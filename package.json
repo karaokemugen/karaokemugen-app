@@ -4,7 +4,7 @@
   "description": "Karaoke playlist manager / player",
   "main": "index.js",
   "scripts": {
-    "start webapp": "nodemon src/webapp/index.js --exec babel-node --presets es2015"
+    "start": "nodemon src/webapp/index.js --exec babel-node --presets es2015"
   },
   "repository": {
     "type": "git",
