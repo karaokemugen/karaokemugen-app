@@ -2,3 +2,4 @@
 .idea/
 .npmrc
 node_modules
+./db/*.sqlite3
