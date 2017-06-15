@@ -3,4 +3,4 @@
 .npmrc
 .vscode
 node_modules
-./app/
+app/
