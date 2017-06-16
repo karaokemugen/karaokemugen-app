@@ -43,11 +43,13 @@
     "TYPE_LIVE": "Concert",
     "TYPE_LIVE_SHORT": "LIVE",
     "TYPE_CM": "Publicité",
-    "TYPE_CM_SHORT": "PUB",
+    "TYPE_CM_SHORT": "CM",
     "TYPE_ED": "Ending",
     "TYPE_ED_SHORT": "ED",
     "TYPE_OP": "Opening",
     "TYPE_OP_SHORT": "OP",
+    "TYPE_TRAILER": "Bande-annonce",
+    "TYPE_TRAILER_SHORT": "TRAILER"
     "TYPE_OTHER": "Autre",
     "TYPE_OTHER_SHORT": "OT",
 
@@ -69,10 +71,12 @@
     "TAG_PS2": "PS2",
     "TAG_PS3": "PS3",
     "TAG_PSV": "PSVita",
+    "TAG_PSX": "PSX",
     "TAG_PSP": "PSP",
     "TAG_R18": "R18",
     "TAG_PV": "Bande-annonce",
-    "TAG_THEME": "Thème",
     "TAG_VOCALOID": "Vocaloid",
     "TAG_XBOX360": "XBOX 360"
+    "TAG_PC": "PC"
+
 }
