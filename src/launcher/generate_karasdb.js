@@ -211,24 +211,26 @@ var karas_db = new sqlite3.Database(karas_dbfile,function (err,rep){
             console.log('Erreur create');
             console.log(err);
             console.log(sqlCreateKarasDB);
+        } else {
+        var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile,'utf8');
+        karas_db.exec(sqlCreateKarasDBViewAll, function (err, rep){
+            if (err) {
+                console.log('Erreur create view');
+                console.log(err);
+                console.log(sqlCreateKarasDBViewAll);
+            } else {
+                var karas = fs.readdirSync(karasdir);
+                karas.forEach(addKara(value,karas_db));
+                karas_db.close();
+            }
+        });
         }
     });
+    
 
     // Création de la vue all_karas
-    var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile,'utf8');
-    karas_db.exec(sqlCreateKarasDBViewAll, function (err, rep){
-        if (err) {
-            console.log('Erreur create view');
-            console.log(err);
-            console.log(sqlCreateKarasDBViewAll);
-        }
-    });
+ 
 
-    var karas = fs.readdirSync(karasdir);
-
-    karas.forEach(addKara(value,karas_db));
-
-    karas_db.close();
-
+    
 });
 
