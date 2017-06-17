@@ -28,7 +28,6 @@
     "matroska-subtitles": "^2.0.1",
     "node-mpv": "^1.0.3",
     "os": "^0.1.1",
-    "pkg": "^4.0.0",
     "qrcode": "^0.8.2",
     "rsync": "^0.6.1",
     "socket.io": "^2.0.3",
