@@ -17,6 +17,7 @@
   "license": "ISC",
   "private": true,
   "dependencies": {
+    "cli-color": "^1.2.0",
     "cli-colors": "0.0.2",
     "cutlass": "^0.2.7",
     "download-file": "^0.1.5",
