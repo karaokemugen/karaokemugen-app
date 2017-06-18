@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Toyunda Launcher</title>
+        <link rel="stylesheet" type="text/css" href="/style.css">
+    </head>
+    <body>
+        <div class="wrapper">
+            <blockquote id="firefox_alert">
+                <p>Il semble que vous utilisiez le navigateur Firefox</p>
+                <p>Ce dernier ne permet pas de fermer automatiquement un onglet</p>
+                <p>Le launcher Toyunda est à présent coupé et vous pouvez fermer cette fenêtre</p>
+            </blockquote>
+            <h1>Toyunda Launcher</h1>
+            <p><button id="terminate"><i class="fa fa-power-off"></i> Quitter l'application</button></p>
+            <p><span class="states_private"></span> <button id="togglePrivate">Switch</button>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/jquery.js"></script>
+        <script src="/script.js"></script>
+    </body>
+</html>

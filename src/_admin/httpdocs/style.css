@@ -1,0 +1,33 @@
+html,body {
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	font-size: 14px;
+	font-family: sans-serif;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+}
+
+#firefox_alert {
+	margin: 0 0 1em;
+	display: none;
+	background: #dd5044;
+	color: #fff;
+	padding: 1em;
+}
+
+h1 {
+	margin-top: 0;
+}
+
+.wrapper {
+	width: 90%;
+	max-width: 1200px;
+	margin: auto;
+	padding-top: 4em;
+}
