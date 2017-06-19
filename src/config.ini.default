@@ -36,16 +36,16 @@ ASSStyleAdded = "Style: Pseudo,Arial,$StyleRequesterTaille,&H00FFFFFF,&H000000FF
 ASSDialogueAdded = "Dialogue: 0,0:00:00.00,0:00:08.00,Pseudo,,0,0,0,,{\\fad(800,250)\\i1}Demandé par{\\i0}\\N{\\u0}$Requester{\\u1}"
 
 [Binaries.Windows]
-BinMPV = "app/bin/mpv.exe"
-BinFFProbe = "app/bin/ffprobe.exe"
+BinPlayer = "app/bin/mpv.exe"
+BinProbe = "app/bin/ffprobe.exe"
 
 [Binaries.OSX]
-BinMPV = "app/bin/mpv.osx"
-BinFFProbe = "app/bin/ffprobe.osx"
+BinPlayer = "app/bin/mpv.osx"
+BinProbe = "app/bin/ffprobe.osx"
 
 [Binaries.linux]
-BinMPV = "/usr/bin/mpv"
-BinFFProbe = "/usr/bin/ffprobe"
+BinPlayer = "/usr/bin/mpv"
+BinProbe = "/usr/bin/ffprobe"
 
 [Version]
 VersionNo = "v2.0"
