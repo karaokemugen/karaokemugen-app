@@ -6,10 +6,7 @@ Password = "shami"
 ;Ce paramètre est ignoré si AntiFloodType = IP
 DisplayNickname = 1
 
-;AntiFloodType : d?finit le type d'antiflood
-;IP = Par adresse IP de l'appareil
-;Nickname = Par pseudo. L'app web demandera alors de saisir son pseudo au chargement.
-AntiFloodType = "Nickname"
+AllowNicknameChange = 1
 
 ;SongsPerPerson : Nombre de chansons passable par IP/Nickname
 SongsPerPerson = 10000
