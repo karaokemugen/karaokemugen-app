@@ -1,8 +1,50 @@
-[section1]
-a=1
-b=1
-c=3
-[section2]
-d=4
-e=5
-f=6
+[Admin]
+Password = "shami"
+
+[Appearance]
+;DisplayNickname : affiche dans le coin inférieur droit du kara qui a demandé la chanson en cours.
+;Ce paramètre est ignoré si AntiFloodType = IP
+DisplayNickname = 1
+
+;AntiFloodType : d?finit le type d'antiflood
+;IP = Par adresse IP de l'appareil
+;Nickname = Par pseudo. L'app web demandera alors de saisir son pseudo au chargement.
+AntiFloodType = "Nickname"
+
+;SongsPerPerson : Nombre de chansons passable par IP/Nickname
+SongsPerPerson = 10000
+
+[Path]
+Karas = "app/data/karas"
+Videos = "app/data/videos"
+Subs = "app/data/lyrics"
+BaseKaras = "app/db/karas.sqlite3"
+BaseUser = "app/db/userdata.sqlite3"
+
+[Player]
+;Screen : définit l'écran sur lequel doit s'afficher le karaoke.
+;NE FONCTIONNE PAS AVEC MPLAYER TOYUNDA.
+;0 = Premier écran
+;1 = Second écran
+; ...
+;9 = Aucun écran spécifié (ne pas préciser l'option --screen)
+Screen = 0
+
+[Player]
+mpvOptions = "-fs --ontop --no-osc --no-osd-bar --osd-level=0"
+
+[Binaries.Windows]
+BinMPV = "app/bin/mpv.exe"
+BinFFProbe = "app/bin/ffprobe.exe"
+
+[Binaries.OSX]
+BinMPV = "app/bin/mpv.osx"
+BinFFProbe = "app/bin/ffprobe.osx"
+
+[Binaries.linux]
+BinMPV = "/usr/bin/mpv"
+BinFFProbe = "/usr/bin/ffprobe"
+
+[Version]
+VersionNo = "v2.0"
+VersionName = "Finé Fantastique"
