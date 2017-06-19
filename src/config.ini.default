@@ -1,12 +1,15 @@
 [Admin]
 Password = "shami"
 
-[Appearance]
+[Engine]
 ;DisplayNickname : affiche dans le coin inférieur droit du kara qui a demandé la chanson en cours.
 ;Ce paramètre est ignoré si AntiFloodType = IP
 DisplayNickname = 1
 
 AllowNicknameChange = 1
+
+;Image affichée quand le player attend.
+Wallpaper = "app/background.jpg"
 
 ;SongsPerPerson : Nombre de chansons passable par IP/Nickname
 SongsPerPerson = 10000
