@@ -43,7 +43,7 @@ BinProbe = "app/bin/ffprobe.exe"
 BinPlayer = "app/bin/mpv.osx"
 BinProbe = "app/bin/ffprobe.osx"
 
-[Binaries.linux]
+[Binaries.Linux]
 BinPlayer = "/usr/bin/mpv"
 BinProbe = "/usr/bin/ffprobe"
 
