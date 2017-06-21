@@ -14,7 +14,13 @@
             </blockquote>
             <h1>Toyunda Launcher</h1>
             <p><button id="terminate"><i class="fa fa-power-off"></i> Quitter l'application</button></p>
-            <p><span class="states_private"></span> <button id="togglePrivate">Switch</button>
+            <p><span class="states_private"></span> <button id="togglePrivate">Switch</button></p>
+            <p>
+                Status du moteur de karaoke : <span class="states_status"></span> 
+                <button id="engine_play">Play</button>
+                <button id="engine_stop">Stop (After)</button>
+                <button id="engine_stop_now">Stop (Now)</button>
+            </p>
         </div>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/jquery.js"></script>

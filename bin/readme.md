@@ -1,0 +1,3 @@
+Emplacement des binaires utilisé par l'application mpv, ffprobe, ...
+Ultérieurement ils seront téléchargé automatiquement par le script de lancement
+Pour le moment il faudra les placer manuellement
