@@ -1,39 +1,5 @@
 {
 
-//Langues
-    "LANG_FRENCH": "Français",
-    "LANG_FRENCH_SHORT": "FR",
-    "LANG_GERMAN": "Allemand",
-    "LANG_GERMAN_SHORT": "ALL",
-    "LANG_SPANISH": "Espagnol",
-    "LANG_SPANISH_SHORT": "ESP",
-    "LANG_JAPANESE": "Japonais",
-    "LANG_JAPANESE_SHORT": "JAP",
-    "LANG_ITALIAN": "Italien",
-    "LANG_ITALIAN_SHORT": "ITA",
-    "LANG_ENGLISH": "Anglais",
-    "LANG_ENGLISH_SHORT": "ANG",
-    "LANG_PORTUGESE": "Portugais",
-    "LANG_PORTUGESE_SHORT": "POR",
-    "LANG_CHINESE": "Chinois",
-    "LANG_CHINESE_SHORT": "CHI",
-    "LANG_KOREAN": "Coréen",
-    "LANG_KOREAN_SHORT": "COR",
-    "LANG_FICTION": "Fictionnel",
-    "LANG_FICTION_SHORT": "FIC",
-    "LANG_HEBREW": "Hébreu",
-    "LANG_HEBREW_SHORT": "HEB",
-    "LANG_LATIN": "Latin",
-    "LANG_LATIN_SHORT": "LAT",
-    "LANG_RUSSIAN": "Russe",
-    "LANG_RUSSIAN_SHORT": "RUS",
-    "LANG_SWEDISH": "Suédois",
-    "LANG_SWEDISH_SHORT": "SUE",
-    "LANG_ESPERANTO": "Esperanto",
-    "LANG_ESPERANTO_SHORT": "EPO",
-
-// Types de chansons
-
     "TYPE_AMV": "Anime Music Video",
     "TYPE_AMV_SHORT": "AMV",
     "TYPE_INSERTSONG": "Insert Song",
@@ -52,9 +18,10 @@
     "TYPE_TRAILER_SHORT": "TRAILER"
     "TYPE_OTHER": "Autre",
     "TYPE_OTHER_SHORT": "OT",
+    "TYPE_PV": "Bande-annonce",
+    "TYPE_PV_SHORT": "PV",
 
-//Tags
-
+    "TAG_SPECIAL": "Special",
     "TAG_GAMECUBE": "Gamecube",    
     "TAG_TOKU": "Tokusatsu/Sentai",
     "TAG_OVA": "OAV",
@@ -74,7 +41,6 @@
     "TAG_PSX": "PSX",
     "TAG_PSP": "PSP",
     "TAG_R18": "R18",
-    "TAG_PV": "Bande-annonce",
     "TAG_VOCALOID": "Vocaloid",
     "TAG_XBOX360": "XBOX 360"
     "TAG_PC": "PC"
