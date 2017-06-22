@@ -219,7 +219,22 @@ function addKara(kara,db) {
         }
 
         //Ajout de la série
-        if (!S(karaType).contains('LIVE') || !S(karaType).contains('MV')){
+        if (karaType == 'LIVE' || karaType == 'MV'){
+            //Ajouter les artistes à la place de la série
+            var singers = karaSerie.split(',');
+            var singer = undefined;
+            async.each(singers, function(singer, callback){
+                    singer = S(singer).trimLeft().s;
+                    qt.push(singer+',2,'+id_kara, function(err,result){
+                        console.log('['+id_kara+'] Fin tâche add tag');
+                    });
+                    callback();
+            }, function(err) {
+                if (err) {
+                    console.log("Erreur ajout Tag Singer");
+                }
+            });                
+        } else {
             qs.push(karaSerie+','+id_kara, function(err){
                 console.log('['+id_kara+'] Fin tâche add série ('+karaSerie+')');
             });
@@ -580,6 +595,9 @@ var db = new sqlite3.Database(karas_dbfile,function (err,rep){
                         qt.resume();
                         qs.drain = function() { 
                             console.log('Toutes les opérations de séries sont terminées.');    
+                            qt.drain = function() {
+                                console.log('Plus rien a faire! (en théorie)');                                
+                            }
                             //Parse du series_altnames.csv
 
                         };
