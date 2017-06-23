@@ -30,6 +30,7 @@
     "iso-countries-languages": "^0.1.1",
     "mathjs": "^3.13.3",
     "matroska-subtitles": "^2.0.1",
+    "moment": "^2.18.1",
     "node-mpv": "^1.0.3",
     "open": "0.0.5",
     "os": "^0.1.1",
