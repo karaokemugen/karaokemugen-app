@@ -1,3 +1,4 @@
+BEGIN TRANSACTION;
 CREATE TABLE `tag` (
 	`PK_id_tag`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 	`tagtype`	INTEGER,
@@ -36,3 +37,4 @@ CREATE INDEX `index_kara_tag_id_tag` ON `kara_tag` (`FK_id_tag` );
 CREATE INDEX `index_kara_tag_id_kara` ON `kara_tag` (`FK_id_kara` );
 CREATE INDEX `index_kara_series_id_series` ON `kara_series` (`FK_id_series` );
 CREATE INDEX `index_kara_series_id_kara` ON `kara_series` (`FK_id_kara` );
+COMMIT;
