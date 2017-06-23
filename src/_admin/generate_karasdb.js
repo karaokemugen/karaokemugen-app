@@ -9,6 +9,7 @@ var S = require('string');
 var moment = require('moment');
 const uuidV4 = require("uuid/v4");
 const async = require('async');
+const { diacritics, normalize } = require('normalize-diacritics');
 
 // Pour l'instant on met les infos en dur.
 // Plus tard dans le fichier de config
@@ -59,16 +60,19 @@ karafiles.forEach(function(kara){
 console.log(moment().format('LTS')+' - Tableau series OK ('+series.length+' séries, '+karas_series.length+' liaisons)');
 
 //Construction des requêtes SQL
-        
+
 async.eachOf(karas, function(kara, id_kara, callback){
     id_kara++;
-    sqlInsertKaras += 'INSERT INTO kara(PK_id_kara,kid,title,year,songorder,videofile,subfile,videolength,date_added,date_last_modified,rating,viewcount) VALUES('+id_kara+',"'+kara['KID']+'","'+kara['title']+'","'+kara['year']+'",'+kara['songorder']+',"'+kara['videofile']+'","'+kara['subfile']+'",'+kara['videolength']+','+kara['dateadded']+','+kara['datemodif']+','+kara['rating']+','+kara['viewcount']+');';
+    console.log(kara['title']);
+    var titlenorm = normalize(kara['title']);
+    sqlInsertKaras += 'INSERT INTO kara(PK_id_kara,kid,title,NORM_title,year,songorder,videofile,subfile,videolength,date_added,date_last_modified,rating,viewcount) VALUES('+id_kara+',"'+kara['KID']+'","'+kara['title']+'","'+titlenorm+'","'+kara['year']+'",'+kara['songorder']+',"'+kara['videofile']+'","'+kara['subfile']+'",'+kara['videolength']+','+kara['dateadded']+','+kara['datemodif']+','+kara['rating']+','+kara['viewcount']+');';
     callback();
 })
 sqlInsertKaras += 'COMMIT;'
 async.eachOf(series, function(serie, id_series, callback){
     id_series++;
-    sqlInsertSeries += 'INSERT INTO series(PK_id_series,name) VALUES('+id_series+',"'+serie+'");';
+    var serienorm = normalize(serie);
+    sqlInsertSeries += 'INSERT INTO series(PK_id_series,name,NORM_name) VALUES('+id_series+',"'+serie+'","'+serienorm+'");';
     callback();
 })
 sqlInsertSeries += 'COMMIT;'
@@ -76,8 +80,9 @@ async.eachOf(tags, function(tag, id_tag, callback){
     id_tag++;
     tag = tag.split(',');
     var tagname = tag[0];
+    var tagnamenorm = normalize(tagname);
     var tagtype = tag[1];
-    sqlInsertTags += 'INSERT INTO tag(PK_id_tag,tagtype,name) VALUES('+id_tag+','+tagtype+',"'+tagname+'");';
+    sqlInsertTags += 'INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES('+id_tag+','+tagtype+',"'+tagname+'","'+tagnamenorm+'");';
     callback();
 })
 sqlInsertTags += 'COMMIT;'
@@ -434,11 +439,11 @@ function addKara(karafile) {
     var karaWOExtension = S(karafile).chompRight('.kara');
     // Découper le nom du kara : langue, série, type, titre
     var karaInfos = karaWOExtension.split(' - ');
-    if (S(kara['title']).isEmpty()) {
-        kara['title'] = '';
-    } else {
-        kara['title'] = karaInfos[3];
+    if (karaInfos[3] == undefined) {
+        karaInfos[3] = '';
     }
+    kara['title'] = karaInfos[3];
+    
     kara['year'] = karadata.year;
     // Ordre : trouver le songorder à la suite du type
     var karaOrder = undefined;
