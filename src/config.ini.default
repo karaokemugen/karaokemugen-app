@@ -1,15 +1,15 @@
 [Admin]
 Password = "shami"
 
-[Appearance]
+[Engine]
 ;DisplayNickname : affiche dans le coin inférieur droit du kara qui a demandé la chanson en cours.
 ;Ce paramètre est ignoré si AntiFloodType = IP
 DisplayNickname = 1
 
-;AntiFloodType : d?finit le type d'antiflood
-;IP = Par adresse IP de l'appareil
-;Nickname = Par pseudo. L'app web demandera alors de saisir son pseudo au chargement.
-AntiFloodType = "Nickname"
+AllowNicknameChange = 1
+
+;Image affichée quand le player attend.
+Wallpaper = "app/background.jpg"
 
 ;SongsPerPerson : Nombre de chansons passable par IP/Nickname
 SongsPerPerson = 10000
@@ -29,21 +29,23 @@ BaseUser = "app/db/userdata.sqlite3"
 ; ...
 ;9 = Aucun écran spécifié (ne pas préciser l'option --screen)
 Screen = 0
-
-[Player]
 mpvOptions = "-fs --ontop --no-osc --no-osd-bar --osd-level=0"
+ASSStyleCredits = "Style: Credits,Arial,$StyleCreditsTaille,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,-1,0,0,0,90,100,0,0,1,0.7,0,1,15,10,15,1"
+ASSDialogueCredits = "Dialogue: 0,0:00:00.00,0:00:08.00,Credits,,0,0,0,,{\\fad(800,250)\\i1}$KaraSerie{\\i0}\\N{\\u0}$KaraType - $KaraTitre{\\u1}"
+ASSStyleAdded = "Style: Pseudo,Arial,$StyleRequesterTaille,&H00FFFFFF,&H000000FF,&H64000000,&H64000000,0,0,0,0,100,100,0,0,3,3,0,3,15,10,15,1"
+ASSDialogueAdded = "Dialogue: 0,0:00:00.00,0:00:08.00,Pseudo,,0,0,0,,{\\fad(800,250)\\i1}Demandé par{\\i0}\\N{\\u0}$Requester{\\u1}"
 
 [Binaries.Windows]
-BinMPV = "app/bin/mpv.exe"
-BinFFProbe = "app/bin/ffprobe.exe"
+BinPlayer = "app/bin/mpv.exe"
+BinProbe = "app/bin/ffprobe.exe"
 
 [Binaries.OSX]
-BinMPV = "app/bin/mpv.osx"
-BinFFProbe = "app/bin/ffprobe.osx"
+BinPlayer = "app/bin/mpv.osx"
+BinProbe = "app/bin/ffprobe.osx"
 
-[Binaries.linux]
-BinMPV = "/usr/bin/mpv"
-BinFFProbe = "/usr/bin/ffprobe"
+[Binaries.Linux]
+BinPlayer = "/usr/bin/mpv"
+BinProbe = "/usr/bin/ffprobe"
 
 [Version]
 VersionNo = "v2.0"
