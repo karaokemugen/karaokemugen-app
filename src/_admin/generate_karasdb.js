@@ -152,16 +152,22 @@ console.log(moment().format('LTS')+' - Tableau series OK ('+series.length+' sér
 
 function getvideoduration(videofile,id_kara,callback) {
     var videolength = 0;
-    probe.FFPROBE_PATH = './app/bin/ffprobe.exe';
-    probe(videosdir+'/'+videofile,function (err, videodata) {
-        if (err) {
-            console.log("["+videofile+"] Impossible de probe la vidéo : "+err);
-            callback(err,videolength,id_kara);
-        } else {            
-            videolength = math.round(videodata.format.duration);                
-            callback(null,videolength,id_kara);
-        }
-    });
+    if (fs.existsSync(videosdir+'/'+videofile))
+    {
+        probe.FFPROBE_PATH = './app/bin/ffprobe.exe';
+        probe(videosdir+'/'+videofile,function (err, videodata) {
+            if (err) {
+                console.log("["+videofile+"] Impossible de probe la vidéo : "+err);
+                callback(err,videolength,id_kara);
+            } else {            
+                videolength = math.round(videodata.format.duration);                
+                callback(null,videolength,id_kara);
+            }
+        });
+    } else {
+        console.log('Fichier vidéo '+videofile+' inexistant, pas de calcul.')
+    }
+    
     
 }
 
