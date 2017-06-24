@@ -1,4 +1,4 @@
-var ffprobe = module.exports = require('./src/common/modules/node-ffprobe/lib/ffprobe.js');
+var ffprobe = module.exports = require('./lib/ffprobe.js');
 
 if(require.main === module) {
 	var exit = function(code, msg) {
@@ -14,7 +14,7 @@ if(require.main === module) {
 
 	!function probeFile(file) {
 		if(!file) return exit(0, 'Finished probing all files');
-
+		file = '"'+file+'"';
 		ffprobe(file, function(err, results) {
 			console.log('%s\n========================================\n%s\n\n', file, err || JSON.stringify(results, null, '   '));
 
