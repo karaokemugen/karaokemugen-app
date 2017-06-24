@@ -10,6 +10,7 @@ var moment = require('moment');
 const uuidV4 = require("uuid/v4");
 const async = require('async');
 const { diacritics, normalize } = require('normalize-diacritics');
+var csv = require('csv-string');
 
 // Pour l'instant on met les infos en dur.
 // Plus tard dans le fichier de config
@@ -32,6 +33,7 @@ var sqlInsertTags = 'BEGIN TRANSACTION;';
 var sqlInsertKarasTags = 'BEGIN TRANSACTION;';
 var sqlInsertKarasSeries = 'BEGIN TRANSACTION;';
 var sqlUpdateVideoLength = 'BEGIN TRANSACTION;';
+var sqlUpdateSeriesAltNames = 'BEGIN TRANSACTION;';
 var karas = [];
 var series = [];
 var tags = [];
@@ -48,6 +50,17 @@ karafiles.forEach(function(kara){
     addKara(kara);    
 });
 console.log(moment().format('LTS')+' - Tableau karas OK ('+karas.length+' karas)');
+//Un autre passage dans karas pour avoir la durée des vidéos, mais cette fois en série
+id_kara = 0;
+karas.forEach(function(kara)
+{
+    id_kara++;
+    getvideoduration(kara['videofile'],id_kara,function(err,videolength,id){
+        sqlUpdateVideoLength += 'UPDATE kara SET videolength='+videolength+' WHERE PK_id_kara='+id+';';
+    });    
+
+});
+console.log(moment().format('LTS')+' - Calcul durée des vidéos OK');
 karafiles.forEach(function(kara){
     id_kara++;
     addTags(kara,id_kara);            
@@ -60,17 +73,8 @@ karafiles.forEach(function(kara){
 });
 console.log(moment().format('LTS')+' - Tableau series OK ('+series.length+' séries, '+karas_series.length+' liaisons)');
 
-//Un autre passage dans karas pour avoir la durée des vidéos, mais cette fois en série
-id_kara = 0;
-karas.forEach(function(kara)
-{
-    id_kara++;
-    getvideoduration(kara['videofile'],id_kara,function(err,videolength,id){
-        sqlUpdateVideoLength += 'UPDATE kara SET videolength='+videolength+' WHERE PK_id_kara='+id+';';
-    });    
 
-});
-            console.log(moment().format('LTS')+' - Calcul durée des vidéos OK');
+
             //Construction des requêtes SQL
             async.eachOf(karas, function(kara, id_kara, callback){
                 id_kara++;
@@ -79,7 +83,6 @@ karas.forEach(function(kara)
                 callback();
             })
             sqlInsertKaras += 'COMMIT;'
-            fs.writeFileSync('temp.sql',sqlInsertKaras);
             
             async.eachOf(series, function(serie, id_series, callback){
                 id_series++;
@@ -114,6 +117,32 @@ karas.forEach(function(kara)
                 callback();
             })
             sqlInsertKarasSeries += 'COMMIT;'
+
+
+            //Traitement des altnames de séries
+            
+            if (fs.existsSync(series_altnamesfile)) 
+            {
+                var DoUpdateSeriesAltNames = true;
+                series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);     
+                csv.forEach(series_altnamesfilecontent.toString(),':',function (serie,index) {
+                    var serie_name = serie[0];
+                    var serie_altnames = serie[1];
+                    if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
+                        var serie_altnamesnorm = normalize(serie[1]);
+                        sqlUpdateSeriesAltNames += 'UPDATE series SET altname="'+serie_altnames+'",NORM_altname="'+serie_altnamesnorm+'" WHERE name="'+serie_name+'";';
+                    }
+                    //console.log('['+index+'] '+serie_name+' -> '+serie_altnames);                
+                })
+                sqlUpdateSeriesAltNames += 'COMMIT;'
+            } else {
+                var DoUpdateSeriesAltNames = false;
+                console.log ('WARNING : Pas de fichier de noms de séries alternatifs. On passe');
+                
+            }
+            
+            
+
             generateDB();
 
     
@@ -189,21 +218,33 @@ function generateDB() {
                                         } else {
                                             console.log(moment().format('LTS')+' - Remplissage karas_tags OK');
                                             db.exec(sqlInsertSeries, function (err,rep) {
-                                if (err) {
-                                    console.log('Erreur remplissage séries');
-                                    console.log(err);                            
-                                } else {
-                                    console.log(moment().format('LTS')+' - Remplissage séries OK');
-                                    db.exec(sqlInsertKarasSeries, function (err,rep) {
-                                        if (err) {
-                                            console.log('Erreur remplissage karas_series');
-                                            console.log(err);                            
-                                        } else {
-                                            console.log(moment().format('LTS')+' - Remplissage karas_series OK');
-                                        }
-                                    });
-                                }
-                            });
+                                                if (err) {
+                                                    console.log('Erreur remplissage séries');
+                                                    console.log(err);                            
+                                                } else {
+                                                    console.log(moment().format('LTS')+' - Remplissage séries OK');
+                                                    if (DoUpdateSeriesAltNames)
+                                                    {
+                                                        db.exec(sqlUpdateSeriesAltNames, function (err, rep) {
+                                                            if (err) {
+                                                                console.log('Erreur MAJ series altnames');
+                                                                console.log(err);
+                                                            } else {
+                                                                console.log(moment().format('LTS')+' - MAJ noms alternatifs des séries OK');
+                                                            }
+                                                        })
+                                                    }
+                                                        
+                                                    db.exec(sqlInsertKarasSeries, function (err,rep) {
+                                                        if (err) {
+                                                            console.log('Erreur remplissage     karas_series');
+                                                            console.log(err);                            
+                                                        } else {
+                                                            console.log(moment().format('LTS')+' - Remplissage karas_series OK');
+                                                        }
+                                                    });
+                                                }
+                                            });
                                         }
                                     });
                                 }
