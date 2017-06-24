@@ -3,7 +3,7 @@ var sqlite3 = require('sqlite3').verbose();
 var fs = require("fs");
 var ini = require("ini");
 var timestamp = require("unix-timestamp");
-//var probe = require('d:/perso/toyundamugen-appv2/src/_common/modules/node-ffprobe');
+var probe = require('../_common/modules/node-ffprobe');
 var math = require('mathjs');
 var S = require('string');
 var moment = require('moment');
@@ -59,16 +59,25 @@ karafiles.forEach(function(kara){
 });
 console.log(moment().format('LTS')+' - Tableau series OK ('+series.length+' séries, '+karas_series.length+' liaisons)');
 
+//Un autre passage dans karas pour avoir la durée des vidéos, mais cette fois en série
+karas.forEach(function(kara)
+{
+    getvideoduration(kara['videofile'],function(videolength){
+        kara['videolength'] = videolength;        
+    });    
+});
+
+console.log(moment().format('LTS')+' - Durée des vidéos OK');
 //Construction des requêtes SQL
 
 async.eachOf(karas, function(kara, id_kara, callback){
     id_kara++;
-    console.log(kara['title']);
     var titlenorm = normalize(kara['title']);
     sqlInsertKaras += 'INSERT INTO kara(PK_id_kara,kid,title,NORM_title,year,songorder,videofile,subfile,videolength,date_added,date_last_modified,rating,viewcount) VALUES('+id_kara+',"'+kara['KID']+'","'+kara['title']+'","'+titlenorm+'","'+kara['year']+'",'+kara['songorder']+',"'+kara['videofile']+'","'+kara['subfile']+'",'+kara['videolength']+','+kara['dateadded']+','+kara['datemodif']+','+kara['rating']+','+kara['viewcount']+');';
     callback();
 })
 sqlInsertKaras += 'COMMIT;'
+console.log(sqlInsertKaras)
 async.eachOf(series, function(serie, id_series, callback){
     id_series++;
     var serienorm = normalize(serie);
@@ -102,8 +111,23 @@ async.each(karas_series, function(karaseries, callback){
     callback();
 })
 sqlInsertKarasSeries += 'COMMIT;'
-//fs.writeFileSync('temp.sql',sqlInsertTags);
 generateDB();
+
+function getvideoduration(videofile,callback) {
+    var videolength = 0;
+    probe.FFPROBE_PATH = './app/bin/ffprobe.exe';
+    probe(videosdir+'/'+videofile,function (err, videodata) {
+        if (err) {
+            console.log("["+videofile+"] Impossible de probe la vidéo : "+err);
+            videolength = 0;
+            callback(videolength);
+        } else {            
+            videolength = math.round(videodata.format.duration);                
+            callback(videolength);
+        }
+    });
+    
+}
 
 function generateDB() {
     var db = new sqlite3.Database(karas_dbfile,function (err,rep){ 
@@ -463,27 +487,7 @@ function addKara(karafile) {
     kara['songorder'] = karaOrder;
     kara['videofile'] = karadata.videofile;
     kara['subfile'] = karadata.subfile;
-    kara['videolength'] = 0;
-    /* probe.FFPROBE_PATH = 'app/bin/ffprobe.exe';
-        probe(videosdir+'/'+videofile,function (err, videodata) {
-            if (err) {
-                console.log("["+id_kara+"] Impossible de probe la vidéo : "+err);
-                karaVideolength = 0;
-            } else {
-                karaVideolength = math.round(videodata.format.duration);
-                sqlUpdateKaraVideoLength = 'UPDATE kara SET videolength = $videolength WHERE PK_id_kara = $id_kara';
-                db.run(sqlUpdateKaraVideoLength, {
-                    $id_kara: id_kara, 
-                    $videolength: videolength
-                }, function (err) {
-                if (err) {
-                    console.log("["+id_kara+"] Erreur d'update de la durée de la vidéo : "+err);
-                    process.exit();
-                    }
-                });  
-            }
-        });
-    */ 
+    kara['videolength'] = 0;         
     kara['rating'] = 0;
     kara['viewcount'] = 0;
     karas.push(kara);
