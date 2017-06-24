@@ -31,6 +31,7 @@ var sqlInsertSeries = 'BEGIN TRANSACTION;';
 var sqlInsertTags = 'BEGIN TRANSACTION;';
 var sqlInsertKarasTags = 'BEGIN TRANSACTION;';
 var sqlInsertKarasSeries = 'BEGIN TRANSACTION;';
+var sqlUpdateVideoLength = 'BEGIN TRANSACTION;';
 var karas = [];
 var series = [];
 var tags = [];
@@ -60,70 +61,76 @@ karafiles.forEach(function(kara){
 console.log(moment().format('LTS')+' - Tableau series OK ('+series.length+' séries, '+karas_series.length+' liaisons)');
 
 //Un autre passage dans karas pour avoir la durée des vidéos, mais cette fois en série
+id_kara = 0;
 karas.forEach(function(kara)
 {
-    getvideoduration(kara['videofile'],function(videolength){
-        kara['videolength'] = videolength;        
-    });    
-});
-
-console.log(moment().format('LTS')+' - Durée des vidéos OK');
-//Construction des requêtes SQL
-
-async.eachOf(karas, function(kara, id_kara, callback){
     id_kara++;
-    var titlenorm = normalize(kara['title']);
-    sqlInsertKaras += 'INSERT INTO kara(PK_id_kara,kid,title,NORM_title,year,songorder,videofile,subfile,videolength,date_added,date_last_modified,rating,viewcount) VALUES('+id_kara+',"'+kara['KID']+'","'+kara['title']+'","'+titlenorm+'","'+kara['year']+'",'+kara['songorder']+',"'+kara['videofile']+'","'+kara['subfile']+'",'+kara['videolength']+','+kara['dateadded']+','+kara['datemodif']+','+kara['rating']+','+kara['viewcount']+');';
-    callback();
-})
-sqlInsertKaras += 'COMMIT;'
-console.log(sqlInsertKaras)
-async.eachOf(series, function(serie, id_series, callback){
-    id_series++;
-    var serienorm = normalize(serie);
-    sqlInsertSeries += 'INSERT INTO series(PK_id_series,name,NORM_name) VALUES('+id_series+',"'+serie+'","'+serienorm+'");';
-    callback();
-})
-sqlInsertSeries += 'COMMIT;'
-async.eachOf(tags, function(tag, id_tag, callback){
-    id_tag++;
-    tag = tag.split(',');
-    var tagname = tag[0];
-    var tagnamenorm = normalize(tagname);
-    var tagtype = tag[1];
-    sqlInsertTags += 'INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES('+id_tag+','+tagtype+',"'+tagname+'","'+tagnamenorm+'");';
-    callback();
-})
-sqlInsertTags += 'COMMIT;'
-async.each(karas_tags, function(karatag, callback){
-    karatag = karatag.split(',');
-    var id_tag = karatag[0];
-    var id_kara = karatag[1];
-    sqlInsertKarasTags += 'INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES('+id_tag+','+id_kara+');';
-    callback();
-})
-sqlInsertKarasTags += 'COMMIT;'
-async.each(karas_series, function(karaseries, callback){
-    karaseries = karaseries.split(',');
-    var id_series = karaseries[0];
-    var id_kara = karaseries[1];
-    sqlInsertKarasSeries += 'INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES('+id_series+','+id_kara+');';
-    callback();
-})
-sqlInsertKarasSeries += 'COMMIT;'
-generateDB();
+    getvideoduration(kara['videofile'],id_kara,function(err,videolength,id){
+        sqlUpdateVideoLength += 'UPDATE kara SET videolength='+videolength+' WHERE PK_id_kara='+id+';';
+    });    
 
-function getvideoduration(videofile,callback) {
+});
+            console.log(moment().format('LTS')+' - Calcul durée des vidéos OK');
+            //Construction des requêtes SQL
+            async.eachOf(karas, function(kara, id_kara, callback){
+                id_kara++;
+                var titlenorm = normalize(kara['title']);
+                sqlInsertKaras += 'INSERT INTO kara(PK_id_kara,kid,title,NORM_title,year,songorder,videofile,subfile,date_added,date_last_modified,rating,viewcount) VALUES('+id_kara+',"'+kara['KID']+'","'+kara['title']+'","'+titlenorm+'","'+kara['year']+'",'+kara['songorder']+',"'+kara['videofile']+'","'+kara['subfile']+'",'+kara['dateadded']+','+kara['datemodif']+','+kara['rating']+','+kara['viewcount']+');';
+                callback();
+            })
+            sqlInsertKaras += 'COMMIT;'
+            fs.writeFileSync('temp.sql',sqlInsertKaras);
+            
+            async.eachOf(series, function(serie, id_series, callback){
+                id_series++;
+                var serienorm = normalize(serie);
+                sqlInsertSeries += 'INSERT INTO series(PK_id_series,name,NORM_name) VALUES('+id_series+',"'+serie+'","'+serienorm+'");';
+                callback();
+            })
+            sqlInsertSeries += 'COMMIT;'
+            async.eachOf(tags, function(tag, id_tag, callback){
+                id_tag++;
+                tag = tag.split(',');
+                var tagname = tag[0];
+                var tagnamenorm = normalize(tagname);
+                var tagtype = tag[1];
+                sqlInsertTags += 'INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES('+id_tag+','+tagtype+',"'+tagname+'","'+tagnamenorm+'");';
+                callback();
+            })
+            sqlInsertTags += 'COMMIT;'
+            async.each(karas_tags, function(karatag, callback){
+                karatag = karatag.split(',');
+                var id_tag = karatag[0];
+                var id_kara = karatag[1];
+                sqlInsertKarasTags += 'INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES('+id_tag+','+id_kara+');';
+                callback();
+            })
+            sqlInsertKarasTags += 'COMMIT;'
+            async.each(karas_series, function(karaseries, callback){
+                karaseries = karaseries.split(',');
+                var id_series = karaseries[0];
+                var id_kara = karaseries[1];
+                sqlInsertKarasSeries += 'INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES('+id_series+','+id_kara+');';
+                callback();
+            })
+            sqlInsertKarasSeries += 'COMMIT;'
+            generateDB();
+
+    
+
+
+
+
+function getvideoduration(videofile,id_kara,callback) {
     var videolength = 0;
     probe.FFPROBE_PATH = './app/bin/ffprobe.exe';
     probe(videosdir+'/'+videofile,function (err, videodata) {
         if (err) {
             console.log("["+videofile+"] Impossible de probe la vidéo : "+err);
-            videolength = 0;
-            callback(videolength);
+            callback(err,videolength,id_kara);
         } else {            
             videolength = math.round(videodata.format.duration);                
-            callback(videolength);
+            callback(null,videolength,id_kara);
         }
     });
     
@@ -159,6 +166,16 @@ function generateDB() {
                             console.log(err);                            
                         } else {
                             console.log(moment().format('LTS')+' - Remplissage karas OK');
+                            sqlUpdateVideoLength += 'COMMIT;';                                                        
+                            db.exec(sqlUpdateVideoLength, function (err,rep) {
+                                if (err) {
+                                    console.log('Erreur MAJ de la durée des vidéos');
+                                    console.log(err);
+                                } else {
+                                    console.log(moment().format('LTS')+' - MAJ durée des vidéos OK');
+                                }
+                            })
+
                             db.exec(sqlInsertTags, function (err,rep) {
                                 if (err) {
                                     console.log('Erreur remplissage tags');
@@ -487,7 +504,7 @@ function addKara(karafile) {
     kara['songorder'] = karaOrder;
     kara['videofile'] = karadata.videofile;
     kara['subfile'] = karadata.subfile;
-    kara['videolength'] = 0;         
+    kara['videolength'] = undefined;         
     kara['rating'] = 0;
     kara['viewcount'] = 0;
     karas.push(kara);
