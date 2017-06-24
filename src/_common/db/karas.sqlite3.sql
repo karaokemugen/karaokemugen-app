@@ -27,7 +27,7 @@ CREATE TABLE `kara` (
 	`videofile`	TEXT,
 	`subfile`	TEXT,
 	`videolength`	INTEGER,
-	`date_added`	TEXT,
+	`date_added`	INTEGER,
 	`date_last_modified`	INTEGER,
 	`rating`	REAL,
 	`viewcount`	INTEGER
