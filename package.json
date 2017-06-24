@@ -21,6 +21,7 @@
     "babel-cli": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "cli-color": "^1.2.0",
+    "csv-string": "^2.3.2",
     "cutlass": "^0.2.7",
     "download-file": "^0.1.5",
     "express": "^4.15.3",
