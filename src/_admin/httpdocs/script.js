@@ -6,10 +6,12 @@ var states = {};
 // alert message
 socket.on('states', function(newStates) {
     states = newStates;
-    if(states.private)
-    	$('.states_private').html('Private = TRUE');
-	else
-		$('.states_private').html('Private = FALSE');
+
+    private_message = states.private ? 'Mode Privé':'Mode publique';
+    $('.states_private').html(private_message);
+
+    status_message = states.status=='play' ? 'Mode lecture':'Mode arrêt';
+    $('.states_status').html(status_message);
 })
 
 socket.on('message', function(message) {
@@ -17,7 +19,7 @@ socket.on('message', function(message) {
 })
 
 $('#terminate').click(function () {
-    socket.emit('message', 'terminate');
+    socket.emit('action', 'terminate');
     window.close();
     setTimeout(function(){
         $('#firefox_alert').show();
@@ -25,5 +27,15 @@ $('#terminate').click(function () {
 })
 
 $('#togglePrivate').click(function () {
-    socket.emit('message', 'togglePrivate');
+    socket.emit('action', 'togglePrivate');
+})
+
+$('#engine_play').click(function () {
+    socket.emit('action', 'play');
+})
+$('#engine_stop').click(function () {
+    socket.emit('action', 'stop');
+})
+$('#engine_stop_now').click(function () {
+    socket.emit('action', 'stop.now');
 })

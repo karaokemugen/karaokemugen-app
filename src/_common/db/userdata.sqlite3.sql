@@ -1,14 +1,69 @@
 BEGIN TRANSACTION;
-CREATE TABLE `viewcount` (
-	`id_viewcount`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-	`kid`	TEXT,
-	`datetime`	TEXT
+CREATE TABLE viewcount (
+    pk_id_viewcount INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    fk_id_kara      INTEGER NOT NULL,
+    unique_id       TEXT NOT NULL,
+    datetime        INTEGER
 );
-CREATE TABLE "rating" (
-	`id_rating`	INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-	`kid`	TEXT,
-	`rating`	INTEGER,
-	`session`	INTEGER,
-	`datetime`	TEXT
+
+CREATE TABLE rating (
+    pk_id_rating INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    fk_id_kara   INTEGER NOT NULL,
+    unique_id    TEXT NOT NULL,
+    rating       INTEGER NOT NULL,
+    datetime     INTEGER
 );
+
+CREATE TABLE playlist (
+    pk_id_playlist INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    name           TEXT    NOT NULL,
+    NORM_name      TEXT COLLATE NOCASE   NOT NULL,
+    num_karas      INTEGER,
+    length         INTEGER,
+    creation_time  INTEGER NOT NULL,
+    lastedit_time  INTEGER,
+    flag_visible   BOOL,
+    flag_current   BOOL,
+    flag_public    BOOL
+);
+
+CREATE TABLE playlist_content (
+    pk_idplcontent INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    fk_id_playlist INTEGER NOT NULL,
+    fk_id_kara     INTEGER NOT NULL,
+    date_add       TEXT,
+    pseudo_add     TEXT,
+    NORM_pseudo_add     TEXT COLLATE NOCASE,
+    pos            INTEGER NOT NULL,
+    flag_playing   INTEGER NOT NULL,
+    banned         INTEGER DEFAULT (0),
+    ban_date       INTEGER,
+    ban_reason     TEXT
+);
+
+CREATE TABLE blacklist (
+    fk_id_kara INTEGER NOT NULL UNIQUE ON CONFLICT IGNORE,
+    ban_date   INTEGER,
+    ban_reason TEXT
+);
+
+CREATE TABLE blacklist_criteria (
+    pk_id_blcriteria INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    blcriteria_type  INTEGER NOT NULL,
+    blcriteria_value TEXT NOT NULL
+);
+
+CREATE TABLE whitelist (
+    pk_id_whitelist INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    fk_id_kara      INTEGER NOT NULL,
+    wl_date         INTEGER,
+    wl_reason       TEXT
+);
+
+CREATE INDEX index_viewcount_fk_id_kara ON viewcount (fk_id_kara);
+CREATE INDEX index_rating_fk_id_kara ON rating (fk_id_kara);
+CREATE INDEX index_playlist_id_playlist ON playlist (pk_id_playlist);
+CREATE INDEX index_playlist_content_fk_id_playlist ON playlist_content (fk_id_playlist);
+CREATE INDEX index_whitelist_fk_id_kara ON whitelist (fk_id_kara);
+CREATE INDEX index_blacklist_fk_id_kara ON blacklist (fk_id_kara);
 COMMIT;

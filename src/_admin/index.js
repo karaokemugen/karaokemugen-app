@@ -7,7 +7,6 @@ module.exports = {
 	_io:null,
 	_states:{},
 
-
 	init : function(){
 		if(this.SYSPATH === null)
 		{
@@ -35,6 +34,22 @@ module.exports = {
 					// Création des évènements d'entrée (actions de l'utilisateur)
 					socket.on('message', function (message) {
 						switch (message) {
+							default:
+								console.log('Launcher::Serveur : Un client me parle ! Il me dit : ' + message);
+								break;
+						}
+					});
+					socket.on('action', function (action) {
+						switch (action) {
+							case 'play':
+								module.exports.onPlay();
+								break;
+							case 'stop':
+								module.exports.onStop();
+								break;
+							case 'stop.now':
+								module.exports.onStopNow();
+								break;
 							case 'togglePrivate':
 								module.exports.onTogglePrivate();
 								break;
@@ -45,7 +60,7 @@ module.exports = {
 								},500);
 								break;
 							default:
-								console.log('Launcher::Serveur : Un client me parle ! Il me dit : ' + message);
+								console.log('Launcher::Serveur : Action inconnu : ' + action);
 								break;
 						}
 					});
@@ -84,14 +99,27 @@ module.exports = {
 	setStates:function(newStates)
 	{
 		// set new states
-		this._states = newStates;
+		module.exports._states = newStates;
 		// emit change to webpage
-		this._io.emit('states', this._states);
+		module.exports._io.emit('states', this._states);
 	},
 
 	// ---------------------------------------------------------------------------
 	// Evenements à référencer par le composant  parent
 	// ---------------------------------------------------------------------------
+
+	onPlay:function(){
+		// événement émis pour quitter l'application
+		console.log('_admin/index.js :: onPlay not set')
+	},
+	onStop:function(){
+		// événement émis pour quitter l'application
+		console.log('_admin/index.js :: onStop not set')
+	},
+	onStopNow:function(){
+		// événement émis pour quitter l'application
+		console.log('_admin/index.js :: onStopNow not set')
+	},
 
 	onTerminate:function(){
 		// événement émis pour quitter l'application
