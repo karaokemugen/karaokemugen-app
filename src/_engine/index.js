@@ -166,7 +166,7 @@ module.exports = {
 	_start_player:function()
 	{
 		this._services.player = require(path.resolve(__dirname,'../_player/index.js'));
-		this._services.player.BINPATH = path.resolve(this.SYSPATH,'../bin');
+		this._services.player.BINPATH = path.resolve(this.SYSPATH,'app/bin');
 		this._services.player.onEnd = this.playerEnding;
 		this._services.player.init();
 	}

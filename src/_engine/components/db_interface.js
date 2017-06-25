@@ -13,7 +13,7 @@ module.exports = {
 		}
 		// démarre une instance de SQLITE
 		var sqlite3 = require('sqlite3').verbose();
-		module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'../app/db/karas.sqlite3'), function(err){
+		module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
 			if (err)
 			{
 				console.log('Error loading main karaoke database : '+err)
@@ -22,15 +22,15 @@ module.exports = {
 		});
 		// On vérifie si la base user existe. Si non on insère les tables.
 		var NeedToCreateUserTables = false;
-		if (!fs.existsSync(path.join(module.exports.SYSPATH,'../app/db/userdata.sqlite3'))) 
+		if (!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'))) 
 		{
 			console.log('Unable to find user database. Creating it...');
     		NeedToCreateUserTables = true;
 		};
-		module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'../app/db/userdata.sqlite3'), function (err) {
+		module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
 			if (err) 
 			{
-            	console.log('Error opening user database : '+err);            	
+            	console.log('Error loading user database : '+err);            	
         	}
 			
 			if (NeedToCreateUserTables)

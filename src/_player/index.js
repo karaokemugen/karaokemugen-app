@@ -63,19 +63,19 @@ module.exports = {
 					}
 					else
 					{
-						console.log('Can not found subtitle '+subtitle)
+						console.log('Can not find subtitle '+subtitle)
 					}
 				}
 				else
 				{
-					console.log('No subtitle');
+					console.log('No subtitles');
 				}
 				module.exports._player.loadFile(path.join(__dirname,'assets/__blank__.png'),'append');
 			},500);
 		}
 		else {
 			module.exports.playing = false;
-			console.log('Can not found video '+video)
+			console.log('Can not find video '+video)
 		}
 	},
 	stop:function()
