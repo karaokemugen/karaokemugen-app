@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon src/webapp/index.js --exec babel-node --presets es2015"
   },
+  "homepage": "https://lab.shelter.moe/toyundamugen/toyundamugen-app",
   "repository": {
     "type": "git",
     "url": "https://lab.shelter.moe/toyundamugen/toyundamugen-app.git"
@@ -13,7 +14,20 @@
   "keywords": [
     "karaoke"
   ],
-  "author": "Guillaume Lebigot",
+  "bugs": {
+    "url": "https://lab.shelter.moe/toyundamugen/toyundamugen-app/issues",
+    "email": "axel@teri-chan.net"
+  },
+  "author": "Guillaume Lebigot <axel@teri-chan.net> (http://www.meido-rando.net)",
+  "contributors": [
+    "ldbglobe",
+    "spokeek",
+    "nemotaku",
+    "jaerdoster"    
+  ],
+  "engines": { 
+       "node" : ">=6.11.0 <8.0"
+  },
   "license": "ISC",
   "private": true,
   "dependencies": {
