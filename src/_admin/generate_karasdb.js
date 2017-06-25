@@ -18,6 +18,7 @@ const karasdir = './app/data/karas';
 const videosdir = './app/data/videos';
 const karas_dbfile = './app/db/karas.sqlite3';
 const series_altnamesfile = './app/data/series_altnames.csv';
+probe.FFPROBE_PATH = './app/bin/ffprobe.exe';
 
 const sqlCreateKarasDBfile = './src/_common/db/karas.sqlite3.sql';
 const sqlCreateKarasDBViewAllfile = './src/_common/db/view_all.view.sql';
@@ -153,8 +154,7 @@ console.log(moment().format('LTS')+' - Tableau series OK ('+series.length+' sér
 function getvideoduration(videofile,id_kara,callback) {
     var videolength = 0;
     if (fs.existsSync(videosdir+'/'+videofile))
-    {
-        probe.FFPROBE_PATH = './app/bin/ffprobe.exe';
+    {        
         probe(videosdir+'/'+videofile,function (err, videodata) {
             if (err) {
                 console.log("["+videofile+"] Impossible de probe la vidéo : "+err);
