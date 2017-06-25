@@ -1,4 +1,4 @@
-var spawn = require('child_process').spawn,
+var spawn = require('child_process').spawnSync,
 		fs = require('fs'),
 		path = require('path');
 
@@ -97,26 +97,22 @@ module.exports = (function() {
 	};
 
 	function doProbe(file, callback) {
-		var proc = spawn(module.exports.FFPROBE_PATH || 'ffprobe', ['-show_streams', '-show_format', '-loglevel', 'warning', file]),
-
+		
+		var proc = spawn(module.exports.FFPROBE_PATH || 'ffprobe', ['-show_streams', '-show_format', '-loglevel', 'warning', file], { encoding : 'utf8' }),
 				probeData = [],
 				errData = [],
 				exitCode = null,
 				start = Date.now();
+				
 
-		proc.stdout.setEncoding('utf8');
-		proc.stderr.setEncoding('utf8');
+		probeData.push(proc.stdout);
+		errData.push(proc.stderr);
 
-		proc.stdout.on('data', function(data) { probeData.push(data) });
-		proc.stderr.on('data', function(data) { errData.push(data) });
-
-		proc.on('exit', function(code) {
-			exitCode = code;
-		});
-		proc.on('error', function(err) {
-			callback(err);
-		});
-		proc.on('close', function() {
+		exitCode = proc.status;
+		if (proc.error) {
+			callback(proc.error); 
+		}
+		
 			var blocks = findBlocks(probeData.join(''));
 
 			var s = parseStreams(blocks.streams),
@@ -139,7 +135,7 @@ module.exports = (function() {
 				format: f.format,
 				metadata: f.metadata
 			});
-		});
+		
 	};
 
 	return doProbe;
