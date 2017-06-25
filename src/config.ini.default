@@ -18,12 +18,12 @@ SongsPerPerson = 10000
 Karas = "app/data/karas"
 Videos = "app/data/videos"
 Subs = "app/data/lyrics"
-BaseKaras = "app/db/karas.sqlite3"
-BaseUser = "app/db/userdata.sqlite3"
+DB = "app/db"
+DBKarasFile = "karas.sqlite3"
+DBUserFile = "userdata.sqlite3"
 
 [Player]
 ;Screen : définit l'écran sur lequel doit s'afficher le karaoke.
-;NE FONCTIONNE PAS AVEC MPLAYER TOYUNDA.
 ;0 = Premier écran
 ;1 = Second écran
 ; ...
