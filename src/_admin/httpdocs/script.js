@@ -14,6 +14,26 @@ socket.on('states', function(newStates) {
     $('.states_status').html(status_message);
 })
 
+socket.on('local_states', function(newStates) {
+    console.log(newStates);
+    states = newStates;
+    if(states.generate_karabd)
+    {
+        $('.tool-kara-index').attr('data-state','running');
+    }
+    else
+    {
+        $('.tool-kara-index').attr('data-state','stop');
+    }
+})
+
+socket.on('generate_karabd', function(param) {
+    if(param.event && param.event=='setLog')
+    {
+        $('.tool-kara-index .log').html(param.data);
+    }
+})
+
 socket.on('message', function(message) {
     alert('Le serveur a un message pour vous : ' + message);
 })
@@ -38,4 +58,8 @@ $('#engine_stop').click(function () {
 })
 $('#engine_stop_now').click(function () {
     socket.emit('action', 'stop.now');
+})
+
+$('.tool-kara-index .run').click(function () {
+    socket.emit('action', 'generate_karabd');
 })

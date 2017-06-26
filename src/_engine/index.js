@@ -2,12 +2,13 @@ var path = require('path');
 
 module.exports = {
 	SYSPATH:null,
+	SETTINGS:null,
+	DB_INTERFACE:null,
 	_states:{
 		status:'stop', // [stop,play] // etat générale de l'application Karaoke - STOP => la lecture de la playlist est interrompu
 		private:true, // [bool(true|false)] // Karaoke en mode privé ou publique
 	},
 	_services:{
-		db_interface:null,
 		admin: null,
 		playlist_controler: null,
 		player:null,
@@ -20,8 +21,14 @@ module.exports = {
 			console.log('_engine/index.js : SYSPATH is null');
 			process.exit();
 		}
-		this._start_player();
+		if(this.SETTINGS === null)
+		{
+			console.log('_engine/index.js : SETTINGS is null');
+			process.exit();
+		}
+
 		this._start_db_interface();
+		this._start_player();
 		this._start_playlist_controler();
 		this._start_admin();
 		this._broadcastStates();
@@ -125,15 +132,16 @@ module.exports = {
 
 	_start_db_interface: function()
 	{
-		this._services.db_interface = require(path.resolve(__dirname,'components/db_interface.js'));
-		this._services.db_interface.SYSPATH = this.SYSPATH;
-		this._services.db_interface.init();
+		this.DB_INTERFACE = require(path.resolve(__dirname,'components/db_interface.js'));
+		this.DB_INTERFACE.SYSPATH = this.SYSPATH;
+		this.DB_INTERFACE.init();
 	},
 	_start_admin:function(){
 		this._services.admin = require(path.resolve(__dirname,'../_admin/index.js'));
 		this._services.admin.LISTEN = 1338;
 		this._services.admin.SYSPATH = this.SYSPATH;
-		this._services.admin.DB_INTERFACE = this._db_interface;
+		this._services.admin.SETTINGS = this.SETTINGS;
+		this._services.admin.DB_INTERFACE = this.DB_INTERFACE;
 		// --------------------------------------------------------
 		// diffusion des méthodes interne vers les events admin
 		// --------------------------------------------------------
@@ -153,7 +161,7 @@ module.exports = {
 	_start_playlist_controler:function(){
 		this._services.playlist_controler = require(path.resolve(__dirname,'components/playlist_controler.js'));
 		this._services.playlist_controler.SYSPATH = this.SYSPATH;
-		this._services.playlist_controler.DB_INTERFACE = this._db_interface;
+		this._services.playlist_controler.DB_INTERFACE = this.DB_INTERFACE;
 		this._services.playlist_controler.onPlaylistUpdated = this.playlistUpdated;
 		this._services.playlist_controler.init();
 		var playlist_id = this._services.playlist_controler.createPlaylist('Ma plélyst lol',0,1,0);

@@ -21,6 +21,7 @@ Subs = "app/data/lyrics"
 DB = "app/db"
 DBKarasFile = "karas.sqlite3"
 DBUserFile = "userdata.sqlite3"
+Altname = "app/data/series_altnames.csv"
 
 [Player]
 ;Screen : définit l'écran sur lequel doit s'afficher le karaoke.

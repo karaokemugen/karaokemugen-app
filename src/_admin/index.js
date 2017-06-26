@@ -1,34 +1,41 @@
 var path = require('path');
 
 module.exports = {
-	SYSPATH:__dirname,
+	SYSPATH:null,
+	SETTINGS:null,
 	DB_INTERFACE:null,
 	_server:null,
 	_io:null,
-	_states:{},
+	_engine_states:{},
+	_local_states:{},
 
 	init : function(){
-		if(this.SYSPATH === null)
+		if(module.exports.SYSPATH === null)
 		{
 			console.log('_engine/components/playlist_controler.js : SYSPATH is null');
 			process.exit();
 		}
-		if(this.DB_INTERFACE === null)
+		if(module.exports.SETTINGS === null)
+		{
+			console.log('_engine/components/playlist_controler.js : SETTINGS is null');
+			process.exit();
+		}
+		if(module.exports.DB_INTERFACE === null)
 		{
 			console.log('_engine/components/playlist_controler.js : DB_INTERFACE is null');
 			process.exit();
 		}
 
 		// Création d'un server http pour diffuser l'appli web du launcher
-		if(this._server==null)
+		if(module.exports._server==null)
 		{
 			if(module.exports.LISTEN)
 			{
-				this._server = require(path.join(__dirname,'../_common/utils/httpserver.js'))(path.join(__dirname,'httpdocs'));
+				module.exports._server = require(path.join(__dirname,'../_common/utils/httpserver.js'))(path.join(__dirname,'httpdocs'));
 
 				// Chargement de socket.io sur l'appli web du launcher
-				this._io = require('socket.io').listen(this._server);
-				this._io.sockets.on('connection', function (socket) {
+				module.exports._io = require('socket.io').listen(module.exports._server);
+				module.exports._io.sockets.on('connection', function (socket) {
 					console.log('Launcher::Serveur : Un client est connecté ! ('+socket.id+')');
 					socket.emit('states', module.exports._states);
 					// Création des évènements d'entrée (actions de l'utilisateur)
@@ -59,13 +66,34 @@ module.exports = {
 									module.exports.onTerminate();
 								},500);
 								break;
+							case 'generate_karabd':
+								module.exports.setLocalStates('generate_karabd',true);
+								// on stop le moteur de kara avant de procéder à la reconstruction
+								module.exports.onStopNow();
+								// on coupe l'accès à la base de données
+								module.exports.DB_INTERFACE.close();
+								// procédure interne à l'admin on ne le signale pas à l'admin
+								var generator = require('./generate_karasdb.js');
+								generator.SYSPATH = module.exports.SYSPATH;
+								generator.SETTINGS = module.exports.SETTINGS;
+								generator.run().then(function(response){
+									// on relance l'interface de base de données
+									module.exports.DB_INTERFACE.init();
+									// et on emet un event vers linterface d'admin
+									socket.emit('generate_karabd', {event:'setLog',data:response});
+									module.exports.setLocalStates('generate_karabd',false);
+								}).catch(function(response,error){
+									socket.emit('generate_karabd', {event:'setLog',data:error});
+									module.exports.setLocalStates('generate_karabd',false);
+								});
+								break;
 							default:
 								console.log('Launcher::Serveur : Action inconnu : ' + action);
 								break;
 						}
 					});
 				});
-				this._server.listen(module.exports.LISTEN);
+				module.exports._server.listen(module.exports.LISTEN);
 			}
 			else
 			{
@@ -102,6 +130,13 @@ module.exports = {
 		module.exports._states = newStates;
 		// emit change to webpage
 		module.exports._io.emit('states', this._states);
+	},
+	setLocalStates:function(k,v)
+	{
+		// set new states
+		module.exports._local_states[k] = v;
+		// emit change to webpage
+		module.exports._io.emit('local_states', this._local_states);
 	},
 
 	// ---------------------------------------------------------------------------

@@ -10,12 +10,12 @@ module.exports = {
 	samplePlaylist:[],
 
 	init: function(){
-		if(this.SYSPATH === null)
+		if(module.exports.SYSPATH === null)
 		{
 			console.log('_engine/components/playlist_controler.js : SYSPATH is null');
 			process.exit();
 		}
-		if(this.DB_INTERFACE === null)
+		if(module.exports.DB_INTERFACE === null)
 		{
 			console.log('_engine/components/playlist_controler.js : DB_INTERFACE is null');
 			process.exit();
@@ -39,26 +39,26 @@ module.exports = {
 		}
 		if (flag_public == 1)
 		{
-			this.unsetPublicAllPlaylists();
+			module.exports.unsetPublicAllPlaylists();
 		}
 		if (flag_current == 1)
 		{
-			this.unsetCurrentAllPlaylists();
+			module.exports.unsetCurrentAllPlaylists();
 		}
 		
-		var new_playlist = DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public);
+		var new_playlist = module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public);
 		return new_playlist;
 
 	},
 	unsetPublicAllPlaylists:function()
 	{
 		// Désactive le flag Public sur toutes les playlists
-		this.DB_INTERFACE.unsetPublicAllPlaylists();
+		module.exports.DB_INTERFACE.unsetPublicAllPlaylists();
 	},
 	unsetCurrentAllPlaylists:function()
 	{
 		// Désactive le flag Current sur toutes les playlists
-		this.DB_INTERFACE.unsetCurrentAllPlaylists();
+		module.exports.DB_INTERFACE.unsetCurrentAllPlaylists();
 	},
 	addKara:function(kara_id,requester)
 	{
@@ -91,15 +91,15 @@ module.exports = {
 
 		// puis on préparer l'ass qui lui sera associé pour la lecture
 		require('./ass_builder.js')(
-			path.resolve(module.exports.SYSPATH,'samples/lyrics',kara.subfile),
-			path.resolve(module.exports.SYSPATH,'samples/videos',kara.videofile),
+			path.resolve(module.exports.SYSPATH,'src/samples/lyrics',kara.subfile),
+			path.resolve(module.exports.SYSPATH,'src/samples/videos',kara.videofile),
 			path.resolve(module.exports.SYSPATH,'app/tmp'),
 			kara.title,
 			kara.requester
 		)
 		.then(function(processed_ass){
 			// on met à jour l'object kara
-			kara.videofile = path.resolve(module.exports.SYSPATH,'samples/videos',kara.videofile);
+			kara.videofile = path.resolve(module.exports.SYSPATH,'src/samples/videos',kara.videofile);
 			kara.subfile = processed_ass;
 
 			// Todo injection de l'entré dans la playlist BDD
