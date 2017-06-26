@@ -1,0 +1,1 @@
+UPDATE playlist SET flag_current = 0;

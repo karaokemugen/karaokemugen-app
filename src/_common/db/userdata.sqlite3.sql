@@ -18,13 +18,13 @@ CREATE TABLE playlist (
     pk_id_playlist INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     name           TEXT    NOT NULL,
     NORM_name      TEXT COLLATE NOCASE   NOT NULL,
-    num_karas      INTEGER,
-    length         INTEGER,
+    num_karas      INTEGER NOT NULL,
+    length         INTEGER NOT NULL,
     creation_time  INTEGER NOT NULL,
-    lastedit_time  INTEGER,
-    flag_visible   BOOL,
-    flag_current   BOOL,
-    flag_public    BOOL
+    lastedit_time  INTEGER NOT NULL,
+    flag_visible   INTEGER NOT NULL,
+    flag_current   INTEGER NOT NULL,
+    flag_public    INTEGER NOT NULL
 );
 
 CREATE TABLE playlist_content (

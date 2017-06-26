@@ -156,7 +156,8 @@ module.exports = {
 		this._services.playlist_controler.DB_INTERFACE = this._db_interface;
 		this._services.playlist_controler.onPlaylistUpdated = this.playlistUpdated;
 		this._services.playlist_controler.init();
-
+		var playlist_id = this._services.playlist_controler.createPlaylist('Ma plélyst lol',0,1,0);
+		console.log('New playlist created with ID : '+playlist_id);
 		// on ajoute 4 morceau dans la playlist
 		this._services.playlist_controler.addKara(1,'toto');
 		this._services.playlist_controler.addKara(2,'tata');

@@ -1,5 +1,8 @@
 var path = require('path');
-
+const { diacritics, normalize } = require('normalize-diacritics');
+var timestamp = require("unix-timestamp");
+timestamp.round = true;
+    	
 module.exports = {
 	SYSPATH:null,
 	DB_INTERFACE:null,
@@ -19,6 +22,44 @@ module.exports = {
 		}
 	},
 
+	createPlaylist:function(name,flag_visible,flag_current,flag_public)
+	{
+		// Méthode de création playlist
+		// Prend en entrée un nom, et des booléens
+		// Si flag_public ou flag_current = true il faut désactiver le flag sur toutes les autres playlists
+
+		var NORM_name = normalize(name);
+		var creation_time = timestamp.now();
+		var lastedit_time = creation_time;
+
+		if (flag_current == 1 && flag_public == 1)
+		{
+			var err = 'ERROR: Current and Public flags are mutually exclusive on a playlist.';
+			return (err,0);
+		}
+		if (flag_public == 1)
+		{
+			this.unsetPublicAllPlaylists();
+		}
+		if (flag_current == 1)
+		{
+			this.unsetCurrentAllPlaylists();
+		}
+		
+		var new_playlist = DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public);
+		return new_playlist;
+
+	},
+	unsetPublicAllPlaylists:function()
+	{
+		// Désactive le flag Public sur toutes les playlists
+		this.DB_INTERFACE.unsetPublicAllPlaylists();
+	},
+	unsetCurrentAllPlaylists:function()
+	{
+		// Désactive le flag Current sur toutes les playlists
+		this.DB_INTERFACE.unsetCurrentAllPlaylists();
+	},
 	addKara:function(kara_id,requester)
 	{
 		//var kara = this.DB_INTERFACE.get_kara(kara_id);

@@ -1,0 +1,1 @@
+UPDATE playlist SET flag_public = 0;
