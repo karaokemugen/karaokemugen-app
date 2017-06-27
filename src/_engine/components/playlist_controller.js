@@ -54,11 +54,13 @@ module.exports = {
 	{
 		// Désactive le flag Public sur toutes les playlists
 		module.exports.DB_INTERFACE.unsetPublicAllPlaylists();
+		console.log("All playlists now have public flag set to 0");
 	},
 	unsetCurrentAllPlaylists:function()
 	{
 		// Désactive le flag Current sur toutes les playlists
 		module.exports.DB_INTERFACE.unsetCurrentAllPlaylists();
+		console.log("All playlists now have current flag set to 0");
 	},
 	addKara:function(kara_id,requester)
 	{

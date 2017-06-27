@@ -10,7 +10,7 @@ module.exports = {
 	},
 	_services:{
 		admin: null,
-		playlist_controler: null,
+		playlist_controller: null,
 		player:null,
 	},
 
@@ -29,7 +29,7 @@ module.exports = {
 
 		this._start_db_interface();
 		this._start_player();
-		this._start_playlist_controler();
+		this._start_playlist_controller();
 		this._start_admin();
 		this._broadcastStates();
 	},
@@ -158,19 +158,19 @@ module.exports = {
 		// et on lance la commande pour ouvrir la page web
 		this._services.admin.open();
 	},
-	_start_playlist_controler:function(){
-		this._services.playlist_controler = require(path.resolve(__dirname,'components/playlist_controler.js'));
-		this._services.playlist_controler.SYSPATH = this.SYSPATH;
-		this._services.playlist_controler.DB_INTERFACE = this.DB_INTERFACE;
-		this._services.playlist_controler.onPlaylistUpdated = this.playlistUpdated;
-		this._services.playlist_controler.init();
-		var playlist_id = this._services.playlist_controler.createPlaylist('Ma plélyst lol',0,1,0);
-		console.log('New playlist created with ID : '+playlist_id);
+	_start_playlist_controller:function(){
+		this._services.playlist_controller = require(path.resolve(__dirname,'components/playlist_controller.js'));
+		this._services.playlist_controller.SYSPATH = this.SYSPATH;
+		this._services.playlist_controller.DB_INTERFACE = this.DB_INTERFACE;
+		this._services.playlist_controller.onPlaylistUpdated = this.playlistUpdated;
+		this._services.playlist_controller.init();
+		var playlist_id = this._services.playlist_controller.createPlaylist('Ma plélyst lol',0,1,0);
+		
 		// on ajoute 4 morceau dans la playlist
-		this._services.playlist_controler.addKara(1,'toto');
-		this._services.playlist_controler.addKara(2,'tata');
-		this._services.playlist_controler.addKara(3,'titi');
-		this._services.playlist_controler.addKara(4,'tutu');
+		this._services.playlist_controller.addKara(1,'toto');
+		this._services.playlist_controller.addKara(2,'tata');
+		this._services.playlist_controller.addKara(3,'titi');
+		this._services.playlist_controller.addKara(4,'tutu');
 	},
 	_start_player:function()
 	{
