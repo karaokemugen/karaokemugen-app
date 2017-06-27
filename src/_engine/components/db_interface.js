@@ -46,7 +46,7 @@ module.exports = {
 	                	console.log(err);
             		} else
 					{
-						console.log('User Base created successfully.');
+						console.log('User database created successfully.');
 					}
 				});
 			}
