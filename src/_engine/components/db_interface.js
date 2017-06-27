@@ -44,6 +44,7 @@ module.exports = {
 					{
                 		console.log('Error creating user base :');
 	                	console.log(err);
+						process.exit();
             		} else
 					{
 						console.log('User database created successfully.');
@@ -89,7 +90,7 @@ module.exports = {
 			}
 		});
 	},
-	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public)
+	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,callback)
 	{
 		// Création de la playlist
 		// Prend en entrée name, NORM_name, creation_time, lastedit_time, flag_visible, flag_current, flag_public
@@ -113,16 +114,16 @@ module.exports = {
                     console.log('ERROR : Unable to create playlist '+name+' :');
                     console.log(err);
                     console.log(sqlCreatePlaylist);
-					return {
+					callback({
 						id:0,
 						error:true,
 						error_msg:err
-					}
+					});
 				} else {
-					return {
+					callback({
 						id:this.lastID,
-						error:false,
-					}
+						error:false
+					});
 				}
 		})
 	},

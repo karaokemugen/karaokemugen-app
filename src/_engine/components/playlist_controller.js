@@ -22,7 +22,7 @@ module.exports = {
 		}
 	},
 
-	createPlaylist:function(name,flag_visible,flag_current,flag_public)
+	createPlaylist:function(name,flag_visible,flag_current,flag_public,callback)
 	{
 		// Méthode de création playlist
 		// Prend en entrée un nom, et des booléens
@@ -39,16 +39,17 @@ module.exports = {
 		}
 		if (flag_public == 1)
 		{
-			module.exports.unsetPublicAllPlaylists();
+			this.unsetPublicAllPlaylists();
 		}
 		if (flag_current == 1)
 		{
-			module.exports.unsetCurrentAllPlaylists();
+			this.unsetCurrentAllPlaylists();
 		}
 		
-		var new_playlist = module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public);
-		return new_playlist;
-
+		this.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,function(new_id_playlist){
+			callback(new_id_playlist);
+		});
+		
 	},
 	unsetPublicAllPlaylists:function()
 	{
