@@ -29,7 +29,7 @@ if(SYSPATH)
 	SETTINGS.os = 'Windows';
 
 	console.log('Loading configuration :');
-	console.log(SETTINGS);
+	//console.log(SETTINGS);
 	console.log("\n");
 
 	// Vérification que les chemins sont bien présents, sinon les créer
