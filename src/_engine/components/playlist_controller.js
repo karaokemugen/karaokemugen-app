@@ -28,28 +28,35 @@ module.exports = {
 		// Prend en entrée un nom, et des booléens
 		// Si flag_public ou flag_current = true il faut désactiver le flag sur toutes les autres playlists
 
-		var NORM_name = normalize(name);
-		var creation_time = timestamp.now();
-		var lastedit_time = creation_time;
+		// on retourne une promise
+		// cela implique qu'on ne gère plus le callback ici mais que tout se fait du coté de l'appelant
+		return new Promise(function(resolve,reject){
+			var NORM_name = normalize(name);
+			var creation_time = timestamp.now();
+			var lastedit_time = creation_time;
 
-		if (flag_current == 1 && flag_public == 1)
-		{
-			var err = 'ERROR: Current and Public flags are mutually exclusive on a playlist.';
-			return (err,0);
-		}
-		if (flag_public == 1)
-		{
-			this.unsetPublicAllPlaylists();
-		}
-		if (flag_current == 1)
-		{
-			this.unsetCurrentAllPlaylists();
-		}
-		
-		this.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,function(new_id_playlist){
-			callback(new_id_playlist);
+			if (flag_current == 1 && flag_public == 1)
+			{
+				var err = 'ERROR: Current and Public flags are mutually exclusive on a playlist.';
+				// on renvoi un reject sur la promise
+				reject(err);
+			}
+
+			if (flag_public == 1)
+			{
+				module.exports.unsetPublicAllPlaylists();
+			}
+			if (flag_current == 1)
+			{
+				module.exports.unsetCurrentAllPlaylists();
+			}
+
+			//on préfèrera les module.exports.XXX pluttôt que this pour éviter tout problème de scope javascript
+			module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,function(new_id_playlist){
+				//on résoud la promesse (ici dans un callback qui pourrait donc aussi être revu en promise)
+				resolve(new_id_playlist)
+			});
 		});
-		
 	},
 	unsetPublicAllPlaylists:function()
 	{

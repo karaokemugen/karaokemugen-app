@@ -164,10 +164,13 @@ module.exports = {
 		this._services.playlist_controller.DB_INTERFACE = this.DB_INTERFACE;
 		this._services.playlist_controller.onPlaylistUpdated = this.playlistUpdated;
 		this._services.playlist_controller.init();
-		this._services.playlist_controller.createPlaylist('Ma plélyst lol',0,1,0,function (new_playlist){
-			console.log("New playlist created with ID : "+new_playlist.id);	
-			
-		});	
+		this._services.playlist_controller.createPlaylist('Ma plélyst lol',0,1,0)
+			.then(function (new_playlist){
+				console.log("New playlist created with ID : "+new_playlist.id);
+			})
+			.catch(function(err){
+				console.log("New playlist fail : "+err);
+			});
 		// on ajoute 4 morceau dans la playlist
 		this._services.playlist_controller.addKara(1,'toto');
 		this._services.playlist_controller.addKara(2,'tata');
