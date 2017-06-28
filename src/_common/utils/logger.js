@@ -18,4 +18,10 @@ module.exports = {
 	{
 		console.log(clc.redBright('ERROR :: '+module.exports.SOURCE+' :: '+message));
 	},
+	debug:function(message)
+	{
+		if (process.env.DEBUG == 1){
+			console.log(clc.cyan('DEBUG :: '+module.exports.SOURCE+' :: '+message));
+		}		
+	}
 }
