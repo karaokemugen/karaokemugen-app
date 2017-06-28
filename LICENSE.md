@@ -1,10 +1,10 @@
-Ici sont inclus les licences des modules directement inclus et modifiés pour Toyunda Mugen.
+Ici sont inclus les licences des modules directement inclus et modifiÃ©s pour Toyunda Mugen.
 
-Sauf mention contraire, les modules dont dépend Toyunda Mugen sont installés par npm.
+Sauf mention contraire, les modules dont dÃ©pend Toyunda Mugen sont installÃ©s par npm.
 
 # node-ffprobe
 
-node-ffprobe a été modifié pour être synchrone et mieux gérer les fichiers avec espaces.
+node-ffprobe a Ã©tÃ© modifiÃ© pour Ãªtre synchrone et mieux gÃ©rer les fichiers avec espaces.
 
 Voici sa licence :
 
@@ -29,4 +29,5 @@ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.```
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
