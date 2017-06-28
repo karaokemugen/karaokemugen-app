@@ -64,7 +64,117 @@ module.exports = {
 	// implémenter ici toutes les méthodes de lecture écritures qui seront utilisé par l'ensemble de l'applicatif
 	// aucun autre composant ne doit manipuler la base SQLITE par un autre moyen
 
-	unsetPublicAllPlaylists:function()
+	isPublicPlaylist:function(playlist_id,callback)
+	{
+		var sqlIsPlaylistPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_public_flag.sql'),'utf-8');
+		this._user_db_handler.get(sqlIsPlaylistPublic,
+		{
+			$playlist_id: playlist_id
+		}, function (err, row)
+		{
+                if (err)
+				{
+                    console.log('ERROR : Unable to select playlist '+playlist_id+'\'s public flag :');
+                    console.log(err);
+                    callback(null,err);
+				} else {
+					if (row) {
+						if (row.flag_public == 1) {
+							callback(true);
+						} else {
+							callback(false);
+						}
+					} else {
+						var err = 'Playlist unknown.'
+						console.log(err);
+						callback(null,err);
+					}					
+				}
+		})
+	},
+	isCurrentPlaylist:function(playlist_id,callback)
+	{
+		var sqlIsPlaylistCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_current_flag.sql'),'utf-8');
+		this._user_db_handler.get(sqlIsPlaylistCurrent,
+		{
+			$playlist_id: playlist_id
+		}, function (err, row)
+		{
+                if (err)
+				{
+                    console.log('ERROR : Unable to select playlist '+playlist_id+'\'s current flag :');
+                    console.log(err);
+                    callback(null,err);
+				} else {
+					if (row) {
+						if (row.flag_current == 1) {
+							callback(true);
+						} else {
+							callback(false);
+						}
+					} else {
+						var err = 'Playlist unknown.'
+						console.log(err);
+						callback(null,err);
+					}
+				}
+		})
+	},
+	isPlaylist:function(playlist_id,callback)
+	{
+		var sqlIsPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist.sql'),'utf-8');
+		this._user_db_handler.get(sqlIsPlaylist,
+		{
+			$playlist_id: playlist_id
+		}, function (err, row)
+		{
+                if (err)
+				{
+                    console.log('ERROR : Unable to select playlist '+playlist_id+' :');
+                    console.log(err);
+                    callback(null,err);
+				} else {
+					if (row) {
+						callback(true);						
+					} else {
+						callback(false);
+					}
+				}
+		})
+	},
+	setCurrentPlaylist:function(playlist_id,callback)
+	{
+		var sqlSetCurrentPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_current.sql'),'utf-8');
+		this._user_db_handler.run(sqlSetCurrentPlaylist, 
+		{
+			$playlist_id: playlist_id
+		}, function (err, rep)
+		{
+			if (err)
+			{
+				console.log('ERROR : Unable to set current flag on playlist '+playlist_id+' :');
+                console.log(err);                
+			}
+			callback(rep,err);
+		});
+	},
+	setPublicPlaylist:function(playlist_id,callback)
+	{
+		var sqlSetPublicPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_public.sql'),'utf-8');
+		this._user_db_handler.run(sqlSetPublicPlaylist, 
+		{
+			$playlist_id: playlist_id	
+		}, function (err, rep) 
+		{
+			if (err)
+			{
+				console.log('ERROR : Unable to set public flag on playlist '+playlist_id+' :');
+                console.log(err);                
+			}
+			callback(rep,err);
+		});
+	},
+	unsetPublicAllPlaylists:function(callback)
 	{
 		var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
 		this._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err, rep)
@@ -75,9 +185,10 @@ module.exports = {
                 console.log(err);
                 console.log(sqlUpdatePlaylistsUnsetPublic);
 			}
+			callback();
 		});
 	},
-	unsetCurrentAllPlaylists:function()
+	unsetCurrentAllPlaylists:function(callback)
 	{
 		var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
 		this._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err, rep)
@@ -88,7 +199,39 @@ module.exports = {
                 console.log(err);
                 console.log(sqlUpdatePlaylistsUnsetCurrent);
 			}
+			callback();
 		});
+		
+	},
+	emptyPlaylist:function(playlist_id)
+	{
+		// Vidage de playlist. Sert aussi à nettoyer la table playlist_content en cas de suppression de PL
+		var sqlEmptyPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_playlist.sql'),'utf-8');
+		this._user_db_handler.run(sqlEmptyPlaylist,
+		{
+			$playlist_id: playlist_id
+		}, function(err) {
+			if (err)
+			{
+				console.log('ERROR : Unable to empty playlist :');
+                console.log(err);                
+			}
+		})
+	},
+	deletePlaylist:function(playlist_id,callback)
+	{		
+		var sqlDeletePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_playlist.sql'),'utf-8');
+		this._user_db_handler.run(sqlDeletePlaylist,
+		{
+			$playlist_id: playlist_id
+		}, function(err) {
+			if (err)
+			{
+				console.log('ERROR : Unable to delete playlist :');
+                console.log(err);                
+			}
+			callback(true);
+		})
 	},
 	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,callback)
 	{
