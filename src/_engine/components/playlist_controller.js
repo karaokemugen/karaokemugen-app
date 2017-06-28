@@ -44,7 +44,7 @@ module.exports = {
 		});		
 	},
 	
-	setCurrentPlaylist(playlist_id,callback)
+	setCurrentPlaylist:function(playlist_id,callback)
 	{
 		module.exports.unsetCurrentAllPlaylists(function(){
 			module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id,function(res){
@@ -53,7 +53,7 @@ module.exports = {
 			});		
 		});	
 	},
-	setPublicPlaylist(playlist_id,callback)
+	setPublicPlaylist:function(playlist_id,callback)
 	{
 		module.exports.unsetPublicAllPlaylists(function(){
 			module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id, function(res){
