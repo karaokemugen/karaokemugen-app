@@ -163,6 +163,13 @@ module.exports = {
 		module.exports._services.admin.open();
 	},
 	_start_playlist_controller:function(){
+		module.exports._services.playlist_controller = require(path.resolve(__dirname,'components/playlist_controller.js'));
+		module.exports._services.playlist_controller.SYSPATH = module.exports.SYSPATH;
+		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
+		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
+		module.exports._services.playlist_controller.init();
+		/*
+		module.exports._services.playlist_controller.createPlaylist('Ma plélyst lol',0,1,0)
 			.then(function (new_playlist){
 				logger.success("New playlist created with ID : "+new_playlist.id);
 			})
@@ -170,13 +177,14 @@ module.exports = {
 				logger.error("New playlist fail : "+err);
 			});
 		*/
-		this._services.playlist_controller.deletePlaylist(34,35)
+		/* this._services.playlist_controller.deletePlaylist(34,35)
 		    .then(function (old_playlist,new_curorpubplaylist){
 				logger.success("Playlist "+playlist.id+" deleted. Transferred flags to "+new_curorpubplaylist);
 			})
 			.catch(function(err){
 				logger.error("Deleting playlist failed : "+err);
 			});			
+		*/
 		// on ajoute 4 morceau dans la playlist
 		module.exports._services.playlist_controller.addKara(1,'toto');
 		module.exports._services.playlist_controller.addKara(2,'tata');
