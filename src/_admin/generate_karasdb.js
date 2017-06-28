@@ -13,13 +13,12 @@ const clc = require('cli-color');
 module.exports = {
     SYSPATH:null,
     SETTINGS:null,
-    log:[],
     run:function(){
-        console.log(clc.greenBright('generate_karasdb :: Start'));
+        module.exports.onLog('success','generate_karasdb :: Start');
         return new Promise(function(resolve, reject){
             if(module.exports.SYSPATH==null)
             {
-                console.log('_admin/generate_karasdb.js ::  SYSPATH is not defined');
+                module.exports.onLog('error','SYSPATH is not defined');
                 process.exit();
             }
 
@@ -71,12 +70,12 @@ module.exports = {
             var date = new Date();
             moment.locale('fr');
 
-            module.exports.log.push(moment().format('LTS')+' - Lecture dossier OK');
+            module.exports.onLog('success',moment().format('LTS')+' - Lecture dossier OK');
             //D'abord analyser les .kara, ajouter l'UUID s'il n'y est pas, construire la table karas avec une seule transaction.
             karafiles.forEach(function(kara){
                 addKara(kara);
             });
-            module.exports.log.push(moment().format('LTS')+' - Tableau karas OK ('+karas.length+' karas)');
+            module.exports.onLog('success',moment().format('LTS')+' - Tableau karas OK ('+karas.length+' karas)');
             //Un autre passage dans karas pour avoir la durée des vidéos, mais cette fois en série
             id_kara = 0;
             karas.forEach(function(kara)
@@ -87,20 +86,18 @@ module.exports = {
                 });
 
             });
-            module.exports.log.push(moment().format('LTS')+' - Calcul durée des vidéos OK');
+            module.exports.onLog('success',moment().format('LTS')+' - Calcul durée des vidéos OK');
             karafiles.forEach(function(kara){
                 id_kara++;
                 addTags(kara,id_kara);
             });
-            module.exports.log.push(moment().format('LTS')+' - Tableau tags OK ('+tags.length+' tags, '+karas_tags.length+' liaisons)');
+            module.exports.onLog('success',moment().format('LTS')+' - Tableau tags OK ('+tags.length+' tags, '+karas_tags.length+' liaisons)');
             id_kara = 0;
             karafiles.forEach(function(kara){
                 id_kara++;
                 addSeries(kara,id_kara);
             });
-            module.exports.log.push(moment().format('LTS')+' - Tableau series OK ('+series.length+' séries, '+karas_series.length+' liaisons)');
-
-
+            module.exports.onLog('success',moment().format('LTS')+' - Tableau series OK ('+series.length+' séries, '+karas_series.length+' liaisons)');
 
                         //Construction des requêtes SQL
                         async.eachOf(karas, function(kara, id_kara, callback){
@@ -159,12 +156,12 @@ module.exports = {
                                     var serie_altnamesnorm = normalize(serie[1]);
                                     sqlUpdateSeriesAltNames += 'UPDATE series SET altname="'+serie_altnames+'",NORM_altname="'+serie_altnamesnorm+'" WHERE name="'+serie_name+'";';
                                 }
-                                //console.log('['+index+'] '+serie_name+' -> '+serie_altnames);
+                                //module.exports.onLog('error','['+index+'] '+serie_name+' -> '+serie_altnames);
                             })
                             sqlUpdateSeriesAltNames += 'COMMIT;'
                         } else {
                             var DoUpdateSeriesAltNames = false;
-                            console.log ('WARNING : Pas de fichier de noms de séries alternatifs. On passe');
+                            module.exports.onLog('warning','Pas de fichier de noms de séries alternatifs. On passe');
 
                         }
 
@@ -183,7 +180,7 @@ module.exports = {
                 {
                     probe(videosdir+'/'+videofile,function (err, videodata) {
                         if (err) {
-                            console.log("["+videofile+"] Impossible de probe la vidéo : "+err);
+                            module.exports.onLog('error',"["+videofile+"] Impossible de probe la vidéo : "+err);
                             callback(err,videolength,id_kara);
                         } else {
                             videolength = math.round(videodata.format.duration);
@@ -191,7 +188,7 @@ module.exports = {
                         }
                     });
                 } else {
-                    console.log('Fichier vidéo '+videofile+' inexistant, pas de calcul.')
+                    module.exports.onLog('notice','Fichier vidéo '+videofile+' inexistant, pas de calcul.')
                 }
 
 
@@ -200,81 +197,80 @@ module.exports = {
             function generateDB() {
                 var db = new sqlite3.Database(karas_dbfile,function (err,rep){
                     if (err) {
-                        console.log('Erreur ouverture base Karas');
+                        module.exports.onLog('error','Erreur ouverture base Karas');
                         process.exit();
                     }
-                    module.exports.log.push(moment().format('LTS')+' - Creation BDD OK');
+                    module.exports.onLog('success',moment().format('LTS')+' - Creation BDD OK');
                     // Création des tables
                     var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile,'utf-8');
                     db.exec(sqlCreateKarasDB, function (err, rep){
                         if (err) {
-                            console.log('Erreur create');
-                            console.log (err);
-                            console.log(sqlCreateKarasDB);
+                            module.exports.onLog('error','Erreur create');
+                            module.exports.onLog('error',err);
                         } else {
-                        module.exports.log.push(moment().format('LTS')+' - Creation tables OK');
+                        module.exports.onLog('success',moment().format('LTS')+' - Creation tables OK');
                         var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile,'utf8');
                         db.exec(sqlCreateKarasDBViewAll, function (err, rep){
                             if (err) {
-                                console.log('Erreur create view');
-                                console.log(err);
-                                console.log(sqlCreateKarasDBViewAll);
+                                module.exports.onLog('error','Erreur create view');
+                                module.exports.onLog('error',err);
+                                module.exports.onLog('error',sqlCreateKarasDBViewAll);
                             } else {
-                                module.exports.log.push(moment().format('LTS')+' - Creation view OK');
+                                module.exports.onLog('success',moment().format('LTS')+' - Creation view OK');
                                 db.exec(sqlInsertKaras, function (err,rep) {
                                     if (err) {
-                                        console.log('Erreur remplissage kara');
-                                        console.log(err);
+                                        module.exports.onLog('error','Erreur remplissage kara');
+                                        module.exports.onLog('error',err);
                                     } else {
-                                        module.exports.log.push(moment().format('LTS')+' - Remplissage karas OK');
+                                        module.exports.onLog('success',moment().format('LTS')+' - Remplissage karas OK');
                                         sqlUpdateVideoLength += 'COMMIT;';
                                         db.exec(sqlUpdateVideoLength, function (err,rep) {
                                             if (err) {
-                                                console.log('Erreur MAJ de la durée des vidéos');
-                                                console.log(err);
+                                                module.exports.onLog('error','Erreur MAJ de la durée des vidéos');
+                                                module.exports.onLog('error',err);
                                             } else {
-                                                module.exports.log.push(moment().format('LTS')+' - MAJ durée des vidéos OK');
+                                                module.exports.onLog('success',moment().format('LTS')+' - MAJ durée des vidéos OK');
                                             }
                                         })
 
                                         db.exec(sqlInsertTags, function (err,rep) {
                                             if (err) {
-                                                console.log('Erreur remplissage tags');
-                                                console.log(err);
+                                                module.exports.onLog('error','Erreur remplissage tags');
+                                                module.exports.onLog('error',err);
                                             } else {
-                                                module.exports.log.push(moment().format('LTS')+' - Remplissage tags OK');
+                                                module.exports.onLog('success',moment().format('LTS')+' - Remplissage tags OK');
                                                 db.exec(sqlInsertKarasTags, function (err,rep) {
                                                     if (err) {
-                                                        console.log('Erreur remplissage karas_tags');
-                                                        console.log(err);
+                                                        module.exports.onLog('error','Erreur remplissage karas_tags');
+                                                        module.exports.onLog('error',err);
                                                     } else {
-                                                        module.exports.log.push(moment().format('LTS')+' - Remplissage karas_tags OK');
+                                                        module.exports.onLog('success',moment().format('LTS')+' - Remplissage karas_tags OK');
                                                         db.exec(sqlInsertSeries, function (err,rep) {
                                                             if (err) {
-                                                                console.log('Erreur remplissage séries');
-                                                                console.log(err);
+                                                                module.exports.onLog('error','Erreur remplissage séries');
+                                                                module.exports.onLog('error',err);
                                                             } else {
-                                                                module.exports.log.push(moment().format('LTS')+' - Remplissage séries OK');
+                                                                module.exports.onLog('success',moment().format('LTS')+' - Remplissage séries OK');
                                                                 if (DoUpdateSeriesAltNames)
                                                                 {
                                                                     db.exec(sqlUpdateSeriesAltNames, function (err, rep) {
                                                                         if (err) {
-                                                                            console.log('Erreur MAJ series altnames');
-                                                                            console.log(err);
+                                                                            module.exports.onLog('error','Erreur MAJ series altnames');
+                                                                            module.exports.onLog('error',err);
                                                                         } else {
-                                                                            module.exports.log.push(moment().format('LTS')+' - MAJ noms alternatifs des séries OK');
+                                                                            module.exports.onLog('success',moment().format('LTS')+' - MAJ noms alternatifs des séries OK');
                                                                         }
                                                                     })
                                                                 }
 
                                                                 db.exec(sqlInsertKarasSeries, function (err,rep) {
                                                                     if (err) {
-                                                                        console.log('Erreur remplissage     karas_series');
-                                                                        console.log(err);
+                                                                        module.exports.onLog('error','Erreur remplissage     karas_series');
+                                                                        module.exports.onLog('error',err);
                                                                     } else {
-                                                                        module.exports.log.push(moment().format('LTS')+' - Remplissage karas_series OK');
+                                                                        module.exports.onLog('success',moment().format('LTS')+' - Remplissage karas_series OK');
                                                                     }
-                                                                    resolve(module.exports.log.join("\r\n"));
+                                                                    resolve();
                                                                 });
                                                             }
                                                         });
@@ -536,12 +532,12 @@ module.exports = {
                     kara['KID'] = karadata.KID;
                     fs.writeFile(karasdir+'/'+karafile,ini.stringify(karadata),function (err,rep) {
                         if (err) {
-                            console.log("Impossible d'écrire le .kara !");
+                            module.exports.onLog('error',"Impossible d'écrire le .kara !");
                             process.exit();
                         }
                         fs.appendFile(karasdir+'/'+karafile,';DO NOT MODIFY - KARAOKE ID GENERATED AUTOMATICALLY',function(err) {
                             if (err) {
-                                console.log("Impossible d'ajouter la ligne de commentaire au .kara!: "+err);
+                                module.exports.onLog('error',"Impossible d'ajouter la ligne de commentaire au .kara!: "+err);
                                 process.exit();
                             }
                         });
@@ -584,5 +580,10 @@ module.exports = {
                 karas.push(kara);
             }
         })
+    }    ,
+    onLog:function(type,message)
+    {
+        // événement émis pour remonter un message de log sur l'admin
+        logger.warning('onLog not set')
     }
 }
