@@ -2,7 +2,10 @@ var path = require('path');
 const { diacritics, normalize } = require('normalize-diacritics');
 var timestamp = require("unix-timestamp");
 timestamp.round = true;
-    	
+const logger = require('../../_common/utils/logger.js');
+logger.SOURCE = '_engine/components/playlist_controller.js';
+
+
 module.exports = {
 	SYSPATH:null,
 	DB_INTERFACE:null,
@@ -12,12 +15,12 @@ module.exports = {
 	init: function(){
 		if(module.exports.SYSPATH === null)
 		{
-			console.log('_engine/components/playlist_controler.js : SYSPATH is null');
+			logger.error('_engine/components/playlist_controler.js : SYSPATH is null');
 			process.exit();
 		}
 		if(module.exports.DB_INTERFACE === null)
 		{
-			console.log('_engine/components/playlist_controler.js : DB_INTERFACE is null');
+			logger.error('_engine/components/playlist_controler.js : DB_INTERFACE is null');
 			process.exit();
 		}
 	},
@@ -25,14 +28,14 @@ module.exports = {
 	isCurrentPlaylist:function(playlist_id,callback)
 	{
 		module.exports.DB_INTERFACE.isCurrentPlaylist(playlist_id,function(res){							
-			console.log('Current = '+res);
+			logger.debug('Current = '+res);
 			callback(res);
 		});		
 	},
 	isPublicPlaylist:function(playlist_id,callback)
 	{
 		module.exports.DB_INTERFACE.isPublicPlaylist(playlist_id,function(res){							
-			console.log('Public = '+res);
+			logger.debug('Public = '+res);
 			callback(res);
 		});		
 	},
@@ -48,7 +51,7 @@ module.exports = {
 	{
 		module.exports.unsetCurrentAllPlaylists(function(){
 			module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id,function(res){
-				console.log('Setting playlist '+playlist_id+' current flag to ON');							
+				logger.debug('Setting playlist '+playlist_id+' current flag to ON');							
 				callback();
 			});		
 		});	
@@ -57,7 +60,7 @@ module.exports = {
 	{
 		module.exports.unsetPublicAllPlaylists(function(){
 			module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id, function(res){
-				console.log('Setting playlist '+playlist_id+' public flag to ON');							
+				logger.debug('Setting playlist '+playlist_id+' public flag to ON');							
 				callback();
 			});		
 		});		
@@ -66,7 +69,7 @@ module.exports = {
 	{
 		// Suppression d'une playlist. Si la playlist a un flag_public ou flag_current, il faut
 		// set l'un de ces flags sur l'autre ID de playlist (optionnel) fourni
-		console.log('Deleting playlist '+playlist_id+', transferring flags to '+new_curorpubplaylist_id);
+		logger.notice('Deleting playlist '+playlist_id+', transferring flags to '+new_curorpubplaylist_id);
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id,function(res) 
 			{
@@ -97,9 +100,13 @@ module.exports = {
 					});
 					Promise.all([pIsPublic,pIsCurrent]).then(function(){
 						module.exports.emptyPlaylist(playlist_id);
-						//module.exports.DB_INTERFACE.deletePlaylist(playlist_id,function(res){
-							resolve(playlist_id,new_curorpubplaylist_id);				
-						//});
+						module.exports.DB_INTERFACE.deletePlaylist(playlist_id,function(res){
+							var values = {
+								playlist_id: playlist_id,
+								new_curorpubplaylist_id: new_curorpubplaylist_id
+							};
+							resolve(values);				
+						});
 					})																
 				} else {
 					reject('Playlist does not exist!');
@@ -152,7 +159,7 @@ module.exports = {
 	{
 		// Désactive le flag Public sur toutes les playlists
 		module.exports.DB_INTERFACE.unsetPublicAllPlaylists(function(){
-			console.log("All playlists now have public flag set to 0");
+			logger.notice("All playlists now have public flag set to 0");
 			callback();
 		});
 		
@@ -161,7 +168,7 @@ module.exports = {
 	{
 		// Désactive le flag Current sur toutes les playlists
 		module.exports.DB_INTERFACE.unsetCurrentAllPlaylists(function(){
-			console.log("All playlists now have current flag set to 0");
+			logger.notice("All playlists now have current flag set to 0");
 			callback();
 		});		
 	},

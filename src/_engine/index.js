@@ -177,9 +177,9 @@ module.exports = {
 				logger.error("New playlist fail : "+err);
 			});
 		*/
-		/* this._services.playlist_controller.deletePlaylist(34,35)
-		    .then(function (old_playlist,new_curorpubplaylist){
-				logger.success("Playlist "+playlist.id+" deleted. Transferred flags to "+new_curorpubplaylist);
+		/* this._services.playlist_controller.deletePlaylist(34,36)
+		    .then(function (values){
+				logger.success("Playlist "+values.playlist_id+" deleted. Transferred flags to "+values.new_curorpubplaylist_id);
 			})
 			.catch(function(err){
 				logger.error("Deleting playlist failed : "+err);

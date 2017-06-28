@@ -1,5 +1,7 @@
 var path = require('path');
 var fs = require('fs');
+const logger = require('../../_common/utils/logger.js');
+logger.SOURCE = '_engine/components/db_interface.js';
 
 module.exports = {
 	SYSPATH:null,
@@ -9,7 +11,7 @@ module.exports = {
 	init: function(){
 		if(module.exports.SYSPATH === null)
 		{
-			console.log('_engine/components/db_interface.js : SYSPATH is null');
+			logger.error('_engine/components/db_interface.js : SYSPATH is null');
 			process.exit();
 		}
 		// démarre une instance de SQLITE
@@ -17,8 +19,8 @@ module.exports = {
 		module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
 			if (err)
 			{
-				console.log('Error loading main karaoke database : '+err)
-				console.log('Please run generate_karasdb.js first!');
+				logger.error('Error loading main karaoke database : '+err)
+				logger.error('Please run generate_karasdb.js first!');
 			}
 		});
 		// On vérifie si la base user existe. Si non on insère les tables.
@@ -26,14 +28,14 @@ module.exports = {
 		// le fichier sqlite est externe (car l'appli ne peux écrire dans ses assets interne)
 		if (!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3')))
 		{
-			console.log('Unable to find user database. Creating it...');
+			logger.error('Unable to find user database. Creating it...');
     		NeedToCreateUserTables = true;
 		};
 		// le fichier sqlite est externe (car l'appli ne peux écrire dans ses assets interne)
 		module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
 			if (err)
 			{
-            	console.log('Error loading user database : '+err);
+            	logger.error('Error loading user database : '+err);
         	}
 
 			if (NeedToCreateUserTables)
@@ -43,12 +45,12 @@ module.exports = {
         		module.exports._user_db_handler.exec(sqlCreateUserDB, function (err){
 	            	if (err)
 					{
-                		console.log('Error creating user base :');
-	                	console.log(err);
+                		logger.error('Error creating user base :');
+	                	logger.error(err);
 						process.exit();
             		} else
 					{
-						console.log('User database created successfully.');
+						logger.notice('User database created successfully.');
 					}
 				});
 			}
@@ -82,8 +84,8 @@ module.exports = {
 		{
                 if (err)
 				{
-                    console.log('ERROR : Unable to select playlist '+playlist_id+'\'s public flag :');
-                    console.log(err);
+                    logger.error('Unable to select playlist '+playlist_id+'\'s public flag :');
+                    logger.error(err);
                     callback(null,err);
 				} else {
 					if (row) {
@@ -94,7 +96,7 @@ module.exports = {
 						}
 					} else {
 						var err = 'Playlist unknown.'
-						console.log(err);
+						logger.error(err);
 						callback(null,err);
 					}					
 				}
@@ -110,8 +112,8 @@ module.exports = {
 		{
                 if (err)
 				{
-                    console.log('ERROR : Unable to select playlist '+playlist_id+'\'s current flag :');
-                    console.log(err);
+                    logger.error('Unable to select playlist '+playlist_id+'\'s current flag :');
+                    logger.error(err);
                     callback(null,err);
 				} else {
 					if (row) {
@@ -122,7 +124,7 @@ module.exports = {
 						}
 					} else {
 						var err = 'Playlist unknown.'
-						console.log(err);
+						logger.error(err);
 						callback(null,err);
 					}
 				}
@@ -138,8 +140,8 @@ module.exports = {
 		{
                 if (err)
 				{
-                    console.log('ERROR : Unable to select playlist '+playlist_id+' :');
-                    console.log(err);
+                    logger.error('Unable to select playlist '+playlist_id+' :');
+                    logger.error(err);
                     callback(null,err);
 				} else {
 					if (row) {
@@ -160,8 +162,8 @@ module.exports = {
 		{
 			if (err)
 			{
-				console.log('ERROR : Unable to set current flag on playlist '+playlist_id+' :');
-                console.log(err);                
+				logger.error('Unable to set current flag on playlist '+playlist_id+' :');
+                logger.error(err);                
 			}
 			callback(rep,err);
 		});
@@ -176,8 +178,8 @@ module.exports = {
 		{
 			if (err)
 			{
-				console.log('ERROR : Unable to set public flag on playlist '+playlist_id+' :');
-                console.log(err);                
+				logger.error('Unable to set public flag on playlist '+playlist_id+' :');
+                logger.error(err);                
 			}
 			callback(rep,err);
 		});
@@ -186,7 +188,7 @@ module.exports = {
 	{
 		if(!module.exports.isReady())
 		{
-			console.log('ERROR : DB_iNTERFACE is not ready to work');
+			logger.error('DB_INTERFACE is not ready to work');
 			return false;
 		}
 
@@ -195,9 +197,8 @@ module.exports = {
 		{
 			if (err)
 			{
-				console.log('ERROR : Unable to unset public flag on playlists :');
-                console.log(err);
-                console.log(sqlUpdatePlaylistsUnsetPublic);
+				logger.error('Unable to unset public flag on playlists :');
+                logger.error(err);                
 			}
 			callback();
 		});
@@ -206,7 +207,7 @@ module.exports = {
 	{
 		if(!module.exports.isReady())
 		{
-			console.log('ERROR : DB_iNTERFACE is not ready to work');
+			logger.error('DB_INTERFACE is not ready to work');
 			return false;
 		}
 
@@ -215,9 +216,8 @@ module.exports = {
 		{
 			if (err)
 			{
-				console.log('ERROR : Unable to unset current flag on playlists :');
-                console.log(err);
-                console.log(sqlUpdatePlaylistsUnsetCurrent);
+				logger.error('Unable to unset current flag on playlists :');
+                logger.error(err);                
 			}
 			callback();
 		});
@@ -233,8 +233,8 @@ module.exports = {
 		}, function(err) {
 			if (err)
 			{
-				console.log('ERROR : Unable to empty playlist :');
-                console.log(err);                
+				logger.error('Unable to empty playlist :');
+                logger.error(err);                
 			}
 		})
 	},
@@ -247,8 +247,8 @@ module.exports = {
 		}, function(err) {
 			if (err)
 			{
-				console.log('ERROR : Unable to delete playlist :');
-                console.log(err);                
+				logger.error('Unable to delete playlist :');
+                logger.error(err);                
 			}
 			callback(true);
 		})
@@ -257,7 +257,7 @@ module.exports = {
 	{
 		if(!module.exports.isReady())
 		{
-			console.log('ERROR : DB_iNTERFACE is not ready to work');
+			logger.error('DB_INTERFACE is not ready to work');
 			return false;
 		}
 
@@ -280,9 +280,8 @@ module.exports = {
 		{
                 if (err)
 				{
-                    console.log('ERROR : Unable to create playlist '+name+' :');
-                    console.log(err);
-                    console.log(sqlCreatePlaylist);
+                    logger.error('Unable to create playlist '+name+' :');
+                    logger.error(err);
 					callback({
 						id:0,
 						error:true,
@@ -301,7 +300,7 @@ module.exports = {
 	{
 		if(!module.exports.isReady())
 		{
-			console.log('ERROR : DB_iNTERFACE is not ready to work');
+			logger.error('DB_INTERFACE is not ready to work');
 			return false;
 		}
 
