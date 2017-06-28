@@ -3,7 +3,8 @@ var fs = require('fs');
 
 module.exports = {
 	SYSPATH:null,
-	_db_handler:null,
+	_ready: false,
+	_db_handler: null,
 
 	init: function(){
 		if(module.exports.SYSPATH === null)
@@ -52,13 +53,20 @@ module.exports = {
 				});
 			}
 		});
+		module.exports._ready = true;
 	},
 
 	// fermeture des instances SQLITE (unlock les fichiers)
 	close:function()
 	{
+		module.exports._ready = false;
 		module.exports._db_handler.close();
 		module.exports._user_db_handler.close();
+	},
+
+	isReady: function()
+	{
+		return module.exports._ready;
 	},
 
 	// implémenter ici toutes les méthodes de lecture écritures qui seront utilisé par l'ensemble de l'applicatif
@@ -176,6 +184,12 @@ module.exports = {
 	},
 	unsetPublicAllPlaylists:function(callback)
 	{
+		if(!module.exports.isReady())
+		{
+			console.log('ERROR : DB_iNTERFACE is not ready to work');
+			return false;
+		}
+
 		var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
 		this._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err, rep)
 		{
@@ -190,6 +204,12 @@ module.exports = {
 	},
 	unsetCurrentAllPlaylists:function(callback)
 	{
+		if(!module.exports.isReady())
+		{
+			console.log('ERROR : DB_iNTERFACE is not ready to work');
+			return false;
+		}
+
 		var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
 		this._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err, rep)
 		{
@@ -235,6 +255,12 @@ module.exports = {
 	},
 	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,callback)
 	{
+		if(!module.exports.isReady())
+		{
+			console.log('ERROR : DB_iNTERFACE is not ready to work');
+			return false;
+		}
+
 		// Création de la playlist
 		// Prend en entrée name, NORM_name, creation_time, lastedit_time, flag_visible, flag_current, flag_public
 		// Retourne l'ID de la playlist nouvellement crée.
@@ -273,6 +299,12 @@ module.exports = {
 
 	get_next_kara:function()
 	{
+		if(!module.exports.isReady())
+		{
+			console.log('ERROR : DB_iNTERFACE is not ready to work');
+			return false;
+		}
+
 		return {
 			uuid:'0000-0000-0000-0000',
 			kara_id:1,

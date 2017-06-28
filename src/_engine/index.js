@@ -1,4 +1,6 @@
-var path = require('path');
+const path = require('path');
+const logger = require('../_common/utils/logger.js');
+logger.SOURCE = '_engine/index.js';
 
 module.exports = {
 	SYSPATH:null,
@@ -18,12 +20,12 @@ module.exports = {
 		// méthode de démarrage de base
 		if(this.SYSPATH === null)
 		{
-			console.log('_engine/index.js : SYSPATH is null');
+			logger.error('SYSPATH is null');
 			process.exit();
 		}
 		if(this.SETTINGS === null)
 		{
-			console.log('_engine/index.js : SETTINGS is null');
+			logger.error('SETTINGS is null');
 			process.exit();
 		}
 
@@ -82,7 +84,8 @@ module.exports = {
 	},
 	togglePrivate:function()
 	{
-		module.exports._states.private = !this._states.private;
+		module.exports._states.private = !module.exports._states.private;
+		logger.success('private is now '+module.exports._states.private);
 		module.exports._broadcastStates();
 	},
 
@@ -98,15 +101,16 @@ module.exports = {
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing)
 		{
 			kara = module.exports._services.playlist_controler.get_next_kara();
-			console.log(kara);
 			if(kara)
 			{
+				logger.success('next kara is '+kara.title);
 				module.exports._services.player.play(
 					kara.videofile,
 					kara.subfile,
 					kara.kara_id
 				);
 			}
+			logger.warning('next kara is not available');
 			module.exports._broadcastPlaylist();
 		}
 	},
@@ -118,7 +122,7 @@ module.exports = {
 	_broadcastStates:function()
 	{
 		// diffuse l'état courant à tout les services concerné (normalement les webapp)
-		this._services.admin.setStates(this._states);
+		module.exports._services.admin.setEngineStates(module.exports._states);
 	},
 
 	_broadcastPlaylist:function()
@@ -132,65 +136,58 @@ module.exports = {
 
 	_start_db_interface: function()
 	{
-		this.DB_INTERFACE = require(path.resolve(__dirname,'components/db_interface.js'));
-		this.DB_INTERFACE.SYSPATH = this.SYSPATH;
-		this.DB_INTERFACE.init();
+		module.exports.DB_INTERFACE = require(path.resolve(__dirname,'components/db_interface.js'));
+		module.exports.DB_INTERFACE.SYSPATH = module.exports.SYSPATH;
+		module.exports.DB_INTERFACE.init();
 	},
 	_start_admin:function(){
-		this._services.admin = require(path.resolve(__dirname,'../_admin/index.js'));
-		this._services.admin.LISTEN = 1338;
-		this._services.admin.SYSPATH = this.SYSPATH;
-		this._services.admin.SETTINGS = this.SETTINGS;
-		this._services.admin.DB_INTERFACE = this.DB_INTERFACE;
+		module.exports._services.admin = require(path.resolve(__dirname,'../_admin/index.js'));
+		module.exports._services.admin.LISTEN = 1338;
+		module.exports._services.admin.SYSPATH = module.exports.SYSPATH;
+		module.exports._services.admin.SETTINGS = module.exports.SETTINGS;
+		module.exports._services.admin.DB_INTERFACE = module.exports.DB_INTERFACE;
 		// --------------------------------------------------------
 		// diffusion des méthodes interne vers les events admin
 		// --------------------------------------------------------
-		this._services.admin.onTerminate = module.exports.exit;
+		module.exports._services.admin.onTerminate = module.exports.exit;
 		// Evenement de changement bascule privé/publique
-		this._services.admin.onTogglePrivate = module.exports.togglePrivate;
+		module.exports._services.admin.onTogglePrivate = module.exports.togglePrivate;
 		// Supervision des évènement de changement de status (play/stop)
-		this._services.admin.onPlay = module.exports.play;
-		this._services.admin.onStop = module.exports.stop;
-		this._services.admin.onStopNow = function(){module.exports.stop(true)};
+		module.exports._services.admin.onPlay = module.exports.play;
+		module.exports._services.admin.onStop = module.exports.stop;
+		module.exports._services.admin.onStopNow = function(){module.exports.stop(true)};
 		// --------------------------------------------------------
 		// on démarre ensuite le service
-		this._services.admin.init();
+		module.exports._services.admin.init();
 		// et on lance la commande pour ouvrir la page web
-		this._services.admin.open();
+		module.exports._services.admin.open();
 	},
 	_start_playlist_controller:function(){
-		this._services.playlist_controller = require(path.resolve(__dirname,'components/playlist_controller.js'));
-		this._services.playlist_controller.SYSPATH = this.SYSPATH;
-		this._services.playlist_controller.DB_INTERFACE = this.DB_INTERFACE;
-		this._services.playlist_controller.onPlaylistUpdated = this.playlistUpdated;
-		this._services.playlist_controller.init();
-		/*
-		this._services.playlist_controller.createPlaylist('Ma plélyst lol',0,0,0)
 			.then(function (new_playlist){
-				console.log("New playlist created with ID : "+new_playlist.id);
+				logger.success("New playlist created with ID : "+new_playlist.id);
 			})
 			.catch(function(err){
-				console.log("New playlist fail : "+err);
+				logger.error("New playlist fail : "+err);
 			});
 		*/
 		this._services.playlist_controller.deletePlaylist(34,35)
 		    .then(function (old_playlist,new_curorpubplaylist){
-				console.log("Playlist "+old_playlist+" deleted. Transferred flags to playlist "+new_curorpubplaylist);
+				logger.success("Playlist "+playlist.id+" deleted. Transferred flags to "+new_curorpubplaylist);
 			})
 			.catch(function(err){
-				console.log("ERROR : Deleting playlist failed ("+err+")");
+				logger.error("Deleting playlist failed : "+err);
 			});			
 		// on ajoute 4 morceau dans la playlist
-		this._services.playlist_controller.addKara(1,'toto');
-		this._services.playlist_controller.addKara(2,'tata');
-		this._services.playlist_controller.addKara(3,'titi');
-		this._services.playlist_controller.addKara(4,'tutu');
+		module.exports._services.playlist_controller.addKara(1,'toto');
+		module.exports._services.playlist_controller.addKara(2,'tata');
+		module.exports._services.playlist_controller.addKara(3,'titi');
+		module.exports._services.playlist_controller.addKara(4,'tutu');
 	},
 	_start_player:function()
 	{
-		this._services.player = require(path.resolve(__dirname,'../_player/index.js'));
-		this._services.player.BINPATH = path.resolve(this.SYSPATH,'app/bin');
-		this._services.player.onEnd = this.playerEnding;
-		this._services.player.init();
+		module.exports._services.player = require(path.resolve(__dirname,'../_player/index.js'));
+		module.exports._services.player.BINPATH = path.resolve(module.exports.SYSPATH,'app/bin');
+		module.exports._services.player.onEnd = module.exports.playerEnding;
+		module.exports._services.player.init();
 	}
 }

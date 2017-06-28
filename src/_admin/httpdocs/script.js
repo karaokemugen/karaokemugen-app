@@ -1,23 +1,23 @@
 // websocket events
 var socket = io.connect('http://localhost:1338');
 
-var states = {};
+var engine_states = {};
+var local_states = {};
 
 // alert message
-socket.on('states', function(newStates) {
-    states = newStates;
+socket.on('engine_states', function(newStates) {
+    engine_states = newStates;
 
-    private_message = states.private ? 'Mode Privé':'Mode publique';
+    private_message = engine_states.private ? 'Mode Privé':'Mode publique';
     $('.states_private').html(private_message);
 
-    status_message = states.status=='play' ? 'Mode lecture':'Mode arrêt';
+    status_message = engine_states.status=='play' ? 'Mode lecture':'Mode arrêt';
     $('.states_status').html(status_message);
 })
 
 socket.on('local_states', function(newStates) {
-    console.log(newStates);
-    states = newStates;
-    if(states.generate_karabd)
+    local_states = newStates;
+    if(local_states.generate_karabd)
     {
         $('.tool-kara-index').attr('data-state','running');
     }
@@ -28,9 +28,14 @@ socket.on('local_states', function(newStates) {
 })
 
 socket.on('generate_karabd', function(param) {
-    if(param.event && param.event=='setLog')
+    if(param.event && param.event=='cleanLog')
     {
-        $('.tool-kara-index .log').html(param.data);
+        $('.tool-kara-index .log').empty();
+    }
+    if(param.event && param.event=='addLog')
+    {
+        console.log(param.data);
+        $('.tool-kara-index .log').append(param.data+"\r\n");
     }
 })
 
