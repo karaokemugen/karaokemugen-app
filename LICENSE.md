@@ -8,7 +8,8 @@ node-ffprobe a été modifié pour être synchrone et mieux gérer les fichiers 
 
 Voici sa licence :
 
-```(The MIT License)
+```
+(The MIT License)
 
 Copyright (c) 2011 Listener Approved LLC.
 
