@@ -89,7 +89,7 @@ module.exports = {
 	resume: function(){
 		module.exports._player.play();
 	},
-	onEnd:function(){
+	onEnd:function(ref){
 		// événement émis pour quitter l'application
 		console.log('_player/index.js :: onEnd not set')
 	},
