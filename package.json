@@ -26,9 +26,9 @@
     "jaerdoster"
   ],
   "engines": {
-    "node": ">=6.11.0 <8.0"
+    "node": ">=6.0.0"
   },
-  "license": "ISC",
+  "license": "MIT",
   "private": true,
   "dependencies": {
     "asap": "^2.0.5",

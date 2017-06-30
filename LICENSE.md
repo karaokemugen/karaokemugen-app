@@ -1,12 +1,6 @@
-Ici sont inclus les licences des modules directement inclus et modifiés pour Toyunda Mugen.
+# License de Toyunda Mugen
 
-Sauf mention contraire, les modules dont dépend Toyunda Mugen sont installés par npm.
-
-# node-ffprobe
-
-node-ffprobe a été modifié pour être synchrone et mieux gérer les fichiers avec espaces.
-
-Voici sa licence :
+La license du code de Toyunda Mugen est la license MIT.
 
 ```
 (The MIT License)
@@ -32,3 +26,13 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
+
+
+# Autres modules
+
+Sauf mention contraire, les modules dont dépend Toyunda Mugen sont installés par npm.
+
+## node-ffprobe
+
+node-ffprobe a été modifié pour être synchrone et mieux gérer les fichiers avec espaces.
+
