@@ -72,6 +72,6 @@ if(SYSPATH)
 }
 else
 {
-	console.log(clc.redBright('Cannot resolve syspath - Exit'));
+	console.log(clc.redBright('ERROR - Cannot resolve syspath - Exiting...'));
 	console.log("\n");
 }

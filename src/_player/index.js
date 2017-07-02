@@ -1,5 +1,7 @@
 var fs = require('fs');
 var path = require('path');
+const logger = require('./_common/utils/logger.js');
+logger.SOURCE = '_player/index.js';
 
 module.exports = {
 	playing:false,
@@ -9,8 +11,8 @@ module.exports = {
 	BINPATH:null,
 	init:function(){
 		if(!fs.existsSync(module.exports.BINPATH)){
-			console.log('Unable to found mpv.exe');
-			console.log('Received path was : '+module.exports.BINPATH);
+			logger.error('Unable to find mpv.exe !');
+			logger.error('Received path was : '+module.exports.BINPATH);
 			process.exit();
 		}
 
@@ -58,24 +60,24 @@ module.exports = {
 				if(subtitle)
 				{
 					if(fs.existsSync(subtitle)){
-						console.log('subtitle : '+subtitle);
+						logger.notice('subtitle : '+subtitle);
 						module.exports._player.addSubtitles(subtitle);//, flag, title, lang)
 					}
 					else
 					{
-						console.log('Can not find subtitle '+subtitle)
+						logger.error('Can not find subtitle '+subtitle)
 					}
 				}
 				else
 				{
-					console.log('No subtitles');
+					logger.notice('No subtitles');
 				}
 				module.exports._player.loadFile(path.join(__dirname,'assets/__blank__.png'),'append');
 			},500);
 		}
 		else {
 			module.exports.playing = false;
-			console.log('Can not find video '+video)
+			logger.error('Can not find video '+video)
 		}
 	},
 	stop:function()
