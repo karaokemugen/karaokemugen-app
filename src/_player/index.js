@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-const logger = require('./_common/utils/logger.js');
+const logger = require('../_common/utils/logger.js');
 logger.SOURCE = '_player/index.js';
 
 module.exports = {
