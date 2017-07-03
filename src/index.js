@@ -1,3 +1,7 @@
+/**
+ * @fileoverview Launcher source file
+ */
+
 const clc = require('cli-color');
 const fs = require('fs');
 const path = require('path');
@@ -8,10 +12,12 @@ const logger = require('winston');
 logger.add(logger.transports.File, {filename: 'toyundamugen.log'});
 const argv = require('minimist')(process.argv.slice(2));
 
-// Clear console - and welcome message
-
-
-process.stdout.write('\033c');
+/**
+ * Clear console - and welcome message
+ * Node does not like the octal clear screen sequence.
+ * So we wrote it in hexa (1B)
+ */ 
+process.stdout.write('\x1Bc');
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
 console.log(clc.greenBright('| Project Toyunda Mugen ^^                                         |'));
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
@@ -38,11 +44,15 @@ if (argv.version) {
 	process.exit(0);
 }
 
+/** Call to resolveSyspath to get the app's path in all OS configurations */
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
 if(SYSPATH)
 {
-	logger.info('Detected SysPath is :'+clc.greenBright(SYSPATH));
+	logger.info('Detected SysPath is :'+SYSPATH);
 	// Lecture de la configuration par défault
+	/**
+	 * Reading config.ini.default, then override it with config.ini if it exists.
+	 */
 	var SETTINGS = ini.parse(fs.readFileSync(path.join(SYSPATH,'config.ini.default'), 'utf-8'));
 	if(fs.existsSync(path.join(SYSPATH,'config.ini')))
 	{
@@ -53,10 +63,18 @@ if(SYSPATH)
 	SETTINGS.os = 'Windows';
 
 	logger.info('Loading configuration.');
-	//console.log(SETTINGS);
+	logger.info(SETTINGS);
 
 	// Vérification que les chemins sont bien présents, sinon les créer
-	logger.info('Checking if data folders are in place...');
+	/**
+	 * Checking if application paths exist.
+	 * The app needs :
+	 * app/bin
+	 * app/data
+	 * app/db
+	 * app/temp
+	 */
+	logger.info('Checking if data folders are in place');
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Karas))) {
 		logger.info(path.join(SYSPATH,SETTINGS.Path.Karas)+' does not exist, creating it...');
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Karas));
@@ -90,6 +108,9 @@ if(SYSPATH)
 		}
 	}
 
+	/**
+	 * Calling engine.
+	 */
 	var engine = require('./_engine/index.js');
 	engine.SYSPATH = SYSPATH;
 	engine.SETTINGS = SETTINGS;

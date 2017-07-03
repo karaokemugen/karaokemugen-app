@@ -8,3 +8,5 @@ src/app/
 npm-debug.log
 *.exe
 toyundamugen.log
+out/
+doc/

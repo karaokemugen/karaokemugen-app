@@ -1,10 +1,22 @@
+/**
+ * @fileoverview Main engine source file
+ */
 const path = require('path');
 const logger = require('winston');
 
+/**
+ * @module engine
+ * Main engine module.
+ */
 module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
 	DB_INTERFACE:null,
+	/**
+	 * @private 
+	 * Engine status.
+	 * Can be stop or play. Stop by default.
+	 */
 	_states:{
 		status:'stop', // [stop,play] // etat générale de l'application Karaoke - STOP => la lecture de la playlist est interrompu
 		private:true, // [bool(true|false)] // Karaoke en mode privé ou publique
@@ -14,9 +26,13 @@ module.exports = {
 		playlist_controller: null,
 		player:null,
 	},
-
+	/**
+	 * Base method for starting up the engine.
+	 * It starts up the DB Interface, player, playlist controller and admin dashboard.
+	 * @function {run}
+	 */
 	run: function(){
-		// méthode de démarrage de base
+		
 		if(this.SYSPATH === null)
 		{
 			logger.error('SYSPATH is null');
@@ -34,11 +50,18 @@ module.exports = {
 		this._start_admin();
 		this._broadcastStates();
 	},
-	exit:function(){
-		// coupe tout le système
+	/**
+	 * Exits application.
+	 * @function {exit}
+	 */
+	exit:function(){		
 		process.exit();
 	},
 
+    /**
+	 * Starts playing karaoke songs.
+	 * @function {play}
+	 */
 	play:function(){
 		if(module.exports._states.status !== 'play')
 		{
@@ -54,6 +77,10 @@ module.exports = {
 			module.exports._services.player.resume();
 		}
 	},
+	/**
+	* @function {stop}
+	* @param  {boolean} now {If set, stops karaoke immediately. If not, karaoke will stop at end of current song}
+	*/
 	stop:function(now){
 		if(now)
 			module.exports._services.player.stop();
@@ -64,6 +91,10 @@ module.exports = {
 			module.exports._broadcastStates();
 		}
 	},
+	/**
+	 * @function {pause}
+	 * Pauses current song in the player and broadcasts new status.
+	 */
 	pause:function(){
 		module.exports._services.player.pause()
 		// l'état globale n'a pas besoin de changer
@@ -71,16 +102,26 @@ module.exports = {
 		module.exports._broadcastStates();
 	},
 
+	/**
+	* @function {setPrivateOn}
+	* @private
+	*/
 	setPrivateOn:function()
 	{
 		module.exports._states.private = true;
 		module.exports._broadcastStates();
 	},
+	/**
+	* @function {setPrivateOff}
+	*/
 	setPrivateOff:function()
 	{
 		module.exports._states.private = false;
 		module.exports._broadcastStates();
 	},
+	/**
+	* @function {togglePrivate}	
+	*/
 	togglePrivate:function()
 	{
 		module.exports._states.private = !module.exports._states.private;
@@ -89,27 +130,40 @@ module.exports = {
 	},
 
 	// Methode lié à la lecture de kara
+	/**
+	* @function 
+	* 
+	*/
 	playlistUpdated:function(){
 		module.exports.tryToReadNextKaraInPlaylist();
 	},
+	/**
+	* @function 
+	* 
+	* Function triggered on player ending its current song.
+	*/
 	playerEnding:function(){
 		module.exports.tryToReadNextKaraInPlaylist();
 	},
 
+	/**
+	* @function 
+	* Try to read next karaoke in playlist.
+	*/
 	tryToReadNextKaraInPlaylist:function(){
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing)
 		{
 			kara = module.exports._services.playlist_controler.get_next_kara();
 			if(kara)
 			{
-				logger.success('next kara is '+kara.title);
+				logger.info('Next song is '+kara.title);
 				module.exports._services.player.play(
 					kara.videofile,
 					kara.subfile,
 					kara.kara_id
 				);
 			}
-			logger.log('warning','Next kara is not available');
+			logger.log('warning','Next song is not available');
 			module.exports._broadcastPlaylist();
 		}
 	},
@@ -133,12 +187,22 @@ module.exports = {
 	// methodes de démarrage des services
 	// ------------------------------------------------------------------
 
+	/**
+	* @function _start_db_interface
+	* Starts database interface.
+	* Requires the db_interface.js script 
+	*/
 	_start_db_interface: function()
 	{
 		module.exports.DB_INTERFACE = require(path.resolve(__dirname,'components/db_interface.js'));
 		module.exports.DB_INTERFACE.SYSPATH = module.exports.SYSPATH;
 		module.exports.DB_INTERFACE.init();
 	},
+	/**
+	* @function 
+	* Starts the admin dashboard webservice on the selected port
+	* Broadcasts syspath and settings, as well as db interface to that module.
+	*/
 	_start_admin:function(){
 		module.exports._services.admin = require(path.resolve(__dirname,'../_admin/index.js'));
 		module.exports._services.admin.LISTEN = 1338;
@@ -161,6 +225,11 @@ module.exports = {
 		// et on lance la commande pour ouvrir la page web
 		module.exports._services.admin.open();
 	},
+	/**
+	* @function 
+	* Starts playlist controller
+	* Broadcasts syspath, database, and the playlistUpdated method
+	*/
 	_start_playlist_controller:function(){
 		module.exports._services.playlist_controller = require(path.resolve(__dirname,'components/playlist_controller.js'));
 		module.exports._services.playlist_controller.SYSPATH = module.exports.SYSPATH;
@@ -185,11 +254,16 @@ module.exports = {
 			});			
 		*/
 		// on ajoute 4 morceau dans la playlist
-		module.exports._services.playlist_controller.addKara(1,'toto');
-		module.exports._services.playlist_controller.addKara(2,'tata');
-		module.exports._services.playlist_controller.addKara(3,'titi');
-		module.exports._services.playlist_controller.addKara(4,'tutu');
+		//module.exports._services.playlist_controller.addKara(1,'toto');
+		//module.exports._services.playlist_controller.addKara(2,'tata');
+		//module.exports._services.playlist_controller.addKara(3,'titi');
+		//module.exports._services.playlist_controller.addKara(4,'tutu');
 	},
+	/**
+	* @function 
+	* Starts player interface
+	* This is used to drive mpv or whatever video player is used.
+	*/
 	_start_player:function()
 	{
 		module.exports._services.player = require(path.resolve(__dirname,'../_player/index.js'));
