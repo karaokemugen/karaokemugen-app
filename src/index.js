@@ -6,12 +6,37 @@ const extend = require('extend');
 const mkdirp = require('mkdirp');
 const logger = require('./_common/utils/logger.js');
 logger.SOURCE = 'index.js';
+const argv = require('minimist')(process.argv.slice(2));
+
 // Clear console - and welcome message
+
+
 process.stdout.write('\033c');
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
-console.log(clc.greenBright('| Project Toyunda ^^ Enjoy                                         |'));
+console.log(clc.greenBright('| Project Toyunda Mugen ^^                                         |'));
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
 console.log("\n");
+
+if (argv.help) { 
+	var help = "Usage : \n";
+	help += "\n";
+	help += "toyundamugen [--help] [--version] [--debug]\n";
+	help += "\n";
+	help += "	Options : \n";
+	help += "\n";
+	help += "		--help     Prints this help message\n";
+	help += "		--version  Prints version information\n";
+	help += "		--debug    Displays debug messages\n";
+	help += "\n";
+
+	console.log(help);
+	process.exit(0);
+}
+
+if (argv.version) {
+	console.log("Toyunda Mugen v2.0 - Finé Fantastique");
+	process.exit(0);
+}
 
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
 if(SYSPATH)
