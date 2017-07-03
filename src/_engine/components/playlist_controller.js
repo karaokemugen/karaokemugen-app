@@ -2,8 +2,7 @@ var path = require('path');
 const { diacritics, normalize } = require('normalize-diacritics');
 var timestamp = require("unix-timestamp");
 timestamp.round = true;
-const logger = require('../../_common/utils/logger.js');
-logger.SOURCE = '_engine/components/playlist_controller.js';
+const logger = require('winston');
 
 
 module.exports = {
@@ -28,14 +27,14 @@ module.exports = {
 	isCurrentPlaylist:function(playlist_id,callback)
 	{
 		module.exports.DB_INTERFACE.isCurrentPlaylist(playlist_id,function(res){							
-			logger.debug('Current = '+res);
+			logger.log('debug','Current = '+res);
 			callback(res);
 		});		
 	},
 	isPublicPlaylist:function(playlist_id,callback)
 	{
 		module.exports.DB_INTERFACE.isPublicPlaylist(playlist_id,function(res){							
-			logger.debug('Public = '+res);
+			logger.log('debug','Public = '+res);
 			callback(res);
 		});		
 	},
@@ -51,7 +50,7 @@ module.exports = {
 	{
 		module.exports.unsetCurrentAllPlaylists(function(){
 			module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id,function(res){
-				logger.debug('Setting playlist '+playlist_id+' current flag to ON');							
+				logger.log('debug','Setting playlist '+playlist_id+' current flag to ON');							
 				callback();
 			});		
 		});	
@@ -60,7 +59,7 @@ module.exports = {
 	{
 		module.exports.unsetPublicAllPlaylists(function(){
 			module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id, function(res){
-				logger.debug('Setting playlist '+playlist_id+' public flag to ON');							
+				logger.log('debug','Setting playlist '+playlist_id+' public flag to ON');							
 				callback();
 			});		
 		});		
@@ -159,7 +158,7 @@ module.exports = {
 	{
 		// Désactive le flag Public sur toutes les playlists
 		module.exports.DB_INTERFACE.unsetPublicAllPlaylists(function(){
-			logger.notice("All playlists now have public flag set to 0");
+			logger.info("All playlists now have public flag set to 0");
 			callback();
 		});
 		
@@ -168,7 +167,7 @@ module.exports = {
 	{
 		// Désactive le flag Current sur toutes les playlists
 		module.exports.DB_INTERFACE.unsetCurrentAllPlaylists(function(){
-			logger.notice("All playlists now have current flag set to 0");
+			logger.info("All playlists now have current flag set to 0");
 			callback();
 		});		
 	},
@@ -222,8 +221,7 @@ module.exports = {
 			module.exports.onPlaylistUpdated();
 		})
 		.catch(function(err){
-			console.log('addKara Fail');
-			console.log(err.message);
+			logger.error('addKara Fail : '+err.message);			
 		});
 	},
 
@@ -238,6 +236,6 @@ module.exports = {
 
 	onPlaylistUpdated:function(){
 		// événement émis pour quitter l'application
-		console.log('_engine/components/playlist_controler.js :: onPlaylistUpdated not set')
+		logger.error('_engine/components/playlist_controler.js :: onPlaylistUpdated not set')
 	},
 }

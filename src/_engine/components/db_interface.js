@@ -1,7 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-const logger = require('../../_common/utils/logger.js');
-logger.SOURCE = '_engine/components/db_interface.js';
+const logger = require('winston');
 
 module.exports = {
 	SYSPATH:null,
@@ -50,7 +49,7 @@ module.exports = {
 						process.exit();
             		} else
 					{
-						logger.notice('User database created successfully.');
+						logger.info('User database created successfully.');
 					}
 				});
 			}

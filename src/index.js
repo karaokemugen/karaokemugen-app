@@ -4,8 +4,8 @@ const path = require('path');
 const ini = require('ini');
 const extend = require('extend');
 const mkdirp = require('mkdirp');
-const logger = require('./_common/utils/logger.js');
-logger.SOURCE = 'index.js';
+const logger = require('winston');
+logger.add(logger.transports.File, {filename: 'toyundamugen.log'});
 const argv = require('minimist')(process.argv.slice(2));
 
 // Clear console - and welcome message
@@ -41,7 +41,7 @@ if (argv.version) {
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
 if(SYSPATH)
 {
-	logger.notice('Detected SysPath is :'+clc.greenBright(SYSPATH));
+	logger.info('Detected SysPath is :'+clc.greenBright(SYSPATH));
 	// Lecture de la configuration par défault
 	var SETTINGS = ini.parse(fs.readFileSync(path.join(SYSPATH,'config.ini.default'), 'utf-8'));
 	if(fs.existsSync(path.join(SYSPATH,'config.ini')))
@@ -52,13 +52,13 @@ if(SYSPATH)
 	}
 	SETTINGS.os = 'Windows';
 
-	logger.notice('Loading configuration.');
+	logger.info('Loading configuration.');
 	//console.log(SETTINGS);
 
 	// Vérification que les chemins sont bien présents, sinon les créer
-	logger.notice('Checking if data folders are in place...');
+	logger.info('Checking if data folders are in place...');
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Karas))) {
-		logger.notice(path.join(SYSPATH,SETTINGS.Path.Karas)+' does not exist, creating it...');
+		logger.info(path.join(SYSPATH,SETTINGS.Path.Karas)+' does not exist, creating it...');
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Karas));
 		if (!ret) {
 			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.Karas)+'... Exiting.')
@@ -97,6 +97,5 @@ if(SYSPATH)
 }
 else
 {
-	console.log(clc.redBright('ERROR - Cannot resolve syspath - Exiting...'));
-	console.log("\n");
+	logger.error('Cannot resolve syspath - Exiting...');
 }

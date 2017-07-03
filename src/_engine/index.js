@@ -1,6 +1,5 @@
 const path = require('path');
-const logger = require('../_common/utils/logger.js');
-logger.SOURCE = '_engine/index.js';
+const logger = require('winston');
 
 module.exports = {
 	SYSPATH:null,
@@ -110,7 +109,7 @@ module.exports = {
 					kara.kara_id
 				);
 			}
-			logger.warning('next kara is not available');
+			logger.log('warning','Next kara is not available');
 			module.exports._broadcastPlaylist();
 		}
 	},
@@ -171,7 +170,7 @@ module.exports = {
 		/*
 		module.exports._services.playlist_controller.createPlaylist('Ma plélyst lol',0,1,0)
 			.then(function (new_playlist){
-				logger.success("New playlist created with ID : "+new_playlist.id);
+				logger.info("New playlist created with ID : "+new_playlist.id);
 			})
 			.catch(function(err){
 				logger.error("New playlist fail : "+err);
@@ -179,7 +178,7 @@ module.exports = {
 		*/
 		/* this._services.playlist_controller.deletePlaylist(34,36)
 		    .then(function (values){
-				logger.success("Playlist "+values.playlist_id+" deleted. Transferred flags to "+values.new_curorpubplaylist_id);
+				logger.info("Playlist "+values.playlist_id+" deleted. Transferred flags to "+values.new_curorpubplaylist_id);
 			})
 			.catch(function(err){
 				logger.error("Deleting playlist failed : "+err);

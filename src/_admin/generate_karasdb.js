@@ -584,6 +584,6 @@ module.exports = {
     onLog:function(type,message)
     {
         // événement émis pour remonter un message de log sur l'admin
-        logger.warning('onLog not set')
+        logger.log('warning','onLog not set');
     }
 }

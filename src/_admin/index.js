@@ -1,6 +1,5 @@
 const path = require('path');
-const logger = require('../_common/utils/logger.js');
-logger.SOURCE = '_admin/index.js';
+const logger = require('winston');
 
 module.exports = {
 	SYSPATH:null,
@@ -38,13 +37,13 @@ module.exports = {
 				// Chargement de socket.io sur l'appli web du launcher
 				module.exports._io = require('socket.io').listen(module.exports._server);
 				module.exports._io.sockets.on('connection', function (socket) {
-					logger.notice('Un client est connecté ! ('+socket.id+')');
+					logger.info('Client connected : ('+socket.id+')');
 					socket.emit('engine_states', module.exports._engine_states);
 					// Création des évènements d'entrée (actions de l'utilisateur)
 					socket.on('message', function (message) {
 						switch (message) {
 							default:
-								logger.notice('Un client me parle ! Il me dit : ' + message);
+								logger.info('Client says : ' + message);
 								break;
 						}
 					});
@@ -72,7 +71,7 @@ module.exports = {
 								module.exports.generateKaraDb(socket);
 								break;
 							default:
-								logger.warning('Action inconnu : ' + action);
+								logger.log('warning','Unknown action : ' + action);
 								break;
 						}
 					});
@@ -81,12 +80,12 @@ module.exports = {
 			}
 			else
 			{
-				logger.error('PORT is not defined');
+				logger.error('PORT is not defined.');
 			}
 		}
 		else
 		{
-			logger.error('Serveur allready started');
+			logger.error('Server already started.');
 		}
 	},
 	open: function(){
@@ -98,7 +97,7 @@ module.exports = {
 
 		if(os.platform()=='linux')
 		{
-			logger.success('Launcher::Serveur : Go to http://'+ip.address()+':1338');
+			logger.info('Launcher::Serveur : Go to http://'+ip.address()+':1338');
 			cp.exec('firefox --new-tab http://'+ip.address()+':1338');
 		}
 		else
@@ -154,25 +153,25 @@ module.exports = {
 
 	onPlay:function(){
 		// événement émis pour quitter l'application
-		logger.warning('onPlay not set')
+		logger.log('warning','onPlay not set');
 	},
 	onStop:function(){
 		// événement émis pour quitter l'application
-		logger.warning('onStop not set')
+		logger.log('warning','onStop not set');
 	},
 	onStopNow:function(){
 		// événement émis pour quitter l'application
-		logger.warning('onStopNow not set')
+		logger.log('warning','onStopNow not set');
 	},
 
 	onTerminate:function(){
 		// événement émis pour quitter l'application
-		logger.warning('onTerminate not set')
+		logger.log('warning','onTerminate not set');
 	},
 
 	onTogglePrivate:function(){
 		// événement émis pour quitter l'application
-		logger.warning('onPrivateToggle not set')
+		logger.log('warning','onPrivateToggle not set');
 	},
 
 }

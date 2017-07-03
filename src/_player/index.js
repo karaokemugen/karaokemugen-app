@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-const logger = require('../_common/utils/logger.js');
-logger.SOURCE = '_player/index.js';
+const logger = require('winston');
 
 module.exports = {
 	playing:false,
@@ -49,7 +48,7 @@ module.exports = {
 	play: function(video,subtitle,reference){
 		module.exports.playing = true;
 		if(fs.existsSync(video)){
-			console.log('playing : '+video);
+			logger.info('Playing : '+video);
 			module.exports._ref = reference;
 			module.exports._player.loadFile(video);
 			module.exports._player.volume(70);
@@ -60,7 +59,7 @@ module.exports = {
 				if(subtitle)
 				{
 					if(fs.existsSync(subtitle)){
-						logger.notice('subtitle : '+subtitle);
+						logger.info('subtitle : '+subtitle);
 						module.exports._player.addSubtitles(subtitle);//, flag, title, lang)
 					}
 					else
@@ -70,7 +69,7 @@ module.exports = {
 				}
 				else
 				{
-					logger.notice('No subtitles');
+					logger.info('No subtitles');
 				}
 				module.exports._player.loadFile(path.join(__dirname,'assets/__blank__.png'),'append');
 			},500);
@@ -93,6 +92,6 @@ module.exports = {
 	},
 	onEnd:function(ref){
 		// événement émis pour quitter l'application
-		console.log('_player/index.js :: onEnd not set')
+		logger.error('_player/index.js :: onEnd not set')
 	},
 };

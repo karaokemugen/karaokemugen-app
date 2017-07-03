@@ -6,3 +6,4 @@ Inscrivez ici la doc des modules pour vous y référer rapidement.
 * cutlass : https://github.com/Daiz/cutlass
 * async : https://caolan.github.io/async/docs.html
 * fs-extras : https://www.npmjs.com/package/fs-extra
+* winston (logger) : https://github.com/winstonjs/winston
