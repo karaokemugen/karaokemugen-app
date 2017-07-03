@@ -63,7 +63,7 @@ if(SYSPATH)
 	SETTINGS.os = 'Windows';
 
 	logger.info('Loading configuration.');
-	logger.info(SETTINGS);
+	logger.log('debug','Configuration loaded : '+SETTINGS);
 
 	// Vérification que les chemins sont bien présents, sinon les créer
 	/**

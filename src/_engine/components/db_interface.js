@@ -73,6 +73,33 @@ module.exports = {
 	// implémenter ici toutes les méthodes de lecture écritures qui seront utilisé par l'ensemble de l'applicatif
 	// aucun autre composant ne doit manipuler la base SQLITE par un autre moyen
 
+	/**
+	* @function {getPlaylistInfo}
+	* @param  {number} playlist_id {Playlist ID}
+	* @return {Object} {Playlist object}
+	* Selects playlist info from playlist table. Returns the info in a callback.
+	*/
+    getPlaylistInfo:function(playlist_id,callback)
+	{
+		var sqlGetPlaylistInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_info.sql'),'utf-8');
+		this._user_db_handler.get(sqlGetPlaylistInfo,
+		{
+			$playlist_id: playlist_id
+		}, function (err, row)
+		{
+			if (err)
+			{
+				logger.error('Unable to select playlist '+playlist_id+' information : '+err);
+				callback(null,err);
+			} else {
+				if (row) {
+					callback(row);
+				} else {					
+					callback(null, 'Playlist '+playlist_id+' unknown.');
+				}
+			}
+		})
+	},
 	isPublicPlaylist:function(playlist_id,callback)
 	{
 		var sqlIsPlaylistPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_public_flag.sql'),'utf-8');
@@ -83,8 +110,7 @@ module.exports = {
 		{
                 if (err)
 				{
-                    logger.error('Unable to select playlist '+playlist_id+'\'s public flag :');
-                    logger.error(err);
+                    logger.error('Unable to select playlist '+playlist_id+'\'s public flag : '+err);
                     callback(null,err);
 				} else {
 					if (row) {

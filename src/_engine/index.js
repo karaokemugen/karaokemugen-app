@@ -236,7 +236,16 @@ module.exports = {
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
-		/*
+		/* Selecting playlist example : 
+		module.exports._services.playlist_controller.getPlaylistInfo(1)
+			.then(function(playlist){
+				logger.info("Playlist get OK");
+				logger.log('debug','Playlist information : '+JSON.stringify(playlist));
+			})
+			.catch(function(err){
+				logger.error("Playlist view failed : "+err);
+			});
+		/* Editing playlist example : 
 		module.exports._services.playlist_controller.editPlaylist(1,'Super plélyst lol',0,1,0)
 			.then(function (){
 				logger.info("Playlist edited.");
@@ -245,7 +254,7 @@ module.exports = {
 				logger.error("Playlist edit failed : "+err);
 			});
 		*/
-		/*
+		/* Creating playlist example : 
 		module.exports._services.playlist_controller.createPlaylist('Ma plélyst lol',0,1,0)
 			.then(function (new_playlist){
 				logger.info("New playlist created with ID : "+new_playlist.id);
@@ -253,8 +262,9 @@ module.exports = {
 			.catch(function(err){
 				logger.error("New playlist fail : "+err);
 			});
-		*/
-		/* this._services.playlist_controller.deletePlaylist(34,36)
+		*/ 
+		/* Deleting playlist example :  
+		module.exports._services.playlist_controller.deletePlaylist(34,36)
 		    .then(function (values){
 				logger.info("Playlist "+values.playlist_id+" deleted. Transferred flags to "+values.new_curorpubplaylist_id);
 			})

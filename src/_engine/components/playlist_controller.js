@@ -189,6 +189,33 @@ module.exports = {
 			});
 		});
 	},
+	/**
+	* @function {getPlaylistInfo}
+	* @param  {number} playlist_id {Playlist ID to fetch}
+	* @return {Object} {Playlist object}
+	* Returns a playlist object with the following information :
+	* - name (name of playlist)
+	* - num_karas (Number of karaoke songs in the playlist)
+	* - length (duration in seconds of the whole playlist)
+	* - creation_time (creation time in UNIX timestamp format)
+	* - lastedit_time (last modification time in UNIX timestamp format)
+	* - flag_visible (is the playlist visible?)
+	* - flag_current (is the playlist the current one?)
+	* - flag_public (is the playlist the public one?)
+	*/
+	getPlaylistInfo:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject){			
+			module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,function(playlist, err){				
+				if (err) {
+					logger.error(err);
+					reject(err);
+				} else {
+					resolve(playlist);
+				}				
+			});
+		});
+	},
 	unsetPublicAllPlaylists:function(callback)
 	{
 		// Désactive le flag Public sur toutes les playlists
