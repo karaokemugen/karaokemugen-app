@@ -237,6 +237,15 @@ module.exports = {
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
 		/*
+		module.exports._services.playlist_controller.editPlaylist(1,'Super plélyst lol',0,1,0)
+			.then(function (){
+				logger.info("Playlist edited.");
+			})
+			.catch(function(err){
+				logger.error("Playlist edit failed : "+err);
+			});
+		*/
+		/*
 		module.exports._services.playlist_controller.createPlaylist('Ma plélyst lol',0,1,0)
 			.then(function (new_playlist){
 				logger.info("New playlist created with ID : "+new_playlist.id);

@@ -196,10 +196,8 @@ module.exports = {
 		{
 			if (err)
 			{
-				logger.error('Unable to unset public flag on playlists :');
-                logger.error(err);                
-			}
-			callback();
+				logger.error('Unable to unset public flag on playlists : '+err);               
+			}	
 		});
 	},
 	unsetCurrentAllPlaylists:function(callback)
@@ -217,8 +215,7 @@ module.exports = {
 			{
 				logger.error('Unable to unset current flag on playlists :');
                 logger.error(err);                
-			}
-			callback();
+			}			
 		});
 		
 	},
@@ -250,6 +247,55 @@ module.exports = {
                 logger.error(err);                
 			}
 			callback(true);
+		})
+	},
+	/**
+	* @function {Edit Playlist query function}
+	* @param  {number} playlist_id   {Playlist ID}
+	* @param  {string} name          {Name of playlist}
+	* @param  {string} NORM_name     {Normalized name of playlist (without accents)}
+	* @param  {number} lastedit_time {Last modification date in Unix timestamp}
+	* @param  {number} flag_visible  {Is the playlist visible?}
+	* @param  {number} flag_current  {Is the playlist the current one?}
+	* @param  {number} flag_public   {Is the playlist the public one?}
+	* @return {boolean} {true if created succesfully, false otherwise}
+	*/
+	editPlaylist:function(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public,callback)
+	{
+		if(!module.exports.isReady())
+		{
+			logger.error('DB_INTERFACE is not ready to work');
+			return false;
+		}
+
+		// Création de la playlist
+		// Prend en entrée name, NORM_name, creation_time, lastedit_time, flag_visible, flag_current, flag_public
+		// Retourne l'ID de la playlist nouvellement crée.
+
+		var sqlEditPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_playlist.sql'),'utf-8');
+		this._user_db_handler.run(sqlEditPlaylist,
+		{
+			$playlist_id: playlist_id,
+			$name: name,
+			$NORM_name: NORM_name,
+			$lastedit_time: lastedit_time,
+			$flag_visible: flag_visible,
+			$flag_current: flag_current,
+			$flag_public: flag_public
+		}, function (err, rep)
+		{
+                if (err)
+				{
+                    logger.error('Unable to edit playlist '+name+' : '+err);                    
+					callback({
+						error:true,
+						error_msg:err
+					});
+				} else {
+					callback({
+						error:false
+					});
+				}
 		})
 	},
 	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,callback)

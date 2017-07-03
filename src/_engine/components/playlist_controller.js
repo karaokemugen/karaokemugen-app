@@ -117,7 +117,42 @@ module.exports = {
 	{
 		module.exports.DB_INTERFACE.emptyPlaylist(playlist_id);				
 	},
+	/**
+	* @function {editPlaylist}
+	* Edits properties of a playlist
+	* @param  {number} playlist_id  {Playlist ID to edit}
+	* @param  {string} name         {New name of playlist}
+	* @param  {number} flag_visible {Is the playlist visible?}
+	* @param  {number} flag_current {Is the playlist the current one?}
+	* @param  {number} flag_public  {Is the playlist the public one?}
+	*/
+	editPlaylist:function(playlist_id,name,flag_visible,flag_current,flag_public)
+	{
+		return new Promise(function(resolve,reject){
+			var NORM_name = normalize(name);
+			var lastedit_time = timestamp.now();
+			
+			if (flag_current == 1 && flag_public == 1)
+			{
+				var err = 'ERROR: Current and Public flags are mutually exclusive on a playlist.';
+				// on renvoi un reject sur la promise
+				reject(err);
+			}
 
+			if (flag_public == 1)
+			{
+				module.exports.unsetPublicAllPlaylists();
+			}
+			if (flag_current == 1)
+			{
+				module.exports.unsetCurrentAllPlaylists();
+			}
+
+			module.exports.DB_INTERFACE.editPlaylist(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public,function(callback){				
+				resolve(callback);
+			});
+		});
+	},
 	createPlaylist:function(name,flag_visible,flag_current,flag_public)
 	{
 		// Méthode de création playlist
@@ -157,7 +192,7 @@ module.exports = {
 	unsetPublicAllPlaylists:function(callback)
 	{
 		// Désactive le flag Public sur toutes les playlists
-		module.exports.DB_INTERFACE.unsetPublicAllPlaylists(function(){
+		module.exports.DB_INTERFACE.unsetPublicAllPlaylists(function(callback){
 			logger.info("All playlists now have public flag set to 0");
 			callback();
 		});
@@ -166,7 +201,7 @@ module.exports = {
 	unsetCurrentAllPlaylists:function(callback)
 	{
 		// Désactive le flag Current sur toutes les playlists
-		module.exports.DB_INTERFACE.unsetCurrentAllPlaylists(function(){
+		module.exports.DB_INTERFACE.unsetCurrentAllPlaylists(function(callback){
 			logger.info("All playlists now have current flag set to 0");
 			callback();
 		});		
