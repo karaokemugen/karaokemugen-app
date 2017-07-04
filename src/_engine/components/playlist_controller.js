@@ -26,6 +26,8 @@ module.exports = {
 
 	isCurrentPlaylist:function(playlist_id,callback)
 	{
+		//TODO : Transformer en promesse
+		//TODO : Check si la playlist existe
 		module.exports.DB_INTERFACE.isCurrentPlaylist(playlist_id,function(res){							
 			logger.log('debug','Current = '+res);
 			callback(res);
@@ -33,6 +35,8 @@ module.exports = {
 	},
 	isPublicPlaylist:function(playlist_id,callback)
 	{
+		//TODO : Transformer en promesse
+		//TODO : Check si la playlist existe
 		module.exports.DB_INTERFACE.isPublicPlaylist(playlist_id,function(res){							
 			logger.log('debug','Public = '+res);
 			callback(res);
@@ -41,6 +45,7 @@ module.exports = {
 	isPlaylist:function(playlist_id,callback)
 	{
 		//Une requête toute bête pour voir si une Playlist existe
+		//TODO : Transformer en promesse
 		module.exports.DB_INTERFACE.isPlaylist(playlist_id,function(res){							
 			callback(res);
 		});		
@@ -48,24 +53,53 @@ module.exports = {
 	
 	setCurrentPlaylist:function(playlist_id,callback)
 	{
+		//TODO : Tester si la playlist existe
+		//TODO : Transformer en promesse
 		module.exports.unsetCurrentAllPlaylists(function(){
 			module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id,function(res){
-				logger.log('debug','Setting playlist '+playlist_id+' current flag to ON');							
+				logger.info('Setting playlist '+playlist_id+' current flag to ON');							
 				callback();
 			});		
 		});	
 	},
+	/**
+	* @function {setVisiblePlaylist}
+	* @param  {number} playlist_id {ID of playlist to make visible}
+	*/	
+	setVisiblePlaylist:function(playlist_id)
+	{
+		//TODO : Tester si la playlist existe
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.setVisiblePlaylist(playlist_id,function(res){
+				logger.info('Setting playlist '+playlist_id+' visible flag to ON');							
+				resolve();
+			});				
+		});
+	},
+	unsetVisiblePlaylist:function(playlist_id,callback)
+	{
+		//TODO : Tester si la playlist existe
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.unsetVisiblePlaylist(playlist_id,function(res){
+				logger.info('Setting playlist '+playlist_id+' visible flag to OFF');							
+				callback();
+			});				
+		});
+	},
 	setPublicPlaylist:function(playlist_id,callback)
 	{
+		//TODO : Tester si la playlist existe
+		//TODO : Transformer en promesse
 		module.exports.unsetPublicAllPlaylists(function(){
 			module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id, function(res){
-				logger.log('debug','Setting playlist '+playlist_id+' public flag to ON');							
+				logger.info('Setting playlist '+playlist_id+' public flag to ON');							
 				callback();
 			});		
 		});		
 	},
     deletePlaylist:function(playlist_id,new_curorpubplaylist_id)
-	{
+	{		
+		//TODO : Vérifier si la playlist existe
 		// Suppression d'une playlist. Si la playlist a un flag_public ou flag_current, il faut
 		// set l'un de ces flags sur l'autre ID de playlist (optionnel) fourni
 		logger.notice('Deleting playlist '+playlist_id+', transferring flags to '+new_curorpubplaylist_id);
@@ -115,6 +149,8 @@ module.exports = {
 	},
 	emptyPlaylist:function(playlist_id)
 	{
+		//TODO : Tester si la playlist existe
+		//TODO : Transformer en promesse.
 		module.exports.DB_INTERFACE.emptyPlaylist(playlist_id);				
 	},
 	/**
@@ -128,6 +164,7 @@ module.exports = {
 	*/
 	editPlaylist:function(playlist_id,name,flag_visible,flag_current,flag_public)
 	{
+		//TODO : Tester si la playlist existe
 		return new Promise(function(resolve,reject){
 			var NORM_name = normalize(name);
 			var lastedit_time = timestamp.now();
@@ -155,6 +192,7 @@ module.exports = {
 	},
 	createPlaylist:function(name,flag_visible,flag_current,flag_public)
 	{
+		
 		// Méthode de création playlist
 		// Prend en entrée un nom, et des booléens
 		// Si flag_public ou flag_current = true il faut désactiver le flag sur toutes les autres playlists
@@ -205,6 +243,7 @@ module.exports = {
 	*/
 	getPlaylistInfo:function(playlist_id)
 	{
+		// TODO : Tester si la playlist existe
 		return new Promise(function(resolve,reject){			
 			module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,function(playlist, err){				
 				if (err) {
@@ -218,6 +257,7 @@ module.exports = {
 	},
 	unsetPublicAllPlaylists:function(callback)
 	{
+		// TODO : Transformer en promesse
 		// Désactive le flag Public sur toutes les playlists
 		module.exports.DB_INTERFACE.unsetPublicAllPlaylists(function(callback){
 			logger.info("All playlists now have public flag set to 0");
@@ -227,6 +267,7 @@ module.exports = {
 	},
 	unsetCurrentAllPlaylists:function(callback)
 	{
+		// TODO : Transformer en promesse
 		// Désactive le flag Current sur toutes les playlists
 		module.exports.DB_INTERFACE.unsetCurrentAllPlaylists(function(callback){
 			logger.info("All playlists now have current flag set to 0");

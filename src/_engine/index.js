@@ -236,6 +236,15 @@ module.exports = {
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
+		/* Making playlist visible example :
+		module.exports._services.playlist_controller.setVisiblePlaylist(1)
+			.then(function(playlist){
+				logger.info("Playlist set to visible");				
+			})
+			.catch(function(err){
+				logger.error("Playlist view failed : "+err);
+			});		
+		*/
 		/* Selecting playlist example : 
 		module.exports._services.playlist_controller.getPlaylistInfo(1)
 			.then(function(playlist){

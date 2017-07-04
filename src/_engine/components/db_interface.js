@@ -193,6 +193,46 @@ module.exports = {
 			callback(rep,err);
 		});
 	},
+	/**
+	* @function {setVisiblePlaylist}
+	* @param  {number} playlist_id {ID of playlist to make visible}
+	* @return {string} {error}
+	*/
+	setVisiblePlaylist:function(playlist_id,callback)
+	{
+		var sqlSetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_visible.sql'),'utf-8');
+		this._user_db_handler.run(sqlSetVisiblePlaylist, 
+		{
+			$playlist_id: playlist_id
+		}, function (err, rep)
+		{
+			if (err)
+			{
+				logger.error('Unable to set visible flag on playlist '+playlist_id+' : '+err);                
+			}
+			callback(rep,err);
+		});
+	},
+	/**
+	* @function {unsetVisiblePlaylist}
+	* @param  {number} playlist_id {ID of playlist to make invisible}
+	* @return {string} {error}
+	*/	
+	unsetVisiblePlaylist:function(playlist_id,callback)
+	{
+		var sqlUnsetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_visible.sql'),'utf-8');
+		this._user_db_handler.run(sqlSetCurrentPlaylist, 
+		{
+			$playlist_id: playlist_id
+		}, function (err, rep)
+		{
+			if (err)
+			{
+				logger.error('Unable to unset visible flag on playlist '+playlist_id+' : '+err);                
+			}
+			callback(rep,err);
+		});
+	},
 	setPublicPlaylist:function(playlist_id,callback)
 	{
 		var sqlSetPublicPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_public.sql'),'utf-8');
@@ -203,8 +243,7 @@ module.exports = {
 		{
 			if (err)
 			{
-				logger.error('Unable to set public flag on playlist '+playlist_id+' :');
-                logger.error(err);                
+				logger.error('Unable to set public flag on playlist '+playlist_id+' : '+err);
 			}
 			callback(rep,err);
 		});
