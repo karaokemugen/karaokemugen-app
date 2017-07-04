@@ -134,7 +134,7 @@ module.exports = {
 		generator.SYSPATH = module.exports.SYSPATH;
 		generator.SETTINGS = module.exports.SETTINGS;
 		generator.onLog = function(type,message) {
-			logger[type]('generate_karasdb.js > '+message);
+			logger.info('generate_karasdb.js > '+message);
 			if(type!='notice')
 				socket.emit('generate_karabd', {event:'addLog',data:message});
 		}
