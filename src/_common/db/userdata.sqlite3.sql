@@ -31,7 +31,7 @@ CREATE TABLE playlist_content (
     pk_idplcontent INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     fk_id_playlist INTEGER NOT NULL,
     fk_id_kara     INTEGER NOT NULL,
-    date_add       TEXT,
+    date_add       INTEGER,
     pseudo_add     TEXT,
     NORM_pseudo_add     TEXT COLLATE NOCASE,
     pos            INTEGER NOT NULL,
