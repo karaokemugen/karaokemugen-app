@@ -8,9 +8,16 @@ const path = require('path');
 const ini = require('ini');
 const extend = require('extend');
 const mkdirp = require('mkdirp');
-const logger = require('winston');
-logger.add(logger.transports.File, {filename: 'toyundamugen.log'});
 const argv = require('minimist')(process.argv.slice(2));
+
+const tsFormat = () => (new Date()).toLocaleTimeString();
+const winston = require('winston');
+const logger = new (winston.Logger)({
+    transports: [
+      new (winston.transports.Console)({ timestamp: tsFormat, level: 'info', colorize: true }),
+      new (winston.transports.File)({ timestap: tsFormat, filename: 'toyundamugen.log', level: 'debug' })
+    ]
+  });
 
 /**
  * Clear console - and welcome message
@@ -44,6 +51,15 @@ if (argv.version) {
 	process.exit(0);
 }
 
+if (argv.debug) {
+	logger.configure({
+		transports: [
+      		new (winston.transports.Console)({ timestamp: tsFormat, level: 'debug', colorize: true }),
+      		new (winston.transports.File)({ timestap: tsFormat, filename: 'toyundamugen.log', level: 'debug' })
+    	]	
+	})
+}
+
 /** Call to resolveSyspath to get the app's path in all OS configurations */
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
 if(SYSPATH)
@@ -63,7 +79,7 @@ if(SYSPATH)
 	SETTINGS.os = 'Windows';
 
 	logger.info('Loading configuration.');
-	logger.log('debug','Configuration loaded : '+SETTINGS);
+	logger.log('debug','Configuration loaded : '+JSON.stringify(SETTINGS,null,'\n'));
 
 	// Vérification que les chemins sont bien présents, sinon les créer
 	/**
