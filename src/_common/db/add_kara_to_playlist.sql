@@ -1,0 +1,1 @@
+INSERT INTO playlist_content(fk_id_playlist,fk_id_kara,date_add,pseudo_add,NORM_pseudo_add,pos,flag_playing) VALUES($playlist_id,$kara_id,$date_added,$pseudo_add,$NORM_pseudo_add,$pos,$flag_playing);

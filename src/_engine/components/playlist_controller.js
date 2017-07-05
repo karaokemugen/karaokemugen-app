@@ -42,15 +42,43 @@ module.exports = {
 			callback(res);
 		});		
 	},
-	isPlaylist:function(playlist_id,callback)
+	/**
+	* @function {isPlaylist}
+	* @param  {number} playlist_id {ID of playlist to check for existence}
+	* @return {promise} Promise
+	*/	
+	isPlaylist:function(playlist_id)
 	{
 		//Une requête toute bête pour voir si une Playlist existe
-		//TODO : Transformer en promesse
-		module.exports.DB_INTERFACE.isPlaylist(playlist_id,function(res){							
-			callback(res);
-		});		
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isPlaylist(playlist_id,function(res){
+				if (res == true) {
+					resolve(true);
+				} else {
+					reject(false);
+				}					
+			})
+		})		
 	},
-	
+	/**
+	* @function {isKara}
+	* @param  {number} kara_id {Karaoke ID to check for existence}	
+	* @return {promise} Promise
+	*/
+	isKara:function(kara_id)
+	{
+		//Une requête toute bête pour voir si une Playlist existe
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isKara(kara_id,function(res){
+				if (res == true) {
+					resolve(true);
+				} else {
+					reject(false);
+				}					
+			})
+
+		})		
+	},
 	setCurrentPlaylist:function(playlist_id,callback)
 	{
 		//TODO : Tester si la playlist existe
@@ -104,47 +132,55 @@ module.exports = {
 		// set l'un de ces flags sur l'autre ID de playlist (optionnel) fourni
 		logger.notice('Deleting playlist '+playlist_id+', transferring flags to '+new_curorpubplaylist_id);
 		return new Promise(function(resolve,reject){
-			module.exports.isPlaylist(playlist_id,function(res) 
-			{
-				if (res == true) {
-					var pIsPublic = new Promise((resolve,reject) => 
+			module.exports.isPlaylist(playlist_id)
+		     .then(function(){
+				var pIsPublic = new Promise((resolve,reject) => 
+				{
+					module.exports.isPublicPlaylist(playlist_id,function(res) 
 					{
-						module.exports.isPublicPlaylist(playlist_id,function(res) {
-							if (res == true) {
-								module.exports.setPublicPlaylist(new_curorpubplaylist_id,function(){
-									resolve(true);
-								})
-							} else {
+						if (res == true) 
+						{
+							module.exports.setPublicPlaylist(new_curorpubplaylist_id,function()
+							{
 								resolve(true);
-							}							
-						})
-					});
-					var pIsCurrent = new Promise((resolve,reject) =>
+							})
+						} else {
+							resolve(true);
+						}							
+					})
+				});
+				var pIsCurrent = new Promise((resolve,reject) =>
+				{
+					module.exports.isCurrentPlaylist(playlist_id,function(res) 
 					{
-						module.exports.isCurrentPlaylist(playlist_id,function(res) {
-							if (res == true) {
-								module.exports.setCurrentPlaylist(new_curorpubplaylist_id,function(){
-									resolve(true);
-								})
-							} else {
+						if (res == true) 
+						{
+							module.exports.setCurrentPlaylist(new_curorpubplaylist_id,function()
+							{
 								resolve(true);
-							}							
-						})
+							})
+						} else {
+							resolve(true);
+						}							
+					})
+				});
+				Promise.all([pIsPublic,pIsCurrent]).then(function()
+				{
+					module.exports.emptyPlaylist(playlist_id);
+					module.exports.DB_INTERFACE.deletePlaylist(playlist_id,function(res)
+					{
+						var values = 
+						{
+							playlist_id: playlist_id,
+							new_curorpubplaylist_id: new_curorpubplaylist_id
+						};
+						resolve(values);				
 					});
-					Promise.all([pIsPublic,pIsCurrent]).then(function(){
-						module.exports.emptyPlaylist(playlist_id);
-						module.exports.DB_INTERFACE.deletePlaylist(playlist_id,function(res){
-							var values = {
-								playlist_id: playlist_id,
-								new_curorpubplaylist_id: new_curorpubplaylist_id
-							};
-							resolve(values);				
-						});
-					})																
-				} else {
-					reject('Playlist does not exist!');
-				}				
-			});
+				})																
+			})
+			.catch(function(){
+				reject('Playlist does not exist!');
+			})										
 		});
 	},
 	emptyPlaylist:function(playlist_id)
@@ -274,8 +310,56 @@ module.exports = {
 			callback();
 		});		
 	},
-	addKara:function(kara_id,requester)
+	addKaraToPlaylist:function(kara_id,requester,playlist_id,pos)
 	{
+		return new Promise(function(resolve,reject){
+			var NORM_requester = normalize(requester);
+			var date_add = timestamp.now();
+			var flag_playing = 0;
+
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});			
+			var pIsKara = new Promise((resolve,reject) =>
+			{
+				console.log('Check if kara exists :');
+				module.exports.isKara(kara_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Kara '+kara_id+' does not exist');
+					})		
+			});
+			Promise.all([pIsKara,pIsPlaylist])
+			.then(function()
+			{
+				// Adding karaoke song here								
+				module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
+				.then(function(){
+					resolve(true);
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			})
+
+		});
+		
+
+		/* Ancienne fonction
+
 		//var kara = this.DB_INTERFACE.get_kara(kara_id);
 		// on récupère un object kara contenant tout ce que la bdd propose
 		// la structure au 21/06/2017 étant
@@ -292,7 +376,7 @@ module.exports = {
 		`date_last_modified`	INTEGER,
 		`rating`	REAL,
 		`viewcount`	INTEGER
-		*/
+		
 		var kara = {
 			'kara_id':kara_id,//PK_id_kara
 			'title':'Dragon Ball - OP - Maka fushigi Adventure',
@@ -326,6 +410,7 @@ module.exports = {
 		.catch(function(err){
 			logger.error('addKara Fail : '+err.message);			
 		});
+		*/
 	},
 
 	get_next_kara:function(){

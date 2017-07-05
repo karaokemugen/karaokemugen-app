@@ -236,6 +236,15 @@ module.exports = {
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
+		/* Adding kara to playlist example 
+		module.exports._services.playlist_controller.addKaraToPlaylist(1337,'Axél',1,1)
+			.then(function(){
+				logger.info("Kara added");				
+			})
+			.catch(function(err){
+				logger.error("Kara add failed : "+err);
+			});		
+		*/
 		/* Making playlist visible example :
 		module.exports._services.playlist_controller.setVisiblePlaylist(1)
 			.then(function(playlist){

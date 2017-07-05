@@ -155,6 +155,37 @@ module.exports = {
 				}
 		})
 	},
+	/**
+	* @function {is it a kara?}
+	* @param  {number} kara_id {Karaoke ID to check for existence}
+	* @return {type} {Returns true or false}
+	*/
+	isKara:function(kara_id,callback)
+	{
+		var sqlIsKara = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara.sql'),'utf-8');
+		this._db_handler.get(sqlIsKara,
+		{
+			$kara_id: kara_id
+		}, function (err, row)
+		{
+                if (err)
+				{
+                    logger.error('Unable to select karaoke song '+kara_id+' : '+err);                    
+                    callback(null,err);
+				} else {
+					if (row) {
+						callback(true);						
+					} else {
+						callback(false);
+					}
+				}
+		})
+	},
+	/**
+	* @function {is it a playlist?}
+	* @param  {number} playlist_id {Playlist ID to check for existence}
+	* @return {type} {Returns true or false}
+	*/
 	isPlaylist:function(playlist_id,callback)
 	{
 		var sqlIsPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist.sql'),'utf-8');
@@ -406,6 +437,48 @@ module.exports = {
 		})
 	},
 
+	/**
+	* @function {Add Kara To Playlist}
+	* @param  {number} kara_id        {ID of karaoke song to add to playlist}
+	* @param  {string} requester      {Name of person requesting the song}
+	* @param  {string} NORM_requester {Normalized name (without accents)}
+	* @param  {number} playlist_id    {ID of playlist to add the song to}
+	* @param  {number} pos            {Position in the playlist}
+	* @param  {number} date_add       {UNIX timestap of the date and time the song was added to the list}
+	* @param  {number} flag_playing   {Is the song playing?}
+	* @return {promise} {Promise}
+	*/
+	addKaraToPlaylist:function(kara_id,requester,NORM_requester,playlist_id,pos,date_added,flag_playing)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+
+			var sqlAddKaraToPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlAddKaraToPlaylist,
+			{
+				$playlist_id: playlist_id,
+				$pseudo_add: requester,
+				$NORM_pseudo_add: NORM_requester,
+				$kara_id: kara_id,
+				$date_added: date_added,
+				$pos: pos,
+				$flag_playing: flag_playing
+			}, function (err, rep)
+			{
+					if (err)
+					{
+						logger.error('Unable to add kara '+kara_id+' to playlist '+playlist_id+' : '+err);
+						reject(err);
+					} else {
+						resolve(true);
+					}
+			})
+		})
+	},
 	get_next_kara:function()
 	{
 		if(!module.exports.isReady())
