@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-const logger = require('winston');
+const logger = require('../_common/utils/logger.js');
 
 module.exports = {
 	playing:false,

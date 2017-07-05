@@ -2,7 +2,7 @@ var path = require('path');
 const { diacritics, normalize } = require('normalize-diacritics');
 var timestamp = require("unix-timestamp");
 timestamp.round = true;
-const logger = require('winston');
+const logger = require('../../_common/utils/logger.js');
 
 
 module.exports = {

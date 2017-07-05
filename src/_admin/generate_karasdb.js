@@ -8,7 +8,7 @@ generator.run().then(function(response){
 });
 */
 
-const clc = require('cli-color');
+const logger = require('../_common/utils/logger.js');
 
 module.exports = {
     SYSPATH:null,

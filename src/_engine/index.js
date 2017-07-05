@@ -2,7 +2,7 @@
  * @fileoverview Main engine source file
  */
 const path = require('path');
-const logger = require('winston');
+const logger = require('../_common/utils/logger.js');
 
 /**
  * @module engine

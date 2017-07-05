@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-const logger = require('winston');
+const logger = require('../../_common/utils/logger.js');
 
 module.exports = {
 	SYSPATH:null,

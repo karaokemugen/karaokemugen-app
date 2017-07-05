@@ -10,14 +10,7 @@ const extend = require('extend');
 const mkdirp = require('mkdirp');
 const argv = require('minimist')(process.argv.slice(2));
 
-const tsFormat = () => (new Date()).toLocaleTimeString();
-const winston = require('winston');
-const logger = new (winston.Logger)({
-    transports: [
-      new (winston.transports.Console)({ timestamp: tsFormat, level: 'info', colorize: true }),
-      new (winston.transports.File)({ timestap: tsFormat, filename: 'toyundamugen.log', level: 'debug' })
-    ]
-  });
+const logger = require('./_common/utils/logger.js');
 
 /**
  * Clear console - and welcome message
@@ -49,15 +42,6 @@ if (argv.help) {
 if (argv.version) {
 	console.log("Toyunda Mugen v2.0 - Finé Fantastique");
 	process.exit(0);
-}
-
-if (argv.debug) {
-	logger.configure({
-		transports: [
-      		new (winston.transports.Console)({ timestamp: tsFormat, level: 'debug', colorize: true }),
-      		new (winston.transports.File)({ timestap: tsFormat, filename: 'toyundamugen.log', level: 'debug' })
-    	]	
-	})
 }
 
 /** Call to resolveSyspath to get the app's path in all OS configurations */

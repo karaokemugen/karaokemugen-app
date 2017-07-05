@@ -3,7 +3,7 @@
 const os = require('os')
 const fs = require('fs')
 const path = require('path')
-const logger = require('winston');
+const logger = require('./logger.js');
 
 module.exports = function(testfile, callerDirname, paths){
 
