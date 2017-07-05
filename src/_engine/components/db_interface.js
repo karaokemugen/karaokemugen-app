@@ -82,7 +82,7 @@ module.exports = {
     getPlaylistInfo:function(playlist_id,callback)
 	{
 		var sqlGetPlaylistInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_info.sql'),'utf-8');
-		this._user_db_handler.get(sqlGetPlaylistInfo,
+		module.exports._user_db_handler.get(sqlGetPlaylistInfo,
 		{
 			$playlist_id: playlist_id
 		}, function (err, row)
@@ -103,7 +103,7 @@ module.exports = {
 	isPublicPlaylist:function(playlist_id,callback)
 	{
 		var sqlIsPlaylistPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_public_flag.sql'),'utf-8');
-		this._user_db_handler.get(sqlIsPlaylistPublic,
+		module.exports._user_db_handler.get(sqlIsPlaylistPublic,
 		{
 			$playlist_id: playlist_id
 		}, function (err, row)
@@ -130,7 +130,7 @@ module.exports = {
 	isCurrentPlaylist:function(playlist_id,callback)
 	{
 		var sqlIsPlaylistCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_current_flag.sql'),'utf-8');
-		this._user_db_handler.get(sqlIsPlaylistCurrent,
+		module.exports._user_db_handler.get(sqlIsPlaylistCurrent,
 		{
 			$playlist_id: playlist_id
 		}, function (err, row)
@@ -163,7 +163,7 @@ module.exports = {
 	isKara:function(kara_id,callback)
 	{
 		var sqlIsKara = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara.sql'),'utf-8');
-		this._db_handler.get(sqlIsKara,
+		module.exports._db_handler.get(sqlIsKara,
 		{
 			$kara_id: kara_id
 		}, function (err, row)
@@ -189,7 +189,7 @@ module.exports = {
 	isPlaylist:function(playlist_id,callback)
 	{
 		var sqlIsPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist.sql'),'utf-8');
-		this._user_db_handler.get(sqlIsPlaylist,
+		module.exports._user_db_handler.get(sqlIsPlaylist,
 		{
 			$playlist_id: playlist_id
 		}, function (err, row)
@@ -211,7 +211,7 @@ module.exports = {
 	setCurrentPlaylist:function(playlist_id,callback)
 	{
 		var sqlSetCurrentPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_current.sql'),'utf-8');
-		this._user_db_handler.run(sqlSetCurrentPlaylist, 
+		module.exports._user_db_handler.run(sqlSetCurrentPlaylist, 
 		{
 			$playlist_id: playlist_id
 		}, function (err, rep)
@@ -232,7 +232,7 @@ module.exports = {
 	setVisiblePlaylist:function(playlist_id,callback)
 	{
 		var sqlSetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_visible.sql'),'utf-8');
-		this._user_db_handler.run(sqlSetVisiblePlaylist, 
+		module.exports._user_db_handler.run(sqlSetVisiblePlaylist, 
 		{
 			$playlist_id: playlist_id
 		}, function (err, rep)
@@ -252,7 +252,7 @@ module.exports = {
 	unsetVisiblePlaylist:function(playlist_id,callback)
 	{
 		var sqlUnsetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_visible.sql'),'utf-8');
-		this._user_db_handler.run(sqlSetCurrentPlaylist, 
+		module.exports._user_db_handler.run(sqlSetCurrentPlaylist, 
 		{
 			$playlist_id: playlist_id
 		}, function (err, rep)
@@ -267,7 +267,7 @@ module.exports = {
 	setPublicPlaylist:function(playlist_id,callback)
 	{
 		var sqlSetPublicPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_public.sql'),'utf-8');
-		this._user_db_handler.run(sqlSetPublicPlaylist, 
+		module.exports._user_db_handler.run(sqlSetPublicPlaylist, 
 		{
 			$playlist_id: playlist_id	
 		}, function (err, rep) 
@@ -288,7 +288,7 @@ module.exports = {
 		}
 
 		var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
-		this._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err, rep)
+		module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err, rep)
 		{
 			if (err)
 			{
@@ -305,7 +305,7 @@ module.exports = {
 		}
 
 		var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
-		this._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err, rep)
+		module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err, rep)
 		{
 			if (err)
 			{
@@ -319,7 +319,7 @@ module.exports = {
 	{
 		// Vidage de playlist. Sert aussi à nettoyer la table playlist_content en cas de suppression de PL
 		var sqlEmptyPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_playlist.sql'),'utf-8');
-		this._user_db_handler.run(sqlEmptyPlaylist,
+		module.exports._user_db_handler.run(sqlEmptyPlaylist,
 		{
 			$playlist_id: playlist_id
 		}, function(err) {
@@ -333,7 +333,7 @@ module.exports = {
 	deletePlaylist:function(playlist_id,callback)
 	{		
 		var sqlDeletePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_playlist.sql'),'utf-8');
-		this._user_db_handler.run(sqlDeletePlaylist,
+		module.exports._user_db_handler.run(sqlDeletePlaylist,
 		{
 			$playlist_id: playlist_id
 		}, function(err) {
@@ -369,7 +369,7 @@ module.exports = {
 		// Retourne l'ID de la playlist nouvellement crée.
 
 		var sqlEditPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_playlist.sql'),'utf-8');
-		this._user_db_handler.run(sqlEditPlaylist,
+		module.exports._user_db_handler.run(sqlEditPlaylist,
 		{
 			$playlist_id: playlist_id,
 			$name: name,
@@ -408,7 +408,7 @@ module.exports = {
 
 		var new_playlist_id = 0;
 		var sqlCreatePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/create_playlist.sql'),'utf-8');
-		this._user_db_handler.run(sqlCreatePlaylist,
+		module.exports._user_db_handler.run(sqlCreatePlaylist,
 		{
 			$name: name,
 			$NORM_name: NORM_name,
@@ -430,7 +430,7 @@ module.exports = {
 					});
 				} else {
 					callback({
-						id:this.lastID,
+						id:module.exports.lastID,
 						error:false
 					});
 				}
