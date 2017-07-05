@@ -153,7 +153,7 @@ module.exports = {
 	tryToReadNextKaraInPlaylist:function(){
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing)
 		{
-			kara = module.exports._services.playlist_controler.get_next_kara();
+			kara = module.exports._services.playlist_controller.get_next_kara();
 			if(kara)
 			{
 				logger.info('Next song is '+kara.title);

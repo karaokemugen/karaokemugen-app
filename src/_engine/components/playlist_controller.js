@@ -14,12 +14,12 @@ module.exports = {
 	init: function(){
 		if(module.exports.SYSPATH === null)
 		{
-			logger.error('_engine/components/playlist_controler.js : SYSPATH is null');
+			logger.error('_engine/components/playlist_controller.js : SYSPATH is null');
 			process.exit();
 		}
 		if(module.exports.DB_INTERFACE === null)
 		{
-			logger.error('_engine/components/playlist_controler.js : DB_INTERFACE is null');
+			logger.error('_engine/components/playlist_controller.js : DB_INTERFACE is null');
 			process.exit();
 		}
 	},
@@ -339,6 +339,6 @@ module.exports = {
 
 	onPlaylistUpdated:function(){
 		// événement émis pour quitter l'application
-		logger.error('_engine/components/playlist_controler.js :: onPlaylistUpdated not set')
+		logger.error('_engine/components/playlist_controller.js :: onPlaylistUpdated not set')
 	},
 }
