@@ -86,29 +86,27 @@ module.exports = {
 				reject('Database is not ready!');
 			}
 			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
-			module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;'), function(err)
-			{
-				if (err)
-				{
-					console.log('ERROR :' +err);
-					reject(err);
-				} else {	
-					console.log('OK');
-					module.exports._user_db_handler.all(sqlGetPlaylistContents,
-					{
-						$playlist_id: playlist_id				
-					}, function (err, playlist)
-					{
-							if (err)
-							{
-								logger.error('Unable to get playlist '+playlist_id+' contents : '+err);
-								reject(err);
-							} else {
-								resolve(playlist);
-							}
-					})
-				}
-			}
+			module.exports._user_db_handler.serialize(function(){
+				module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;')
+					
+						console.log('OK');
+						module.exports._user_db_handler.all(sqlGetPlaylistContents,
+						{
+							$playlist_id: playlist_id				
+						}, function (err, playlist)
+						{
+								if (err)
+								{
+									logger.error('Unable to get playlist '+playlist_id+' contents : '+err);
+									reject(err);
+								} else {
+									resolve(playlist);
+								}
+						})
+					
+			
+			})
+			
 		})
 	},
 
