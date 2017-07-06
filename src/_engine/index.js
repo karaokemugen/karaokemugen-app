@@ -236,14 +236,23 @@ module.exports = {
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
+		/* Getting all karas from Playlist 1 */
+		module.exports._services.playlist_controller.getPlaylistContents(1)
+			.then(function(playlist){
+				console.log(playlist);
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+	    
 		/* Adding kara to playlist example 
-		module.exports._services.playlist_controller.addKaraToPlaylist(1337,'Axél',1,1)
+		module.exports._services.playlist_controller.addKaraToPlaylist(2000,'Axél',1,2)
 			.then(function(){
 				logger.info("Kara added");				
 			})
 			.catch(function(err){
 				logger.error("Kara add failed : "+err);
-			});		
+			});				
 		*/
 		/* Making playlist visible example :
 		module.exports._services.playlist_controller.setVisiblePlaylist(1)

@@ -74,6 +74,45 @@ module.exports = {
 	// aucun autre composant ne doit manipuler la base SQLITE par un autre moyen
 
 	/**
+	* @function {Get contents of playlist}
+	* @param  {number} playlist_id {ID of playlist to get a list of songs from}
+	* @return {Object} {Playlist object}
+	*/
+	getPlaylistContents:function(playlist_id){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
+			module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;'), function(err)
+			{
+				if (err)
+				{
+					console.log('ERROR :' +err);
+					reject(err);
+				} else {	
+					console.log('OK');
+					module.exports._user_db_handler.all(sqlGetPlaylistContents,
+					{
+						$playlist_id: playlist_id				
+					}, function (err, playlist)
+					{
+							if (err)
+							{
+								logger.error('Unable to get playlist '+playlist_id+' contents : '+err);
+								reject(err);
+							} else {
+								resolve(playlist);
+							}
+					})
+				}
+			}
+		})
+	},
+
+	/**
 	* @function {getPlaylistInfo}
 	* @param  {number} playlist_id {Playlist ID}
 	* @return {Object} {Playlist object}
@@ -81,6 +120,7 @@ module.exports = {
 	*/
     getPlaylistInfo:function(playlist_id,callback)
 	{
+		//TODO : transformer en promesse
 		var sqlGetPlaylistInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_info.sql'),'utf-8');
 		module.exports._user_db_handler.get(sqlGetPlaylistInfo,
 		{
@@ -102,6 +142,7 @@ module.exports = {
 	},
 	isPublicPlaylist:function(playlist_id,callback)
 	{
+		//TODO : transformer en promesse
 		var sqlIsPlaylistPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_public_flag.sql'),'utf-8');
 		module.exports._user_db_handler.get(sqlIsPlaylistPublic,
 		{
@@ -129,6 +170,7 @@ module.exports = {
 	},
 	isCurrentPlaylist:function(playlist_id,callback)
 	{
+		//TODO : transformer en promesse
 		var sqlIsPlaylistCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_current_flag.sql'),'utf-8');
 		module.exports._user_db_handler.get(sqlIsPlaylistCurrent,
 		{
@@ -162,6 +204,7 @@ module.exports = {
 	*/
 	isKara:function(kara_id,callback)
 	{
+		//TODO : transformer en promesse
 		var sqlIsKara = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara.sql'),'utf-8');
 		module.exports._db_handler.get(sqlIsKara,
 		{
@@ -188,6 +231,7 @@ module.exports = {
 	*/
 	isPlaylist:function(playlist_id,callback)
 	{
+		//TODO : transformer en promesse
 		var sqlIsPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist.sql'),'utf-8');
 		module.exports._user_db_handler.get(sqlIsPlaylist,
 		{
@@ -210,6 +254,7 @@ module.exports = {
 	},
 	setCurrentPlaylist:function(playlist_id,callback)
 	{
+		//TODO : transformer en promesse
 		var sqlSetCurrentPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_current.sql'),'utf-8');
 		module.exports._user_db_handler.run(sqlSetCurrentPlaylist, 
 		{
@@ -231,6 +276,7 @@ module.exports = {
 	*/
 	setVisiblePlaylist:function(playlist_id,callback)
 	{
+		//TODO : transformer en promesse
 		var sqlSetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_visible.sql'),'utf-8');
 		module.exports._user_db_handler.run(sqlSetVisiblePlaylist, 
 		{
@@ -251,6 +297,7 @@ module.exports = {
 	*/	
 	unsetVisiblePlaylist:function(playlist_id,callback)
 	{
+		//TODO : transformer en promesse
 		var sqlUnsetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_visible.sql'),'utf-8');
 		module.exports._user_db_handler.run(sqlSetCurrentPlaylist, 
 		{
@@ -266,6 +313,7 @@ module.exports = {
 	},
 	setPublicPlaylist:function(playlist_id,callback)
 	{
+		//TODO : transformer en promesse
 		var sqlSetPublicPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_public.sql'),'utf-8');
 		module.exports._user_db_handler.run(sqlSetPublicPlaylist, 
 		{
@@ -281,6 +329,7 @@ module.exports = {
 	},
 	unsetPublicAllPlaylists:function(callback)
 	{
+		//TODO : transformer en promesse
 		if(!module.exports.isReady())
 		{
 			logger.error('DB_INTERFACE is not ready to work');
@@ -298,6 +347,7 @@ module.exports = {
 	},
 	unsetCurrentAllPlaylists:function(callback)
 	{
+		//TODO : transformer en promesse
 		if(!module.exports.isReady())
 		{
 			logger.error('DB_INTERFACE is not ready to work');
@@ -317,6 +367,7 @@ module.exports = {
 	},
 	emptyPlaylist:function(playlist_id)
 	{
+		//TODO : transformer en promesse
 		// Vidage de playlist. Sert aussi à nettoyer la table playlist_content en cas de suppression de PL
 		var sqlEmptyPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_playlist.sql'),'utf-8');
 		module.exports._user_db_handler.run(sqlEmptyPlaylist,
@@ -332,6 +383,7 @@ module.exports = {
 	},
 	deletePlaylist:function(playlist_id,callback)
 	{		
+		//TODO : transformer en promesse
 		var sqlDeletePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_playlist.sql'),'utf-8');
 		module.exports._user_db_handler.run(sqlDeletePlaylist,
 		{
@@ -358,6 +410,7 @@ module.exports = {
 	*/
 	editPlaylist:function(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public,callback)
 	{
+		//TODO : transformer en promesse
 		if(!module.exports.isReady())
 		{
 			logger.error('DB_INTERFACE is not ready to work');
@@ -396,6 +449,7 @@ module.exports = {
 	},
 	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,callback)
 	{
+		//TODO : transformer en promesse
 		if(!module.exports.isReady())
 		{
 			logger.error('DB_INTERFACE is not ready to work');
@@ -449,7 +503,7 @@ module.exports = {
 	* @return {promise} {Promise}
 	*/
 	addKaraToPlaylist:function(kara_id,requester,NORM_requester,playlist_id,pos,date_added,flag_playing)
-	{
+	{		
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady())
 			{

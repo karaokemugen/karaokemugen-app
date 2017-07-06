@@ -310,6 +310,37 @@ module.exports = {
 			callback();
 		});		
 	},
+	getPlaylistContents:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});
+			Promise.all([pIsPlaylist])
+			.then(function()
+			{
+				// Get karaoke list								
+				module.exports.DB_INTERFACE.getPlaylistContents(playlist_id)
+				.then(function(playlist){
+					resolve(playlist);
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			})
+
+		})
+	},
 	addKaraToPlaylist:function(kara_id,requester,playlist_id,pos)
 	{
 		return new Promise(function(resolve,reject){
