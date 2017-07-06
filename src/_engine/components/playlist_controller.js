@@ -79,6 +79,26 @@ module.exports = {
 
 		})		
 	},
+	/**
+	* @function {Tests if a karaoke is already in ap laylist or not}
+	* @param  {number} kara_id     {ID of karaoke to search}
+	* @param  {number} playlist_id {ID of playlist to search into}
+	* @return {boolean} {Promise}
+	*/
+	isKaraInPlaylist:function(kara_id,playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isKaraInPlaylist(kara_id,playlist_id)
+			 .then(function()
+			 {				 			  
+					resolve(true);
+			 })
+			 .catch(function()
+			 {
+				   	reject(false);
+			 })
+		})	
+	},
 	setCurrentPlaylist:function(playlist_id,callback)
 	{
 		//TODO : Tester si la playlist existe
@@ -459,7 +479,21 @@ module.exports = {
 						reject('Kara '+kara_id+' does not exist');
 					})		
 			});
-			Promise.all([pIsKara,pIsPlaylist])
+			var pIsKaraNotInPlaylist = new Promise((resolve,reject) =>
+			{
+				module.exports.isKaraInPlaylist(kara_id,playlist_id)
+					.then(function()
+					{						
+						//Karaoke song is in playlist, then we will reject the promise
+						//since we don't want duplicates in playlists.
+						reject('Kara '+kara_id+' is already in playlist!');
+					})
+					.catch(function()
+					{						
+						resolve(true);
+					})		
+			});
+			Promise.all([pIsKara,pIsPlaylist,pIsKaraNotInPlaylist])
 			.then(function()
 			{
 				// Adding karaoke song here								

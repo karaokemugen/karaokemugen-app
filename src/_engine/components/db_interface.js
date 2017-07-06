@@ -340,6 +340,35 @@ module.exports = {
 		})
 	},
 	/**
+	* @function {Is the kara in the playlist?}
+	* @param  {number} kara_id {ID of karaoke to search for}
+	* @param  {number} playlist_id {ID of playlist to search in}
+	* @return {boolean} {Promise}
+	*/
+	isKaraInPlaylist:function(kara_id,playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			var sqlIsKaraInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara_in_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlIsKaraInPlaylist,
+			{
+				$kara_id: kara_id,
+				$playlist_id: playlist_id
+			}, function (err, row)
+			{
+					if (err)
+					{
+						logger.error('Unable to search for karaoke song '+kara_id+' in playlist '+playlist_id+' : '+err);   reject(err);						
+					} else {
+						if (row) {
+							resolve(true);
+						} else {
+							resolve(false);
+						}
+					}
+			});
+		});
+	},
+	/**
 	* @function {is it a playlist?}
 	* @param  {number} playlist_id {Playlist ID to check for existence}
 	* @return {type} {Returns true or false}
