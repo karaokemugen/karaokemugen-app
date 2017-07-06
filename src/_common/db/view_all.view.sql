@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS all_karas AS SELECT k.title
+CREATE VIEW IF NOT EXISTS all_karas AS SELECT k.PK_id_kara, k.title
 ,k.songorder
 ,(select GROUP_CONCAT( s.name)
     FROM kara_series ks 
