@@ -70,12 +70,12 @@ module.exports = {
             var date = new Date();
             moment.locale('fr');
 
-            module.exports.onLog('success',moment().format('LTS')+' - Lecture dossier OK');
+            module.exports.onLog('success',moment().format('LTS')+' - Karaoke directory read.');
             //D'abord analyser les .kara, ajouter l'UUID s'il n'y est pas, construire la table karas avec une seule transaction.
             karafiles.forEach(function(kara){
                 addKara(kara);
             });
-            module.exports.onLog('success',moment().format('LTS')+' - Tableau karas OK ('+karas.length+' karas)');
+            module.exports.onLog('success',moment().format('LTS')+' - We have '+karas.length+' karaoke songs');
             //Un autre passage dans karas pour avoir la durée des vidéos, mais cette fois en série
             id_kara = 0;
             karas.forEach(function(kara)
@@ -86,24 +86,25 @@ module.exports = {
                 });
 
             });
-            module.exports.onLog('success',moment().format('LTS')+' - Calcul durée des vidéos OK');
+            module.exports.onLog('success',moment().format('LTS')+' - Calculated videos duration.');
+            id_kara = 0;
             karafiles.forEach(function(kara){
                 id_kara++;
                 addTags(kara,id_kara);
             });
-            module.exports.onLog('success',moment().format('LTS')+' - Tableau tags OK ('+tags.length+' tags, '+karas_tags.length+' liaisons)');
+            module.exports.onLog('success',moment().format('LTS')+' - We havre '+tags.length+' tags, '+karas_tags.length+' links');
             id_kara = 0;
             karafiles.forEach(function(kara){
                 id_kara++;
                 addSeries(kara,id_kara);
             });
-            module.exports.onLog('success',moment().format('LTS')+' - Tableau series OK ('+series.length+' séries, '+karas_series.length+' liaisons)');
+            module.exports.onLog('success',moment().format('LTS')+' - We have '+series.length+' series, '+karas_series.length+' links');
 
                         //Construction des requêtes SQL
                         async.eachOf(karas, function(kara, id_kara, callback){
                             id_kara++;
                             var titlenorm = normalize(kara['title']);
-                            sqlInsertKaras += "\n"+'INSERT INTO kara(PK_id_kara,kid,title,NORM_title,year,songorder,videofile,subfile,date_added,date_last_modified,rating,viewcount) VALUES('+id_kara+',"'+kara['KID']+'","'+escape(kara['title'])+'","'+escape(titlenorm)+'","'+kara['year']+'",'+kara['songorder']+',"'+escape(kara['videofile'])+'","'+escape(kara['subfile'])+'",'+kara['dateadded']+','+kara['datemodif']+','+kara['rating']+','+kara['viewcount']+');';
+                            sqlInsertKaras += "\n"+'INSERT INTO kara(PK_id_kara,kid,title,NORM_title,year,songorder,videofile,subfile,date_added,date_last_modified,rating,viewcount) VALUES('+id_kara+',"'+kara['KID']+'","'+kara['title']+'","'+titlenorm+'","'+kara['year']+'",'+kara['songorder']+',"'+kara['videofile']+'","'+kara['subfile']+'",'+kara['dateadded']+','+kara['datemodif']+','+kara['rating']+','+kara['viewcount']+');';
                             callback();
                         })
                         sqlInsertKaras += 'COMMIT;'
@@ -155,13 +156,13 @@ module.exports = {
                                 if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
                                     var serie_altnamesnorm = normalize(serie[1]);
                                     sqlUpdateSeriesAltNames += 'UPDATE series SET altname="'+serie_altnames+'",NORM_altname="'+serie_altnamesnorm+'" WHERE name="'+serie_name+'";';
-                                }
-                                //module.exports.onLog('error','['+index+'] '+serie_name+' -> '+serie_altnames);
+                                }                                
                             })
                             sqlUpdateSeriesAltNames += 'COMMIT;'
+                            module.exports.onLog('success',moment().format('LTS')+' - Found alternative series name file. Ready to populate series table.');
                         } else {
                             var DoUpdateSeriesAltNames = false;
-                            module.exports.onLog('warning','Pas de fichier de noms de séries alternatifs. On passe');
+                            module.exports.onLog('warning',moment().format('LTS')+' - No alternative series name file found.');
 
                         }
 
@@ -180,7 +181,7 @@ module.exports = {
                 {
                     probe(videosdir+'/'+videofile,function (err, videodata) {
                         if (err) {
-                            module.exports.onLog('error',"["+videofile+"] Impossible de probe la vidéo : "+err);
+                            module.exports.onLog('error',moment().format('LTS')+' - ['+videofile+''] Unable to probe video file : '+err);
                             callback(err,videolength,id_kara);
                         } else {
                             videolength = math.round(videodata.format.duration);
@@ -188,7 +189,7 @@ module.exports = {
                         }
                     });
                 } else {
-                    module.exports.onLog('notice','Fichier vidéo '+videofile+' inexistant, pas de calcul.')
+                    module.exports.onLog('warning',moment().format('LTS')+' - Video file '+videofile+' not found, setting duration to 0.')
                 }
 
 
@@ -197,78 +198,79 @@ module.exports = {
             function generateDB() {
                 var db = new sqlite3.Database(karas_dbfile,function (err,rep){
                     if (err) {
-                        module.exports.onLog('error','Erreur ouverture base Karas');
+                        module.exports.onLog('error',moment().format('LTS')+' - Error opening karaoke database.');
                         process.exit();
                     }
-                    module.exports.onLog('success',moment().format('LTS')+' - Creation BDD OK');
+                    module.exports.onLog('success',moment().format('LTS')+' - Karaoke database created.');
                     // Création des tables
                     var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile,'utf-8');
                     db.exec(sqlCreateKarasDB, function (err, rep){
                         if (err) {
-                            module.exports.onLog('error','Erreur create');
+                            module.exports.onLog('error','Error create table');
                             module.exports.onLog('error',err);
                         } else {
-                        module.exports.onLog('success',moment().format('LTS')+' - Creation tables OK');
+                        module.exports.onLog('success',moment().format('LTS')+' - Tables created.');
                         var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile,'utf8');
                         db.exec(sqlCreateKarasDBViewAll, function (err, rep){
                             if (err) {
-                                module.exports.onLog('error','Erreur create view');
+                                module.exports.onLog('error','Error create view');
                                 module.exports.onLog('error',err);
                                 module.exports.onLog('error',sqlCreateKarasDBViewAll);
                             } else {
-                                module.exports.onLog('success',moment().format('LTS')+' - Creation view OK');
+                                module.exports.onLog('success',moment().format('LTS')+' - Views created.');
                                 db.exec(sqlInsertKaras, function (err,rep) {
                                     if (err) {
-                                        module.exports.onLog('error','Erreur remplissage kara');
+                                        module.exports.onLog('error','Error filling database');
                                         module.exports.onLog('error',err);
                                     } else {
-                                        module.exports.onLog('success',moment().format('LTS')+' - Remplissage karas OK');
+                                        module.exports.onLog('success',moment().format('LTS')+' - Filled karaokes table.');
                                         sqlUpdateVideoLength += 'COMMIT;';
                                         db.exec(sqlUpdateVideoLength, function (err,rep) {
                                             if (err) {
-                                                module.exports.onLog('error','Erreur MAJ de la durée des vidéos');
+                                                module.exports.onLog('error','Error updating video durations.');
                                                 module.exports.onLog('error',err);
                                             } else {
-                                                module.exports.onLog('success',moment().format('LTS')+' - MAJ durée des vidéos OK');
+                                                module.exports.onLog('success',moment().format('LTS')+' - Updated video durations.');
                                             }
                                         })
 
                                         db.exec(sqlInsertTags, function (err,rep) {
                                             if (err) {
-                                                module.exports.onLog('error','Erreur remplissage tags');
+                                                module.exports.onLog('error','Error filling tags');
                                                 module.exports.onLog('error',err);
                                             } else {
-                                                module.exports.onLog('success',moment().format('LTS')+' - Remplissage tags OK');
+                                                module.exports.onLog('success',moment().format('LTS')+' - Filled tags table.');
                                                 db.exec(sqlInsertKarasTags, function (err,rep) {
                                                     if (err) {
-                                                        module.exports.onLog('error','Erreur remplissage karas_tags');
+                                                        module.exports.onLog('error','Error filling kara_tag table');
                                                         module.exports.onLog('error',err);
                                                     } else {
-                                                        module.exports.onLog('success',moment().format('LTS')+' - Remplissage karas_tags OK');
+                                                        module.exports.onLog('success',moment().format('LTS')+' - Linked karaokes to tags.');
                                                         db.exec(sqlInsertSeries, function (err,rep) {
                                                             if (err) {
-                                                                module.exports.onLog('error','Erreur remplissage séries');
+                                                                module.exports.onLog('error','Error filling series');
                                                                 module.exports.onLog('error',err);
                                                             } else {
-                                                                module.exports.onLog('success',moment().format('LTS')+' - Remplissage séries OK');
+                                                                module.exports.onLog('success',moment().format('LTS')+' - Filled series table.');
                                                                 if (DoUpdateSeriesAltNames)
                                                                 {
                                                                     db.exec(sqlUpdateSeriesAltNames, function (err, rep) {
                                                                         if (err) {
-                                                                            module.exports.onLog('error','Erreur MAJ series altnames');
+                                                                            module.exports.onLog('error','Error updating alt names');
                                                                             module.exports.onLog('error',err);
                                                                         } else {
-                                                                            module.exports.onLog('success',moment().format('LTS')+' - MAJ noms alternatifs des séries OK');
+                                                                            module.exports.onLog('success',moment().format('LTS')+' - Updated alternative names of series.');
                                                                         }
                                                                     })
                                                                 }
 
                                                                 db.exec(sqlInsertKarasSeries, function (err,rep) {
                                                                     if (err) {
-                                                                        module.exports.onLog('error','Erreur remplissage     karas_series');
+                                                                        module.exports.onLog('error','Error filling kara_series');
                                                                         module.exports.onLog('error',err);
                                                                     } else {
-                                                                        module.exports.onLog('success',moment().format('LTS')+' - Remplissage karas_series OK');
+                                                                        module.exports.onLog('success',moment().format('LTS')+' - Linked karaokes to series.');
+                                                                        module.exports.onLog('success',moment().format('LTS')+' - Successfully generated database.');
                                                                     }
                                                                     resolve();
                                                                 });
@@ -576,7 +578,7 @@ module.exports = {
                 kara['subfile'] = karadata.subfile;
                 kara['videolength'] = undefined;
                 kara['rating'] = 0;
-                kara['viewcount'] = 0;
+                kara['viewcount'] = 0;                
                 karas.push(kara);
             }
         })
