@@ -310,6 +310,47 @@ module.exports = {
 			callback();
 		});		
 	},
+	updatePlaylistDuration:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});
+			Promise.all([pIsPlaylist])
+			.then(function()
+			{
+				// Get playlist duration								
+				module.exports.DB_INTERFACE.calculatePlaylistDuration(playlist_id)
+				.then(function(duration){
+					module.exports.DB_INTERFACE.updatePlaylistDuration(playlist_id,duration.duration)
+					.then(function(duration){
+						resolve(duration);
+					})
+					.catch(function(err){
+						reject(err);
+					})			
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			})
+		})
+	},
+	/**
+	* @function {Get playlist contents}
+	* @param  {number} playlist_id {ID of playlist to get contents from}
+	* @return {array} {Array of playlist objects}
+	*/
 	getPlaylistContents:function(playlist_id)
 	{
 		return new Promise(function(resolve,reject)
@@ -378,6 +419,7 @@ module.exports = {
 				// Adding karaoke song here								
 				module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
 				.then(function(){
+					module.exports.calculatePlaylistDuration(playlist_id);
 					resolve(true);
 				})
 				.catch(function(err){

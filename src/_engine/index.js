@@ -223,7 +223,7 @@ module.exports = {
 		// on démarre ensuite le service
 		module.exports._services.admin.init();
 		// et on lance la commande pour ouvrir la page web
-		module.exports._services.admin.open();
+		module.exports._services.admin.open();		
 	},
 	/**
 	* @function 
@@ -236,7 +236,16 @@ module.exports = {
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
-		/* Getting all karas from Playlist 1 */
+		/* Update playlist's duration 
+		module.exports._services.playlist_controller.updatePlaylistDuration(1)
+			.then(function(duration){
+				console.log(duration);
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+		*/
+		/* Getting all karas from Playlist 1
 		module.exports._services.playlist_controller.getPlaylistContents(1)
 			.then(function(playlist){
 				console.log(playlist);
@@ -244,7 +253,7 @@ module.exports = {
 			.catch(function(err){
 				console.log(err);
 			});
-	    
+	    */
 		/* Adding kara to playlist example 
 		module.exports._services.playlist_controller.addKaraToPlaylist(2000,'Axél',1,2)
 			.then(function(){

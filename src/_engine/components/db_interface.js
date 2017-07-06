@@ -74,6 +74,64 @@ module.exports = {
 	// aucun autre composant ne doit manipuler la base SQLITE par un autre moyen
 
 	/**
+	* @function {Calculate duration of a whole playlist}
+	* @param  {number} playlist_id {ID of playlist to recalculate duration for}
+	* @return {object} {duration object (duration.duration = number)}
+	*/
+	calculatePlaylistDuration:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlCalculatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_duration.sql'),'utf-8');
+			module.exports._user_db_handler.serialize(function(){
+				module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;')
+					
+						module.exports._user_db_handler.get(sqlCalculatePlaylistDuration,
+						{
+							$playlist_id: playlist_id				
+						}, function (err, duration)
+						{
+								if (err)
+								{
+									logger.error('Unable to get playlist '+playlist_id+' duration : '+err);
+									reject(err);
+								} else {
+									resolve(duration);
+								}
+						})
+			})			
+		})
+	},
+	updatePlaylistDuration:function(playlist_id,duration)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlUpdatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_duration.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlUpdatePlaylistDuration,
+				{
+					$playlist_id: playlist_id,
+					$duration: duration				
+				}, function (err)
+				{
+					if (err)
+					{
+						logger.error('Unable to update playlist '+playlist_id+' duration : '+err);
+						reject(err);
+					} else {
+						resolve(duration);
+					}
+				})					
+		})
+	},
+	/**
 	* @function {Get contents of playlist}
 	* @param  {number} playlist_id {ID of playlist to get a list of songs from}
 	* @return {Object} {Playlist object}
@@ -89,7 +147,6 @@ module.exports = {
 			module.exports._user_db_handler.serialize(function(){
 				module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;')
 					
-						console.log('OK');
 						module.exports._user_db_handler.all(sqlGetPlaylistContents,
 						{
 							$playlist_id: playlist_id				
