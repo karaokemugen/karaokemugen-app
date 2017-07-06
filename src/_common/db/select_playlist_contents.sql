@@ -10,4 +10,5 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.misc AS misc
  FROM karasdb.all_karas AS ak, playlist_content
 WHERE playlist_content.fk_id_playlist = $playlist_id
-  AND playlist_content.fk_id_kara = ak.PK_id_kara;
+  AND playlist_content.fk_id_kara = ak.PK_id_kara
+ORDER BY playlist_content.pos;
