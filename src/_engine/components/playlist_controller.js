@@ -331,7 +331,6 @@ module.exports = {
 			});			
 			var pIsKara = new Promise((resolve,reject) =>
 			{
-				console.log('Check if kara exists :');
 				module.exports.isKara(kara_id)
 					.then(function()
 					{						
