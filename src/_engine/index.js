@@ -236,6 +236,15 @@ module.exports = {
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
+		/* Update playlist's number of karas
+		module.exports._services.playlist_controller.updatePlaylistNumOfKaras(1)
+			.then(function(num_karas){
+				console.log(num_karas);
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+		*/
 		/* Update playlist's duration 
 		module.exports._services.playlist_controller.updatePlaylistDuration(1)
 			.then(function(duration){
@@ -254,15 +263,15 @@ module.exports = {
 				console.log(err);
 			});
 	    */
-		/* Adding kara to playlist example 
-		module.exports._services.playlist_controller.addKaraToPlaylist(2000,'Axél',1,2)
+		/* Adding kara to playlist example */
+		module.exports._services.playlist_controller.addKaraToPlaylist(2001,'Axél',1,7)
 			.then(function(){
 				logger.info("Kara added");				
 			})
 			.catch(function(err){
 				logger.error("Kara add failed : "+err);
 			});				
-		*/
+		
 		/* Making playlist visible example :
 		module.exports._services.playlist_controller.setVisiblePlaylist(1)
 			.then(function(playlist){

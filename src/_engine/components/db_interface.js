@@ -74,6 +74,35 @@ module.exports = {
 	// aucun autre composant ne doit manipuler la base SQLITE par un autre moyen
 
 	/**
+	* @function {Calculate number of a karaoke songs in a whole playlist}
+	* @param  {number} playlist_id {ID of playlist to recalculate number of songs}
+	* @return {number} {Number of karaoke songs found}
+	*/
+	calculatePlaylistNumOfKaras:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlCalculatePlaylistNumOfKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_numofkaras.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlCalculatePlaylistNumOfKaras,
+			{
+				$playlist_id: playlist_id				
+			}, function (err, num_karas)
+			{
+				if (err)
+				{
+					logger.error('Unable to get playlist '+playlist_id+' number of karas : '+err);
+					reject(err);
+				} else {
+					resolve(num_karas.NumberOfKaras);
+				}
+			})						
+		})
+	},
+	/**
 	* @function {Calculate duration of a whole playlist}
 	* @param  {number} playlist_id {ID of playlist to recalculate duration for}
 	* @return {object} {duration object (duration.duration = number)}
@@ -106,6 +135,37 @@ module.exports = {
 			})			
 		})
 	},
+	updatePlaylistNumOfKaras:function(playlist_id,num_karas)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlUpdatePlaylistNumOfKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_numofkaras.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlUpdatePlaylistNumOfKaras,
+				{
+					$playlist_id: playlist_id,
+					$num_karas: num_karas		
+				}, function (err)
+				{
+					if (err)
+					{
+						logger.error('Unable to update playlist '+playlist_id+' number of karas : '+err);
+						reject(err);
+					} else {
+						resolve(num_karas);
+					}
+				})					
+		})
+	},
+	/**
+	* @function {Update playlist's duration field}
+	* @param  {number} playlist_id {ID of playlist to update}
+	* @param  {number} duration    {Duration in seconds}
+	* @return {boolean} {Promise}
+	*/
 	updatePlaylistDuration:function(playlist_id,duration)
 	{
 		return new Promise(function(resolve,reject){

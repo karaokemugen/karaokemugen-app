@@ -310,6 +310,52 @@ module.exports = {
 			callback();
 		});		
 	},
+	/**
+	* @function {Update number of karaokes in playlist}
+	* @param  {number} playlist_id {ID of playlist to update}
+	* @return {number} {number of karaokes found}
+	*/
+	updatePlaylistNumOfKaras:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});
+			Promise.all([pIsPlaylist])
+			.then(function()
+			{
+				// Get playlist number of karaokes
+				module.exports.DB_INTERFACE.calculatePlaylistNumOfKaras(playlist_id)
+				.then(function(num_karas){
+					module.exports.DB_INTERFACE.updatePlaylistNumOfKaras(playlist_id,num_karas)
+					.then(function(num_karas){
+						resolve(num_karas);
+					})
+					.catch(function(err){
+						reject(err);
+					})			
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			})
+		})
+	},
+	/**
+	* @function {Update duration of a playlist}
+	* @param  {number} playlist_id {ID of playlist to update}
+	* @return {number} {duration in seconds}
+	*/
 	updatePlaylistDuration:function(playlist_id)
 	{
 		return new Promise(function(resolve,reject)
@@ -419,7 +465,8 @@ module.exports = {
 				// Adding karaoke song here								
 				module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
 				.then(function(){
-					module.exports.calculatePlaylistDuration(playlist_id);
+					module.exports.updatePlaylistDuration(playlist_id);
+					module.exports.updatePlaylistNumOfKaras(playlist_id);
 					resolve(true);
 				})
 				.catch(function(err){
