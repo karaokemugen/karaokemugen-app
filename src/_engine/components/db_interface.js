@@ -1,6 +1,9 @@
 var path = require('path');
 var fs = require('fs');
 const logger = require('../../_common/utils/logger.js');
+const moment = require('moment');
+require("moment-duration-format");
+moment.locale('fr');
 
 module.exports = {
 	SYSPATH:null,
@@ -55,6 +58,22 @@ module.exports = {
 			}
 		});
 		module.exports._ready = true;
+		module.exports.getStats()
+		 .then(function(stats)
+		 {
+			logger.info('Number of karaokes in database : '+stats.totalcount);
+			logger.info('Duration of all karaokes       : '+stats.totalduration);
+			logger.info('Number of series               : '+stats.totalseries);
+			logger.info('Number of languages            : '+stats.totallanguages);
+			logger.info('Number of artists              : '+stats.totalartists);
+			logger.info('Number of playlists            : '+stats.totalplaylists);
+		 })
+		 .catch(function(err)
+		 {
+			logger.warn('Unable to calculate stats : '+err);
+		 })
+		logger.info('Database is READY.')
+		
 	},
 
 	// fermeture des instances SQLITE (unlock les fichiers)
@@ -73,6 +92,134 @@ module.exports = {
 	// implémenter ici toutes les méthodes de lecture écritures qui seront utilisé par l'ensemble de l'applicatif
 	// aucun autre composant ne doit manipuler la base SQLITE par un autre moyen
 
+		/**
+	* @function {Calculate various stats}
+	* @return {number} {Object with stats}
+	*/
+	getStats:function()
+	{
+		return new Promise(function(resolve,reject){
+			var stats = {};
+			if(!module.exports.isReady())
+			{
+				logger.error('getStats :: DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+
+			var pGetSeriesCount = new Promise((resolve,reject) =>
+			{
+				var sqlCalculateSeriesCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_series_count.sql'),'utf-8');
+			module.exports._db_handler.get(sqlCalculateSeriesCount,
+				function (err, res)
+				{
+					if (err)
+					{
+						logger.error('Unable to get number of series : '+err);
+						stats.totalseries = 0;
+						resolve();
+					} else {
+						stats.totalseries = res.seriescount;
+						resolve();
+					}
+				})
+			});	
+			
+			var pGetPlaylistCount = new Promise((resolve,reject) =>
+			{
+				var sqlCalculatePlaylistCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_count.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlCalculatePlaylistCount,
+				function (err, res)
+				{
+					if (err)
+					{
+						logger.error('Unable to get number of playlists : '+err);
+						stats.totalplaylists = 0;
+						resolve();
+					} else {
+						stats.totalplaylists = res.plcount;
+						resolve();
+					}
+				})
+			});
+			var pGetArtistCount = new Promise((resolve,reject) =>
+			{
+				var sqlCalculateArtistCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_artist_count.sql'),'utf-8');
+			module.exports._db_handler.get(sqlCalculateArtistCount,
+				function (err, res)
+				{
+					if (err)
+					{
+						logger.error('Unable to get number of artists : '+err);
+						stats.totalartists = res.artistcount;
+						resolve();						
+					} else {
+						stats.totalartists = res.artistcount;
+						resolve();
+					}
+				})
+			});
+			var pGetKaraCount = new Promise((resolve,reject) =>
+			{
+				var sqlCalculateKaraCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_kara_count.sql'),'utf-8');
+			module.exports._db_handler.get(sqlCalculateKaraCount,
+				function (err, res)
+				{
+					if (err)
+					{
+						logger.error('Unable to get number of karaoke songs : '+err);
+						stats.totalcount = 0;
+						resolve();
+					} else {
+						stats.totalcount = res.karacount;
+						resolve();
+					}
+				})
+			});
+			var pGetLanguageCount = new Promise((resolve,reject) =>
+			{
+				var sqlCalculateLanguageCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_lang_count.sql'),'utf-8');
+			module.exports._db_handler.get(sqlCalculateLanguageCount,
+				function (err, res)
+				{
+					if (err)
+					{
+						logger.error('Unable to get number of languages : '+err);
+						stats.totallanguages = 0;
+						resolve();
+					} else {
+						stats.totallanguages = res.langcount;
+						resolve();
+					}
+				})
+			});
+			var pGetDuration = new Promise((resolve,reject) =>
+			{
+				var sqlCalculateTotalDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_total_duration.sql'),'utf-8');
+			module.exports._db_handler.get(sqlCalculateTotalDuration,
+				function (err, res)
+				{
+					if (err)
+					{
+						logger.error('Unable to get total duration : '+err);
+						stats.totalduration = 'Unknown';
+						resolve();
+					} else {
+						stats.totalduration = moment.duration(res.totalduration,'seconds').format('D [days], H [hours], m [minutes], s [seconds]');
+						resolve();
+					}
+				})
+			});
+			Promise.all([pGetKaraCount,pGetDuration,pGetSeriesCount,pGetLanguageCount,pGetArtistCount,pGetPlaylistCount])
+			.then(function()
+			{
+				resolve(stats);
+			})	
+			.catch(function()
+			{
+				reject('One promise failed getting stats.');
+			})				
+		})
+	},
 	/**
 	* @function {Calculate number of a karaoke songs in a whole playlist}
 	* @param  {number} playlist_id {ID of playlist to recalculate number of songs}

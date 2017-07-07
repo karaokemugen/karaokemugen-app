@@ -22,6 +22,7 @@ module.exports = {
 			logger.error('_engine/components/playlist_controller.js : DB_INTERFACE is null');
 			process.exit();
 		}
+		logger.info('Playlist controller is READY.');
 	},
 
 	isCurrentPlaylist:function(playlist_id,callback)

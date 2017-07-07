@@ -78,6 +78,7 @@ module.exports = {
 					});
 				});
 				module.exports._server.listen(module.exports.LISTEN);
+				logger.info('Dashboard is READY.');
 			}
 			else
 			{

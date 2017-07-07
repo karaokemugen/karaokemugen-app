@@ -44,6 +44,7 @@ module.exports = {
 				module.exports._ref = null;
 			}
 		});
+		logger.info('Player is READY.')
 	},
 	play: function(video,subtitle,reference){
 		module.exports.playing = true;
