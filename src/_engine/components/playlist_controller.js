@@ -89,9 +89,9 @@ module.exports = {
 	{
 		return new Promise(function(resolve,reject){
 			module.exports.DB_INTERFACE.isKaraInPlaylist(kara_id,playlist_id)
-			 .then(function()
+			 .then(function(isKaraInPL)
 			 {				 			  
-					resolve(true);
+					resolve(isKaraInPL);
 			 })
 			 .catch(function()
 			 {
@@ -454,7 +454,7 @@ module.exports = {
 			var NORM_requester = normalize(requester);
 			var date_add = timestamp.now();
 			var flag_playing = 0;
-
+			var isKaraInPlaylist = undefined;
 			var pIsPlaylist = new Promise((resolve,reject) => 
 			{
 				module.exports.isPlaylist(playlist_id)
@@ -479,33 +479,39 @@ module.exports = {
 						reject('Kara '+kara_id+' does not exist');
 					})		
 			});
-			var pIsKaraNotInPlaylist = new Promise((resolve,reject) =>
+			var pIsKaraInPlaylist = new Promise((resolve,reject) =>
 			{
 				module.exports.isKaraInPlaylist(kara_id,playlist_id)
-					.then(function()
+					.then(function(isKaraInPL)
 					{						
 						//Karaoke song is in playlist, then we will reject the promise
 						//since we don't want duplicates in playlists.
-						reject('Kara '+kara_id+' is already in playlist!');
+						isKaraInPlaylist = isKaraInPL;
+						resolve(isKaraInPL);
 					})
 					.catch(function()
 					{						
-						resolve(true);
+						reject('Unable to tell if karaoke song is in playlist or not.');
 					})		
 			});
-			Promise.all([pIsKara,pIsPlaylist,pIsKaraNotInPlaylist])
+			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist])
 			.then(function()
 			{
-				// Adding karaoke song here								
-				module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
-				.then(function(){
-					module.exports.updatePlaylistDuration(playlist_id);
-					module.exports.updatePlaylistNumOfKaras(playlist_id);
-					resolve(true);
-				})
-				.catch(function(err){
-					reject(err);
-				})			
+				if (isKaraInPlaylist) 
+				{
+					reject('Karaoke song is already in playlist');
+				} else {
+					// Adding karaoke song here								
+					module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
+					.then(function(){
+						module.exports.updatePlaylistDuration(playlist_id);
+						module.exports.updatePlaylistNumOfKaras(playlist_id);
+						resolve(true);
+					})
+					.catch(function(err){
+						reject(err);
+					})			
+				}
 			})
 
 		});

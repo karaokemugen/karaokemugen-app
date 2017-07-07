@@ -263,15 +263,15 @@ module.exports = {
 				console.log(err);
 			});
 	    */
-		/* Adding kara to playlist example */
-		module.exports._services.playlist_controller.addKaraToPlaylist(2001,'Axél',1,7)
+		/* Adding kara to playlist example
+		module.exports._services.playlist_controller.addKaraToPlaylist(2042,'Axél',1,7)
 			.then(function(){
 				logger.info("Kara added");				
 			})
 			.catch(function(err){
 				logger.error("Kara add failed : "+err);
 			});				
-		
+		*/
 		/* Making playlist visible example :
 		module.exports._services.playlist_controller.setVisiblePlaylist(1)
 			.then(function(playlist){
