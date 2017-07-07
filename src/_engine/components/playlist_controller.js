@@ -44,6 +44,25 @@ module.exports = {
 		});		
 	},
 	/**
+	* @function {Is there a current playlist in the database?}
+	* @return {boolean} {Promise}
+	*/
+	isACurrentPlaylist:function()
+	{
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isACurrentPlaylist()
+				.then(function ()
+				{
+					resolve();
+				})
+				.catch(function ()
+				{
+					reject();
+				})
+		})
+		
+	},
+	/**
 	* @function {isPlaylist}
 	* @param  {number} playlist_id {ID of playlist to check for existence}
 	* @return {promise} Promise

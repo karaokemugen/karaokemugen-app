@@ -92,7 +92,7 @@ module.exports = {
 	// implémenter ici toutes les méthodes de lecture écritures qui seront utilisé par l'ensemble de l'applicatif
 	// aucun autre composant ne doit manipuler la base SQLITE par un autre moyen
 
-		/**
+	/**
 	* @function {Calculate various stats}
 	* @return {number} {Object with stats}
 	*/
@@ -400,6 +400,39 @@ module.exports = {
 					callback(null, 'Playlist '+playlist_id+' unknown.');
 				}
 			}
+		})
+	},
+	/**
+	* @function {Checks for a current playlist}
+	* @return {boolean} {Promise}
+	*/
+	isACurrentPlaylist:function()
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlTestCurrentPlaylistExists = fs.readFileSync(path.join(__dirname,'../../_common/db/test_current_playlist_exists.sql'),'utf-8');
+				module.exports._user_db_handler.get(sqlTestCurrentPlaylistExists,
+					function (err, row)
+					{
+						if (err)
+						{
+							logger.error('Unable to search for playlist with current flag : '+err);
+							reject(err);
+						} else {
+							if (row) {
+								resolve();
+							} else {
+								reject();
+							}
+							
+						}
+					})
+				
+			
 		})
 	},
 	isPublicPlaylist:function(playlist_id,callback)

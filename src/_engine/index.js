@@ -236,6 +236,22 @@ module.exports = {
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
+		//Test if a playlist with flag_current exists. If not create one.
+		module.exports._services.playlist_controller.isACurrentPlaylist()
+			.then(function(){
+				//A playlist exists, nothing to do.
+			})
+			.catch(function(){
+				//No playlist exists, creating one.
+				logger.warn('No playlist with current flag exists. Creating one...');
+				module.exports._services.playlist_controller.createPlaylist('Current playlist',1,1,0)
+					.then(function (new_playlist){
+						logger.info("Current playlist created with ID : "+new_playlist.id);
+				})
+					.catch(function(err){
+						logger.error("New playlist fail : "+err);
+				});
+			})
 		/* Update playlist's number of karas
 		module.exports._services.playlist_controller.updatePlaylistNumOfKaras(1)
 			.then(function(num_karas){
