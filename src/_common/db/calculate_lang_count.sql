@@ -1,0 +1,1 @@
+SELECT COUNT(*) AS langcount FROM tag WHERE tagtype = 5;

@@ -22,6 +22,7 @@ module.exports = {
 			logger.error('_engine/components/playlist_controller.js : DB_INTERFACE is null');
 			process.exit();
 		}
+		logger.info('Playlist controller is READY.');
 	},
 
 	isCurrentPlaylist:function(playlist_id,callback)
@@ -41,6 +42,25 @@ module.exports = {
 			logger.log('debug','Public = '+res);
 			callback(res);
 		});		
+	},
+	/**
+	* @function {Is there a current playlist in the database?}
+	* @return {boolean} {Promise}
+	*/
+	isACurrentPlaylist:function()
+	{
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isACurrentPlaylist()
+				.then(function ()
+				{
+					resolve();
+				})
+				.catch(function ()
+				{
+					reject();
+				})
+		})
+		
 	},
 	/**
 	* @function {isPlaylist}
@@ -78,6 +98,26 @@ module.exports = {
 			})
 
 		})		
+	},
+	/**
+	* @function {Tests if a karaoke is already in ap laylist or not}
+	* @param  {number} kara_id     {ID of karaoke to search}
+	* @param  {number} playlist_id {ID of playlist to search into}
+	* @return {boolean} {Promise}
+	*/
+	isKaraInPlaylist:function(kara_id,playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isKaraInPlaylist(kara_id,playlist_id)
+			 .then(function(isKaraInPL)
+			 {				 			  
+					resolve(isKaraInPL);
+			 })
+			 .catch(function()
+			 {
+				   	reject(false);
+			 })
+		})	
 	},
 	setCurrentPlaylist:function(playlist_id,callback)
 	{
@@ -310,13 +350,131 @@ module.exports = {
 			callback();
 		});		
 	},
+	/**
+	* @function {Update number of karaokes in playlist}
+	* @param  {number} playlist_id {ID of playlist to update}
+	* @return {number} {number of karaokes found}
+	*/
+	updatePlaylistNumOfKaras:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});
+			Promise.all([pIsPlaylist])
+			.then(function()
+			{
+				// Get playlist number of karaokes
+				module.exports.DB_INTERFACE.calculatePlaylistNumOfKaras(playlist_id)
+				.then(function(num_karas){
+					module.exports.DB_INTERFACE.updatePlaylistNumOfKaras(playlist_id,num_karas)
+					.then(function(num_karas){
+						resolve(num_karas);
+					})
+					.catch(function(err){
+						reject(err);
+					})			
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			})
+		})
+	},
+	/**
+	* @function {Update duration of a playlist}
+	* @param  {number} playlist_id {ID of playlist to update}
+	* @return {number} {duration in seconds}
+	*/
+	updatePlaylistDuration:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});
+			Promise.all([pIsPlaylist])
+			.then(function()
+			{
+				// Get playlist duration								
+				module.exports.DB_INTERFACE.calculatePlaylistDuration(playlist_id)
+				.then(function(duration){
+					module.exports.DB_INTERFACE.updatePlaylistDuration(playlist_id,duration.duration)
+					.then(function(duration){
+						resolve(duration);
+					})
+					.catch(function(err){
+						reject(err);
+					})			
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			})
+		})
+	},
+	/**
+	* @function {Get playlist contents}
+	* @param  {number} playlist_id {ID of playlist to get contents from}
+	* @return {array} {Array of playlist objects}
+	*/
+	getPlaylistContents:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});
+			Promise.all([pIsPlaylist])
+			.then(function()
+			{
+				// Get karaoke list								
+				module.exports.DB_INTERFACE.getPlaylistContents(playlist_id)
+				.then(function(playlist){
+					resolve(playlist);
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			})
+
+		})
+	},
 	addKaraToPlaylist:function(kara_id,requester,playlist_id,pos)
 	{
 		return new Promise(function(resolve,reject){
 			var NORM_requester = normalize(requester);
 			var date_add = timestamp.now();
 			var flag_playing = 0;
-
+			var isKaraInPlaylist = undefined;
 			var pIsPlaylist = new Promise((resolve,reject) => 
 			{
 				module.exports.isPlaylist(playlist_id)
@@ -331,7 +489,6 @@ module.exports = {
 			});			
 			var pIsKara = new Promise((resolve,reject) =>
 			{
-				console.log('Check if kara exists :');
 				module.exports.isKara(kara_id)
 					.then(function()
 					{						
@@ -342,17 +499,39 @@ module.exports = {
 						reject('Kara '+kara_id+' does not exist');
 					})		
 			});
-			Promise.all([pIsKara,pIsPlaylist])
+			var pIsKaraInPlaylist = new Promise((resolve,reject) =>
+			{
+				module.exports.isKaraInPlaylist(kara_id,playlist_id)
+					.then(function(isKaraInPL)
+					{						
+						//Karaoke song is in playlist, then we will reject the promise
+						//since we don't want duplicates in playlists.
+						isKaraInPlaylist = isKaraInPL;
+						resolve(isKaraInPL);
+					})
+					.catch(function()
+					{						
+						reject('Unable to tell if karaoke song is in playlist or not.');
+					})		
+			});
+			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist])
 			.then(function()
 			{
-				// Adding karaoke song here								
-				module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
-				.then(function(){
-					resolve(true);
-				})
-				.catch(function(err){
-					reject(err);
-				})			
+				if (isKaraInPlaylist) 
+				{
+					reject('Karaoke song is already in playlist');
+				} else {
+					// Adding karaoke song here								
+					module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
+					.then(function(){
+						module.exports.updatePlaylistDuration(playlist_id);
+						module.exports.updatePlaylistNumOfKaras(playlist_id);
+						resolve(true);
+					})
+					.catch(function(err){
+						reject(err);
+					})			
+				}
 			})
 
 		});

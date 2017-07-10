@@ -1,0 +1,1 @@
+SELECT SUM(videolength) AS totalduration FROM kara;

@@ -223,7 +223,7 @@ module.exports = {
 		// on démarre ensuite le service
 		module.exports._services.admin.init();
 		// et on lance la commande pour ouvrir la page web
-		module.exports._services.admin.open();
+		module.exports._services.admin.open();		
 	},
 	/**
 	* @function 
@@ -236,14 +236,57 @@ module.exports = {
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
-		/* Adding kara to playlist example 
-		module.exports._services.playlist_controller.addKaraToPlaylist(1337,'Axél',1,1)
+		//Test if a playlist with flag_current exists. If not create one.
+		module.exports._services.playlist_controller.isACurrentPlaylist()
+			.then(function(){
+				//A playlist exists, nothing to do.
+			})
+			.catch(function(){
+				//No playlist exists, creating one.
+				logger.warn('No playlist with current flag exists. Creating one...');
+				module.exports._services.playlist_controller.createPlaylist('Current playlist',1,1,0)
+					.then(function (new_playlist){
+						logger.info("Current playlist created with ID : "+new_playlist.id);
+				})
+					.catch(function(err){
+						logger.error("New playlist fail : "+err);
+				});
+			})
+		/* Update playlist's number of karas
+		module.exports._services.playlist_controller.updatePlaylistNumOfKaras(1)
+			.then(function(num_karas){
+				console.log(num_karas);
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+		*/
+		/* Update playlist's duration 
+		module.exports._services.playlist_controller.updatePlaylistDuration(1)
+			.then(function(duration){
+				console.log(duration);
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+		*/
+		/* Getting all karas from Playlist 1
+		module.exports._services.playlist_controller.getPlaylistContents(1)
+			.then(function(playlist){
+				console.log(playlist);
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+	    */
+		/* Adding kara to playlist example
+		module.exports._services.playlist_controller.addKaraToPlaylist(2042,'Axél',1,7)
 			.then(function(){
 				logger.info("Kara added");				
 			})
 			.catch(function(err){
 				logger.error("Kara add failed : "+err);
-			});		
+			});				
 		*/
 		/* Making playlist visible example :
 		module.exports._services.playlist_controller.setVisiblePlaylist(1)

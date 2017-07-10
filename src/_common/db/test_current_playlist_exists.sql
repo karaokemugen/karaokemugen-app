@@ -1,0 +1,1 @@
+SELECT * FROM playlist WHERE flag_current = 1;

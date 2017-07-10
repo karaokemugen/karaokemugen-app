@@ -1,0 +1,1 @@
+SELECT COUNT(*) AS artistcount FROM tag WHERE tagtype=2;
