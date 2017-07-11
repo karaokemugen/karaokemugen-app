@@ -48,7 +48,7 @@ if (argv.version) {
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
 if(SYSPATH)
 {
-	logger.info('Detected SysPath is :'+SYSPATH);
+	logger.debug('Detected SysPath is :'+SYSPATH);
 	// Lecture de la configuration par défault
 	/**
 	 * Reading config.ini.default, then override it with config.ini if it exists.

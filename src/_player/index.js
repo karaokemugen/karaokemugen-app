@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 const logger = require('../_common/utils/logger.js');
+const download = require('download-file');
 
 module.exports = {
 	playing:false,
@@ -10,9 +11,9 @@ module.exports = {
 	BINPATH:null,
 	init:function(){
 		if(!fs.existsSync(module.exports.BINPATH)){
-			logger.error('Unable to find mpv.exe !');
-			logger.error('Received path was : '+module.exports.BINPATH);
-			process.exit();
+			logger.err('Unable to find mpv.exe !');
+			logger.err('Received path was : '+module.exports.BINPATH);
+			logger.err('Please download it from http://mpv.io and put mpv.exe in '+module.exports.BINPATH);
 		}
 
 		var mpvAPI = require('node-mpv');
