@@ -1,7 +1,10 @@
 var fs = require('fs');
 var path = require('path');
 const logger = require('../_common/utils/logger.js');
-const download = require('download-file');
+const dl = require('request-progress');
+var ProgressBar = require('progress');
+var http = require('http');
+
 
 module.exports = {
 	playing:false,
@@ -10,42 +13,100 @@ module.exports = {
 	_ref:null,
 	BINPATH:null,
 	init:function(){
-		if(!fs.existsSync(module.exports.BINPATH)){
-			logger.err('Unable to find mpv.exe !');
-			logger.err('Received path was : '+module.exports.BINPATH);
-			logger.err('Please download it from http://mpv.io and put mpv.exe in '+module.exports.BINPATH);
-		}
+		
+		var pIsmpvAvailable = new Promise((resolve,reject) =>
+		{
+			if(!fs.existsSync(module.exports.BINPATH+'/mpv.exe')){
+				logger.warn('Unable to find mpv.exe !');
+				logger.warn('Received path was : '+module.exports.BINPATH);
+				//logger.warn('Please download it from http://mpv.io and place mpv.exe in '+module.exports.BINPATH);
+				logger.warn('Attempting to download it from Shelter...')
 
-		var mpvAPI = require('node-mpv');
-		module.exports._player = new mpvAPI({
-			audio_only: false,
-			binary: path.join(module.exports.BINPATH,'mpv.exe'),
-			socket: '\\\\.\\pipe\\mpvsocket',
-			time_update: 1,
-			verbose: false,
-			debug: false,
-		},
-		[
-			//"--fullscreen",
-			"--no-border",
-			"--keep-open=yes",
-			"--idle=yes",
-			"--fps=60",
-			"--screen=1",
-		]);
-
-		module.exports._player.on('statuschange',function(status){
-			if(module.exports._playing && status && status.filename && status.filename.match(/__blank__/))
-			{
-				// immediate switch to Playing = False to avoid multiple trigger
-				module.exports.playing = false;
-				module.exports._playing = false;
-				module.exports._player.pause();
-				module.exports.onEnd(module.exports._ref);
-				module.exports._ref = null;
+				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp.exe');
+				var req = http.request({
+				host: 'toyundamugen.shelter.moe',
+				port: 80,
+				path: '/mpv.exe'
+				});
+				
+				req.on('response', function(res){
+					var len = parseInt(res.headers['content-length'], 10);
+					
+					console.log();
+					var bar = new ProgressBar('  Downloading mpv [:bar] :percent :etas', {
+						complete: '=',
+						incomplete: ' ',
+						width: 40,
+						total: len
+					});
+					
+					res.on('data', function (chunk) {
+						bar.tick(chunk.length);
+					});
+					
+					res.on('end', function () {
+						console.log('\n');
+						fs.rename(module.exports.BINPATH+'/mpvtemp.exe',
+								  module.exports.BINPATH+'/mpv.exe',
+								  function(err) {
+									  if (err) {
+										  logger.error('Unable to rename downloaded file : '+err)
+										  reject();
+									  } else {
+										  logger.info('Downloaded mpv.')						
+										  resolve();
+									  }
+									}
+						)						
+					});
+					res.pipe(mpvFile);
+				});			
+				req.on('error',function(err){
+					reject(err);
+				})	
+				req.end();
+			} else {
+				resolve();
 			}
+		})
+
+		Promise.all([pIsmpvAvailable]).then(function()
+		{
+			var mpvAPI = require('node-mpv');
+			module.exports._player = new mpvAPI({
+				audio_only: false,
+				binary: path.join(module.exports.BINPATH,'mpv.exe'),
+				socket: '\\\\.\\pipe\\mpvsocket',
+				time_update: 1,
+				verbose: false,
+				debug: false,
+			},
+			[
+				//"--fullscreen",
+				"--no-border",
+				"--keep-open=yes",
+				"--idle=yes",
+				"--fps=60",
+				"--screen=1",
+			]);
+
+			module.exports._player.on('statuschange',function(status){
+				if(module.exports._playing && status && status.filename && status.filename.match(/__blank__/))
+				{
+					// immediate switch to Playing = False to avoid multiple trigger
+					module.exports.playing = false;
+					module.exports._playing = false;
+					module.exports._player.pause();
+					module.exports.onEnd(module.exports._ref);
+					module.exports._ref = null;
+				}
+			});
+			logger.info('Player is READY.')
+		})
+		.catch(function(err) {
+			logger.error('Player is NOT READY : '+err);
+			process.exit();
 		});
-		logger.info('Player is READY.')
 	},
 	play: function(video,subtitle,reference){
 		module.exports.playing = true;
