@@ -158,7 +158,8 @@ module.exports = {
 	{
 		//TODO : Tester si la playlist existe
 		//TODO : Transformer en promesse
-		module.exports.unsetPublicAllPlaylists(function(){
+		module.exports.unsetPublicAllPlaylists()
+		.then(function(){
 			module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id, function(res){
 				logger.info('Setting playlist '+playlist_id+' public flag to ON');							
 				callback();
@@ -240,30 +241,71 @@ module.exports = {
 	*/
 	editPlaylist:function(playlist_id,name,flag_visible,flag_current,flag_public)
 	{
-		//TODO : Tester si la playlist existe
 		return new Promise(function(resolve,reject){
 			var NORM_name = normalize(name);
 			var lastedit_time = timestamp.now();
 			
+
 			if (flag_current == 1 && flag_public == 1)
 			{
-				var err = 'ERROR: Current and Public flags are mutually exclusive on a playlist.';
-				// on renvoi un reject sur la promise
-				reject(err);
+				reject('ERROR: Current and Public flags are mutually exclusive on a playlist.');
 			}
 
-			if (flag_public == 1)
+			var pIsPlaylist = new Promise((resolve,reject) => 
 			{
-				module.exports.unsetPublicAllPlaylists();
-			}
-			if (flag_current == 1)
-			{
-				module.exports.unsetCurrentAllPlaylists();
-			}
-
-			module.exports.DB_INTERFACE.editPlaylist(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public,function(callback){				
-				resolve(callback);
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
 			});
+			var pUnsetFlagPublic = new Promise((resolve,reject) =>
+			{
+				if (flag_public == 1)
+				{	
+					module.exports.unsetPublicAllPlaylists()
+					.then(function(){
+						resolve();
+					})
+					.catch(function(){
+						reject();
+					})
+				} else {
+					resolve();
+				}
+			});
+			
+			var pUnsetFlagCurrent = new Promise((resolve,reject) =>
+			{
+				if (flag_current == 1)
+				{	
+					module.exports.unsetCurrentAllPlaylists()
+					.then(function(){
+						resolve();
+					})
+					.catch(function(){
+						reject();
+					})
+				} else {
+					resolve();
+				}
+			});
+			
+			Promise.all([pIsPlaylist,pUnsetFlagCurrent,pUnsetFlagPublic])
+			.then(function()
+			{
+				module.exports.DB_INTERFACE.editPlaylist(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public,function(callback){				
+					resolve(callback);
+				});
+			})
+			.catch(function()
+			{
+				reject();
+			})
 		});
 	},
 	createPlaylist:function(name,flag_visible,flag_current,flag_public)
@@ -282,25 +324,52 @@ module.exports = {
 
 			if (flag_current == 1 && flag_public == 1)
 			{
-				var err = 'ERROR: Current and Public flags are mutually exclusive on a playlist.';
-				// on renvoi un reject sur la promise
-				reject(err);
+				reject('ERROR: Current and Public flags are mutually exclusive on a playlist.');
 			}
 
-			if (flag_public == 1)
+			var pUnsetFlagPublic = new Promise((resolve,reject) =>
 			{
-				module.exports.unsetPublicAllPlaylists();
-			}
-			if (flag_current == 1)
-			{
-				module.exports.unsetCurrentAllPlaylists();
-			}
-
-			//on préfèrera les module.exports.XXX pluttôt que this pour éviter tout problème de scope javascript
-			module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,function(new_id_playlist){
-				//on résoud la promesse (ici dans un callback qui pourrait donc aussi être revu en promise)
-				resolve(new_id_playlist)
+				if (flag_public == 1)
+				{	
+					module.exports.unsetPublicAllPlaylists()
+					.then(function(){
+						resolve();
+					})
+					.catch(function(){
+						reject();
+					})						
+				} else {
+					resolve();
+				}
 			});
+			
+			var pUnsetFlagCurrent = new Promise((resolve,reject) =>
+			{
+				if (flag_current == 1)
+				{	
+					module.exports.unsetCurrentAllPlaylists()
+					.then(function(){
+						resolve();
+					})
+					.catch(function(){
+						reject();
+					})
+				} else {
+					resolve();
+				}
+			});
+			
+			Promise.all([pUnsetFlagCurrent,pUnsetFlagPublic])
+			.then(function()
+			{				
+				module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,function(new_id_playlist){					
+					resolve(new_id_playlist.id)
+				})
+			})
+			.catch(function()
+			{
+				reject();
+			})
 		});
 	},
 	/**
@@ -331,24 +400,34 @@ module.exports = {
 			});
 		});
 	},
-	unsetPublicAllPlaylists:function(callback)
-	{
-		// TODO : Transformer en promesse
-		// Désactive le flag Public sur toutes les playlists
-		module.exports.DB_INTERFACE.unsetPublicAllPlaylists(function(callback){
-			logger.info("All playlists now have public flag set to 0");
-			callback();
-		});
+	unsetPublicAllPlaylists:function()
+	{		
+		return new Promise(function(resolve,reject){			
+			// Désactive le flag Public sur toutes les playlists
+			module.exports.DB_INTERFACE.unsetPublicAllPlaylists()
+			.then(function(){
+				logger.debug("All playlists now have public flag set to 0");
+				resolve();
+			})
+			.catch(function(){
+				reject();
+			})
+		});	
 		
 	},
-	unsetCurrentAllPlaylists:function(callback)
+	unsetCurrentAllPlaylists:function()
 	{
-		// TODO : Transformer en promesse
-		// Désactive le flag Current sur toutes les playlists
-		module.exports.DB_INTERFACE.unsetCurrentAllPlaylists(function(callback){
-			logger.info("All playlists now have current flag set to 0");
-			callback();
-		});		
+		return new Promise(function(resolve,reject){			
+			// Désactive le flag Current sur toutes les playlists
+			module.exports.DB_INTERFACE.unsetCurrentAllPlaylists()
+			.then(function(){
+				logger.debug("All playlists now have current flag set to 0");
+				resolve();
+			})
+			.catch(function(){
+				reject();
+			})
+		});
 	},
 	/**
 	* @function {Update number of karaokes in playlist}

@@ -654,41 +654,47 @@ module.exports = {
 	},
 	unsetPublicAllPlaylists:function(callback)
 	{
-		//TODO : transformer en promesse
-		if(!module.exports.isReady())
-		{
-			logger.error('DB_INTERFACE is not ready to work');
-			return false;
-		}
-
-		var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
-		module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err, rep)
-		{
-			if (err)
+		return new Promise(function(resolve,reject){	
+			if(!module.exports.isReady())
 			{
-				logger.error('Unable to unset public flag on playlists : '+err);               
-			}	
+				logger.error('DB_INTERFACE is not ready to work');
+				reject();
+			}
+
+			var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
+			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err, rep)
+			{
+				if (err)
+				{
+					logger.error('Unable to unset public flag on playlists : '+err);               
+					reject();
+				} else {
+					resolve();
+				}
+			});
 		});
 	},
-	unsetCurrentAllPlaylists:function(callback)
+	unsetCurrentAllPlaylists:function()
 	{
-		//TODO : transformer en promesse
-		if(!module.exports.isReady())
-		{
-			logger.error('DB_INTERFACE is not ready to work');
-			return false;
-		}
-
-		var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
-		module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err, rep)
-		{
-			if (err)
+		return new Promise(function(resolve,reject){	
+			if(!module.exports.isReady())
 			{
-				logger.error('Unable to unset current flag on playlists :');
-                logger.error(err);                
-			}			
+				logger.error('DB_INTERFACE is not ready to work');
+				reject();
+			}
+
+			var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
+			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err, rep)
+			{
+				if (err)
+				{
+					logger.error('Unable to unset current flag on playlists : '+err);					
+					reject();
+				} else {
+					resolve();
+				}			
+			});
 		});
-		
 	},
 	emptyPlaylist:function(playlist_id)
 	{
@@ -800,16 +806,16 @@ module.exports = {
 		{
                 if (err)
 				{
-                    logger.error('Unable to create playlist '+name+' :');
+                    logger.error('Unable to create playlist '+name+' : '+err);
                     logger.error(err);
 					callback({
 						id:0,
 						error:true,
 						error_msg:err
 					});
-				} else {
+				} else {					
 					callback({
-						id:module.exports.lastID,
+						id:this.lastID,
 						error:false
 					});
 				}

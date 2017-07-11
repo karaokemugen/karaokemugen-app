@@ -246,10 +246,10 @@ module.exports = {
 				logger.warn('No playlist with current flag exists. Creating one...');
 				module.exports._services.playlist_controller.createPlaylist('Current playlist',1,1,0)
 					.then(function (new_playlist){
-						logger.info("Current playlist created with ID : "+new_playlist.id);
+						logger.info("Current playlist created with ID : "+new_playlist);
 				})
 					.catch(function(err){
-						logger.error("New playlist fail : "+err);
+						logger.error("Unable to create current playlist : "+err);
 				});
 			})
 		/* Update playlist's number of karas
