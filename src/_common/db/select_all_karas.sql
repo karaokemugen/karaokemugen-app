@@ -14,12 +14,6 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.language AS language,
       ak.author AS author,
       ak.NORM_author AS NORM_author,
-      ak.misc AS misc,
-      pc.date_add AS date_add,
-      pc.pseudo_add AS pseudo_add,
-      pc.NORM_pseudo_add AS NORM_pseudo_add,
-      pc.pos AS pos
- FROM karasdb.all_karas AS ak, playlist_content AS pc
-WHERE pc.fk_id_playlist = $playlist_id
-  AND pc.fk_id_kara = ak.PK_id_kara
-ORDER BY pc.pos;
+      ak.misc AS misc   
+ FROM all_karas AS ak
+ORDER BY ak.language, ak.series, ak.title, ak.songtype, ak.songorder

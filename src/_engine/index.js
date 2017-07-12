@@ -270,15 +270,42 @@ module.exports = {
 				console.log(err);
 			});
 		*/
-		/* Getting all karas from Playlist 1
-		module.exports._services.playlist_controller.getPlaylistContents(1)
+		/* Getting all karas from Playlist
+		
+		module.exports._services.playlist_controller.getPlaylistContents(45)
 			.then(function(playlist){
-				console.log(playlist);
+				logger.profile('Search');
+				module.exports._services.playlist_controller.filterPlaylist(playlist,'gotta')
+				.then(function(filtered_pl){
+					console.log(filtered_pl);					
+					logger.profile('Search');
+				})
+				.catch(function(err) {
+					console.log(err);
+				}) 				
 			})
 			.catch(function(err){
 				console.log(err);
 			});
 	    */
+		/* Getting all karas		 */
+		module.exports._services.playlist_controller.getAllKaras()
+			.then(function(playlist){
+				logger.profile('Search');
+				module.exports._services.playlist_controller.filterPlaylist(playlist,'Bleach ED Pace')
+				.then(function(filtered_pl){
+					console.log(filtered_pl);	
+					console.log('Karaoke songs found : '+filtered_pl.length);				
+					logger.profile('Search');
+				})
+				.catch(function(err) {
+					console.log(err);
+				}) 				
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+	    
 		/* Adding kara to playlist example
 		module.exports._services.playlist_controller.addKaraToPlaylist(2042,'Axél',1,7)
 			.then(function(){

@@ -373,7 +373,33 @@ module.exports = {
 			
 		})
 	},
-
+	/**
+	* @function {Get all karaokes}
+	* @return {array} {array of karaoke objects}
+	*/
+	getAllKaras:function(){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlGetAllKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_karas.sql'),'utf-8');
+			module.exports._db_handler.all(sqlGetAllKaras,
+				function (err, playlist)
+				{
+					if (err)
+					{
+						logger.error('Unable to get all karaokes : '+err);
+						reject(err);
+					} else {
+						resolve(playlist);
+					}
+				})
+			
+			
+		})
+	},
 	/**
 	* @function {getPlaylistInfo}
 	* @param  {number} playlist_id {Playlist ID}

@@ -3,7 +3,8 @@ const { diacritics, normalize } = require('normalize-diacritics');
 var timestamp = require("unix-timestamp");
 timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
-
+const S = require('string');
+const async = require('async');
 
 module.exports = {
 	SYSPATH:null,
@@ -514,7 +515,7 @@ module.exports = {
 	/**
 	* @function {Get playlist contents}
 	* @param  {number} playlist_id {ID of playlist to get contents from}
-	* @return {array} {Array of playlist objects}
+	* @return {array} {Array of karaoke objects}
 	*/
 	getPlaylistContents:function(playlist_id)
 	{
@@ -546,6 +547,71 @@ module.exports = {
 			})
 
 		})
+	},
+	/**
+	* @function {Get all karaokes}
+	* @return {array} {Array of karaoke objects}
+	*/
+	getAllKaras:function()
+	{
+		return new Promise(function(resolve,reject)
+		{
+			
+				// Get karaoke list								
+				module.exports.DB_INTERFACE.getAllKaras()
+				.then(function(playlist){
+					resolve(playlist);
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			
+		})
+	},
+	/**
+	* @function {Filter playlist with a text}
+	* @param  {object} playlist   {playlist array of karaoke objects}
+	* @param  {string} searchText {Words separated by a space}
+	* @return {object} {playlist array filtered}
+	*/
+	filterPlaylist:function(playlist,searchText)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			function textSearch(kara){
+				searchText = searchText.toLowerCase();
+				
+				var searchOK = [];
+				var searchWords = searchText.split(' ');
+
+				var searchWordID = 0;
+            	searchWords.forEach(function(searchWord)
+				{
+					searchOK[searchWordID] = false;								
+					if (!S(kara.NORM_title).isEmpty()) {if (S(kara.NORM_title.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;}			
+					if (!S(kara.NORM_series).isEmpty()) {if (S(kara.NORM_series.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;}
+					if (!S(kara.NORM_series_altname).isEmpty()) {if (S(kara.NORM_series_altname.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;}
+					if (!S(kara.NORM_singer).isEmpty()) {if (S(kara.NORM_singer.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;}
+					if (!S(kara.NORM_creator).isEmpty()) {if (S(kara.NORM_creator.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;}
+					if (!S(kara.NORM_author).isEmpty()) {if (S(kara.NORM_author.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;}
+					if (!S(kara.NORM_pseudo_add).isEmpty()) {if (S(kara.NORM_pseudo_add.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;}	
+					if (!S(kara.songtype).isEmpty()) {if (S(kara.songtype.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;}				
+                
+					searchWordID++;				
+            	});
+
+				if (searchOK.indexOf(false) > -1 )
+				{
+					return false;	
+				} else {
+					return true;
+				}				
+			}
+
+			var filteredPlaylist = playlist.filter(textSearch);
+			resolve(filteredPlaylist);
+
+		});
 	},
 	addKaraToPlaylist:function(kara_id,requester,playlist_id,pos)
 	{
