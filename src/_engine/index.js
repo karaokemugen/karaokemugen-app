@@ -32,7 +32,8 @@ module.exports = {
 	 * @function {run}
 	 */
 	run: function(){
-		
+		logger.info('Engine is starting');
+
 		if(this.SYSPATH === null)
 		{
 			logger.error('SYSPATH is null');
@@ -44,17 +45,20 @@ module.exports = {
 			process.exit();
 		}
 
-		this._start_db_interface();
-		this._start_player();
-		this._start_playlist_controller();
-		this._start_admin();
-		this._broadcastStates();
+		this._start_db_interface().then(function(){
+			module.exports._start_player();
+			module.exports._start_playlist_controller();
+			module.exports._start_admin();
+			module.exports._broadcastStates();
+		}).catch(function(response){
+			console.log(response);
+		});
 	},
 	/**
 	 * Exits application.
 	 * @function {exit}
 	 */
-	exit:function(){		
+	exit:function(){
 		process.exit();
 	},
 
@@ -196,7 +200,8 @@ module.exports = {
 	{
 		module.exports.DB_INTERFACE = require(path.resolve(__dirname,'components/db_interface.js'));
 		module.exports.DB_INTERFACE.SYSPATH = module.exports.SYSPATH;
-		module.exports.DB_INTERFACE.init();
+		module.exports.DB_INTERFACE.SETTINGS = module.exports.SETTINGS;
+		return module.exports.DB_INTERFACE.init();
 	},
 	/**
 	* @function 

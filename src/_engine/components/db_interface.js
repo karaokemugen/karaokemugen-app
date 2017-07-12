@@ -7,16 +7,48 @@ moment.locale('fr');
 
 module.exports = {
 	SYSPATH:null,
+	SETTINGS:null,
 	_ready: false,
 	_db_handler: null,
 
 	init: function(){
-		if(module.exports.SYSPATH === null)
-		{
-			logger.error('_engine/components/db_interface.js : SYSPATH is null');
-			process.exit();
-		}
-		// démarre une instance de SQLITE
+		return new Promise(function(resolve,error){
+			if(module.exports.SYSPATH === null)
+			{
+				logger.error('_engine/components/db_interface.js : SYSPATH is null');
+				process.exit();
+			}
+			// démarre une instance de SQLITE
+
+			if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')))
+			{
+				logger.error('Unable to find kara database. Creating it...');
+	    		var generator = require('../../_admin/generate_karasdb.js');
+				generator.SYSPATH = module.exports.SYSPATH;
+				generator.SETTINGS = module.exports.SETTINGS;
+				generator.onLog = function(type,message) {
+					logger.info('generate_karasdb.js > '+message);
+				}
+				generator.run().then(function(response){
+					// on relance l'interface de base de données et on sort du mode rebuild
+					module.exports.init_on_db_ready();
+					resolve();
+				}).catch(function(response,error){
+					// erreur ?
+					console.log(response);
+					process.exit();
+				});
+			}
+			else
+			{
+				module.exports.init_on_db_ready();
+				resolve();
+			}
+		});
+	},
+
+	init_on_db_ready:function(){
+
 		var sqlite3 = require('sqlite3').verbose();
 		module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
 			if (err)
@@ -150,8 +182,8 @@ module.exports = {
 					if (err)
 					{
 						logger.error('Unable to get number of artists : '+err);
-						stats.totalartists = res.artistcount;
-						resolve();						
+						stats.totalartists = 0;
+						resolve();
 					} else {
 						stats.totalartists = res.artistcount;
 						resolve();
