@@ -105,7 +105,11 @@ module.exports = {
 		})
 		.catch(function(err) {
 			logger.error('Player is NOT READY : '+err);
-			process.exit();
+			fs.unlink(module.exports.BINPATH+'/mpvtemp.exe', (err) => {
+  				if (err) throw err;
+  				logger.info('Cleaned up binary directory')
+				process.exit();
+			});			
 		});
 	},
 	play: function(video,subtitle,reference){
