@@ -288,7 +288,7 @@ module.exports = {
 				console.log(err);
 			});
 	    */
-		/* Getting all karas		 */
+		/* Getting all karas		 
 		module.exports._services.playlist_controller.getAllKaras()
 			.then(function(playlist){
 				logger.profile('Search');
@@ -305,7 +305,7 @@ module.exports = {
 			.catch(function(err){
 				console.log(err);
 			});
-	    
+	    */
 		/* Adding kara to playlist example
 		module.exports._services.playlist_controller.addKaraToPlaylist(2042,'Axél',1,7)
 			.then(function(){
