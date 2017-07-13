@@ -28,11 +28,7 @@ module.exports = {
             var S = require('string');
             var moment = require('moment');
             const uuidV4 = require("uuid/v4");
-            const async = require('async');
-            const {
-                diacritics,
-                normalize
-            } = require('normalize-diacritics');
+            const async = require('async');            
             var csv = require('csv-string');
             const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Karas);
             const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Videos);
@@ -143,7 +139,7 @@ module.exports = {
                                 var stmt_InsertKaras = db.prepare("INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);");
                                 async.eachOf(karas, function(kara, id_kara, callback) {
                                     id_kara++;
-                                    var titlenorm = normalize(kara['title']);
+                                    var titlenorm = S(kara['title']).latinise();
                                     sqlInsertKaras.push({
                                         $id_kara : id_kara,
                                         $kara_KID : kara['KID'],
@@ -164,7 +160,7 @@ module.exports = {
 
                                 async.eachOf(series, function(serie, id_series, callback) {
                                     id_series++;
-                                    var serienorm = normalize(serie);
+                                    var serienorm = S(serie).latinise();
                                     sqlInsertSeries += 'INSERT INTO series(PK_id_series,name,NORM_name) VALUES(' + id_series + ',"' + serie + '","' + serienorm + '");';
                                     callback();
                                 })
@@ -172,7 +168,7 @@ module.exports = {
                                     id_tag++;
                                     tag = tag.split(',');
                                     var tagname = tag[0];
-                                    var tagnamenorm = normalize(tagname);
+                                    var tagnamenorm = S(tagname).latinise();
                                     var tagtype = tag[1];
                                     sqlInsertTags += 'INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES(' + id_tag + ',' + tagtype + ',"' + tagname + '","' + tagnamenorm + '");';
                                     callback();
@@ -199,7 +195,7 @@ module.exports = {
                                         var serie_name = serie[0];
                                         var serie_altnames = serie[1];
                                         if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
-                                            var serie_altnamesnorm = normalize(serie[1]);
+                                            var serie_altnamesnorm = S(serie[1]).latinise();
                                             sqlUpdateSeriesAltNames += 'UPDATE series SET altname="' + serie_altnames + '",NORM_altname="' + serie_altnamesnorm + '" WHERE name="' + serie_name + '";';
                                         }
                                     })
