@@ -33,6 +33,7 @@ module.exports = {
             const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Karas);
             const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Videos);
             const karas_dbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.DB, module.exports.SETTINGS.Path.DBKarasFile);
+            const karas_userdbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.DB, module.exports.SETTINGS.Path.DBUserFile);
             const series_altnamesfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Altname);
             probe.FFPROBE_PATH = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Binaries[module.exports.SETTINGS.os].BinProbe);
             const sqlCreateKarasDBfile = path.join(__dirname, '../_common/db/karas.sqlite3.sql');
@@ -61,6 +62,12 @@ module.exports = {
             var db = new sqlite3.Database(karas_dbfile, function(err, rep) {
                 if (err) {
                     module.exports.onLog('error', moment().format('LTS') + ' - Error opening karaoke database.');
+                    process.exit();
+                }
+            });
+            var userdb = new sqlite3.Database(karas_userdbfile, function(err, rep) {
+                if (err) {
+                    module.exports.onLog('error', moment().format('LTS') + ' - Error opening user database.');
                     process.exit();
                 }
             });
@@ -209,16 +216,16 @@ module.exports = {
                                 // Execution des requetes (RAW SQL ou STATEMENT selon le cas)
                                 // -------------------------------------------------------------------------------------------------------------
 
-                                module.exports.onLog('info', moment().format('LTS') + ' - Fill karaokes table.');
                                 sqlInsertKaras.forEach(function(kara){
                                     stmt_InsertKaras.run(kara);
                                 });
-
-                                 module.exports.onLog('info', moment().format('LTS') + ' - Updating video durations.');
+                                module.exports.onLog('info', moment().format('LTS') + ' - Filled karaokes table.');
+                                
                                 sqlUpdateVideoLength.forEach(function(kara){
                                     stmt_UpdateVideoLength.run(kara);
                                 });
-
+                                module.exports.onLog('info', moment().format('LTS') + ' - Updated video durations.');
+                                
                                 db.exec(sqlInsertTags, function(err, rep) {
                                     if (err) {
                                         module.exports.onLog('error', 'Error filling tags');
@@ -246,8 +253,7 @@ module.exports = {
                                 if (DoUpdateSeriesAltNames) {
                                     db.exec(sqlUpdateSeriesAltNames, function(err, rep) {
                                         if (err) {
-                                            module.exports.onLog('error', 'Error updating alt names');
-                                            module.exports.onLog('error', err);
+                                            module.exports.onLog('error', 'Error updating alt names : '+err);                                          
                                         } else {
                                             module.exports.onLog('success', moment().format('LTS') + ' - Updated alternative names of series.');
                                         }
@@ -258,21 +264,328 @@ module.exports = {
                                         module.exports.onLog('error', 'Error filling kara_series');
                                         module.exports.onLog('error', err);
                                     } else {
-                                        module.exports.onLog('success', moment().format('LTS') + ' - Linked karaokes to series.');
+                                        module.exports.onLog('success', moment().format('LTS') + ' - Linked karaokes to series.');                                        
                                         module.exports.onLog('success', moment().format('LTS') + ' - Successfully generated database.');
+                                        module.exports.onLog('info', moment().format('LTS') + ' - Running integrity checks on user database with the newly generated data.');
+                                        //
+                                        // Running checks on user database
+                                        // Now that we regenerated kara_ids 
+                                        //
+                                        
+                                        run_userdb_integrity_checks()
+                                        .then(function(){
+                                            module.exports.onLog('success', moment().format('LTS') + ' - Completed integrity checks.');
+                                        })
+                                        .catch(function(err){
+                                            module.exports.onLog('error', moment().format('LTS') + ' - Error during integrity checks : '+err);
+                                        });
+
                                     }
                                 });
 
                                 db.run("commit");
-                            });
+                            });                            
                             db.close(function(){
-                                resolve();
+                                userdb.close(function(){
+                                    resolve();
+                                })
                             });
+                            
+
                         }
                     });
                 }
             });
 
+            /**
+            * @function run_userdb_integrity_checks
+            */
+            function run_userdb_integrity_checks()
+            {
+                return new Promise(function(resolve,reject){
+                // Get all karas from all_karas view
+                // Get all karas in playlist_content, blacklist, rating, viewcount, whitelist
+                // Parse karas in playlist_content, search for the KIDs in all_karas
+                // If id_kara is different, write a UPDATE query.
+                    var AllKaras = [];
+                    var PlaylistKaras = [];
+                    var WhitelistKaras = [];
+                    var RatingKaras = [];
+                    var ViewcountKaras = [];
+                    var BlacklistKaras = [];
+
+                    var sqlUpdateUserDB = "BEGIN TRANSACTION;"                    
+
+                    var pGetAllKaras = new Promise((resolve,reject) => 
+			        {
+                        var sqlGetAllKaras = "SELECT PK_id_kara AS id_kara, kid FROM all_karas;";
+			            db.all(sqlGetAllKaras,
+				        function (err, playlist)
+				        {
+    					    if (err)
+					        {
+						        logger.error('Unable to get all karaokes : '+err);
+						        reject(err);
+					        } else {
+                                AllKaras = playlist;
+						        resolve();
+                            }
+					    })				    
+                    });
+                    var pGetPlaylistKaras = new Promise((resolve,reject) => 
+			        {
+                        var sqlGetPlaylistKaras = "SELECT fk_id_kara AS id_kara, kid FROM playlist_content;";
+			            userdb.all(sqlGetPlaylistKaras,
+				        function (err, playlist)
+				        {
+    					    if (err)
+					        {
+						        logger.error('Unable to get Playlist karaokes : '+err);
+						        reject(err);
+					        } else {
+                                if (playlist) {
+                                    PlaylistKaras = playlist;
+						            resolve();    
+                                } else {
+                                    PlaylistKaras = [];
+                                    resolve();
+                                }
+					        }
+				        })  
+                    });
+                    var pGetWhitelistKaras = new Promise((resolve,reject) => 
+			        {
+                        var sqlGetWhitelistKaras = "SELECT fk_id_kara AS id_kara, kid FROM whitelist;";
+			            userdb.all(sqlGetWhitelistKaras,
+				        function (err, playlist)
+				        {
+    					    if (err)
+					        {
+						        logger.error('Unable to get whitelist karaokes : '+err);
+						        reject(err);
+					        } else {
+                                if (playlist) {
+                                    WhitelistKaras = playlist;
+						            resolve();    
+                                } else {
+                                    WhitelistKaras = [];
+                                    resolve();
+                                }
+					    }
+				        })  
+                    });
+                    var pGetBlacklistKaras = new Promise((resolve,reject) => 
+			        {
+                        var sqlGetBlacklistKaras = "SELECT fk_id_kara AS id_kara, kid FROM blacklist;";
+			            userdb.all(sqlGetBlacklistKaras,
+				        function (err, playlist)
+				        {
+    					    if (err)
+					        {
+						        logger.error('Unable to get blacklist karaokes : '+err);
+						        reject(err);
+					        } else {
+                                if (playlist) {
+                                    BlacklistKaras = playlist;
+						            resolve();    
+                                } else {
+                                    BlacklistKaras = [];
+                                    resolve();
+                                }
+					        }
+				        })  
+                    });	
+                    var pGetRatingKaras = new Promise((resolve,reject) => 
+			        {
+                        var sqlGetRatingKaras = "SELECT fk_id_kara AS id_kara, kid FROM rating;";
+			            userdb.all(sqlGetRatingKaras,
+				        function (err, playlist)
+				        {
+    					    if (err)
+					        {
+						        logger.error('Unable to get rated karaokes : '+err);
+						        reject(err);
+					        } else {
+                                if (playlist) {
+                                    RatingKaras = playlist;
+						            resolve();    
+                                } else {
+                                    RatingKaras = [];
+                                    resolve();
+                                }
+					        }
+				        })  
+                    });
+                    var pGetViewcountKaras = new Promise((resolve,reject) => 
+			        {
+                        var sqlGetViewcountKaras = "SELECT fk_id_kara AS id_kara, kid FROM viewcount;";
+			            userdb.all(sqlGetViewcountKaras,
+				        function (err, playlist)
+				        {
+    					    if (err)
+					        {
+						        logger.error('Unable to get all karaokes : '+err);
+						        reject(err);
+					        } else {
+                                if (playlist) {
+                                    WhitelistKaras = playlist;
+						            resolve();    
+                                } else {
+                                    WhitelistKaras = [];
+                                    resolve();
+                                }
+					        }
+				        })  
+                    });
+
+                    Promise.all([pGetViewcountKaras,pGetRatingKaras,pGetWhitelistKaras,pGetBlacklistKaras,pGetPlaylistKaras,pGetAllKaras])
+			        .then(function()
+			        {
+				        // We've got all of our lists, let's compare !
+                        var KaraFound = false;
+                        var UpdateNeeded = false;
+                        if (WhitelistKaras != []) {
+                            WhitelistKaras.forEach(function(WLKara){
+                                KaraFound = false;                            
+                                AllKaras.forEach(function(Kara){
+                                    if (Kara.kid == WLKara.kid){
+                                        // Found a matching KID, checking if id_karas are the same
+                                        if (Kara.id_kara != WLKara.id_kara){
+                                            sqlUpdateUserDB += "UPDATE whitelist SET fk_id_kara = "+Kara.id_kara+" WHERE kid = '"+WLKara.kid+"';";
+                                            UpdateNeeded = true;
+                                        }
+                                        KaraFound = true;
+                                    }
+                                })
+                                //If No Karaoke with this KID was found in the AllKaras table, delete the KID
+                                if (!KaraFound) {
+                                    sqlUpdateUserDB += "DELETE FROM whitelist WHERE kid = '"+WLKara.kid+"';";
+                                    module.exports.onLog('warn', "KID "+WLKara.kid+" doesn't exist anymore, removed from whitelists.");
+                                    UpdateNeeded = true;
+                                }
+                            })
+                        }
+                        
+                        if (BlacklistKaras != []) {
+                            
+                            BlacklistKaras.forEach(function(BLKara){
+                                KaraFound = false;
+                                AllKaras.forEach(function(Kara){
+                                    if (Kara.kid == BLKara.kid){
+                                        // Found a matching KID, checking if id_karas are the same
+                                        if (Kara.id_kara != BLKara.id_kara){
+                                            sqlUpdateUserDB += "UPDATE blacklist SET fk_id_kara = "+Kara.id_kara+" WHERE kid = '"+BLKara.kid+"';";
+                                            UpdateNeeded = true;
+                                        }
+                                        KaraFound = true;
+                                    }
+                                })
+                                //If No Karaoke with this KID was found in the AllKaras table, delete the KID
+                                if (!KaraFound) {
+                                    sqlUpdateUserDB += "DELETE FROM blacklist WHERE kid = '"+BLKara.kid+"';";
+                                    module.exports.onLog('warn', "KID "+BLKara.kid+" doesn't exist anymore, removed from blacklists.");
+                                    UpdateNeeded = true;
+                                }
+                            })
+                        }
+                        if (RatingKaras != []) {
+                            
+                            RatingKaras.forEach(function(RKara){
+                                KaraFound = false;
+                                AllKaras.forEach(function(Kara){
+                                    if (Kara.kid == RKara.kid){
+                                        // Found a matching KID, checking if id_karas are the same
+                                        if (Kara.id_kara != RKara.id_kara){
+                                            sqlUpdateUserDB += "UPDATE rating SET fk_id_kara = "+Kara.id_kara+" WHERE kid = '"+RKara.kid+"';";
+                                            UpdateNeeded = true;
+                                        }
+                                        KaraFound = true;
+                                    }
+                                })
+                                //If No Karaoke with this KID was found in the AllKaras table, delete the KID
+                                if (!KaraFound) {
+                                    sqlUpdateUserDB += "DELETE FROM rating WHERE kid = '"+RKara.kid+"';";
+                                    module.exports.onLog('warn', "KID "+RKara.kid+" doesn't exist anymore, removed from ratings.");
+                                    UpdateNeeded = true;
+                                }
+                            })
+                        }
+                        if (ViewcountKaras != []) {
+                            
+                            ViewcountKaras.forEach(function(VKara){
+                                KaraFound = false;
+                                AllKaras.forEach(function(Kara){
+                                    if (Kara.kid == VKara.kid){
+                                        // Found a matching KID, checking if id_karas are the same
+                                        if (Kara.id_kara != VKara.id_kara){
+                                            sqlUpdateUserDB += "UPDATE viewcount SET fk_id_kara = "+Kara.id_kara+" WHERE kid = '"+VKara.kid+"';";
+                                            UpdateNeeded = true;
+                                        }
+                                        KaraFound = true;
+                                    }
+                                })
+                                //If No Karaoke with this KID was found in the AllKaras table, delete the KID
+                                if (!KaraFound) {
+                                    sqlUpdateUserDB += "DELETE FROM viewcount WHERE kid = '"+VKara.kid+"';";
+                                    module.exports.onLog('warn', "KID "+VKara.kid+" doesn't exist anymore, removed from viewcounts.");
+                                    UpdateNeeded = true;
+                                }
+                            })
+                        }
+                        
+                        if (PlaylistKaras != []) {
+                        
+                            
+                            PlaylistKaras.forEach(function(PLKara){
+                                KaraFound = false;
+                                
+                                AllKaras.forEach(function(Kara){                                    
+                                    if (Kara.kid == PLKara.kid){
+                                        
+                                        // Found a matching KID, checking if id_karas are the same
+                                        if (Kara.id_kara != PLKara.id_kara){
+                                            console.log('Entered 5');
+                                            sqlUpdateUserDB += "UPDATE playlist_content SET fk_id_kara = "+Kara.id_kara+" WHERE kid = '"+PLKara.kid+"';";
+                                            UpdateNeeded = true;
+                                        }
+                                        KaraFound = true;
+                                    }
+                                })
+                                //If No Karaoke with this KID was found in the AllKaras table, delete the KID
+                                if (!KaraFound) {
+                                    
+                                    sqlUpdateUserDB += "DELETE FROM playlist_content WHERE kid = '"+PLKara.kid+"';";
+                                    module.exports.onLog('warn', "KID "+PLKara.kid+" doesn't exist anymore, removed from playlists.");
+                                    UpdateNeeded = true;
+                                }
+                            })                            
+                        }
+                        if (UpdateNeeded)
+                        {
+                            sqlUpdateUserDB += "COMMIT;"                        
+                            userdb.exec(sqlUpdateUserDB, function(err, rep) {
+                                if (err) {
+                                    module.exports.onLog('error', 'Error updating user database after integrity checks : '+err)                                             
+                                } else {
+                                    module.exports.onLog('success', moment().format('LTS') + ' - Updated user database.');
+                                    resolve();
+                                }
+                            });
+                        } else {
+                            module.exports.onLog('success', moment().format('LTS') + ' - No update needed to user database.');
+                            resolve();
+                        }
+                        
+                        
+			        })
+			        .catch(function(err)
+			        {
+				        reject(err);
+        			})
+
+
+                });
+            }
             function getvideoduration(videofile, id_kara, callback) {
                 var videolength = 0;
                 if (fs.existsSync(videosdir + '/' + videofile)) {
