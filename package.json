@@ -47,7 +47,6 @@
     "ini": "^1.3.4",
     "ip": "^1.1.5",
     "langs": "^2.0.0",
-    "mathjs": "^3.13.3",
     "matroska-subtitles": "^2.0.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",

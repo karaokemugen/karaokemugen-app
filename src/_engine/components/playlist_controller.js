@@ -242,7 +242,7 @@ module.exports = {
 	editPlaylist:function(playlist_id,name,flag_visible,flag_current,flag_public)
 	{
 		return new Promise(function(resolve,reject){
-			var NORM_name = S(name).latinise();
+			var NORM_name = S(name).latinise().s;
 			var lastedit_time = timestamp.now();
 			
 
@@ -318,7 +318,7 @@ module.exports = {
 		// on retourne une promise
 		// cela implique qu'on ne gère plus le callback ici mais que tout se fait du coté de l'appelant
 		return new Promise(function(resolve,reject){
-			var NORM_name = S(name).latinise();
+			var NORM_name = S(name).latinise().s;
 			var creation_time = timestamp.now();
 			var lastedit_time = creation_time;
 
@@ -619,7 +619,7 @@ module.exports = {
 	addKaraToPlaylist:function(kara_id,requester,playlist_id,pos)
 	{
 		return new Promise(function(resolve,reject){
-			var NORM_requester = S(requester).latinise();
+			var NORM_requester = S(requester).latinise().s;
 			var date_add = timestamp.now();
 			var flag_playing = 0;
 			var isKaraInPlaylist = undefined;

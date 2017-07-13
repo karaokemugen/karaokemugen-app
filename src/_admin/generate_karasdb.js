@@ -24,7 +24,6 @@ module.exports = {
             var ini = require("ini");
             var timestamp = require("unix-timestamp");
             var probe = require('../_common/modules/node-ffprobe');
-            var math = require('mathjs');
             var S = require('string');
             var moment = require('moment');
             const uuidV4 = require("uuid/v4");
@@ -112,7 +111,7 @@ module.exports = {
                                 module.exports.onLog('success', moment().format('LTS') + ' - We have ' + karas.length + ' karaoke songs');
 
                                 //Un autre passage dans karas pour avoir la durée des vidéos, mais cette fois en série
-                                var stmt_UpdateVideoLength = db.prepare("UPDATE kara SET videolength = $videolength WHERE PK_id_kara= $id ;");
+                                var stmt_UpdateVideoLength = db.prepare("UPDATE kara SET videolength = $videolength WHERE PK_id_kara = $id ;");
                                 id_kara = 0;
                                 karas.forEach(function(kara) {
                                     id_kara++;
@@ -146,7 +145,7 @@ module.exports = {
                                 var stmt_InsertKaras = db.prepare("INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);");
                                 async.eachOf(karas, function(kara, id_kara, callback) {
                                     id_kara++;
-                                    var titlenorm = S(kara['title']).latinise();
+                                    var titlenorm = S(kara['title']).latinise().s;
                                     sqlInsertKaras.push({
                                         $id_kara : id_kara,
                                         $kara_KID : kara['KID'],
@@ -167,7 +166,7 @@ module.exports = {
 
                                 async.eachOf(series, function(serie, id_series, callback) {
                                     id_series++;
-                                    var serienorm = S(serie).latinise();
+                                    var serienorm = S(serie).latinise().s;
                                     sqlInsertSeries += 'INSERT INTO series(PK_id_series,name,NORM_name) VALUES(' + id_series + ',"' + serie + '","' + serienorm + '");';
                                     callback();
                                 })
@@ -202,7 +201,7 @@ module.exports = {
                                         var serie_name = serie[0];
                                         var serie_altnames = serie[1];
                                         if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
-                                            var serie_altnamesnorm = S(serie[1]).latinise();
+                                            var serie_altnamesnorm = S(serie[1]).latinise().s;
                                             sqlUpdateSeriesAltNames += 'UPDATE series SET altname="' + serie_altnames + '",NORM_altname="' + serie_altnamesnorm + '" WHERE name="' + serie_name + '";';
                                         }
                                     })
@@ -593,8 +592,8 @@ module.exports = {
                         if (err) {
                             module.exports.onLog('error', moment().format('LTS') + ' - [' + videofile + '] Unable to probe video file : ' + err);
                             callback(err, videolength, id_kara);
-                        } else {
-                            videolength = math.round(videodata.format.duration);
+                        } else {                            
+                            videolength = Math.floor(videodata.format.duration);                            
                             callback(null, videolength, id_kara);
                         }
                     });
