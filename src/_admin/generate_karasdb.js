@@ -140,7 +140,7 @@ module.exports = {
                                 // Construction des requêtes SQL pour l'insertion des données
                                 // -------------------------------------------------------------------------------------------------------------
 
-                                var stmt_InsertKaras = db.prepare("INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount);");
+                                var stmt_InsertKaras = db.prepare("INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);");
                                 async.eachOf(karas, function(kara, id_kara, callback) {
                                     id_kara++;
                                     var titlenorm = normalize(kara['title']);
@@ -157,6 +157,7 @@ module.exports = {
                                         $kara_datemodif : kara['datemodif'],
                                         $kara_rating : kara['rating'],
                                         $kara_viewcount : kara['viewcount'],
+                                        $kara_gain : kara['gain'],
                                     });
                                     callback();
                                 })
@@ -566,6 +567,12 @@ module.exports = {
                 kara['songorder'] = karaOrder;
                 kara['videofile'] = karadata.videofile;
                 kara['subfile'] = karadata.subfile;
+                if (S(karadata.trackgain).isEmpty())
+                {
+                    kara['gain'] = 0;
+                } else {
+                    kara['gain'] = karadata.trackgain;                
+                }
                 kara['videolength'] = undefined;
                 kara['rating'] = 0;
                 kara['viewcount'] = 0;
