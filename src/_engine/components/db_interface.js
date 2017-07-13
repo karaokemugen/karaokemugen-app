@@ -22,7 +22,7 @@ module.exports = {
 
 			if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')))
 			{
-				logger.error('Unable to find kara database. Creating it...');
+				logger.warn('Unable to find karaoke database. Creating it...');
 	    		var generator = require('../../_admin/generate_karasdb.js');
 				generator.SYSPATH = module.exports.SYSPATH;
 				generator.SETTINGS = module.exports.SETTINGS;
@@ -62,7 +62,7 @@ module.exports = {
 		// le fichier sqlite est externe (car l'appli ne peux écrire dans ses assets interne)
 		if (!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3')))
 		{
-			logger.error('Unable to find user database. Creating it...');
+			logger.warn('Unable to find user database. Creating it...');
     		NeedToCreateUserTables = true;
 		};
 		// le fichier sqlite est externe (car l'appli ne peux écrire dans ses assets interne)
@@ -79,8 +79,7 @@ module.exports = {
         		module.exports._user_db_handler.exec(sqlCreateUserDB, function (err){
 	            	if (err)
 					{
-                		logger.error('Error creating user base :');
-	                	logger.error(err);
+                		logger.error('Error creating user base : '+err);	                	
 						process.exit();
             		} else
 					{
@@ -900,24 +899,47 @@ module.exports = {
 				reject('Database is not ready!');
 			}
 
-			var sqlAddKaraToPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlAddKaraToPlaylist,
+			//We need to get the KID of the karaoke we're adding.
+			
+			var sqlGetKID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kid.sql'),'utf-8');
+			module.exports._db_handler.get(sqlGetKID,
 			{
-				$playlist_id: playlist_id,
-				$pseudo_add: requester,
-				$NORM_pseudo_add: NORM_requester,
-				$kara_id: kara_id,
-				$date_added: date_added,
-				$pos: pos,
-				$flag_playing: flag_playing
-			}, function (err, rep)
+				$kara_id: kara_id				
+			}, function (err, row)
 			{
 					if (err)
 					{
-						logger.error('Unable to add kara '+kara_id+' to playlist '+playlist_id+' : '+err);
+						logger.error('Unable to get KID for '+kara_id+' : '+err);
 						reject(err);
 					} else {
-						resolve(true);
+						if (row) {
+							var kid = row.kid
+							var sqlAddKaraToPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_playlist.sql'),'utf-8');
+							module.exports._user_db_handler.run(sqlAddKaraToPlaylist,
+							{
+								$playlist_id: playlist_id,
+								$pseudo_add: requester,
+								$NORM_pseudo_add: NORM_requester,
+								$kara_id: kara_id,
+								$kid: kid, 
+								$date_added: date_added,
+								$pos: pos,
+								$flag_playing: flag_playing
+							}, function (err, rep)
+							{
+									if (err)
+									{
+										logger.error('Unable to add kara '+kara_id+' to playlist '+playlist_id+' : '+err);
+										reject(err);
+									} else {
+										resolve(true);
+									}
+							})						
+						} else {
+							logger.error('No KID found for this '+kara_id+' !');
+							reject('No KID found for this '+kara_id+' !');
+						}
+						
 					}
 			})
 		})

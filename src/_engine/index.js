@@ -311,8 +311,8 @@ module.exports = {
 				console.log(err);
 			});
 	    */
-		/* Adding kara to playlist example
-		module.exports._services.playlist_controller.addKaraToPlaylist(2042,'Axél',1,7)
+		/* Adding kara to playlist example 
+		module.exports._services.playlist_controller.addKaraToPlaylist(2017,'Axél',1,1)
 			.then(function(){
 				logger.info("Kara added");				
 			})

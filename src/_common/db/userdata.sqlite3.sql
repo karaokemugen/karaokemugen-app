@@ -2,14 +2,14 @@ BEGIN TRANSACTION;
 CREATE TABLE viewcount (
     pk_id_viewcount INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     fk_id_kara      INTEGER NOT NULL,
-    unique_id       TEXT NOT NULL,
+    kid   TEXT UNIQUE,
     datetime        INTEGER
 );
 
 CREATE TABLE rating (
     pk_id_rating INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     fk_id_kara   INTEGER NOT NULL,
-    unique_id    TEXT NOT NULL,
+    kid   TEXT UNIQUE,
     rating       INTEGER NOT NULL,
     datetime     INTEGER
 );
@@ -31,6 +31,7 @@ CREATE TABLE playlist_content (
     pk_idplcontent INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     fk_id_playlist INTEGER NOT NULL,
     fk_id_kara     INTEGER NOT NULL,
+    kid   TEXT UNIQUE,
     date_add       INTEGER,
     pseudo_add     TEXT,
     NORM_pseudo_add     TEXT COLLATE NOCASE,
@@ -43,6 +44,7 @@ CREATE TABLE playlist_content (
 
 CREATE TABLE blacklist (
     fk_id_kara INTEGER NOT NULL UNIQUE ON CONFLICT IGNORE,
+    kid   TEXT UNIQUE,
     ban_date   INTEGER,
     ban_reason TEXT
 );
@@ -56,6 +58,7 @@ CREATE TABLE blacklist_criteria (
 CREATE TABLE whitelist (
     pk_id_whitelist INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
     fk_id_kara      INTEGER NOT NULL,
+    kid   TEXT UNIQUE,
     wl_date         INTEGER,
     wl_reason       TEXT
 );

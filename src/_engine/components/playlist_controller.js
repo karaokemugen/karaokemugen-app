@@ -498,6 +498,10 @@ module.exports = {
 				// Get playlist duration								
 				module.exports.DB_INTERFACE.calculatePlaylistDuration(playlist_id)
 				.then(function(duration){
+					if (duration.duration == null) 
+					{
+						duration.duration = 0;
+					}
 					module.exports.DB_INTERFACE.updatePlaylistDuration(playlist_id,duration.duration)
 					.then(function(duration){
 						resolve(duration);
