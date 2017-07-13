@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS all_karas AS SELECT k.PK_id_kara, k.kid, k.title, k.NORM_title, k.videolength, k.kid, k.year, k.videofile, k.subfile, k.date_added, k.date_last_modified, k.rating, k.viewcount
+CREATE VIEW IF NOT EXISTS all_karas AS SELECT k.PK_id_kara, k.kid, k.title, k.NORM_title, k.videolength, k.gain, k.kid, k.year, k.videofile, k.subfile, k.date_added, k.date_last_modified, k.rating, k.viewcount
 ,k.songorder
 ,(select GROUP_CONCAT( s.name)
     FROM kara_series ks 
