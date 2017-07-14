@@ -26,13 +26,14 @@ console.log("\n");
 if (argv.help) { 
 	var help = "Usage : \n";
 	help += "\n";
-	help += "toyundamugen [--help] [--version] [--debug]\n";
+	help += "toyundamugen [--help] [--version] [--debug] [--testplaylist]\n";
 	help += "\n";
 	help += "	Options : \n";
 	help += "\n";
 	help += "		--help     Prints this help message\n";
 	help += "		--version  Prints version information\n";
 	help += "		--debug    Displays debug messages\n";
+	help += "		--testplaylist    Launch a playlist controller test procedure\n";
 	help += "\n";
 
 	console.log(help);
@@ -114,7 +115,11 @@ if(SYSPATH)
 	var engine = require('./_engine/index.js');
 	engine.SYSPATH = SYSPATH;
 	engine.SETTINGS = SETTINGS;
-	engine.run();
+
+	if(argv.testplaylist)
+		engine.test_playlist_controller();
+	else
+		engine.run();
 }
 else
 {

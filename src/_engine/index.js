@@ -13,7 +13,7 @@ module.exports = {
 	SETTINGS:null,
 	DB_INTERFACE:null,
 	/**
-	 * @private 
+	 * @private
 	 * Engine status.
 	 * Can be stop or play. Stop by default.
 	 */
@@ -57,21 +57,73 @@ module.exports = {
 			console.log(response);
 		});
 	},
+
+	//---------------------------------------------------------------
+	// 	 /$$$$$$$$ /$$$$$$$$  /$$$$$$  /$$$$$$$$
+	// 	|__  $$__/| $$_____/ /$$__  $$|__  $$__/
+	// 	   | $$   | $$      | $$  \__/   | $$
+	// 	   | $$   | $$$$$   |  $$$$$$    | $$
+	// 	   | $$   | $$__/    \____  $$   | $$
+	// 	   | $$   | $$       /$$  \ $$   | $$
+	// 	   | $$   | $$$$$$$$|  $$$$$$/   | $$
+	// 	   |__/   |________/ \______/    |__/
+	//
+	//
+	//
+
+	test:function(){
+		console.log('This is an engine test event !');
+		return 'This is an engine test event response !';
+	},
+
+	test_playlist_controller: function(){
+		if(this.SYSPATH === null)
+		{
+			logger.error('SYSPATH is null');
+			process.exit();
+		}
+		if(this.SETTINGS === null)
+		{
+			logger.error('SETTINGS is null');
+			process.exit();
+		}
+
+		this._start_db_interface().then(function(){
+			module.exports._start_player();
+			module.exports._start_playlist_controller();
+
+			logger.info('Start playlist controller test procedure');
+
+			// Here is the test
+			// module.exports._services.playlist_controller.whatever_you_want()
+			logger.error('TODO: Implement test procedure ');
+
+			process.exit();
+
+		}).catch(function(response){
+			console.log(response);
+			process.exit();
+		});
+	},
+
+	// 	 /$$      /$$             /$$     /$$                       /$$
+	// 	| $$$    /$$$            | $$    | $$                      | $$
+	// 	| $$$$  /$$$$  /$$$$$$  /$$$$$$  | $$$$$$$   /$$$$$$   /$$$$$$$  /$$$$$$$
+	// 	| $$ $$/$$ $$ /$$__  $$|_  $$_/  | $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+	// 	| $$  $$$| $$| $$$$$$$$  | $$    | $$  \ $$| $$  \ $$| $$  | $$|  $$$$$$
+	// 	| $$\  $ | $$| $$_____/  | $$ /$$| $$  | $$| $$  | $$| $$  | $$ \____  $$
+	// 	| $$ \/  | $$|  $$$$$$$  |  $$$$/| $$  | $$|  $$$$$$/|  $$$$$$$ /$$$$$$$/
+	// 	|__/     |__/ \_______/   \___/  |__/  |__/ \______/  \_______/|_______/
+	//
+	//
+	//
+
 	/**
 	 * Exits application.
 	 * @function {exit}
 	 */
 	exit:function(){
 		process.exit();
-	},
-
-	/**
-	 * Test Fonction
-	 * @function {play}
-	 */
-	test:function(){
-		console.log('This is an engine test event !');
-		return 'This is an engine test event response !';
 	},
 
     /**
@@ -136,7 +188,7 @@ module.exports = {
 		module.exports._broadcastStates();
 	},
 	/**
-	* @function {togglePrivate}	
+	* @function {togglePrivate}
 	*/
 	togglePrivate:function()
 	{
@@ -147,15 +199,15 @@ module.exports = {
 
 	// Methode lié à la lecture de kara
 	/**
-	* @function 
-	* 
+	* @function
+	*
 	*/
 	playlistUpdated:function(){
 		module.exports.tryToReadNextKaraInPlaylist();
 	},
 	/**
-	* @function 
-	* 
+	* @function
+	*
 	* Function triggered on player ending its current song.
 	*/
 	playerEnding:function(){
@@ -163,7 +215,7 @@ module.exports = {
 	},
 
 	/**
-	* @function 
+	* @function
 	* Try to read next karaoke in playlist.
 	*/
 	tryToReadNextKaraInPlaylist:function(){
@@ -206,7 +258,7 @@ module.exports = {
 	/**
 	* @function _start_db_interface
 	* Starts database interface.
-	* Requires the db_interface.js script 
+	* Requires the db_interface.js script
 	*/
 	_start_db_interface: function()
 	{
@@ -216,7 +268,7 @@ module.exports = {
 		return module.exports.DB_INTERFACE.init();
 	},
 	/**
-	* @function 
+	* @function
 	* Starts the admin dashboard webservice on the selected port
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
@@ -240,10 +292,10 @@ module.exports = {
 		// on démarre ensuite le service
 		module.exports._services.admin.init();
 		// et on lance la commande pour ouvrir la page web
-		module.exports._services.admin.open();		
+		module.exports._services.admin.open();
 	},
 	/**
-	* @function 
+	* @function
 	* Starts the admin dashboard webservice on the selected port
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
@@ -262,7 +314,7 @@ module.exports = {
 		module.exports._services.frontend.init();
 	},
 	/**
-	* @function 
+	* @function
 	* Starts playlist controller
 	* Broadcasts syspath, database, and the playlistUpdated method
 	*/
@@ -297,7 +349,7 @@ module.exports = {
 				console.log(err);
 			});
 		*/
-		/* Update playlist's duration 
+		/* Update playlist's duration
 		module.exports._services.playlist_controller.updatePlaylistDuration(1)
 			.then(function(duration){
 				console.log(duration);
@@ -307,60 +359,60 @@ module.exports = {
 			});
 		*/
 		/* Getting all karas from Playlist
-		
+
 		module.exports._services.playlist_controller.getPlaylistContents(45)
 			.then(function(playlist){
 				logger.profile('Search');
 				module.exports._services.playlist_controller.filterPlaylist(playlist,'gotta')
 				.then(function(filtered_pl){
-					console.log(filtered_pl);					
+					console.log(filtered_pl);
 					logger.profile('Search');
 				})
 				.catch(function(err) {
 					console.log(err);
-				}) 				
+				})
 			})
 			.catch(function(err){
 				console.log(err);
 			});
 	    */
-		/* Getting all karas		 
+		/* Getting all karas
 		module.exports._services.playlist_controller.getAllKaras()
 			.then(function(playlist){
 				logger.profile('Search');
 				module.exports._services.playlist_controller.filterPlaylist(playlist,'Bleach ED Pace')
 				.then(function(filtered_pl){
-					console.log(filtered_pl);	
-					console.log('Karaoke songs found : '+filtered_pl.length);				
+					console.log(filtered_pl);
+					console.log('Karaoke songs found : '+filtered_pl.length);
 					logger.profile('Search');
 				})
 				.catch(function(err) {
 					console.log(err);
-				}) 				
+				})
 			})
 			.catch(function(err){
 				console.log(err);
 			});
 	    */
-		/* Adding kara to playlist example 
+		/* Adding kara to playlist example
 		module.exports._services.playlist_controller.addKaraToPlaylist(2017,'Axél',1,1)
 			.then(function(){
-				logger.info("Kara added");				
+				logger.info("Kara added");
 			})
 			.catch(function(err){
 				logger.error("Kara add failed : "+err);
-			});				
+			});
 		*/
 		/* Making playlist visible example :
 		module.exports._services.playlist_controller.setVisiblePlaylist(1)
 			.then(function(playlist){
-				logger.info("Playlist set to visible");				
+				logger.info("Playlist set to visible");
 			})
 			.catch(function(err){
 				logger.error("Playlist view failed : "+err);
-			});		
+			});
 		*/
-		/* Selecting playlist example : 
+		/* Selecting playlist example :
 		module.exports._services.playlist_controller.getPlaylistInfo(1)
 			.then(function(playlist){
 				logger.info("Playlist get OK");
@@ -369,7 +421,7 @@ module.exports = {
 			.catch(function(err){
 				logger.error("Playlist view failed : "+err);
 			});
-		/* Editing playlist example : 
+		/* Editing playlist example :
 		module.exports._services.playlist_controller.editPlaylist(1,'Super plélyst lol',0,1,0)
 			.then(function (){
 				logger.info("Playlist edited.");
@@ -378,7 +430,7 @@ module.exports = {
 				logger.error("Playlist edit failed : "+err);
 			});
 		*/
-		/* Creating playlist example : 
+		/* Creating playlist example :
 		module.exports._services.playlist_controller.createPlaylist('Ma plélyst lol',0,1,0)
 			.then(function (new_playlist){
 				logger.info("New playlist created with ID : "+new_playlist.id);
@@ -386,15 +438,15 @@ module.exports = {
 			.catch(function(err){
 				logger.error("New playlist fail : "+err);
 			});
-		*/ 
-		/* Deleting playlist example :  
+		*/
+		/* Deleting playlist example :
 		module.exports._services.playlist_controller.deletePlaylist(34,36)
 		    .then(function (values){
 				logger.info("Playlist "+values.playlist_id+" deleted. Transferred flags to "+values.new_curorpubplaylist_id);
 			})
 			.catch(function(err){
 				logger.error("Deleting playlist failed : "+err);
-			});			
+			});
 		*/
 		// on ajoute 4 morceau dans la playlist
 		//module.exports._services.playlist_controller.addKara(1,'toto');
@@ -403,7 +455,7 @@ module.exports = {
 		//module.exports._services.playlist_controller.addKara(4,'tutu');
 	},
 	/**
-	* @function 
+	* @function
 	* Starts player interface
 	* This is used to drive mpv or whatever video player is used.
 	*/
