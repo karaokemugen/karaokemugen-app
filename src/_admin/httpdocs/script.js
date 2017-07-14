@@ -13,6 +13,9 @@ socket.on('engine_states', function(newStates) {
 
     status_message = engine_states.status=='play' ? 'Mode lecture':'Mode arrêt';
     $('.states_status').html(status_message);
+
+    $('.tool-frontend-access').attr('data-port',1*engine_states.frontend_port);
+    $('.tool-frontend-access').attr('action','//'+document.location.hostname+':'+engine_states.frontend_port);
 })
 
 socket.on('local_states', function(newStates) {

@@ -34,3 +34,5 @@ h1 {
 
 .tool-kara-index[data-state="stop"] .indexing { display: none; }
 .tool-kara-index[data-state="running"] .run { display: none; }
+
+.tool-frontend-access[data-port="0"] { display: none; }

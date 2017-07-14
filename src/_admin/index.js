@@ -5,6 +5,7 @@ const logger = require('../_common/utils/logger.js');
 module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
+	LISTEN:null,
 	DB_INTERFACE:null,
 	_server:null,
 	_io:null,
@@ -22,6 +23,11 @@ module.exports = {
 			logger.error('SETTINGS is null');
 			process.exit();
 		}
+		if(module.exports.LISTEN === null)
+		{
+			logger.error('LISTEN is null');
+			process.exit();
+		}
 		if(module.exports.DB_INTERFACE === null)
 		{
 			logger.error('DB_INTERFACE is null');
@@ -31,59 +37,52 @@ module.exports = {
 		// Création d'un server http pour diffuser l'appli web du launcher
 		if(module.exports._server==null)
 		{
-			if(module.exports.LISTEN)
-			{
-				module.exports._server = require(path.join(__dirname,'../_common/utils/httpserver.js'))(path.join(__dirname,'httpdocs'));
+			module.exports._server = require(path.join(__dirname,'../_common/utils/httpserver.js'))(path.join(__dirname,'httpdocs'));
 
-				// Chargement de socket.io sur l'appli web du launcher
-				module.exports._io = require('socket.io').listen(module.exports._server);
-				module.exports._io.sockets.on('connection', function (socket) {
-					logger.info('Client connected : ('+socket.id+')');
-					socket.emit('engine_states', module.exports._engine_states);
-					// Création des évènements d'entrée (actions de l'utilisateur)
-					socket.on('message', function (message) {
-						switch (message) {
-							default:
-								logger.info('Client says : ' + message);
-								break;
-						}
-					});
-					socket.on('action', function (action) {
-						switch (action) {
-							case 'play':
-								module.exports.onPlay();
-								break;
-							case 'stop':
-								module.exports.onStop();
-								break;
-							case 'stop.now':
-								module.exports.onStopNow();
-								break;
-							case 'togglePrivate':
-								module.exports.onTogglePrivate();
-								break;
-							case 'terminate':
-								setTimeout(function(){
-									// on insert un décalage car la webapp doit d'abord déclencher la fermeture de la fenetre du navigateur internet
-									module.exports.onTerminate();
-								},500);
-								break;
-							case 'generate_karabd':
-								module.exports.generateKaraDb(socket);
-								break;
-							default:
-								logger.log('warning','Unknown action : ' + action);
-								break;
-						}
-					});
+			// Chargement de socket.io sur l'appli web du launcher
+			module.exports._io = require('socket.io').listen(module.exports._server);
+			module.exports._io.sockets.on('connection', function (socket) {
+				logger.info('Client connected : ('+socket.id+')');
+				socket.emit('engine_states', module.exports._engine_states);
+				// Création des évènements d'entrée (actions de l'utilisateur)
+				socket.on('message', function (message) {
+					switch (message) {
+						default:
+							logger.info('Client says : ' + message);
+							break;
+					}
 				});
-				module.exports._server.listen(module.exports.LISTEN);
-				logger.info('Dashboard is READY.');
-			}
-			else
-			{
-				logger.error('PORT is not defined.');
-			}
+				socket.on('action', function (action) {
+					switch (action) {
+						case 'play':
+							module.exports.onPlay();
+							break;
+						case 'stop':
+							module.exports.onStop();
+							break;
+						case 'stop.now':
+							module.exports.onStopNow();
+							break;
+						case 'togglePrivate':
+							module.exports.onTogglePrivate();
+							break;
+						case 'terminate':
+							setTimeout(function(){
+								// on insert un décalage car la webapp doit d'abord déclencher la fermeture de la fenetre du navigateur internet
+								module.exports.onTerminate();
+							},500);
+							break;
+						case 'generate_karabd':
+							module.exports.generateKaraDb(socket);
+							break;
+						default:
+							logger.log('warning','Unknown action : ' + action);
+							break;
+					}
+				});
+			});
+			module.exports._server.listen(module.exports.LISTEN);
+			logger.info('Dashboard is READY.');
 		}
 		else
 		{
@@ -99,12 +98,12 @@ module.exports = {
 
 		if(os.platform()=='linux')
 		{
-			logger.info('Launcher::Serveur : Go to http://'+ip.address()+':1338');
-			cp.exec('firefox --new-tab http://'+ip.address()+':1338');
+			logger.info('Launcher::Serveur : Go to http://'+ip.address()+':'+module.exports.LISTEN);
+			cp.exec('firefox --new-tab http://'+ip.address()+':'+module.exports.LISTEN);
 		}
 		else
 		{
-			open('http://'+ip.address()+':1338');
+			open('http://'+ip.address()+':'+module.exports.LISTEN);
 		}
 	},
 

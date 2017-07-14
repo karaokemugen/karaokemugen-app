@@ -16,7 +16,7 @@
             <p><button id="terminate"><i class="fa fa-power-off"></i> Quitter l'application</button></p>
             <p><span class="states_private"></span> <button id="togglePrivate">Switch</button></p>
             <p>
-                Status du moteur de karaoke : <span class="states_status"></span> 
+                Status du moteur de karaoke : <span class="states_status"></span>
                 <button id="engine_play">Play</button>
                 <button id="engine_stop">Stop (After)</button>
                 <button id="engine_stop_now">Stop (Now)</button>
@@ -27,6 +27,10 @@
                 <span class="indexing">En cours ...</span>
                 <pre class="log"></pre>
             </div>
+
+            <form class="tool-frontend-access" data-port="0" action="#" target="_blank">
+                <button type="submit">Accéder au front end</button>
+            </form>
         </div>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/jquery.js"></script>

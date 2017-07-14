@@ -20,6 +20,8 @@ module.exports = {
 	_states:{
 		status:'stop', // [stop,play] // etat générale de l'application Karaoke - STOP => la lecture de la playlist est interrompu
 		private:true, // [bool(true|false)] // Karaoke en mode privé ou publique
+		admin_port:1338,
+		frontend_port:1337,
 	},
 	_services:{
 		admin: null,
@@ -49,6 +51,7 @@ module.exports = {
 			module.exports._start_player();
 			module.exports._start_playlist_controller();
 			module.exports._start_admin();
+			module.exports._start_frontend();
 			module.exports._broadcastStates();
 		}).catch(function(response){
 			console.log(response);
@@ -60,6 +63,15 @@ module.exports = {
 	 */
 	exit:function(){
 		process.exit();
+	},
+
+	/**
+	 * Test Fonction
+	 * @function {play}
+	 */
+	test:function(){
+		console.log('This is an engine test event !');
+		return 'This is an engine test event response !';
 	},
 
     /**
@@ -210,7 +222,7 @@ module.exports = {
 	*/
 	_start_admin:function(){
 		module.exports._services.admin = require(path.resolve(__dirname,'../_admin/index.js'));
-		module.exports._services.admin.LISTEN = 1338;
+		module.exports._services.admin.LISTEN = module.exports._states.admin_port;
 		module.exports._services.admin.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.admin.SETTINGS = module.exports.SETTINGS;
 		module.exports._services.admin.DB_INTERFACE = module.exports.DB_INTERFACE;
@@ -229,6 +241,25 @@ module.exports = {
 		module.exports._services.admin.init();
 		// et on lance la commande pour ouvrir la page web
 		module.exports._services.admin.open();		
+	},
+	/**
+	* @function 
+	* Starts the admin dashboard webservice on the selected port
+	* Broadcasts syspath and settings, as well as db interface to that module.
+	*/
+	_start_frontend:function(){
+		module.exports._services.frontend = require(path.resolve(__dirname,'../_webapp/index.js'));
+		module.exports._services.frontend.LISTEN = module.exports._states.frontend_port;
+		module.exports._services.frontend.SYSPATH = module.exports.SYSPATH;
+		module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;
+		module.exports._services.frontend.DB_INTERFACE = module.exports.DB_INTERFACE;
+		// --------------------------------------------------------
+		// diffusion des méthodes interne vers les events frontend
+		// --------------------------------------------------------
+		module.exports._services.frontend.onTest = module.exports.test;
+		// --------------------------------------------------------
+		// on démarre ensuite le service
+		module.exports._services.frontend.init();
 	},
 	/**
 	* @function 
