@@ -1,3 +1,4 @@
+var sqlite3 = require('sqlite3').verbose();
 var path = require('path');
 var fs = require('fs');
 const logger = require('../../_common/utils/logger.js');
@@ -13,98 +14,99 @@ module.exports = {
 
 	init: function(){
 		return new Promise(function(resolve,error){
+			// démarre une instance de SQLITE
+
 			if(module.exports.SYSPATH === null)
 			{
 				logger.error('_engine/components/db_interface.js : SYSPATH is null');
 				process.exit();
 			}
-			// démarre une instance de SQLITE
 
-			if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')))
-			{
-				logger.warn('Unable to find karaoke database. Creating it...');
-	    		var generator = require('../../_admin/generate_karasdb.js');
-				generator.SYSPATH = module.exports.SYSPATH;
-				generator.SETTINGS = module.exports.SETTINGS;
-				generator.onLog = function(type,message) {
-					logger.info('generate_karasdb.js > '+message);
-				}
-				generator.run().then(function(response){
-					// on relance l'interface de base de données et on sort du mode rebuild
-					module.exports.init_on_db_ready();
+			var userDB_Test = new Promise(function(resolve,reject){
+				if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3')))
+				{
+					logger.warn('Unable to find user database. Creating it...');
+					NeedToCreateUserTables = true;
+					var db = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'));
+					var sqlCreateUserDB = fs.readFileSync(path.join(__dirname,'../../_common/db/userdata.sqlite3.sql'),'utf-8');
+					db.exec(sqlCreateUserDB, function (err){
+						if (err)
+						{
+							logger.error('Error creating user base : '+err);
+							process.exit();
+						} else
+						{
+							logger.info('User database created successfully.');
+							resolve();
+						}
+					});
+				} else {
 					resolve();
-				}).catch(function(response,error){
-					// erreur ?
-					console.log(response);
-					process.exit();
-				});
-			}
-			else
-			{
+				}
+			});
+
+			var karasDB_Test = new Promise(function(resolve,reject){
+				if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')))
+				{
+					logger.warn('Unable to find karaoke database. Creating it...');
+					var generator = require('../../_admin/generate_karasdb.js');
+					generator.SYSPATH = module.exports.SYSPATH;
+					generator.SETTINGS = module.exports.SETTINGS;
+					generator.onLog = function(type,message) {
+						logger.info('generate_karasdb.js > '+message);
+					}
+					generator.run().then(function(response){
+						resolve();
+					}).catch(function(response,error){
+						// erreur ?
+						console.log(response);
+						process.exit();
+					});
+				} else {
+					resolve();
+				}
+			});
+
+			Promise.all([ userDB_Test, karasDB_Test ]).then(function() {
 				module.exports.init_on_db_ready();
 				resolve();
-			}
+			});
 		});
 	},
 
 	init_on_db_ready:function(){
 
-		var sqlite3 = require('sqlite3').verbose();
+		// les fichiers sqlites sont externe (car l'appli ne peux écrire dans ses assets interne)
+
 		module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
 			if (err)
 			{
 				logger.error('Error loading main karaoke database : '+err)
-				logger.error('Please run generate_karasdb.js first!');
+				process.exit();
 			}
 		});
-		// On vérifie si la base user existe. Si non on insère les tables.
-		var NeedToCreateUserTables = false;
-		// le fichier sqlite est externe (car l'appli ne peux écrire dans ses assets interne)
-		if (!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3')))
-		{
-			logger.warn('Unable to find user database. Creating it...');
-    		NeedToCreateUserTables = true;
-		};
-		// le fichier sqlite est externe (car l'appli ne peux écrire dans ses assets interne)
+
 		module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
 			if (err)
 			{
-            	logger.error('Error loading user database : '+err);
-        	}
-
-			if (NeedToCreateUserTables)
-			{
-				// ici on va lire un fichier SQL interne à l'appli on met donc un chemin relatif à __dirname
-				var sqlCreateUserDB = fs.readFileSync(path.join(__dirname,'../../_common/db/userdata.sqlite3.sql'),'utf-8');
-        		module.exports._user_db_handler.exec(sqlCreateUserDB, function (err){
-	            	if (err)
-					{
-                		logger.error('Error creating user base : '+err);	                	
-						process.exit();
-            		} else
-					{
-						logger.info('User database created successfully.');
-					}
-				});
+				logger.error('Error loading user database : '+err);
+				process.exit();
 			}
 		});
+
 		module.exports._ready = true;
-		module.exports.getStats()
-		 .then(function(stats)
-		 {
+		module.exports.getStats().then(function(stats){
 			logger.info('Number of karaokes in database : '+stats.totalcount);
 			logger.info('Duration of all karaokes       : '+stats.totalduration);
 			logger.info('Number of series               : '+stats.totalseries);
 			logger.info('Number of languages            : '+stats.totallanguages);
 			logger.info('Number of artists              : '+stats.totalartists);
 			logger.info('Number of playlists            : '+stats.totalplaylists);
-		 })
-		 .catch(function(err)
-		 {
+		}).catch(function(err){
 			logger.warn('Unable to calculate stats : '+err);
-		 })
+		})
 		logger.info('Database is READY.')
-		
+
 	},
 
 	// fermeture des instances SQLITE (unlock les fichiers)
@@ -140,115 +142,119 @@ module.exports = {
 			var pGetSeriesCount = new Promise((resolve,reject) =>
 			{
 				var sqlCalculateSeriesCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_series_count.sql'),'utf-8');
-			module.exports._db_handler.get(sqlCalculateSeriesCount,
-				function (err, res)
-				{
-					if (err)
+				module.exports._db_handler.get(sqlCalculateSeriesCount,
+					function (err, res)
 					{
-						logger.error('Unable to get number of series : '+err);
-						stats.totalseries = 0;
-						resolve();
-					} else {
-						stats.totalseries = res.seriescount;
-						resolve();
-					}
-				})
-			});	
-			
+						if (err)
+						{
+							logger.error('Unable to get number of series : '+err);
+							stats.totalseries = 0;
+							resolve();
+						} else {
+							stats.totalseries = res.seriescount;
+							resolve();
+						}
+					})
+			});
+
 			var pGetPlaylistCount = new Promise((resolve,reject) =>
 			{
 				var sqlCalculatePlaylistCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_count.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlCalculatePlaylistCount,
-				function (err, res)
-				{
-					if (err)
+				module.exports._user_db_handler.get(sqlCalculatePlaylistCount,
+					function (err, res)
 					{
-						logger.error('Unable to get number of playlists : '+err);
-						stats.totalplaylists = 0;
-						resolve();
-					} else {
-						stats.totalplaylists = res.plcount;
-						resolve();
-					}
-				})
+						if (err)
+						{
+							logger.error('Unable to get number of playlists : '+err);
+							stats.totalplaylists = 0;
+							resolve();
+						} else {
+							stats.totalplaylists = res.plcount;
+							resolve();
+						}
+					})
 			});
 			var pGetArtistCount = new Promise((resolve,reject) =>
 			{
 				var sqlCalculateArtistCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_artist_count.sql'),'utf-8');
-			module.exports._db_handler.get(sqlCalculateArtistCount,
-				function (err, res)
-				{
-					if (err)
+				module.exports._db_handler.get(sqlCalculateArtistCount,
+					function (err, res)
 					{
-						logger.error('Unable to get number of artists : '+err);
-						stats.totalartists = 0;
-						resolve();
-					} else {
-						stats.totalartists = res.artistcount;
-						resolve();
-					}
-				})
+						if (err)
+						{
+							logger.error('Unable to get number of artists : '+err);
+							stats.totalartists = 0;
+							resolve();
+						} else {
+							stats.totalartists = res.artistcount;
+							resolve();
+						}
+					})
 			});
 			var pGetKaraCount = new Promise((resolve,reject) =>
 			{
 				var sqlCalculateKaraCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_kara_count.sql'),'utf-8');
-			module.exports._db_handler.get(sqlCalculateKaraCount,
-				function (err, res)
-				{
-					if (err)
+				module.exports._db_handler.get(sqlCalculateKaraCount,
+					function (err, res)
 					{
-						logger.error('Unable to get number of karaoke songs : '+err);
-						stats.totalcount = 0;
-						resolve();
-					} else {
-						stats.totalcount = res.karacount;
-						resolve();
-					}
-				})
+						if (err)
+						{
+							logger.error('Unable to get number of karaoke songs : '+err);
+							stats.totalcount = 0;
+							resolve();
+						} else {
+							stats.totalcount = res.karacount;
+							resolve();
+						}
+					})
 			});
 			var pGetLanguageCount = new Promise((resolve,reject) =>
 			{
 				var sqlCalculateLanguageCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_lang_count.sql'),'utf-8');
-			module.exports._db_handler.get(sqlCalculateLanguageCount,
-				function (err, res)
-				{
-					if (err)
+				module.exports._db_handler.get(sqlCalculateLanguageCount,
+					function (err, res)
 					{
-						logger.error('Unable to get number of languages : '+err);
-						stats.totallanguages = 0;
-						resolve();
-					} else {
-						stats.totallanguages = res.langcount;
-						resolve();
-					}
-				})
+						if (err)
+						{
+							logger.error('Unable to get number of languages : '+err);
+							stats.totallanguages = 0;
+							resolve();
+						} else {
+							stats.totallanguages = res.langcount;
+							resolve();
+						}
+					})
 			});
 			var pGetDuration = new Promise((resolve,reject) =>
 			{
 				var sqlCalculateTotalDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_total_duration.sql'),'utf-8');
-			module.exports._db_handler.get(sqlCalculateTotalDuration,
-				function (err, res)
-				{
-					if (err)
+				module.exports._db_handler.get(sqlCalculateTotalDuration,
+					function (err, res)
 					{
-						logger.error('Unable to get total duration : '+err);
-						stats.totalduration = 'Unknown';
-						resolve();
-					} else {
-						stats.totalduration = moment.duration(res.totalduration,'seconds').format('D [days], H [hours], m [minutes], s [seconds]');
-						resolve();
-					}
-				})
+						if (err)
+						{
+							logger.error('Unable to get total duration : '+err);
+							stats.totalduration = 'Unknown';
+							resolve();
+						} else {
+							stats.totalduration = moment.duration(res.totalduration,'seconds').format('D [days], H [hours], m [minutes], s [seconds]');
+							resolve();
+						}
+					})
 			});
-			Promise.all([pGetKaraCount,pGetDuration,pGetSeriesCount,pGetLanguageCount,pGetArtistCount,pGetPlaylistCount])
-			.then(function()
-			{
+
+			Promise.all([
+				pGetKaraCount,
+				pGetDuration,
+				pGetSeriesCount,
+				pGetLanguageCount,
+				pGetArtistCount,
+				pGetPlaylistCount
+			]).then(function(){
 				resolve(stats);
-			})	
-			.catch(function()
-			{
+			}).catch(function(){
 				reject('One promise failed getting stats.');
-			})				
+			})
 		})
 	},
 	/**
@@ -267,7 +273,7 @@ module.exports = {
 			var sqlCalculatePlaylistNumOfKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_numofkaras.sql'),'utf-8');
 			module.exports._user_db_handler.get(sqlCalculatePlaylistNumOfKaras,
 			{
-				$playlist_id: playlist_id				
+				$playlist_id: playlist_id
 			}, function (err, num_karas)
 			{
 				if (err)
@@ -277,7 +283,7 @@ module.exports = {
 				} else {
 					resolve(num_karas.NumberOfKaras);
 				}
-			})						
+			})
 		})
 	},
 	/**
@@ -296,10 +302,10 @@ module.exports = {
 			var sqlCalculatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_duration.sql'),'utf-8');
 			module.exports._user_db_handler.serialize(function(){
 				module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;')
-					
+
 						module.exports._user_db_handler.get(sqlCalculatePlaylistDuration,
 						{
-							$playlist_id: playlist_id				
+							$playlist_id: playlist_id
 						}, function (err, duration)
 						{
 								if (err)
@@ -310,7 +316,7 @@ module.exports = {
 									resolve(duration);
 								}
 						})
-			})			
+			})
 		})
 	},
 	updatePlaylistNumOfKaras:function(playlist_id,num_karas)
@@ -325,7 +331,7 @@ module.exports = {
 			module.exports._user_db_handler.run(sqlUpdatePlaylistNumOfKaras,
 				{
 					$playlist_id: playlist_id,
-					$num_karas: num_karas		
+					$num_karas: num_karas
 				}, function (err)
 				{
 					if (err)
@@ -335,7 +341,7 @@ module.exports = {
 					} else {
 						resolve(num_karas);
 					}
-				})					
+				})
 		})
 	},
 	/**
@@ -356,7 +362,7 @@ module.exports = {
 			module.exports._user_db_handler.run(sqlUpdatePlaylistDuration,
 				{
 					$playlist_id: playlist_id,
-					$duration: duration				
+					$duration: duration
 				}, function (err)
 				{
 					if (err)
@@ -366,7 +372,7 @@ module.exports = {
 					} else {
 						resolve(duration);
 					}
-				})					
+				})
 		})
 	},
 	/**
@@ -384,10 +390,10 @@ module.exports = {
 			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
 			module.exports._user_db_handler.serialize(function(){
 				module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;')
-					
+
 						module.exports._user_db_handler.all(sqlGetPlaylistContents,
 						{
-							$playlist_id: playlist_id				
+							$playlist_id: playlist_id
 						}, function (err, playlist)
 						{
 								if (err)
@@ -398,10 +404,10 @@ module.exports = {
 									resolve(playlist);
 								}
 						})
-					
-			
+
+
 			})
-			
+
 		})
 	},
 	/**
@@ -427,8 +433,8 @@ module.exports = {
 						resolve(playlist);
 					}
 				})
-			
-			
+
+
 		})
 	},
 	/**
@@ -437,7 +443,7 @@ module.exports = {
 	* @return {Object} {Playlist object}
 	* Selects playlist info from playlist table. Returns the info in a callback.
 	*/
-    getPlaylistInfo:function(playlist_id,callback)
+	getPlaylistInfo:function(playlist_id,callback)
 	{
 		//TODO : transformer en promesse
 		var sqlGetPlaylistInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_info.sql'),'utf-8');
@@ -453,7 +459,7 @@ module.exports = {
 			} else {
 				if (row) {
 					callback(row);
-				} else {					
+				} else {
 					callback(null, 'Playlist '+playlist_id+' unknown.');
 				}
 			}
@@ -485,11 +491,11 @@ module.exports = {
 							} else {
 								reject();
 							}
-							
+
 						}
 					})
-				
-			
+
+
 		})
 	},
 	isPublicPlaylist:function(playlist_id,callback)
@@ -501,10 +507,10 @@ module.exports = {
 			$playlist_id: playlist_id
 		}, function (err, row)
 		{
-                if (err)
+				if (err)
 				{
-                    logger.error('Unable to select playlist '+playlist_id+'\'s public flag : '+err);
-                    callback(null,err);
+					logger.error('Unable to select playlist '+playlist_id+'\'s public flag : '+err);
+					callback(null,err);
 				} else {
 					if (row) {
 						if (row.flag_public == 1) {
@@ -516,7 +522,7 @@ module.exports = {
 						var err = 'Playlist unknown.'
 						logger.error(err);
 						callback(null,err);
-					}					
+					}
 				}
 		})
 	},
@@ -529,11 +535,11 @@ module.exports = {
 			$playlist_id: playlist_id
 		}, function (err, row)
 		{
-                if (err)
+				if (err)
 				{
-                    logger.error('Unable to select playlist '+playlist_id+'\'s current flag :');
-                    logger.error(err);
-                    callback(null,err);
+					logger.error('Unable to select playlist '+playlist_id+'\'s current flag :');
+					logger.error(err);
+					callback(null,err);
 				} else {
 					if (row) {
 						if (row.flag_current == 1) {
@@ -563,13 +569,13 @@ module.exports = {
 			$kara_id: kara_id
 		}, function (err, row)
 		{
-                if (err)
+				if (err)
 				{
-                    logger.error('Unable to select karaoke song '+kara_id+' : '+err);                    
-                    callback(null,err);
+					logger.error('Unable to select karaoke song '+kara_id+' : '+err);
+					callback(null,err);
 				} else {
 					if (row) {
-						callback(true);						
+						callback(true);
 					} else {
 						callback(false);
 					}
@@ -594,7 +600,7 @@ module.exports = {
 			{
 					if (err)
 					{
-						logger.error('Unable to search for karaoke song '+kara_id+' in playlist '+playlist_id+' : '+err);   reject(err);						
+						logger.error('Unable to search for karaoke song '+kara_id+' in playlist '+playlist_id+' : '+err);   reject(err);
 					} else {
 						console.log(row);
 						if (row) {
@@ -620,14 +626,14 @@ module.exports = {
 			$playlist_id: playlist_id
 		}, function (err, row)
 		{
-                if (err)
+				if (err)
 				{
-                    logger.error('Unable to select playlist '+playlist_id+' :');
-                    logger.error(err);
-                    callback(null,err);
+					logger.error('Unable to select playlist '+playlist_id+' :');
+					logger.error(err);
+					callback(null,err);
 				} else {
 					if (row) {
-						callback(true);						
+						callback(true);
 					} else {
 						callback(false);
 					}
@@ -638,7 +644,7 @@ module.exports = {
 	{
 		//TODO : transformer en promesse
 		var sqlSetCurrentPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_current.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlSetCurrentPlaylist, 
+		module.exports._user_db_handler.run(sqlSetCurrentPlaylist,
 		{
 			$playlist_id: playlist_id
 		}, function (err, rep)
@@ -646,7 +652,7 @@ module.exports = {
 			if (err)
 			{
 				logger.error('Unable to set current flag on playlist '+playlist_id+' :');
-                logger.error(err);                
+				logger.error(err);
 			}
 			callback(rep,err);
 		});
@@ -660,14 +666,14 @@ module.exports = {
 	{
 		//TODO : transformer en promesse
 		var sqlSetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_visible.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlSetVisiblePlaylist, 
+		module.exports._user_db_handler.run(sqlSetVisiblePlaylist,
 		{
 			$playlist_id: playlist_id
 		}, function (err, rep)
 		{
 			if (err)
 			{
-				logger.error('Unable to set visible flag on playlist '+playlist_id+' : '+err);                
+				logger.error('Unable to set visible flag on playlist '+playlist_id+' : '+err);
 			}
 			callback(rep,err);
 		});
@@ -676,19 +682,19 @@ module.exports = {
 	* @function {unsetVisiblePlaylist}
 	* @param  {number} playlist_id {ID of playlist to make invisible}
 	* @return {string} {error}
-	*/	
+	*/
 	unsetVisiblePlaylist:function(playlist_id,callback)
 	{
 		//TODO : transformer en promesse
 		var sqlUnsetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_visible.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlSetCurrentPlaylist, 
+		module.exports._user_db_handler.run(sqlSetCurrentPlaylist,
 		{
 			$playlist_id: playlist_id
 		}, function (err, rep)
 		{
 			if (err)
 			{
-				logger.error('Unable to unset visible flag on playlist '+playlist_id+' : '+err);                
+				logger.error('Unable to unset visible flag on playlist '+playlist_id+' : '+err);
 			}
 			callback(rep,err);
 		});
@@ -697,10 +703,10 @@ module.exports = {
 	{
 		//TODO : transformer en promesse
 		var sqlSetPublicPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_public.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlSetPublicPlaylist, 
+		module.exports._user_db_handler.run(sqlSetPublicPlaylist,
 		{
-			$playlist_id: playlist_id	
-		}, function (err, rep) 
+			$playlist_id: playlist_id
+		}, function (err, rep)
 		{
 			if (err)
 			{
@@ -711,7 +717,7 @@ module.exports = {
 	},
 	unsetPublicAllPlaylists:function(callback)
 	{
-		return new Promise(function(resolve,reject){	
+		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady())
 			{
 				logger.error('DB_INTERFACE is not ready to work');
@@ -723,7 +729,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					logger.error('Unable to unset public flag on playlists : '+err);               
+					logger.error('Unable to unset public flag on playlists : '+err);
 					reject();
 				} else {
 					resolve();
@@ -733,7 +739,7 @@ module.exports = {
 	},
 	unsetCurrentAllPlaylists:function()
 	{
-		return new Promise(function(resolve,reject){	
+		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady())
 			{
 				logger.error('DB_INTERFACE is not ready to work');
@@ -745,11 +751,11 @@ module.exports = {
 			{
 				if (err)
 				{
-					logger.error('Unable to unset current flag on playlists : '+err);					
+					logger.error('Unable to unset current flag on playlists : '+err);
 					reject();
 				} else {
 					resolve();
-				}			
+				}
 			});
 		});
 	},
@@ -765,12 +771,12 @@ module.exports = {
 			if (err)
 			{
 				logger.error('Unable to empty playlist :');
-                logger.error(err);                
+				logger.error(err);
 			}
 		})
 	},
 	deletePlaylist:function(playlist_id,callback)
-	{		
+	{
 		//TODO : transformer en promesse
 		var sqlDeletePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_playlist.sql'),'utf-8');
 		module.exports._user_db_handler.run(sqlDeletePlaylist,
@@ -780,7 +786,7 @@ module.exports = {
 			if (err)
 			{
 				logger.error('Unable to delete playlist :');
-                logger.error(err);                
+				logger.error(err);
 			}
 			callback(true);
 		})
@@ -821,9 +827,9 @@ module.exports = {
 			$flag_public: flag_public
 		}, function (err, rep)
 		{
-                if (err)
+				if (err)
 				{
-                    logger.error('Unable to edit playlist '+name+' : '+err);                    
+					logger.error('Unable to edit playlist '+name+' : '+err);
 					callback({
 						error:true,
 						error_msg:err
@@ -861,16 +867,16 @@ module.exports = {
 			$flag_public: flag_public
 		}, function (err, rep)
 		{
-                if (err)
+				if (err)
 				{
-                    logger.error('Unable to create playlist '+name+' : '+err);
-                    logger.error(err);
+					logger.error('Unable to create playlist '+name+' : '+err);
+					logger.error(err);
 					callback({
 						id:0,
 						error:true,
 						error_msg:err
 					});
-				} else {					
+				} else {
 					callback({
 						id:this.lastID,
 						error:false
@@ -891,7 +897,7 @@ module.exports = {
 	* @return {promise} {Promise}
 	*/
 	addKaraToPlaylist:function(kara_id,requester,NORM_requester,playlist_id,pos,date_added,flag_playing)
-	{		
+	{
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady())
 			{
@@ -900,11 +906,11 @@ module.exports = {
 			}
 
 			//We need to get the KID of the karaoke we're adding.
-			
+
 			var sqlGetKID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kid.sql'),'utf-8');
 			module.exports._db_handler.get(sqlGetKID,
 			{
-				$kara_id: kara_id				
+				$kara_id: kara_id
 			}, function (err, row)
 			{
 					if (err)
@@ -921,7 +927,7 @@ module.exports = {
 								$pseudo_add: requester,
 								$NORM_pseudo_add: NORM_requester,
 								$kara_id: kara_id,
-								$kid: kid, 
+								$kid: kid,
 								$date_added: date_added,
 								$pos: pos,
 								$flag_playing: flag_playing
@@ -934,12 +940,12 @@ module.exports = {
 									} else {
 										resolve(true);
 									}
-							})						
+							})
 						} else {
 							logger.error('No KID found for this '+kara_id+' !');
 							reject('No KID found for this '+kara_id+' !');
 						}
-						
+
 					}
 			})
 		})

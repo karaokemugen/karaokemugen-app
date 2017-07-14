@@ -27,7 +27,7 @@ module.exports = {
             var S = require('string');
             var moment = require('moment');
             const uuidV4 = require("uuid/v4");
-            const async = require('async');            
+            const async = require('async');
             var csv = require('csv-string');
             const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Karas);
             const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Videos);
@@ -99,7 +99,9 @@ module.exports = {
                                 // Et on s'occupe des données dans une transaction sérialisé (BULK mode)
                                 // -------------------------------------------------------------------------------------------------------------
 
-                                 db.run("begin transaction");
+                                db.run("begin transaction");
+
+                                // -------------------------------------------------------------------------------------------------------------
 
                                 var karafiles = fs.readdirSync(karasdir);
                                 module.exports.onLog('success', moment().format('LTS') + ' - Karaoke directory read.');
@@ -110,44 +112,36 @@ module.exports = {
                                 });
                                 module.exports.onLog('success', moment().format('LTS') + ' - We have ' + karas.length + ' karaoke songs');
 
-                                //Un autre passage dans karas pour avoir la durée des vidéos, mais cette fois en série
-                                var stmt_UpdateVideoLength = db.prepare("UPDATE kara SET videolength = $videolength WHERE PK_id_kara = $id ;");
-                                id_kara = 0;
-                                karas.forEach(function(kara) {
-                                    id_kara++;
-                                    getvideoduration(kara['videofile'], id_kara, function(err, videolength, id) {
-                                        sqlUpdateVideoLength.push({
-                                            $videolength:videolength,
-                                            $id:id
-                                        });
-                                    });
-                                });
-                                module.exports.onLog('success', moment().format('LTS') + ' - Calculated videos duration.');
-
-                                id_kara = 0;
-                                karafiles.forEach(function(kara) {
-                                    id_kara++;
-                                    addTags(kara, id_kara);
+                                // extraction des tags
+                                karafiles.forEach(function(kara, index) {
+                                    addTags(kara, index);
                                 });
                                 module.exports.onLog('success', moment().format('LTS') + ' - We havre ' + tags.length + ' tags, ' + karas_tags.length + ' links');
 
-                                id_kara = 0;
-                                karafiles.forEach(function(kara) {
-                                    id_kara++;
-                                    addSeries(kara, id_kara);
+                                // extraction des séries
+                                karafiles.forEach(function(kara, index) {
+                                    addSeries(kara, index);
                                 });
                                 module.exports.onLog('success', moment().format('LTS') + ' - We have ' + series.length + ' series, ' + karas_series.length + ' links');
 
                                 // -------------------------------------------------------------------------------------------------------------
                                 // Construction des requêtes SQL pour l'insertion des données
-                                // -------------------------------------------------------------------------------------------------------------
+                                // ------------------------------------------------------------------------------------------------------------
 
                                 var stmt_InsertKaras = db.prepare("INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);");
-                                async.eachOf(karas, function(kara, id_kara, callback) {
-                                    id_kara++;
+                                var stmt_UpdateVideoLength = db.prepare("UPDATE kara SET videolength = $videolength WHERE PK_id_kara = $id ;");
+                                var stmt_InsertSeries = db.prepare("INSERT INTO series(PK_id_series,name,NORM_name) VALUES( $id_series, $serie, $serienorm );");
+                                var stmt_InsertTags = db.prepare("INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );");
+                                var stmt_InsertKarasTags = db.prepare("INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES( $id_tag, $id_kara );");
+                                var stmt_InsertKarasSeries = db.prepare("INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES( $id_series, $id_kara);");
+                                var stmt_UpdateSeriesAltNames = db.prepare("UPDATE series SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;");
+
+                                // ------------------------------------------------------------------------------------------------------------
+
+                                karas.forEach(function(kara, index) {
                                     var titlenorm = S(kara['title']).latinise().s;
                                     sqlInsertKaras.push({
-                                        $id_kara : id_kara,
+                                        $id_kara : index,
                                         $kara_KID : kara['KID'],
                                         $kara_title : kara['title'],
                                         $titlenorm : titlenorm,
@@ -161,136 +155,155 @@ module.exports = {
                                         $kara_viewcount : kara['viewcount'],
                                         $kara_gain : kara['gain'],
                                     });
-                                    callback();
-                                })
+                                });
 
-                                async.eachOf(series, function(serie, id_series, callback) {
-                                    id_series++;
+                                series.forEach(function(serie, index) {
                                     var serienorm = S(serie).latinise().s;
-                                    sqlInsertSeries += 'INSERT INTO series(PK_id_series,name,NORM_name) VALUES(' + id_series + ',"' + serie + '","' + serienorm + '");';
-                                    callback();
-                                })
-                                async.eachOf(tags, function(tag, id_tag, callback) {
-                                    id_tag++;
+                                    sqlInsertSeries.push({
+                                        $id_series : index,
+                                        $serie : serie,
+                                        $serienorm : serienorm,
+                                    });
+                                });
+                                tags.forEach(function(tag, index) {
                                     tag = tag.split(',');
                                     var tagname = tag[0];
                                     var tagnamenorm = S(tagname).latinise();
                                     var tagtype = tag[1];
-                                    sqlInsertTags += 'INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES(' + id_tag + ',' + tagtype + ',"' + tagname + '","' + tagnamenorm + '");';
-                                    callback();
-                                })
-                                async.each(karas_tags, function(karatag, callback) {
+                                    sqlInsertTags.push({
+                                        $id_tag : index,
+                                        $tagtype : tagtype,
+                                        $tagname : tagname,
+                                        $tagnamenorm : tagnamenorm,
+                                    });
+                                });
+                                karas_tags.forEach(function(karatag, index) {
                                     karatag = karatag.split(',');
                                     var id_tag = karatag[0];
                                     var id_kara = karatag[1];
-                                    sqlInsertKarasTags += 'INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES(' + id_tag + ',' + id_kara + ');';
-                                    callback();
-                                })
-                                async.each(karas_series, function(karaseries, callback) {
-                                    karaseries = karaseries.split(',');
-                                    var id_series = karaseries[0];
-                                    var id_kara = karaseries[1];
-                                    sqlInsertKarasSeries += 'INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES(' + id_series + ',' + id_kara + ');';
-                                    callback();
-                                })
+                                    sqlInsertKarasTags.push({
+                                        $id_tag : id_tag,
+                                        $id_kara : id_kara,
+                                    });
+                                });
+                                karas_series.forEach(function(karaserie, index) {
+                                    karaserie = karaserie.split(',');
+                                    var id_series = karaserie[0];
+                                    var id_kara = karaserie[1];
+                                    sqlInsertKarasSeries.push({
+                                        $id_series : id_series,
+                                        $id_kara : id_kara,
+                                    });
+                                });
+
                                 //Traitement des altnames de séries
                                 if (fs.existsSync(series_altnamesfile)) {
                                     var DoUpdateSeriesAltNames = true;
                                     series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
+                                    // !!! non native forEach (here "csv" is a csv-string handler)
                                     csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie, index) {
                                         var serie_name = serie[0];
                                         var serie_altnames = serie[1];
                                         if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
                                             var serie_altnamesnorm = S(serie[1]).latinise().s;
-                                            sqlUpdateSeriesAltNames += 'UPDATE series SET altname="' + serie_altnames + '",NORM_altname="' + serie_altnamesnorm + '" WHERE name="' + serie_name + '";';
+                                            sqlUpdateSeriesAltNames.push({
+                                                $serie_altnames : serie_altnames,
+                                                $serie_altnamesnorm : serie_altnamesnorm,
+                                                $serie_name : serie_name,
+                                            });
                                         }
-                                    })
+                                    });
                                     module.exports.onLog('success', moment().format('LTS') + ' - Found alternative series name file. Ready to populate series table.');
                                 } else {
                                     var DoUpdateSeriesAltNames = false;
                                     module.exports.onLog('warning', moment().format('LTS') + ' - No alternative series name file found.');
                                 }
 
+                                //Un autre passage dans karas pour avoir la durée des vidéos
+                                karas.forEach(function(kara, index) {
+                                    getvideoduration(kara['videofile'], index, function(err, videolength, id) {
+                                        sqlUpdateVideoLength.push({
+                                            $videolength:videolength,
+                                            $id:id
+                                        });
+                                    });
+                                });
+                                module.exports.onLog('success', moment().format('LTS') + ' - Calculated videos duration.');
+
                                 // -------------------------------------------------------------------------------------------------------------
                                 // Execution des requetes (RAW SQL ou STATEMENT selon le cas)
                                 // -------------------------------------------------------------------------------------------------------------
 
-                                sqlInsertKaras.forEach(function(kara){
-                                    stmt_InsertKaras.run(kara);
+                                sqlInsertKaras.forEach(function(data){
+                                    stmt_InsertKaras.run(data);
                                 });
                                 module.exports.onLog('info', moment().format('LTS') + ' - Filled karaokes table.');
-                                
-                                sqlUpdateVideoLength.forEach(function(kara){
-                                    stmt_UpdateVideoLength.run(kara);
+
+                                sqlUpdateVideoLength.forEach(function(data){
+                                    //console.log(data);
+                                    stmt_UpdateVideoLength.run(data);
                                 });
                                 module.exports.onLog('info', moment().format('LTS') + ' - Updated video durations.');
-                                
-                                db.exec(sqlInsertTags, function(err, rep) {
-                                    if (err) {
-                                        module.exports.onLog('error', 'Error filling tags');
-                                        module.exports.onLog('error', err);
-                                    } else {
-                                        module.exports.onLog('success', moment().format('LTS') + ' - Filled tags table.');
-                                    }
-                                });
-                                db.exec(sqlInsertKarasTags, function(err, rep) {
-                                    if (err) {
-                                        module.exports.onLog('error', 'Error filling kara_tag table');
-                                        module.exports.onLog('error', err);
-                                    } else {
-                                        module.exports.onLog('success', moment().format('LTS') + ' - Linked karaokes to tags.');
-                                    }
-                                });
-                                db.exec(sqlInsertSeries, function(err, rep) {
-                                    if (err) {
-                                        module.exports.onLog('error', 'Error filling series');
-                                        module.exports.onLog('error', err);
-                                    } else {
-                                        module.exports.onLog('success', moment().format('LTS') + ' - Filled series table.');
-                                    }
-                                });
-                                if (DoUpdateSeriesAltNames) {
-                                    db.exec(sqlUpdateSeriesAltNames, function(err, rep) {
-                                        if (err) {
-                                            module.exports.onLog('error', 'Error updating alt names : '+err);                                          
-                                        } else {
-                                            module.exports.onLog('success', moment().format('LTS') + ' - Updated alternative names of series.');
-                                        }
-                                    });
-                                }
-                                db.exec(sqlInsertKarasSeries, function(err, rep) {
-                                    if (err) {
-                                        module.exports.onLog('error', 'Error filling kara_series');
-                                        module.exports.onLog('error', err);
-                                    } else {
-                                        module.exports.onLog('success', moment().format('LTS') + ' - Linked karaokes to series.');                                        
-                                        module.exports.onLog('success', moment().format('LTS') + ' - Successfully generated database.');
-                                        module.exports.onLog('info', moment().format('LTS') + ' - Running integrity checks on user database with the newly generated data.');
-                                        //
-                                        // Running checks on user database
-                                        // Now that we regenerated kara_ids 
-                                        //
-                                        
-                                        run_userdb_integrity_checks()
-                                        .then(function(){
-                                            module.exports.onLog('success', moment().format('LTS') + ' - Completed integrity checks.');
-                                        })
-                                        .catch(function(err){
-                                            module.exports.onLog('error', moment().format('LTS') + ' - Error during integrity checks : '+err);
-                                        });
 
-                                    }
+                                sqlInsertTags.forEach(function(data){
+                                    //console.log(data);
+                                    stmt_InsertTags.run(data);
                                 });
+                                module.exports.onLog('success', moment().format('LTS') + ' - Filled tags table.');
+
+                                sqlInsertKarasTags.forEach(function(data){
+                                    //console.log(data);
+                                    stmt_InsertKarasTags.run(data);
+                                });
+                                module.exports.onLog('success', moment().format('LTS') + ' - Linked karaokes to tags.');
+
+                                sqlInsertSeries.forEach(function(data){
+                                    //console.log(data);
+                                    stmt_InsertSeries.run(data);
+                                });
+                                module.exports.onLog('success', moment().format('LTS') + ' - Filled series table.');
+
+                                if (DoUpdateSeriesAltNames) {
+                                    sqlUpdateSeriesAltNames.forEach(function(data){
+                                        //console.log(data);
+                                        stmt_UpdateSeriesAltNames.run(data);
+                                    });
+                                    module.exports.onLog('success', moment().format('LTS') + ' - Updated alternative names of series.');
+                                }
+
+                                sqlInsertKarasSeries.forEach(function(data){
+                                    //console.log(data);
+                                    stmt_InsertKarasSeries.run(data);
+                                });
+                                module.exports.onLog('success', moment().format('LTS') + ' - Linked karaokes to series.');
+                                module.exports.onLog('success', moment().format('LTS') + ' - Successfully generated database.');
 
                                 db.run("commit");
-                            });                            
+                            });
+
+                            // -------------------------------------------------------------------------------------------------------------
+                            // Running checks on user database
+                            // Now that we regenerated kara_ids
+                            // -------------------------------------------------------------------------------------------------------------
+
+                            module.exports.onLog('info', moment().format('LTS') + ' - Running integrity checks on user database with the newly generated data.');
+                            run_userdb_integrity_checks()
+                            .then(function(){
+                                module.exports.onLog('success', moment().format('LTS') + ' - Completed integrity checks.');
+                            })
+                            .catch(function(err){
+                                module.exports.onLog('error', moment().format('LTS') + ' - Error during integrity checks : '+err);
+                            });
+
+                            // -------------------------------------------------------------------------------------------------------------
+                            // Then close database connexion
+                            // -------------------------------------------------------------------------------------------------------------
+
                             db.close(function(){
                                 userdb.close(function(){
                                     resolve();
                                 })
                             });
-                            
-
                         }
                     });
                 }
@@ -313,9 +326,9 @@ module.exports = {
                     var ViewcountKaras = [];
                     var BlacklistKaras = [];
 
-                    var sqlUpdateUserDB = "BEGIN TRANSACTION;"                    
+                    var sqlUpdateUserDB = "BEGIN TRANSACTION;"
 
-                    var pGetAllKaras = new Promise((resolve,reject) => 
+                    var pGetAllKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetAllKaras = "SELECT PK_id_kara AS id_kara, kid FROM all_karas;";
 			            db.all(sqlGetAllKaras,
@@ -329,9 +342,9 @@ module.exports = {
                                 AllKaras = playlist;
 						        resolve();
                             }
-					    })				    
+					    })
                     });
-                    var pGetPlaylistKaras = new Promise((resolve,reject) => 
+                    var pGetPlaylistKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetPlaylistKaras = "SELECT fk_id_kara AS id_kara, kid FROM playlist_content;";
 			            userdb.all(sqlGetPlaylistKaras,
@@ -344,15 +357,15 @@ module.exports = {
 					        } else {
                                 if (playlist) {
                                     PlaylistKaras = playlist;
-						            resolve();    
+						            resolve();
                                 } else {
                                     PlaylistKaras = [];
                                     resolve();
                                 }
 					        }
-				        })  
+				        })
                     });
-                    var pGetWhitelistKaras = new Promise((resolve,reject) => 
+                    var pGetWhitelistKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetWhitelistKaras = "SELECT fk_id_kara AS id_kara, kid FROM whitelist;";
 			            userdb.all(sqlGetWhitelistKaras,
@@ -365,15 +378,15 @@ module.exports = {
 					        } else {
                                 if (playlist) {
                                     WhitelistKaras = playlist;
-						            resolve();    
+						            resolve();
                                 } else {
                                     WhitelistKaras = [];
                                     resolve();
                                 }
 					    }
-				        })  
+				        })
                     });
-                    var pGetBlacklistKaras = new Promise((resolve,reject) => 
+                    var pGetBlacklistKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetBlacklistKaras = "SELECT fk_id_kara AS id_kara, kid FROM blacklist;";
 			            userdb.all(sqlGetBlacklistKaras,
@@ -386,15 +399,15 @@ module.exports = {
 					        } else {
                                 if (playlist) {
                                     BlacklistKaras = playlist;
-						            resolve();    
+						            resolve();
                                 } else {
                                     BlacklistKaras = [];
                                     resolve();
                                 }
 					        }
-				        })  
-                    });	
-                    var pGetRatingKaras = new Promise((resolve,reject) => 
+				        })
+                    });
+                    var pGetRatingKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetRatingKaras = "SELECT fk_id_kara AS id_kara, kid FROM rating;";
 			            userdb.all(sqlGetRatingKaras,
@@ -407,15 +420,15 @@ module.exports = {
 					        } else {
                                 if (playlist) {
                                     RatingKaras = playlist;
-						            resolve();    
+						            resolve();
                                 } else {
                                     RatingKaras = [];
                                     resolve();
                                 }
 					        }
-				        })  
+				        })
                     });
-                    var pGetViewcountKaras = new Promise((resolve,reject) => 
+                    var pGetViewcountKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetViewcountKaras = "SELECT fk_id_kara AS id_kara, kid FROM viewcount;";
 			            userdb.all(sqlGetViewcountKaras,
@@ -428,13 +441,13 @@ module.exports = {
 					        } else {
                                 if (playlist) {
                                     WhitelistKaras = playlist;
-						            resolve();    
+						            resolve();
                                 } else {
                                     WhitelistKaras = [];
                                     resolve();
                                 }
 					        }
-				        })  
+				        })
                     });
 
                     Promise.all([pGetViewcountKaras,pGetRatingKaras,pGetWhitelistKaras,pGetBlacklistKaras,pGetPlaylistKaras,pGetAllKaras])
@@ -445,7 +458,7 @@ module.exports = {
                         var UpdateNeeded = false;
                         if (WhitelistKaras != []) {
                             WhitelistKaras.forEach(function(WLKara){
-                                KaraFound = false;                            
+                                KaraFound = false;
                                 AllKaras.forEach(function(Kara){
                                     if (Kara.kid == WLKara.kid){
                                         // Found a matching KID, checking if id_karas are the same
@@ -464,9 +477,9 @@ module.exports = {
                                 }
                             })
                         }
-                        
+
                         if (BlacklistKaras != []) {
-                            
+
                             BlacklistKaras.forEach(function(BLKara){
                                 KaraFound = false;
                                 AllKaras.forEach(function(Kara){
@@ -488,7 +501,7 @@ module.exports = {
                             })
                         }
                         if (RatingKaras != []) {
-                            
+
                             RatingKaras.forEach(function(RKara){
                                 KaraFound = false;
                                 AllKaras.forEach(function(Kara){
@@ -510,7 +523,7 @@ module.exports = {
                             })
                         }
                         if (ViewcountKaras != []) {
-                            
+
                             ViewcountKaras.forEach(function(VKara){
                                 KaraFound = false;
                                 AllKaras.forEach(function(Kara){
@@ -531,16 +544,16 @@ module.exports = {
                                 }
                             })
                         }
-                        
+
                         if (PlaylistKaras != []) {
-                        
-                            
+
+
                             PlaylistKaras.forEach(function(PLKara){
                                 KaraFound = false;
-                                
-                                AllKaras.forEach(function(Kara){                                    
+
+                                AllKaras.forEach(function(Kara){
                                     if (Kara.kid == PLKara.kid){
-                                        
+
                                         // Found a matching KID, checking if id_karas are the same
                                         if (Kara.id_kara != PLKara.id_kara){
                                             console.log('Entered 5');
@@ -552,19 +565,19 @@ module.exports = {
                                 })
                                 //If No Karaoke with this KID was found in the AllKaras table, delete the KID
                                 if (!KaraFound) {
-                                    
+
                                     sqlUpdateUserDB += "DELETE FROM playlist_content WHERE kid = '"+PLKara.kid+"';";
                                     module.exports.onLog('warn', "KID "+PLKara.kid+" doesn't exist anymore, removed from playlists.");
                                     UpdateNeeded = true;
                                 }
-                            })                            
+                            })
                         }
                         if (UpdateNeeded)
                         {
-                            sqlUpdateUserDB += "COMMIT;"                        
+                            sqlUpdateUserDB += "COMMIT;"
                             userdb.exec(sqlUpdateUserDB, function(err, rep) {
                                 if (err) {
-                                    module.exports.onLog('error', 'Error updating user database after integrity checks : '+err)                                             
+                                    module.exports.onLog('error', 'Error updating user database after integrity checks : '+err)
                                 } else {
                                     module.exports.onLog('success', moment().format('LTS') + ' - Updated user database.');
                                     resolve();
@@ -574,8 +587,8 @@ module.exports = {
                             module.exports.onLog('success', moment().format('LTS') + ' - No update needed to user database.');
                             resolve();
                         }
-                        
-                        
+
+
 			        })
 			        .catch(function(err)
 			        {
@@ -592,8 +605,8 @@ module.exports = {
                         if (err) {
                             module.exports.onLog('error', moment().format('LTS') + ' - [' + videofile + '] Unable to probe video file : ' + err);
                             callback(err, videolength, id_kara);
-                        } else {                            
-                            videolength = Math.floor(videodata.format.duration);                            
+                        } else {
+                            videolength = Math.floor(videodata.format.duration);
                             callback(null, videolength, id_kara);
                         }
                     });
@@ -879,7 +892,7 @@ module.exports = {
                 {
                     kara['gain'] = 0;
                 } else {
-                    kara['gain'] = karadata.trackgain;                
+                    kara['gain'] = karadata.trackgain;
                 }
                 kara['videolength'] = undefined;
                 kara['rating'] = 0;
