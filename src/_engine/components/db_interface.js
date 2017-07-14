@@ -487,7 +487,40 @@ module.exports = {
 							reject(err);
 						} else {
 							if (row) {
-								resolve();
+								resolve(row.pk_id_playlist);
+							} else {
+								reject();
+							}
+
+						}
+					})
+
+
+		})
+	},
+	/**
+	* @function {Checks for a public playlist}
+	* @return {number} {Playlist ID or rejection}
+	*/
+	isAPublicPlaylist:function()
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlTestPublicPlaylistExists = fs.readFileSync(path.join(__dirname,'../../_common/db/test_public_playlist_exists.sql'),'utf-8');
+				module.exports._user_db_handler.get(sqlTestPublicPlaylistExists,
+					function (err, row)
+					{
+						if (err)
+						{
+							logger.error('Unable to search for playlist with current flag : '+err);
+							reject(err);
+						} else {
+							if (row) {
+								resolve(row.pk_id_playlist);
 							} else {
 								reject();
 							}

@@ -1,1 +1,1 @@
-SELECT * FROM playlist WHERE flag_current = 1;
+SELECT pk_id_playlist FROM playlist WHERE flag_current = 1;

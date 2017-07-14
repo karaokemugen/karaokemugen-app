@@ -1,0 +1,1 @@
+SELECT pk_id_playlist FROM playlist WHERE flag_public = 1;

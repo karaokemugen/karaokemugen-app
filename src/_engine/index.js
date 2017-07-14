@@ -340,6 +340,21 @@ module.exports = {
 						logger.error("Unable to create current playlist : "+err);
 				});
 			})
+		module.exports._services.playlist_controller.isAPublicPlaylist()
+			.then(function(){
+				//A playlist exists, nothing to do.
+			})
+			.catch(function(){
+				//No playlist exists, creating one.
+				logger.warn('No playlist with public flag exists. Creating one...');
+				module.exports._services.playlist_controller.createPlaylist('Public playlist',1,0,1)
+					.then(function (new_playlist){
+						logger.info("Public playlist created with ID : "+new_playlist);
+				})
+					.catch(function(err){
+						logger.error("Unable to create public playlist : "+err);
+				});
+			})
 		/* Update playlist's number of karas
 		module.exports._services.playlist_controller.updatePlaylistNumOfKaras(1)
 			.then(function(num_karas){

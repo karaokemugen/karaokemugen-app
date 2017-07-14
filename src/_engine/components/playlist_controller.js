@@ -45,22 +45,39 @@ module.exports = {
 	},
 	/**
 	* @function {Is there a current playlist in the database?}
-	* @return {boolean} {Promise}
+	* @return {number} {Playlist ID, or error message}
 	*/
 	isACurrentPlaylist:function()
 	{
 		return new Promise(function(resolve,reject){
 			module.exports.DB_INTERFACE.isACurrentPlaylist()
-				.then(function ()
+				.then(function (playlist_id)
 				{
-					resolve();
+					resolve(playlist_id);
 				})
 				.catch(function ()
 				{
-					reject();
+					reject('No current playlist found');
 				})
-		})
-		
+		})		
+	},
+	/**
+	* @function {Is there a public playlist in the database?}
+	* @return {number} {Playlist ID or message}
+	*/
+	isAPublicPlaylist:function()
+	{
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isAPublicPlaylist()
+				.then(function (playlist_id)
+				{
+					resolve(playlist_id);
+				})
+				.catch(function ()
+				{
+					reject('No public playlist found');
+				})
+		})		
 	},
 	/**
 	* @function {isPlaylist}
