@@ -4,7 +4,7 @@
   "description": "Karaoke playlist manager / player",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/webapp/index.js --exec babel-node --presets es2015"
+    "start": "node src/index.js"
   },
   "homepage": "https://lab.shelter.moe/toyundamugen/toyundamugen-app",
   "repository": {
