@@ -72,7 +72,7 @@ module.exports = {
 	//
 
 	test:function(){
-		console.log('This is an engine test event !');
+		//console.log('This is an engine test event !');
 		return 'This is an engine test event response !';
 	},
 
@@ -101,7 +101,7 @@ module.exports = {
 			process.exit();
 
 		}).catch(function(response){
-			console.log(response);
+			//console.log(response);
 			process.exit();
 		});
 	},
@@ -193,7 +193,7 @@ module.exports = {
 	togglePrivate:function()
 	{
 		module.exports._states.private = !module.exports._states.private;
-		logger.success('private is now '+module.exports._states.private);
+		logger.debug('private is now '+module.exports._states.private);
 		module.exports._broadcastStates();
 	},
 
