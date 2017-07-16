@@ -23,7 +23,10 @@
     "ldbglobe",
     "spokeek",
     "nemotaku",
-    "jaerdoster"
+    "jaerdoster",
+    "ziassan",
+    "belderak",
+    "coyoyann"
   ],
   "engines": {
     "node": ">=6.0.0"
