@@ -77,7 +77,7 @@ if(SYSPATH)
 	 */
 	logger.info('Checking if data folders are in place');
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Karas))) {
-		logger.info(path.join(SYSPATH,SETTINGS.Path.Karas)+' does not exist, creating it...');
+		logger.warn(path.join(SYSPATH,SETTINGS.Path.Karas)+' does not exist, creating it...');
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Karas));
 		if (!ret) {
 			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.Karas)+'... Exiting.')
@@ -85,7 +85,7 @@ if(SYSPATH)
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Subs))) {
-		logger.notice(path.join(SYSPATH,SETTINGS.Path.Subs)+' does not exist, creating it...');
+		logger.warn(path.join(SYSPATH,SETTINGS.Path.Subs)+' does not exist, creating it...');
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Subs));
 		if (!ret) {
 			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.Subs)+'... Exiting.')
@@ -93,7 +93,7 @@ if(SYSPATH)
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Videos))) {
-		logger.notice(path.join(SYSPATH,SETTINGS.Path.Videos)+' does not exist, creating it...');
+		logger.warn(path.join(SYSPATH,SETTINGS.Path.Videos)+' does not exist, creating it...');
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Videos));
 		if (!ret) {
 			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.Videos)+'... Exiting.')
@@ -101,7 +101,7 @@ if(SYSPATH)
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.DB))) {
-		logger.notice(path.join(SYSPATH,SETTINGS.Path.DB)+' does not exist, creating it...');
+		logger.warn(path.join(SYSPATH,SETTINGS.Path.DB)+' does not exist, creating it...');
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.DB));
 		if (!ret) {
 			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.DB)+'... Exiting.')
