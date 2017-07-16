@@ -65,10 +65,10 @@ module.exports = {
 
             module.exports._server.listen(module.exports.LISTEN);
 
-            console.log(`server started on port ${module.exports.LISTEN}`);
+            logger.info(`Webapp frontend started on port ${module.exports.LISTEN}`);
 
             // trigger test event (call engine deffered method and log response)
-            console.log(module.exports.onTest());
+            //console.log(module.exports.onTest());
         }
         else
         {

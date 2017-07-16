@@ -19,7 +19,7 @@ const logger = require('./_common/utils/logger.js');
  */ 
 process.stdout.write('\x1Bc');
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
-console.log(clc.greenBright('| Project Toyunda Mugen ^^                                         |'));
+console.log(clc.greenBright('| Project Toyunda Mugen - v2.0 Finé Fantastique                    |'));
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
 console.log("\n");
 
