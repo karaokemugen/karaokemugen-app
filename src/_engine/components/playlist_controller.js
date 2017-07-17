@@ -699,6 +699,7 @@ module.exports = {
 					.then(function(){
 						module.exports.updatePlaylistDuration(playlist_id);
 						module.exports.updatePlaylistNumOfKaras(playlist_id);
+						module.exports.reorderPlaylist(playlist_id);
 						resolve(true);
 					})
 					.catch(function(err){
@@ -835,6 +836,7 @@ module.exports = {
 						.then(function(){
 							module.exports.updatePlaylistDuration(publicPlaylistID);
 							module.exports.updatePlaylistNumOfKaras(publicPlaylistID);
+							module.exports.reorderPlaylist(publicPlaylistID);
 							resolve(true);
 						})
 						.catch(function(err){
@@ -923,6 +925,7 @@ module.exports = {
 						.then(function(){
 							module.exports.updatePlaylistDuration(currentPlaylistID);
 							module.exports.updatePlaylistNumOfKaras(currentPlaylistID);
+							module.exports.reorderPlaylist(currentPlaylistID);
 							resolve(true);
 						})
 						.catch(function(err){
