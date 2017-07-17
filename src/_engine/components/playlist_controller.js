@@ -716,6 +716,55 @@ module.exports = {
 
 		
 	},
+	reorderPlaylist:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});	
+			Promise.all([pIsPlaylist])
+			.then(function()
+			{
+				
+				module.exports.getPlaylistContents(playlist_id)
+				.then(function(playlist){
+					playlist.sort(function(a,b){
+						return a.pos - b.pos;
+					});
+					var newpos = 0;
+					var arraypos = 0;
+					playlist.forEach(function(kara){
+						newpos++;
+						playlist[arraypos].pos = newpos;
+						arraypos++;
+					})
+					module.exports.DB_INTERFACE.reorderPlaylist(playlist_id,playlist)
+					.then(function() {
+						resolve(playlist);
+					})
+					.catch(function(err) {
+						reject(err);
+					})					
+				})
+				.catch(function(err){
+					reject(err);
+				});
+			})
+			.catch(function(err)
+			{
+				reject(err);
+			});
+		});
+	},
 	/**
 	* @function {Add Karaoke to Public playlist}
 	* @param  {number} kara_id     {ID of karaoke to add}

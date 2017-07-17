@@ -373,6 +373,15 @@ module.exports = {
 				console.log(err);
 			});
 		*/
+		/*
+		module.exports._services.playlist_controller.reorderPlaylist(1)
+			.then(function(playlist){
+				console.log(playlist);
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+		*/
 		/* Getting all karas from Playlist
 
 		module.exports._services.playlist_controller.getPlaylistContents(45)

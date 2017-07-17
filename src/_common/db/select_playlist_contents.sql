@@ -24,4 +24,4 @@ SELECT ak.PK_id_kara AS id_kara,
  FROM karasdb.all_karas AS ak, playlist_content AS pc
 WHERE pc.fk_id_playlist = $playlist_id
   AND pc.fk_id_kara = ak.PK_id_kara
-ORDER BY pc.pos;
+ORDER BY pc.pos,pc.date_add DESC;

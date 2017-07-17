@@ -345,6 +345,44 @@ module.exports = {
 		})
 	},
 	/**
+	* @function {Reorders playlist item positions}
+	* @param  {number} playlist_id {ID of playlist to reorder}
+	* @param  {array} playlist   {Playlist array of kara objects}
+	* @return {boolean} {Promise}
+	*/
+	reorderPlaylist:function(playlist_id,playlist)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlUpdateKaraPosition = fs.readFileSync(path.join(__dirname,'../../_common/db/update_kara_position.sql'),'utf-8');
+
+			var newpos = 0;
+			playlist.forEach(function(kara)
+			{
+				newpos++;
+				module.exports._user_db_handler.run(sqlUpdateKaraPosition,
+				{
+					$playlist_id: playlist_id,
+					$pos: newpos,
+					$kara_id: kara.id_kara
+				}, function (err)
+				{
+					if (err)
+					{
+						logger.error('Unable to update karaoke '+kara.id_kara+' position ('+kara.pos+') in playlist '+playlist_id+' : '+err);
+						reject(err);
+					} else {
+						resolve();
+					}
+				})
+			})			
+		})
+	},
+	/**
 	* @function {Update playlist's duration field}
 	* @param  {number} playlist_id {ID of playlist to update}
 	* @param  {number} duration    {Duration in seconds}
