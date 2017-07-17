@@ -108,6 +108,14 @@ if(SYSPATH)
 			process.exit();
 		}
 	}
+	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Temp))) {
+		logger.warn(path.join(SYSPATH,SETTINGS.Path.Temp)+' does not exist, creating it...');
+		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Temp));
+		if (!ret) {
+			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.Temp)+'... Exiting.')
+			process.exit();
+		}
+	}
 
 	/**
 	 * Calling engine.
