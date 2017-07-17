@@ -418,6 +418,15 @@ module.exports = {
 				logger.error("Kara add failed : "+err);
 			});
 		*/
+		/* Add karaoke to public playlist example. Public playlist is autodetected.		
+		module.exports._services.playlist_controller.addKaraToPublicPlaylist(2017,'Axél',1)
+			.then(function(){
+				logger.info("Kara added");
+			})
+			.catch(function(err){
+				logger.error("Kara add failed : "+err);
+			});
+		*/
 		/* Making playlist visible example :
 		module.exports._services.playlist_controller.setVisiblePlaylist(1)
 			.then(function(playlist){

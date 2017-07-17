@@ -634,8 +634,7 @@ module.exports = {
 					if (err)
 					{
 						logger.error('Unable to search for karaoke song '+kara_id+' in playlist '+playlist_id+' : '+err);   reject(err);
-					} else {
-						console.log(row);
+					} else {						
 						if (row) {
 							resolve(true);
 						} else {

@@ -633,6 +633,14 @@ module.exports = {
 
 		});
 	},
+	/**
+	* @function {Add Karaoke to Playlist}
+	* @param  {number} kara_id     {ID of karaoke to add}
+	* @param  {string} requester   {Name of person submitting karaoke}
+	* @param  {number} playlist_id {ID of playlist to add to}
+	* @param  {number} pos         {Position in playlist}
+	* @return {boolean} {Promise}
+	*/
 	addKaraToPlaylist:function(kara_id,requester,playlist_id,pos)
 	{
 		return new Promise(function(resolve,reject){
@@ -698,65 +706,193 @@ module.exports = {
 					})			
 				}
 			})
+			.catch(function(err)
+			{
+				reject(err);
+			});
 
 		});
 		
 
-		/* Ancienne fonction
-
-		//var kara = this.DB_INTERFACE.get_kara(kara_id);
-		// on récupère un object kara contenant tout ce que la bdd propose
-		// la structure au 21/06/2017 étant
-		/*
-		`PK_id_kara` INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
-		`kid`	TEXT UNIQUE,
-		`title`	TEXT COLLATE NOCASE,
-		`year`	TEXT,
-		`songorder`	INTEGER,
-		`videofile`	TEXT,
-		`subfile`	TEXT,
-		`videolength`	INTEGER,
-		`date_added`	INTEGER,
-		`date_last_modified`	INTEGER,
-		`rating`	REAL,
-		`viewcount`	INTEGER
 		
-		var kara = {
-			'kara_id':kara_id,//PK_id_kara
-			'title':'Dragon Ball - OP - Maka fushigi Adventure',
-			'videofile':'Dragon Ball - OP - Maka fushigi Adventure.avi',
-			'subfile':'Dragon Ball - OP - Maka fushigi Adventure.ass',
-			//...
-		}
-		// on enrichi l'objet
-		kara.requested = requester;
-
-		// puis on préparer l'ass qui lui sera associé pour la lecture
-		require('./ass_builder.js')(
-			path.resolve(module.exports.SYSPATH,'src/samples/lyrics',kara.subfile),
-			path.resolve(module.exports.SYSPATH,'src/samples/videos',kara.videofile),
-			path.resolve(module.exports.SYSPATH,'app/tmp'),
-			kara.title,
-			kara.requester
-		)
-		.then(function(processed_ass){
-			// on met à jour l'object kara
-			kara.videofile = path.resolve(module.exports.SYSPATH,'src/samples/videos',kara.videofile);
-			kara.subfile = processed_ass;
-
-			// Todo injection de l'entré dans la playlist BDD
-			// pour le moment juste un objet local
-			module.exports.samplePlaylist.push(kara);
-
-			//appel
-			module.exports.onPlaylistUpdated();
-		})
-		.catch(function(err){
-			logger.error('addKara Fail : '+err.message);			
-		});
-		*/
 	},
-
+	/**
+	* @function {Add Karaoke to Public playlist}
+	* @param  {number} kara_id     {ID of karaoke to add}
+	* @param  {string} requester   {Name of person submitting karaoke}
+	* @param  {number} pos         {Position in playlist}
+	* @return {boolean} {Promise}
+	*/
+	addKaraToPublicPlaylist:function(kara_id,requester,pos)
+	{
+		return new Promise(function(resolve,reject){
+			var NORM_requester = S(requester).latinise().s;
+			var date_add = timestamp.now();
+			var flag_playing = 0;
+			var isKaraInPlaylist = undefined;
+			var publicPlaylistID = undefined;
+			var pWhichPublicPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isAPublicPlaylist()
+					.then(function(playlist_id)
+					{						
+						publicPlaylistID = playlist_id;
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('No public playlist detected!');
+					})		
+			});			
+			var pIsKara = new Promise((resolve,reject) =>
+			{
+				module.exports.isKara(kara_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Kara '+kara_id+' does not exist');
+					})		
+			});			
+			Promise.all([pIsKara,pWhichPublicPlaylist])
+			.then(function()
+			{
+				var pIsKaraInPlaylist = new Promise((resolve,reject) =>
+				{
+				module.exports.isKaraInPlaylist(kara_id,publicPlaylistID)
+					.then(function(isKaraInPL)
+					{						
+						//Karaoke song is in playlist, then we will reject the promise
+						//since we don't want duplicates in playlists.
+						isKaraInPlaylist = isKaraInPL;
+						resolve(isKaraInPL);
+					})
+					.catch(function()
+					{						
+						reject('Unable to tell if karaoke song is in playlist or not.');
+					})		
+				});
+				Promise.all([pIsKaraInPlaylist])
+				.then(function()
+				{
+					if (isKaraInPlaylist) 
+					{
+						reject('Karaoke song is already in playlist');
+					} else {
+						// Adding karaoke song here								
+						module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,publicPlaylistID,pos,date_add,flag_playing)
+						.then(function(){
+							module.exports.updatePlaylistDuration(publicPlaylistID);
+							module.exports.updatePlaylistNumOfKaras(publicPlaylistID);
+							resolve(true);
+						})
+						.catch(function(err){
+							reject(err);
+						})			
+					}
+				})
+				.catch(function(err)
+				{
+					reject(err);
+				});
+			})
+			.catch(function(err)
+			{
+				reject(err);
+			});
+		});
+	},
+	/**
+	* @function {Add Karaoke to Current playlist}
+	* @param  {number} kara_id     {ID of karaoke to add}
+	* @param  {string} requester   {Name of person submitting karaoke}
+	* @param  {number} pos         {Position in playlist}
+	* @return {boolean} {Promise}
+	*/
+	addKaraToCurrentPlaylist:function(kara_id,requester,pos)
+	{
+		return new Promise(function(resolve,reject){
+			var NORM_requester = S(requester).latinise().s;
+			var date_add = timestamp.now();
+			var flag_playing = 0;
+			var isKaraInPlaylist = undefined;
+			var currentPlaylistID = undefined;
+			var pWhichCurrentPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isACurrentPlaylist()
+					.then(function(playlist_id)
+					{						
+						currentPlaylistID = playlist_id;
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('No current playlist detected!');
+					})		
+			});			
+			var pIsKara = new Promise((resolve,reject) =>
+			{
+				module.exports.isKara(kara_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Kara '+kara_id+' does not exist');
+					})		
+			});			
+			Promise.all([pIsKara,pWhichCurrentPlaylist])
+			.then(function()
+			{
+				var pIsKaraInPlaylist = new Promise((resolve,reject) =>
+				{
+				module.exports.isKaraInPlaylist(kara_id,currentPlaylistID)
+					.then(function(isKaraInPL)
+					{						
+						//Karaoke song is in playlist, then we will reject the promise
+						//since we don't want duplicates in playlists.
+						isKaraInPlaylist = isKaraInPL;
+						resolve(isKaraInPL);
+					})
+					.catch(function()
+					{						
+						reject('Unable to tell if karaoke song is in playlist or not.');
+					})		
+				});
+				Promise.all([pIsKaraInPlaylist])
+				.then(function()
+				{
+					if (isKaraInPlaylist) 
+					{
+						reject('Karaoke song is already in playlist');
+					} else {
+						// Adding karaoke song here								
+						module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,currentPlaylistID,pos,date_add,flag_playing)
+						.then(function(){
+							module.exports.updatePlaylistDuration(currentPlaylistID);
+							module.exports.updatePlaylistNumOfKaras(currentPlaylistID);
+							resolve(true);
+						})
+						.catch(function(err){
+							reject(err);
+						})			
+					}
+				})
+				.catch(function(err)
+				{
+					reject(err);
+				});
+			})
+			.catch(function(err)
+			{
+				reject(err);
+			});
+		});
+		
+	},
 	get_next_kara:function(){
 		// TODO implémenter la lecture dans la BDD via this.DB_INTERFACE
 		return module.exports.samplePlaylist.shift()
