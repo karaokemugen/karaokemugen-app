@@ -717,6 +717,91 @@ module.exports = {
 
 		
 	},
+	/**
+	* @function {Remove karaoke from playlist}
+	* @param  {number} kara_id     {ID of karaoke to remove}
+	* @param  {number} playlist_id {ID of playlist to add to}
+	* @return {boolean} {Promise}
+	*/
+	deleteKaraFromPlaylist:function(kara_id,playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			var isKaraInPlaylist = undefined;
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});			
+			var pIsKara = new Promise((resolve,reject) =>
+			{
+				module.exports.isKara(kara_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Kara '+kara_id+' does not exist');
+					})		
+			});
+			var pIsKaraInPlaylist = new Promise((resolve,reject) =>
+			{
+				module.exports.isKaraInPlaylist(kara_id,playlist_id)
+					.then(function(isKaraInPL)
+					{						
+						//Karaoke song is in playlist, then we will reject the promise
+						//since we don't want duplicates in playlists.
+						isKaraInPlaylist = isKaraInPL;
+						resolve(isKaraInPL);
+					})
+					.catch(function()
+					{						
+						reject('Unable to tell if karaoke song is in playlist or not.');
+					})		
+			});
+			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist])
+			.then(function()
+			{
+				if (isKaraInPlaylist) 
+				{
+					// Removing karaoke here.
+					module.exports.DB_INTERFACE.removeKaraFromPlaylist(kara_id,playlist_id)
+					.then(function(){
+						module.exports.updatePlaylistDuration(playlist_id);
+						module.exports.updatePlaylistNumOfKaras(playlist_id);
+						module.exports.reorderPlaylist(playlist_id);
+						resolve(true);
+					})
+					.catch(function(err){
+						reject(err);
+					})			
+					
+				} else {
+					reject('Karaoke song is not present in this playlist.');
+				}
+			})
+			.catch(function(err)
+			{
+				reject(err);
+			});
+
+		});
+		
+
+		
+	},
+	/**
+	* @function {reorders a playlist by updating karaoke positions}
+	* @param  {number} playlist_id {ID of playlist to sort}
+	* @return {array} {Playlist array of karaoke objects.}
+	*/
 	reorderPlaylist:function(playlist_id)
 	{
 		return new Promise(function(resolve,reject){

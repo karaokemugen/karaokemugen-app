@@ -69,6 +69,7 @@ module.exports = {
 
 			Promise.all([ userDB_Test, karasDB_Test ]).then(function() {
 				module.exports.init_on_db_ready();
+				module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;')
 				resolve();
 			});
 		});
@@ -301,8 +302,6 @@ module.exports = {
 			}
 			var sqlCalculatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_duration.sql'),'utf-8');
 			module.exports._user_db_handler.serialize(function(){
-				module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;')
-
 						module.exports._user_db_handler.get(sqlCalculatePlaylistDuration,
 						{
 							$playlist_id: playlist_id
@@ -312,10 +311,11 @@ module.exports = {
 								{
 									logger.error('Unable to get playlist '+playlist_id+' duration : '+err);
 									reject(err);
-								} else {
+								} else {									
 									resolve(duration);
 								}
 						})
+				
 			})
 		})
 	},
@@ -426,9 +426,7 @@ module.exports = {
 				reject('Database is not ready!');
 			}
 			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
-			module.exports._user_db_handler.serialize(function(){
-				module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;')
-
+			module.exports._user_db_handler.serialize(function(){				
 						module.exports._user_db_handler.all(sqlGetPlaylistContents,
 						{
 							$playlist_id: playlist_id
@@ -1019,6 +1017,38 @@ module.exports = {
 					}
 			})
 		})
+	},
+	/**
+	* @function {Remove kara from playlist}
+	* @param  {number} kara_id        {ID of karaoke song to remove from playlist}
+	* @param  {number} playlist_id    {ID of playlist to delete the song from}
+	* @return {promise} {Promise}
+	*/
+	removeKaraFromPlaylist:function(kara_id,playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+
+			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlRemoveKaraFromPlaylist,
+			{
+				$playlist_id: playlist_id,
+				$kara_id: kara_id
+			}, function (err, rep)
+			{
+				if (err)
+				{
+					logger.error('Unable to remove kara '+kara_id+' from playlist '+playlist_id+' : '+err);
+					reject(err);
+				} else {
+					resolve(true);
+				}
+			});
+		});
 	},
 	get_next_kara:function()
 	{

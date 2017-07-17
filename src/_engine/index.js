@@ -373,10 +373,19 @@ module.exports = {
 				console.log(err);
 			});
 		*/
-		/*
+		/* Reorder/sort playlist example
 		module.exports._services.playlist_controller.reorderPlaylist(1)
 			.then(function(playlist){
 				console.log(playlist);
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+		*/
+		/* Deleting kara from playlist example
+		module.exports._services.playlist_controller.deleteKaraFromPlaylist(1982,1)
+			.then(function(playlist){
+				console.log('Delete OK');
 			})
 			.catch(function(err){
 				console.log(err);
