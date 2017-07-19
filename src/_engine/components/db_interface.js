@@ -364,22 +364,21 @@ module.exports = {
 			playlist.forEach(function(kara)
 			{
 				newpos++;
+				logger.debug('Updating '+kara.playlistcontent_id+' to position '+newpos);
 				module.exports._user_db_handler.run(sqlUpdateKaraPosition,
 				{
-					$playlist_id: playlist_id,
 					$pos: newpos,
-					$kara_id: kara.id_kara
+					$playlistcontent_id: kara.playlistcontent_id
 				}, function (err)
 				{
 					if (err)
 					{
 						logger.error('Unable to update karaoke '+kara.id_kara+' position ('+kara.pos+') in playlist '+playlist_id+' : '+err);
-						reject(err);
-					} else {
-						resolve();
+						reject(err);					
 					}
 				})
 			})			
+			resolve();								
 		})
 	},
 	/**
@@ -1107,6 +1106,70 @@ module.exports = {
 					reject(err);
 				} else {
 					resolve(true);
+				}
+			});
+		});
+	},
+	/**
+	* @function {Raises position of a song in playlist}
+	* @param  {number} playlist_id        {ID of playlist to modify}
+	* @param  {number} pos        {Position to modify}
+	* @return {promise} {Promise}
+	*/
+	raisePosInPlaylist:function(pos,playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+
+			var newpos = pos + 0.1;			
+			var sqlRaisePosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_raise_pos_in_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlRaisePosInPlaylist,
+			{
+				$newpos: newpos,
+				$playlist_id: playlist_id,
+				$pos: pos
+			}, function (err, rep)
+			{
+				if (err)
+				{
+					logger.error('Unable to update pos in playlist '+playlist_id+' : '+err);
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
+		});
+	},
+	/**
+	* @function {Get biggest position in playlist}
+	* @param  {number} playlist_id        {ID of playlist to modify}
+	* @return {promise} {Promise}
+	*/
+	getMaxPosInPlaylist:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+
+			var sqlGetMaxPosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/select_max_pos_in_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlGetMaxPosInPlaylist,
+			{
+				$playlist_id: playlist_id			
+			}, function (err, row)
+			{
+				if (err)
+				{
+					logger.error('Unable to update pos in playlist '+playlist_id+' : '+err);
+					reject(err);
+				} else {
+					resolve(row.maxpos);
 				}
 			});
 		});

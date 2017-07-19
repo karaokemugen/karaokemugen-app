@@ -661,8 +661,9 @@ module.exports = {
 	* @param  {number} kara_id     {ID of karaoke to add}
 	* @param  {string} requester   {Name of person submitting karaoke}
 	* @param  {number} playlist_id {ID of playlist to add to}
-	* @param  {number} pos         {Position in playlist}
+	* @param  {number} pos         {OPTIONAL : Position in playlist}
 	* @return {boolean} {Promise}
+	* If no position is provided, it will be maximum position in playlist + 1
 	*/
 	addKaraToPlaylist:function(kara_id,requester,playlist_id,pos)
 	{
@@ -713,29 +714,78 @@ module.exports = {
 			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist])
 			.then(function()
 			{
-				if (isKaraInPlaylist) 
+					if (isKaraInPlaylist) 
 					{
 						reject('Karaoke song is already in playlist');
 					} else {
 					
 						// Adding karaoke song here		
-						module.exports.getKara(kara_id)
-							 .then(function(kara)
-							 {	
-								assbuilder(
-									module.exports.SETTINGS.Path.Subs,
-									module.exports.SETTINGS.Path.Videos,
-									kara.subfile, 
-									kara.videofile, 
-									module.exports.SETTINGS.Path.Temp, 
-									kara.title, 
-									kara.series, 
-									kara.songtype, 
-									kara.songorder, 
-									requester, 
-									kara_id, 
-									playlist_id, 
-									module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+							module.exports.getKara(kara_id)
+							.then(function(kara)									
+							{	
+										
+								var pBuildASS = new Promise((resolve,reject) =>
+								{
+			
+									assbuilder(
+										module.exports.SETTINGS.Path.Subs,
+										module.exports.SETTINGS.Path.Videos,
+										kara.subfile, 
+										kara.videofile, 
+										module.exports.SETTINGS.Path.Temp, 
+										kara.title, 
+										kara.series, 
+										kara.songtype, 
+										kara.songorder, 
+										requester, 
+										kara_id, 
+										playlist_id, 
+										module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+									.then(function() 
+									{
+										resolve();
+									})
+									.catch(function(err){
+										reject('ASSBUILDER : '+err);
+									})
+								});
+								var pGetPos = new Promise((resolve,reject) =>
+								{
+									if (pos) {
+										resolve();
+									}
+									else
+									{
+										module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
+										.then(function(maxpos){
+											pos = maxpos + 1.0;
+											resolve();
+										})
+										.catch(function(err){
+											reject('GETPOS : '+err);
+										});
+									}
+								});
+								var pRaisePos = new Promise((resolve,reject) =>
+								{
+									if (pos) 
+									{
+										module.exports.raisePosInPlaylist(pos,playlist_id)
+										.then(function(){
+											resolve();
+										})
+										.catch(function(err){
+											reject(err);
+										});
+									} 
+									else 
+									{
+										resolve();
+									}
+								})
+								
+								
+								Promise.all([pBuildASS,pGetPos,pRaisePos])
 								.then(function() 
 								{
 									module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
@@ -755,8 +805,8 @@ module.exports = {
 											.then(function(){
 												resolve();
 											})
-											.catch(function(){
-												reject();
+											.catch(function(err){
+												reject(err);
 											})
 										});										
 										var pUpdatedKarasCount = new Promise((resolve,reject) =>
@@ -765,19 +815,19 @@ module.exports = {
 											.then(function(){
 												resolve();
 											})
-											.catch(function(){
-												reject();
+											.catch(function(err){
+												reject(err);
 											})
 										});				
 										var pReorderPlaylist = new Promise((resolve,reject) =>
 										{
-											module.exports.reorderPlaylist(playlist_id)
+											 module.exports.reorderPlaylist(playlist_id)
 											.then(function(){
 												resolve();
 											})
-											.catch(function(){
-												reject();
-											})
+											.catch(function(err){
+												reject(err);
+											});											
 										});				
 										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 										.then(function()
@@ -798,12 +848,12 @@ module.exports = {
 								.catch(function(err)
 								{
 									reject(err);
-								});
-								
-							 })
-							 .catch(function(err) {
-								 reject(err);
-							 });																				
+								});																							
+							})
+							.catch(function(err){
+							reject('GETKARA : '+err);
+							})
+										
 					}
 			})
 			.catch(function(err)
@@ -876,7 +926,7 @@ module.exports = {
 							});
 						});				
 						var pReorderPlaylist = new Promise((resolve,reject) =>
-						{
+						{							
 							module.exports.reorderPlaylist(playlist_id)
 							.then(function(){
 								resolve();
@@ -908,6 +958,27 @@ module.exports = {
 		
 
 		
+	},
+	/**
+	* @function {Raises position of kara in a playlist}
+	* @param  {number} playlist_id     {ID of playlist to modify order of}
+	* @param  {number} order           {Order to raise}
+	* @return {boolean} {Promise}
+	* This utility function raises the position of a song in a playlist by 0.1
+	* This allows the reorderPlaylist function, called immediately after, to 
+	* reorder the new playlist correctly.
+	*/
+	raisePosInPlaylist:function(pos,playlist_id)
+	{
+		return new Promise(function(resolve,reject){	
+			module.exports.DB_INTERFACE.raisePosInPlaylist(pos,playlist_id)
+					.then(function() {
+						resolve();
+					})
+					.catch(function(err) {
+						reject(err);
+					})
+		});
 	},
 	/**
 	* @function {reorders a playlist by updating karaoke positions}
@@ -951,7 +1022,7 @@ module.exports = {
 					})
 					.catch(function(err) {
 						reject(err);
-					})					
+					})				
 				})
 				.catch(function(err){
 					reject(err);
@@ -967,10 +1038,9 @@ module.exports = {
 	* @function {Add Karaoke to Public playlist}
 	* @param  {number} kara_id     {ID of karaoke to add}
 	* @param  {string} requester   {Name of person submitting karaoke}
-	* @param  {number} pos         {Position in playlist}
 	* @return {boolean} {Promise}
 	*/
-	addKaraToPublicPlaylist:function(kara_id,requester,pos)
+	addKaraToPublicPlaylist:function(kara_id,requester)
 	{
 		return new Promise(function(resolve,reject){
 			var NORM_requester = S(requester).latinise().s;
@@ -1033,20 +1103,51 @@ module.exports = {
 						module.exports.getKara(kara_id)
 							 .then(function(kara)
 							 {	
-								assbuilder(
-									module.exports.SETTINGS.Path.Subs,
-									module.exports.SETTINGS.Path.Videos,
-									kara.subfile, 
-									kara.videofile, 
-									module.exports.SETTINGS.Path.Temp, 
-									kara.title, 
-									kara.series, 
-									kara.songtype, 
-									kara.songorder, 
-									requester, 
-									kara_id, 
-									publicPlaylistID, 
-									module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+								var pos = 0;
+								var pBuildASS = new Promise((resolve,reject) =>
+								{
+			
+									assbuilder(
+										module.exports.SETTINGS.Path.Subs,
+										module.exports.SETTINGS.Path.Videos,
+										kara.subfile, 
+										kara.videofile, 
+										module.exports.SETTINGS.Path.Temp, 
+										kara.title, 
+										kara.series, 
+										kara.songtype, 
+										kara.songorder, 
+										requester, 
+										kara_id, 
+										publicPlaylistID, 
+										module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+									.then(function() 
+									{
+										resolve();
+									})
+									.catch(function(err){
+										reject('ASSBUILDER : '+err);
+									})
+								});
+								var pGetPos = new Promise((resolve,reject) =>
+								{
+									module.exports.DB_INTERFACE.getMaxPosInPlaylist(publicPlaylistID)
+									.then(function(maxpos){
+										if (maxpos) 
+										{
+											pos = maxpos + 1.0;
+										} else {
+											pos = 1;
+										}
+										resolve();
+									})
+									.catch(function(err){
+										reject('GETPOS : '+err);
+									});
+									
+								});								
+								
+								Promise.all([pBuildASS,pGetPos])								
 								.then(function() 
 								{
 									module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,publicPlaylistID,pos,date_add,flag_playing)
@@ -1054,7 +1155,7 @@ module.exports = {
 										var pRenameASS = new Promise((resolve,reject) =>
 										{
 											fs.renameSync(
-												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+playlist_id+'.ass'),
+												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+publicPlaylistID+'.ass'),
 												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
 												playlistcontent_id+'.ass')
 											);
@@ -1090,7 +1191,7 @@ module.exports = {
 												reject();
 											})
 										});				
-										Promise.all([pRenamePlaylist,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 										.then(function()
 										{												
 											resolve();
@@ -1132,7 +1233,7 @@ module.exports = {
 	* @function {Add Karaoke to Current playlist}
 	* @param  {number} kara_id     {ID of karaoke to add}
 	* @param  {string} requester   {Name of person submitting karaoke}
-	* @param  {number} pos         {Position in playlist}
+	* @param  {number} pos         {OPTIONAL : Position in playlist}
 	* @return {boolean} {Promise}
 	*/
 	addKaraToCurrentPlaylist:function(kara_id,requester,pos)
@@ -1198,28 +1299,59 @@ module.exports = {
 						module.exports.getKara(kara_id)
 							 .then(function(kara)
 							 {	
-								assbuilder(
-									module.exports.SETTINGS.Path.Subs,
-									module.exports.SETTINGS.Path.Videos,
-									kara.subfile, 
-									kara.videofile, 
-									module.exports.SETTINGS.Path.Temp, 
-									kara.title, 
-									kara.series, 
-									kara.songtype, 
-									kara.songorder, 
-									requester, 
-									kara_id, 
-									currentPlaylistID, 
-									module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
-								.then(function() 
+								var pos = 0;
+								var pBuildASS = new Promise((resolve,reject) =>
 								{
+			
+									assbuilder(
+										module.exports.SETTINGS.Path.Subs,
+										module.exports.SETTINGS.Path.Videos,
+										kara.subfile, 
+										kara.videofile, 
+										module.exports.SETTINGS.Path.Temp, 
+										kara.title, 
+										kara.series, 
+										kara.songtype, 
+										kara.songorder, 
+										requester, 
+										kara_id, 
+										currentPlaylistID, 
+										module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+									.then(function() 
+									{
+										resolve();
+									})
+									.catch(function(err){
+										reject('ASSBUILDER : '+err);
+									})
+								});
+								var pGetPos = new Promise((resolve,reject) =>
+								{
+									module.exports.DB_INTERFACE.getMaxPosInPlaylist(currentPlaylistID)
+									.then(function(maxpos){
+										if (maxpos) 
+										{
+											pos = maxpos + 1.0;
+										} else {
+											pos = 1;
+										}
+										resolve();
+									})
+									.catch(function(err){
+										reject('GETPOS : '+err);
+									});
+									
+								});								
+								
+								Promise.all([pBuildASS,pGetPos])								
+								.then(function() 
+								{										
 									module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,currentPlaylistID,pos,date_add,flag_playing)
 									.then(function(playlistcontent_id){
 										var pRenameASS = new Promise((resolve,reject) =>
 										{
 											fs.renameSync(
-												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+playlist_id+'.ass'),
+												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+currentPlaylistID+'.ass'),
 												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
 												playlistcontent_id+'.ass')
 											);
@@ -1231,8 +1363,8 @@ module.exports = {
 											.then(function(){
 												resolve();
 											})
-											.catch(function(){
-												reject();
+											.catch(function(err){
+												reject(err);
 											})
 										});										
 										var pUpdatedKarasCount = new Promise((resolve,reject) =>
@@ -1241,8 +1373,8 @@ module.exports = {
 											.then(function(){
 												resolve();
 											})
-											.catch(function(){
-												reject();
+											.catch(function(err){
+												reject(err);
 											})
 										});				
 										var pReorderPlaylist = new Promise((resolve,reject) =>
@@ -1251,8 +1383,8 @@ module.exports = {
 											.then(function(){
 												resolve();
 											})
-											.catch(function(){
-												reject();
+											.catch(function(err){
+												reject(err);
 											})
 										});				
 										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
@@ -1279,7 +1411,7 @@ module.exports = {
 							 })
 							 .catch(function(err) {
 								 reject(err);
-							 });																				
+							 });
 					}
 				})
 				.catch(function(err)

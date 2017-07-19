@@ -374,15 +374,14 @@ module.exports = {
 				console.log(err);
 			});
 		*/
-		/* Reorder/sort playlist example
-		module.exports._services.playlist_controller.reorderPlaylist(1)
+		/* Reorder/sort playlist example 
+		module.exports._services.playlist_controller.reorderPlaylist(2)
 			.then(function(playlist){
-				console.log(playlist);
+				//console.log(playlist);
 			})
 			.catch(function(err){
 				console.log(err);
-			});
-		*/
+			});	
 		/* Deleting kara from playlist example
 		module.exports._services.playlist_controller.deleteKaraFromPlaylist(1982,1)
 			.then(function(playlist){
@@ -428,8 +427,8 @@ module.exports = {
 				console.log(err);
 			});
 	    */
-		/* Adding kara to playlist example 
-		module.exports._services.playlist_controller.addKaraToPlaylist(4571,'Axél',1,1)
+		/* Adding kara to playlist example
+		module.exports._services.playlist_controller.addKaraToPlaylist(4571,'Axél',2)
 			.then(function(){
 				logger.info("Kara added");
 			})
@@ -439,6 +438,15 @@ module.exports = {
 		
 		/* Add karaoke to public playlist example. Public playlist is autodetected.				
 		module.exports._services.playlist_controller.addKaraToPublicPlaylist(4571,'Axél',1)
+			.then(function(){
+				logger.info("Kara added");
+			})
+			.catch(function(err){
+				logger.error("Kara add failed : "+err);
+			});
+		/* */
+		/* Add karaoke to current playlist example. Current playlist is autodetected.	*/			
+		module.exports._services.playlist_controller.addKaraToCurrentPlaylist(4571,'Axél',1)
 			.then(function(){
 				logger.info("Kara added");
 			})

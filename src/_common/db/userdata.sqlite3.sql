@@ -35,7 +35,7 @@ CREATE TABLE playlist_content (
     date_add       INTEGER,
     pseudo_add     TEXT,
     NORM_pseudo_add     TEXT COLLATE NOCASE,
-    pos            INTEGER NOT NULL,
+    pos            REAL NOT NULL,
     flag_playing   INTEGER NOT NULL,
     banned         INTEGER DEFAULT (0),
     ban_date       INTEGER,

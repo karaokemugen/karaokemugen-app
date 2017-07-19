@@ -19,6 +19,7 @@ i18n.setLocale('fr');
 
 module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id, pathToFFmpeg){
 	
+		
 		/*
 		// Parameters examples :
 		var subFile = 'app/data/lyrics/Mahoromatic - AMV - Derniere danse 2010.ass';

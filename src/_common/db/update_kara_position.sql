@@ -1,1 +1,1 @@
-UPDATE playlist_content SET pos = $pos WHERE fk_id_playlist = $playlist_id AND fk_id_kara = $kara_id;
+UPDATE playlist_content SET pos = $pos WHERE pk_idplcontent = $playlistcontent_id;
