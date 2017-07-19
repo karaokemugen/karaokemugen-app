@@ -44,6 +44,8 @@
     "TAG_VOCALOID": "Vocaloid",
     "TAG_XBOX360": "XBOX 360",
     "TAG_PC": "PC",
-    "TAG_SEGACD": "Mega CD"
+    "TAG_SEGACD": "Mega CD",
+
+    "REQUESTED_BY": "Demandé par"
 
 }

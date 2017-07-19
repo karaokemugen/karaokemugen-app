@@ -16,14 +16,7 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.author AS author,
       ak.NORM_author AS NORM_author,
       ak.misc AS misc,
-      ak.gain AS gain,
-      pc.date_add AS date_add,
-      pc.pseudo_add AS pseudo_add,
-      pc.NORM_pseudo_add AS NORM_pseudo_add,
-      pc.pos AS pos,
       ak.subfile AS subfile,
       ak.videofile AS videofile
- FROM karasdb.all_karas AS ak, playlist_content AS pc
-WHERE pc.fk_id_playlist = $playlist_id
-  AND pc.fk_id_kara = ak.PK_id_kara
-ORDER BY pc.pos,pc.date_add DESC;
+ FROM all_karas AS ak
+WHERE ak.PK_id_kara = $kara_id;

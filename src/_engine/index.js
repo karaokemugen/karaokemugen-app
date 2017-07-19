@@ -321,6 +321,7 @@ module.exports = {
 	_start_playlist_controller:function(){
 		module.exports._services.playlist_controller = require(path.resolve(__dirname,'components/playlist_controller.js'));
 		module.exports._services.playlist_controller.SYSPATH = module.exports.SYSPATH;
+		module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.init();
@@ -427,24 +428,24 @@ module.exports = {
 				console.log(err);
 			});
 	    */
-		/* Adding kara to playlist example
-		module.exports._services.playlist_controller.addKaraToPlaylist(2017,'Axél',1,1)
+		/* Adding kara to playlist example 
+		module.exports._services.playlist_controller.addKaraToPlaylist(4571,'Axél',1,1)
 			.then(function(){
 				logger.info("Kara added");
 			})
 			.catch(function(err){
 				logger.error("Kara add failed : "+err);
 			});
-		*/
-		/* Add karaoke to public playlist example. Public playlist is autodetected.		
-		module.exports._services.playlist_controller.addKaraToPublicPlaylist(2017,'Axél',1)
+		
+		/* Add karaoke to public playlist example. Public playlist is autodetected.				
+		module.exports._services.playlist_controller.addKaraToPublicPlaylist(4571,'Axél',1)
 			.then(function(){
 				logger.info("Kara added");
 			})
 			.catch(function(err){
 				logger.error("Kara add failed : "+err);
 			});
-		*/
+		/* */
 		/* Making playlist visible example :
 		module.exports._services.playlist_controller.setVisiblePlaylist(1)
 			.then(function(playlist){
@@ -488,6 +489,15 @@ module.exports = {
 			})
 			.catch(function(err){
 				logger.error("Deleting playlist failed : "+err);
+			});
+		*/
+		/* Deleting kara from playlist example : 
+		module.exports._services.playlist_controller.deleteKaraFromPlaylist(16)
+		    .then(function (){
+				logger.info("Karaoke deleted from playlist.");
+			})
+			.catch(function(err){
+				logger.error("Deleting kara from playlist failed : "+err);
 			});
 		*/
 		// on ajoute 4 morceau dans la playlist

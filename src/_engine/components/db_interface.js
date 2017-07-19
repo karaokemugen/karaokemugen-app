@@ -474,6 +474,68 @@ module.exports = {
 		})
 	},
 	/**
+	* @function {Get karaoke info from a playlistcontent_id}
+	* @return {object} {Karaoke object}
+	*/
+	getPLContentInfo:function(playlistcontent_id){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlGetPLContentInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_plcontent_info.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlGetPLContentInfo,
+				{
+					$playlistcontent_id: playlistcontent_id
+				},
+				function (err, kara)
+				{
+					if (err)
+					{
+						logger.error('Unable to get karaoke PL info : '+err);
+						reject(err);
+					} else {
+						resolve(kara);
+					}
+				})
+
+
+		})
+	},
+	/**
+	* @function {Get one karaoke}
+	* @param  {number} kara_id {Karaoke ID}
+	* @return {Object} {karaoke object}
+	*/
+	getKara:function(kara_id){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			
+			var sqlGetKara = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kara.sql'),'utf-8');
+			module.exports._db_handler.get(sqlGetKara,
+				{	
+					$kara_id: kara_id					
+				},
+				function (err, kara)
+				{
+					if (err)
+					{
+						logger.error('Unable to get karaoke : '+err);
+						reject(err);
+					} else {
+						resolve(kara);
+					}
+				})
+
+
+		})
+	},
+	/**
 	* @function {getPlaylistInfo}
 	* @param  {number} playlist_id {Playlist ID}
 	* @return {Object} {Playlist object}
@@ -1006,7 +1068,8 @@ module.exports = {
 										logger.error('Unable to add kara '+kara_id+' to playlist '+playlist_id+' : '+err);
 										reject(err);
 									} else {
-										resolve(true);
+										//We return the playlist_content ID of the kara we just added.
+										resolve(this.lastID);
 									}
 							})
 						} else {
@@ -1020,11 +1083,10 @@ module.exports = {
 	},
 	/**
 	* @function {Remove kara from playlist}
-	* @param  {number} kara_id        {ID of karaoke song to remove from playlist}
-	* @param  {number} playlist_id    {ID of playlist to delete the song from}
+	* @param  {number} playlistcontent_id        {ID of karaoke song to remove from playlist}
 	* @return {promise} {Promise}
 	*/
-	removeKaraFromPlaylist:function(kara_id,playlist_id)
+	removeKaraFromPlaylist:function(playlistcontent_id)
 	{
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady())
@@ -1036,8 +1098,7 @@ module.exports = {
 			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
 			module.exports._user_db_handler.run(sqlRemoveKaraFromPlaylist,
 			{
-				$playlist_id: playlist_id,
-				$kara_id: kara_id
+				$playlistcontent_id: playlistcontent_id				
 			}, function (err, rep)
 			{
 				if (err)

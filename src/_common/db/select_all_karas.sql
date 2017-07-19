@@ -15,6 +15,8 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.language AS language,
       ak.author AS author,
       ak.NORM_author AS NORM_author,
-      ak.misc AS misc   
+      ak.misc AS misc,
+      ak.subfile AS subfile,
+      ak.videofile AS videofile
  FROM all_karas AS ak
 ORDER BY ak.language, ak.series, ak.title, ak.songtype, ak.songorder

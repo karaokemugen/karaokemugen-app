@@ -3,6 +3,7 @@ var fs = require('fs');
 var assParser = require('ass-parser');
 var assStringify = require('ass-stringify');
 var S = require('string');
+var i18n = require("i18n");
 
 const exec = require('child_process');
 
@@ -10,7 +11,13 @@ const MatroskaSubtitles = require('matroska-subtitles')
 const moment = require('moment');
 require("moment-duration-format");
 
-module.exports = function(subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id,pathToFFmpeg){
+i18n.configure({
+    locales:['fr'],
+    directory: path.resolve(__dirname,'../../_common/locales')
+});
+i18n.setLocale('fr');
+
+module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id, pathToFFmpeg){
 	
 		/*
 		// Parameters examples :
@@ -29,7 +36,8 @@ module.exports = function(subFile, videoFile, outputFolder, title, series, songT
 			return new Promise(function(resolve, reject){
 				
 			//Testing if video file exists and which extension it has.
-			if(!fs.existsSync(videoFile)) 
+			
+			if(!fs.existsSync(path.resolve(__dirname,'../../../',pathToVideoFiles,videoFile))) 
 			{
 					reject('Video file does not exist!');
 			}	
@@ -94,11 +102,13 @@ module.exports = function(subFile, videoFile, outputFolder, title, series, songT
 				} else {
 					// No .mkv or .mp4 detected, so we create a .ass from vide.ass
 					// Videofile is most probably a hardsubbed video.
-					subFile = 'src/_player/assets/vide.ass';			
+					subFile = 'vide.ass';			
+					pathToSubFiles = 'src/_player/assets/'
 				}
 			} else {
 				// Checking if subFile exists. Abort if not.
-				if(!fs.existsSync(subFile)) 
+				console.log(pathToSubFiles);				
+				if(!fs.existsSync(path.resolve(__dirname,'../../../',pathToSubFiles,subFile))) 
 				{
 					reject('ASS file not found : '+subFile);
 				}	
@@ -221,7 +231,7 @@ module.exports = function(subFile, videoFile, outputFolder, title, series, songT
 										MarginR: '0',
 										MarginV: '0',
 										Effect: '',
-										Text: '{\\fad(800,250)\\i1}'+series+'{\\i0}\\N{\\u0}'+songtype+songorder+' - '+title+'{\\u1}'
+										Text: '{\\fad(800,250)\\i1}'+series+'{\\i0}\\N{\\u0}'+i18n.__(songType+'_SHORT')+songOrder+' - '+title+'{\\u1}'
 									}};
 			var DialogueNickname = { key: 'Dialogue',
 									value: {
@@ -234,7 +244,7 @@ module.exports = function(subFile, videoFile, outputFolder, title, series, songT
 										MarginR: '0',
 										MarginV: '0',
 										Effect: '',
-										Text: '{\\fad(800,250)\\i1}Demandé par{\\i0}\\N{\\u0}'+requester+'{\\u1}'
+										Text: '{\\fad(800,250)\\i1}'+i18n.__('REQUESTED_BY')+'{\\i0}\\N{\\u0}'+requester+'{\\u1}'
 									}}
 			
 			script[2].body.push(DialogueCredits);
@@ -242,7 +252,7 @@ module.exports = function(subFile, videoFile, outputFolder, title, series, songT
 
 			// Writing to the final ASS, which is the karaoke's ID.ass
 			// If writing is successfull, we return the path to the ASS file.
-			var outputFile = outputFolder+'/'+kara_id+'.ass';
+			var outputFile = outputFolder+'/'+kara_id+'.'+playlist_id+'.ass';
 			fs.writeFile(outputFile, assStringify(script), function(err, rep) {
 								if (err) {
 									reject('Error writing output ASS file : '+err)

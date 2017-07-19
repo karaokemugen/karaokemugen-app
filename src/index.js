@@ -62,7 +62,7 @@ if(SYSPATH)
 		extend(true,SETTINGS,configCustom);
 	}
 	SETTINGS.os = 'Windows';
-
+	
 	logger.info('Loading configuration.');
 	logger.log('debug','Configuration loaded : '+JSON.stringify(SETTINGS,null,'\n'));
 

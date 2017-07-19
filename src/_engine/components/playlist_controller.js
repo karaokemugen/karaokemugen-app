@@ -4,11 +4,13 @@ timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
 const S = require('string');
 const async = require('async');
+const assbuilder = require(path.resolve(__dirname,'./ass_builder.js'));
+const fs = require('fs');
 
 module.exports = {
 	SYSPATH:null,
 	DB_INTERFACE:null,
-
+	SETTINGS:null,
 	samplePlaylist:[],
 
 	init: function(){
@@ -589,6 +591,27 @@ module.exports = {
 		})
 	},
 	/**
+	* @function {Get karaoke by ID}
+	* @param  {number} kara_id {ID of karaoke to fetch infos from}
+	* @return {Object} {karaoke object}
+	*/
+	getKara:function(kara_id)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			
+				// Get karaoke list								
+				module.exports.DB_INTERFACE.getKara(kara_id)
+				.then(function(kara){
+					resolve(kara);
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			
+		})
+	},
+	/**
 	* @function {Filter playlist with a text}
 	* @param  {object} playlist   {playlist array of karaoke objects}
 	* @param  {string} searchText {Words separated by a space}
@@ -677,7 +700,7 @@ module.exports = {
 				module.exports.isKaraInPlaylist(kara_id,playlist_id)
 					.then(function(isKaraInPL)
 					{						
-						//Karaoke song is in playlist, then we will reject the promise
+						//Karaoke song is in playlist, then we update the boolean and resolve the promise
 						//since we don't want duplicates in playlists.
 						isKaraInPlaylist = isKaraInPL;
 						resolve(isKaraInPL);
@@ -691,21 +714,97 @@ module.exports = {
 			.then(function()
 			{
 				if (isKaraInPlaylist) 
-				{
-					reject('Karaoke song is already in playlist');
-				} else {
-					// Adding karaoke song here								
-					module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
-					.then(function(){
-						module.exports.updatePlaylistDuration(playlist_id);
-						module.exports.updatePlaylistNumOfKaras(playlist_id);
-						module.exports.reorderPlaylist(playlist_id);
-						resolve(true);
-					})
-					.catch(function(err){
-						reject(err);
-					})			
-				}
+					{
+						reject('Karaoke song is already in playlist');
+					} else {
+					
+						// Adding karaoke song here		
+						module.exports.getKara(kara_id)
+							 .then(function(kara)
+							 {	
+								assbuilder(
+									module.exports.SETTINGS.Path.Subs,
+									module.exports.SETTINGS.Path.Videos,
+									kara.subfile, 
+									kara.videofile, 
+									module.exports.SETTINGS.Path.Temp, 
+									kara.title, 
+									kara.series, 
+									kara.songtype, 
+									kara.songorder, 
+									requester, 
+									kara_id, 
+									playlist_id, 
+									module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+								.then(function() 
+								{
+									module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
+									.then(function(playlistcontent_id){
+										var pRenameASS = new Promise((resolve,reject) =>
+										{
+											fs.renameSync(
+												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+playlist_id+'.ass'),
+												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
+												playlistcontent_id+'.ass')
+											);
+											resolve();
+										})
+										var pUpdatedDuration = new Promise((resolve,reject) =>
+										{
+											module.exports.updatePlaylistDuration(playlist_id)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(){
+												reject();
+											})
+										});										
+										var pUpdatedKarasCount = new Promise((resolve,reject) =>
+										{
+											module.exports.updatePlaylistNumOfKaras(playlist_id)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(){
+												reject();
+											})
+										});				
+										var pReorderPlaylist = new Promise((resolve,reject) =>
+										{
+											module.exports.reorderPlaylist(playlist_id)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(){
+												reject();
+											})
+										});				
+										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+										.then(function()
+										{												
+											resolve();
+										})
+										.catch(function(err)
+										{
+											reject(err);
+										});
+									})
+									.catch(function(err)
+									{
+										reject(err);
+									});
+
+								})
+								.catch(function(err)
+								{
+									reject(err);
+								});
+								
+							 })
+							 .catch(function(err) {
+								 reject(err);
+							 });																				
+					}
 			})
 			.catch(function(err)
 			{
@@ -719,73 +818,86 @@ module.exports = {
 	},
 	/**
 	* @function {Remove karaoke from playlist}
-	* @param  {number} kara_id     {ID of karaoke to remove}
-	* @param  {number} playlist_id {ID of playlist to add to}
+	* @param  {number} playlistcontent_id     {ID of karaoke to remove}
 	* @return {boolean} {Promise}
 	*/
-	deleteKaraFromPlaylist:function(kara_id,playlist_id)
+	deleteKaraFromPlaylist:function(playlistcontent_id)
 	{
 		return new Promise(function(resolve,reject){
-			var isKaraInPlaylist = undefined;
-			var pIsPlaylist = new Promise((resolve,reject) => 
+			var playlist_id = undefined;
+			var kara_id = undefined;
+			var pGetPLContentInfo = new Promise((resolve,reject) => 
 			{
-				module.exports.isPlaylist(playlist_id)
-					.then(function()
-					{						
-						resolve(true);
+				module.exports.DB_INTERFACE.getPLContentInfo(playlistcontent_id)
+					.then(function(kara)
+					{				
+						playlist_id = kara.playlist_id;
+						kara_id = kara.kara_id;		
+						resolve();
 					})
-					.catch(function()
+					.catch(function(err)
 					{						
-						reject('Playlist '+playlist_id+' does not exist');
+						reject('Kara '+playlistcontent_id+' (PlaylistContentID) does not exist: '+err);
 					})		
-			});			
-			var pIsKara = new Promise((resolve,reject) =>
-			{
-				module.exports.isKara(kara_id)
-					.then(function()
-					{						
-						resolve(true);
-					})
-					.catch(function()
-					{						
-						reject('Kara '+kara_id+' does not exist');
-					})		
-			});
-			var pIsKaraInPlaylist = new Promise((resolve,reject) =>
-			{
-				module.exports.isKaraInPlaylist(kara_id,playlist_id)
-					.then(function(isKaraInPL)
-					{						
-						//Karaoke song is in playlist, then we will reject the promise
-						//since we don't want duplicates in playlists.
-						isKaraInPlaylist = isKaraInPL;
-						resolve(isKaraInPL);
-					})
-					.catch(function()
-					{						
-						reject('Unable to tell if karaoke song is in playlist or not.');
-					})		
-			});
-			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist])
+			});						
+			Promise.all([pGetPLContentInfo])
 			.then(function()
 			{
-				if (isKaraInPlaylist) 
-				{
-					// Removing karaoke here.
-					module.exports.DB_INTERFACE.removeKaraFromPlaylist(kara_id,playlist_id)
-					.then(function(){
-						module.exports.updatePlaylistDuration(playlist_id);
-						module.exports.updatePlaylistNumOfKaras(playlist_id);
-						module.exports.reorderPlaylist(playlist_id);
-						resolve(true);
+				// Removing karaoke here.
+					var assFile = path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
+							playlistcontent_id+'.ass')
+					if (fs.existsSync(assFile))
+					{
+						fs.unlinkSync(assFile);
+						logger.debug('Deleted '+assFile)
+					} else {
+						logger.warn('Could not find ASS file to delete : '+assFile);
+					}											
+					module.exports.DB_INTERFACE.removeKaraFromPlaylist(playlistcontent_id)
+					.then(function(){						
+						var pUpdatedDuration = new Promise((resolve,reject) =>
+						{
+							module.exports.updatePlaylistDuration(playlist_id)
+							.then(function(){								
+								resolve();
+							})
+							.catch(function(){
+								reject();
+							})
+						});										
+						var pUpdatedKarasCount = new Promise((resolve,reject) =>
+						{
+							module.exports.updatePlaylistNumOfKaras(playlist_id)
+							.then(function(){
+								resolve();
+							})
+							.catch(function(){
+								reject();
+							});
+						});				
+						var pReorderPlaylist = new Promise((resolve,reject) =>
+						{
+							module.exports.reorderPlaylist(playlist_id)
+							.then(function(){
+								resolve();
+							})
+							.catch(function(){
+								reject();
+							})
+						});				
+						Promise.all([pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+						.then(function()
+						{												
+							resolve();
+						})
+						.catch(function(err)
+						{
+							reject(err);
+						});
 					})
 					.catch(function(err){
 						reject(err);
-					})			
-					
-				} else {
-					reject('Karaoke song is not present in this playlist.');
-				}
+					})							
 			})
 			.catch(function(err)
 			{
@@ -899,7 +1011,7 @@ module.exports = {
 				module.exports.isKaraInPlaylist(kara_id,publicPlaylistID)
 					.then(function(isKaraInPL)
 					{						
-						//Karaoke song is in playlist, then we will reject the promise
+						//Karaoke song is in playlist, then we update the boolean and resolve the promise
 						//since we don't want duplicates in playlists.
 						isKaraInPlaylist = isKaraInPL;
 						resolve(isKaraInPL);
@@ -916,17 +1028,93 @@ module.exports = {
 					{
 						reject('Karaoke song is already in playlist');
 					} else {
-						// Adding karaoke song here								
-						module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,publicPlaylistID,pos,date_add,flag_playing)
-						.then(function(){
-							module.exports.updatePlaylistDuration(publicPlaylistID);
-							module.exports.updatePlaylistNumOfKaras(publicPlaylistID);
-							module.exports.reorderPlaylist(publicPlaylistID);
-							resolve(true);
-						})
-						.catch(function(err){
-							reject(err);
-						})			
+					
+						// Adding karaoke song here		
+						module.exports.getKara(kara_id)
+							 .then(function(kara)
+							 {	
+								assbuilder(
+									module.exports.SETTINGS.Path.Subs,
+									module.exports.SETTINGS.Path.Videos,
+									kara.subfile, 
+									kara.videofile, 
+									module.exports.SETTINGS.Path.Temp, 
+									kara.title, 
+									kara.series, 
+									kara.songtype, 
+									kara.songorder, 
+									requester, 
+									kara_id, 
+									publicPlaylistID, 
+									module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+								.then(function() 
+								{
+									module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,publicPlaylistID,pos,date_add,flag_playing)
+									.then(function(playlistcontent_id){
+										var pRenameASS = new Promise((resolve,reject) =>
+										{
+											fs.renameSync(
+												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+playlist_id+'.ass'),
+												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
+												playlistcontent_id+'.ass')
+											);
+											resolve();
+										});
+										var pUpdatedDuration = new Promise((resolve,reject) =>
+										{
+											module.exports.updatePlaylistDuration(publicPlaylistID)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(){
+												reject();
+											})
+										});										
+										var pUpdatedKarasCount = new Promise((resolve,reject) =>
+										{
+											module.exports.updatePlaylistNumOfKaras(publicPlaylistID)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(){
+												reject();
+											})
+										});				
+										var pReorderPlaylist = new Promise((resolve,reject) =>
+										{
+											module.exports.reorderPlaylist(publicPlaylistID)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(){
+												reject();
+											})
+										});				
+										Promise.all([pRenamePlaylist,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+										.then(function()
+										{												
+											resolve();
+										})
+										.catch(function(err)
+										{
+											reject(err);
+										});
+									})
+									.catch(function(err)
+									{
+										reject(err);
+									});
+
+								})
+								.catch(function(err)
+								{
+									reject(err);
+								});
+								
+							 })
+							 .catch(function(err) {
+								 reject(err);
+							 });																				
 					}
 				})
 				.catch(function(err)
@@ -988,7 +1176,7 @@ module.exports = {
 				module.exports.isKaraInPlaylist(kara_id,currentPlaylistID)
 					.then(function(isKaraInPL)
 					{						
-						//Karaoke song is in playlist, then we will reject the promise
+						//Karaoke song is in playlist, then we update the boolean and resolve the promise
 						//since we don't want duplicates in playlists.
 						isKaraInPlaylist = isKaraInPL;
 						resolve(isKaraInPL);
@@ -1005,17 +1193,93 @@ module.exports = {
 					{
 						reject('Karaoke song is already in playlist');
 					} else {
-						// Adding karaoke song here								
-						module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,currentPlaylistID,pos,date_add,flag_playing)
-						.then(function(){
-							module.exports.updatePlaylistDuration(currentPlaylistID);
-							module.exports.updatePlaylistNumOfKaras(currentPlaylistID);
-							module.exports.reorderPlaylist(currentPlaylistID);
-							resolve(true);
-						})
-						.catch(function(err){
-							reject(err);
-						})			
+					
+						// Adding karaoke song here		
+						module.exports.getKara(kara_id)
+							 .then(function(kara)
+							 {	
+								assbuilder(
+									module.exports.SETTINGS.Path.Subs,
+									module.exports.SETTINGS.Path.Videos,
+									kara.subfile, 
+									kara.videofile, 
+									module.exports.SETTINGS.Path.Temp, 
+									kara.title, 
+									kara.series, 
+									kara.songtype, 
+									kara.songorder, 
+									requester, 
+									kara_id, 
+									currentPlaylistID, 
+									module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+								.then(function() 
+								{
+									module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,currentPlaylistID,pos,date_add,flag_playing)
+									.then(function(playlistcontent_id){
+										var pRenameASS = new Promise((resolve,reject) =>
+										{
+											fs.renameSync(
+												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+playlist_id+'.ass'),
+												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
+												playlistcontent_id+'.ass')
+											);
+											resolve();
+										});
+										var pUpdatedDuration = new Promise((resolve,reject) =>
+										{
+											module.exports.updatePlaylistDuration(currentPlaylistID)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(){
+												reject();
+											})
+										});										
+										var pUpdatedKarasCount = new Promise((resolve,reject) =>
+										{
+											module.exports.updatePlaylistNumOfKaras(currentPlaylistID)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(){
+												reject();
+											})
+										});				
+										var pReorderPlaylist = new Promise((resolve,reject) =>
+										{
+											module.exports.reorderPlaylist(currentPlaylistID)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(){
+												reject();
+											})
+										});				
+										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+										.then(function()
+										{												
+											resolve();
+										})
+										.catch(function(err)
+										{
+											reject(err);
+										});
+									})
+									.catch(function(err)
+									{
+										reject(err);
+									});
+
+								})
+								.catch(function(err)
+								{
+									reject(err);
+								});
+								
+							 })
+							 .catch(function(err) {
+								 reject(err);
+							 });																				
 					}
 				})
 				.catch(function(err)
