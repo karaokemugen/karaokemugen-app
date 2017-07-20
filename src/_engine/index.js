@@ -382,6 +382,15 @@ module.exports = {
 			.catch(function(err){
 				console.log(err);
 			});	
+		/* Shuffle playlist example 
+		module.exports._services.playlist_controller.shufflePlaylist(1)
+			.then(function(playlist){
+				console.log(playlist);
+				logger.info('Shuffled playlist.');
+			})
+			.catch(function(err){
+				console.log(err);
+			});	
 		/* Deleting kara from playlist example
 		module.exports._services.playlist_controller.deleteKaraFromPlaylist(1982,1)
 			.then(function(playlist){
@@ -445,7 +454,7 @@ module.exports = {
 				logger.error("Kara add failed : "+err);
 			});
 		/* */
-		/* Add karaoke to current playlist example. Current playlist is autodetected.	*/			
+		/* Add karaoke to current playlist example. Current playlist is autodetected.		
 		module.exports._services.playlist_controller.addKaraToCurrentPlaylist(4571,'Axél',1)
 			.then(function(){
 				logger.info("Kara added");

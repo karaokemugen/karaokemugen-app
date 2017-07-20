@@ -22,6 +22,7 @@ SELECT ak.PK_id_kara AS id_kara,
       pc.NORM_pseudo_add AS NORM_pseudo_add,
       pc.pos AS pos,
       pc.pk_idplcontent AS playlistcontent_id,
+      pc.flag_playing AS flag_playing,
       ak.subfile AS subfile,
       ak.videofile AS videofile
  FROM karasdb.all_karas AS ak, playlist_content AS pc

@@ -6,6 +6,7 @@ const S = require('string');
 const async = require('async');
 const assbuilder = require(path.resolve(__dirname,'./ass_builder.js'));
 const fs = require('fs');
+const shuffle = require('knuth-shuffle').knuthShuffle;
 
 module.exports = {
 	SYSPATH:null,
@@ -1009,6 +1010,95 @@ module.exports = {
 					playlist.sort(function(a,b){
 						return a.pos - b.pos;
 					});
+					var newpos = 0;
+					var arraypos = 0;
+					playlist.forEach(function(kara){
+						newpos++;
+						playlist[arraypos].pos = newpos;
+						arraypos++;
+					})
+					module.exports.DB_INTERFACE.reorderPlaylist(playlist_id,playlist)
+					.then(function() {
+						resolve(playlist);
+					})
+					.catch(function(err) {
+						reject(err);
+					})				
+				})
+				.catch(function(err){
+					reject(err);
+				});
+			})
+			.catch(function(err)
+			{
+				reject(err);
+			});
+		});
+	},
+	/**
+	* @function {Shuffles playlist}
+	* @param  {number} playlist_id {ID of playlist to shuffle}
+	* @return {array} {Playlist array of karaoke objects.}
+	*/
+	shufflePlaylist:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject){
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject('Playlist '+playlist_id+' does not exist');
+					})		
+			});	
+			// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
+			// the part after the song currently being played.
+			var IsCurrent = undefined;
+			var pIsCurrent = new Promise((resolve,reject) =>
+			{
+				module.exports.isCurrentPlaylist(playlist_id,function(res) 
+				{
+					if (res == true) 
+					{
+						IsCurrent = true;
+					} else {
+						IsCurrent = false;
+					}	
+					resolve();						
+				})
+			});
+			Promise.all([pIsPlaylist,pIsCurrent])
+			.then(function()
+			{
+				module.exports.getPlaylistContents(playlist_id)
+				.then(function(playlist){
+					if (IsCurrent == false) {
+						shuffle(playlist);						
+					} else 
+					{
+						// If it's current playlist, we'll make two arrays out of the playlist :
+						// One before (and including) the current song being played (flag_playing = 1)
+						// One after.
+						// We'll shuffle the one after then concatenate the two arrays.
+						var BeforePlaying = [];
+						var AfterPlaying = [];
+						var ReachedPlaying = false;
+						playlist.forEach(function(kara){
+							if (ReachedPlaying == false)
+							{
+								BeforePlaying.push(kara);
+								if (kara.flag_playing == 1) ReachedPlaying = true;
+							} else {
+								AfterPlaying.push(kara);
+							}
+						})
+						shuffle(AfterPlaying);
+						playlist = BeforePlaying.concat(AfterPlaying);
+					}
 					var newpos = 0;
 					var arraypos = 0;
 					playlist.forEach(function(kara){
