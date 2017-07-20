@@ -20,3 +20,4 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.videofile AS videofile
  FROM all_karas AS ak
 ORDER BY ak.language, ak.series, ak.title, ak.songtype, ak.songorder
+WHERE ak.PK_id_kara NOT IN (SELECT fk_id_kara FROM blacklist)

@@ -3,6 +3,7 @@ var path = require('path');
 var fs = require('fs');
 const logger = require('../../_common/utils/logger.js');
 const moment = require('moment');
+var timestamp = require("unix-timestamp");
 require("moment-duration-format");
 moment.locale('fr');
 
@@ -318,6 +319,159 @@ module.exports = {
 				
 			})
 		})
+	},
+	/**
+	* @function {Generate new blacklist}
+	* @return {boolean} {Promise}
+	*/
+	generateBlacklist:function()
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlGenerateBlacklist = fs.readFileSync(path.join(__dirname,'../../_common/db/generate_blacklist.sql'),'utf-8');
+			
+			module.exports._user_db_handler.exec(sqlGenerateBlacklist,
+			function (err, rep)
+			{
+				if (err)
+				{
+					logger.error('Unable to generate blacklist : '+err);
+					reject(err);
+				} else {											
+					resolve();
+				}
+			});
+		});
+	},
+	/**
+	* @function {Get list of criterias for blacklist}
+	* @return {object} {List of criterias}
+	*/
+	getBlacklistCriterias:function()
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlGetBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_criterias.sql'),'utf-8');
+			
+			module.exports._user_db_handler.all(sqlGetBlacklistCriterias,
+			function (err, blcriterias)
+			{
+				if (err)
+				{
+					logger.error('Unable to get blacklist criterias : '+err);
+					reject(err);
+				} else {											
+					resolve(blcriterias);
+				}
+			});
+		});
+	},
+	/**
+	* @function {Add criteria to blacklist}
+	* @param {number} {type of criteria}
+	* @param {string} {value of criteria}
+	* @return {boolean} {promise}
+	*/
+	addBlacklistCriteria:function(blctype,blcvalue)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlAddBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/insert_blacklist_criteria.sql'),'utf-8');
+			
+			module.exports._user_db_handler.run(sqlAddBlacklistCriterias,
+			{
+				$blctype: blctype,
+				$blcvalue: blcvalue
+			},
+			function (err)
+			{
+				if (err)
+				{
+					logger.error('Unable to add blacklist criterias : '+err);
+					reject(err);
+				} else {											
+					resolve();
+				}
+			});
+		});
+	},
+	/**
+	* @function {Delete criteria from blacklist}
+	* @param {number} {blacklist criteria ID}
+	* @return {boolean} {promise}
+	*/
+	deleteBlacklistCriteria:function(blc_id)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlDeleteBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_blacklist_criteria.sql'),'utf-8');
+			
+			module.exports._user_db_handler.run(sqlDeleteBlacklistCriterias,
+			{
+				$blc_id: blc_id				
+			},
+			function (err)
+			{
+				if (err)
+				{
+					logger.error('Unable to delete blacklist criteria : '+err);
+					reject(err);
+				} else {											
+					resolve();
+				}
+			});
+		});
+	},
+	/**
+	* @function {Edit criteria from blacklist}
+	* @param {number} {blacklist criteria ID}
+	* @param {number} {blacklist criteria type}
+	* @param {string} {blacklist criteria value}
+	* @return {boolean} {promise}
+	*/
+	editBlacklistCriteria:function(blc_id,blctype,blcvalue)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+			var sqlEditBlacklistCriteria = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_blacklist_criteria.sql'),'utf-8');
+			
+			module.exports._user_db_handler.run(sqlEditBlacklistCriteria,
+			{
+				$blc_id: blc_id,
+				$blctype: blctype,
+				$blcvalue: blcvalue
+			},
+			function (err)
+			{
+				if (err)
+				{
+					logger.error('Unable to edit blacklist criteria : '+err);
+					reject(err);
+				} else {											
+					resolve();
+				}
+			});
+		});
 	},
 	updatePlaylistNumOfKaras:function(playlist_id,num_karas)
 	{
@@ -711,6 +865,33 @@ module.exports = {
 					}
 				}
 		})
+	},
+	/**
+	* @function {is blacklist criteria?}
+	* @param  {number} blc_id {BL criteria ID to check}
+	* @return {type} {Returns true or false}
+	*/
+	isBLCriteria:function(blc_id)
+	{
+		return new Promise(function(resolve,reject){
+			var sqlIsBLC = fs.readFileSync(path.join(__dirname,'../../_common/db/test_blacklist_criteria.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlIsBLC,
+			{
+				$blc_id: blc_id
+			}, function (err, row)
+			{
+					if (err)
+					{						
+						reject(err);
+					} else {
+						if (row) {
+							resolve()
+						} else {
+							reject();
+						}
+					}
+			});
+		});
 	},
 	/**
 	* @function {Is the kara in the playlist?}

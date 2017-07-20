@@ -65,6 +65,150 @@ module.exports = {
 		})		
 	},
 	/**
+	* @function {(Re)generate blacklist}
+	* @return {boolean} {Promise}
+	*/
+	generateBlacklist:function()
+	{
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.generateBlacklist()
+				.then(function ()
+				{
+					resolve();
+				})
+				.catch(function (err)
+				{
+					reject('Error during generation : '+err);
+				})
+		})		
+	},
+	/**
+	* @function {List blacklist criterias}
+	* @return {object} {Array of objects}
+	*/
+	getBlacklistCriterias:function()
+	{		
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.getBlacklistCriterias()
+				.then(function (blcriterias)
+				{
+					resolve(blcriterias);
+				})
+				.catch(function (err)
+				{
+					reject('Unable to get list of criterias : '+err);
+				})
+		})		
+	},
+	/**
+	* @function {Add a blacklist criteria}
+	* @param  {number} blctype {Type of blacklist criteria}
+	* @param  {string} blcvalue {Value of blacklist criteria}
+	* @return {promise} Promise
+	*/	
+	addBlacklistCriteria:function(blctype,blcvalue)
+	{
+		return new Promise(function(resolve,reject){
+			if (blctype >= 0 && blctype <= 1001) {
+				if ((blctype == 1001 || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric()))
+				{
+					reject('Blacklist criteria type selected ('+blctype+') requires a numeric criteria value!');
+				} else {
+					module.exports.DB_INTERFACE.addBlacklistCriteria(blctype,blcvalue)
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					})
+				}
+			} else {
+				reject('Wrong criteria type ('+blctype+')');
+			}
+			
+		})		
+	},
+	/**
+	* @function {Delete a blacklist criteria}
+	* @param  {number} blc_id {Blacklist Criteria ID}
+	* @return {promise} Promise
+	*/	
+	deleteBlacklistCriteria:function(blc_id)
+	{
+		return new Promise(function(resolve,reject){
+			var pIsBLC = new Promise((resolve,reject) => 
+			{
+				module.exports.isBLCriteria(blc_id)
+						.then(function()
+						{						
+							resolve(true);
+						})
+						.catch(function(err)
+						{						
+							reject('Blacklist criteria '+blc_id+' does not exist');
+						})	
+			});			
+			Promise.all([pIsBLC])
+			.then(function(){
+				module.exports.DB_INTERFACE.deleteBlacklistCriteria(blc_id)
+				.then(function(){
+					resolve();
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			})		
+		})
+		
+	},
+	/**
+	* @function {Edit a blacklist criteria}
+	* @param  {number} blc_id {Blacklist Criteria ID}
+	* @param  {number} blctype {Blacklist Criteria type}
+	* @param  {string} blcvalue {Blacklist Criteria value}
+	* @return {promise} Promise
+	*/	
+	editBlacklistCriteria:function(blc_id,blctype,blcvalue)
+	{
+		return new Promise(function(resolve,reject){
+			var pIsBLC = new Promise((resolve,reject) => 
+			{
+				module.exports.isBLCriteria(blc_id)
+						.then(function()
+						{						
+							resolve();
+						})
+						.catch(function(err)
+						{						
+							reject('Blacklist criteria '+blc_id+' does not exist');
+						})	
+			});			
+			Promise.all([pIsBLC])
+			.then(function(){
+				if (blctype >= 0 && blctype <= 1001) {
+					if ((blctype == 1001 || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric()))
+					{
+						reject('Blacklist criteria type selected ('+blctype+') requires a numeric criteria value!');
+					} else {
+						module.exports.DB_INTERFACE.editBlacklistCriteria(blc_id,blctype,blcvalue)
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){
+							reject(err);
+						})
+					}
+				} else {
+					reject('Wrong criteria type ('+blctype+')');
+				}			
+			})
+			.catch(function(err){
+				reject(err);
+			})	
+		})
+		
+	},
+	/**
 	* @function {Is there a public playlist in the database?}
 	* @return {number} {Playlist ID or message}
 	*/
@@ -117,6 +261,23 @@ module.exports = {
 				}					
 			})
 
+		})		
+	},
+	/**
+	* @function {Is it a blacklist criteria ?}
+	* @param  {number} blc_id {Blacklist criteria ID}	
+	* @return {promise} Promise
+	*/
+	isBLCriteria:function(blc_id)
+	{
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isBLCriteria(blc_id)
+			.then(function(){
+				resolve();
+			})
+			.catch(function(err){
+				reject(err);
+			})	
 		})		
 	},
 	/**
@@ -657,7 +818,6 @@ module.exports = {
 
 			var filteredPlaylist = playlist.filter(textSearch);
 			resolve(filteredPlaylist);
-
 		});
 	},
 	/**

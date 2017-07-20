@@ -391,6 +391,60 @@ module.exports = {
 			.catch(function(err){
 				console.log(err);
 			});	
+		/* Add blacklist criteria 
+		module.exports._services.playlist_controller.addBlacklistCriteria(1000,'Love')
+			.then(function(){
+				console.log('Add criteria OK');
+				module.exports._services.playlist_controller.generateBlacklist()
+				.then(function(){
+					console.log('Generate OK');
+				})
+				.catch(function(err){
+					console.log(err);
+				});
+			})
+			.catch(function(err){
+				console.log(err);
+			});	
+		/* Delete blacklist criteria 
+		module.exports._services.playlist_controller.deleteBlacklistCriteria(5)
+			.then(function(){
+				console.log('Delete criteria OK');
+				module.exports._services.playlist_controller.generateBlacklist()
+				.then(function(){
+					console.log('Generation OK');
+				})
+				.catch(function(err){
+					console.log(err);
+				});
+			})
+			.catch(function(err){
+				console.log(err);
+			});	
+		/* Edit blacklist criteria 
+		module.exports._services.playlist_controller.editBlacklistCriteria(3,1000,'Eurovision lol')
+			.then(function(){
+				console.log('Edited criteria OK');
+			})
+			.catch(function(err){
+				console.log(err);
+			});	
+		/* List all blacklist criterias 
+		module.exports._services.playlist_controller.getBlacklistCriterias()
+			.then(function(blcriteria){
+				console.log(blcriteria);
+			})
+			.catch(function(err){
+				console.log(err);
+			});
+		/* Generate blacklist 
+		module.exports._services.playlist_controller.generateBlacklist()
+			.then(function(){
+				console.log('OK');
+			})
+			.catch(function(err){
+				console.log(err);
+			});
 		/* Deleting kara from playlist example
 		module.exports._services.playlist_controller.deleteKaraFromPlaylist(1982,1)
 			.then(function(playlist){
