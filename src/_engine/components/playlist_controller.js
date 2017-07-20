@@ -623,6 +623,7 @@ module.exports = {
 		return new Promise(function(resolve,reject)
 		{
 			function textSearch(kara){
+				searchText = S(searchText).latinise().s;
 				searchText = searchText.toLowerCase();
 				
 				var searchOK = [];
@@ -640,6 +641,8 @@ module.exports = {
 					if (!S(kara.NORM_author).isEmpty()) {if (S(kara.NORM_author.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;}
 					if (!S(kara.NORM_pseudo_add).isEmpty()) {if (S(kara.NORM_pseudo_add.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;}	
 					if (!S(kara.songtype).isEmpty()) {if (S(kara.songtype.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;}				
+					if (!S(kara.misc).isEmpty()) {if (S(kara.misc.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;}				
+					if (!S(kara.language).isEmpty()) {if (S(kara.language.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;}
                 
 					searchWordID++;				
             	});

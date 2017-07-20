@@ -400,12 +400,12 @@ module.exports = {
 				console.log(err);
 			});
 		*/
-		/* Getting all karas from Playlist
+		/* Getting all karas from Playlist 
 
-		module.exports._services.playlist_controller.getPlaylistContents(45)
+		module.exports._services.playlist_controller.getPlaylistContents(1)
 			.then(function(playlist){
 				logger.profile('Search');
-				module.exports._services.playlist_controller.filterPlaylist(playlist,'gotta')
+				module.exports._services.playlist_controller.filterPlaylist(playlist,'hunter')
 				.then(function(filtered_pl){
 					console.log(filtered_pl);
 					logger.profile('Search');
@@ -417,7 +417,7 @@ module.exports = {
 			.catch(function(err){
 				console.log(err);
 			});
-	    */
+	    
 		/* Getting all karas
 		module.exports._services.playlist_controller.getAllKaras()
 			.then(function(playlist){
