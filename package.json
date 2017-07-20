@@ -45,6 +45,7 @@
     "express": "^4.15.3",
     "express-handlebars": "^3.0.0",
     "extend": "^3.0.1",
+    "ffmpeg-binaries": "^3.2.2-3",
     "fs-extra": "^3.0.1",
     "handlebars": "^4.0.10",
     "i18n": "^0.8.3",
