@@ -61,6 +61,7 @@
     "node-mpv": "^1.2.0",
     "open": "0.0.5",
     "os": "^0.1.1",
+    "os-locale": "^2.0.0",
     "progress": "^2.0.0",
     "qrcode": "^0.8.2",
     "request-progress": "^3.0.0",

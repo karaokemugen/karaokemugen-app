@@ -17,22 +17,22 @@ module.exports = {
     init : function(){
         if(module.exports.SYSPATH === null)
         {
-            logger.error('SYSPATH is null');
+            logger.error(__('SYSPATH_NULL'));
             process.exit();
         }
         if(module.exports.SETTINGS === null)
         {
-            logger.error('SETTINGS is null');
+            logger.error(__('SETTINGS_NULL'));
             process.exit();
         }
         if(module.exports.LISTEN === null)
         {
-            logger.error('LISTEN is null');
+            logger.error(__('LISTEN_NULL'));
             process.exit();
         }
         if(module.exports.DB_INTERFACE === null)
         {
-            logger.error('DB_INTERFACE is null');
+            logger.error(__('DBI_NULL'));
             process.exit();
         }
 
@@ -65,14 +65,15 @@ module.exports = {
 
             module.exports._server.listen(module.exports.LISTEN);
 
-            logger.info(`Webapp frontend started on port ${module.exports.LISTEN}`);
+            logger.info(__('WEBAPP_LISTENING'),module.exports.LISTEN);
+            logger.info(__('WEBAPP_READY'));
 
             // trigger test event (call engine deffered method and log response)
             //console.log(module.exports.onTest());
         }
         else
         {
-            logger.error('Server already started.');
+            logger.error(__('WEBAPP_ALREADY_STARTED'));
         }
     },
 

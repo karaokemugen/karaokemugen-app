@@ -42,13 +42,13 @@ module.exports = {
 			// Chargement de socket.io sur l'appli web du launcher
 			module.exports._io = require('socket.io').listen(module.exports._server);
 			module.exports._io.sockets.on('connection', function (socket) {
-				logger.info('Client connected : ('+socket.id+')');
+				logger.info(__('CLIENT_CONNECTED',socket.id));
 				socket.emit('engine_states', module.exports._engine_states);
 				// Création des évènements d'entrée (actions de l'utilisateur)
 				socket.on('message', function (message) {
 					switch (message) {
 						default:
-							logger.info('Client says : ' + message);
+							logger.debug(__('CLIENT_SAYS',message));
 							break;
 					}
 				});
@@ -76,17 +76,17 @@ module.exports = {
 							module.exports.generateKaraDb(socket);
 							break;
 						default:
-							logger.log('warning','Unknown action : ' + action);
+							logger.warn(__('UNKNOWN_ACTION',action));
 							break;
 					}
 				});
 			});
 			module.exports._server.listen(module.exports.LISTEN);
-			logger.info('Dashboard is READY.');
+			logger.info(__('DASHBOARD_READY'));
 		}
 		else
 		{
-			logger.error('Server already started.');
+			logger.error(__('DASHBOARD_ALREADY_STARTED'));
 		}
 	},
 	open: function(){
@@ -135,7 +135,7 @@ module.exports = {
 		generator.SYSPATH = module.exports.SYSPATH;
 		generator.SETTINGS = module.exports.SETTINGS;
 		generator.onLog = function(type,message) {
-			logger.info('generate_karasdb.js > '+message);
+			logger.info(__('DATABASE_GENERATION',message));
 			if(type!='notice')
 				socket.emit('generate_karabd', {event:'addLog',data:message});
 		}

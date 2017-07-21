@@ -11,6 +11,8 @@ const mkdirp = require('mkdirp');
 const argv = require('minimist')(process.argv.slice(2));
 
 const logger = require('./_common/utils/logger.js');
+const i18n = require('i18n');
+const osLocale = require('os-locale');
 
 /**
  * Clear console - and welcome message
@@ -19,29 +21,32 @@ const logger = require('./_common/utils/logger.js');
  */ 
 process.stdout.write('\x1Bc');
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
-console.log(clc.greenBright('| Project Toyunda Mugen - v2.0 Finé Fantastique                    |'));
+console.log(clc.greenBright('| Project Toyunda Mugen                                            |'));
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
 console.log("\n");
 
-if (argv.help) { 
-	var help = "Usage : \n";
-	help += "\n";
-	help += "toyundamugen [--help] [--version] [--debug] [--testplaylist]\n";
-	help += "\n";
-	help += "	Options : \n";
-	help += "\n";
-	help += "		--help     Prints this help message\n";
-	help += "		--version  Prints version information\n";
-	help += "		--debug    Displays debug messages\n";
-	help += "		--testplaylist    Launch a playlist controller test procedure\n";
-	help += "\n";
+var detectedLocale = osLocale.sync().substring(0,2);	
 
-	console.log(help);
+
+i18n.configure({    
+    directory: path.resolve(__dirname,'_common/locales'),
+	defaultLocale: 'en',
+	register: global
+});
+i18n.setLocale(detectedLocale);
+
+logger.info(__('LOCALE_DETECTED')+detectedLocale);
+
+
+if (argv.help) { 
+	
+	console.log(__('HELP_MSG'));
 	process.exit(0);
 }
 
 if (argv.version) {
 	console.log("Toyunda Mugen v2.0 - Finé Fantastique");
+	console.log("Database version : xxx")
 	process.exit(0);
 }
 
@@ -49,7 +54,7 @@ if (argv.version) {
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
 if(SYSPATH)
 {
-	logger.debug('Detected SysPath is :'+SYSPATH);
+	logger.debug(__('SYSPATH_DETECTED')+SYSPATH);
 	// Lecture de la configuration par défault
 	/**
 	 * Reading config.ini.default, then override it with config.ini if it exists.
@@ -63,8 +68,8 @@ if(SYSPATH)
 	}
 	SETTINGS.os = 'Windows';
 	
-	logger.info('Loading configuration.');
-	logger.log('debug','Configuration loaded : '+JSON.stringify(SETTINGS,null,'\n'));
+	logger.info(__('CONFIG_LOADING'));
+	logger.debug(__('CONFIG_LOADED')+JSON.stringify(SETTINGS,null,'\n'));
 
 	// Vérification que les chemins sont bien présents, sinon les créer
 	/**
@@ -75,44 +80,44 @@ if(SYSPATH)
 	 * app/db
 	 * app/temp
 	 */
-	logger.info('Checking if data folders are in place');
+	logger.info(__('DATAFOLDERS_CHECK'));
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Karas))) {
-		logger.warn(path.join(SYSPATH,SETTINGS.Path.Karas)+' does not exist, creating it...');
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Karas)));
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Karas));
 		if (!ret) {
-			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.Karas)+'... Exiting.')
+			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
 		}
-	}
+	}	
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Subs))) {
-		logger.warn(path.join(SYSPATH,SETTINGS.Path.Subs)+' does not exist, creating it...');
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Subs)));
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Subs));
 		if (!ret) {
-			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.Subs)+'... Exiting.')
+			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Videos))) {
-		logger.warn(path.join(SYSPATH,SETTINGS.Path.Videos)+' does not exist, creating it...');
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Videos)));
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Videos));
 		if (!ret) {
-			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.Videos)+'... Exiting.')
+			logger.error(__('CREATING_FOLDER_FAILED'))
 			process.exit();
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.DB))) {
-		logger.warn(path.join(SYSPATH,SETTINGS.Path.DB)+' does not exist, creating it...');
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.DB)));
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.DB));
 		if (!ret) {
-			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.DB)+'... Exiting.')
+			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Temp))) {
-		logger.warn(path.join(SYSPATH,SETTINGS.Path.Temp)+' does not exist, creating it...');
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Temp)));
 		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Temp));
 		if (!ret) {
-			logger.error('Unable to create '+path.join(SYSPATH,SETTINGS.Path.Temp)+'... Exiting.')
+			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
 		}
 	}
@@ -131,5 +136,5 @@ if(SYSPATH)
 }
 else
 {
-	logger.error('Cannot resolve syspath - Exiting...');
+	logger.error('DETECTED_SYSPATH_FAILED');
 }

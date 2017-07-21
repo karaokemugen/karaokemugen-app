@@ -11,12 +11,6 @@ const MatroskaSubtitles = require('matroska-subtitles')
 const moment = require('moment');
 require("moment-duration-format");
 
-i18n.configure({
-    locales:['fr'],
-    directory: path.resolve(__dirname,'../../_common/locales')
-});
-i18n.setLocale('fr');
-
 module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id, pathToFFmpeg){
 	
 		
@@ -40,7 +34,7 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 			
 			if(!fs.existsSync(path.resolve(__dirname,'../../../',pathToVideoFiles,videoFile))) 
 			{
-					reject('Video file does not exist!');
+					reject(__('VIDEO_NOT_FOUND',videoFile));
 			}	
 
 			//Testing if the subfile provided is dummy.ass
@@ -98,7 +92,7 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 
 					subFile = outputFolder+'/kara_extract.ass';
 					if (proc.error) {
-						reject('Unable to extract karaoke from video file!');
+						reject(__('EXTRACTING_ASS_FAILED'));
 					}					
 				} else {
 					// No .mkv or .mp4 detected, so we create a .ass from vide.ass
@@ -245,7 +239,7 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 										MarginR: '0',
 										MarginV: '0',
 										Effect: '',
-										Text: '{\\fad(800,250)\\i1}'+i18n.__('REQUESTED_BY')+'{\\i0}\\N{\\u0}'+requester+'{\\u1}'
+										Text: '{\\fad(800,250)\\i1}'+__('REQUESTED_BY')+'{\\i0}\\N{\\u0}'+requester+'{\\u1}'
 									}}
 			
 			script[2].body.push(DialogueCredits);
@@ -256,7 +250,7 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 			var outputFile = outputFolder+'/'+kara_id+'.'+playlist_id+'.ass';
 			fs.writeFile(outputFile, assStringify(script), function(err, rep) {
 								if (err) {
-									reject('Error writing output ASS file : '+err)
+									reject(__('WRITING_ASS_FAILED',err));
 								} else {
 									resolve(outputFile)
 								}

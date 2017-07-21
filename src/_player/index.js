@@ -17,10 +17,9 @@ module.exports = {
 		var pIsmpvAvailable = new Promise((resolve,reject) =>
 		{
 			if(!fs.existsSync(module.exports.BINPATH+'/mpv.exe')){
-				logger.warn('Unable to find mpv.exe !');
-				logger.warn('Received path was : '+module.exports.BINPATH);
-				//logger.warn('Please download it from http://mpv.io and place mpv.exe in '+module.exports.BINPATH);
-				logger.warn('Attempting to download it from Shelter...')
+				logger.warn(__('MPV_NOT_FOUND',module.exports.BINPATH));
+				logger.warn(__('MPV_MANUAL_DL',module.exports.BINPATH));				
+				logger.warn(__('MPV_DL'));
 
 				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp.exe');
 				var req = http.request({
@@ -33,7 +32,7 @@ module.exports = {
 					var len = parseInt(res.headers['content-length'], 10);
 					
 					console.log();
-					var bar = new ProgressBar('  Downloading mpv [:bar] :percent :etas', {
+					var bar = new ProgressBar(__('DOWNLOADING')+' [:bar] :percent :etas', {
 						complete: '=',
 						incomplete: ' ',
 						width: 40,
@@ -50,10 +49,10 @@ module.exports = {
 								  module.exports.BINPATH+'/mpv.exe',
 								  function(err) {
 									  if (err) {
-										  logger.error('Unable to rename downloaded file : '+err)
+										  logger.error(__('RENAME_MPV_FAILED',err))
 										  reject();
 									  } else {
-										  logger.info('Downloaded mpv.')						
+										  logger.info(__('DOWNLOADED_MPV'));
 										  resolve();
 									  }
 									}
@@ -101,13 +100,13 @@ module.exports = {
 					module.exports._ref = null;
 				}
 			});
-			logger.info('Player is READY.')
+			logger.info(__('PLAYER_READY'));
 		})
 		.catch(function(err) {
-			logger.error('Player is NOT READY : '+err);
+			logger.error(__('PLAYER_NOT_READY',err));
 			fs.unlink(module.exports.BINPATH+'/mpvtemp.exe', (err) => {
   				if (err) throw err;
-  				logger.info('Cleaned up binary directory')
+  				logger.debug(__('BINDIR_CLEANED_UP'));
 				process.exit();
 			});			
 		});
@@ -126,24 +125,24 @@ module.exports = {
 				if(subtitle)
 				{
 					if(fs.existsSync(subtitle)){
-						logger.info('subtitle : '+subtitle);
+						logger.info(__('SUBTITLE',subtitle));
 						module.exports._player.addSubtitles(subtitle);//, flag, title, lang)
 					}
 					else
 					{
-						logger.error('Can not find subtitle '+subtitle)
+						logger.error(__('SUBTITLE_NOT_FOUND',subtitle));
 					}
 				}
 				else
 				{
-					logger.info('No subtitles');
+					logger.info(__('NO_SUBTITLE'));
 				}
 				module.exports._player.loadFile(path.join(__dirname,'assets/__blank__.png'),'append');
 			},500);
 		}
 		else {
 			module.exports.playing = false;
-			logger.error('Can not find video '+video)
+			logger.error(__('VIDEO_NOT_FOUND',video))
 		}
 	},
 	stop:function()

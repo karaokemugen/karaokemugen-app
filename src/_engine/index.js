@@ -33,17 +33,15 @@ module.exports = {
 	 * It starts up the DB Interface, player, playlist controller and admin dashboard.
 	 * @function {run}
 	 */
-	run: function(){
-		logger.info('Engine is starting');
-
+	run: function(){		
 		if(this.SYSPATH === null)
 		{
-			logger.error('SYSPATH is null');
+			logger.error(__('SYSPATH_NULL'));
 			process.exit();
 		}
 		if(this.SETTINGS === null)
 		{
-			logger.error('SETTINGS is null');
+			logger.error(__('SETTINGS_NULL'));
 			process.exit();
 		}
 
@@ -79,12 +77,12 @@ module.exports = {
 	test_playlist_controller: function(){
 		if(this.SYSPATH === null)
 		{
-			logger.error('SYSPATH is null');
+			logger.error(__('SYSPATH_NULL'));
 			process.exit();
 		}
 		if(this.SETTINGS === null)
 		{
-			logger.error('SETTINGS is null');
+			logger.error(__('SETTINGS_NULL'));
 			process.exit();
 		}
 
@@ -92,7 +90,7 @@ module.exports = {
 			module.exports._start_player();
 			module.exports._start_playlist_controller();
 
-			logger.info('Start playlist controller test procedure');
+			logger.info(__('START_PLC_TEST_PROC'));
 
 			// Here is the test
 			// module.exports._services.playlist_controller.whatever_you_want()
@@ -332,13 +330,13 @@ module.exports = {
 			})
 			.catch(function(){
 				//No playlist exists, creating one.
-				logger.warn('No playlist with current flag exists. Creating one...');
-				module.exports._services.playlist_controller.createPlaylist('Current playlist',1,1,0)
+				logger.warn(__('NO_CURRENT_PLAYLIST'));
+				module.exports._services.playlist_controller.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0)
 					.then(function (new_playlist){
-						logger.info("Current playlist created with ID : "+new_playlist);
+						logger.info(__('CURRENT_PLAYLIST_CREATED',new_playlist));
 				})
 					.catch(function(err){
-						logger.error("Unable to create current playlist : "+err);
+						logger.error(__('CURRENT_PLAYLIST_CREATE_ERROR',err));
 				});
 			})
 		module.exports._services.playlist_controller.isAPublicPlaylist()
@@ -347,13 +345,13 @@ module.exports = {
 			})
 			.catch(function(){
 				//No playlist exists, creating one.
-				logger.warn('No playlist with public flag exists. Creating one...');
-				module.exports._services.playlist_controller.createPlaylist('Public playlist',1,0,1)
+				logger.warn(__('NO_PUBLIC_PLAYLIST'));
+				module.exports._services.playlist_controller.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1)
 					.then(function (new_playlist){
-						logger.info("Public playlist created with ID : "+new_playlist);
+						logger.info(__('PUBLIC_PLAYLIST_CREATED',new_playlist));
 				})
 					.catch(function(err){
-						logger.error("Unable to create public playlist : "+err);
+						logger.error(__('PUBLIC_PLAYLIST_CREATE_ERROR',err));
 				});
 			})
 		/* Update playlist's number of karas
@@ -586,7 +584,7 @@ module.exports = {
 			.catch(function(err){
 				logger.error("Deleting kara from whitelist failed : "+err);
 			});
-		
+		*/
 		// on ajoute 4 morceau dans la playlist
 		//module.exports._services.playlist_controller.addKara(1,'toto');
 		//module.exports._services.playlist_controller.addKara(2,'tata');
