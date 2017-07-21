@@ -923,6 +923,33 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Is the kara in the whitelist?}
+	* @param  {number} kara_id {ID of karaoke to search for}
+	* @return {boolean} {Promise}
+	*/
+	isKaraInWhitelist:function(kara_id)
+	{
+		return new Promise(function(resolve,reject){
+			var sqlIsKaraInWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara_in_whitelist.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlIsKaraInWhitelist,
+			{
+				$kara_id: kara_id
+			}, function (err, row)
+			{
+					if (err)
+					{
+						logger.error('Unable to search for karaoke song '+kara_id+' in whitelist : '+err);   reject(err);
+					} else {						
+						if (row) {
+							resolve(true);
+						} else {
+							resolve(false);
+						}
+					}
+			});
+		});
+	},
+	/**
 	* @function {is it a playlist?}
 	* @param  {number} playlist_id {Playlist ID to check for existence}
 	* @return {type} {Returns true or false}
@@ -1262,6 +1289,64 @@ module.exports = {
 		})
 	},
 	/**
+	* @function {Add Kara To whitelist}
+	* @param  {number} kara_id        {ID of karaoke song to add to playlist}
+	* @param  {string} reason      {Reason for adding the karaoke}
+	* @param  {number} date_add       {UNIX timestap of the date and time the song was added to the list}
+	* @return {promise} {Promise}
+	*/
+	addKaraToWhitelist:function(kara_id,reason,date_added)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+
+			//We need to get the KID of the karaoke we're adding.
+
+			var sqlGetKID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kid.sql'),'utf-8');
+			module.exports._db_handler.get(sqlGetKID,
+			{
+				$kara_id: kara_id
+			}, function (err, row)
+			{
+					if (err)
+					{
+						logger.error('Unable to get KID for '+kara_id+' : '+err);
+						reject(err);
+					} else {
+						if (row) {
+							var kid = row.kid
+							var sqlAddKaraToWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_whitelist.sql'),'utf-8');
+							module.exports._user_db_handler.run(sqlAddKaraToWhitelist,
+							{
+								$reason: reason,
+								$kara_id: kara_id,
+								$kid: kid,
+								$date_added: date_added,
+							}, function (err, rep)
+							{
+									if (err)
+									{
+										logger.error('Unable to add kara '+kara_id+' to whitelist : '+err);
+										reject(err);
+									} else {
+										//We return the whitelist_content ID of the kara we just added.
+										resolve(this.lastID);
+									}
+							})
+						} else {
+							logger.error('No KID found for this '+kara_id+' !');
+							reject('No KID found for this '+kara_id+' !');
+						}
+
+					}
+			})
+		})
+	},
+	/**
 	* @function {Remove kara from playlist}
 	* @param  {number} playlistcontent_id        {ID of karaoke song to remove from playlist}
 	* @return {promise} {Promise}
@@ -1283,7 +1368,37 @@ module.exports = {
 			{
 				if (err)
 				{
-					logger.error('Unable to remove kara '+kara_id+' from playlist '+playlist_id+' : '+err);
+					logger.error('Unable to remove kara '+playlistcontent_id+' (playlist_content_id) from playlist '+playlist_id+' : '+err);
+					reject(err);
+				} else {
+					resolve(true);
+				}
+			});
+		});
+	},
+	/**
+	* @function {Remove kara from whitelist}
+	* @param  {number} whitelistcontent_id        {ID of karaoke song to remove from playlist}
+	* @return {promise} {Promise}
+	*/
+	removeKaraFromWhitelist:function(wlc_id)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				logger.error('DB_INTERFACE is not ready to work');
+				reject('Database is not ready!');
+			}
+
+			var sqlRemoveKaraFromWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_whitelist.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlRemoveKaraFromWhitelist,
+			{
+				$wlc_id: wlc_id
+			}, function (err, rep)
+			{
+				if (err)
+				{
+					logger.error('Unable to remove kara '+wlc_id+' (whitelist_content ID) from whitelist : '+err);
 					reject(err);
 				} else {
 					resolve(true);

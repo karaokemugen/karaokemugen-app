@@ -498,7 +498,14 @@ module.exports = {
 			.catch(function(err){
 				logger.error("Kara add failed : "+err);
 			});
-		
+		/* Adding kara to whitelist example
+		module.exports._services.playlist_controller.addKaraToWhitelist(4571,'Because reasons')
+			.then(function(){
+				logger.info("Kara added");
+			})
+			.catch(function(err){
+				logger.error("Kara add failed : "+err);
+			});
 		/* Add karaoke to public playlist example. Public playlist is autodetected.				
 		module.exports._services.playlist_controller.addKaraToPublicPlaylist(4571,'Axél',1)
 			.then(function(){
@@ -571,6 +578,15 @@ module.exports = {
 				logger.error("Deleting kara from playlist failed : "+err);
 			});
 		*/
+		/* Deleting kara from whitelist example : 
+		module.exports._services.playlist_controller.deleteKaraFromWhitelist(1)
+		    .then(function (){
+				logger.info("Karaoke deleted from whitelist.");
+			})
+			.catch(function(err){
+				logger.error("Deleting kara from whitelist failed : "+err);
+			});
+		
 		// on ajoute 4 morceau dans la playlist
 		//module.exports._services.playlist_controller.addKara(1,'toto');
 		//module.exports._services.playlist_controller.addKara(2,'tata');

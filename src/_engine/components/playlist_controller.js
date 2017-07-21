@@ -129,6 +129,68 @@ module.exports = {
 		})		
 	},
 	/**
+	* @function {Add a kara to the whitelist}
+	* @param  {number} kara_id {ID of karaoke to add}
+	* @param  {string} reason {Reason for add in whitelist}
+	* @return {promise} Promise
+	*/	
+	addKaraToWhitelist:function(kara_id,reason)
+	{
+		return new Promise(function(resolve,reject){
+			var isKaraInWhitelist = undefined;
+			var pIsKara = new Promise((resolve,reject) =>
+			{
+				module.exports.isKara(kara_id)
+					.then(function()
+					{						
+						resolve();
+					})
+					.catch(function()
+					{						
+						reject('Kara '+kara_id+' does not exist');
+					})		
+			});
+			var pIsKaraInWhitelist = new Promise((resolve,reject) =>
+			{
+				module.exports.isKaraInWhitelist(kara_id)
+					.then(function(isKaraInWL)
+					{						
+						//Karaoke song is in whitelist, then we update the boolean and resolve the promise
+						//since we don't want duplicates in playlists.
+						isKaraInWhitelist = isKaraInWL;
+						resolve(isKaraInWL);
+					})
+					.catch(function(err)
+					{						
+						reject('Unable to tell if karaoke song is in whitelist or not : '+err);
+					})		
+			});
+			Promise.all([pIsKara,pIsKaraInWhitelist])
+			.then(function()
+			{
+				var date_added = timestamp.now();
+				module.exports.DB_INTERFACE.addKaraToWhitelist(kara_id,reason,date_added)
+				.then(function(){
+					// Regenerate blacklist to take new kara into account.
+					module.exports.generateBlacklist()
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					})
+				})
+				.catch(function(err){
+					reject(err);
+				});
+			})
+			.catch(function(err)
+			{
+				reject(err);
+			});
+		});
+	},
+	/**
 	* @function {Delete a blacklist criteria}
 	* @param  {number} blc_id {Blacklist Criteria ID}
 	* @return {promise} Promise
@@ -136,6 +198,9 @@ module.exports = {
 	deleteBlacklistCriteria:function(blc_id)
 	{
 		return new Promise(function(resolve,reject){
+			if (S(blc_id).isEmpty()) {
+				reject('blc_id is empty!');
+			}
 			var pIsBLC = new Promise((resolve,reject) => 
 			{
 				module.exports.isBLCriteria(blc_id)
@@ -152,7 +217,13 @@ module.exports = {
 			.then(function(){
 				module.exports.DB_INTERFACE.deleteBlacklistCriteria(blc_id)
 				.then(function(){
-					resolve();
+					module.exports.generateBlacklist()
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					})
 				})
 				.catch(function(err){
 					reject(err);
@@ -192,7 +263,13 @@ module.exports = {
 					} else {
 						module.exports.DB_INTERFACE.editBlacklistCriteria(blc_id,blctype,blcvalue)
 						.then(function(){
-							resolve();
+							module.exports.generateBlacklist()
+							.then(function(){
+								resolve();
+							})
+							.catch(function(err){
+								reject(err);
+							})
 						})
 						.catch(function(err){
 							reject(err);
@@ -294,9 +371,28 @@ module.exports = {
 			 {				 			  
 					resolve(isKaraInPL);
 			 })
-			 .catch(function()
+			 .catch(function(err)
 			 {
-				   	reject(false);
+				   	reject(err);
+			 })
+		})	
+	},
+	/**
+	* @function {Tests if a karaoke is already in the whitelist}
+	* @param  {number} kara_id     {ID of karaoke to search}
+	* @return {boolean} {Promise}
+	*/
+	isKaraInWhitelist:function(kara_id)
+	{
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isKaraInWhitelist(kara_id)
+			 .then(function(isKaraInWL)
+			 {				 			  
+					resolve(isKaraInWL);
+			 })
+			 .catch(function(err)
+			 {
+				   	reject(err);
 			 })
 		})	
 	},
@@ -1038,6 +1134,9 @@ module.exports = {
 	deleteKaraFromPlaylist:function(playlistcontent_id)
 	{
 		return new Promise(function(resolve,reject){
+			if (S(playlistcontent_id).isEmpty()) {
+				reject('playlistcontent_id is empty!');
+			}
 			var playlist_id = undefined;
 			var kara_id = undefined;
 			var pGetPLContentInfo = new Promise((resolve,reject) => 
@@ -1122,6 +1221,34 @@ module.exports = {
 		
 
 		
+	},
+	/**
+	* @function {Remove karaoke from whitelist}
+	* @param  {number} wlc_id     {ID of karaoke to remove}
+	* @return {boolean} {Promise}
+	*/
+	deleteKaraFromWhitelist:function(wlc_id)
+	{
+		return new Promise(function(resolve,reject){
+			if (S(wlc_id).isEmpty()) {
+				reject('wlc_id is empty!');
+			}
+				// Removing karaoke here.
+					module.exports.DB_INTERFACE.removeKaraFromWhitelist(wlc_id)
+					.then(function(){						
+						module.exports.generateBlacklist()
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){
+							reject(err);
+						})
+					})
+					.catch(function(err){
+						reject(err);
+					})							
+			
+		});
 	},
 	/**
 	* @function {Raises position of kara in a playlist}
