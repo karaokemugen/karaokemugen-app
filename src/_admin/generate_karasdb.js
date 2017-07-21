@@ -12,7 +12,7 @@ module.exports = {
     SYSPATH: null,
     SETTINGS: null,
     run: function() {
-        module.exports.onLog('success', 'generate_karasdb :: Start');
+        module.exports.onLog('success', __('GDB_START'));
         return new Promise(function(resolve, reject) {
             if (module.exports.SYSPATH == null) {
                 module.exports.onLog('error', 'SYSPATH is not defined');
@@ -25,7 +25,6 @@ module.exports = {
             var timestamp = require("unix-timestamp");
             var probe = require('../_common/modules/node-ffprobe');
             var S = require('string');
-            var moment = require('moment');
             const uuidV4 = require("uuid/v4");
             const async = require('async');
             var csv = require('csv-string');
@@ -33,11 +32,11 @@ module.exports = {
             const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Videos);
             const karas_dbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.DB, module.exports.SETTINGS.Path.DBKarasFile);
             const karas_userdbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.DB, module.exports.SETTINGS.Path.DBUserFile);
-            const series_altnamesfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Altname);
-            probe.FFPROBE_PATH = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Binaries[module.exports.SETTINGS.os].BinProbe);
+            const series_altnamesfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Altname);            
             const sqlCreateKarasDBfile = path.join(__dirname, '../_common/db/karas.sqlite3.sql');
             const sqlCreateKarasDBViewAllfile = path.join(__dirname, '../_common/db/view_all.view.sql');
-            // Suppression de la bdd d'abord
+            
+            // Deleting karasdb first to start over.
             if (fs.existsSync(karas_dbfile)) {
                 fs.unlinkSync(karas_dbfile);
             };
@@ -56,47 +55,46 @@ module.exports = {
             var karas_tags = [];
             var id_kara = 0;
             var date = new Date();
-            moment.locale('fr');
-
+            
             var db = new sqlite3.Database(karas_dbfile, function(err, rep) {
                 if (err) {
-                    module.exports.onLog('error', moment().format('LTS') + ' - Error opening karaoke database.');
+                    module.exports.onLog('error', __('GDB_OPEN_KARASDB_ERROR'));
                     process.exit();
                 }
             });
             var userdb = new sqlite3.Database(karas_userdbfile, function(err, rep) {
                 if (err) {
-                    module.exports.onLog('error', moment().format('LTS') + ' - Error opening user database.');
+                    module.exports.onLog('error', __('GDB_OPEN_USERDB_ERROR'));
                     process.exit();
                 }
             });
-            module.exports.onLog('success', moment().format('LTS') + ' - Karaoke database created.');
+            module.exports.onLog('success', __('GDB_KARASDB_CREATED'));
 
             // -------------------------------------------------------------------------------------------------------------
-            // création des tables
+            // Creating tables
             // -------------------------------------------------------------------------------------------------------------
             var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
             db.exec(sqlCreateKarasDB, function(err, rep) {
                 if (err) {
-                    module.exports.onLog('error', 'Error create table');
+                    module.exports.onLog('error', __('GDB_TABLES_CREATION_ERROR'));
                     module.exports.onLog('error', err);
                 } else {
-                    module.exports.onLog('success', moment().format('LTS') + ' - Tables created.');
+                    module.exports.onLog('success', __('GDB_TABLES_CREATED'));
                     // -------------------------------------------------------------------------------------------------------------
-                    // Création des vues
+                    // Creating views
                     // -------------------------------------------------------------------------------------------------------------
                     var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
                     db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
                         if (err) {
-                            module.exports.onLog('error', 'Error create view');
+                            module.exports.onLog('error', __('GDB_VIEW_CREATION_ERROR'));
                             module.exports.onLog('error', err);
                             module.exports.onLog('error', sqlCreateKarasDBViewAll);
                         } else {
-                            module.exports.onLog('success', moment().format('LTS') + ' - Views created.');
+                            module.exports.onLog('success', __('GDB_VIEW_CREATED'));
                             db.serialize(function() {
 
                                 // -------------------------------------------------------------------------------------------------------------
-                                // Et on s'occupe des données dans une transaction sérialisé (BULK mode)
+                                // Now working with a transaction to bulk-add data.
                                 // -------------------------------------------------------------------------------------------------------------
 
                                 db.run("begin transaction");
@@ -104,28 +102,30 @@ module.exports = {
                                 // -------------------------------------------------------------------------------------------------------------
 
                                 var karafiles = fs.readdirSync(karasdir);
-                                module.exports.onLog('success', moment().format('LTS') + ' - Karaoke directory read.');
+                                module.exports.onLog('success', __('GDB_KARADIR_READ'));
 
-                                //D'abord analyser les .kara, ajouter l'UUID s'il n'y est pas, construire la table karas avec une seule transaction.
+                                //First analyze .kara
+                                //Then add UUID for each karaoke inside if it isn't there already
+                                //Then build karas table in one transaction.
                                 karafiles.forEach(function(kara) {
                                     addKara(kara);
                                 });
-                                module.exports.onLog('success', moment().format('LTS') + ' - We have ' + karas.length + ' karaoke songs');
+                                module.exports.onLog('success', __('GDB_KARACOUNT',karas.length));
 
-                                // extraction des tags
+                                // Extracting tags.
                                 karafiles.forEach(function(kara, index) {
                                     addTags(kara, index);
                                 });
-                                module.exports.onLog('success', moment().format('LTS') + ' - We havre ' + tags.length + ' tags, ' + karas_tags.length + ' links');
+                                module.exports.onLog('success', __('GDB_TAGCOUNT',tags.length,karas_tags.length));
 
-                                // extraction des séries
+                                // Extracting series.
                                 karafiles.forEach(function(kara, index) {
                                     addSeries(kara, index);
                                 });
-                                module.exports.onLog('success', moment().format('LTS') + ' - We have ' + series.length + ' series, ' + karas_series.length + ' links');
+                                module.exports.onLog('success', __('GDB_SERIESCOUNT',series.length,karas_series.length));                                
 
                                 // -------------------------------------------------------------------------------------------------------------
-                                // Construction des requêtes SQL pour l'insertion des données
+                                // Building SQL queries for insertion
                                 // ------------------------------------------------------------------------------------------------------------
 
                                 var stmt_InsertKaras = db.prepare("INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);");
@@ -196,7 +196,7 @@ module.exports = {
                                     });
                                 });
 
-                                //Traitement des altnames de séries
+                                //Working on altnerative names of series
                                 if (fs.existsSync(series_altnamesfile)) {
                                     var DoUpdateSeriesAltNames = true;
                                     series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
@@ -213,71 +213,69 @@ module.exports = {
                                             });
                                         }
                                     });
-                                    module.exports.onLog('success', moment().format('LTS') + ' - Found alternative series name file. Ready to populate series table.');
+                                    module.exports.onLog('success', __('GDB_ALTNAMES_FOUND'));
                                 } else {
                                     var DoUpdateSeriesAltNames = false;
-                                    module.exports.onLog('warning', moment().format('LTS') + ' - No alternative series name file found.');
+                                    module.exports.onLog('warning', __('GDB_ALTNAMES_NOT_FOUND'));
                                 }
 
-                                //Un autre passage dans karas pour avoir la durée des vidéos
+                                //Another run of kara songs to get duration time.
+                                    
+                                
+                                
                                 karas.forEach(function(kara, index) {
                                     getvideoduration(kara['videofile'], index, function(err, videolength, id) {
                                         sqlUpdateVideoLength.push({
                                             $videolength:videolength,
-                                            $id:id
+                                            $id:id                                            
                                         });
-                                    });
+                                        
+                                    });                                     
                                 });
-                                module.exports.onLog('success', moment().format('LTS') + ' - Calculated videos duration.');
+                                module.exports.onLog('success', __('GDB_CALCULATED_DURATION'));
 
                                 // -------------------------------------------------------------------------------------------------------------
-                                // Execution des requetes (RAW SQL ou STATEMENT selon le cas)
+                                // Running queries (Statements or RAW depending on the case)
                                 // -------------------------------------------------------------------------------------------------------------
 
                                 sqlInsertKaras.forEach(function(data){
                                     stmt_InsertKaras.run(data);
                                 });
-                                module.exports.onLog('info', moment().format('LTS') + ' - Filled karaokes table.');
+                                module.exports.onLog('info', __('GDB_FILLED_KARA_TABLE'));
 
                                 sqlUpdateVideoLength.forEach(function(data){
-                                    //console.log(data);
                                     stmt_UpdateVideoLength.run(data);
                                 });
-                                module.exports.onLog('info', moment().format('LTS') + ' - Updated video durations.');
+                                module.exports.onLog('info', __('GDB_UPDATED_VIDEO_DURATION'));
 
                                 sqlInsertTags.forEach(function(data){
                                     //console.log(data);
                                     stmt_InsertTags.run(data);
                                 });
-                                module.exports.onLog('success', moment().format('LTS') + ' - Filled tags table.');
+                                module.exports.onLog('success', __('GDB_FILLED_TAG_TABLE'));
 
                                 sqlInsertKarasTags.forEach(function(data){
-                                    //console.log(data);
                                     stmt_InsertKarasTags.run(data);
                                 });
-                                module.exports.onLog('success', moment().format('LTS') + ' - Linked karaokes to tags.');
+                                module.exports.onLog('success', __('GDB_LINKED_KARA_TO_TAGS'));
 
                                 sqlInsertSeries.forEach(function(data){
-                                    //console.log(data);
                                     stmt_InsertSeries.run(data);
                                 });
-                                module.exports.onLog('success', moment().format('LTS') + ' - Filled series table.');
+                                module.exports.onLog('success', __('GDB_FILLED_SERIES_TABLE'));
 
                                 if (DoUpdateSeriesAltNames) {
                                     sqlUpdateSeriesAltNames.forEach(function(data){
-                                        //console.log(data);
                                         stmt_UpdateSeriesAltNames.run(data);
                                     });
-                                    module.exports.onLog('success', moment().format('LTS') + ' - Updated alternative names of series.');
+                                    module.exports.onLog('success', __('GDB_UPDATED_ALTNAMES'));
                                 }
 
                                 sqlInsertKarasSeries.forEach(function(data){
-                                    //console.log(data);
                                     stmt_InsertKarasSeries.run(data);
                                 });
-                                module.exports.onLog('success', moment().format('LTS') + ' - Linked karaokes to series.');
-                                module.exports.onLog('success', moment().format('LTS') + ' - Successfully generated database.');
-
+                                module.exports.onLog('success', __('GDB_LINKED_KARA_TO_SERIES'));
+                                module.exports.onLog('success', __('GDB_FINISHED_DATABASE_GENERATION'));
                                 db.run("commit");
                             });
 
@@ -286,17 +284,17 @@ module.exports = {
                             // Now that we regenerated kara_ids
                             // -------------------------------------------------------------------------------------------------------------
 
-                            module.exports.onLog('info', moment().format('LTS') + ' - Running integrity checks on user database with the newly generated data.');
+                            module.exports.onLog('info', __('GDB_INTEGRITY_CHECK_START'));
                             run_userdb_integrity_checks()
                             .then(function(){
-                                module.exports.onLog('success', moment().format('LTS') + ' - Completed integrity checks.');
+                                module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_COMPLETE'));
                             })
                             .catch(function(err){
-                                module.exports.onLog('error', moment().format('LTS') + ' - Error during integrity checks : '+err);
+                                module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_ERROR',err));
                             });
 
                             // -------------------------------------------------------------------------------------------------------------
-                            // Then close database connexion
+                            // Then close database connection
                             // -------------------------------------------------------------------------------------------------------------
 
                             db.close(function(){
@@ -336,8 +334,7 @@ module.exports = {
 				        {
     					    if (err)
 					        {
-						        logger.error('Unable to get all karaokes : '+err);
-						        reject(err);
+						        reject(__('DB_GET_ALL_KARAS_ERROR',err));
 					        } else {
                                 AllKaras = playlist;
 						        resolve();
@@ -352,8 +349,7 @@ module.exports = {
 				        {
     					    if (err)
 					        {
-						        logger.error('Unable to get Playlist karaokes : '+err);
-						        reject(err);
+						        reject(__('DB_PLAYLIST_KARAS_ERROR',err));
 					        } else {
                                 if (playlist) {
                                     PlaylistKaras = playlist;
@@ -373,8 +369,7 @@ module.exports = {
 				        {
     					    if (err)
 					        {
-						        logger.error('Unable to get whitelist karaokes : '+err);
-						        reject(err);
+						        reject(__('DB_WHITELIST_KARAS_ERROR',err));
 					        } else {
                                 if (playlist) {
                                     WhitelistKaras = playlist;
@@ -394,8 +389,7 @@ module.exports = {
 				        {
     					    if (err)
 					        {
-						        logger.error('Unable to get blacklist karaokes : '+err);
-						        reject(err);
+						        reject(__('DB_BLACKLIST_KARAS_ERROR',err));
 					        } else {
                                 if (playlist) {
                                     BlacklistKaras = playlist;
@@ -415,8 +409,7 @@ module.exports = {
 				        {
     					    if (err)
 					        {
-						        logger.error('Unable to get rated karaokes : '+err);
-						        reject(err);
+						        reject(__('DB_RATINGS_KARAS_ERROR',err));
 					        } else {
                                 if (playlist) {
                                     RatingKaras = playlist;
@@ -436,8 +429,7 @@ module.exports = {
 				        {
     					    if (err)
 					        {
-						        logger.error('Unable to get all karaokes : '+err);
-						        reject(err);
+						        reject(__('DB_VIEWCOUNTS_KARAS_ERROR',err));
 					        } else {
                                 if (playlist) {
                                     WhitelistKaras = playlist;
@@ -472,7 +464,7 @@ module.exports = {
                                 //If No Karaoke with this KID was found in the AllKaras table, delete the KID
                                 if (!KaraFound) {
                                     sqlUpdateUserDB += "DELETE FROM whitelist WHERE kid = '"+WLKara.kid+"';";
-                                    module.exports.onLog('warn', "KID "+WLKara.kid+" doesn't exist anymore, removed from whitelists.");
+                                    module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_WL_DELETED',WLKara.kid));
                                     UpdateNeeded = true;
                                 }
                             })
@@ -495,7 +487,7 @@ module.exports = {
                                 //If No Karaoke with this KID was found in the AllKaras table, delete the KID
                                 if (!KaraFound) {
                                     sqlUpdateUserDB += "DELETE FROM blacklist WHERE kid = '"+BLKara.kid+"';";
-                                    module.exports.onLog('warn', "KID "+BLKara.kid+" doesn't exist anymore, removed from blacklists.");
+                                    module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_BL_DELETED',BLKara.kid));
                                     UpdateNeeded = true;
                                 }
                             })
@@ -517,7 +509,7 @@ module.exports = {
                                 //If No Karaoke with this KID was found in the AllKaras table, delete the KID
                                 if (!KaraFound) {
                                     sqlUpdateUserDB += "DELETE FROM rating WHERE kid = '"+RKara.kid+"';";
-                                    module.exports.onLog('warn', "KID "+RKara.kid+" doesn't exist anymore, removed from ratings.");
+                                    module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_RATING_DELETED',RKara.kid));
                                     UpdateNeeded = true;
                                 }
                             })
@@ -539,7 +531,7 @@ module.exports = {
                                 //If No Karaoke with this KID was found in the AllKaras table, delete the KID
                                 if (!KaraFound) {
                                     sqlUpdateUserDB += "DELETE FROM viewcount WHERE kid = '"+VKara.kid+"';";
-                                    module.exports.onLog('warn', "KID "+VKara.kid+" doesn't exist anymore, removed from viewcounts.");
+                                    module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_VIEWCOUNT_DELETED',VKara.kid));
                                     UpdateNeeded = true;
                                 }
                             })
@@ -556,7 +548,6 @@ module.exports = {
 
                                         // Found a matching KID, checking if id_karas are the same
                                         if (Kara.id_kara != PLKara.id_kara){
-                                            console.log('Entered 5');
                                             sqlUpdateUserDB += "UPDATE playlist_content SET fk_id_kara = "+Kara.id_kara+" WHERE kid = '"+PLKara.kid+"';";
                                             UpdateNeeded = true;
                                         }
@@ -567,7 +558,7 @@ module.exports = {
                                 if (!KaraFound) {
 
                                     sqlUpdateUserDB += "DELETE FROM playlist_content WHERE kid = '"+PLKara.kid+"';";
-                                    module.exports.onLog('warn', "KID "+PLKara.kid+" doesn't exist anymore, removed from playlists.");
+                                    module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_PLAYLIST_DELETED',PLKara.kid));
                                     UpdateNeeded = true;
                                 }
                             })
@@ -577,14 +568,14 @@ module.exports = {
                             sqlUpdateUserDB += "COMMIT;"
                             userdb.exec(sqlUpdateUserDB, function(err, rep) {
                                 if (err) {
-                                    module.exports.onLog('error', 'Error updating user database after integrity checks : '+err)
+                                    module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_UPDATE_ERROR',err));
                                 } else {
-                                    module.exports.onLog('success', moment().format('LTS') + ' - Updated user database.');
+                                    module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_UPDATED'));
                                     resolve();
                                 }
                             });
                         } else {
-                            module.exports.onLog('success', moment().format('LTS') + ' - No update needed to user database.');
+                            module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_UNNEEDED'));
                             resolve();
                         }
 
@@ -603,7 +594,7 @@ module.exports = {
                 if (fs.existsSync(videosdir + '/' + videofile)) {
                     probe(videosdir + '/' + videofile, function(err, videodata) {
                         if (err) {
-                            module.exports.onLog('error', moment().format('LTS') + ' - [' + videofile + '] Unable to probe video file : ' + err);
+                            module.exports.onLog('error', __('GDB_PROBE_ERROR',videofile,err));
                             callback(err, videolength, id_kara);
                         } else {
                             videolength = Math.floor(videodata.format.duration);
@@ -611,7 +602,7 @@ module.exports = {
                         }
                     });
                 } else {
-                    module.exports.onLog('warning', moment().format('LTS') + ' - Video file ' + videofile + ' not found, setting duration to 0.')
+                    module.exports.onLog('warning', __('GDB_VIDEO_FILE_NOT_FOUND',videofile));
                 }
             }
 
@@ -623,7 +614,7 @@ module.exports = {
                 var serieslist = [];
                 if (S(karadata.series).isEmpty()) {
                     if (karaType == 'LIVE' || karaType == 'MV') {
-                        // Ne rien faire en fait
+                        // Don't do anything.
                     } else {
                         serieslist.push(karaInfos[1]);
                     }
@@ -635,7 +626,7 @@ module.exports = {
                     if (series.indexOf(serie) == -1) {
                         series.push(serie);
                     }
-                    // On récupère le nouvel index
+                    // Let's get our new index.
                     var seriesIDX = series.indexOf(serie);
                     seriesIDX++;
                     karas_series.push(seriesIDX + ',' + id_kara);
@@ -651,14 +642,14 @@ module.exports = {
                 var karaTitle = karaInfos[3];
                 var karaType = karaInfos[2];
                 var taglist = [];
-                //On remplit la taglist, c'est parti.
+                //Filling taglist, and let's go.
                 if (S(karaSerie).contains(' OAV') || S(karaSerie).contains(' OVA') || S(karaType).contains('OAV')) {
                     if (taglist.indexOf('TAG_OVA,7') == -1) {
                         taglist.push('TAG_OVA,2');
                     }
                 }
                 if (karaType == 'LIVE' || karaType == 'MV') {
-                    //Ajouter les artistes à la place de la série
+                    //If LIVE or MV, we add the series as artist.
                     var singers = karaSerie.split(',');
                     singers.forEach(function(singer) {
                         var tag = S(singer).trimLeft().s;
@@ -828,7 +819,7 @@ module.exports = {
                     if (tags.indexOf(tag) == -1) {
                         tags.push(tag);
                     }
-                    // On récupère le nouvel index
+                    // Let's get our new index.
                     var tagsIDX = tags.indexOf(tag);
                     tagsIDX++;
                     karas_tags.push(tagsIDX + ',' + id_kara);
@@ -847,12 +838,12 @@ module.exports = {
                     kara['KID'] = karadata.KID;
                     fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err, rep) {
                         if (err) {
-                            module.exports.onLog('error', "Impossible d'écrire le .kara !");
+                            module.exports.onLog('error', __('GDB_WRITING_KARA_ERROR'));
                             process.exit();
                         }
                         fs.appendFile(karasdir + '/' + karafile, ';DO NOT MODIFY - KARAOKE ID GENERATED AUTOMATICALLY', function(err) {
                             if (err) {
-                                module.exports.onLog('error', "Impossible d'ajouter la ligne de commentaire au .kara!: " + err);
+                                module.exports.onLog('error', __('GDB_ADDING_COMMENT_ERROR',err));
                                 process.exit();
                             }
                         });
@@ -861,16 +852,16 @@ module.exports = {
                 timestamp.round = true;
                 kara['dateadded'] = timestamp.now();
                 kara['datemodif'] = kara['dateadded'];
-                // Récupérer le nom du .kara sans le .kara
+                // Take out .kara from the filename
                 var karaWOExtension = S(karafile).chompRight('.kara');
-                // Découper le nom du kara : langue, série, type, titre
+                // Cut name into different fields.
                 var karaInfos = karaWOExtension.split(' - ');
                 if (karaInfos[3] == undefined) {
                     karaInfos[3] = '';
                 }
                 kara['title'] = karaInfos[3];
                 kara['year'] = karadata.year;
-                // Ordre : trouver le songorder à la suite du type
+                // Songorder : find it after the songtype
                 var karaOrder = undefined;
                 var karaType = karaInfos[2];
                 if (S(S(karaType).right(2)).isNumeric()) {
@@ -888,6 +879,7 @@ module.exports = {
                 kara['songorder'] = karaOrder;
                 kara['videofile'] = karadata.videofile;
                 kara['subfile'] = karadata.subfile;
+                //Calculate gain. 
                 if (S(karadata.trackgain).isEmpty())
                 {
                     kara['gain'] = 0;
@@ -902,7 +894,7 @@ module.exports = {
         })
     },
     onLog: function(type, message) {
-        // événement émis pour remonter un message de log sur l'admin
+        // Event to bring up messages into dashboard.
         logger.warn('onLog not set');
     }
 }

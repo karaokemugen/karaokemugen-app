@@ -10,6 +10,7 @@ const exec = require('child_process');
 const MatroskaSubtitles = require('matroska-subtitles')
 const moment = require('moment');
 require("moment-duration-format");
+const ffmpegPath = require('ffmpeg-downloader').path
 
 module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id, pathToFFmpeg){
 	
@@ -84,7 +85,7 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 					
 					// Using ffmpeg 
 				
-					var proc = exec.spawnSync(pathToFFmpeg, ['-y', '-i', videoFile, outputFolder+'/kara_extract.ass'], { encoding : 'utf8' }),
+					var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(__dirname,'../../../',pathToVideoFiles,videoFile), outputFolder+'/kara_extract.ass'], { encoding : 'utf8' }),
 								ffmpegData = [],
 								errData = [],
 								exitCode = null,
@@ -105,12 +106,12 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 				console.log(pathToSubFiles);				
 				if(!fs.existsSync(path.resolve(__dirname,'../../../',pathToSubFiles,subFile))) 
 				{
-					reject('ASS file not found : '+subFile);
+					reject(__('ASS_UNABLE_TO_FIND',subFile));
 				}	
 			}							
 			// Parsing the subFile provided, either vide.ass, the associated .ass file or the extracted .ass file from
 			// a .mkv/.mp4
-			var assdata = fs.readFileSync(subFile, 'utf-8');
+			var assdata = fs.readFileSync(path.resolve(__dirname,'../../../',pathToSubFiles,subFile), 'utf-8');
 			var script = assParser(assdata, { comments: true });
 			// Contents of script array :
 			// script[0] = Header

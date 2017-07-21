@@ -513,8 +513,8 @@ module.exports = {
 				logger.error("Kara add failed : "+err);
 			});
 		/* */
-		/* Add karaoke to current playlist example. Current playlist is autodetected.		
-		module.exports._services.playlist_controller.addKaraToCurrentPlaylist(4571,'Axél',1)
+		/* Add karaoke to current playlist example. Current playlist is autodetected.		 
+		module.exports._services.playlist_controller.addKaraToCurrentPlaylist(1000,'Axél',1)
 			.then(function(){
 				logger.info("Kara added");
 			})
