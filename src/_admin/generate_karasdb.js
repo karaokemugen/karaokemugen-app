@@ -91,7 +91,7 @@ module.exports = {
                             module.exports.onLog('error', __('GDB_VIEW_CREATION_ERROR'));
                             module.exports.onLog('error', err);
                             module.exports.onLog('error', sqlCreateKarasDBViewAll);
-                            console.log('Error create view');
+                            
                             process.exit();
                         } else {
                             module.exports.onLog('success', __('GDB_VIEW_CREATED'));
@@ -186,7 +186,7 @@ module.exports = {
                                         $tagnamenorm : tagnamenorm,
                                     });
                                 });
-                                console.log(karas_tags);
+                                
                                 karas_tags.forEach(function(karatag, index) {                                   
                                     karatag = karatag.split(',');
                                     var id_tag = karatag[0];
@@ -196,7 +196,7 @@ module.exports = {
                                         $id_kara : id_kara,
                                     });
                                 });
-                                console.log(karas_series);
+                                
                                 karas_series.forEach(function(karaserie, index) {
                                     karaserie = karaserie.split(',');
                                     var id_series = karaserie[0];
