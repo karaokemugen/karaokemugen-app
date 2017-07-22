@@ -1807,25 +1807,31 @@ module.exports = {
 			});
 		});
 	},
-	get_next_kara:function(){
-		// TODO implémenter la lecture dans la BDD via this.DB_INTERFACE
+
+	// ---------------------------------------------------------------------------
+	// Methodes rapides de gestion de la playlist courante
+	// prev / next / get_current
+	// ---------------------------------------------------------------------------
+
+	prev:function(){
 		return new Promise(function(resolve,reject){
 			module.exports.isACurrentPlaylist().then(function(playlist_id){
 				module.exports.getPlaylistContents(playlist_id).then(function(pl_content){
 					if(pl_content.length==0)
 					{
-						module.exports.build_dummy_current_playlist().then(function(){
-							module.exports.get_next_kara();
-						});
+						reject();
 					}
 					else
 					{
 						readpos = 0;
 						pl_content.forEach(function(element, index) {
-							if(element.flag_playing && index < pl_content.length-1)
-								readpos = index+1
+							if(element.flag_playing)
+								readpos = index-1
 						});
-						console.log(readpos);
+						// on est au début de la playlist
+						if(readpos<0)
+							reject();
+
 						var kara = pl_content[readpos];
 						if(kara)
 						{
@@ -1833,35 +1839,136 @@ module.exports = {
 							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
 								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
 							});
-							// on enrichie l'objet pour fournir son contexte et les chemins système prêt à l'emploi
-							kara.playlist_id = playlist_id;
-							kara.path = {
-								video: path.join(module.exports.SYSPATH,module.exports.SETTINGS.Path.Videos, kara.videofile),
-								subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.Path.Temp, kara.playlistcontent_id+'.ass'),
-							};
-							resolve(kara);
+							resolve();
 						}
 						reject();
 					}
 				})
 			}).catch(function(error_message){
-				module.exports.build_dummy_current_playlist().then(function(){
-					module.exports.get_next_kara();
-				});
+				reject();
 			});
+		});
+	},
+	next:function(){
+		return new Promise(function(resolve,reject){
+			module.exports.isACurrentPlaylist().then(function(playlist_id){
+				module.exports.getPlaylistContents(playlist_id).then(function(pl_content){
+					if(pl_content.length==0)
+					{
+						reject();
+					}
+					else
+					{
+						readpos = 0;
+						pl_content.forEach(function(element, index) {
+							if(element.flag_playing)
+								readpos = index+1
+						});
+						// on est la fin de la playlist
+						if(readpos >= pl_content.length)
+							reject();
+
+						var kara = pl_content[readpos];
+						if(kara)
+						{
+							// mise à jour du pointeur de lecture
+							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
+							});
+							resolve();
+						}
+						reject();
+					}
+				})
+			}).catch(function(error_message){
+				reject();
+			});
+		});
+	},
+	current_playlist:function(){
+		return new Promise(function(resolve,reject){
+			module.exports.isACurrentPlaylist()
+				.then(function(playlist_id){
+					module.exports.getPlaylistContents(playlist_id).then(function(pl_content){
+						readpos = false;
+						pl_content.forEach(function(element, index) {
+							if(element.flag_playing)
+								readpos = index;
+						});
+						resolve({'id':playlist_id,content:pl_content,index:readpos});
+					})
+				})
+				.catch(function(error_message){
+					reject(error_message)
+				});
+		});
+	},
+	current:function(){
+		// TODO : renommer en get_current_kara
+		// implémenter des méthode next et prev
+		// et coder sur engine en fin de morceau (event venant du player) => passer au morceau suivant avant de récupérer le morceau courant
+		// => next'n play
+		return new Promise(function(resolve,reject){
+			module.exports.current_playlist()
+				.then(function(playlist){
+					readpos = false;
+					playlist.content.forEach(function(element, index) {
+						if(element.flag_playing)
+							readpos = index
+					});
+
+					update_playing_kara = false;
+					if(readpos===false)
+					{
+						readpos = 0;
+						update_playing_kara = true;
+					}
+
+					var kara = playlist.content[readpos];
+					if(kara)
+					{
+						// si il n'y avait pas de morceau en lecture on marque le premier de la playlist
+						if(update_playing_kara)
+						{
+							// mise à jour du pointeur de lecture
+							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
+							});
+						}
+
+						// on enrichie l'objet pour fournir son contexte et les chemins système prêt à l'emploi
+						kara.playlist_id = playlist.id;
+						kara.path = {
+							video: path.join(module.exports.SYSPATH,module.exports.SETTINGS.Path.Videos, kara.videofile),
+							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.Path.Temp, kara.playlistcontent_id+'.ass'),
+						};
+						resolve(kara);
+					}
+					reject();
+				})
 		});
 	},
 
 	build_dummy_current_playlist:function(){
 		console.log('build_dummy_current_playlist');
 		return new Promise(function(resolve,reject){
-			module.exports.createPlaylist("Toyunda Galor",true,true,false).then(function(playlist_id){
-				var promises = [];
-				for(var i=1; i<=10; i++)
-					promises.push(module.exports.addKaraToPlaylist(i,'Dummy user '+i,playlist_id).catch(function(message){ console.log(message)}))
+			module.exports.isACurrentPlaylist()
+				.then(function(playlist_id){
+					var promises = [];
+					for(var i=1; i<=10; i++)
+						promises.push(module.exports.addKaraToPlaylist(i,'Dummy user '+i,playlist_id).catch(function(message){ console.log(message)}))
 
-				Promise.all(promises).then(resolve).catch(reject);
-			});
+					Promise.all(promises).then(resolve).catch(reject);
+				})
+				.catch(function(){
+					module.exports.createPlaylist("Toyunda Galor",true,true,false).then(function(playlist_id){
+						var promises = [];
+						for(var i=1; i<=10; i++)
+							promises.push(module.exports.addKaraToPlaylist(i,'Dummy user '+i,playlist_id).catch(function(message){ console.log(message)}))
+
+						Promise.all(promises).then(resolve).catch(reject);
+					});
+				});
 		});
 	},
 

@@ -66,6 +66,15 @@ module.exports = {
 						case 'stop.now':
 							module.exports.onStopNow();
 							break;
+						case 'pause':
+							module.exports.onPause();
+							break;
+						case 'prev':
+							module.exports.onPrev();
+							break;
+						case 'next':
+							module.exports.onNext();
+							break;
 						case 'togglePrivate':
 							module.exports.onTogglePrivate();
 							break;

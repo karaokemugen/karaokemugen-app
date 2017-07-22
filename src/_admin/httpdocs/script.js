@@ -9,18 +9,24 @@ socket.on('engine_states', function(newStates) {
     engine_states = newStates;
     // status, private
     for(var i in engine_states)
-        $('body').attr('states-engine-'+i,engine_states[i]);
+        $('body').attr('states-engine-'+i,JSON.stringify(engine_states[i]));
 
     refreshShowOnState();
 
     // puis on met à jour les éléments complémentaires (ex url vers le frontend)
     $('.tool-frontend-access').attr('action','//'+document.location.hostname+':'+engine_states.frontend_port);
+
+    if(engine_states.playlist)
+    {
+        $('.engine-playlist-count').html(engine_states.playlist.content.length);
+        $('.engine-playlist-index').html(engine_states.playlist.index+1);
+    }
 })
 
 socket.on('local_states', function(newStates) {
     local_states = newStates;
     for(var i in local_states)
-        $('body').attr('states-local-'+i,local_states[i]);
+        $('body').attr('states-local-'+i,JSON.stringify(local_states[i]));
 
     refreshShowOnState();
 })
@@ -57,6 +63,15 @@ function enginePlay(){
 function engineStop(){
     socket.emit('action', 'stop');
 }
+function enginePause(){
+    socket.emit('action', 'pause');
+}
+function enginePrev(){
+    socket.emit('action', 'prev');
+}
+function engineNext(){
+    socket.emit('action', 'next');
+}
 function engineStopNow(){
     socket.emit('action', 'stop.now');
 }
@@ -67,8 +82,8 @@ function generateKaraDB(){
 function refreshShowOnState()
 {
     $('[show-on-state]').each(function(){
-        var cond = $(this).attr('show-on-state').split(':');
-        if($('body').attr('states-'+cond[0])==cond[1])
+        var cond = ($(this).attr('show-on-state')+':').split(':');
+        if(cond[1]!='' && $('body').attr('states-'+cond[0])==cond[1] || cond[1]=='' && $('body').attr('states-'+cond[0])!=null)
             $(this).show();
         else
             $(this).hide();
