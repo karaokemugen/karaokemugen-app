@@ -34,7 +34,6 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "7zip-bin": "^2.1.0",
     "asap": "^2.0.5",
     "ass-parser": "^0.1.2",
     "ass-stringify": "^0.1.3",
