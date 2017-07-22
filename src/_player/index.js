@@ -147,6 +147,10 @@ module.exports = {
 	},
 	stop:function()
 	{
+		// on stop do not trigger onEnd event
+		// => setting internal playing = false prevent this behavior
+		module.exports.playing = false;
+		module.exports._playing = false;
 		module.exports._player.loadFile(path.join(__dirname,'assets/__blank__.png'));
 	},
 	pause: function(){

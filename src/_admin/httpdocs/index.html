@@ -30,6 +30,12 @@
                 <button onClick="engineStopNow()">Stop (Now)</button>
             </p>
 
+            <ul show-on-state="engine-playlist">
+                <li>Nombre de morceau dans la playlist = <span class="engine-playlist-count"></span></li>
+                <li>Position dans la playlist = <span class="engine-playlist-index"></span></li>
+                <li><button type="button" onclick="enginePrev();">Prev</button> <button type="button" onclick="engineNext();">Next</button></li>
+            </ul>
+
             <div class="tool-kara-index" data-state="stop">
                 <button onClick="generateKaraDB()" show-on-state="local-generate_karabd:false">Regenerate DB</button>
                 <span show-on-state="local-generate_karabd:true">En cours ...</span>

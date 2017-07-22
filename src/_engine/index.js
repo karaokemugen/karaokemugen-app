@@ -22,6 +22,7 @@ module.exports = {
 		private:true, // [bool(true|false)] // Karaoke en mode privé ou publique
 		admin_port:1338,
 		frontend_port:1337,
+		playlist:null,
 	},
 	_services:{
 		admin: null,
@@ -51,6 +52,9 @@ module.exports = {
 			module.exports._start_admin();
 			module.exports._start_frontend();
 			module.exports._broadcastStates();
+
+			// Build a dummy playlist for testing purpose
+			module.exports._services.playlist_controller.build_dummy_current_playlist();
 		}).catch(function(response){
 			console.log(response);
 		});
@@ -135,7 +139,7 @@ module.exports = {
 			module.exports._states.status = 'play';
 			module.exports._broadcastStates();
 
-			module.exports.tryToReadNextKaraInPlaylist();
+			module.exports.tryToReadKaraInPlaylist();
 		}
 		else if(module.exports._states.status === 'play')
 		{
@@ -166,6 +170,33 @@ module.exports = {
 		// l'état globale n'a pas besoin de changer
 		// le player ne terminera jamais son morceau en restant en pause
 		module.exports._broadcastStates();
+	},
+	/**
+	 * @function {pause}
+	 * Pauses current song in the player and broadcasts new status.
+	 */
+	prev:function(){
+		module.exports.stop(true);
+		module.exports._services.playlist_controller.prev()
+			.then(function(){
+				module.exports.play();
+			}).catch(function(){
+				module.exports.play();
+				logger.info('Previous song is not available');
+			});
+	},
+	/**
+	 * @function {pause}
+	 * Pauses current song in the player and broadcasts new status.
+	 */
+	next:function(){
+		module.exports.stop(true);
+		module.exports._services.playlist_controller.next()
+			.then(function(){
+				module.exports.play();
+			}).catch(function(){
+				logger.info('Next song is not available');
+			});
 	},
 
 	/**
@@ -201,7 +232,15 @@ module.exports = {
 	*
 	*/
 	playlistUpdated:function(){
-		module.exports.tryToReadNextKaraInPlaylist();
+		if(module.exports._states.status === 'play' && !module.exports._services.player.playing)
+		{
+			module.exports._services.playlist_controller.next()
+			.then(function(){
+				module.exports.tryToReadKaraInPlaylist();
+			}).catch(function(){
+				logger.info('Next song is not available');
+			});
+		}
 	},
 	/**
 	* @function
@@ -209,30 +248,42 @@ module.exports = {
 	* Function triggered on player ending its current song.
 	*/
 	playerEnding:function(){
-		module.exports.tryToReadNextKaraInPlaylist();
+		module.exports._services.playlist_controller.next()
+		.then(function(){
+			module.exports.tryToReadKaraInPlaylist();
+		}).catch(function(){
+			logger.info('Next song is not available');
+		});
 	},
 
 	/**
 	* @function
 	* Try to read next karaoke in playlist.
 	*/
-	tryToReadNextKaraInPlaylist:function(){
+	tryToReadKaraInPlaylist:function(){
+		module.exports._services.playlist_controller.current_playlist().then(function(playlist){
+			if(module.exports._states.playlist != playlist)
+			{
+				module.exports._states.playlist = playlist;
+				module.exports._broadcastStates();
+			}
+		})
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing)
 		{
-			module.exports._services.playlist_controller.get_next_kara()
-				.then(function(kara){
-					logger.info('Next song is '+kara.title);
-					module.exports._services.player.play(
-						kara.path.video,
-						kara.path.subtitle,
-						kara.id_kara
-					);
-					module.exports._broadcastPlaylist();
-				})
-				.catch(function(){
-					logger.log('warning','Next song is not available');
-					module.exports._broadcastPlaylist();
-				});
+			module.exports._services.playlist_controller.current()
+			.then(function(kara){
+				logger.info('Start playing '+kara.title);
+				module.exports._services.player.play(
+					kara.path.video,
+					kara.path.subtitle,
+					kara.id_kara
+				);
+				module.exports._broadcastStates();
+			})
+			.catch(function(){
+				logger.info('Cannot found a song to play');
+				module.exports._broadcastStates();
+			});
 		}
 	},
 
@@ -244,11 +295,6 @@ module.exports = {
 	{
 		// diffuse l'état courant à tout les services concerné (normalement les webapp)
 		module.exports._services.admin.setEngineStates(module.exports._states);
-	},
-
-	_broadcastPlaylist:function()
-	{
-		// récupère la playlist à jour et la diffuser vers les services concerné (normalement les webapp)
 	},
 
 	// ------------------------------------------------------------------
@@ -287,6 +333,9 @@ module.exports = {
 		// Supervision des évènement de changement de status (play/stop)
 		module.exports._services.admin.onPlay = module.exports.play;
 		module.exports._services.admin.onStop = module.exports.stop;
+		module.exports._services.admin.onNext = module.exports.next;
+		module.exports._services.admin.onPrev = module.exports.prev;
+		module.exports._services.admin.onPause = module.exports.pause;
 		module.exports._services.admin.onStopNow = function(){module.exports.stop(true)};
 		// --------------------------------------------------------
 		// on démarre ensuite le service
