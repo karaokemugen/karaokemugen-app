@@ -34,7 +34,7 @@ module.exports = {
 					db.exec(sqlCreateUserDB, function (err){
 						if (err)
 						{
-							logger.error(__('USER_DB_CREATION_FAILED',err));
+							logger.error(__('USER_DB_CREATION_FAILED',err.stringify()));
 							process.exit();
 						} else
 						{
@@ -85,7 +85,7 @@ module.exports = {
 		module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
 			if (err)
 			{
-				logger.error(__('LOADING_KARA_DB_FAILED',+err));
+				logger.error(__('LOADING_KARA_DB_FAILED',+err.stringify()));
 				process.exit();
 			}
 		});
@@ -93,7 +93,7 @@ module.exports = {
 		module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
 			if (err)
 			{
-				logger.error(__('LOADING_USER_DB_FAILED',+err));
+				logger.error(__('LOADING_USER_DB_FAILED',+err.stringify()));
 				process.exit();
 			}
 		});
@@ -107,7 +107,7 @@ module.exports = {
 			logger.info(__('STATS_ARTISTS',stats.totalartists));
 			logger.info(__('STATS_PLAYLISTS',stats.totalplaylists));
 		}).catch(function(err){
-			logger.warn(__('STATS_FAILED',err));
+			logger.warn(__('STATS_FAILED',err.stringify()));
 		})
 		logger.info(__('DATABASE_READY'));
 
@@ -157,7 +157,7 @@ module.exports = {
 					{
 						if (err)
 						{
-							logger.warn(__('DB_STATS_SERIES_FAILED',err));
+							logger.warn(__('DB_STATS_SERIES_FAILED',err.stringify()));
 							stats.totalseries = 0;
 							resolve();
 						} else {
@@ -175,7 +175,7 @@ module.exports = {
 					{
 						if (err)
 						{
-							logger.warn(__('DB_STATS_PLAYLISTS_FAILED',err));
+							logger.warn(__('DB_STATS_PLAYLISTS_FAILED',err.stringify()));
 							stats.totalplaylists = 0;
 							resolve();
 						} else {
@@ -192,7 +192,7 @@ module.exports = {
 					{
 						if (err)
 						{
-							logger.warn(__('DB_STATS_ARTISTS_FAILED',err));
+							logger.warn(__('DB_STATS_ARTISTS_FAILED',err.stringify()));
 							stats.totalartists = 0;
 							resolve();
 						} else {
@@ -209,7 +209,7 @@ module.exports = {
 					{
 						if (err)
 						{
-							logger.error(__('DB_STATS_COUNT_FAILED',err));
+							logger.error(__('DB_STATS_COUNT_FAILED',err.stringify()));
 							stats.totalcount = 0;
 							resolve();
 						} else {
@@ -226,7 +226,7 @@ module.exports = {
 					{
 						if (err)
 						{
-							logger.error(__('DB_STATS_LANGUAGES_FAILED',err));
+							logger.error(__('DB_STATS_LANGUAGES_FAILED',err.stringify()));
 							stats.totallanguages = 0;
 							resolve();
 						} else {
@@ -243,7 +243,7 @@ module.exports = {
 					{
 						if (err)
 						{
-							logger.error(__('DB_STATS_DURATION_FAILED',err));
+							logger.error(__('DB_STATS_DURATION_FAILED',err.stringify()));
 							stats.totalduration = 'Unknown';
 							resolve();
 						} else {
@@ -287,7 +287,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_KARACOUNT_ERROR',err));
+					reject(__('DB_KARACOUNT_ERROR',err.stringify()));
 				} else {
 					resolve(num_karas.NumberOfKaras);
 				}
@@ -315,7 +315,7 @@ module.exports = {
 						{
 								if (err)
 								{
-									reject(__('DB_DURATION_PL_ERROR',playlist_id,err));									
+									reject(__('DB_DURATION_PL_ERROR',playlist_id,err.stringify()));									
 								} else {									
 									resolve(duration);
 								}
@@ -342,7 +342,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_BLACKLIST_GENERATION_ERROR',err));														
+					reject(__('DB_BLACKLIST_GENERATION_ERROR',err.stringify()));														
 				} else {											
 					resolve();
 				}
@@ -367,7 +367,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_BLACKLIST_GET_CRITERIAS_ERROR',err));									
+					reject(__('DB_BLACKLIST_GET_CRITERIAS_ERROR',err.stringify()));									
 				} else {											
 					resolve(blcriterias);
 				}
@@ -399,7 +399,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_BLACKLIST_ADD_CRITERIA_ERROR',err));														
+					reject(__('DB_BLACKLIST_ADD_CRITERIA_ERROR',err.stringify()));														
 				} else {											
 					resolve();
 				}
@@ -429,7 +429,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_BLACKLIST_DELETE_CRITERIA_ERROR',err));												
+					reject(__('DB_BLACKLIST_DELETE_CRITERIA_ERROR',err.stringify()));												
 				} else {											
 					resolve();
 				}
@@ -462,7 +462,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_BLACKLIST_EDIT_CRITERIA_ERROR',err));									
+					reject(__('DB_BLACKLIST_EDIT_CRITERIA_ERROR',err.stringify()));									
 				} else {											
 					resolve();
 				}
@@ -485,7 +485,7 @@ module.exports = {
 				{
 					if (err)
 					{
-						reject(__('DB_PLAYLIST_UPDATE_KARACOUNT_ERROR',playlist_id,err));												
+						reject(__('DB_PLAYLIST_UPDATE_KARACOUNT_ERROR',playlist_id,err.stringify()));												
 					} else {
 						resolve(num_karas);
 					}
@@ -520,7 +520,7 @@ module.exports = {
 				{
 					if (err)
 					{
-						reject(__('DB_PLAYLIST_REORDER_ERROR',playlist_id,err));														
+						reject(__('DB_PLAYLIST_REORDER_ERROR',playlist_id,err.stringify()));														
 					}
 				})
 			})			
@@ -549,7 +549,7 @@ module.exports = {
 				{
 					if (err)
 					{
-						reject(__('DB_PLAYLIST_UPDATE_DURATION_ERROR',playlist_id,err));									
+						reject(__('DB_PLAYLIST_UPDATE_DURATION_ERROR',playlist_id,err.stringify()));									
 					} else {
 						resolve(duration);
 					}
@@ -576,7 +576,7 @@ module.exports = {
 						{
 								if (err)
 								{
-									reject(__('DB_PLAYLIST_GET_CONTENTS_ERROR',playlist_id,err));									
+									reject(__('DB_PLAYLIST_GET_CONTENTS_ERROR',playlist_id,err.stringify()));									
 								} else {
 									resolve(playlist);
 								}
@@ -603,7 +603,7 @@ module.exports = {
 				{
 					if (err)
 					{
-						reject(__('DB_GET_ALL_KARAS_ERROR',err));									
+						reject(__('DB_GET_ALL_KARAS_ERROR',err.stringify()));									
 					} else {
 						resolve(playlist);
 					}
@@ -631,7 +631,7 @@ module.exports = {
 				{
 					if (err)
 					{
-						reject(__('DB_KARA_GET_PLCINFO_ERROR',playlistcontent_id,err));									
+						reject(__('DB_KARA_GET_PLCINFO_ERROR',playlistcontent_id,err.stringify()));									
 					} else {
 						resolve(kara);
 					}
@@ -661,7 +661,7 @@ module.exports = {
 				{
 					if (err)
 					{
-						reject(__('DB_KARA_GET_ERROR',kara_id,err));									
+						reject(__('DB_KARA_GET_ERROR',kara_id,err.stringify()));									
 					} else {
 						resolve(kara);
 					}
@@ -687,12 +687,12 @@ module.exports = {
 		{
 			if (err)
 			{				
-				callback(null,__('DB_PLAYLIST_GET_INFO_ERROR',playlist_id,err));
+				callback(null,__('DB_PLAYLIST_GET_INFO_ERROR',playlist_id,err.stringify()));
 			} else {
 				if (row) {
 					callback(row);
 				} else {
-					callback(null,__('DB_PLAYLIST_GET_INFO_UNKNOWN_ERROR',playlist_id,err));
+					callback(null,__('DB_PLAYLIST_GET_INFO_UNKNOWN_ERROR',playlist_id,err.stringify()));
 				}
 			}
 		})
@@ -714,7 +714,7 @@ module.exports = {
 					{
 						if (err)
 						{
-							logger.error(__('DB_PLAYLIST_TEST_CURRENT_EXISTS_ERROR',err));
+							logger.error(__('DB_PLAYLIST_TEST_CURRENT_EXISTS_ERROR',err.stringify()));
 							reject();									
 						} else {
 							if (row) {
@@ -746,7 +746,7 @@ module.exports = {
 					{
 						if (err)
 						{
-							logger.error(__('DB_PLAYLIST_TEST_CURRENT_EXISTS_ERROR',err));
+							logger.error(__('DB_PLAYLIST_TEST_CURRENT_EXISTS_ERROR',err.stringify()));
 							reject();									
 						} else {
 							if (row) {
@@ -772,7 +772,7 @@ module.exports = {
 		{
 				if (err)
 				{					
-					callback(null,__('DB_PLAYLIST_TEST_PUBLIC_ERROR',playlist_id,err));
+					callback(null,__('DB_PLAYLIST_TEST_PUBLIC_ERROR',playlist_id,err.stringify()));
 				} else {
 					if (row) {
 						if (row.flag_public == 1) {
@@ -797,7 +797,7 @@ module.exports = {
 		{
 				if (err)
 				{
-					callback(null,__('DB_PLAYLIST_TEST_CURRENT_ERROR',playlist_id,err));					
+					callback(null,__('DB_PLAYLIST_TEST_CURRENT_ERROR',playlist_id,err.stringify()));					
 				} else {
 					if (row) {
 						if (row.flag_current == 1) {
@@ -826,7 +826,7 @@ module.exports = {
 		{
 				if (err)
 				{					
-					callback(null,__('DB_KARA_TEST_ERROR',kara_id,err));
+					callback(null,__('DB_KARA_TEST_ERROR',kara_id,err.stringify()));
 				} else {
 					if (row) {
 						callback(true);
@@ -852,7 +852,7 @@ module.exports = {
 			{
 					if (err)
 					{						
-						reject(__('DB_BLACKLIST_TEST_CRITERIA_ERROR',blc_id,err));									
+						reject(__('DB_BLACKLIST_TEST_CRITERIA_ERROR',blc_id,err.stringify()));									
 					} else {
 						if (row) {
 							resolve()
@@ -881,7 +881,7 @@ module.exports = {
 			{
 					if (err)
 					{
-						reject(__('DB_PLAYLIST_SEARCH_KARA_ERROR',kara_id,playlist_id,err));									
+						reject(__('DB_PLAYLIST_SEARCH_KARA_ERROR',kara_id,playlist_id,err.stringify()));									
 					} else {						
 						if (row) {
 							resolve(true);
@@ -908,7 +908,7 @@ module.exports = {
 			{
 					if (err)
 					{
-						reject(__('DB_WHITELIST_SEARCH_KARA_ERROR',kara_id,err));									
+						reject(__('DB_WHITELIST_SEARCH_KARA_ERROR',kara_id,err.stringify()));									
 					} else {						
 						if (row) {
 							resolve(true);
@@ -935,7 +935,7 @@ module.exports = {
 		{
 				if (err)
 				{
-					callback(null,__('DB_PLAYLIST_TEST_ERROR',playlist_id,err));
+					callback(null,__('DB_PLAYLIST_TEST_ERROR',playlist_id,err.stringify()));
 				} else {
 					if (row) {
 						callback(true);
@@ -956,7 +956,7 @@ module.exports = {
 		{
 			if (err)
 			{
-				callback(null,__('DB_PLAYLIST_SET_CURRENT_ERROR',playlist_id,err));
+				callback(null,__('DB_PLAYLIST_SET_CURRENT_ERROR',playlist_id,err.stringify()));
 			} else {
 				callback(rep);
 			}			
@@ -978,7 +978,7 @@ module.exports = {
 		{
 			if (err)
 			{
-				callback(null,__('DB_PLAYLIST_SET_VISIBLE_ERROR',playlist_id,err));
+				callback(null,__('DB_PLAYLIST_SET_VISIBLE_ERROR',playlist_id,err.stringify()));
 			} else {
 				callback(rep);
 			}
@@ -1001,7 +1001,7 @@ module.exports = {
 		{
 			if (err)
 			{
-				callback(null,__('DB_PLAYLIST_UNSET_VISIBLE_ERROR',playlist_id,err));
+				callback(null,__('DB_PLAYLIST_UNSET_VISIBLE_ERROR',playlist_id,err.stringify()));
 			} else {
 				callback(rep);
 			}
@@ -1019,7 +1019,7 @@ module.exports = {
 		{
 			if (err)
 			{
-				callback(null,__('DB_PLAYLIST_SET_PUBLIC_ERROR',playlist_id,err));
+				callback(null,__('DB_PLAYLIST_SET_PUBLIC_ERROR',playlist_id,err.stringify()));
 			} else {
 				callback(rep);
 			}				
@@ -1038,7 +1038,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_PLAYLIST_UNSET_PUBLIC_ALL_ERROR',err));														
+					reject(__('DB_PLAYLIST_UNSET_PUBLIC_ALL_ERROR',err.stringify()));														
 				} else {
 					resolve();
 				}
@@ -1058,7 +1058,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_PLAYLIST_UNSET_CURRENT_ALL_ERROR',err));									
+					reject(__('DB_PLAYLIST_UNSET_CURRENT_ALL_ERROR',err.stringify()));									
 				} else {
 					resolve();
 				}
@@ -1076,7 +1076,7 @@ module.exports = {
 		}, function(err) {
 			if (err)
 			{
-				logger.error(__('DB_PLAYLIST_EMPTY_ERROR',playlist_id,err));									
+				logger.error(__('DB_PLAYLIST_EMPTY_ERROR',playlist_id,err.stringify()));									
 				
 			}
 		})
@@ -1091,7 +1091,7 @@ module.exports = {
 		}, function(err) {
 			if (err)
 			{
-				logger.error(__('DB_PLAYLIST_DELETE',playlist_id,err));
+				logger.error(__('DB_PLAYLIST_DELETE',playlist_id,err.stringify()));
 			}
 			callback(true);
 		})
@@ -1134,7 +1134,7 @@ module.exports = {
 		{
 				if (err)
 				{
-					logger.error(__('DB_PLAYLIST_EDIT_ERROR',playlist_id,err));
+					logger.error(__('DB_PLAYLIST_EDIT_ERROR',playlist_id,err.stringify()));
 					callback({
 						error:true,
 						error_msg:err
@@ -1174,7 +1174,7 @@ module.exports = {
 		{
 				if (err)
 				{
-					logger.error(__('DB_PLAYLIST_CREATE_ERROR',name,err));					
+					logger.error(__('DB_PLAYLIST_CREATE_ERROR',name,err.stringify()));					
 					callback({
 						id:0,
 						error:true,
@@ -1218,7 +1218,7 @@ module.exports = {
 			{
 					if (err)
 					{
-						reject(__('DB_KARA_GET_KID_ERROR',kara_id,err));
+						reject(__('DB_KARA_GET_KID_ERROR',kara_id,err.stringify()));
 					} else {
 						if (row) {
 							var kid = row.kid
@@ -1237,7 +1237,7 @@ module.exports = {
 							{
 									if (err)
 									{
-										reject(__('DB_PLAYLIST_ADD_KARA_ERROR',kara_id,playlist_id,err));
+										reject(__('DB_PLAYLIST_ADD_KARA_ERROR',kara_id,playlist_id,err.stringify()));
 									} else {
 										//We return the playlist_content ID of the kara we just added.
 										resolve(this.lastID);
@@ -1276,7 +1276,7 @@ module.exports = {
 			{
 					if (err)
 					{
-						reject(__('DB_KARA_GET_KID_ERROR',kara_id,err));
+						reject(__('DB_KARA_GET_KID_ERROR',kara_id,err.stringify()));
 					} else {
 						if (row) {
 							var kid = row.kid
@@ -1291,7 +1291,7 @@ module.exports = {
 							{
 									if (err)
 									{
-										reject(__('DB_WHITELIST_ADD_KARA_ERROR',kara_id,err));
+										reject(__('DB_WHITELIST_ADD_KARA_ERROR',kara_id,err.stringify()));
 									} else {
 										//We return the whitelist_content ID of the kara we just added.
 										resolve(this.lastID);
@@ -1325,7 +1325,7 @@ module.exports = {
 			{
 				if (err)
 				{					
-					reject(__('DB_PLAYLIST_REMOVE_KARA_ERROR',playlistcontent_id,err));
+					reject(__('DB_PLAYLIST_REMOVE_KARA_ERROR',playlistcontent_id,err.stringify()));
 				} else {
 					resolve(true);
 				}
@@ -1353,7 +1353,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_WHITELIST_REMOVE_KARA_ERROR',wlc_id,err));
+					reject(__('DB_WHITELIST_REMOVE_KARA_ERROR',wlc_id,err.stringify()));
 					reject(err);
 				} else {
 					resolve(true);
@@ -1386,7 +1386,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_PLAYLIST_UPDATE_POS_ERROR',playlist_id,err));
+					reject(__('DB_PLAYLIST_UPDATE_POS_ERROR',playlist_id,err.stringify()));
 				} else {
 					resolve();
 				}
@@ -1414,7 +1414,7 @@ module.exports = {
 			{
 				if (err)
 				{
-					reject(__('DB_PLAYLIST_GET_MAXPOS_ERROR',playlist_id,err));
+					reject(__('DB_PLAYLIST_GET_MAXPOS_ERROR',playlist_id,err.stringify()));
 				} else {
 					resolve(row.maxpos);
 				}
