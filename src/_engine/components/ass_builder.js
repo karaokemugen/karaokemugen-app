@@ -120,7 +120,16 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 			// script[0] = Header
 			// script[1] = Styles
 			// script[2] = Time
-						
+			// Note, if there's another section present, the array will be shifted.
+			// We need to test which is which.
+
+			var StylesSection = 1;
+			var DialogueSection = 2;
+			script.forEach(function(ASSSection,index){
+				if (ASSSection.section == 'V4+ Styles') StylesSection = index;
+				if (ASSSection.section == 'Events') DialogueSection = index;
+			})
+
 			// Calculate font size to use for Credits and Nickname
 			// Based on size of first Style encountered.
 						
@@ -149,7 +158,7 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 			var styleFontSize = undefined;
 
 			// Using .some to stop after the first occurence of style is encountered.
-			script[1].body.some(function(param){    
+			script[StylesSection].body.some(function(param){    
 				if (param.key == 'Style') 
 				{					
 					styleFontSize = param.value.Fontsize;
@@ -214,8 +223,8 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 						Encoding: '1' } };
 			
 			// Pushing the styles into the ASS script's Styles section.
-			script[1].body.push(StyleCredits);
-			script[1].body.push(StyleNickname);
+			script[StylesSection].body.push(StyleCredits);
+			script[StylesSection].body.push(StyleNickname);
 
 			// Doing the same with the subs we're adding.
 			// 8 seconds is enough to display the name of the video and who requested it.
@@ -246,8 +255,8 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 										Text: '{\\fad(800,250)\\i1}'+__('REQUESTED_BY')+'{\\i0}\\N{\\u0}'+requester+'{\\u1}'
 									}}
 			
-			script[2].body.push(DialogueCredits);
-			script[2].body.push(DialogueNickname);
+			script[DialogueSection].body.push(DialogueCredits);
+			script[DialogueSection].body.push(DialogueNickname);
 
 			// Writing to the final ASS, which is the karaoke's ID.ass
 			// If writing is successfull, we return the path to the ASS file.
