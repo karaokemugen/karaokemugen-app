@@ -9,6 +9,8 @@ generator.run().then(function(response){
 */
 const logger = require('../_common/utils/logger.js');
 module.exports = {
+    db:null,
+    userdb:null,
     SYSPATH: null,
     SETTINGS: null,
     run: function() {
@@ -56,13 +58,13 @@ module.exports = {
             var id_kara = 0;
             var date = new Date();
             
-            var db = new sqlite3.Database(karas_dbfile, function(err, rep) {
+            module.exports.db = new sqlite3.Database(karas_dbfile, function(err, rep) {
                 if (err) {
                     module.exports.onLog('error', __('GDB_OPEN_KARASDB_ERROR'));
                     process.exit();
                 }
             });
-            var userdb = new sqlite3.Database(karas_userdbfile, function(err, rep) {
+            module.exports.userdb = new sqlite3.Database(karas_userdbfile, function(err, rep) {
                 if (err) {
                     module.exports.onLog('error', __('GDB_OPEN_USERDB_ERROR'));
                     process.exit();
@@ -74,7 +76,7 @@ module.exports = {
             // Creating tables
             // -------------------------------------------------------------------------------------------------------------
             var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
-            db.exec(sqlCreateKarasDB, function(err, rep) {
+            module.exports.db.exec(sqlCreateKarasDB, function(err, rep) {
                 if (err) {
                     module.exports.onLog('error', __('GDB_TABLES_CREATION_ERROR'));
                     module.exports.onLog('error', err);
@@ -84,20 +86,22 @@ module.exports = {
                     // Creating views
                     // -------------------------------------------------------------------------------------------------------------
                     var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
-                    db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
+                    module.exports.db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
                         if (err) {
                             module.exports.onLog('error', __('GDB_VIEW_CREATION_ERROR'));
                             module.exports.onLog('error', err);
                             module.exports.onLog('error', sqlCreateKarasDBViewAll);
+                            console.log('Error create view');
+                            process.exit();
                         } else {
                             module.exports.onLog('success', __('GDB_VIEW_CREATED'));
-                            db.serialize(function() {
+                            module.exports.db.serialize(function() {
 
                                 // -------------------------------------------------------------------------------------------------------------
                                 // Now working with a transaction to bulk-add data.
                                 // -------------------------------------------------------------------------------------------------------------
 
-                                db.run("begin transaction");
+                                module.exports.db.run("begin transaction");
 
                                 // -------------------------------------------------------------------------------------------------------------
 
@@ -128,13 +132,13 @@ module.exports = {
                                 // Building SQL queries for insertion
                                 // ------------------------------------------------------------------------------------------------------------
 
-                                var stmt_InsertKaras = db.prepare("INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);");
-                                var stmt_UpdateVideoLength = db.prepare("UPDATE kara SET videolength = $videolength WHERE PK_id_kara = $id ;");
-                                var stmt_InsertSeries = db.prepare("INSERT INTO series(PK_id_series,name,NORM_name) VALUES( $id_series, $serie, $serienorm );");
-                                var stmt_InsertTags = db.prepare("INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );");
-                                var stmt_InsertKarasTags = db.prepare("INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES( $id_tag, $id_kara );");
-                                var stmt_InsertKarasSeries = db.prepare("INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES( $id_series, $id_kara);");
-                                var stmt_UpdateSeriesAltNames = db.prepare("UPDATE series SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;");
+                                var stmt_InsertKaras = module.exports.db.prepare("INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);");
+                                var stmt_UpdateVideoLength = module.exports.db.prepare("UPDATE kara SET videolength = $videolength WHERE PK_id_kara = $id ;");
+                                var stmt_InsertSeries = module.exports.db.prepare("INSERT INTO series(PK_id_series,name,NORM_name) VALUES( $id_series, $serie, $serienorm );");
+                                var stmt_InsertTags = module.exports.db.prepare("INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );");
+                                var stmt_InsertKarasTags = module.exports.db.prepare("INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES( $id_tag, $id_kara );");
+                                var stmt_InsertKarasSeries = module.exports.db.prepare("INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES( $id_series, $id_kara);");
+                                var stmt_UpdateSeriesAltNames = module.exports.db.prepare("UPDATE series SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;");
 
                                 // ------------------------------------------------------------------------------------------------------------
 
@@ -276,7 +280,7 @@ module.exports = {
                                 });
                                 module.exports.onLog('success', __('GDB_LINKED_KARA_TO_SERIES'));
                                 module.exports.onLog('success', __('GDB_FINISHED_DATABASE_GENERATION'));
-                                db.run("commit");
+                                module.exports.db.run("commit");
                                 // Close all statements just to be sure. 
                                 stmt_InsertKarasSeries.finalize();
                                 stmt_InsertSeries.finalize();                                    
@@ -297,8 +301,8 @@ module.exports = {
                             .then(function(){
                                 module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_COMPLETE'));
                                
-                                db.close(function(err){
-                                    userdb.close(function(err){
+                                module.exports.db.close(function(err){
+                                    module.exports.userdb.close(function(err){
                                         resolve();
                                     })
                                 });
@@ -341,7 +345,7 @@ module.exports = {
                     var pGetAllKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetAllKaras = "SELECT PK_id_kara AS id_kara, kid FROM all_karas;";
-			            db.all(sqlGetAllKaras,
+			            module.exports.db.all(sqlGetAllKaras,
 				        function (err, playlist)
 				        {
     					    if (err)
@@ -356,7 +360,7 @@ module.exports = {
                     var pGetPlaylistKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetPlaylistKaras = "SELECT fk_id_kara AS id_kara, kid FROM playlist_content;";
-			            userdb.all(sqlGetPlaylistKaras,
+			            module.exports.userdb.all(sqlGetPlaylistKaras,
 				        function (err, playlist)
 				        {
     					    if (err)
@@ -376,7 +380,7 @@ module.exports = {
                     var pGetWhitelistKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetWhitelistKaras = "SELECT fk_id_kara AS id_kara, kid FROM whitelist;";
-			            userdb.all(sqlGetWhitelistKaras,
+			            module.exports.userdb.all(sqlGetWhitelistKaras,
 				        function (err, playlist)
 				        {
     					    if (err)
@@ -396,7 +400,7 @@ module.exports = {
                     var pGetBlacklistKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetBlacklistKaras = "SELECT fk_id_kara AS id_kara, kid FROM blacklist;";
-			            userdb.all(sqlGetBlacklistKaras,
+			            module.exports.userdb.all(sqlGetBlacklistKaras,
 				        function (err, playlist)
 				        {
     					    if (err)
@@ -416,7 +420,7 @@ module.exports = {
                     var pGetRatingKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetRatingKaras = "SELECT fk_id_kara AS id_kara, kid FROM rating;";
-			            userdb.all(sqlGetRatingKaras,
+			            module.exports.userdb.all(sqlGetRatingKaras,
 				        function (err, playlist)
 				        {
     					    if (err)
@@ -436,7 +440,7 @@ module.exports = {
                     var pGetViewcountKaras = new Promise((resolve,reject) =>
 			        {
                         var sqlGetViewcountKaras = "SELECT fk_id_kara AS id_kara, kid FROM viewcount;";
-			            userdb.all(sqlGetViewcountKaras,
+			            module.exports.userdb.all(sqlGetViewcountKaras,
 				        function (err, playlist)
 				        {
     					    if (err)
@@ -578,7 +582,7 @@ module.exports = {
                         if (UpdateNeeded)
                         {
                             sqlUpdateUserDB += "COMMIT;"
-                            userdb.exec(sqlUpdateUserDB, function(err, rep) {
+                            module.exports.userdb.exec(sqlUpdateUserDB, function(err, rep) {
                                 if (err) {
                                     module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_UPDATE_ERROR',err));
                                 } else {

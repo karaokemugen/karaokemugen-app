@@ -10,7 +10,9 @@ module.exports = {
 	_server:null,
 	_io:null,
 	_engine_states:{},
-	_local_states:{},
+	_local_states:{
+		generate_karabd:false,
+	},
 
 	init : function(){
 		if(module.exports.SYSPATH === null)
@@ -126,25 +128,28 @@ module.exports = {
 	{
 		module.exports.setLocalStates('generate_karabd',true);
 		// on coupe l'accès à la base de données
-		module.exports.DB_INTERFACE.close();
+		module.exports.DB_INTERFACE.close().then(function(){
+				logger.info('Admin starting generate db script...');
+				// on vide les logs
+				socket.emit('generate_karabd', {event:'cleanLog'});
 
-		// on vide les logs
-		socket.emit('generate_karabd', {event:'cleanLog'});
-
-		var generator = require('./generate_karasdb.js');
-		generator.SYSPATH = module.exports.SYSPATH;
-		generator.SETTINGS = module.exports.SETTINGS;
-		generator.onLog = function(type,message) {
-			logger.info(__('DATABASE_GENERATION',message));
-			if(type!='notice')
-				socket.emit('generate_karabd', {event:'addLog',data:message});
-		}
-		generator.run().then(function(response){
-			// on relance l'interface de base de données et on sort du mode rebuild
-			module.exports.DB_INTERFACE.init();
-			module.exports.setLocalStates('generate_karabd',false);
-		}).catch(function(response,error){
-			module.exports.setLocalStates('generate_karabd',false);
+			var generator = require('./generate_karasdb.js');
+			generator.SYSPATH = module.exports.SYSPATH;
+			generator.SETTINGS = module.exports.SETTINGS;
+			generator.onLog = function(type,message) {
+				logger.info(__('DATABASE_GENERATION',message));
+				if(type!='notice')
+					socket.emit('generate_karabd', {event:'addLog',data:message});
+			}
+			generator.run().then(function(response){
+				// on relance l'interface de base de données et on sort du mode rebuild
+				module.exports.DB_INTERFACE.init();
+				module.exports.setLocalStates('generate_karabd',false);
+			}).catch(function(response,error){
+					console.log(response);
+					module.exports.DB_INTERFACE.init();
+					module.exports.setLocalStates('generate_karabd',false);
+			});
 		});
 	},
 

@@ -37,6 +37,7 @@ module.exports = {
 							process.exit();
 						} else
 						{
+							db.close();
 							logger.info(__('USER_DB_CREATED'));
 							resolve();
 						}
@@ -115,8 +116,15 @@ module.exports = {
 	close:function()
 	{
 		module.exports._ready = false;
-		module.exports._db_handler.close();
-		module.exports._user_db_handler.close();
+		return new Promise(function(resolve,reject){
+			module.exports._db_handler.close(function(err){
+				if(err) console.log(err)
+				module.exports._user_db_handler.close(function(err){
+					if(err) console.log(err)
+					resolve();
+				});
+			});
+		});
 	},
 
 	isReady: function()
