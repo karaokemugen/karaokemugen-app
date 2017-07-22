@@ -5,7 +5,6 @@ const dl = require('request-progress');
 var ProgressBar = require('progress');
 var http = require('http');
 
-
 module.exports = {
 	playing:false,
 	_playing:false, // internal delay flag
@@ -114,7 +113,7 @@ module.exports = {
 	play: function(video,subtitle,reference){
 		module.exports.playing = true;
 		if(fs.existsSync(video)){
-			logger.info('Playing : '+video);
+			logger.info(__('VIDEO_PLAYING',video));
 			module.exports._ref = reference;
 			module.exports._player.loadFile(video);
 			module.exports._player.volume(70);
