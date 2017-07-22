@@ -118,12 +118,14 @@ module.exports = {
 
                                 // Extracting tags.
                                 karafiles.forEach(function(kara, index) {
+                                    index++;
                                     addTags(kara, index);
                                 });
                                 module.exports.onLog('success', __('GDB_TAGCOUNT',tags.length,karas_tags.length));
 
                                 // Extracting series.
                                 karafiles.forEach(function(kara, index) {
+                                    index++;
                                     addSeries(kara, index);
                                 });
                                 module.exports.onLog('success', __('GDB_SERIESCOUNT',series.length,karas_series.length));                                
@@ -143,6 +145,7 @@ module.exports = {
                                 // ------------------------------------------------------------------------------------------------------------
 
                                 karas.forEach(function(kara, index) {
+                                    index++;
                                     var titlenorm = S(kara['title']).latinise().s;
                                     sqlInsertKaras.push({
                                         $id_kara : index,
@@ -162,6 +165,7 @@ module.exports = {
                                 });
 
                                 series.forEach(function(serie, index) {
+                                    index++;
                                     var serienorm = S(serie).latinise().s;
                                     sqlInsertSeries.push({
                                         $id_series : index,
@@ -170,6 +174,7 @@ module.exports = {
                                     });
                                 });
                                 tags.forEach(function(tag, index) {
+                                    index++;
                                     tag = tag.split(',');
                                     var tagname = tag[0];
                                     var tagnamenorm = S(tagname).latinise();
@@ -181,7 +186,8 @@ module.exports = {
                                         $tagnamenorm : tagnamenorm,
                                     });
                                 });
-                                karas_tags.forEach(function(karatag, index) {
+                                console.log(karas_tags);
+                                karas_tags.forEach(function(karatag, index) {                                   
                                     karatag = karatag.split(',');
                                     var id_tag = karatag[0];
                                     var id_kara = karatag[1];
@@ -190,6 +196,7 @@ module.exports = {
                                         $id_kara : id_kara,
                                     });
                                 });
+                                console.log(karas_series);
                                 karas_series.forEach(function(karaserie, index) {
                                     karaserie = karaserie.split(',');
                                     var id_series = karaserie[0];
@@ -228,6 +235,7 @@ module.exports = {
                                 
                                 
                                 karas.forEach(function(kara, index) {
+                                    index++;
                                     getvideoduration(kara['videofile'], index, function(err, videolength, id) {
                                         sqlUpdateVideoLength.push({
                                             $videolength:videolength,
@@ -237,7 +245,7 @@ module.exports = {
                                     });                                     
                                 });
                                 module.exports.onLog('success', __('GDB_CALCULATED_DURATION'));
-
+                                
                                 // -------------------------------------------------------------------------------------------------------------
                                 // Running queries (Statements or RAW depending on the case)
                                 // -------------------------------------------------------------------------------------------------------------
@@ -770,7 +778,7 @@ module.exports = {
                         taglist.push('TYPE_OP,3');
                     }
                 }
-                if (S(karaType).contains('MV')) {
+                if (S(karaType).startsWith('MV')) {
                     if (taglist.indexOf('TYPE_MUSIC,3') == -1) {
                         taglist.push('TYPE_MUSIC,3');
                     }
