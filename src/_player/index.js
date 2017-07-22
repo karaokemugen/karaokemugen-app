@@ -86,6 +86,7 @@ module.exports = {
 				"--idle=yes",
 				"--fps=60",
 				"--screen=1",
+				"--sub-codepage=UTF-8-BROKEN",
 			]);
 
 			module.exports._player.on('statuschange',function(status){
