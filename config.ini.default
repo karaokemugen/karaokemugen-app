@@ -35,18 +35,12 @@ mpvOptions = "-fs --ontop --no-osc --no-osd-bar --osd-level=0"
 
 [Binaries.Windows]
 BinPlayer = "app/bin/mpv.exe"
-BinProbe = "app/bin/ffprobe.exe"
-BinFFmpeg = "app/bin/ffmpeg.exe"
 
 [Binaries.OSX]
 BinPlayer = "app/bin/mpv.osx"
-BinProbe = "app/bin/ffprobe.osx"
-BinFFmpeg = "app/bin/ffmpeg.osx"
 
 [Binaries.Linux]
 BinPlayer = "/usr/bin/mpv"
-BinProbe = "/usr/bin/ffprobe"
-BinFFmpeg = "/usr/bin/ffmpeg"
 
 [Version]
 VersionNo = "v2.0"
