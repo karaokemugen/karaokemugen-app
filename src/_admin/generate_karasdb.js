@@ -277,17 +277,33 @@ module.exports = {
                                 module.exports.onLog('success', __('GDB_LINKED_KARA_TO_SERIES'));
                                 module.exports.onLog('success', __('GDB_FINISHED_DATABASE_GENERATION'));
                                 db.run("commit");
+                                // Close all statements just to be sure. 
+                                stmt_InsertKarasSeries.finalize();
+                                stmt_InsertSeries.finalize();                                    
+                                stmt_UpdateSeriesAltNames.finalize();
+                                stmt_InsertKarasTags.finalize();
+                                stmt_InsertTags.finalize();
+                                stmt_UpdateVideoLength.finalize();
+                                stmt_InsertKaras.finalize();
                             });
 
                             // -------------------------------------------------------------------------------------------------------------
                             // Running checks on user database
                             // Now that we regenerated kara_ids
                             // -------------------------------------------------------------------------------------------------------------
-
+                                                        
                             module.exports.onLog('info', __('GDB_INTEGRITY_CHECK_START'));
                             run_userdb_integrity_checks()
                             .then(function(){
                                 module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_COMPLETE'));
+                               
+                                db.close(function(err){
+                                    userdb.close(function(err){
+                                        resolve();
+                                    })
+                                });
+                                
+                                
                             })
                             .catch(function(err){
                                 module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_ERROR',err));
@@ -297,11 +313,7 @@ module.exports = {
                             // Then close database connection
                             // -------------------------------------------------------------------------------------------------------------
 
-                            db.close(function(){
-                                userdb.close(function(){
-                                    resolve();
-                                })
-                            });
+                            
                         }
                     });
                 }

@@ -215,6 +215,5 @@
 	"GDB_LINKED_KARA_TO_SERIES": "Liaison des séries et des karas",
 	"GDB_FINISHED_DATABASE_GENERATION": "Génération de la BDD terminée.",
 	"GDB_INTEGRITY_CHECK_START": "Démarrage des tests d'intégrité.",
-	"GDB_INTEGRITY_CHECK_COMPLETE": "Tests d'intégrité terminés.",
-	"PROBING": "Scrutage..."
+	"GDB_INTEGRITY_CHECK_COMPLETE": "Tests d'intégrité terminés."
 }
