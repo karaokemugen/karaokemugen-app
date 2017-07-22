@@ -219,18 +219,20 @@ module.exports = {
 	tryToReadNextKaraInPlaylist:function(){
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing)
 		{
-			kara = module.exports._services.playlist_controller.get_next_kara();
-			if(kara)
-			{
-				logger.info('Next song is '+kara.title);
-				module.exports._services.player.play(
-					kara.videofile,
-					kara.subfile,
-					kara.kara_id
-				);
-			}
-			logger.log('warning','Next song is not available');
-			module.exports._broadcastPlaylist();
+			module.exports._services.playlist_controller.get_next_kara()
+				.then(function(kara){
+					logger.info('Next song is '+kara.title);
+					module.exports._services.player.play(
+						kara.path.video,
+						kara.path.subtitle,
+						kara.id_kara
+					);
+					module.exports._broadcastPlaylist();
+				})
+				.catch(function(){
+					logger.log('warning','Next song is not available');
+					module.exports._broadcastPlaylist();
+				});
 		}
 	},
 

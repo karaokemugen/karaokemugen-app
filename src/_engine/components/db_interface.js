@@ -12,6 +12,7 @@ module.exports = {
 	SETTINGS:null,
 	_ready: false,
 	_db_handler: null,
+	_user_db_handler:null,
 
 	init: function(){
 		return new Promise(function(resolve,error){

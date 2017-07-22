@@ -4,7 +4,7 @@ timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
 const S = require('string');
 const async = require('async');
-const assbuilder = require(path.resolve(__dirname,'./ass_builder.js'));
+const assbuilder = require('./ass_builder.js');
 const fs = require('fs');
 const shuffle = require('knuth-shuffle').knuthShuffle;
 
@@ -25,6 +25,9 @@ module.exports = {
 			logger.error('_engine/components/playlist_controller.js : DB_INTERFACE is null');
 			process.exit();
 		}
+
+		assbuilder.SYSPATH = module.exports.SYSPATH;
+
 		logger.info(__('PLAYLIST_CONTROLLER_READY'));
 	},
 
@@ -1053,8 +1056,8 @@ module.exports = {
 										var pRenameASS = new Promise((resolve,reject) =>
 										{
 											fs.renameSync(
-												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+playlist_id+'.ass'),
-												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
+												path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,kara_id+'.'+playlist_id+'.ass'),
+												path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,
 												playlistcontent_id+'.ass')
 											);
 											resolve();
@@ -1157,7 +1160,7 @@ module.exports = {
 			.then(function()
 			{
 				// Removing karaoke here.
-					var assFile = path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
+					var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,
 							playlistcontent_id+'.ass')
 					if (fs.existsSync(assFile))
 					{
@@ -1535,8 +1538,8 @@ module.exports = {
 										var pRenameASS = new Promise((resolve,reject) =>
 										{
 											fs.renameSync(
-												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+publicPlaylistID+'.ass'),
-												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
+												path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,kara_id+'.'+publicPlaylistID+'.ass'),
+												path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,
 												playlistcontent_id+'.ass')
 											);
 											resolve();
@@ -1731,8 +1734,8 @@ module.exports = {
 										var pRenameASS = new Promise((resolve,reject) =>
 										{
 											fs.renameSync(
-												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,kara_id+'.'+currentPlaylistID+'.ass'),
-												path.resolve(__dirname,'../../../',module.exports.SETTINGS.Path.Temp,
+												path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.Path.Temp,kara_id+'.'+currentPlaylistID+'.ass'),
+												path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.Path.Temp,
 												playlistcontent_id+'.ass')
 											);
 											resolve();
@@ -1787,7 +1790,6 @@ module.exports = {
 								{
 									reject(err);
 								});
-								
 							 })
 							 .catch(function(err) {
 								 reject(err);
@@ -1804,11 +1806,63 @@ module.exports = {
 				reject(err);
 			});
 		});
-		
 	},
 	get_next_kara:function(){
 		// TODO implémenter la lecture dans la BDD via this.DB_INTERFACE
-		return module.exports.samplePlaylist.shift()
+		return new Promise(function(resolve,reject){
+			module.exports.isACurrentPlaylist().then(function(playlist_id){
+				module.exports.getPlaylistContents(playlist_id).then(function(pl_content){
+					if(pl_content.length==0)
+					{
+						module.exports.build_dummy_current_playlist().then(function(){
+							module.exports.get_next_kara();
+						});
+					}
+					else
+					{
+						readpos = 0;
+						pl_content.forEach(function(element, index) {
+							if(element.flag_playing && index < pl_content.length-1)
+								readpos = index+1
+						});
+						console.log(readpos);
+						var kara = pl_content[readpos];
+						if(kara)
+						{
+							// mise à jour du pointeur de lecture
+							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
+							});
+							// on enrichie l'objet pour fournir son contexte et les chemins système prêt à l'emploi
+							kara.playlist_id = playlist_id;
+							kara.path = {
+								video: path.join(module.exports.SYSPATH,module.exports.SETTINGS.Path.Videos, kara.videofile),
+								subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.Path.Temp, kara.playlistcontent_id+'.ass'),
+							};
+							resolve(kara);
+						}
+						reject();
+					}
+				})
+			}).catch(function(error_message){
+				module.exports.build_dummy_current_playlist().then(function(){
+					module.exports.get_next_kara();
+				});
+			});
+		});
+	},
+
+	build_dummy_current_playlist:function(){
+		console.log('build_dummy_current_playlist');
+		return new Promise(function(resolve,reject){
+			module.exports.createPlaylist("Toyunda Galor",true,true,false).then(function(playlist_id){
+				var promises = [];
+				for(var i=1; i<=10; i++)
+					promises.push(module.exports.addKaraToPlaylist(i,'Dummy user '+i,playlist_id).catch(function(message){ console.log(message)}))
+
+				Promise.all(promises).then(resolve).catch(reject);
+			});
+		});
 	},
 
 	// ---------------------------------------------------------------------------

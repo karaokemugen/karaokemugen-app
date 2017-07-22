@@ -4,17 +4,15 @@ var assParser = require('ass-parser');
 var assStringify = require('ass-stringify');
 var S = require('string');
 var i18n = require("i18n");
-
+const uuidv4 = require('uuid/v4');
 const exec = require('child_process');
-
 const MatroskaSubtitles = require('matroska-subtitles')
 const moment = require('moment');
 require("moment-duration-format");
 const ffmpegPath = require('ffmpeg-downloader').path
 
 module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id, pathToFFmpeg){
-	
-		
+		var uuid = uuidv4();;
 		/*
 		// Parameters examples :
 		var subFile = 'app/data/lyrics/Mahoromatic - AMV - Derniere danse 2010.ass';
@@ -33,7 +31,7 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 				
 			//Testing if video file exists and which extension it has.
 			
-			if(!fs.existsSync(path.resolve(__dirname,'../../../',pathToVideoFiles,videoFile))) 
+			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) 
 			{
 					reject(__('VIDEO_NOT_FOUND',videoFile));
 			}	
@@ -85,13 +83,15 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 					
 					// Using ffmpeg 
 				
-					var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(__dirname,'../../../',pathToVideoFiles,videoFile), outputFolder+'/kara_extract.ass'], { encoding : 'utf8' }),
+					var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile), outputFolder+'/kara_extract.'+uuid+'.ass'], { encoding : 'utf8' }),
 								ffmpegData = [],
 								errData = [],
 								exitCode = null,
 								start = Date.now();
 
-					subFile = outputFolder+'/kara_extract.ass';
+					pathToSubFiles = outputFolder;
+					subFile = 'kara_extract.'+uuid+'.ass';
+
 					if (proc.error) {
 						reject(__('EXTRACTING_ASS_FAILED'));
 					}					
@@ -103,15 +103,18 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 				}
 			} else {
 				// Checking if subFile exists. Abort if not.
-				console.log(pathToSubFiles);				
-				if(!fs.existsSync(path.resolve(__dirname,'../../../',pathToSubFiles,subFile))) 
+				//console.log(pathToSubFiles);				
+				if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))) 
 				{
 					reject(__('ASS_UNABLE_TO_FIND',subFile));
 				}	
 			}							
 			// Parsing the subFile provided, either vide.ass, the associated .ass file or the extracted .ass file from
 			// a .mkv/.mp4
-			var assdata = fs.readFileSync(path.resolve(__dirname,'../../../',pathToSubFiles,subFile), 'utf-8');
+			//console.log('1 '+module.exports.SYSPATH);
+			//console.log('2 '+pathToSubFiles);
+			//console.log('3 '+subFile);
+			var assdata = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile), 'utf-8');
 			var script = assParser(assdata, { comments: true });
 			// Contents of script array :
 			// script[0] = Header
