@@ -1808,7 +1808,10 @@ module.exports = {
 		});
 	},
 	get_next_kara:function(){
-		// TODO implémenter la lecture dans la BDD via this.DB_INTERFACE
+		// TODO : renommer en get_current_kara
+		// implémenter des méthode next et prev
+		// et coder sur engine en fin de morceau (event venant du player) => passer au morceau suivant avant de récupérer le morceau courant
+		// => next'n play
 		return new Promise(function(resolve,reject){
 			module.exports.isACurrentPlaylist().then(function(playlist_id){
 				module.exports.getPlaylistContents(playlist_id).then(function(pl_content){
