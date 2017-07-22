@@ -57,6 +57,12 @@ function engineTerminate(){
 function togglePrivate(){
     socket.emit('action', 'togglePrivate');
 }
+function toggleFullscreen(){
+    socket.emit('action', 'toggleFullscreen');
+}
+function toggleOnTop(){
+    socket.emit('action', 'toggleOnTop');
+}
 function enginePlay(){
     socket.emit('action', 'play');
 }

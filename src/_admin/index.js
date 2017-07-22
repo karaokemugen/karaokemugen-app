@@ -78,6 +78,12 @@ module.exports = {
 						case 'togglePrivate':
 							module.exports.onTogglePrivate();
 							break;
+						case 'toggleFullscreen':
+							module.exports.onToggleFullscreen();
+							break;
+						case 'toggleOnTop':
+							module.exports.onToggleOnTop();
+							break;
 						case 'terminate':
 							setTimeout(function(){
 								// on insert un décalage car la webapp doit d'abord déclencher la fermeture de la fenetre du navigateur internet
@@ -188,6 +194,16 @@ module.exports = {
 	onTogglePrivate:function(){
 		// événement émis pour quitter l'application
 		logger.log('warning','onPrivateToggle not set');
+	},
+
+	onToggleFullscreen:function(){
+		// événement émis pour quitter l'application
+		logger.log('warning','onToggleFullscreen not set');
+	},
+
+	onToggleOnTop:function(){
+		// événement émis pour quitter l'application
+		logger.log('warning','onToggleOnTop not set');
 	},
 
 }

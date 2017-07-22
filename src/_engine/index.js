@@ -20,6 +20,8 @@ module.exports = {
 	_states:{
 		status:'stop', // [stop,play] // etat générale de l'application Karaoke - STOP => la lecture de la playlist est interrompu
 		private:true, // [bool(true|false)] // Karaoke en mode privé ou publique
+		fullscreen:true,
+		ontop:true,
 		admin_port:1338,
 		frontend_port:1337,
 		playlist:null,
@@ -34,7 +36,7 @@ module.exports = {
 	 * It starts up the DB Interface, player, playlist controller and admin dashboard.
 	 * @function {run}
 	 */
-	run: function(){		
+	run: function(){
 		if(this.SYSPATH === null)
 		{
 			logger.error(__('SYSPATH_NULL'));
@@ -45,6 +47,10 @@ module.exports = {
 			logger.error(__('SETTINGS_NULL'));
 			process.exit();
 		}
+
+		// settings some player config in engine _states
+		module.exports._states.fullscreen = module.exports.SETTINGS.Player.Fullscreen>0;
+		module.exports._states.ontop = module.exports.SETTINGS.Player.StayOnTop>0;
 
 		this._start_db_interface().then(function(){
 			module.exports._start_player();
@@ -226,6 +232,27 @@ module.exports = {
 		module.exports._broadcastStates();
 	},
 
+	/**
+	* @function {toggleFullscreen}
+	*/
+	toggleFullscreen:function()
+	{
+		module.exports._states.fullscreen = !module.exports._states.fullscreen;
+		module.exports._services.player.setFullscreen(module.exports._states.fullscreen);
+		logger.debug('fullscreen is now '+module.exports._states.fullscreen);
+		module.exports._broadcastStates();
+	},
+	/**
+	* @function {toggleStayOnTop}
+	*/
+	toggleOnTop:function()
+	{
+		// player services return new ontop states after change
+		module.exports._states.ontop = module.exports._services.player.toggleOnTop();
+		logger.debug('ontop is now '+module.exports._states.ontop);
+		module.exports._broadcastStates();
+	},
+
 	// Methode lié à la lecture de kara
 	/**
 	* @function
@@ -330,6 +357,9 @@ module.exports = {
 		module.exports._services.admin.onTerminate = module.exports.exit;
 		// Evenement de changement bascule privé/publique
 		module.exports._services.admin.onTogglePrivate = module.exports.togglePrivate;
+		// Evenement de changement bascule fullscreen/windowed
+		module.exports._services.admin.onToggleFullscreen = module.exports.toggleFullscreen;
+		module.exports._services.admin.onToggleOnTop = module.exports.toggleOnTop;
 		// Supervision des évènement de changement de status (play/stop)
 		module.exports._services.admin.onPlay = module.exports.play;
 		module.exports._services.admin.onStop = module.exports.stop;
@@ -652,6 +682,15 @@ module.exports = {
 		module.exports._services.player = require(path.resolve(__dirname,'../_player/index.js'));
 		module.exports._services.player.BINPATH = path.resolve(module.exports.SYSPATH,'app/bin');
 		module.exports._services.player.onEnd = module.exports.playerEnding;
+		// si le wallpaper de la config existe bien on le configure dans le player
+		if(module.exports.SETTINGS.Player.Wallpaper && fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.Player.Wallpaper)))
+			module.exports._services.player.background = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.Player.Wallpaper);
+		module.exports._services.player.screen = module.exports.SETTINGS.Player.Screen;
+		module.exports._services.player.fullscreen = module.exports.SETTINGS.Player.Fullscreen>0;
+		module.exports._services.player.stayontop = module.exports.SETTINGS.Player.StayOnTop>0;
+		module.exports._services.player.nohud = module.exports.SETTINGS.Player.NoHud>0;
+		module.exports._services.player.nobar = module.exports.SETTINGS.Player.NoBar>0;
 		module.exports._services.player.init();
+
 	}
 }
