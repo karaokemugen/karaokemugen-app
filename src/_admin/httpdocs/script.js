@@ -7,27 +7,22 @@ var local_states = {};
 // alert message
 socket.on('engine_states', function(newStates) {
     engine_states = newStates;
+    // status, private
+    for(var i in engine_states)
+        $('body').attr('states-engine-'+i,engine_states[i]);
 
-    private_message = engine_states.private ? 'Mode Privé':'Mode publique';
-    $('.states_private').html(private_message);
+    refreshShowOnState();
 
-    status_message = engine_states.status=='play' ? 'Mode lecture':'Mode arrêt';
-    $('.states_status').html(status_message);
-
-    $('.tool-frontend-access').attr('data-port',1*engine_states.frontend_port);
+    // puis on met à jour les éléments complémentaires (ex url vers le frontend)
     $('.tool-frontend-access').attr('action','//'+document.location.hostname+':'+engine_states.frontend_port);
 })
 
 socket.on('local_states', function(newStates) {
     local_states = newStates;
-    if(local_states.generate_karabd)
-    {
-        $('.tool-kara-index').attr('data-state','running');
-    }
-    else
-    {
-        $('.tool-kara-index').attr('data-state','stop');
-    }
+    for(var i in local_states)
+        $('body').attr('states-local-'+i,local_states[i]);
+
+    refreshShowOnState();
 })
 
 socket.on('generate_karabd', function(param) {
@@ -46,28 +41,38 @@ socket.on('message', function(message) {
     alert('Le serveur a un message pour vous : ' + message);
 })
 
-$('#terminate').click(function () {
+function engineTerminate(){
     socket.emit('action', 'terminate');
     window.close();
     setTimeout(function(){
         $('#firefox_alert').show();
     },1000);
-})
-
-$('#togglePrivate').click(function () {
+}
+function togglePrivate(){
     socket.emit('action', 'togglePrivate');
-})
-
-$('#engine_play').click(function () {
+}
+function enginePlay(){
     socket.emit('action', 'play');
-})
-$('#engine_stop').click(function () {
+}
+function engineStop(){
     socket.emit('action', 'stop');
-})
-$('#engine_stop_now').click(function () {
+}
+function engineStopNow(){
     socket.emit('action', 'stop.now');
-})
-
-$('.tool-kara-index .run').click(function () {
+}
+function generateKaraDB(){
     socket.emit('action', 'generate_karabd');
-})
+}
+
+function refreshShowOnState()
+{
+    $('[show-on-state]').each(function(){
+        var cond = $(this).attr('show-on-state').split(':');
+        if($('body').attr('states-'+cond[0])==cond[1])
+            $(this).show();
+        else
+            $(this).hide();
+
+    });
+}
+refreshShowOnState();

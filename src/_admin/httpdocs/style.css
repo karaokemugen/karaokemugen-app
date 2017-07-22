@@ -32,6 +32,8 @@ h1 {
 	padding-top: 4em;
 }
 
+.show-on-state { display: none; }
+
 .tool-kara-index[data-state="stop"] .indexing { display: none; }
 .tool-kara-index[data-state="running"] .run { display: none; }
 

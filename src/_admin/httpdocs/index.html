@@ -13,18 +13,26 @@
                 <p>Le launcher Toyunda est à présent coupé et vous pouvez fermer cette fenêtre</p>
             </blockquote>
             <h1>Toyunda Launcher</h1>
-            <p><button id="terminate"><i class="fa fa-power-off"></i> Quitter l'application</button></p>
-            <p><span class="states_private"></span> <button id="togglePrivate">Switch</button></p>
+            <p><button onClick="engineTerminate()"><i class="fa fa-power-off"></i> Quitter l'application</button></p>
             <p>
-                Status du moteur de karaoke : <span class="states_status"></span>
-                <button id="engine_play">Play</button>
-                <button id="engine_stop">Stop (After)</button>
-                <button id="engine_stop_now">Stop (Now)</button>
+                <span show-on-state="engine-private:false">Mode publique</span>
+                <span show-on-state="engine-private:true">Mode Privé</span>
+                <br>
+                <button onClick="togglePrivate()">Switch</button>
+            </p>
+            <p>
+                Status du moteur de karaoke :
+                <span show-on-state="engine-status:play">Mode lecture</span>
+                <span show-on-state="engine-status:stop">Mode arrêt</span>
+                <br>
+                <button onClick="enginePlay()">Play</button>
+                <button onClick="engineStop()">Stop (After)</button>
+                <button onClick="engineStopNow()">Stop (Now)</button>
             </p>
 
             <div class="tool-kara-index" data-state="stop">
-                <button class="run">Regenerate DB</button>
-                <span class="indexing">En cours ...</span>
+                <button onClick="generateKaraDB()" show-on-state="local-generate_karabd:false">Regenerate DB</button>
+                <span show-on-state="local-generate_karabd:true">En cours ...</span>
                 <pre class="log"></pre>
             </div>
 

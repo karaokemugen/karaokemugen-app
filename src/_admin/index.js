@@ -46,6 +46,7 @@ module.exports = {
 			module.exports._io.sockets.on('connection', function (socket) {
 				logger.info(__('CLIENT_CONNECTED',socket.id));
 				socket.emit('engine_states', module.exports._engine_states);
+				socket.emit('local_states', module.exports._local_states);
 				// Création des évènements d'entrée (actions de l'utilisateur)
 				socket.on('message', function (message) {
 					switch (message) {
