@@ -13,14 +13,6 @@ html,body {
 body {
 }
 
-#firefox_alert {
-	margin: 0 0 1em;
-	display: none;
-	background: #dd5044;
-	color: #fff;
-	padding: 1em;
-}
-
 h1 {
 	margin-top: 0;
 }

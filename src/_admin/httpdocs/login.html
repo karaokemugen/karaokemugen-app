@@ -5,9 +5,13 @@
         <title>Toyunda Launcher</title>
         <link rel="stylesheet" type="text/css" href="/style.css">
     </head>
-    <body data-page-group="loader">
+    <body data-page-group="login">
         <div class="wrapper">
-            <h1>Loading</h1>
+            <h1>Identification requise</h1>
+            <form action="#" method="post" onsubmit="event.preventDefault();login($('input[name=password]').val());">
+                <input type="text" name="password" value="" />
+                <button type="submit">Valider</button>
+            </form>
         </div>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/jquery.js"></script>

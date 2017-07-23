@@ -185,7 +185,7 @@ module.exports = {
 		module.exports._player.loadFile(module.exports.background);
 	},
 	pause: function(){
-		console.log(module.exports._player);
+		//console.log(module.exports._player);
 		module.exports._player.pause();
 	},
 	resume: function(){

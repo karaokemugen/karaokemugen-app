@@ -11,6 +11,9 @@ AllowNicknameChange = 1
 ;SongsPerPerson : Nombre de chansons passable par IP/Nickname
 SongsPerPerson = 10000
 
+[Admin]
+Password = "gurdil"
+
 [Path]
 Karas = "app/data/karas"
 Videos = "app/data/videos"

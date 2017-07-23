@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Toyunda Launcher</title>
+        <link rel="stylesheet" type="text/css" href="/style.css">
+    </head>
+    <body data-page-group="dashboard">
+        <div class="wrapper">
+            <h1>Toyunda Launcher</h1>
+            <p><button onClick="engineTerminate()"><i class="fa fa-power-off"></i> Quitter l'application</button></p>
+            <p>
+                <span show-on-state="engine-private:false">Mode publique</span>
+                <span show-on-state="engine-private:true">Mode Privé</span>
+                <br>
+                <button onClick="togglePrivate()">Switch</button>
+            </p>
+            <p>
+                Status du moteur de karaoke :
+                <span show-on-state="engine-status:play">Mode lecture</span>
+                <span show-on-state="engine-status:stop">Mode arrêt</span>
+                <br>
+                <button onClick="enginePlay()">Play</button>
+                <button onClick="enginePause()">Pause</button>
+                <button onClick="engineStop()">Stop (After)</button>
+                <button onClick="engineStopNow()">Stop (Now)</button>
+                <button onClick="toggleFullscreen()">Windowed/Fullscreen</button>
+                <button onClick="toggleOnTop()">Player stay on top :
+                    <span show-on-state="engine-ontop:true">true</span>
+                    <span show-on-state="engine-ontop:false">false</span>
+                </button>
+            </p>
+
+            <ul show-on-state="engine-playlist">
+                <li>Nombre de morceau dans la playlist = <span class="engine-playlist-count"></span></li>
+                <li>Position dans la playlist = <span class="engine-playlist-index"></span></li>
+                <li><button type="button" onclick="enginePrev();">Prev</button> <button type="button" onclick="engineNext();">Next</button></li>
+            </ul>
+
+            <div class="tool-kara-index" data-state="stop">
+                <button onClick="generateKaraDB()" show-on-state="local-generate_karabd:false">Regenerate DB</button>
+                <span show-on-state="local-generate_karabd:true">En cours ...</span>
+                <pre class="log"></pre>
+            </div>
+
+            <form class="tool-frontend-access" data-port="0" action="#" target="_blank">
+                <button type="submit">Accéder au front end</button>
+            </form>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/jquery.js"></script>
+        <script src="/script.js"></script>
+    </body>
+</html>

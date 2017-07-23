@@ -216,5 +216,6 @@
 	"GDB_FINISHED_DATABASE_GENERATION": "Génération de la BDD terminée.",
 	"GDB_INTEGRITY_CHECK_START": "Démarrage des tests d'intégrité.",
 	"GDB_INTEGRITY_CHECK_COMPLETE": "Tests d'intégrité terminés.",
-	"VIDEO_PLAYING": "Vidéo : %s"
+	"VIDEO_PLAYING": "Vidéo : %s",
+	"CLIENT_DISCONNECTED": "CLIENT_DISCONNECTED"
 }

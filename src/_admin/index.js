@@ -8,10 +8,39 @@ module.exports = {
 	LISTEN:null,
 	DB_INTERFACE:null,
 	_server:null,
+	_sessions:{},
 	_io:null,
+	_sessions:{},
+	_clients: {},
 	_engine_states:{},
 	_local_states:{
 		generate_karabd:false,
+	},
+
+	get_client_session: function(socket_id,code,default_value)
+	{
+		//console.log(socket_id);
+		//console.log(module.exports._clients);
+		//console.log(module.exports._clients[socket_id]);
+		//console.log(module.exports._sessions);
+		//console.log(module.exports._sessions[module.exports._clients[socket_id]]);
+
+		var session =  module.exports._sessions[module.exports._clients[socket_id]] ? module.exports._sessions[module.exports._clients[socket_id]] : {};
+		//console.log(session[code]);
+
+		if(typeof session[code] === 'undefined')
+		{
+			//console.log('return default value');
+			return default_value;
+		}
+		//console.log('return',session[code]);
+		return session[code];
+	},
+	set_client_session: function(socket_id,code,value)
+	{
+		if(!module.exports._sessions[module.exports._clients[socket_id]])
+			module.exports._sessions[module.exports._clients[socket_id]] = {};
+		module.exports._sessions[module.exports._clients[socket_id]][code] = value;
 	},
 
 	init : function(){
@@ -43,16 +72,52 @@ module.exports = {
 
 			// Chargement de socket.io sur l'appli web du launcher
 			module.exports._io = require('socket.io').listen(module.exports._server);
+
 			module.exports._io.sockets.on('connection', function (socket) {
-				logger.info(__('CLIENT_CONNECTED',socket.id));
-				socket.emit('engine_states', module.exports._engine_states);
-				socket.emit('local_states', module.exports._local_states);
+
+				socket.on('clientRegister', function (session_id) {
+					if (session_id !== null) {
+						//logger.info(__('CLIENT_CONNECTED',socket.id+'::'+session_id));
+						module.exports._clients[socket.id] = session_id;
+					}
+					if(!module.exports.get_client_session(socket.id,'logged'))
+						socket.emit('login','required');
+					else
+					{
+						// loggé => on reçoit les données d'états
+						socket.emit('login','ready');
+						socket.emit('engine_states', module.exports._engine_states);
+						socket.emit('local_states', module.exports._local_states);
+					}
+				});
+				socket.on('disconnect', function () {
+					setTimeout(function () {
+						if(module.exports._clients[socket.id])
+						{
+							//logger.info(__('CLIENT_DISCONNECTED',socket.id));
+							delete module.exports._clients[socket.id]
+						}
+					}, 10000);
+				});
+
 				// Création des évènements d'entrée (actions de l'utilisateur)
 				socket.on('message', function (message) {
 					switch (message) {
 						default:
 							logger.debug(__('CLIENT_SAYS',message));
 							break;
+					}
+				});
+				socket.on('login', function (password) {
+					if(password==module.exports.SETTINGS.Admin.Password)
+					{
+						module.exports.set_client_session(socket.id,'logged',true);
+						socket.emit('login','success');
+					}
+					else
+					{
+						module.exports.set_client_session(socket.id,'logged',false);
+						socket.emit('login','fail');
 					}
 				});
 				socket.on('action', function (action) {

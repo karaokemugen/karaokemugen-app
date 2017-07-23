@@ -1,8 +1,35 @@
+if(!localStorage.getItem('toyunda_admin_session_id'))
+    localStorage.setItem('toyunda_admin_session_id', Math.random().toString(36).substring(3,16) + +new Date);
+
 // websocket events
 var socket = io.connect('http://localhost:1338');
+// immediate send of client UUID
+socket.emit('clientRegister', localStorage.getItem('toyunda_admin_session_id'));
 
 var engine_states = {};
 var local_states = {};
+
+socket.on('login', function(code) {
+    console.log(code);
+    switch (code) {
+        case 'required':
+            if($('body').data('page-group')!=='login')
+                document.location.href="/login.html";
+            break;
+        case 'ready':
+            if($('body').data('page-group')=='loader')
+                document.location.href="/dashboard.html";
+            break;
+        case 'success':
+            document.location.href="/dashboard.html";
+            break;
+        case 'fail':
+            document.location.href="/login-fail.html";
+            break;
+        default:
+            break;
+    }
+})
 
 // alert message
 socket.on('engine_states', function(newStates) {
@@ -47,12 +74,16 @@ socket.on('message', function(message) {
     alert('Le serveur a un message pour vous : ' + message);
 })
 
+function login(password)
+{
+    socket.emit('login', password);
+}
+
 function engineTerminate(){
+     // close engine after a delay
     socket.emit('action', 'terminate');
-    window.close();
-    setTimeout(function(){
-        $('#firefox_alert').show();
-    },1000);
+    // and immediate call terminate page
+    document.location.href="/terminate.html"
 }
 function togglePrivate(){
     socket.emit('action', 'togglePrivate');
