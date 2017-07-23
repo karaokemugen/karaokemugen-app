@@ -66,7 +66,7 @@ if(SYSPATH)
 		var configCustom = ini.parse(fs.readFileSync(path.join(SYSPATH,'config.ini'), 'utf-8'))
 		extend(true,SETTINGS,configCustom);
 	}
-	SETTINGS.os = 'Windows';
+	SETTINGS.os = process.platform;
 	
 	logger.info(__('CONFIG_LOADING'));
 	logger.debug(__('CONFIG_LOADED')+JSON.stringify(SETTINGS,null,'\n'));
