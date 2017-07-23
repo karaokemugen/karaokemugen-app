@@ -1949,26 +1949,32 @@ module.exports = {
 		});
 	},
 
-	build_dummy_current_playlist:function(){
+	build_dummy_current_iterate_index:1,
+	build_dummy_current_iterate:function(playlist_id,resolve,reject)
+	{
+		console.log('Adding Kara '+module.exports.build_dummy_current_iterate_index+' into dummy playlist');
+		module.exports.addKaraToPlaylist(
+			module.exports.build_dummy_current_iterate_index,
+			'Dummy user '+module.exports.build_dummy_current_iterate_index,
+			playlist_id
+		)
+			.then(function(){
+				module.exports.build_dummy_current_iterate_index++;
+				if(module.exports.build_dummy_current_iterate_index<=10)
+					module.exports.build_dummy_current_iterate(playlist_id,resolve,reject);
+				else
+					resolve();
+			})
+			.catch(function(message){
+				console.log(message)
+				reject();
+			})
+	},
+
+	build_dummy_current_playlist:function(playlist_id){
 		console.log('build_dummy_current_playlist');
 		return new Promise(function(resolve,reject){
-			module.exports.isACurrentPlaylist()
-				.then(function(playlist_id){
-					var promises = [];
-					for(var i=1; i<=10; i++)
-						promises.push(module.exports.addKaraToPlaylist(i,'Dummy user '+i,playlist_id).catch(function(message){ console.log(message)}))
-
-					Promise.all(promises).then(resolve).catch(reject);
-				})
-				.catch(function(){
-					module.exports.createPlaylist("Toyunda Galor",true,true,false).then(function(playlist_id){
-						var promises = [];
-						for(var i=1; i<=10; i++)
-							promises.push(module.exports.addKaraToPlaylist(i,'Dummy user '+i,playlist_id).catch(function(message){ console.log(message)}))
-
-						Promise.all(promises).then(resolve).catch(reject);
-					});
-				});
+			module.exports.build_dummy_current_iterate(playlist_id,resolve,reject);
 		});
 	},
 

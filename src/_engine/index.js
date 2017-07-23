@@ -58,9 +58,6 @@ module.exports = {
 			module.exports._start_admin();
 			module.exports._start_frontend();
 			module.exports._broadcastStates();
-
-			// Build a dummy playlist for testing purpose
-			module.exports._services.playlist_controller.build_dummy_current_playlist();
 		}).catch(function(response){
 			console.log(response);
 		});
@@ -415,6 +412,8 @@ module.exports = {
 				module.exports._services.playlist_controller.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0)
 					.then(function (new_playlist){
 						logger.info(__('CURRENT_PLAYLIST_CREATED',new_playlist));
+						// Build a dummy playlist for testing purpose
+						module.exports._services.playlist_controller.build_dummy_current_playlist(new_playlist);
 				})
 					.catch(function(err){
 						logger.error(__('CURRENT_PLAYLIST_CREATE_ERROR',err));
