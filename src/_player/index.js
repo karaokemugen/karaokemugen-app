@@ -4,6 +4,7 @@ const logger = require('../_common/utils/logger.js');
 const dl = require('request-progress');
 var ProgressBar = require('progress');
 var http = require('http');
+var extract = require('extract-zip')
 
 module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
@@ -17,20 +18,41 @@ module.exports = {
 	nohud: 0,
 	nobar: 0,
 	BINPATH:null,
+	SETTINGS:null,
 	init:function(){
 
 		var pIsmpvAvailable = new Promise((resolve,reject) =>
 		{
-			if(!fs.existsSync(module.exports.BINPATH+'/mpv.exe')){
+			
+			if (module.exports.SETTINGS.os == 'win32') 
+			{
+				mpvBinary = module.exports.BINPATH+'/mpv.exe';
+				mpvHTTP = '/mpv.exe';
+			}
+			if (module.exports.SETTINGS.os == 'darwin') 
+			{
+				mpvBinary = module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv';
+				mpvHTTP = '/mpv-osx.zip';
+			}
+			console.log(mpvHTTP);
+			if (module.exports.SETTINGS.os == 'linux') mpvBinary = '/usr/bin/mpv';
+			
+			if(!fs.existsSync(mpvBinary)){				
 				logger.warn(__('MPV_NOT_FOUND',module.exports.BINPATH));
-				logger.warn(__('MPV_MANUAL_DL',module.exports.BINPATH));
+				if (process.platform == 'linux') 
+				{
+					logger.warn(__('MPV_LINUX_DL'));
+					process.exit();
+				}
+
+				logger.warn(__('MPV_MANUAL_DL',module.exports.BINPATH));				
 				logger.warn(__('MPV_DL'));
 
-				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp.exe');
+				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp');
 				var req = http.request({
 				host: 'toyundamugen.shelter.moe',
 				port: 80,
-				path: '/mpv.exe'
+				path: '/'+mpvHTTP
 				});
 
 				req.on('response', function(res){
@@ -50,8 +72,9 @@ module.exports = {
 
 					res.on('end', function () {
 						console.log('\n');
-						fs.rename(module.exports.BINPATH+'/mpvtemp.exe',
-								  module.exports.BINPATH+'/mpv.exe',
+						if (module.exports.SETTINGS.os == 'win32') {
+							fs.rename(module.exports.BINPATH+'/mpvtemp',
+								  mpvBinary,
 								  function(err) {
 									  if (err) {
 										  logger.error(__('RENAME_MPV_FAILED',err))
@@ -60,8 +83,21 @@ module.exports = {
 										  logger.info(__('DOWNLOADED_MPV'));
 										  resolve();
 									  }
-									}
-						)
+									
+							})
+						}
+						if (module.exports.SETTINGS.os == 'darwin') {
+							logger.info(__('MPV_EXTRACTING'));
+							extract(module.exports.BINPATH+'/mpvtemp', {dir: module.exports.BINPATH}, function (err) {
+								if (err) {
+									logger.error(__('MPV_EXTRACT_ERROR',err.stringify()));
+									reject();
+								}
+								fs.unlinkSync(module.exports.BINPATH+'/mpvtemp')							
+								logger.info(__('MPV_EXTRACT_COMPLETE'));
+								resolve();
+							});
+						}
 					});
 					res.pipe(mpvFile);
 				});
@@ -97,7 +133,7 @@ module.exports = {
 			module.exports._player = new mpvAPI(
 				{
 					audio_only: false,
-					binary: path.join(module.exports.BINPATH,'mpv.exe'),
+					binary: mpvBinary,
 					socket: '\\\\.\\pipe\\mpvsocket',
 					time_update: 1,
 					verbose: false,
@@ -106,6 +142,7 @@ module.exports = {
 				mpvOptions
 			);
 
+		
 			module.exports._player.on('statuschange',function(status){
 				// si on affiche une image il faut considérer que c'est la pause d'après chanson
 				if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i))

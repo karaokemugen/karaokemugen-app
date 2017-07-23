@@ -45,6 +45,7 @@
     "express": "^4.15.3",
     "express-handlebars": "^3.0.0",
     "extend": "^3.0.1",
+    "extract-zip": "^1.6.5",
     "ffmpeg-downloader": "^1.0.4",
     "fs-extra": "^3.0.1",
     "handlebars": "^4.0.10",
@@ -70,7 +71,6 @@
     "sqlite3": "^3.1.8",
     "string": "^3.3.3",
     "unix-timestamp": "^0.2.0",
-    "unzip": "^0.1.11",
     "uuid": "^3.1.0",
     "winston": "^2.3.1"
   },

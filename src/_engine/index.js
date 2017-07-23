@@ -681,6 +681,7 @@ module.exports = {
 	{
 		module.exports._services.player = require(path.resolve(__dirname,'../_player/index.js'));
 		module.exports._services.player.BINPATH = path.resolve(module.exports.SYSPATH,'app/bin');
+		module.exports._services.player.SETTINGS = module.exports.SETTINGS;
 		module.exports._services.player.onEnd = module.exports.playerEnding;
 		// si le wallpaper de la config existe bien on le configure dans le player
 		if(module.exports.SETTINGS.Player.Wallpaper && fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.Player.Wallpaper)))

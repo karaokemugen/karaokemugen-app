@@ -93,6 +93,7 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 					subFile = 'kara_extract.'+uuid+'.ass';
 
 					if (proc.error) {
+						logger.error(proc.error);
 						reject(__('EXTRACTING_ASS_FAILED'));
 					}					
 				} else {
@@ -263,7 +264,7 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 			var outputFile = outputFolder+'/'+kara_id+'.'+playlist_id+'.ass';
 			fs.writeFile(outputFile, assStringify(script), function(err, rep) {
 								if (err) {
-									reject(__('WRITING_ASS_FAILED',err));
+									reject(__('WRITING_ASS_FAILED',err.stringify()));
 								} else {
 									resolve(outputFile)
 								}
