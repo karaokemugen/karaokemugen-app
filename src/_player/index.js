@@ -7,14 +7,20 @@ var http = require('http');
 var extract = require('extract-zip')
 
 module.exports = {
+	background:path.join(__dirname,'assets/background.jpg'), // default background
 	playing:false,
 	_playing:false, // internal delay flag
 	_player:null,
 	_ref:null,
+	screen: 1,
+	fullscreen: 0,
+	stayontop: 0,
+	nohud: 0,
+	nobar: 0,
 	BINPATH:null,
 	SETTINGS:null,
 	init:function(){
-		
+
 		var pIsmpvAvailable = new Promise((resolve,reject) =>
 		{
 			
@@ -48,10 +54,10 @@ module.exports = {
 				port: 80,
 				path: '/'+mpvHTTP
 				});
-				
+
 				req.on('response', function(res){
 					var len = parseInt(res.headers['content-length'], 10);
-					
+
 					console.log();
 					var bar = new ProgressBar(__('DOWNLOADING')+' [:bar] :percent :etas', {
 						complete: '=',
@@ -59,11 +65,11 @@ module.exports = {
 						width: 40,
 						total: len
 					});
-					
+
 					res.on('data', function (chunk) {
 						bar.tick(chunk.length);
 					});
-					
+
 					res.on('end', function () {
 						console.log('\n');
 						if (module.exports.SETTINGS.os == 'win32') {
@@ -94,10 +100,10 @@ module.exports = {
 						}
 					});
 					res.pipe(mpvFile);
-				});			
+				});
 				req.on('error',function(err){
 					reject(err);
-				})	
+				})
 				req.end();
 			} else {
 				resolve();
@@ -106,28 +112,40 @@ module.exports = {
 
 		Promise.all([pIsmpvAvailable]).then(function()
 		{
-			var mpvAPI = require('node-mpv');
-			module.exports._player = new mpvAPI({
-				audio_only: false,
-				binary: mpvBinary,
-				socket: '\\\\.\\pipe\\mpvsocket',
-				time_update: 1,
-				verbose: false,
-				debug: false,
-			},
-			[
-				//"--fullscreen",
-				"--no-border",
+			var mpvOptions = [
 				"--keep-open=yes",
 				"--idle=yes",
 				"--fps=60",
-				"--screen=1",
+				'--no-border',
+				'--osd-level=0',
 				"--sub-codepage=UTF-8-BROKEN",
-			]);
+			];
+			if(module.exports.screen!==null) mpvOptions.push('--screen='+module.exports.screen)
+			if(module.exports.screen!==null) mpvOptions.push('--fs-screen='+module.exports.screen)
+			if(module.exports.fullscreen==1) mpvOptions.push('--fullscreen')
+			if(module.exports.stayontop==1) mpvOptions.push('--ontop')
+			if(module.exports.nohud==1) mpvOptions.push('--no-osc')
+			if(module.exports.nobar==1) mpvOptions.push('--no-osd-bar')
+
+			//console.log(mpvOptions);
+
+			var mpvAPI = require('node-mpv');
+			module.exports._player = new mpvAPI(
+				{
+					audio_only: false,
+					binary: mpvBinary,
+					socket: '\\\\.\\pipe\\mpvsocket',
+					time_update: 1,
+					verbose: false,
+					debug: false,
+				},
+				mpvOptions
+			);
 
 		
 			module.exports._player.on('statuschange',function(status){
-				if(module.exports._playing && status && status.filename && status.filename.match(/__blank__/))
+				// si on affiche une image il faut considérer que c'est la pause d'après chanson
+				if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i))
 				{
 					// immediate switch to Playing = False to avoid multiple trigger
 					module.exports.playing = false;
@@ -145,7 +163,7 @@ module.exports = {
   				if (err) throw err;
   				logger.debug(__('BINDIR_CLEANED_UP'));
 				process.exit();
-			});			
+			});
 		});
 	},
 	play: function(video,subtitle,reference){
@@ -174,7 +192,7 @@ module.exports = {
 				{
 					logger.info(__('NO_SUBTITLE'));
 				}
-				module.exports._player.loadFile(path.join(__dirname,'assets/__blank__.png'),'append');
+				module.exports._player.loadFile(module.exports.background,'append');
 			},500);
 		}
 		else {
@@ -182,13 +200,26 @@ module.exports = {
 			logger.error(__('VIDEO_NOT_FOUND',video))
 		}
 	},
+	setFullscreen:function(fsState){
+		module.exports.fullscreen==fsState
+
+		if(fsState)
+			module.exports._player.fullscreen();
+		else
+			module.exports._player.leaveFullscreen();
+	},
+	toggleOnTop:function(){
+		module.exports.stayontop = !module.exports.stayontop;
+		module.exports._player.command("keypress",["T"]);
+		return module.exports.stayontop;
+	},
 	stop:function()
 	{
 		// on stop do not trigger onEnd event
 		// => setting internal playing = false prevent this behavior
 		module.exports.playing = false;
 		module.exports._playing = false;
-		module.exports._player.loadFile(path.join(__dirname,'assets/__blank__.png'));
+		module.exports._player.loadFile(module.exports.background);
 	},
 	pause: function(){
 		console.log(module.exports._player);
