@@ -221,5 +221,9 @@
 	"GDB_INTEGRITY_CHECK_START": "Démarrage des tests d'intégrité.",
 	"GDB_INTEGRITY_CHECK_COMPLETE": "Tests d'intégrité terminés.",
 	"VIDEO_PLAYING": "Vidéo : %s",
-	"CLIENT_DISCONNECTED": "CLIENT_DISCONNECTED"
+	"CLIENT_DISCONNECTED": "Client déconnecté",
+	"API_SERVER_READY": "API PRÊTE",
+	"API_SERVER_LISTEN": "Serveur d'API écoute sur le port %s",
+	"API_LOG": "Appel API : %s"
+
 }

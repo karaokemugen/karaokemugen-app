@@ -24,6 +24,7 @@ module.exports = {
 		ontop:true,
 		admin_port:1338,
 		frontend_port:1337,
+		apiserver_port:1339,
 		playlist:null,
 	},
 	_services:{
@@ -388,6 +389,25 @@ module.exports = {
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.frontend.init();
+	},
+	/**
+	* @function
+	* Starts the API webservice on the selected port
+	* Broadcasts syspath and settings, as well as db interface to that module.
+	*/
+	_start_frontend:function(){
+		module.exports._services.apiserver = require(path.resolve(__dirname,'../_apiserver/index.js'));
+		module.exports._services.apiserver.LISTEN = module.exports._states.apiserver_port;
+		module.exports._services.apiserver.SYSPATH = module.exports.SYSPATH;
+		module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
+		module.exports._services.apiserver.DB_INTERFACE = module.exports.DB_INTERFACE;
+		// --------------------------------------------------------
+		// diffusion des méthodes interne vers les events frontend
+		// --------------------------------------------------------
+		module.exports._services.apiserver.onTest = module.exports.test;
+		// --------------------------------------------------------
+		// on démarre ensuite le service
+		module.exports._services.apiserver.init();
 	},
 	/**
 	* @function
