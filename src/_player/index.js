@@ -34,7 +34,7 @@ module.exports = {
 				mpvBinary = module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv';
 				mpvHTTP = '/mpv-osx.zip';
 			}
-			console.log(mpvHTTP);
+			
 			if (module.exports.SETTINGS.os == 'linux') mpvBinary = '/usr/bin/mpv';
 			
 			if(!fs.existsSync(mpvBinary)){				
