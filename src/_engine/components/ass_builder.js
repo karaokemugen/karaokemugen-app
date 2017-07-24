@@ -158,14 +158,33 @@ module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, 
 
 			var styleFontSize = undefined;
 
-			// Using .some to stop after the first occurence of style is encountered.
+			// Using .some to stop after the first occurence of style Default is encountered.
+			
+			// First we search for a default style. 
+			// In most cases, the style of an ASS is called Default.
+			
 			script[StylesSection].body.some(function(param){    
-				if (param.key == 'Style') 
+				if (param.key == 'Style' && param.value.Name == 'Default') 
 				{					
 					styleFontSize = param.value.Fontsize;
 					return true;
 				}
-			})
+			});
+
+			// If we don't find it, styleFontSize will still be undefined, so we'll
+			// find the first occurence of a Style and decide the size based on it
+			// It's a last resort behavior.
+			if (styleFontSize == undefined) 
+			{
+				script[StylesSection].body.some(function(param){    
+					if (param.key == 'Style') 
+					{					
+						styleFontSize = param.value.Fontsize;
+						return true;
+					}
+				});	
+			}
+			
 
 			// Reducing sizes of font style by 25% and 30% respectively.
 			var CreditsSize = styleFontSize - Math.floor((25 / 100) * styleFontSize);
