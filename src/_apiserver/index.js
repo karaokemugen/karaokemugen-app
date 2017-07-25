@@ -46,7 +46,7 @@ module.exports = {
         
         router.use(function(req, res, next) {
             // do logging
-            logger.info('API_LOG',req)
+            //logger.info('API_LOG',req)
             next(); // make sure we go to the next routes and don't stop here
         });
 
@@ -82,6 +82,12 @@ module.exports = {
         // 403 : FORBIDDEN
 
         // In case of error, return the correct code an object 'error'
+
+        router.route('/karas')
+        .get(function(req,res){
+            var karas = module.exports.onKaras();
+            res.send(JSON.stringify(karas));
+        })
 
         router.route('/playlists')
         .post(function(req,res){
@@ -120,4 +126,7 @@ module.exports = {
         // événement de test
         logger.log('warning','onTest not set');
     },
+    onKaras:function(){
+    
+    }
 }

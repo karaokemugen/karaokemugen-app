@@ -58,6 +58,7 @@ module.exports = {
 			module.exports._start_playlist_controller();
 			module.exports._start_admin();
 			module.exports._start_frontend();
+			module.exports._start_apiserver();
 			module.exports._broadcastStates();
 		}).catch(function(response){
 			console.log(response);
@@ -395,7 +396,7 @@ module.exports = {
 	* Starts the API webservice on the selected port
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
-	_start_frontend:function(){
+	_start_apiserver:function(){
 		module.exports._services.apiserver = require(path.resolve(__dirname,'../_apiserver/index.js'));
 		module.exports._services.apiserver.LISTEN = module.exports._states.apiserver_port;
 		module.exports._services.apiserver.SYSPATH = module.exports.SYSPATH;
@@ -405,6 +406,22 @@ module.exports = {
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
 		module.exports._services.apiserver.onTest = module.exports.test;
+		module.exports._services.apiserver.onKaras = function()
+		{
+			module.exports._services.playlist_controller.getAllKaras()
+			.then(function(playlist){
+				module.exports._services.playlist_controller.filterPlaylist(playlist,'Bleach ED Pace')
+				.then(function(filtered_pl){
+					return filtered_pl;					
+				})
+				.catch(function(err) {
+					return err;
+				})
+			})
+			.catch(function(err){
+				return err;
+			});
+		}
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();
