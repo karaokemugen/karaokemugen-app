@@ -598,11 +598,12 @@ module.exports = {
 				reject(__('DBI_NOT_READY'));
 			}
 			var sqlGetAllKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_karas.sql'),'utf-8');
-			module.exports._db_handler.all(sqlGetAllKaras,
+			module.exports._user_db_handler.all(sqlGetAllKaras,
 				function (err, playlist)
 				{
 					if (err)
 					{
+						console.log(err);
 						reject(__('DB_GET_ALL_KARAS_ERROR',JSON.stringify(err)));									
 					} else {
 						resolve(playlist);

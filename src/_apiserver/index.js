@@ -36,14 +36,13 @@ module.exports = {
 
         var app = express();
         app.use(bodyParser.urlencoded({ extended: true }));
-        app.use(bodyParser.json());   
-        var router = express.Router(); 
+        app.use(bodyParser.json());
+        var router = express.Router();
 
         app.listen(module.exports.LISTEN, function () {
             logger.info(__('API_SERVER_LISTEN',module.exports.LISTEN));
         });
 
-        
         router.use(function(req, res, next) {
             // do logging
             //logger.info('API_LOG',req)
@@ -85,8 +84,10 @@ module.exports = {
 
         router.route('/karas')
         .get(function(req,res){
-            var karas = module.exports.onKaras();
-            res.send(JSON.stringify(karas));
+            module.exports.onKaras().then(function(karas){
+                console.log(karas);
+                res.send(JSON.stringify(karas));
+            });
         })
 
         router.route('/playlists')
