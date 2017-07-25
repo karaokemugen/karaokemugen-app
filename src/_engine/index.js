@@ -406,21 +406,27 @@ module.exports = {
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
 		module.exports._services.apiserver.onTest = module.exports.test;
-		module.exports._services.apiserver.onKaras = function()
-		{
+		module.exports._services.apiserver.onKaras = function(){
+			console.log('onKaras called');
 			module.exports._services.playlist_controller.getAllKaras()
-			.then(function(playlist){
-				module.exports._services.playlist_controller.filterPlaylist(playlist,'Bleach ED Pace')
-				.then(function(filtered_pl){
-					return filtered_pl;					
+				.then(function(playlist){
+					console.log('karas playlist found');
+					module.exports._services.playlist_controller.filterPlaylist(playlist,'Bleach ED Pace')
+						.then(function(filtered_pl){
+							console.log('karas playlist filtered');
+							return filtered_pl;
+						})
+						.catch(function(err) {
+							console.log('err1');
+							console.log(err);
+							return err;
+						})
 				})
-				.catch(function(err) {
+				.catch(function(err){
+					console.log('err2');
+					console.log(err);
 					return err;
-				})
-			})
-			.catch(function(err){
-				return err;
-			});
+				});
 		}
 		// --------------------------------------------------------
 		// on démarre ensuite le service
