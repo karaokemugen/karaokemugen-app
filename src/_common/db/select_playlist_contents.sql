@@ -24,8 +24,18 @@ SELECT ak.PK_id_kara AS id_kara,
       pc.pk_idplcontent AS playlistcontent_id,
       pc.flag_playing AS flag_playing,
       ak.subfile AS subfile,
-      ak.videofile AS videofile
- FROM karasdb.all_karas AS ak, playlist_content AS pc
+      ak.videofile AS videofile,
+      (CASE WHEN wl.fk_id_kara = ak.PK_id_kara
+	     	THEN 1
+        ELSE 0
+      END) AS flag_whitelisted,
+      (CASE WHEN bl.fk_id_kara = ak.PK_id_kara
+	      THEN 1
+        ELSE 0
+      END) AS flag_blacklisted
+ FROM karasdb.all_karas AS ak 
+INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.PK_id_kara
+LEFT OUTER JOIN blacklist AS bl ON ak.PK_id_kara = bl.fk_id_kara
+LEFT OUTER JOIN whitelist AS wl ON ak.PK_id_kara = wl.fk_id_kara
 WHERE pc.fk_id_playlist = $playlist_id
-  AND pc.fk_id_kara = ak.PK_id_kara
 ORDER BY pc.pos,pc.date_add DESC;
