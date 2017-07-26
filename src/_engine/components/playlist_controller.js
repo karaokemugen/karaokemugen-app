@@ -404,9 +404,9 @@ module.exports = {
 		//TODO : Tester si la playlist existe
 		//TODO : Transformer en promesse
 		module.exports.unsetCurrentAllPlaylists(function(){
-			module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id,function(res){
+			module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id,function(res){				
 				logger.debug('Setting playlist '+playlist_id+' current flag to ON');							
-				callback();
+				module.exports.updatePlaylistLastEditTime(playlist_id).then(function(){callback()});
 			});		
 		});	
 	},
@@ -420,7 +420,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			module.exports.DB_INTERFACE.setVisiblePlaylist(playlist_id,function(res){
 				logger.info('Setting playlist '+playlist_id+' visible flag to ON');							
-				resolve();
+				module.exports.updatePlaylistLastEditTime(playlist_id).then(function(){resolve()});
 			});				
 		});
 	},
@@ -430,7 +430,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			module.exports.DB_INTERFACE.unsetVisiblePlaylist(playlist_id,function(res){
 				logger.debug('Setting playlist '+playlist_id+' visible flag to OFF');							
-				callback();
+				module.exports.updatePlaylistLastEditTime(playlist_id).then(function(){callback()});
 			});				
 		});
 	},
@@ -442,7 +442,7 @@ module.exports = {
 		.then(function(){
 			module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id, function(res){
 				logger.debug('Setting playlist '+playlist_id+' public flag to ON');							
-				callback();
+				module.exports.updatePlaylistLastEditTime(playlist_id).then(function(){callback()});
 			});		
 		});		
 	},
@@ -509,6 +509,7 @@ module.exports = {
 		//TODO : Tester si la playlist existe
 		//TODO : Transformer en promesse.
 		module.exports.DB_INTERFACE.emptyPlaylist(playlist_id);				
+		module.exports.updatePlaylistLastEditTime(playlist_id);
 	},
 	/**
 	* @function {editPlaylist}
@@ -778,6 +779,45 @@ module.exports = {
 					reject(err);
 				})			
 			})
+		})
+	},
+	/**
+	* @function {Update playlist's last edit time}
+	* @param  {number} playlist_id {ID of playlist to update}
+	* @return {boolean} {Promise}
+	*/
+	updatePlaylistLastEditTime:function(playlist_id)
+	{
+		return new Promise(function(resolve,reject)
+		{
+			var pIsPlaylist = new Promise((resolve,reject) => 
+			{
+				module.exports.isPlaylist(playlist_id)
+					.then(function()
+					{						
+						resolve(true);
+					})
+					.catch(function()
+					{						
+						reject(__('PLAYLIST_UNKNOWN',playlist_id));
+					})		
+			});
+			Promise.all([pIsPlaylist])
+			.then(function()
+			{
+				var lastedit_date = timestamp.now();
+				// Update PL's last edit time
+				module.exports.DB_INTERFACE.updatePlaylistLastEditTime(playlist_id,lastedit_data)
+				.then(function(){
+					resolve();
+				})
+				.catch(function(err){
+					reject(err);
+				})			
+			})
+			.catch(function(err){
+				reject(err);
+			})			
 		})
 	},
 	/**
@@ -1092,6 +1132,16 @@ module.exports = {
 											);
 											resolve();
 										})
+										var pUpdateLastEditTime = new Promise((resolve,reject) =>
+										{
+											module.exports.updatePlaylistLastEditTime(playlist_id)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(err){
+												reject(err);
+											})
+										});
 										var pUpdatedDuration = new Promise((resolve,reject) =>
 										{
 											module.exports.updatePlaylistDuration(playlist_id)
@@ -1122,7 +1172,7 @@ module.exports = {
 												reject(err);
 											});											
 										});				
-										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+										Promise.all([pRenameASS,pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 										.then(function()
 										{												
 											resolve();
@@ -1209,7 +1259,7 @@ module.exports = {
 							})
 							.catch(function(err){
 								reject(err);
-							})
+							});
 						});										
 						var pUpdatedKarasCount = new Promise((resolve,reject) =>
 						{
@@ -1221,6 +1271,16 @@ module.exports = {
 								reject(err);
 							});
 						});				
+						var pUpdateLastEditTime = new Promise((resolve,reject) =>
+						{
+							module.exports.updatePlaylistLastEditTime(playlist_id)
+							.then(function(){
+								resolve();
+							})
+							.catch(function(err){
+								reject(err);
+							});
+						});
 						var pReorderPlaylist = new Promise((resolve,reject) =>
 						{							
 							module.exports.reorderPlaylist(playlist_id)
@@ -1231,7 +1291,7 @@ module.exports = {
 								reject(err);
 							})
 						});				
-						Promise.all([pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+						Promise.all([pUpdateLastEditTime,ReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 						.then(function()
 						{												
 							resolve();
@@ -1429,13 +1489,35 @@ module.exports = {
 						playlist[arraypos].pos = newpos;
 						arraypos++;
 					})
-					module.exports.DB_INTERFACE.reorderPlaylist(playlist_id,playlist)
-					.then(function() {
-						resolve(playlist);
+					var pUpdateLastEditTime = new Promise((resolve,reject) =>
+					{
+						module.exports.updatePlaylistLastEditTime(playlist_id)
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){
+							reject(err);
+						})
+					});
+					var pReorderPlayList = new Promise((resolve,reject) =>
+					{
+						module.exports.DB_INTERFACE.reorderPlaylist(playlist_id,playlist)
+						.then(function() {
+							resolve();
+						})
+						.catch(function(err) {
+							reject(err);
+						})
 					})
-					.catch(function(err) {
+					Promise.all([pReorderPlaylist,pUpdateLastEditTime])
+					.then(function()
+					{
+						resolve();
+					})
+					.catch(function(err)
+					{
 						reject(err);
-					})				
+					});									
 				})
 				.catch(function(err){
 					reject(err);
@@ -1603,8 +1685,18 @@ module.exports = {
 											.catch(function(err){
 												reject(err);
 											})
+										});
+										var pUpdatedPlaylistLastEditTime = new Promise((resolve,reject) =>
+										{
+											module.exports.updatePlaylistLastEditTime(publicPlaylistID)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(err){
+												reject(err);
+											})
 										});				
-										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+										Promise.all([pRenameASS,pUpdatedLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 										.then(function()
 										{												
 											resolve();
@@ -1789,6 +1881,16 @@ module.exports = {
 											.catch(function(err){
 												reject(err);
 											})
+										});
+										var pUpdatedPlaylistLastEditTime = new Promise((resolve,reject) =>
+										{
+											module.exports.updatePlaylistLastEditTime(currentPlaylistID)
+											.then(function(){
+												resolve();
+											})
+											.catch(function(err){
+												reject(err);
+											})
 										});				
 										var pReorderPlaylist = new Promise((resolve,reject) =>
 										{
@@ -1800,7 +1902,7 @@ module.exports = {
 												reject(err);
 											})
 										});				
-										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedPlaylistLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
 										.then(function()
 										{												
 											resolve();

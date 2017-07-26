@@ -1067,6 +1067,31 @@ module.exports = {
 			});
 		});
 	},
+	updatePlaylistLastEditTime:function(playlist_id,lastEditTime)
+	{
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady())
+			{
+				reject(__('DBI_NOT_READY'));
+			}
+
+			var sqlUpdatePlaylistLastEditTime = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_last_edit_time.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlUpdatePlaylistLastEditTime, 
+			{
+				$playlist_id: playlist_id,
+				$lastEditTime: lastEditTime
+			}, function (err, rep)
+			
+			{
+				if (err)
+				{
+					reject(__('DB_PLAYLIST_UPDATE_LAST_EDIT_TIME_ERROR',JSON.stringify(err)));													
+				} else {
+					resolve();
+				}
+			});
+		});
+	},
 	unsetCurrentAllPlaylists:function()
 	{
 		return new Promise(function(resolve,reject){

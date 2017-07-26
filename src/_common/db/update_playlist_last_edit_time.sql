@@ -1,0 +1,1 @@
+UPDATE playlist SET lastedit_time=$lastEditTime WHERE pk_id_playlist=$playlist_id;
