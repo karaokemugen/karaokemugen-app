@@ -85,8 +85,8 @@ module.exports = {
         router.route('/karas')
         .get(function(req,res){
             module.exports.onKaras().then(function(karas){
-                console.log(karas);
-                res.send(JSON.stringify(karas));
+                //res.json({message: 'test'})
+                res.json(karas);
             });
         })
 

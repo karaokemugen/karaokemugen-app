@@ -411,25 +411,9 @@ module.exports = {
 				//console.log('onKaras called');
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
-						//console.log('karas playlist found');
-						// TODO skip filter @axel fera le job plus tard
-						//console.log(playlist);
-						resolve(playlist);
-						module.exports._services.playlist_controller.filterPlaylist(playlist,'Bleach ED Pace')
-							.then(function(filtered_pl){
-								//console.log('karas playlist filtered');
-								//console.log(filtered_pl);
-								resolve(filtered_pl);
-							})
-							.catch(function(err) {
-								//console.log('err1');
-								//console.log(err);
-								reject(err);
-							})
+						resolve(playlist);						
 					})
 					.catch(function(err){
-						//console.log('err2');
-						//console.log(err);
 						reject(err);
 					});
 			});
