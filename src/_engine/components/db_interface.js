@@ -603,7 +603,6 @@ module.exports = {
 				{
 					if (err)
 					{
-						console.log(err);
 						reject(__('DB_GET_ALL_KARAS_ERROR',JSON.stringify(err)));									
 					} else {
 						resolve(playlist);
