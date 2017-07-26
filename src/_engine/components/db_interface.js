@@ -698,6 +698,28 @@ module.exports = {
 		})
 	},
 	/**
+	* @function {getPlaylists}
+	* @return {Object} {Array of Playlist objects}
+	* Selects playlist info from playlist table. Returns the info in a promise
+	*/
+	getPlaylists:function()
+	{
+		return new Promise(function(resolve,reject){
+			var sqlGetPlaylists = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_playlists_info.sql'),'utf-8');
+			module.exports._user_db_handler.all(sqlGetPlaylists,
+			function (err, playlists)
+			{
+				if (err)
+				{		
+					logger.error(__('DB_PLAYLISTS_GET_ERROR',JSON.stringify(err)));
+					reject(err);
+				} else {
+					resolve(playlists);					
+				}
+			})
+		});
+	},
+	/**
 	* @function {Checks for a current playlist}
 	* @return {boolean} {Promise}
 	*/

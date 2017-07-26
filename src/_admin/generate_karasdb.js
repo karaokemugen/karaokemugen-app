@@ -726,7 +726,7 @@ module.exports = {
                             taglist.push(tag + ',5');
                         }
                     });
-                }
+                }                
                 // Check du type de song
                 if (S(karaType).contains('AMV')) {
                     if (taglist.indexOf('TYPE_AMV,3') == -1) {

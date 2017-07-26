@@ -657,6 +657,7 @@ module.exports = {
 	* @param  {number} playlist_id {Playlist ID to fetch}
 	* @return {Object} {Playlist object}
 	* Returns a playlist object with the following information :
+	* - id_playlist
 	* - name (name of playlist)
 	* - num_karas (Number of karaoke songs in the playlist)
 	* - length (duration in seconds of the whole playlist)
@@ -677,6 +678,35 @@ module.exports = {
 				} else {
 					resolve(playlist);
 				}				
+			});
+		});
+	},
+	/**
+	* @function {getPlaylists}
+	* @return {Object} {array of Playlist objects}
+	* Returns an array of playlist objects to get all playlists :
+	* - id_playlist (ID of playlist)
+	* - name (name of playlist)
+	* - NORM_name (normalized name of playlist)
+	* - num_karas (Number of karaoke songs in the playlist)
+	* - length (duration in seconds of the whole playlist)
+	* - creation_time (creation time in UNIX timestamp format)
+	* - lastedit_time (last modification time in UNIX timestamp format)
+	* - flag_visible (is the playlist visible?)
+	* - flag_current (is the playlist the current one?)
+	* - flag_public (is the playlist the public one?)
+	*/
+	getPlaylists:function()
+	{
+		return new Promise(function(resolve,reject){			
+			module.exports.DB_INTERFACE.getPlaylists()
+			.then(function(playlists)
+			{				
+				resolve(playlists);
+			})
+			.catch(function(err)
+			{
+				resovle(err);
 			});
 		});
 	},

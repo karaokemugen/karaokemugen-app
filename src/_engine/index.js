@@ -406,18 +406,50 @@ module.exports = {
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
 		module.exports._services.apiserver.onTest = module.exports.test;
-		module.exports._services.apiserver.onKaras = function(){
+		module.exports._services.apiserver.onKaras = function(filter){
 			return new Promise(function(resolve,reject){
-				//console.log('onKaras called');
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
-						resolve(playlist);						
+						if (filter) 
+						{
+							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
+							.then(function(filtered_pl){
+								resolve(filtered_pl);
+							})
+							.catch(function(err){
+								resovle(err);
+							})
+						} else {
+							resolve(playlist);						
+						}
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
 		}
+		module.exports._services.apiserver.onKaraSingle = function(id_kara){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.getKara(id_kara)
+					.then(function(kara){
+						resolve(kara);						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+		}
+		module.exports._services.apiserver.onPlaylists = function(){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.getPlaylists()
+				.then(function(playlists){
+					resolve(playlists);
+				})
+				.catch(function(err){
+					reject(err);
+				});
+			});
+		}	
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();

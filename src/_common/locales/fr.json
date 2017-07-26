@@ -127,6 +127,7 @@
 	"DB_KARA_GET_PLCINFO_ERROR": "Erreur BDD de récupération de karaoké en liste de lecture (PLC ID %s) : %s",
 	"DB_KARA_GET_ERROR": "Erreur BDD de récupération de karaoké (ID %s) : %s",
 	"DB_PLAYLIST_GET_INFO_ERROR": "Erreur BDD de récupération de liste de lecture (PLID %s) : %s",
+	"DB_PLAYLISTS_GET_ERROR": "Erreur BDD de récupération de la liste des listes de lecture : %s",
 	"DB_PLAYLIST_GET_INFO_UNKNOWN_ERROR": "Erreur BDD de récupération de liste de lecture (PLID %s) : liste introuvable",
 	"DB_PLAYLIST_TEST_CURRENT_EXISTS_ERROR": "Erreur BDD de test de présence d'une liste de lecture courante : %s",
 	"DB_PLAYLIST_TEST_PUBLIC_EXISTS_ERROR": "Erreur BDD de test de présence d'une liste de lecture publique : %s",

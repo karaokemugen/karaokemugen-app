@@ -1,5 +1,5 @@
 const express = require('express');
-
+const expressValidator = require('express-validator');
 const logger = require('../_common/utils/logger.js');
 const bodyParser = require('body-parser');
         
@@ -37,6 +37,8 @@ module.exports = {
         var app = express();
         app.use(bodyParser.urlencoded({ extended: true }));
         app.use(bodyParser.json());
+        app.use(expressValidator());
+
         var router = express.Router();
 
         app.listen(module.exports.LISTEN, function () {
@@ -84,12 +86,24 @@ module.exports = {
 
         router.route('/karas')
         .get(function(req,res){
-            module.exports.onKaras().then(function(karas){
-                //res.json({message: 'test'})
+            // if the query has a &filter=xxx
+            // then the playlist returned gets filtered with the text.
+            var filter = req.query.filter;            
+            module.exports.onKaras(filter).then(function(karas){
                 res.json(karas);
             });
         })
 
+        router.route('/karas/:id_kara([0-9]+)')
+        .get(function(req,res){
+            var id_kara = req.params.id_kara;
+            
+            module.exports.onKaraSingle(id_kara).then(function(kara){
+                if (kara == []) res.statusCode = 404;
+                res.json(kara);
+            })
+        })
+        
         router.route('/playlists')
         .post(function(req,res){
             // L'objet posté arrive dans req.body.
@@ -98,7 +112,10 @@ module.exports = {
         })
         .get(function(req,res){
             // Get list of playlists
-            // Send response as json via res.json(object)
+            module.exports.onPlaylists().then(function(playlists){
+                if (playlists == []) res.statusCode = 404;
+                res.json(playlists);
+            })
             // Set res.statusCode = 404 if not found
             // 
         })
@@ -127,7 +144,13 @@ module.exports = {
         // événement de test
         logger.log('warning','onTest not set');
     },
-    onKaras:function(){
+    onKaras:function(filter){
     
+    },
+    onKaraSingle:function(){
+
+    },
+    onPlaylists:function(){
+
     }
 }
