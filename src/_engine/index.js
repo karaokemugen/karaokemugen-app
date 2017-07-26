@@ -24,6 +24,7 @@ module.exports = {
 		ontop:true,
 		admin_port:1338,
 		frontend_port:1337,
+		apiserver_port:1339,
 		playlist:null,
 	},
 	_services:{
@@ -57,6 +58,7 @@ module.exports = {
 			module.exports._start_playlist_controller();
 			module.exports._start_admin();
 			module.exports._start_frontend();
+			module.exports._start_apiserver();
 			module.exports._broadcastStates();
 		}).catch(function(response){
 			console.log(response);
@@ -388,6 +390,53 @@ module.exports = {
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.frontend.init();
+	},
+	/**
+	* @function
+	* Starts the API webservice on the selected port
+	* Broadcasts syspath and settings, as well as db interface to that module.
+	*/
+	_start_apiserver:function(){
+		module.exports._services.apiserver = require(path.resolve(__dirname,'../_apiserver/index.js'));
+		module.exports._services.apiserver.LISTEN = module.exports._states.apiserver_port;
+		module.exports._services.apiserver.SYSPATH = module.exports.SYSPATH;
+		module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
+		module.exports._services.apiserver.DB_INTERFACE = module.exports.DB_INTERFACE;
+		// --------------------------------------------------------
+		// diffusion des méthodes interne vers les events frontend
+		// --------------------------------------------------------
+		module.exports._services.apiserver.onTest = module.exports.test;
+		module.exports._services.apiserver.onKaras = function(){
+			return new Promise(function(resolve,reject){
+				//console.log('onKaras called');
+				module.exports._services.playlist_controller.getAllKaras()
+					.then(function(playlist){
+						//console.log('karas playlist found');
+						// TODO skip filter @axel fera le job plus tard
+						//console.log(playlist);
+						resolve(playlist);
+						module.exports._services.playlist_controller.filterPlaylist(playlist,'Bleach ED Pace')
+							.then(function(filtered_pl){
+								//console.log('karas playlist filtered');
+								//console.log(filtered_pl);
+								resolve(filtered_pl);
+							})
+							.catch(function(err) {
+								//console.log('err1');
+								//console.log(err);
+								reject(err);
+							})
+					})
+					.catch(function(err){
+						//console.log('err2');
+						//console.log(err);
+						reject(err);
+					});
+			});
+		}
+		// --------------------------------------------------------
+		// on démarre ensuite le service
+		module.exports._services.apiserver.init();
 	},
 	/**
 	* @function
