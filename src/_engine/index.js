@@ -467,6 +467,17 @@ module.exports = {
 				});
 			});
 		}
+		module.exports._services.apiserver.onPlaylistSingle = function(id_playlist){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
+					.then(function(playlist){
+						resolve(playlist);						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+		}
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();

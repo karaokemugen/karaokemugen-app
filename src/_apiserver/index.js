@@ -74,7 +74,7 @@ module.exports = {
         // blacklist
         // whitelist
 
-        // Validators : 
+        // Validators & sanitizers : 
         // https://github.com/chriso/validator.js
 
         // Reminder of HTTP codes:
@@ -148,7 +148,7 @@ module.exports = {
                     }                    
                 },
             });
-
+            
             req.getValidationResult().then(function(result){
                 if (result.isEmpty())
                 {
@@ -169,17 +169,13 @@ module.exports = {
                             res.statusCode = 500;
                             res.json(err);
                     })
-                    
                 } else {
                     // Errors detected
                     // Sending BAD REQUEST HTTP code and error object.
                     res.statusCode = 400;
                     res.json(result.mapped());
                 }
-                
             })
-            
-
         })
         .get(function(req,res){
             // Get list of playlists
@@ -195,6 +191,16 @@ module.exports = {
         .get(function(req,res){
             //Access :pl_id by req.params.pl_id 
             // This get route gets infos from a playlist
+            var playlist_id = req.params.pl_id;
+            
+            module.exports.onPlaylistSingle(playlist_id).then(function(playlist){
+                if (playlist == []) res.statusCode = 404;
+                res.json(playlist);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
         })
         .put(function(req,res){
             // Update playlist info
@@ -218,5 +224,6 @@ module.exports = {
     onKaras:function(filter){},
     onKaraSingle:function(){},
     onPlaylists:function(){},
-    onPlaylistCreate:function(){}
+    onPlaylistCreate:function(){},
+    onPlaylistSingle:function(){}
 }
