@@ -606,51 +606,53 @@ module.exports = {
 			if (flag_current == 1 && flag_public == 1)
 			{
 				reject(__('PLAYLIST_PUBLIC_AND_CURRENT_EXCLUSIVE'));
-			}
-
-			var pUnsetFlagPublic = new Promise((resolve,reject) =>
-			{
-				if (flag_public == 1)
-				{	
-					module.exports.unsetPublicAllPlaylists()
-					.then(function(){
+			} else {
+				var pUnsetFlagPublic = new Promise((resolve,reject) =>
+				{
+					if (flag_public == 1)
+					{	
+						module.exports.unsetPublicAllPlaylists()
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){
+							reject(err);
+						})						
+					} else {
 						resolve();
-					})
-					.catch(function(err){
-						reject(err);
-					})						
-				} else {
-					resolve();
-				}
-			});
-			
-			var pUnsetFlagCurrent = new Promise((resolve,reject) =>
-			{
-				if (flag_current == 1)
-				{	
-					module.exports.unsetCurrentAllPlaylists()
-					.then(function(){
+					}
+				});
+				
+				var pUnsetFlagCurrent = new Promise((resolve,reject) =>
+				{
+					if (flag_current == 1)
+					{	
+						module.exports.unsetCurrentAllPlaylists()
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){
+							reject(err);
+						})
+					} else {
 						resolve();
+					}
+				});
+				
+				Promise.all([pUnsetFlagCurrent,pUnsetFlagPublic])
+				.then(function()
+				{				
+					module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,function(new_id_playlist){					
+						resolve(new_id_playlist.id)
 					})
-					.catch(function(err){
-						reject(err);
-					})
-				} else {
-					resolve();
-				}
-			});
-			
-			Promise.all([pUnsetFlagCurrent,pUnsetFlagPublic])
-			.then(function()
-			{				
-				module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,function(new_id_playlist){					
-					resolve(new_id_playlist.id)
 				})
-			})
-			.catch(function(err)
-			{
-				reject(err);
-			})
+				.catch(function(err)
+				{
+					reject(err);
+				})
+			}
+			
+			
 		});
 	},
 	/**
