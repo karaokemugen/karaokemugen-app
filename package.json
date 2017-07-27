@@ -44,6 +44,7 @@
     "cli-color": "^1.2.0",
     "csv-string": "^2.3.2",
     "express": "^4.15.3",
+    "express-basic-auth": "^1.1.1",
     "express-handlebars": "^3.0.0",
     "express-validator": "^3.2.1",
     "extend": "^3.0.1",

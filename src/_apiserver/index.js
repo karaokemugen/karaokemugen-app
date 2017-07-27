@@ -2,7 +2,8 @@ const express = require('express');
 const expressValidator = require('express-validator');
 const logger = require('../_common/utils/logger.js');
 const bodyParser = require('body-parser');
-        
+const S = require('string');
+const basicAuth = require('express-basic-auth');
 module.exports = {
     SYSPATH:null,
     SETTINGS:null,
@@ -39,19 +40,28 @@ module.exports = {
         app.use(bodyParser.json());
         app.use(expressValidator());
 
-        var router = express.Router();
+        var routerPublic = express.Router();
+        var routerAdmin = express.Router();
 
         app.listen(module.exports.LISTEN, function () {
             logger.info(__('API_SERVER_LISTEN',module.exports.LISTEN));
         });
 
-        router.use(function(req, res, next) {
+        routerAdmin.use(basicAuth({ authorizer: AdminPasswordSetting }))
+        routerAdmin.use(function(req,res,next) {
+            next();
+        })
+        function AdminPasswordSetting(username, password){
+            return password === 'shami';
+        }
+
+        routerPublic.use(function(req, res, next) {
             // do logging
             //logger.info('API_LOG',req)
-            next(); // make sure we go to the next routes and don't stop here
+            next(); // make sure we go to the next routes and don't stop here            
         });
 
-        router.get('/', function (req, res) {
+        routerPublic.get('/', function (req, res) {
             res.send('Hello World!');
         });
 
@@ -87,36 +97,8 @@ module.exports = {
 
         // In case of error, return the correct code an object 'error'
 
-        router.route('/karas')
-        .get(function(req,res){
-            // if the query has a &filter=xxx
-            // then the playlist returned gets filtered with the text.
-            var filter = req.query.filter;            
-            module.exports.onKaras(filter)
-            .then(function(karas){
-                res.json(karas);
-            })
-            .catch(function(err){
-                res.statusCode = 500;
-                res.json(err);
-            })
-        })
-
-        router.route('/karas/:id_kara([0-9]+)')
-        .get(function(req,res){
-            var id_kara = req.params.id_kara;
-            
-            module.exports.onKaraSingle(id_kara).then(function(kara){
-                if (kara == []) res.statusCode = 404;
-                res.json(kara);
-            })
-            .catch(function(err){
-                res.statusCode = 500;
-                res.json(err);
-            })
-        })
-        
-        router.route('/playlists')
+        // Admin routes
+        routerAdmin.route('/playlists')
         .post(function(req,res){
             // req.body = posted object.
 
@@ -177,17 +159,7 @@ module.exports = {
                 }
             })
         })
-        .get(function(req,res){
-            // Get list of playlists
-            module.exports.onPlaylists().then(function(playlists){
-                if (playlists == []) res.statusCode = 404;
-                res.json(playlists);
-            })
-            // Set res.statusCode = 404 if not found
-            // 
-        })
-
-        router.route('/playlists/:pl_id([0-9]+)')
+        routerAdmin.route('/playlists/:pl_id([0-9]+)')
         .get(function(req,res){
             //Access :pl_id by req.params.pl_id 
             // This get route gets infos from a playlist
@@ -211,9 +183,52 @@ module.exports = {
         .delete(function(req,res){
             // Delete playlist
         })
+        // Public routes
+        routerPublic.route('/karas')
+        .get(function(req,res){
+            // if the query has a &filter=xxx
+            // then the playlist returned gets filtered with the text.
+            var filter = req.query.filter;            
+            module.exports.onKaras(filter)
+            .then(function(karas){
+                res.json(karas);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
+        })
+
+        routerPublic.route('/karas/:id_kara([0-9]+)')
+        .get(function(req,res){
+            var id_kara = req.params.id_kara;
+            
+            module.exports.onKaraSingle(id_kara).then(function(kara){
+                if (kara == []) res.statusCode = 404;
+                res.json(kara);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
+        })
+            
+        routerPublic.route('/playlists')
+        .get(function(req,res){
+            // Get list of playlists
+            module.exports.onPlaylists().then(function(playlists){
+                if (playlists == []) res.statusCode = 404;
+                res.json(playlists);
+            })
+            // Set res.statusCode = 404 if not found
+            // 
+        })
+
+        
         
 
-        app.use('/api/v1', router);
+        app.use('/api/v1/public', routerPublic);
+        app.use('/api/v1/admin', routerAdmin);
         logger.info(__('API_SERVER_READY'));
         // Création d'un server http pour diffuser l'appli web du launcher
     },
