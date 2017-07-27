@@ -165,7 +165,7 @@ module.exports = {
             // This get route gets infos from a playlist
             var playlist_id = req.params.pl_id;
             
-            module.exports.onPlaylistSingle(playlist_id).then(function(playlist){
+            module.exports.onPlaylistSingleInfo(playlist_id).then(function(playlist){
                 if (playlist == []) res.statusCode = 404;
                 res.json(playlist);
             })
@@ -177,12 +177,10 @@ module.exports = {
         .put(function(req,res){
             // Update playlist info
         })
-        .post(function(req,res){
-            // New Playlist
-        })
         .delete(function(req,res){
             // Delete playlist
         })
+        
         // Public routes
         routerPublic.route('/karas')
         .get(function(req,res){
@@ -213,15 +211,17 @@ module.exports = {
             })
         })
             
-        routerPublic.route('/playlists')
+        routerPublic.route('/playlists/current')
         .get(function(req,res){
-            // Get list of playlists
-            module.exports.onPlaylists().then(function(playlists){
-                if (playlists == []) res.statusCode = 404;
-                res.json(playlists);
+            // Get current Playlist
+            module.exports.onPlaylistCurrentInfo()
+            .then(function(playlist){
+                res.json(playlist);
+            })            
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
             })
-            // Set res.statusCode = 404 if not found
-            // 
         })
 
         
@@ -240,5 +240,6 @@ module.exports = {
     onKaraSingle:function(){},
     onPlaylists:function(){},
     onPlaylistCreate:function(){},
-    onPlaylistSingle:function(){}
+    onPlaylistSingleInfo:function(){},
+    onPlaylistCurrentInfo:function(){}
 }

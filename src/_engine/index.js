@@ -467,7 +467,7 @@ module.exports = {
 				});
 			});
 		}
-		module.exports._services.apiserver.onPlaylistSingle = function(id_playlist){
+		module.exports._services.apiserver.onPlaylistSingleInfo = function(id_playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
 					.then(function(playlist){
@@ -476,6 +476,29 @@ module.exports = {
 					.catch(function(err){
 						reject(err);
 					});
+			});
+		}
+		module.exports._services.apiserver.onPlaylistCurrentInfo = function(){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.isACurrentPlaylist()
+				.then(function(id_playlist){
+					module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
+					.then(function(playlist){
+						resolve(playlist);						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+				})
+				.catch(function(err){
+					if (err) 
+					{
+						reject(err);
+					} else {
+						reject('No current playlist found');
+					}
+
+				})					
 			});
 		}
 		// --------------------------------------------------------
