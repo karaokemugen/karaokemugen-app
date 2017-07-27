@@ -809,7 +809,7 @@ module.exports = {
 			{
 				var lastedit_date = timestamp.now();
 				// Update PL's last edit time
-				module.exports.DB_INTERFACE.updatePlaylistLastEditTime(playlist_id,lastedit_data)
+				module.exports.DB_INTERFACE.updatePlaylistLastEditTime(playlist_id,lastedit_date)
 				.then(function(){
 					resolve();
 				})
@@ -1593,7 +1593,7 @@ module.exports = {
 				{
 					if (isKaraInPlaylist) 
 					{
-						reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,playlist_id));
+						reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,publicPlaylistID));
 					} else {
 					
 						// Adding karaoke song here		
@@ -1799,7 +1799,7 @@ module.exports = {
 				{
 					if (isKaraInPlaylist) 
 					{
-						reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,playlist_id));
+						reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,currentPlaylistID));
 					} else {
 					
 						// Adding karaoke song here		
@@ -1906,7 +1906,7 @@ module.exports = {
 										});				
 										Promise.all([pRenameASS,pReorderPlaylist,pUpdatedPlaylistLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
 										.then(function()
-										{												
+										{														
 											resolve();
 										})
 										.catch(function(err)

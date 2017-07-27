@@ -214,6 +214,7 @@ module.exports = {
             })
         })
 
+        
         routerPublic.route('/karas/:id_kara([0-9]+)')
         .get(function(req,res){
             var id_kara = req.params.id_kara;
@@ -226,6 +227,40 @@ module.exports = {
                 res.statusCode = 500;
                 res.json(err);
             })
+        })
+        .post(function(req,res){
+            // Add Kara to the playlist currently used depending on mode
+            var id_kara = req.params.id_kara;
+            req.checkBody({
+                'requestedby': {
+                    in: 'body',
+                    notEmpty: true,                    
+                }                
+            });
+            
+            req.getValidationResult().then(function(result)
+            {
+                if (result.isEmpty())
+                {
+                    req.sanitize('requestedby').trim();
+                    req.sanitize('requestedby').unescape();
+                    module.exports.onKaraAddToModePlaylist(id_kara,req.body.requestedby)
+                    .then(function(){
+                        res.statusCode = 201;
+                        res.json('Karaoke '+id_kara+' added by '+req.body.requestedby);
+                    })
+                    .catch(function(err){
+                        console.log(err);
+                        res.statusCode = 500;
+                        res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            });            
         })
             
         routerPublic.route('/playlists/current')
@@ -301,4 +336,5 @@ module.exports = {
     onPlaylistCurrentContents:function(){},
     onPlaylistPublicInfo:function(){},
     onPlaylistPublicContents:function(){},
+    onKaraAddToModePlaylist:function(){},
 }
