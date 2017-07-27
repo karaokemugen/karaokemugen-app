@@ -186,7 +186,7 @@ module.exports = {
 		}
 		else
 		{
-			open('http://'+ip.address()+':'+module.exports.LISTEN);
+			//open('http://'+ip.address()+':'+module.exports.LISTEN);
 		}
 	},
 

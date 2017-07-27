@@ -74,6 +74,9 @@ module.exports = {
         // blacklist
         // whitelist
 
+        // Validators : 
+        // https://github.com/chriso/validator.js
+
         // Reminder of HTTP codes:
         // 200 : OK
         // 201 : CREATED
@@ -89,9 +92,14 @@ module.exports = {
             // if the query has a &filter=xxx
             // then the playlist returned gets filtered with the text.
             var filter = req.query.filter;            
-            module.exports.onKaras(filter).then(function(karas){
+            module.exports.onKaras(filter)
+            .then(function(karas){
                 res.json(karas);
-            });
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
         })
 
         router.route('/karas/:id_kara([0-9]+)')
@@ -102,12 +110,75 @@ module.exports = {
                 if (kara == []) res.statusCode = 404;
                 res.json(kara);
             })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
         })
         
         router.route('/playlists')
         .post(function(req,res){
-            // L'objet posté arrive dans req.body.
+            // req.body = posted object.
+
             // Add playlist
+            req.checkBody({
+                'name': {
+                    in: 'body',
+                    notEmpty: true,                    
+                },
+                'flag_visible': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: {
+                        errorMessage: 'Invalid visible flag (must be boolean)'
+                    }                    
+                },
+                'flag_public': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: {
+                        errorMessage: 'Invalid public flag (must be boolean)'
+                    }                    
+                },
+                'flag_current': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: {
+                        errorMessage: 'Invalid current flag (must be boolean)'
+                    }                    
+                },
+            });
+
+            req.getValidationResult().then(function(result){
+                if (result.isEmpty())
+                {
+                    // No errors detected
+                    req.sanitize('name').trim();
+                    req.sanitize('name').unescape();
+                    req.sanitize('flag_visible').toBoolean();
+                    req.sanitize('flag_public').toBoolean();
+                    req.sanitize('flag_current').toBoolean();
+
+                    //Now we add playlist
+                    module.exports.onPlaylistCreate(req.body)
+                    .then(function(new_playlist){
+                            res.statusCode = 201;
+                            res.json(new_playlist);
+                    })
+                    .catch(function(err){
+                            res.statusCode = 500;
+                            res.json(err);
+                    })
+                    
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+                
+            })
+            
 
         })
         .get(function(req,res){
@@ -144,13 +215,8 @@ module.exports = {
         // événement de test
         logger.log('warning','onTest not set');
     },
-    onKaras:function(filter){
-    
-    },
-    onKaraSingle:function(){
-
-    },
-    onPlaylists:function(){
-
-    }
+    onKaras:function(filter){},
+    onKaraSingle:function(){},
+    onPlaylists:function(){},
+    onPlaylistCreate:function(){}
 }

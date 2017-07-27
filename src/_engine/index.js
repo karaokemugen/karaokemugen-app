@@ -450,6 +450,23 @@ module.exports = {
 				});
 			});
 		}	
+		module.exports._services.apiserver.onPlaylistCreate = function(playlist){
+			return new Promise(function(resolve,reject){		
+				module.exports._services.playlist_controller.createPlaylist(playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
+				.then(function (new_playlist){
+					var res = {
+						new_playlist_id: new_playlist
+					}					
+					resolve(res)
+				})
+				.catch(function(err){
+					var res = {
+						error: err
+					}
+					reject(res);
+				});
+			});
+		}
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();
