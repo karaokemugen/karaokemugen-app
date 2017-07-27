@@ -181,6 +181,23 @@ module.exports = {
             // Delete playlist
         })
         
+        routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
+        .get(function(req,res){
+            //Access :pl_id by req.params.pl_id 
+            // This get route gets infos from a playlist
+            var playlist_id = req.params.pl_id;
+            
+            module.exports.onPlaylistSingleContents(playlist_id)
+            .then(function(playlist){
+                if (playlist == []) res.statusCode = 404;
+                res.json(playlist);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
+        })
+
         // Public routes
         routerPublic.route('/karas')
         .get(function(req,res){
@@ -237,6 +254,31 @@ module.exports = {
             })
         })
 
+        routerPublic.route('/playlists/public')
+        .get(function(req,res){
+            // Get current Playlist
+            module.exports.onPlaylistCurrentInfo()
+            .then(function(playlist){
+                res.json(playlist);
+            })            
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
+        })
+
+        routerPublic.route('/playlists/public/karas')
+        .get(function(req,res){
+            // Get current Playlist
+            module.exports.onPlaylistCurrentContents()
+            .then(function(playlist){
+                res.json(playlist);
+            })            
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
+        })
         
         
 
@@ -254,6 +296,9 @@ module.exports = {
     onPlaylists:function(){},
     onPlaylistCreate:function(){},
     onPlaylistSingleInfo:function(){},
+    onPlaylistSingleContents:function(){},
     onPlaylistCurrentInfo:function(){},
-    onPlaylistCurrentContents:function(){}
+    onPlaylistCurrentContents:function(){},
+    onPlaylistPublicInfo:function(){},
+    onPlaylistPublicContents:function(){},
 }

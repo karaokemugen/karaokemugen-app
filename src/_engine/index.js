@@ -478,6 +478,17 @@ module.exports = {
 					});
 			});
 		}
+		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
+					.then(function(playlist){
+						resolve(playlist);						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+		}
 		module.exports._services.apiserver.onPlaylistCurrentInfo = function(){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
@@ -519,6 +530,52 @@ module.exports = {
 						reject(err);
 					} else {
 						reject('No current playlist found');
+					}
+
+				})					
+			});
+		}
+		module.exports._services.apiserver.onPlaylistPublicInfo = function(){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.isACurrentPlaylist()
+				.then(function(id_playlist){
+					module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
+					.then(function(playlist){
+						resolve(playlist);						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+				})
+				.catch(function(err){
+					if (err) 
+					{
+						reject(err);
+					} else {
+						reject('No public playlist found');
+					}
+
+				})					
+			});
+		}
+		module.exports._services.apiserver.onPlaylistPublicContents = function(){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.isAPublicPlaylist()
+				.then(function(id_playlist){
+					module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
+					.then(function(playlist){
+						resolve(playlist);						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+				})
+				.catch(function(err){
+					if (err) 
+					{
+						reject(err);
+					} else {
+						reject('No public playlist found');
 					}
 
 				})					
