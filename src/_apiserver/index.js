@@ -224,6 +224,19 @@ module.exports = {
             })
         })
 
+        routerPublic.route('/playlists/current/karas')
+        .get(function(req,res){
+            // Get current Playlist
+            module.exports.onPlaylistCurrentContents()
+            .then(function(playlist){
+                res.json(playlist);
+            })            
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
+        })
+
         
         
 
@@ -241,5 +254,6 @@ module.exports = {
     onPlaylists:function(){},
     onPlaylistCreate:function(){},
     onPlaylistSingleInfo:function(){},
-    onPlaylistCurrentInfo:function(){}
+    onPlaylistCurrentInfo:function(){},
+    onPlaylistCurrentContents:function(){}
 }

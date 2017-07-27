@@ -501,6 +501,29 @@ module.exports = {
 				})					
 			});
 		}
+		module.exports._services.apiserver.onPlaylistCurrentContents = function(){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.isACurrentPlaylist()
+				.then(function(id_playlist){
+					module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
+					.then(function(playlist){
+						resolve(playlist);						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+				})
+				.catch(function(err){
+					if (err) 
+					{
+						reject(err);
+					} else {
+						reject('No current playlist found');
+					}
+
+				})					
+			});
+		}
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();
