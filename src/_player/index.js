@@ -28,7 +28,13 @@ module.exports = {
 				mpvBinary = module.exports.BINPATH+'/mpv.exe';
 				mpvHTTP = '/mpv.exe';
 			} else if (module.exports.SETTINGS.os == 'darwin') {
+				// if mpv is installed with MacPorts
 				mpvBinary = '/Applications/MacPorts/mpv.app/Contents/MacOS/mpv';
+				// if mpv is installed with Homebrew
+				if (!fs.existsSync(mpvBinary)) {
+					mpvBinary = '/usr/bin/mpv';
+				}
+				// if mpv is installed locally or not installed
 				if (!fs.existsSync(mpvBinary)) {
 					mpvBinary = module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv';
 					mpvHTTP = '/mpv-osx.zip';
@@ -93,7 +99,8 @@ module.exports = {
 									logger.error(__('MPV_EXTRACT_ERROR',err.stringify()));
 									reject();
 								}
-								fs.unlinkSync(module.exports.BINPATH+'/mpvtemp')							
+								fs.unlinkSync(module.exports.BINPATH+'/mpvtemp');
+								fs.chmodSync(module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv', '755');
 								logger.info(__('MPV_EXTRACT_COMPLETE'));
 								resolve();
 							});

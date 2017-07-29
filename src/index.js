@@ -80,10 +80,11 @@ if(SYSPATH)
 	 * app/db
 	 * app/temp
 	 */
+	var ret;
 	logger.info(__('DATAFOLDERS_CHECK'));
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Karas))) {
 		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Karas)));
-		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Karas));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Karas));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
@@ -91,7 +92,7 @@ if(SYSPATH)
 	}	
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Subs))) {
 		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Subs)));
-		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Subs));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Subs));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
@@ -99,7 +100,7 @@ if(SYSPATH)
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Videos))) {
 		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Videos)));
-		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Videos));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Videos));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'))
 			process.exit();
@@ -107,7 +108,7 @@ if(SYSPATH)
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.DB))) {
 		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.DB)));
-		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.DB));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.DB));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
@@ -115,7 +116,15 @@ if(SYSPATH)
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Temp))) {
 		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Temp)));
-		var ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Temp));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Temp));
+		if (!ret) {
+			logger.error(__('CREATING_FOLDER_FAILED'));
+			process.exit();
+		}
+	}
+	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Bin))) {
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Bin)));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Bin));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();

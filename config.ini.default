@@ -15,6 +15,7 @@ SongsPerPerson = 10000
 Password = "gurdil"
 
 [Path]
+Bin = "app/bin"
 Karas = "app/data/karas"
 Videos = "app/data/videos"
 Subs = "app/data/lyrics"
