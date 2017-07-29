@@ -20,23 +20,23 @@ module.exports = {
 	BINPATH:null,
 	SETTINGS:null,
 	init:function(){
-
+		var mpvBinary;
+		var mpvHTTP;
 		var pIsmpvAvailable = new Promise((resolve,reject) =>
 		{
-			
-			if (module.exports.SETTINGS.os == 'win32') 
-			{
+			if (module.exports.SETTINGS.os == 'win32') {
 				mpvBinary = module.exports.BINPATH+'/mpv.exe';
 				mpvHTTP = '/mpv.exe';
+			} else if (module.exports.SETTINGS.os == 'darwin') {
+				mpvBinary = '/Applications/MacPorts/mpv.app/Contents/MacOS/mpv';
+				if (!fs.existsSync(mpvBinary)) {
+					mpvBinary = module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv';
+					mpvHTTP = '/mpv-osx.zip';
+				}
+			} else if (module.exports.SETTINGS.os == 'linux') {
+				mpvBinary = '/usr/bin/mpv';
 			}
-			if (module.exports.SETTINGS.os == 'darwin') 
-			{
-				mpvBinary = module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv';
-				mpvHTTP = '/mpv-osx.zip';
-			}
-			
-			if (module.exports.SETTINGS.os == 'linux') mpvBinary = '/usr/bin/mpv';
-			
+
 			if(!fs.existsSync(mpvBinary)){				
 				logger.warn(__('MPV_NOT_FOUND',module.exports.BINPATH));
 				if (process.platform == 'linux') 
