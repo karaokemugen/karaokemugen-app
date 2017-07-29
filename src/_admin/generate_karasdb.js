@@ -105,7 +105,12 @@ module.exports = {
 
                                 // -------------------------------------------------------------------------------------------------------------
 
-                                var karafiles = fs.readdirSync(karasdir);
+								var karafiles = fs.readdirSync(karasdir); 
+								for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
+									if(!S(karafiles[indexToRemove]).endsWith('.kara')) {
+										karafiles.splice(indexToRemove, 1);
+									}
+								}
                                 module.exports.onLog('success', __('GDB_KARADIR_READ'));
 
                                 //First analyze .kara
