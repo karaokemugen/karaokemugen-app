@@ -46,13 +46,23 @@ module.exports = {
 				});
 		});
 	},
-	isPublicPlaylist:function(playlist_id,callback) {
-		//TODO : Transformer en promesse
-		//TODO : Check si la playlist existe
-		module.exports.DB_INTERFACE.isPublicPlaylist(playlist_id,function(res){							
-			logger.log('debug','Public = '+res);
-			callback(res);
-		});		
+	isPublicPlaylist:function(playlist_id) {
+		return new Promise(function(resolve,reject){
+			module.exports.isPlaylist(playlist_id)
+				.then(function(){
+					module.exports.DB_INTERFACE.isPublicPlaylist(playlist_id)
+						.then(function(res){
+							logger.log('debug','Public = '+res);
+							resolve(res);
+						})
+						.catch(function(err){
+							reject(err);
+						});
+				})
+				.catch(function(){
+					reject(__('PLAYLIST_UNKNOWN',playlist_id));
+				});
+		});
 	},
 	/**
 	* @function {Is there a current playlist in the database?}
@@ -411,8 +421,7 @@ module.exports = {
 				});		
 			});		
 	},
-	deletePlaylist:function(playlist_id,new_curorpubplaylist_id) {		
-		//TODO : Vérifier si la playlist existe
+	deletePlaylist:function(playlist_id,new_curorpubplaylist_id) {
 		// Suppression d'une playlist. Si la playlist a un flag_public ou flag_current, il faut
 		// set l'un de ces flags sur l'autre ID de playlist (optionnel) fourni
 		logger.info(__('DELETE_PLAYLIST',playlist_id,new_curorpubplaylist_id));
@@ -420,15 +429,19 @@ module.exports = {
 			module.exports.isPlaylist(playlist_id)
 				.then(function(){
 					var pIsPublic = new Promise((resolve,reject) => {
-						module.exports.isPublicPlaylist(playlist_id,function(res) {
-							if (res == true) {
-								module.exports.setPublicPlaylist(new_curorpubplaylist_id,function() {
+						module.exports.isPublicPlaylist(playlist_id)
+							.then(function(res) {
+								if (res == true) {
+									module.exports.setPublicPlaylist(new_curorpubplaylist_id,function() {
+										resolve(true);
+									});
+								} else {
 									resolve(true);
-								});
-							} else {
-								resolve(true);
-							}							
-						});
+								}
+							})
+							.catch(function(err) {
+								reject(err);
+							});
 					});
 					var pIsCurrent = new Promise((resolve,reject) =>	{
 						module.exports.isCurrentPlaylist(playlist_id)
