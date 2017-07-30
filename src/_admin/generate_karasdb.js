@@ -30,6 +30,7 @@ module.exports = {
 			var async = require('async');
 			const uuidV4 = require('uuid/v4');
 			var csv = require('csv-string');
+			var crc = require('crc');
 			const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Karas);
 			const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Videos);
 			const karas_dbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.DB, module.exports.SETTINGS.Path.DBKarasFile);
@@ -169,27 +170,7 @@ module.exports = {
 						});
 						Promise.all([pAddToKaras])
 							.then(function(){
-								/**
-								 * Another run of kara songs to get duration time.
-								 */
-								var pGetVideoDuration= new Promise((resolve,reject) => {
-									karas.forEach(function(kara, index) {
-										index++;
-										getvideoduration(kara['videofile'])
-											.then(function(videolength){
-												sqlUpdateVideoLength.push({
-													$videolength:videolength,
-													$id:index											
-												});
-												resolve();
-											})
-											.catch(function(err){
-												reject(err);
-											});							 
-									});
-									module.exports.onLog('success', __('GDB_CALCULATED_DURATION'));
-									resolve();
-								});
+								
 								/**
 								 * Push to array sqlInsertKaras for sql statements from karas.
 								 */
@@ -211,6 +192,7 @@ module.exports = {
 											$kara_rating : kara['rating'],
 											$kara_viewcount : kara['viewcount'],
 											$kara_gain : kara['gain'],
+											$kara_videolength : kara['videolength'],
 										});
 									});
 									resolve();
@@ -391,7 +373,7 @@ module.exports = {
 										});
 								});
 
-								Promise.all([pGetVideoDuration, pPushSqlInsertKaras, pCreateSeries, pCreateTags])
+								Promise.all([pPushSqlInsertKaras, pCreateSeries, pCreateTags])
 									.then(function(){
 										resolve();
 									})
@@ -469,8 +451,7 @@ module.exports = {
 						/*
 						* Building SQL queries for insertion
 						*/
-						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);');
-						var stmt_UpdateVideoLength = module.exports.db.prepare('UPDATE kara SET videolength = $videolength WHERE PK_id_kara = $id ;');
+						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain, videolength ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength);');
 						var stmt_InsertSeries = module.exports.db.prepare('INSERT INTO series(PK_id_series,name,NORM_name) VALUES( $id_series, $serie, $serienorm );');
 						var stmt_InsertTags = module.exports.db.prepare('INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );');
 						var stmt_InsertKarasTags = module.exports.db.prepare('INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES( $id_tag, $id_kara );');
@@ -488,16 +469,7 @@ module.exports = {
 							});
 						});
 						module.exports.onLog('info', __('GDB_FILLED_KARA_TABLE'));
-
-						sqlUpdateVideoLength.forEach(function(data){
-							stmt_UpdateVideoLength.run(data, function (err) {
-								if(err) {
-									reject(err);
-								}
-							});
-						});
-						module.exports.onLog('info', __('GDB_UPDATED_VIDEO_DURATION'));
-
+						
 						sqlInsertTags.forEach(function(data){
 							stmt_InsertTags.run(data, function (err) {
 								if(err) {
@@ -554,8 +526,7 @@ module.exports = {
 								stmt_InsertSeries.finalize();									
 								stmt_UpdateSeriesAltNames.finalize();
 								stmt_InsertKarasTags.finalize();
-								stmt_InsertTags.finalize();
-								stmt_UpdateVideoLength.finalize();
+								stmt_InsertTags.finalize();								
 								stmt_InsertKaras.finalize();
 								resolve();
 							}
@@ -850,19 +821,15 @@ module.exports = {
 			function getvideoduration(videofile) {
 				return new Promise((resolve,reject) => {
 					var videolength = 0;
-					if (fs.existsSync(videosdir + '/' + videofile)) {
-						probe(videosdir + '/' + videofile, function(err, videodata) {
-							if (err) {
-								module.exports.onLog('error', __('GDB_PROBE_ERROR',videofile,err));
-								reject(err);
-							} else {
-								videolength = Math.floor(videodata.format.duration);
-								resolve(videolength);
-							}
-						});
-					} else {
-						module.exports.onLog('warning', __('GDB_VIDEO_FILE_NOT_FOUND',videofile));
-					}
+					probe(videosdir + '/' + videofile, function(err, videodata) {
+						if (err) {
+							module.exports.onLog('error', __('GDB_PROBE_ERROR',videofile,err));
+							reject(err);
+						} else {
+							videolength = Math.floor(videodata.format.duration);
+							resolve(videolength);
+						}
+					});					
 				});
 			}
 
@@ -1072,19 +1039,7 @@ module.exports = {
 							} else {
 								var KID = uuidV4();
 								karadata.KID = KID;
-								kara['KID'] = karadata.KID;
-								fs.appendFile(karasdir + '/' + karafile, '\n;DO NOT MODIFY - KARAOKE ID GENERATED AUTOMATICALLY\n',function(err) {
-									if (err) {
-										reject(err);
-									} else {
-										fs.appendFile(karasdir + '/' + karafile, 'KID="'+KID+'"\n',function(err){
-											if (err) {
-												reject(err);
-											}								
-										});						
-									}
-								});					
-								
+								kara['KID'] = karadata.KID;								
 							}
 							timestamp.round = true;
 							kara['dateadded'] = timestamp.now();
@@ -1116,17 +1071,60 @@ module.exports = {
 							kara['songorder'] = karaOrder;
 							kara['videofile'] = karadata.videofile;
 							kara['subfile'] = karadata.subfile;
-							//Calculate gain. 
-							if (S(karadata.trackgain).isEmpty()) {
-								kara['gain'] = 0;
+							
+							//Calculate CRC.
+							if (fs.existsSync(videosdir + '/' + kara['videofile'])) {
+								var videostats = fs.statSync(videosdir + '/' + kara['videofile'])							
+								if (videostats.size != karadata.videosize){
+									//Probe file for duration
+									//Calculate gain
+									// write duration and gain to .kara
+									kara['gain'] = 0;
+									karadata.videogain = 0;
+									
+									var pGetVideoDuration = new Promise ((resolve,reject) => {
+										getvideoduration(karadata.videofile)
+											.then(function(videolength){
+												kara['videolength'] = videolength;
+												karadata.videoduration = videolength;
+												resolve();
+											})
+											.catch(function(err){
+												kara['videolength'] = 0;
+												reject(err);
+											});							 								
+									});
+										
+									karadata.videosize = videostats.size;
+								} else {
+									kara['gain'] = karadata.videogain;
+									kara['videolength'] = karadata.videoduration;
+								}							
 							} else {
-								kara['gain'] = karadata.trackgain;
+								module.exports.onLog('warning', __('GDB_VIDEO_FILE_NOT_FOUND',kara['videofile']));
+								kara['gain'] = 0;
+								kara['size'] = 0;
+								kara['videolength'] = 0;
 							}
-							kara['videolength'] = undefined;
+							
 							kara['rating'] = 0;
-							kara['viewcount'] = 0;
-							karas.push(kara);
-							resolve();
+							kara['viewcount'] = 0;							
+							Promise.all([pGetVideoDuration])
+							.then(function(){
+								karas.push(kara);
+								fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err, rep) {
+									if (err) {
+										module.exports.onLog('error', __('GDB_WRITING_KARA_ERROR'));
+										reject(err);
+									}
+									resolve();
+								});
+							})
+							.catch(function(err){
+								reject(err);
+							})
+							
+							
 						}
 					})					
 				});
