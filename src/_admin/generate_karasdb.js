@@ -350,7 +350,7 @@ module.exports = {
 													index++;
 													tag = tag.split(',');
 													var tagname = tag[0];
-													var tagnamenorm = S(tagname).latinise();
+													var tagnamenorm = S(tagname).latinise().s;
 													var tagtype = tag[1];
 													sqlInsertTags.push({
 														$id_tag : index,
