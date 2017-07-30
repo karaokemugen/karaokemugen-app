@@ -1073,7 +1073,7 @@ module.exports = {
 								var KID = uuidV4();
 								karadata.KID = KID;
 								kara['KID'] = karadata.KID;
-								fs.appendFile(karasdir + '/' + karafile, ';DO NOT MODIFY - KARAOKE ID GENERATED AUTOMATICALLY\n',function(err) {
+								fs.appendFile(karasdir + '/' + karafile, '\n;DO NOT MODIFY - KARAOKE ID GENERATED AUTOMATICALLY\n',function(err) {
 									if (err) {
 										reject(err);
 									} else {
