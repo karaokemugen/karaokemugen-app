@@ -27,6 +27,7 @@ module.exports = {
 			var timestamp = require('unix-timestamp');
 			var probe = require('../_common/modules/node-ffprobe');
 			var S = require('string');
+			var async = require('async');
 			const uuidV4 = require('uuid/v4');
 			var csv = require('csv-string');
 			const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Karas);
@@ -70,6 +71,342 @@ module.exports = {
 				}
 			});
 			module.exports.onLog('success', __('GDB_KARASDB_CREATED'));
+
+			/**
+			 * Creating tables and views
+			 */
+			var pCreateTableAndView = new Promise((resolve,reject) => {
+				/**
+				 * Creating tables
+				 */
+				var pCreateKarasDB = new Promise((resolve,reject) => {
+					var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
+					module.exports.db.exec(sqlCreateKarasDB, function(err, rep) {
+						if (err) {
+							module.exports.onLog('error', __('GDB_TABLES_CREATION_ERROR'));
+							module.exports.onLog('error', err);
+							reject(err);
+						} else {
+							module.exports.onLog('success', __('GDB_TABLES_CREATED'));
+							resolve();
+						}
+					});
+				});
+				Promise.all([pCreateKarasDB])
+					.then(function(){
+						/**
+						 * Creating views
+						 */
+						var pCreateKarasDBViewAll = new Promise((resolve,reject) => {
+							var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
+							module.exports.db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
+								if (err) {
+									module.exports.onLog('error', __('GDB_VIEW_CREATION_ERROR'));
+									module.exports.onLog('error', err);
+									module.exports.onLog('error', sqlCreateKarasDBViewAll);
+									reject(err);
+								} else {
+									module.exports.onLog('success', __('GDB_VIEW_CREATED'));
+									resolve();
+								}
+							});
+						});
+
+						
+						Promise.all([pCreateKarasDBViewAll])
+							.then(function(){
+								resolve();
+							})
+							.catch(function(err){
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+
+			/**
+			 * Creating arrays for use in sql statements
+			 */
+			var pCreateKaraArrays = new Promise((resolve,reject) => {
+				/**
+				 * Get data from .kara files
+				 */
+				var pCreateKaraFiles = new Promise((resolve,reject) => {
+					karafiles = fs.readdirSync(karasdir);  
+					for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) { 
+						if(!S(karafiles[indexToRemove]).endsWith('.kara')) { 
+							karafiles.splice(indexToRemove, 1); 
+						} 
+					} 
+					module.exports.onLog('success', __('GDB_KARADIR_READ'));
+					resolve();
+				});
+				Promise.all([pCreateKaraFiles])
+					.then(function(){
+						/**
+						 * First analyze .kara
+						 * Then add UUID for each karaoke inside if it isn't there already
+						 * Then build karas table in one transaction.
+						 */
+						var pAddToKaras = new Promise((resolve,reject) => {
+							async.eachLimit(karafiles, 100, function(kara, callback){
+								addKara(kara)
+								.then(function(){
+									callback();
+								})
+								.catch(function(err){
+									callback(err);
+								})
+							},function(err){
+								if (err) {
+									reject(err);
+								}										
+								module.exports.onLog('success', __('GDB_KARACOUNT',karas.length));
+								resolve();
+							});				
+						});
+						Promise.all([pAddToKaras])
+							.then(function(){
+								/**
+								 * Another run of kara songs to get duration time.
+								 */
+								var pGetVideoDuration= new Promise((resolve,reject) => {
+									karas.forEach(function(kara, index) {
+										index++;
+										getvideoduration(kara['videofile'])
+											.then(function(videolength){
+												sqlUpdateVideoLength.push({
+													$videolength:videolength,
+													$id:index											
+												});
+												resolve();
+											})
+											.catch(function(err){
+												reject(err);
+											});							 
+									});
+									module.exports.onLog('success', __('GDB_CALCULATED_DURATION'));
+									resolve();
+								});
+								/**
+								 * Push to array sqlInsertKaras for sql statements from karas.
+								 */
+								var pPushSqlInsertKaras = new Promise((resolve,reject) => {
+									karas.forEach(function(kara, index) {
+										index++;
+										var titlenorm = S(kara['title']).latinise().s;
+										sqlInsertKaras.push({
+											$id_kara : index,
+											$kara_KID : kara['KID'],
+											$kara_title : kara['title'],
+											$titlenorm : titlenorm,
+											$kara_year : kara['year'],
+											$kara_songorder : kara['songorder'],
+											$kara_videofile : kara['videofile'],
+											$kara_subfile : kara['subfile'],
+											$kara_dateadded : kara['dateadded'],
+											$kara_datemodif : kara['datemodif'],
+											$kara_rating : kara['rating'],
+											$kara_viewcount : kara['viewcount'],
+											$kara_gain : kara['gain'],
+										});
+									});
+									resolve();
+								});
+								/**
+								 * Create arrays for series
+								 */
+								var pCreateSeries = new Promise((resolve,reject) => {
+									/**
+									 * Extracting series.
+									 */
+									var pAddToSeries = new Promise((resolve,reject) => {
+										async.eachOfLimit(karafiles, 100, function(kara, index, callback){
+											index++;
+											addSeries(kara, index)
+												.then(function(){
+													callback();
+												})
+												.catch(function(err){
+													callback(err);
+												});
+										},function(err){
+											if (err) {
+												reject(err);
+											}
+											module.exports.onLog('success', __('GDB_SERIESCOUNT',series.length,karas_series.length));
+											resolve();
+										});				
+									});
+									Promise.all([pAddToSeries])
+										.then(function(){
+											/**
+											 * Push to array sqlInsertSeries for sql statements from series.
+											 */
+											var pPushSqlInsertSeries = new Promise((resolve,reject) => {
+												series.forEach(function(serie, index) {
+													index++;
+													var serienorm = S(serie).latinise().s;
+													sqlInsertSeries.push({
+														$id_series : index,
+														$serie : serie,
+														$serienorm : serienorm,
+													});
+												});
+												resolve();
+											});
+											/**
+											 * Push to array sqlInsertKarasSeries for sql statements from karas_series.
+											 */
+											var pPushSqlInsertKarasSeries= new Promise((resolve,reject) => {
+												karas_series.forEach(function(karaserie) {
+													karaserie = karaserie.split(',');
+													var id_series = karaserie[0];
+													var id_kara = karaserie[1];
+													sqlInsertKarasSeries.push({
+														$id_series : id_series,
+														$id_kara : id_kara,
+													});
+												});
+												resolve();
+											});
+
+											/**
+											 * Working on altnerative names of series.
+											 */
+											var pCreateSeriesAltNames= new Promise((resolve,reject) => {
+												if (fs.existsSync(series_altnamesfile)) {
+													doUpdateSeriesAltNames = true;
+													var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
+													// !!! non native forEach (here "csv" is a csv-string handler)
+													csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie) {
+														var serie_name = serie[0];
+														var serie_altnames = serie[1];
+														if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
+															var serie_altnamesnorm = S(serie[1]).latinise().s;
+															sqlUpdateSeriesAltNames.push({
+																$serie_altnames : serie_altnames,
+																$serie_altnamesnorm : serie_altnamesnorm,
+																$serie_name : serie_name,
+															});
+														}
+													});
+													module.exports.onLog('success', __('GDB_ALTNAMES_FOUND'));
+												} else {
+													doUpdateSeriesAltNames = false;
+													module.exports.onLog('warning', __('GDB_ALTNAMES_NOT_FOUND'));
+												}
+												resolve();
+											});
+
+
+											Promise.all([pPushSqlInsertSeries, pPushSqlInsertKarasSeries, pCreateSeriesAltNames])
+												.then(function(){
+													resolve();
+												})
+												.catch(function(err){
+													reject(err);
+												});
+										})
+										.catch(function(err){
+											reject(err);
+										});
+								});
+								/**
+								 * Create arrays for series
+								 */
+								var pCreateTags = new Promise((resolve,reject) => {
+									/**
+									 * Extracting tags.
+									 */
+									var pAddToTags = new Promise((resolve,reject) => {
+										async.eachOfLimit(karafiles, 100, function(kara, index, callback){
+											index++;
+											addTags(kara, index)
+												.then(function(){
+													callback();
+												})
+												.catch(function(err){
+													callback(err);
+												});
+										},function(err){
+											if (err) {
+												reject(err);
+											}
+											module.exports.onLog('success', __('GDB_TAGCOUNT',tags.length,karas_tags.length));
+											resolve();
+										});				
+									});
+
+									Promise.all([pAddToTags])
+										.then(function(){
+											/**
+											 * Push to array sqlInsertTags for sql statements from tags.
+											 */
+											var pPushSqlInsertTags = new Promise((resolve,reject) => {
+												tags.forEach(function(tag, index) {
+													index++;
+													tag = tag.split(',');
+													var tagname = tag[0];
+													var tagnamenorm = S(tagname).latinise();
+													var tagtype = tag[1];
+													sqlInsertTags.push({
+														$id_tag : index,
+														$tagtype : tagtype,
+														$tagname : tagname,
+														$tagnamenorm : tagnamenorm,
+													});
+												});
+												resolve();
+											});
+
+											/**
+											 * Push to array sqlInsertKarasTags for sql statements from karas_tags.
+											 */
+											var pPushSqlInsertKarasTags = new Promise((resolve,reject) => {
+												karas_tags.forEach(function(karatag) {								   
+													karatag = karatag.split(',');
+													var id_tag = karatag[0];
+													var id_kara = karatag[1];
+													sqlInsertKarasTags.push({
+														$id_tag : id_tag,
+														$id_kara : id_kara,
+													});
+												});
+												resolve();
+											});
+
+											Promise.all([pPushSqlInsertTags, pPushSqlInsertKarasTags])
+												.then(function(){
+													resolve();
+												})
+												.catch(function(err){
+													reject(err);
+												});
+										})
+										.catch(function(err){
+											reject(err);
+										});
+								});
+
+								Promise.all([pGetVideoDuration, pPushSqlInsertKaras, pCreateSeries, pCreateTags])
+									.then(function(){
+										resolve();
+									})
+									.catch(function(err){
+										reject(err);
+									});
+							})
+							.catch(function(err){
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
 
 			Promise.all([pCreateTableAndView, pCreateKaraArrays])
 				.then(function(){
@@ -117,333 +454,11 @@ module.exports = {
 							reject(err);
 						});
 				});
-			
-			/**
-			 * Creating tables and views
-			 */
-			var pCreateTableAndView = new Promise((resolve,reject) => {
-				Promise.all([pCreateKarasDB])
-					.then(function(){
-						Promise.all([pCreateKarasDBViewAll])
-							.then(function(){
-								resolve();
-							})
-							.catch(function(err){
-								reject(err);
-							});
-					})
-					.catch(function(err){
-						reject(err);
-					});
-			});
-
-			/**
-			 * Creating arrays for use in sql statements
-			 */
-			var pCreateKaraArrays = new Promise((resolve,reject) => {
-				Promise.all([pCreateKaraFiles])
-					.then(function(){
-						Promise.all([pAddToKaras])
-							.then(function(){
-								Promise.all([pGetVideoDuration, pPushSqlInsertKaras, pCreateSeries, pCreateTags])
-									.then(function(){
-										resolve();
-									})
-									.catch(function(err){
-										reject(err);
-									});
-							})
-							.catch(function(err){
-								reject(err);
-							});
-					})
-					.catch(function(err){
-						reject(err);
-					});
-			});
-
-			/**
-			 * Creating tables
-			 */
-			var pCreateKarasDB = new Promise((resolve,reject) => {
-				var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
-				module.exports.db.exec(sqlCreateKarasDB, function(err, rep) {
-					if (err) {
-						module.exports.onLog('error', __('GDB_TABLES_CREATION_ERROR'));
-						module.exports.onLog('error', err);
-						reject(err);
-					} else {
-						module.exports.onLog('success', __('GDB_TABLES_CREATED'));
-						resolve();
-					}
-				});
-			});
-
-			/**
-			 * Creating views
-			 */
-			var pCreateKarasDBViewAll = new Promise((resolve,reject) => {
-				var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
-				module.exports.db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
-					if (err) {
-						module.exports.onLog('error', __('GDB_VIEW_CREATION_ERROR'));
-						module.exports.onLog('error', err);
-						module.exports.onLog('error', sqlCreateKarasDBViewAll);
-						reject(err);
-					} else {
-						module.exports.onLog('success', __('GDB_VIEW_CREATED'));
-						resolve();
-					}
-				});
-			});
-
-			/**
-			 * Create arrays for series
-			 */
-			var pCreateTags = new Promise((resolve,reject) => {
-				Promise.all([pAddToTags])
-					.then(function(){
-						Promise.all([pPushSqlInsertTags, pPushSqlInsertKarasTags])
-							.then(function(){
-								resolve();
-							})
-							.catch(function(err){
-								reject(err);
-							});
-					})
-					.catch(function(err){
-						reject(err);
-					});
-			});
-
-			/**
-			 * Create arrays for series
-			 */
-			var pCreateSeries = new Promise((resolve,reject) => {
-				Promise.all([pAddToSeries])
-					.then(function(){
-						Promise.all([pPushSqlInsertSeries, pPushSqlInsertKarasSeries, pCreateSeriesAltNames])
-							.then(function(){
-								resolve();
-							})
-							.catch(function(err){
-								reject(err);
-							});
-					})
-					.catch(function(err){
-						reject(err);
-					});
-			});
-
-			/**
-			 * Get data from .kara files
-			 */
-			var pCreateKaraFiles = new Promise((resolve,reject) => {
-				karafiles = fs.readdirSync(karasdir);  
-				for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) { 
-					if(!S(karafiles[indexToRemove]).endsWith('.kara')) { 
-						karafiles.splice(indexToRemove, 1); 
-					} 
-				} 
-				module.exports.onLog('success', __('GDB_KARADIR_READ'));
-				resolve();
-			});
-			
-			/**
-			 * First analyze .kara
-			 * Then add UUID for each karaoke inside if it isn't there already
-			 * Then build karas table in one transaction.
-			 */
-			var pAddToKaras = new Promise((resolve,reject) => {
-				karafiles.forEach(function(kara) {
-					addKara(kara);
-				});
-				module.exports.onLog('success', __('GDB_KARACOUNT',karas.length));
-				resolve();
-			});
-
-			/**
-			 * Extracting tags.
-			 */
-			var pAddToTags = new Promise((resolve,reject) => {
-				karafiles.forEach(function(kara, index) {
-					index++;
-					addTags(kara, index)
-						.then(function(){
-						})
-						.catch(function(err){
-							reject(err);
-						});
-				});
-				module.exports.onLog('success', __('GDB_TAGCOUNT',tags.length,karas_tags.length));
-				resolve();
-			});
-
-			/**
-			 * Extracting series.
-			 */
-			var pAddToSeries = new Promise((resolve,reject) => {
-				karafiles.forEach(function(kara, index) {
-					index++;
-					addSeries(kara, index)
-						.then(function(){
-						})
-						.catch(function(err){
-							reject(err);
-						});
-				});
-				module.exports.onLog('success', __('GDB_SERIESCOUNT',series.length,karas_series.length));
-				resolve();							
-			});
-
-			/**
-			 * Push to array sqlInsertKaras for sql statements from karas.
-			 */
-			var pPushSqlInsertKaras = new Promise((resolve,reject) => {
-				karas.forEach(function(kara, index) {
-					index++;
-					var titlenorm = S(kara['title']).latinise().s;
-					sqlInsertKaras.push({
-						$id_kara : index,
-						$kara_KID : kara['KID'],
-						$kara_title : kara['title'],
-						$titlenorm : titlenorm,
-						$kara_year : kara['year'],
-						$kara_songorder : kara['songorder'],
-						$kara_videofile : kara['videofile'],
-						$kara_subfile : kara['subfile'],
-						$kara_dateadded : kara['dateadded'],
-						$kara_datemodif : kara['datemodif'],
-						$kara_rating : kara['rating'],
-						$kara_viewcount : kara['viewcount'],
-						$kara_gain : kara['gain'],
-					});
-				});
-				resolve();
-			});
-
-			/**
-			 * Push to array sqlInsertSeries for sql statements from series.
-			 */
-			var pPushSqlInsertSeries = new Promise((resolve,reject) => {
-				series.forEach(function(serie, index) {
-					index++;
-					var serienorm = S(serie).latinise().s;
-					sqlInsertSeries.push({
-						$id_series : index,
-						$serie : serie,
-						$serienorm : serienorm,
-					});
-				});
-				resolve();
-			});
-
-			/**
-			 * Push to array sqlInsertTags for sql statements from tags.
-			 */
-			var pPushSqlInsertTags = new Promise((resolve,reject) => {
-				tags.forEach(function(tag, index) {
-					index++;
-					tag = tag.split(',');
-					var tagname = tag[0];
-					var tagnamenorm = S(tagname).latinise();
-					var tagtype = tag[1];
-					sqlInsertTags.push({
-						$id_tag : index,
-						$tagtype : tagtype,
-						$tagname : tagname,
-						$tagnamenorm : tagnamenorm,
-					});
-				});
-				resolve();
-			});
-
-			/**
-			 * Push to array sqlInsertKarasTags for sql statements from karas_tags.
-			 */
-			var pPushSqlInsertKarasTags = new Promise((resolve,reject) => {
-				karas_tags.forEach(function(karatag) {								   
-					karatag = karatag.split(',');
-					var id_tag = karatag[0];
-					var id_kara = karatag[1];
-					sqlInsertKarasTags.push({
-						$id_tag : id_tag,
-						$id_kara : id_kara,
-					});
-				});
-				resolve();
-			});
-
-			/**
-			 * Push to array sqlInsertKarasSeries for sql statements from karas_series.
-			 */
-			var pPushSqlInsertKarasSeries= new Promise((resolve,reject) => {
-				karas_series.forEach(function(karaserie) {
-					karaserie = karaserie.split(',');
-					var id_series = karaserie[0];
-					var id_kara = karaserie[1];
-					sqlInsertKarasSeries.push({
-						$id_series : id_series,
-						$id_kara : id_kara,
-					});
-				});
-				resolve();
-			});
-
-			/**
-			 * Working on altnerative names of series.
-			 */
-			var pCreateSeriesAltNames= new Promise((resolve,reject) => {
-				if (fs.existsSync(series_altnamesfile)) {
-					doUpdateSeriesAltNames = true;
-					var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
-					// !!! non native forEach (here "csv" is a csv-string handler)
-					csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie) {
-						var serie_name = serie[0];
-						var serie_altnames = serie[1];
-						if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
-							var serie_altnamesnorm = S(serie[1]).latinise().s;
-							sqlUpdateSeriesAltNames.push({
-								$serie_altnames : serie_altnames,
-								$serie_altnamesnorm : serie_altnamesnorm,
-								$serie_name : serie_name,
-							});
-						}
-					});
-					module.exports.onLog('success', __('GDB_ALTNAMES_FOUND'));
-				} else {
-					doUpdateSeriesAltNames = false;
-					module.exports.onLog('warning', __('GDB_ALTNAMES_NOT_FOUND'));
-				}
-				resolve();
-			});
-
-			/**
-			 * Another run of kara songs to get duration time.
-			 */
-			var pGetVideoDuration= new Promise((resolve,reject) => {
-				karas.forEach(function(kara, index) {
-					index++;
-					getvideoduration(kara['videofile'])
-						.then(function(videolength){
-							sqlUpdateVideoLength.push({
-								$videolength:videolength,
-								$id:index											
-							});
-							resolve();
-						})
-						.catch(function(err){
-							reject(err);
-						});							 
-				});
-				module.exports.onLog('success', __('GDB_CALCULATED_DURATION'));
-				resolve();
-			});
 
 			/**
 			 * Insert into database
 			 */
-			var insertIntoDatabaseWowWow = function() {
+			function insertIntoDatabaseWowWow() {
 				return new Promise((resolve,reject) => {
 					module.exports.db.serialize(function() {
 						/* 
@@ -552,7 +567,7 @@ module.exports = {
 			/**
 			 * close database connection
 			 */
-			var closeDatabaseConnection = function() {
+			function closeDatabaseConnection() {
 				return new Promise((resolve,reject) => {
 					module.exports.db.close(function(err){
 						if (err) {
@@ -577,7 +592,7 @@ module.exports = {
 			* Parse karas in playlist_content, search for the KIDs in all_karas
 			* If id_kara is different, write a UPDATE query.
 			*/
-			var run_userdb_integrity_checks = function() {
+			function run_userdb_integrity_checks() {
 				return new Promise(function(resolve,reject){
 					module.exports.onLog('info', __('GDB_INTEGRITY_CHECK_START'));
 					var AllKaras = [];
@@ -853,247 +868,268 @@ module.exports = {
 
 			function addSeries(karafile, id_kara) {
 				return new Promise((resolve,reject) => {
-					var karadata = ini.parse(fs.readFileSync(karasdir + '/' + karafile, 'utf-8'));
-					var karaWOExtension = S(karafile).chompRight('.kara');
-					var karaInfos = karaWOExtension.split(' - ');
-					var karaType = karaInfos[2];
-					var serieslist = [];
-					if (S(karadata.series).isEmpty()) {
-						if (karaType == 'LIVE' || karaType == 'MV') {
-							// Don't do anything.
-						} else {
-							serieslist.push(karaInfos[1]);
+					fs.readFile(karasdir + '/' + karafile, 'utf-8', function(err,data){
+						if (err) {
+							reject(err)
+						} else {							
+							var karadata = ini.parse(data);
+							var karaWOExtension = S(karafile).chompRight('.kara');
+							var karaInfos = karaWOExtension.split(' - ');
+							var karaType = karaInfos[2];
+							var serieslist = [];
+							if (S(karadata.series).isEmpty()) {
+								if (karaType == 'LIVE' || karaType == 'MV') {
+									// Don't do anything.
+								} else {
+									serieslist.push(karaInfos[1]);
+								}
+							} else {
+								serieslist = karadata.series.split(',');
+							}
+							serieslist.forEach(function(serie) {
+								serie = S(serie).trimLeft().s;
+								if (series.indexOf(serie) == -1) {
+									series.push(serie);
+								}
+								// Let's get our new index.
+								var seriesIDX = series.indexOf(serie);
+								seriesIDX++;
+								karas_series.push(seriesIDX + ',' + id_kara);
+							});
+							resolve();
 						}
-					} else {
-						serieslist = karadata.series.split(',');
-					}
-					serieslist.forEach(function(serie) {
-						serie = S(serie).trimLeft().s;
-						if (series.indexOf(serie) == -1) {
-							series.push(serie);
-						}
-						// Let's get our new index.
-						var seriesIDX = series.indexOf(serie);
-						seriesIDX++;
-						karas_series.push(seriesIDX + ',' + id_kara);
-					});
-					resolve();
+					});					
 				});
 			}
 
 			function addTags(karafile, id_kara) {
 				return new Promise((resolve,reject) => {
-					var karadata = ini.parse(fs.readFileSync(karasdir + '/' + karafile, 'utf-8'));
-					var karaWOExtension = S(karafile).chompRight('.kara');
-					var karaInfos = karaWOExtension.split(' - ');
-					var karaSerie = karaInfos[1];
-					var karaType = karaInfos[2];
-					var taglist = [];
-					var singers;
-					//Filling taglist, and let's go.
-					if (S(karaSerie).contains(' OAV') || S(karaSerie).contains(' OVA') || S(karaType).contains('OAV')) {
-						if (taglist.indexOf('TAG_OVA,7') == -1) {
-							taglist.push('TAG_OVA,2');
+					fs.readFile(karasdir + '/' + karafile, 'utf-8', function(err,data){
+						if (err) {
+							reject(err)
+						} else {							
+							var karadata = ini.parse(data);
+							var karaWOExtension = S(karafile).chompRight('.kara');
+							var karaInfos = karaWOExtension.split(' - ');
+							var karaSerie = karaInfos[1];
+							var karaType = karaInfos[2];
+							var taglist = [];
+							var singers;
+							//Filling taglist, and let's go.
+							if (S(karaSerie).contains(' OAV') || S(karaSerie).contains(' OVA') || S(karaType).contains('OAV')) {
+								if (taglist.indexOf('TAG_OVA,7') == -1) {
+									taglist.push('TAG_OVA,2');
+								}
+							}
+							if (karaType == 'LIVE' || karaType == 'MV') {
+								//If LIVE or MV, we add the series as artist.
+								singers = karaSerie.split(',');
+								singers.forEach(function(singer) {
+									var tag = S(singer).trimLeft().s;
+									if (taglist.indexOf(tag + ',2') == -1) {
+										taglist.push(tag + ',2');
+									}
+								});
+							}
+							if (!S(karadata.singer).isEmpty()) {
+								singers = karadata.singer.split(',');
+								singers.forEach(function(singer) {
+									var tag = S(singer).trimLeft().s;
+									if (taglist.indexOf(tag + ',2') == -1) {
+										taglist.push(tag + ',2');
+									}
+								});
+							}
+							if (!S(karadata.author).isEmpty()) {
+								var authors = karadata.author.split(',');
+								authors.forEach(function(author) {
+									var tag = S(author).trimLeft().s;
+									if (taglist.indexOf(tag + ',6') == -1) {
+										taglist.push(tag + ',6');
+									}
+								});
+							}
+							if (!S(karadata.creator).isEmpty()) {
+								var creators = karadata.creator.split(',');
+								creators.forEach(function(creator) {
+									var tag = S(creator).trimLeft().s;
+									if (taglist.indexOf(tag + ',4') == -1) {
+										taglist.push(tag + ',4');
+									}
+								});
+							}
+							if (!S(karadata.songwriter).isEmpty()) {
+								var songwriters = karadata.songwriter.split(',');
+								songwriters.forEach(function(songwriter) {
+									var tag = S(songwriter).trimLeft().s;
+									if (taglist.indexOf(tag + ',8') == -1) {
+										taglist.push(tag + ',8');
+									}
+								});
+							}
+							if (!S(karadata.lang).isEmpty()) {
+								var langs = karadata.lang.split(',');
+								langs.forEach(function(lang) {
+									var tag = S(lang).trimLeft().s;
+									if (taglist.indexOf(tag + ',5') == -1) {
+										taglist.push(tag + ',5');
+									}
+								});
+							}				
+							// Check du type de song
+							if (S(karaType).contains('AMV') && taglist.indexOf('TYPE_AMV,3') == -1) {
+								taglist.push('TYPE_AMV,3');
+							}
+							if (S(karaType).contains('CM') && taglist.indexOf('TYPE_CM,3') == -1) {
+								taglist.push('TYPE_CM,3');
+							}
+							if (S(karaType).contains('ED') && taglist.indexOf('TYPE_ED,3') == -1) {
+								taglist.push('TYPE_ED,3');
+							}
+							if (S(karaType).contains('GAME') && taglist.indexOf('TAG_VIDEOGAME,7') == -1) {
+								taglist.push('TAG_VIDEOGAME,7');
+							}
+							if (S(karaType).contains('GC') && taglist.indexOf('TAG_GAMECUBE,7') == -1) {
+								taglist.push('TAG_GAMECUBE,7');
+							}
+							if (S(karaType).contains('IN') && taglist.indexOf('TYPE_INSERTSONG,3') == -1) {
+								taglist.push('TYPE_INSERTSONG,3');
+							}
+							if (S(karaType).contains('LIVE') && taglist.indexOf('TYPE_LIVE,3') == -1) {
+								taglist.push('TYPE_LIVE,3');
+							}
+							if (S(karaType).contains('MOVIE') && taglist.indexOf('TAG_MOVIE,7') == -1) {
+								taglist.push('TAG_MOVIE,7');
+							}
+							if (S(karaType).contains('OAV') && taglist.indexOf('TAG_OVA,7') == -1) {
+								taglist.push('TAG_OVA,7');
+							}
+							if (S(karaType).contains('OP') && taglist.indexOf('TYPE_OP,3') == -1) {
+								taglist.push('TYPE_OP,3');
+							}
+							if (S(karaType).startsWith('MV') && taglist.indexOf('TYPE_MUSIC,3') == -1) {
+								taglist.push('TYPE_MUSIC,3');
+							}
+							if (S(karaType).contains('OT') && taglist.indexOf('TYPE_OTHER,3') == -1) {
+								taglist.push('TYPE_OTHER,3');
+							}
+							if (S(karaType).contains('PS3') && taglist.indexOf('TAG_PS3,7') == -1) {
+								taglist.push('TAG_PS3,7');
+							}
+							if (S(karaType).contains('PS2') && taglist.indexOf('TAG_PS2,7') == -1) {
+								taglist.push('TAG_PS2,7');
+							}
+							if (S(karaType).contains('PSV') && taglist.indexOf('TAG_PSV,7') == -1) {
+								taglist.push('TAG_PSV,7');
+							}
+							if (S(karaType).contains('PSX') && taglist.indexOf('TAG_PSX,7') == -1) {
+								taglist.push('TAG_PSX,7');
+							}
+							if (S(karaType).contains('PV') && taglist.indexOf('TYPE_PV,3') == -1) {
+								taglist.push('TYPE_PV,3');
+							}
+							if (S(karaType).contains('R18') && taglist.indexOf('TAG_R18,7') == -1) {
+								taglist.push('TAG_R18,7');
+							}
+							if (S(karaType).contains('REMIX') && taglist.indexOf('TAG_REMIX,7') == -1) {
+								taglist.push('TAG_REMIX,7');
+							}
+							if (S(karaType).contains('SPECIAL') && taglist.indexOf('TAG_SPECIAL,7') == -1) {
+								taglist.push('TAG_SPECIAL,7');
+							}
+							if (S(karaType).contains('VOCA') && taglist.indexOf('TAG_VOCALOID,7') == -1) {
+								taglist.push('TAG_VOCALOID,7');
+							}
+							if (S(karaType).contains('XBOX360') && taglist.indexOf('TAG_XBOX360,7') == -1) {
+								taglist.push('TAG_XBOX360,7');
+							}
+							taglist.forEach(function(tag) {
+								tag = S(tag).trimLeft().s;
+								if (tags.indexOf(tag) == -1) {
+									tags.push(tag);
+								}
+								// Let's get our new index.
+								var tagsIDX = tags.indexOf(tag);
+								tagsIDX++;
+								karas_tags.push(tagsIDX + ',' + id_kara);
+							});
+							resolve();
 						}
-					}
-					if (karaType == 'LIVE' || karaType == 'MV') {
-						//If LIVE or MV, we add the series as artist.
-						singers = karaSerie.split(',');
-						singers.forEach(function(singer) {
-							var tag = S(singer).trimLeft().s;
-							if (taglist.indexOf(tag + ',2') == -1) {
-								taglist.push(tag + ',2');
-							}
-						});
-					}
-					if (!S(karadata.singer).isEmpty()) {
-						singers = karadata.singer.split(',');
-						singers.forEach(function(singer) {
-							var tag = S(singer).trimLeft().s;
-							if (taglist.indexOf(tag + ',2') == -1) {
-								taglist.push(tag + ',2');
-							}
-						});
-					}
-					if (!S(karadata.author).isEmpty()) {
-						var authors = karadata.author.split(',');
-						authors.forEach(function(author) {
-							var tag = S(author).trimLeft().s;
-							if (taglist.indexOf(tag + ',6') == -1) {
-								taglist.push(tag + ',6');
-							}
-						});
-					}
-					if (!S(karadata.creator).isEmpty()) {
-						var creators = karadata.creator.split(',');
-						creators.forEach(function(creator) {
-							var tag = S(creator).trimLeft().s;
-							if (taglist.indexOf(tag + ',4') == -1) {
-								taglist.push(tag + ',4');
-							}
-						});
-					}
-					if (!S(karadata.songwriter).isEmpty()) {
-						var songwriters = karadata.songwriter.split(',');
-						songwriters.forEach(function(songwriter) {
-							var tag = S(songwriter).trimLeft().s;
-							if (taglist.indexOf(tag + ',8') == -1) {
-								taglist.push(tag + ',8');
-							}
-						});
-					}
-					if (!S(karadata.lang).isEmpty()) {
-						var langs = karadata.lang.split(',');
-						langs.forEach(function(lang) {
-							var tag = S(lang).trimLeft().s;
-							if (taglist.indexOf(tag + ',5') == -1) {
-								taglist.push(tag + ',5');
-							}
-						});
-					}				
-					// Check du type de song
-					if (S(karaType).contains('AMV') && taglist.indexOf('TYPE_AMV,3') == -1) {
-						taglist.push('TYPE_AMV,3');
-					}
-					if (S(karaType).contains('CM') && taglist.indexOf('TYPE_CM,3') == -1) {
-						taglist.push('TYPE_CM,3');
-					}
-					if (S(karaType).contains('ED') && taglist.indexOf('TYPE_ED,3') == -1) {
-						taglist.push('TYPE_ED,3');
-					}
-					if (S(karaType).contains('GAME') && taglist.indexOf('TAG_VIDEOGAME,7') == -1) {
-						taglist.push('TAG_VIDEOGAME,7');
-					}
-					if (S(karaType).contains('GC') && taglist.indexOf('TAG_GAMECUBE,7') == -1) {
-						taglist.push('TAG_GAMECUBE,7');
-					}
-					if (S(karaType).contains('IN') && taglist.indexOf('TYPE_INSERTSONG,3') == -1) {
-						taglist.push('TYPE_INSERTSONG,3');
-					}
-					if (S(karaType).contains('LIVE') && taglist.indexOf('TYPE_LIVE,3') == -1) {
-						taglist.push('TYPE_LIVE,3');
-					}
-					if (S(karaType).contains('MOVIE') && taglist.indexOf('TAG_MOVIE,7') == -1) {
-						taglist.push('TAG_MOVIE,7');
-					}
-					if (S(karaType).contains('OAV') && taglist.indexOf('TAG_OVA,7') == -1) {
-						taglist.push('TAG_OVA,7');
-					}
-					if (S(karaType).contains('OP') && taglist.indexOf('TYPE_OP,3') == -1) {
-						taglist.push('TYPE_OP,3');
-					}
-					if (S(karaType).startsWith('MV') && taglist.indexOf('TYPE_MUSIC,3') == -1) {
-						taglist.push('TYPE_MUSIC,3');
-					}
-					if (S(karaType).contains('OT') && taglist.indexOf('TYPE_OTHER,3') == -1) {
-						taglist.push('TYPE_OTHER,3');
-					}
-					if (S(karaType).contains('PS3') && taglist.indexOf('TAG_PS3,7') == -1) {
-						taglist.push('TAG_PS3,7');
-					}
-					if (S(karaType).contains('PS2') && taglist.indexOf('TAG_PS2,7') == -1) {
-						taglist.push('TAG_PS2,7');
-					}
-					if (S(karaType).contains('PSV') && taglist.indexOf('TAG_PSV,7') == -1) {
-						taglist.push('TAG_PSV,7');
-					}
-					if (S(karaType).contains('PSX') && taglist.indexOf('TAG_PSX,7') == -1) {
-						taglist.push('TAG_PSX,7');
-					}
-					if (S(karaType).contains('PV') && taglist.indexOf('TYPE_PV,3') == -1) {
-						taglist.push('TYPE_PV,3');
-					}
-					if (S(karaType).contains('R18') && taglist.indexOf('TAG_R18,7') == -1) {
-						taglist.push('TAG_R18,7');
-					}
-					if (S(karaType).contains('REMIX') && taglist.indexOf('TAG_REMIX,7') == -1) {
-						taglist.push('TAG_REMIX,7');
-					}
-					if (S(karaType).contains('SPECIAL') && taglist.indexOf('TAG_SPECIAL,7') == -1) {
-						taglist.push('TAG_SPECIAL,7');
-					}
-					if (S(karaType).contains('VOCA') && taglist.indexOf('TAG_VOCALOID,7') == -1) {
-						taglist.push('TAG_VOCALOID,7');
-					}
-					if (S(karaType).contains('XBOX360') && taglist.indexOf('TAG_XBOX360,7') == -1) {
-						taglist.push('TAG_XBOX360,7');
-					}
-					taglist.forEach(function(tag) {
-						tag = S(tag).trimLeft().s;
-						if (tags.indexOf(tag) == -1) {
-							tags.push(tag);
-						}
-						// Let's get our new index.
-						var tagsIDX = tags.indexOf(tag);
-						tagsIDX++;
-						karas_tags.push(tagsIDX + ',' + id_kara);
 					});
-					resolve();
 				});
 			}
 
 			function addKara(karafile) {
-				var karadata = ini.parse(fs.readFileSync(karasdir + '/' + karafile, 'utf-8'));
-				var kara = [];
-				if (karadata.KID) {
-					kara['KID'] = karadata.KID;
-				} else {
-					var KID = uuidV4();
-					karadata.KID = KID;
-					kara['KID'] = karadata.KID;
-					fs.appendFile(karasdir + '/' + karafile, ';DO NOT MODIFY - KARAOKE ID GENERATED AUTOMATICALLY\n',function(err) {
+				return new Promise(function(resolve, reject) {
+					fs.readFile(karasdir + '/' + karafile, 'utf-8', function(err,data){
 						if (err) {
-							reject(err);
-						} else {
-							fs.appendFile(karasdir + '/' + karafile, 'kid='+KID+'\n',function(err){
-								if (err) {
-									reject(err);
-								}								
-							});						
+							reject(err)
+						} else {							
+							var karadata = ini.parse(data);
+							var kara = [];
+							if (karadata.KID) {
+								kara['KID'] = karadata.KID;
+							} else {
+								var KID = uuidV4();
+								karadata.KID = KID;
+								kara['KID'] = karadata.KID;
+								fs.appendFile(karasdir + '/' + karafile, ';DO NOT MODIFY - KARAOKE ID GENERATED AUTOMATICALLY\n',function(err) {
+									if (err) {
+										reject(err);
+									} else {
+										fs.appendFile(karasdir + '/' + karafile, 'kid="'+KID+'"\n',function(err){
+											if (err) {
+												reject(err);
+											}								
+										});						
+									}
+								});					
+								
+							}
+							timestamp.round = true;
+							kara['dateadded'] = timestamp.now();
+							kara['datemodif'] = kara['dateadded'];
+							// Take out .kara from the filename
+							var karaWOExtension = S(karafile).chompRight('.kara');
+							// Cut name into different fields.
+							var karaInfos = karaWOExtension.split(' - ');
+							if (karaInfos[3] == undefined) {
+								karaInfos[3] = '';
+							}
+							kara['title'] = karaInfos[3];
+							kara['year'] = karadata.year;
+							// Songorder : find it after the songtype
+							var karaOrder = undefined;
+							var karaType = karaInfos[2];
+							if (S(S(karaType).right(2)).isNumeric()) {
+								karaOrder = S(karaType).right(2).s;
+								if (S(karaOrder).left(1) == '0') {
+									karaOrder = S(karaOrder).right(1).s;
+								}
+							} else {
+								if (S(S(karaType).right(1)).isNumeric()) {
+									karaOrder = S(karaType).right(1).s;
+								} else {
+									karaOrder = 1;
+								}
+							}
+							kara['songorder'] = karaOrder;
+							kara['videofile'] = karadata.videofile;
+							kara['subfile'] = karadata.subfile;
+							//Calculate gain. 
+							if (S(karadata.trackgain).isEmpty()) {
+								kara['gain'] = 0;
+							} else {
+								kara['gain'] = karadata.trackgain;
+							}
+							kara['videolength'] = undefined;
+							kara['rating'] = 0;
+							kara['viewcount'] = 0;
+							karas.push(kara);
+							resolve();
 						}
-					});					
-					
-				}
-				timestamp.round = true;
-				kara['dateadded'] = timestamp.now();
-				kara['datemodif'] = kara['dateadded'];
-				// Take out .kara from the filename
-				var karaWOExtension = S(karafile).chompRight('.kara');
-				// Cut name into different fields.
-				var karaInfos = karaWOExtension.split(' - ');
-				if (karaInfos[3] == undefined) {
-					karaInfos[3] = '';
-				}
-				kara['title'] = karaInfos[3];
-				kara['year'] = karadata.year;
-				// Songorder : find it after the songtype
-				var karaOrder = undefined;
-				var karaType = karaInfos[2];
-				if (S(S(karaType).right(2)).isNumeric()) {
-					karaOrder = S(karaType).right(2).s;
-					if (S(karaOrder).left(1) == '0') {
-						karaOrder = S(karaOrder).right(1).s;
-					}
-				} else {
-					if (S(S(karaType).right(1)).isNumeric()) {
-						karaOrder = S(karaType).right(1).s;
-					} else {
-						karaOrder = 1;
-					}
-				}
-				kara['songorder'] = karaOrder;
-				kara['videofile'] = karadata.videofile;
-				kara['subfile'] = karadata.subfile;
-				//Calculate gain. 
-				if (S(karadata.trackgain).isEmpty()) {
-					kara['gain'] = 0;
-				} else {
-					kara['gain'] = karadata.trackgain;
-				}
-				kara['videolength'] = undefined;
-				kara['rating'] = 0;
-				kara['viewcount'] = 0;
-				karas.push(kara);
+					})					
+				});
 			}
 		});
 	},
