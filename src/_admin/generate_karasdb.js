@@ -18,7 +18,7 @@ module.exports = {
 		return new Promise(function(resolve, reject) {
 			if (module.exports.SYSPATH == null) {
 				module.exports.onLog('error', 'SYSPATH is not defined');
-				process.exit();
+				reject();
 			}
 			var path = require('path');
 			var sqlite3 = require('sqlite3').verbose();
@@ -55,294 +55,467 @@ module.exports = {
 			var tags = [];
 			var karas_series = [];
 			var karas_tags = [];
+			var karafiles = [];
+			var doUpdateSeriesAltNames = false;
 			
 			module.exports.db = new sqlite3.Database(karas_dbfile, function(err, rep) {
 				if (err) {
 					module.exports.onLog('error', __('GDB_OPEN_KARASDB_ERROR'));
-					process.exit();
+					reject(err);
 				}
 			});
 			module.exports.userdb = new sqlite3.Database(karas_userdbfile, function(err, rep) {
 				if (err) {
 					module.exports.onLog('error', __('GDB_OPEN_USERDB_ERROR'));
-					process.exit();
+					reject(err);
 				}
 			});
 			module.exports.onLog('success', __('GDB_KARASDB_CREATED'));
 
-			// -------------------------------------------------------------------------------------------------------------
-			// Creating tables
-			// -------------------------------------------------------------------------------------------------------------
-			var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
-			module.exports.db.exec(sqlCreateKarasDB, function(err, rep) {
-				if (err) {
-					module.exports.onLog('error', __('GDB_TABLES_CREATION_ERROR'));
-					module.exports.onLog('error', err);
-				} else {
-					module.exports.onLog('success', __('GDB_TABLES_CREATED'));
-					// -------------------------------------------------------------------------------------------------------------
-					// Creating views
-					// -------------------------------------------------------------------------------------------------------------
-					var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
-					module.exports.db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
-						if (err) {
-							module.exports.onLog('error', __('GDB_VIEW_CREATION_ERROR'));
-							module.exports.onLog('error', err);
-							module.exports.onLog('error', sqlCreateKarasDBViewAll);
-							
-							process.exit();
-						} else {
-							module.exports.onLog('success', __('GDB_VIEW_CREATED'));
-							module.exports.db.serialize(function() {
-
-								// -------------------------------------------------------------------------------------------------------------
-								// Now working with a transaction to bulk-add data.
-								// -------------------------------------------------------------------------------------------------------------
-
-								module.exports.db.run('begin transaction');
-
-								// -------------------------------------------------------------------------------------------------------------
-
-								var karafiles = fs.readdirSync(karasdir);  
-								for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) { 
-									if(!S(karafiles[indexToRemove]).endsWith('.kara')) { 
-										karafiles.splice(indexToRemove, 1); 
-									} 
-								} 
-								module.exports.onLog('success', __('GDB_KARADIR_READ'));
-
-								//First analyze .kara
-								//Then add UUID for each karaoke inside if it isn't there already
-								//Then build karas table in one transaction.
-								karafiles.forEach(function(kara) {
-									addKara(kara);
-								});
-								module.exports.onLog('success', __('GDB_KARACOUNT',karas.length));
-
-								// Extracting tags.
-								karafiles.forEach(function(kara, index) {
-									index++;
-									addTags(kara, index);
-								});
-								module.exports.onLog('success', __('GDB_TAGCOUNT',tags.length,karas_tags.length));
-
-								// Extracting series.
-								karafiles.forEach(function(kara, index) {
-									index++;
-									addSeries(kara, index);
-								});
-								module.exports.onLog('success', __('GDB_SERIESCOUNT',series.length,karas_series.length));								
-
-								// -------------------------------------------------------------------------------------------------------------
-								// Building SQL queries for insertion
-								// ------------------------------------------------------------------------------------------------------------
-
-								var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);');
-								var stmt_UpdateVideoLength = module.exports.db.prepare('UPDATE kara SET videolength = $videolength WHERE PK_id_kara = $id ;');
-								var stmt_InsertSeries = module.exports.db.prepare('INSERT INTO series(PK_id_series,name,NORM_name) VALUES( $id_series, $serie, $serienorm );');
-								var stmt_InsertTags = module.exports.db.prepare('INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );');
-								var stmt_InsertKarasTags = module.exports.db.prepare('INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES( $id_tag, $id_kara );');
-								var stmt_InsertKarasSeries = module.exports.db.prepare('INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES( $id_series, $id_kara);');
-								var stmt_UpdateSeriesAltNames = module.exports.db.prepare('UPDATE series SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;');
-
-								// ------------------------------------------------------------------------------------------------------------
-
-								karas.forEach(function(kara, index) {
-									index++;
-									var titlenorm = S(kara['title']).latinise().s;
-									sqlInsertKaras.push({
-										$id_kara : index,
-										$kara_KID : kara['KID'],
-										$kara_title : kara['title'],
-										$titlenorm : titlenorm,
-										$kara_year : kara['year'],
-										$kara_songorder : kara['songorder'],
-										$kara_videofile : kara['videofile'],
-										$kara_subfile : kara['subfile'],
-										$kara_dateadded : kara['dateadded'],
-										$kara_datemodif : kara['datemodif'],
-										$kara_rating : kara['rating'],
-										$kara_viewcount : kara['viewcount'],
-										$kara_gain : kara['gain'],
-									});
-								});
-
-								series.forEach(function(serie, index) {
-									index++;
-									var serienorm = S(serie).latinise().s;
-									sqlInsertSeries.push({
-										$id_series : index,
-										$serie : serie,
-										$serienorm : serienorm,
-									});
-								});
-								tags.forEach(function(tag, index) {
-									index++;
-									tag = tag.split(',');
-									var tagname = tag[0];
-									var tagnamenorm = S(tagname).latinise();
-									var tagtype = tag[1];
-									sqlInsertTags.push({
-										$id_tag : index,
-										$tagtype : tagtype,
-										$tagname : tagname,
-										$tagnamenorm : tagnamenorm,
-									});
-								});
-								
-								karas_tags.forEach(function(karatag) {								   
-									karatag = karatag.split(',');
-									var id_tag = karatag[0];
-									var id_kara = karatag[1];
-									sqlInsertKarasTags.push({
-										$id_tag : id_tag,
-										$id_kara : id_kara,
-									});
-								});
-								
-								karas_series.forEach(function(karaserie) {
-									karaserie = karaserie.split(',');
-									var id_series = karaserie[0];
-									var id_kara = karaserie[1];
-									sqlInsertKarasSeries.push({
-										$id_series : id_series,
-										$id_kara : id_kara,
-									});
-								});
-								var DoUpdateSeriesAltNames;
-								//Working on altnerative names of series
-								if (fs.existsSync(series_altnamesfile)) {
-									DoUpdateSeriesAltNames = true;
-									var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
-									// !!! non native forEach (here "csv" is a csv-string handler)
-									csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie) {
-										var serie_name = serie[0];
-										var serie_altnames = serie[1];
-										if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
-											var serie_altnamesnorm = S(serie[1]).latinise().s;
-											sqlUpdateSeriesAltNames.push({
-												$serie_altnames : serie_altnames,
-												$serie_altnamesnorm : serie_altnamesnorm,
-												$serie_name : serie_name,
-											});
-										}
-									});
-									module.exports.onLog('success', __('GDB_ALTNAMES_FOUND'));
-								} else {
-									DoUpdateSeriesAltNames = false;
-									module.exports.onLog('warning', __('GDB_ALTNAMES_NOT_FOUND'));
-								}
-
-								//Another run of kara songs to get duration time.
-									
-								
-								
-								karas.forEach(function(kara, index) {
-									index++;
-									getvideoduration(kara['videofile'], index, function(err, videolength, id) {
-										sqlUpdateVideoLength.push({
-											$videolength:videolength,
-											$id:id											
-										});
-										
-									});									 
-								});
-								module.exports.onLog('success', __('GDB_CALCULATED_DURATION'));
-								
-								// -------------------------------------------------------------------------------------------------------------
-								// Running queries (Statements or RAW depending on the case)
-								// -------------------------------------------------------------------------------------------------------------
-
-								sqlInsertKaras.forEach(function(data){
-									stmt_InsertKaras.run(data);
-								});
-								module.exports.onLog('info', __('GDB_FILLED_KARA_TABLE'));
-
-								sqlUpdateVideoLength.forEach(function(data){
-									stmt_UpdateVideoLength.run(data);
-								});
-								module.exports.onLog('info', __('GDB_UPDATED_VIDEO_DURATION'));
-
-								sqlInsertTags.forEach(function(data){
-									//console.log(data);
-									stmt_InsertTags.run(data);
-								});
-								module.exports.onLog('success', __('GDB_FILLED_TAG_TABLE'));
-
-								sqlInsertKarasTags.forEach(function(data){
-									stmt_InsertKarasTags.run(data);
-								});
-								module.exports.onLog('success', __('GDB_LINKED_KARA_TO_TAGS'));
-
-								sqlInsertSeries.forEach(function(data){
-									stmt_InsertSeries.run(data);
-								});
-								module.exports.onLog('success', __('GDB_FILLED_SERIES_TABLE'));
-
-								if (DoUpdateSeriesAltNames) {
-									sqlUpdateSeriesAltNames.forEach(function(data){
-										stmt_UpdateSeriesAltNames.run(data);
-									});
-									module.exports.onLog('success', __('GDB_UPDATED_ALTNAMES'));
-								}
-
-								sqlInsertKarasSeries.forEach(function(data){
-									stmt_InsertKarasSeries.run(data);
-								});
-								module.exports.onLog('success', __('GDB_LINKED_KARA_TO_SERIES'));
-								module.exports.onLog('success', __('GDB_FINISHED_DATABASE_GENERATION'));
-								module.exports.db.run('commit');
-								// Close all statements just to be sure. 
-								stmt_InsertKarasSeries.finalize();
-								stmt_InsertSeries.finalize();									
-								stmt_UpdateSeriesAltNames.finalize();
-								stmt_InsertKarasTags.finalize();
-								stmt_InsertTags.finalize();
-								stmt_UpdateVideoLength.finalize();
-								stmt_InsertKaras.finalize();
-							});
-
-							// -------------------------------------------------------------------------------------------------------------
-							// Running checks on user database
-							// Now that we regenerated kara_ids
-							// -------------------------------------------------------------------------------------------------------------
-														
-							module.exports.onLog('info', __('GDB_INTEGRITY_CHECK_START'));
+			Promise.all([pCreateTableAndView, pCreateKaraArrays])
+				.then(function(){
+					Promise.all([insertIntoDatabaseWowWow])
+						.then(function(){
 							run_userdb_integrity_checks()
 								.then(function(){
-									module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_COMPLETE'));
-								
-									module.exports.db.close(function(err){
-										module.exports.userdb.close(function(err){
-											resolve();
-										});
-									});
-									
-									
+									closeDatabaseConnection();
+									resolve();
 								})
 								.catch(function(err){
-									module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_ERROR',err));
+									module.exports.onLog('error', err);
+									closeDatabaseConnection();
+									reject(err);
 								});
+						})
+						.catch(function(err){
+							module.exports.onLog('error', err);
+							closeDatabaseConnection();
+							reject(err);
+						});
+				})
+				.catch(function(err){
+					module.exports.onLog('error', err);
+					closeDatabaseConnection();
+					reject(err);
+				});
+			
+			/**
+			 * Creating tables and views
+			 */
+			var pCreateTableAndView = new Promise((resolve,reject) => {
+				Promise.all([pCreateKarasDB])
+					.then(function(){
+						Promise.all([pCreateKarasDBViewAll])
+							.then(function(){
+								resolve();
+							})
+							.catch(function(err){
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
 
-							// -------------------------------------------------------------------------------------------------------------
-							// Then close database connection
-							// -------------------------------------------------------------------------------------------------------------
+			/**
+			 * Creating arrays for use in sql statements
+			 */
+			var pCreateKaraArrays = new Promise((resolve,reject) => {
+				Promise.all([pCreateKaraFiles])
+					.then(function(){
+						Promise.all([pAddToKaras])
+							.then(function(){
+								Promise.all([pGetVideoDuration, pPushSqlInsertKaras, pCreateSeries, pCreateTags])
+									.then(function(){
+										resolve();
+									})
+									.catch(function(err){
+										reject(err);
+									});
+							})
+							.catch(function(err){
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
 
-							
+			/**
+			 * Creating tables
+			 */
+			var pCreateKarasDB = new Promise((resolve,reject) => {
+				var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
+				module.exports.db.exec(sqlCreateKarasDB, function(err, rep) {
+					if (err) {
+						module.exports.onLog('error', __('GDB_TABLES_CREATION_ERROR'));
+						module.exports.onLog('error', err);
+						reject(err);
+					} else {
+						module.exports.onLog('success', __('GDB_TABLES_CREATED'));
+						resolve();
+					}
+				});
+			});
+
+			/**
+			 * Creating views
+			 */
+			var pCreateKarasDBViewAll = new Promise((resolve,reject) => {
+				var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
+				module.exports.db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
+					if (err) {
+						module.exports.onLog('error', __('GDB_VIEW_CREATION_ERROR'));
+						module.exports.onLog('error', err);
+						module.exports.onLog('error', sqlCreateKarasDBViewAll);
+						reject(err);
+					} else {
+						module.exports.onLog('success', __('GDB_VIEW_CREATED'));
+						resolve();
+					}
+				});
+			});
+
+			/**
+			 * Create arrays for series
+			 */
+			var pCreateTags = new Promise((resolve,reject) => {
+				Promise.all([pAddToTags])
+					.then(function(){
+						Promise.all([pPushSqlInsertTags, pPushSqlInsertKarasTags])
+							.then(function(){
+								resolve();
+							})
+							.catch(function(err){
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+
+			/**
+			 * Create arrays for series
+			 */
+			var pCreateSeries = new Promise((resolve,reject) => {
+				Promise.all([pAddToSeries])
+					.then(function(){
+						Promise.all([pPushSqlInsertSeries, pPushSqlInsertKarasSeries, pCreateSeriesAltNames])
+							.then(function(){
+								resolve();
+							})
+							.catch(function(err){
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+
+			/**
+			 * Get data from .kara files
+			 */
+			var pCreateKaraFiles = new Promise((resolve,reject) => {
+				karafiles = fs.readdirSync(karasdir);  
+				for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) { 
+					if(!S(karafiles[indexToRemove]).endsWith('.kara')) { 
+						karafiles.splice(indexToRemove, 1); 
+					} 
+				} 
+				module.exports.onLog('success', __('GDB_KARADIR_READ'));
+				resolve();
+			});
+			
+			/**
+			 * First analyze .kara
+			 * Then add UUID for each karaoke inside if it isn't there already
+			 * Then build karas table in one transaction.
+			 */
+			var pAddToKaras = new Promise((resolve,reject) => {
+				karafiles.forEach(function(kara) {
+					addKara(kara);
+				});
+				module.exports.onLog('success', __('GDB_KARACOUNT',karas.length));
+				resolve();
+			});
+
+			/**
+			 * Extracting tags.
+			 */
+			var pAddToTags = new Promise((resolve,reject) => {
+				karafiles.forEach(function(kara, index) {
+					index++;
+					addTags(kara, index);
+				});
+				module.exports.onLog('success', __('GDB_TAGCOUNT',tags.length,karas_tags.length));
+				resolve();
+			});
+
+			/**
+			 * Extracting series.
+			 */
+			var pAddToSeries = new Promise((resolve,reject) => {
+				karafiles.forEach(function(kara, index) {
+					index++;
+					addSeries(kara, index);
+				});
+				module.exports.onLog('success', __('GDB_SERIESCOUNT',series.length,karas_series.length));
+				resolve();							
+			});
+
+			/**
+			 * Push to array sqlInsertKaras for sql statements from karas.
+			 */
+			var pPushSqlInsertKaras = new Promise((resolve,reject) => {
+				karas.forEach(function(kara, index) {
+					index++;
+					var titlenorm = S(kara['title']).latinise().s;
+					sqlInsertKaras.push({
+						$id_kara : index,
+						$kara_KID : kara['KID'],
+						$kara_title : kara['title'],
+						$titlenorm : titlenorm,
+						$kara_year : kara['year'],
+						$kara_songorder : kara['songorder'],
+						$kara_videofile : kara['videofile'],
+						$kara_subfile : kara['subfile'],
+						$kara_dateadded : kara['dateadded'],
+						$kara_datemodif : kara['datemodif'],
+						$kara_rating : kara['rating'],
+						$kara_viewcount : kara['viewcount'],
+						$kara_gain : kara['gain'],
+					});
+				});
+				resolve();
+			});
+
+			/**
+			 * Push to array sqlInsertSeries for sql statements from series.
+			 */
+			var pPushSqlInsertSeries = new Promise((resolve,reject) => {
+				series.forEach(function(serie, index) {
+					index++;
+					var serienorm = S(serie).latinise().s;
+					sqlInsertSeries.push({
+						$id_series : index,
+						$serie : serie,
+						$serienorm : serienorm,
+					});
+				});
+				resolve();
+			});
+
+			/**
+			 * Push to array sqlInsertTags for sql statements from tags.
+			 */
+			var pPushSqlInsertTags = new Promise((resolve,reject) => {
+				tags.forEach(function(tag, index) {
+					index++;
+					tag = tag.split(',');
+					var tagname = tag[0];
+					var tagnamenorm = S(tagname).latinise();
+					var tagtype = tag[1];
+					sqlInsertTags.push({
+						$id_tag : index,
+						$tagtype : tagtype,
+						$tagname : tagname,
+						$tagnamenorm : tagnamenorm,
+					});
+				});
+				resolve();
+			});
+
+			/**
+			 * Push to array sqlInsertKarasTags for sql statements from karas_tags.
+			 */
+			var pPushSqlInsertKarasTags = new Promise((resolve,reject) => {
+				karas_tags.forEach(function(karatag) {								   
+					karatag = karatag.split(',');
+					var id_tag = karatag[0];
+					var id_kara = karatag[1];
+					sqlInsertKarasTags.push({
+						$id_tag : id_tag,
+						$id_kara : id_kara,
+					});
+				});
+				resolve();
+			});
+
+			/**
+			 * Push to array sqlInsertKarasSeries for sql statements from karas_series.
+			 */
+			var pPushSqlInsertKarasSeries= new Promise((resolve,reject) => {
+				karas_series.forEach(function(karaserie) {
+					karaserie = karaserie.split(',');
+					var id_series = karaserie[0];
+					var id_kara = karaserie[1];
+					sqlInsertKarasSeries.push({
+						$id_series : id_series,
+						$id_kara : id_kara,
+					});
+				});
+				resolve();
+			});
+
+			/**
+			 * Working on altnerative names of series.
+			 */
+			var pCreateSeriesAltNames= new Promise((resolve,reject) => {
+				if (fs.existsSync(series_altnamesfile)) {
+					doUpdateSeriesAltNames = true;
+					var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
+					// !!! non native forEach (here "csv" is a csv-string handler)
+					csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie) {
+						var serie_name = serie[0];
+						var serie_altnames = serie[1];
+						if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
+							var serie_altnamesnorm = S(serie[1]).latinise().s;
+							sqlUpdateSeriesAltNames.push({
+								$serie_altnames : serie_altnames,
+								$serie_altnamesnorm : serie_altnamesnorm,
+								$serie_name : serie_name,
+							});
 						}
 					});
+					module.exports.onLog('success', __('GDB_ALTNAMES_FOUND'));
+				} else {
+					doUpdateSeriesAltNames = false;
+					module.exports.onLog('warning', __('GDB_ALTNAMES_NOT_FOUND'));
 				}
+				resolve();
 			});
+
+			/**
+			 * Another run of kara songs to get duration time.
+			 */
+			var pGetVideoDuration= new Promise((resolve,reject) => {
+				karas.forEach(function(kara, index) {
+					index++;
+					getvideoduration(kara['videofile'], index, function(err, videolength, id) {
+						sqlUpdateVideoLength.push({
+							$videolength:videolength,
+							$id:id											
+						});
+						
+					});									 
+				});
+				module.exports.onLog('success', __('GDB_CALCULATED_DURATION'));
+				resolve();
+			});
+
+			/**
+			 * Insert into database
+			 */
+			var insertIntoDatabaseWowWow = new Promise((resolve,reject) => {
+				module.exports.db.serialize(function() {
+					/* 
+					* Now working with a transaction to bulk-add data.
+					*/
+					module.exports.db.run('begin transaction');
+				
+					/*
+					* Building SQL queries for insertion
+					*/
+					var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain);');
+					var stmt_UpdateVideoLength = module.exports.db.prepare('UPDATE kara SET videolength = $videolength WHERE PK_id_kara = $id ;');
+					var stmt_InsertSeries = module.exports.db.prepare('INSERT INTO series(PK_id_series,name,NORM_name) VALUES( $id_series, $serie, $serienorm );');
+					var stmt_InsertTags = module.exports.db.prepare('INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );');
+					var stmt_InsertKarasTags = module.exports.db.prepare('INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES( $id_tag, $id_kara );');
+					var stmt_InsertKarasSeries = module.exports.db.prepare('INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES( $id_series, $id_kara);');
+					var stmt_UpdateSeriesAltNames = module.exports.db.prepare('UPDATE series SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;');
+					
+					/*
+					* Running queries (Statements or RAW depending on the case)
+					*/
+					sqlInsertKaras.forEach(function(data){
+						stmt_InsertKaras.run(data, function (err) {
+							reject(err);
+						});
+					});
+					module.exports.onLog('info', __('GDB_FILLED_KARA_TABLE'));
+
+					sqlUpdateVideoLength.forEach(function(data){
+						stmt_UpdateVideoLength.run(data, function (err) {
+							reject(err);
+						});
+					});
+					module.exports.onLog('info', __('GDB_UPDATED_VIDEO_DURATION'));
+
+					sqlInsertTags.forEach(function(data){
+						stmt_InsertTags.run(data, function (err) {
+							reject(err);
+						});
+					});
+					module.exports.onLog('success', __('GDB_FILLED_TAG_TABLE'));
+
+					sqlInsertKarasTags.forEach(function(data){
+						stmt_InsertKarasTags.run(data, function (err) {
+							reject(err);
+						});
+					});
+					module.exports.onLog('success', __('GDB_LINKED_KARA_TO_TAGS'));
+
+					sqlInsertSeries.forEach(function(data){
+						stmt_InsertSeries.run(data, function (err) {
+							reject(err);
+						});
+					});
+					module.exports.onLog('success', __('GDB_FILLED_SERIES_TABLE'));
+
+					if (doUpdateSeriesAltNames) {
+						sqlUpdateSeriesAltNames.forEach(function(data){
+							stmt_UpdateSeriesAltNames.run(data, function (err) {
+								reject(err);
+							});
+						});
+						module.exports.onLog('success', __('GDB_UPDATED_ALTNAMES'));
+					}
+
+					sqlInsertKarasSeries.forEach(function(data){
+						stmt_InsertKarasSeries.run(data, function (err) {
+							reject(err);
+						});
+					});
+					module.exports.onLog('success', __('GDB_LINKED_KARA_TO_SERIES'));
+					module.exports.onLog('success', __('GDB_FINISHED_DATABASE_GENERATION'));
+					module.exports.db.run('commit');
+					// Close all statements just to be sure. 
+					stmt_InsertKarasSeries.finalize();
+					stmt_InsertSeries.finalize();									
+					stmt_UpdateSeriesAltNames.finalize();
+					stmt_InsertKarasTags.finalize();
+					stmt_InsertTags.finalize();
+					stmt_UpdateVideoLength.finalize();
+					stmt_InsertKaras.finalize();
+					resolve();
+				});
+			});
+
+			/**
+			 * close database connection
+			 */
+			function closeDatabaseConnection() {
+				module.exports.db.close(function(err){
+					module.exports.userdb.close(function(err){
+						module.exports.onLog('error', err);
+					});
+				});
+			}
 
 			/**
 			* @function run_userdb_integrity_checks
 			*/
 			function run_userdb_integrity_checks() {
 				return new Promise(function(resolve,reject){
-				// Get all karas from all_karas view
-				// Get all karas in playlist_content, blacklist, rating, viewcount, whitelist
-				// Parse karas in playlist_content, search for the KIDs in all_karas
-				// If id_kara is different, write a UPDATE query.
+					module.exports.onLog('info', __('GDB_INTEGRITY_CHECK_START'));
+					// Get all karas from all_karas view
+					// Get all karas in playlist_content, blacklist, rating, viewcount, whitelist
+					// Parse karas in playlist_content, search for the KIDs in all_karas
+					// If id_kara is different, write a UPDATE query.
 					var AllKaras = [];
 					var PlaylistKaras = [];
 					var WhitelistKaras = [];
@@ -575,6 +748,8 @@ module.exports = {
 								module.exports.userdb.exec(sqlUpdateUserDB, function(err, rep) {
 									if (err) {
 										module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_UPDATE_ERROR',err));
+										module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_ERROR',err));
+										reject();
 									} else {
 										module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_UPDATED'));
 										resolve();
@@ -582,10 +757,12 @@ module.exports = {
 								});
 							} else {
 								module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_UNNEEDED'));
+								module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_COMPLETE'));
 								resolve();
 							}
 						})
 						.catch(function(err) {
+							module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_ERROR',err));
 							reject(err);
 						});
 				});
