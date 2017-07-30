@@ -1077,7 +1077,7 @@ module.exports = {
 									if (err) {
 										reject(err);
 									} else {
-										fs.appendFile(karasdir + '/' + karafile, 'kid="'+KID+'"\n',function(err){
+										fs.appendFile(karasdir + '/' + karafile, 'KID="'+KID+'"\n',function(err){
 											if (err) {
 												reject(err);
 											}								
