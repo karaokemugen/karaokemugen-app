@@ -1041,18 +1041,18 @@ module.exports = {
 					var KID = uuidV4();
 					karadata.KID = KID;
 					kara['KID'] = karadata.KID;
-					fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err, rep) {
+					fs.appendFile(karasdir + '/' + karafile, ';DO NOT MODIFY - KARAOKE ID GENERATED AUTOMATICALLY\n',function(err) {
 						if (err) {
-							module.exports.onLog('error', __('GDB_WRITING_KARA_ERROR'));
-							process.exit();
+							reject(err);
+						} else {
+							fs.appendFile(karasdir + '/' + karafile, 'kid='+KID+'\n',function(err){
+								if (err) {
+									reject(err);
+								}								
+							});						
 						}
-						fs.appendFile(karasdir + '/' + karafile, ';DO NOT MODIFY - KARAOKE ID GENERATED AUTOMATICALLY', function(err) {
-							if (err) {
-								module.exports.onLog('error', __('GDB_ADDING_COMMENT_ERROR',err));
-								process.exit();
-							}
-						});
-					});
+					});					
+					
 				}
 				timestamp.round = true;
 				kara['dateadded'] = timestamp.now();
