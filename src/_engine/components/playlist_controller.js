@@ -3,7 +3,6 @@ var timestamp = require("unix-timestamp");
 timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
 const S = require('string');
-const async = require('async');
 const assbuilder = require('./ass_builder.js');
 const fs = require('fs');
 const shuffle = require('knuth-shuffle').knuthShuffle;
