@@ -808,28 +808,28 @@ module.exports = {
 				}
 		})
 	},
-	isCurrentPlaylist:function(playlist_id,callback)
-	{
-		//TODO : transformer en promesse
-		var sqlIsPlaylistCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_current_flag.sql'),'utf-8');
-		module.exports._user_db_handler.get(sqlIsPlaylistCurrent,
-		{
-			$playlist_id: playlist_id
-		}, function (err, row)
-		{
-				if (err)
-				{
-					callback(null,__('DB_PLAYLIST_TEST_CURRENT_ERROR',playlist_id,JSON.stringify(err)));					
-				} else {
-					if (row) {
-						if (row.flag_current == 1) {
-							callback(true);
-						} else {
-							callback(false);
-						}
+	isCurrentPlaylist:function(playlist_id,callback) {
+		return new Promise(function(resolve,reject){
+			var sqlIsPlaylistCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_current_flag.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlIsPlaylistCurrent,
+			{
+				$playlist_id: playlist_id
+			}, function (err, row)
+			{
+					if (err)
+					{
+						reject(__('DB_PLAYLIST_TEST_CURRENT_ERROR',playlist_id,JSON.stringify(err)));					
 					} else {
-						callback(null,__('DB_PLAYLIST_UNKNOWN',playlist_id));					}
-				}
+						if (row) {
+							if (row.flag_current == 1) {
+								resolve(true);
+							} else {
+								resolve(false);
+							}
+						} else {
+							reject(__('DB_PLAYLIST_UNKNOWN',playlist_id));					}
+					}
+			})
 		})
 	},
 	/**
