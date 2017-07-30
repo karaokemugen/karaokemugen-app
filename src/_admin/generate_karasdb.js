@@ -555,12 +555,16 @@ module.exports = {
 			var closeDatabaseConnection = function() {
 				return new Promise((resolve,reject) => {
 					module.exports.db.close(function(err){
-						module.exports.onLog('error', err);
-						reject();
+						if (err) {
+							module.exports.onLog('error', err);
+							reject();
+						}
 					});
 					module.exports.userdb.close(function(err){
-						module.exports.onLog('error', err);
-						reject();
+						if (err) {
+							module.exports.onLog('error', err);
+							reject();
+						}
 					});
 					resolve();
 				});
