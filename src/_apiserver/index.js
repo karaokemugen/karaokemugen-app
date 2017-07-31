@@ -208,8 +208,102 @@ module.exports = {
                 res.json(err);
             })
         })
+        .post(function(req,res){
+            //add a kara to a playlist
+        })
+        
+        routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+        .put(function(req,res){
+            //Update playlist's karaoke song
+            //Params: position and flag_playing 
+            //if flag_playing = 1 then flag_playing = 0 is set on all other songs from this PL            
+        })
+        .delete(function(req,res){
+            //delete karaoke from playlist
+        })
+        
+        routerAdmin.route('/settings')
+        .get(function(req,res){
+            //Returns settings
+        })
+        .put(function(req,res){
+            //Updates settings
+        })
+
+        routerAdmin.route('/whitelist')
+        .get(function(req,res){
+            //Returns whitelist
+        })
+        .post(function(req,res){
+            //Add kara to whistelist
+        })
+
+        routerAdmin.route('/whitelist/:wl_id([0-9]+)')
+        .delete(function(req,res){
+            //Delete kara from whitelist
+        })
+
+        routerAdmin.route('/blacklist')
+        .get(function(req,res){
+            //Get list of blacklisted karas
+        })
+        
+        routerAdmin.route('/blacklist/criterias')
+        .get(function(req,res){
+            //Get list of blacklist criterias
+        })
+        .post(function(req,res){
+            //Add blacklist criteria
+        })
+
+        routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
+        .delete(function(req,res){
+            //Delete BLC
+        })
+        .put(function(req,res){
+            //Update BLC
+        })
+
+        routerAdmin.route('/player')
+        .put(function(req,res){
+            // Update status of player (play/pause/stopNow/stopNext)
+        })
+
+        routerAdmin.route('/playlists/:pl_id([0-9]+)/portable')
+        .get(function(req,res){
+            // Returns the playlist and its contents in an exportable format (to save on disk)
+        })
+        .post(function(req,res){
+            // Imports a playlist and its contents in an importable format (posted as a file)
+        })
 
         // Public routes
+        
+        routerPublic.route('/stats')
+        .get(function(req,res){
+            // Get stats from the database
+        })
+
+        routerAdmin.route('/whitelist')
+        .get(function(req,res){
+            //Returns whitelist IF the settings allow public to see it
+        })
+        
+        routerPublic.route('/blacklist')
+        .get(function(req,res){
+            //Get list of blacklisted karas IF the settings allow public to see it
+        })
+        
+        routerPublic.route('/blacklist/criterias')
+        .get(function(req,res){
+            //Get list of blacklist criterias IF the settings allow public to see it
+        })
+
+        routerPublic.route('/player')
+        .get(function(req,res){
+            // Get player status
+            // What's playing, time in seconds, duration of song
+        })
         routerPublic.route('/karas')
         .get(function(req,res){
             // if the query has a &filter=xxx
