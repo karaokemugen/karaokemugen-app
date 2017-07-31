@@ -876,6 +876,61 @@ module.exports = {
 			});
 	},
 	/**
+	* @function {Sets Flag Playing on a PL content}
+	* @param  {number} playlistcontent_id {ID of playlist content to set to playing}
+	* @return {string} {error}
+	*/
+	setPlaying:function(playlistcontent_id,playlist_id) {
+		return new Promise(function(resolve,reject){				
+		
+			//Unset playing flag everywhere on this playlist
+			var sqlUnsetPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_unset_playing.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlUnsetPlaying,
+			{
+				$playlist_id: playlist_id
+			}, function (err, rep) {
+				if (err) {
+					reject(err);
+				} else {
+					var sqlSetPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_playing.sql'),'utf-8');
+					module.exports._user_db_handler.run(sqlSetPlaying,
+					{
+						$playlistcontent_id: playlistcontent_id
+					}, function (err, rep) {
+						if (err) {
+							reject(err);
+						} else {
+							resolve();
+						}
+					});	
+				}
+			});
+		});
+	},
+	/**
+	* @function {Sets Flag Playing on a PL content}
+	* @param  {number} playlistcontent_id {ID of playlist content to set to playing}
+	* @return {string} {error}
+	*/
+	setPos:function(playlistcontent_id,pos) {
+		return new Promise(function(resolve,reject){				
+		
+			//Unset playing flag everywhere on this playlist
+			var sqlSetPos = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_pos.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlSetPos,
+			{
+				$playlistcontent_id: playlistcontent_id,
+				$pos: pos
+			}, function (err, rep) {
+				if (err) {
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
+		});
+	},
+	/**
 	* @function {unsetVisiblePlaylist}
 	* @param  {number} playlist_id {ID of playlist to make invisible}
 	* @return {string} {error}

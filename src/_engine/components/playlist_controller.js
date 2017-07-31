@@ -1207,6 +1207,101 @@ module.exports = {
 		
 	},
 	/**
+	* @function {Update karaoke from playlist}
+	* @param  {number} playlistcontent_id     {ID of karaoke to remove}
+	* @param  {number} pos {New position of karaoke, optional}
+	* @param  {boolean} flag_playing {Is the karaoke currently the playing one?}
+	* @return {boolean} {Promise}
+	*/
+	editKaraFromPlaylist:function(playlistcontent_id,pos,flag_playing) {
+		return new Promise(function(resolve,reject){
+			if (S(playlistcontent_id).isEmpty()) {
+				reject(__('PLCID_EMPTY'));
+			}			
+			var playlist_id = undefined;
+			var pGetPLContentInfo = new Promise((resolve,reject) => {
+				module.exports.DB_INTERFACE.getPLContentInfo(playlistcontent_id)
+					.then(function(kara) {				
+						playlist_id = kara.playlist_id;
+						resolve();
+					})
+					.catch(function(err) {						
+						reject(__('PLCID_UNKNOWN',playlistcontent_id,err));
+					});
+			});						
+			Promise.all([pGetPLContentInfo])
+			.then(function() {
+				// Updating karaoke here.
+				var pUpdatePlaying = new Promise((resolve,reject) => {
+					if (flag_playing) {
+						module.exports.DB_INTERFACE.setPlaying(playlistcontent_id,playlist_id)
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){
+							reject(err);
+						});						
+					} else {
+						resolve();
+					}
+				})
+				var pUpdatePos = new Promise((resolve,reject) => {
+					if (pos) {
+						module.exports.raisePosInPlaylist(pos,playlist_id)
+						.then(function(){
+							module.exports.DB_INTERFACE.setPos(playlistcontent_id,pos)
+							.then(function(){							
+								resolve();
+							})
+							.catch(function(err){
+								reject(err);
+							})
+						})
+						.catch(function(err){
+							reject(err);
+						});						
+					} else {
+						resolve();
+					}
+				})
+				Promise.all([pUpdatePos,pUpdatePlaying])
+				.then(function(){						
+					var pReorderPlaylist = new Promise((resolve,reject) => {							
+						module.exports.reorderPlaylist(playlist_id)
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){										
+							reject(err);
+						});
+					});
+					var pUpdateLastEditTime = new Promise((resolve,reject) => {
+						module.exports.updatePlaylistLastEditTime(playlist_id)
+							.then(function(){
+								resolve();
+							})
+							.catch(function(err){
+								reject(err);
+							});
+					});
+					Promise.all([pUpdateLastEditTime,pReorderPlaylist])
+					.then(function() {	
+						resolve();
+					})
+					.catch(function(err) {
+						reject(err);
+					});
+				})
+				.catch(function(err) {
+					reject(err);
+				});
+			})
+			.catch(function(err) {
+				reject(err);
+			})		
+		});
+	},
+	/**
 	* @function {Remove karaoke from whitelist}
 	* @param  {number} wlc_id     {ID of karaoke to remove}
 	* @return {boolean} {Promise}
@@ -1282,6 +1377,7 @@ module.exports = {
 								playlist[arraypos].pos = newpos;
 								arraypos++;
 							});
+							
 							module.exports.DB_INTERFACE.reorderPlaylist(playlist_id,playlist)
 								.then(function() {
 									resolve(playlist);

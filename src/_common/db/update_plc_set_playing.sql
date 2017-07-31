@@ -1,0 +1,1 @@
+UPDATE playlist_content SET flag_playing = 1 WHERE pk_idplcontent = $playlistcontent_id;

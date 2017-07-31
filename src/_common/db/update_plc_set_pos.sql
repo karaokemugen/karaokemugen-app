@@ -1,0 +1,1 @@
+UPDATE playlist_content SET pos = $pos WHERE pk_idplcontent = $playlistcontent_id;

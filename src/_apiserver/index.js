@@ -350,7 +350,44 @@ module.exports = {
         .put(function(req,res){
             //Update playlist's karaoke song
             //Params: position and flag_playing 
-            //if flag_playing = 1 then flag_playing = 0 is set on all other songs from this PL            
+            //if flag_playing = 1 then flag_playing = 0 is set on all other songs from this PL 
+            req.checkBody({
+                'pos': {
+                    in: 'body',
+                    optional: true,                    
+                    isInt: true,
+                },
+                'flag_playing': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: {
+                        errorMessage: 'Invalid playing flag (must be boolean)'
+                    }  
+                },                
+            });   
+
+            req.getValidationResult().then(function(result)
+            {
+                if (result.isEmpty())
+                {
+                    req.sanitize('flag_playing').toBoolean();
+                    if (req.body.pos != undefined) req.sanitize('pos').toInt();
+                    module.exports.onPlaylistSingleKaraEdit(req.params.plc_id,req.body.pos,req.body.flag_playing)
+                    .then(function(){
+                        res.json('PLC '+req.params.plc_id+' edited in playlist '+req.params.pl_id);
+                    })
+                    .catch(function(err){
+                        console.log(err);
+                        res.statusCode = 500;
+                        res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            });        
         })
         .delete(function(req,res){
             // Delete kara from playlist
@@ -430,7 +467,7 @@ module.exports = {
             // Get stats from the database
         })
 
-        routerAdmin.route('/whitelist')
+        routerPublic.route('/whitelist')
         .get(function(req,res){
             //Returns whitelist IF the settings allow public to see it
         })
@@ -606,6 +643,7 @@ module.exports = {
     onPlaylistSingleEdit:function(){},
     onPlaylistSingleContents:function(){},
     onPlaylistSingleKaraDelete:function(){},
+    onPlaylistSingleKaraEdit:function(){},
     onPlaylistCurrentInfo:function(){},
     onPlaylistCurrentContents:function(){},
     onPlaylistPublicInfo:function(){},
