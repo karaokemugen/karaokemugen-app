@@ -187,6 +187,61 @@ module.exports = {
         })
         .put(function(req,res){
             // Update playlist info
+            
+            req.check({
+                'name': {
+                    in: 'body',
+                    notEmpty: true,                    
+                },
+                'flag_visible': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: {
+                        errorMessage: 'Invalid visible flag (must be boolean)'
+                    }                    
+                },
+                'flag_public': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: {
+                        errorMessage: 'Invalid public flag (must be boolean)'
+                    }                    
+                },
+                'flag_current': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: {
+                        errorMessage: 'Invalid current flag (must be boolean)'
+                    }                    
+                },
+            });
+            
+            req.getValidationResult().then(function(result){
+                if (result.isEmpty())
+                {
+                    // No errors detected
+                    req.sanitize('name').trim();
+                    req.sanitize('name').unescape();
+                    req.sanitize('flag_visible').toBoolean();
+                    req.sanitize('flag_public').toBoolean();
+                    req.sanitize('flag_current').toBoolean();
+
+                    //Now we add playlist
+                    module.exports.onPlaylistSingleEdit(req.params.pl_id,req.body)
+                    .then(function(){                            
+                            res.json('Playlist '+req.params.pl_id+' updated');
+                    })
+                    .catch(function(err){
+                            res.statusCode = 500;
+                            res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            })
         })
         .delete(function(req,res){
             var playlist_id = req.params.pl_id;
@@ -197,7 +252,7 @@ module.exports = {
                     isInt: true,
                 }           
             });
-            console.log(req.body.newplaylist_id);
+            
             req.getValidationResult().then(function(result)
             {
                 if (result.isEmpty())
@@ -525,7 +580,6 @@ module.exports = {
         app.use('/api/v1/public', routerPublic);
         app.use('/api/v1/admin', routerAdmin);
         logger.info(__('API_SERVER_READY'));
-        // Création d'un server http pour diffuser l'appli web du launcher
     },
     onTest:function(){
         // événement de test
@@ -537,6 +591,7 @@ module.exports = {
     onPlaylistCreate:function(){},
     onPlaylistSingleInfo:function(){},
     onPlaylistSingleDelete:function(){},
+    onPlaylistSingleEdit:function(){},
     onPlaylistSingleContents:function(){},
     onPlaylistCurrentInfo:function(){},
     onPlaylistCurrentContents:function(){},
