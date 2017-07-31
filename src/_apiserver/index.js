@@ -99,6 +99,17 @@ module.exports = {
 
         // Admin routes
         routerAdmin.route('/playlists')
+        .get(function(req,res){
+            // Get list of playlists
+            module.exports.onPlaylists()
+            .then(function(playlists){
+                res.json(playlists);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
+        })
         .post(function(req,res){
             // req.body = posted object.
 
