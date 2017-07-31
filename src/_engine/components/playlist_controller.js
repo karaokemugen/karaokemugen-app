@@ -432,9 +432,14 @@ module.exports = {
 						module.exports.isPublicPlaylist(playlist_id)
 							.then(function(res) {
 								if (res == true) {
-									module.exports.setPublicPlaylist(new_curorpubplaylist_id,function() {
-										resolve(true);
-									});
+									if (new_curorpubplaylist_id != undefined ) {
+										module.exports.setPublicPlaylist(new_curorpubplaylist_id,function() {
+											resolve(true);
+										});
+									} else {
+										reject('Playlist to delete is public but no new playlist ID to transfert flags to was specified');
+									}
+									
 								} else {
 									resolve(true);
 								}
@@ -447,9 +452,13 @@ module.exports = {
 						module.exports.isCurrentPlaylist(playlist_id)
 							.then(function(res){
 								if (res == true) {
-									module.exports.setCurrentPlaylist(new_curorpubplaylist_id,function(){
-										resolve(true);
-									});
+									if (new_curorpubplaylist_id != undefined ) {
+										module.exports.setCurrentPlaylist(new_curorpubplaylist_id,function() {
+											resolve(true);
+										});
+									} else {
+										reject('Playlist to delete is current but no new playlist ID to transfert flags to was specified');
+									}
 								} else {
 									resolve(true);
 								}
@@ -458,7 +467,8 @@ module.exports = {
 								reject(err);
 							});
 					});
-					Promise.all([pIsPublic,pIsCurrent]).then(function() {
+					Promise.all([pIsPublic,pIsCurrent])
+					.then(function() {
 						module.exports.emptyPlaylist(playlist_id);
 						module.exports.DB_INTERFACE.deletePlaylist(playlist_id,function(res) {
 							var values = 
@@ -468,7 +478,10 @@ module.exports = {
 							};
 							resolve(values);				
 						});
-					});																
+					})
+					.catch(function(err) {
+						reject(err)
+					})																
 				})
 				.catch(function(){
 					reject(__('PLAYLIST_UNKNOWN',playlist_id));

@@ -189,7 +189,42 @@ module.exports = {
             // Update playlist info
         })
         .delete(function(req,res){
-            // Delete playlist
+            var playlist_id = req.params.pl_id;
+            req.checkBody({
+                'newplaylist_id': {
+                    in: 'body',
+                    optional: true,
+                    isInt: true,
+                }           
+            });
+            console.log(req.body.newplaylist_id);
+            req.getValidationResult().then(function(result)
+            {
+                if (result.isEmpty())
+                {
+                    if (req.body.newplaylist_id != undefined) req.sanitize('newplaylist_id').toInt();
+                    module.exports.onPlaylistSingleDelete(playlist_id,req.body.newplaylist_id)
+                    .then(function(){
+                        res.statusCode = 201;
+                        if (req.body.newplaylist_id === undefined) {                            
+                            var newplaylist = ', switched flags to playlist '+newplaylist_id;
+                        } else {
+                            var newplaylist = '';
+                        }
+                        res.json('Deleted '+playlist_id+newplaylist);
+                    })
+                    .catch(function(err){
+                        console.log(err);
+                        res.statusCode = 500;
+                        res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            });            
         })
         
         routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
@@ -239,7 +274,7 @@ module.exports = {
                     module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
                     .then(function(){
                         res.statusCode = 201;
-                        if (req.body.pod === undefined) var pos = 'last';
+                        if (req.body.pos === undefined) var pos = 'last';
                         res.json('Karaoke '+req.body.kara_id+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
                     })
                     .catch(function(err){
@@ -501,6 +536,7 @@ module.exports = {
     onPlaylists:function(){},
     onPlaylistCreate:function(){},
     onPlaylistSingleInfo:function(){},
+    onPlaylistSingleDelete:function(){},
     onPlaylistSingleContents:function(){},
     onPlaylistCurrentInfo:function(){},
     onPlaylistCurrentContents:function(){},

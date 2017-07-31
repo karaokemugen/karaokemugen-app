@@ -478,6 +478,17 @@ module.exports = {
 					});
 			});
 		}
+		module.exports._services.apiserver.onPlaylistSingleDelete = function(id_playlist,id_newplaylist){
+			return new Promise(function(resolve,reject){				
+				module.exports._services.playlist_controller.deletePlaylist(id_playlist,id_newplaylist)
+					.then(function(){
+						resolve();						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+		}
 		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
