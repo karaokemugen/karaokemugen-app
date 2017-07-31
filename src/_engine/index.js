@@ -604,6 +604,17 @@ module.exports = {
 					});					
 				}
 			});
+		}	
+		module.exports._services.apiserver.onKaraAddToPlaylist = function(id_kara,requester,playlist_id,pos){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
+				.then(function(){
+					resolve();						
+				})
+				.catch(function(err){
+					reject(err);
+				});									
+			});
 		}		
 		// --------------------------------------------------------
 		// on démarre ensuite le service

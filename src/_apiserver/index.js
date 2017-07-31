@@ -114,7 +114,7 @@ module.exports = {
             // req.body = posted object.
 
             // Add playlist
-            req.checkBody({
+            req.check({
                 'name': {
                     in: 'body',
                     notEmpty: true,                    
@@ -210,6 +210,50 @@ module.exports = {
         })
         .post(function(req,res){
             //add a kara to a playlist
+            var playlist_id = req.params.pl_id;
+            req.checkBody({
+                'requestedby': {
+                    in: 'body',
+                    notEmpty: true,                    
+                },
+                'kara_id': {
+                    in: 'body',
+                    notEmpty: true,
+                    isInt: true,
+                },
+                'pos': {
+                    in: 'body',
+                    optional: true,
+                    isInt: true,
+                }           
+            });
+            
+            req.getValidationResult().then(function(result)
+            {
+                if (result.isEmpty())
+                {
+                    req.sanitize('requestedby').trim();
+                    req.sanitize('requestedby').unescape();
+                    req.sanitize('playlist_id').toInt();
+                    if (req.body.pos != undefined) req.sanitize('pos').toInt();
+                    module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
+                    .then(function(){
+                        res.statusCode = 201;
+                        if (req.body.pod === undefined) var pos = 'last';
+                        res.json('Karaoke '+req.body.kara_id+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
+                    })
+                    .catch(function(err){
+                        console.log(err);
+                        res.statusCode = 500;
+                        res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            });    
         })
         
         routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
@@ -336,7 +380,7 @@ module.exports = {
         .post(function(req,res){
             // Add Kara to the playlist currently used depending on mode
             var id_kara = req.params.id_kara;
-            req.checkBody({
+            req.check({
                 'requestedby': {
                     in: 'body',
                     notEmpty: true,                    
@@ -463,4 +507,5 @@ module.exports = {
     onPlaylistPublicInfo:function(){},
     onPlaylistPublicContents:function(){},
     onKaraAddToModePlaylist:function(){},
+    onKaraAddToPlaylist:function(){},
 }
