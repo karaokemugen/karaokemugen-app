@@ -30,7 +30,6 @@ module.exports = {
 			var async = require('async');
 			const uuidV4 = require('uuid/v4');
 			var csv = require('csv-string');
-			var crc = require('crc');
 			const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Karas);
 			const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Videos);
 			const karas_dbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.DB, module.exports.SETTINGS.Path.DBKarasFile);
