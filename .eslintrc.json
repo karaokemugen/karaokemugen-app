@@ -1,15 +1,16 @@
 {
     "globals": {
-        "__": true
+		"__": true
     },
     "env": {
         "es6": true,
-        "node": true
+		"node": true,
+		"mocha":true
     },
     "extends": "eslint:recommended",
     "rules": {
         "brace-style": [
-            "error", 
+            "error",
             "1tbs"
         ],
         "no-console": 0,

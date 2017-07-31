@@ -4,7 +4,8 @@
   "description": "Karaoke playlist manager / player",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js"
+	"start": "node src/index.js",
+	"test": "mocha"
   },
   "homepage": "https://lab.shelter.moe/toyundamugen/toyundamugen-app",
   "repository": {
@@ -26,7 +27,8 @@
     "jaerdoster",
     "ziassan",
     "belderak",
-    "coyoyann"
+    "coyoyann",
+    "Florent Berthelot <florentius.b@gmail.com> (@Aeden_)"
   ],
   "engines": {
     "node": ">=6.0.0"
@@ -80,7 +82,9 @@
   },
   "devDependencies": {
     "jsdoc": "^3.4.3",
-    "nodemon": "^1.11.0"
+	"nodemon": "^1.11.0",
+	"mocha": "^3.5.0",
+    "eslint": "^4.3.0"
   },
   "false": {}
 }
