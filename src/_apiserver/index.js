@@ -353,7 +353,19 @@ module.exports = {
             //if flag_playing = 1 then flag_playing = 0 is set on all other songs from this PL            
         })
         .delete(function(req,res){
-            //delete karaoke from playlist
+            // Delete kara from playlist
+            // Deletion is through playlist content's ID.
+            // There is actually no need for a playlist number to be used at this moment.
+            var playlistcontent_id = req.params.plc_id;
+                        
+            module.exports.onPlaylistSingleKaraDelete(playlistcontent_id)
+            .then(function(){
+                res.json('Deleted PLCID '+playlistcontent_id);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })         
         })
         
         routerAdmin.route('/settings')
@@ -593,6 +605,7 @@ module.exports = {
     onPlaylistSingleDelete:function(){},
     onPlaylistSingleEdit:function(){},
     onPlaylistSingleContents:function(){},
+    onPlaylistSingleKaraDelete:function(){},
     onPlaylistCurrentInfo:function(){},
     onPlaylistCurrentContents:function(){},
     onPlaylistPublicInfo:function(){},

@@ -1187,10 +1187,10 @@ module.exports = {
 				{
 					$playlistcontent_id: playlistcontent_id				
 				}, function (err, rep) {
-					if (err) {					
+					if (err) {		
 						reject(__('DB_PLAYLIST_REMOVE_KARA_ERROR',playlistcontent_id,JSON.stringify(err)));
 					} else {
-						resolve(true);
+						resolve();
 					}
 				});
 		});

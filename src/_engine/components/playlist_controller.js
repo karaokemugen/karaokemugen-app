@@ -1148,7 +1148,7 @@ module.exports = {
 						logger.warn(__('ASS_UNABLE_TO_FIND',assFile));
 					}											
 					module.exports.DB_INTERFACE.removeKaraFromPlaylist(playlistcontent_id)
-						.then(function(){						
+						.then(function(){	
 							var pUpdatedDuration = new Promise((resolve,reject) => {
 								module.exports.updatePlaylistDuration(playlist_id)
 									.then(function(){								
@@ -1181,11 +1181,11 @@ module.exports = {
 									.then(function(){
 										resolve();
 									})
-									.catch(function(err){
+									.catch(function(err){										
 										reject(err);
 									});
 							});				
-							Promise.all([pUpdateLastEditTime,ReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+							Promise.all([pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 								.then(function() {												
 									resolve();
 								})
