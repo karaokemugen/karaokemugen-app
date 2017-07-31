@@ -1,30 +1,5 @@
-<!doctype html>
-
-<html lang="fr">
-
-<head>
-    <meta charset="utf-8">
-
-    <title>The HTML5 Herald</title>
-    <meta name="description" content="karaoke">
-    <meta name="author" content="toyunda">
-
-    <link rel="stylesheet" href="../css/bootstrap.min.css">
-    <link rel="stylesheet" href="../css/bootstrap-switch.min.css">
-    <link rel="stylesheet" href="../css/select2.min.css">
-    <link rel="stylesheet" href="../css/select2-bootstrap.min.css">
-    <link rel="stylesheet" href="../css/toyundamugen.css">
-
-    <script src="../js/jquery-3.2.1.min.js"></script>
-    <script src="../js/select2.min.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
-    <script src="../js/bootstrap-switch.min.js"></script>
-</head>
-
-<body>
 
     <div id="header">
-
         <button class="btn btn-default btn-dark pull-right">
             <i class="glyphicon glyphicon-off"></i></button>
         <div class="pull-left btn-group" style="height: 100%;width: 129px;">
@@ -40,7 +15,7 @@
             <button id="stop" class="btn btn-danger"><i class="glyphicon glyphicon-stop"></i></button>
         </div>
 
-        <img src="https://lab.shelter.moe/uploads/system/project/avatar/18/tmugen2.jpg" alt="logo kara" height="100%" class="pull-right">
+        <img src="https://lab.shelter.moe/uploads/-/system/project/avatar/18/tmugen2.jpg" alt="logo kara" height="100%" class="pull-right">
         <strike class="pull-right" style="margin-right: 19px;    line-height: 64px;    font-size: 22px;">TOYUNDA</strike>
 
     </div>
@@ -51,10 +26,6 @@
                 <div class="panel-heading">
                     <div class="pull-left col-lg-6 col-xs-6">
                         <select type="playlist_select" num="1" class="select2 form-control">
-                            <option value="1" default>Playlist des familles</option>
-                            <option value="2"  >Playlist du bon goût</option>
-                            <option value="3" >Whitelist</option>
-                            <option value="4" >Blacklist</option>
                         </select>
                     </div>
                     <div class="col-lg-6 col-xs-6">
@@ -63,7 +34,7 @@
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
                             <button class="btn btn-default ">
-                                <i class="glyphicon glyphicon-floppy-disk"></i>
+                                <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
                             <button class="btn btn-default ">
                                 <i class="glyphicon glyphicon-eye-close"></i>
@@ -81,10 +52,6 @@
                 <div class="panel-heading">
                     <div class="col-lg-6 col-xs-6">
                         <select type="playlist_select" num="2" class="select2">
-                            <option value="1" default>Playlist des familles</option>
-                            <option value="2"  >Playlist du bon goût</option>
-                            <option value="3" >Whitelist</option>
-                            <option >Blacklist</option>
                         </select>
                     </div>
                     <div class="col-lg-6 col-xs-6">
@@ -93,7 +60,7 @@
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
                             <button class="btn btn-default ">
-                                <i class="glyphicon glyphicon-floppy-disk"></i>
+                                <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
                             <button class="btn btn-default ">
                                 <i class="glyphicon glyphicon-eye-close"></i>
@@ -101,35 +68,7 @@
                         </div>
                     </div>
                 </div>
-				 <!--
-					<table class="table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Lang</th>
-                            <th>Serie</th>
-                            <th>Type</th>
-                            <th>Titre</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>FR</td>
-                            <td>Mahoromatic</td>
-                            <td>AMV</td>
-                            <td>Dernière danse 2010</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>JAP</td>
-                            <td>School Days</td>
-                            <td>AMV</td>
-                            <td>@Kanashimi no Mukou he</td>
-                        </tr>
-                    </tbody>
-                </table>
-				-->
+			
                 <ul id="playlist2" class="list-group">
                   <li class="list-group-item"></li>
                 </ul>
@@ -191,23 +130,43 @@
         </div>
     </div>
 
-    <script>
-		/* fake data */
+	<script>
 		
-				var playlist1 = {
-					1 : { "name": "Your name - AMV - Dernière danse 2010", "lang": "FR" },
-					2 : { "name": "Suzumiya Haruhi no Yuutsu - OP1 - Bouken deshou deshou", "lang": "JAP" },
-					3 : { "name": "Kodomo no Jikan - ED2 - Yasashii EP6.ver.", "lang": "JAP" },
-					4 : { "name": "Suzumiya Haruhi no Yuutsu - OP1 - Bouken deshou deshou", "lang": "JAP" },
-					5 : { "name": "Bonne nuit les petits (1963) - IN - J'ai du bon tabac", "lang": "FR" }
-				}
-                 
-               
-					
-		/* init selects & switchs */
-        $(".select2").select2({
-            theme: "bootstrap"
+        $(document).ready(function(){
+           
         });
+
+        /* variables & ajax setup */
+
+		var trad = {{{trad}}};
+	
+		$.ajaxPrefilter(function( options ) {
+			options.url = "http://localhost:1339/api/v1/" +  options.url 
+		});
+		$.ajaxSetup({
+		  headers : {"Authorization": "Basic {{mdpAdminHash}}"}
+		});
+		
+		
+        /* fill the 2 playlist selects */
+        
+        fillPlaylistSelects = function() {
+            var playlistList = {};
+            $.ajax({url : 'admin/playlists'}).done(function(data){
+                playlistList = data;
+                playlistList.push({"id_playlist" : -1, "name" : "Karas"});
+                $.each(playlistList, function(key, value) 
+                {  
+                    $("select[type='playlist_select']").append('<option value=' + value.id_playlist + '>' + value.name + '</option>');
+                });
+                $(".select2").select2({theme: "bootstrap"});
+            });
+        };
+
+		/* init selects & switchs */
+
+        fillPlaylistSelects();
+
         $("input[switch='onoff']").bootstrapSwitch({
             wrapperClass: "btn btn-default",
             "data-size": "normal"
@@ -220,11 +179,7 @@
             "data-inverse": "false"
         });
       
-		/* fill list selects */
-		
-		// FCT Get playlist list from server
-		// fill both selects with data 
-		
+	
 		
 		/* event handlers */
 		
@@ -248,21 +203,40 @@
 		$("select[type='playlist_select']").change(function(){
 			var val = $(this).val();
 			var num = $(this).attr('num');
-			var side = num == 1 ? 'right' : 'left';
-			// FCT get kara list from playlist
+			/* prevent selecting 2 times the same playlist */
+			$("select[type='playlist_select'][num!=" + num + "] > option").prop( "disabled", false );
+			$("select[type='playlist_select'][num!=" + num + "] > option[value='" + val + "']").prop( "disabled", true );
+			$("select[type='playlist_select'][num!=" + num + "]").select2({theme: "bootstrap"});
 			
-			// fill list with kara list
+			var side = num == 1 ? 'right' : 'left';
+			var buttonHtml = '<button onclick="transfer(this);" num="' + num + '" class="btn btn-sm btn-default btn-dark pull-' + side +'">'
+								+ '<i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i></button>'
 			
 			$("#playlist" + num).empty();
-			$.each(playlist1, function (i, item) {
-				$('#playlist' + num).append($('<li>', { 
-					value: item.key,
-					class: 'list-group-item',
-					html:  item.name + '<span class="badge">' + item.lang + '</span>'
-									 + '<button onclick="transfer(this);" num="' + num + '" class="btn btn-sm btn-default btn-dark pull-' + side +'">'
-									 + '<i class="glyphicon glyphicon-arrow-' + side + '"></i></button>'
-				}));
-			});
+
+            // fill list with kara list
+            var urlKaras = "";
+            if(val > 0) {
+                urlKaras =  'admin/playlists/' + val + '/karas';
+            } else if (val == -1) {
+                urlKaras =  'public/karas';
+            }
+
+            $.ajax({url : urlKaras}).done(function(data){
+                console.time('profile');
+                htmlList = "";
+                for(var key in data){
+                    if(data.hasOwnProperty(key)){
+                        if (data[key].language === null) data[key].language = "";
+                        htmlList += "<li value='" + data[key].key + "' class='list-group-item'>"
+                            + [data[key].language.toUpperCase(), data[key].title, "" , data[key].series].join(" - ")
+                            + '<span class="badge">' + data[key].language.toUpperCase() + '</span>' + buttonHtml + "</li>";
+     
+                    }
+                }
+                document.getElementById('playlist' + num).innerHTML = htmlList;
+                var time = console.timeEnd('profile');
+            });
 		});	
 		
 		transfer = function(e) {
@@ -270,7 +244,6 @@
 			$(e).attr('num', newNum);
 			$(e).parent().detach().appendTo('#playlist' + newNum);
 		};
-
 		
 		$("#play").click(function() {
 			if($(this).val() === "play") {
@@ -310,10 +283,4 @@
 			// FCT change screen number
 		});
 		
-		
-		
-		
     </script>
-</body>
-
-</html>

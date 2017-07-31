@@ -137,6 +137,9 @@ select.form-control {
 .select2-container--bootstrap .select2-results__option {
 	color: #555;
 }
+.select2-container--default .select2-results__option[aria-disabled=true] {
+    display: none;
+}
 
 .list-group > li > button {
 	position: absolute;
@@ -147,6 +150,14 @@ select.form-control {
 }
 #playlist2.list-group > li > button {
 	left:0;
+	border-left-width: 0;
+	border-right-width: 3px;
+}
+#playlist2.list-group > li > button > i.glyphicon-arrow-right {
+	display: none; 
+}
+#playlist1.list-group > li > button > i.glyphicon-arrow-left {
+	display: none; 
 }
 
 .list-group > li:hover > button {
