@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "mocha"
+    "test": "mocha --timeout 5000"
   },
   "homepage": "https://lab.shelter.moe/toyundamugen/toyundamugen-app",
   "repository": {
@@ -82,10 +82,11 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
+    "eslint": "^4.3.0",
     "jsdoc": "^3.4.3",
-    "nodemon": "^1.11.0",
     "mocha": "^3.5.0",
-    "eslint": "^4.3.0"
+    "nodemon": "^1.11.0",
+    "supertest": "^3.0.0"
   },
   "false": {}
 }
