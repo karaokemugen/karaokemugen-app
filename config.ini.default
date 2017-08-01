@@ -1,31 +1,25 @@
-[Admin]
-Password = "shami"
+AdminPassword = "gurdil"
 
-[Engine]
 ;DisplayNickname : affiche dans le coin inférieur droit du kara qui a demandé la chanson en cours.
 ;Ce paramètre est ignoré si AntiFloodType = IP
-DisplayNickname = 1
+EngineDisplayNickname = 1
 
-AllowNicknameChange = 1
+EngineAllowNicknameChange = 1
 
 ;SongsPerPerson : Nombre de chansons passable par IP/Nickname
-SongsPerPerson = 10000
+EngineSongsPerPerson = 10000
 
-[Admin]
-Password = "gurdil"
 
-[Path]
-Bin = "app/bin"
-Karas = "app/data/karas"
-Videos = "app/data/videos"
-Subs = "app/data/lyrics"
-DB = "app/db"
-Temp = "app/temp"
-DBKarasFile = "karas.sqlite3"
-DBUserFile = "userdata.sqlite3"
-Altname = "app/data/series_altnames.csv"
+PathBin = "app/bin"
+PathKaras = "app/data/karas"
+PathVideos = "app/data/videos"
+PathSubs = "app/data/lyrics"
+PathDB = "app/db"
+PathTemp = "app/temp"
+PathDBKarasFile = "karas.sqlite3"
+PathDBUserFile = "userdata.sqlite3"
+PathAltname = "app/data/series_altnames.csv"
 
-[Player]
 ;Image affichée quand le player attend.
 ;Wallpaper = "app/background.jpg"
 ;Screen : définit l'écran sur lequel doit s'afficher le karaoke.
@@ -33,22 +27,16 @@ Altname = "app/data/series_altnames.csv"
 ;1 = Second écran
 ; ...
 ;9 = Aucun écran spécifié (ne pas préciser l'option --screen)
-Screen = 1
-Fullscreen = 1
-StayOnTop = 1
-NoHud = 1
-NoBar = 1
+PlayerScreen = 1
+PlayerFullscreen = 1
+PlayerStayOnTop = 1
+PlayerNoHud = 1
+PlayerNoBar = 1
 
 
-[Binaries.Windows]
-BinPlayer = "app/bin/mpv.exe"
+BinPlayerWindows = "app/bin/mpv.exe"
+BinPlayerOSX = "app/bin/mpv.osx"
+BinPlayerLinux = "/usr/bin/mpv"
 
-[Binaries.OSX]
-BinPlayer = "app/bin/mpv.osx"
-
-[Binaries.Linux]
-BinPlayer = "/usr/bin/mpv"
-
-[Version]
 VersionNo = "v2.0"
 VersionName = "Finé Fantastique"

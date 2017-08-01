@@ -4,6 +4,8 @@ const logger = require('../_common/utils/logger.js');
 const bodyParser = require('body-parser');
 const S = require('string');
 const basicAuth = require('express-basic-auth');
+const extend = require('extend');
+
 module.exports = {
     SYSPATH:null,
     SETTINGS:null,
@@ -268,8 +270,7 @@ module.exports = {
                         }
                         res.json('Deleted '+playlist_id+newplaylist);
                     })
-                    .catch(function(err){
-                        console.log(err);
+                    .catch(function(err){                        
                         res.statusCode = 500;
                         res.json(err);
                     })
@@ -332,8 +333,7 @@ module.exports = {
                         if (req.body.pos === undefined) var pos = 'last';
                         res.json('Karaoke '+req.body.kara_id+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
                     })
-                    .catch(function(err){
-                        console.log(err);
+                    .catch(function(err){                        
                         res.statusCode = 500;
                         res.json(err);
                     })
@@ -376,8 +376,7 @@ module.exports = {
                     .then(function(){
                         res.json('PLC '+req.params.plc_id+' edited in playlist '+req.params.pl_id);
                     })
-                    .catch(function(err){
-                        console.log(err);
+                    .catch(function(err){                        
                         res.statusCode = 500;
                         res.json(err);
                     })
@@ -407,10 +406,86 @@ module.exports = {
         
         routerAdmin.route('/settings')
         .get(function(req,res){
-            //Returns settings
+            res.json(module.exports.SETTINGS);            
         })
         .put(function(req,res){
-            //Updates settings
+            //Update settings
+            req.checkBody({
+                'AdminPassword': {
+                    in: 'body',
+                    notEmpty: true                    
+                },
+                'EngineAllowNicknameChange': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: true,
+                },                
+                'EngineDisplayNickname': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: true,
+                },
+                'EngineSongsPerPerson': {
+                    in: 'body',
+                    notEmpty: true,
+                    isInt: true,
+                },             
+                'PlayerFullscreen': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: true,
+                },         
+                'PlayerNoBar': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: true,
+                },
+                'PlayerNoHud': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: true,
+                },    
+                'PlayerScreen': {
+                    in: 'body',
+                    notEmpty: true,
+                    isInt: true,
+                },       
+                'PlayerStayOnTop': {
+                    in: 'body',
+                    notEmpty: true,
+                    isBoolean: true,
+                },                                                                               
+            });   
+
+            req.getValidationResult().then(function(result)
+            {
+                if (result.isEmpty())
+                {
+                    req.sanitize('AllowNicknameChange').toBoolean();
+                    req.sanitize('DisplayNickname').toBoolean();
+                    req.sanitize('Fullscreen').toBoolean();
+                    req.sanitize('NoBar').toBoolean();
+                    req.sanitize('NoHud').toBoolean();
+                    req.sanitize('AlwaysOnTop').toBoolean();
+                    req.sanitize('Screen').toInt();
+                    req.sanitize('SongsPerPerson').toInt();
+
+                    var SETTINGS = req.body;
+                    module.exports.onSettingsUpdate(SETTINGS)                       
+                    .then(function(){
+                        res.json('Settings updated');
+                    })
+                    .catch(function(err){                        
+                        res.statusCode = 500;
+                        res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            }); 
         })
 
         routerAdmin.route('/whitelist')
@@ -462,6 +537,23 @@ module.exports = {
 
         // Public routes
         
+         routerPublic.route('/settings')
+        .get(function(req,res){
+            //We don't want to return all settings.
+            var settings = {};
+            for (var key in module.exports.SETTINGS) {
+                if (module.exports.SETTINGS.hasOwnProperty(key)) {
+                    
+                    if (!S(key).startsWith('Path') &&
+                        !S(key).startsWith('Admin') &&
+                        !S(key).startsWith('Bin')
+                       ) {
+                           settings[key] = module.exports.SETTINGS[key];
+                       }
+                }
+            }
+            res.json(settings);            
+        })        
         routerPublic.route('/stats')
         .get(function(req,res){
             // Get stats from the database
@@ -537,8 +629,7 @@ module.exports = {
                         res.statusCode = 201;
                         res.json('Karaoke '+id_kara+' added by '+req.body.requestedby);
                     })
-                    .catch(function(err){
-                        console.log(err);
+                    .catch(function(err){                        
                         res.statusCode = 500;
                         res.json(err);
                     })
@@ -650,4 +741,5 @@ module.exports = {
     onPlaylistPublicContents:function(){},
     onKaraAddToModePlaylist:function(){},
     onKaraAddToPlaylist:function(){},
+    onSettingsUpdate:function(){},
 }

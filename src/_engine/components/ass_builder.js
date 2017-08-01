@@ -11,7 +11,7 @@ const moment = require('moment');
 require("moment-duration-format");
 const ffmpegPath = require('ffmpeg-downloader').path
 
-module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id, pathToFFmpeg){
+module.exports = function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id){
 		var uuid = uuidv4();;
 		/*
 		// Parameters examples :

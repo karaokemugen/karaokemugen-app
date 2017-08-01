@@ -3,7 +3,7 @@
  */
 const path = require('path');
 const logger = require('../_common/utils/logger.js');
-
+const extend = require('extend');
 /**
  * @module engine
  * Main engine module.
@@ -50,8 +50,8 @@ module.exports = {
 		}
 
 		// settings some player config in engine _states
-		module.exports._states.fullscreen = module.exports.SETTINGS.Player.Fullscreen>0;
-		module.exports._states.ontop = module.exports.SETTINGS.Player.StayOnTop>0;
+		module.exports._states.fullscreen = module.exports.SETTINGS.PlayerFullscreen>0;
+		module.exports._states.ontop = module.exports.SETTINGS.PlayerStayOnTop>0;
 
 		this._start_db_interface().then(function(){
 			module.exports._start_player();
@@ -511,6 +511,18 @@ module.exports = {
 					});
 			});
 		}
+		module.exports._services.apiserver.onSettingsUpdate = function(settings)
+		{
+			return new Promise(function(resolve,reject){
+				extend(true,module.exports.SETTINGS,settings);
+				module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
+				module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
+				module.exports._services.player.SETTINGS = module.exports.SETTINGS;
+				module.exports._services.admin.SETTINGS = module.exports.SETTINGS;
+				module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;
+				resolve();
+			})
+		}		
 		module.exports._services.apiserver.onPlaylistSingleEdit = function(id_playlist,playlist){
 			return new Promise(function(resolve,reject){				
 				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
@@ -958,13 +970,13 @@ module.exports = {
 		module.exports._services.player.SETTINGS = module.exports.SETTINGS;
 		module.exports._services.player.onEnd = module.exports.playerEnding;
 		// si le wallpaper de la config existe bien on le configure dans le player
-		if(module.exports.SETTINGS.Player.Wallpaper && fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.Player.Wallpaper)))
-			module.exports._services.player.background = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.Player.Wallpaper);
-		module.exports._services.player.screen = module.exports.SETTINGS.Player.Screen;
-		module.exports._services.player.fullscreen = module.exports.SETTINGS.Player.Fullscreen>0;
-		module.exports._services.player.stayontop = module.exports.SETTINGS.Player.StayOnTop>0;
-		module.exports._services.player.nohud = module.exports.SETTINGS.Player.NoHud>0;
-		module.exports._services.player.nobar = module.exports.SETTINGS.Player.NoBar>0;
+		if(module.exports.SETTINGS.PlayerWallpaper && fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper)))
+			module.exports._services.player.background = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper);
+		module.exports._services.player.screen = module.exports.SETTINGS.PlayerScreen;
+		module.exports._services.player.fullscreen = module.exports.SETTINGS.PlayerFullscreen>0;
+		module.exports._services.player.stayontop = module.exports.SETTINGS.PlayerStayOnTop>0;
+		module.exports._services.player.nohud = module.exports.SETTINGS.PlayerNoHud>0;
+		module.exports._services.player.nobar = module.exports.SETTINGS.PlayerNoBar>0;
 		module.exports._services.player.init();
 
 	}

@@ -109,7 +109,7 @@ module.exports = {
 					}
 				});
 				socket.on('login', function (password) {
-					if(password==module.exports.SETTINGS.Admin.Password)
+					if(password==module.exports.SETTINGS.AdminPassword)
 					{
 						module.exports.set_client_session(socket.id,'logged',true);
 						socket.emit('login','success');

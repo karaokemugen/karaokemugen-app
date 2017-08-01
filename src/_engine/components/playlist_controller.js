@@ -985,19 +985,19 @@ module.exports = {
 							.then(function(kara) {	
 								var pBuildASS = new Promise((resolve,reject) => {
 									assbuilder(
-										module.exports.SETTINGS.Path.Subs,
-										module.exports.SETTINGS.Path.Videos,
+										module.exports.SETTINGS.PathSubs,
+										module.exports.SETTINGS.PathVideos,
 										kara.subfile, 
 										kara.videofile, 
-										module.exports.SETTINGS.Path.Temp, 
+										module.exports.SETTINGS.PathTemp, 
 										kara.title, 
 										kara.series, 
 										kara.songtype, 
 										kara.songorder, 
 										requester, 
 										kara_id, 
-										playlist_id, 
-										module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+										playlist_id
+										)
 										.then(function() {
 											resolve();
 										})
@@ -1039,8 +1039,8 @@ module.exports = {
 											.then(function(playlistcontent_id){
 												var pRenameASS = new Promise((resolve,reject) => {
 													fs.renameSync(
-														path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,kara_id+'.'+playlist_id+'.ass'),
-														path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,
+														path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,kara_id+'.'+playlist_id+'.ass'),
+														path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
 															playlistcontent_id+'.ass')
 													);
 													resolve();
@@ -1139,7 +1139,7 @@ module.exports = {
 			Promise.all([pGetPLContentInfo])
 				.then(function() {
 				// Removing karaoke here.
-					var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,
+					var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
 						playlistcontent_id+'.ass');
 					if (fs.existsSync(assFile)) {
 						fs.unlinkSync(assFile);
@@ -1556,19 +1556,18 @@ module.exports = {
 										var pBuildASS = new Promise((resolve,reject) => {
 					
 											assbuilder(
-												module.exports.SETTINGS.Path.Subs,
-												module.exports.SETTINGS.Path.Videos,
+												module.exports.SETTINGS.PathSubs,
+												module.exports.SETTINGS.PathVideos,
 												kara.subfile, 
 												kara.videofile, 
-												module.exports.SETTINGS.Path.Temp, 
+												module.exports.SETTINGS.PathTemp, 
 												kara.title, 
 												kara.series, 
 												kara.songtype, 
 												kara.songorder, 
 												requester, 
 												kara_id, 
-												publicPlaylistID, 
-												module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+												publicPlaylistID)
 												.then(function() {
 													resolve();
 												})
@@ -1598,8 +1597,8 @@ module.exports = {
 													.then(function(playlistcontent_id){
 														var pRenameASS = new Promise((resolve,reject) => {
 															fs.renameSync(
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,kara_id+'.'+publicPlaylistID+'.ass'),
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.Path.Temp,
+																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,kara_id+'.'+publicPlaylistID+'.ass'),
+																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
 																	playlistcontent_id+'.ass')
 															);
 															resolve();
@@ -1732,19 +1731,19 @@ module.exports = {
 										var pBuildASS = new Promise((resolve,reject) => {
 					
 											assbuilder(
-												module.exports.SETTINGS.Path.Subs,
-												module.exports.SETTINGS.Path.Videos,
+												module.exports.SETTINGS.PathSubs,
+												module.exports.SETTINGS.PathVideos,
 												kara.subfile, 
 												kara.videofile, 
-												module.exports.SETTINGS.Path.Temp, 
+												module.exports.SETTINGS.PathTemp, 
 												kara.title, 
 												kara.series, 
 												kara.songtype, 
 												kara.songorder, 
 												requester, 
 												kara_id, 
-												currentPlaylistID, 
-												module.exports.SETTINGS.Binaries.Windows.BinFFmpeg)
+												currentPlaylistID 
+												)
 												.then(function() {
 													resolve();
 												})
@@ -1774,8 +1773,8 @@ module.exports = {
 													.then(function(playlistcontent_id){
 														var pRenameASS = new Promise((resolve,reject) => {
 															fs.renameSync(
-																path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.Path.Temp,kara_id+'.'+currentPlaylistID+'.ass'),
-																path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.Path.Temp,
+																path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,kara_id+'.'+currentPlaylistID+'.ass'),
+																path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,
 																	playlistcontent_id+'.ass')
 															);
 															resolve();
@@ -1970,8 +1969,8 @@ module.exports = {
 						// on enrichie l'objet pour fournir son contexte et les chemins système prêt à l'emploi
 						kara.playlist_id = playlist.id;
 						kara.path = {
-							video: path.join(module.exports.SYSPATH,module.exports.SETTINGS.Path.Videos, kara.videofile),
-							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.Path.Temp, kara.playlistcontent_id+'.ass'),
+							video: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
+							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.playlistcontent_id+'.ass'),
 						};
 						resolve(kara);
 					}

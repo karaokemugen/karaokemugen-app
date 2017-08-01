@@ -30,11 +30,11 @@ module.exports = {
 			var async = require('async');
 			const uuidV4 = require('uuid/v4');
 			var csv = require('csv-string');
-			const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Karas);
-			const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Videos);
-			const karas_dbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.DB, module.exports.SETTINGS.Path.DBKarasFile);
-			const karas_userdbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.DB, module.exports.SETTINGS.Path.DBUserFile);
-			const series_altnamesfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.Path.Altname);			
+			const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
+			const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
+			const karas_dbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
+			const karas_userdbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBUserFile);
+			const series_altnamesfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathAltname);			
 			const sqlCreateKarasDBfile = path.join(__dirname, '../_common/db/karas.sqlite3.sql');
 			const sqlCreateKarasDBViewAllfile = path.join(__dirname, '../_common/db/view_all.view.sql');
 			

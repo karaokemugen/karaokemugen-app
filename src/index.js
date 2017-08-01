@@ -82,49 +82,49 @@ if(SYSPATH)
 	 */
 	var ret;
 	logger.info(__('DATAFOLDERS_CHECK'));
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Karas))) {
-		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Karas)));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Karas));
+	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathKaras))) {
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.PathKaras)));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathKaras));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
 		}
 	}	
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Subs))) {
-		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Subs)));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Subs));
+	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathSubs))) {
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.PathSubs)));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathSubs));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
 		}
 	}
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Videos))) {
-		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Videos)));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Videos));
+	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathVideos))) {
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.PathVideos)));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathVideos));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'))
 			process.exit();
 		}
 	}
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.DB))) {
-		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.DB)));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.DB));
+	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathDB))) {
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.PathDB)));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathDB));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
 		}
 	}
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Temp))) {
-		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Temp)));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Temp));
+	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathTemp))) {
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.PathTemp)));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathTemp));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
 		}
 	}
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.Path.Bin))) {
-		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.Path.Bin)));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.Path.Bin));
+	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathBin))) {
+		logger.warn(__('CREATING_FOLDER',path.join(SYSPATH,SETTINGS.PathBin)));
+		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathBin));
 		if (!ret) {
 			logger.error(__('CREATING_FOLDER_FAILED'));
 			process.exit();
