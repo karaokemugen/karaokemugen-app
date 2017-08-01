@@ -67,7 +67,8 @@ if(SYSPATH)
 		extend(true,SETTINGS,configCustom);
 	}
 	SETTINGS.os = process.platform;
-	
+	SETTINGS.EngineDefaultLocale = detectedLocale;
+
 	logger.info(__('CONFIG_LOADING'));
 	logger.debug(__('CONFIG_LOADED')+JSON.stringify(SETTINGS,null,'\n'));
 

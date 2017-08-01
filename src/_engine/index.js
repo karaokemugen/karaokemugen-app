@@ -406,21 +406,34 @@ module.exports = {
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
 		module.exports._services.apiserver.onTest = module.exports.test;
-		module.exports._services.apiserver.onKaras = function(filter){
-			return new Promise(function(resolve,reject){
+		module.exports._services.apiserver.onKaras = function(filter,lang){
+			return new Promise(function(resolve,reject){	
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
 						if (filter) 
 						{
 							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
 							.then(function(filtered_pl){
-								resolve(filtered_pl);
+								module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,lang)
+								.then(function(karalist){
+									resolve(karalist);
+								})
+								.catch(function(err){
+									reject(err);
+								})
 							})
 							.catch(function(err){
 								resovle(err);
 							})
 						} else {
-							resolve(playlist);						
+							module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+								.then(function(karalist){
+									resolve(karalist);
+								})
+								.catch(function(err){
+									reject(err);
+								})
+							
 						}
 					})
 					.catch(function(err){
@@ -428,11 +441,17 @@ module.exports = {
 					});
 			});
 		}
-		module.exports._services.apiserver.onKaraSingle = function(id_kara){
+		module.exports._services.apiserver.onKaraSingle = function(id_kara,lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getKara(id_kara)
 					.then(function(kara){
-						resolve(kara);						
+						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
+						.then(function(karalist){
+							resolve(karalist);
+						})
+						.catch(function(err){
+							reject(err);
+						})						
 					})
 					.catch(function(err){
 						reject(err);
@@ -534,11 +553,17 @@ module.exports = {
 					});
 			});
 		}
-		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist){
+		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
 					.then(function(playlist){
-						resolve(playlist);						
+						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+						.then(function(karalist){
+							resolve(karalist);
+						})
+						.catch(function(err){
+							reject(err);
+						})												
 					})
 					.catch(function(err){
 						reject(err);
@@ -568,13 +593,19 @@ module.exports = {
 				})					
 			});
 		}
-		module.exports._services.apiserver.onPlaylistCurrentContents = function(){
+		module.exports._services.apiserver.onPlaylistCurrentContents = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
 				.then(function(id_playlist){
 					module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
 					.then(function(playlist){
-						resolve(playlist);						
+						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+						.then(function(karalist){
+							resolve(karalist);
+						})
+						.catch(function(err){
+							reject(err);
+						})						
 					})
 					.catch(function(err){
 						reject(err);
@@ -614,13 +645,19 @@ module.exports = {
 				})					
 			});
 		}
-		module.exports._services.apiserver.onPlaylistPublicContents = function(){
+		module.exports._services.apiserver.onPlaylistPublicContents = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isAPublicPlaylist()
 				.then(function(id_playlist){
 					module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
 					.then(function(playlist){
-						resolve(playlist);						
+						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+						.then(function(karalist){
+							resolve(karalist);
+						})
+						.catch(function(err){
+							reject(err);
+						})						
 					})
 					.catch(function(err){
 						reject(err);

@@ -6,6 +6,8 @@ const S = require('string');
 const assbuilder = require('./ass_builder.js');
 const fs = require('fs');
 const shuffle = require('knuth-shuffle').knuthShuffle;
+const langs = require('langs');
+const isoCountriesLanguages = require('iso-countries-languages');
 
 module.exports = {
 	SYSPATH:null,
@@ -1393,6 +1395,76 @@ module.exports = {
 				.catch(function(err) {
 					reject(err);
 				});
+		});
+	},
+	/**
+	* @function {Translate Kara Information}
+	* @param  {type} karalist {list of kara objects}
+	* @param  {type} lang     {language in ISO639-1 to translate into}
+	* @return {object} {Returns array of kara objects}
+	*/
+	translateKaraInfo:function(karalist,lang){
+		return new Promise(function(resolve,reject) {					
+			
+			// If lang is not provided, assume we're using node's system locale			
+			if (!lang) lang = module.exports.SETTINGS.EngineDefaultLocale;
+			// Test if lang actually exists in ISO639-1 format
+			if (!langs.has('1',lang)) {
+				reject('Unknown language : '+lang);
+			}
+			// Instanciate a translation object for our needs with the correct language.
+			const i18n = require('i18n'); // Needed for its own translation instance
+			i18n.configure({    
+    			directory: path.resolve(__dirname,'../../_common/locales'),				
+			});
+			i18n.setLocale(lang);
+			
+			// We need to read the detected locale in ISO639-1
+			var detectedLocale = langs.where('1',lang);			
+			
+			// If the kara list provided is not an array (only a single karaoke)
+			// Put it into an array first
+			if (karalist.constructor != Array) {
+				var karas = [];
+				karas[0] = karalist;
+			} else {
+				var karas = karalist;
+			}
+			
+			karas.forEach(function(kara,index) {								
+				karas[index].songtype_i18n = i18n.__(kara.songtype);				
+				karas[index].songtype_i18n_short = i18n.__(kara.songtype+'_SHORT');
+				
+				if (kara.language != null) {
+					var karalangs = kara.language.split(',');
+					var languages = [];
+					karalangs.forEach(function(karalang,index){
+						// Special case : und
+						// Undefined language
+						// In this case we return something different.
+						if (karalang === 'und') {
+							languages.push(i18n.__('UNDEFINED_LANGUAGE'))
+						} else {
+							// We need to convert ISO639-2B to ISO639-1 to get its language
+							var langdata = langs.where('2B',karalang)
+							languages.push(isoCountriesLanguages.getLanguage(detectedLocale[1],langdata[1]));
+						}
+					});
+					karas[index].language_i18n = languages.join();
+				}
+				// Let's do the same with tags, without language stuff
+				if (kara.misc != null) {
+					var tags = [];
+					var karatags = kara.misc.split(',');
+					karatags.forEach(function(karatag,index){
+						tags.push(i18n.__(karatag));					
+					});
+					karas[index].misc_i18n = tags.join();
+				} else {
+					karas[index].misc_i18n = null;
+				}			
+			});
+			resolve(karas);
 		});
 	},
 	/**

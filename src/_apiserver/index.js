@@ -288,8 +288,8 @@ module.exports = {
             //Access :pl_id by req.params.pl_id 
             // This get route gets infos from a playlist
             var playlist_id = req.params.pl_id;
-            
-            module.exports.onPlaylistSingleContents(playlist_id)
+            var lang = req.query.lang;
+            module.exports.onPlaylistSingleContents(playlist_id,lang)
             .then(function(playlist){
                 if (playlist == []) res.statusCode = 404;
                 res.json(playlist);
@@ -583,8 +583,9 @@ module.exports = {
         .get(function(req,res){
             // if the query has a &filter=xxx
             // then the playlist returned gets filtered with the text.
-            var filter = req.query.filter;            
-            module.exports.onKaras(filter)
+            var filter = req.query.filter;    
+            var lang = req.query.lang;        
+            module.exports.onKaras(filter,lang)
             .then(function(karas){
                 res.json(karas);
             })
@@ -598,8 +599,8 @@ module.exports = {
         routerPublic.route('/karas/:id_kara([0-9]+)')
         .get(function(req,res){
             var id_kara = req.params.id_kara;
-            
-            module.exports.onKaraSingle(id_kara).then(function(kara){
+            var lang = req.query.lang;
+            module.exports.onKaraSingle(id_kara,lang).then(function(kara){
                 if (kara == []) res.statusCode = 404;
                 res.json(kara);
             })
@@ -645,6 +646,7 @@ module.exports = {
         routerPublic.route('/playlists/current')
         .get(function(req,res){
             // Get current Playlist
+            
             module.exports.onPlaylistCurrentInfo()
             .then(function(playlist){
                 res.json(playlist);
@@ -658,7 +660,8 @@ module.exports = {
         routerPublic.route('/playlists/current/karas')
         .get(function(req,res){
             // Get current Playlist
-            module.exports.onPlaylistCurrentContents()
+            var lang = req.query.lang;
+            module.exports.onPlaylistCurrentContents(lang)
             .then(function(playlist){
                 res.json(playlist);
             })            
@@ -671,7 +674,7 @@ module.exports = {
         routerPublic.route('/playlists/public')
         .get(function(req,res){
             // Get current Playlist
-            module.exports.onPlaylistCurrentInfo()
+            module.exports.onPlaylistPublicInfo()
             .then(function(playlist){
                 res.json(playlist);
             })            
@@ -684,7 +687,8 @@ module.exports = {
         routerPublic.route('/playlists/public/karas')
         .get(function(req,res){
             // Get current Playlist
-            module.exports.onPlaylistCurrentContents()
+            var lang = req.query.lang;
+            module.exports.onPlaylistPublicContents(lang)
             .then(function(playlist){
                 res.json(playlist);
             })            

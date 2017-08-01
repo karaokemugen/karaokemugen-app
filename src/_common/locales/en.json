@@ -22,5 +22,6 @@
 	"DAY": "DAY",
 	"HOUR": "HOUR",
 	"MINUTE": "MINUTE",
-	"SECOND": "SECOND"
+	"SECOND": "SECOND",
+	"TYPE_ED": "TYPE_ED"
 }

@@ -43,6 +43,7 @@
 	"TAG_XBOX360": "XBOX 360",
 	"TAG_PC": "PC",
 	"TAG_SEGACD": "Mega CD",
+	"TAG_REMIX": "Remix",
 	"REQUESTED_BY": "Demandé par",
 	"LOCALE_DETECTED": "Langue détectée : ",
 	"HELP_MSG": "Utilisation : \n\ntoyundamugen [--help] [--version] [--debug] [--testplaylist]\n\n\tOptions : \n\n\t\t--help     Affiche ce message d'aide\n\t\t--version  Affiche les infos de version\n\t\t--debug    Affiche les messages de debug\n\t\t--testplaylist    Lance une procédure de test du contrôleur de playlist\n\n",
@@ -225,6 +226,6 @@
 	"CLIENT_DISCONNECTED": "Client déconnecté",
 	"API_SERVER_READY": "API PRÊTE",
 	"API_SERVER_LISTEN": "Serveur d'API écoute sur le port %s",
-	"API_LOG": "Appel API : %s"
-
+	"API_LOG": "Appel API : %s",
+	"UNDEFINED_LANGUAGE": "Langue inconnue"	
 }
