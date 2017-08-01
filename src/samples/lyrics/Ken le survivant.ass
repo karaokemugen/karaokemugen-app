@@ -1,0 +1,24 @@
+[Script Info]
+Title: karaoke
+ScriptType: v4.00+
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+Collisions: Normal
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,20,&H00FFFFFF,&H000088EF,&H00000000,&H00666666,-1,0,0,0,100,100,0,0,1,3,0,8,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+
+Dialogue: 1,0:0:0.00,0:0:2.70,Default,,0000,0000,0000,,{\k10.010010010010006}{\kf60}Ken, {\kf57}{\kf17}sur{\kf17}vi{\kf17}vant {\kf17}de {\kf17}l'en{\kf60}fer
+Dialogue: 1,0:0:2.14,0:0:5.67,Default,,0000,0000,0000,,{\k100}{\kf43}Ken, {\kf67}{\kf17}sou{\kf10}vent {\kf13}{\kf17}croi{\kf23}se {\kf13}le {\kf50}fer
+Dialogue: 1,0:0:5.14,0:0:8.64,Default,,0000,0000,0000,,{\k100}{\kf50}Ken, {\kf47}{\kf17}dans {\kf20}le {\kf7}cha{\kf13}{\kf3}os {\kf13}{\kf17}des {\kf3}es{\kf13}{\kf47}prits
+Dialogue: 1,0:0:8.18,0:0:11.54,Default,,0000,0000,0000,,{\k100}{\kf43}Ken, {\kf53}{\kf3}con{\kf13}{\kf17}tre {\kf20}les {\kf7}fous, {\kf13}{\kf13}les {\kf20}ban{\kf33}dits
+Dialogue: 1,0:0:11.15,0:0:14.71,Default,,0000,0000,0000,,{\k100}{\kf17}Hé{\kf3}ros {\kf17}{\kf17}du {\kf7}fu{\kf13}{\kf20}tur, {\kf20}il {\kf7}fait {\kf13}{\kf20}res{\kf7}pec{\kf13}{\kf7}ter {\kf13}{\kf17}la {\kf47}loi
+Dialogue: 1,0:0:14.15,0:0:17.65,Default,,0000,0000,0000,,{\k100}{\kf10}Il {\kf13}{\kf17}est {\kf20}l'hé{\kf17}ri{\kf17}tier {\kf10}des {\kf13}{\kf17}plus {\kf10}grands {\kf13}{\kf13}maî{\kf17}tre {\kf13}chi{\kf50}nois
+Dialogue: 1,0:0:17.12,0:0:20.65,Default,,0000,0000,0000,,{\k100}{\kf43}Ken, {\kf63}{\kf13}sur{\kf13}{\kf7}vi{\kf13}{\kf17}vant {\kf17}de {\kf3}l'en{\kf13}{\kf50}fer
+Dialogue: 1,0:0:20.09,0:0:23.62,Default,,0000,0000,0000,,{\k100}{\kf33}Ken, {\kf73}{\kf10}sou{\kf13}{\kf10}vent {\kf13}{\kf7}croi{\kf13}{\kf13}se {\kf7}le {\kf13}{\kf47}fer
+Dialogue: 1,0:0:23.09,0:0:26.63,Default,,0000,0000,0000,,{\k100}{\kf33}Ken, {\kf67}{\kf20}dans {\kf7}le {\kf13}{\kf17}cha{\kf17}os {\kf17}des {\kf20}esp{\kf43}rits
+Dialogue: 1,0:0:26.09,0:0:29.63,Default,,0000,0000,0000,,{\k100}{\kf37}Ken, {\kf63}{\kf17}con{\kf20}tre {\kf7}les {\kf13}{\kf17}fous, {\kf20}les {\kf3}ban{\kf13}{\kf43}dits
