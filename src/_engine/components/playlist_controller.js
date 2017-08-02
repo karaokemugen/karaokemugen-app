@@ -836,6 +836,23 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get whitelist contents}
+	* @return {array} {Array of karaoke objects}
+	*/
+	getWhitelistContents:function() {
+		return new Promise(function(resolve,reject) {
+			// Get karaoke list								
+			module.exports.DB_INTERFACE.getWhitelistContents()
+			.then(function(playlist){
+				resolve(playlist);
+			})
+			.catch(function(err){
+				reject(err);
+			});
+			
+		});
+	},
+	/**
 	* @function {Get all karaokes}
 	* @return {array} {Array of karaoke objects}
 	*/

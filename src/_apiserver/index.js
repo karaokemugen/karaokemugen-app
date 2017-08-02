@@ -490,7 +490,16 @@ module.exports = {
 
         routerAdmin.route('/whitelist')
         .get(function(req,res){
-            //Returns whitelist
+            var lang = req.query.lang;        
+            var filter = req.query.filter;
+            module.exports.onWhitelist(filter,lang)
+            .then(function(karas){
+                res.json(karas);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
         })
         .post(function(req,res){
             //Add kara to whistelist
@@ -746,4 +755,5 @@ module.exports = {
     onKaraAddToModePlaylist:function(){},
     onKaraAddToPlaylist:function(){},
     onSettingsUpdate:function(){},
+    onWhitelist:function(){},
 }
