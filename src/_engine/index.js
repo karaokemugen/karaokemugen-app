@@ -745,7 +745,20 @@ module.exports = {
 					reject(err);
 				});									
 			});
-		}		
+		}
+		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
+				.then(function(){
+					console.log('lol! Resolved')
+					resolve();						
+				})
+				.catch(function(err){	
+					console.log('Catch de KaraAddToWhitelist')				
+					reject(err);
+				});									
+			});
+		}
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();

@@ -496,13 +496,47 @@ module.exports = {
             .then(function(karas){
                 res.json(karas);
             })
-            .catch(function(err){
+            .catch(function(err){                
                 res.statusCode = 500;
                 res.json(err);
             })
         })
         .post(function(req,res){
-            //Add kara to whistelist
+            // Add Kara to the playlist currently used depending on mode
+            req.check({
+                'id_kara': {
+                    in: 'body',
+                    notEmpty: true,                    
+                    isInt: true,
+                },
+                'reason': {
+                    in: 'body',
+                    notEmpty: true,
+                }
+            });
+            
+            req.getValidationResult().then(function(result)
+            {
+                if (result.isEmpty())
+                {
+                    req.sanitize('id_kara').toInt();
+                    module.exports.onKaraAddToWhitelist(req.body.id_kara,req.body.reason)
+                    .then(function(){
+                        res.statusCode = 201;
+                        res.json('Karaoke '+id_kara+' added to whitelist with reason \''+req.body.requestedby+'\'');
+                    })
+                    .catch(function(err){                        
+                        console.log('lol? Pourquoi ça catche?!');
+                        res.statusCode = 500;
+                        res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            });            
         })
 
         routerAdmin.route('/whitelist/:wl_id([0-9]+)')
@@ -754,6 +788,7 @@ module.exports = {
     onPlaylistPublicContents:function(){},
     onKaraAddToModePlaylist:function(){},
     onKaraAddToPlaylist:function(){},
+    onKaraAddToWhitelist:function(){},
     onSettingsUpdate:function(){},
     onWhitelist:function(){},
 }

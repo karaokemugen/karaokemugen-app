@@ -167,22 +167,28 @@ module.exports = {
 					});
 			});
 			Promise.all([pIsKara,pIsKaraInWhitelist])
-				.then(function() {
+				.then(function() {					
 					var date_added = timestamp.now();
-					module.exports.DB_INTERFACE.addKaraToWhitelist(kara_id,reason,date_added)
+					if (!isKaraInWhitelist) {
+						module.exports.DB_INTERFACE.addKaraToWhitelist(kara_id,reason,date_added)
 						.then(function(){
 							// Regenerate blacklist to take new kara into account.
+							
 							module.exports.generateBlacklist()
-								.then(function(){
+								.then(function(){									
 									resolve();
 								})
-								.catch(function(err){
+								.catch(function(err){									
 									reject(err);
 								});
 						})
 						.catch(function(err){
 							reject(err);
 						});
+					} else {
+						reject('Karaoke already present in whitelist');
+					}
+					
 				})
 				.catch(function(err) {
 					reject(err);
