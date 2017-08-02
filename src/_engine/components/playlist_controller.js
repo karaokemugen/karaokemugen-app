@@ -281,6 +281,42 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Edit a whitelist entry}
+	* @param  {number} wlc_id {Blacklist Criteria ID}
+	* @param  {string} reason {Edit Reason for whitelisting}
+	* @return {promise} Promise
+	*/	
+	editWhitelistKara:function(wlc_id,reason) {
+		return new Promise(function(resolve,reject){
+			if (S(wlc_id).isEmpty()) {
+				reject(__('WLCID_EMPTY'));
+			}
+			var pIsWLC = new Promise((resolve,reject) => {
+				module.exports.isWLC(wlc_id)
+					.then(function() {						
+						resolve(true);
+					})
+					.catch(function(err) {						
+						reject('Whitelist item unknown : '+err);
+					});
+			});
+			Promise.all([pIsWLC])
+			.then(function(){
+				// Editing whitelist item here
+				module.exports.DB_INTERFACE.editWhitelistKara(wlc_id,reason)
+				.then(function(){						
+					resolve();
+				})
+				.catch(function(err){					
+					reject(err);
+				});
+			})
+			.catch(function(err){
+				reject(err);
+			});
+		});
+	},
+	/**
 	* @function {Is there a public playlist in the database?}
 	* @return {number} {Playlist ID or message}
 	*/
@@ -337,6 +373,22 @@ module.exports = {
 	isBLCriteria:function(blc_id) {
 		return new Promise(function(resolve,reject){
 			module.exports.DB_INTERFACE.isBLCriteria(blc_id)
+				.then(function(){
+					resolve();
+				})
+				.catch(function(err){
+					reject(err);
+				});
+		});
+	},
+	/**
+	* @function {Is it a whitelist item?}
+	* @param  {type} wlc_id {ID of whitelist item}
+	* @return {boolean} {Promise}
+	*/
+	isWLC:function(wlc_id) {
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isWLC(wlc_id)
 				.then(function(){
 					resolve();
 				})

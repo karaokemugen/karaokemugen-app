@@ -523,10 +523,9 @@ module.exports = {
                     module.exports.onKaraAddToWhitelist(req.body.id_kara,req.body.reason)
                     .then(function(){
                         res.statusCode = 201;
-                        res.json('Karaoke '+id_kara+' added to whitelist with reason \''+req.body.requestedby+'\'');
+                        res.json('Karaoke '+req.body.id_kara+' added to whitelist with reason \''+req.body.reason+'\'');
                     })
-                    .catch(function(err){                        
-                        console.log('lol? Pourquoi ça catche?!');
+                    .catch(function(err){                                                
                         res.statusCode = 500;
                         res.json(err);
                     })
@@ -551,6 +550,34 @@ module.exports = {
                 res.statusCode = 500;
                 res.json(err);
             })         
+        })
+        .put(function(req,res){
+            req.check({
+                'reason': {
+                    in: 'body',
+                    notEmpty: true,
+                }
+            });
+            
+            req.getValidationResult().then(function(result)
+            {
+                if (result.isEmpty())
+                {                    
+                    module.exports.onWhitelistSingleKaraEdit(req.params.wl_id,req.body.reason)
+                    .then(function(){
+                        res.json('Whitelist item '+req.params.wl_id+' edited whitelist reason \''+req.body.reason+'\'');
+                    })
+                    .catch(function(err){                                                
+                        res.statusCode = 500;
+                        res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            });            
         })
 
         routerAdmin.route('/blacklist')
@@ -792,6 +819,7 @@ module.exports = {
     onPlaylistSingleKaraDelete:function(){},
     onPlaylistSingleKaraEdit:function(){},
     onWhitelistSingleKaraDelete:function(){},
+    onWhitelistSingleKaraEdit:function(){},
     onPlaylistCurrentInfo:function(){},
     onPlaylistCurrentContents:function(){},
     onPlaylistPublicInfo:function(){},

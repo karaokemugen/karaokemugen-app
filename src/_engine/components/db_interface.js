@@ -790,6 +790,30 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {is whitelist?}
+	* @param  {number} wlc_id {WLC ID to check}
+	* @return {promise} {Promise}
+	*/
+	isWLC:function(wlc_id) {
+		return new Promise(function(resolve,reject){
+			var sqlIsWLC = fs.readFileSync(path.join(__dirname,'../../_common/db/test_whitelist.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlIsWLC,
+				{
+					$wlc_id: wlc_id
+				}, function (err, row) {
+					if (err) {	
+						reject('DB Error : Unable to run query : '+err);									
+					} else {
+						if (row) {
+							resolve();
+						} else {
+							reject();
+						}
+					}
+				});
+		});
+	},
+	/**
 	* @function {Is the kara in the playlist?}
 	* @param  {number} kara_id {ID of karaoke to search for}
 	* @param  {number} playlist_id {ID of playlist to search in}
@@ -1145,7 +1169,27 @@ module.exports = {
 				}
 			});
 	},
+	editWhitelistKara:function(wlc_id,reason) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error(__('DBI_NOT_READY'));
+				reject('Database not ready');
+			}
 
+			var sqlEditWhitelistKara = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_whitelist_kara.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlEditWhitelistKara,
+				{
+					$wlc_id: wlc_id,
+					$reason: reason
+				}, function (err, rep) {
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
+			});
+		});
+	},
 	/**
 	* @function {Add Kara To Playlist}
 	* @param  {number} kara_id        {ID of karaoke song to add to playlist}

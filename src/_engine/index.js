@@ -566,7 +566,18 @@ module.exports = {
 						reject(err);
 					});
 			});
-		}		
+		}	
+		module.exports._services.apiserver.onWhitelistSingleKaraEdit = function(wl_id,reason){
+			return new Promise(function(resolve,reject){								
+				module.exports._services.playlist_controller.editWhitelistKara(wl_id,reason)
+					.then(function(){
+						resolve();						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+		}	
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
 			return new Promise(function(resolve,reject){				
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
@@ -761,11 +772,9 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
 				.then(function(){
-					console.log('lol! Resolved')
 					resolve();						
 				})
 				.catch(function(err){	
-					console.log('Catch de KaraAddToWhitelist')				
 					reject(err);
 				});									
 			});
