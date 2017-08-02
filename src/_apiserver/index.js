@@ -542,6 +542,15 @@ module.exports = {
         routerAdmin.route('/whitelist/:wl_id([0-9]+)')
         .delete(function(req,res){
             //Delete kara from whitelist
+            // Deletion is through whitelist ID.            
+            module.exports.onWhitelistSingleKaraDelete(req.params.wl_id)
+            .then(function(){
+                res.json('Deleted WLID '+req.params.wl_id);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })         
         })
 
         routerAdmin.route('/blacklist')
@@ -782,6 +791,7 @@ module.exports = {
     onPlaylistSingleContents:function(){},
     onPlaylistSingleKaraDelete:function(){},
     onPlaylistSingleKaraEdit:function(){},
+    onWhitelistSingleKaraDelete:function(){},
     onPlaylistCurrentInfo:function(){},
     onPlaylistCurrentContents:function(){},
     onPlaylistPublicInfo:function(){},

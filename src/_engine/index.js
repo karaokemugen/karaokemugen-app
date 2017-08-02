@@ -556,6 +556,17 @@ module.exports = {
 					});
 			});
 		}
+		module.exports._services.apiserver.onWhitelistSingleKaraDelete = function(wl_id){
+			return new Promise(function(resolve,reject){				
+				module.exports._services.playlist_controller.deleteKaraFromWhitelist(wl_id)
+					.then(function(){
+						resolve();						
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+		}		
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
 			return new Promise(function(resolve,reject){				
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
