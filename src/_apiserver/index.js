@@ -609,6 +609,37 @@ module.exports = {
         })
         .post(function(req,res){
             //Add blacklist criteria
+            req.check({
+                'blcriteria_type': {
+                    in: 'body',
+                    notEmpty: true,
+                    isInt: true,
+                },
+                'blcriteria_value': {
+                    in: 'body',
+                    notEmpty: true,                    
+                }
+            });
+            
+            req.getValidationResult().then(function(result)
+            {
+                if (result.isEmpty())
+                {                    
+                    module.exports.onBlacklistCriteriaAdd(req.body.blcriteria_type,req.body.blcriteria_value)
+                    .then(function(){
+                        res.json('Blacklist criteria type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' added');
+                    })
+                    .catch(function(err){                                                
+                        res.statusCode = 500;
+                        res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            }); 
         })
 
         routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
@@ -639,7 +670,7 @@ module.exports = {
 
         // Public routes
         
-         routerPublic.route('/settings')
+        routerPublic.route('/settings')
         .get(function(req,res){
             //We don't want to return all settings.
             var settings = {};

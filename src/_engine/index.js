@@ -480,48 +480,58 @@ module.exports = {
 		module.exports._services.apiserver.onBlacklist = function(filter,lang){
 			return new Promise(function(resolve,reject){	
 				module.exports._services.playlist_controller.getBlacklistContents()
-					.then(function(playlist){
-						if (filter) 
-						{
-							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
-							.then(function(filtered_pl){
-								module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,lang)
-								.then(function(karalist){
-									resolve(karalist);
-								})
-								.catch(function(err){
-									reject(err);
-								})
+				.then(function(playlist){
+					if (filter) 
+					{
+						module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
+						.then(function(filtered_pl){
+							module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,ang)
+							.then(function(karalist){
+								resolve(karalist);
 							})
 							.catch(function(err){
-								resovle(err);
+								reject(err);
 							})
-						} else {
+						})
+						.catch(function(err){
+							resovle(err);
+						})
+					} else {
+						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+						.then(function(karalist){
+							resolve(karalist);
+						})
+						.catch(function(err){
+							reject(err);
+						})
 							
-							module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-								.then(function(karalist){
-									resolve(karalist);
-								})
-								.catch(function(err){
-									reject(err);
-								})
-							
-						}
-					})
-					.catch(function(err){
-						reject(err);
-					});
+					}
+				})
+				.catch(function(err){
+					reject(err);
+				});
 			});
 		}
 		module.exports._services.apiserver.onBlacklistCriterias = function(){
 			return new Promise(function(resolve,reject){	
 				module.exports._services.playlist_controller.getBlacklistCriterias()
-					.then(function(blc){						
-						resolve(blc)
-					})
-					.catch(function(err){
-						reject(err);
-					});
+				.then(function(blc){						
+					resolve(blc)
+				})
+				.catch(function(err){
+					reject(err);
+				});
+			});
+		}
+		module.exports._services.apiserver.onBlacklistCriteriaAdd = function(blctype,blcvalue){
+			return new Promise(function(resolve,reject){	
+				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
+				.then(function(blc){						
+					resolve(blc)
+				})
+				.catch(function(err){
+					reject(err);
+				});
 			});
 		}
 		module.exports._services.apiserver.onKaraSingle = function(id_kara,lang){
