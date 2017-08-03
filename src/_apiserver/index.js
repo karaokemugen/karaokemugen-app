@@ -692,6 +692,7 @@ module.exports = {
         routerAdmin.route('/player')
         .put(function(req,res){
             // Update status of player (play/pause/stopNow/stopNext)
+            
         })
 
         routerAdmin.route('/playlists/:pl_id([0-9]+)/portable')
@@ -704,7 +705,14 @@ module.exports = {
 
         routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
         .put(function(req,res){
-            // Shuffles the playlist selected.
+            module.exports.onPlaylistShuffle(req.params.pl_id)
+            .then(function(){
+                res.json('Playlist '+req.params.pl_id+' shuffled');
+            })
+            .catch(function(err){                                                
+                res.statusCode = 500;
+                res.json(err);
+            })
         })        
 
         // Public routes
@@ -931,6 +939,7 @@ module.exports = {
     onPlaylistCurrentContents:function(){},
     onPlaylistPublicInfo:function(){},
     onPlaylistPublicContents:function(){},
+    onPlaylistShuffle:function(){},
     onKaraAddToModePlaylist:function(){},
     onKaraAddToPlaylist:function(){},
     onKaraAddToWhitelist:function(){},

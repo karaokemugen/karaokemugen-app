@@ -556,6 +556,18 @@ module.exports = {
 				});
 			});
 		}
+		module.exports._services.apiserver.onPlaylistShuffle = function(pl_id){
+			return new Promise(function(resolve,reject){	
+				module.exports._services.playlist_controller.shufflePlaylist(pl_id)
+				.then(function(){						
+					resolve()
+				})
+				.catch(function(err){
+					console.log()
+					reject(err);
+				});
+			});
+		}
 		module.exports._services.apiserver.onKaraSingle = function(id_kara,lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getKara(id_kara)

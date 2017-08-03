@@ -1613,8 +1613,8 @@ module.exports = {
 				.then(function() {
 					module.exports.getPlaylistContents(playlist_id)
 						.then(function(playlist){
-							if (IsCurrent == false) {
-								shuffle(playlist);						
+							if (IsCurrent === false) {
+								shuffle(playlist);														
 							} else  {
 							// If it's current playlist, we'll make two arrays out of the playlist :
 							// One before (and including) the current song being played (flag_playing = 1)
@@ -1652,7 +1652,7 @@ module.exports = {
 										reject(err);
 									});
 							});
-							var pReorderPlayList = new Promise((resolve,reject) => {
+							var pReorderPlaylist = new Promise((resolve,reject) => {
 								module.exports.DB_INTERFACE.reorderPlaylist(playlist_id,playlist)
 									.then(function() {
 										resolve();
@@ -1665,11 +1665,12 @@ module.exports = {
 								.then(function() {
 									resolve();
 								})
-								.catch(function(err) {
+								.catch(function(err) {									
 									reject(err);
 								});									
 						})
-						.catch(function(err){
+						.catch(function(err){							
+							console.log('Rejecting 2');
 							reject(err);
 						});
 				})
