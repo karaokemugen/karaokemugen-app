@@ -53,7 +53,7 @@ module.exports = {
             });
 			
             module.exports._server.get('/admin', function (req, res) {
-                res.render('admin', {"layout": "main", "mdpAdminHash" : Buffer(":shami").toString('base64'), "trad" : 
+                res.render('admin', {"layout": "adminHeader", "mdpAdminHash" : Buffer(":shami").toString('base64'), "trad" : 
 					JSON.stringify({"TYPE_AMV": __('TYPE_AMV'),
 					"TYPE_AMV_SHORT": __('TYPE_AMV_SHORT'),
 					"TYPE_INSERTSONG": __('TYPE_INSERTSONG'),

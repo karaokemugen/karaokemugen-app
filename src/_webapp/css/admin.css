@@ -1,0 +1,63 @@
+
+#manage .bootstrap-switch-container > span {
+	line-height: 2.25;
+}
+
+.form-horizontal {
+	padding: 20px 50px;
+}
+
+.panel {
+	border: 20px solid #1E2124;
+    background-color: #3b3e44;
+    margin: 0px;
+    padding: 0px;
+    __min-height: 700px;
+}
+.panel-heading > div {
+	padding: 0px;
+}
+.panel-heading {
+	border-bottom: 15px solid #1E2124;
+	display: flex;
+}
+
+	
+.select2 {
+	width: 100% !important;
+}
+.select2-container--bootstrap .select2-selection--single, .select2-dropdown {
+	border-radius: 0 !important;
+	background-color: #f3f3f3;
+	font-weight: 600;
+}
+.select2-container--bootstrap .select2-results__option {
+	color: #555;
+}
+.select2-container--default .select2-results__option[aria-disabled=true] {
+    display: none;
+}
+
+.list-group > li > button {
+	position: absolute;
+    right: 0;
+    height: 100%;
+    top: 0;
+	display: none;
+}
+#playlist2.list-group > li > button {
+	left:0;
+	border-left-width: 0;
+	border-right-width: 3px;
+}
+#playlist2.list-group > li > button > i.glyphicon-arrow-right {
+	display: none; 
+}
+#playlist1.list-group > li > button > i.glyphicon-arrow-left {
+	display: none; 
+}
+
+.list-group > li:hover > button {
+	display: block;
+}
+
