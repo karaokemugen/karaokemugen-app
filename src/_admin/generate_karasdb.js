@@ -30,6 +30,7 @@ module.exports = {
 			var async = require('async');
 			const uuidV4 = require('uuid/v4');
 			var csv = require('csv-string');
+			var iniread = require('node-ini');			
 			const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
 			const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
 			const karas_dbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
@@ -838,7 +839,7 @@ module.exports = {
 						if (err) {
 							reject(err)
 						} else {							
-							var karadata = ini.parse(data);
+							var karadata = iniread.parseSync(karasdir + '/' + karafile);
 							var karaWOExtension = S(karafile).chompRight('.kara');
 							var karaInfos = karaWOExtension.split(' - ');
 							var karaType = karaInfos[2];
@@ -874,7 +875,7 @@ module.exports = {
 						if (err) {
 							reject(err)
 						} else {							
-							var karadata = ini.parse(data);
+							var karadata = iniread.parseSync(karasdir + '/' + karafile);
 							var karaWOExtension = S(karafile).chompRight('.kara');
 							var karaInfos = karaWOExtension.split(' - ');
 							var karaSerie = karaInfos[1];
@@ -1031,7 +1032,7 @@ module.exports = {
 						if (err) {
 							reject(err)
 						} else {							
-							var karadata = ini.parse(data);
+							var karadata = iniread.parseSync(karasdir + '/' + karafile);
 							var kara = [];
 							if (karadata.KID) {
 								kara['KID'] = karadata.KID;
