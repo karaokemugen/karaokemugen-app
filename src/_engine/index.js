@@ -545,6 +545,17 @@ module.exports = {
 				});
 			});
 		}
+		module.exports._services.apiserver.onBlacklistCriteriaEdit = function(blc_id,blctype,blcvalue){
+			return new Promise(function(resolve,reject){	
+				module.exports._services.playlist_controller.editBlacklistCriteria(blc_id,blctype,blcvalue)
+				.then(function(){						
+					resolve()
+				})
+				.catch(function(err){
+					reject(err);
+				});
+			});
+		}
 		module.exports._services.apiserver.onKaraSingle = function(id_kara,lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getKara(id_kara)

@@ -656,6 +656,37 @@ module.exports = {
         })
         .put(function(req,res){
             //Update BLC
+            req.check({
+                'blcriteria_type': {
+                    in: 'body',
+                    notEmpty: true,
+                    isInt: true,
+                },
+                'blcriteria_value': {
+                    in: 'body',
+                    notEmpty: true,                    
+                }
+            });
+            
+            req.getValidationResult().then(function(result)
+            {
+                if (result.isEmpty())
+                {                    
+                    module.exports.onBlacklistCriteriaEdit(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value)
+                    .then(function(){
+                        res.json('Blacklist criteria '+req.params.blc_id+' type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' edited');
+                    })
+                    .catch(function(err){                                                
+                        res.statusCode = 500;
+                        res.json(err);
+                    })
+                } else {
+                    // Errors detected
+                    // Sending BAD REQUEST HTTP code and error object.
+                    res.statusCode = 400;
+                    res.json(result.mapped());
+                }
+            });
         })
 
         routerAdmin.route('/player')
@@ -909,4 +940,5 @@ module.exports = {
     onBlacklistCriterias:function(){},
     onBlacklistCriteriaAdd:function(){},
     onBlacklistCriteriaDelete:function(){},
+    onBlacklistCriteriaEdit:function(){},
 }

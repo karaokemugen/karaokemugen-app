@@ -256,7 +256,7 @@ module.exports = {
 					if (blctype >= 0 && blctype <= 1001) {
 						if ((blctype == 1001 || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric())) {
 							reject(__('BLACKLIST_CRITERIA_TYPE_ERROR',blctype));
-						} else {
+						} else {							
 							module.exports.DB_INTERFACE.editBlacklistCriteria(blc_id,blctype,blcvalue)
 								.then(function(){
 									module.exports.generateBlacklist()
