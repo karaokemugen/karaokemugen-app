@@ -911,6 +911,23 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get blacklist contents}
+	* @return {array} {Array of karaoke objects}
+	*/
+	getBlacklistContents:function() {
+		return new Promise(function(resolve,reject) {
+			// Get karaoke list								
+			module.exports.DB_INTERFACE.getBlacklistContents()
+			.then(function(playlist){
+				resolve(playlist);
+			})
+			.catch(function(err){
+				reject(err);
+			});
+			
+		});
+	},
+	/**
 	* @function {Get all karaokes}
 	* @return {array} {Array of karaoke objects}
 	*/

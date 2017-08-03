@@ -445,7 +445,42 @@ module.exports = {
 			return new Promise(function(resolve,reject){	
 				module.exports._services.playlist_controller.getWhitelistContents()
 					.then(function(playlist){
-						console.log(playlist);
+						if (filter) 
+						{
+							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
+							.then(function(filtered_pl){
+								module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,lang)
+								.then(function(karalist){
+									resolve(karalist);
+								})
+								.catch(function(err){
+									reject(err);
+								})
+							})
+							.catch(function(err){
+								resovle(err);
+							})
+						} else {
+							
+							module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+								.then(function(karalist){
+									resolve(karalist);
+								})
+								.catch(function(err){
+									reject(err);
+								})
+							
+						}
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+		}
+		module.exports._services.apiserver.onBlacklist = function(filter,lang){
+			return new Promise(function(resolve,reject){	
+				module.exports._services.playlist_controller.getBlacklistContents()
+					.then(function(playlist){
 						if (filter) 
 						{
 							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)

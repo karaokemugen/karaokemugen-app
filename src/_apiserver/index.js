@@ -583,6 +583,16 @@ module.exports = {
         routerAdmin.route('/blacklist')
         .get(function(req,res){
             //Get list of blacklisted karas
+            var lang = req.query.lang;        
+            var filter = req.query.filter;
+            module.exports.onBlacklist(filter,lang)
+            .then(function(karas){
+                res.json(karas);
+            })
+            .catch(function(err){                
+                res.statusCode = 500;
+                res.json(err);
+            })
         })
         
         routerAdmin.route('/blacklist/criterias')
@@ -613,6 +623,11 @@ module.exports = {
         .post(function(req,res){
             // Imports a playlist and its contents in an importable format (posted as a file)
         })
+
+        routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
+        .put(function(req,res){
+            // Shuffles the playlist selected.
+        })        
 
         // Public routes
         
@@ -776,6 +791,20 @@ module.exports = {
                 res.json(err);
             })
         })
+
+        routerPublic.route('/playlists/')
+        .get(function(req,res){
+            // Get list of playlists, only return the visible ones            
+        })
+        routerPublic.route('/playlists/:pl_id')
+        .get(function(req,res){
+            // Get playlist, only if visible
+        })
+        routerPublic.route('/playlists/:pl_id/karas')
+        .get(function(req,res){
+            // Get playlist contents, only if visible
+        })
+
         // Add headers
 		app.use(function (req, res, next) {
 		
@@ -829,4 +858,5 @@ module.exports = {
     onKaraAddToWhitelist:function(){},
     onSettingsUpdate:function(){},
     onWhitelist:function(){},
+    onBlacklist:function(){},
 }

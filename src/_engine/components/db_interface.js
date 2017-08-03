@@ -516,8 +516,7 @@ module.exports = {
 		});
 	},
 	/**
-	* @function {Get contents of playlist}
-	* @param  {number} playlist_id {ID of playlist to get a list of songs from}
+	* @function {Get contents of whitelist}
 	* @return {Object} {Playlist object}
 	*/
 	getWhitelistContents:function(){
@@ -530,6 +529,26 @@ module.exports = {
 				function (err, playlist) {					
 					if (err) {
 						reject('DB Get Whitelist content error :'+err);									
+					} else {						
+						resolve(playlist);
+					}
+			});			
+		});
+	},
+	/**
+	* @function {Get contents of blacklist}
+	* @return {Object} {Playlist object}
+	*/
+	getBlacklistContents:function(){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject(__('DBI_NOT_READY'));
+			}
+			var sqlGetBlacklistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_contents.sql'),'utf-8');			
+			module.exports._user_db_handler.all(sqlGetBlacklistContents,
+				function (err, playlist) {					
+					if (err) {
+						reject('DB Get Blacklist content error :'+err);									
 					} else {						
 						resolve(playlist);
 					}
