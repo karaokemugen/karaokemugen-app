@@ -526,8 +526,19 @@ module.exports = {
 		module.exports._services.apiserver.onBlacklistCriteriaAdd = function(blctype,blcvalue){
 			return new Promise(function(resolve,reject){	
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
-				.then(function(blc){						
-					resolve(blc)
+				.then(function(){						
+					resolve()
+				})
+				.catch(function(err){
+					reject(err);
+				});
+			});
+		}
+		module.exports._services.apiserver.onBlacklistCriteriaDelete = function(blc_id){
+			return new Promise(function(resolve,reject){	
+				module.exports._services.playlist_controller.deleteBlacklistCriteria(blc_id)
+				.then(function(){						
+					resolve()
 				})
 				.catch(function(err){
 					reject(err);

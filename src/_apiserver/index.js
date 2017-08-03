@@ -644,7 +644,15 @@ module.exports = {
 
         routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
         .delete(function(req,res){
-            //Delete BLC
+                        
+            module.exports.onBlacklistCriteriaDelete(req.params.blc_id)
+            .then(function(){
+                res.json('Deleted BLCID '+req.params.blc_id);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })         
         })
         .put(function(req,res){
             //Update BLC
@@ -899,4 +907,6 @@ module.exports = {
     onWhitelist:function(){},
     onBlacklist:function(){},
     onBlacklistCriterias:function(){},
+    onBlacklistCriteriaAdd:function(){},
+    onBlacklistCriteriaDelete:function(){},
 }
