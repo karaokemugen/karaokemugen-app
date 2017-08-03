@@ -1670,7 +1670,6 @@ module.exports = {
 								});									
 						})
 						.catch(function(err){							
-							console.log('Rejecting 2');
 							reject(err);
 						});
 				})
