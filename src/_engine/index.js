@@ -513,6 +513,17 @@ module.exports = {
 					});
 			});
 		}
+		module.exports._services.apiserver.onBlacklistCriterias = function(){
+			return new Promise(function(resolve,reject){	
+				module.exports._services.playlist_controller.getBlacklistCriterias()
+					.then(function(blc){						
+						resolve(blc)
+					})
+					.catch(function(err){
+						reject(err);
+					});
+			});
+		}
 		module.exports._services.apiserver.onKaraSingle = function(id_kara,lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getKara(id_kara)

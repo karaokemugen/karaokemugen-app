@@ -597,7 +597,15 @@ module.exports = {
         
         routerAdmin.route('/blacklist/criterias')
         .get(function(req,res){
-            //Get list of blacklist criterias
+            //Get list of blacklisted karas
+            module.exports.onBlacklistCriterias()
+            .then(function(blc){
+                res.json(blc);
+            })
+            .catch(function(err){                
+                res.statusCode = 500;
+                res.json(err);
+            })
         })
         .post(function(req,res){
             //Add blacklist criteria
@@ -859,4 +867,5 @@ module.exports = {
     onSettingsUpdate:function(){},
     onWhitelist:function(){},
     onBlacklist:function(){},
+    onBlacklistCriterias:function(){},
 }

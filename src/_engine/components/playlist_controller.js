@@ -928,6 +928,23 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get blacklist contents}
+	* @return {array} {Array of karaoke objects}
+	*/
+	getBlacklistCriterias:function() {
+		return new Promise(function(resolve,reject) {
+			// Get list of criterias
+			module.exports.DB_INTERFACE.getBlacklistCriterias()
+			.then(function(blc){
+				resolve(blc);
+			})
+			.catch(function(err){
+				reject(err);
+			});
+			
+		});
+	},
+	/**
 	* @function {Get all karaokes}
 	* @return {array} {Array of karaoke objects}
 	*/

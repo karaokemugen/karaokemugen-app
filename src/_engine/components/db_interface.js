@@ -554,7 +554,7 @@ module.exports = {
 					}
 			});			
 		});
-	},
+	},	
 	/**
 	* @function {Get all karaokes}
 	* @return {array} {array of karaoke objects}
