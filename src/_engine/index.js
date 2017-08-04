@@ -521,12 +521,12 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylists = function(seenFromUser){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylists(seenFromUser)
-				.then(function(playlists){
-					resolve(playlists);
-				})
-				.catch(function(err){
-					reject(err);
-				});
+					.then(function(playlists){
+						resolve(playlists);
+					})
+					.catch(function(err){
+						reject(err);
+					});
 			});
 		};
 		module.exports._services.apiserver.onPlaylistCreate = function(playlist){

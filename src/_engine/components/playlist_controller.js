@@ -320,7 +320,7 @@ module.exports = {
 	* @function {isPlaylist}
 	* @param  {number} playlist_id {ID of playlist to check for existence}
 	* @return {promise} Promise
-	*/	
+	*/
 	isPlaylist:function(playlist_id,seenFromUser) {
 		//Une requête toute bête pour voir si une Playlist existe
 		return new Promise(function(resolve,reject){
@@ -680,8 +680,8 @@ module.exports = {
 	*/
 	getPlaylistInfo:function(playlist_id,seenFromUser) {
 		// TODO : Tester si la playlist existe
-		return new Promise(function(resolve,reject){			
-			module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,seenFromUser,function(playlist, err){				
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,seenFromUser,function(playlist, err){
 				if (err) {
 					logger.error(err);
 					reject(err);
@@ -708,9 +708,9 @@ module.exports = {
 	* - flag_public (is the playlist the public one?)
 	*/
 	getPlaylists:function(seenFromUser) {
-		return new Promise(function(resolve,reject){			
+		return new Promise(function(resolve,reject){
 			module.exports.DB_INTERFACE.getPlaylists(seenFromUser)
-				.then(function(playlists) {				
+				.then(function(playlists) {
 					resolve(playlists);
 				})
 				.catch(function(err) {
@@ -860,7 +860,7 @@ module.exports = {
 		return new Promise(function(resolve,reject) {
 			var pIsPlaylist = new Promise((resolve,reject) => {
 				module.exports.isPlaylist(playlist_id,seenFromUser)
-					.then(function() {						
+					.then(function() {
 						resolve();
 					})
 					.catch(function() {
@@ -1534,10 +1534,10 @@ module.exports = {
 						// Undefined language
 						// In this case we return something different.
 						if (karalang === 'und') {
-							languages.push(i18n.__('UNDEFINED_LANGUAGE'))
+							languages.push(i18n.__('UNDEFINED_LANGUAGE'));
 						} else {
 							// We need to convert ISO639-2B to ISO639-1 to get its language
-							var langdata = langs.where('2B',karalang)
+							var langdata = langs.where('2B',karalang);
 							if (langdata === undefined) {
 								languages.push(__('UNKNOWN_LANGUAGE'));
 							} else {

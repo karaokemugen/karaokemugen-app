@@ -500,8 +500,8 @@ module.exports = {
 			if(!module.exports.isReady()) {
 				reject(__('DBI_NOT_READY'));
 			}
-			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');			
-			module.exports._user_db_handler.serialize(function(){				
+			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
+			module.exports._user_db_handler.serialize(function(){
 				module.exports._user_db_handler.all(sqlGetPlaylistContents,
 					{
 						$playlist_id: playlist_id
@@ -633,22 +633,22 @@ module.exports = {
 		//TODO : transformer en promesse
 		var sqlGetPlaylistInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_info.sql'),'utf-8');
 		if (seenFromUser) {
-			sqlGetPlaylistInfo += " AND flag_visible = 1"
+			sqlGetPlaylistInfo += ' AND flag_visible = 1';
 		}
 		module.exports._user_db_handler.get(sqlGetPlaylistInfo,
-		{
-			$playlist_id: playlist_id
-		}, function (err, row) {
-			if (err) {				
-				callback(null,__('DB_PLAYLIST_GET_INFO_ERROR',playlist_id,JSON.stringify(err)));
-			} else {				
-				if (row) {
-					callback(row);
-				} else {					
-					callback();
+			{
+				$playlist_id: playlist_id
+			}, function (err, row) {
+				if (err) {
+					callback(null,__('DB_PLAYLIST_GET_INFO_ERROR',playlist_id,JSON.stringify(err)));
+				} else {
+					if (row) {
+						callback(row);
+					} else {
+						callback();
+					}
 				}
-			}
-		});
+			});
 	},
 	/**
 	* @function {getPlaylists}
@@ -661,7 +661,7 @@ module.exports = {
 			// If seen from the user/public view, we're only showing playlists with
 			// visible flag
 			if (seenFromUser) {
-				sqlGetPlaylists += " WHERE flag_visible = 1"
+				sqlGetPlaylists += ' WHERE flag_visible = 1';
 			}
 			module.exports._user_db_handler.all(sqlGetPlaylists,
 				function (err, playlists) {
@@ -726,7 +726,7 @@ module.exports = {
 	},
 	isPublicPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
-			var sqlIsPlaylistPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_public_flag.sql'),'utf-8');		
+			var sqlIsPlaylistPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_public_flag.sql'),'utf-8');
 			module.exports._user_db_handler.get(sqlIsPlaylistPublic,
 				{
 					$playlist_id: playlist_id
@@ -747,7 +747,7 @@ module.exports = {
 				});
 		});
 	},
-	isCurrentPlaylist:function(playlist_id,callback) {
+	isCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlIsPlaylistCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_current_flag.sql'),'utf-8');
 			module.exports._user_db_handler.get(sqlIsPlaylistCurrent,
@@ -764,7 +764,8 @@ module.exports = {
 								resolve(false);
 							}
 						} else {
-							reject(__('DB_PLAYLIST_UNKNOWN',playlist_id));					}
+							reject(__('DB_PLAYLIST_UNKNOWN',playlist_id));
+						}
 					}
 				});
 		});
@@ -899,7 +900,7 @@ module.exports = {
 		//TODO : transformer en promesse
 		var sqlIsPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist.sql'),'utf-8');
 		if (seenFromUser) {
-				sqlIsPlaylist += 'AND flag_visible = 1';
+			sqlIsPlaylist += 'AND flag_visible = 1';
 		}
 		module.exports._user_db_handler.get(sqlIsPlaylist,
 			{
@@ -1039,7 +1040,7 @@ module.exports = {
 				}
 			});
 	},
-	unsetPublicAllPlaylists:function(callback) {
+	unsetPublicAllPlaylists:function() {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject(__('DBI_NOT_READY'));
