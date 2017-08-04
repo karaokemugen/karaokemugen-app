@@ -585,9 +585,9 @@ module.exports = {
 					});
 			});
 		}
-		module.exports._services.apiserver.onPlaylists = function(){
+		module.exports._services.apiserver.onPlaylists = function(seenFromUser){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.getPlaylists()
+				module.exports._services.playlist_controller.getPlaylists(seenFromUser)
 				.then(function(playlists){
 					resolve(playlists);
 				})
@@ -613,9 +613,9 @@ module.exports = {
 				});
 			});
 		}
-		module.exports._services.apiserver.onPlaylistSingleInfo = function(id_playlist){
+		module.exports._services.apiserver.onPlaylistSingleInfo = function(id_playlist,seenFromUser){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
+				module.exports._services.playlist_controller.getPlaylistInfo(id_playlist,seenFromUser)
 					.then(function(playlist){
 						resolve(playlist);						
 					})
@@ -702,9 +702,9 @@ module.exports = {
 					});
 			});
 		}
-		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,lang){
+		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,lang,seenFromUser){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
+				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 						.then(function(karalist){

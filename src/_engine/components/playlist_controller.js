@@ -336,10 +336,10 @@ module.exports = {
 	* @param  {number} playlist_id {ID of playlist to check for existence}
 	* @return {promise} Promise
 	*/	
-	isPlaylist:function(playlist_id) {
+	isPlaylist:function(playlist_id,seenFromUser) {
 		//Une requête toute bête pour voir si une Playlist existe
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isPlaylist(playlist_id,function(res){
+			module.exports.DB_INTERFACE.isPlaylist(playlist_id,seenFromUser,function(res){
 				if (res == true) {
 					resolve(true);
 				} else {
@@ -680,6 +680,7 @@ module.exports = {
 	/**
 	* @function {getPlaylistInfo}
 	* @param  {number} playlist_id {Playlist ID to fetch}
+	* @param  {boolean} seenFromuser {Is the playlist being seen from the user's perspective?}
 	* @return {Object} {Playlist object}
 	* Returns a playlist object with the following information :
 	* - id_playlist
@@ -692,10 +693,10 @@ module.exports = {
 	* - flag_current (is the playlist the current one?)
 	* - flag_public (is the playlist the public one?)
 	*/
-	getPlaylistInfo:function(playlist_id) {
+	getPlaylistInfo:function(playlist_id,seenFromUser) {
 		// TODO : Tester si la playlist existe
 		return new Promise(function(resolve,reject){			
-			module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,function(playlist, err){				
+			module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,seenFromUser,function(playlist, err){				
 				if (err) {
 					logger.error(err);
 					reject(err);
@@ -708,6 +709,7 @@ module.exports = {
 	/**
 	* @function {getPlaylists}
 	* @return {Object} {array of Playlist objects}
+	* @param {boolean} seenFromUser {Is the playlist list seen from the user's perspective?}
 	* Returns an array of playlist objects to get all playlists :
 	* - id_playlist (ID of playlist)
 	* - name (name of playlist)
@@ -720,9 +722,9 @@ module.exports = {
 	* - flag_current (is the playlist the current one?)
 	* - flag_public (is the playlist the public one?)
 	*/
-	getPlaylists:function() {
+	getPlaylists:function(seenFromUser) {
 		return new Promise(function(resolve,reject){			
-			module.exports.DB_INTERFACE.getPlaylists()
+			module.exports.DB_INTERFACE.getPlaylists(seenFromUser)
 				.then(function(playlists) {				
 					resolve(playlists);
 				})
@@ -869,12 +871,12 @@ module.exports = {
 	* @param  {number} playlist_id {ID of playlist to get contents from}
 	* @return {array} {Array of karaoke objects}
 	*/
-	getPlaylistContents:function(playlist_id) {
+	getPlaylistContents:function(playlist_id,seenFromUser) {
 		return new Promise(function(resolve,reject) {
 			var pIsPlaylist = new Promise((resolve,reject) => {
-				module.exports.isPlaylist(playlist_id)
+				module.exports.isPlaylist(playlist_id,seenFromUser)
 					.then(function() {						
-						resolve(true);
+						resolve();
 					})
 					.catch(function() {						
 						reject(__('PLAYLIST_UNKNOWN',playlist_id));
@@ -890,7 +892,10 @@ module.exports = {
 						.catch(function(err){
 							reject(err);
 						});
-				});
+				})
+				.catch(function(err) {
+					reject(err);
+				})
 		});
 	},
 	/**

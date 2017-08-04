@@ -878,18 +878,53 @@ module.exports = {
             })
         })
 
-        routerPublic.route('/playlists/')
+        routerPublic.route('/playlists')
         .get(function(req,res){
             // Get list of playlists, only return the visible ones            
+			var seenFromUser = true;
+			module.exports.onPlaylists(seenFromUser)
+            .then(function(playlists){
+                res.json(playlists);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
         })
-        routerPublic.route('/playlists/:pl_id')
+        routerPublic.route('/playlists/:pl_id([0-9]+)')
         .get(function(req,res){
             // Get playlist, only if visible
-        })
-        routerPublic.route('/playlists/:pl_id/karas')
+		    //Access :pl_id by req.params.pl_id 
+            // This get route gets infos from a playlist
+            var playlist_id = req.params.pl_id;
+            var seenFromUser = true;
+            module.exports.onPlaylistSingleInfo(playlist_id,seenFromUser)
+			.then(function(playlist){
+                if (playlist == null) res.statusCode = 404;
+                res.json(playlist);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
+        })        
+        routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
         .get(function(req,res){
             // Get playlist contents, only if visible
-        })
+			//Access :pl_id by req.params.pl_id 
+            var playlist_id = req.params.pl_id;
+            var lang = req.query.lang;
+			var seenFromUser = true;
+            module.exports.onPlaylistSingleContents(playlist_id,lang,seenFromUser)
+            .then(function(playlist){
+                if (playlist == null) res.statusCode = 404;
+                res.json(playlist);
+            })
+            .catch(function(err){
+                res.statusCode = 500;
+                res.json(err);
+            })
+        })        
 
         // Add headers
 		app.use(function (req, res, next) {

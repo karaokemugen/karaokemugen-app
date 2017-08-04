@@ -500,7 +500,7 @@ module.exports = {
 			if(!module.exports.isReady()) {
 				reject(__('DBI_NOT_READY'));
 			}
-			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
+			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');			
 			module.exports._user_db_handler.serialize(function(){				
 				module.exports._user_db_handler.all(sqlGetPlaylistContents,
 					{
@@ -629,32 +629,40 @@ module.exports = {
 	* @return {Object} {Playlist object}
 	* Selects playlist info from playlist table. Returns the info in a callback.
 	*/
-	getPlaylistInfo:function(playlist_id,callback) {
+	getPlaylistInfo:function(playlist_id,seenFromUser,callback) {
 		//TODO : transformer en promesse
 		var sqlGetPlaylistInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_info.sql'),'utf-8');
+		if (seenFromUser) {
+			sqlGetPlaylistInfo += " AND flag_visible = 1"
+		}
 		module.exports._user_db_handler.get(sqlGetPlaylistInfo,
-			{
-				$playlist_id: playlist_id
-			}, function (err, row) {
-				if (err) {				
-					callback(null,__('DB_PLAYLIST_GET_INFO_ERROR',playlist_id,JSON.stringify(err)));
-				} else {
-					if (row) {
-						callback(row);
-					} else {
-						callback(null,__('DB_PLAYLIST_GET_INFO_UNKNOWN_ERROR',playlist_id,JSON.stringify(err)));
-					}
+		{
+			$playlist_id: playlist_id
+		}, function (err, row) {
+			if (err) {				
+				callback(null,__('DB_PLAYLIST_GET_INFO_ERROR',playlist_id,JSON.stringify(err)));
+			} else {				
+				if (row) {
+					callback(row);
+				} else {					
+					callback();
 				}
-			});
+			}
+		});
 	},
 	/**
 	* @function {getPlaylists}
 	* @return {Object} {Array of Playlist objects}
 	* Selects playlist info from playlist table. Returns the info in a promise
 	*/
-	getPlaylists:function() {
+	getPlaylists:function(seenFromUser) {
 		return new Promise(function(resolve,reject){
 			var sqlGetPlaylists = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_playlists_info.sql'),'utf-8');
+			// If seen from the user/public view, we're only showing playlists with
+			// visible flag
+			if (seenFromUser) {
+				sqlGetPlaylists += " WHERE flag_visible = 1"
+			}
 			module.exports._user_db_handler.all(sqlGetPlaylists,
 				function (err, playlists) {
 					if (err) {		
@@ -718,7 +726,7 @@ module.exports = {
 	},
 	isPublicPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
-			var sqlIsPlaylistPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_public_flag.sql'),'utf-8');
+			var sqlIsPlaylistPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_public_flag.sql'),'utf-8');		
 			module.exports._user_db_handler.get(sqlIsPlaylistPublic,
 				{
 					$playlist_id: playlist_id
@@ -887,9 +895,12 @@ module.exports = {
 	* @param  {number} playlist_id {Playlist ID to check for existence}
 	* @return {type} {Returns true or false}
 	*/
-	isPlaylist:function(playlist_id,callback) {
+	isPlaylist:function(playlist_id,seenFromUser,callback) {
 		//TODO : transformer en promesse
 		var sqlIsPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist.sql'),'utf-8');
+		if (seenFromUser) {
+				sqlIsPlaylist += 'AND flag_visible = 1';
+		}
 		module.exports._user_db_handler.get(sqlIsPlaylist,
 			{
 				$playlist_id: playlist_id

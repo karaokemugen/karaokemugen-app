@@ -1,1 +1,1 @@
-SELECT pk_id_playlist FROM playlist WHERE pk_id_playlist = $playlist_id;
+SELECT pk_id_playlist FROM playlist WHERE pk_id_playlist = $playlist_id
