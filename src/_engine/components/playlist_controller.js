@@ -996,15 +996,15 @@ module.exports = {
 					}
 					if (!S(kara.NORM_creator).isEmpty()) {
 						if (S(kara.NORM_creator.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					}					
+					if (!S(kara.songtype_i18n_short).isEmpty()) {
+						if (S(kara.songtype_i18n_short.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
 					}
-					if (!S(kara.songtype).isEmpty()) {
-						if (S(kara.songtype.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
+					if (!S(kara.misc_i18n).isEmpty()) {
+						if (S(kara.misc_i18n.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
 					}
-					if (!S(kara.misc).isEmpty()) {
-						if (S(kara.misc.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
-					}
-					if (!S(kara.language).isEmpty()) {
-						if (S(kara.language.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
+					if (!S(kara.language_i18n).isEmpty()) {
+						if (S(kara.language_i18n.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
 					}
 
 					searchWordID++;
