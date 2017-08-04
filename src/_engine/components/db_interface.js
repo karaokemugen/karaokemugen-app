@@ -283,8 +283,8 @@ module.exports = {
 						$playlist_id: playlist_id
 					}, function (err, duration) {
 						if (err) {
-							reject(__('DB_DURATION_PL_ERROR',playlist_id,JSON.stringify(err)));									
-						} else {									
+							reject(__('DB_DURATION_PL_ERROR',playlist_id,JSON.stringify(err)));
+						} else {
 							resolve(duration);
 						}
 					});
@@ -301,12 +301,12 @@ module.exports = {
 				reject(__('DBI_NOT_READY'));
 			}
 			var sqlGenerateBlacklist = fs.readFileSync(path.join(__dirname,'../../_common/db/generate_blacklist.sql'),'utf-8');
-			
+
 			module.exports._user_db_handler.exec(sqlGenerateBlacklist,
 				function (err, rep) {
 					if (err) {
-						reject(__('DB_BLACKLIST_GENERATION_ERROR',JSON.stringify(err)));														
-					} else {											
+						reject(__('DB_BLACKLIST_GENERATION_ERROR',JSON.stringify(err)));
+					} else {
 						resolve();
 					}
 				});
@@ -322,12 +322,12 @@ module.exports = {
 				reject(__('DBI_NOT_READY'));
 			}
 			var sqlGetBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_criterias.sql'),'utf-8');
-			
+
 			module.exports._user_db_handler.all(sqlGetBlacklistCriterias,
 				function (err, blcriterias) {
 					if (err) {
-						reject(__('DB_BLACKLIST_GET_CRITERIAS_ERROR',JSON.stringify(err)));									
-					} else {											
+						reject(__('DB_BLACKLIST_GET_CRITERIAS_ERROR',JSON.stringify(err)));
+					} else {
 						resolve(blcriterias);
 					}
 				});
@@ -346,7 +346,7 @@ module.exports = {
 				reject(__('DBI_NOT_READY'));
 			}
 			var sqlAddBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/insert_blacklist_criteria.sql'),'utf-8');
-			
+
 			module.exports._user_db_handler.run(sqlAddBlacklistCriterias,
 				{
 					$blctype: blctype,
@@ -354,8 +354,8 @@ module.exports = {
 				},
 				function (err) {
 					if (err) {
-						reject(__('DB_BLACKLIST_ADD_CRITERIA_ERROR',JSON.stringify(err)));														
-					} else {											
+						reject(__('DB_BLACKLIST_ADD_CRITERIA_ERROR',JSON.stringify(err)));
+					} else {
 						resolve();
 					}
 				});
@@ -373,15 +373,15 @@ module.exports = {
 				reject(__('DBI_NOT_READY'));
 			}
 			var sqlDeleteBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_blacklist_criteria.sql'),'utf-8');
-			
+
 			module.exports._user_db_handler.run(sqlDeleteBlacklistCriterias,
 				{
-					$blc_id: blc_id				
+					$blc_id: blc_id
 				},
 				function (err) {
 					if (err) {
-						reject(__('DB_BLACKLIST_DELETE_CRITERIA_ERROR',JSON.stringify(err)));												
-					} else {											
+						reject(__('DB_BLACKLIST_DELETE_CRITERIA_ERROR',JSON.stringify(err)));
+					} else {
 						resolve();
 					}
 				});
@@ -400,7 +400,7 @@ module.exports = {
 				reject(__('DBI_NOT_READY'));
 			}
 			var sqlEditBlacklistCriteria = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_blacklist_criteria.sql'),'utf-8');
-			
+
 			module.exports._user_db_handler.run(sqlEditBlacklistCriteria,
 				{
 					$blc_id: blc_id,
@@ -409,8 +409,8 @@ module.exports = {
 				},
 				function (err) {
 					if (err) {
-						reject(__('DB_BLACKLIST_EDIT_CRITERIA_ERROR',JSON.stringify(err)));									
-					} else {											
+						reject(__('DB_BLACKLIST_EDIT_CRITERIA_ERROR',JSON.stringify(err)));
+					} else {
 						resolve();
 					}
 				});
@@ -428,7 +428,7 @@ module.exports = {
 					$num_karas: num_karas
 				}, function (err) {
 					if (err) {
-						reject(__('DB_PLAYLIST_UPDATE_KARACOUNT_ERROR',playlist_id,JSON.stringify(err)));												
+						reject(__('DB_PLAYLIST_UPDATE_KARACOUNT_ERROR',playlist_id,JSON.stringify(err)));
 					} else {
 						resolve(num_karas);
 					}
@@ -458,11 +458,11 @@ module.exports = {
 						$playlistcontent_id: kara.playlistcontent_id
 					}, function (err) {
 						if (err) {
-							reject(__('DB_PLAYLIST_REORDER_ERROR',playlist_id,JSON.stringify(err)));														
+							reject(__('DB_PLAYLIST_REORDER_ERROR',playlist_id,JSON.stringify(err)));
 						}
 					});
 			});
-			resolve();								
+			resolve();
 		});
 	},
 	/**
@@ -483,7 +483,7 @@ module.exports = {
 					$duration: duration
 				}, function (err) {
 					if (err) {
-						reject(__('DB_PLAYLIST_UPDATE_DURATION_ERROR',playlist_id,JSON.stringify(err)));									
+						reject(__('DB_PLAYLIST_UPDATE_DURATION_ERROR',playlist_id,JSON.stringify(err)));
 					} else {
 						resolve(duration);
 					}
@@ -507,7 +507,7 @@ module.exports = {
 						$playlist_id: playlist_id
 					}, function (err, playlist) {
 						if (err) {
-							reject(__('DB_PLAYLIST_GET_CONTENTS_ERROR',playlist_id,JSON.stringify(err)));									
+							reject(__('DB_PLAYLIST_GET_CONTENTS_ERROR',playlist_id,JSON.stringify(err)));
 						} else {
 							resolve(playlist);
 						}
@@ -524,15 +524,15 @@ module.exports = {
 			if(!module.exports.isReady()) {
 				reject(__('DBI_NOT_READY'));
 			}
-			var sqlGetWhitelistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_whitelist_contents.sql'),'utf-8');			
+			var sqlGetWhitelistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_whitelist_contents.sql'),'utf-8');
 			module.exports._user_db_handler.all(sqlGetWhitelistContents,
-				function (err, playlist) {					
+				function (err, playlist) {
 					if (err) {
-						reject('DB Get Whitelist content error :'+err);									
-					} else {						
+						reject('DB Get Whitelist content error :'+err);
+					} else {
 						resolve(playlist);
 					}
-			});			
+				});
 		});
 	},
 	/**
@@ -544,17 +544,17 @@ module.exports = {
 			if(!module.exports.isReady()) {
 				reject(__('DBI_NOT_READY'));
 			}
-			var sqlGetBlacklistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_contents.sql'),'utf-8');			
+			var sqlGetBlacklistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_contents.sql'),'utf-8');
 			module.exports._user_db_handler.all(sqlGetBlacklistContents,
-				function (err, playlist) {					
+				function (err, playlist) {
 					if (err) {
-						reject('DB Get Blacklist content error :'+err);									
-					} else {						
+						reject('DB Get Blacklist content error :'+err);
+					} else {
 						resolve(playlist);
 					}
-			});			
+				});
 		});
-	},	
+	},
 	/**
 	* @function {Get all karaokes}
 	* @return {array} {array of karaoke objects}
@@ -568,7 +568,7 @@ module.exports = {
 			module.exports._user_db_handler.all(sqlGetAllKaras,
 				function (err, playlist) {
 					if (err) {
-						reject(__('DB_GET_ALL_KARAS_ERROR',JSON.stringify(err)));									
+						reject(__('DB_GET_ALL_KARAS_ERROR',JSON.stringify(err)));
 					} else {
 						resolve(playlist);
 					}
@@ -591,7 +591,7 @@ module.exports = {
 				},
 				function (err, kara) {
 					if (err) {
-						reject(__('DB_KARA_GET_PLCINFO_ERROR',playlistcontent_id,JSON.stringify(err)));									
+						reject(__('DB_KARA_GET_PLCINFO_ERROR',playlistcontent_id,JSON.stringify(err)));
 					} else {
 						resolve(kara);
 					}
@@ -608,15 +608,15 @@ module.exports = {
 			if(!module.exports.isReady()) {
 				reject(__('DBI_NOT_READY'));
 			}
-			
+
 			var sqlGetKara = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kara.sql'),'utf-8');
 			module.exports._db_handler.get(sqlGetKara,
-				{	
-					$kara_id: kara_id					
+				{
+					$kara_id: kara_id
 				},
 				function (err, kara) {
 					if (err) {
-						reject(__('DB_KARA_GET_ERROR',kara_id,JSON.stringify(err)));									
+						reject(__('DB_KARA_GET_ERROR',kara_id,JSON.stringify(err)));
 					} else {
 						resolve(kara);
 					}
@@ -665,11 +665,11 @@ module.exports = {
 			}
 			module.exports._user_db_handler.all(sqlGetPlaylists,
 				function (err, playlists) {
-					if (err) {		
+					if (err) {
 						logger.error(__('DB_PLAYLISTS_GET_ERROR',JSON.stringify(err)));
 						reject(err);
 					} else {
-						resolve(playlists);					
+						resolve(playlists);
 					}
 				});
 		});
@@ -688,7 +688,7 @@ module.exports = {
 				function (err, row) {
 					if (err) {
 						logger.error(__('DB_PLAYLIST_TEST_CURRENT_EXISTS_ERROR',JSON.stringify(err)));
-						reject();									
+						reject();
 					} else {
 						if (row) {
 							resolve(row.pk_id_playlist);
@@ -713,7 +713,7 @@ module.exports = {
 				function (err, row) {
 					if (err) {
 						logger.error(__('DB_PLAYLIST_TEST_CURRENT_EXISTS_ERROR',JSON.stringify(err)));
-						reject();									
+						reject();
 					} else {
 						if (row) {
 							resolve(row.pk_id_playlist);
@@ -740,7 +740,7 @@ module.exports = {
 							} else {
 								resolve(false);
 							}
-						} else {						
+						} else {
 							reject(__('DB_PLAYLIST_UNKNOWN',playlist_id));
 						}
 					}
@@ -755,7 +755,7 @@ module.exports = {
 					$playlist_id: playlist_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_PLAYLIST_TEST_CURRENT_ERROR',playlist_id,JSON.stringify(err)));					
+						reject(__('DB_PLAYLIST_TEST_CURRENT_ERROR',playlist_id,JSON.stringify(err)));
 					} else {
 						if (row) {
 							if (row.flag_current == 1) {
@@ -804,8 +804,8 @@ module.exports = {
 				{
 					$blc_id: blc_id
 				}, function (err, row) {
-					if (err) {	
-						reject(__('DB_BLACKLIST_TEST_CRITERIA_ERROR',blc_id,JSON.stringify(err)));									
+					if (err) {
+						reject(__('DB_BLACKLIST_TEST_CRITERIA_ERROR',blc_id,JSON.stringify(err)));
 					} else {
 						if (row) {
 							resolve();
@@ -828,8 +828,8 @@ module.exports = {
 				{
 					$wlc_id: wlc_id
 				}, function (err, row) {
-					if (err) {	
-						reject('DB Error : Unable to run query : '+err);									
+					if (err) {
+						reject('DB Error : Unable to run query : '+err);
 					} else {
 						if (row) {
 							resolve();
@@ -855,8 +855,8 @@ module.exports = {
 					$playlist_id: playlist_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_PLAYLIST_SEARCH_KARA_ERROR',kara_id,playlist_id,JSON.stringify(err)));									
-					} else {						
+						reject(__('DB_PLAYLIST_SEARCH_KARA_ERROR',kara_id,playlist_id,JSON.stringify(err)));
+					} else {
 						if (row) {
 							resolve(true);
 						} else {
@@ -879,8 +879,8 @@ module.exports = {
 					$kara_id: kara_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_WHITELIST_SEARCH_KARA_ERROR',kara_id,JSON.stringify(err)));									
-					} else {						
+						reject(__('DB_WHITELIST_SEARCH_KARA_ERROR',kara_id,JSON.stringify(err)));
+					} else {
 						if (row) {
 							resolve(true);
 						} else {
@@ -927,7 +927,7 @@ module.exports = {
 					callback(null,__('DB_PLAYLIST_SET_CURRENT_ERROR',playlist_id,JSON.stringify(err)));
 				} else {
 					callback(rep);
-				}			
+				}
 			});
 	},
 	/**
@@ -947,7 +947,7 @@ module.exports = {
 				} else {
 					callback(rep);
 				}
-				
+
 			});
 	},
 	/**
@@ -956,30 +956,30 @@ module.exports = {
 	* @return {string} {error}
 	*/
 	setPlaying:function(playlistcontent_id,playlist_id) {
-		return new Promise(function(resolve,reject){				
-		
+		return new Promise(function(resolve,reject){
+
 			//Unset playing flag everywhere on this playlist
 			var sqlUnsetPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_unset_playing.sql'),'utf-8');
 			module.exports._user_db_handler.run(sqlUnsetPlaying,
-			{
-				$playlist_id: playlist_id
-			}, function (err, rep) {
-				if (err) {
-					reject(err);
-				} else {
-					var sqlSetPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_playing.sql'),'utf-8');
-					module.exports._user_db_handler.run(sqlSetPlaying,
-					{
-						$playlistcontent_id: playlistcontent_id
-					}, function (err, rep) {
-						if (err) {
-							reject(err);
-						} else {
-							resolve();
-						}
-					});	
-				}
-			});
+				{
+					$playlist_id: playlist_id
+				}, function (err, rep) {
+					if (err) {
+						reject(err);
+					} else {
+						var sqlSetPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_playing.sql'),'utf-8');
+						module.exports._user_db_handler.run(sqlSetPlaying,
+							{
+								$playlistcontent_id: playlistcontent_id
+							}, function (err, rep) {
+								if (err) {
+									reject(err);
+								} else {
+									resolve();
+								}
+							});
+					}
+				});
 		});
 	},
 	/**
@@ -988,21 +988,21 @@ module.exports = {
 	* @return {string} {error}
 	*/
 	setPos:function(playlistcontent_id,pos) {
-		return new Promise(function(resolve,reject){				
-		
+		return new Promise(function(resolve,reject){
+
 			//Unset playing flag everywhere on this playlist
 			var sqlSetPos = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_pos.sql'),'utf-8');
 			module.exports._user_db_handler.run(sqlSetPos,
-			{
-				$playlistcontent_id: playlistcontent_id,
-				$pos: pos
-			}, function (err, rep) {
-				if (err) {
-					reject(err);
-				} else {
-					resolve();
-				}
-			});
+				{
+					$playlistcontent_id: playlistcontent_id,
+					$pos: pos
+				}, function (err, rep) {
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
+				});
 		});
 	},
 	/**
@@ -1022,7 +1022,7 @@ module.exports = {
 				} else {
 					callback(rep);
 				}
-				
+
 			});
 	},
 	setPublicPlaylist:function(playlist_id,callback) {
@@ -1036,7 +1036,7 @@ module.exports = {
 					callback(null,__('DB_PLAYLIST_SET_PUBLIC_ERROR',playlist_id,JSON.stringify(err)));
 				} else {
 					callback(rep);
-				}				
+				}
 			});
 	},
 	unsetPublicAllPlaylists:function(callback) {
@@ -1048,7 +1048,7 @@ module.exports = {
 			var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
 			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err, rep) {
 				if (err) {
-					reject(__('DB_PLAYLIST_UNSET_PUBLIC_ALL_ERROR',JSON.stringify(err)));														
+					reject(__('DB_PLAYLIST_UNSET_PUBLIC_ALL_ERROR',JSON.stringify(err)));
 				} else {
 					resolve();
 				}
@@ -1062,13 +1062,13 @@ module.exports = {
 			}
 
 			var sqlUpdatePlaylistLastEditTime = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_last_edit_time.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlUpdatePlaylistLastEditTime, 
+			module.exports._user_db_handler.run(sqlUpdatePlaylistLastEditTime,
 				{
 					$playlist_id: playlist_id,
 					$lastEditTime: lastEditTime
 				}, function (err, rep) {
 					if (err) {
-						reject(__('DB_PLAYLIST_UPDATE_LAST_EDIT_TIME_ERROR',JSON.stringify(err)));													
+						reject(__('DB_PLAYLIST_UPDATE_LAST_EDIT_TIME_ERROR',JSON.stringify(err)));
 					} else {
 						resolve();
 					}
@@ -1084,7 +1084,7 @@ module.exports = {
 			var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
 			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err, rep) {
 				if (err) {
-					reject(__('DB_PLAYLIST_UNSET_CURRENT_ALL_ERROR',JSON.stringify(err)));									
+					reject(__('DB_PLAYLIST_UNSET_CURRENT_ALL_ERROR',JSON.stringify(err)));
 				} else {
 					resolve();
 				}
@@ -1100,7 +1100,7 @@ module.exports = {
 				$playlist_id: playlist_id
 			}, function(err) {
 				if (err) {
-					logger.error(__('DB_PLAYLIST_EMPTY_ERROR',playlist_id,JSON.stringify(err)));									
+					logger.error(__('DB_PLAYLIST_EMPTY_ERROR',playlist_id,JSON.stringify(err)));
 				}
 			});
 	},
@@ -1185,7 +1185,7 @@ module.exports = {
 				$flag_public: flag_public
 			}, function (err, rep) {
 				if (err) {
-					logger.error(__('DB_PLAYLIST_CREATE_ERROR',name,JSON.stringify(err)));					
+					logger.error(__('DB_PLAYLIST_CREATE_ERROR',name,JSON.stringify(err)));
 					callback({
 						id:0,
 						error:true,
@@ -1217,7 +1217,7 @@ module.exports = {
 					} else {
 						resolve();
 					}
-			});
+				});
 		});
 	},
 	/**
@@ -1335,9 +1335,9 @@ module.exports = {
 			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
 			module.exports._user_db_handler.run(sqlRemoveKaraFromPlaylist,
 				{
-					$playlistcontent_id: playlistcontent_id				
+					$playlistcontent_id: playlistcontent_id
 				}, function (err, rep) {
-					if (err) {		
+					if (err) {
 						reject(__('DB_PLAYLIST_REMOVE_KARA_ERROR',playlistcontent_id,JSON.stringify(err)));
 					} else {
 						resolve();
@@ -1382,7 +1382,7 @@ module.exports = {
 				reject(__('DBI_NOT_READY'));
 			}
 
-			var newpos = pos + 0.1;			
+			var newpos = pos + 0.1;
 			var sqlRaisePosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_raise_pos_in_playlist.sql'),'utf-8');
 			module.exports._user_db_handler.run(sqlRaisePosInPlaylist,
 				{
@@ -1412,7 +1412,7 @@ module.exports = {
 			var sqlGetMaxPosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/select_max_pos_in_playlist.sql'),'utf-8');
 			module.exports._user_db_handler.get(sqlGetMaxPosInPlaylist,
 				{
-					$playlist_id: playlist_id			
+					$playlist_id: playlist_id
 				}, function (err, row) {
 					if (err) {
 						reject(__('DB_PLAYLIST_GET_MAXPOS_ERROR',playlist_id,JSON.stringify(err)));

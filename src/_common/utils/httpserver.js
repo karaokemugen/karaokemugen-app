@@ -6,12 +6,12 @@ const url = require('url');
 const fs = require('fs');
 
 const mimeTypes = {
-    "html": "text/html",
-    "jpeg": "image/jpeg",
-    "jpg": "image/jpeg",
-    "png": "image/png",
-    "js": "text/javascript",
-    "css": "text/css"
+	'html': 'text/html',
+	'jpeg': 'image/jpeg',
+	'jpg': 'image/jpeg',
+	'png': 'image/png',
+	'js': 'text/javascript',
+	'css': 'text/css'
 };
 
 module.exports = function(httpdocs) {
@@ -22,19 +22,19 @@ module.exports = function(httpdocs) {
 		fs.exists(filename, function(exists) {
 			if (!exists) {
 				response.writeHead(404, {
-					"Content-Type": "text/plain"
+					'Content-Type': 'text/plain'
 				});
-				response.write("404 Not Found\n" + filename + "\n" + uri);
+				response.write('404 Not Found\n' + filename + '\n' + uri);
 				response.end();
 				return;
 			}
 			if (fs.statSync(filename).isDirectory()) filename += '/index.html';
-			fs.readFile(filename, "binary", function(err, file) {
+			fs.readFile(filename, 'binary', function(err, file) {
 				if (err) {
 					response.writeHead(500, {
-						"Content-Type": "text/plain"
+						'Content-Type': 'text/plain'
 					});
-					response.write(err + "\n");
+					response.write(err + '\n');
 					response.end();
 					return;
 				}
@@ -43,11 +43,11 @@ module.exports = function(httpdocs) {
 					mimeType = 'text/plain';
 				}
 				response.writeHead(200, {
-					"Content-Type": mimeType
+					'Content-Type': mimeType
 				});
-				response.write(file, "binary");
+				response.write(file, 'binary');
 				response.end();
 			});
 		});
 	});
-}
+};
