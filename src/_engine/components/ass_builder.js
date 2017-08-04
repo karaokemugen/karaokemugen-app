@@ -1,4 +1,4 @@
-const logger = require('../_common/utils/logger.js');
+const logger = require('../../_common/utils/logger.js');
 var path = require('path');
 var fs = require('fs');
 var assParser = require('ass-parser');
