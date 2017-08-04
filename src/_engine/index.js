@@ -1,6 +1,7 @@
 /**
  * @fileoverview Main engine source file
  */
+var fs = require('fs');
 const path = require('path');
 const logger = require('../_common/utils/logger.js');
 const extend = require('extend');
@@ -38,13 +39,11 @@ module.exports = {
 	 * @function {run}
 	 */
 	run: function(){
-		if(this.SYSPATH === null)
-		{
+		if(this.SYSPATH === null) {
 			logger.error(__('SYSPATH_NULL'));
 			process.exit();
 		}
-		if(this.SETTINGS === null)
-		{
+		if(this.SETTINGS === null) {
 			logger.error(__('SETTINGS_NULL'));
 			process.exit();
 		}
@@ -62,54 +61,6 @@ module.exports = {
 			module.exports._broadcastStates();
 		}).catch(function(response){
 			console.log(response);
-		});
-	},
-
-	//---------------------------------------------------------------
-	// 	 /$$$$$$$$ /$$$$$$$$  /$$$$$$  /$$$$$$$$
-	// 	|__  $$__/| $$_____/ /$$__  $$|__  $$__/
-	// 	   | $$   | $$      | $$  \__/   | $$
-	// 	   | $$   | $$$$$   |  $$$$$$    | $$
-	// 	   | $$   | $$__/    \____  $$   | $$
-	// 	   | $$   | $$       /$$  \ $$   | $$
-	// 	   | $$   | $$$$$$$$|  $$$$$$/   | $$
-	// 	   |__/   |________/ \______/    |__/
-	//
-	//
-	//
-
-	test:function(){
-		//console.log('This is an engine test event !');
-		return 'This is an engine test event response !';
-	},
-
-	test_playlist_controller: function(){
-		if(this.SYSPATH === null)
-		{
-			logger.error(__('SYSPATH_NULL'));
-			process.exit();
-		}
-		if(this.SETTINGS === null)
-		{
-			logger.error(__('SETTINGS_NULL'));
-			process.exit();
-		}
-
-		this._start_db_interface().then(function(){
-			module.exports._start_player();
-			module.exports._start_playlist_controller();
-
-			logger.info(__('START_PLC_TEST_PROC'));
-
-			// Here is the test
-			// module.exports._services.playlist_controller.whatever_you_want()
-			logger.error('TODO: Implement test procedure ');
-
-			process.exit();
-
-		}).catch(function(response){
-			//console.log(response);
-			process.exit();
 		});
 	},
 
@@ -133,21 +84,18 @@ module.exports = {
 		process.exit();
 	},
 
-    /**
+	/**
 	 * Starts playing karaoke songs.
 	 * @function {play}
 	 */
 	play:function(){
-		if(module.exports._states.status !== 'play')
-		{
+		if(module.exports._states.status !== 'play') {
 			// passe en mode lecture (le gestionnaire de playlist vas travailler à nouveau)
 			module.exports._states.status = 'play';
 			module.exports._broadcastStates();
 
 			module.exports.tryToReadKaraInPlaylist();
-		}
-		else if(module.exports._states.status === 'play')
-		{
+		} else if(module.exports._states.status === 'play') {
 			// resume current play if needed
 			module.exports._services.player.resume();
 		}
@@ -160,8 +108,7 @@ module.exports = {
 		if(now)
 			module.exports._services.player.stop();
 
-		if(module.exports._states.status !== 'stop')
-		{
+		if(module.exports._states.status !== 'stop') {
 			module.exports._states.status = 'stop';
 			module.exports._broadcastStates();
 		}
@@ -171,7 +118,7 @@ module.exports = {
 	 * Pauses current song in the player and broadcasts new status.
 	 */
 	pause:function(){
-		module.exports._services.player.pause()
+		module.exports._services.player.pause();
 		// l'état globale n'a pas besoin de changer
 		// le player ne terminera jamais son morceau en restant en pause
 		module.exports._broadcastStates();
@@ -208,24 +155,21 @@ module.exports = {
 	* @function {setPrivateOn}
 	* @private
 	*/
-	setPrivateOn:function()
-	{
+	setPrivateOn:function() {
 		module.exports._states.private = true;
 		module.exports._broadcastStates();
 	},
 	/**
 	* @function {setPrivateOff}
 	*/
-	setPrivateOff:function()
-	{
+	setPrivateOff:function() {
 		module.exports._states.private = false;
 		module.exports._broadcastStates();
 	},
 	/**
 	* @function {togglePrivate}
 	*/
-	togglePrivate:function()
-	{
+	togglePrivate:function() {
 		module.exports._states.private = !module.exports._states.private;
 		logger.debug('private is now '+module.exports._states.private);
 		module.exports._broadcastStates();
@@ -234,8 +178,7 @@ module.exports = {
 	/**
 	* @function {toggleFullscreen}
 	*/
-	toggleFullscreen:function()
-	{
+	toggleFullscreen:function() {
 		module.exports._states.fullscreen = !module.exports._states.fullscreen;
 		module.exports._services.player.setFullscreen(module.exports._states.fullscreen);
 		logger.debug('fullscreen is now '+module.exports._states.fullscreen);
@@ -244,8 +187,7 @@ module.exports = {
 	/**
 	* @function {toggleStayOnTop}
 	*/
-	toggleOnTop:function()
-	{
+	toggleOnTop:function() {
 		// player services return new ontop states after change
 		module.exports._states.ontop = module.exports._services.player.toggleOnTop();
 		logger.debug('ontop is now '+module.exports._states.ontop);
@@ -258,14 +200,13 @@ module.exports = {
 	*
 	*/
 	playlistUpdated:function(){
-		if(module.exports._states.status === 'play' && !module.exports._services.player.playing)
-		{
+		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
 			module.exports._services.playlist_controller.next()
-			.then(function(){
-				module.exports.tryToReadKaraInPlaylist();
-			}).catch(function(){
-				logger.info('Next song is not available');
-			});
+				.then(function(){
+					module.exports.tryToReadKaraInPlaylist();
+				}).catch(function(){
+					logger.info('Next song is not available');
+				});
 		}
 	},
 	/**
@@ -275,11 +216,11 @@ module.exports = {
 	*/
 	playerEnding:function(){
 		module.exports._services.playlist_controller.next()
-		.then(function(){
-			module.exports.tryToReadKaraInPlaylist();
-		}).catch(function(){
-			logger.info('Next song is not available');
-		});
+			.then(function(){
+				module.exports.tryToReadKaraInPlaylist();
+			}).catch(function(){
+				logger.info('Next song is not available');
+			});
 	},
 
 	/**
@@ -288,28 +229,26 @@ module.exports = {
 	*/
 	tryToReadKaraInPlaylist:function(){
 		module.exports._services.playlist_controller.current_playlist().then(function(playlist){
-			if(module.exports._states.playlist != playlist)
-			{
+			if(module.exports._states.playlist != playlist) {
 				module.exports._states.playlist = playlist;
 				module.exports._broadcastStates();
 			}
-		})
-		if(module.exports._states.status === 'play' && !module.exports._services.player.playing)
-		{
+		});
+		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
 			module.exports._services.playlist_controller.current()
-			.then(function(kara){
-				logger.info('Start playing '+kara.title);
-				module.exports._services.player.play(
-					kara.path.video,
-					kara.path.subtitle,
-					kara.id_kara
-				);
-				module.exports._broadcastStates();
-			})
-			.catch(function(){
-				logger.info('Cannot found a song to play');
-				module.exports._broadcastStates();
-			});
+				.then(function(kara){
+					logger.info('Start playing '+kara.title);
+					module.exports._services.player.play(
+						kara.path.video,
+						kara.path.subtitle,
+						kara.id_kara
+					);
+					module.exports._broadcastStates();
+				})
+				.catch(function(){
+					logger.info('Cannot found a song to play');
+					module.exports._broadcastStates();
+				});
 		}
 	},
 
@@ -317,8 +256,7 @@ module.exports = {
 	// méthodes privées
 	// ------------------------------------------------------------------
 
-	_broadcastStates:function()
-	{
+	_broadcastStates:function() {
 		// diffuse l'état courant à tout les services concerné (normalement les webapp)
 		module.exports._services.admin.setEngineStates(module.exports._states);
 	},
@@ -332,8 +270,7 @@ module.exports = {
 	* Starts database interface.
 	* Requires the db_interface.js script
 	*/
-	_start_db_interface: function()
-	{
+	_start_db_interface: function() {
 		module.exports.DB_INTERFACE = require(path.resolve(__dirname,'components/db_interface.js'));
 		module.exports.DB_INTERFACE.SYSPATH = module.exports.SYSPATH;
 		module.exports.DB_INTERFACE.SETTINGS = module.exports.SETTINGS;
@@ -365,7 +302,9 @@ module.exports = {
 		module.exports._services.admin.onNext = module.exports.next;
 		module.exports._services.admin.onPrev = module.exports.prev;
 		module.exports._services.admin.onPause = module.exports.pause;
-		module.exports._services.admin.onStopNow = function(){module.exports.stop(true)};
+		module.exports._services.admin.onStopNow = function(){
+			module.exports.stop(true);
+		};
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.admin.init();
@@ -407,24 +346,23 @@ module.exports = {
 		// --------------------------------------------------------
 		module.exports._services.apiserver.onTest = module.exports.test;
 		module.exports._services.apiserver.onKaras = function(filter,lang){
-			return new Promise(function(resolve,reject){	
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
-						if (filter) 
-						{
+						if (filter) {
 							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
-							.then(function(filtered_pl){
-								module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,lang)
-								.then(function(karalist){
-									resolve(karalist);
+								.then(function(filtered_pl){
+									module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,lang)
+										.then(function(karalist){
+											resolve(karalist);
+										})
+										.catch(function(err){
+											reject(err);
+										});
 								})
 								.catch(function(err){
-									reject(err);
-								})
-							})
-							.catch(function(err){
-								resovle(err);
-							})
+									resolve(err);
+								});
 						} else {
 							module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 								.then(function(karalist){
@@ -432,255 +370,249 @@ module.exports = {
 								})
 								.catch(function(err){
 									reject(err);
-								})
-							
+								});
+
 						}
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onWhitelist = function(filter,lang){
-			return new Promise(function(resolve,reject){	
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getWhitelistContents()
 					.then(function(playlist){
-						if (filter) 
-						{
+						if (filter) {
 							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
-							.then(function(filtered_pl){
-								module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,lang)
-								.then(function(karalist){
-									resolve(karalist);
+								.then(function(filtered_pl){
+									module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,lang)
+										.then(function(karalist){
+											resolve(karalist);
+										})
+										.catch(function(err){
+											reject(err);
+										});
 								})
 								.catch(function(err){
 									reject(err);
-								})
-							})
-							.catch(function(err){
-								resovle(err);
-							})
+								});
 						} else {
-							
+
 							module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 								.then(function(karalist){
 									resolve(karalist);
 								})
 								.catch(function(err){
 									reject(err);
-								})
-							
+								});
 						}
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onBlacklist = function(filter,lang){
-			return new Promise(function(resolve,reject){	
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistContents()
-				.then(function(playlist){
-					if (filter) 
-					{
-						module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
-						.then(function(filtered_pl){
-							module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,ang)
-							.then(function(karalist){
-								resolve(karalist);
-							})
-							.catch(function(err){
-								reject(err);
-							})
-						})
-						.catch(function(err){
-							resovle(err);
-						})
-					} else {
-						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-						.then(function(karalist){
-							resolve(karalist);
-						})
-						.catch(function(err){
-							reject(err);
-						})
-							
-					}
-				})
-				.catch(function(err){
-					reject(err);
-				});
+					.then(function(playlist){
+						if (filter) {
+							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
+								.then(function(filtered_pl){
+									module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,ang)
+										.then(function(karalist){
+											resolve(karalist);
+										})
+										.catch(function(err){
+											reject(err);
+										});
+								})
+								.catch(function(err){
+									reject(err);
+								});
+						} else {
+							module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+								.then(function(karalist){
+									resolve(karalist);
+								})
+								.catch(function(err){
+									reject(err);
+								});
+						}
+					})
+					.catch(function(err){
+						reject(err);
+					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onBlacklistCriterias = function(){
-			return new Promise(function(resolve,reject){	
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistCriterias()
-				.then(function(blc){						
-					resolve(blc)
-				})
-				.catch(function(err){
-					reject(err);
-				});
+					.then(function(blc){
+						resolve(blc);
+					})
+					.catch(function(err){
+						reject(err);
+					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onBlacklistCriteriaAdd = function(blctype,blcvalue){
-			return new Promise(function(resolve,reject){	
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
-				.then(function(){						
-					resolve()
-				})
-				.catch(function(err){
-					reject(err);
-				});
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onBlacklistCriteriaDelete = function(blc_id){
-			return new Promise(function(resolve,reject){	
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteBlacklistCriteria(blc_id)
-				.then(function(){						
-					resolve()
-				})
-				.catch(function(err){
-					reject(err);
-				});
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onBlacklistCriteriaEdit = function(blc_id,blctype,blcvalue){
-			return new Promise(function(resolve,reject){	
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editBlacklistCriteria(blc_id,blctype,blcvalue)
-				.then(function(){						
-					resolve()
-				})
-				.catch(function(err){
-					reject(err);
-				});
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistShuffle = function(pl_id){
-			return new Promise(function(resolve,reject){	
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.shufflePlaylist(pl_id)
-				.then(function(){						
-					resolve()
-				})
-				.catch(function(err){
-					console.log()
-					reject(err);
-				});
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onKaraSingle = function(id_kara,lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getKara(id_kara)
 					.then(function(kara){
 						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
-						.then(function(karalist){
-							resolve(karalist);
-						})
-						.catch(function(err){
-							reject(err);
-						})						
+							.then(function(karalist){
+								resolve(karalist);
+							})
+							.catch(function(err){
+								reject(err);
+							});
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylists = function(){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylists()
-				.then(function(playlists){
-					resolve(playlists);
-				})
-				.catch(function(err){
-					reject(err);
-				});
+					.then(function(playlists){
+						resolve(playlists);
+					})
+					.catch(function(err){
+						reject(err);
+					});
 			});
-		}	
+		};
 		module.exports._services.apiserver.onPlaylistCreate = function(playlist){
-			return new Promise(function(resolve,reject){		
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.createPlaylist(playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
-				.then(function (new_playlist){
-					var res = {
-						new_playlist_id: new_playlist
-					}					
-					resolve(res)
-				})
-				.catch(function(err){
-					var res = {
-						error: err
-					}
-					reject(res);
-				});
+					.then(function (new_playlist){
+						var res = {
+							new_playlist_id: new_playlist
+						};
+						resolve(res);
+					})
+					.catch(function(err){
+						var res = {
+							error: err
+						};
+						reject(res);
+					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistSingleInfo = function(id_playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
 					.then(function(playlist){
-						resolve(playlist);						
+						resolve(playlist);
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistSingleDelete = function(id_playlist,id_newplaylist){
-			return new Promise(function(resolve,reject){				
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deletePlaylist(id_playlist,id_newplaylist)
 					.then(function(){
-						resolve();						
+						resolve();
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistSingleKaraDelete = function(playlistcontent_id){
-			return new Promise(function(resolve,reject){				
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromPlaylist(playlistcontent_id)
 					.then(function(){
-						resolve();						
+						resolve();
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onWhitelistSingleKaraDelete = function(wl_id){
-			return new Promise(function(resolve,reject){				
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromWhitelist(wl_id)
 					.then(function(){
-						resolve();						
+						resolve();
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}	
+		};
 		module.exports._services.apiserver.onWhitelistSingleKaraEdit = function(wl_id,reason){
-			return new Promise(function(resolve,reject){								
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editWhitelistKara(wl_id,reason)
 					.then(function(){
-						resolve();						
+						resolve();
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}	
+		};
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
-			return new Promise(function(resolve,reject){				
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
 					.then(function(){
-						resolve();						
+						resolve();
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}
-		module.exports._services.apiserver.onSettingsUpdate = function(settings)
-		{
+		};
+		module.exports._services.apiserver.onSettingsUpdate = function(settings) {
 			return new Promise(function(resolve,reject){
 				extend(true,module.exports.SETTINGS,settings);
 				module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
@@ -689,186 +621,177 @@ module.exports = {
 				module.exports._services.admin.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;
 				resolve();
-			})
-		}		
+			});
+		};
 		module.exports._services.apiserver.onPlaylistSingleEdit = function(id_playlist,playlist){
-			return new Promise(function(resolve,reject){				
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
 					.then(function(){
-						resolve();						
+						resolve();
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-						.then(function(karalist){
-							resolve(karalist);
-						})
-						.catch(function(err){
-							reject(err);
-						})												
+							.then(function(karalist){
+								resolve(karalist);
+							})
+							.catch(function(err){
+								reject(err);
+							});
 					})
 					.catch(function(err){
 						reject(err);
 					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistCurrentInfo = function(){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
-				.then(function(id_playlist){
-					module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
-					.then(function(playlist){
-						resolve(playlist);						
+					.then(function(id_playlist){
+						module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
+							.then(function(playlist){
+								resolve(playlist);
+							})
+							.catch(function(err){
+								reject(err);
+							});
 					})
 					.catch(function(err){
-						reject(err);
+						if (err) {
+							reject(err);
+						} else {
+							reject('No current playlist found');
+						}
 					});
-				})
-				.catch(function(err){
-					if (err) 
-					{
-						reject(err);
-					} else {
-						reject('No current playlist found');
-					}
-
-				})					
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistCurrentContents = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
-				.then(function(id_playlist){
-					module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
-					.then(function(playlist){
-						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-						.then(function(karalist){
-							resolve(karalist);
-						})
-						.catch(function(err){
-							reject(err);
-						})						
+					.then(function(id_playlist){
+						module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
+							.then(function(playlist){
+								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+									.then(function(karalist){
+										resolve(karalist);
+									})
+									.catch(function(err){
+										reject(err);
+									});
+							})
+							.catch(function(err){
+								reject(err);
+							});
 					})
 					.catch(function(err){
-						reject(err);
+						if (err) {
+							reject(err);
+						} else {
+							reject('No current playlist found');
+						}
 					});
-				})
-				.catch(function(err){
-					if (err) 
-					{
-						reject(err);
-					} else {
-						reject('No current playlist found');
-					}
-
-				})					
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistPublicInfo = function(){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
-				.then(function(id_playlist){
-					module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
-					.then(function(playlist){
-						resolve(playlist);						
+					.then(function(id_playlist){
+						module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
+							.then(function(playlist){
+								resolve(playlist);
+							})
+							.catch(function(err){
+								reject(err);
+							});
 					})
 					.catch(function(err){
-						reject(err);
+						if (err) {
+							reject(err);
+						} else {
+							reject('No public playlist found');
+						}
 					});
-				})
-				.catch(function(err){
-					if (err) 
-					{
-						reject(err);
-					} else {
-						reject('No public playlist found');
-					}
-
-				})					
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistPublicContents = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isAPublicPlaylist()
-				.then(function(id_playlist){
-					module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
-					.then(function(playlist){
-						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-						.then(function(karalist){
-							resolve(karalist);
+					.then(function(id_playlist){
+						module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
+							.then(function(playlist){
+								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+									.then(function(karalist){
+										resolve(karalist);
+									})
+									.catch(function(err){
+										reject(err);
+									});
+							})
+							.catch(function(err){
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						if (err) {
+							reject(err);
+						} else {
+							reject('No public playlist found');
+						}
+					});
+			});
+		};
+		module.exports._services.apiserver.onKaraAddToModePlaylist = function(id_kara,requester){
+			return new Promise(function(resolve,reject){
+				if (module.exports._states.private) {
+					//If Kara mode is private, then add to current playlist
+					module.exports._services.playlist_controller.addKaraToCurrentPlaylist(id_kara,requester)
+						.then(function(){
+							resolve();
 						})
 						.catch(function(err){
 							reject(err);
-						})						
+						});
+				} else {
+					//If Kara mode is public, then add to public playlist
+					module.exports._services.playlist_controller.addKaraToPublicPlaylist(id_kara,requester)
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){
+							reject(err);
+						});
+				}
+			});
+		};
+		module.exports._services.apiserver.onKaraAddToPlaylist = function(id_kara,requester,playlist_id,pos){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
+					.then(function(){
+						resolve();
 					})
 					.catch(function(err){
 						reject(err);
 					});
-				})
-				.catch(function(err){
-					if (err) 
-					{
-						reject(err);
-					} else {
-						reject('No public playlist found');
-					}
-
-				})					
 			});
-		}		
-		module.exports._services.apiserver.onKaraAddToModePlaylist = function(id_kara,requester){
-			return new Promise(function(resolve,reject){
-				if (module.exports._states.private) 
-				{
-					//If Kara mode is private, then add to current playlist
-					module.exports._services.playlist_controller.addKaraToCurrentPlaylist(id_kara,requester)
-					.then(function(){
-						resolve();						
-					})
-					.catch(function(err){
-						reject(err);
-					});					
-				} else {
-					//If Kara mode is public, then add to public playlist
-					module.exports._services.playlist_controller.addKaraToPublicPlaylist(id_kara,requester)
-					.then(function(){
-						resolve();						
-					})
-					.catch(function(err){
-						reject(err);
-					});					
-				}
-			});
-		}	
-		module.exports._services.apiserver.onKaraAddToPlaylist = function(id_kara,requester,playlist_id,pos){
-			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
-				.then(function(){
-					resolve();						
-				})
-				.catch(function(err){
-					reject(err);
-				});									
-			});
-		}
+		};
 		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
-				.then(function(){
-					resolve();						
-				})
-				.catch(function(err){	
-					reject(err);
-				});									
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					});
 			});
-		}
+		};
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();
@@ -898,11 +821,11 @@ module.exports = {
 						logger.info(__('CURRENT_PLAYLIST_CREATED',new_playlist));
 						// Build a dummy playlist for testing purpose
 						module.exports._services.playlist_controller.build_dummy_current_playlist(new_playlist);
-				})
+					})
 					.catch(function(err){
 						logger.error(__('CURRENT_PLAYLIST_CREATE_ERROR',err));
-				});
-			})
+					});
+			});
 		module.exports._services.playlist_controller.isAPublicPlaylist()
 			.then(function(){
 				//A playlist exists, nothing to do.
@@ -913,11 +836,11 @@ module.exports = {
 				module.exports._services.playlist_controller.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1)
 					.then(function (new_playlist){
 						logger.info(__('PUBLIC_PLAYLIST_CREATED',new_playlist));
-				})
+					})
 					.catch(function(err){
 						logger.error(__('PUBLIC_PLAYLIST_CREATE_ERROR',err));
-				});
-			})
+					});
+			});
 		/* Update playlist's number of karas
 		module.exports._services.playlist_controller.updatePlaylistNumOfKaras(1)
 			.then(function(num_karas){
@@ -936,15 +859,15 @@ module.exports = {
 				console.log(err);
 			});
 		*/
-		/* Reorder/sort playlist example 
+		/* Reorder/sort playlist example
 		module.exports._services.playlist_controller.reorderPlaylist(2)
 			.then(function(playlist){
 				//console.log(playlist);
 			})
 			.catch(function(err){
 				console.log(err);
-			});	
-		/* Shuffle playlist example 
+			});
+		/* Shuffle playlist example
 		module.exports._services.playlist_controller.shufflePlaylist(1)
 			.then(function(playlist){
 				console.log(playlist);
@@ -952,8 +875,8 @@ module.exports = {
 			})
 			.catch(function(err){
 				console.log(err);
-			});	
-		/* Add blacklist criteria 
+			});
+		/* Add blacklist criteria
 		module.exports._services.playlist_controller.addBlacklistCriteria(1000,'Love')
 			.then(function(){
 				console.log('Add criteria OK');
@@ -967,8 +890,8 @@ module.exports = {
 			})
 			.catch(function(err){
 				console.log(err);
-			});	
-		/* Delete blacklist criteria 
+			});
+		/* Delete blacklist criteria
 		module.exports._services.playlist_controller.deleteBlacklistCriteria(5)
 			.then(function(){
 				console.log('Delete criteria OK');
@@ -982,16 +905,16 @@ module.exports = {
 			})
 			.catch(function(err){
 				console.log(err);
-			});	
-		/* Edit blacklist criteria 
+			});
+		/* Edit blacklist criteria
 		module.exports._services.playlist_controller.editBlacklistCriteria(3,1000,'Eurovision lol')
 			.then(function(){
 				console.log('Edited criteria OK');
 			})
 			.catch(function(err){
 				console.log(err);
-			});	*/		
-		/* List all blacklist criterias 
+			});	*/
+		/* List all blacklist criterias
 		module.exports._services.playlist_controller.getBlacklistCriterias()
 			.then(function(blcriteria){
 				console.log(blcriteria);
@@ -999,7 +922,7 @@ module.exports = {
 			.catch(function(err){
 				console.log(err);
 			});
-		/* Generate blacklist 
+		/* Generate blacklist
 		module.exports._services.playlist_controller.generateBlacklist()
 			.then(function(){
 				console.log('OK');
@@ -1016,7 +939,7 @@ module.exports = {
 				console.log(err);
 			});
 		*/
-		/* Getting all karas from Playlist 
+		/* Getting all karas from Playlist
 
 		module.exports._services.playlist_controller.getPlaylistContents(1)
 			.then(function(playlist){
@@ -1033,7 +956,7 @@ module.exports = {
 			.catch(function(err){
 				console.log(err);
 			});
-	    
+
 		/* Getting all karas
 		module.exports._services.playlist_controller.getAllKaras()
 			.then(function(playlist){
@@ -1068,7 +991,7 @@ module.exports = {
 			.catch(function(err){
 				logger.error("Kara add failed : "+err);
 			});
-		/* Add karaoke to public playlist example. Public playlist is autodetected.				
+		/* Add karaoke to public playlist example. Public playlist is autodetected.
 		module.exports._services.playlist_controller.addKaraToPublicPlaylist(4571,'Axél',1)
 			.then(function(){
 				logger.info("Kara added");
@@ -1077,7 +1000,7 @@ module.exports = {
 				logger.error("Kara add failed : "+err);
 			});
 		/* */
-		/* Add karaoke to current playlist example. Current playlist is autodetected.		 
+		/* Add karaoke to current playlist example. Current playlist is autodetected.
 		module.exports._services.playlist_controller.addKaraToCurrentPlaylist(1000,'Axél',1)
 			.then(function(){
 				logger.info("Kara added");
@@ -1131,7 +1054,7 @@ module.exports = {
 				logger.error("Deleting playlist failed : "+err);
 			});
 		*/
-		/* Deleting kara from playlist example : 
+		/* Deleting kara from playlist example :
 		module.exports._services.playlist_controller.deleteKaraFromPlaylist(16)
 		    .then(function (){
 				logger.info("Karaoke deleted from playlist.");
@@ -1140,7 +1063,7 @@ module.exports = {
 				logger.error("Deleting kara from playlist failed : "+err);
 			});
 		*/
-		/* Deleting kara from whitelist example : 
+		/* Deleting kara from whitelist example :
 		module.exports._services.playlist_controller.deleteKaraFromWhitelist(1)
 		    .then(function (){
 				logger.info("Karaoke deleted from whitelist.");
@@ -1160,8 +1083,7 @@ module.exports = {
 	* Starts player interface
 	* This is used to drive mpv or whatever video player is used.
 	*/
-	_start_player:function()
-	{
+	_start_player:function() {
 		module.exports._services.player = require(path.resolve(__dirname,'../_player/index.js'));
 		module.exports._services.player.BINPATH = path.resolve(module.exports.SYSPATH,'app/bin');
 		module.exports._services.player.SETTINGS = module.exports.SETTINGS;
@@ -1177,4 +1099,4 @@ module.exports = {
 		module.exports._services.player.init();
 
 	}
-}
+};
