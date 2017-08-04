@@ -421,6 +421,11 @@ module.exports = {
 						notEmpty: true,
 						isBoolean: true,
 					},
+					'EnginePrivateMode': {
+						in: 'body',
+						notEmpty: true,
+						isBoolean: true,
+					},
 					'EngineSongsPerPerson': {
 						in: 'body',
 						notEmpty: true,
@@ -455,14 +460,15 @@ module.exports = {
 
 				req.getValidationResult().then(function(result) {
 					if (result.isEmpty()) {
-						req.sanitize('AllowNicknameChange').toBoolean();
-						req.sanitize('DisplayNickname').toBoolean();
-						req.sanitize('Fullscreen').toBoolean();
-						req.sanitize('NoBar').toBoolean();
-						req.sanitize('NoHud').toBoolean();
-						req.sanitize('AlwaysOnTop').toBoolean();
-						req.sanitize('Screen').toInt();
-						req.sanitize('SongsPerPerson').toInt();
+						req.sanitize('EngineAllowNicknameChange').toBoolean();
+						req.sanitize('EngineDisplayNickname').toBoolean();
+						req.sanitize('PlayerFullscreen').toBoolean();
+						req.sanitize('PlayerNoBar').toBoolean();
+						req.sanitize('PlayerNoHud').toBoolean();
+						req.sanitize('PlayerAlwaysOnTop').toBoolean();
+						req.sanitize('PlayerScreen').toInt();
+						req.sanitize('EngineSongsPerPerson').toInt();
+						req.sanitize('EnginePrivateMode').toInt();
 
 						var SETTINGS = req.body;
 						module.exports.onSettingsUpdate(SETTINGS)

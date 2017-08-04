@@ -3,8 +3,11 @@ AdminPassword = "gurdil"
 ;DisplayNickname : affiche dans le coin inférieur droit du kara qui a demandé la chanson en cours.
 ;Ce paramètre est ignoré si AntiFloodType = IP
 EngineDisplayNickname = 1
-
+EnginePrivateMode = 0
 EngineAllowNicknameChange = 1
+EngineAllowViewWhitelist = 1
+EngineAllowViewBlacklist = 1
+EngineAllowViewBlacklistCriterias = 1
 
 ;SongsPerPerson : Nombre de chansons passable par IP/Nickname
 EngineSongsPerPerson = 10000
