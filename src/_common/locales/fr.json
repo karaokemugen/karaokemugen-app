@@ -227,6 +227,7 @@
 	"API_SERVER_READY": "API PRÊTE",
 	"API_SERVER_LISTEN": "Serveur d'API écoute sur le port %s",
 	"API_LOG": "Appel API : %s",
-	"UNDEFINED_LANGUAGE": "Langue inconnue",
-	"GDB_VIEW_CREATION_ERROR": "GDB_VIEW_CREATION_ERROR"
+	"UNDEFINED_LANGUAGE": "Langue indéfinie",
+	"GDB_VIEW_CREATION_ERROR": "GDB_VIEW_CREATION_ERROR",
+	"UNKNOWN_LANGUAGE": "Langue inconnue"
 }

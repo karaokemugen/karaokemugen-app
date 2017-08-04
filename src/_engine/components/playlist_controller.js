@@ -1009,13 +1009,7 @@ module.exports = {
 					}
 					if (!S(kara.NORM_creator).isEmpty()) {
 						if (S(kara.NORM_creator.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
-					}
-					if (!S(kara.NORM_author).isEmpty()) {
-						if (S(kara.NORM_author.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
-					}
-					if (!S(kara.NORM_pseudo_add).isEmpty()) {
-						if (S(kara.NORM_pseudo_add.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
-					}	
+					}					
 					if (!S(kara.songtype).isEmpty()) {
 						if (S(kara.songtype.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
 					}				
@@ -1036,7 +1030,7 @@ module.exports = {
 				}				
 			}
 
-			var filteredPlaylist = playlist.filter(textSearch);
+			var filteredPlaylist = playlist.filter(textSearch);			
 			resolve(filteredPlaylist);
 		});
 	},
@@ -1556,7 +1550,12 @@ module.exports = {
 						} else {
 							// We need to convert ISO639-2B to ISO639-1 to get its language
 							var langdata = langs.where('2B',karalang)
-							languages.push(isoCountriesLanguages.getLanguage(detectedLocale[1],langdata[1]));
+							if (langdata === undefined) {
+								languages.push(__('UNKNOWN_LANGUAGE'));
+							} else {
+								languages.push(isoCountriesLanguages.getLanguage(detectedLocale[1],langdata[1]));
+							}
+							
 						}
 					});
 					karas[index].language_i18n = languages.join();
@@ -1572,7 +1571,7 @@ module.exports = {
 				} else {
 					karas[index].misc_i18n = null;
 				}			
-			});
+			});			
 			resolve(karas);
 		});
 	},
