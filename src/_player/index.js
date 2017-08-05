@@ -11,7 +11,7 @@ module.exports = {
 	playing:false,
 	_playing:false, // internal delay flag
 	_player:null,
-	_ref:null,
+	_ref:null,	
 	screen: 1,
 	fullscreen: 0,
 	stayontop: 0,
@@ -19,6 +19,7 @@ module.exports = {
 	nobar: 0,
 	BINPATH:null,
 	SETTINGS:null,
+	timeposition:0,
 	init:function(){
 		var mpvBinary;
 		var mpvHTTP;
@@ -167,6 +168,10 @@ module.exports = {
 					module.exports._ref = null;
 				}
 			});
+			module.exports._player.on('timeposition',function(position){
+				// Returns the position in seconds in the current song
+				module.exports.timeposition = position;
+			});
 			logger.info(__('PLAYER_READY'));
 		})
 			.catch(function(err) {
@@ -223,6 +228,7 @@ module.exports = {
 		// on stop do not trigger onEnd event
 		// => setting internal playing = false prevent this behavior
 		module.exports.playing = false;
+		module.exports.timeposition = 0;
 		module.exports._playing = false;
 		module.exports._player.loadFile(module.exports.background);
 	},

@@ -27,6 +27,7 @@ module.exports = {
 		frontend_port:1337,
 		apiserver_port:1339,
 		playlist:null,
+		timeposition:0,
 	},
 	_services:{
 		admin: null,
@@ -823,6 +824,17 @@ module.exports = {
 						break;
 				}
 				resolve();
+			});
+		};
+		module.exports._services.apiserver.onPlayerStatus = function(){
+			return new Promise(function(resolve,reject){
+					resolve({
+						private: module.exports._states.private,
+						status: module.exports._states.status,
+						ontop: module.exports._states.ontop,
+						fullscreen: module.exports._states.fullscreen,
+						timeposition: module.exports._services.player.timeposition						
+					});
 			});
 		};
 		// --------------------------------------------------------

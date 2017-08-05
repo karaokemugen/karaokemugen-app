@@ -671,10 +671,7 @@ module.exports = {
 				});
 			});
 
-		routerAdmin.route('/player')
-			.get(function(req,res){
-				//return status of the player
-			})
+		routerAdmin.route('/player')			
 			.put(function(req,res){
 				// Update status of player (play/pause/stopNow/stopNext)
 				// Commands:
@@ -829,6 +826,18 @@ module.exports = {
 			.get(function(req,res){
 				// Get player status
 				// What's playing, time in seconds, duration of song
+				
+				//return status of the player
+
+				module.exports.onPlayerStatus()
+					.then(function(status){
+						res.json(status);
+					})
+					.catch(function(err){
+						res.statusCode = 500;
+						res.json(err);
+					});
+				
 			});
 		routerPublic.route('/karas')
 			.get(function(req,res){
@@ -1021,4 +1030,5 @@ module.exports = {
 	onBlacklistCriteriaDelete:function(){},
 	onBlacklistCriteriaEdit:function(){},
 	onPlayerCommand:function(){},
+	onPlayerStatus:function(){},
 };
