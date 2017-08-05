@@ -35,8 +35,13 @@ module.exports = {
 		var app = express();
 		app.use(bodyParser.urlencoded({ extended: true }));
 		app.use(bodyParser.json());
-		app.use(expressValidator());
-
+		// Calling express validator with a custom validator, used for the player commands
+		// to check if they're from the allowed list.
+		app.use(expressValidator({
+  					customValidators: {
+    					enum: (input, options) => options.includes(input)
+  					}
+				}));
 		var routerPublic = express.Router();
 		var routerAdmin = express.Router();
 
@@ -667,9 +672,49 @@ module.exports = {
 			});
 
 		routerAdmin.route('/player')
+			.get(function(req,res){
+				//return status of the player
+			})
 			.put(function(req,res){
 				// Update status of player (play/pause/stopNow/stopNext)
-
+				// Commands:
+				// play - starts off kara / resumes from pause
+				// pause - pauses player in mid song 
+				// stopNow - stops the karaoke NOW
+				// stopAfter - stops the karaoke after the current song finishes
+				// skip - skips to next song
+				// prev - goes to previous song
+				// toggleFullscreen - as it says
+				// toggleAlwaysOnTop - as it says
+				req.checkBody('command')
+					.notEmpty()
+					.enum(['play',
+							   'pause',
+							   'stopNow',
+							   'stopAfter',
+							   'skip',
+							   'prev',
+							   'toggleFullscreen',
+							   'toggleAlwaysOnTop'
+						]
+					);
+				req.getValidationResult().then(function(result) {
+					if (result.isEmpty()) {
+						module.exports.onPlayerCommand(req.body.command)
+							.then(function(){
+								res.json('Command '+req.body.command+' executed');
+							})
+							.catch(function(err){
+								res.statusCode = 500;
+								res.json(err);
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
+				});
 			});
 
 		routerAdmin.route('/playlists/:pl_id([0-9]+)/portable')
@@ -742,7 +787,7 @@ module.exports = {
 						res.json(err);
 					});
 			});
-			
+
 		routerPublic.route('/settings')
 			.get(function(req,res){
 				//We don't want to return all settings.
@@ -975,4 +1020,5 @@ module.exports = {
 	onBlacklistCriteriaAdd:function(){},
 	onBlacklistCriteriaDelete:function(){},
 	onBlacklistCriteriaEdit:function(){},
+	onPlayerCommand:function(){},
 };

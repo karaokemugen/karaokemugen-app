@@ -595,11 +595,24 @@ module.exports = {
 		module.exports._services.apiserver.onSettingsUpdate = function(settings) {
 			return new Promise(function(resolve,reject){
 				extend(true,module.exports.SETTINGS,settings);
+
+				// TODO : Need to save settings here
+
 				module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.player.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.admin.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;
+
+				// Part where we toggle settings
+				if (module.exports.SETTINGS.EnginePrivateMode === 1) {
+					module.exports.setPrivateOn();
+				} else {
+					module.exports.setPrivateOff();
+				}
+
+				// Other settings for now have to be toggled through API calls				
+
 				resolve();
 			});
 		};
@@ -771,6 +784,45 @@ module.exports = {
 					.catch(function(err){
 						reject(err);
 					});
+			});
+		};
+		module.exports._services.apiserver.onPlayerCommand = function(command){
+			return new Promise(function(resolve,reject){
+				// play - starts off kara
+				// pause - pauses player in mid song / resending the command unpauses
+				// stopNow - stops the karaoke NOW
+				// stopAfter - stops the karaoke after the current song finishes
+				// skip - skips to next song
+				// prev - goes to previous song
+				// toggleFullscreen - as it says
+				// toggleAlwaysOnTop - as it says
+				switch (command) {
+					case 'play':
+						module.exports.play();
+						break;
+					case 'stopNow':
+						module.exports.stop(true);
+						break;
+					case 'pause':
+						module.exports.pause();
+						break;
+					case 'stopAfter':
+						module.exports.stop();
+						break;
+					case 'skip':
+						module.exports.next();
+						break;
+					case 'prev':
+						module.exports.prev();
+						break;
+					case 'toggleFullscreen':
+						module.exports.toggleFullscreen();
+						break;
+					case 'toggleAlwaysOnTop':
+						module.exports.toggleOnTop();
+						break;
+				}
+				resolve();
 			});
 		};
 		// --------------------------------------------------------
