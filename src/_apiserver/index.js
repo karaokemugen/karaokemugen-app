@@ -541,6 +541,19 @@ module.exports = {
 				});
 			});
 
+		routerAdmin.route('/blacklist')
+			.get(function(req,res){
+				var lang = req.query.lang;
+				var filter = req.query.filter;
+				module.exports.onBlacklistlist(filter,lang)
+					.then(function(karas){
+						res.json(karas);
+					})
+					.catch(function(err){
+						res.statusCode = 500;
+						res.json(err);
+					});
+			})
 		routerAdmin.route('/whitelist/:wl_id([0-9]+)')
 			.delete(function(req,res){
 				//Delete kara from whitelist
@@ -817,16 +830,59 @@ module.exports = {
 		routerPublic.route('/whitelist')
 			.get(function(req,res){
 				//Returns whitelist IF the settings allow public to see it
+				if (module.exports.SETTINGS.AllowViewWhitelist === 1) {
+					var lang = req.query.lang;
+					var filter = req.query.filter;
+					module.exports.onWhitelist(filter,lang)
+						.then(function(karas){
+							res.json(karas);
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				} else {
+					res.StatusCode = 403
+					res.json('Displaying whitelist to public is disabled');
+				}				
 			});
 
 		routerPublic.route('/blacklist')
 			.get(function(req,res){
 				//Get list of blacklisted karas IF the settings allow public to see it
+				if (module.exports.SETTINGS.AllowViewBlacklist === 1) {
+					var lang = req.query.lang;
+					var filter = req.query.filter;
+					module.exports.onBlacklist(filter,lang)
+						.then(function(karas){
+							res.json(karas);
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				} else {
+					res.StatusCode = 403
+					res.json('Displaying blacklist to public is disabled');
+				}				
 			});
 
 		routerPublic.route('/blacklist/criterias')
 			.get(function(req,res){
 				//Get list of blacklist criterias IF the settings allow public to see it
+				if (module.exports.SETTINGS.AllowViewBlacklistCriterias === 1) {
+					module.exports.onBlacklistCriterias()
+						.then(function(blc){
+							res.json(blc);
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				} else {
+					res.StatusCode = 403
+					res.json('Displaying blacklist criterias to public is disabled');
+				}				
 			});
 
 		routerPublic.route('/player')
