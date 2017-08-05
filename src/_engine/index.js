@@ -831,7 +831,7 @@ module.exports = {
 				console.log(err);
 			});
 		*/
-		
+		/*
 		module.exports._services.playlist_controller.toggleDisplayNickname(true)
 			.then(function(){
 				console.log('Success toggling all karas');
