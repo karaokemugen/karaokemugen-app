@@ -957,18 +957,6 @@ module.exports = {
 					});
 			});
 
-		routerPublic.route('/playlists/')
-			.get(function(req,res){
-				// Get list of playlists, only return the visible ones
-			});
-		routerPublic.route('/playlists/:pl_id')
-			.get(function(req,res){
-				// Get playlist, only if visible
-			});
-		routerPublic.route('/playlists/:pl_id/karas')
-			.get(function(req,res){
-				// Get playlist contents, only if visible
-			});
 
 		// Add headers
 		app.use(function (req, res, next) {
