@@ -729,6 +729,7 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onKaraAddToModePlaylist = function(id_kara,requester){
 			return new Promise(function(resolve,reject){
+				module.exports._states.private = false;
 				if (module.exports._states.private) {
 					//If Kara mode is private, then add to current playlist
 					module.exports._services.playlist_controller.addKaraToCurrentPlaylist(id_kara,requester)

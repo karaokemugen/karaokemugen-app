@@ -351,6 +351,22 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {is Karaoke blacklisted?}
+	* @param  {number} kara_id {Karaoke ID to check in the blacklist}
+	* @return {boolean} Promise with true or false)
+	*/
+	isKaraInBlacklist:function(kara_id) {
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.isKaraInBlacklist(kara_id)
+				.then(function(isKaraInBL) {
+					resolve(isKaraInBL);
+				})
+				.catch(function(err) {
+					reject(err);
+				});
+		});
+	},
+	/**
 	* @function {Is it a blacklist criteria ?}
 	* @param  {number} blc_id {Blacklist criteria ID}
 	* @return {promise} Promise
@@ -1677,6 +1693,7 @@ module.exports = {
 			var date_add = timestamp.now();
 			var flag_playing = 0;
 			var isKaraInPlaylist = undefined;
+			var isKaraBlacklisted = undefined;
 			var publicPlaylistID = undefined;
 			var pWhichPublicPlaylist = new Promise((resolve,reject) => {
 				module.exports.isAPublicPlaylist()
@@ -1711,12 +1728,23 @@ module.exports = {
 								reject(err);
 							});
 					});
-					Promise.all([pIsKaraInPlaylist])
-						.then(function() {
+					var pIsKaraBlacklisted = new Promise((resolve,reject) => {
+						module.exports.isKaraInBlacklist(kara_id)
+						.then(function(isKaraInBL){
+							isKaraBlacklisted = isKaraInBL;
+							resolve();
+						})
+						.catch(function(){
+							reject();
+						});
+					});
+					Promise.all([pIsKaraInPlaylist,pIsKaraBlacklisted])
+						.then(function() {							
 							if (isKaraInPlaylist) {
 								reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,publicPlaylistID));
+							} else if(isKaraBlacklisted) {
+								reject('Karaoke '+kara_id+' is blacklisted');
 							} else {
-
 								// Adding karaoke song here
 								module.exports.getKara(kara_id)
 									.then(function(kara) {
@@ -1886,12 +1914,23 @@ module.exports = {
 								reject(err);
 							});
 					});
-					Promise.all([pIsKaraInPlaylist])
-						.then(function() {
+					var pIsKaraBlacklisted = new Promise((resolve,reject) => {
+						module.exports.isKaraInBlacklist(kara_id)
+						.then(function(isKaraInBL){
+							isKaraBlacklisted = isKaraInBL;
+							resolve();
+						})
+						.catch(function(){
+							reject();
+						});
+					});
+					Promise.all([pIsKaraInPlaylist,pIsKaraBlacklisted])
+						.then(function() {							
 							if (isKaraInPlaylist) {
-								reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,currentPlaylistID));
+								reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,publicPlaylistID));
+							} else if(isKaraBlacklisted) {
+								reject('Karaoke '+kara_id+' is blacklisted');
 							} else {
-
 								// Adding karaoke song here
 								module.exports.getKara(kara_id)
 									.then(function(kara) {

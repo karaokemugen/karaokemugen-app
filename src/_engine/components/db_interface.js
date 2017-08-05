@@ -868,6 +868,30 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Is the kara in the blacklist?}
+	* @param  {number} kara_id {ID of karaoke to search for}
+	* @return {boolean} {Promise}
+	*/
+	isKaraInBlacklist:function(kara_id) {
+		return new Promise(function(resolve,reject){
+			var sqlIsKaraInBlacklist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara_in_blacklist.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlIsKaraInBlacklist,
+				{
+					$kara_id: kara_id,
+				}, function (err, row) {
+					if (err) {
+						reject('DB Error searching for karaoke '+kara_id+' in blacklist : '+err);
+					} else {
+						if (row) {
+							resolve(true);
+						} else {
+							resolve(false);
+						}
+					}
+				});
+		});
+	},
+	/**
 	* @function {Is the kara in the whitelist?}
 	* @param  {number} kara_id {ID of karaoke to search for}
 	* @return {boolean} {Promise}
