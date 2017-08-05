@@ -349,30 +349,23 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
-						if (filter) {
-							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
+						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+						.then(function(karalist){
+							if (filter) {
+								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 								.then(function(filtered_pl){
-									module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,lang)
-										.then(function(karalist){
-											resolve(karalist);
-										})
-										.catch(function(err){
-											reject(err);
-										});
+									resolve(filtered_pl)
 								})
 								.catch(function(err){
 									resolve(err);
-								});
-						} else {
-							module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-								.then(function(karalist){
-									resolve(karalist);
-								})
-								.catch(function(err){
-									reject(err);
-								});
-
-						}
+								});							
+							} else {
+								resolve(karalist);
+							}
+						})
+						.catch(function(err){
+							reject(err);
+						});						
 					})
 					.catch(function(err){
 						reject(err);
@@ -383,30 +376,23 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getWhitelistContents()
 					.then(function(playlist){
-						if (filter) {
-							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
+						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+						.then(function(karalist){
+							if (filter) {
+								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 								.then(function(filtered_pl){
-									module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,lang)
-										.then(function(karalist){
-											resolve(karalist);
-										})
-										.catch(function(err){
-											reject(err);
-										});
+									resolve(filtered_pl)
 								})
 								.catch(function(err){
-									reject(err);
-								});
-						} else {
-
-							module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-								.then(function(karalist){
-									resolve(karalist);
-								})
-								.catch(function(err){
-									reject(err);
-								});
-						}
+									resolve(err);
+								});							
+							} else {
+								resolve(karalist);
+							}
+						})
+						.catch(function(err){
+							reject(err);
+						});						
 					})
 					.catch(function(err){
 						reject(err);
@@ -417,29 +403,23 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistContents()
 					.then(function(playlist){
-						if (filter) {
-							module.exports._services.playlist_controller.filterPlaylist(playlist,filter)
+						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
+						.then(function(karalist){
+							if (filter) {
+								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 								.then(function(filtered_pl){
-									module.exports._services.playlist_controller.translateKaraInfo(filtered_pl,ang)
-										.then(function(karalist){
-											resolve(karalist);
-										})
-										.catch(function(err){
-											reject(err);
-										});
+									resolve(filtered_pl)
 								})
 								.catch(function(err){
-									reject(err);
-								});
-						} else {
-							module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-								.then(function(karalist){
-									resolve(karalist);
-								})
-								.catch(function(err){
-									reject(err);
-								});
-						}
+									resolve(err);
+								});							
+							} else {
+								resolve(karalist);
+							}
+						})
+						.catch(function(err){
+							reject(err);
+						});						
 					})
 					.catch(function(err){
 						reject(err);
