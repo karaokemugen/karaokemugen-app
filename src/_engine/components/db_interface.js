@@ -64,47 +64,46 @@ module.exports = {
 				}
 			});
 
-			Promise.all([ userDB_Test, karasDB_Test ]).then(function() {
-				module.exports.init_on_db_ready();
-				module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;')
-				resolve();
+			Promise.all([ userDB_Test, karasDB_Test ])
+			.then(function() {
+				module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
+					if (err) {
+						logger.error(__('LOADING_KARA_DB_FAILED',+JSON.stringify(err)));
+						process.exit();
+					}
+				});
+
+				module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
+					if (err) {
+						logger.error(__('LOADING_USER_DB_FAILED',+JSON.stringify(err)));
+						process.exit();
+					} else {
+						module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;',function(err){
+							if (err) {
+								logger.error(err);
+							} else {
+								module.exports._ready = true;
+								module.exports.getStats()
+								.then(function(stats){
+									logger.info(__('STATS_COUNT',stats.totalcount));
+									logger.info(__('STATS_DURATION',stats.totalduration));
+									logger.info(__('STATS_SERIES',stats.totalseries));
+									logger.info(__('STATS_LANGUAGES',stats.totallanguages));
+									logger.info(__('STATS_ARTISTS',stats.totalartists));
+									logger.info(__('STATS_PLAYLISTS',stats.totalplaylists));
+								})
+								.catch(function(err){
+									logger.warn(__('STATS_FAILED',JSON.stringify(err)));
+								});
+								logger.info(__('DATABASE_READY'));
+								resolve();
+							}
+						});
+					}
+				});
 			});
 		});
 	},
-
-	init_on_db_ready:function(){
-
-		// les fichiers sqlites sont externe (car l'appli ne peux écrire dans ses assets interne)
-
-		module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
-			if (err) {
-				logger.error(__('LOADING_KARA_DB_FAILED',+JSON.stringify(err)));
-				process.exit();
-			}
-		});
-
-		module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
-			if (err) {
-				logger.error(__('LOADING_USER_DB_FAILED',+JSON.stringify(err)));
-				process.exit();
-			}
-		});
-
-		module.exports._ready = true;
-		module.exports.getStats().then(function(stats){
-			logger.info(__('STATS_COUNT',stats.totalcount));
-			logger.info(__('STATS_DURATION',stats.totalduration));
-			logger.info(__('STATS_SERIES',stats.totalseries));
-			logger.info(__('STATS_LANGUAGES',stats.totallanguages));
-			logger.info(__('STATS_ARTISTS',stats.totalartists));
-			logger.info(__('STATS_PLAYLISTS',stats.totalplaylists));
-		}).catch(function(err){
-			logger.warn(__('STATS_FAILED',JSON.stringify(err)));
-		});
-		logger.info(__('DATABASE_READY'));
-
-	},
-
 	// fermeture des instances SQLITE (unlock les fichiers)
 	close:function() {
 		module.exports._ready = false;
@@ -512,6 +511,27 @@ module.exports = {
 							resolve(playlist);
 						}
 					});
+			});
+		});
+	},
+	/**
+	* @function {Get all playlist contents no matter the playlist}
+	* @return {Object} {Playlist object}
+	*/
+	getAllPlaylistContents:function(){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject(__('DBI_NOT_READY'));
+			}			
+			var sqlGetAllPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_playlist_contents.sql'),'utf-8');
+			module.exports._user_db_handler.all(sqlGetAllPlaylistContents,
+			function (err, playlist) {
+				if (err) {
+					console.log(err);
+					reject('DB Error getting all playlist contents : '+err);
+				} else {
+					resolve(playlist);
+				}
 			});
 		});
 	},

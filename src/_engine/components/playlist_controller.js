@@ -3,7 +3,7 @@ var timestamp = require('unix-timestamp');
 timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
 const S = require('string');
-const assbuilder = require('./ass_builder.js');
+const assBuilder = require('./ass_builder.js');
 const fs = require('fs');
 const shuffle = require('knuth-shuffle').knuthShuffle;
 const langs = require('langs');
@@ -25,11 +25,28 @@ module.exports = {
 			process.exit();
 		}
 
-		assbuilder.SYSPATH = module.exports.SYSPATH;
+		assBuilder.SYSPATH = module.exports.SYSPATH;
 
 		logger.info(__('PLAYLIST_CONTROLLER_READY'));
 	},
-
+	toggleDisplayNickname:function(displayNickname) {
+		//Get the list of karas currently in playlists and pass it over to the assBuilder
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.getAllPlaylistContents()
+			.then(function(karalist){
+				assBuilder.toggleDisplayNickname(karalist,displayNickname,module.exports.SETTINGS.PathTemp)
+				.then(function(){					
+					resolve();
+				})
+				.catch(function(){
+					reject();
+				})
+			})
+			.catch(function(){
+				reject();
+			});
+		});
+	},
 	isCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
@@ -1092,7 +1109,7 @@ module.exports = {
 						module.exports.getKara(kara_id)
 							.then(function(kara) {
 								var pBuildASS = new Promise((resolve,reject) => {
-									assbuilder(
+									assBuilder.build(
 										module.exports.SETTINGS.PathSubs,
 										module.exports.SETTINGS.PathVideos,
 										kara.subfile,
@@ -1751,7 +1768,7 @@ module.exports = {
 										var pos = 0;
 										var pBuildASS = new Promise((resolve,reject) => {
 
-											assbuilder(
+											assBuilder.build(
 												module.exports.SETTINGS.PathSubs,
 												module.exports.SETTINGS.PathVideos,
 												kara.subfile,
@@ -1937,7 +1954,7 @@ module.exports = {
 										var pos = 0;
 										var pBuildASS = new Promise((resolve,reject) => {
 
-											assbuilder(
+											assBuilder.build(
 												module.exports.SETTINGS.PathSubs,
 												module.exports.SETTINGS.PathVideos,
 												kara.subfile,

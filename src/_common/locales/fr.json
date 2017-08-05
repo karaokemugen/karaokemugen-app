@@ -229,5 +229,6 @@
 	"API_LOG": "Appel API : %s",
 	"UNDEFINED_LANGUAGE": "Langue indéfinie",
 	"GDB_VIEW_CREATION_ERROR": "GDB_VIEW_CREATION_ERROR",
-	"UNKNOWN_LANGUAGE": "Langue inconnue"
+	"UNKNOWN_LANGUAGE": "Langue inconnue",
+	"DBI_NOT_READY": "DBI_NOT_READY"
 }
