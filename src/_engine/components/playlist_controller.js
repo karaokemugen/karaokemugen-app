@@ -469,7 +469,6 @@ module.exports = {
 	deletePlaylist:function(playlist_id,new_curorpubplaylist_id) {
 		// Suppression d'une playlist. Si la playlist a un flag_public ou flag_current, il faut
 		// set l'un de ces flags sur l'autre ID de playlist (optionnel) fourni
-		logger.info(__('DELETE_PLAYLIST',playlist_id,new_curorpubplaylist_id));
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
 				.then(function(){
@@ -478,6 +477,7 @@ module.exports = {
 							.then(function(res) {
 								if (res == true) {
 									if (new_curorpubplaylist_id != undefined ) {
+										logger.info(__('DELETE_PLAYLIST',playlist_id,new_curorpubplaylist_id));
 										module.exports.setPublicPlaylist(new_curorpubplaylist_id,function() {
 											resolve(true);
 										});
