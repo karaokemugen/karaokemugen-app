@@ -837,6 +837,17 @@ module.exports = {
 					});
 			});
 		};
+		module.exports._services.apiserver.onStats = function(){
+			return new Promise(function(resolve,reject){
+					module.exports.DB_INTERFACE.getStats()
+						.then(function(stats){
+							resolve(stats);
+						})
+						.catch(function(err){
+							reject(err);
+						});
+			});
+		};
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();

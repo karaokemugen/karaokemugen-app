@@ -86,7 +86,7 @@ module.exports = {
 								module.exports.getStats()
 								.then(function(stats){
 									logger.info(__('STATS_COUNT',stats.totalcount));
-									logger.info(__('STATS_DURATION',stats.totalduration));
+									logger.info(__('STATS_DURATION',moment.duration(stats.totalduration,'seconds').format('D ['+__('DAY')+'], H ['+__('HOUR')+'], m ['+__('MINUTE')+'], s ['+__('SECOND')+']')));
 									logger.info(__('STATS_SERIES',stats.totalseries));
 									logger.info(__('STATS_LANGUAGES',stats.totallanguages));
 									logger.info(__('STATS_ARTISTS',stats.totalartists));
@@ -222,7 +222,7 @@ module.exports = {
 							stats.totalduration = 'Unknown';
 							resolve();
 						} else {
-							stats.totalduration = moment.duration(res.totalduration,'seconds').format('D ['+__('DAY')+'], H ['+__('HOUR')+'], m ['+__('MINUTE')+'], s ['+__('SECOND')+']');
+							stats.totalduration = res.totalduration;							
 							resolve();
 						}
 					});

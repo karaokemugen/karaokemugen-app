@@ -804,7 +804,14 @@ module.exports = {
 			});
 		routerPublic.route('/stats')
 			.get(function(req,res){
-				// Get stats from the database
+				module.exports.onStats()
+					.then(function(stats){
+						res.json(stats);
+					})
+					.catch(function(err){
+						res.statusCode = 500;
+						res.json(err);
+					});
 			});
 
 		routerPublic.route('/whitelist')
@@ -1019,4 +1026,5 @@ module.exports = {
 	onBlacklistCriteriaEdit:function(){},
 	onPlayerCommand:function(){},
 	onPlayerStatus:function(){},
+	onStats:function(){},
 };
