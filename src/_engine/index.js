@@ -28,6 +28,7 @@ module.exports = {
 		apiserver_port:1339,
 		playlist:null,
 		timeposition:0,
+		currentlyPlayingKara:undefined,
 	},
 	_services:{
 		admin: null,
@@ -257,6 +258,7 @@ module.exports = {
 						kara.path.subtitle,
 						kara.id_kara
 					);
+					module.exports._states.currentlyPlayingKara = kara.id_kara;
 					module.exports._broadcastStates();
 				})
 				.catch(function(){
@@ -846,7 +848,8 @@ module.exports = {
 						status: module.exports._states.status,
 						ontop: module.exports._states.ontop,
 						fullscreen: module.exports._states.fullscreen,
-						timeposition: module.exports._services.player.timeposition						
+						timeposition: module.exports._services.player.timeposition,				
+						currentlyplaying: module.exports._states.currentlyPlayingKara,
 					});
 			});
 		};

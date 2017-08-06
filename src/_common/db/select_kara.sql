@@ -17,6 +17,7 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.NORM_author AS NORM_author,
       ak.misc AS misc,
       ak.subfile AS subfile,
-      ak.videofile AS videofile
+      ak.videofile AS videofile,
+	  ak.videolength AS duration
  FROM all_karas AS ak
 WHERE ak.PK_id_kara = $kara_id;

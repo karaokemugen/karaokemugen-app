@@ -25,6 +25,7 @@ SELECT ak.PK_id_kara AS id_kara,
       pc.flag_playing AS flag_playing,
       ak.subfile AS subfile,
       ak.videofile AS videofile,
+	  ak.videolength AS duration,
       (CASE WHEN wl.fk_id_kara = ak.PK_id_kara
 	     	THEN 1
         ELSE 0

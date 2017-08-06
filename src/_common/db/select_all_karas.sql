@@ -17,7 +17,8 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.NORM_author AS NORM_author,
       ak.misc AS misc,
       ak.subfile AS subfile,
-      ak.videofile AS videofile
+      ak.videofile AS videofile,
+	  ak.videolength AS duration
  FROM karasdb.all_karas AS ak
  WHERE ak.PK_id_kara NOT IN (SELECT fk_id_kara FROM blacklist)
 ORDER BY ak.language, ak.series IS NULL, ak.series, ak.songtype, ak.songorder, ak.title
