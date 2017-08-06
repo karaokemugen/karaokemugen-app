@@ -308,6 +308,9 @@ module.exports = {
 			script[StylesSection].body.push(StyleCredits);
 			script[StylesSection].body.push(StyleNickname);
 
+			if (!S(title).isEmpty()) {
+				title = ' - '+title;
+			}
 			// Doing the same with the subs we're adding.
 			// 8 seconds is enough to display the name of the video and who requested it.
 			var DialogueCredits = {
@@ -322,7 +325,7 @@ module.exports = {
 					MarginR: '0',
 					MarginV: '0',
 					Effect: '',
-					Text: '{\\fad(800,250)\\i1}'+series+'{\\i0}\\N{\\u0}'+i18n.__(songType+'_SHORT')+songOrder+' - '+title+'{\\u1}'
+					Text: '{\\fad(800,250)\\i1}'+series+'{\\i0}\\N{\\u0}'+i18n.__(songType+'_SHORT')+songOrder+title+'{\\u1}'
 				}};
 			var DialogueNickname = {
 				key: 'Dialogue',
