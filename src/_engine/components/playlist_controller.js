@@ -1361,7 +1361,23 @@ module.exports = {
 						if (flag_playing) {
 							module.exports.DB_INTERFACE.setPlaying(playlistcontent_id,playlist_id)
 								.then(function(){
-									resolve();
+									module.exports.isCurrentPlaylist(playlist_id)
+										.then(function(res){
+											if (res == true) {
+												module.exports.onPlayingUpdated()
+													.then(function(){
+														resolve();
+													})
+													.catch(function(err){
+														reject(err);
+													})
+											} else {
+												resolve();
+											}											
+										})
+										.catch(function(err){
+											reject(err);
+										});
 								})
 								.catch(function(err){
 									reject(err);
@@ -2238,4 +2254,7 @@ module.exports = {
 		// événement émis pour quitter l'application
 		logger.error('_engine/components/playlist_controller.js :: onPlaylistUpdated not set');
 	},
+	onPlayingUpdated:function(){
+		// event when the playing flag is changed in the current playlist
+	}
 };

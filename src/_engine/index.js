@@ -213,6 +213,19 @@ module.exports = {
 	/**
 	* @function
 	*
+	*/
+	playingUpdated:function(){
+		if(module.exports._states.status === 'play' && module.exports._services.player.playing) {
+			module.exports.stop(true)				
+			module.exports.play()
+			resolve();								
+		} else {
+			resolve();
+		}
+	},
+	/**
+	* @function
+	*
 	* Function triggered on player ending its current song.
 	*/
 	playerEnding:function(){
@@ -863,6 +876,8 @@ module.exports = {
 		module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
+		module.exports._services.playlist_controller.onPlayingUpdated =
+		module.exports.playingUpdated;
 		module.exports._services.playlist_controller.init();
 		//Test if a playlist with flag_current exists. If not create one.
 		module.exports._services.playlist_controller.isACurrentPlaylist()

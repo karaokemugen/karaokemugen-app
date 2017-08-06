@@ -351,8 +351,7 @@ module.exports = {
 		routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 			.put(function(req,res){
 				//Update playlist's karaoke song
-				//Params: position and flag_playing
-				//if flag_playing = 1 then flag_playing = 0 is set on all other songs from this PL
+				//Params: position				
 				req.checkBody({
 					'pos': {
 						in: 'body',
@@ -361,18 +360,16 @@ module.exports = {
 					},
 					'flag_playing': {
 						in: 'body',
-						notEmpty: true,
-						isBoolean: {
-							errorMessage: 'Invalid playing flag (must be boolean)'
-						}
-					},
+						optional: true,
+						isInt: true,
+					}
 				});
 
 				req.getValidationResult()
 					.then(function(result) {
-						if (result.isEmpty()) {
-							req.sanitize('flag_playing').toBoolean();
+						if (result.isEmpty()) {							
 							if (req.body.pos != undefined) req.sanitize('pos').toInt();
+							if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
 							module.exports.onPlaylistSingleKaraEdit(req.params.plc_id,req.body.pos,req.body.flag_playing)
 								.then(function(){
 									res.json('PLC '+req.params.plc_id+' edited in playlist '+req.params.pl_id);
