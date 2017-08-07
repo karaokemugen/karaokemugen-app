@@ -152,7 +152,7 @@ module.exports = {
 						 * Then build karas table in one transaction.
 						 */
 						var pAddToKaras = new Promise((resolve,reject) => {
-							async.eachLimit(karafiles, 100, function(kara, callback){
+							async.eachLimit(karafiles, 500, function(kara, callback){
 								addKara(kara)
 									.then(function(){
 										callback();
@@ -169,8 +169,7 @@ module.exports = {
 							});
 						});
 						Promise.all([pAddToKaras])
-							.then(function(){
-
+							.then(function(){								
 								/**
 								 * Push to array sqlInsertKaras for sql statements from karas.
 								 */
@@ -205,7 +204,7 @@ module.exports = {
 									 * Extracting series.
 									 */
 									var pAddToSeries = new Promise((resolve,reject) => {
-										async.eachOfLimit(karafiles, 100, function(kara, index, callback){
+										async.eachOf(karas, function(kara, index, callback){
 											index++;
 											addSeries(kara, index)
 												.then(function(){
@@ -304,7 +303,7 @@ module.exports = {
 									 * Extracting tags.
 									 */
 									var pAddToTags = new Promise((resolve,reject) => {
-										async.eachOfLimit(karafiles, 100, function(kara, index, callback){
+										async.eachOf(karas, function(kara, index, callback){
 											index++;
 											addTags(kara, index)
 												.then(function(){
@@ -833,229 +832,208 @@ module.exports = {
 				});
 			}
 
-			function addSeries(karafile, id_kara) {
+			function addSeries(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
-					fs.readFile(karasdir + '/' + karafile, 'utf-8', function(err,data){
-						if (err) {
-							reject(err);
+					var karaWOExtension = S(karadata.karafile).chompRight('.kara');
+					var karaInfos = karaWOExtension.split(' - ');
+					var karaType = karaInfos[2];
+					var serieslist = [];
+					if (S(karadata.series).isEmpty()) {
+						if (karaType == 'LIVE' || karaType == 'MV') {
+							// Don't do anything.
 						} else {
-							data = S(data).strip('"');							
-							var karadata = ini.parse(data);
-
-							//New way without "" in data
-							//var karadata = iniread.parseSync(karasdir + '/' + karafile);
-							var karaWOExtension = S(karafile).chompRight('.kara');
-							var karaInfos = karaWOExtension.split(' - ');
-							var karaType = karaInfos[2];
-							var serieslist = [];
-							if (S(karadata.series).isEmpty()) {
-								if (karaType == 'LIVE' || karaType == 'MV') {
-									// Don't do anything.
-								} else {
-									if (S(karaInfos[1]).isEmpty()) {
-										reject('Karaoke series cannot be detected!')
-									} else {
-										serieslist.push(karaInfos[1]);
-									}									
-								}
+							if (S(karaInfos[1]).isEmpty()) {
+								reject('Karaoke series cannot be detected!')
 							} else {
-								serieslist = karadata.series.split(',');
-								if (serieslist === [])  {
-									reject('Karaoke series cannot be detected!')
-								}
-							}
-							serieslist.forEach(function(serie) {
-								serie = S(serie).trimLeft().s;
-								if (series.indexOf(serie) == -1) {
-									series.push(serie);
-								}
-								// Let's get our new index.
-								var seriesIDX = series.indexOf(serie);
-								seriesIDX++;
-								karas_series.push(seriesIDX + ',' + id_kara);
-							});
-							resolve();
+								serieslist.push(karaInfos[1]);
+							}									
 						}
+					} else {
+						serieslist = karadata.series.split(',');
+						if (serieslist === [])  {
+							reject('Karaoke series cannot be detected!')
+						}
+					}
+					serieslist.forEach(function(serie) {
+						serie = S(serie).trimLeft().s;
+						if (series.indexOf(serie) == -1) {
+							series.push(serie);
+						}
+						// Let's get our new index.
+						var seriesIDX = series.indexOf(serie);
+						seriesIDX++;
+						karas_series.push(seriesIDX + ',' + id_kara);
 					});
+					resolve();						
 				});
 			}
 
-			function addTags(karafile, id_kara) {
+			function addTags(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
-					fs.readFile(karasdir + '/' + karafile, 'utf-8', function(err,data){
-						if (err) {
-							reject(err);
-						} else {
-							data = S(data).strip('"');							
-							var karadata = ini.parse(data);
-							//New way without "" in data
-							//var karadata = iniread.parseSync(karasdir + '/' + karafile);
-							var karaWOExtension = S(karafile).chompRight('.kara');
-							var karaInfos = karaWOExtension.split(' - ');
-							var karaSerie = karaInfos[1];
-							var karaType = karaInfos[2];
-							var taglist = [];
-							var singers;
-							//Filling taglist, and let's go.
-							if (S(karaSerie).contains(' OAV') || S(karaSerie).contains(' OVA') || S(karaType).contains('OAV')) {
-								if (taglist.indexOf('TAG_OVA,7') == -1) {
-									taglist.push('TAG_OVA,2');
-								}
-							}
-							if (karaType == 'LIVE' || karaType == 'MV') {
-								//If LIVE or MV, we add the series as artist.
-								singers = karaSerie.split(',');
-								singers.forEach(function(singer) {
-									var tag = S(singer).trimLeft().s;
-									if (taglist.indexOf(tag + ',2') == -1) {
-										taglist.push(tag + ',2');
-									}
-								});
-							}
-							if (!S(karadata.singer).isEmpty()) {
-								singers = karadata.singer.split(',');
-								singers.forEach(function(singer) {
-									var tag = S(singer).trimLeft().s;
-									if (taglist.indexOf(tag + ',2') == -1) {
-										taglist.push(tag + ',2');
-									}
-								});
-							}
-							if (!S(karadata.author).isEmpty()) {
-								var authors = karadata.author.split(',');
-								authors.forEach(function(author) {
-									var tag = S(author).trimLeft().s;
-									if (taglist.indexOf(tag + ',6') == -1) {
-										taglist.push(tag + ',6');
-									}
-								});
-							}
-							if (!S(karadata.creator).isEmpty()) {
-								var creators = karadata.creator.split(',');
-								creators.forEach(function(creator) {
-									var tag = S(creator).trimLeft().s;
-									if (taglist.indexOf(tag + ',4') == -1) {
-										taglist.push(tag + ',4');
-									}
-								});
-							}
-							if (!S(karadata.songwriter).isEmpty()) {
-								var songwriters = karadata.songwriter.split(',');
-								songwriters.forEach(function(songwriter) {
-									var tag = S(songwriter).trimLeft().s;
-									if (taglist.indexOf(tag + ',8') == -1) {
-										taglist.push(tag + ',8');
-									}
-								});
-							}
-							karadata.lang = S(karadata.lang).strip('"');							
-							if (!S(karadata.lang).isEmpty()) {
-								var langs = karadata.lang.split(',');
-								langs.forEach(function(lang) {
-									var tag = S(lang).trimLeft().s;
-									if (!langsModule.has('2B',tag) && tag !== 'und') {					reject('Unknown language : '+tag);
-									} else {
-										if (taglist.indexOf(tag + ',5') == -1) {
-											taglist.push(tag + ',5');
-										}
-									}									
-								});
-							}
-							// Check du type de song
-							var typeDetected = false;
-							if (S(karaType).contains('AMV') && taglist.indexOf('TYPE_AMV,3') == -1) {
-								typeDetected = true;
-								taglist.push('TYPE_AMV,3');
-							}
-							if (S(karaType).contains('CM') && taglist.indexOf('TYPE_CM,3') == -1) {
-								typeDetected = true;
-								taglist.push('TYPE_CM,3');
-							}
-							if (S(karaType).contains('ED') && taglist.indexOf('TYPE_ED,3') == -1) {
-								typeDetected = true;
-								taglist.push('TYPE_ED,3');
-							}
-							if (S(karaType).contains('GAME') && taglist.indexOf('TAG_VIDEOGAME,7') == -1) {
-								typeDetected = true;
-								taglist.push('TAG_VIDEOGAME,7');
-							}
-							if (S(karaType).contains('GC') && taglist.indexOf('TAG_GAMECUBE,7') == -1) {
-								typeDetected = true;
-								taglist.push('TAG_GAMECUBE,7');
-							}
-							if (S(karaType).contains('IN') && taglist.indexOf('TYPE_INSERTSONG,3') == -1) {
-								typeDetected = true;
-								taglist.push('TYPE_INSERTSONG,3');
-							}
-							if (S(karaType).contains('LIVE') && taglist.indexOf('TYPE_LIVE,3') == -1) {
-								typeDetected = true;
-								taglist.push('TYPE_LIVE,3');
-							}
-							if (S(karaType).contains('MOVIE') && taglist.indexOf('TAG_MOVIE,7') == -1) {
-								taglist.push('TAG_MOVIE,7');
-							}
-							if (S(karaType).contains('OAV') && taglist.indexOf('TAG_OVA,7') == -1) {
-								taglist.push('TAG_OVA,7');
-							}
-							if (S(karaType).contains('OP') && taglist.indexOf('TYPE_OP,3') == -1) {
-								typeDetected = true;
-								taglist.push('TYPE_OP,3');
-							}
-							if (S(karaType).startsWith('MV') && taglist.indexOf('TYPE_MUSIC,3') == -1) {
-								typeDetected = true;
-								taglist.push('TYPE_MUSIC,3');
-							}
-							if (S(karaType).contains('OT') && taglist.indexOf('TYPE_OTHER,3') == -1) {
-								typeDetected = true;
-								taglist.push('TYPE_OTHER,3');
-							}
-							if (S(karaType).contains('PS3') && taglist.indexOf('TAG_PS3,7') == -1) {
-								taglist.push('TAG_PS3,7');
-							}
-							if (S(karaType).contains('PS2') && taglist.indexOf('TAG_PS2,7') == -1) {
-								taglist.push('TAG_PS2,7');
-							}
-							if (S(karaType).contains('PSV') && taglist.indexOf('TAG_PSV,7') == -1) {
-								taglist.push('TAG_PSV,7');
-							}
-							if (S(karaType).contains('PSX') && taglist.indexOf('TAG_PSX,7') == -1) {
-								taglist.push('TAG_PSX,7');
-							}
-							if (S(karaType).contains('PV') && taglist.indexOf('TYPE_PV,3') == -1) {
-								typeDetected = true;
-								taglist.push('TYPE_PV,3');
-							}
-							if (S(karaType).contains('R18') && taglist.indexOf('TAG_R18,7') == -1) {
-								taglist.push('TAG_R18,7');
-							}
-							if (S(karaType).contains('REMIX') && taglist.indexOf('TAG_REMIX,7') == -1) {
-								taglist.push('TAG_REMIX,7');
-							}
-							if (S(karaType).contains('SPECIAL') && taglist.indexOf('TAG_SPECIAL,7') == -1) {
-								taglist.push('TAG_SPECIAL,7');
-							}
-							if (S(karaType).contains('VOCA') && taglist.indexOf('TAG_VOCALOID,7') == -1) {
-								taglist.push('TAG_VOCALOID,7');
-							}
-							if (S(karaType).contains('XBOX360') && taglist.indexOf('TAG_XBOX360,7') == -1) {
-								taglist.push('TAG_XBOX360,7');
-							}
-							if (!typeDetected) {
-								reject('Karaoke type cannot be detected! Got : '+karaType)
-							}
-							taglist.forEach(function(tag) {
-								tag = S(tag).trimLeft().s;
-								if (tags.indexOf(tag) == -1) {
-									tags.push(tag);
-								}
-								// Let's get our new index.
-								var tagsIDX = tags.indexOf(tag);
-								tagsIDX++;
-								karas_tags.push(tagsIDX + ',' + id_kara);
-							});
-							resolve();
+					var karaWOExtension = S(karadata.karafile).chompRight('.kara');
+					var karaInfos = karaWOExtension.split(' - ');
+					var karaSerie = karaInfos[1];
+					var karaType = karaInfos[2];
+					var taglist = [];
+					var singers;
+					//Filling taglist, and let's go.
+					if (S(karaSerie).contains(' OAV') || S(karaSerie).contains(' OVA') || S(karaType).contains('OAV')) {
+						if (taglist.indexOf('TAG_OVA,7') == -1) {
+							taglist.push('TAG_OVA,2');
 						}
+					}
+					if (karaType == 'LIVE' || karaType == 'MV') {
+						//If LIVE or MV, we add the series as artist.
+						singers = karaSerie.split(',');
+						singers.forEach(function(singer) {
+							var tag = S(singer).trimLeft().s;
+							if (taglist.indexOf(tag + ',2') == -1) {
+								taglist.push(tag + ',2');
+							}
+						});
+					}
+					if (!S(karadata.singer).isEmpty()) {
+						singers = karadata.singer.split(',');
+						singers.forEach(function(singer) {
+							var tag = S(singer).trimLeft().s;
+							if (taglist.indexOf(tag + ',2') == -1) {
+								taglist.push(tag + ',2');
+							}
+						});
+					}
+					if (!S(karadata.author).isEmpty()) {
+						var authors = karadata.author.split(',');
+						authors.forEach(function(author) {
+							var tag = S(author).trimLeft().s;
+							if (taglist.indexOf(tag + ',6') == -1) {
+								taglist.push(tag + ',6');
+							}
+						});
+					}
+					if (!S(karadata.creator).isEmpty()) {
+						var creators = karadata.creator.split(',');
+						creators.forEach(function(creator) {
+							var tag = S(creator).trimLeft().s;
+							if (taglist.indexOf(tag + ',4') == -1) {
+								taglist.push(tag + ',4');
+							}
+						});
+					}
+					if (!S(karadata.songwriter).isEmpty()) {
+						var songwriters = karadata.songwriter.split(',');
+						songwriters.forEach(function(songwriter) {
+							var tag = S(songwriter).trimLeft().s;
+							if (taglist.indexOf(tag + ',8') == -1) {
+								taglist.push(tag + ',8');
+							}
+						});
+					}
+					karadata.lang = S(karadata.lang).strip('"');							
+					if (!S(karadata.lang).isEmpty()) {
+						var langs = karadata.lang.split(',');
+						langs.forEach(function(lang) {
+							var tag = S(lang).trimLeft().s;
+							if (!langsModule.has('2B',tag) && tag !== 'und') {					reject('Unknown language : '+tag);
+							} else {
+								if (taglist.indexOf(tag + ',5') == -1) {
+									taglist.push(tag + ',5');
+								}
+							}									
+						});
+					}
+					// Check du type de song
+					var typeDetected = false;
+					if (S(karaType).contains('AMV') && taglist.indexOf('TYPE_AMV,3') == -1) {
+						typeDetected = true;
+						taglist.push('TYPE_AMV,3');
+					}
+					if (S(karaType).contains('CM') && taglist.indexOf('TYPE_CM,3') == -1) {
+						typeDetected = true;
+						taglist.push('TYPE_CM,3');
+					}
+					if (S(karaType).contains('ED') && taglist.indexOf('TYPE_ED,3') == -1) {
+						typeDetected = true;
+						taglist.push('TYPE_ED,3');
+					}
+					if (S(karaType).contains('GAME') && taglist.indexOf('TAG_VIDEOGAME,7') == -1) {
+						typeDetected = true;
+						taglist.push('TAG_VIDEOGAME,7');
+					}
+					if (S(karaType).contains('GC') && taglist.indexOf('TAG_GAMECUBE,7') == -1) {
+						typeDetected = true;
+						taglist.push('TAG_GAMECUBE,7');
+					}
+					if (S(karaType).contains('IN') && taglist.indexOf('TYPE_INSERTSONG,3') == -1) {
+						typeDetected = true;
+						taglist.push('TYPE_INSERTSONG,3');
+					}
+					if (S(karaType).contains('LIVE') && taglist.indexOf('TYPE_LIVE,3') == -1) {
+						typeDetected = true;
+						taglist.push('TYPE_LIVE,3');
+					}
+					if (S(karaType).contains('MOVIE') && taglist.indexOf('TAG_MOVIE,7') == -1) {
+						taglist.push('TAG_MOVIE,7');
+					}
+					if (S(karaType).contains('OAV') && taglist.indexOf('TAG_OVA,7') == -1) {
+						taglist.push('TAG_OVA,7');
+					}
+					if (S(karaType).contains('OP') && taglist.indexOf('TYPE_OP,3') == -1) {
+						typeDetected = true;
+						taglist.push('TYPE_OP,3');
+					}
+					if (S(karaType).startsWith('MV') && taglist.indexOf('TYPE_MUSIC,3') == -1) {
+						typeDetected = true;
+						taglist.push('TYPE_MUSIC,3');
+					}
+					if (S(karaType).contains('OT') && taglist.indexOf('TYPE_OTHER,3') == -1) {
+						typeDetected = true;
+						taglist.push('TYPE_OTHER,3');
+					}
+					if (S(karaType).contains('PS3') && taglist.indexOf('TAG_PS3,7') == -1) {
+						taglist.push('TAG_PS3,7');
+					}
+					if (S(karaType).contains('PS2') && taglist.indexOf('TAG_PS2,7') == -1) {
+						taglist.push('TAG_PS2,7');
+					}
+					if (S(karaType).contains('PSV') && taglist.indexOf('TAG_PSV,7') == -1) {
+						taglist.push('TAG_PSV,7');
+					}
+					if (S(karaType).contains('PSX') && taglist.indexOf('TAG_PSX,7') == -1) {
+						taglist.push('TAG_PSX,7');
+					}
+					if (S(karaType).contains('PV') && taglist.indexOf('TYPE_PV,3') == -1) {
+						typeDetected = true;
+						taglist.push('TYPE_PV,3');
+					}
+					if (S(karaType).contains('R18') && taglist.indexOf('TAG_R18,7') == -1) {
+						taglist.push('TAG_R18,7');
+					}
+					if (S(karaType).contains('REMIX') && taglist.indexOf('TAG_REMIX,7') == -1) {
+						taglist.push('TAG_REMIX,7');
+					}
+					if (S(karaType).contains('SPECIAL') && taglist.indexOf('TAG_SPECIAL,7') == -1) {
+						taglist.push('TAG_SPECIAL,7');
+					}
+					if (S(karaType).contains('VOCA') && taglist.indexOf('TAG_VOCALOID,7') == -1) {
+						taglist.push('TAG_VOCALOID,7');
+					}
+					if (S(karaType).contains('XBOX360') && taglist.indexOf('TAG_XBOX360,7') == -1) {
+						taglist.push('TAG_XBOX360,7');
+					}
+					if (!typeDetected) {
+						reject('Karaoke type cannot be detected! Got : '+karaType)
+					}
+					taglist.forEach(function(tag) {
+						tag = S(tag).trimLeft().s;
+						if (tags.indexOf(tag) == -1) {
+							tags.push(tag);
+						}
+						// Let's get our new index.
+						var tagsIDX = tags.indexOf(tag);
+						tagsIDX++;
+						karas_tags.push(tagsIDX + ',' + id_kara);
 					});
+					resolve();					
 				});
 			}
 
@@ -1122,6 +1100,7 @@ module.exports = {
 							
 
 							//Calculate size.
+							
 							if (fs.existsSync(videosdir + '/' + kara['videofile'])) {
 								var videostats = fs.statSync(videosdir + '/' + kara['videofile'])
 								if (videostats.size != karadata.videosize){
@@ -1158,6 +1137,14 @@ module.exports = {
 
 							kara['rating'] = 0;
 							kara['viewcount'] = 0;
+							kara['karafile'] = karafile;
+							kara['tags'] = karadata.tags;
+							kara['lang'] = karadata.lang;
+							kara['singer'] = karadata.singer;
+							kara['songwriter'] = karadata.songwriter;
+							kara['creator'] = karadata.creator;
+							kara['author'] = karadata.author;
+							kara['series'] = karadata.series;
 							Promise.all([pGetVideoDuration])
 								.then(function(){
 									karas.push(kara);
