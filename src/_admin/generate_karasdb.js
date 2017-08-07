@@ -104,7 +104,7 @@ module.exports = {
 									module.exports.onLog('error', 'Error creating views : '+err);								
 									reject(err);
 								} else {
-									module.exports.onLog('success', 'Views created';
+									module.exports.onLog('success', 'Views created');
 									resolve();
 								}
 							});
@@ -138,7 +138,7 @@ module.exports = {
 							karafiles.splice(indexToRemove, 1);
 						}
 					}
-					module.exports.onLog('success', 'Karaoke data folder read';
+					module.exports.onLog('success', 'Karaoke data folder read');
 					resolve();
 				});
 				Promise.all([pCreateKaraFiles])
