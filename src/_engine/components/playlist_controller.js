@@ -2286,9 +2286,14 @@ module.exports = {
 							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.playlistcontent_id+'.ass'),
 						};
 						resolve(kara);
+					} else { 						
+						reject();
 					}
-					reject();
-				});
+				})
+				.catch(function(err){
+					logger.error(err);
+					reject(err);
+				})
 		});
 	},
 

@@ -94,10 +94,16 @@ module.exports = {
 	play:function(){
 		if(module.exports._states.status !== 'play') {
 			// passe en mode lecture (le gestionnaire de playlist vas travailler à nouveau)
-			module.exports._states.status = 'play';
-			module.exports._broadcastStates();
-
-			module.exports.tryToReadKaraInPlaylist();
+			if (module.exports._states.status === 'pause') {
+				module.exports._states.status = 'play';
+				module.exports._services.player.resume();
+				module.exports._broadcastStates();		
+			}
+			if (module.exports._states.status === 'stop') {
+				module.exports._states.status = 'play';
+				module.exports.tryToReadKaraInPlaylist();
+				module.exports._broadcastStates();		
+			}							
 		} else if(module.exports._states.status === 'play') {
 			// resume current play if needed
 			module.exports._services.player.resume();
@@ -122,8 +128,7 @@ module.exports = {
 	 */
 	pause:function(){
 		module.exports._services.player.pause();
-		// l'état globale n'a pas besoin de changer
-		// le player ne terminera jamais son morceau en restant en pause
+		module.exports._states.status = 'pause';
 		module.exports._broadcastStates();
 	},
 	/**
@@ -244,6 +249,7 @@ module.exports = {
 	* Try to read next karaoke in playlist.
 	*/
 	tryToReadKaraInPlaylist:function(){
+		console.log('Try!');
 		module.exports._services.playlist_controller.current_playlist().then(function(playlist){
 			if(module.exports._states.playlist != playlist) {
 				module.exports._states.playlist = playlist;

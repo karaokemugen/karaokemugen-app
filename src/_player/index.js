@@ -196,7 +196,7 @@ module.exports = {
 				module.exports._playing = true;
 				if(subtitle) {
 					if(fs.existsSync(subtitle)){
-						logger.info('Subs :'+subtitle);
+						logger.info('Subs : '+subtitle);
 						module.exports._player.addSubtitles(subtitle);//, flag, title, lang)
 					} else {
 						logger.error('Subs NOT FOUND : '+subtitle);
