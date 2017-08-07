@@ -877,6 +877,7 @@ module.exports = {
 					resolve({
 						private: module.exports._states.private,
 						status: module.exports._states.status,
+						playerstatus: module.exports._services.player.playerstatus,
 						ontop: module.exports._states.ontop,
 						fullscreen: module.exports._states.fullscreen,
 						timeposition: module.exports._services.player.timeposition,				

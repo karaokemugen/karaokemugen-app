@@ -9,7 +9,8 @@ var extract = require('extract-zip');
 module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
 	playing:false,
-	_playing:false, // internal delay flag
+	playerstatus:'stop',
+	_playing:false, // internal delay flag	
 	_player:null,
 	_ref:null,	
 	screen: 1,
@@ -163,11 +164,17 @@ module.exports = {
 					// immediate switch to Playing = False to avoid multiple trigger
 					module.exports.playing = false;
 					module.exports._playing = false;
+					module.exports.playerstatus = 'stop';
 					module.exports._player.pause();
 					module.exports.onEnd(module.exports._ref);
 					module.exports._ref = null;
 				}
 			});
+			module.exports._player.on('paused',function(){
+				module.exports.playing = false;
+				module.exports._playing = false;
+				module.exports.playerstatus = 'pause';
+			});			
 			module.exports._player.on('timeposition',function(position){
 				// Returns the position in seconds in the current song
 				module.exports.timeposition = position;
@@ -191,6 +198,7 @@ module.exports = {
 			module.exports._player.loadFile(video);
 			module.exports._player.volume(70);
 			module.exports._player.play();
+			module.exports.playerstatus = 'play'
 			// video may need some delay to play
 			setTimeout(function(){
 				module.exports._playing = true;
@@ -230,14 +238,16 @@ module.exports = {
 		module.exports.playing = false;
 		module.exports.timeposition = 0;
 		module.exports._playing = false;
+		module.exports.playerstatus = 'stop'
 		module.exports._player.loadFile(module.exports.background);
 	},
-	pause: function(){
-		//console.log(module.exports._player);
+	pause: function(){		
 		module.exports._player.pause();
+		module.exports.playerstatus = 'pause'
 	},
 	resume: function(){
 		module.exports._player.play();
+		module.exports.playerstatus = 'play'
 	},
 	onEnd:function(ref){
 		// événement émis pour quitter l'application
