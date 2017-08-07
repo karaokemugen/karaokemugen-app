@@ -1,0 +1,1 @@
+INSERT INTO viewcount(fk_id_kara,kid,datetime) VALUES($kara_id,$kid,$datetime);

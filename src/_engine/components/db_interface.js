@@ -1168,6 +1168,55 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Adds one viewcount entry to table}
+	* @param  {number} kara_id  {Database ID of Kara to add a VC to}
+	* @param  {string} kid      {KID provided}
+	* @param  {number} datetime {date and time in unix timestamp}
+	* @return {promise} {promise}
+	*/
+	addViewcount:function(kara_id,kid,datetime) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('Database interface is not ready yet!');
+				reject();
+			}
+			var sqlAddViewcount = fs.readFileSync(path.join(__dirname,'../../_common/db/add_viewcount.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlAddViewcount,
+			{
+				$kara_id: kara_id,
+				$kid: kid,
+				$datetime: datetime
+			}, function (err, rep) {
+				if (err) {
+					logger.error('Failed to add viewcount for karaoke '+kara_id+' : '+err);
+					reject(err);					
+				} else {
+					resolve();
+				}
+			});
+		});
+	},
+	updateTotalViewcounts:function(kid) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('Database interface is not ready yet!');
+				reject();
+			}
+			var sqlCalculateViewcount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_viewcount.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlCalculateViewcount,
+			{
+				$kid: kid
+			}, function (err, rep) {
+				if (err) {
+					logger.error('Failed to calculate viewcount for karaoke ID '+kid+' : '+err);
+					reject(err);					
+				} else {
+					resolve();
+				}
+			});
+		});
+	},
+	/**
 	* @function {Edit Playlist query function}
 	* @param  {number} playlist_id   {Playlist ID}
 	* @param  {string} name          {Name of playlist}
@@ -1182,7 +1231,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				logger.error('Database interface is not ready yet!');
-				return false;
+				reject();
 			}
 
 			// Création de la playlist
@@ -1213,7 +1262,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				logger.error('Database interface is not ready yet!');
-				return false;
+				reject('Database not ready');
 			}
 
 			// Creating playlist

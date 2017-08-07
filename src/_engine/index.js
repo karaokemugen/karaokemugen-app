@@ -5,6 +5,7 @@ var fs = require('fs');
 const path = require('path');
 const logger = require('../_common/utils/logger.js');
 const extend = require('extend');
+const timestamp = require('unix-timestamp');
 /**
  * @module engine
  * Main engine module.
@@ -260,14 +261,39 @@ module.exports = {
 					);
 					module.exports._states.currentlyPlayingKara = kara.id_kara;
 					module.exports._broadcastStates();
+					//Add a view to the viewcount
+					module.exports.AddViewcount(kara.id_kara,kara.kid);
 				})
 				.catch(function(){
-					logger.info('Cannot found a song to play');
+					logger.info('Cannot find a song to play');
 					module.exports._broadcastStates();
 				});
 		}
 	},
-
+	/**
+	* @function {Adds one viewcount for this kara}
+	* @param {number} kara_id {ID of kara to add a viewcount to}
+	* @return {promise} {Promise}
+	*/
+	addViewcount:function(kara_id,kid){
+		// Add one viewcount to the table
+		var datetime = timestamp.now();
+		module.exports.DB_INTERFACE.addViewcount(kara_id,kid,datetime)		
+		.then(function(){
+			logger.debug('Added 1 viewcount to karaoke '+kara_id);
+			// Recalculate viewcount and edit it in karasdb
+			module.exports.DB_INTERFACE.updateTotalViewcounts(kid)
+			.then(function(){
+				logger.debug('Viewcounts updated for KID '+kid);
+			})
+			.catch(function(err){
+				logger.error('Failed to update viewcounts on karaoke ID '+kid);
+			})
+		})
+		.catch(function(err){
+			logger.error('Failed to add viewcount for karaoke '+kara_id);
+		})		
+	},
 	// ------------------------------------------------------------------
 	// méthodes privées
 	// ------------------------------------------------------------------
