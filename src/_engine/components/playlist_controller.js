@@ -2256,7 +2256,7 @@ module.exports = {
 		// => next'n play
 		return new Promise(function(resolve,reject){
 			module.exports.current_playlist()
-				.then(function(playlist){
+				.then(function(playlist){					
 					var readpos = false;
 					playlist.content.forEach(function(element, index) {
 						if(element.flag_playing)
@@ -2284,15 +2284,15 @@ module.exports = {
 						kara.path = {
 							video: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
 							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.playlistcontent_id+'.ass'),
-						};
+						};						
 						resolve(kara);
-					} else { 						
-						reject();
+					} else { 							
+						reject('No kara found in playlist object');
 					}
 				})
 				.catch(function(err){
 					logger.error(err);
-					reject(err);
+					reject('meh');
 				})
 		});
 	},

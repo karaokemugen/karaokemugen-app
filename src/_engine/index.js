@@ -248,8 +248,7 @@ module.exports = {
 	* @function
 	* Try to read next karaoke in playlist.
 	*/
-	tryToReadKaraInPlaylist:function(){
-		console.log('Try!');
+	tryToReadKaraInPlaylist:function(){		
 		module.exports._services.playlist_controller.current_playlist().then(function(playlist){
 			if(module.exports._states.playlist != playlist) {
 				module.exports._states.playlist = playlist;
@@ -268,10 +267,10 @@ module.exports = {
 					module.exports._states.currentlyPlayingKara = kara.id_kara;
 					module.exports._broadcastStates();
 					//Add a view to the viewcount
-					module.exports.AddViewcount(kara.id_kara,kara.kid);
+					module.exports.addViewcount(kara.id_kara,kara.kid);
 				})
-				.catch(function(){
-					logger.info('Cannot find a song to play');
+				.catch(function(err){
+					logger.info('Cannot find a song to play : '+err);					
 					module.exports._broadcastStates();
 				});
 		}
