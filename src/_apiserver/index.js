@@ -16,19 +16,19 @@ module.exports = {
 	_local_states:{},
 	init:function() {
 		if(module.exports.SYSPATH === null) {
-			logger.error(__('SYSPATH_NULL'));
+			logger.error('SysPath is null!');
 			process.exit();
 		}
 		if(module.exports.SETTINGS === null) {
-			logger.error(__('SETTINGS_NULL'));
+			logger.error('SETTINGS is null!');
 			process.exit();
 		}
 		if(module.exports.LISTEN === null) {
-			logger.error(__('LISTEN_NULL'));
+			logger.error('LISTEN is null!');
 			process.exit();
 		}
 		if(module.exports.DB_INTERFACE === null) {
-			logger.error(__('DBI_NULL'));
+			logger.error('DB_INTERFACE is null!');
 			process.exit();
 		}
 
@@ -46,7 +46,7 @@ module.exports = {
 		var routerAdmin = express.Router();
 
 		app.listen(module.exports.LISTEN, function () {
-			logger.info(__('API_SERVER_LISTEN',module.exports.LISTEN));
+			logger.info('API server is READY and listens on port '+module.exports.LISTEN);
 		});
 
 		routerAdmin.use(basicAuth({ authorizer: AdminPasswordSetting }));
@@ -1043,8 +1043,7 @@ module.exports = {
 		});
 
 		app.use('/api/v1/public', routerPublic);
-		app.use('/api/v1/admin', routerAdmin);
-		logger.info(__('API_SERVER_READY'));
+		app.use('/api/v1/admin', routerAdmin);		
 	},
 	onTest:function(){
 		// événement de test

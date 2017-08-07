@@ -24,17 +24,17 @@ module.exports = {
 
 			var userDB_Test = new Promise(function(resolve,reject){
 				if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'))) {
-					logger.warn(__('USER_DB_NOT_FOUND'));
+					logger.warn('User database not found');
 					var db = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'));
 					var sqlCreateUserDB = fs.readFileSync(path.join(__dirname,'../../_common/db/userdata.sqlite3.sql'),'utf-8');
 					db.exec(sqlCreateUserDB, function (err){
 						if (err) {
-							logger.error(__('USER_DB_CREATION_FAILED',JSON.stringify(err)));
+							logger.error('Failed creating user database : '+err);
 							db.close();
 							reject(err);
 						} else {
 							db.close();
-							logger.info(__('USER_DB_CREATED'));
+							logger.info('User database created');
 							resolve();
 						}
 					});
@@ -45,12 +45,12 @@ module.exports = {
 
 			var karasDB_Test = new Promise(function(resolve,reject){
 				if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'))) {
-					logger.warn(__('KARA_DB_NOT_FOUND'));
+					logger.warn('Karaoke database not found');
 					var generator = require('../../_admin/generate_karasdb.js');
 					generator.SYSPATH = module.exports.SYSPATH;
 					generator.SETTINGS = module.exports.SETTINGS;
 					generator.onLog = function(type,message) {
-						logger.info(__('DATABASE_GENERATION',message));
+						logger.info('Generating database',message);
 					};
 					generator.run().then(function(response){
 						resolve();
@@ -68,14 +68,14 @@ module.exports = {
 			.then(function() {
 				module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
 					if (err) {
-						logger.error(__('LOADING_KARA_DB_FAILED',+JSON.stringify(err)));
+						logger.error('Loading karaoke database failed : '+err);
 						process.exit();
 					}
 				});
 
 				module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
 					if (err) {
-						logger.error(__('LOADING_USER_DB_FAILED',+JSON.stringify(err)));
+						logger.error('Loading user database failed : '+err);
 						process.exit();
 					} else {
 						module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;',function(err){
@@ -85,17 +85,17 @@ module.exports = {
 								module.exports._ready = true;
 								module.exports.getStats()
 								.then(function(stats){
-									logger.info(__('STATS_COUNT',stats.totalcount));
-									logger.info(__('STATS_DURATION',moment.duration(stats.totalduration,'seconds').format('D ['+__('DAY')+'], H ['+__('HOUR')+'], m ['+__('MINUTE')+'], s ['+__('SECOND')+']')));
-									logger.info(__('STATS_SERIES',stats.totalseries));
-									logger.info(__('STATS_LANGUAGES',stats.totallanguages));
-									logger.info(__('STATS_ARTISTS',stats.totalartists));
-									logger.info(__('STATS_PLAYLISTS',stats.totalplaylists));
+									logger.info('Karaoke count   : '+stats.totalcount);
+									logger.info('Total duration  : '+moment.duration(stats.totalduration,'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
+									logger.info('Total series    : '+stats.totalseries);
+									logger.info('Total languages : '+stats.totallanguages);
+									logger.info('Total artists   : '+stats.totalartists);
+									logger.info('Total playlists : '+stats.totalplaylists);
 								})
 								.catch(function(err){
-									logger.warn(__('STATS_FAILED',JSON.stringify(err)));
+									logger.warn('Failed to fetch statistics : '+err);
 								});
-								logger.info(__('DATABASE_READY'));
+								logger.info('Database interface is READY');
 								resolve();
 							}
 						});
@@ -139,7 +139,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			var stats = {};
 			if(!module.exports.isReady()) {
-				reject(__('DBI_IS_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			var pGetSeriesCount = new Promise((resolve,reject) => {
@@ -147,7 +147,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateSeriesCount,
 					function (err, res) {
 						if (err) {
-							logger.warn(__('DB_STATS_SERIES_FAILED',JSON.stringify(err)));
+							logger.warn('Failed to fetch series count : '+err);
 							stats.totalseries = 0;
 							resolve();
 						} else {
@@ -162,7 +162,7 @@ module.exports = {
 				module.exports._user_db_handler.get(sqlCalculatePlaylistCount,
 					function (err, res) {
 						if (err) {
-							logger.warn(__('DB_STATS_PLAYLISTS_FAILED',JSON.stringify(err)));
+							logger.warn('Failed to fetch playlists count : '+err);
 							stats.totalplaylists = 0;
 							resolve();
 						} else {
@@ -176,7 +176,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateArtistCount,
 					function (err, res) {
 						if (err) {
-							logger.warn(__('DB_STATS_ARTISTS_FAILED',JSON.stringify(err)));
+							logger.warn('Failed to fetch artists count : '+err);
 							stats.totalartists = 0;
 							resolve();
 						} else {
@@ -190,7 +190,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateKaraCount,
 					function (err, res) {
 						if (err) {
-							logger.error(__('DB_STATS_COUNT_FAILED',JSON.stringify(err)));
+							logger.error('Failed to fetch karaoke count : '+err);
 							stats.totalcount = 0;
 							resolve();
 						} else {
@@ -204,7 +204,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateLanguageCount,
 					function (err, res) {
 						if (err) {
-							logger.error(__('DB_STATS_LANGUAGES_FAILED',JSON.stringify(err)));
+							logger.error('Failed to fetch language count : '+err);
 							stats.totallanguages = 0;
 							resolve();
 						} else {
@@ -218,7 +218,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateTotalDuration,
 					function (err, res) {
 						if (err) {
-							logger.error(__('DB_STATS_DURATION_FAILED',JSON.stringify(err)));
+							logger.error('Failed to fetch duration data : '+err);
 							stats.totalduration = 'Unknown';
 							resolve();
 						} else {
@@ -238,7 +238,7 @@ module.exports = {
 			]).then(function(){
 				resolve(stats);
 			}).catch(function(){
-				reject(__('DB_STATS_GENERAL_ERROR'));
+				reject('Stats general error');
 			});
 		});
 	},
@@ -250,7 +250,7 @@ module.exports = {
 	calculatePlaylistNumOfKaras:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlCalculatePlaylistNumOfKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_numofkaras.sql'),'utf-8');
 			module.exports._user_db_handler.get(sqlCalculatePlaylistNumOfKaras,
@@ -273,7 +273,7 @@ module.exports = {
 	calculatePlaylistDuration:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlCalculatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_duration.sql'),'utf-8');
 			module.exports._user_db_handler.serialize(function(){
@@ -282,7 +282,7 @@ module.exports = {
 						$playlist_id: playlist_id
 					}, function (err, duration) {
 						if (err) {
-							reject(__('DB_DURATION_PL_ERROR',playlist_id,JSON.stringify(err)));
+							reject('Failed to calculate playlist duration : '+err);
 						} else {
 							resolve(duration);
 						}
@@ -297,14 +297,14 @@ module.exports = {
 	generateBlacklist:function() {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlGenerateBlacklist = fs.readFileSync(path.join(__dirname,'../../_common/db/generate_blacklist.sql'),'utf-8');
 
 			module.exports._user_db_handler.exec(sqlGenerateBlacklist,
 				function (err, rep) {
 					if (err) {
-						reject(__('DB_BLACKLIST_GENERATION_ERROR',JSON.stringify(err)));
+						reject('Failed to generate blacklist : '+err);
 					} else {
 						resolve();
 					}
@@ -318,14 +318,14 @@ module.exports = {
 	getBlacklistCriterias:function() {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlGetBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_criterias.sql'),'utf-8');
 
 			module.exports._user_db_handler.all(sqlGetBlacklistCriterias,
 				function (err, blcriterias) {
 					if (err) {
-						reject(__('DB_BLACKLIST_GET_CRITERIAS_ERROR',JSON.stringify(err)));
+						reject('Failed to fetch blacklist criterias :'+err);
 					} else {
 						resolve(blcriterias);
 					}
@@ -341,8 +341,7 @@ module.exports = {
 	addBlacklistCriteria:function(blctype,blcvalue) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				logger.error('DB_INTERFACE is not ready to work');
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlAddBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/insert_blacklist_criteria.sql'),'utf-8');
 
@@ -353,7 +352,7 @@ module.exports = {
 				},
 				function (err) {
 					if (err) {
-						reject(__('DB_BLACKLIST_ADD_CRITERIA_ERROR',JSON.stringify(err)));
+						reject('Failed to add blacklist criteria : '+err);
 					} else {
 						resolve();
 					}
@@ -369,7 +368,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				logger.error('DB_INTERFACE is not ready to work');
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlDeleteBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_blacklist_criteria.sql'),'utf-8');
 
@@ -379,7 +378,7 @@ module.exports = {
 				},
 				function (err) {
 					if (err) {
-						reject(__('DB_BLACKLIST_DELETE_CRITERIA_ERROR',JSON.stringify(err)));
+						reject('Failed to delete blacklist criteria : '+err);
 					} else {
 						resolve();
 					}
@@ -396,7 +395,7 @@ module.exports = {
 	editBlacklistCriteria:function(blc_id,blctype,blcvalue) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlEditBlacklistCriteria = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_blacklist_criteria.sql'),'utf-8');
 
@@ -408,7 +407,7 @@ module.exports = {
 				},
 				function (err) {
 					if (err) {
-						reject(__('DB_BLACKLIST_EDIT_CRITERIA_ERROR',JSON.stringify(err)));
+						reject('Failed to edit blacklist criteria '+err);
 					} else {
 						resolve();
 					}
@@ -418,7 +417,7 @@ module.exports = {
 	updatePlaylistNumOfKaras:function(playlist_id,num_karas) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlUpdatePlaylistNumOfKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_numofkaras.sql'),'utf-8');
 			module.exports._user_db_handler.run(sqlUpdatePlaylistNumOfKaras,
@@ -427,7 +426,7 @@ module.exports = {
 					$num_karas: num_karas
 				}, function (err) {
 					if (err) {
-						reject(__('DB_PLAYLIST_UPDATE_KARACOUNT_ERROR',playlist_id,JSON.stringify(err)));
+						reject('Failed to update song count in playlist '+playlist_id+' : '+err);
 					} else {
 						resolve(num_karas);
 					}
@@ -443,7 +442,7 @@ module.exports = {
 	reorderPlaylist:function(playlist_id,playlist) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlUpdateKaraPosition = fs.readFileSync(path.join(__dirname,'../../_common/db/update_kara_position.sql'),'utf-8');
 
@@ -457,7 +456,7 @@ module.exports = {
 						$playlistcontent_id: kara.playlistcontent_id
 					}, function (err) {
 						if (err) {
-							reject(__('DB_PLAYLIST_REORDER_ERROR',playlist_id,JSON.stringify(err)));
+							reject('Failed to reorder playlist '+playlist_id+' : '+err);
 						}
 					});
 			});
@@ -473,7 +472,7 @@ module.exports = {
 	updatePlaylistDuration:function(playlist_id,duration) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlUpdatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_duration.sql'),'utf-8');
 			module.exports._user_db_handler.run(sqlUpdatePlaylistDuration,
@@ -482,7 +481,7 @@ module.exports = {
 					$duration: duration
 				}, function (err) {
 					if (err) {
-						reject(__('DB_PLAYLIST_UPDATE_DURATION_ERROR',playlist_id,JSON.stringify(err)));
+						reject('Failed to update duration of playlist '+playlist_id+' : '+err);
 					} else {
 						resolve(duration);
 					}
@@ -497,7 +496,7 @@ module.exports = {
 	getPlaylistContents:function(playlist_id){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
 			module.exports._user_db_handler.serialize(function(){
@@ -506,7 +505,7 @@ module.exports = {
 						$playlist_id: playlist_id
 					}, function (err, playlist) {
 						if (err) {
-							reject(__('DB_PLAYLIST_GET_CONTENTS_ERROR',playlist_id,JSON.stringify(err)));
+							reject('Failed to get contents of playlist '+playlist_id+' : '+err);
 						} else {
 							resolve(playlist);
 						}
@@ -521,14 +520,13 @@ module.exports = {
 	getAllPlaylistContents:function(){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}			
 			var sqlGetAllPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_playlist_contents.sql'),'utf-8');
 			module.exports._user_db_handler.all(sqlGetAllPlaylistContents,
 			function (err, playlist) {
 				if (err) {
-					console.log(err);
-					reject('DB Error getting all playlist contents : '+err);
+					reject('Failed to get all playlists contents : '+err);
 				} else {
 					resolve(playlist);
 				}
@@ -542,13 +540,13 @@ module.exports = {
 	getWhitelistContents:function(){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlGetWhitelistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_whitelist_contents.sql'),'utf-8');
 			module.exports._user_db_handler.all(sqlGetWhitelistContents,
 				function (err, playlist) {
 					if (err) {
-						reject('DB Get Whitelist content error :'+err);
+						reject('Failed to get whitelist contents :'+err);
 					} else {
 						resolve(playlist);
 					}
@@ -562,13 +560,13 @@ module.exports = {
 	getBlacklistContents:function(){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlGetBlacklistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_contents.sql'),'utf-8');
 			module.exports._user_db_handler.all(sqlGetBlacklistContents,
 				function (err, playlist) {
 					if (err) {
-						reject('DB Get Blacklist content error :'+err);
+						reject('Failed to get blacklist contents :'+err);
 					} else {
 						resolve(playlist);
 					}
@@ -582,13 +580,13 @@ module.exports = {
 	getAllKaras:function(){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlGetAllKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_karas.sql'),'utf-8');
 			module.exports._user_db_handler.all(sqlGetAllKaras,
 				function (err, playlist) {
 					if (err) {
-						reject(__('DB_GET_ALL_KARAS_ERROR',JSON.stringify(err)));
+						reject('Failed to fetch all karaokes : '+err);
 					} else {
 						resolve(playlist);
 					}
@@ -602,7 +600,7 @@ module.exports = {
 	getPLContentInfo:function(playlistcontent_id){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlGetPLContentInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_plcontent_info.sql'),'utf-8');
 			module.exports._user_db_handler.get(sqlGetPLContentInfo,
@@ -611,7 +609,7 @@ module.exports = {
 				},
 				function (err, kara) {
 					if (err) {
-						reject(__('DB_KARA_GET_PLCINFO_ERROR',playlistcontent_id,JSON.stringify(err)));
+						reject('Failed to get playlist item '+playlistcontent_id+'\'s information : '+err);
 					} else {
 						resolve(kara);
 					}
@@ -626,7 +624,7 @@ module.exports = {
 	getKara:function(kara_id){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			var sqlGetKara = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kara.sql'),'utf-8');
@@ -636,7 +634,7 @@ module.exports = {
 				},
 				function (err, kara) {
 					if (err) {
-						reject(__('DB_KARA_GET_ERROR',kara_id,JSON.stringify(err)));
+						reject('Failed to get karaoke song '+kara_id+' information : '+err);
 					} else {
 						resolve(kara);
 					}
@@ -660,7 +658,7 @@ module.exports = {
 				$playlist_id: playlist_id
 			}, function (err, row) {
 				if (err) {
-					callback(null,__('DB_PLAYLIST_GET_INFO_ERROR',playlist_id,JSON.stringify(err)));
+					callback(null,'Failed to fetch playlist '+playlist_id+' information : '+err);
 				} else {
 					if (row) {
 						callback(row);
@@ -686,7 +684,7 @@ module.exports = {
 			module.exports._user_db_handler.all(sqlGetPlaylists,
 				function (err, playlists) {
 					if (err) {
-						logger.error(__('DB_PLAYLISTS_GET_ERROR',JSON.stringify(err)));
+						logger.error('Failed to fetch list of playlists : '+err);
 						reject(err);
 					} else {
 						resolve(playlists);
@@ -701,13 +699,13 @@ module.exports = {
 	isACurrentPlaylist:function() {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlTestCurrentPlaylistExists = fs.readFileSync(path.join(__dirname,'../../_common/db/test_current_playlist_exists.sql'),'utf-8');
 			module.exports._user_db_handler.get(sqlTestCurrentPlaylistExists,
 				function (err, row) {
 					if (err) {
-						logger.error(__('DB_PLAYLIST_TEST_CURRENT_EXISTS_ERROR',JSON.stringify(err)));
+						logger.error('Failed to find out if there is a current playlist : '+err);
 						reject();
 					} else {
 						if (row) {
@@ -726,13 +724,13 @@ module.exports = {
 	isAPublicPlaylist:function() {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 			var sqlTestPublicPlaylistExists = fs.readFileSync(path.join(__dirname,'../../_common/db/test_public_playlist_exists.sql'),'utf-8');
 			module.exports._user_db_handler.get(sqlTestPublicPlaylistExists,
 				function (err, row) {
 					if (err) {
-						logger.error(__('DB_PLAYLIST_TEST_CURRENT_EXISTS_ERROR',JSON.stringify(err)));
+						logger.error('Failed to find out if there is a public playlist : '+err);
 						reject();
 					} else {
 						if (row) {
@@ -752,7 +750,7 @@ module.exports = {
 					$playlist_id: playlist_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_PLAYLIST_TEST_PUBLIC_ERROR',playlist_id,JSON.stringify(err)));
+						reject('Failed to test if playlist '+playlist_id+' is public or not : '+err);
 					} else {
 						if (row) {
 							if (row.flag_public == 1) {
@@ -775,7 +773,7 @@ module.exports = {
 					$playlist_id: playlist_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_PLAYLIST_TEST_CURRENT_ERROR',playlist_id,JSON.stringify(err)));
+						reject('Failed to test if playlist '+playlist_id+' is current or not : '+err);
 					} else {
 						if (row) {
 							if (row.flag_current == 1) {
@@ -784,7 +782,7 @@ module.exports = {
 								resolve(false);
 							}
 						} else {
-							reject(__('DB_PLAYLIST_UNKNOWN',playlist_id));
+							reject();
 						}
 					}
 				});
@@ -803,7 +801,7 @@ module.exports = {
 				$kara_id: kara_id
 			}, function (err, row) {
 				if (err) {
-					callback(null,__('DB_KARA_TEST_ERROR',kara_id,JSON.stringify(err)));
+					callback(null,'Failed to test if karaoke '+kara_id+' exists : '+err);
 				} else {
 					if (row) {
 						callback(true);
@@ -826,7 +824,7 @@ module.exports = {
 					$blc_id: blc_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_BLACKLIST_TEST_CRITERIA_ERROR',blc_id,JSON.stringify(err)));
+						reject('Failed to test if blacklist criteria '+blc_id+' exists : '+err);
 					} else {
 						if (row) {
 							resolve();
@@ -850,7 +848,7 @@ module.exports = {
 					$wlc_id: wlc_id
 				}, function (err, row) {
 					if (err) {
-						reject('DB Error : Unable to run query : '+err);
+						reject('Failed to test if whitelist item '+wlc_id+' exists : '+err);
 					} else {
 						if (row) {
 							resolve();
@@ -876,7 +874,7 @@ module.exports = {
 					$playlist_id: playlist_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_PLAYLIST_SEARCH_KARA_ERROR',kara_id,playlist_id,JSON.stringify(err)));
+						reject('Failed to find if karaoke song '+kara_id+' is in playlist '+playlist_id+' or not : '+err);
 					} else {
 						if (row) {
 							resolve(true);
@@ -900,7 +898,7 @@ module.exports = {
 					$kara_id: kara_id,
 				}, function (err, row) {
 					if (err) {
-						reject('DB Error searching for karaoke '+kara_id+' in blacklist : '+err);
+						reject('Failed to search for karaoke '+kara_id+' in blacklist : '+err);
 					} else {
 						if (row) {
 							resolve(true);
@@ -924,7 +922,7 @@ module.exports = {
 					$kara_id: kara_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_WHITELIST_SEARCH_KARA_ERROR',kara_id,JSON.stringify(err)));
+						reject('Failed to search for karaoke '+kara_id+' in whitelist : '+err);
 					} else {
 						if (row) {
 							resolve(true);
@@ -951,7 +949,7 @@ module.exports = {
 				$playlist_id: playlist_id
 			}, function (err, row) {
 				if (err) {
-					callback(null,__('DB_PLAYLIST_TEST_ERROR',playlist_id,JSON.stringify(err)));
+					callback(null,'Failed to test if playlist '+playlist_id+' exists : '+err);
 				} else {
 					if (row) {
 						callback(true);
@@ -969,7 +967,7 @@ module.exports = {
 				$playlist_id: playlist_id
 			}, function (err, rep) {
 				if (err) {
-					callback(null,__('DB_PLAYLIST_SET_CURRENT_ERROR',playlist_id,JSON.stringify(err)));
+					callback(null,'Failed to set current flag on playlist '+playlist_id+' : '+err);
 				} else {
 					callback(rep);
 				}
@@ -988,7 +986,7 @@ module.exports = {
 				$playlist_id: playlist_id
 			}, function (err, rep) {
 				if (err) {
-					callback(null,__('DB_PLAYLIST_SET_VISIBLE_ERROR',playlist_id,JSON.stringify(err)));
+					callback(null,'Failed to set visible flag on playlist '+playlist_id+' : '+err);
 				} else {
 					callback(rep);
 				}
@@ -1063,7 +1061,7 @@ module.exports = {
 				$playlist_id: playlist_id
 			}, function (err, rep) {
 				if (err) {
-					callback(null,__('DB_PLAYLIST_UNSET_VISIBLE_ERROR',playlist_id,JSON.stringify(err)));
+					callback(null,'Failed to unset visible flag on playlist '+playlist_id+' : '+err);
 				} else {
 					callback(rep);
 				}
@@ -1078,7 +1076,7 @@ module.exports = {
 				$playlist_id: playlist_id
 			}, function (err, rep) {
 				if (err) {
-					callback(null,__('DB_PLAYLIST_SET_PUBLIC_ERROR',playlist_id,JSON.stringify(err)));
+					callback(null,'Failed to set public flag on playlist '+playlist_id+' : '+err);
 				} else {
 					callback(rep);
 				}
@@ -1087,13 +1085,13 @@ module.exports = {
 	unsetPublicAllPlaylists:function() {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
 			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err, rep) {
 				if (err) {
-					reject(__('DB_PLAYLIST_UNSET_PUBLIC_ALL_ERROR',JSON.stringify(err)));
+					callback(null,'Failed to unset public flag on all playlists : '+err);
 				} else {
 					resolve();
 				}
@@ -1103,7 +1101,7 @@ module.exports = {
 	updatePlaylistLastEditTime:function(playlist_id,lastEditTime) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			var sqlUpdatePlaylistLastEditTime = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_last_edit_time.sql'),'utf-8');
@@ -1113,7 +1111,7 @@ module.exports = {
 					$lastEditTime: lastEditTime
 				}, function (err, rep) {
 					if (err) {
-						reject(__('DB_PLAYLIST_UPDATE_LAST_EDIT_TIME_ERROR',JSON.stringify(err)));
+						reject('Failed to set last edit time on playlist '+playlist_id+' : '+err);
 					} else {
 						resolve();
 					}
@@ -1123,13 +1121,13 @@ module.exports = {
 	unsetCurrentAllPlaylists:function() {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
 			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err, rep) {
 				if (err) {
-					reject(__('DB_PLAYLIST_UNSET_CURRENT_ALL_ERROR',JSON.stringify(err)));
+					callback(null,'Failed to unset current flag on all playlists : '+err);
 				} else {
 					resolve();
 				}
@@ -1138,14 +1136,14 @@ module.exports = {
 	},
 	emptyPlaylist:function(playlist_id) {
 		//TODO : transformer en promesse
-		// Vidage de playlist. Sert aussi à nettoyer la table playlist_content en cas de suppression de PL
+		// Empties playlist
 		var sqlEmptyPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_playlist.sql'),'utf-8');
 		module.exports._user_db_handler.run(sqlEmptyPlaylist,
 			{
 				$playlist_id: playlist_id
 			}, function(err) {
 				if (err) {
-					logger.error(__('DB_PLAYLIST_EMPTY_ERROR',playlist_id,JSON.stringify(err)));
+					logger.error('Failed to empty playlist '+playlist_id+' : '+err);
 				}
 			});
 	},
@@ -1157,7 +1155,7 @@ module.exports = {
 				$playlist_id: playlist_id
 			}, function(err) {
 				if (err) {
-					logger.error(__('DB_PLAYLIST_DELETE',playlist_id,JSON.stringify(err)));
+					logger.error('Failed to delete playlist '+playlist_id+' : '+err);
 				}
 				callback(true);
 			});
@@ -1176,7 +1174,7 @@ module.exports = {
 	editPlaylist:function(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public,callback) {
 		//TODO : transformer en promesse
 		if(!module.exports.isReady()) {
-			logger.error(__('DBI_NOT_READY'));
+			logger.error('Database interface is not ready yet!');
 			return false;
 		}
 
@@ -1196,7 +1194,7 @@ module.exports = {
 				$flag_public: flag_public
 			}, function (err, rep) {
 				if (err) {
-					logger.error(__('DB_PLAYLIST_EDIT_ERROR',playlist_id,JSON.stringify(err)));
+					logger.error('Failed to edit playlist '+playlist_id+' : '+err);
 					callback({
 						error:true,
 						error_msg:err
@@ -1211,7 +1209,7 @@ module.exports = {
 	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,callback) {
 		//TODO : transformer en promesse
 		if(!module.exports.isReady()) {
-			logger.error(__('DBI_NOT_READY'));
+			logger.error('Database interface is not ready yet!');
 			return false;
 		}
 
@@ -1230,7 +1228,7 @@ module.exports = {
 				$flag_public: flag_public
 			}, function (err, rep) {
 				if (err) {
-					logger.error(__('DB_PLAYLIST_CREATE_ERROR',name,JSON.stringify(err)));
+					logger.error('Failed to create playlist '+name+' : '+err);
 					callback({
 						id:0,
 						error:true,
@@ -1247,7 +1245,7 @@ module.exports = {
 	editWhitelistKara:function(wlc_id,reason) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				logger.error(__('DBI_NOT_READY'));
+				logger.error('Database interface is not ready yet!');
 				reject('Database not ready');
 			}
 
@@ -1279,7 +1277,7 @@ module.exports = {
 	addKaraToPlaylist:function(kara_id,requester,NORM_requester,playlist_id,pos,date_added,flag_playing) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			//We need to get the KID of the karaoke we're adding.
@@ -1290,7 +1288,7 @@ module.exports = {
 					$kara_id: kara_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_KARA_GET_KID_ERROR',kara_id,JSON.stringify(err)));
+						reject('Failed to get KID from karaoke song '+kara_id+' : '+err);
 					} else {
 						if (row) {
 							var kid = row.kid;
@@ -1307,14 +1305,14 @@ module.exports = {
 									$flag_playing: flag_playing
 								}, function (err, rep) {
 									if (err) {
-										reject(__('DB_PLAYLIST_ADD_KARA_ERROR',kara_id,playlist_id,JSON.stringify(err)));
+										reject('Failed to add karaoke '+kara_id+' to playlist '+playlist_id+' : '+err);
 									} else {
 										//We return the playlist_content ID of the kara we just added.
 										resolve(this.lastID);
 									}
 								});
 						} else {
-							reject(__('DB_KARA_NO_KID',kara_id));
+							reject('No KID found for karaoke song '+kara_id);
 						}
 					}
 				});
@@ -1330,7 +1328,7 @@ module.exports = {
 	addKaraToWhitelist:function(kara_id,reason,date_added) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			//We need to get the KID of the karaoke we're adding.
@@ -1341,7 +1339,7 @@ module.exports = {
 					$kara_id: kara_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_KARA_GET_KID_ERROR',kara_id,JSON.stringify(err)));
+						reject('Failed to get KID from karaoke song '+kara_id+' : '+err);
 					} else {
 						if (row) {
 							var kid = row.kid;
@@ -1353,14 +1351,14 @@ module.exports = {
 								$date_added: date_added,
 							}, function (err, rep) {
 								if (err) {
-									reject(__('DB_WHITELIST_ADD_KARA_ERROR',kara_id,JSON.stringify(err)));
+									reject('Failed to add karaoke '+kara_id+' to whitelist : '+err);
 								} else {
 									//We return the whitelist_content ID of the kara we just added.
 									resolve(this.lastID);
 								}
 							});
 						} else {
-							reject(__('DB_KARA_NO_KID',kara_id));
+							reject('No KID found for karaoke song '+kara_id);
 						}
 					}
 				});
@@ -1374,7 +1372,7 @@ module.exports = {
 	removeKaraFromPlaylist:function(playlistcontent_id) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
@@ -1383,7 +1381,7 @@ module.exports = {
 					$playlistcontent_id: playlistcontent_id
 				}, function (err, rep) {
 					if (err) {
-						reject(__('DB_PLAYLIST_REMOVE_KARA_ERROR',playlistcontent_id,JSON.stringify(err)));
+						reject('Failed to remove playlist item '+playlistcontent_id+' : '+err);
 					} else {
 						resolve();
 					}
@@ -1398,7 +1396,7 @@ module.exports = {
 	removeKaraFromWhitelist:function(wlc_id) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			var sqlRemoveKaraFromWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_whitelist.sql'),'utf-8');
@@ -1407,7 +1405,7 @@ module.exports = {
 					$wlc_id: wlc_id
 				}, function (err, rep) {
 					if (err) {
-						reject(__('DB_WHITELIST_REMOVE_KARA_ERROR',wlc_id,JSON.stringify(err)));
+						reject('Failed to remove whitelist item '+wlc_id+' : '+err);
 						reject(err);
 					} else {
 						resolve(true);
@@ -1424,7 +1422,7 @@ module.exports = {
 	raisePosInPlaylist:function(pos,playlist_id) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			var newpos = pos + 0.1;
@@ -1436,9 +1434,7 @@ module.exports = {
 					$pos: pos
 				}, function (err, rep) {
 					if (err) {
-						reject(__('DB_PLAYLIST_UPDATE_POS_ERROR',playlist_id,JSON.stringify(err)));
-					} else {
-						resolve();
+						reject('Failed to update position in playlist '+playlist_id+' : '+err)
 					}
 				});
 		});
@@ -1451,7 +1447,7 @@ module.exports = {
 	getMaxPosInPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				reject(__('DBI_NOT_READY'));
+				reject('Database interface is not ready yet');
 			}
 
 			var sqlGetMaxPosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/select_max_pos_in_playlist.sql'),'utf-8');
@@ -1460,26 +1456,11 @@ module.exports = {
 					$playlist_id: playlist_id
 				}, function (err, row) {
 					if (err) {
-						reject(__('DB_PLAYLIST_GET_MAXPOS_ERROR',playlist_id,JSON.stringify(err)));
+						reject('Failed to get max position in playlist '+playlist_id+' : '+err);
 					} else {
 						resolve(row.maxpos);
 					}
 				});
 		});
-	},
-	get_next_kara:function() {
-		if(!module.exports.isReady()) {
-			logger.error('DB_INTERFACE is not ready to work');
-			return false;
-		}
-
-		return {
-			uuid:'0000-0000-0000-0000',
-			kara_id:1,
-			title:'Nom du Kara',
-			video:'chemin vers la vidéo',
-			subtitle:'chemin vers la vidéo',
-			requester:'pseudonyme',
-		};
-	}
+	},	
 };

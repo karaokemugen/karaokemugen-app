@@ -42,11 +42,11 @@ module.exports = {
 	 */
 	run: function(){
 		if(this.SYSPATH === null) {
-			logger.error(__('SYSPATH_NULL'));
+			logger.error('SysPath is null !');
 			process.exit();
 		}
 		if(this.SETTINGS === null) {
-			logger.error(__('SETTINGS_NULL'));
+			logger.error('SETTINGS is null !');
 			process.exit();
 		}
 
@@ -889,15 +889,15 @@ module.exports = {
 			})
 			.catch(function(){
 				//No playlist exists, creating one.
-				logger.warn(__('NO_CURRENT_PLAYLIST'));
+				logger.warn('No current playlist found, creating one');
 				module.exports._services.playlist_controller.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0)
 					.then(function (new_playlist){
-						logger.info(__('CURRENT_PLAYLIST_CREATED',new_playlist));
+						logger.info('Current playlist created : '+new_playlist);
 						// Build a dummy playlist for testing purpose
 						module.exports._services.playlist_controller.build_dummy_current_playlist(new_playlist);
 					})
 					.catch(function(err){
-						logger.error(__('CURRENT_PLAYLIST_CREATE_ERROR',err));
+						logger.error('Failed to create current playlist :'+err);
 					});
 			});
 		module.exports._services.playlist_controller.isAPublicPlaylist()
@@ -906,13 +906,13 @@ module.exports = {
 			})
 			.catch(function(){
 				//No playlist exists, creating one.
-				logger.warn(__('NO_PUBLIC_PLAYLIST'));
+				logger.warn('No public playlist found, creating one');
 				module.exports._services.playlist_controller.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1)
 					.then(function (new_playlist){
-						logger.info(__('PUBLIC_PLAYLIST_CREATED',new_playlist));
+						logger.info('Public playlist created : '+new_playlist);
 					})
 					.catch(function(err){
-						logger.error(__('PUBLIC_PLAYLIST_CREATE_ERROR',err));
+						logger.error('Failed to create public playlist :'+err);
 					});
 			});
 		/* Update playlist's number of karas

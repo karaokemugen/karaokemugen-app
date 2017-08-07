@@ -17,23 +17,23 @@ module.exports = {
     init : function(){
         if(module.exports.SYSPATH === null)
         {
-            logger.error(__('SYSPATH_NULL'));
-            process.exit();
+            logger.error('Webapp :: SysPath is null !');
+            process.exit(1);
         }
         if(module.exports.SETTINGS === null)
         {
-            logger.error(__('SETTINGS_NULL'));
-            process.exit();
+            logger.error('Webapp :: Settings are null !');
+            process.exit(1);
         }
         if(module.exports.LISTEN === null)
         {
-            logger.error(__('LISTEN_NULL'));
-            process.exit();
+            logger.error('Webapp :: Listen port is not set !');
+            process.exit(1);
         }
         if(module.exports.DB_INTERFACE === null)
         {
-            logger.error(__('DBI_NULL'));
-            process.exit();
+            logger.error('Webapp :: DB Interface not set !');
+            process.exit(1);
         }
 
         // Création d'un server http pour diffuser l'appli web du launcher
@@ -90,15 +90,14 @@ module.exports = {
 
             module.exports._server.listen(module.exports.LISTEN);
 
-            logger.info(__('WEBAPP_LISTENING'),module.exports.LISTEN);
-            logger.info(__('WEBAPP_READY'));
-
+            logger.info('Webapp is READY and listens on port '+module.exports.LISTEN);
+            
             // trigger test event (call engine deffered method and log response)
             //console.log(module.exports.onTest());
         }
         else
         {
-            logger.error(__('WEBAPP_ALREADY_STARTED'));
+            logger.error('Webapp already started');
         }
     },
 

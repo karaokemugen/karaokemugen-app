@@ -67,8 +67,7 @@ module.exports = {
 			module.exports._io.sockets.on('connection', function (socket) {
 
 				socket.on('clientRegister', function (session_id) {
-					if (session_id !== null) {
-						//logger.info(__('CLIENT_CONNECTED',socket.id+'::'+session_id));
+					if (session_id !== null) {						
 						module.exports._clients[socket.id] = session_id;
 					}
 					if(!module.exports.get_client_session(socket.id,'logged')) {
@@ -82,8 +81,7 @@ module.exports = {
 				});
 				socket.on('disconnect', function () {
 					setTimeout(function () {
-						if(module.exports._clients[socket.id]) {
-							//logger.info(__('CLIENT_DISCONNECTED',socket.id));
+						if(module.exports._clients[socket.id]) {							
 							delete module.exports._clients[socket.id];
 						}
 					}, 10000);
@@ -92,8 +90,7 @@ module.exports = {
 				// Création des évènements d'entrée (actions de l'utilisateur)
 				socket.on('message', function (message) {
 					switch (message) {
-					default:
-						logger.debug(__('CLIENT_SAYS',message));
+					default:						
 						break;
 					}
 				});
@@ -144,16 +141,15 @@ module.exports = {
 					case 'generate_karabd':
 						module.exports.generateKaraDb(socket);
 						break;
-					default:
-						logger.warn(__('UNKNOWN_ACTION',action));
+					default:						
 						break;
 					}
 				});
 			});
 			module.exports._server.listen(module.exports.LISTEN);
-			logger.info(__('DASHBOARD_READY'));
+			logger.info('Dashboard is READY and listens on port '+module.exports.LISTEN);
 		} else {
-			logger.error(__('DASHBOARD_ALREADY_STARTED'));
+			logger.error('Dashboard is already started!');
 		}
 	},
 	open: function(){
@@ -196,7 +192,7 @@ module.exports = {
 			generator.SYSPATH = module.exports.SYSPATH;
 			generator.SETTINGS = module.exports.SETTINGS;
 			generator.onLog = function(type,message) {
-				logger.info(__('DATABASE_GENERATION',message));
+				logger.info('Database generation',message);
 				if(type!='notice')
 					socket.emit('generate_karabd', {event:'addLog',data:message});
 			};

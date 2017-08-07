@@ -92,7 +92,7 @@ module.exports = {
 			//Testing if video file exists and which extension it has.
 
 			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
-				reject(__('VIDEO_NOT_FOUND',videoFile));
+				reject('Video not found : '+videofile);
 			}
 
 			//Testing if the subfile provided is dummy.ass
@@ -151,7 +151,7 @@ module.exports = {
 
 					if (proc.error) {
 						logger.error(proc.error);
-						reject(__('EXTRACTING_ASS_FAILED'));
+						reject('Failed to extract ASS file : '+proc.error);
 					}
 				} else {
 					// No .mkv or .mp4 detected, so we create a .ass from vide.ass
@@ -163,7 +163,7 @@ module.exports = {
 				// Checking if subFile exists. Abort if not.
 				//console.log(pathToSubFiles);
 				if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))) {
-					reject(__('ASS_UNABLE_TO_FIND',subFile));
+					reject('Unable to find ASS file : '+subFile);
 				}
 			}
 			// Parsing the subFile provided, either vide.ass, the associated .ass file or the extracted .ass file from
@@ -351,7 +351,7 @@ module.exports = {
 			var outputFile = outputFolder+'/'+kara_id+'.'+playlist_id+'.ass';
 			fs.writeFile(outputFile, assStringify(script), function(err, rep) {
 				if (err) {
-					reject(__('WRITING_ASS_FAILED',JSON.stringify(err)));
+					reject('Failed to write ASS file : '+err);
 				} else {
 					resolve(outputFile);
 				}

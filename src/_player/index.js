@@ -44,14 +44,14 @@ module.exports = {
 			}
 
 			if(!fs.existsSync(mpvBinary)){
-				logger.warn(__('MPV_NOT_FOUND',module.exports.BINPATH));
+				logger.warn('mpv not found in path : '+module.exports.BINPATH);
 				if (process.platform == 'linux') {
-					logger.warn(__('MPV_LINUX_DL'));
+					logger.warn('You need to have mpv installed first. Use apt-get/yum/etc. depending on y our linux distribution.');
 					process.exit();
 				}
 
-				logger.warn(__('MPV_MANUAL_DL',module.exports.BINPATH));
-				logger.warn(__('MPV_DL'));
+				logger.warn('You can download it manually from http://mpv.io and place it in '+module.exports.BINPATH);
+				logger.warn('Downloading mpv from Shelter...');
 
 				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp');
 				var req = http.request({
@@ -64,7 +64,7 @@ module.exports = {
 					var len = parseInt(res.headers['content-length'], 10);
 
 					console.log();
-					var bar = new ProgressBar(__('DOWNLOADING')+' [:bar] :percent :etas', {
+					var bar = new ProgressBar('Downloading... '+' [:bar] :percent :etas', {
 						complete: '=',
 						incomplete: ' ',
 						width: 40,
@@ -82,24 +82,24 @@ module.exports = {
 								mpvBinary,
 								function(err) {
 									if (err) {
-										logger.error(__('RENAME_MPV_FAILED',err));
+										logger.error('Unable to rename mpv : '+err);
 										reject();
 									} else {
-										logger.info(__('DOWNLOADED_MPV'));
+										logger.info('mpv successfully downloaded');
 										resolve();
 									}
 								});
 						}
 						if (module.exports.SETTINGS.os == 'darwin') {
-							logger.info(__('MPV_EXTRACTING'));
+							logger.info('Extracting mpv from its archive...');
 							extract(module.exports.BINPATH+'/mpvtemp', {dir: module.exports.BINPATH}, function (err) {
 								if (err) {
-									logger.error(__('MPV_EXTRACT_ERROR',err.stringify()));
+									logger.error('Failed to extract mpv : '+err);
 									reject();
 								}
 								fs.unlinkSync(module.exports.BINPATH+'/mpvtemp');
 								fs.chmodSync(module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv', '755');
-								logger.info(__('MPV_EXTRACT_COMPLETE'));
+								logger.info('mpv extraction complete');
 								resolve();
 							});
 						}
@@ -172,13 +172,13 @@ module.exports = {
 				// Returns the position in seconds in the current song
 				module.exports.timeposition = position;
 			});
-			logger.info(__('PLAYER_READY'));
+			logger.info('Player interface is READY');
 		})
 			.catch(function(err) {
-				logger.error(__('PLAYER_NOT_READY',err));
+				logger.error('Player interface is NOT READY :'+err);
 				fs.unlink(module.exports.BINPATH+'/mpvtemp.exe', (err) => {
 					if (err) throw err;
-					logger.debug(__('BINDIR_CLEANED_UP'));
+					logger.debug('Binaries folder cleaned up');
 					process.exit();
 				});
 			});
@@ -186,7 +186,7 @@ module.exports = {
 	play: function(video,subtitle,reference){
 		module.exports.playing = true;
 		if(fs.existsSync(video)){
-			logger.info(__('VIDEO_PLAYING',video));
+			logger.info('Video : '+video);
 			module.exports._ref = reference;
 			module.exports._player.loadFile(video);
 			module.exports._player.volume(70);
@@ -196,19 +196,19 @@ module.exports = {
 				module.exports._playing = true;
 				if(subtitle) {
 					if(fs.existsSync(subtitle)){
-						logger.info(__('SUBTITLE',subtitle));
+						logger.info('Subs :'+subtitle);
 						module.exports._player.addSubtitles(subtitle);//, flag, title, lang)
 					} else {
-						logger.error(__('SUBTITLE_NOT_FOUND',subtitle));
+						logger.error('Subs NOT FOUND : '+subtitle);
 					}
 				} else {
-					logger.info(__('NO_SUBTITLE'));
+					logger.info('Subs not needed');
 				}
 				module.exports._player.loadFile(module.exports.background,'append');
 			},500);
 		} else {
 			module.exports.playing = false;
-			logger.error(__('VIDEO_NOT_FOUND',video));
+			logger.error('Video NOT FOUND : '+video);
 		}
 	},
 	setFullscreen:function(fsState){
@@ -241,6 +241,6 @@ module.exports = {
 	},
 	onEnd:function(ref){
 		// événement émis pour quitter l'application
-		logger.error('_player/index.js :: onEnd not set');
+		logger.error('Player :: onEnd not set');
 	},
 };

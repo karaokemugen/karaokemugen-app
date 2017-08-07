@@ -27,7 +27,7 @@ module.exports = {
 
 		assBuilder.SYSPATH = module.exports.SYSPATH;
 
-		logger.info(__('PLAYLIST_CONTROLLER_READY'));
+		logger.info('Playlist controller is READY');
 	},
 	toggleDisplayNickname:function(displayNickname) {
 		//Get the list of karas currently in playlists and pass it over to the assBuilder
@@ -61,7 +61,7 @@ module.exports = {
 						});
 				})
 				.catch(function(){
-					reject(__('PLAYLIST_UNKNOWN',playlist_id));
+					reject('Unknown playlist ID : '+playlist_id);
 				});
 		});
 	},
@@ -79,7 +79,7 @@ module.exports = {
 						});
 				})
 				.catch(function(){
-					reject(__('PLAYLIST_UNKNOWN',playlist_id));
+					reject('Playlist '+playlist_id+' unknown');
 				});
 		});
 	},
@@ -94,7 +94,7 @@ module.exports = {
 					resolve(playlist_id);
 				})
 				.catch(function () {
-					reject(__('CURRENT_PLAYLIST_NOT_FOUND'));
+					reject('Current playlist not found');
 				});
 		});
 	},
@@ -123,7 +123,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			if (blctype >= 0 && blctype <= 1001) {
 				if ((blctype == 1001 || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric())) {
-					reject(__('BLACKLIST_CRITERIA_TYPE_ERROR',blctype));
+					reject('Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!');
 				} else {
 					module.exports.DB_INTERFACE.addBlacklistCriteria(blctype,blcvalue)
 						.then(function(){
@@ -134,7 +134,7 @@ module.exports = {
 						});
 				}
 			} else {
-				reject(__('BLACKLIST_CRITERIA_TYPE_WRONG',blctype));
+				reject('Blacklist criteria type error : '+blctype+' is incorrect');
 			}
 		});
 	},
@@ -153,7 +153,7 @@ module.exports = {
 						resolve();
 					})
 					.catch(function(err) {
-						reject(__('KARA_UNKNOWN',kara_id,err));
+						reject('Unknown karaoke ID '+kara_id+' : '+err);
 					});
 			});
 			var pIsKaraInWhitelist = new Promise((resolve,reject) => {
@@ -205,7 +205,7 @@ module.exports = {
 	deleteBlacklistCriteria:function(blc_id) {
 		return new Promise(function(resolve,reject){
 			if (S(blc_id).isEmpty()) {
-				reject(__('BLCID_EMPTY'));
+				reject('BLCID is empty');
 			}
 			var pIsBLC = new Promise((resolve,reject) => {
 				module.exports.isBLCriteria(blc_id)
@@ -213,7 +213,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function(err) {
-						reject(__('BLCID_UNKNOWN',blc_id,err));
+						reject('BLCID '+blc_id+' unknown : '+err);
 					});
 			});
 			Promise.all([pIsBLC])
@@ -250,14 +250,14 @@ module.exports = {
 						resolve();
 					})
 					.catch(function(err) {
-						reject(__('BLCID_UNKNOWN',blc_id,err));
+						reject('BLCID '+blc_id+' is unknown : '+err);
 					});
 			});
 			Promise.all([pIsBLC])
 				.then(function(){
 					if (blctype >= 0 && blctype <= 1001) {
 						if ((blctype == 1001 || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric())) {
-							reject(__('BLACKLIST_CRITERIA_TYPE_ERROR',blctype));
+							reject('Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!');
 						} else {
 							module.exports.DB_INTERFACE.editBlacklistCriteria(blc_id,blctype,blcvalue)
 								.then(function(){
@@ -274,7 +274,7 @@ module.exports = {
 								});
 						}
 					} else {
-						reject(__('BLACKLIST_CRITERIA_TYPE_WRONG',blctype));
+						reject('Blacklist criteria type error : '+blctype+' is incorrect');
 					}
 				})
 				.catch(function(err){
@@ -291,7 +291,7 @@ module.exports = {
 	editWhitelistKara:function(wlc_id,reason) {
 		return new Promise(function(resolve,reject){
 			if (S(wlc_id).isEmpty()) {
-				reject(__('WLCID_EMPTY'));
+				reject('WLCID is empty');
 			}
 			var pIsWLC = new Promise((resolve,reject) => {
 				module.exports.isWLC(wlc_id)
@@ -299,7 +299,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function(err) {
-						reject('Whitelist item unknown : '+err);
+						reject('WLCID '+wlc_id+' unknown : '+err);
 					});
 			});
 			Promise.all([pIsWLC])
@@ -329,7 +329,7 @@ module.exports = {
 					resolve(playlist_id);
 				})
 				.catch(function () {
-					reject(__('PUBLIC_PLAYLIST_NOT_FOUND'));
+					reject('Public playlist not found');
 				});
 		});
 	},
@@ -416,7 +416,7 @@ module.exports = {
 		});
 	},
 	/**
-	* @function {Tests if a karaoke is already in ap laylist or not}
+	* @function {Tests if a karaoke is already in a playlist or not}
 	* @param  {number} kara_id     {ID of karaoke to search}
 	* @param  {number} playlist_id {ID of playlist to search into}
 	* @return {boolean} {Promise}
@@ -510,12 +510,12 @@ module.exports = {
 							.then(function(res) {
 								if (res == true) {
 									if (new_curorpubplaylist_id != undefined ) {
-										logger.info(__('DELETE_PLAYLIST',playlist_id,new_curorpubplaylist_id));
+										logger.info('Deleting playlist '+playlist_id+', switching flags to '+new_curorpubplaylist_id);
 										module.exports.setPublicPlaylist(new_curorpubplaylist_id,function() {
 											resolve(true);
 										});
 									} else {
-										reject('Playlist to delete is public but no new playlist ID to transfert flags to was specified');
+										reject('Playlist to delete is public but no new playlist ID to transfer flags to was specified');
 									}
 
 								} else {
@@ -535,7 +535,7 @@ module.exports = {
 											resolve(true);
 										});
 									} else {
-										reject('Playlist to delete is current but no new playlist ID to transfert flags to was specified');
+										reject('Playlist to delete is current but no new playlist ID to transfer flags to was specified');
 									}
 								} else {
 									resolve(true);
@@ -562,7 +562,7 @@ module.exports = {
 						});
 				})
 				.catch(function(){
-					reject(__('PLAYLIST_UNKNOWN',playlist_id));
+					reject('Playlist '+playlist_id+' unknown');
 				});
 		});
 	},
@@ -588,7 +588,7 @@ module.exports = {
 
 
 			if (flag_current == 1 && flag_public == 1) {
-				reject(__('PLAYLIST_PUBLIC_AND_CURRENT_EXCLUSIVE'));
+				reject('A playlist cannot be current and public at the same time !');
 			}
 
 			var pIsPlaylist = new Promise((resolve,reject) => {
@@ -597,7 +597,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('PLAYLIST_UNKNOWN',playlist_id));
+						reject('Playlist '+playlist_id+' unknown');
 					});
 			});
 			var pUnsetFlagPublic = new Promise((resolve,reject) => {
@@ -653,7 +653,7 @@ module.exports = {
 			var lastedit_time = creation_time;
 
 			if (flag_current == 1 && flag_public == 1) {
-				reject(__('PLAYLIST_PUBLIC_AND_CURRENT_EXCLUSIVE'));
+				reject('A playlist cannot be current and public at the same time !');
 			} else {
 				var pUnsetFlagPublic = new Promise((resolve,reject) => {
 					if (flag_public == 1) {
@@ -791,7 +791,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('PLAYLIST_UNKNOWN',playlist_id));
+						reject('Playlist '+playlist_id+' unknown');
 					});
 			});
 			Promise.all([pIsPlaylist])
@@ -826,7 +826,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('PLAYLIST_UNKNOWN',playlist_id));
+						reject('Playlist '+playlist_id+' unknown');
 					});
 			});
 			Promise.all([pIsPlaylist])
@@ -859,7 +859,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('PLAYLIST_UNKNOWN',playlist_id));
+						reject('Playlist '+playlist_id+' unknown');
 					});
 			});
 			Promise.all([pIsPlaylist])
@@ -897,7 +897,7 @@ module.exports = {
 						resolve();
 					})
 					.catch(function() {
-						reject(__('PLAYLIST_UNKNOWN',playlist_id));
+						reject('Playlist '+playlist_id+' unknown');
 					});
 			});
 			Promise.all([pIsPlaylist])
@@ -1075,7 +1075,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('PLAYLIST_UNKNOWN',playlist_id));
+						reject('Playlist '+playlist_id+' unknown');
 					});
 			});
 			var pIsKara = new Promise((resolve,reject) => {
@@ -1084,7 +1084,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('KARA_UNKNOWN',kara_id));
+						reject('Karaoke '+kara_id+' unknown');
 					});
 			});
 			var pIsKaraInPlaylist = new Promise((resolve,reject) => {
@@ -1102,7 +1102,7 @@ module.exports = {
 			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist])
 				.then(function(){
 					if (isKaraInPlaylist) {
-						reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,playlist_id));
+						reject('Karaoke song '+kara_id+' is already in playlist '+playlist_id);
 					} else {
 
 						// Adding karaoke song here
@@ -1246,7 +1246,7 @@ module.exports = {
 	deleteKaraFromPlaylist:function(playlistcontent_id) {
 		return new Promise(function(resolve,reject){
 			if (S(playlistcontent_id).isEmpty()) {
-				reject(__('PLCID_EMPTY'));
+				reject('PLCID empty');
 			}
 			var playlist_id = undefined;
 			var kara_id = undefined;
@@ -1258,7 +1258,7 @@ module.exports = {
 						resolve();
 					})
 					.catch(function(err) {
-						reject(__('PLCID_UNKNOWN',playlistcontent_id,err));
+						reject('PLCID '+playlistcontent_id+' unknown : '+err);
 					});
 			});
 			Promise.all([pGetPLContentInfo])
@@ -1270,7 +1270,7 @@ module.exports = {
 						fs.unlinkSync(assFile);
 						logger.debug('Deleted '+assFile);
 					} else {
-						logger.warn(__('ASS_UNABLE_TO_FIND',assFile));
+						logger.warn('Unable to find ASS file : '+assFile);
 					}
 					module.exports.DB_INTERFACE.removeKaraFromPlaylist(playlistcontent_id)
 						.then(function(){
@@ -1341,7 +1341,7 @@ module.exports = {
 	editKaraFromPlaylist:function(playlistcontent_id,pos,flag_playing) {
 		return new Promise(function(resolve,reject){
 			if (S(playlistcontent_id).isEmpty()) {
-				reject(__('PLCID_EMPTY'));
+				reject('PLCID empty');
 			}
 			var playlist_id = undefined;
 			var pGetPLContentInfo = new Promise((resolve,reject) => {
@@ -1351,7 +1351,7 @@ module.exports = {
 						resolve();
 					})
 					.catch(function(err) {
-						reject(__('PLCID_UNKNOWN',playlistcontent_id,err));
+						reject('PLCID '+playlistcontent_id+' unknown : '+err);
 					});
 			});
 			Promise.all([pGetPLContentInfo])
@@ -1450,7 +1450,7 @@ module.exports = {
 	deleteKaraFromWhitelist:function(wlc_id) {
 		return new Promise(function(resolve,reject){
 			if (S(wlc_id).isEmpty()) {
-				reject(__('WLCID_EMPTY'));
+				reject('WLCID empty');
 			}
 			// Removing karaoke here.
 			module.exports.DB_INTERFACE.removeKaraFromWhitelist(wlc_id)
@@ -1501,7 +1501,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('PLAYLIST_UNKNOWN',playlist_id));
+						reject('Playlist '+playlist_id+' unknown');
 					});
 			});
 			Promise.all([pIsPlaylist])
@@ -1624,8 +1624,8 @@ module.exports = {
 					.then(function() {
 						resolve(true);
 					})
-					.catch(function() {
-						reject(__('PLAYLIST_UNKNOWN',playlist_id));
+					.catch(function(err) {
+						reject('Playlist '+playlist_id+' unknown : '+err);
 					});
 			});
 			// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
@@ -1735,7 +1735,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('PUBLIC_PLAYLIST_NOT_FOUND'));
+						reject('Public playlist not found');
 					});
 			});
 			var pIsKara = new Promise((resolve,reject) => {
@@ -1744,7 +1744,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function(err) {
-						reject(__('KARA_UNKNOWN',kara_id,err));
+						reject('Karaoke '+kara_id+' unknown : '+err);
 					});
 			});
 			Promise.all([pIsKara,pWhichPublicPlaylist])
@@ -1774,7 +1774,7 @@ module.exports = {
 					Promise.all([pIsKaraInPlaylist,pIsKaraBlacklisted])
 						.then(function() {							
 							if (isKaraInPlaylist) {
-								reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,publicPlaylistID));
+								reject('Karaoke song '+kara_id+' is already in playlist '+publicPlaylistID);
 							} else if(isKaraBlacklisted) {
 								reject('Karaoke '+kara_id+' is blacklisted');
 							} else {
@@ -1921,7 +1921,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('CURRENT_PLAYLIST_NOT_FOUND'));
+						reject('Current playlist not found');
 					});
 			});
 			var pIsKara = new Promise((resolve,reject) => {
@@ -1930,7 +1930,7 @@ module.exports = {
 						resolve(true);
 					})
 					.catch(function() {
-						reject(__('KARA_UNKNOWN',kara_id));
+						reject('Karaoke '+kara_id+' unknown');
 					});
 			});
 			Promise.all([pIsKara,pWhichCurrentPlaylist])
@@ -1960,7 +1960,7 @@ module.exports = {
 					Promise.all([pIsKaraInPlaylist,pIsKaraBlacklisted])
 						.then(function() {							
 							if (isKaraInPlaylist) {
-								reject(__('KARA_ALREADY_IN_PLAYLIST',kara_id,publicPlaylistID));
+								reject('Karaoke song '+kara_id+' is already in playlist '+publicPlaylistID);
 							} else if(isKaraBlacklisted) {
 								reject('Karaoke '+kara_id+' is blacklisted');
 							} else {

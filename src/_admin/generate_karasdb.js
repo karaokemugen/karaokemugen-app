@@ -14,7 +14,7 @@ module.exports = {
 	SYSPATH: null,
 	SETTINGS: null,
 	run: function() {
-		module.exports.onLog('success', __('GDB_START'));
+		module.exports.onLog('success', 'Starting database generation');
 		return new Promise(function(resolve, reject) {
 			if (module.exports.SYSPATH == null) {
 				module.exports.onLog('error', 'SYSPATH is not defined');
@@ -61,17 +61,17 @@ module.exports = {
 
 			module.exports.db = new sqlite3.Database(karas_dbfile, function(err, rep) {
 				if (err) {
-					module.exports.onLog('error', __('GDB_OPEN_KARASDB_ERROR'));
+					module.exports.onLog('error', 'Failed opening karaoke database');
 					reject(err);
 				}
 			});
 			module.exports.userdb = new sqlite3.Database(karas_userdbfile, function(err, rep) {
 				if (err) {
-					module.exports.onLog('error', __('GDB_OPEN_USERDB_ERROR'));
+					module.exports.onLog('error', 'Error opening user database : '+err);
 					reject(err);
 				}
 			});
-			module.exports.onLog('success', __('GDB_KARASDB_CREATED'));
+			module.exports.onLog('success', 'Karaoke database created');
 
 			/**
 			 * Creating tables and views
@@ -84,11 +84,10 @@ module.exports = {
 					var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
 					module.exports.db.exec(sqlCreateKarasDB, function(err, rep) {
 						if (err) {
-							module.exports.onLog('error', __('GDB_TABLES_CREATION_ERROR'));
-							module.exports.onLog('error', err);
+							module.exports.onLog('error', 'Error creating database tables : '+err);						
 							reject(err);
 						} else {
-							module.exports.onLog('success', __('GDB_TABLES_CREATED'));
+							module.exports.onLog('success', 'Database tables created');
 							resolve();
 						}
 					});
@@ -102,12 +101,10 @@ module.exports = {
 							var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
 							module.exports.db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
 								if (err) {
-									module.exports.onLog('error', __('GDB_VIEW_CREATION_ERROR'));
-									module.exports.onLog('error', err);
-									module.exports.onLog('error', sqlCreateKarasDBViewAll);
+									module.exports.onLog('error', 'Error creating views : '+err);								
 									reject(err);
 								} else {
-									module.exports.onLog('success', __('GDB_VIEW_CREATED'));
+									module.exports.onLog('success', 'Views created';
 									resolve();
 								}
 							});
@@ -141,7 +138,7 @@ module.exports = {
 							karafiles.splice(indexToRemove, 1);
 						}
 					}
-					module.exports.onLog('success', __('GDB_KARADIR_READ'));
+					module.exports.onLog('success', 'Karaoke data folder read';
 					resolve();
 				});
 				Promise.all([pCreateKaraFiles])
@@ -164,7 +161,7 @@ module.exports = {
 								if (err) {
 									reject(err);
 								}
-								module.exports.onLog('success', __('GDB_KARACOUNT',karas.length));
+								module.exports.onLog('success', 'Karaoke count : '+karas.length);
 								resolve();
 							});
 						});
@@ -217,7 +214,7 @@ module.exports = {
 											if (err) {
 												reject(err);
 											}
-											module.exports.onLog('success', __('GDB_SERIESCOUNT',series.length,karas_series.length));
+											module.exports.onLog('success', 'Series count : '+series.length+' ('+karas_series.length+' links)');
 											resolve();
 										});
 									});
@@ -274,10 +271,10 @@ module.exports = {
 															});
 														}
 													});
-													module.exports.onLog('success', __('GDB_ALTNAMES_FOUND'));
+													module.exports.onLog('success', 'Alternative series name file found');
 												} else {
 													doUpdateSeriesAltNames = false;
-													module.exports.onLog('warning', __('GDB_ALTNAMES_NOT_FOUND'));
+													module.exports.onLog('warning', 'No alternative series name file found, ignoring');
 												}
 												resolve();
 											});
@@ -316,7 +313,7 @@ module.exports = {
 											if (err) {
 												reject(err);
 											}
-											module.exports.onLog('success', __('GDB_TAGCOUNT',tags.length,karas_tags.length));
+											module.exports.onLog('success', 'Tags count : '+tags.length+' ('+karas_tags.length+' links)');
 											resolve();
 										});
 									});
@@ -467,7 +464,7 @@ module.exports = {
 								}
 							});
 						});
-						module.exports.onLog('info', __('GDB_FILLED_KARA_TABLE'));
+						module.exports.onLog('info', 'Karaokes table filled');
 
 						sqlInsertTags.forEach(function(data){
 							stmt_InsertTags.run(data, function (err) {
@@ -476,7 +473,7 @@ module.exports = {
 								}
 							});
 						});
-						module.exports.onLog('success', __('GDB_FILLED_TAG_TABLE'));
+						module.exports.onLog('success', 'Tags table filled');
 
 						sqlInsertKarasTags.forEach(function(data){
 							stmt_InsertKarasTags.run(data, function (err) {
@@ -485,7 +482,7 @@ module.exports = {
 								}
 							});
 						});
-						module.exports.onLog('success', __('GDB_LINKED_KARA_TO_TAGS'));
+						module.exports.onLog('success', 'Karaokes linked to tags');
 
 						sqlInsertSeries.forEach(function(data){
 							stmt_InsertSeries.run(data, function (err) {
@@ -494,7 +491,7 @@ module.exports = {
 								}
 							});
 						});
-						module.exports.onLog('success', __('GDB_FILLED_SERIES_TABLE'));
+						module.exports.onLog('success', 'Series table filled');
 
 						if (doUpdateSeriesAltNames) {
 							sqlUpdateSeriesAltNames.forEach(function(data){
@@ -504,7 +501,7 @@ module.exports = {
 									}
 								});
 							});
-							module.exports.onLog('success', __('GDB_UPDATED_ALTNAMES'));
+							module.exports.onLog('success', 'Alternative series names updated');
 						}
 
 						sqlInsertKarasSeries.forEach(function(data){
@@ -514,8 +511,8 @@ module.exports = {
 								}
 							});
 						});
-						module.exports.onLog('success', __('GDB_LINKED_KARA_TO_SERIES'));
-						module.exports.onLog('success', __('GDB_FINISHED_DATABASE_GENERATION'));
+						module.exports.onLog('success', 'Karaokes linked to series');
+						module.exports.onLog('success', 'Database generation successful!');
 						module.exports.db.run('commit', function(err) {
 							if (err) {
 								reject(err);
@@ -564,7 +561,7 @@ module.exports = {
 			*/
 			function run_userdb_integrity_checks() {
 				return new Promise(function(resolve,reject){
-					module.exports.onLog('info', __('GDB_INTEGRITY_CHECK_START'));
+					module.exports.onLog('info', 'Running user database integrity checks');
 					var AllKaras = [];
 					var PlaylistKaras = [];
 					var WhitelistKaras = [];
@@ -579,7 +576,7 @@ module.exports = {
 						module.exports.db.all(sqlGetAllKaras,
 							function (err, playlist) {
 								if (err) {
-									reject(__('DB_GET_ALL_KARAS_ERROR',err));
+									reject('Error getting all karaokes : '+err);
 								} else {
 									AllKaras = playlist;
 									resolve();
@@ -591,7 +588,7 @@ module.exports = {
 						module.exports.userdb.all(sqlGetPlaylistKaras,
 							function (err, playlist) {
 								if (err) {
-									reject(__('DB_PLAYLIST_KARAS_ERROR',err));
+									reject('Error getting all karaokes from playlists : '+err);
 								} else {
 									if (playlist) {
 										PlaylistKaras = playlist;
@@ -608,7 +605,7 @@ module.exports = {
 						module.exports.userdb.all(sqlGetWhitelistKaras,
 							function (err, playlist) {
 								if (err) {
-									reject(__('DB_WHITELIST_KARAS_ERROR',err));
+									reject('Error reading whitelist : '+err);
 								} else {
 									if (playlist) {
 										WhitelistKaras = playlist;
@@ -625,7 +622,7 @@ module.exports = {
 						module.exports.userdb.all(sqlGetBlacklistKaras,
 							function (err, playlist) {
 								if (err) {
-									reject(__('DB_BLACKLIST_KARAS_ERROR',err));
+									reject('Error reading blacklist : '+err);
 								} else {
 									if (playlist) {
 										BlacklistKaras = playlist;
@@ -642,7 +639,7 @@ module.exports = {
 						module.exports.userdb.all(sqlGetRatingKaras,
 							function (err, playlist) {
 								if (err) {
-									reject(__('DB_RATINGS_KARAS_ERROR',err));
+									reject('Error reading ratings : '+err);
 								} else {
 									if (playlist) {
 										RatingKaras = playlist;
@@ -659,7 +656,7 @@ module.exports = {
 						module.exports.userdb.all(sqlGetViewcountKaras,
 							function (err, playlist) {
 								if (err) {
-									reject(__('DB_VIEWCOUNTS_KARAS_ERROR',err));
+									reject('Error reading viewcounts : '+err);
 								} else {
 									if (playlist) {
 										WhitelistKaras = playlist;
@@ -694,7 +691,7 @@ module.exports = {
 									//If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM whitelist WHERE kid = \'' + WLKara.kid + '\';';
-										module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_WL_DELETED',WLKara.kid));
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from whitelist');
 										UpdateNeeded = true;
 									}
 								});
@@ -717,7 +714,7 @@ module.exports = {
 									// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM blacklist WHERE kid = \'' + BLKara.kid + '\';';
-										module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_BL_DELETED',BLKara.kid));
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from blacklist');
 										UpdateNeeded = true;
 									}
 								});
@@ -739,7 +736,7 @@ module.exports = {
 									// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM rating WHERE kid = \'' + RKara.kid + '\';';
-										module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_RATING_DELETED',RKara.kid));
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from ratings');
 										UpdateNeeded = true;
 									}
 								});
@@ -761,7 +758,7 @@ module.exports = {
 									// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM viewcount WHERE kid = \'' + VKara.kid + '\';';
-										module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_VIEWCOUNT_DELETED',VKara.kid));
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from viewcounts');
 										UpdateNeeded = true;
 									}
 								});
@@ -787,7 +784,7 @@ module.exports = {
 									if (!KaraFound) {
 
 										sqlUpdateUserDB += 'DELETE FROM playlist_content WHERE kid = \'' + PLKara.kid + '\';';
-										module.exports.onLog('warn', __('GDB_INTEGRITY_CHECK_PLAYLIST_DELETED',PLKara.kid));
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+PLKara.kid+' from playlists');
 										UpdateNeeded = true;
 									}
 								});
@@ -796,22 +793,21 @@ module.exports = {
 								sqlUpdateUserDB += 'COMMIT;';
 								module.exports.userdb.exec(sqlUpdateUserDB, function(err, rep) {
 									if (err) {
-										module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_UPDATE_ERROR',err));
-										module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_ERROR',err));
+										module.exports.onLog('error', 'Error updating database : '+err);										
 										reject();
 									} else {
-										module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_UPDATED'));
+										module.exports.onLog('success', 'Database updated due to integrity checks');										
 										resolve();
 									}
 								});
 							} else {
-								module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_UNNEEDED'));
-								module.exports.onLog('success', __('GDB_INTEGRITY_CHECK_COMPLETE'));
+								module.exports.onLog('success', 'No update needed to user database');
+								module.exports.onLog('success', 'Integrity checks complete!');
 								resolve();
 							}
 						})
 						.catch(function(err) {
-							module.exports.onLog('error', __('GDB_INTEGRITY_CHECK_ERROR',err));
+							module.exports.onLog('error', 'Error during integrity checks : '+err);
 							reject(err);
 						});
 				});
@@ -822,7 +818,7 @@ module.exports = {
 					var videolength = 0;
 					probe(videosdir + '/' + videofile, function(err, videodata) {
 						if (err) {
-							module.exports.onLog('error', __('GDB_PROBE_ERROR',videofile,err));
+							module.exports.onLog('error', 'Video '+videofile+' probe error : '+err);
 							reject(err);
 						} else {
 							videolength = Math.floor(videodata.format.duration);
@@ -1129,7 +1125,7 @@ module.exports = {
 									kara['videolength'] = karadata.videoduration;
 								}
 							} else {
-								module.exports.onLog('warning', __('GDB_VIDEO_FILE_NOT_FOUND',kara['videofile']));
+								module.exports.onLog('warning', 'Video file not found : '+kara['videofile']);
 								kara['gain'] = 0;
 								kara['size'] = 0;
 								kara['videolength'] = 0;
@@ -1150,7 +1146,7 @@ module.exports = {
 									karas.push(kara);
 									fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err, rep) {
 										if (err) {
-											module.exports.onLog('error', __('GDB_WRITING_KARA_ERROR'));
+											module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
 											reject(err);
 										}
 										resolve();
