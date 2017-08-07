@@ -1,48 +1,58 @@
 
-    <div id="header">
+    <div id="header" class="header">
         <button class="btn btn-default btn-dark pull-right">
             <i class="glyphicon glyphicon-off"></i></button>
-        <div class="pull-left btn-group" style="height: 100%;width: 129px;">
-            <input type="checkbox" name="kara_state" class="btn btn-default pull-left"
+        <div class="pull-left btn-group" style="width: 129px;">
+            <input type="checkbox"  name="EnginePrivateMode" class="btn btn-default pull-left"
 				data-on-text="<i class='glyphicon glyphicon-eye-close'></i> Privé"
 				data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large">
-            <input type="checkbox" name="kara_panel" class="btn btn-default pull-left"
+            <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-left"
 				data-on-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
 				data-off-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large">
         </div>
-        <div class="pull-left btn-group" style="height:100%;">
-            <button id="play" value="play" class="btn btn-primary"><i class="glyphicon glyphicon-play"></i></button>
-            <button id="stop" class="btn btn-danger"><i class="glyphicon glyphicon-stop"></i></button>
+        <div class="pull-left btn-group">
+            <button action="command" value="stopNow" id="stopNow" class="btn btn-danger-low" style="width: 47px;"> <i class="glyphicon glyphicon-ban-circle"></i></button>
+            <button action="command" value="stopAfter" id="stopAfter" value="play" class="btn btn-danger"><i class="glyphicon glyphicon-stop"></i></button>
         </div>
-
-        <img src="https://lab.shelter.moe/uploads/-/system/project/avatar/18/tmugen2.jpg" alt="logo kara" height="100%" class="pull-right">
-        <strike class="pull-right" style="margin-right: 19px;    line-height: 64px;    font-size: 22px;">TOYUNDA</strike>
-
+        <div id="centerBtns" class="header">
+            <div class="btn-group">
+                <button action="command" value="prev" id="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
+                <button action="command" value="play" id="play" class="btn btn-primary"><i class="glyphicon glyphicon-play"></i></button>
+                <button action="command" value="skip" id="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
+            </div>
+        </div>
+        <div class="pull-right btn-group hidden"  >
+            <img src="https://lab.shelter.moe/uploads/-/system/project/avatar/18/tmugen2.jpg" alt="logo kara" class="pull-right">
+            <strike class="pull-right" style="margin-right: 19px;    line-height: 64px;    font-size: 22px;">TOYUNDA</strike>
+        </div>
     </div>
-    <div id="underHeader" class="container-fluid">
+    <div id="progressBar" class="underHeader">
+        <div id="karaInfo" idKara="-1"> Kara information </div>
+        <div id="progressBarColor" style="width:0%;"></div>
+    </div>
+    <div id="underHeader" class="underHeader container-fluid">
         <div class="playlist-main row" id="playlist">
             <div class="panel col-lg-6 col-xs-6">
-
                 <div class="panel-heading">
-                    <div class="pull-left col-lg-6 col-xs-6">
+                    <div class="col-lg-6 col-xs-6">
                         <select type="playlist_select" num="1" class="select2 form-control">
                         </select>
                     </div>
                     <div class="col-lg-6 col-xs-6">
                         <div class="pull-right">
-                            <button class="btn btn-default ">
+                            <button class="btn btn-lg btn-default ">
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
-                            <button class="btn btn-default ">
+                            <button class="btn btn-lg btn-default ">
                                 <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
-                            <button class="btn btn-default ">
+                            <button class="btn btn-lg btn-default ">
                                 <i class="glyphicon glyphicon-eye-close"></i>
                             </button>
                         </div>
                     </div>
                 </div>
-
+ 
                 <ul id="playlist1" class="list-group">
                   <li class="list-group-item"></li>
                 </ul>
@@ -51,28 +61,26 @@
             <div class="panel col-lg-6 col-xs-6">
                 <div class="panel-heading">
                     <div class="col-lg-6 col-xs-6">
-                        <select type="playlist_select" num="2" class="select2">
+                        <select type="playlist_select" num="2" class="select2 form-control form-control-lg">
                         </select>
                     </div>
                     <div class="col-lg-6 col-xs-6">
                         <div class="pull-right">
-                            <button class="btn btn-default ">
+                            <button class="btn btn-lg btn-default ">
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
-                            <button class="btn btn-default ">
+                            <button class="btn btn-lg btn-default ">
                                 <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
-                            <button class="btn btn-default ">
+                            <button class="btn  btn-lg btn-default ">
                                 <i class="glyphicon glyphicon-eye-close"></i>
                             </button>
                         </div>
                     </div>
-                </div>
-			
+                </div>		
                 <ul id="playlist2" class="list-group">
                   <li class="list-group-item"></li>
                 </ul>
-               
 
             </div>
         </div>
@@ -87,37 +95,51 @@
                         </div>
                     </div>
                 </div>
-
-                <form class="form-horizontal">
-                    <br/>
+                <br/>
+                <form class="form-horizontal" id="status">
                     <div class="form-group">
-                        <label for="password" class="col-xs-4 control-label">Changer mot de passe admin</label>
+                        <label for="EngineAllowNicknameChange" class="col-xs-4 control-label">Toujours au-dessus</label>
                         <div class="col-xs-6">
-                            <input type="password" class="form-control" id="password" placeholder="Mot de passe">
+                            <input action="command" switch="onoff" type="checkbox" name="toggleAlwaysOnTop">
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="EngineAllowNicknameChange" class="col-xs-4 control-label">Plein écran</label>
+                        <div class="col-xs-6">
+                            <input action="command" switch="onoff" type="checkbox" name="toggleFullscreen">
+                        </div>
+                    </div>
+                </form>
+                <form class="form-horizontal" id="settings">
+                    <hr>
+                    <div class="form-group">
+                        <label for="AdminPassword" class="col-xs-4 control-label">Changer mot de passe admin</label>
+                        <div class="col-xs-6">
+                            <input type="password" class="form-control" name="AdminPassword" placeholder="Mot de passe">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="kara_username_show" class="col-xs-4 control-label">Afficher le demandeur du kara</label>
+                        <label for="EngineDisplayNickname" class="col-xs-4 control-label">Afficher le demandeur du kara</label>
                         <div class="col-xs-6">
-                            <input switch="onoff" type="checkbox" id="kara_username_show">
+                            <input switch="onoff" type="checkbox" name="EngineDisplayNickname">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="kara_username_change" class="col-xs-4 control-label">Autoriser changement de pseudo</label>
+                        <label for="EngineAllowNicknameChange" class="col-xs-4 control-label">Autoriser changement de pseudo</label>
                         <div class="col-xs-6">
-                            <input switch="onoff" type="checkbox" id="kara_username_change">
+                            <input switch="onoff" type="checkbox" name="EngineAllowNicknameChange">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="song_per_user" class="col-xs-4 control-label">Chansons par personne</label>
+                        <label for="EngineSongsPerPerson" class="col-xs-4 control-label">Chansons par personne</label>
                         <div class="col-xs-6">
-                            <input type="number" class="form-control" id="song_per_user" placeholder="1000">
+                            <input type="number" class="form-control" name="EngineSongsPerPerson" placeholder="1000">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="screen_number" class="col-xs-4 control-label">Numéro d'écran d'affichage</label>
+                        <label for="PlayerScreen" class="col-xs-4 control-label">Numéro d'écran d'affichage</label>
                         <div class="col-xs-6">
-                            <select type="number" class="form-control" id="screen_number">
+                            <select type="number" class="form-control" name="PlayerScreen">
                                 <option value="1" default> 1 </option>
                             </select>
                         </div>

@@ -1,4 +1,7 @@
 /* css admin3 */
+html {
+	height: 100%;
+}
 body {
 	background-color: #1E2124;
 	color: #eee;
@@ -6,35 +9,59 @@ body {
 	margin: 0;
 }
 
-#header {
+.btn-default {
+	background-color: #e8e8e8;
+}
+
+.header {
 	position: fixed;
 	z-index: 1337;
 	background-color: #1E2124;
 	top: 0;
-	height: 70px;
+	height: 85px;
 	width: 100%;
 	border-bottom: 3px solid #9e9e9e;
 }
 
-#header button {
+.header button {
 	height: 100%;
-	width: 70px;
+	width: 85px;
 	padding: 0px;
 	margin: 0px;
-	font-size: 1.17em;
+	font-size: 135%;
 }
-#header .btn-danger {
+
+.header > .btn-group, #header img {
+	height: 100%
+}
+
+.btn-danger {
 	background-color: #a55250;
 	border-color: #a55250;
 }
+.btn-danger:hover {
+	background-color: #994240;
+	border-color: #994240;
+}
 
-#underHeader {
-	margin-top: 70px;
+.btn-danger:focus:active {
+	background-color: #893230;
+	border-color: #893230;
+}
+
+.underHeader {
+	position: relative;	
+    top: 85px;
 }
 
 div.bootstrap-switch-large{
-    width: 100%;
+	width: 100%;
+	height: 50%;
 	background-color: #9e9e9e; ;
+}
+
+.bootstrap-switch-large:hover, .bootstrap-switch-large:active:hover, .bootstrap-switch-large:focus, .bootstrap-switch-large:visited {
+	background-color: #9e9e9e;
 }
 
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
@@ -56,15 +83,15 @@ div.bootstrap-switch-large{
 	background-color: #9e9e9e; ;
 }
 div.bootstrap-switch-container {
-    height: 31px;
+    height: 100%;
 	border-right: 1px solid #eee;
+}
+
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-secondary {
+	line-height: 2.2;
 }
 .btn, .bootstrap-switch, .bootstrap-switch-secondary, .bootstrap-switch-container > span  {
 	border-radius: 0px !important;
-}
-
-.btn-default {
-	background-color: #e8e8e8;
 }
 
 .btn-dark, .btn-dark:focus {
@@ -97,6 +124,13 @@ select.form-control {
 	width: 50px;
 }
 
+
+ @media only screen and (min-width: 768px) {
+	.loginbox
+	{
+	height: 120px; / height: 50%;
+	}
+		
 
 
 

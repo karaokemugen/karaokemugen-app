@@ -1,10 +1,9 @@
-
 #manage .bootstrap-switch-container > span {
 	line-height: 2.25;
 }
 
 .form-horizontal {
-	padding: 20px 50px;
+	padding: 0px 40px;
 }
 
 .panel {
@@ -21,10 +20,14 @@
 	border-bottom: 15px solid #1E2124;
 	display: flex;
 }
-
 	
 .select2 {
 	width: 100% !important;
+	height: 100%;
+}
+.select2-container--bootstrap .select2-selection--single {
+	height: 100%;
+	line-height: 2.3;
 }
 .select2-container--bootstrap .select2-selection--single, .select2-dropdown {
 	border-radius: 0 !important;
@@ -61,3 +64,66 @@
 	display: block;
 }
 
+#centerBtns {
+	background-color: transparent;
+	width: 255px;
+    left: calc(50% - 255*.5px);
+}
+#centerBtns > .btn-group {
+	width:100%;
+	display: flex;
+ 	justify-content: center;
+ 	align-items: center; 
+}
+.btn-stop {
+	height: 100%;
+}
+.btn-stop > button {
+	height: 50%;
+	display: block;
+}
+
+.btn-danger-low, .btn-danger-low:focus {
+	background-color: #7d0318;
+	border: 0px solid #7d0318;
+	color: white;
+}
+
+.btn-danger-low:hover {
+	background-color: #6d0308;
+	color: white;
+}
+
+.btn-danger-low:active {
+	background-color: #5d0038;
+	color: white;
+}
+
+
+#progressBar {
+	height: 20px;
+	width: 100%;
+	top: 85px;
+	position: fixed;
+	z-index: 1337;
+	border-bottom: solid 2px #9e9e9e;
+	background-color: #1E2124;
+}
+#progressBarColor {
+	background-color: #337ab7;
+	z-index: 9;
+	height: 100%;
+    position: absolute;
+    top: 0;
+}
+#karaInfo {
+	text-align: center;
+	z-index: 10;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.underHeader {
+	top: 100px;
+}
