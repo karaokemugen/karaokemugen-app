@@ -645,28 +645,29 @@ module.exports = {
 	* @function {getPlaylistInfo}
 	* @param  {number} playlist_id {Playlist ID}
 	* @return {Object} {Playlist object}
-	* Selects playlist info from playlist table. Returns the info in a callback.
+	* Selects playlist info from playlist table. Returns the info in a promise.
 	*/
-	getPlaylistInfo:function(playlist_id,seenFromUser,callback) {
-		//TODO : transformer en promesse
-		var sqlGetPlaylistInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_info.sql'),'utf-8');
-		if (seenFromUser) {
-			sqlGetPlaylistInfo += ' AND flag_visible = 1';
-		}
-		module.exports._user_db_handler.get(sqlGetPlaylistInfo,
+	getPlaylistInfo:function(playlist_id,seenFromUser) {
+		return new Promise(function(resolve,reject){
+			var sqlGetPlaylistInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_info.sql'),'utf-8');
+			if (seenFromUser) {
+				sqlGetPlaylistInfo += ' AND flag_visible = 1';
+			}
+			module.exports._user_db_handler.get(sqlGetPlaylistInfo,
 			{
 				$playlist_id: playlist_id
 			}, function (err, row) {
 				if (err) {
-					callback(null,'Failed to fetch playlist '+playlist_id+' information : '+err);
+					reject('Failed to fetch playlist '+playlist_id+' information : '+err);
 				} else {
 					if (row) {
-						callback(row);
+						resolve(row);
 					} else {
-						callback();
+						reject('Playlist '+playlist_id+' not found');
 					}
 				}
 			});
+		});
 	},
 	/**
 	* @function {getPlaylists}
@@ -793,23 +794,24 @@ module.exports = {
 	* @param  {number} kara_id {Karaoke ID to check for existence}
 	* @return {type} {Returns true or false}
 	*/
-	isKara:function(kara_id,callback) {
-		//TODO : transformer en promesse
-		var sqlIsKara = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara.sql'),'utf-8');
-		module.exports._db_handler.get(sqlIsKara,
-			{
-				$kara_id: kara_id
-			}, function (err, row) {
-				if (err) {
-					callback(null,'Failed to test if karaoke '+kara_id+' exists : '+err);
-				} else {
-					if (row) {
-						callback(true);
+	isKara:function(kara_id) {
+		return new Promise(function(resolve,reject){
+			var sqlIsKara = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara.sql'),'utf-8');
+			module.exports._db_handler.get(sqlIsKara,
+				{
+					$kara_id: kara_id
+				}, function (err, row) {
+					if (err) {
+						reject('Failed to test if karaoke '+kara_id+' exists : '+err);
 					} else {
-						callback(false);
+						if (row) {
+							resolve(true);
+						} else {
+							resolve(false);
+						}
 					}
-				}
 			});
+		});
 	},
 	/**
 	* @function {is blacklist criteria?}
@@ -938,60 +940,62 @@ module.exports = {
 	* @param  {number} playlist_id {Playlist ID to check for existence}
 	* @return {type} {Returns true or false}
 	*/
-	isPlaylist:function(playlist_id,seenFromUser,callback) {
-		//TODO : transformer en promesse
-		var sqlIsPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist.sql'),'utf-8');
-		if (seenFromUser) {
-			sqlIsPlaylist += 'AND flag_visible = 1';
-		}
-		module.exports._user_db_handler.get(sqlIsPlaylist,
+	isPlaylist:function(playlist_id,seenFromUser) {
+		return new Promise(function(resolve,reject){
+			var sqlIsPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist.sql'),'utf-8');
+			if (seenFromUser) {
+				sqlIsPlaylist += 'AND flag_visible = 1';
+			}
+			module.exports._user_db_handler.get(sqlIsPlaylist,
 			{
 				$playlist_id: playlist_id
 			}, function (err, row) {
 				if (err) {
-					callback(null,'Failed to test if playlist '+playlist_id+' exists : '+err);
+					reject('Failed to test if playlist '+playlist_id+' exists : '+err);
 				} else {
 					if (row) {
-						callback(true);
+						resolve(true);
 					} else {
-						callback(false);
+						resolve(false);
 					}
 				}
 			});
+		});
 	},
-	setCurrentPlaylist:function(playlist_id,callback) {
-		//TODO : transformer en promesse
-		var sqlSetCurrentPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_current.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlSetCurrentPlaylist,
+	setCurrentPlaylist:function(playlist_id) {
+		return new Promise(function(resolve,reject){
+			var sqlSetCurrentPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_current.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlSetCurrentPlaylist,
 			{
 				$playlist_id: playlist_id
 			}, function (err, rep) {
 				if (err) {
-					callback(null,'Failed to set current flag on playlist '+playlist_id+' : '+err);
+					reject('Failed to set current flag on playlist '+playlist_id+' : '+err);
 				} else {
-					callback(rep);
+					resolve(rep);
 				}
 			});
+		});
 	},
 	/**
 	* @function {setVisiblePlaylist}
 	* @param  {number} playlist_id {ID of playlist to make visible}
 	* @return {string} {error}
 	*/
-	setVisiblePlaylist:function(playlist_id,callback) {
-		//TODO : transformer en promesse
-		var sqlSetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_visible.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlSetVisiblePlaylist,
+	setVisiblePlaylist:function(playlist_id) {
+		return new Promise(function(resolve,reject){
+			var sqlSetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_visible.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlSetVisiblePlaylist,
 			{
 				$playlist_id: playlist_id
 			}, function (err, rep) {
 				if (err) {
-					callback(null,'Failed to set visible flag on playlist '+playlist_id+' : '+err);
+					reject('Failed to set visible flag on playlist '+playlist_id+' : '+err);
 				} else {
-					callback(rep);
+					resolve(rep);
 				}
-
 			});
+		});
 	},
 	/**
 	* @function {Sets Flag Playing on a PL content}
@@ -1053,34 +1057,35 @@ module.exports = {
 	* @param  {number} playlist_id {ID of playlist to make invisible}
 	* @return {string} {error}
 	*/
-	unsetVisiblePlaylist:function(playlist_id,callback) {
-		//TODO : transformer en promesse
-		var sqlUnsetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_visible.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlUnsetVisiblePlaylist,
+	unsetVisiblePlaylist:function(playlist_id) {
+		return new Promise(function(resolve,reject){
+			var sqlUnsetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_visible.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlUnsetVisiblePlaylist,
 			{
 				$playlist_id: playlist_id
 			}, function (err, rep) {
 				if (err) {
-					callback(null,'Failed to unset visible flag on playlist '+playlist_id+' : '+err);
+					reject('Failed to unset visible flag on playlist '+playlist_id+' : '+err);
 				} else {
-					callback(rep);
+					resolve(rep);
 				}
-
 			});
+		});
 	},
-	setPublicPlaylist:function(playlist_id,callback) {
-		//TODO : transformer en promesse
-		var sqlSetPublicPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_public.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlSetPublicPlaylist,
+	setPublicPlaylist:function(playlist_id) {
+		return new Promise(function(resolve,reject){
+			var sqlSetPublicPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_public.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlSetPublicPlaylist,
 			{
 				$playlist_id: playlist_id
 			}, function (err, rep) {
 				if (err) {
-					callback(null,'Failed to set public flag on playlist '+playlist_id+' : '+err);
+					reject('Failed to set public flag on playlist '+playlist_id+' : '+err);
 				} else {
-					callback(rep);
+					resolve(rep);
 				}
 			});
+		});
 	},
 	unsetPublicAllPlaylists:function() {
 		return new Promise(function(resolve,reject){
@@ -1091,7 +1096,7 @@ module.exports = {
 			var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
 			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err, rep) {
 				if (err) {
-					callback(null,'Failed to unset public flag on all playlists : '+err);
+					reject('Failed to unset public flag on all playlists : '+err);
 				} else {
 					resolve();
 				}
@@ -1127,7 +1132,7 @@ module.exports = {
 			var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
 			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err, rep) {
 				if (err) {
-					callback(null,'Failed to unset current flag on all playlists : '+err);
+					reject('Failed to unset current flag on all playlists : '+err);
 				} else {
 					resolve();
 				}
@@ -1147,8 +1152,8 @@ module.exports = {
 				}
 			});
 	},
-	deletePlaylist:function(playlist_id,callback) {
-		//TODO : transformer en promesse
+	deletePlaylist:function(playlist_id) {
+		return new Promise(function(resolve,reject){
 		var sqlDeletePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_playlist.sql'),'utf-8');
 		module.exports._user_db_handler.run(sqlDeletePlaylist,
 			{
@@ -1156,9 +1161,11 @@ module.exports = {
 			}, function(err) {
 				if (err) {
 					logger.error('Failed to delete playlist '+playlist_id+' : '+err);
+					reject()
 				}
-				callback(true);
+				resolve();
 			});
+		});
 	},
 	/**
 	* @function {Edit Playlist query function}
@@ -1171,19 +1178,19 @@ module.exports = {
 	* @param  {number} flag_public   {Is the playlist the public one?}
 	* @return {boolean} {true if created succesfully, false otherwise}
 	*/
-	editPlaylist:function(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public,callback) {
-		//TODO : transformer en promesse
-		if(!module.exports.isReady()) {
-			logger.error('Database interface is not ready yet!');
-			return false;
-		}
+	editPlaylist:function(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('Database interface is not ready yet!');
+				return false;
+			}
 
-		// Création de la playlist
-		// Prend en entrée name, NORM_name, creation_time, lastedit_time, flag_visible, flag_current, flag_public
-		// Retourne l'ID de la playlist nouvellement crée.
+			// Création de la playlist
+			// Prend en entrée name, NORM_name, creation_time, lastedit_time, flag_visible, flag_current, flag_public
+			// Retourne l'ID de la playlist nouvellement crée.
 
-		var sqlEditPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_playlist.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlEditPlaylist,
+			var sqlEditPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlEditPlaylist,
 			{
 				$playlist_id: playlist_id,
 				$name: name,
@@ -1195,29 +1202,23 @@ module.exports = {
 			}, function (err, rep) {
 				if (err) {
 					logger.error('Failed to edit playlist '+playlist_id+' : '+err);
-					callback({
-						error:true,
-						error_msg:err
-					});
+					reject(err);					
 				} else {
-					callback({
-						error:false
-					});
+					resolve();
 				}
 			});
+		});
 	},
-	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,callback) {
-		//TODO : transformer en promesse
-		if(!module.exports.isReady()) {
-			logger.error('Database interface is not ready yet!');
-			return false;
-		}
+	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('Database interface is not ready yet!');
+				return false;
+			}
 
-		// Création de la playlist
-		// Prend en entrée name, NORM_name, creation_time, lastedit_time, flag_visible, flag_current, flag_public
-		// Retourne l'ID de la playlist nouvellement crée.
-		var sqlCreatePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/create_playlist.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlCreatePlaylist,
+			// Creating playlist
+			var sqlCreatePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/create_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlCreatePlaylist,
 			{
 				$name: name,
 				$NORM_name: NORM_name,
@@ -1229,18 +1230,12 @@ module.exports = {
 			}, function (err, rep) {
 				if (err) {
 					logger.error('Failed to create playlist '+name+' : '+err);
-					callback({
-						id:0,
-						error:true,
-						error_msg:err
-					});
+					reject(err);
 				} else {
-					callback({
-						id:this.lastID,
-						error:false
-					});
+					resolve(this.lastID);
 				}
 			});
+		});
 	},
 	editWhitelistKara:function(wlc_id,reason) {
 		return new Promise(function(resolve,reject){

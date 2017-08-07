@@ -341,12 +341,16 @@ module.exports = {
 	isPlaylist:function(playlist_id,seenFromUser) {
 		//Une requête toute bête pour voir si une Playlist existe
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isPlaylist(playlist_id,seenFromUser,function(res){
+			module.exports.DB_INTERFACE.isPlaylist(playlist_id,seenFromUser)
+			.then(function(res){
 				if (res == true) {
 					resolve(true);
 				} else {
 					reject(false);
 				}
+			})
+			.catch(function(err){
+				reject();
 			});
 		});
 	},
@@ -358,13 +362,17 @@ module.exports = {
 	isKara:function(kara_id) {
 		//Une requête toute bête pour voir si une Playlist existe
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isKara(kara_id,function(res){
+			module.exports.DB_INTERFACE.isKara(kara_id)
+			.then(function(res){
 				if (res == true) {
 					resolve(true);
 				} else {
 					reject(false);
 				}
-			});
+			})
+			.catch(function(err){
+				reject(err);
+			})
 		});
 	},
 	/**
@@ -448,15 +456,28 @@ module.exports = {
 				});
 		});
 	},
-	setCurrentPlaylist:function(playlist_id,callback) {
+	setCurrentPlaylist:function(playlist_id) {
 		//TODO : Tester si la playlist existe
-		//TODO : Transformer en promesse
-		module.exports.unsetCurrentAllPlaylists(function(){
-			module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id,function(res){
-				logger.debug('Setting playlist '+playlist_id+' current flag to ON');
-				module.exports.updatePlaylistLastEditTime(playlist_id).then(function(){
-					callback();
-				});
+		return new Promise(function(resolve,reject){
+			module.exports.unsetCurrentAllPlaylists()
+			.then(function(){
+				module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id)
+				.then(function(res){
+					logger.debug('Setting playlist '+playlist_id+' current flag to ON');
+					module.exports.updatePlaylistLastEditTime(playlist_id)
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					});
+				})
+				.catch(function(err){
+					reject(err);
+				})
+			})
+			.catch(function(err){
+				reject(err);
 			});
 		});
 	},
@@ -467,37 +488,65 @@ module.exports = {
 	setVisiblePlaylist:function(playlist_id) {
 		//TODO : Tester si la playlist existe
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.setVisiblePlaylist(playlist_id,function(res){
+			module.exports.DB_INTERFACE.setVisiblePlaylist(playlist_id)
+			.then(function(res){
 				logger.info('Setting playlist '+playlist_id+' visible flag to ON');
-				module.exports.updatePlaylistLastEditTime(playlist_id).then(function(){
+				module.exports.updatePlaylistLastEditTime(playlist_id)
+				.then(function(){
 					resolve();
-				});
+				})
+				.catch(function(err){
+					reject(err);
+				})
+			})
+			.catch(function(err){
+				reject(err);
 			});
 		});
 	},
-	unsetVisiblePlaylist:function(playlist_id,callback) {
+	unsetVisiblePlaylist:function(playlist_id) {
 		//TODO : Tester si la playlist existe
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.unsetVisiblePlaylist(playlist_id,function(res){
+			module.exports.DB_INTERFACE.unsetVisiblePlaylist(playlist_id)
+			.then(function(res){
 				logger.debug('Setting playlist '+playlist_id+' visible flag to OFF');
-				module.exports.updatePlaylistLastEditTime(playlist_id).then(function(){
-					callback();
+				module.exports.updatePlaylistLastEditTime(playlist_id)
+				.then(function(){
+					resolve();					
+				})
+				.catch(function(err){
+					reject(err);
 				});
+			})
+			.catch(function(err){
+				reject(err);
 			});
 		});
 	},
-	setPublicPlaylist:function(playlist_id,callback) {
+	setPublicPlaylist:function(playlist_id){
 		//TODO : Tester si la playlist existe
-		//TODO : Transformer en promesse
-		module.exports.unsetPublicAllPlaylists()
+		return new Promise(function(resolve,reject){
+			module.exports.unsetPublicAllPlaylists()
 			.then(function(){
-				module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id, function(res){
+				module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id)
+				.then(function(res){
 					logger.debug('Setting playlist '+playlist_id+' public flag to ON');
-					module.exports.updatePlaylistLastEditTime(playlist_id).then(function(){
-						callback();
+					module.exports.updatePlaylistLastEditTime(playlist_id)
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject();
 					});
+				})
+				.catch(function(err){
+					reject(err);
 				});
+			})
+			.catch(function(err){
+				reject(err);
 			});
+		});
 	},
 	deletePlaylist:function(playlist_id,new_curorpubplaylist_id) {
 		// Suppression d'une playlist. Si la playlist a un flag_public ou flag_current, il faut
@@ -511,9 +560,13 @@ module.exports = {
 								if (res == true) {
 									if (new_curorpubplaylist_id != undefined ) {
 										logger.info('Deleting playlist '+playlist_id+', switching flags to '+new_curorpubplaylist_id);
-										module.exports.setPublicPlaylist(new_curorpubplaylist_id,function() {
+										module.exports.setPublicPlaylist(new_curorpubplaylist_id)
+										.then(function(){
 											resolve(true);
-										});
+										})
+										.catchn(function(err){
+											reject(err);
+										})
 									} else {
 										reject('Playlist to delete is public but no new playlist ID to transfer flags to was specified');
 									}
@@ -531,9 +584,13 @@ module.exports = {
 							.then(function(res){
 								if (res == true) {
 									if (new_curorpubplaylist_id != undefined ) {
-										module.exports.setCurrentPlaylist(new_curorpubplaylist_id,function() {
+										module.exports.setCurrentPlaylist(new_curorpubplaylist_id)
+										.then(function() {
 											resolve(true);
-										});
+										})
+										.catch(function(err){
+											reject(err);
+										})
 									} else {
 										reject('Playlist to delete is current but no new playlist ID to transfer flags to was specified');
 									}
@@ -548,13 +605,17 @@ module.exports = {
 					Promise.all([pIsPublic,pIsCurrent])
 						.then(function() {
 							module.exports.emptyPlaylist(playlist_id);
-							module.exports.DB_INTERFACE.deletePlaylist(playlist_id,function(res) {
+							module.exports.DB_INTERFACE.deletePlaylist(playlist_id)
+							.then(function(res) {
 								var values =
-							{
-								playlist_id: playlist_id,
-								new_curorpubplaylist_id: new_curorpubplaylist_id
-							};
+								{
+									playlist_id: playlist_id,
+									new_curorpubplaylist_id: new_curorpubplaylist_id
+								};
 								resolve(values);
+							})
+							.catch(function(err){
+								reject(err);
 							});
 						})
 						.catch(function(err) {
@@ -630,12 +691,16 @@ module.exports = {
 
 			Promise.all([pIsPlaylist,pUnsetFlagCurrent,pUnsetFlagPublic])
 				.then(function() {
-					module.exports.DB_INTERFACE.editPlaylist(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public,function(callback){
-						resolve(callback);
-					});
+					module.exports.DB_INTERFACE.editPlaylist(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public)
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						reject(err);
+					})
 				})
-				.catch(function() {
-					reject();
+				.catch(function(err) {
+					reject(err);
 				});
 		});
 	},
@@ -646,7 +711,7 @@ module.exports = {
 		// Si flag_public ou flag_current = true il faut désactiver le flag sur toutes les autres playlists
 
 		// on retourne une promise
-		// cela implique qu'on ne gère plus le callback ici mais que tout se fait du coté de l'appelant
+		
 		return new Promise(function(resolve,reject){
 			var NORM_name = S(name).latinise().s;
 			var creation_time = timestamp.now();
@@ -685,8 +750,12 @@ module.exports = {
 
 				Promise.all([pUnsetFlagCurrent,pUnsetFlagPublic])
 					.then(function() {
-						module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public,function(new_id_playlist){
+						module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public)
+						.then(function(new_id_playlist){
 							resolve(new_id_playlist.id);
+						})
+						.catch(function(err){
+							reject(err);
 						});
 					})
 					.catch(function(err) {
@@ -714,14 +783,18 @@ module.exports = {
 	getPlaylistInfo:function(playlist_id,seenFromUser) {
 		// TODO : Tester si la playlist existe
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,seenFromUser,function(playlist, err){
+			module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,seenFromUser)
+			.then(function(playlist, err){
 				if (err) {
 					logger.error(err);
 					reject(err);
 				} else {
 					resolve(playlist);
 				}
-			});
+			})
+			.catch(function(err){
+				reject(err);
+			})
 		});
 	},
 	/**
