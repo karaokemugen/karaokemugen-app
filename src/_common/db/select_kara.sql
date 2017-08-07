@@ -16,6 +16,7 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.author AS author,
       ak.NORM_author AS NORM_author,
       ak.misc AS misc,
+	  ak.viewcount AS viewcount,
       ak.subfile AS subfile,
       ak.videofile AS videofile,
 	  ak.videolength AS duration
