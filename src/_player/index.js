@@ -159,7 +159,8 @@ module.exports = {
 				mpvOptions
 			);
 
-
+			module.exports._player.observeProperty('sub-text',13);
+			
 			module.exports._player.on('statuschange',function(status){
 				// si on affiche une image il faut considérer que c'est la pause d'après chanson
 				if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i)) {

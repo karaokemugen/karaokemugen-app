@@ -704,7 +704,9 @@ module.exports = {
 							   'toggleFullscreen',
 							   'toggleAlwaysOnTop',
 							   'seek',
-							   'reset'
+							   'reset',
+							   'mute',
+							   'unmute'
 						]
 					);
 				req.getValidationResult().then(function(result) {
