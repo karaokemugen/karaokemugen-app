@@ -900,6 +900,7 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onPlayerStatus = function(){
 			return new Promise(function(resolve,reject){
+					logger.debug(module.exports._services.player.status);
 					resolve({
 						private: module.exports._states.private,
 						status: module.exports._states.status,
@@ -910,6 +911,7 @@ module.exports = {
 						mutestatus: module.exports._services.player.mutestatus,
 						playerstatus: module.exports._services.player.playerstatus,
 						currentlyplaying: module.exports._states.currentlyPlayingKara,
+						subtext: module.exports._services.player.subtext,
 					});
 			});
 		};

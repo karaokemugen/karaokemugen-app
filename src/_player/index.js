@@ -23,6 +23,8 @@ module.exports = {
 	timeposition:0,
 	duration:0,
 	mutestatus:false,
+	subtext:'',
+	status:{},
 	init:function(){
 		var mpvBinary;
 		var mpvHTTP;
@@ -163,6 +165,7 @@ module.exports = {
 			
 			module.exports._player.on('statuschange',function(status){
 				// si on affiche une image il faut considérer que c'est la pause d'après chanson
+				module.exports.status = status;
 				if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i)) {
 					// immediate switch to Playing = False to avoid multiple trigger
 					module.exports.playing = false;
@@ -173,7 +176,8 @@ module.exports = {
 					module.exports._ref = null;
 				}
 				module.exports.mutestatus = status.mute;
-				module.exports.duration = status.duration;				
+				module.exports.duration = status.duration;
+				module.exports.subtext = status['sub-text'];				
 			});
 			module.exports._player.on('paused',function(){
 				module.exports.playing = false;
