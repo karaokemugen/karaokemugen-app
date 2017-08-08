@@ -94,16 +94,14 @@ module.exports = {
 	play:function(){
 		if(module.exports._states.status !== 'play') {
 			// passe en mode lecture (le gestionnaire de playlist vas travailler à nouveau)
+			module.exports._states.status = 'play';
+			module.exports._broadcastStates();
 			if (module.exports._states.status === 'pause') {
-				module.exports._states.status = 'play';
 				module.exports._services.player.resume();
-				module.exports._broadcastStates();		
 			}
 			if (module.exports._states.status === 'stop') {
-				module.exports._states.status = 'play';
 				module.exports.tryToReadKaraInPlaylist();
-				module.exports._broadcastStates();		
-			}							
+			}			
 		} else if(module.exports._states.status === 'play') {
 			// resume current play if needed
 			module.exports._services.player.resume();
@@ -130,6 +128,18 @@ module.exports = {
 		module.exports._services.player.pause();
 		module.exports._states.status = 'pause';
 		module.exports._broadcastStates();
+	},
+	mute:function(){
+		module.exports._services.player.mute();
+	},
+	unmute:function(){
+		module.exports._services.player.unmute();
+	},
+	seek:function(delta){
+		module.exports._services.player.seek(delta);
+	},
+	reset:function(){
+		module.exports._services.player.reset();
 	},
 	/**
 	 * @function {pause}
@@ -248,7 +258,7 @@ module.exports = {
 	* @function
 	* Try to read next karaoke in playlist.
 	*/
-	tryToReadKaraInPlaylist:function(){		
+	tryToReadKaraInPlaylist:function(){
 		module.exports._services.playlist_controller.current_playlist().then(function(playlist){
 			if(module.exports._states.playlist != playlist) {
 				module.exports._states.playlist = playlist;
@@ -269,8 +279,8 @@ module.exports = {
 					//Add a view to the viewcount
 					module.exports.addViewcount(kara.id_kara,kara.kid);
 				})
-				.catch(function(err){
-					logger.info('Cannot find a song to play : '+err);					
+				.catch(function(){
+					logger.info('Cannot find a song to play');
 					module.exports._broadcastStates();
 				});
 		}
@@ -833,7 +843,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlayerCommand = function(command){
+		module.exports._services.apiserver.onPlayerCommand = function(command,options){
 			return new Promise(function(resolve,reject){
 				// play - starts off kara
 				// pause - pauses player in mid song / resending the command unpauses
@@ -868,6 +878,19 @@ module.exports = {
 					case 'toggleAlwaysOnTop':
 						module.exports.toggleOnTop();
 						break;
+					case 'mute':
+						module.exports.mute();
+						break;
+					case 'unmute':
+						module.exports.unmute();
+						break;
+					case 'seek':
+						if (!options) options = 0;
+						module.exports.seek(options)
+						break;
+					case 'reset':
+						module.exports.reset();
+						break;
 				}
 				resolve();
 			});
@@ -877,10 +900,11 @@ module.exports = {
 					resolve({
 						private: module.exports._states.private,
 						status: module.exports._states.status,
-						playerstatus: module.exports._services.player.playerstatus,
 						ontop: module.exports._states.ontop,
 						fullscreen: module.exports._states.fullscreen,
 						timeposition: module.exports._services.player.timeposition,				
+						duration: module.exports._services.player.duration,
+						mutestatus: module.exports._services.player.mutestatus,
 						currentlyplaying: module.exports._states.currentlyPlayingKara,
 					});
 			});
