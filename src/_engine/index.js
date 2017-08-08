@@ -92,20 +92,23 @@ module.exports = {
 	 * @function {play}
 	 */
 	play:function(){
-		if(module.exports._states.status !== 'play') {
+				if(module.exports._states.status !== 'play') {
 			// passe en mode lecture (le gestionnaire de playlist vas travailler à nouveau)
-			module.exports._states.status = 'play';
-			module.exports._broadcastStates();
 			if (module.exports._states.status === 'pause') {
+				module.exports._states.status = 'play';
 				module.exports._services.player.resume();
+				module.exports._broadcastStates();		
 			}
 			if (module.exports._states.status === 'stop') {
+				module.exports._states.status = 'play';
 				module.exports.tryToReadKaraInPlaylist();
-			}			
+				module.exports._broadcastStates();		
+			}							
 		} else if(module.exports._states.status === 'play') {
 			// resume current play if needed
 			module.exports._services.player.resume();
 		}
+
 	},
 	/**
 	* @function {stop}
@@ -905,6 +908,7 @@ module.exports = {
 						timeposition: module.exports._services.player.timeposition,				
 						duration: module.exports._services.player.duration,
 						mutestatus: module.exports._services.player.mutestatus,
+						playerstatus: module.exports._services.player.playerstatus,
 						currentlyplaying: module.exports._states.currentlyPlayingKara,
 					});
 			});
