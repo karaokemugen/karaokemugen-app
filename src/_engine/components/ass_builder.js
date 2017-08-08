@@ -13,6 +13,64 @@ require('moment-duration-format');
 const ffmpegPath = require('ffmpeg-downloader').path;
 
 module.exports = {
+	getLyrics:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile){
+		return new Promise(function(resolve,reject){
+			var lyrics = [];
+			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
+				reject('Video not found : '+videofile);
+			}
+
+			//Testing if the subfile provided is dummy.ass
+			//In which case we will work with either an empty ass file or
+			// the one provided by the mkv or mp4 file.
+			if (subFile == 'dummy.ass') {
+				if (S(videoFile.toLowerCase()).contains('.mkv') || S(videoFile.toLowerCase()).contains('.mp4')) {
+			
+					// Using ffmpeg
+
+					var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile), outputFolder+'/kara_extract.'+uuid+'.ass'], { encoding : 'utf8' }),
+						ffmpegData = [],
+						errData = [],
+						exitCode = null,
+						start = Date.now();
+
+					pathToSubFiles = outputFolder;
+					subFile = 'kara_extract.'+uuid+'.ass';
+
+					if (proc.error) {
+						logger.error(proc.error);
+						reject('Failed to extract ASS file : '+proc.error);
+					}
+				} else {
+					// No .mkv or .mp4 detected, so we create a .ass from vide.ass
+					// Videofile is most probably a hardsubbed video.
+					subFile = 'vide.ass';
+					pathToSubFiles = 'src/_player/assets/';
+				}
+			} else {
+				// Checking if subFile exists. Abort if not.
+				//console.log(pathToSubFiles);
+				if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))) {
+					reject('Unable to find ASS file : '+subFile);
+				}
+			}
+			// Parsing the subFile provided, either vide.ass, the associated .ass file or the extracted .ass file from
+			// a .mkv/.mp4
+			var assdata = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile), 'utf-8');
+			var script = assParser(assdata, { comments: true });
+			script.forEach(function(ASSSection,index){
+				if (ASSSection.section == 'Events') {
+					DialogueSection = index;
+				}
+			});
+			script[DialogueSection].body.forEach(function(param,index){
+					if (param.key == 'Dialogue') {
+						lyrics.push(param.value.Text.replace(/\{(?:.|\n)*?\}/gm, ''));
+					}
+			});
+			resolve(lyrics);
+		})
+	},
 	toggleDisplayNickname:function(karalist,displayNickname,tempFolder){
 		return new Promise(function(resolve,reject){		
 			// If DisplayNickname is true, then try to add the requested by bit to the ASS again if it's not there already

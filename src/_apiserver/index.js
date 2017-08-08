@@ -982,6 +982,19 @@ module.exports = {
 				});
 			});
 
+		routerPublic.route('/karas/:id_kara([0-9]+)/lyrics')
+			.get(function(req,res){
+				var id_kara = req.params.id_kara;
+				module.exports.onKaraSingleLyrics(id_kara)
+					.then(function(kara){
+						if (kara == []) res.statusCode = 404;
+						res.json(kara);
+					})
+					.catch(function(err){
+						res.statusCode = 500;
+						res.json(err);
+					});
+			})
 		routerPublic.route('/playlists/current')
 			.get(function(req,res){
 				// Get current Playlist
@@ -1099,4 +1112,5 @@ module.exports = {
 	onPlayerCommand:function(){},
 	onPlayerStatus:function(){},
 	onStats:function(){},
+	onKaraSingleLyrics:function(){},
 };

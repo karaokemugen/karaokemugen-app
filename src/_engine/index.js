@@ -926,6 +926,18 @@ module.exports = {
 						});
 			});
 		};
+		module.exports._services.apiserver.onKaraSingleLyrics = function(kara_id){
+			return new Promise(function(resolve,reject){
+					module.exports._services.playlist_controller.getKaraLyrics(kara_id)
+						.then(function(lyrics){
+							resolve(lyrics);
+						})
+						.catch(function(err){
+							console.log(err);
+							reject(err);
+						});
+			});
+		};
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();

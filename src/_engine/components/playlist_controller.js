@@ -198,6 +198,48 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get karaoke lyrics}
+	* @param  {number} id_kara {Karaoke ID}
+	* @return {string} {List of lyrics}
+	*/
+	getKaraLyrics:function(kara_id) {
+		return new Promise(function(resolve,reject){
+			var pIsKara = new Promise((resolve,reject) => {
+				module.exports.isKara(kara_id)
+					.then(function() {
+						resolve(true);
+					})
+					.catch(function() {
+						reject('Karaoke '+kara_id+' unknown');
+					});
+			});
+			Promise.all([pIsKara])
+				.then(function(){									
+					module.exports.getKara(kara_id)
+						.then(function(kara) {							
+							assBuilder.getLyrics(
+								module.exports.SETTINGS.PathSubs,
+								module.exports.SETTINGS.PathVideos,
+								kara.subfile,
+								kara.videofile
+								)
+								.then(function(lyrics) {
+									resolve(lyrics);
+								})
+								.catch(function(err){
+									reject(err);
+								});
+						})
+						.catch(function(err){
+							reject(err);
+						});
+				})
+				.catch(function(err){
+					reject(err);
+				})
+		});
+	},
+	/**
 	* @function {Delete a blacklist criteria}
 	* @param  {number} blc_id {Blacklist Criteria ID}
 	* @return {promise} Promise
