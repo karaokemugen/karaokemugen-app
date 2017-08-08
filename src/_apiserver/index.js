@@ -417,6 +417,21 @@ module.exports = {
 						notEmpty: true,
 						isBoolean: true,
 					},
+					'EngineAllowViewBlacklist': {
+						in: 'body',
+						notEmpty: true,
+						isBoolean: true,
+					},
+					'EngineAllowViewWhitelist': {
+						in: 'body',
+						notEmpty: true,
+						isBoolean: true,
+					},
+					'EngineAllowViewBlacklistCriterias': {
+						in: 'body',
+						notEmpty: true,
+						isBoolean: true,
+					},
 					'EngineDisplayNickname': {
 						in: 'body',
 						notEmpty: true,
@@ -462,6 +477,9 @@ module.exports = {
 				req.getValidationResult().then(function(result) {
 					if (result.isEmpty()) {
 						req.sanitize('EngineAllowNicknameChange').toBoolean();
+						req.sanitize('EngineAllowViewWhitelist').toBoolean();
+						req.sanitize('EngineAllowViewBlacklist').toBoolean();
+						req.sanitize('EngineAllowViewBlacklistCriterias').toBoolean();
 						req.sanitize('EngineDisplayNickname').toBoolean();
 						req.sanitize('PlayerFullscreen').toBoolean();
 						req.sanitize('PlayerNoBar').toBoolean();
@@ -502,8 +520,7 @@ module.exports = {
 						res.json(err);
 					});
 			})
-			.post(function(req,res){
-				// Add Kara to the playlist currently used depending on mode
+			.post(function(req,res){				
 				req.check({
 					'id_kara': {
 						in: 'body',
