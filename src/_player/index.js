@@ -21,6 +21,8 @@ module.exports = {
 	BINPATH:null,
 	SETTINGS:null,
 	timeposition:0,
+	duration:0,
+	mutestatus:false,
 	init:function(){
 		var mpvBinary;
 		var mpvHTTP;
@@ -169,6 +171,8 @@ module.exports = {
 					module.exports.onEnd(module.exports._ref);
 					module.exports._ref = null;
 				}
+				module.exports.mutestatus = status.mute;
+				module.exports.duration = status.duration;				
 			});
 			module.exports._player.on('paused',function(){
 				module.exports.playing = false;
@@ -248,6 +252,18 @@ module.exports = {
 	resume: function(){
 		module.exports._player.play();
 		module.exports.playerstatus = 'play'
+	},
+	seek: function(delta) {
+		module.exports._player.seek(delta);
+	},
+	reset: function() {
+		module.exports._player.goToPosition(0);
+	},
+	mute: function() {
+		module.exports._player.mute();
+	},
+	unmute: function() {
+		module.exports._player.unmute();
 	},
 	onEnd:function(ref){
 		// événement émis pour quitter l'application

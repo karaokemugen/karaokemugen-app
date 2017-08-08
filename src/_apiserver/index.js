@@ -702,12 +702,14 @@ module.exports = {
 							   'skip',
 							   'prev',
 							   'toggleFullscreen',
-							   'toggleAlwaysOnTop'
+							   'toggleAlwaysOnTop',
+							   'seek',
+							   'reset'
 						]
 					);
 				req.getValidationResult().then(function(result) {
 					if (result.isEmpty()) {
-						module.exports.onPlayerCommand(req.body.command)
+						module.exports.onPlayerCommand(req.body.command,req.body.options)
 							.then(function(){
 								res.json('Command '+req.body.command+' executed');
 							})
