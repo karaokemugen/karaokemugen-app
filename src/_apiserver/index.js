@@ -264,7 +264,6 @@ module.exports = {
 							}
 							module.exports.onPlaylistSingleDelete(playlist_id,req.body.newplaylist_id)
 								.then(function(){
-									res.statusCode = 201;
 									var newplaylist;
 									if (req.body.newplaylist_id !== undefined) {
 										newplaylist = ', switched flags to playlist '+req.body.newplaylist_id;
