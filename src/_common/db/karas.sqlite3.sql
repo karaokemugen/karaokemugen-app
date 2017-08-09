@@ -1,45 +1,45 @@
 CREATE TABLE tag (
     pk_id_tag   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    tagtype     INTEGER,
-    name        TEXT,
-    NORM_name   TEXT COLLATE NOCASE
+    tagtype     INTEGER NOT NULL,
+    name        TEXT NOT NULL,
+    NORM_name   TEXT NOT NULL COLLATE NOCASE
 );
 
 CREATE TABLE serie (
     pk_id_serie    INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    name           TEXT,
-    NORM_name      TEXT COLLATE NOCASE,
+    name           TEXT NOT NULL,
+    NORM_name      TEXT NOT NULL COLLATE NOCASE,
     altname        TEXT,
     NORM_altname   TEXT COLLATE NOCASE
 );
 
 CREATE TABLE kara_tag (
     pk_id_kara_tag   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    fk_id_kara       INTEGER REFERENCES kara,
-    fk_id_tag        INTEGER REFERENCES tag
+    fk_id_kara       INTEGER NOT NULL REFERENCES kara,
+    fk_id_tag        INTEGER NOT NULL REFERENCES tag
 );
 
 CREATE TABLE kara_serie (
     pk_id_kara_serie   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    fk_id_kara         INTEGER REFERENCES kara,
-    fk_id_serie        INTEGER REFERENCES serie
+    fk_id_kara         INTEGER NOT NULL REFERENCES kara,
+    fk_id_serie        INTEGER NOT NULL REFERENCES serie
 );
 
 CREATE TABLE kara (
     pk_id_kara           INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    kid                  TEXT UNIQUE,
+    kid                  TEXT UNIQUE NOT NULL,
     title                TEXT,
     NORM_title           TEXT COLLATE NOCASE,
     year                 TEXT,
-    songorder            INTEGER,
-    videofile            TEXT,
-    subfile              TEXT,
+    songorder            INTEGER NOT NULL,
+    videofile            TEXT NOT NULL,
+    subfile              TEXT NOT NULL,
     videolength          INTEGER,
-    gain                 REAL,
-    date_added           INTEGER,
-    date_last_modified   INTEGER,
+    gain                 REAL DEFAULT (0),
+    date_added           INTEGER NOT NULL,
+    date_last_modified   INTEGER NOT NULL,
     rating               REAL,
-    viewcount            INTEGER
+    viewcount            INTEGER DEFAULT (0)
 );
 
 CREATE INDEX index_kara_tag_id_tag ON kara_tag (fk_id_tag );
