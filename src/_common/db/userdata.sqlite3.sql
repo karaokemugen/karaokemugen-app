@@ -1,13 +1,14 @@
 BEGIN TRANSACTION;
+
 CREATE TABLE viewcount (
-    pk_id_viewcount INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    pk_id_viewcount INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara      INTEGER NOT NULL,
     kid   TEXT,
     datetime        INTEGER
 );
 
 CREATE TABLE rating (
-    pk_id_rating INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    pk_id_rating INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara   INTEGER NOT NULL,
     kid   TEXT,
     rating       INTEGER NOT NULL,
@@ -15,7 +16,7 @@ CREATE TABLE rating (
 );
 
 CREATE TABLE playlist (
-    pk_id_playlist INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    pk_id_playlist INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     name           TEXT    NOT NULL,
     NORM_name      TEXT COLLATE NOCASE   NOT NULL,
     num_karas      INTEGER NOT NULL,
@@ -28,7 +29,7 @@ CREATE TABLE playlist (
 );
 
 CREATE TABLE playlist_content (
-    pk_idplcontent INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    pk_idplcontent INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_playlist INTEGER NOT NULL,
     fk_id_kara     INTEGER NOT NULL,
     kid   TEXT,
@@ -50,13 +51,13 @@ CREATE TABLE blacklist (
 );
 
 CREATE TABLE blacklist_criteria (
-    pk_id_blcriteria INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    pk_id_blcriteria INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     blcriteria_type  INTEGER NOT NULL,
     blcriteria_value TEXT NOT NULL
 );
 
 CREATE TABLE whitelist (
-    pk_id_whitelist INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+    pk_id_whitelist INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara      INTEGER NOT NULL,
     kid   TEXT,
     wl_date         INTEGER,
