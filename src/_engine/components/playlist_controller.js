@@ -2434,7 +2434,7 @@ module.exports = {
 						if(kara) {
 							// mise à jour du pointeur de lecture
 							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
 							});
 							resolve();
 						} else {
@@ -2475,7 +2475,7 @@ module.exports = {
 						if(kara) {
 							// mise à jour du pointeur de lecture
 							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
 							});
 							resolve();
 						} else {
@@ -2542,7 +2542,7 @@ module.exports = {
 						if(update_playing_kara) {
 							// mise à jour du pointeur de lecture
 							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
 							});
 						}
 

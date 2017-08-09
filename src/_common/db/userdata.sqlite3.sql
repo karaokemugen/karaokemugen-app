@@ -29,7 +29,7 @@ CREATE TABLE playlist (
 );
 
 CREATE TABLE playlist_content (
-    pk_idplcontent    INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+    pk_id_plcontent    INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_playlist    INTEGER NOT NULL REFERENCES playlist,
     fk_id_kara        INTEGER NOT NULL,
     kid               TEXT,
