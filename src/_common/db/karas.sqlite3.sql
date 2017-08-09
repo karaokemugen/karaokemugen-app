@@ -1,45 +1,45 @@
 CREATE TABLE tag (
-    pk_id_tag INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    tagtype   INTEGER,
-    name  TEXT,
-    NORM_name TEXT COLLATE NOCASE
+    pk_id_tag   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+    tagtype     INTEGER,
+    name        TEXT,
+    NORM_name   TEXT COLLATE NOCASE
 );
 
 CREATE TABLE series (
-    pk_id_series  INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    name  TEXT,
-    NORM_name TEXT COLLATE NOCASE,
-    altname   TEXT,
-    NORM_altname  TEXT COLLATE NOCASE
+    pk_id_series   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+    name           TEXT,
+    NORM_name      TEXT COLLATE NOCASE,
+    altname        TEXT,
+    NORM_altname   TEXT COLLATE NOCASE
 );
 
 CREATE TABLE kara_tag (
-    pk_id_kara_tag    INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    fk_id_kara    INTEGER,
-    fk_id_tag INTEGER
+    pk_id_kara_tag   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+    fk_id_kara       INTEGER REFERENCES kara,
+    fk_id_tag        INTEGER REFERENCES tag
 );
 
 CREATE TABLE kara_series (
-    pk_id_kara_series INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    fk_id_kara    INTEGER,
-    fk_id_series  INTEGER
+    pk_id_kara_series   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+    fk_id_kara          INTEGER REFERENCES kara,
+    fk_id_series        INTEGER REFERENCES series
 );
 
 CREATE TABLE kara (
-    pk_id_kara INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    kid   TEXT UNIQUE,
-    title TEXT,
-    NORM_title    TEXT COLLATE NOCASE,
-    year  TEXT,
-    songorder INTEGER,
-    videofile TEXT,
-    subfile   TEXT,
-    videolength   INTEGER,
-    gain          REAL,
-    date_added    INTEGER,
-    date_last_modified    INTEGER,
-    rating    REAL,
-    viewcount INTEGER
+    pk_id_kara           INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+    kid                  TEXT UNIQUE,
+    title                TEXT,
+    NORM_title           TEXT COLLATE NOCASE,
+    year                 TEXT,
+    songorder            INTEGER,
+    videofile            TEXT,
+    subfile              TEXT,
+    videolength          INTEGER,
+    gain                 REAL,
+    date_added           INTEGER,
+    date_last_modified   INTEGER,
+    rating               REAL,
+    viewcount            INTEGER
 );
 
 CREATE INDEX index_kara_tag_id_tag ON kara_tag (fk_id_tag );
