@@ -1,5 +1,5 @@
 SELECT wl.pk_id_whitelist AS id_whitelist, 
-      ak.PK_id_kara AS id_kara,
+      ak.pk_id_kara AS id_kara,
       ak.kid AS kid,
       ak.title AS title,
       ak.NORM_title AS NORM_title,
@@ -24,5 +24,5 @@ SELECT wl.pk_id_whitelist AS id_whitelist,
       ak.subfile AS subfile,
       ak.videofile AS videofile
  FROM karasdb.all_karas AS ak 
-INNER JOIN whitelist AS wl ON wl.fk_id_kara = ak.PK_id_kara
+INNER JOIN whitelist AS wl ON wl.fk_id_kara = ak.pk_id_kara
 ORDER BY ak.language, ak.series IS NULL, ak.series, ak.songtype, ak.songorder, ak.title

@@ -447,11 +447,11 @@ module.exports = {
 						/*
 						* Building SQL queries for insertion
 						*/
-						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain, videolength ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength);');
-						var stmt_InsertSeries = module.exports.db.prepare('INSERT INTO series(PK_id_series,name,NORM_name) VALUES( $id_series, $serie, $serienorm );');
-						var stmt_InsertTags = module.exports.db.prepare('INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );');
-						var stmt_InsertKarasTags = module.exports.db.prepare('INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES( $id_tag, $id_kara );');
-						var stmt_InsertKarasSeries = module.exports.db.prepare('INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES( $id_series, $id_kara);');
+						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain, videolength ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength);');
+						var stmt_InsertSeries = module.exports.db.prepare('INSERT INTO series(pk_id_series,name,NORM_name) VALUES( $id_series, $serie, $serienorm );');
+						var stmt_InsertTags = module.exports.db.prepare('INSERT INTO tag(pk_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );');
+						var stmt_InsertKarasTags = module.exports.db.prepare('INSERT INTO kara_tag(fk_id_tag,fk_id_kara) VALUES( $id_tag, $id_kara );');
+						var stmt_InsertKarasSeries = module.exports.db.prepare('INSERT INTO kara_series(fk_id_series,fk_id_kara) VALUES( $id_series, $id_kara);');
 						var stmt_UpdateSeriesAltNames = module.exports.db.prepare('UPDATE series SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;');
 
 						/*
@@ -572,7 +572,7 @@ module.exports = {
 					var sqlUpdateUserDB = 'BEGIN TRANSACTION;';
 
 					var pGetAllKaras = new Promise((resolve,reject) => {
-						var sqlGetAllKaras = 'SELECT PK_id_kara AS id_kara, kid FROM all_karas;';
+						var sqlGetAllKaras = 'SELECT pk_id_kara AS id_kara, kid FROM all_karas;';
 						module.exports.db.all(sqlGetAllKaras,
 							function (err, playlist) {
 								if (err) {

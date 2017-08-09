@@ -1,4 +1,4 @@
-SELECT ak.PK_id_kara AS id_kara,
+SELECT ak.pk_id_kara AS id_kara,
       ak.kid AS kid,
       ak.title AS title,
       ak.NORM_title AS NORM_title,
@@ -21,5 +21,5 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.videofile AS videofile,
 	  ak.videolength AS duration
  FROM karasdb.all_karas AS ak
- WHERE ak.PK_id_kara NOT IN (SELECT fk_id_kara FROM blacklist)
+ WHERE ak.pk_id_kara NOT IN (SELECT fk_id_kara FROM blacklist)
 ORDER BY ak.language, ak.series IS NULL, ak.series, ak.songtype, ak.songorder, ak.title

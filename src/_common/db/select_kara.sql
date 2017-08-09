@@ -1,4 +1,4 @@
-SELECT ak.PK_id_kara AS id_kara,
+SELECT ak.pk_id_kara AS id_kara,
       ak.kid AS kid,
       ak.title AS title,
       ak.NORM_title AS NORM_title,
@@ -21,4 +21,4 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.videofile AS videofile,
 	  ak.videolength AS duration
  FROM all_karas AS ak
-WHERE ak.PK_id_kara = $kara_id;
+WHERE ak.pk_id_kara = $kara_id;

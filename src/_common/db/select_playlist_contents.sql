@@ -1,4 +1,4 @@
-SELECT ak.PK_id_kara AS id_kara,
+SELECT ak.pk_id_kara AS id_kara,
       ak.kid AS kid,
       ak.title AS title,
       ak.NORM_title AS NORM_title,
@@ -27,17 +27,17 @@ SELECT ak.PK_id_kara AS id_kara,
       ak.videofile AS videofile,
 	  ak.videolength AS duration,
 	  ak.viewcount AS viewcount,
-      (CASE WHEN wl.fk_id_kara = ak.PK_id_kara
+      (CASE WHEN wl.fk_id_kara = ak.pk_id_kara
 	     	THEN 1
         ELSE 0
       END) AS flag_whitelisted,
-      (CASE WHEN bl.fk_id_kara = ak.PK_id_kara
+      (CASE WHEN bl.fk_id_kara = ak.pk_id_kara
 	      THEN 1
         ELSE 0
       END) AS flag_blacklisted
  FROM karasdb.all_karas AS ak 
-INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.PK_id_kara
-LEFT OUTER JOIN blacklist AS bl ON ak.PK_id_kara = bl.fk_id_kara
-LEFT OUTER JOIN whitelist AS wl ON ak.PK_id_kara = wl.fk_id_kara
+INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.pk_id_kara
+LEFT OUTER JOIN blacklist AS bl ON ak.pk_id_kara = bl.fk_id_kara
+LEFT OUTER JOIN whitelist AS wl ON ak.pk_id_kara = wl.fk_id_kara
 WHERE pc.fk_id_playlist = $playlist_id
 ORDER BY pc.pos,pc.date_add DESC;
