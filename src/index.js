@@ -35,7 +35,7 @@ i18n.configure({
 });
 i18n.setLocale(detectedLocale);
 
-logger.info('Locale detected : '+detectedLocale);
+logger.info('[Launcher] Locale detected : '+detectedLocale);
 
 
 if (argv.help) {
@@ -53,7 +53,7 @@ if (argv.version) {
 /** Call to resolveSyspath to get the app's path in all OS configurations */
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
 if(SYSPATH) {
-	logger.debug('SysPath detected : '+SYSPATH);
+	logger.debug('[Launcher] SysPath detected : '+SYSPATH);
 	// Lecture de la configuration par défault
 	/**
 	 * Reading config.ini.default, then override it with config.ini if it exists.
@@ -63,14 +63,14 @@ if(SYSPATH) {
 		// et surcharge via le contenu du fichier personnalisé si présent
 		var configCustom = ini.parse(fs.readFileSync(path.join(SYSPATH,'config.ini'), 'utf-8'));
 		extend(true,SETTINGS,configCustom);
-		logger.debug('Custom configuration merged.');
+		logger.debug('[Launcher] Custom configuration merged.');
 	}
 	SETTINGS.os = process.platform;
-	logger.debug('Detected OS : '+SETTINGS.os);
+	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);
 	SETTINGS.EngineDefaultLocale = detectedLocale;	
 
-	logger.info('Loading configuration file');
-	logger.debug('Loaded configuration : '+JSON.stringify(SETTINGS,null,'\n'));
+	logger.info('[Launcher] Loading configuration file');
+	logger.debug('[Launcher] Loaded configuration : '+JSON.stringify(SETTINGS,null,'\n'));
 
 	// Vérification que les chemins sont bien présents, sinon les créer
 	/**
@@ -82,52 +82,52 @@ if(SYSPATH) {
 	 * app/temp
 	 */
 	var ret;
-	logger.info('Checking data folders');
+	logger.info('[Launcher] Checking data folders');
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathKaras))) {
-		logger.warn('Creating folder '+path.join(SYSPATH,SETTINGS.PathKaras));
+		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathKaras));
 		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathKaras));
 		if (!ret) {
-			logger.error('Failed to create folder');
+			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathSubs))) {
-		logger.warn('Creating folder '+path.join(SYSPATH,SETTINGS.PathSubs));
+		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathSubs));
 		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathSubs));
 		if (!ret) {
-			logger.error('Failed to create folder');
+			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathVideos))) {
-		logger.warn('Creating folder '+path.join(SYSPATH,SETTINGS.PathVideos));
+		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathVideos));
 		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathVideos));
 		if (!ret) {
-			logger.error('Failed to create folder');
+			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathDB))) {
-		logger.warn('Creating folder '+path.join(SYSPATH,SETTINGS.PathDB));
+		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathDB));
 		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathDB));
 		if (!ret) {
-			logger.error('Failed to create folder');
+			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathTemp))) {
-		logger.warn('Creating folder '+path.join(SYSPATH,SETTINGS.PathTemp));
+		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathTemp));
 		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathTemp));
 		if (!ret) {
-			logger.error('Failed to create folder');
+			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
 	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathBin))) {
-		logger.warn('Creating folder '+path.join(SYSPATH,SETTINGS.PathBin));
+		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathBin));
 		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathBin));
 		if (!ret) {
-			logger.error('Failed to create folder');
+			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
@@ -144,6 +144,6 @@ if(SYSPATH) {
 	else
 		engine.run();
 } else {
-	logger.error('Unable to detect SysPath !');
+	logger.error('[Launcher] Unable to detect SysPath !');
 	process.exit(1);
 }

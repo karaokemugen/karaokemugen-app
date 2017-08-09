@@ -26,9 +26,11 @@ module.exports = {
 	subtext:'',
 	status:{},
 	init:function(){
+		logger.debug('[Player] Entering init...');
 		var mpvBinary;
 		var mpvHTTP;
 		var pIsmpvAvailable = new Promise((resolve,reject) => {
+			logger.debug('[Player] Entering promise pIsmpvAvailable...')
 			if (module.exports.SETTINGS.os == 'win32') {
 				mpvBinary = module.exports.BINPATH+'/mpv.exe';
 				mpvHTTP = '/mpv.exe';
@@ -49,14 +51,14 @@ module.exports = {
 			}
 
 			if(!fs.existsSync(mpvBinary)){
-				logger.warn('mpv not found in path : '+module.exports.BINPATH);
+				logger.warn('[Player] mpv not found in path : '+module.exports.BINPATH+' or '+mpvBinary);
 				if (process.platform == 'linux') {
-					logger.warn('You need to have mpv installed first. Use apt-get/yum/etc. depending on y our linux distribution.');
+					logger.error('[Player] You need to have mpv installed first. Use apt-get/yum/etc. depending on your linux distribution.');
 					process.exit();
 				}
 
-				logger.warn('You can download it manually from http://mpv.io and place it in '+module.exports.BINPATH);
-				logger.warn('Downloading mpv from Shelter...');
+				logger.warn('[Player] You can download it manually from http://mpv.io and place it in '+module.exports.BINPATH);
+				logger.info('[Player] Downloading mpv from Shelter...');
 
 				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp');
 				var req = http.request({
@@ -87,24 +89,26 @@ module.exports = {
 								mpvBinary,
 								function(err) {
 									if (err) {
-										logger.error('Unable to rename mpv : '+err);
+										logger.error('[Player] Unable to rename mpv : '+err);
 										reject();
 									} else {
-										logger.info('mpv successfully downloaded');
+										logger.info('[Player] mpv successfully downloaded');
 										resolve();
 									}
 								});
 						}
 						if (module.exports.SETTINGS.os == 'darwin') {
-							logger.info('Extracting mpv from its archive...');
+							logger.info('[Player] Extracting mpv from its archive...');
 							extract(module.exports.BINPATH+'/mpvtemp', {dir: module.exports.BINPATH}, function (err) {
 								if (err) {
-									logger.error('Failed to extract mpv : '+err);
+									logger.error('[Player] Failed to extract mpv : '+err);
 									reject();
 								}
+								logger.debug('[Player] Unlinking temporary downloaded file')
 								fs.unlinkSync(module.exports.BINPATH+'/mpvtemp');
+								logger.debug('[Player] Making mpv executable via chmod')
 								fs.chmodSync(module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv', '755');
-								logger.info('mpv extraction complete');
+								logger.info('[Player] mpv extraction complete');
 								resolve();
 							});
 						}
@@ -121,6 +125,7 @@ module.exports = {
 		});
 
 		Promise.all([pIsmpvAvailable]).then(function() {
+			logger.debug('[Player] Promise success pIsmpvAvailable')
 			var mpvOptions = [
 				'--keep-open=yes',
 				'--idle=yes',
@@ -148,6 +153,8 @@ module.exports = {
 				mpvOptions.push('--no-osd-bar');
 			}
 
+			logger.debug('[Player] Requiring mpv API module')
+			logger.debug('[Player] mpv options : '+mpvOptions)
 			var mpvAPI = require('node-mpv');
 			module.exports._player = new mpvAPI(
 				{
@@ -168,6 +175,7 @@ module.exports = {
 				module.exports.status = status;
 				if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i)) {
 					// immediate switch to Playing = False to avoid multiple trigger
+					logger.debug('[Player] Stopped mode triggered on statuschange event')
 					module.exports.playing = false;
 					module.exports._playing = false;
 					module.exports.playerstatus = 'stop';
@@ -188,21 +196,22 @@ module.exports = {
 				// Returns the position in seconds in the current song
 				module.exports.timeposition = position;
 			});
-			logger.info('Player interface is READY');
+			logger.info('[Player] Player interface is READY');
 		})
-			.catch(function(err) {
-				logger.error('Player interface is NOT READY :'+err);
+			.catch(function(err) {				
+				logger.error('[Player] Player interface is NOT READY :'+err);
 				fs.unlink(module.exports.BINPATH+'/mpvtemp.exe', (err) => {
 					if (err) throw err;
-					logger.debug('Binaries folder cleaned up');
+					logger.debug('[Player] Binaries folder cleaned up');
 					process.exit();
 				});
 			});
 	},
 	play: function(video,subtitle,reference){
+		logger.debug('[Player] Entering play...')
 		module.exports.playing = true;
 		if(fs.existsSync(video)){
-			logger.info('Video : '+video);
+			logger.info('[Player] Video : '+video);
 			module.exports._ref = reference;
 			module.exports._player.loadFile(video);
 			module.exports._player.volume(70);
@@ -213,22 +222,24 @@ module.exports = {
 				module.exports._playing = true;
 				if(subtitle) {
 					if(fs.existsSync(subtitle)){
-						logger.info('Subs : '+subtitle);
+						logger.info('[Player] Subs : '+subtitle);
 						module.exports._player.addSubtitles(subtitle);//, flag, title, lang)
 					} else {
-						logger.error('Subs NOT FOUND : '+subtitle);
+						logger.error('[Player] Subs NOT FOUND : '+subtitle);
 					}
 				} else {
-					logger.info('Subs not needed');
+					logger.info('[Player] Subs not needed');
 				}
 				module.exports._player.loadFile(module.exports.background,'append');
 			},500);
 		} else {
 			module.exports.playing = false;
-			logger.error('Video NOT FOUND : '+video);
+			logger.error('[Player] Video NOT FOUND : '+video);
 		}
 	},
 	setFullscreen:function(fsState){
+		logger.debug('[Player] Entering setFullscreen...')
+		logger.debug('[Player] fsState = '+fsState)
 		module.exports.fullscreen==fsState;
 
 		if(fsState)
@@ -237,11 +248,13 @@ module.exports = {
 			module.exports._player.leaveFullscreen();
 	},
 	toggleOnTop:function(){
+		logger.debug('[Player] Entering toggleOnTop...')
 		module.exports.stayontop = !module.exports.stayontop;
 		module.exports._player.command('keypress',['T']);
 		return module.exports.stayontop;
 	},
 	stop:function() {
+		logger.debug('[Player] Entering stop...')
 		// on stop do not trigger onEnd event
 		// => setting internal playing = false prevent this behavior
 		module.exports.playing = false;
@@ -251,23 +264,30 @@ module.exports = {
 		module.exports._player.loadFile(module.exports.background);
 	},
 	pause: function(){		
+		logger.debug('[Player] Entering pause...')
 		module.exports._player.pause();
 		module.exports.playerstatus = 'pause'
 	},
 	resume: function(){
+		logger.debug('[Player] Entering resume...')
 		module.exports._player.play();
 		module.exports.playerstatus = 'play'
 	},
 	seek: function(delta) {
+		logger.debug('[Player] Entering seek...')
+		logger.debug('[Player] Seek delta : '+delta)
 		module.exports._player.seek(delta);
 	},
 	reset: function() {
+		logger.debug('[Player] Entering reset...')
 		module.exports._player.goToPosition(0);
 	},
 	mute: function() {
+		logger.debug('[Player] Entering mute...')
 		module.exports._player.mute();
 	},
 	unmute: function() {
+		logger.debug('[Player] Entering unmute...')
 		module.exports._player.unmute();
 	},
 	onEnd:function(ref){
