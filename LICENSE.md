@@ -36,3 +36,6 @@ Sauf mention contraire, les modules dont dépend Toyunda Mugen sont installés p
 
 node-ffprobe a été modifié pour être synchrone et mieux gérer les fichiers avec espaces.
 
+Le code d'origine est ici : https://github.com/ListenerApproved/node-ffprobe
+
+

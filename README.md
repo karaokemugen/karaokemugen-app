@@ -15,12 +15,28 @@ Il y a deux modules principaux :
 
 ## Téléchargement
 
-Nous sommes actuellement aux débuts de la réécriture en node.js de Toyunda Mugen.
+L'application est déjà bien avancée et utilisable, l'interface Web n'est pas encore terminée par contre, mais l'API est fonctionelle pour piloter l'app.
+
+Pour installer, clonez le dépôt, puis
+
+```
+npm install
+```
+
+Attention, si votre dossier d'installation contient des espaces, le module `ffmpeg-downloader``` va planter à l'installation.
+
+puis
+
+```
+npm start
+```
+
+La génération de la base de données est nécessaire à la première utilisation, vous pouvez la déclencher en vous connectant sur http://localhost:1338 et en ayant placé des karaokés dans app/data/ (voir plus bas)
 
 Une version "legacy" en PHP existe sur ce dépôt :
 https://lab.shelter.moe/toyundamugen/toyundamugen-app-legacy
 
-Cette version est parfaitement fonctionelle mais assez basique.
+Cette version est fonctionelle mais assez basique.
 
 ## Pré-requis système
 
@@ -45,6 +61,7 @@ Toyunda Mugen est écrit en node.js et contient quelques scripts bash à usage u
 - Gère le formats de sous-titrage .ass 
 - Permet de passer une chanson
 - Ajout de chanson après celle en cours
+- Affiche les paroles des chansons
 - Mettre le karaoke en pause ou le relancer
 - Shuffle de la playlist
 - Ajout de la base entière dans la playlist
@@ -58,8 +75,7 @@ Toyunda Mugen est écrit en node.js et contient quelques scripts bash à usage u
 
 ## Comment ça fonctionne
 
-* Récupérez une version de ce dépôt via un git clone ou un téléchargement.
-* Assurez-vous d'avoir ffprobe.exe et mpv.exe dans un dossier app/bin* 
+* Voir la partie téléchargement
 * Placez des karaoké à l'intérieur d'un dossier app/data. Voir https://lab.shelter.moe/toyundamugen/times
 
 ## Comment participer au code
