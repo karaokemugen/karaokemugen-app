@@ -1,25 +1,25 @@
 CREATE VIEW IF NOT EXISTS all_karas AS SELECT k.pk_id_kara, k.kid, k.title, k.NORM_title, k.videolength, k.gain, k.year, k.videofile, k.subfile, k.date_added, k.date_last_modified, k.rating, k.viewcount
 ,k.songorder
 ,(select GROUP_CONCAT( s.name)
-    FROM kara_series ks 
-    INNER JOIN series s ON ks.fk_id_series = s.pk_id_series
+    FROM kara_serie ks
+    INNER JOIN serie s ON ks.fk_id_serie = s.pk_id_serie
     WHERE k.pk_id_kara = ks.fk_id_kara
-    ) as series
+    ) as serie
 ,(select GROUP_CONCAT( s.NORM_name)
-    FROM kara_series ks 
-    INNER JOIN series s ON ks.fk_id_series = s.pk_id_series
+    FROM kara_serie ks
+    INNER JOIN serie s ON ks.fk_id_serie = s.pk_id_serie
     WHERE k.pk_id_kara = ks.fk_id_kara
-    ) as NORM_series
+    ) as NORM_serie
 ,(select GROUP_CONCAT( s.altname)
-    FROM kara_series ks 
-    INNER JOIN series s ON ks.fk_id_series = s.pk_id_series
+    FROM kara_serie ks
+    INNER JOIN serie s ON ks.fk_id_serie = s.pk_id_serie
     WHERE k.pk_id_kara = ks.fk_id_kara
-    ) as series_altname
+    ) as serie_altname
 ,(select GROUP_CONCAT( s.NORM_altname)
-    FROM kara_series ks 
-    INNER JOIN series s ON ks.fk_id_series = s.pk_id_series
+    FROM kara_serie ks
+    INNER JOIN serie s ON ks.fk_id_serie = s.pk_id_serie
     WHERE k.pk_id_kara = ks.fk_id_kara
-    ) as NORM_series_altname
+    ) as NORM_serie_altname
 ,(select GROUP_CONCAT( t2.name)
     FROM kara_tag kt2  
     INNER JOIN tag t2 ON kt2.fk_id_tag = t2.pk_id_tag AND t2.tagtype = 2
@@ -76,4 +76,4 @@ CREATE VIEW IF NOT EXISTS all_karas AS SELECT k.pk_id_kara, k.kid, k.title, k.NO
     WHERE k.pk_id_kara = kt8.fk_id_kara
     ) as NORM_songwriter
 FROM kara k
-order by language, series, singer, songtype, songorder
+order by language, serie, singer, songtype, songorder

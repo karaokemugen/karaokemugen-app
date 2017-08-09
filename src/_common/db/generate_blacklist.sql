@@ -20,8 +20,8 @@ AND   kt.fk_id_kara NOT IN (select fk_id_kara from whitelist)
 SELECT k.pk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Series by name : ' ||  blc.blcriteria_value
 FROM blacklist_criteria blc
 INNER JOIN karasdb.kara k ON s.NORM_name LIKE ('%' || blc.blcriteria_value || '%')
-INNER JOIN karasdb.series s ON s.pk_id_series = ks.fk_id_series
-INNER JOIN karasdb.kara_series ks ON ks.fk_id_kara = k.pk_id_kara
+INNER JOIN karasdb.serie s ON s.pk_id_serie = ks.fk_id_serie
+INNER JOIN karasdb.kara_serie ks ON ks.fk_id_kara = k.pk_id_kara
 WHERE blc.blcriteria_type = 1000
 AND   k.pk_id_kara NOT IN (select fk_id_kara from whitelist)
     UNION    

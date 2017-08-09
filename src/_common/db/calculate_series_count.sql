@@ -1,1 +1,1 @@
-SELECT COUNT(*) AS seriescount FROM series;
+SELECT COUNT(*) AS seriescount FROM serie;

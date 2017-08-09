@@ -5,8 +5,8 @@ CREATE TABLE tag (
     NORM_name   TEXT COLLATE NOCASE
 );
 
-CREATE TABLE series (
-    pk_id_series   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+CREATE TABLE serie (
+    pk_id_serie    INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     name           TEXT,
     NORM_name      TEXT COLLATE NOCASE,
     altname        TEXT,
@@ -19,10 +19,10 @@ CREATE TABLE kara_tag (
     fk_id_tag        INTEGER REFERENCES tag
 );
 
-CREATE TABLE kara_series (
-    pk_id_kara_series   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    fk_id_kara          INTEGER REFERENCES kara,
-    fk_id_series        INTEGER REFERENCES series
+CREATE TABLE kara_serie (
+    pk_id_kara_serie   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+    fk_id_kara         INTEGER REFERENCES kara,
+    fk_id_serie        INTEGER REFERENCES serie
 );
 
 CREATE TABLE kara (
@@ -44,5 +44,5 @@ CREATE TABLE kara (
 
 CREATE INDEX index_kara_tag_id_tag ON kara_tag (fk_id_tag );
 CREATE INDEX index_kara_tag_id_kara ON kara_tag (fk_id_kara );
-CREATE INDEX index_kara_series_id_series ON kara_series (fk_id_series );
-CREATE INDEX index_kara_series_id_kara ON kara_series (fk_id_kara );
+CREATE INDEX index_kara_serie_id_serie ON kara_serie (fk_id_serie );
+CREATE INDEX index_kara_serie_id_kara ON kara_serie (fk_id_kara );

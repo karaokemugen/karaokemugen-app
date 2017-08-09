@@ -1230,11 +1230,11 @@ module.exports = {
 					if (!S(kara.NORM_title).isEmpty()) {
 						if (S(kara.NORM_title.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.NORM_series).isEmpty()) {
-						if (S(kara.NORM_series.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					if (!S(kara.NORM_serie).isEmpty()) {
+						if (S(kara.NORM_serie.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.NORM_series_altname).isEmpty()) {
-						if (S(kara.NORM_series_altname.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					if (!S(kara.NORM_serie_altname).isEmpty()) {
+						if (S(kara.NORM_serie_altname.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
 					}
 					if (!S(kara.NORM_singer).isEmpty()) {
 						if (S(kara.NORM_singer.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
@@ -1335,7 +1335,7 @@ module.exports = {
 										kara.videofile,
 										module.exports.SETTINGS.PathTemp,
 										kara.title,
-										kara.series,
+										kara.serie,
 										kara.songtype,
 										kara.songorder,
 										requester,
@@ -2074,7 +2074,7 @@ module.exports = {
 												kara.videofile,
 												module.exports.SETTINGS.PathTemp,
 												kara.title,
-												kara.series,
+												kara.serie,
 												kara.songtype,
 												kara.songorder,
 												requester,
@@ -2283,7 +2283,7 @@ module.exports = {
 												kara.videofile,
 												module.exports.SETTINGS.PathTemp,
 												kara.title,
-												kara.series,
+												kara.serie,
 												kara.songtype,
 												kara.songorder,
 												requester,
