@@ -1,13 +1,13 @@
 SELECT 
-      ak.PK_id_kara AS id_kara,
+      ak.pk_id_kara AS id_kara,
       ak.kid AS kid,
       ak.title AS title,
       ak.NORM_title AS NORM_title,
       ak.songorder AS songorder,
-      ak.series AS series,
-      ak.NORM_series AS NORM_series,
-      ak.series_altname AS series_altname,
-      ak.NORM_series_altname AS NORM_series_altname,
+      ak.serie AS serie,
+      ak.NORM_serie AS NORM_serie,
+      ak.serie_altname AS serie_altname,
+      ak.NORM_serie_altname AS NORM_serie_altname,
       ak.singer AS singer,
       ak.NORM_singer AS NORM_singer,
       ak.songtype AS songtype,      
@@ -19,10 +19,10 @@ SELECT
       ak.misc AS misc,    
       ak.viewcount AS viewcount,  
       ak.videolength AS duration,
-      bl.ban_date AS date_add,
-      bl.ban_reason AS reason_add,
+      bl.created_at AS created_at,
+      bl.reason AS reason_add,
       ak.subfile AS subfile,
       ak.videofile AS videofile
  FROM karasdb.all_karas AS ak 
-INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.PK_id_kara
-ORDER BY ak.language, ak.series IS NULL, ak.series, ak.songtype, ak.songorder, ak.title
+INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.pk_id_kara
+ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title

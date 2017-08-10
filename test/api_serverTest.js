@@ -21,7 +21,7 @@ describe('GET /api/v1/public/karas?filter=Inspecteur', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body[0].NORM_series, 'Inspecteur Gadget');
+				assert.equal(response.body[0].NORM_serie, 'Inspecteur Gadget');
 			});
 	});
 });

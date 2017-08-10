@@ -891,8 +891,8 @@ module.exports = {
 	* - name (name of playlist)
 	* - num_karas (Number of karaoke songs in the playlist)
 	* - length (duration in seconds of the whole playlist)
-	* - creation_time (creation time in UNIX timestamp format)
-	* - lastedit_time (last modification time in UNIX timestamp format)
+	* - creation_time (in UNIX timestamp format)
+	* - lastedit_time (in UNIX timestamp format)
 	* - flag_visible (is the playlist visible?)
 	* - flag_current (is the playlist the current one?)
 	* - flag_public (is the playlist the public one?)
@@ -920,8 +920,8 @@ module.exports = {
 	* - NORM_name (normalized name of playlist)
 	* - num_karas (Number of karaoke songs in the playlist)
 	* - length (duration in seconds of the whole playlist)
-	* - creation_time (creation time in UNIX timestamp format)
-	* - lastedit_time (last modification time in UNIX timestamp format)
+	* - created_at (in UNIX timestamp format)
+	* - modified_at (in UNIX timestamp format)
 	* - flag_visible (is the playlist visible?)
 	* - flag_current (is the playlist the current one?)
 	* - flag_public (is the playlist the public one?)
@@ -1230,11 +1230,11 @@ module.exports = {
 					if (!S(kara.NORM_title).isEmpty()) {
 						if (S(kara.NORM_title.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.NORM_series).isEmpty()) {
-						if (S(kara.NORM_series.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					if (!S(kara.NORM_serie).isEmpty()) {
+						if (S(kara.NORM_serie.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.NORM_series_altname).isEmpty()) {
-						if (S(kara.NORM_series_altname.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					if (!S(kara.NORM_serie_altname).isEmpty()) {
+						if (S(kara.NORM_serie_altname.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
 					}
 					if (!S(kara.NORM_singer).isEmpty()) {
 						if (S(kara.NORM_singer.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
@@ -1335,7 +1335,7 @@ module.exports = {
 										kara.videofile,
 										module.exports.SETTINGS.PathTemp,
 										kara.title,
-										kara.series,
+										kara.serie,
 										kara.songtype,
 										kara.songorder,
 										requester,
@@ -2074,7 +2074,7 @@ module.exports = {
 												kara.videofile,
 												module.exports.SETTINGS.PathTemp,
 												kara.title,
-												kara.series,
+												kara.serie,
 												kara.songtype,
 												kara.songorder,
 												requester,
@@ -2283,7 +2283,7 @@ module.exports = {
 												kara.videofile,
 												module.exports.SETTINGS.PathTemp,
 												kara.title,
-												kara.series,
+												kara.serie,
 												kara.songtype,
 												kara.songorder,
 												requester,
@@ -2434,7 +2434,7 @@ module.exports = {
 						if(kara) {
 							// mise à jour du pointeur de lecture
 							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
 							});
 							resolve();
 						} else {
@@ -2475,7 +2475,7 @@ module.exports = {
 						if(kara) {
 							// mise à jour du pointeur de lecture
 							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
 							});
 							resolve();
 						} else {
@@ -2542,7 +2542,7 @@ module.exports = {
 						if(update_playing_kara) {
 							// mise à jour du pointeur de lecture
 							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_idplcontent = '+kara.playlistcontent_id+';');
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
 							});
 						}
 

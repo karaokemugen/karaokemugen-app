@@ -1113,7 +1113,7 @@ module.exports = {
 			module.exports._user_db_handler.run(sqlUpdatePlaylistLastEditTime,
 				{
 					$playlist_id: playlist_id,
-					$lastEditTime: lastEditTime
+					$modified_at: lastEditTime
 				}, function (err, rep) {
 					if (err) {
 						reject('Failed to set last edit time on playlist '+playlist_id+' : '+err);
@@ -1185,7 +1185,7 @@ module.exports = {
 			{
 				$kara_id: kara_id,
 				$kid: kid,
-				$datetime: datetime
+				$modified_at: datetime
 			}, function (err, rep) {
 				if (err) {
 					logger.error('Failed to add viewcount for karaoke '+kara_id+' : '+err);
@@ -1234,8 +1234,8 @@ module.exports = {
 				reject();
 			}
 
-			// Création de la playlist
-			// Prend en entrée name, NORM_name, creation_time, lastedit_time, flag_visible, flag_current, flag_public
+			// Edition de la playlist
+			// Prend en entrée name, NORM_name, modified_at, flag_visible, flag_current, flag_public
 			// Retourne l'ID de la playlist nouvellement crée.
 
 			var sqlEditPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_playlist.sql'),'utf-8');
@@ -1244,7 +1244,7 @@ module.exports = {
 				$playlist_id: playlist_id,
 				$name: name,
 				$NORM_name: NORM_name,
-				$lastedit_time: lastedit_time,
+				$modified_at: lastedit_time,
 				$flag_visible: flag_visible,
 				$flag_current: flag_current,
 				$flag_public: flag_public
@@ -1271,8 +1271,8 @@ module.exports = {
 			{
 				$name: name,
 				$NORM_name: NORM_name,
-				$creation_time: creation_time,
-				$lastedit_time: lastedit_time,
+				$created_at: creation_time,
+				$modified_at: lastedit_time,
 				$flag_visible: flag_visible,
 				$flag_current: flag_current,
 				$flag_public: flag_public
@@ -1344,7 +1344,7 @@ module.exports = {
 									$NORM_pseudo_add: NORM_requester,
 									$kara_id: kara_id,
 									$kid: kid,
-									$date_added: date_added,
+									$created_at: date_added,
 									$pos: pos,
 									$flag_playing: flag_playing
 								}, function (err, rep) {
@@ -1392,7 +1392,7 @@ module.exports = {
 								$reason: reason,
 								$kara_id: kara_id,
 								$kid: kid,
-								$date_added: date_added,
+								$created_at: date_added,
 							}, function (err, rep) {
 								if (err) {
 									reject('Failed to add karaoke '+kara_id+' to whitelist : '+err);

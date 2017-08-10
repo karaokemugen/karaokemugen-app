@@ -228,7 +228,7 @@ module.exports = {
 													index++;
 													var serienorm = S(serie).latinise().s;
 													sqlInsertSeries.push({
-														$id_series : index,
+														$id_serie : index,
 														$serie : serie,
 														$serienorm : serienorm,
 													});
@@ -241,10 +241,10 @@ module.exports = {
 											var pPushSqlInsertKarasSeries= new Promise((resolve,reject) => {
 												karas_series.forEach(function(karaserie) {
 													karaserie = karaserie.split(',');
-													var id_series = karaserie[0];
+													var id_serie = karaserie[0];
 													var id_kara = karaserie[1];
 													sqlInsertKarasSeries.push({
-														$id_series : id_series,
+														$id_serie : id_serie,
 														$id_kara : id_kara,
 													});
 												});
@@ -447,12 +447,12 @@ module.exports = {
 						/*
 						* Building SQL queries for insertion
 						*/
-						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(PK_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, date_added, date_last_modified, rating, viewcount, gain, videolength ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength);');
-						var stmt_InsertSeries = module.exports.db.prepare('INSERT INTO series(PK_id_series,name,NORM_name) VALUES( $id_series, $serie, $serienorm );');
-						var stmt_InsertTags = module.exports.db.prepare('INSERT INTO tag(PK_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );');
-						var stmt_InsertKarasTags = module.exports.db.prepare('INSERT INTO kara_tag(FK_id_tag,FK_id_kara) VALUES( $id_tag, $id_kara );');
-						var stmt_InsertKarasSeries = module.exports.db.prepare('INSERT INTO kara_series(FK_id_series,FK_id_kara) VALUES( $id_series, $id_kara);');
-						var stmt_UpdateSeriesAltNames = module.exports.db.prepare('UPDATE series SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;');
+						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, created_at, modified_at, rating, viewcount, gain, videolength ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength);');
+						var stmt_InsertSeries = module.exports.db.prepare('INSERT INTO serie(pk_id_serie,name,NORM_name) VALUES( $id_serie, $serie, $serienorm );');
+						var stmt_InsertTags = module.exports.db.prepare('INSERT INTO tag(pk_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );');
+						var stmt_InsertKarasTags = module.exports.db.prepare('INSERT INTO kara_tag(fk_id_tag,fk_id_kara) VALUES( $id_tag, $id_kara );');
+						var stmt_InsertKarasSeries = module.exports.db.prepare('INSERT INTO kara_serie(fk_id_serie,fk_id_kara) VALUES( $id_serie, $id_kara);');
+						var stmt_UpdateSeriesAltNames = module.exports.db.prepare('UPDATE serie SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;');
 
 						/*
 						* Running queries (Statements or RAW depending on the case)
@@ -569,10 +569,10 @@ module.exports = {
 					var ViewcountKaras = [];
 					var BlacklistKaras = [];
 
-					var sqlUpdateUserDB = 'BEGIN TRANSACTION;';
+					var sqlUpdateUserDB = '';
 
 					var pGetAllKaras = new Promise((resolve,reject) => {
-						var sqlGetAllKaras = 'SELECT PK_id_kara AS id_kara, kid FROM all_karas;';
+						var sqlGetAllKaras = 'SELECT pk_id_kara AS id_kara, kid FROM all_karas;';
 						module.exports.db.all(sqlGetAllKaras,
 							function (err, playlist) {
 								if (err) {
@@ -790,7 +790,6 @@ module.exports = {
 								});
 							}
 							if (UpdateNeeded) {
-								sqlUpdateUserDB += 'COMMIT;';
 								module.exports.userdb.exec(sqlUpdateUserDB, function(err, rep) {
 									if (err) {
 										module.exports.onLog('error', 'Error updating database : '+err);										
@@ -1140,7 +1139,7 @@ module.exports = {
 							kara['songwriter'] = karadata.songwriter;
 							kara['creator'] = karadata.creator;
 							kara['author'] = karadata.author;
-							kara['series'] = karadata.series;
+							kara['serie'] = karadata.series;
 							Promise.all([pGetVideoDuration])
 								.then(function(){
 									karas.push(kara);

@@ -40,7 +40,7 @@ $(document).ready(function(){
                 $.ajax({url : 'public/karas/' + data.currentlyplaying}).done(function(dataKara){
                     //console.log(dataKara[0].duration);
                     $('#karaInfo').attr('idKara', dataKara[0].id_kara);
-                    $('#karaInfo').text( [dataKara[0].language.toUpperCase(), dataKara[0].title, "" , dataKara[0].series].join(" - ") );
+                    $('#karaInfo').text( [dataKara[0].language.toUpperCase(), dataKara[0].title, "" , dataKara[0].serie].join(" - ") );
                     $('#karaInfo').attr('length', dataKara[0].duration);                
                 });
             }
@@ -190,7 +190,7 @@ $(document).ready(function(){
                 if(data.hasOwnProperty(key)){
                     if (data[key].language === null) data[key].language = "";
                     htmlList += "<li idKara='" + data[key].id_kara + "' class='list-group-item'>"
-                        + [data[key].language.toUpperCase(), data[key].title, data[key].songtype_i18n_short , data[key].series].join(" - ")
+                        + [data[key].language.toUpperCase(), data[key].title, data[key].songtype_i18n_short , data[key].serie].join(" - ")
                         + '<span class="badge">' + data[key].language.toUpperCase() + '</span>' + buttonHtml + "</li>";
 
                 }
