@@ -569,7 +569,7 @@ module.exports = {
 					var ViewcountKaras = [];
 					var BlacklistKaras = [];
 
-					var sqlUpdateUserDB = 'BEGIN TRANSACTION;';
+					var sqlUpdateUserDB = '';
 
 					var pGetAllKaras = new Promise((resolve,reject) => {
 						var sqlGetAllKaras = 'SELECT pk_id_kara AS id_kara, kid FROM all_karas;';
@@ -790,7 +790,6 @@ module.exports = {
 								});
 							}
 							if (UpdateNeeded) {
-								sqlUpdateUserDB += 'COMMIT;';
 								module.exports.userdb.exec(sqlUpdateUserDB, function(err, rep) {
 									if (err) {
 										module.exports.onLog('error', 'Error updating database : '+err);										

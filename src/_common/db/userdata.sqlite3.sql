@@ -1,5 +1,3 @@
-BEGIN TRANSACTION;
-
 CREATE TABLE viewcount (
     pk_id_viewcount   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara        INTEGER NOT NULL,
@@ -70,4 +68,3 @@ CREATE INDEX index_playlist_id_playlist ON playlist (pk_id_playlist);
 CREATE INDEX index_playlist_content_fk_id_playlist ON playlist_content (fk_id_playlist);
 CREATE INDEX index_whitelist_fk_id_kara ON whitelist (fk_id_kara);
 CREATE INDEX index_blacklist_fk_id_kara ON blacklist (fk_id_kara);
-COMMIT;
