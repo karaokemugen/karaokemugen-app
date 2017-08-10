@@ -1,1 +1,1 @@
-UPDATE playlist SET name=$name,NORM_name=$NORM_name,lastedit_time=$lastedit_time,flag_visible=$flag_visible,flag_current=$flag_current,flag_public=$flag_public WHERE pk_id_playlist=$playlist_id;
+UPDATE playlist SET name=$name,NORM_name=$NORM_name,modified_at=$modified_at,flag_visible=$flag_visible,flag_current=$flag_current,flag_public=$flag_public WHERE pk_id_playlist=$playlist_id;

@@ -17,7 +17,7 @@ SELECT ak.pk_id_kara AS id_kara,
       ak.NORM_author AS NORM_author,
       ak.misc AS misc,
       ak.gain AS gain,
-      pc.date_add AS date_add,
+      pc.created_at AS created_at,
       pc.pseudo_add AS pseudo_add,
       pc.NORM_pseudo_add AS NORM_pseudo_add,
       pc.pos AS pos,
@@ -39,4 +39,4 @@ SELECT ak.pk_id_kara AS id_kara,
 INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.pk_id_kara
 LEFT OUTER JOIN blacklist AS bl ON ak.pk_id_kara = bl.fk_id_kara
 LEFT OUTER JOIN whitelist AS wl ON ak.pk_id_kara = wl.fk_id_kara
-ORDER BY pc.date_add DESC;
+ORDER BY pc.created_at DESC;

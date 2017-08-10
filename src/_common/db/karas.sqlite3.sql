@@ -36,8 +36,8 @@ CREATE TABLE kara (
     subfile              TEXT NOT NULL,
     videolength          INTEGER,
     gain                 REAL DEFAULT (0),
-    date_added           INTEGER NOT NULL,
-    date_last_modified   INTEGER NOT NULL,
+    created_at           INTEGER NOT NULL,
+    modified_at          INTEGER NOT NULL,
     rating               REAL,
     viewcount            INTEGER DEFAULT (0)
 );

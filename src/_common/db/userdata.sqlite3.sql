@@ -4,7 +4,7 @@ CREATE TABLE viewcount (
     pk_id_viewcount   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara        INTEGER NOT NULL,
     kid               TEXT NOT NULL,
-    datetime          INTEGER NOT NULL
+    modified_at       INTEGER NOT NULL
 );
 
 CREATE TABLE rating (
@@ -12,7 +12,7 @@ CREATE TABLE rating (
     fk_id_kara     INTEGER NOT NULL,
     kid            TEXT NOT NULL,
     rating         INTEGER NOT NULL,
-    datetime       INTEGER NOT NULL
+    modified_at    INTEGER NOT NULL
 );
 
 CREATE TABLE playlist (
@@ -21,8 +21,8 @@ CREATE TABLE playlist (
     NORM_name        TEXT COLLATE NOCASE NOT NULL,
     num_karas        INTEGER NOT NULL,
     length           INTEGER NOT NULL,
-    creation_time    INTEGER NOT NULL,
-    lastedit_time    INTEGER NOT NULL,
+    created_at       INTEGER NOT NULL,
+    modified_at      INTEGER NOT NULL,
     flag_visible     INTEGER NOT NULL,
     flag_current     INTEGER NOT NULL,
     flag_public      INTEGER NOT NULL
@@ -33,21 +33,21 @@ CREATE TABLE playlist_content (
     fk_id_playlist    INTEGER NOT NULL REFERENCES playlist,
     fk_id_kara        INTEGER NOT NULL,
     kid               TEXT NOT NULL,
-    date_add          INTEGER NOT NULL,
+    created_at        INTEGER NOT NULL,
     pseudo_add        TEXT,
     NORM_pseudo_add   TEXT COLLATE NOCASE,
     pos               REAL NOT NULL,
     flag_playing      INTEGER NOT NULL,
     banned            INTEGER DEFAULT (0),
-    ban_date          INTEGER,
-    ban_reason        TEXT
+    banned_at         INTEGER,
+    banned_reason     TEXT
 );
 
 CREATE TABLE blacklist (
     fk_id_kara   INTEGER NOT NULL UNIQUE ON CONFLICT IGNORE,
     kid          TEXT NOT NULL,
-    ban_date     INTEGER NOT NULL,
-    ban_reason   TEXT NOT NULL
+    created_at   INTEGER NOT NULL,
+    reason       TEXT NOT NULL
 );
 
 CREATE TABLE blacklist_criteria (
@@ -60,8 +60,8 @@ CREATE TABLE whitelist (
     pk_id_whitelist   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara        INTEGER NOT NULL,
     kid               TEXT NOT NULL,
-    wl_date           INTEGER NOT NULL,
-    wl_reason         TEXT NOT NULL
+    created_at        INTEGER NOT NULL,
+    reason            TEXT NOT NULL
 );
 
 CREATE INDEX index_viewcount_fk_id_kara ON viewcount (fk_id_kara);

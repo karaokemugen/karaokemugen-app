@@ -1,6 +1,6 @@
 DELETE FROM blacklist;
 
-INSERT INTO blacklist (fk_id_kara, kid, ban_date, ban_reason)
+INSERT INTO blacklist (fk_id_kara, kid, created_at, reason)
 SELECT kt.fk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Tag : ' || t.name || ' (type ' || t.tagtype || ')'
 FROM blacklist_criteria AS blc
 INNER JOIN karasdb.tag t ON blc.blcriteria_type = t.tagtype AND CAST(blc.blcriteria_value AS INTEGER) = t.pk_id_tag

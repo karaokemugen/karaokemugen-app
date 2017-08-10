@@ -1,1 +1,1 @@
-UPDATE whitelist SET wl_reason = $reason WHERE pk_id_whitelist = $wlc_id
+UPDATE whitelist SET reason = $reason WHERE pk_id_whitelist = $wlc_id

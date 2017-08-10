@@ -19,8 +19,8 @@ SELECT wl.pk_id_whitelist AS id_whitelist,
       ak.NORM_author AS NORM_author,
       ak.misc AS misc,    
       ak.videolength AS duration,  
-      wl.wl_date AS date_add,
-      wl.wl_reason AS reason_add,
+      wl.created_at AS created_at,
+      wl.reason AS reason_add,
       ak.subfile AS subfile,
       ak.videofile AS videofile
  FROM karasdb.all_karas AS ak 
