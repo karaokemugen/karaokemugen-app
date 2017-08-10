@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const S = require('string');
 const basicAuth = require('express-basic-auth');
 const extend = require('extend');
+//const expressWinston = require('express-winston');
+//const winston = require('winston');
 
 module.exports = {
 	SYSPATH:null,
@@ -33,6 +35,16 @@ module.exports = {
 		}
 
 		var app = express();
+		/*
+		app.use(expressWinston.logger({
+			  transports: [
+    			new winston.transports.Console({
+      			json: true,
+      			colorize: true
+    			})
+  			]
+		}));
+		*/
 		app.use(bodyParser.urlencoded({ extended: true }));
 		app.use(bodyParser.json());
 		// Calling express validator with a custom validator, used for the player commands
@@ -44,9 +56,20 @@ module.exports = {
 				}));
 		var routerPublic = express.Router();
 		var routerAdmin = express.Router();
-
+		var express = require('express');
+		// Place the express-winston errorLogger after the router.
+		/*
+		app.use(expressWinston.errorLogger({
+  			transports: [
+    			new winston.transports.Console({
+      			json: true,
+      			colorize: true
+    			})
+  			]
+		}));
+		*/
 		app.listen(module.exports.LISTEN, function () {
-			logger.info('API server is READY and listens on port '+module.exports.LISTEN);
+			logger.info('[API] API server is READY and listens on port '+module.exports.LISTEN);
 		});
 
 		routerAdmin.use(basicAuth({ authorizer: AdminPasswordSetting }));
@@ -64,7 +87,7 @@ module.exports = {
 		});
 
 		routerPublic.get('/', function (req, res) {
-			res.send('Hello World!');
+			res.send('Toyunda Mugen API service ready');
 		});
 
 		// Rules :

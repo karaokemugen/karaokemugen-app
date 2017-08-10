@@ -43,7 +43,6 @@ module.exports = {
 	 * @function {run}
 	 */
 	run: function(){
-		logger.debug('[Engine] Entering run...');
 		if(this.SYSPATH === null) {
 			logger.error('SysPath is null !');
 			process.exit();
@@ -86,7 +85,6 @@ module.exports = {
 	 * @function {exit}
 	 */
 	exit:function(){
-		logger.debug('[Engine] Entering exit...');
 		process.exit();
 	},
 
@@ -95,8 +93,6 @@ module.exports = {
 	 * @function {play}
 	 */
 	play:function(){
-		logger.debug('[Engine] Entering play...');
-		logger.debug('[Engine] Status = '+module.exports._states.status);
 		if(module.exports._states.status !== 'play') {
 			// passe en mode lecture (le gestionnaire de playlist vas travailler à nouveau)
 			if (module.exports._states.status === 'pause') {
@@ -120,12 +116,9 @@ module.exports = {
 	* @param  {boolean} now {If set, stops karaoke immediately. If not, karaoke will stop at end of current song}
 	*/
 	stop:function(now){
-		logger.debug('[Engine] Entering stop...');
-		logger.debug('[Engine] now = '+now);
 		if(now)
 			module.exports._services.player.stop();
 
-		logger.debug('[Engine] status = '+module.exports._states.status);
 		if(module.exports._states.status !== 'stop') {
 			module.exports._states.status = 'stop';
 			module.exports._broadcastStates();
@@ -136,25 +129,20 @@ module.exports = {
 	 * Pauses current song in the player and broadcasts new status.
 	 */
 	pause:function(){
-		logger.debug('[Engine] Entering pause...');
 		module.exports._services.player.pause();
 		module.exports._states.status = 'pause';
 		module.exports._broadcastStates();
 	},
 	mute:function(){
-		logger.debug('[Engine] Entering mute...');
 		module.exports._services.player.mute();
 	},
 	unmute:function(){
-		logger.debug('[Engine] Entering unmute...');
 		module.exports._services.player.unmute();		
 	},
 	seek:function(delta){
-		logger.debug('[Engine] Entering seek...');
 		module.exports._services.player.seek(delta);
 	},
 	reset:function(){
-		logger.debug('[Engine] Entering reset...');
 		module.exports._services.player.reset();
 	},
 	/**
@@ -162,14 +150,11 @@ module.exports = {
 	 * Pauses current song in the player and broadcasts new status.
 	 */
 	prev:function(){
-		logger.debug('[Engine] Entering prev...');
 		module.exports.stop(true);
 		module.exports._services.playlist_controller.prev()
 			.then(function(){
-				logger.debug('[Engine] PLC Prev resolved');
 				module.exports.play();
 			}).catch(function(){
-				logger.debug('[Engine] PLC Prev catched');
 				module.exports.play();
 				logger.warn('[Engine] Previous song is not available');
 			});
@@ -179,14 +164,11 @@ module.exports = {
 	 * Pauses current song in the player and broadcasts new status.
 	 */
 	next:function(){
-		logger.debug('[Engine] Entering next...');
 		module.exports.stop(true);
 		module.exports._services.playlist_controller.next()
 			.then(function(){
-				logger.debug('[Engine] PLC next resolved');
 				module.exports.play();
 			}).catch(function(){
-				logger.debug('[Engine] PLC next catched');
 				logger.warn('Next song is not available');
 			});
 	},
@@ -196,7 +178,6 @@ module.exports = {
 	* @private
 	*/
 	setPrivateOn:function() {
-		logger.debug('[Engine] Entering setPrivateOn...');
 		module.exports._states.private = true;
 		module.exports._broadcastStates();
 	},
@@ -204,7 +185,6 @@ module.exports = {
 	* @function {setPrivateOff}
 	*/
 	setPrivateOff:function() {
-		logger.debug('[Engine] Entering setPrivateOff...');
 		module.exports._states.private = false;
 		module.exports._broadcastStates();
 	},
@@ -212,10 +192,7 @@ module.exports = {
 	* @function {togglePrivate}
 	*/
 	togglePrivate:function() {
-		logger.debug('[Engine] Entering togglePrivate...');
-		logger.debug('[Engine] Current state of private = '+module.exports._states.private);
 		module.exports._states.private = !module.exports._states.private;
-		logger.debug('[Engine] private is now '+module.exports._states.private);
 		module.exports._broadcastStates();
 	},
 
@@ -223,22 +200,16 @@ module.exports = {
 	* @function {toggleFullscreen}
 	*/
 	toggleFullscreen:function() {
-		logger.debug('[Engine] Entering toggleFullscreen...');
-		logger.debug('[Engine] Current state of fullscreen = '+module.exports._states.fullscreen);
 		module.exports._states.fullscreen = !module.exports._states.fullscreen;
 		module.exports._services.player.setFullscreen(module.exports._states.fullscreen);
-		logger.debug('fullscreen is now '+module.exports._states.fullscreen);
 		module.exports._broadcastStates();
 	},
 	/**
 	* @function {toggleStayOnTop}
 	*/
 	toggleOnTop:function() {
-		logger.debug('[Engine] Entering toggleOnTop...');
-		logger.debug('[Engine] Current state of ontop = '+module.exports._states.ontop);
 		// player services return new ontop states after change
 		module.exports._states.ontop = module.exports._services.player.toggleOnTop();
-		logger.debug('ontop is now '+module.exports._states.ontop);
 		module.exports._broadcastStates();
 	},
 
@@ -248,15 +219,11 @@ module.exports = {
 	*
 	*/
 	playlistUpdated:function(){
-		logger.debug('[Engine] Entering playlistUpdated...');		
-		logger.debug('[Engine] Status = '+module.exports._states.status);		
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
 			module.exports._services.playlist_controller.next()
 				.then(function(){
-					logger.debug('[Engine] PLC next resolved');		
 					module.exports.tryToReadKaraInPlaylist();
 				}).catch(function(){
-					logger.debug('[Engine] PLC next catched');		
 					logger.warn('Next song is not available');
 				});
 		}
@@ -266,8 +233,6 @@ module.exports = {
 	*
 	*/
 	playingUpdated:function(){
-		logger.debug('[Engine] Entering playingUpdated...');		
-		logger.debug('[Engine] Status = '+module.exports._states.status);				
 		if(module.exports._states.status === 'play' && module.exports._services.player.playing) {
 			module.exports.stop(true)				
 			module.exports.play()
@@ -282,13 +247,10 @@ module.exports = {
 	* Function triggered on player ending its current song.
 	*/
 	playerEnding:function(){
-		logger.debug('[Engine] Entering playerEnding...');		
 		module.exports._services.playlist_controller.next()
 			.then(function(){
-				logger.debug('[Engine] PLC next resolved');		
 				module.exports.tryToReadKaraInPlaylist();
 			}).catch(function(){
-				logger.debug('[Engine] PLC next catched');		
 				logger.warn('Next song is not available');
 			});
 	},
@@ -298,24 +260,19 @@ module.exports = {
 	* Try to read next karaoke in playlist.
 	*/
 	tryToReadKaraInPlaylist:function(){
-		logger.debug('[Engine] Entering tryToReadKaraInPlaylist...');		
 		module.exports._services.playlist_controller.current_playlist()
 		.then(function(playlist){
-			logger.debug('[Engine] PLC current_playlist resolved');		
 			if(module.exports._states.playlist != playlist) {
 				module.exports._states.playlist = playlist;
 				module.exports._broadcastStates();
 			}
 		})
 		.catch(function(err){
-			logger.debug('[Engine] PLC current_playlist catched');		
 			logger.error('[Engine] Unable to get playlist!')			
 		})
-		logger.debug('[Engine] Status = '+module.exports._states.status);		
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
 			module.exports._services.playlist_controller.current()
 				.then(function(kara){
-					logger.debug('[Engine] PLC current resolved');		
 					logger.info('Start playing '+kara.path.video);
 					module.exports._services.player.play(
 						kara.path.video,
@@ -328,7 +285,6 @@ module.exports = {
 					module.exports.addViewcount(kara.id_kara,kara.kid);
 				})
 				.catch(function(){
-					logger.debug('[Engine] PLC current catched');		
 					logger.info('Cannot find a song to play');
 					module.exports._broadcastStates();
 				});
@@ -340,26 +296,19 @@ module.exports = {
 	* @return {promise} {Promise}
 	*/
 	addViewcount:function(kara_id,kid){
-		logger.debug('[Engine] Entering addViewCount');		
-		logger.debug('[Engine] kara_id = '+kara_id);		
-		logger.debug('[Engine] kid = '+kid);		
 		// Add one viewcount to the table
 		var datetime = timestamp.now();
 		module.exports.DB_INTERFACE.addViewcount(kara_id,kid,datetime)		
 		.then(function(){
-			logger.debug('[Engine] DBI addViewcount resolved');					
 			// Recalculate viewcount and edit it in karasdb
 			module.exports.DB_INTERFACE.updateTotalViewcounts(kid)
 			.then(function(){
-				logger.debug('[Engine] DBI updateTotalViewcounts resolved');						
 			})
 			.catch(function(err){
-				logger.debug('[Engine] DBI updateTotalViewcounts catched');		
 				logger.error('[Engine] Failed to update viewcounts on karaoke ID '+kid);
 			})
 		})
 		.catch(function(err){
-			logger.debug('[Engine] DBI addViewcount catched');					
 			logger.error('[Engine] Failed to add viewcount for karaoke '+kara_id);
 		})		
 	},
@@ -368,7 +317,6 @@ module.exports = {
 	// ------------------------------------------------------------------
 
 	_broadcastStates:function() {
-		logger.debug('[Engine] Entering _broadcastStates');					
 		// diffuse l'état courant à tout les services concerné (normalement les webapp)
 		module.exports._services.admin.setEngineStates(module.exports._states);
 	},
@@ -383,7 +331,6 @@ module.exports = {
 	* Requires the db_interface.js script
 	*/
 	_start_db_interface: function() {
-		logger.debug('[Engine] Entering _start_db_interface...');					
 		module.exports.DB_INTERFACE = require(path.resolve(__dirname,'components/db_interface.js'));
 		module.exports.DB_INTERFACE.SYSPATH = module.exports.SYSPATH;
 		module.exports.DB_INTERFACE.SETTINGS = module.exports.SETTINGS;
@@ -395,7 +342,6 @@ module.exports = {
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
 	_start_admin:function(){
-		logger.debug('[Engine] Entering _start_admin...');					
 		module.exports._services.admin = require(path.resolve(__dirname,'../_admin/index.js'));
 		module.exports._services.admin.LISTEN = module.exports._states.admin_port;
 		module.exports._services.admin.SYSPATH = module.exports.SYSPATH;
@@ -431,7 +377,6 @@ module.exports = {
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
 	_start_frontend:function(){
-		logger.debug('[Engine] Entering _start_frontend...');					
 		module.exports._services.frontend = require(path.resolve(__dirname,'../_webapp/index.js'));
 		module.exports._services.frontend.LISTEN = module.exports._states.frontend_port;
 		module.exports._services.frontend.SYSPATH = module.exports.SYSPATH;
@@ -451,7 +396,6 @@ module.exports = {
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
 	_start_apiserver:function(){
-		logger.debug('[Engine] Entering _start_apiserver...');					
 		module.exports._services.apiserver = require(path.resolve(__dirname,'../_apiserver/index.js'));
 		module.exports._services.apiserver.LISTEN = module.exports._states.apiserver_port;
 		module.exports._services.apiserver.SYSPATH = module.exports.SYSPATH;
@@ -462,19 +406,14 @@ module.exports = {
 		// --------------------------------------------------------
 		module.exports._services.apiserver.onTest = module.exports.test;
 		module.exports._services.apiserver.onKaras = function(filter,lang){
-			logger.debug('[Engine] Entering apiserver.onKaras...');					
-			logger.debug('[Engine] args = '+arguments)
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
-						logger.debug('[Engine] PLC getAllKaras resolved');
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 						.then(function(karalist){
-							logger.debug('[Engine] PLC translateKaraInfo resolved');							
 							if (filter) {
 								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 								.then(function(filtered_pl){
-									logger.debug('[Engine] PLC filterPlaylist resolved');							
 									resolve(filtered_pl)
 								})
 								.catch(function(err){
@@ -497,19 +436,14 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onWhitelist = function(filter,lang){
-			logger.debug('[Engine] Entering apiserver.onWhitelist...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getWhitelistContents()
 					.then(function(playlist){
-						logger.debug('[Engine] PLC getWhitelistContents resolved');
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 						.then(function(karalist){
-							logger.debug('[Engine] PLC translateKaraInfo resolved');							
 							if (filter) {
 								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 								.then(function(filtered_pl){
-									logger.debug('[Engine] PLC filterPlaylist resolved');							
 									resolve(filtered_pl)
 								})
 								.catch(function(err){
@@ -532,19 +466,14 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onBlacklist = function(filter,lang){
-			logger.debug('[Engine] Entering apiserver.onBlacklist...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistContents()
 					.then(function(playlist){
-						logger.debug('[Engine] PLC getBlacklistContents resolved');
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 						.then(function(karalist){
-							logger.debug('[Engine] PLC translateKaraInfo resolved');							
 							if (filter) {
 								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 								.then(function(filtered_pl){
-									logger.debug('[Engine] PLC filterPlaylist resolved');							
 									resolve(filtered_pl)
 								})
 								.catch(function(err){
@@ -567,11 +496,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onBlacklistCriterias = function(){
-			logger.debug('[Engine] Entering apiserver.onBlacklistCriterias...');					
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistCriterias()
 					.then(function(blc){
-						logger.debug('[Engine] PLC getBlacklistCriterias resolved');							
 						resolve(blc);
 					})
 					.catch(function(err){
@@ -581,12 +508,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onBlacklistCriteriaAdd = function(blctype,blcvalue){
-			logger.debug('[Engine] Entering apiserver.onBlacklistCriteriaAdd...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
 					.then(function(){
-						logger.debug('[Engine] PLC addBlacklistCriterias resolved');							
 						resolve();
 					})
 					.catch(function(err){
@@ -596,12 +520,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onBlacklistCriteriaDelete = function(blc_id){
-			logger.debug('[Engine] Entering apiserver.onBlacklistCriteriaDelete...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){				
 				module.exports._services.playlist_controller.deleteBlacklistCriteria(blc_id)
 					.then(function(){
-						logger.debug('[Engine] PLC deleteBlacklistCriterias resolved');							
 						resolve();
 					})
 					.catch(function(err){
@@ -611,12 +532,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onBlacklistCriteriaEdit = function(blc_id,blctype,blcvalue){
-			logger.debug('[Engine] Entering apiserver.onBlacklistCriteriaEdit...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editBlacklistCriteria(blc_id,blctype,blcvalue)
 					.then(function(){
-						logger.debug('[Engine] PLC editBlacklistCriterias resolved');							
 						resolve();
 					})
 					.catch(function(err){
@@ -626,12 +544,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistShuffle = function(pl_id){
-			logger.debug('[Engine] Entering apiserver.onPlaylistShuffle...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.shufflePlaylist(pl_id)
 					.then(function(){
-						logger.debug('[Engine] PLC shufflePlaylist resolved');							
 						resolve();
 					})
 					.catch(function(err){
@@ -641,15 +556,11 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onKaraSingle = function(id_kara,lang){
-			logger.debug('[Engine] Entering apiserver.onKaraSingle...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getKara(id_kara)
 					.then(function(kara){
-						logger.debug('[Engine] PLC getKara resolved');	
 						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
 							.then(function(karalist){
-								logger.debug('[Engine] PLC translateKaraInfo resolved');	
 								resolve(karalist);
 							})
 							.catch(function(err){
@@ -664,12 +575,9 @@ module.exports = {
 			});
 		}
 		module.exports._services.apiserver.onPlaylists = function(seenFromUser){
-			logger.debug('[Engine] Entering apiserver.onPlaylists...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylists(seenFromUser)
 					.then(function(playlists){
-						logger.debug('[Engine] PLC getPlaylists resolved');							
 						resolve(playlists);
 					})
 					.catch(function(err){
@@ -679,13 +587,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistCreate = function(playlist){
-			logger.debug('[Engine] Entering apiserver.onPlaylistCreate...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.createPlaylist(playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
 					.then(function (new_playlist){
-						logger.debug('[Engine] PLC createPlaylist resolved');
-						logger.debug('[Engine] New playlist : '+new_playlist);
 						resolve(new_playlist);
 					})
 					.catch(function(err){						
@@ -695,12 +599,9 @@ module.exports = {
 			});
 		}
 		module.exports._services.apiserver.onPlaylistSingleInfo = function(id_playlist,seenFromUser){
-			logger.debug('[Engine] Entering apiserver.onPlaylistSingleInfo...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistInfo(id_playlist,seenFromUser)
 					.then(function(playlist){
-						logger.debug('[Engine] PLC getPlaylistInfo resolved');											
 						resolve(playlist);
 					})
 					.catch(function(err){
@@ -710,12 +611,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistSingleDelete = function(id_playlist,id_newplaylist){
-			logger.debug('[Engine] Entering apiserver.onPlaylistSingleDelte...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deletePlaylist(id_playlist,id_newplaylist)
 					.then(function(){
-						logger.debug('[Engine] PLC deletePlaylist resolved');											
 						resolve();
 					})
 					.catch(function(err){
@@ -725,12 +623,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistSingleKaraDelete = function(playlistcontent_id){
-			logger.debug('[Engine] Entering apiserver.onPlaylistSingleKaraDelete...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromPlaylist(playlistcontent_id)
 					.then(function(){
-						logger.debug('[Engine] PLC deleteKaraFromPlaylist resolved');		
 						resolve();
 					})
 					.catch(function(err){
@@ -740,12 +635,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onWhitelistSingleKaraDelete = function(wl_id){
-			logger.debug('[Engine] Entering apiserver.onWhitelistSingleKaraDelete...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromWhitelist(wl_id)
 					.then(function(){
-						logger.debug('[Engine] PLC deleteKaraFromWhitelist resolved');		
 						resolve();
 					})
 					.catch(function(err){
@@ -755,12 +647,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onWhitelistSingleKaraEdit = function(wl_id,reason){
-			logger.debug('[Engine] Entering apiserver.onWhitelistSingleKaraEdit...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editWhitelistKara(wl_id,reason)
 					.then(function(){
-						logger.debug('[Engine] PLC editWhitelistKara resolved');		
 						resolve();
 					})
 					.catch(function(err){
@@ -770,12 +659,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
-			logger.debug('[Engine] Entering apiserver.onPlaylistSingleKaraEdit...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
 					.then(function(){
-						logger.debug('[Engine] PLC editKaraFromPlaylist resolved');		
 						resolve();
 					})
 					.catch(function(err){
@@ -785,11 +671,8 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onSettingsUpdate = function(settings) {
-			logger.debug('[Engine] Entering apiserver.onSettingsUpdate...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				extend(true,module.exports.SETTINGS,settings);
-				logger.debug('[Engine] New settings : '+module.exports.SETTINGS);		
 
 				// TODO : Need to save settings here
 
@@ -812,12 +695,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistSingleEdit = function(id_playlist,playlist){
-			logger.debug('[Engine] Entering apiserver.onPlaylistSingleEdit...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
 					.then(function(){
-						logger.debug('[Engine] PLC editPlaylist resolved');		
 						resolve();
 					})
 					.catch(function(err){
@@ -827,15 +707,11 @@ module.exports = {
 			});
 		}
 		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,lang,seenFromUser){
-			logger.debug('[Engine] Entering apiserver.onPlaylistSingleContents...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)
 					.then(function(playlist){
-						logger.debug('[Engine] PLC getPlaylistContents resolved');		
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 							.then(function(karalist){
-								logger.debug('[Engine] PLC translateKaraInfo resolved');		
 								resolve(karalist);
 							})
 							.catch(function(err){
@@ -850,15 +726,11 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistCurrentInfo = function(){
-			logger.debug('[Engine] Entering apiserver.onPlaylistCurrentInfo...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
 					.then(function(id_playlist){
-						logger.debug('[Engine] PLC isACurrentPlaylist resolved');		
 						module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
 							.then(function(playlist){
-								logger.debug('[Engine] PLC getPlaylistInfo resolved');		
 								resolve(playlist);
 							})
 							.catch(function(err){
@@ -877,18 +749,13 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistCurrentContents = function(lang){
-			logger.debug('[Engine] Entering apiserver.onPlaylistCurrentContents...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
 					.then(function(id_playlist){
-						logger.debug('[Engine] PLC isACurrentPlaylist resolved');		
 						module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
 							.then(function(playlist){
-								logger.debug('[Engine] PLC getPlaylistContents resolved');		
 								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 									.then(function(karalist){
-										logger.debug('[Engine] PLC translateKaraInfo resolved');		
 										resolve(karalist);
 									})
 									.catch(function(err){
@@ -912,15 +779,11 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistPublicInfo = function(){
-			logger.debug('[Engine] Entering apiserver.onPlaylistPublicInfo...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isAPublicPlaylist()				
 					.then(function(id_playlist){
-						logger.debug('[Engine] PLC isAPublicPlaylist resolved');		
 						module.exports._services.playlist_controller.getPlaylistInfo(id_playlist)
 							.then(function(playlist){
-								logger.debug('[Engine] PLC getPlaylistInfo resolved');		
 								resolve(playlist);
 							})
 							.catch(function(err){
@@ -939,18 +802,13 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlaylistPublicContents = function(lang){
-			logger.debug('[Engine] Entering apiserver.onPlaylistPublicContents...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isAPublicPlaylist()
 					.then(function(id_playlist){
-						logger.debug('[Engine] PLC isAPublicPlaylist resolved');		
 						module.exports._services.playlist_controller.getPlaylistContents(id_playlist)
 							.then(function(playlist){
-								logger.debug('[Engine] PLC getPlaylistContents resolved');		
 								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 									.then(function(karalist){
-										logger.debug('[Engine] PLC translateKaraInfo resolved');		
 										resolve(karalist);
 									})
 									.catch(function(err){
@@ -974,15 +832,11 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onKaraAddToModePlaylist = function(id_kara,requester){
-			logger.debug('[Engine] Entering apiserver.onAddToModePlaylist...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
-				logger.debug('[Engine] Private state = '+module.exports._states.private);
 				if (module.exports._states.private) {
 					//If Kara mode is private, then add to current playlist
 					module.exports._services.playlist_controller.addKaraToCurrentPlaylist(id_kara,requester)
 						.then(function(){
-							logger.debug('[Engine] PLC addKaraToCurrentPlaylist resolved')
 							resolve();
 						})
 						.catch(function(err){
@@ -993,7 +847,6 @@ module.exports = {
 					//If Kara mode is public, then add to public playlist
 					module.exports._services.playlist_controller.addKaraToPublicPlaylist(id_kara,requester)
 						.then(function(){
-							logger.debug('[Engine] PLC addKaraToPublicPlaylist resolved')
 							resolve();
 						})
 						.catch(function(err){
@@ -1004,12 +857,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onKaraAddToPlaylist = function(id_kara,requester,playlist_id,pos){
-			logger.debug('[Engine] Entering apiserver.onKaraAddToPlaylist...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
 					.then(function(){
-						logger.debug('[Engine] PLC addKaraToPlaylist resolved')
 						resolve();
 					})
 					.catch(function(err){
@@ -1019,12 +869,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){
-			logger.debug('[Engine] Entering apiserver.onKaraAddToWhitelist...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
 					.then(function(){
-						logger.debug('[Engine] PLC addKaraToWhitelist resolved')
 						resolve();
 					})
 					.catch(function(err){
@@ -1034,8 +881,6 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlayerCommand = function(command,options){
-			logger.debug('[Engine] Entering apiserver.onPlayerCommand...');
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				// play - starts off kara
 				// pause - pauses player in mid song / resending the command unpauses
@@ -1088,7 +933,6 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlayerStatus = function(){
-			logger.debug('[Engine] Entering apiserver.onPlayerStatus...');					
 			return new Promise(function(resolve,reject){				
 				resolve({
 					private: module.exports._states.private,
@@ -1105,11 +949,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onStats = function(){
-			logger.debug('[Engine] Entering apiserver.onStats...');					
 			return new Promise(function(resolve,reject){
 				module.exports.DB_INTERFACE.getStats()
 					.then(function(stats){
-						logger.debug('[Engine] DBI getStats resolved')
 						resolve(stats);
 					})
 					.catch(function(err){
@@ -1119,12 +961,9 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onKaraSingleLyrics = function(kara_id){
-			logger.debug('[Engine] Entering apiserver.onKaraSingleLyrics...');					
-			logger.debug('[Engine] args = '+arguments);
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getKaraLyrics(kara_id)
 					.then(function(lyrics){
-						logger.debug('[Engine] PLC getKaraLyrics resolved')
 						resolve(lyrics);
 					})
 					.catch(function(err){							
@@ -1143,7 +982,6 @@ module.exports = {
 	* Broadcasts syspath, database, and the playlistUpdated method
 	*/
 	_start_playlist_controller:function(){
-		logger.debug('[Engine] Entering _start_playlist_controller...');					
 		module.exports._services.playlist_controller = require(path.resolve(__dirname,'components/playlist_controller.js'));
 		module.exports._services.playlist_controller.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
@@ -1155,10 +993,8 @@ module.exports = {
 		//Test if a playlist with flag_current exists. If not create one.
 		module.exports._services.playlist_controller.isACurrentPlaylist()
 			.then(function(){
-				logger.debug('[Engine] PLC isACurrentPlaylist resolved');		
 			})
 			.catch(function(){
-				logger.debug('[Engine] PLC isACurrentPlaylist : '+err);		
 				//No playlist exists, creating one.
 				logger.warn('[Engine] No current playlist found, creating one');
 				module.exports._services.playlist_controller.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0)
@@ -1174,11 +1010,9 @@ module.exports = {
 		module.exports._services.playlist_controller.isAPublicPlaylist()
 			.then(function(){
 				//A playlist exists, nothing to do.
-				logger.debug('[Engine] PLC isAPublicPlaylist resolved');		
 			})
 			.catch(function(){
 				//No playlist exists, creating one.
-				logger.debug('[Engine] PLC isAPublicPlaylist : '+err);		
 				logger.warn('[Engine] No public playlist found, creating one');
 				module.exports._services.playlist_controller.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1)
 					.then(function (new_playlist){
@@ -1195,7 +1029,6 @@ module.exports = {
 	* This is used to drive mpv or whatever video player is used.
 	*/
 	_start_player:function() {
-		logger.debug('[Engine] Entering _start_player...');					
 		module.exports._services.player = require(path.resolve(__dirname,'../_player/index.js'));
 		module.exports._services.player.BINPATH = path.resolve(module.exports.SYSPATH,'app/bin');
 		module.exports._services.player.SETTINGS = module.exports.SETTINGS;

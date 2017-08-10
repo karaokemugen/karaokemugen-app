@@ -17,7 +17,9 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			var lyrics = [];
 			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
-				reject('Video not found : '+videofile);
+				var err = 'Video not found : '+videofile
+				logger.error('[ASS] getLyrics : '+err)
+				reject(err);
 			}
 
 			//Testing if the subfile provided is dummy.ass
@@ -38,8 +40,9 @@ module.exports = {
 					subFile = 'kara_extract.'+uuid+'.ass';
 
 					if (proc.error) {
-						logger.error(proc.error);
-						reject('Failed to extract ASS file : '+proc.error);
+						err = 'Failed to extract ASS file : '+proc.error;
+						logger.error('[ASS] getLyrics : '+err);
+						reject(err);						
 					}
 				} else {
 					// No .mkv or .mp4 detected, so we create a .ass from vide.ass
@@ -51,7 +54,9 @@ module.exports = {
 				// Checking if subFile exists. Abort if not.
 				//console.log(pathToSubFiles);
 				if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))) {
-					reject('Unable to find ASS file : '+subFile);
+					var err = ('Unable to find ASS file : '+subfile);
+					logger.error('[ASS] getLyrics : '+err)
+					reject(err);
 				}
 			}
 			// Parsing the subFile provided, either vide.ass, the associated .ass file or the extracted .ass file from
@@ -131,26 +136,15 @@ module.exports = {
 	},
 	build:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id){
 		var uuid = uuidv4();
-		/*
-		// Parameters examples :
-		var subFile = 'app/data/lyrics/Mahoromatic - AMV - Derniere danse 2010.ass';
-		var subFile = 'dummy.ass';
-		var videoFile = 'xeno.mkv';
-		var outputFolder = 'app/temp/';
-		var title = 'Dernière Danse';
-		var series = 'Mahoromatic';
-		var songType = 'AMV'
-		var songOrder = '';
-		var requester = 'Axel';
-		var kara_id = 1200;
-		*/
-
+		
 		return new Promise(function(resolve, reject){
 
 			//Testing if video file exists and which extension it has.
 
 			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
-				reject('Video not found : '+videofile);
+				var err = 'Video not found : '+videofile
+				logger.error('[ASS] build : '+err)
+				reject(err);
 			}
 
 			//Testing if the subfile provided is dummy.ass
@@ -158,44 +152,6 @@ module.exports = {
 			// the one provided by the mkv or mp4 file.
 			if (subFile == 'dummy.ass') {
 				if (S(videoFile.toLowerCase()).contains('.mkv') || S(videoFile.toLowerCase()).contains('.mp4')) {
-					// Extract .ass from mkv
-					/* Using matroska-subtitles parser
-					// NOT WORKING RIGHT NOW.
-					// Lacks an event 'on end'.
-					var script = undefined;
-					var tracknumber = undefined;
-					var parser = new MatroskaSubtitles()
-
-					parser.once('tracks', function (tracks) {
-
-						tracks.forEach(function(track){
-							if (track.type == 'ass') {
-								tracknumber = track.number;
-								script = track.header;
-							}
-						})
-					})
-					parser.on('subtitle', function (subtitle) {
-					var text = subtitle.text;
-					var begin = subtitle.time;
-					var layer = subtitle.layer;
-					var style = subtitle.style;
-					var name = subtitle.name;
-					var marginL = subtitle.marginL;
-					var marginR = subtitle.marginR;
-					var marginV = subtitle.marginV;
-					var effect = subtitle.effect;
-					var duration = subtitle.duration;
-					var begintime = moment.duration(begin).format('h[:]mm[:]ss',2,{trim:false});
-					var endtime = moment.duration(begin).add(duration).format('h[:]mm[:]ss',2,{trim:false});
-
-					script += '\r\nDialogue: '+layer+','+begintime+','+endtime+','+style+','+name+','+effect+','+text;
-
-					})
-
-					var mkv = fs.createReadStream(videofile).pipe(parser);
-					*/
-
 					// Using ffmpeg
 
 					var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile), outputFolder+'/kara_extract.'+uuid+'.ass'], { encoding : 'utf8' }),
@@ -208,8 +164,9 @@ module.exports = {
 					subFile = 'kara_extract.'+uuid+'.ass';
 
 					if (proc.error) {
-						logger.error(proc.error);
-						reject('Failed to extract ASS file : '+proc.error);
+						err = 'Failed to extract ASS file : '+proc.error;
+						logger.error('[ASS] build : '+err);
+						reject(err);
 					}
 				} else {
 					// No .mkv or .mp4 detected, so we create a .ass from vide.ass
@@ -221,7 +178,9 @@ module.exports = {
 				// Checking if subFile exists. Abort if not.
 				//console.log(pathToSubFiles);
 				if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))) {
-					reject('Unable to find ASS file : '+subFile);
+					var err = 'ASS file not found : '+subFile
+					logger.error('[ASS] build : '+err)
+					reject(err);
 				}
 			}
 			// Parsing the subFile provided, either vide.ass, the associated .ass file or the extracted .ass file from
@@ -366,6 +325,7 @@ module.exports = {
 			script[StylesSection].body.push(StyleCredits);
 			script[StylesSection].body.push(StyleNickname);
 
+			// If title is empty, do not display - after songtype and order
 			if (!S(title).isEmpty()) {
 				title = ' - '+title;
 			}
@@ -409,7 +369,9 @@ module.exports = {
 			var outputFile = outputFolder+'/'+kara_id+'.'+playlist_id+'.ass';
 			fs.writeFile(outputFile, assStringify(script), function(err, rep) {
 				if (err) {
-					reject('Failed to write ASS file : '+err);
+					var err = 'Failed to write ASS file : '+err;
+					logger.error('[ASS] build : '+err);
+					reject(err);
 				} else {
 					resolve(outputFile);
 				}
