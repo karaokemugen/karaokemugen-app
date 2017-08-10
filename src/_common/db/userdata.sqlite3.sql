@@ -42,10 +42,11 @@ CREATE TABLE playlist_content (
 );
 
 CREATE TABLE blacklist (
-    fk_id_kara   INTEGER NOT NULL UNIQUE ON CONFLICT IGNORE,
-    kid          TEXT NOT NULL,
-    created_at   INTEGER NOT NULL,
-    reason       TEXT NOT NULL
+    pk_id_blacklist   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+    fk_id_kara        INTEGER NOT NULL UNIQUE,
+    kid               TEXT NOT NULL,
+    created_at        INTEGER NOT NULL,
+    reason            TEXT NOT NULL
 );
 
 CREATE TABLE blacklist_criteria (
@@ -56,7 +57,7 @@ CREATE TABLE blacklist_criteria (
 
 CREATE TABLE whitelist (
     pk_id_whitelist   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    fk_id_kara        INTEGER NOT NULL,
+    fk_id_kara        INTEGER NOT NULL UNIQUE,
     kid               TEXT NOT NULL,
     created_at        INTEGER NOT NULL,
     reason            TEXT NOT NULL
