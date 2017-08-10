@@ -7,7 +7,6 @@ var S = require('string');
 var i18n = require('i18n');
 const uuidv4 = require('uuid/v4');
 const exec = require('child_process');
-const MatroskaSubtitles = require('matroska-subtitles');
 const moment = require('moment');
 require('moment-duration-format');
 const ffmpegPath = require('ffmpeg-downloader').path;
