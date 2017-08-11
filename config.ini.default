@@ -36,7 +36,7 @@ PlayerStayOnTop = 1
 PlayerNoHud = 1
 PlayerNoBar = 1
 PlayerPIP = 1
-PlayerPIPSize = 20
+PlayerPIPSize = 35
 PlayerPIPPositionX = "Left"
 PlayerPIPPositionY = "Bottom"
 
