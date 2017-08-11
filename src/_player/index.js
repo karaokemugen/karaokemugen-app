@@ -125,6 +125,7 @@ module.exports = {
 		});
 
 		Promise.all([pIsmpvAvailable]).then(function() {
+			logger.debug('[Player] mpv is available')
 			var mpvOptions = [
 				'--keep-open=yes',
 				'--idle=yes',
@@ -132,11 +133,9 @@ module.exports = {
 				'--no-border',
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
-			];
-			if (module.exports.pipmode === 1) {
-				mpvOptions.push('--ontop');
-				mpvOptions.push('--no-border');
-				mpvOptions.push('--autofit='+module.exports.pipsize+'%:'+module.exports.pipsize+'%');
+			];			
+			if (module.exports.pipmode) {
+				mpvOptions.push('--autofit='+module.exports.pipsize+'%x'+module.exports.pipsize+'%');
 				// By default, center.
 				var positionX = 50;
 				var positionY = 50;
@@ -166,11 +165,10 @@ module.exports = {
 			}
 			if(module.exports.screen!==null) {
 				mpvOptions.push('--screen='+module.exports.screen);
-			}
-			if(module.exports.screen!==null) {
 				mpvOptions.push('--fs-screen='+module.exports.screen);
 			}
-			if(module.exports.fullscreen==1) {
+			// Fullscreen is disabled if pipmode is set. 
+			if(module.exports.fullscreen==1 && !module.exports.pipmode) {
 				mpvOptions.push('--fullscreen');
 			}
 			if(module.exports.stayontop==1) {
@@ -182,7 +180,7 @@ module.exports = {
 			if(module.exports.nobar==1) {
 				mpvOptions.push('--no-osd-bar');
 			}
-
+			logger.debug('[Player] mpv options : '+mpvOptions);
 			var mpvAPI = require('node-mpv');
 			module.exports._player = new mpvAPI(
 				{

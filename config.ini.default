@@ -30,14 +30,14 @@ PathAltname = "app/data/series_altnames.csv"
 ;1 = Second écran
 ; ...
 ;9 = Aucun écran spécifié (ne pas préciser l'option --screen)
-PlayerScreen = 1
+PlayerScreen = 0
 PlayerFullscreen = 1
 PlayerStayOnTop = 1
 PlayerNoHud = 1
 PlayerNoBar = 1
 PlayerPIP = 1
 PlayerPIPSize = 35
-PlayerPIPPositionX = "Left"
+PlayerPIPPositionX = "Right"
 PlayerPIPPositionY = "Bottom"
 
 BinPlayerWindows = "app/bin/mpv.exe"
