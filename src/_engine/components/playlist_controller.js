@@ -702,8 +702,7 @@ module.exports = {
 							});
 					});
 					Promise.all([pIsPublic,pIsCurrent])
-						.then(function() {
-							module.exports.emptyPlaylist(playlist_id);
+						.then(function() {							
 							module.exports.DB_INTERFACE.deletePlaylist(playlist_id)
 							.then(function(res) {
 								var values =
