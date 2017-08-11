@@ -497,7 +497,7 @@ module.exports = {
 						isInt: true,
 					}
 				});		
-				console.log(module.exports.SETTINGS);		
+				
 				req.checkBody('PlayerPIPPositionX')
 					.notEmpty()
 					.enum(['Left',
@@ -515,15 +515,15 @@ module.exports = {
 				
 				req.getValidationResult().then(function(result) {
 					if (result.isEmpty()) {
-						req.sanitize('EngineAllowNicknameChange').toBoolean();
-						req.sanitize('EngineAllowViewWhitelist').toBoolean();
-						req.sanitize('EngineAllowViewBlacklist').toBoolean();
-						req.sanitize('EngineAllowViewBlacklistCriterias').toBoolean();
-						req.sanitize('EngineDisplayNickname').toBoolean();
-						req.sanitize('PlayerFullscreen').toBoolean();
-						req.sanitize('PlayerNoBar').toBoolean();
-						req.sanitize('PlayerNoHud').toBoolean();
-						req.sanitize('PlayerAlwaysOnTop').toBoolean();
+						req.sanitize('EngineAllowNicknameChange').toInt();
+						req.sanitize('EngineAllowViewWhitelist').toInt();
+						req.sanitize('EngineAllowViewBlacklist').toInt();
+						req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
+						req.sanitize('EngineDisplayNickname').toInt();
+						req.sanitize('PlayerFullscreen').toInt();
+						req.sanitize('PlayerNoBar').toInt();
+						req.sanitize('PlayerNoHud').toInt();
+						req.sanitize('PlayerAlwaysOnTop').toInt();
 						req.sanitize('PlayerScreen').toInt();
 						req.sanitize('EngineSongsPerPerson').toInt();
 						req.sanitize('EnginePrivateMode').toInt();

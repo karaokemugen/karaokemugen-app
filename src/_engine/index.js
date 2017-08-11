@@ -673,15 +673,24 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onSettingsUpdate = function(settings) {
-			return new Promise(function(resolve,reject){
-				
+			return new Promise(function(resolve,reject){								
+				var settingsToSave = {};				
+				var defaultSettings = ini.parse(fs.readFileSync(path.join(module.exports.SYSPATH,'config.ini.default'), 'utf-8'));				
+				for (var setting in settings){
+					if (settings.hasOwnProperty(setting)){
+						if (defaultSettings[setting] != settings[setting]) {
+							settingsToSave[setting] = settings[setting];
+						}							
+					}
+				}
+
 				extend(true,module.exports.SETTINGS,settings);
 				
 				module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.player.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.admin.SETTINGS = module.exports.SETTINGS;
-				module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;
+				module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;								
 
 				// Part where we toggle settings
 				if (module.exports.SETTINGS.EnginePrivateMode === 1) {
@@ -690,13 +699,14 @@ module.exports = {
 					module.exports.setPrivateOff();
 				}
 
-				// Other settings for now have to be toggled through API calls				
-				
-				fs.writeFile(path.join(__dirname,'../../','config.ini'),ini.stringify(module.exports.SETTINGS), function(err, rep) {
+				// Other settings for now have to be toggled through API calls												
+
+				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err, rep) {
 					if (err) {
 						logger.error('[Engine] Unable to save settings : '+err);
 						reject(err);
 					}
+						logger.info('[Engine] Settings updated and saved to disk')
 						resolve();
 					});				
 			});
