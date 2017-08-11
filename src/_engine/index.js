@@ -1054,6 +1054,10 @@ module.exports = {
 		module.exports._services.player.stayontop = module.exports.SETTINGS.PlayerStayOnTop>0;
 		module.exports._services.player.nohud = module.exports.SETTINGS.PlayerNoHud>0;
 		module.exports._services.player.nobar = module.exports.SETTINGS.PlayerNoBar>0;
+		module.exports._services.player.pipmode = module.exports.SETTINGS.PlayerPIP>0;
+		module.exports._services.player.pippositionx = module.exports.SETTINGS.PlayerPIPPositionX;
+		module.exports._services.player.pippositiony = module.exports.SETTINGS.PlayerPIPPositionY;
+		module.exports._services.player.pipsize = module.exports.SETTINGS.PlayerPIPSize;
 		module.exports._services.player.init();
 	}
 };

@@ -486,8 +486,32 @@ module.exports = {
 						notEmpty: true,
 						isBoolean: true,
 					},
+					'PlayerPIP': {
+						in: 'body',
+						notEmpty: true,
+						isBoolean: true,
+					},
+					'PlayerPIPSize': {
+						in: 'body',
+						notEmpty: true,
+						isInt: true,
+					},
 				});
-
+				req.checkBody('PlayerPIPPositionX')
+					.notEmpty()
+					.enum(['Left',
+							'Center',
+							'Right',
+						]
+					);
+				req.checkBody('PlayerPIPPositionY')
+					.notEmpty()
+					.enum(['Top',
+							'Center',
+							'Bottom',
+						]
+					);
+					
 				req.getValidationResult().then(function(result) {
 					if (result.isEmpty()) {
 						req.sanitize('EngineAllowNicknameChange').toBoolean();
@@ -502,6 +526,8 @@ module.exports = {
 						req.sanitize('PlayerScreen').toInt();
 						req.sanitize('EngineSongsPerPerson').toInt();
 						req.sanitize('EnginePrivateMode').toInt();
+						req.sanitize('PlayerPIP').toInt();
+						req.sanitize('PlayerPIPSize').toInt();
 
 						var SETTINGS = req.body;
 						module.exports.onSettingsUpdate(SETTINGS)

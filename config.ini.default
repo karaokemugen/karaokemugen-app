@@ -35,7 +35,10 @@ PlayerFullscreen = 1
 PlayerStayOnTop = 1
 PlayerNoHud = 1
 PlayerNoBar = 1
-
+PlayerPIP = 1
+PlayerPIPSize = 20
+PlayerPIPPositionX = "Left"
+PlayerPIPPositionY = "Bottom"
 
 BinPlayerWindows = "app/bin/mpv.exe"
 BinPlayerOSX = "app/bin/mpv.osx"

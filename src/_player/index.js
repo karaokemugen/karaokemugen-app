@@ -25,6 +25,10 @@ module.exports = {
 	mutestatus:false,
 	subtext:'',
 	status:{},
+	pipmode:null,
+	pipsize:null,
+	pippositionx:null,
+	pippositiony:null,
 	init:function(){
 		var mpvBinary;
 		var mpvHTTP;
@@ -129,6 +133,37 @@ module.exports = {
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
 			];
+			if (module.exports.pipmode === 1) {
+				mpvOptions.push('--ontop');
+				mpvOptions.push('--no-border');
+				mpvOptions.push('--autofit='+module.exports.pipsize+'%x'+module.exports.pipsize+'%');
+				// By default, center.
+				var positionX = 50;
+				var positionY = 50;
+				switch(module.exports.pippositionx){
+					case 'Left':
+						positionX = 1;
+						break;
+					case 'Center':
+						positionX = 50;
+						break;
+					case 'Right':
+						positionX = 99;
+						break;
+				}
+				switch(module.exports.pippositiony){
+					case 'Top':
+						positionY = 5;
+						break;
+					case 'Center':
+						positionX = 50;
+						break;
+					case 'Bottom':
+						positionX = 95;
+						break;
+				}
+				mpvOptions.push('--geometry='+positionX+'%:'+positionY+'%');
+			}
 			if(module.exports.screen!==null) {
 				mpvOptions.push('--screen='+module.exports.screen);
 			}
