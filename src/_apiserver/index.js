@@ -54,7 +54,7 @@ module.exports = {
 			next();
 		});
 		function AdminPasswordSetting(username, password){
-			return password === 'shami';
+			return password === module.exports.SETTINGS.AdminPassword;
 		}
 
 		routerPublic.use(function(req, res, next) {
