@@ -1140,17 +1140,21 @@ module.exports = {
 		});
 	},
 	emptyPlaylist:function(playlist_id) {
-		//TODO : transformer en promesse
-		// Empties playlist
-		var sqlEmptyPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_playlist.sql'),'utf-8');
-		module.exports._user_db_handler.run(sqlEmptyPlaylist,
-			{
-				$playlist_id: playlist_id
-			}, function(err) {
-				if (err) {
-					logger.error('Failed to empty playlist '+playlist_id+' : '+err);
-				}
-			});
+		return new Promise(function(resolve,reject){
+			// Empties playlist
+			var sqlEmptyPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlEmptyPlaylist,
+				{
+					$playlist_id: playlist_id
+				}, function(err) {
+					if (err) {
+						logger.error('Failed to empty playlist '+playlist_id+' : '+err);
+						reject(err);
+					} else {
+						resolve();
+					}
+				});
+		});
 	},
 	deletePlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){

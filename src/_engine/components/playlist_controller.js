@@ -730,11 +730,32 @@ module.exports = {
 				});
 		});
 	},
-	emptyPlaylist:function(playlist_id) {
-		//TODO : Tester si la playlist existe
-		//TODO : Transformer en promesse.
-		module.exports.DB_INTERFACE.emptyPlaylist(playlist_id);
-		module.exports.updatePlaylistLastEditTime(playlist_id);
+	emptyPlaylist:function(playlist_id) {		
+		return new Promise(function(resolve,reject){
+			module.exports.isPlaylist(playlist_id)
+				.then(function() {
+					module.exports.DB_INTERFACE.emptyPlaylist(playlist_id)
+						.then(function(){
+							module.exports.updatePlaylistLastEditTime(playlist_id)
+								.then(function(){
+									resolve();
+								})
+								.catch(function(err){
+									logger.error('[PLC] updatePlaylistLastEditTime : '+err);
+									reject(err);
+								})
+						})
+						.catch(function(err){
+							logger.error('[PLC] DBI emptyPlaylist : '+err);
+							reject(err);
+						});
+				})
+				.catch(function(err) {
+					var err = 'Playlist '+playlist_id+' unknown'
+					logger.error('[PLC] isPlaylist : '+err)
+					reject(err);
+				});			
+		});
 	},
 	/**
 	* @function {editPlaylist}

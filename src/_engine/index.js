@@ -706,6 +706,18 @@ module.exports = {
 					});
 			});
 		}
+		module.exports._services.apiserver.onPlaylistSingleEmpty = function(id_playlist){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.emptyPlaylist(id_playlist)
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC emptyPlaylist : '+err);
+						reject(err);						
+					});
+			});
+		}
 		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,lang,seenFromUser){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)

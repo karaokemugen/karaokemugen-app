@@ -284,6 +284,20 @@ module.exports = {
 						}
 					});
 			});
+		
+		routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
+		.put(function(req,res){
+			// Empty playlist
+
+			module.exports.onPlaylistSingleEmpty(req.params.pl_id)
+				.then(function(){
+					res.json('Playlist '+req.params.pl_id+' emptied');
+				})
+				.catch(function(err){
+					res.statusCode = 500;
+					res.json(err);
+				});
+			})
 
 		routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
 			.get(function(req,res){
@@ -1089,6 +1103,7 @@ module.exports = {
 	onPlaylistSingleInfo:function(){},
 	onPlaylistSingleDelete:function(){},
 	onPlaylistSingleEdit:function(){},
+	onPlaylistSingleEmpty:function(){},
 	onPlaylistSingleContents:function(){},
 	onPlaylistSingleKaraDelete:function(){},
 	onPlaylistSingleKaraEdit:function(){},
