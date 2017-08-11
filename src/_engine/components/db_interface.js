@@ -1284,7 +1284,7 @@ module.exports = {
 				if (err) {
 					logger.error('Failed to create playlist '+name+' : '+err);
 					reject(err);
-				} else {
+				} else {					
 					resolve(this.lastID);
 				}
 			});

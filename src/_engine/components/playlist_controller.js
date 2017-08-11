@@ -888,7 +888,7 @@ module.exports = {
 					.then(function() {
 						module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public)
 						.then(function(new_id_playlist){
-							resolve(new_id_playlist.id);
+							resolve(new_id_playlist);
 						})
 						.catch(function(err){
 							logger.error('[PLC] DBI createPlaylist : '+err)

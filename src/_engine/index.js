@@ -1054,6 +1054,5 @@ module.exports = {
 		module.exports._services.player.nohud = module.exports.SETTINGS.PlayerNoHud>0;
 		module.exports._services.player.nobar = module.exports.SETTINGS.PlayerNoBar>0;
 		module.exports._services.player.init();
-
 	}
 };
