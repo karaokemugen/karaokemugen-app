@@ -136,7 +136,7 @@ module.exports = {
 			if (module.exports.pipmode === 1) {
 				mpvOptions.push('--ontop');
 				mpvOptions.push('--no-border');
-				mpvOptions.push('--autofit='+module.exports.pipsize+'%x'+module.exports.pipsize+'%');
+				mpvOptions.push('--autofit='+module.exports.pipsize+'%:'+module.exports.pipsize+'%');
 				// By default, center.
 				var positionX = 50;
 				var positionY = 50;
