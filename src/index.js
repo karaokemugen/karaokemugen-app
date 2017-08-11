@@ -25,7 +25,6 @@ console.log(clc.greenBright('| Project Toyunda Mugen                            
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
 console.log('\n');
 
-var detectedLocale = osLocale.sync().substring(0,2);
 
 
 i18n.configure({
@@ -33,10 +32,10 @@ i18n.configure({
 	defaultLocale: 'en',
 	register: global
 });
+
+var detectedLocale = osLocale.sync().substring(0,2);
 i18n.setLocale(detectedLocale);
-
 logger.info('[Launcher] Locale detected : '+detectedLocale);
-
 
 if (argv.help) {
 
@@ -69,7 +68,7 @@ if(SYSPATH) {
 	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);
 	SETTINGS.EngineDefaultLocale = detectedLocale;	
 
-	logger.info('[Launcher] Loading configuration file');
+	logger.info('[Launcher] Loaded configuration file');
 	logger.debug('[Launcher] Loaded configuration : '+JSON.stringify(SETTINGS,null,'\n'));
 
 	// Vérification que les chemins sont bien présents, sinon les créer

@@ -495,23 +495,24 @@ module.exports = {
 						in: 'body',
 						notEmpty: true,
 						isInt: true,
-					},
-				});
+					}
+				});		
+				console.log(module.exports.SETTINGS);		
 				req.checkBody('PlayerPIPPositionX')
 					.notEmpty()
 					.enum(['Left',
 							'Center',
-							'Right',
+							'Right'
 						]
-					);
+					);					
 				req.checkBody('PlayerPIPPositionY')
 					.notEmpty()
 					.enum(['Top',
 							'Center',
-							'Bottom',
+							'Bottom'
 						]
 					);
-					
+				
 				req.getValidationResult().then(function(result) {
 					if (result.isEmpty()) {
 						req.sanitize('EngineAllowNicknameChange').toBoolean();
@@ -529,7 +530,7 @@ module.exports = {
 						req.sanitize('PlayerPIP').toInt();
 						req.sanitize('PlayerPIPSize').toInt();
 
-						var SETTINGS = req.body;
+						var SETTINGS = req.body;						
 						module.exports.onSettingsUpdate(SETTINGS)
 							.then(function(){
 								res.json('Settings updated');

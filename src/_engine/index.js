@@ -6,6 +6,8 @@ const path = require('path');
 const logger = require('../_common/utils/logger.js');
 const extend = require('extend');
 const timestamp = require('unix-timestamp');
+const ini = require('ini');
+
 /**
  * @module engine
  * Main engine module.
@@ -672,10 +674,9 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onSettingsUpdate = function(settings) {
 			return new Promise(function(resolve,reject){
+				
 				extend(true,module.exports.SETTINGS,settings);
-
-				// TODO : Need to save settings here
-
+				
 				module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.player.SETTINGS = module.exports.SETTINGS;
@@ -690,8 +691,14 @@ module.exports = {
 				}
 
 				// Other settings for now have to be toggled through API calls				
-
-				resolve();
+				
+				fs.writeFile(path.join(__dirname,'../../','config.ini'),ini.stringify(module.exports.SETTINGS), function(err, rep) {
+					if (err) {
+						logger.error('[Engine] Unable to save settings : '+err);
+						reject(err);
+					}
+						resolve();
+					});				
 			});
 		};
 		module.exports._services.apiserver.onPlaylistSingleEdit = function(id_playlist,playlist){
