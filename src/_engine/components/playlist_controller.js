@@ -2309,7 +2309,7 @@ module.exports = {
 												kara.songorder,
 												requester,
 												kara_id,
-												publicPlaylistID)
+												currentPlaylistID)
 												.then(function() {
 													resolve();
 												})
@@ -2378,7 +2378,7 @@ module.exports = {
 																});
 														});
 														var pUpdatedPlaylistLastEditTime = new Promise((resolve,reject) => {
-															module.exports.updatePlaylistLastEditTime(publicPlaylistID)
+															module.exports.updatePlaylistLastEditTime(currentPlaylistID)
 																.then(function(){
 																	resolve();
 																})

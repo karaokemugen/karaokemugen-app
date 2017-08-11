@@ -1005,6 +1005,7 @@ module.exports = {
 		//Test if a playlist with flag_current exists. If not create one.
 		module.exports._services.playlist_controller.isACurrentPlaylist()
 			.then(function(){
+				//A playlist exists, nothing to do.
 			})
 			.catch(function(){
 				//No playlist exists, creating one.
