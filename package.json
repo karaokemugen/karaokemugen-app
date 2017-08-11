@@ -35,6 +35,9 @@
   },
   "license": "MIT",
   "private": true,
+  "pkg": {
+    "assets": "src/_admin/httpdocs/*, src/_common/db/*, src/_common/locales/*, src/_player/assets/*, src/_webapp/**/*"
+  },
   "dependencies": {
     "asap": "^2.0.5",
     "ass-parser": "^0.1.2",
@@ -68,13 +71,13 @@
     "node-mpv": "^1.2.0",
     "open": "0.0.5",
     "os": "^0.1.1",
-    "os-locale": "^2.0.0",
+    "os-locale": "^2.0.0",    
     "progress": "^2.0.0",
     "qrcode": "^0.8.2",
     "request": "^2.81.0",
     "request-progress": "^3.0.0",
     "rsync": "^0.6.1",
-    "socket.io": "^2.0.3",
+    "socket.io": "^2.0.3",    
     "sqlite3": "^3.1.8",
     "string": "^3.3.3",
     "unix-timestamp": "^0.2.0",
@@ -86,6 +89,7 @@
     "jsdoc": "^3.4.3",
     "mocha": "^3.5.0",
     "nodemon": "^1.11.0",
+    "pkg": "^4.2.2",
     "supertest": "^3.0.0"
   },
   "false": {}
