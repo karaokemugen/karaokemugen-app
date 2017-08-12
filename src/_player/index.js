@@ -20,6 +20,8 @@ module.exports = {
 	nobar: 0,
 	BINPATH:null,
 	SETTINGS:null,
+	SYSPATH:null,
+	frontend_port:null,
 	timeposition:0,
 	duration:0,
 	mutestatus:false,
@@ -32,6 +34,21 @@ module.exports = {
 	init:function(){
 		var mpvBinary;
 		var mpvHTTP;
+		var pGenerateBackground = new Promise((resolve,reject) => {
+			generateBackground = require('./generate_background.js');
+			generateBackground.SYSPATH = module.exports.SYSPATH;
+			generateBackground.frontend_port = module.exports.frontend_port;
+			generateBackground.SETTINGS = module.exports.SETTINGS;
+			generateBackground.build()
+				.then(function(){
+					logger.info('[Player] Background generated');
+					resolve();
+				})
+				.catch(function(err){
+					logger.error('[Player] Background generation error : '+err);
+					reject(err); 
+				})
+		})
 		var pIsmpvAvailable = new Promise((resolve,reject) => {
 			if (module.exports.SETTINGS.os == 'win32') {
 				mpvBinary = module.exports.BINPATH+'/mpv.exe';
@@ -124,7 +141,7 @@ module.exports = {
 			}
 		});
 
-		Promise.all([pIsmpvAvailable]).then(function() {
+		Promise.all([pIsmpvAvailable,pGenerateBackground]).then(function() {
 			logger.debug('[Player] mpv is available')
 			var mpvOptions = [
 				'--keep-open=yes',
@@ -193,7 +210,8 @@ module.exports = {
 				},
 				mpvOptions
 			);
-
+			var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg')
+			module.exports._player.loadFile(backgroundImageFile);
 			module.exports._player.observeProperty('sub-text',13);
 			
 			module.exports._player.on('statuschange',function(status){
@@ -224,7 +242,7 @@ module.exports = {
 			logger.info('[Player] Player interface is READY');
 		})
 			.catch(function(err) {				
-				logger.error('[Player] Player interface is NOT READY :'+err);
+				logger.error('[Player] Player interface is NOT READY : '+err);
 				fs.unlink(module.exports.BINPATH+'/mpvtemp.exe', (err) => {
 					if (err) throw err;
 					process.exit();
@@ -253,7 +271,8 @@ module.exports = {
 				} else {
 					logger.info('[Player] Subs not needed');
 				}
-				module.exports._player.loadFile(module.exports.background,'append');
+				var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg')
+				module.exports._player.loadFile(backgroundImageFile,'append');
 			},500);
 		} else {
 			module.exports.playing = false;

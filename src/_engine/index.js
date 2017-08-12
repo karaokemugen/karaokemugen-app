@@ -1061,11 +1061,13 @@ module.exports = {
 	_start_player:function() {
 		module.exports._services.player = require(path.resolve(__dirname,'../_player/index.js'));
 		module.exports._services.player.BINPATH = path.resolve(module.exports.SYSPATH,'app/bin');
-		module.exports._services.player.SETTINGS = module.exports.SETTINGS;
+		module.exports._services.player.SETTINGS = module.exports.SETTINGS;		
+		module.exports._services.player.SYSPATH = module.exports.SYSPATH;		
+		module.exports._services.player.frontend_port = module.exports._states.frontend_port;
 		module.exports._services.player.onEnd = module.exports.playerEnding;
-		// si le wallpaper de la config existe bien on le configure dans le player
-		if(module.exports.SETTINGS.PlayerWallpaper && fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper)))
-			module.exports._services.player.background = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper);
+		// TODO : Wallpaper is not yet configurable : this will be reworked later
+		/*if(module.exports.SETTINGS.PlayerWallpaper && fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper)))
+			module.exports._services.player.background = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper); */
 		module.exports._services.player.screen = module.exports.SETTINGS.PlayerScreen;
 		module.exports._services.player.fullscreen = module.exports.SETTINGS.PlayerFullscreen>0;
 		module.exports._services.player.stayontop = module.exports.SETTINGS.PlayerStayOnTop>0;
