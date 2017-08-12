@@ -211,7 +211,8 @@ module.exports = {
 				mpvOptions
 			);
 			var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg')
-			module.exports._player.loadFile(backgroundImageFile);
+			// Disabled loading the background at start during dev.
+			//module.exports._player.loadFile(backgroundImageFile);
 			module.exports._player.observeProperty('sub-text',13);
 			
 			module.exports._player.on('statuschange',function(status){
