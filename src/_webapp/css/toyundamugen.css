@@ -9,6 +9,10 @@ body {
 	margin: 0;
 }
 
+.form-control {
+	background-color: #f5f5f5;
+}
+
 .btn-default {
 	background-color: #e8e8e8;
 }
@@ -28,7 +32,7 @@ body {
 	width: 85px;
 	padding: 0px;
 	margin: 0px;
-	font-size: 135%;
+	font-size: 140%;
 }
 
 .header > .btn-group, #header img {
@@ -125,6 +129,7 @@ select.form-control {
 }
 
 
+
  @media only screen and (min-width: 768px) {
 	.loginbox
 	{
@@ -147,3 +152,92 @@ select.form-control {
 	color: #333;
 }
 */
+
+
+/** range CSS */
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 11.5px 0;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 13px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.03), 0px 0px 1px rgba(13, 13, 13, 0.03);
+  background: #ffffff;
+  border-radius: 0px;
+  border: 0.1px solid rgba(0, 1, 1, 0.36);
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 0px solid #000000;
+  height: 36px;
+  width: 27px;
+  border-radius: 0px;
+  background: #e6e6e6;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -11.6px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #ffffff;
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 13px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.03), 0px 0px 1px rgba(13, 13, 13, 0.03);
+  background: #ffffff;
+  border-radius: 0px;
+  border: 0.1px solid rgba(0, 1, 1, 0.36);
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 0px solid #000000;
+  height: 36px;
+  width: 27px;
+  border-radius: 0px;
+  background: #e6e6e6;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 13px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: #f2f2f2;
+  border: 0.1px solid rgba(0, 1, 1, 0.36);
+  border-radius: 0px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.03), 0px 0px 1px rgba(13, 13, 13, 0.03);
+}
+input[type=range]::-ms-fill-upper {
+  background: #ffffff;
+  border: 0.1px solid rgba(0, 1, 1, 0.36);
+  border-radius: 0px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.03), 0px 0px 1px rgba(13, 13, 13, 0.03);
+}
+input[type=range]::-ms-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 0px solid #000000;
+  height: 36px;
+  width: 27px;
+  border-radius: 0px;
+  background: #e6e6e6;
+  cursor: pointer;
+  height: 13px;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: #ffffff;
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: #ffffff;
+}
