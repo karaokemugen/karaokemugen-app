@@ -1,2 +1,2 @@
-SELECT pk_id_blcriteria, blcriteria_type, blcriteria_value
+SELECT pk_id_blcriteria, type, value
   FROM blacklist_criteria;

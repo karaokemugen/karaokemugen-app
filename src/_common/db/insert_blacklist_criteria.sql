@@ -1,2 +1,2 @@
-INSERT INTO blacklist_criteria(blcriteria_type,blcriteria_value)
+INSERT INTO blacklist_criteria(type,value)
      VALUES ($blctype,$blcvalue);

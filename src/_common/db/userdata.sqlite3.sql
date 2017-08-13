@@ -51,8 +51,8 @@ CREATE TABLE blacklist (
 
 CREATE TABLE blacklist_criteria (
     pk_id_blcriteria   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-    blcriteria_type    INTEGER NOT NULL,
-    blcriteria_value   TEXT NOT NULL
+    type             INTEGER NOT NULL,
+    value   TEXT NOT NULL
 );
 
 CREATE TABLE whitelist (
