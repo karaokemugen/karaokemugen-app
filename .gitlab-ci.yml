@@ -18,5 +18,6 @@ test:
 deploy:
   stage: deploy
   script: "echo lol2"
-  only: master
+  only: 
+    - master
 
