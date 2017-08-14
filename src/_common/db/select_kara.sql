@@ -19,6 +19,7 @@ SELECT ak.pk_id_kara AS id_kara,
 	  ak.viewcount AS viewcount,
       ak.subfile AS subfile,
       ak.videofile AS videofile,
-	  ak.videolength AS duration
+	  ak.videolength AS duration,
+	  ak.gain AS gain
  FROM all_karas AS ak
 WHERE ak.pk_id_kara = $kara_id;

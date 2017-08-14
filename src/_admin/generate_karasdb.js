@@ -31,6 +31,8 @@ module.exports = {
 			const uuidV4 = require('uuid/v4');
 			var csv = require('csv-string');
 			var iniread = require('node-ini');
+			const exec = require('child_process');
+			const ffmpegPath = require('ffmpeg-downloader').path;
 			const langsModule = require('langs');
 			const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
 			const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
@@ -149,7 +151,9 @@ module.exports = {
 						 * Then build karas table in one transaction.
 						 */
 						var pAddToKaras = new Promise((resolve,reject) => {
-							async.eachLimit(karafiles, 500, function(kara, callback){
+								
+							logger.profile('AddKara')
+							async.eachLimit(karafiles, 5, function(kara, callback){
 								addKara(kara)
 									.then(function(){
 										callback();
@@ -161,6 +165,7 @@ module.exports = {
 								if (err) {
 									reject(err);
 								}
+								logger.profile('AddKara')
 								module.exports.onLog('success', 'Karaoke count : '+karas.length);
 								resolve();
 							});
@@ -811,7 +816,38 @@ module.exports = {
 						});
 				});
 			}
+			function getvideogain(videofile){
+				return new Promise((resolve,reject) => {
+					var videogain = 0;
+					var proc = exec.spawn(ffmpegPath, ['-i', videosdir + '/' + videofile, '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 
+					var audioGain = undefined;
+					var output = '';
+
+					proc.stderr.on('data',(data) => {
+						output += data.toString();
+					})
+
+					proc.on('close', (code) => {
+						if (code !== 0) {
+							module.exports.onLog('error', 'Video '+videofile+' gain calculation error : '+code);
+							resolve(0);
+						} else {
+							var outputArray = output.split(' ');
+							var index = outputArray.indexOf('track_gain');
+							if ( index != -1) {
+								audioGain = S(outputArray[index+2]).toFloat();
+							}	
+							if (typeof audioGain === 'number') {
+								resolve(audioGain.toString())
+							} else {
+								resolve(0);
+							}
+						}						
+					})
+
+				})
+			}
 			function getvideoduration(videofile) {
 				return new Promise((resolve,reject) => {
 					var videolength = 0;
@@ -1097,13 +1133,24 @@ module.exports = {
 							//Calculate size.
 							
 							if (fs.existsSync(videosdir + '/' + kara['videofile'])) {
-								var videostats = fs.statSync(videosdir + '/' + kara['videofile'])
-								if (videostats.size != karadata.videosize){
+								var videostats = fs.statSync(videosdir + '/' + kara['videofile'])								
+								if (videostats.size != karadata.videosize) {
 									//Probe file for duration
 									//Calculate gain
 									// write duration and gain to .kara
-									kara['gain'] = 0;
-									karadata.videogain = 0;
+									
+									var pGetVideoGain = new Promise ((resolve,reject) => {
+										getvideogain(karadata.videofile)
+											.then(function(gain){												
+												kara['gain'] = gain;
+												karadata.videogain = gain;
+												resolve();
+											})
+											.catch(function(err){
+												kara['gain'] = 0;
+												reject(err);
+											})
+									});
 
 									var pGetVideoDuration = new Promise ((resolve,reject) => {
 										getvideoduration(karadata.videofile)
@@ -1140,7 +1187,7 @@ module.exports = {
 							kara['creator'] = karadata.creator;
 							kara['author'] = karadata.author;
 							kara['serie'] = karadata.series;
-							Promise.all([pGetVideoDuration])
+							Promise.all([pGetVideoDuration,pGetVideoGain])
 								.then(function(){
 									karas.push(kara);
 									fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err, rep) {
