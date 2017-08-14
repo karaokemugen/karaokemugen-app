@@ -314,8 +314,8 @@ module.exports = {
 	seek: function(delta) {
 		module.exports._player.seek(delta);
 	},
-	reset: function() {
-		module.exports._player.goToPosition(0);
+	goTo: function(seconds) {
+		module.exports._player.goToPosition(seconds);
 	},
 	mute: function() {
 		module.exports._player.mute();

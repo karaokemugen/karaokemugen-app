@@ -144,6 +144,9 @@ module.exports = {
 	seek:function(delta){
 		module.exports._services.player.seek(delta);
 	},
+	goTo:function(seconds){
+		module.exports._services.player.goTo(seconds);
+	},
 	reset:function(){
 		module.exports._services.player.reset();
 	},
@@ -952,11 +955,14 @@ module.exports = {
 						module.exports.unmute();
 						break;
 					case 'seek':
-						if (!options) options = 0;
+						if (!options && typeof options !== "undefined") options = 0;
+						if (isNaN(options)) reject('Command seek must have a numeric option value');
 						module.exports.seek(options)
 						break;
-					case 'reset':
-						module.exports.reset();
+					case 'goTo':
+						if (!options && typeof options !== "undefined") options = 0;
+						if (isNaN(options)) reject('Command goTo must have a numeric option value');
+						module.exports.goTo(options);
 						break;
 				}
 				resolve();
