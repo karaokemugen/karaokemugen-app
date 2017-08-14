@@ -70,6 +70,13 @@ module.exports = {
 					if (err) {
 						logger.error('Loading karaoke database failed : '+err);
 						process.exit();
+					} else {
+						module.exports._db_handler.run('PRAGMA foreign_keys = ON;', function (err) {
+							if (err) {
+								logger.error('Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
+								process.exit();
+							}
+						});
 					}
 				});
 
@@ -78,7 +85,7 @@ module.exports = {
 						logger.error('Loading user database failed : '+err);
 						process.exit();
 					} else {
-						module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb;',function(err){
+						module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb; PRAGMA foreign_keys = ON;',function(err){
 							if (err) {
 								logger.error(err);
 							} else {
