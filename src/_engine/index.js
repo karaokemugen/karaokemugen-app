@@ -955,13 +955,13 @@ module.exports = {
 						module.exports.unmute();
 						break;
 					case 'seek':
-						if (!options) options = 0;
-						if (typeof options != 'number') reject('Command seek must have a numeric option value');
+						if (!options && typeof options !== "undefined") options = 0;
+						if (isNaN(options)) reject('Command seek must have a numeric option value');
 						module.exports.seek(options)
 						break;
 					case 'goTo':
-						if (!options) options = 0;
-						if (typeof options != 'number') reject('Command goTo must have a numeric option value');
+						if (!options && typeof options !== "undefined") options = 0;
+						if (isNaN(options)) reject('Command goTo must have a numeric option value');
 						module.exports.goTo(options);
 						break;
 				}
