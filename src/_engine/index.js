@@ -144,6 +144,9 @@ module.exports = {
 	seek:function(delta){
 		module.exports._services.player.seek(delta);
 	},
+	goTo:function(seconds){
+		module.exports._services.player.goTo(seconds);
+	},
 	reset:function(){
 		module.exports._services.player.reset();
 	},
@@ -953,10 +956,13 @@ module.exports = {
 						break;
 					case 'seek':
 						if (!options) options = 0;
+						if (typeof options != 'number') reject('Command seek must have a numeric option value');
 						module.exports.seek(options)
 						break;
-					case 'reset':
-						module.exports.reset();
+					case 'goTo':
+						if (!options) options = 0;
+						if (typeof options != 'number') reject('Command goTo must have a numeric option value');
+						module.exports.goTo(options);
 						break;
 				}
 				resolve();

@@ -761,7 +761,7 @@ module.exports = {
 							   'toggleFullscreen',
 							   'toggleAlwaysOnTop',
 							   'seek',
-							   'reset',
+							   'goTo',
 							   'mute',
 							   'unmute'
 						]
