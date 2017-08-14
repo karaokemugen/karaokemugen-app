@@ -1,158 +1,181 @@
-
-    <div id="header" class="header">
-        <button class="btn btn-default btn-dark pull-right">
+<div id="header" class="header">
+    <button class="btn btn-default btn-dark pull-right">
             <i class="glyphicon glyphicon-off"></i></button>
-        <div class="pull-left btn-group" style="width: 129px;">
-            <input type="checkbox"  name="EnginePrivateMode" class="btn btn-default pull-left"
-				data-on-text="<i class='glyphicon glyphicon-eye-close'></i> Privé"
-				data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large">
-            <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-left"
-				data-on-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
-				data-off-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large">
-        </div>
-        <div class="pull-left btn-group">
-            <button action="command" value="stopNow" id="stopNow" class="btn btn-danger-low" style="width: 47px;"> <i class="glyphicon glyphicon-ban-circle"></i></button>
-            <button action="command" value="stopAfter" id="stopAfter" value="play" class="btn btn-danger"><i class="glyphicon glyphicon-stop"></i></button>
-        </div>
-        <div id="centerBtns" class="header">
-            <div class="btn-group">
-                <button action="command" value="prev" id="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
-                <button action="command" value="play" id="play" class="btn btn-primary"><i class="glyphicon glyphicon-play"></i></button>
-                <button action="command" value="skip" id="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
-            </div>
-        </div>
-        <div class="pull-right btn-group hidden"  >
-            <img src="https://lab.shelter.moe/uploads/-/system/project/avatar/18/tmugen2.jpg" alt="logo kara" class="pull-right">
-            <strike class="pull-right" style="margin-right: 19px;    line-height: 64px;    font-size: 22px;">TOYUNDA</strike>
+    <button action="command" value="mute" id="volume" class="btn btn-default btn-dark pull-right">
+            <i class="glyphicon glyphicon-volume-up"></i></button>
+    <div class="pull-left btn-group" style="width: 129px;">
+        <input type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> Privé"
+            data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large">
+        <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
+            data-off-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large">
+    </div>
+    <div class="pull-left btn-group">
+        <button action="command" value="stopAfter" id="stopAfter" class="btn btn-danger-low" style="width: 50px;"><i class="glyphicon glyphicon-time"></i></button>
+        <button action="command" value="stopNow" id="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
+        <button action="command" value="reset" id="reset" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
+    </div>
+    <div id="centerBtns" class="header">
+        <div class="btn-group">
+            <button action="command" value="prev" id="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
+            <button action="command" value="play" id="play" class="btn btn-primary"><i class="glyphicon glyphicon-play"></i></button>
+            <button action="command" value="skip" id="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
+            <button class="btn btn-default hidden"></button>
         </div>
     </div>
-    <div id="progressBar" class="underHeader">
-        <div id="karaInfo" idKara="-1"> Kara information </div>
-        <div id="progressBarColor" style="width:0%;"></div>
+    <div class="pull-right btn-group hidden">
+        <img src="https://lab.shelter.moe/uploads/-/system/project/avatar/18/tmugen2.jpg" alt="logo kara" class="pull-right">
+        <strike class="pull-right" style="margin-right: 19px;    line-height: 64px;    font-size: 22px;">TOYUNDA</strike>
     </div>
-    <div id="underHeader" class="underHeader container-fluid">
-        <div class="playlist-main row" id="playlist">
-            <div class="panel col-lg-6 col-xs-6">
-                <div class="panel-heading">
-                    <div class="col-lg-6 col-xs-6">
-                        <select type="playlist_select" num="1" class="select2 form-control">
+</div>
+<div id="progressBar" class="underHeader">
+    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"> Kara information </div>
+    <div id="progressBarColor" style="width:0%;"></div>
+</div>
+<div id="underHeader" class="underHeader container-fluid">
+    <div class="playlist-main row" id="playlist">
+        <div class="panel col-lg-6 col-xs-6">
+            <div class="panel-heading">
+                <div class="col-lg-6 col-xs-6">
+                    <select type="playlist_select" num="1" class="select2 form-control">
                         </select>
-                    </div>
-                    <div class="col-lg-6 col-xs-6">
-                        <div class="pull-right">
-                            <button class="btn btn-lg btn-default ">
+                </div>
+                <div class="col-lg-6 col-xs-6">
+                    <div class="pull-right">
+                        <button class="btn btn-lg btn-default ">
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
-                            <button class="btn btn-lg btn-default ">
+                        <button class="btn btn-lg btn-default ">
                                 <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
-                            <button class="btn btn-lg btn-default ">
+                        <button class="btn btn-lg btn-default ">
                                 <i class="glyphicon glyphicon-eye-close"></i>
                             </button>
-                        </div>
                     </div>
                 </div>
- 
-                <ul id="playlist1" class="list-group">
-                  <li class="list-group-item"></li>
-                </ul>
             </div>
-			
-            <div class="panel col-lg-6 col-xs-6">
-                <div class="panel-heading">
-                    <div class="col-lg-6 col-xs-6">
-                        <select type="playlist_select" num="2" class="select2 form-control form-control-lg">
-                        </select>
-                    </div>
-                    <div class="col-lg-6 col-xs-6">
-                        <div class="pull-right">
-                            <button class="btn btn-lg btn-default ">
-                                <i class="glyphicon glyphicon-export"></i>
-                            </button>
-                            <button class="btn btn-lg btn-default ">
-                                <i class="glyphicon glyphicon-facetime-video"></i>
-                            </button>
-                            <button class="btn  btn-lg btn-default ">
-                                <i class="glyphicon glyphicon-eye-close"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>		
-                <ul id="playlist2" class="list-group">
-                  <li class="list-group-item"></li>
-                </ul>
 
-            </div>
+            <ul id="playlist1" class="list-group">
+                <li class="list-group-item"></li>
+            </ul>
         </div>
-        <div class="row" id="manage" hidden>
-            <div class="col-lg-2 col-xs-0"></div>
-            <div class="panel col-lg-8 col-xs-12">
 
-                <div class="panel-heading">
-                    <div class="col-lg-6 col-xs-6">
-                        <div class="pull-right">
-                            <h4> Gestion </h4>
-                        </div>
+        <div class="panel col-lg-6 col-xs-6">
+            <div class="panel-heading">
+                <div class="col-lg-6 col-xs-6">
+                    <select type="playlist_select" num="2" class="select2 form-control form-control-lg">
+                        </select>
+                </div>
+                <div class="col-lg-6 col-xs-6">
+                    <div class="pull-right">
+                        <button class="btn btn-lg btn-default ">
+                                <i class="glyphicon glyphicon-export"></i>
+                            </button>
+                        <button class="btn btn-lg btn-default ">
+                                <i class="glyphicon glyphicon-facetime-video"></i>
+                            </button>
+                        <button class="btn  btn-lg btn-default ">
+                                <i class="glyphicon glyphicon-eye-close"></i>
+                            </button>
                     </div>
                 </div>
-                <br/>
-                <form class="form-horizontal" id="status">
-                    <div class="form-group">
-                        <label for="EngineAllowNicknameChange" class="col-xs-4 control-label">Toujours au-dessus</label>
-                        <div class="col-xs-6">
-                            <input action="command" switch="onoff" type="checkbox" name="toggleAlwaysOnTop">
-                        </div>
+            </div>
+            <ul id="playlist2" class="list-group">
+                <li class="list-group-item"></li>
+            </ul>
+
+        </div>
+    </div>
+    <div class="row" id="manage" hidden>
+        <div class="col-lg-2 col-xs-0"></div>
+        <div class="panel col-lg-8 col-xs-12">
+
+            <div class="panel-heading">
+                <div class="col-lg-6 col-xs-6">
+                    <div class="pull-right">
+                        <h4> Gestion </h4>
                     </div>
-                     <div class="form-group">
-                        <label for="EngineAllowNicknameChange" class="col-xs-4 control-label">Plein écran</label>
-                        <div class="col-xs-6">
-                            <input action="command" switch="onoff" type="checkbox" name="toggleFullscreen">
-                        </div>
+                </div>
+            </div>
+            <br/>
+            <form class="form-horizontal" id="status">
+                <div class="form-group">
+                    <label for="toggleAlwaysOnTop" class="col-xs-4 control-label">Toujours au-dessus</label>
+                    <div class="col-xs-6">
+                        <input action="command" switch="onoff" type="checkbox" name="toggleAlwaysOnTop">
                     </div>
-                </form>
-                <form class="form-horizontal" id="settings">
-                    <hr>
-                    <div class="form-group">
-                        <label for="AdminPassword" class="col-xs-4 control-label">Changer mot de passe admin</label>
-                        <div class="col-xs-6">
-                            <input type="password" class="form-control" name="AdminPassword" placeholder="Mot de passe">
-                        </div>
+                </div>
+                <div class="form-group">
+                    <label for="toggleFullscreen" class="col-xs-4 control-label">Plein écran</label>
+                    <div class="col-xs-6">
+                        <input action="command" switch="onoff" type="checkbox" name="toggleFullscreen">
                     </div>
-                    <div class="form-group">
-                        <label for="EngineDisplayNickname" class="col-xs-4 control-label">Afficher le demandeur du kara</label>
-                        <div class="col-xs-6">
-                            <input switch="onoff" type="checkbox" name="EngineDisplayNickname">
-                        </div>
+                </div>
+            </form>
+            <form class="form-horizontal" id="settings">
+                <hr>
+                <div class="form-group">
+                    <label for="AdminPassword" class="col-xs-4 control-label">Changer mot de passe admin</label>
+                    <div class="col-xs-3">
+                        <input id="password" type="password" exclude="true" class="form-control" placeholder="Mot de passe">
                     </div>
-                    <div class="form-group">
-                        <label for="EngineAllowNicknameChange" class="col-xs-4 control-label">Autoriser changement de pseudo</label>
-                        <div class="col-xs-6">
-                            <input switch="onoff" type="checkbox" name="EngineAllowNicknameChange">
-                        </div>
+                    <div class="col-xs-3">
+                        <input id="confirmPassword" type="password" exclude="true" class="form-control" placeholder="Confirmez le mot de passe">
                     </div>
-                    <div class="form-group">
-                        <label for="EngineSongsPerPerson" class="col-xs-4 control-label">Chansons par personne</label>
-                        <div class="col-xs-6">
-                            <input type="number" class="form-control" name="EngineSongsPerPerson" placeholder="1000">
-                        </div>
+                    <button type="button" id="sendPassword" class="btn btn-danger" name="AdminPassword" oldvalue="{{mdpAdmin}}" disabled>
+                            <i class="glyphicon glyphicon-floppy-disk" value="">  </i>                     
+                        </button>
+                </div>
+                <div class="form-group">
+                    <label for="EngineSongsPerPerson" class="col-xs-4 control-label">Chansons par personne</label>
+                    <div class="col-xs-6">
+                        <input type="number" class="form-control" name="EngineSongsPerPerson" placeholder="1000">
                     </div>
-                    <div class="form-group">
-                        <label for="PlayerScreen" class="col-xs-4 control-label">Numéro d'écran d'affichage</label>
-                        <div class="col-xs-6">
-                            <select type="number" class="form-control" name="PlayerScreen">
+                </div>
+                <div class="form-group">
+                    <label for="PlayerScreen" class="col-xs-4 control-label">Numéro d'écran d'affichage</label>
+                    <div class="col-xs-6">
+                        <select type="number" class="form-control" name="PlayerScreen">
                                 <option value="1" default> 1 </option>
+                            </select>
+                    </div>
+                </div>
+                <div id="pipSettings" style="background-color:transparent;border: solid #585b65; border-width: 2px 0px;" class="well well-sm">
+                    <div class="form-group">
+                        <label for="PlayerPIPSize" class="col-xs-4 control-label">Taille vidéo (%)</label>
+                        <div class="col-xs-6">
+                            <input type="range" name="PlayerPIPSize">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="PlayerPIPPositionX" class="col-xs-4 control-label">Position vidéo X</label>
+                        <div class="col-xs-6">
+                            <select type="number" class="form-control" name="PlayerPIPPositionX">
+                                <option value="Left" > Gauche </option>
+                                <option value="Center" default> Centre </option>
+                                <option value="Right" > Droit </option>
                             </select>
                         </div>
                     </div>
 
-                </form>
+                    <div class="form-group">
+                        <label for="PlayerPIPPositionY" class="col-xs-4 control-label">Position vidéo Y</label>
+                        <div class="col-xs-6">
+                            <select type="number" class="form-control" name="PlayerPIPPositionY">
+                                <option value="Bottom" > Bas </option>
+                                <option value="Center" default> Centre </option>
+                                <option value="Top" > Haut </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
 
-            </div>
-            <div class="col-lg-2 col-xs-0"></div>
         </div>
+        <div class="col-lg-2 col-xs-0"></div>
     </div>
+</div>
 
 <script>
-       var trad = {{{trad}}};
-       var mdpAdminHash = "{{mdpAdminHash}}";
+    var mdpAdmin = "{{mdpAdmin}}";
 </script>

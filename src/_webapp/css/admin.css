@@ -101,7 +101,8 @@
 
 
 #progressBar {
-	height: 20px;
+	cursor: pointer;
+	height: 25px;
 	width: 100%;
 	top: 85px;
 	position: fixed;
@@ -116,7 +117,14 @@
     position: absolute;
     top: 0;
 }
+#progressBar:hover > #progressBarColor {
+	background-color: #286faa;
+}
+#progressBar:active > #progressBarColor {
+	background-color: #18617a;
+}
 #karaInfo {
+    line-height: 1.85;
 	text-align: center;
 	z-index: 10;
     position: absolute;
