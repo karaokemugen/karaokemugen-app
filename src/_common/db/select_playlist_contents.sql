@@ -26,6 +26,7 @@ SELECT ak.pk_id_kara AS id_kara,
       ak.subfile AS subfile,
       ak.videofile AS videofile,
 	  ak.videolength AS duration,
+	  ak.gain AS gain,
 	  ak.viewcount AS viewcount,
       (CASE WHEN wl.fk_id_kara = ak.pk_id_kara
 	     	THEN 1

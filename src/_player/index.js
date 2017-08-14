@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 const logger = require('../_common/utils/logger.js');
-const dl = require('request-progress');
 var ProgressBar = require('progress');
 var http = require('http');
 var extract = require('extract-zip');
@@ -250,13 +249,15 @@ module.exports = {
 				});
 			});
 	},
-	play: function(video,subtitle,reference){
+	play: function(video,subtitle,reference,gain){
 		module.exports.playing = true;
 		if(fs.existsSync(video)){
 			logger.info('[Player] Video : '+video);
+			logger.debug('[Player] Audio gain adjustment : '+gain);
+			if (gain == undefined || gain == null) gain = 0;
 			module.exports._ref = reference;
-			module.exports._player.loadFile(video);
-			module.exports._player.volume(70);
+			module.exports._player.command("loadfile",[video,"replace","replaygain-fallback="+gain]);
+			module.exports._player.volume(100);
 			module.exports._player.play();
 			module.exports.playerstatus = 'play'
 			// video may need some delay to play
