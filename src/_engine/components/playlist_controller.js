@@ -138,7 +138,15 @@ module.exports = {
 				} else {
 					module.exports.DB_INTERFACE.addBlacklistCriteria(blctype,blcvalue)
 						.then(function(){
-							resolve();
+							// Regenerate blacklist to take new kara into account.
+							module.exports.generateBlacklist()
+								.then(function(){
+									resolve();
+								})
+								.catch(function(err){
+									logger.error('[PLC] addBlacklistCriteria : generateBlacklist : '+err);
+									reject(err);
+								});							
 						})
 						.catch(function(err){
 							logger.error('[PLC] DBI addBlacklistCriteria : '+err);
