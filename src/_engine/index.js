@@ -727,6 +727,15 @@ module.exports = {
 					});
 			});
 		}
+		module.exports._services.apiserver.onShutdown = function(){
+			return new Promise(function(resolve,reject){
+				logger.info('[Engine] Dropping the mic, shutting down!');
+				resolve();
+				setTimeout(function(){
+					process.exit(0)
+				},1000);
+			});
+		}
 		module.exports._services.apiserver.onPlaylistSingleEmpty = function(id_playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.emptyPlaylist(id_playlist)

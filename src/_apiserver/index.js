@@ -100,6 +100,19 @@ module.exports = {
 		// In case of error, return the correct code an object 'error'
 
 		// Admin routes
+		routerAdmin.route('/shutdown')
+			.post(function(req,res){
+				// Sends command to shutdown the app.
+				
+				module.exports.onShutdown()
+					.then(function(){						
+						res.json('Shutdown in progress.');
+					})
+					.catch(function(err){
+						res.statusCode = 500;
+						res.json(err);
+					});
+			});
 		routerAdmin.route('/playlists')
 			.get(function(req,res){
 				// Get list of playlists
@@ -1155,4 +1168,5 @@ module.exports = {
 	onPlayerStatus:function(){},
 	onStats:function(){},
 	onKaraSingleLyrics:function(){},
+	onShutdown:function(){},
 };
