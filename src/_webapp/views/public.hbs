@@ -1,30 +1,26 @@
 <div id="header" class="header">
-    <button class="btn btn-default btn-dark pull-right">
-            <i class="glyphicon glyphicon-off"></i></button>
-    <button action="command" value="mute" id="volume" class="btn btn-default btn-dark pull-right">
-            <i class="glyphicon glyphicon-volume-up"></i></button>
-    <div class="pull-left btn-group" style="width: 129px;">
-        <input type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> Privé"
-            data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large"/>
-        <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
-            data-off-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large"/>
+    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-9" id="searchParent">
+        <input type="text" class="form-control" id="search" placeholder="Recherche...">
     </div>
-    <div class="pull-left btn-group">
-        <button action="command" value="stopAfter" id="stopAfter" class="btn btn-danger-low" style="width: 50px;"><i class="glyphicon glyphicon-time"></i></button>
-        <button action="command" value="stopNow" id="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
-        <button action="command" value="goTo" options="0" id="goTo" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
-    </div>
-    <div id="centerBtns" class="header">
-        <div class="btn-group">
-            <button action="command" value="prev" id="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
-            <button action="command" value="play" id="play" class="btn btn-primary"><i class="glyphicon glyphicon-play"></i></button>
-            <button action="command" value="skip" id="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
-            <button class="btn btn-default hidden"></button>
+    
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5">
+        <div class="dropdown pull-right">
+            <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
+            </span><i class="glyphicon glyphicon-cog"></i></button>
+            <ul class="dropdown-menu">
+                <li><a href="#">Changer pseudo</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Fin du monde</a></li>
+            </ul>
+        </div>
+        <div class="pull-right btn-group switchParent">
+            <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-search'></i>"
+                data-off-text="<i class='glyphicon glyphicon-menu-hamburger'></i>" data-size="large"/>
         </div>
     </div>
     <div class="pull-right btn-group hidden">
         <img src="https://lab.shelter.moe/uploads/-/system/project/avatar/18/tmugen2.jpg" alt="logo kara" class="pull-right">
-        <strike class="pull-right" style="margin-right: 19px;    line-height: 64px;    font-size: 22px;">TOYUNDA</strike>
+        <strike class="pull-right" style="margin-right: 19px;    line-height: 47px;    font-size: 22px;">TOYUNDA</strike>
     </div>
 </div>
 <div id="progressBar" class="underHeader">
@@ -33,51 +29,18 @@
 </div>
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
-        <div class="panel col-lg-6 col-xs-6">
-            <div class="panel-heading">
-                <div class="col-lg-6 col-xs-6">
-                    <select type="playlist_select" num="1" class="select2 form-control">
-                        </select>
-                </div>
-                <div class="col-lg-6 col-xs-6">
-                    <div class="pull-right">
-                        <button class="btn btn-lg btn-default">
-                            <i class="glyphicon glyphicon-export"></i>
-                        </button>
-                        <button class="btn btn-lg btn-default">
-                            <i class="glyphicon glyphicon-facetime-video"></i>
-                        </button>
-                        <button class="btn btn-lg btn-default">
-                            <i class="glyphicon glyphicon-eye-close"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
+        <div class="panel col-lg-8 col-md-7 col-sm-12 col-xs-12">
             <ul id="playlist1" class="list-group">
-                <li class="list-group-item"></li>
             </ul>
         </div>
-        
-        <div class="panel col-lg-6 col-xs-6">
-            <div class="panel-heading">
+
+        <div class="panel col-lg-4 col-md-5 col-sm-12 col-xs-12">
+           <div class="panel-heading">
                 <div class="col-lg-6 col-xs-6">
                     <select type="playlist_select" num="2" class="select2 form-control form-control-lg">
                         </select>
                 </div>
-                <div class="col-lg-6 col-xs-6">
-                    <div class="pull-right">
-                        <button class="btn btn-lg btn-default ">
-                                <i class="glyphicon glyphicon-export"></i>
-                            </button>
-                        <button class="btn btn-lg btn-default ">
-                                <i class="glyphicon glyphicon-facetime-video"></i>
-                            </button>
-                        <button class="btn  btn-lg btn-default ">
-                                <i class="glyphicon glyphicon-eye-close"></i>
-                            </button>
-                    </div>
-                </div>
+              
             </div>
             <ul id="playlist2" class="list-group">
                 <li class="list-group-item"></li>
@@ -88,6 +51,7 @@
     <div class="row" id="manage" hidden>
         <div class="col-lg-2 col-xs-0"></div>
         <div class="panel col-lg-8 col-xs-12">
+
             <div class="panel-heading">
                 <div class="col-lg-6 col-xs-6">
                     <div class="pull-right">
