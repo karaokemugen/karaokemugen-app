@@ -1,7 +1,10 @@
+
+var mouseDown = false;
+var scope = 'admin';
+
 $(document).ready(function () {
     /*** INITIALISATION ***/
     /* variables & ajax setup */
-    var mouseDown = false;
 
     setupAjax = function (passwordAdmin) {
 
@@ -39,6 +42,7 @@ $(document).ready(function () {
             $.each(playlistList, function (key, value) {
                 $("select[type='playlist_select']").append('<option value=' + value.id_playlist + '>' + value.name + '</option>');
             });
+
             $(".select2").select2({ theme: "bootstrap" });
 
             // TODO à suppr
@@ -46,10 +50,7 @@ $(document).ready(function () {
             $("[type='playlist_select'][num='2']").val(1).trigger('change');
 
         }).fail(function (data) {
-            $.each(data, function (index, value) {
-                $('#consolelog').html($('#consolelog').html() + index + ': ' + value + '<br/>');
-            });
-
+            console.log(data);
         });
     };
 
@@ -86,12 +87,11 @@ $(document).ready(function () {
                     .concat($('input[type=checkbox]:not(:checked)').map(function () { return { name: this.name, value: "0" }; }).get());
 
                 $(formArray).each(function (index, obj) {
-                    console.log(index, obj);
                     settingsArray[obj.name] = obj.value;
                 });
                 settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
                 settingsArray['AdminPassword'] = changeAdminPass ? $('button[name="AdminPassword"]').val() : $('button[name="AdminPassword"]').attr('oldValue');
-          
+                console.log("setSettings : ", settingsArray);
                 $.ajax({
                     type: 'PUT',
                     url: 'admin/settings',
@@ -125,46 +125,20 @@ $(document).ready(function () {
         // FCT send playlist state (1=private 0=public)
 
     });
-    
+
     // handling small touchscreen screens with big virtual keyboard
-    
-    $("select[type='playlist_select']").on('select2:open', function(){
+
+    $("select[type='playlist_select']").on('select2:open', function () {
         //$('#header').hide();
-         $(".select2-dropdown").css('z-index','9999');
+        $(".select2-dropdown").css('z-index', '9999');
     });
-    
-    $("select[type='playlist_select']").on('select2:close', function(){
-       // $('#header').show();
-        $(".select2-dropdown").css('z-index','1051');
+
+    $("select[type='playlist_select']").on('select2:close', function () {
+        // $('#header').show();
+        $(".select2-dropdown").css('z-index', '1051');
         document.body.scrollTop = 0; // For Chrome, Safari and Opera 
         document.documentElement.scrollTop = 0; // For IE and Firefox
     })
-    
-    // get & build kara list on screen
-
-    $("select[type='playlist_select']").change(function () {
-        var val = $(this).val();
-        var num = $(this).attr('num');
-        // prevent selecting 2 times the same playlist
-        $("select[type='playlist_select'][num!=" + num + "] > option").prop("disabled", false);
-        $("select[type='playlist_select'][num!=" + num + "] > option[value='" + val + "']").prop("disabled", true);
-        $("select[type='playlist_select'][num!=" + num + "]").select2({ theme: "bootstrap" });
-
-        var side = num == 1 ? 'right' : 'left';
-        var buttonHtml = '<button onclick="transfer(this);" num="' + num + '" class="btn btn-sm btn-default btn-dark pull-' + side + '">'
-            + '<i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i></button>'
-
-        $("#playlist" + num).empty();
-
-        // fill list with kara list
-        var urlKaras = "";
-        if (val > 0) {
-            urlKaras = 'admin/playlists/' + val + '/karas';
-        } else if (val == -1) {
-            urlKaras = 'public/karas';
-        }
-        fillPlaylist('playlist' + num, urlKaras, 'list', buttonHtml);
-    });
 
     // TODO change everything, global PUT followed by playlist refresh showing right client infos
     transfer = function (e) {
@@ -193,7 +167,7 @@ $(document).ready(function () {
 
     $('button[action="command"]').click(function () {
         var val = $(this).val();
-        var dataAjax = { command : val };
+        var dataAjax = { command: val };
         if ($(this).attr('options') != undefined) dataAjax['options'] = $(this).attr('options');
 
         $.ajax({
@@ -218,8 +192,7 @@ $(document).ready(function () {
     $('#settings input[type!="checkbox"][exclude!="true"]').blur(function () {
         setSettings($(this));
     });
-    $('#settings input[type="checkbox"]').on('switchChange.bootstrapSwitch', function (event) {
-        $(this).val($(this).is(':checked') ? 1 : 0);
+    $('#settings input[type="checkbox"], input[name="EnginePrivateMode"]').on('switchChange.bootstrapSwitch', function (event) {
         setSettings($(this));
     });
 
@@ -242,7 +215,7 @@ $(document).ready(function () {
         var presentTimeX = $(progressBarColor).width();
         var futurTimeSec = Math.round(songLength * futurTimeX / barInnerwidth);
         $(progressBarColor).width(100 * futurTimeSec / songLength + "%");
-        
+
         $.ajax({
             url: 'admin/player',
             type: 'PUT',
@@ -259,14 +232,14 @@ $(document).ready(function () {
     $('#karaInfo').on('mousedown touchstart', function (e) {
         stopUpdate = true;
         mouseDown = true;
-        $(progressBarColor).width( e.pageX + "px");
+        $(progressBarColor).width(e.pageX + "px");
     });
     $('#karaInfo').mouseup(function (e) {
         mouseDown = false;
     });
     $('#karaInfo').mousemove(function (e) {
         if (mouseDown) {
-            $(progressBarColor).width( e.pageX + "px");
+            $(progressBarColor).width(e.pageX + "px");
         }
     });
     $('#karaInfo').mouseout(function (e) {

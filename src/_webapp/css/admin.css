@@ -9,26 +9,6 @@
 .form-horizontal {
 	padding: 0px 40px;
 }
-	
-.select2 {
-	width: 100% !important;
-	height: 100%;
-}
-.select2-container--bootstrap .select2-selection--single {
-	height: 100%;
-	line-height: 2.3;
-}
-.select2-container--bootstrap .select2-selection--single, .select2-dropdown {
-	border-radius: 0 !important;
-	background-color: #f3f3f3;
-	font-weight: 600;
-}
-.select2-container--bootstrap .select2-results__option {
-	color: #555;
-}
-.select2-container--default .select2-results__option[aria-disabled=true] {
-    display: none;
-}
 
 .list-group > li > button {
 	position: absolute;
