@@ -2486,23 +2486,22 @@ module.exports = {
 						});
 						// on est la fin de la playlist
 						if(readpos >= pl_content.length) {
-							logger.error('[PLC] prev : current position is last song!');
+							logger.error('[PLC] next : current position is last song!');
 							reject('Current position is last song!');
-						}
-							
-
-						var kara = pl_content[readpos];
-						if(kara) {
-							// mise à jour du pointeur de lecture
-							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
-							});
-							resolve();
 						} else {
-							var err = 'Received an empty karaoke!';
-							logger.error('[PLC] prev : '+err)
-							reject(err);
-						}						
+							var kara = pl_content[readpos];
+							if(kara) {
+								// mise à jour du pointeur de lecture
+								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
+									module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
+								});
+								resolve();
+							} else {
+								var err = 'Received an empty karaoke!';
+								logger.error('[PLC] next : '+err)
+								reject(err);
+							}						
+						}
 					}
 				});
 			})
