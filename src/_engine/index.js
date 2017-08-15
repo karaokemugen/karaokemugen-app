@@ -118,8 +118,12 @@ module.exports = {
 	* @param  {boolean} now {If set, stops karaoke immediately. If not, karaoke will stop at end of current song}
 	*/
 	stop:function(now){
-		if(now)
+		if(now) {
+			logger.info('[Engine] Karaoke stopping NOW.');
 			module.exports._services.player.stop();
+		} else {
+			logger.info('[Engine] Karaoke stopping at the end of current song');
+		}
 
 		if(module.exports._states.status !== 'stop') {
 			module.exports._states.status = 'stop';
@@ -257,6 +261,7 @@ module.exports = {
 				module.exports.tryToReadKaraInPlaylist();
 			}).catch(function(){
 				logger.warn('Next song is not available');
+				module.exports.stop();
 			});
 	},
 
