@@ -612,7 +612,7 @@ module.exports = {
 			.get(function(req,res){
 				var lang = req.query.lang;
 				var filter = req.query.filter;
-				module.exports.onBlacklistlist(filter,lang)
+				module.exports.onBlacklist(filter,lang)
 					.then(function(karas){
 						res.json(karas);
 					})
@@ -901,7 +901,7 @@ module.exports = {
 		routerPublic.route('/whitelist')
 			.get(function(req,res){
 				//Returns whitelist IF the settings allow public to see it
-				if (module.exports.SETTINGS.AllowViewWhitelist === 1) {
+				if (module.exports.SETTINGS.EngineAllowViewWhitelist == 1) {
 					var lang = req.query.lang;
 					var filter = req.query.filter;
 					module.exports.onWhitelist(filter,lang)
@@ -921,7 +921,7 @@ module.exports = {
 		routerPublic.route('/blacklist')
 			.get(function(req,res){
 				//Get list of blacklisted karas IF the settings allow public to see it
-				if (module.exports.SETTINGS.AllowViewBlacklist === 1) {
+				if (module.exports.SETTINGS.EngineAllowViewBlacklist == 1) {
 					var lang = req.query.lang;
 					var filter = req.query.filter;
 					module.exports.onBlacklist(filter,lang)
@@ -941,7 +941,7 @@ module.exports = {
 		routerPublic.route('/blacklist/criterias')
 			.get(function(req,res){
 				//Get list of blacklist criterias IF the settings allow public to see it
-				if (module.exports.SETTINGS.AllowViewBlacklistCriterias === 1) {
+				if (module.exports.SETTINGS.EngineAllowViewBlacklistCriterias == 1) {
 					module.exports.onBlacklistCriterias()
 						.then(function(blc){
 							res.json(blc);
