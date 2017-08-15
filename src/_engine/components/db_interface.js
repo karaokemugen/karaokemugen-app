@@ -951,7 +951,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			var sqlIsPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist.sql'),'utf-8');
 			if (seenFromUser) {
-				sqlIsPlaylist += 'AND flag_visible = 1';
+				sqlIsPlaylist += ' AND flag_visible = 1';
 			}
 			module.exports._user_db_handler.get(sqlIsPlaylist,
 			{
