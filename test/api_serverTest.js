@@ -3,9 +3,18 @@ const supertest = require('supertest');
 const request = supertest('http://localhost:1339');
 const fs = require('fs');
 const path = require('path');
-const password = 'gurdil';
+const ini = require('ini');
+const extend = require('extend');
 
+var SETTINGS = ini.parse(fs.readFileSync('config.ini.default', 'utf-8'));
+if(fs.existsSync('config.ini')) {
+	// et surcharge via le contenu du fichier personnalisé si présent
+	var configCustom = ini.parse(fs.readFileSync('config.ini', 'utf-8'));
+	extend(true,SETTINGS,configCustom);
 
+}
+
+var password = SETTINGS.AdminPassword;
 
 describe('GET /api/v1/public/', function() {
 	it('should return Hello World', function(done) {
@@ -52,7 +61,8 @@ describe('POST / DELETE / PUT /api/v1/admin/playlists ', function() {
 		'name':'new_playlist',
 		'flag_visible':true,
 		'flag_public':false,
-		'flag_current':false
+		'flag_current':false,
+		'newplaylist_id':61
 	};
 	var playlist_current = {
 		'name':'new_playlist',
@@ -118,7 +128,9 @@ describe('POST / DELETE / PUT /api/v1/admin/playlists ', function() {
 				assert.equal(response.body,'Playlist '+new_playlist_id+' updated')
 			});
 	});
+	
 	it('PUT (edit) a CURRENT playlist', function() {
+		playlist.newplaylist_id = new_playlist_id;
 		return request
 			.put('/api/v1/admin/playlists/'+new_playlist_current_id)
 			.set('Accept', 'application/json')
@@ -126,11 +138,13 @@ describe('POST / DELETE / PUT /api/v1/admin/playlists ', function() {
 			.send(playlist)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(function(response) {				
 				assert.equal(response.body,'Playlist '+new_playlist_current_id+' updated')
-			});
+			})
 	});
-	it('PUT (edit) a PUBLIC playlist', function() {
+	
+	it('PUT (edit) a PUBLIC playlist', function() {		
+		playlist.newplaylist_id = new_playlist_current_id;
 		return request
 			.put('/api/v1/admin/playlists/'+new_playlist_public_id)
 			.set('Accept', 'application/json')
@@ -143,14 +157,18 @@ describe('POST / DELETE / PUT /api/v1/admin/playlists ', function() {
 			});
 	});
 	it('DELETE a playlist ', function() {
+		var data = {
+			'newplaylist_id': new_playlist_public_id
+		}
 		return request
 			.delete('/api/v1/admin/playlists/'+new_playlist_id)
 			.set('Accept', 'application/json')
 			.auth('admin', password)
+			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {				
-				assert.equal(response.body, 'Deleted '+new_playlist_id)
+			.then(function(response) {
+				// OK
 			});
 	});
 });
