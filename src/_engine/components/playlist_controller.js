@@ -2708,7 +2708,7 @@ module.exports = {
 		)
 			.then(function(){
 				module.exports.build_dummy_current_iterate_index++;
-				if(module.exports.build_dummy_current_iterate_index<=6)
+				if(module.exports.build_dummy_current_iterate_index<=5)
 					module.exports.build_dummy_current_iterate(playlist_id,resolve,reject);
 				else
 					resolve();
