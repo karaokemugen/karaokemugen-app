@@ -2699,7 +2699,8 @@ module.exports = {
 
 	build_dummy_current_iterate_index:1,
 	build_dummy_current_iterate:function(playlist_id,resolve,reject) {
-		console.log('Adding Kara '+module.exports.build_dummy_current_iterate_index+' into dummy playlist');
+		logger.info('[PLC] Dummy Plug : Adding Kara '+module.exports.build_dummy_current_iterate_index+' into current playlist')
+		
 		module.exports.addKaraToPlaylist(
 			module.exports.build_dummy_current_iterate_index,
 			'Dummy user '+module.exports.build_dummy_current_iterate_index,
@@ -2707,7 +2708,7 @@ module.exports = {
 		)
 			.then(function(){
 				module.exports.build_dummy_current_iterate_index++;
-				if(module.exports.build_dummy_current_iterate_index<=10)
+				if(module.exports.build_dummy_current_iterate_index<=6)
 					module.exports.build_dummy_current_iterate(playlist_id,resolve,reject);
 				else
 					resolve();
@@ -2718,7 +2719,7 @@ module.exports = {
 	},
 
 	build_dummy_current_playlist:function(playlist_id){
-		console.log('build_dummy_current_playlist');
+		logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...')
 		return new Promise(function(resolve,reject){
 			module.exports.build_dummy_current_iterate(playlist_id,resolve,reject);
 		});
