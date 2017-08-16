@@ -1490,6 +1490,8 @@ module.exports = {
 				}, function (err, rep) {
 					if (err) {
 						reject('Failed to update position in playlist '+playlist_id+' : '+err)
+					} else {
+						resolve();
 					}
 				});
 		});
