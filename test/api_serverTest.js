@@ -101,6 +101,20 @@ describe('Managing karaokes in playlists', function() {
 				assert.equal(response.body,'Karaoke '+data.kara_id+' added by '+data.requestedby+' to playlist '+playlist+' at position last');
 			});
 	});
+	var plc_id;
+	it('List contents from playlist 1', function() {
+		return request
+			.get('/api/v1/admin/playlists/'+playlist+'/karas')
+			.set('Accept', 'application/json')
+			.auth('admin', password)			
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				// We get the PLC_ID of our last karaoke, the one we just added
+				plc_id = response.body[response.body.length-1].playlistcontent_id;
+				assert.equal(response.body.length,6);
+			});
+	});
 	it('Add karaoke 6 again to playlist 1 to see if it fails', function() {
 		var data = {
 			'kara_id': 6,
@@ -147,6 +161,17 @@ describe('Managing karaokes in playlists', function() {
 			.expect(500)
 			.then(function(response) {
 				assert.equal(response.body,'Playlist 10000 unknown');
+			});
+	});
+	it('Delete karaoke 6 from playlist 1', function() {
+		return request
+			.delete('/api/v1/admin/playlists/1/karas/'+plc_id)
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body,'Deleted PLCID '+plc_id);
 			});
 	});
 })
