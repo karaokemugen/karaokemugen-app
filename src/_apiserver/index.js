@@ -230,7 +230,7 @@ module.exports = {
 							errorMessage: 'Invalid current flag (must be boolean)'
 						}
 					},
-					'new_playlist_id': {
+					'newplaylist_id': {
 						in: 'body',
 						optional: true,
 						isInt: true,
@@ -246,7 +246,7 @@ module.exports = {
 							req.sanitize('flag_visible').toBoolean();
 							req.sanitize('flag_public').toBoolean();
 							req.sanitize('flag_current').toBoolean();
-							req.sanitize('new_playlist_id').toInt();
+							req.sanitize('newplaylist_id').toInt();
 
 							//Now we add playlist
 							module.exports.onPlaylistSingleEdit(req.params.pl_id,req.body)
