@@ -722,7 +722,7 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onPlaylistSingleEdit = function(id_playlist,playlist){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
+				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public,playlist.new_playlist_id)
 					.then(function(){
 						resolve();
 					})
