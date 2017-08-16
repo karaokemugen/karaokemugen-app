@@ -1,9 +1,9 @@
 # Comment participer au code
 
-Toutes les bonnes volontés sont bienvenues.
+Toutes les bonnes volontÃ©s sont bienvenues.
 
 Pour savoir comment contribuer, lisez le Wiki ! 
-https://lab.shelter.moe/toyundamugen/toyundamugen-app/wikis/home
+https://lab.shelter.moe/karaokemugen/karaokemugen-app/wikis/home
 
-Tout y est expliqué, ou presque, et si vous avez des questions, il y a un lien vers le Discord où nous échangeons quotidiennement !
+Tout y est expliquÃ©, ou presque, et si vous avez des questions, il y a un lien vers le Discord oÃ¹ nous Ã©changeons quotidiennement !
 

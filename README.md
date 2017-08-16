@@ -1,9 +1,9 @@
-# Toyunda Mugen
+# Karaoke Mugen
 
 
-Bienvenue dans Toyunda Mugen. 
+Bienvenue dans Karaoke Mugen. 
 
-Toyunda Mugen est un système de gestion de playlist de karaoke vidéo. Il se présente sous la forme d'une appli web et d'un moteur. L'appli web permet aux gens d'ajouter des chansons à la playlist et l'administrateur de gérer cette playlist. Le moteur tourne et lance ces chansons sur l'ordinateur qui projette les vidéos.
+Karaoke Mugen est un système de gestion de playlist de karaoke vidéo. Il se présente sous la forme d'une appli web et d'un moteur. L'appli web permet aux gens d'ajouter des chansons à la playlist et l'administrateur de gérer cette playlist. Le moteur tourne et lance ces chansons sur l'ordinateur qui projette les vidéos.
 
 Il fonctionne comme un karaoké à la japonaise où chacun peut ajouter des chansons à la suite de la playlist. Un autre mode permet au public d'ajouter des vidéos à une liste de suggestions que l'administrateur prendra soin d'ajouter ou non.
 
@@ -34,7 +34,7 @@ npm start
 La génération de la base de données est nécessaire à la première utilisation, vous pouvez la déclencher en vous connectant sur http://localhost:1338 et en ayant placé des karaokés dans app/data/ (voir plus bas)
 
 Une version "legacy" en PHP existe sur ce dépôt :
-https://lab.shelter.moe/toyundamugen/toyundamugen-app-legacy
+https://lab.shelter.moe/Karaokemugen/Karaokemugen-app-legacy
 
 Cette version est fonctionelle mais assez basique.
 
@@ -53,7 +53,7 @@ Sous Windows et OSX les binaires seront téléchargés automatiquement.
     
 ## Langages
 
-Toyunda Mugen est écrit en node.js et contient quelques scripts bash à usage unique.
+Karaoke Mugen est écrit en node.js et contient quelques scripts bash à usage unique.
 
 ## Fonctionnalités :
 
@@ -76,11 +76,11 @@ Toyunda Mugen est écrit en node.js et contient quelques scripts bash à usage u
 ## Comment ça fonctionne
 
 * Voir la partie téléchargement
-* Placez des karaoké à l'intérieur d'un dossier app/data. Voir https://lab.shelter.moe/toyundamugen/times
+* Placez des karaoké à l'intérieur d'un dossier app/data. Voir https://lab.shelter.moe/Karaokemugen/times
 
 ## Comment participer au code
 
 Lisez le Wiki ! 
-https://lab.shelter.moe/toyundamugen/toyundamugen-app/wikis/home
+https://lab.shelter.moe/Karaokemugen/Karaokemugen-app/wikis/home
 
 Tout y est expliqué, ou presque, et si vous avez des questions, il y a un lien vers le Discord où nous échangeons quotidiennement !

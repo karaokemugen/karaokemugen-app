@@ -1,6 +1,6 @@
-# License de Toyunda Mugen
+# License de Karaoke Mugen
 
-La license du code de Toyunda Mugen est la license MIT.
+La license du code de Karaoke Mugen est la license MIT.
 
 ```
 (The MIT License)

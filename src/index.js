@@ -21,7 +21,7 @@ const osLocale = require('os-locale');
  */
 process.stdout.write('\x1Bc');
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
-console.log(clc.greenBright('| Project Toyunda Mugen                                            |'));
+console.log(clc.greenBright('| Project Karaoke Mugen                                            |'));
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
 console.log('\n');
 
@@ -44,7 +44,7 @@ if (argv.help) {
 }
 
 if (argv.version) {
-	console.log('Toyunda Mugen v2.0 - Finé Fantastique');
+	console.log('Karaoke Mugen v2.0 - Finé Fantastique');
 	console.log('Database schema version : xxx');
 	process.exit(0);
 }
