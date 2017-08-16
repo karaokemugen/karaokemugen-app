@@ -39,6 +39,20 @@ describe('GET /api/v1/public/karas?filter=Dragon', function() {
 	});
 });
 
+describe('GET /api/v1/public/karas/1', function() {
+	it('should return one karaoke song', function() {
+		return request
+			.get('/api/v1/public/karas/1')
+			.set('Accept', 'application/json')
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body.length, 1);
+			});
+	});
+});
+
+
 describe('GET /api/v1/admin/playlists', function() {
 	it('should return 2 or more playlists', function() {
 		return request
