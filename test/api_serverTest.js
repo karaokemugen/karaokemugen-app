@@ -156,12 +156,39 @@ describe('POST / DELETE / PUT /api/v1/admin/playlists ', function() {
 				assert.equal(response.body,'Playlist '+new_playlist_public_id+' updated')
 			});
 	});
-	it('DELETE a playlist ', function() {
+	it('DELETE a CURRENT playlist ', function() {
 		var data = {
 			'newplaylist_id': new_playlist_public_id
 		}
 		return request
 			.delete('/api/v1/admin/playlists/'+new_playlist_id)
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				// OK
+			});
+	});
+	it('POST a new playlist again to transfer flags too', function() {
+		return request
+			.post('/api/v1/admin/playlists')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.send(playlist)
+			.expect('Content-Type', /json/)
+			.expect(201)
+			.then(function(response) {
+				new_playlist_id = response.body;
+			});
+	});
+	it('DELETE a PUBLIC playlist ', function() {
+		var data = {
+			'newplaylist_id': new_playlist_id
+		}
+		return request
+			.delete('/api/v1/admin/playlists/'+new_playlist_current_id)
 			.set('Accept', 'application/json')
 			.auth('admin', password)
 			.send(data)
