@@ -663,7 +663,7 @@ module.exports = {
 										.then(function(){
 											resolve(true);
 										})
-										.catchn(function(err){
+										.catch(function(err){
 											logger.error('[PLC] setPublicPlaylist : '+err);
 											reject(err);
 										})
