@@ -217,6 +217,48 @@ describe('Managing karaokes in playlists', function() {
 	});
 })
 
+describe('Managing settings', function(){
+	it('Read settings', function() {
+		return request
+			.get('/api/v1/admin/settings')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)			
+	});
+	it('Update settings', function() {
+		var data = {			
+				"AdminPassword": "shamoo",
+				"EngineAllowNicknameChange": "1",
+				"EngineAllowViewBlacklist": "1",
+				"EngineAllowViewBlacklistCriterias": "1",
+				"EngineAllowViewWhitelist": "1",
+				"EngineDisplayNickname": "1",
+				"EnginePrivateMode": "1",
+				"EngineSongsPerPerson": "10000",
+				"PlayerFullscreen": "1",
+				"PlayerNoBar": "1",
+				"PlayerNoHud": "1",
+				"PlayerPIP": "1",
+				"PlayerPIPPositionX": "Center",
+				"PlayerPIPPositionY": "Center",
+				"PlayerPIPSize": "35",
+				"PlayerScreen": "0",
+				"PlayerStayOnTop": "1"				
+		}
+		return request
+			.put('/api/v1/admin/settings')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200)			
+			.then(function(response){
+				assert.equal(response.body,'Settings updated');
+			})
+	});
+})
+
 describe('Managing whitelist', function() {
 	it('Add karaoke 1 to whitelist', function() {
 		var data = {
