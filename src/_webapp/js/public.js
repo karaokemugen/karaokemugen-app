@@ -12,10 +12,10 @@ $(document).ready(function () {
   $('input[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event) {
     if ($(this).val() == 0) {
       $('#playlist1').parent().show();
-      $('#playlist2').parent().css('width','');
+      $('#playlist2').parent().css('width', '');
     } else {
       $('#playlist1').parent().hide();
-      $('#playlist2').parent().css('width','100%');
+      $('#playlist2').parent().css('width', '100%');
     }
 
   });
@@ -30,3 +30,4 @@ $(document).ready(function () {
 var scope = 'public';
 var settingsPublic = {}
 var publicPlaylistId = 1;
+refreshTime = 2000;

@@ -1,5 +1,9 @@
 .underHeader {
-	top: 100px;
+	top: 105px;
+	height: calc(100% - 105px);
+}
+.playlist-main, .panel  {
+	height: 100%;
 }
 
 #manage .bootstrap-switch-container > span {
@@ -28,7 +32,9 @@
 #playlist1.list-group > li > button > i.glyphicon-arrow-left {
 	display: none; 
 }
-
+#playlist1, #playlist2 {
+	overflow: auto;
+}
 .list-group > li:hover > button {
 	display: block;
 }

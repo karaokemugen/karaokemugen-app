@@ -1,8 +1,8 @@
 <div id="header" class="header">
     <div class="col-lg-8 col-md-8 col-sm-8 col-xs-9" id="searchParent">
-        <input type="text" class="form-control" id="search" placeholder="Recherche...">
+        <input type="text" class="form-control" id="searchPlaylist1" num="1" placeholder="Recherche...">
     </div>
-    
+
     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-5">
         <div class="dropdown pull-right">
             <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
@@ -15,7 +15,7 @@
         </div>
         <div class="pull-right btn-group switchParent">
             <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-search'></i>"
-                data-off-text="<i class='glyphicon glyphicon-menu-hamburger'></i>" data-size="large"/>
+                data-off-text="<i class='glyphicon glyphicon-menu-hamburger'></i>" data-size="large" />
         </div>
     </div>
     <div class="pull-right btn-group hidden">
@@ -30,17 +30,43 @@
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
         <div class="panel col-lg-8 col-md-7 col-sm-12 col-xs-12">
+             <div>
+                <div>
+                    <select id="selectPlaylist1" num="1" hidden >
+                        <option value="-1" default></option>
+                    </select>
+                </div>
+            </div>
             <ul id="playlist1" class="list-group">
             </ul>
+           
         </div>
-
+         
         <div class="panel col-lg-4 col-md-5 col-sm-12 col-xs-12">
            <div class="panel-heading">
-                <div class="col-lg-6 col-xs-6">
-                    <select type="playlist_select" num="2" class="select2 form-control form-control-lg">
+                <div class="col-lg-4 col-xs-4">
+                    <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control form-control-lg">
                         </select>
                 </div>
-              
+                <div class="col-lg-4 col-xs-4">
+                    <div>
+                        <button class="btn btn-lg btn-default">
+                            <i class="glyphicon glyphicon-export"></i>
+                        </button>
+                        <button class="btn btn-lg btn-default">
+                            <i class="glyphicon glyphicon-facetime-video"></i>
+                        </button>
+                        <button class="btn btn-lg btn-default">
+                            <i class="glyphicon glyphicon-eye-close"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-xs-4">
+                     <div class="right-inner-addon">
+                        <i class="glyphicon glyphicon-search"></i>
+                        <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="Recherche..." />
+                    </div>
+                </div>
             </div>
             <ul id="playlist2" class="list-group">
                 <li class="list-group-item"></li>

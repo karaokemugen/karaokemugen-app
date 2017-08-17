@@ -5,9 +5,9 @@
             <i class="glyphicon glyphicon-volume-up"></i></button>
     <div class="pull-left btn-group" style="width: 129px;">
         <input type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> Privé"
-            data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large"/>
-        <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
-            data-off-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large"/>
+            data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large" />
+        <input type="checkbox" name="kara_panel" class="btn btn-default pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
+            data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large" />
     </div>
     <div class="pull-left btn-group">
         <button action="command" value="stopAfter" id="stopAfter" class="btn btn-danger-low" style="width: 50px;"><i class="glyphicon glyphicon-time"></i></button>
@@ -34,55 +34,72 @@
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
         <div class="panel col-lg-6 col-xs-6">
-            <div class="panel-heading">
-                <div class="col-lg-6 col-xs-6">
-                    <select type="playlist_select" num="1" class="select2 form-control">
-                        </select>
-                </div>
-                <div class="col-lg-6 col-xs-6">
-                    <div class="pull-right">
-                        <button class="btn btn-lg btn-default">
-                            <i class="glyphicon glyphicon-export"></i>
-                        </button>
-                        <button class="btn btn-lg btn-default">
-                            <i class="glyphicon glyphicon-facetime-video"></i>
-                        </button>
-                        <button class="btn btn-lg btn-default">
-                            <i class="glyphicon glyphicon-eye-close"></i>
-                        </button>
+            <div class="panel-heading container-fluid">            
+                    <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
+                        <select id="selectPlaylist1" num="1" type="playlist_select" class="select2 form-control">
+                            </select>
                     </div>
+                    <div class="col-lg-7 col-md-8 col-sm-12 col-xs-12">
+                        <div class="btn-group pull-right" id="flag1">
+                            <button class="btn btn-lg btn-default" name="export">
+                                <i class="glyphicon glyphicon-export"></i>
+                            </button>
+                            <button class="btn btn-lg btn-default" name="current">
+                                <i class="glyphicon glyphicon-facetime-video"></i>
+                            </button>
+                            <button class="btn btn-lg btn-default" name="public">
+                                <i class="glyphicon glyphicon-indent-left"></i>
+                            </button>
+                            <button class="btn btn-lg btn-default" name="visible">
+                                <i class="glyphicon glyphicon-eye-close"></i>
+                            </button>
+                        </div>
+                        <div class="pull-left" style="width:calc(100% - 210px);">
+                            <div class="right-inner-addon">
+                                <i class="glyphicon glyphicon-search"></i>
+                                <input type="text" class="form-control input-lg" num="1" id="searchPlaylist1" placeholder="Recherche..." />
+                            </div>
+                        </div>
                 </div>
             </div>
-
             <ul id="playlist1" class="list-group">
                 <li class="list-group-item"></li>
             </ul>
         </div>
         
         <div class="panel col-lg-6 col-xs-6">
-            <div class="panel-heading">
-                <div class="col-lg-6 col-xs-6">
-                    <select type="playlist_select" num="2" class="select2 form-control form-control-lg">
-                        </select>
-                </div>
-                <div class="col-lg-6 col-xs-6">
-                    <div class="pull-right">
-                        <button class="btn btn-lg btn-default ">
+               <div class="panel-heading container-fluid">            
+                    <div class="col-lg-6 col-sm-12 col-xs-12">
+                        <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control">
+                            </select>
+                    </div>
+                    <div class="col-lg-6 col-sm-12 col-xs-12">
+                        <div class="btn-group pull-right" id="flag2">
+                            <button class="btn btn-lg btn-default" name="export">
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
-                        <button class="btn btn-lg btn-default ">
+                            <button class="btn btn-lg btn-default" name="current">
                                 <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
-                        <button class="btn  btn-lg btn-default ">
+                            <button class="btn btn-lg btn-default" name="public">
+                                <i class="glyphicon glyphicon-indent-left"></i>
+                            </button>
+                            <button class="btn btn-lg btn-default" name="visible">
                                 <i class="glyphicon glyphicon-eye-close"></i>
                             </button>
-                    </div>
+                        </div>
+                        <div class="pull-left" style="width:calc(100% - 210px);">
+                            <div class="right-inner-addon">
+                                <i class="glyphicon glyphicon-search"></i>
+                                <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="Recherche..." />
+                            </div>
+                        </div>
                 </div>
             </div>
+
             <ul id="playlist2" class="list-group">
                 <li class="list-group-item"></li>
             </ul>
-
         </div>
     </div>
     <div class="row" id="manage" hidden>

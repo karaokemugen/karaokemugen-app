@@ -9,7 +9,7 @@
 }
 
 .header button {
-    font-size : calc(15px + 28px - 1.5vw);
+    font-size : calc(17px + 19px - 1vw);
 }
 .header {
 	position: fixed;
@@ -52,7 +52,7 @@ div.bootstrap-switch-large{
 }
 
 .dropdown-menu > li > a {
-    font-size :   calc(15px + 28px - 1.5vw);
+    font-size :   calc(17px + 19px - 1vw);
 }
 
 .playlist-main {
@@ -68,13 +68,13 @@ div.bootstrap-switch-large{
 }
 
 #progressBar {
-    font-size:  calc(15px + 28px - 1.5vw);
+    font-size:  calc(17px + 19px - 1vw);
 }
 .panel-heading {
-    font-size:  calc(15px + 28px - 1.5vw);
+    font-size:  calc(17px + 19px - 1vw);
 }
 .list-group-item {
-    font-size:  calc(15px + 28px - 1.5vw);
+    font-size:  calc(17px + 19px - 1vw);
 }
 body {
     font-size:  calc(155x + 28px - 1.5vw);
@@ -82,7 +82,7 @@ body {
 
 #header input {
     height: 100%;
-    font-size:  calc(15px + 28px - 1.5vw);
+    font-size:  calc(17px + 19px - 1vw);
 }
 
 .badge {
@@ -90,17 +90,21 @@ body {
 }
 
 ::-webkit-input-placeholder {
-    font-size:  calc(15px + 28px - 1.5vw);
+    font-size:  calc(17px + 19px - 1vw);
+    top:  calc(0px + 10px - 0.5vw);
 }
 
 :-moz-placeholder { /* Firefox 18- */
-      font-size: calc(15px + 28px - 1.5vw);
+    font-size:  calc(17px + 19px - 1vw);
+    top:  calc(0px + 10px - 0.5vw);
 }
 
 ::-moz-placeholder {  /* Firefox 19+ */
-      font-size: calc(15px + 28px - 1.5vw);
+    font-size:  calc(17px + 19px - 1vw);
+    top:  calc(0px + 10px - 0.5vw);
 }
 
 :-ms-input-placeholder {
-      font-size: calc(15px + 28px - 1.5vw);
+    font-size:  calc(17px + 19px - 1vw);
+    top:  calc(0px + 10px - 0.5vw);
 }

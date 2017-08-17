@@ -68,7 +68,8 @@ body {
 	z-index: 10;
     position: absolute;
     top: 0;
-    width: 100%;
+	width: 100%;
+	font-weight: 600;
 }
 .btn-danger {
 	background-color: #a55250;
@@ -97,13 +98,12 @@ body {
     padding: 0px;
 }
 .panel-heading > div {
-	padding: 0px;
+	padding: 2px;
 }
 .panel-heading {
 	border-bottom: 15px solid #1E2124;
-	display: flex;
+	padding: 10px 10px;
 }
-
 
 .bootstrap-switch-large:hover, .bootstrap-switch-large:active:hover, .bootstrap-switch-large:focus, .bootstrap-switch-large:visited {
 	background-color: #9e9e9e;
@@ -178,6 +178,7 @@ select.form-control {
 
 .list-group-item,.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
 	background-color: #3b3e44;
+	border-color: #9e9e9e;
 	overflow: auto;
 	padding: 5px;
 }
@@ -203,7 +204,6 @@ select.form-control {
 
 .select2 {
 	width: 100% !important;
-	height: 100%;
 }
 .select2-container--bootstrap .select2-selection--single {
 	height: 100%;
@@ -220,7 +220,9 @@ select.form-control {
 .select2-container--default .select2-results__option[aria-disabled=true] {
     display: none;
 }
-
+.select2-results__option > span > i {
+	float: right;
+}
 
 
 /* theme negatif boutons */
@@ -236,6 +238,22 @@ select.form-control {
 	color: #333;
 }
 */
+
+
+.right-inner-addon input {
+	padding-right: 30px;
+	border-radius: 0;
+}
+
+.right-inner-addon i {
+  position: absolute;
+  color: #ccc;
+  left: calc(100% - 253px);
+  padding: 10px 12px;
+  pointer-events: none;
+  top: 4px;
+  font-size: 20px;
+}
 
 
 /** range CSS */
