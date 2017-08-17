@@ -1,5 +1,5 @@
 #!/bin/bash
 ls -l app/data/*
-npm start &disown
+node src/index.js &disown
 sleep 10
 npm test
