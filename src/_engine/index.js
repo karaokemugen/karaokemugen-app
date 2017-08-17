@@ -242,13 +242,15 @@ module.exports = {
 	*
 	*/
 	playingUpdated:function(){
-		if(module.exports._states.status === 'play' && module.exports._services.player.playing) {
-			module.exports.stop(true)				
-			module.exports.play()
-			resolve();								
-		} else {
-			resolve();
-		}
+		return new Promise(function(resolve,reject){
+			if(module.exports._states.status === 'play' && module.exports._services.player.playing) {
+				module.exports.stop(true)				
+				module.exports.play()
+				resolve();								
+			} else {
+				resolve();
+			}
+		});
 	},
 	/**
 	* @function
