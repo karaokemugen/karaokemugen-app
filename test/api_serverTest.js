@@ -348,4 +348,15 @@ describe('Managing playlists', function() {
 				// OK
 			});
 	});
+	it('Empty playlist 2', function() {
+		return request
+			.put('/api/v1/admin/playlists/2/empty')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body,'Playlist 2 emptied');
+			});
+	});
 });
