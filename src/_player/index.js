@@ -72,7 +72,7 @@ module.exports = {
 				logger.warn('[Player] mpv not found in path : '+module.exports.BINPATH+' or '+mpvBinary);
 				if (process.platform == 'linux') {
 					logger.error('[Player] You need to have mpv installed first. Use apt-get/yum/etc. depending on your linux distribution.');
-					process.exit();
+					reject('mpv not installed!')
 				}
 
 				logger.warn('[Player] You can download it manually from http://mpv.io and place it in '+module.exports.BINPATH);
