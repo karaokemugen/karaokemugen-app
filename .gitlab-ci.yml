@@ -6,9 +6,9 @@ cache:
 
 before_script:
   - npm install
-  - mkdir -p app/data
-  - mkdir -p app/db
-  - cp -R samples/* app/data/ 
+  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
+  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
+  - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/ 
 
 stages: 
   - test

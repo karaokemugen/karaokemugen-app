@@ -1,5 +1,6 @@
 #!/bin/bash
-ls -l app/data/*
+pwd
+ls -l /builds/karaokemugen/karaokemugen-app/app/data/*
 node src/index.js --debug &disown
 sleep 10
 npm test
