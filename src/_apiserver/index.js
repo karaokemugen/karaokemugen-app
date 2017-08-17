@@ -697,6 +697,7 @@ module.exports = {
 					if (result.isEmpty()) {
 						module.exports.onBlacklistCriteriaAdd(req.body.blcriteria_type,req.body.blcriteria_value)
 							.then(function(){
+								res.statusCode = 201;
 								res.json('Blacklist criteria type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' added');
 							})
 							.catch(function(err){

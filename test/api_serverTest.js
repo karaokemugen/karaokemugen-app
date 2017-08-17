@@ -24,7 +24,7 @@ describe('Test public API', function() {
 			.expect('Content-Type', 'text/html; charset=utf-8')
 			.expect(200, done);
 	});
-	it('Get a list of songs with Dragon in their name', function() {
+	it('List songs with Dragon in their name', function() {
 		return request
 			.get('/api/v1/public/karas?filter=Dragon&lang=fr')
 			.set('Accept', 'application/json')
@@ -58,6 +58,68 @@ describe('Test public API', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 	});
+	it('List public playlist information', function() {
+		return request
+			.get('/api/v1/public/playlists/public')
+			.set('Accept', 'application/json')
+			.expect('Content-Type', /json/)
+			.expect(200)
+	});
+	it('List current playlist information', function() {
+		return request
+			.get('/api/v1/public/playlists/current/karas')
+			.set('Accept', 'application/json')
+			.expect('Content-Type', /json/)
+			.expect(200)
+	});
+	it('List public playlist contents', function() {
+		return request
+			.get('/api/v1/public/playlists/public')
+			.set('Accept', 'application/json')
+			.expect('Content-Type', /json/)
+			.expect(200)
+	});	
+	it('Add karaoke 6 to playlist depending on mode', function() {
+		var data = {
+			requestedby: 'Test'
+		}
+		return request
+			.post('/api/v1/public/karas/6')
+			.set('Accept', 'application/json')
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(201)
+			.then(function(response) {
+				assert.equal(response.body,'Karaoke 6 added by '+data.requestedby);
+			});
+	});	
+	var plc_id;
+	it('List contents from current playlist', function() {
+		return request
+			.get('/api/v1/public/playlists/current/karas')
+			.set('Accept', 'application/json')
+			.auth('admin', password)			
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				// We get the PLC_ID of our last karaoke, the one we just added
+				plc_id = response.body[response.body.length-1].playlistcontent_id;
+				var result = false;
+				if (response.body.length >= 1) result = true;
+				assert.equal(result, true);
+			});
+	});
+	it('Delete karaoke 6 from playlist 1', function() {
+		return request
+			.delete('/api/v1/admin/playlists/1/karas/'+plc_id)
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body,'Deleted PLCID '+plc_id);
+			});
+	});
 });
 
 describe('Player tests', function() {
@@ -67,22 +129,7 @@ describe('Player tests', function() {
 			.set('Accept', 'application/json')
 			.expect('Content-Type', /json/)
 			.expect(200)
-	});
-	it('Send stopNow command to player', function() {
-		var data = {
-			command: 'stopNow'
-		}
-		return request
-			.put('/api/v1/admin/player')
-			.set('Accept', 'application/json')
-			.auth('admin', password)
-			.send(data)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response){
-				assert.equal(response.body,'Command stopNow executed');
-			})
-	});
+	});	
 });
 
 describe('Managing karaokes in playlists', function() {
@@ -317,6 +364,79 @@ describe('Managing whitelist', function() {
 				assert.equal(response.body,'Deleted WLID '+wlc_id);
 			});
 	});
+});
+describe('Managing blacklist', function() {
+	it('Add a single karaoke to blacklist criterias', function() {
+		var data = {
+			'blcriteria_type': 1001,
+			'blcriteria_value': 1
+		}
+		return request
+			.post('/api/v1/admin/blacklist/criterias')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(201)
+			.then(function(response) {
+				assert.equal(response.body,'Blacklist criteria type '+data.blcriteria_type+' with value \''+data.blcriteria_value+'\' added');
+			});
+	});
+	var blc_id;
+	it('List blacklist criterias', function() {
+		return request
+			.get('/api/v1/admin/blacklist/criterias')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				blc_id = response.body[0].pk_id_blcriteria;
+				var result = false;
+				if (response.body.length >= 1) result = true;
+				assert.equal(result,true);
+			});
+	});
+	it('Edit blacklist criteria', function() {
+		var data = {
+			blcriteria_type: 1001,
+			blcriteria_value: 2
+		}
+		return request
+			.put('/api/v1/admin/blacklist/criterias/'+blc_id)
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body,'Blacklist criteria '+blc_id+' type '+data.blcriteria_type+' with value \''+data.blcriteria_value+'\' edited');
+			});
+	});
+	it('List blacklist', function() {
+		return request
+			.get('/api/v1/admin/blacklist')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				var result = false;
+				if (response.body.length >= 1) result = true;
+				assert.equal(result,true);
+			});
+	});
+	it('Delete blacklist criteria', function() {
+		return request
+			.delete('/api/v1/admin/blacklist/criterias/'+blc_id)
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {				
+				assert.equal(response.body,'Deleted BLCID '+blc_id);
+			});
+	});	
 })
 describe('Managing playlists', function() {
 	var playlist = {
@@ -494,5 +614,19 @@ describe('Managing playlists', function() {
 			.then(function(response) {
 				assert.equal(response.body,'Playlist 2 emptied');
 			});
+	});
+});
+
+describe('Ending tests', function() {
+	it('Sending shutdown command', function() {		
+		return request
+			.post('/api/v1/admin/shutdown')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response){
+				assert.equal(response.body,'Shutdown in progress.');
+			})
 	});
 });
