@@ -17,17 +17,14 @@ if(fs.existsSync('config.ini')) {
 var password = SETTINGS.AdminPassword;
 
 describe('Test public API', function() {	
-	it('should return Hello World', function(done) {
+	it('Basic connection test', function(done) {
 		request
 			.get('/api/v1/public/')
 			.set('Accept', 'application/json')
 			.expect('Content-Type', 'text/html; charset=utf-8')
 			.expect(200, done);
 	});
-});
-
-describe('Get list of all karas with filter and language fr', function() {
-	it('should return Dragon Ball as first karaoke song', function() {
+	it('Get a list of songs with Dragon in their name', function() {
 		return request
 			.get('/api/v1/public/karas?filter=Dragon&lang=fr')
 			.set('Accept', 'application/json')
@@ -37,10 +34,7 @@ describe('Get list of all karas with filter and language fr', function() {
 				assert.equal(response.body[0].NORM_serie, 'Dragon Ball');
 			});
 	});
-});
-
-describe('Get karaoke ID 1 information', function() {
-	it('should return one karaoke song', function() {
+	it('Get one karaoke song by ID', function() {
 		return request
 			.get('/api/v1/public/karas/1')
 			.set('Accept', 'application/json')
@@ -50,36 +44,44 @@ describe('Get karaoke ID 1 information', function() {
 				assert.equal(response.body.length, 1);
 			});
 	});
-});
-
-
-describe('List all playlists', function() {
-	it('should return 2 or more playlists', function() {
+	it('Get one karaoke song\'s lyrics', function() {
 		return request
-			.get('/api/v1/admin/playlists')
+			.get('/api/v1/public/karas/1/lyrics')
 			.set('Accept', 'application/json')
-			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)			
+	});
+	it('Get stats', function() {
+		return request
+			.get('/api/v1/public/stats')
+			.set('Accept', 'application/json')
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
-				var result = false;
-				if (response.body.length >= 2) result = true;
-				assert.equal(result, true);								
-			});
 	});
 });
 
-describe('List information from playlist 1', function() {
-	it('should return info from a playlist', function() {
+describe('Player tests', function() {
+	it('Read player status', function() {
 		return request
-			.get('/api/v1/admin/playlists/1')
+			.get('/api/v1/public/player')
 			.set('Accept', 'application/json')
-			.auth('admin', password)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
-				assert.equal(response.body.id_playlist, 1);
-			});
+	});
+	it('Send stopNow command to player', function() {
+		var data = {
+			command: 'stopNow'
+		}
+		return request
+			.put('/api/v1/admin/player')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response){
+				assert.equal(response.body,'Command stopNow executed');
+			})
 	});
 });
 
@@ -339,6 +341,30 @@ describe('Managing playlists', function() {
 	var new_playlist_id;
 	var new_playlist_current_id;
 	var new_playlist_public_id;
+	it('List all playlists', function() {
+		return request
+			.get('/api/v1/admin/playlists')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				var result = false;
+				if (response.body.length >= 2) result = true;
+				assert.equal(result, true);								
+			});
+	});
+	it('List single playlist information', function() {
+		return request
+			.get('/api/v1/admin/playlists/1')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body.id_playlist, 1);
+			});
+	});
 	it('Create a new playlist', function() {
 		return request
 			.post('/api/v1/admin/playlists')
