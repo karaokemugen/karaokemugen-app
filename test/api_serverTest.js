@@ -16,7 +16,7 @@ if(fs.existsSync('config.ini')) {
 
 var password = SETTINGS.AdminPassword;
 
-describe('Test public API', function() {
+describe('Test public API', function() {	
 	it('should return Hello World', function(done) {
 		request
 			.get('/api/v1/public/')
@@ -163,7 +163,7 @@ describe('Managing karaokes in playlists', function() {
 				assert.equal(response.body,'Playlist 10000 unknown');
 			});
 	});
-	it('Edit karaoke 6 from playlist 1 : flag_playing', function() {
+	it('Edit karaoke from playlist 1 : flag_playing', function() {
 		var data = {
 			flag_playing: 1
 		};
@@ -178,7 +178,7 @@ describe('Managing karaokes in playlists', function() {
 				assert.equal(response.body,'PLC '+plc_id+' edited in playlist 1');
 			});
 	});
-	it('Edit karaoke 6 from playlist 1 : position', function() {
+	it('Edit karaoke from playlist 1 : position', function() {
 		var data = {
 			pos: 1
 		};
@@ -191,6 +191,17 @@ describe('Managing karaokes in playlists', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.equal(response.body,'PLC '+plc_id+' edited in playlist 1');
+			});
+	});
+	it('Shuffle playlist 1', function() {
+		return request
+			.put('/api/v1/admin/playlists/1/shuffle')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body,'Playlist 1 shuffled');
 			});
 	});
 	it('Delete karaoke 6 from playlist 1', function() {
