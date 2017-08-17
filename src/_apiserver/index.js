@@ -652,7 +652,7 @@ module.exports = {
 					if (result.isEmpty()) {
 						module.exports.onWhitelistSingleKaraEdit(req.params.wl_id,req.body.reason)
 							.then(function(){
-								res.json('Whitelist item '+req.params.wl_id+' edited whitelist reason \''+req.body.reason+'\'');
+								res.json('Whitelist item '+req.params.wl_id+' edited with reason \''+req.body.reason+'\'');
 							})
 							.catch(function(err){
 								res.statusCode = 500;

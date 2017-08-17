@@ -206,6 +206,63 @@ describe('Managing karaokes in playlists', function() {
 	});
 })
 
+describe('Managing whitelist', function() {
+	it('Add karaoke 1 to whitelist', function() {
+		var data = {
+			'id_kara': 1,
+			'reason': 'Because reasons'
+		}
+		return request
+			.post('/api/v1/admin/whitelist')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(201)
+			.then(function(response) {
+				assert.equal(response.body,'Karaoke '+data.id_kara+' added to whitelist with reason \''+data.reason+'\'');
+			});
+	});
+	var wlc_id;
+	it('List whitelist', function() {
+		return request
+			.get('/api/v1/admin/whitelist')
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				wlc_id = response.body[0].id_whitelist;
+				assert.equal(response.body.length,1);
+			});
+	});
+	it('Edit karaoke 1 from whitelist', function() {
+		var data = {
+			reason: 'Because reasons.'
+		}
+		return request
+			.put('/api/v1/admin/whitelist/'+wlc_id)
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body,'Whitelist item '+wlc_id+' edited with reason \''+data.reason+'\'');
+			});
+	});
+	it('Delete karaoke 1 from whitelist', function() {
+		return request
+			.delete('/api/v1/admin/whitelist/'+wlc_id)
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body,'Deleted WLID '+wlc_id);
+			});
+	});
+})
 describe('Managing playlists', function() {
 	var playlist = {
 		'name':'new_playlist',
