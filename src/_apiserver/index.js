@@ -323,8 +323,9 @@ module.exports = {
 				//Access :pl_id by req.params.pl_id
 				// This get route gets infos from a playlist
 				var playlist_id = req.params.pl_id;
+				var filter = req.query.filter;
 				var lang = req.query.lang;
-				module.exports.onPlaylistSingleContents(playlist_id,lang)
+				module.exports.onPlaylistSingleContents(playlist_id,filter,lang)
 					.then(function(playlist){
 						if (playlist == []) res.statusCode = 404;
 						res.json(playlist);
@@ -863,9 +864,10 @@ module.exports = {
 				// Get playlist contents, only if visible
 				//Access :pl_id by req.params.pl_id
 				var playlist_id = req.params.pl_id;
+				var filter = req.query.filter;
 				var lang = req.query.lang;
 				var seenFromUser = true;
-				module.exports.onPlaylistSingleContents(playlist_id,lang,seenFromUser)
+				module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser)
 					.then(function(playlist){
 						if (playlist == null) res.statusCode = 404;
 						res.json(playlist);
@@ -1074,7 +1076,8 @@ module.exports = {
 			.get(function(req,res){
 				// Get current Playlist
 				var lang = req.query.lang;
-				module.exports.onPlaylistCurrentContents(lang)
+				var filter = req.query.filter;
+				module.exports.onPlaylistCurrentContents(filter, lang)
 					.then(function(playlist){
 						res.json(playlist);
 					})
@@ -1101,7 +1104,8 @@ module.exports = {
 			.get(function(req,res){
 				// Get current Playlist
 				var lang = req.query.lang;
-				module.exports.onPlaylistPublicContents(lang)
+				var filter = req.query.filter;
+				module.exports.onPlaylistPublicContents(filter, lang)
 					.then(function(playlist){
 						res.json(playlist);
 					})
