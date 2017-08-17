@@ -16,7 +16,8 @@ stages:
 
 test:
   stage: test
-  script: "echo lol"
+  script: 
+    - bash tests/run.sh
 
 deploy:
   stage: deploy
