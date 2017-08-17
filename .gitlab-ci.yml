@@ -9,6 +9,7 @@ before_script:
   - mkdir -p app/data
   - mkdir -p app/db
   - cp -R samples/* app/data/
+  - ls -l app/data/*
 
 stages: 
   - test
