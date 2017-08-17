@@ -16,6 +16,9 @@ if(fs.existsSync('config.ini')) {
 
 var password = SETTINGS.AdminPassword;
 
+require('../src/index.js');
+
+
 describe('Test public API', function() {	
 	it('Basic connection test', function(done) {
 		request
