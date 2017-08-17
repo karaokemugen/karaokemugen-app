@@ -8,8 +8,7 @@ before_script:
   - npm install
   - mkdir -p app/data
   - mkdir -p app/db
-  - cp -R samples/* app/data/
-  - ls -l app/data/*
+  - cp -R samples/* app/data/ 
 
 stages: 
   - test
