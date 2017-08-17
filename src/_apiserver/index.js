@@ -652,7 +652,7 @@ module.exports = {
 					if (result.isEmpty()) {
 						module.exports.onWhitelistSingleKaraEdit(req.params.wl_id,req.body.reason)
 							.then(function(){
-								res.json('Whitelist item '+req.params.wl_id+' edited whitelist reason \''+req.body.reason+'\'');
+								res.json('Whitelist item '+req.params.wl_id+' edited with reason \''+req.body.reason+'\'');
 							})
 							.catch(function(err){
 								res.statusCode = 500;
@@ -697,6 +697,7 @@ module.exports = {
 					if (result.isEmpty()) {
 						module.exports.onBlacklistCriteriaAdd(req.body.blcriteria_type,req.body.blcriteria_value)
 							.then(function(){
+								res.statusCode = 201;
 								res.json('Blacklist criteria type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' added');
 							})
 							.catch(function(err){

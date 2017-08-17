@@ -6,14 +6,18 @@ cache:
 
 before_script:
   - npm install
+#  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
+#  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
+#  - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/ 
 
 stages: 
-  - test
+#  - test
   - deploy
 
-test:
-  stage: test
-  script: "echo lol"
+#test:
+#  stage: test
+#  script: 
+#    - bash test/run.sh
 
 deploy:
   stage: deploy

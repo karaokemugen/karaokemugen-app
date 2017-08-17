@@ -14,7 +14,7 @@ const ffmpegPath = require('ffmpeg-downloader').path;
 module.exports = {
 	getLyrics:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile){
 		return new Promise(function(resolve,reject){
-			var lyrics = [];
+			var lyrics = [];			
 			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
 				var err = 'Video not found : '+videofile
 				logger.error('[ASS] getLyrics : '+err)
@@ -135,6 +135,7 @@ module.exports = {
 	},
 	build:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id){
 		var uuid = uuidv4();
+		logger.debug(module.exports.SYSPATH+' - '+pathToVideoFiles);
 		logger.debug('[ASS] args = '+JSON.stringify(arguments));
 		return new Promise(function(resolve, reject){
 
