@@ -2697,31 +2697,25 @@ module.exports = {
 		});
 	},
 
-	build_dummy_current_iterate_index:1,
-	build_dummy_current_iterate:function(playlist_id,resolve,reject) {
-		logger.info('[PLC] Dummy Plug : Adding Kara '+module.exports.build_dummy_current_iterate_index+' into current playlist')
-		
-		module.exports.addKaraToPlaylist(
-			module.exports.build_dummy_current_iterate_index,
-			'Dummy user '+module.exports.build_dummy_current_iterate_index,
-			playlist_id
-		)
-			.then(function(){
-				module.exports.build_dummy_current_iterate_index++;
-				if(module.exports.build_dummy_current_iterate_index<=5)
-					module.exports.build_dummy_current_iterate(playlist_id,resolve,reject);
-				else
-					resolve();
-			})
-			.catch(function(message){
-				reject(message);
-			});
-	},
-
 	build_dummy_current_playlist:function(playlist_id){
 		logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...')
 		return new Promise(function(resolve,reject){
-			module.exports.build_dummy_current_iterate(playlist_id,resolve,reject);
+			for (i = 1; i <= 5; i++) {				
+				logger.info('[PLC] Dummy Plug : Adding Kara '+i+' into current playlist')			
+				module.exports.addKaraToPlaylist(
+				i,
+				'Dummy user '+i,
+				playlist_id
+			)
+				.then(function(){
+					// Do nothing.
+				})
+				.catch(function(message){
+					logger.error('[PLC] Dummy Plug : '+message);
+					reject(message);
+				});
+			}
+			resolve();
 		});
 	},
 
