@@ -712,6 +712,11 @@ module.exports = {
 				});
 		});
 	},
+	/**
+	* @function {Empty Playlist}
+	* @param  {number} playlist_id {ID of playlist to empty}
+	* @return {promise} {Promise}
+	*/
 	emptyPlaylist:function(playlist_id) {		
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
@@ -747,9 +752,8 @@ module.exports = {
 	* @param  {number} flag_visible {Is the playlist visible?}
 	* @param  {number} flag_current {Is the playlist the current one?}
 	* @param  {number} flag_public  {Is the playlist the public one?}
-	* @param  {number} new_playlist_id {Optional playlist_id to transfer flags to if set to 0}
 	*/
-	editPlaylist:function(playlist_id,name,flag_visible,flag_current,flag_public,new_playlist_id) {
+	editPlaylist:function(playlist_id,name,flag_visible,flag_current,flag_public) {
 		return new Promise(function(resolve,reject){
 			var NORM_name = S(name).latinise().s;
 			var lastedit_time = timestamp.now();
@@ -760,7 +764,6 @@ module.exports = {
 				logger.error('[PLC] editPlaylist : '+err)
 				reject(err);
 			}
-
 			var pIsPlaylist = new Promise((resolve,reject) => {
 				module.exports.isPlaylist(playlist_id)
 					.then(function() {
@@ -772,142 +775,75 @@ module.exports = {
 						reject(err);
 					});
 			});
-			var pUnsetFlagPublic = new Promise((resolve,reject) => {
-				if (flag_public == 1) {
-					module.exports.unsetPublicAllPlaylists()
-						.then(function(){
-							resolve();
-						})
-						.catch(function(err){
-							logger.error('[PLC] unsetFlagPublic : '+err)
+			var pPlaylistInfo = new Promise((resolve,reject) => {
+				//Get playlist info to see if the playlist we're editing is current or public already
+				module.exports.getPlaylistInfo(playlist_id,false)
+					.then(function(playlist) {
+						isCurrent = playlist.flag_current;
+						isPublic = playlist.flag_public;
+
+						if (isCurrent && flag_current == 0){
+							//Trying to unset current flag. Not possible!
+							var err = 'Unsetting current flag is impossible. Set the current flag on another playlist to disable it on this one';
+							logger.error('[PLC] editPlaylist : '+err);
+						}
+						if (isPublic && flag_public == 0){
+							//Trying to unset public flag. Not possible!
+							var err = 'Unsetting public flag is impossible. Set the public flag on another playlist to disable it on this one';
+							logger.error('[PLC] editPlaylist : '+err);
+						}
+						if (err) {
 							reject(err);
-						});
-				} else {
-					resolve();
-				}
-			});
-			var pUnsetFlagCurrent = new Promise((resolve,reject) => {
-				if (flag_current == 1) {
-					module.exports.unsetCurrentAllPlaylists()
-						.then(function(){
-							resolve();
-						})
-						.catch(function(err){
-							logger.error('[PLC] unsetFlagCurrent : '+err)
-							reject();
-						});
-				} else {
-					resolve();
-				}
-			});
-			var pIsCurrent = new Promise((resolve,reject) => {
-				if (flag_current == 0) {
-					module.exports.isCurrentPlaylist(playlist_id)
-					.then(function(res){
-						if (res == true) {
-							if (new_playlist_id) {
-								// Verify if new_playlist_id has a public flag on. If it has, we can't use it
-								module.exports.isPublicPlaylist(new_playlist_id)
-									.then(function(res){
-										if (res == true) {
-											reject('New playlist cannot be current and public at the same time');
-										} else {
-											isCurrent = true;
-											resolve();
-										}
-									})
-									.catch(function(err){
-										reject(err);
-									})								
-							} else {
-								reject('New playlist ID needed when unsetting public flag from a public playlist')
-							}							
 						} else {
-							isCurrent = false;
 							resolve();
 						}						
 					})
-					.catch(function(err){
-						logger.error('[PLC] isPublicPlaylist : '+err)
+					.catch(function(err) {
+						var err = 'Playlist '+playlist_id+' unknown'
+						logger.error('[PLC] isPlaylist : '+err)
 						reject(err);
 					});
-				} else {
-					resolve();
-				}				
 			});
-			var pIsPublic = new Promise((resolve,reject) => {
-				if (flag_public == 0) {
-					module.exports.isPublicPlaylist(playlist_id)
-					.then(function(res){
-						if (res == true) {
-							if (new_playlist_id) {
-								// Verify if new_playlist_id has a current flag on. If it has, we can't use it
-								module.exports.isCurrentPlaylist(new_playlist_id)
-									.then(function(res){
-										if (res == true) {
-											reject('New playlist cannot be current and public at the same time');
-										} else {
-											isPublic = true;
-											resolve();
-										}
-									})
-									.catch(function(err){
-										reject(err);
-									})								
-							} else {
-								reject('New playlist ID needed when unsetting public flag from a public playlist')
-							}							
-						} else {
-							isPublic = false;
-							resolve();
-						}						
-					})
-					.catch(function(err){
-						logger.error('[PLC] isCurrentPlaylist : '+err)
-						reject(err);
-					});
-				} else {
-					resolve();
-				}				
-			});
-			Promise.all([pIsPlaylist,pUnsetFlagCurrent,pUnsetFlagPublic,pIsPublic,pIsCurrent])
+			Promise.all([pIsPlaylist,pPlaylistInfo])
 				.then(function() {
 					module.exports.DB_INTERFACE.editPlaylist(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public)
 					.then(function(){
-						// We need to check if our playlist was current or public and if the flags have been set to 0
-						// If that is the case, we need to set the new current/public playlist
-						// Since there HAS to be a current or public playlist in the database.
-						var pWasCurrent = new Promise((resolve,reject) => {
-							if (isCurrent && flag_current == 0) {
-								module.exports.setCurrentPlaylist(new_playlist_id)
-								.then(function(){
-									resolve();
-								})
-								.catch(function(err){
-									reject(err);
-								})								
-							} else {
-								resolve();
-							}							
-						})
-						var pWasPublic = new Promise((resolve,reject) => {
-							if (isPublic && flag_public == 0) {
-								module.exports.setPublicPlaylist(new_playlist_id)
+						// Checking if the playlist wasn't public/current and if we need to set it now
+						// In this case we need to unset all other playlist flags
+						var pUnsetFlagPublic = new Promise((resolve,reject) => {
+							if (isPublic == 0 && flag_public == 1) {
+								module.exports.setPublicPlaylist(playlist_id)
 									.then(function(){
 										resolve();
 									})
 									.catch(function(err){
+										logger.error('[PLC] setFlagPublic : '+err)
 										reject(err);
-									})								
+									});
 							} else {
 								resolve();
-							}							
-						})
-						Promise.all([pWasCurrent,pWasPublic])
-							.then(function() {
+							}
+						});
+						var pUnsetFlagCurrent = new Promise((resolve,reject) => {
+							if (isCurrent == 0 && flag_current == 1) {
+								module.exports.setCurrentPlaylist(playlist_id)
+									.then(function(){
+										resolve();
+									})
+									.catch(function(err){
+										logger.error('[PLC] setFlagCurrent : '+err)
+										reject();
+									});
+							} else {
+								resolve();
+							}
+						});
+						Promise.all([pUnsetFlagPublic,pUnsetFlagCurrent])
+							.then(function(){
 								resolve();
 							})
 							.catch(function(err){
+								logger.error('[PLC] editPlaylist : unable to unset public or current flags : '+err)
 								reject(err);
 							})
 					})
@@ -922,6 +858,14 @@ module.exports = {
 				});
 		});
 	},
+	/**
+	* @function {Create a new playlist}
+	* @param  {string} name         {Playlist name}
+	* @param  {number} flag_visible {Is the playlist visible?}
+	* @param  {number} flag_current {Is the playlist current}
+	* @param  {number} flag_public  {Is the playlist public}
+	* @return {promise} {Promise}
+	*/
 	createPlaylist:function(name,flag_visible,flag_current,flag_public) {
 
 		// Méthode de création playlist
@@ -991,7 +935,7 @@ module.exports = {
 	/**
 	* @function {getPlaylistInfo}
 	* @param  {number} playlist_id {Playlist ID to fetch}
-	* @param  {boolean} seenFromuser {Is the playlist being seen from the user's perspective?}
+	* @param  {boolean} seenFromUser {Is the playlist being seen from the user's perspective?}
 	* @return {Object} {Playlist object}
 	* Returns a playlist object with the following information :
 	* - id_playlist
