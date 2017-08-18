@@ -661,7 +661,7 @@ module.exports = {
 						module.exports.isPublicPlaylist(playlist_id)
 							.then(function(res) {
 								if (res == true) {
-									var err = 'Playlist to delete is public. Unable to delete it.';
+									var err = 'Playlist to delete is public. Unable to delete it';
 									logger.error('[PLC] deletePlaylist : '+err);
 									reject(err);
 								} else {
@@ -677,7 +677,7 @@ module.exports = {
 						module.exports.isCurrentPlaylist(playlist_id)
 							.then(function(res){
 								if (res == true) {									
-									var err = 'Playlist to delete is current. Unable to delete it.';
+									var err = 'Playlist to delete is current. Unable to delete it';
 									logger.error('[PLC] deletePlaylist : '+err);
 									reject(err);								
 								} else {
