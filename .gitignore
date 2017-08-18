@@ -7,7 +7,7 @@ app/
 src/app/
 npm-debug.log
 *.exe
-toyundamugen.log
+karaokemugen.log
 out/
 doc/
 \.DS_Store

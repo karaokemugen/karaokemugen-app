@@ -6,7 +6,7 @@ const winston = require('winston');
 const logger = new (winston.Logger)({
 	transports: [
 		new (winston.transports.Console)({ timestamp: tsFormat, level: 'info', colorize: true }),
-		new (winston.transports.File)({ timestap: tsFormat, filename: 'toyundamugen.log', level: 'debug', handleExceptions: true })
+		new (winston.transports.File)({ timestap: tsFormat, filename: 'karaokemugen.log', level: 'debug', handleExceptions: true })
 	]
 });
 
@@ -14,7 +14,7 @@ if (argv.debug) {
 	logger.configure({
 		transports: [
 			new (winston.transports.Console)({ timestamp: tsFormat, level: 'debug', colorize: true }),
-			new (winston.transports.File)({ timestap: tsFormat, filename: 'toyundamugen.log', level: 'debug', handleExceptions: true })
+			new (winston.transports.File)({ timestap: tsFormat, filename: 'karaokemugen.log', level: 'debug', handleExceptions: true })
 		]		
 });
 	
