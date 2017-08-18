@@ -1630,25 +1630,43 @@ module.exports = {
 	* @return {boolean} {Promise}
 	*/
 	editKaraFromPlaylist:function(playlistcontent_id,pos,flag_playing) {
-		return new Promise(function(resolve,reject){
-			if (S(playlistcontent_id).isEmpty()) {
-				var err = 'PLCID empty';
-				logger.error('[PLC] editKaraFromPlaylist : '+err)
-				reject(err);
-			}
+		return new Promise(function(resolve,reject){			
 			var playlist_id = undefined;
+			
+			var pIsPLCEmpty = new Promise((resolve,reject) => {
+				if (S(playlistcontent_id).isEmpty()) {
+					var err = 'PLCID empty';
+					logger.error('[PLC] editKaraFromPlaylist : '+err)
+					reject(err);
+				}
+			})
+			var pIsFlagPlayingUnset = new Promise((resolve,reject) => {
+				if (flag_playing == 0) {
+					var err = 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one'
+					logger.error('[PLC] editKaraFromPlaylist : '+err)
+					reject(err);
+				} else {
+					resolve();
+				}
+			})
 			var pGetPLContentInfo = new Promise((resolve,reject) => {
 				module.exports.DB_INTERFACE.getPLContentInfo(playlistcontent_id)
 					.then(function(kara) {
-						playlist_id = kara.playlist_id;
-						resolve();
+						if (kara) {
+							playlist_id = kara.playlist_id;
+							resolve();
+						} else {
+							var err = 'PLCID unknown!';
+							logger.error('[PLC] editKaraFromPlaylist : '+err)
+							reject(err);
+						}						
 					})
 					.catch(function(err) {
 						logger.error('[PLC] GetPLContentInfo : '+err)
 						reject(err);
 					});
 			});
-			Promise.all([pGetPLContentInfo])
+			Promise.all([pGetPLContentInfo,pIsPLCEmpty,pIsFlagPlayingUnset])
 				.then(function() {
 					// Updating karaoke here.
 					var pUpdatePlaying = new Promise((resolve,reject) => {
