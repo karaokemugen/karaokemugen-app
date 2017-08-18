@@ -216,20 +216,6 @@ module.exports = {
 							errorMessage: 'Invalid visible flag (must be boolean)'
 						}
 					},
-					'flag_public': {
-						in: 'body',
-						notEmpty: true,
-						isBoolean: {
-							errorMessage: 'Invalid public flag (must be boolean)'
-						}
-					},
-					'flag_current': {
-						in: 'body',
-						notEmpty: true,
-						isBoolean: {
-							errorMessage: 'Invalid current flag (must be boolean)'
-						}
-					},					
 				});
 
 				req.getValidationResult()
@@ -239,8 +225,6 @@ module.exports = {
 							req.sanitize('name').trim();
 							req.sanitize('name').unescape();
 							req.sanitize('flag_visible').toBoolean();
-							req.sanitize('flag_public').toBoolean();
-							req.sanitize('flag_current').toBoolean();							
 
 							//Now we add playlist
 							module.exports.onPlaylistSingleEdit(req.params.pl_id,req.body)
