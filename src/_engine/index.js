@@ -762,14 +762,19 @@ module.exports = {
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 							.then(function(karalist){
-								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-								.then(function(filtered_pl){
-									resolve(filtered_pl)
-								})
-								.catch(function(err){
-									logger.error('[Engine] PLC filterPlaylist : '+err);	
-									resolve(err);
-								});
+								if (filter) {
+									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+										.then(function(filtered_pl){
+										resolve(filtered_pl)
+										})
+										.catch(function(err){
+											logger.error('[Engine] PLC filterPlaylist : '+err);	
+											resolve(err);
+										});
+								} else {
+									resolve(karalist);
+								}
+								
 							})
 							.catch(function(err){
 								logger.error('[Engine] PLC translateKaraInfo : '+err);
@@ -813,14 +818,18 @@ module.exports = {
 							.then(function(playlist){
 								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 									.then(function(karalist){
-										module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-											.then(function(filtered_pl){
+										if (filter) {
+											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+												.then(function(filtered_pl){
 												resolve(filtered_pl)
-											})
-											.catch(function(err){
-												logger.error('[Engine] PLC filterPlaylist : '+err);	
-												resolve(err);
-											});
+												})
+												.catch(function(err){
+													logger.error('[Engine] PLC filterPlaylist : '+err);	
+													resolve(err);
+												});
+										} else {
+											resolve(karalist);
+										}
 									})
 									.catch(function(err){
 										logger.error('[Engine] PLC translateKaraInfo : '+err);
@@ -873,14 +882,18 @@ module.exports = {
 							.then(function(playlist){
 								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 									.then(function(karalist){
-										module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-											.then(function(filtered_pl){
+										if (filter) {
+											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+												.then(function(filtered_pl){
 												resolve(filtered_pl)
-											})
-											.catch(function(err){
-												logger.error('[Engine] PLC filterPlaylist : '+err);	
-												resolve(err);
-											});
+												})
+												.catch(function(err){
+													logger.error('[Engine] PLC filterPlaylist : '+err);	
+													resolve(err);
+												});
+										} else {
+											resolve(karalist);
+										}
 									})
 									.catch(function(err){
 										logger.error('[Engine] PLC translateKaraInfo : '+err);
