@@ -216,20 +216,6 @@ module.exports = {
 							errorMessage: 'Invalid visible flag (must be boolean)'
 						}
 					},
-					'flag_public': {
-						in: 'body',
-						notEmpty: true,
-						isBoolean: {
-							errorMessage: 'Invalid public flag (must be boolean)'
-						}
-					},
-					'flag_current': {
-						in: 'body',
-						notEmpty: true,
-						isBoolean: {
-							errorMessage: 'Invalid current flag (must be boolean)'
-						}
-					},					
 				});
 
 				req.getValidationResult()
@@ -239,8 +225,6 @@ module.exports = {
 							req.sanitize('name').trim();
 							req.sanitize('name').unescape();
 							req.sanitize('flag_visible').toBoolean();
-							req.sanitize('flag_public').toBoolean();
-							req.sanitize('flag_current').toBoolean();							
 
 							//Now we add playlist
 							module.exports.onPlaylistSingleEdit(req.params.pl_id,req.body)
@@ -284,7 +268,32 @@ module.exports = {
 					res.json(err);
 				});
 			})
+		routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
+		.put(function(req,res){
+			// set playlist to current
 
+			module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
+				.then(function(){
+					res.json('Playlist '+req.params.pl_id+' is now current');
+				})
+				.catch(function(err){
+					res.statusCode = 500;
+					res.json(err);
+				});
+			})
+		routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
+		.put(function(req,res){
+			// Empty playlist
+
+			module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
+				.then(function(){
+					res.json('Playlist '+req.params.pl_id+' is now public');
+				})
+				.catch(function(err){
+					res.statusCode = 500;
+					res.json(err);
+				});
+			})	
 		routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
 			.get(function(req,res){
 				//Access :pl_id by req.params.pl_id
@@ -1122,6 +1131,8 @@ module.exports = {
 	onPlaylistSingleDelete:function(){},
 	onPlaylistSingleEdit:function(){},
 	onPlaylistSingleEmpty:function(){},
+	onPlaylistSingleSetPublic:function(){},
+	onPlaylistSingleSetCurrent:function(){},
 	onPlaylistSingleContents:function(){},
 	onPlaylistSingleKaraDelete:function(){},
 	onPlaylistSingleKaraEdit:function(){},

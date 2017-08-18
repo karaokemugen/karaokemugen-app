@@ -554,29 +554,43 @@ module.exports = {
 	},
 	setCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
-			module.exports.unsetCurrentAllPlaylists()
-			.then(function(){
-				module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id)
-				.then(function(res){
-					module.exports.updatePlaylistLastEditTime(playlist_id)
-					.then(function(){
-						resolve();
-					})
-					.catch(function(err){
-						logger.error('[PLC] updatePlaylistLastEditTime : '+err);
+			module.exports.getPlaylistInfo(playlist_id)
+				.then(function(playlist){
+					if (playlist.flag_public == 1) {
+						var err = 'A current playlist cannot be set to public. Set another playlist to current first.';
+						logger.error('[PLC] setCurrentPlaylist : '+err);
 						reject(err);
-					});
+					} else {
+						module.exports.unsetCurrentAllPlaylists()
+							.then(function(){
+								module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id)
+								.then(function(res){
+									module.exports.updatePlaylistLastEditTime(playlist_id)
+									.then(function(){
+										resolve();
+									})
+									.catch(function(err){
+										logger.error('[PLC] updatePlaylistLastEditTime : '+err);
+										reject(err);
+									});
+								})
+								.catch(function(err){
+									logger.error('[PLC] DBI setCurrentPlaylist : '+err);					
+									reject(err);
+								});
+							})
+							.catch(function(err){
+								logger.error('[PLC] unsetCurrentAllPlaylists : '+err);
+								reject(err);
+							});
+						
+					}					
 				})
 				.catch(function(err){
-					logger.error('[PLC] DBI setCurrentPlaylist : '+err);					
+					logger.error('[PLC] DBI getPlaylistInfo : '+err);					
 					reject(err);
-				})
-			})
-			.catch(function(err){
-				logger.error('[PLC] unsetCurrentAllPlaylists : '+err);
-				reject(err);
-			});
-		});
+				});
+		})	
 	},
 	/**
 	* @function {setVisiblePlaylist}
@@ -623,28 +637,42 @@ module.exports = {
 	},
 	setPublicPlaylist:function(playlist_id){
 		return new Promise(function(resolve,reject){
-			module.exports.unsetPublicAllPlaylists()
-			.then(function(){
-				module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id)
-				.then(function(res){
-					module.exports.updatePlaylistLastEditTime(playlist_id)
-					.then(function(){
-						resolve();
-					})
-					.catch(function(err){
-						logger.error('[PLC] updatePlaylistLastEditTime : '+err);
-						reject();
-					});
+			module.exports.getPlaylistInfo(playlist_id)
+				.then(function(playlist){
+					if (playlist.flag_current == 1) {
+						var err = 'A public playlist cannot be set to current. Set another playlist to public first.';
+						logger.error('[PLC] setPublicPlaylist : '+err);
+						reject(err);
+					} else {
+						module.exports.unsetPublicAllPlaylists()
+							.then(function(){
+								module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id)
+								.then(function(res){
+									module.exports.updatePlaylistLastEditTime(playlist_id)
+									.then(function(){
+										resolve();
+									})
+									.catch(function(err){
+										logger.error('[PLC] updatePlaylistLastEditTime : '+err);
+										reject(err);
+									});
+								})
+								.catch(function(err){
+									logger.error('[PLC] DBI setPublicPlaylist : '+err);					
+									reject(err);
+								});
+							})
+							.catch(function(err){
+								logger.error('[PLC] unsetPublicAllPlaylists : '+err);
+								reject(err);
+							});
+						
+					}					
 				})
 				.catch(function(err){
-					logger.error('[PLC] DBI setPublicPlaylist : '+err);
+					logger.error('[PLC] DBI getPlaylistInfo : '+err);					
 					reject(err);
 				});
-			})
-			.catch(function(err){
-				logger.error('[PLC] unsetPublicAllPlaylists : '+err);
-				reject(err);
-			});
 		});
 	},
 	/**
@@ -759,11 +787,6 @@ module.exports = {
 			var lastedit_time = timestamp.now();
 			var isCurrent;
 			var isPublic;
-			if (flag_current == 1 && flag_public == 1) {
-				var err = 'A playlist cannot be current and public at the same time!'
-				logger.error('[PLC] editPlaylist : '+err)
-				reject(err);
-			}
 			var pIsPlaylist = new Promise((resolve,reject) => {
 				module.exports.isPlaylist(playlist_id)
 					.then(function() {
@@ -775,77 +798,11 @@ module.exports = {
 						reject(err);
 					});
 			});
-			var pPlaylistInfo = new Promise((resolve,reject) => {
-				//Get playlist info to see if the playlist we're editing is current or public already
-				module.exports.getPlaylistInfo(playlist_id,false)
-					.then(function(playlist) {
-						isCurrent = playlist.flag_current;
-						isPublic = playlist.flag_public;
-
-						if (isCurrent && flag_current == 0){
-							//Trying to unset current flag. Not possible!
-							var err = 'Unsetting current flag is impossible. Set the current flag on another playlist to disable it on this one';
-							logger.error('[PLC] editPlaylist : '+err);
-						}
-						if (isPublic && flag_public == 0){
-							//Trying to unset public flag. Not possible!
-							var err = 'Unsetting public flag is impossible. Set the public flag on another playlist to disable it on this one';
-							logger.error('[PLC] editPlaylist : '+err);
-						}
-						if (err) {
-							reject(err);
-						} else {
-							resolve();
-						}						
-					})
-					.catch(function(err) {
-						var err = 'Playlist '+playlist_id+' unknown'
-						logger.error('[PLC] isPlaylist : '+err)
-						reject(err);
-					});
-			});
-			Promise.all([pIsPlaylist,pPlaylistInfo])
+			Promise.all([pIsPlaylist])
 				.then(function() {
-					module.exports.DB_INTERFACE.editPlaylist(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public)
+					module.exports.DB_INTERFACE.editPlaylist(playlist_id,name,NORM_name,lastedit_time,flag_visible)
 					.then(function(){
-						// Checking if the playlist wasn't public/current and if we need to set it now
-						// In this case we need to unset all other playlist flags
-						var pUnsetFlagPublic = new Promise((resolve,reject) => {
-							if (isPublic == 0 && flag_public == 1) {
-								module.exports.setPublicPlaylist(playlist_id)
-									.then(function(){
-										resolve();
-									})
-									.catch(function(err){
-										logger.error('[PLC] setFlagPublic : '+err)
-										reject(err);
-									});
-							} else {
-								resolve();
-							}
-						});
-						var pUnsetFlagCurrent = new Promise((resolve,reject) => {
-							if (isCurrent == 0 && flag_current == 1) {
-								module.exports.setCurrentPlaylist(playlist_id)
-									.then(function(){
-										resolve();
-									})
-									.catch(function(err){
-										logger.error('[PLC] setFlagCurrent : '+err)
-										reject();
-									});
-							} else {
-								resolve();
-							}
-						});
-						Promise.all([pUnsetFlagPublic,pUnsetFlagCurrent])
-							.then(function(){
-								resolve();
-							})
-							.catch(function(err){
-								logger.error('[PLC] editPlaylist : unable to unset public or current flags : '+err)
-								reject(err);
-							})
+						resolve();
 					})
 					.catch(function(err){
 						logger.error('[PLC] DBI editPlaylist');
@@ -948,17 +905,24 @@ module.exports = {
 	* - flag_current (is the playlist the current one?)
 	* - flag_public (is the playlist the public one?)
 	*/
-	getPlaylistInfo:function(playlist_id,seenFromUser) {
-		// TODO : Tester si la playlist existe
+	getPlaylistInfo:function(playlist_id,seenFromUser) {		
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,seenFromUser)
-			.then(function(playlist){
-				resolve(playlist);
-			})
-			.catch(function(err){
-				logger.error('[PLC] DBI getPlaylistInfo : '+err);
-				reject(err);
-			})
+			module.exports.isPlaylist(playlist_id)
+				.then(function() {
+					module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,seenFromUser)
+						.then(function(playlist){
+							resolve(playlist);
+						})
+						.catch(function(err){
+							logger.error('[PLC] DBI getPlaylistInfo : '+err);
+							reject(err);
+						})
+				})
+				.catch(function(err) {
+					var err = 'Playlist '+playlist_id+' unknown';
+					logger.error('[PLC] isPlaylist : '+err);
+					reject(err);
+				});			
 		});
 	},
 	/**

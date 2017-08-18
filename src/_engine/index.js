@@ -724,12 +724,36 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onPlaylistSingleEdit = function(id_playlist,playlist){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
+				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible)
 					.then(function(){
 						resolve();
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC editPlaylist : '+err);
+						reject(err);						
+					});
+			});
+		}
+		module.exports._services.apiserver.onPlaylistSingleSetCurrent = function(id_playlist){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC setCurrentPlaylist : '+err);
+						reject(err);						
+					});
+			});
+		}
+		module.exports._services.apiserver.onPlaylistSingleSetPublic = function(id_playlist){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.setPublicPlaylist(id_playlist)
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC setPublicPlaylist : '+err);
 						reject(err);						
 					});
 			});
