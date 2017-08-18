@@ -734,6 +734,30 @@ module.exports = {
 					});
 			});
 		}
+		module.exports._services.apiserver.onPlaylistSingleSetCurrent = function(id_playlist){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC setCurrentPlaylist : '+err);
+						reject(err);						
+					});
+			});
+		}
+		module.exports._services.apiserver.onPlaylistSingleSetPublic = function(id_playlist){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.setPublicPlaylist(id_playlist)
+					.then(function(){
+						resolve();
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC setPublicPlaylist : '+err);
+						reject(err);						
+					});
+			});
+		}
 		module.exports._services.apiserver.onShutdown = function(){
 			return new Promise(function(resolve,reject){
 				logger.info('[Engine] Dropping the mic, shutting down!');

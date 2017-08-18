@@ -268,7 +268,32 @@ module.exports = {
 					res.json(err);
 				});
 			})
+		routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
+		.put(function(req,res){
+			// set playlist to current
 
+			module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
+				.then(function(){
+					res.json('Playlist '+req.params.pl_id+' is now current');
+				})
+				.catch(function(err){
+					res.statusCode = 500;
+					res.json(err);
+				});
+			})
+		routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
+		.put(function(req,res){
+			// Empty playlist
+
+			module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
+				.then(function(){
+					res.json('Playlist '+req.params.pl_id+' is now public');
+				})
+				.catch(function(err){
+					res.statusCode = 500;
+					res.json(err);
+				});
+			})	
 		routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
 			.get(function(req,res){
 				//Access :pl_id by req.params.pl_id
@@ -1106,6 +1131,8 @@ module.exports = {
 	onPlaylistSingleDelete:function(){},
 	onPlaylistSingleEdit:function(){},
 	onPlaylistSingleEmpty:function(){},
+	onPlaylistSingleSetPublic:function(){},
+	onPlaylistSingleSetCurrent:function(){},
 	onPlaylistSingleContents:function(){},
 	onPlaylistSingleKaraDelete:function(){},
 	onPlaylistSingleKaraEdit:function(){},
