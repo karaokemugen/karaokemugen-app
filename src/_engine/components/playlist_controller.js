@@ -2548,11 +2548,13 @@ module.exports = {
 				.then(function(playlist_id){
 					module.exports.getPlaylistContents(playlist_id)
 						.then(function(pl_content){
-							var readpos = false;
+							// Setting readpos to 0. If no flag_playing is found in current playlist
+							// Then karaoke will begin at the first element of the playlist (0)
+							var readpos = 0;
 							pl_content.forEach(function(element, index) {
 								if(element.flag_playing)
 									readpos = index;
-							});
+							});							
 							resolve({'id':playlist_id,content:pl_content,index:readpos});
 						})
 						.catch(function(err){
