@@ -43,29 +43,32 @@
         </div>
          
         <div class="panel col-lg-4 col-md-5 col-sm-12 col-xs-12">
-           <div class="panel-heading">
-                <div class="col-lg-4 col-xs-4">
-                    <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control form-control-lg">
-                        </select>
-                </div>
-                <div class="col-lg-4 col-xs-4">
-                    <div>
-                        <button class="btn btn-lg btn-default">
-                            <i class="glyphicon glyphicon-export"></i>
-                        </button>
-                        <button class="btn btn-lg btn-default">
-                            <i class="glyphicon glyphicon-facetime-video"></i>
-                        </button>
-                        <button class="btn btn-lg btn-default">
-                            <i class="glyphicon glyphicon-eye-close"></i>
-                        </button>
+           <div class="panel-heading container-fluid">
+                 <div class="col-lg-4 col-sm-6 col-xs-6">
+                        <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control">
+                            </select>
                     </div>
-                </div>
-                <div class="col-lg-4 col-xs-4">
-                     <div class="right-inner-addon">
-                        <i class="glyphicon glyphicon-search"></i>
-                        <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="Recherche..." />
-                    </div>
+                    <div class="col-lg-8 col-sm-6 col-xs-6">
+                        <div class="btn-group pull-right" id="flag2">
+                            <button class="btn btn-lg btn-default" name="export">
+                                <i class="glyphicon glyphicon-export"></i>
+                            </button>
+                            <button class="btn btn-lg btn-default" name="current">
+                                <i class="glyphicon glyphicon-facetime-video"></i>
+                            </button>
+                            <button class="btn btn-lg btn-default" name="public">
+                                <i class="glyphicon glyphicon-indent-left"></i>
+                            </button>
+                            <button class="btn btn-lg btn-default" name="visible">
+                                <i class="glyphicon glyphicon-eye-close"></i>
+                            </button>
+                        </div>
+                        <div class="pull-left" style="width:calc(100% - 210px);">
+                            <div class="right-inner-addon">
+                                <i class="glyphicon glyphicon-search"></i>
+                                <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="Recherche..." />
+                            </div>
+                        </div>
                 </div>
             </div>
             <ul id="playlist2" class="list-group">
