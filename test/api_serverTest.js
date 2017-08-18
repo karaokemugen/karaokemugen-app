@@ -561,7 +561,6 @@ describe('Managing playlists', function() {
 			.delete('/api/v1/admin/playlists/'+new_playlist_id)
 			.set('Accept', 'application/json')
 			.auth('admin', password)
-			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
@@ -581,7 +580,7 @@ describe('Managing playlists', function() {
 	});
 });
 
-/* describe('Ending tests', function() {
+describe('Ending tests', function() {
 	it('Sending shutdown command', function() {		
 		return request
 			.post('/api/v1/admin/shutdown')
@@ -594,4 +593,3 @@ describe('Managing playlists', function() {
 			})
 	});
 });
-*/
