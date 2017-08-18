@@ -689,8 +689,15 @@ module.exports = {
 				var defaultSettings = ini.parse(fs.readFileSync(path.join(module.exports.SYSPATH,'config.ini.default'), 'utf-8'));				
 				for (var setting in settings){
 					if (settings.hasOwnProperty(setting)){
-						if (defaultSettings[setting] != settings[setting]) {
-							settingsToSave[setting] = settings[setting];
+						if (defaultSettings[setting] != settings[setting]) {							
+							if (setting == 'os' ||
+							    setting == 'EngineDefaultLocale') {
+									// Do nothing
+									// We don't want to save these settings to file.
+									
+							} else {
+									settingsToSave[setting] = settings[setting];
+							}							
 						}							
 					}
 				}
