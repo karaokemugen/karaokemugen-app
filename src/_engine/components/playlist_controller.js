@@ -1602,6 +1602,8 @@ module.exports = {
 					var err = 'PLCID empty';
 					logger.error('[PLC] editKaraFromPlaylist : '+err)
 					reject(err);
+				} else {
+					resolve();
 				}
 			})
 			var pIsFlagPlayingUnset = new Promise((resolve,reject) => {
