@@ -275,28 +275,13 @@ describe('Managing settings', function(){
 			.set('Accept', 'application/json')
 			.auth('admin', password)
 			.expect('Content-Type', /json/)
-			.expect(200)			
+			.expect(200)
+			.then(function(response){
+				SETTINGS = response.body;
+			})
 	});
-	it('Update settings', function() {
-		var data = {			
-				"AdminPassword": "shamoo",
-				"EngineAllowNicknameChange": "1",
-				"EngineAllowViewBlacklist": "1",
-				"EngineAllowViewBlacklistCriterias": "1",
-				"EngineAllowViewWhitelist": "1",
-				"EngineDisplayNickname": "1",
-				"EnginePrivateMode": "1",
-				"EngineSongsPerPerson": "10000",
-				"PlayerFullscreen": "1",
-				"PlayerNoBar": "1",
-				"PlayerNoHud": "1",
-				"PlayerPIP": "1",
-				"PlayerPIPPositionX": "Center",
-				"PlayerPIPPositionY": "Center",
-				"PlayerPIPSize": "35",
-				"PlayerScreen": "0",
-				"PlayerStayOnTop": "1"				
-		}
+	it('Update settings', function() {		
+		var data = SETTINGS;
 		return request
 			.put('/api/v1/admin/settings')
 			.set('Accept', 'application/json')
@@ -442,22 +427,22 @@ describe('Managing blacklist', function() {
 })
 describe('Managing playlists', function() {
 	var playlist = {
-		'name':'new_playlist',
-		'flag_visible':true,
-		'flag_public':false,
-		'flag_current':false,
+		name:'new_playlist',
+		flag_visible:true,
+		flag_public:false,
+		flag_current:false,
 	};
 	var playlist_current = {
-		'name':'new_playlist',
-		'flag_visible':true,
-		'flag_public':false,
-		'flag_current':true
+		name:'new_playlist',
+		flag_visible:true,
+		flag_public:false,
+		flag_current:true
 	};
 	var playlist_public = {
-		'name':'new_playlist',
-		'flag_visible':true,
-		'flag_public':true,
-		'flag_current':false
+		name:'new_playlist',
+		flag_visible:true,
+		flag_public:true,
+		flag_current:false
 	};
 	var new_playlist_id;
 	var new_playlist_current_id;
@@ -522,12 +507,17 @@ describe('Managing playlists', function() {
 				new_playlist_public_id = response.body;
 			});
 	});
+	var edit_playlist = {
+		name:'new_playlist',
+		flag_visible: true
+	};
+	
 	it('Edit a playlist', function() {
 		return request
 			.put('/api/v1/admin/playlists/'+new_playlist_id)
 			.set('Accept', 'application/json')
 			.auth('admin', password)
-			.send(playlist)
+			.send(edit_playlist)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
