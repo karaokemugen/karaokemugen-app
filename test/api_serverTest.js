@@ -446,7 +446,6 @@ describe('Managing playlists', function() {
 		'flag_visible':true,
 		'flag_public':false,
 		'flag_current':false,
-		'newplaylist_id':61
 	};
 	var playlist_current = {
 		'name':'new_playlist',
@@ -523,7 +522,6 @@ describe('Managing playlists', function() {
 				new_playlist_public_id = response.body;
 			});
 	});
-	
 	it('Edit a playlist', function() {
 		return request
 			.put('/api/v1/admin/playlists/'+new_playlist_id)
@@ -535,86 +533,49 @@ describe('Managing playlists', function() {
 			.then(function(response) {
 				assert.equal(response.body,'Playlist '+new_playlist_id+' updated')
 			});
-	});
-	
-	it('Edit a CURRENT playlist', function() {
-		playlist.newplaylist_id = new_playlist_id;
-		return request
-			.put('/api/v1/admin/playlists/'+new_playlist_current_id)
-			.set('Accept', 'application/json')
-			.auth('admin', password)
-			.send(playlist)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response) {				
-				assert.equal(response.body,'Playlist '+new_playlist_current_id+' updated')
-			})
-	});
-	
-	it('Edit a PUBLIC playlist', function() {		
-		playlist.newplaylist_id = new_playlist_current_id;
-		return request
-			.put('/api/v1/admin/playlists/'+new_playlist_public_id)
-			.set('Accept', 'application/json')
-			.auth('admin', password)
-			.send(playlist)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response) {
-				assert.equal(response.body,'Playlist '+new_playlist_public_id+' updated')
-			});
-	});
-	it('Delete a CURRENT playlist ', function() {
-		var data = {
-			'newplaylist_id': new_playlist_public_id
-		}
-		return request
-			.delete('/api/v1/admin/playlists/'+new_playlist_id)
-			.set('Accept', 'application/json')
-			.auth('admin', password)
-			.send(data)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response) {
-				// OK
-			});
-	});
-	it('Create a new playlist again to transfer flags to', function() {
-		return request
-			.post('/api/v1/admin/playlists')
-			.set('Accept', 'application/json')
-			.auth('admin', password)
-			.send(playlist)
-			.expect('Content-Type', /json/)
-			.expect(201)
-			.then(function(response) {
-				new_playlist_id = response.body;
-			});
-	});
-	it('Delete a PUBLIC playlist ', function() {
-		var data = {
-			'newplaylist_id': new_playlist_id
-		}
+	});	
+	it('Try to delete a CURRENT playlist (should fail)', function() {
 		return request
 			.delete('/api/v1/admin/playlists/'+new_playlist_current_id)
 			.set('Accept', 'application/json')
 			.auth('admin', password)
-			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(500)
+			.then(function(response) {
+				assert.equal(response.body,'Playlist to delete is current. Unable to delete it')
+			});
+	});
+	it('Try to delete a PUBLIC playlist (should fail)', function() {
+		return request
+			.delete('/api/v1/admin/playlists/'+new_playlist_public_id)
+			.set('Accept', 'application/json')
+			.auth('admin', password)
+			.expect('Content-Type', /json/)
+			.expect(500)
+			.then(function(response) {
+				assert.equal(response.body,'Playlist to delete is public. Unable to delete it')
+			});
+	});	
+	it('Delete a playlist', function() {
+		return request
+			.delete('/api/v1/admin/playlists/'+new_playlist_id)
+			.set('Accept', 'application/json')
+			.auth('admin', password)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
 				// OK
 			});
 	});
-	it('Empty playlist 2', function() {
+	it('Empty playlist', function() {
 		return request
-			.put('/api/v1/admin/playlists/2/empty')
+			.put('/api/v1/admin/playlists/'+new_playlist_public_id+'/empty')
 			.set('Accept', 'application/json')
 			.auth('admin', password)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body,'Playlist 2 emptied');
+				assert.equal(response.body,'Playlist '+new_playlist_public_id+' emptied');
 			});
 	});
 });

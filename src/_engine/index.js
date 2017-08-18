@@ -623,9 +623,9 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistSingleDelete = function(id_playlist,id_newplaylist){
+		module.exports._services.apiserver.onPlaylistSingleDelete = function(id_playlist){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.deletePlaylist(id_playlist,id_newplaylist)
+				module.exports._services.playlist_controller.deletePlaylist(id_playlist)
 					.then(function(){
 						resolve();
 					})
@@ -724,7 +724,7 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onPlaylistSingleEdit = function(id_playlist,playlist){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public,playlist.newplaylist_id)
+				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
 					.then(function(){
 						resolve();
 					})
@@ -762,14 +762,19 @@ module.exports = {
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 							.then(function(karalist){
-								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-								.then(function(filtered_pl){
-									resolve(filtered_pl)
-								})
-								.catch(function(err){
-									logger.error('[Engine] PLC filterPlaylist : '+err);	
-									resolve(err);
-								});
+								if (filter) {
+									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+										.then(function(filtered_pl){
+										resolve(filtered_pl)
+										})
+										.catch(function(err){
+											logger.error('[Engine] PLC filterPlaylist : '+err);	
+											resolve(err);
+										});
+								} else {
+									resolve(karalist);
+								}
+								
 							})
 							.catch(function(err){
 								logger.error('[Engine] PLC translateKaraInfo : '+err);
@@ -813,14 +818,18 @@ module.exports = {
 							.then(function(playlist){
 								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 									.then(function(karalist){
-										module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-											.then(function(filtered_pl){
+										if (filter) {
+											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+												.then(function(filtered_pl){
 												resolve(filtered_pl)
-											})
-											.catch(function(err){
-												logger.error('[Engine] PLC filterPlaylist : '+err);	
-												resolve(err);
-											});
+												})
+												.catch(function(err){
+													logger.error('[Engine] PLC filterPlaylist : '+err);	
+													resolve(err);
+												});
+										} else {
+											resolve(karalist);
+										}
 									})
 									.catch(function(err){
 										logger.error('[Engine] PLC translateKaraInfo : '+err);
@@ -873,14 +882,18 @@ module.exports = {
 							.then(function(playlist){
 								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 									.then(function(karalist){
-										module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-											.then(function(filtered_pl){
+										if (filter) {
+											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+												.then(function(filtered_pl){
 												resolve(filtered_pl)
-											})
-											.catch(function(err){
-												logger.error('[Engine] PLC filterPlaylist : '+err);	
-												resolve(err);
-											});
+												})
+												.catch(function(err){
+													logger.error('[Engine] PLC filterPlaylist : '+err);	
+													resolve(err);
+												});
+										} else {
+											resolve(karalist);
+										}
 									})
 									.catch(function(err){
 										logger.error('[Engine] PLC translateKaraInfo : '+err);

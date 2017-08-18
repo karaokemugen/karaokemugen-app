@@ -1239,6 +1239,7 @@ module.exports = {
 	* @return {boolean} {true if created succesfully, false otherwise}
 	*/
 	editPlaylist:function(playlist_id,name,NORM_name,lastedit_time,flag_visible,flag_current,flag_public) {
+		logger.debug('[DBI] editPlaylist : args : '+JSON.stringify(arguments));
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				logger.error('Database interface is not ready yet!');
