@@ -623,9 +623,9 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistSingleDelete = function(id_playlist,id_newplaylist){
+		module.exports._services.apiserver.onPlaylistSingleDelete = function(id_playlist){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.deletePlaylist(id_playlist,id_newplaylist)
+				module.exports._services.playlist_controller.deletePlaylist(id_playlist)
 					.then(function(){
 						resolve();
 					})

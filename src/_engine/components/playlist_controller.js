@@ -647,9 +647,13 @@ module.exports = {
 			});
 		});
 	},
+	/**
+	* @function {Delete a playlist}
+	* @param  {number} playlist_id             {ID of playlist to delete}
+	* @return {promise} {Promise}
+	*/
 	deletePlaylist:function(playlist_id,new_curorpubplaylist_id) {
-		// Suppression d'une playlist. Si la playlist a un flag_public ou flag_current, il faut
-		// set l'un de ces flags sur l'autre ID de playlist (optionnel) fourni
+		// Suppression d'une playlist. Si la playlist a un flag_public ou flag_current, c'est refusé.
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
 				.then(function(){
@@ -657,22 +661,9 @@ module.exports = {
 						module.exports.isPublicPlaylist(playlist_id)
 							.then(function(res) {
 								if (res == true) {
-									if (new_curorpubplaylist_id != undefined ) {
-										logger.info('Deleting playlist '+playlist_id+', switching flags to '+new_curorpubplaylist_id);
-										module.exports.setPublicPlaylist(new_curorpubplaylist_id)
-										.then(function(){
-											resolve(true);
-										})
-										.catch(function(err){
-											logger.error('[PLC] setPublicPlaylist : '+err);
-											reject(err);
-										})
-									} else {
-										var err = 'Playlist to delete is public but no new playlist ID to transfer flags to was specified';
-										logger.error('[PLC] deletePlaylist : '+err);
-										reject(err);
-									}
-
+									var err = 'Playlist to delete is public. Unable to delete it.';
+									logger.error('[PLC] deletePlaylist : '+err);
+									reject(err);
 								} else {
 									resolve(true);
 								}
@@ -685,21 +676,10 @@ module.exports = {
 					var pIsCurrent = new Promise((resolve,reject) =>	{
 						module.exports.isCurrentPlaylist(playlist_id)
 							.then(function(res){
-								if (res == true) {
-									if (new_curorpubplaylist_id != undefined ) {
-										module.exports.setCurrentPlaylist(new_curorpubplaylist_id)
-										.then(function() {
-											resolve(true);
-										})
-										.catch(function(err){
-											logger.error('[PLC] setCurrentPlaylist : '+err);
-											reject(err);
-										})
-									} else {
-										var err = 'Playlist to delete is current but no new playlist ID to transfer flags to was specified';
-										logger.error('[PLC] deletePlaylist : '+err);
-										reject(err);
-									}
+								if (res == true) {									
+									var err = 'Playlist to delete is current. Unable to delete it.';
+									logger.error('[PLC] deletePlaylist : '+err);
+									reject(err);								
 								} else {
 									resolve(true);
 								}
@@ -712,13 +692,8 @@ module.exports = {
 					Promise.all([pIsPublic,pIsCurrent])
 						.then(function() {							
 							module.exports.DB_INTERFACE.deletePlaylist(playlist_id)
-							.then(function(res) {
-								var values =
-								{
-									playlist_id: playlist_id,
-									new_curorpubplaylist_id: new_curorpubplaylist_id
-								};
-								resolve(values);
+							.then(function() {
+								resolve();
 							})
 							.catch(function(err){
 								logger.error('[PLC] DBI deletePlaylist : '+err);

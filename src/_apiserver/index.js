@@ -267,41 +267,14 @@ module.exports = {
 			})
 			.delete(function(req,res){
 				var playlist_id = req.params.pl_id;
-				req.checkBody({
-					'newplaylist_id': {
-						in: 'body',
-						optional: true,
-						isInt: true,
-					}
-				});
-
-				req.getValidationResult()
-					.then(function(result) {
-						if (result.isEmpty()) {
-							if (req.body.newplaylist_id != undefined) {
-								req.sanitize('newplaylist_id').toInt();
-							}
-							module.exports.onPlaylistSingleDelete(playlist_id,req.body.newplaylist_id)
-								.then(function(){
-									var newplaylist;
-									if (req.body.newplaylist_id !== undefined) {
-										newplaylist = ', switched flags to playlist '+req.body.newplaylist_id;
-									} else {
-										newplaylist = '';
-									}
-									res.json('Deleted '+playlist_id+newplaylist);
-								})
-								.catch(function(err){
-									res.statusCode = 500;
-									res.json(err);
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
+				module.exports.onPlaylistSingleDelete(playlist_id)
+					.then(function(){
+						res.json('Deleted '+playlist_id);
+					})
+					.catch(function(err){
+						res.statusCode = 500;
+						res.json(err);
+					});				
 			});
 		
 		routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
