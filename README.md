@@ -6,9 +6,19 @@ Karaoke Mugen est un système de gestion de playlist de karaoke vidéo. Il se pr
 
 Il fonctionne comme un karaoké à la japonaise où chacun peut ajouter des chansons à la suite de la playlist via son smartphone, tablette ou ordinateur. Un autre mode permet au public d'ajouter des vidéos à une liste de suggestions que l'administrateur prendra soin d'ajouter ou non.
 
+## Captures d'écran
+
 Pour le moment, l'accès par l'interface web n'est pas encore 100% fonctionnel, mais ça arrive ! Il reste toujours l'API :
 
 ![](docs/sample.jpg)
+
+### Interfaces web en cours de développement
+
+Photos non contractuelles, tout ça.
+
+![](docs/sample_web_user.png)
+
+![](docs/sample_web_admin.png)
 
 ## Téléchargement
 
