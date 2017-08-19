@@ -27,7 +27,7 @@ module.exports = {
 			});
 
 			var origBackgroundFile = 'src/_player/assets/background.jpg';			
-			var imageCaption = 'Toyunda Mugen - '+__('GO_TO')+' '+url+' !';
+			var imageCaption = 'Karaoke Mugen - '+__('GO_TO')+' '+url+' !';
 			var imageSign = module.exports.SETTINGS.VersionNo+' - '+module.exports.SETTINGS.VersionName;
 			var loadedImage;
 
