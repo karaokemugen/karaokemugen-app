@@ -2,7 +2,7 @@ const express = require('express');
 const expressValidator = require('express-validator');
 const logger = require('../_common/utils/logger.js');
 const bodyParser = require('body-parser');
-const S = require('../_common/utils/string');
+const S = require('../_common/modules/string/string');
 const basicAuth = require('express-basic-auth');
 const extend = require('extend');
 
