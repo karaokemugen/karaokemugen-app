@@ -210,8 +210,8 @@ module.exports = {
 				mpvOptions
 			);
 			var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg')
-			// Disabled loading the background at start during dev.
-			//module.exports._player.loadFile(backgroundImageFile);
+			// Disabled loading the background at start during dev. Or not yet.
+			module.exports._player.loadFile(backgroundImageFile);
 			module.exports._player.observeProperty('sub-text',13);
 			
 			module.exports._player.on('statuschange',function(status){
@@ -301,7 +301,7 @@ module.exports = {
 		module.exports.timeposition = 0;
 		module.exports._playing = false;
 		module.exports.playerstatus = 'stop'
-		module.exports._player.loadFile(module.exports.background);
+		module.exports._player.loadFile(module.exports.backgroundImageFile);
 	},
 	pause: function(){		
 		module.exports._player.pause();
