@@ -31,7 +31,7 @@ PathAltname = "app/data/series_altnames.csv"
 ; ...
 ;9 = Aucun écran spécifié (ne pas préciser l'option --screen)
 PlayerScreen = 0
-PlayerFullscreen = 1
+PlayerFullscreen = 0
 PlayerStayOnTop = 1
 PlayerNoHud = 1
 PlayerNoBar = 1
