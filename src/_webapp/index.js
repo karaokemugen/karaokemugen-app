@@ -46,12 +46,8 @@ module.exports = {
 			module.exports._server.use(express.static(__dirname + '/'));
 			
             module.exports._server.get('/', function (req, res) {
-                res.render('home', {"layout": "main"});
+                res.render('public', {"layout": "publicHeader"});
             });
-            module.exports._server.get('/coucou', function (req, res) {
-                res.render('home', {"layout": "test"});
-            });
-			
             module.exports._server.get('/admin', function (req, res) {
                 res.render('admin', {"layout": "adminHeader", "mdpAdmin" : module.exports.SETTINGS.AdminPassword });
             });	
