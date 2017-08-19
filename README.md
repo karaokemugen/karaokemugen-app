@@ -96,7 +96,7 @@ Sur le dépôt cité plus haut, vous trouverez une base de karaokés déjà prê
 ## Comment participer au code
 
 Lisez le Wiki ! 
-https://lab.shelter.moe/Karaokemugen/Karaokemugen-app/wikis/home
+https://lab.shelter.moe/karaokemugen/karaokemugen-app/wikis/home
 
 Tout y est expliqué, ou presque, et si vous avez des questions, il y a un lien vers le Discord où nous échangeons quotidiennement !
 
