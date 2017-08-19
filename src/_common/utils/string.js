@@ -33,7 +33,7 @@ function extendedStringMaker(value) {
 };
 
 //-------------------------------------------------------------------------------------
-// contains
+// latinise
 //-------------------------------------------------------------------------------------
 ExtendedStrings.prototype.latinise =
 	function latinise() {
