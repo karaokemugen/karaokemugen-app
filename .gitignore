@@ -11,3 +11,4 @@ karaokemugen.log
 out/
 doc/
 \.DS_Store
+*.backup
