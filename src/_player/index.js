@@ -171,10 +171,10 @@ module.exports = {
 						positionY = 5;
 						break;
 					case 'Center':
-						positionX = 50;
+						positionY = 50;
 						break;
 					case 'Bottom':
-						positionX = 95;
+						positionY = 95;
 						break;
 				}
 				mpvOptions.push('--geometry='+positionX+'%:'+positionY+'%');
