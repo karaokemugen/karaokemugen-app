@@ -798,20 +798,29 @@ module.exports = {
 								});
 							}
 							if (UpdateNeeded) {
-								module.exports.userdb.exec(sqlUpdateUserDB, function(err, rep) {
+								// Disabling constraints check for this procedure 
+								// Since we'll be renumbering some karas which might have switched places, two entries might have, for a split second, the same number.
+								module.exports.userdb.run('PRAGMA foreign_keys = OFF;', function (err) {
 									if (err) {
 										module.exports.onLog('error', 'Error updating database : '+err);										
 										reject();
 									} else {
-										module.exports.onLog('success', 'Database updated due to integrity checks');										
-										resolve();
+										module.exports.userdb.exec(sqlUpdateUserDB, function(err, rep) {
+											if (err) {
+												module.exports.onLog('error', 'Error updating database : '+err);										
+												reject();
+											} else {
+												module.exports.onLog('success', 'Database updated due to integrity checks');										
+												resolve();
+											}
+										});
 									}
 								});
 							} else {
 								module.exports.onLog('success', 'No update needed to user database');
 								module.exports.onLog('success', 'Integrity checks complete!');
-								resolve();
-							}
+								resolve();	
+							}								
 						})
 						.catch(function(err) {
 							module.exports.onLog('error', 'Error during integrity checks : '+err);
