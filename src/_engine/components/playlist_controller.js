@@ -130,8 +130,8 @@ module.exports = {
 	*/
 	addBlacklistCriteria:function(blctype,blcvalue) {		
 		return new Promise(function(resolve,reject){
-			if (blctype >= 0 && blctype <= 1001) {
-				if ((blctype == 1001 || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric())) {
+			if (blctype >= 0 && blctype <= 1003) {
+				if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric())) {
 					var err = 'Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!';
 					logger.error('[PLC] '+err);
 					reject(err);
@@ -338,8 +338,8 @@ module.exports = {
 			});
 			Promise.all([pIsBLC])
 				.then(function(){
-					if (blctype >= 0 && blctype <= 1001) {
-						if ((blctype == 1001 || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric())) {
+					if (blctype >= 0 && blctype <= 1003) {
+						if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric())) {
 							reject('Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!');
 						} else {
 							module.exports.DB_INTERFACE.editBlacklistCriteria(blc_id,blctype,blcvalue)

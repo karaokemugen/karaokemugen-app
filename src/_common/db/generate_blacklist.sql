@@ -29,4 +29,16 @@ SELECT CAST(blc.value AS INTEGER), k.kid, strftime('%s','now') ,'Blacklisted Son
 FROM blacklist_criteria blc
 INNER JOIN karasdb.kara k ON k.pk_id_kara = blc.value
 WHERE blc.type = 1001
-AND   CAST(blc.value AS INTEGER) NOT IN (select fk_id_kara from whitelist);
+AND   CAST(blc.value AS INTEGER) NOT IN (select fk_id_kara from whitelist)
+    UNION    
+SELECT k.pk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Song longer than ' || blc.value || ' seconds'
+FROM blacklist_criteria blc
+INNER JOIN karasdb.kara k on k.videolength >= blc.value
+WHERE blc.type = 1002
+AND   k.pk_id_kara NOT IN (select fk_id_kara from whitelist)
+    UNION    
+SELECT k.pk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Song shorter than ' || blc.value || ' seconds'
+FROM blacklist_criteria blc
+INNER JOIN karasdb.kara k on k.videolength <= blc.value
+WHERE blc.type = 1003
+AND   k.pk_id_kara NOT IN (select fk_id_kara from whitelist)
