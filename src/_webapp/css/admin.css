@@ -26,12 +26,29 @@
 	border-left-width: 0;
 	border-right-width: 3px;
 }
-#playlist2.list-group > li > button > i.glyphicon-arrow-right {
+
+#playlist2 .list-group-item > .btnDiv > button[name="transfer"] > i.glyphicon-arrow-right {
 	display: none; 
 }
-#playlist1.list-group > li > button > i.glyphicon-arrow-left {
+#playlist2 .list-group-item > .btnDiv > button[name="transfer"]  {
+	float: left; 
+}
+#playlist1 .list-group-item > .btnDiv > button[name="transfer"] > i.glyphicon-arrow-left {
 	display: none; 
 }
+#playlist1 .list-group-item > .btnDiv > button[name="transfer"]  {
+	float: right; 
+}
+
+.panel ul[canTransfer="false"] button[name="transfer"] {
+	display: none;
+}
+
+.panel ul[canAddKara="false"] button[name="addKara"] {
+	display: none;
+}
+
+
 #playlist1, #playlist2 {
 	overflow: auto;
 }

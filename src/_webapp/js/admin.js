@@ -117,6 +117,8 @@ $(document).ready(function () {
     getSettings();
 
     $(window).trigger('resize');
+
+    pseudo = "Administrateur";
 });
 
 /*** INITIALISATION ***/
@@ -152,109 +154,109 @@ $.each(settingsOnOff, function (e, val) {
 });
 
 
-    // nameExclude = input not being updated (most likely user is on it)
-    getSettings = function (nameExclude) {
-        var playlistList = {};
-        $.ajax({ url: 'admin/settings' }).done(function (data) {
-            $.each(data, function (i, val) {
-                input = $('[name="' + i + '"]');
-                // console.log(i, val);
-                if (input.length == 1 && i != nameExclude) {
-                    if (input.attr('type') !== "checkbox") {
-                        input.val(val);
-                    } else {
-                        input.bootstrapSwitch('state', val, true);
-                        input.val(val);
-                        if (input.attr('name') === "PlayerPIP") {
-                            val ? $('#pipSettings').show() : $('#pipSettings').hide();
-                        }
+// nameExclude = input not being updated (most likely user is on it)
+getSettings = function (nameExclude) {
+    var playlistList = {};
+    $.ajax({ url: 'admin/settings' }).done(function (data) {
+        $.each(data, function (i, val) {
+            input = $('[name="' + i + '"]');
+            // console.log(i, val);
+            if (input.length == 1 && i != nameExclude) {
+                if (input.attr('type') !== "checkbox") {
+                    input.val(val);
+                } else {
+                    input.bootstrapSwitch('state', val, true);
+                    input.val(val);
+                    if (input.attr('name') === "PlayerPIP") {
+                        val ? $('#pipSettings').show() : $('#pipSettings').hide();
                     }
                 }
+            }
+        });
+    });
+}
+
+setSettings = function (e, changeAdminPass) {
+//    console.log( $(e).attr('name'), $(e).val(), $(e));
+    if (e.attr('oldValue') !== e.val() || e.attr('type') === "checkbox") {
+        getSettings(e.attr('name'));
+
+        $('#settings').promise().then(function () {
+            settingsArray = {};
+            formArray = $('#settings').serializeArray()
+                .concat($('#settings input[type=checkbox]:not(:checked)').map(function () { return { name: this.name, value: "0" }; }).get());
+
+            $(formArray).each(function (index, obj) {
+                settingsArray[obj.name] = obj.value;
+            });
+            settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
+            settingsArray['AdminPassword'] = changeAdminPass ? $('button[name="AdminPassword"]').val() : $('button[name="AdminPassword"]').attr('oldValue');
+
+            console.log("setSettings : ", settingsArray);
+
+            $.ajax({
+                type: 'PUT',
+                url: 'admin/settings',
+                data: settingsArray
+            }).done(function (data) {
+                if (changeAdminPass) {
+                    mdpAdmin = $('button[name="AdminPassword"]').val();
+                    setupAjax(mdpAdmin);
+                }
+                getSettings();
             });
         });
     }
+}
 
-    setSettings = function (e, changeAdminPass) {
-    //    console.log( $(e).attr('name'), $(e).val(), $(e));
-        if (e.attr('oldValue') !== e.val() || e.attr('type') === "checkbox") {
-            getSettings(e.attr('name'));
+$()    
+// TODO change everything, global PUT followed by playlist refresh showing right client infos
+transfer = function (e) {
+    var num = $(e).attr('num');
+    var newNum = 3 - num;
+    var idPlaylistFrom = $("#selectPlaylist2"+ num).val();
+    var idPlaylistTo = $("#selectPlaylist2" + newNum).val();
 
-            $('#settings').promise().then(function () {
-                settingsArray = {};
-                formArray = $('#settings').serializeArray()
-                    .concat($('#settings input[type=checkbox]:not(:checked)').map(function () { return { name: this.name, value: "0" }; }).get());
-
-                $(formArray).each(function (index, obj) {
-                    settingsArray[obj.name] = obj.value;
-                });
-                settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
-                settingsArray['AdminPassword'] = changeAdminPass ? $('button[name="AdminPassword"]').val() : $('button[name="AdminPassword"]').attr('oldValue');
-
-                console.log("setSettings : ", settingsArray);
-
-                $.ajax({
-                    type: 'PUT',
-                    url: 'admin/settings',
-                    data: settingsArray
-                }).done(function (data) {
-                    if (changeAdminPass) {
-                        mdpAdmin = $('button[name="AdminPassword"]').val();
-                        setupAjax(mdpAdmin);
-                    }
-                    getSettings();
-                });
-            });
-        }
-    }
-
-
-    // TODO change everything, global PUT followed by playlist refresh showing right client infos
-    transfer = function (e) {
-        var num = $(e).attr('num');
-        var newNum = 3 - num;
-        var idPlaylistFrom = $("#selectPlaylist2"+ num).val();
-        var idPlaylistTo = $("#selectPlaylist2" + newNum).val();
-
-        if (idPlaylistFrom == -1) {
-            $.ajax({
-                type: 'POST',
-                url: 'admin/playlists/' + idPlaylistTo + '/karas',
-                data: {
-                    requestedby: 'admin',
-                    kara_id: $(e).parent().attr('idKara')
-                }
-            }).done(function (data) {
-                console.log(data);
-                $(e).parent().clone().appendTo('#playlist' + newNum);
-            });
-        } else {
-            $(e).attr('num', newNum);
-            $(e).parent().detach().appendTo('#playlist' + newNum);
-        }
-    };
-
-    /* progression bar handlers part */
-
-    goToPosition = function (e) {
-        var karaInfo = $('#karaInfo');
-        var songLength = karaInfo.attr('length');
-        var barInnerwidth = karaInfo.innerWidth();
-        var futurTimeX = e.pageX - karaInfo.offset().left;
-        var presentTimeX = $(progressBarColor).width();
-        var futurTimeSec = Math.round(songLength * futurTimeX / barInnerwidth);
-        $(progressBarColor).stop().css('width', 100 * futurTimeSec / songLength + "%");
-
+    if (idPlaylistFrom == -1) {
         $.ajax({
-            url: 'admin/player',
-            type: 'PUT',
-            data: { command: 'goTo', options: futurTimeSec }
-        })
-            .done(function (data) {
-                refreshCommandStates(setStopUpdate, false);
-            });
+            type: 'POST',
+            url: 'admin/playlists/' + idPlaylistTo + '/karas',
+            data: {
+                requestedby: 'admin',
+                kara_id: $(e).parent().attr('idKara')
+            }
+        }).done(function (data) {
+            console.log(data);
+            $(e).parent().clone().appendTo('#playlist' + newNum);
+        });
+    } else {
+        $(e).attr('num', newNum);
+        $(e).parent().detach().appendTo('#playlist' + newNum);
     }
-    $(window).resize(function () {
-        //  initSwitchs();$
-        var topHeight = $('.panel-heading.container-fluid').outerHeight();
-        $('#playlist1,#playlist2').css('height','calc(100% - ' + topHeight + 'px  ');
-    });
+};
+
+/* progression bar handlers part */
+
+goToPosition = function (e) {
+    var karaInfo = $('#karaInfo');
+    var songLength = karaInfo.attr('length');
+    var barInnerwidth = karaInfo.innerWidth();
+    var futurTimeX = e.pageX - karaInfo.offset().left;
+    var presentTimeX = $(progressBarColor).width();
+    var futurTimeSec = Math.round(songLength * futurTimeX / barInnerwidth);
+    $(progressBarColor).stop().css('width', 100 * futurTimeSec / songLength + "%");
+
+    $.ajax({
+        url: 'admin/player',
+        type: 'PUT',
+        data: { command: 'goTo', options: futurTimeSec }
+    })
+        .done(function (data) {
+            refreshCommandStates(setStopUpdate, false);
+        });
+}
+$(window).resize(function () {
+    //  initSwitchs();$
+    var topHeight = $('.panel-heading.container-fluid').outerHeight();
+    $('#playlist1,#playlist2').css('height','calc(100% - ' + topHeight + 'px  ');
+});

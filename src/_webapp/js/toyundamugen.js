@@ -34,7 +34,7 @@ $(document).ready(function () {
          checkSearch();
      }, 300);*/
 
-    $("select[type='playlist_select']").change(function () {
+    $("#selectPlaylist1, #selectPlaylist2").change(function () {
         var val = $(this).val();
         var num = $(this).attr('num');
         // prevent selecting 2 times the same playlist
@@ -56,30 +56,64 @@ $(document).ready(function () {
         fillPlaylist(num, "", "list");
     });
 
-    $('.playlist-main').on('click', '.addKara > button', function (e) {
-
-        var idPlaylistFrom = $(this).closest('list-group');
+    $('.playlist-main').on('click', '.btnDiv > button', function (e) {
+        var num = $(this).closest('ul.list-group').attr('num');
+        var idPlaylistFrom = $('#selectPlaylist' + num).val();
+        var idPlaylistTo = $('#selectPlaylist' + non(num)).val();
         var idKara = $(this).closest('li').attr('idkara');
-        // var idPlaylistTo = $("[type='playlist_select'][num='" + newNum + "']").val();
-        if (scope === "public") {
-            $.ajax({
-                url: 'public/karas/' + idKara,
-                type: 'POST',
-                data: { requestedby: "truc" }
-            }).done(function (data) {
+        var idKaraPlaylist = $(this).closest('li').attr('idplaylistcontent');
+        var action = $(this).attr('name');
 
-                $("#selectPlaylist2").trigger('change');
-                //console.log(data);
-            });
-        } else {
-            $.ajax({
-                type: 'POST',
-                url: 'admin/playlists/' + idPlaylistTo + '/karas',
-                data: {
-                    requestedby: 'admin',
-                    kara_id: $(e).parent().attr('idKara')
-                }
-            });
+        var url, data, type;
+        if( action === "addKara" || action === "transfer") {
+            url="", data={}, type = "";
+            type = "POST";
+            if (idPlaylistTo > 0) {
+                url = scope + '/playlists/' + idPlaylistTo + '/karas';
+                data = { requestedby : pseudo, kara_id : idKara }; // pos : 
+            } else if (idPlaylistTo == -1) {
+                console.log("ERR: can't add kara to the kara list from database");
+            } else if (idPlaylistTo == -2) {
+                url = scope + '/blacklist/criterias'
+                data = { blcriteria_type : 1001, blcriteria_value : idKara};
+            } else if (idPlaylistTo == -3) {
+                url = scope + '/whitelist';
+                data = { id_kara : idKara, reason : prompt("Raison d'ajout à la whitelist")};
+            }
+            console.log("ACTION",idPlaylistTo, url, type, data);
+            if(url !== "") {
+                $.ajax({
+                    url: url,
+                    type: type,
+                    data: data
+                }).done(function (data) {
+                    $('#selectPlaylist' + non(num)).trigger('input');
+                    console.log("Kara " + idKara + " ajouté à la playlist (" + idPlaylistTo + ") "
+                        + $("#selectPlaylist" + non(num) + " > option[value='" + idPlaylistTo + "']").text() + ".");
+                }).fail(function (data) {
+                    console.log("ERR : ", data.responseText);
+                });
+            }
+        }
+        if( action === "transfer") {
+            url="", data={}, type = "";
+            type = "DELETE"
+             if (idPlaylistFrom > 0) {
+                url = scope + '/playlists/42/karas/' + idKaraPlaylist;
+            } else if (idPlaylistFrom == -1) {
+                console.log("ERR: can't add kara to the kara list from database");
+            } else if (idPlaylistFrom == -2) {
+                url = scope + '/blacklist/criterias'
+                data = { blcriteria_type : 1001, blcriteria_value : idKara};
+            } else if (idPlaylistFrom == -3) {
+                url = scope + '/whitelist/' + idKara;
+            }
+            if(url !== "") {
+                $.ajax({
+                    type: 'DELETE',
+                    url: url
+                });
+            }
         }
     });
 
@@ -94,9 +128,10 @@ var stopUpdate = false;
 var oldState = {};
 var oldSearchVal = "";
 var ajaxSearch = {}, timer;
-var addKaraHtml = '<span class="pull-left addKara"><button class="btn btn-sm btn-default"><i class="glyphicon glyphicon-plus"></i></button></span>';
-var deleteHtml = '<span class="pull-left addKara"><button class="btn btn-sm btn-default"><i class="glyphicon glyphicon-minus"></i></button></span>';
-var transferHtml = '<button onclick="transfer(this);" class="btn btn-sm btn-default btn-dark">'
+var pseudo ="Anonymous";
+var addKaraHtml = '<button name="addKara" class="btn btn-sm btn-default"><i class="glyphicon glyphicon-plus"></i></button>';
+var deleteHtml = '<button class="btn btn-sm btn-default"><i class="glyphicon glyphicon-minus"></i></button>';
+var transferHtml = '<button name="transfer" onclick="transfer(this);" class="btn btn-sm btn-default btn-dark">'
     + '<i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i></button>'
 var buttonHtmlPublic = '';
 
@@ -105,7 +140,7 @@ $.ajaxPrefilter(function (options) {
 });
 
 /**
- * Fill playlist with karas
+ * Fill playlist on screen with karas
  * @param {1, 2} num - which playlist on the screen
  * @param {String} filter - add a search filter to the request
  * @param {"list"} mode - way to render the list (only list atm)
@@ -113,23 +148,32 @@ $.ajaxPrefilter(function (options) {
 
 fillPlaylist = function (num, filter, mode) {
     var idPlaylist = $("#selectPlaylist" + num).val();
-    var url, html;
+   
+    var url, html, canTransfer, canAddKara;
     if (idPlaylist > 0) {
         url = scope + '/playlists/' + idPlaylist + '/karas';
-        html = scope === "admin" ? transferHtml : '';
+        html = scope === "admin" ? transferHtml + addKaraHtml: '';
+        canTransfer = true;
+        canAddKara = true;
     } else if (idPlaylist == -1) {
         url = 'public/karas';
         html = addKaraHtml;
+        canTransfer = false;
+        canAddKara = false;
     } else if (idPlaylist == -2) {
         url = scope + '/blacklist';
         html = scope === "admin" ? '' : '';
+        canTransfer = false;
+        canAddKara = true;
     } else if (idPlaylist == -3) {
         url = scope + '/whitelist';
-        html = scope === "admin" ? deleteHtml : '';
+        html = scope === "admin" ? transferHtml + deleteHtml : '';
+        canTransfer = true;
+        canAddKara = true;
     }
     urlFiltre = url + "?filter=" + filter;
         console.log("AHHHH : " + url, scope, mode === "list");
-
+    
     console.time('ajax');
     if (ajaxSearch[url]) {   ajaxSearch[url].abort();  }
     ajaxSearch[url] = $.ajax({ url: urlFiltre }).done(function (data) {
@@ -141,14 +185,18 @@ fillPlaylist = function (num, filter, mode) {
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
                     if (data[key].language === null) data[key].language = "";
-                    htmlContent += "<li idKara='" + data[key].id_kara + "' class='list-group-item'>"
+                    htmlContent += "<li idKara='" + data[key].id_kara + "' class='list-group-item'><div class='btnDiv'>" + html + "</div><div class='contentDiv''>"
                         + [data[key].language.toUpperCase(), data[key].serie, data[key].songtype_i18n_short, data[key].title].join(" - ")
-                        + '<span class="badge">' + data[key].language.toUpperCase() + '</span>' + html + "</li>";
+                        + "</span><span class='badge'>" + data[key].language.toUpperCase() + "</span></div></li>";
 
                 }
             }
         }
-
+        if( scope == "admin" ) {   
+            $('#playlist' + non(num)).attr('canTransfer', canTransfer);
+            $('#playlist' + non(num)).attr('canAddKara', canAddKara);
+        }
+        
         var time = console.timeEnd('html');
         var time2 = console.timeEnd(url);
         document.getElementById("playlist" + num).innerHTML = htmlContent;
@@ -286,3 +334,8 @@ formatPlaylist = function(playlist) {
 
   return $option;
 };
+
+/* opposite number of playlist : 1 or 2 */
+non = function(num) {
+    return 3  - parseInt(num);
+}

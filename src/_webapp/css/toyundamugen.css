@@ -90,13 +90,18 @@ body {
   top: 75px;
 }
 
+.playlist-main {
+  padding: 7px;
+}
+
 .panel {
-	border: 15px solid #1E2124;
-    border-right: 0px;
+	border: 7px solid #1E2124;
     background-color: #2d2d2f;
     margin: 0px;
     padding: 0px;
 }
+
+
 .panel-heading > div {
 	padding: 2px;
 }
@@ -143,16 +148,6 @@ div.bootstrap-switch-container {
 	line-height: 2.2;
 }
 
-.addKara {
-	margin-right: 10px;
-}
-
-.addKara button {
-	background-color: #393939;
-	color: white;
-	border-width: 2px;
-}
-
 .btn, .bootstrap-switch, .bootstrap-switch-secondary, .bootstrap-switch-container > span  {
 	border-radius: 0px !important;
 }
@@ -180,8 +175,41 @@ select.form-control {
 	background-color: #3b3e44;
 	border-color: #9e9e9e;
 	overflow: auto;
-	padding: 5px;
+	padding: 0px;
+	min-height: calc(35px + 10px - .5vw);
+	line-height: calc(35px + 10px - .5vw);
 }
+.list-group-item > div {
+	padding: 3px;
+}
+/*.list-group-item > .btnDiv {
+	
+}*/
+.list-group-item > .btnDiv > button {
+	background-color: #393939;
+	color: white;
+	border-width: 2px;
+	width: calc(35px + 19px - 1vw);
+	height: calc(35px + 19px - 1vw);
+	display: block;
+}
+
+.list-group-item > .contentDiv {
+	padding: 3px 7px;
+	overflow: auto;
+}
+.list-group-item > span {
+	padding: 7px;
+}
+
+#playlist1.list-group > li.list-group-item  > div:first-child, #playlist1.list-group > li.list-group-item  > div:first-child > span {
+	float: right;
+}
+
+#playlist2.list-group > li.list-group-item  > div:first-child, #playlist2.list-group > li.list-group-item  > div:first-child > span {
+	float: left;
+}
+
 .badge {
 	background-color: #555;
 	border-radius: 0;
@@ -204,6 +232,7 @@ select.form-control {
 
 .select2 {
 	width: 100% !important;
+	height: 100%;
 }
 .select2-container--bootstrap .select2-selection--single {
 	height: 100%;
