@@ -85,27 +85,39 @@ module.exports = {
 						logger.error('Loading user database failed : '+err);
 						process.exit();
 					} else {
-						module.exports._user_db_handler.run('ATTACH DATABASE "'+path.join(module.exports.SYSPATH,'app/db/karas.sqlite3')+'" as karasdb; PRAGMA foreign_keys = ON;',function(err){
-							if (err) {
-								logger.error(err);
-							} else {
-								module.exports._ready = true;
-								module.exports.getStats()
-								.then(function(stats){
-									logger.info('Karaoke count   : '+stats.totalcount);
-									logger.info('Total duration  : '+moment.duration(stats.totalduration,'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-									logger.info('Total series    : '+stats.totalseries);
-									logger.info('Total languages : '+stats.totallanguages);
-									logger.info('Total artists   : '+stats.totalartists);
-									logger.info('Total playlists : '+stats.totalplaylists);
-								})
-								.catch(function(err){
-									logger.warn('Failed to fetch statistics : '+err);
+						module.exports._user_db_handler.serialize(function() {
+							module.exports._user_db_handler.run('PRAGMA foreign_keys = ON;', function(err) {
+								if (err) {
+									logger.error('Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
+									process.exit();
+								}
+							});
+
+							module.exports._user_db_handler.run('ATTACH DATABASE "' + path.join(module.exports.SYSPATH, 'app/db/karas.sqlite3') + '" as karasdb;',
+								function(err) {
+									if (err) {
+										logger.error(err);
+									} else {
+										module.exports._ready = true;
+										module.exports.getStats()
+											.then(function(stats) {
+												logger.info('Karaoke count   : ' + stats.totalcount);
+												logger.info('Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format(
+													'D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
+												logger.info('Total series    : ' + stats.totalseries);
+												logger.info('Total languages : ' + stats.totallanguages);
+												logger.info('Total artists   : ' + stats.totalartists);
+												logger.info('Total playlists : ' + stats.totalplaylists);
+											})
+											.catch(function(err) {
+												logger.warn('Failed to fetch statistics : ' + err);
+											});
+										logger.info('Database interface is READY');
+										resolve();
+									}
 								});
-								logger.info('Database interface is READY');
-								resolve();
-							}
-						});
+              }
+            );
 					}
 				});
 			});
