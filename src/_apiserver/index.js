@@ -2,7 +2,7 @@ const express = require('express');
 const expressValidator = require('express-validator');
 const logger = require('../_common/utils/logger.js');
 const bodyParser = require('body-parser');
-const S = require('../_common/modules/string/string');
+const L = require('lodash');
 const basicAuth = require('express-basic-auth');
 const extend = require('extend');
 
@@ -861,9 +861,9 @@ module.exports = {
 				for (var key in module.exports.SETTINGS) {
 					if (module.exports.SETTINGS.hasOwnProperty(key)) {
 
-						if (!S(key).startsWith('Path') &&
-							!S(key).startsWith('Admin') &&
-							!S(key).startsWith('Bin')
+						if (!key.startsWith('Path') &&
+							!key.startsWith('Admin') &&
+							!key.startsWith('Bin')
 						) {
 							settings[key] = module.exports.SETTINGS[key];
 						}
