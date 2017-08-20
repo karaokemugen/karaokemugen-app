@@ -63,7 +63,6 @@ div.bootstrap-switch-large{
 }
 .panel {
     height : 100%;
-    overflow: auto;
 }
 
 #playlist1 .list-group-item {
