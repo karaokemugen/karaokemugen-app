@@ -1953,7 +1953,7 @@ module.exports = {
 					module.exports.getPlaylistContents(playlist_id)
 						.then(function(playlist){
 							if (IsCurrent === false) {
-								shuffle(playlist);
+								playlist = L.shuffle(playlist);
 							} else  {
 								// If it's current playlist, we'll make two arrays out of the playlist :
 								// One before (and including) the current song being played (flag_playing = 1)
@@ -1972,7 +1972,7 @@ module.exports = {
 										AfterPlaying.push(kara);
 									}
 								});
-								shuffle(AfterPlaying);
+								AfterPlaying = L.shuffle(AfterPlaying);
 								playlist = BeforePlaying.concat(AfterPlaying);
 							}
 							var newpos = 0;
