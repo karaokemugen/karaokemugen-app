@@ -319,7 +319,7 @@ module.exports = {
 						in: 'body',
 						notEmpty: true,
 					},
-					'kara_id': {
+					'id_kara': {
 						in: 'body',
 						notEmpty: true,
 						isInt: true,
@@ -338,7 +338,7 @@ module.exports = {
 							req.sanitize('requestedby').unescape();
 							req.sanitize('playlist_id').toInt();
 							if (req.body.pos != undefined) req.sanitize('pos').toInt();
-							module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
+							module.exports.onKaraAddToPlaylist(req.body.id_kara,req.body.requestedby,playlist_id,req.body.pos)
 								.then(function(){
 									res.statusCode = 201;
 									if (req.body.pos === undefined) var pos = 'last';
