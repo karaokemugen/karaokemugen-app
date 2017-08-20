@@ -2,9 +2,9 @@ var path = require('path');
 var timestamp = require('unix-timestamp');
 timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
-const S = require('../../_common/modules/string/string');
 const assBuilder = require('./ass_builder.js');
 const fs = require('fs');
+const L = require('lodash');
 const shuffle = require('knuth-shuffle').knuthShuffle;
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
@@ -131,7 +131,7 @@ module.exports = {
 	addBlacklistCriteria:function(blctype,blcvalue) {		
 		return new Promise(function(resolve,reject){
 			if (blctype >= 0 && blctype <= 1003) {
-				if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric())) {
+				if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (isNaN(blcvalue))) {
 					var err = 'Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!';
 					logger.error('[PLC] '+err);
 					reject(err);
@@ -279,7 +279,7 @@ module.exports = {
 	*/
 	deleteBlacklistCriteria:function(blc_id) {
 		return new Promise(function(resolve,reject){
-			if (S(blc_id).isEmpty()) {
+			if (L.isEmpty(blc_id)) {
 				var err = 'BLCID is empty';
 				logger.error('[PLC] deleteBlacklistCriteria : '+err);
 				reject(err);
@@ -339,7 +339,7 @@ module.exports = {
 			Promise.all([pIsBLC])
 				.then(function(){
 					if (blctype >= 0 && blctype <= 1003) {
-						if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (!S(blcvalue).isNumeric())) {
+						if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (isNaN(blcvalue))) {
 							reject('Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!');
 						} else {
 							module.exports.DB_INTERFACE.editBlacklistCriteria(blc_id,blctype,blcvalue)
@@ -783,7 +783,7 @@ module.exports = {
 	*/
 	editPlaylist:function(playlist_id,name,flag_visible,flag_current,flag_public) {
 		return new Promise(function(resolve,reject){
-			var NORM_name = S(name).latinise().s;
+			var NORM_name = L.deburr(name);
 			var lastedit_time = timestamp.now();
 			var isCurrent;
 			var isPublic;
@@ -832,7 +832,7 @@ module.exports = {
 		// on retourne une promise
 		
 		return new Promise(function(resolve,reject){
-			var NORM_name = S(name).latinise().s;
+			var NORM_name = L.deburr(name);
 			var creation_time = timestamp.now();
 			var lastedit_time = creation_time;
 
@@ -1233,7 +1233,7 @@ module.exports = {
 	filterPlaylist:function(playlist,searchText) {
 		return new Promise(function(resolve,reject) {
 			function textSearch(kara){
-				searchText = S(searchText).latinise().s;
+				searchText = L.deburr(searchText);
 				searchText = searchText.toLowerCase();
 
 				var searchOK = [];
@@ -1242,34 +1242,34 @@ module.exports = {
 				var searchWordID = 0;
 				searchWords.forEach(function(searchWord) {
 					searchOK[searchWordID] = false;
-					if (!S(kara.NORM_title).isEmpty()) {
-						if (S(kara.NORM_title.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					if (!L.isEmpty(kara.NORM_title)) {
+						if (kara.NORM_title.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.NORM_serie).isEmpty()) {
-						if (S(kara.NORM_serie.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					if (!L.isEmpty(kara.NORM_serie)) {
+						if (kara.NORM_serie.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.NORM_serie_altname).isEmpty()) {
-						if (S(kara.NORM_serie_altname.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					if (!L.isEmpty(kara.NORM_serie_altname)) {
+						if (kara.NORM_serie_altname.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.NORM_singer).isEmpty()) {
-						if (S(kara.NORM_singer.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					if (!L.isEmpty(kara.NORM_singer)) {
+						if (kara.NORM_singer.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.NORM_creator).isEmpty()) {
-						if (S(kara.NORM_creator.toLowerCase()).contains(searchWord)) searchOK[searchWordID] = true;
+					if (!L.isEmpty(kara.NORM_creator)) {
+						if (kara.NORM_creator.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}					
-					if (!S(kara.songtype_i18n_short).isEmpty()) {
-						if (S(kara.songtype_i18n_short.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
+					if (!L.isEmpty(kara.songtype_i18n_short)) {
+						if (kara.songtype_i18n_short.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.misc_i18n).isEmpty()) {
-						if (S(kara.misc_i18n.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
+					if (!L.isEmpty(kara.misc_i18n)) {
+						if (kara.misc_i18n.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!S(kara.language_i18n).isEmpty()) {
-						if (S(kara.language_i18n.toLowerCase()).contains(searchWord))searchOK[searchWordID] = true;
+					if (!L.isEmpty(kara.language_i18n)) {
+						if (kara.language_i18n.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
 
 					searchWordID++;
 				});
-
+				
 				if (searchOK.indexOf(false) > -1 ) {
 					return false;
 				} else {
@@ -1292,7 +1292,7 @@ module.exports = {
 	*/
 	addKaraToPlaylist:function(kara_id,requester,playlist_id,pos) {
 		return new Promise(function(resolve,reject){
-			var NORM_requester = S(requester).latinise().s;
+			var NORM_requester = L.deburr(requester);
 			var date_add = timestamp.now();
 			var flag_playing = 0;
 			var isKaraInPlaylist = undefined;
@@ -1491,7 +1491,7 @@ module.exports = {
 	*/
 	deleteKaraFromPlaylist:function(playlistcontent_id) {
 		return new Promise(function(resolve,reject){
-			if (S(playlistcontent_id).isEmpty()) {
+			if (L.isEmpty(playlistcontent_id)) {
 				var err = 'PLCID empty';
 				logger.error('[PLC] deleteKaraFromPlaylist : '+err)
 				reject(err);
@@ -1598,7 +1598,7 @@ module.exports = {
 			var playlist_id = undefined;
 			
 			var pIsPLCEmpty = new Promise((resolve,reject) => {
-				if (S(playlistcontent_id).isEmpty()) {
+				if (L.isEmpty(playlistcontent_id)) {
 					var err = 'PLCID empty';
 					logger.error('[PLC] editKaraFromPlaylist : '+err)
 					reject(err);
@@ -1737,7 +1737,7 @@ module.exports = {
 	*/
 	deleteKaraFromWhitelist:function(wlc_id) {
 		return new Promise(function(resolve,reject){
-			if (S(wlc_id).isEmpty()) {
+			if (L.isEmpty(wlc_id)) {
 				var err = 'WLCID empty';
 				logger.error('[PLC] deleteKaraFromWhitelist : '+err)
 				reject(err);
@@ -2030,7 +2030,7 @@ module.exports = {
 	*/
 	addKaraToPublicPlaylist:function(kara_id,requester) {
 		return new Promise(function(resolve,reject){
-			var NORM_requester = S(requester).latinise().s;
+			var NORM_requester = L.deburr(requester);
 			var date_add = timestamp.now();
 			var flag_playing = 0;
 			var isKaraInPlaylist = undefined;
@@ -2239,7 +2239,7 @@ module.exports = {
 	*/
 	addKaraToCurrentPlaylist:function(kara_id,requester,pos) {
 		return new Promise(function(resolve,reject){
-			var NORM_requester = S(requester).latinise().s;
+			var NORM_requester = L.deburr(requester);
 			var date_add = timestamp.now();
 			var flag_playing = 0;
 			var isKaraInPlaylist = undefined;

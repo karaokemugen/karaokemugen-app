@@ -3,7 +3,7 @@ var path = require('path');
 var fs = require('fs');
 var assParser = require('ass-parser');
 var assStringify = require('ass-stringify');
-var S = require('../../_common/modules/string/string');
+var L = require('lodash');
 var i18n = require('i18n');
 const uuidv4 = require('uuid/v4');
 const exec = require('child_process');
@@ -24,7 +24,7 @@ module.exports = {
 				//In which case we will work with either an empty ass file or
 				// the one provided by the mkv or mp4 file.
 				if (subFile == 'dummy.ass') {
-					if (S(videoFile.toLowerCase()).contains('.mkv') || S(videoFile.toLowerCase()).contains('.mp4')) {
+					if (videoFile.toLowerCase().includes('.mkv') || videoFile.toLowerCase().includes('.mp4')) {
 				
 						// Using ffmpeg
 
@@ -150,7 +150,7 @@ module.exports = {
 				//In which case we will work with either an empty ass file or
 				// the one provided by the mkv or mp4 file.
 				if (subFile == 'dummy.ass') {
-					if (S(videoFile.toLowerCase()).contains('.mkv') || S(videoFile.toLowerCase()).contains('.mp4')) {
+					if (videoFile.toLowerCase().includes('.mkv') || videoFile.toLowerCase().includes('.mp4')) {
 						// Using ffmpeg
 
 						var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile), outputFolder+'/kara_extract.'+uuid+'.ass'], { encoding : 'utf8' }),
@@ -325,7 +325,7 @@ module.exports = {
 				script[StylesSection].body.push(StyleNickname);
 
 				// If title is empty, do not display - after songtype and order
-				if (!S(title).isEmpty()) {
+				if (!L.isEmpty(title)) {
 					title = ' - '+title;
 				}
 				// Doing the same with the subs we're adding.
