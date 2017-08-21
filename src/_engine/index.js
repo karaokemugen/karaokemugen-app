@@ -1055,14 +1055,14 @@ module.exports = {
 				resolve({
 					private: module.exports._states.private,
 					status: module.exports._states.status,
-					ontop: module.exports._states.ontop,
+					onTop: module.exports._states.ontop,
 					fullscreen: module.exports._states.fullscreen,
-					timeposition: module.exports._services.player.timeposition,				
+					timePosition: module.exports._services.player.timeposition,				
 					duration: module.exports._services.player.duration,
-					mutestatus: module.exports._services.player.mutestatus,
-					playerstatus: module.exports._services.player.playerstatus,
-					currentlyplaying: module.exports._states.currentlyPlayingKara,
-					subtext: module.exports._services.player.subtext,
+					muteStatus: module.exports._services.player.mutestatus,
+					playerStatus: module.exports._services.player.playerstatus,
+					currentlyPlaying: module.exports._states.currentlyPlayingKara,
+					subText: module.exports._services.player.subtext,
 				});
 			});
 		};
