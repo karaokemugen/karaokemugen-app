@@ -5,7 +5,6 @@ const logger = require('../../_common/utils/logger.js');
 const assBuilder = require('./ass_builder.js');
 const fs = require('fs');
 const L = require('lodash');
-const shuffle = require('knuth-shuffle').knuthShuffle;
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
 
