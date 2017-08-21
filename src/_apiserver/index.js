@@ -319,7 +319,7 @@ module.exports = {
 						in: 'body',
 						notEmpty: true,
 					},
-					'id_kara': {
+					'kara_id': {
 						in: 'body',
 						notEmpty: true,
 						isInt: true,
@@ -338,7 +338,7 @@ module.exports = {
 							req.sanitize('requestedby').unescape();
 							req.sanitize('playlist_id').toInt();
 							if (req.body.pos != undefined) req.sanitize('pos').toInt();
-							module.exports.onKaraAddToPlaylist(req.body.id_kara,req.body.requestedby,playlist_id,req.body.pos)
+							module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
 								.then(function(){
 									res.statusCode = 201;
 									if (req.body.pos === undefined) var pos = 'last';
@@ -559,7 +559,7 @@ module.exports = {
 			})
 			.post(function(req,res){				
 				req.check({
-					'id_kara': {
+					'kara_id': {
 						in: 'body',
 						notEmpty: true,
 						isInt: true,
@@ -576,7 +576,7 @@ module.exports = {
 						module.exports.onKaraAddToWhitelist(req.body.id_kara,req.body.reason)
 							.then(function(){
 								res.statusCode = 201;
-								res.json('Karaoke '+req.body.id_kara+' added to whitelist with reason \''+req.body.reason+'\'');
+								res.json('Karaoke '+req.body.kara_id+' added to whitelist with reason \''+req.body.reason+'\'');
 							})
 							.catch(function(err){
 								res.statusCode = 500;
@@ -975,11 +975,9 @@ module.exports = {
 			});
 
 
-		routerPublic.route('/karas/:id_kara([0-9]+)')
+		routerPublic.route('/karas/:kara_id([0-9]+)')
 			.get(function(req,res){
-				var id_kara = req.params.id_kara;
-				var lang = req.query.lang;
-				module.exports.onKaraSingle(id_kara,lang)
+				module.exports.onKaraSingle(req.params.kara_id,req.query.lang)
 					.then(function(kara){
 						if (kara == []) res.statusCode = 404;
 						res.json(kara);
@@ -991,7 +989,6 @@ module.exports = {
 			})
 			.post(function(req,res){
 				// Add Kara to the playlist currently used depending on mode
-				var id_kara = req.params.id_kara;
 				req.check({
 					'requestedby': {
 						in: 'body',
@@ -1003,7 +1000,7 @@ module.exports = {
 					if (result.isEmpty()) {
 						req.sanitize('requestedby').trim();
 						req.sanitize('requestedby').unescape();
-						module.exports.onKaraAddToModePlaylist(id_kara,req.body.requestedby)
+						module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
 							.then(function(){
 								res.statusCode = 201;
 								res.json('Karaoke '+id_kara+' added by '+req.body.requestedby);
@@ -1021,10 +1018,9 @@ module.exports = {
 				});
 			});
 
-		routerPublic.route('/karas/:id_kara([0-9]+)/lyrics')
+		routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')
 			.get(function(req,res){
-				var id_kara = req.params.id_kara;
-				module.exports.onKaraSingleLyrics(id_kara)
+				module.exports.onKaraSingleLyrics(kara_id)
 					.then(function(kara){
 						if (kara == []) res.statusCode = 404;
 						res.json(kara);
