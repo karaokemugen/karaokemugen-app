@@ -572,8 +572,8 @@ module.exports = {
 
 				req.getValidationResult().then(function(result) {
 					if (result.isEmpty()) {
-						req.sanitize('id_kara').toInt();
-						module.exports.onKaraAddToWhitelist(req.body.id_kara,req.body.reason)
+						req.sanitize('kara_id').toInt();
+						module.exports.onKaraAddToWhitelist(req.body.kara_id,req.body.reason)
 							.then(function(){
 								res.statusCode = 201;
 								res.json('Karaoke '+req.body.kara_id+' added to whitelist with reason \''+req.body.reason+'\'');
@@ -1003,7 +1003,7 @@ module.exports = {
 						module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
 							.then(function(){
 								res.statusCode = 201;
-								res.json('Karaoke '+id_kara+' added by '+req.body.requestedby);
+								res.json('Karaoke '+req.params.kara_id+' added by '+req.body.requestedby);
 							})
 							.catch(function(err){
 								res.statusCode = 500;
