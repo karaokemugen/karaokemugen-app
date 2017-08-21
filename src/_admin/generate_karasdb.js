@@ -1082,7 +1082,6 @@ module.exports = {
 
 			function addKara(karafile) {
 				return new Promise(function(resolve, reject) {
-					console.log(karafile);
 					fs.readFile(karasdir + '/' + karafile, 'utf-8', function(err,data){
 						if (err) {
 							reject(err);
