@@ -1020,7 +1020,7 @@ module.exports = {
 
 		routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')
 			.get(function(req,res){
-				module.exports.onKaraSingleLyrics(kara_id)
+				module.exports.onKaraSingleLyrics(req.params.kara_id)
 					.then(function(kara){
 						if (kara == []) res.statusCode = 404;
 						res.json(kara);
