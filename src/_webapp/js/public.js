@@ -1,8 +1,12 @@
 $(document).ready(function () {
   $.ajax({ url: 'public/settings', }).done(function (data) {
     settingsPublic = data;
-    fillPlaylistSelects('public');
-
+    fillPlaylistSelects();
+      
+    if(settingsPublic['EngineAllowNicknameChange'] == "1") {
+      $('#pseudo').parent().show();
+      $('#searchParent').css("width","");
+    }
   });
 
   $.ajax({ url: 'public/playlists/current', }).done(function (data) {
@@ -20,9 +24,22 @@ $(document).ready(function () {
 
   });
 
+  $('#choixPseudo').focus(function(){
+    //this.setSelectionRange(0, this.value.length);
+    this.value = "";
+  });
+  $('#choixPseudo').blur(function(){
+    if(settingsPublic['EngineAllowNicknameChange'] == "1") {
+      pseudo = $(this).val();
+      $('#choixPseudo').val(pseudo);
+      if($('#pseudo > option[value="' + pseudo +'"]').length == 0) {
+        $('#pseudo').append($('<option>', {value: pseudo}));
+      }
 
-  // fillPlaylist('playlist2', 'public/playlists/public/karas', 'list', '');
-  // fillPlaylist('playlist1', 'public/karas', 'list', '');
+      document.cookie = 'mugenPseudo=' + pseudo + ';expires=' +  date.toUTCString();
+      document.cookie = 'mugenPseudoList=' + JSON.stringify($('#pseudo > option').map(function(i,e){return e.value})) + ';expires=' +  date.toUTCString();
+    }
+  });
 
   //  alert($(window).width() + "-" + $(window).height());
 });

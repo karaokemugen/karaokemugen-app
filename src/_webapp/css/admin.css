@@ -26,17 +26,28 @@
 	border-left-width: 0;
 	border-right-width: 3px;
 }
-#playlist2.list-group > li > button > i.glyphicon-arrow-right {
+
+#playlist2 .list-group-item > .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-right {
 	display: none; 
 }
-#playlist1.list-group > li > button > i.glyphicon-arrow-left {
+#playlist2 .list-group-item > .btnDiv > button[name="transferKara"]  {
+	float: left; 
+    margin-top: 1px;
+}
+#playlist1 .list-group-item > .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-left {
 	display: none; 
 }
-#playlist1, #playlist2 {
-	overflow: auto;
+#playlist1 .list-group-item > .btnDiv > button[name="transferKara"]  {
+	float: right; 
+    margin-top: 1px;
 }
-.list-group > li:hover > button {
-	display: block;
+
+.panel ul[canTransferKara="false"] button[name="transferKara"] {
+	display: none;
+}
+
+.panel ul[canAddKara="false"] button[name="addKara"] {
+	display: none;
 }
 
 #centerBtns {

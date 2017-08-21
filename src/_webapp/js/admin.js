@@ -1,8 +1,13 @@
-$(document).ready(function () {
+  (function(yourcode) {
+    // The global jQuery object is passed as a parameter
+  	yourcode(window.jQuery, window, document);
+  }(function($, window, document) {
+    // The $ is now locally scoped 
+   // Listen for the jQuery ready event on the document
+   $(function() {
 
     /* init selects & switchs */
 
-    
     $("[name='kara_panel']").on('switchChange.bootstrapSwitch', function (event, state) {
         if (state) {
             $('#playlist').show();
@@ -116,41 +121,42 @@ $(document).ready(function () {
     fillPlaylistSelects("admin");
     getSettings();
 
-    $(window).trigger('resize');
-});
+    pseudo = "Administrateur";
+   });
 
-/*** INITIALISATION ***/
-/* variables & ajax setup */
+    /*** INITIALISATION ***/
+    /* variables & ajax setup */
 
-var mouseDown = false;
-var scope = 'admin';
+    mouseDown = false;
+    scope = 'admin';
 
-setupAjax = function (passwordAdmin) {
+    setupAjax = function (passwordAdmin) {
 
-    $.ajaxSetup({
-        headers: { "Authorization": "Basic " + btoa("truc:" + passwordAdmin) },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR.status + "  - " + textStatus + "  - " + errorThrown);
+        $.ajaxSetup({
+            headers: { "Authorization": "Basic " + btoa("truc:" + passwordAdmin) },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.status + "  - " + textStatus + "  - " + errorThrown);
+            }
+        });
+    }
+
+    setupAjax(mdpAdmin);
+
+    // dynamic creation of switchable settings 
+    var settingsOnOff = ["PlayerPIP", "EngineAllowNicknameChange", "EngineAllowViewBlacklist", "EngineAllowViewBlacklistCriterias"
+        , "EngineAllowViewWhitelist", "EngineDisplayNickname", "PlayerFullscreen", "PlayerStayOnTop"
+        , "PlayerNoBar", "PlayerNoHud"];
+    var htmlSettings = ""
+    $.each(settingsOnOff, function (e, val) {
+        html = '<div class="form-group"><label for="' + val + '" class="col-xs-4 control-label">' + val + '</label>'
+            + '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + val + '"></div></div>';
+        if (val === "PlayerPIP") {
+            $(html).insertBefore('#pipSettings')
+        } else {
+            htmlSettings += html;
         }
     });
-}
-
-setupAjax(mdpAdmin);
-
-// dynamic creation of switchable settings 
-var settingsOnOff = ["PlayerPIP", "EngineAllowNicknameChange", "EngineAllowViewBlacklist", "EngineAllowViewBlacklistCriterias"
-    , "EngineAllowViewWhitelist", "EngineDisplayNickname", "PlayerFullscreen", "PlayerStayOnTop"
-    , "PlayerNoBar", "PlayerNoHud"];
-$.each(settingsOnOff, function (e, val) {
-    html = $('<div class="form-group"><label for="' + val + '" class="col-xs-4 control-label">' + val + '</label>'
-        + '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + val + '"></div></div>');
-    if (val === "PlayerPIP") {
-        html.insertBefore('#pipSettings')
-    } else {
-        $('#settings').append(html);
-    }
-});
-
+    $('#settings').append(htmlSettings);
 
     // nameExclude = input not being updated (most likely user is on it)
     getSettings = function (nameExclude) {
@@ -166,7 +172,7 @@ $.each(settingsOnOff, function (e, val) {
                         input.bootstrapSwitch('state', val, true);
                         input.val(val);
                         if (input.attr('name') === "PlayerPIP") {
-                            val ? $('#pipSettings').show() : $('#pipSettings').hide();
+                            val ? $('#pipSettings').show('500') : $('#pipSettings').hide('500');
                         }
                     }
                 }
@@ -206,8 +212,7 @@ $.each(settingsOnOff, function (e, val) {
             });
         }
     }
-
-
+    
     // TODO change everything, global PUT followed by playlist refresh showing right client infos
     transfer = function (e) {
         var num = $(e).attr('num');
@@ -253,8 +258,7 @@ $.each(settingsOnOff, function (e, val) {
                 refreshCommandStates(setStopUpdate, false);
             });
     }
-    $(window).resize(function () {
-        //  initSwitchs();$
-        var topHeight = $('.panel-heading.container-fluid').outerHeight();
-        $('#playlist1,#playlist2').css('height','calc(100% - ' + topHeight + 'px  ');
-    });
+
+}));
+	
+
