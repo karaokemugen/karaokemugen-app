@@ -1,5 +1,5 @@
 SELECT wl.pk_id_whitelist AS whitelist_id, 
-      ak.pk_id_kara AS id_kara,
+      ak.pk_id_kara AS kara_id,
       ak.kid AS kid,
       ak.title AS title,
       ak.NORM_title AS NORM_title,
