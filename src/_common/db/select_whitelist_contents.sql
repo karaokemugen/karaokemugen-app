@@ -1,4 +1,4 @@
-SELECT wl.pk_id_whitelist AS id_whitelist, 
+SELECT wl.pk_id_whitelist AS whitelist_id, 
       ak.pk_id_kara AS id_kara,
       ak.kid AS kid,
       ak.title AS title,
