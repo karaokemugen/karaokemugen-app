@@ -298,7 +298,7 @@ describe('Managing settings', function(){
 describe('Managing whitelist', function() {
 	it('Add karaoke 1 to whitelist', function() {
 		var data = {
-			'id_kara': 1,
+			'kara_id': 1,
 			'reason': 'Because reasons'
 		}
 		return request
@@ -309,7 +309,7 @@ describe('Managing whitelist', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				assert.equal(response.body,'Karaoke '+data.id_kara+' added to whitelist with reason \''+data.reason+'\'');
+				assert.equal(response.body,'Karaoke '+data.kara_id+' added to whitelist with reason \''+data.reason+'\'');
 			});
 	});
 	var wlc_id;
@@ -321,7 +321,7 @@ describe('Managing whitelist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				wlc_id = response.body[0].id_whitelist;
+				wlc_id = response.body[0].whitelist_id;
 				assert.equal(response.body.length,1);
 			});
 	});
@@ -378,7 +378,7 @@ describe('Managing blacklist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				blc_id = response.body[0].pk_id_blcriteria;
+				blc_id = response.body[0].blcriteria_id;
 				var result = false;
 				if (response.body.length >= 1) result = true;
 				assert.equal(result,true);
@@ -468,7 +468,7 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.id_playlist, 1);
+				assert.equal(response.body.playlist_id, 1);
 			});
 	});
 	it('Create a new playlist', function() {
