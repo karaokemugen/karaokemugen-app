@@ -5,7 +5,6 @@ const logger = require('../../_common/utils/logger.js');
 const assBuilder = require('./ass_builder.js');
 const fs = require('fs');
 const L = require('lodash');
-const shuffle = require('knuth-shuffle').knuthShuffle;
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
 
@@ -930,7 +929,7 @@ module.exports = {
 	* @return {Object} {array of Playlist objects}
 	* @param {boolean} seenFromUser {Is the playlist list seen from the user's perspective?}
 	* Returns an array of playlist objects to get all playlists :
-	* - id_playlist (ID of playlist)
+	* - playlist_id (ID of playlist)
 	* - name (name of playlist)
 	* - NORM_name (normalized name of playlist)
 	* - num_karas (Number of karaoke songs in the playlist)
