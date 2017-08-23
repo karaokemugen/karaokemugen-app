@@ -922,7 +922,7 @@ module.exports = {
 					//Filling taglist, and let's go.
 					if (karaSerie.includes(' OAV') || karaSerie.includes(' OVA') || karaType.includes('OAV')) {
 						if (taglist.indexOf('TAG_OVA,7') == -1) {
-							taglist.push('TAG_OVA,2');
+							taglist.push('TAG_OVA,7');
 						}
 					}
 					if (karaType == 'LIVE' || karaType == 'MV') {
