@@ -580,7 +580,7 @@ module.exports = {
 					var sqlUpdateUserDB = '';
 
 					var pGetAllKaras = new Promise((resolve,reject) => {
-						var sqlGetAllKaras = 'SELECT pk_id_kara AS id_kara, kid FROM all_karas;';
+						var sqlGetAllKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
 						module.exports.db.all(sqlGetAllKaras,
 							function (err, playlist) {
 								if (err) {
