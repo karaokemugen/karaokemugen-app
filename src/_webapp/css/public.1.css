@@ -37,7 +37,10 @@
 .header .dropdown {
     padding: 0px 0px 0px 7px;
 }
-
+.bootstrap-switch-container i {
+    font-size: calc(17px + 10px - .5vw);
+    line-height: calc(22px + 10px - .5vw);
+}
 div.bootstrap-switch-large{
     width: 100%;
 	height: 100%;

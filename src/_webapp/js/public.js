@@ -18,7 +18,7 @@ $(document).ready(function () {
 
   $.ajax({ url: 'public/settings', }).done(function (data) {
     settingsPublic = data;
-    fillPlaylistSelects();
+    fillPlaylistSelects(true);
       
     if(settingsPublic['EngineAllowNicknameChange'] == "1") {
       $('#pseudo').parent().show();
@@ -64,3 +64,4 @@ var settingsPublic = {}
 var playlistAjoutId;
 pseudo ="Anonymous";
 refreshTime = 2000;
+panel1Default = -1;

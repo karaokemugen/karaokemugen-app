@@ -182,6 +182,11 @@ select.form-control {
 	min-height: calc(35px + 10px - .5vw);
 	line-height: calc(35px + 10px - .5vw);
 }
+.list-group-item[currentlyPlaying] {
+	background-color: #3a5064;
+	border-color: #9e9e9e;
+}
+
 .list-group-item > div {
 	padding: 3px;
 }
@@ -270,12 +275,12 @@ select.form-control {
 	border: 1px solid #9e9e9e;
 }
 .dropdown-menu > li >a {
-			color : #eee;
+	color : #eee;
 }
 
 .dropdown-menu > li:hover > a {
-			color : #222;
-			background-color: #9e9e9e;
+	color : #222;
+	background-color: #9e9e9e;
 }
 
 .select2 {
@@ -297,10 +302,12 @@ select.form-control {
 .select2-container--default .select2-results__option[aria-disabled=true] {
     display: none;
 }
-.select2-results__option > span > i {
+.select2-results__option > span > i, .select2-selection > span > span > i  {
 	float: right;
 }
-
+.select2-selection > span > span > i {
+	line-height: 2.3;
+}
 
 /* theme negatif boutons */
 /*

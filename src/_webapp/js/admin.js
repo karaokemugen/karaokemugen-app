@@ -55,7 +55,15 @@
             refreshCommandStates();
         });
     });
-
+    $('button[action="poweroff"]').click(function() {
+          $.ajax({
+            url: 'admin/shutdown',
+            type: 'POST',
+        }).done(function (data) {
+            console.log("Extinction de l'appli");
+            stopUpdate = true;
+        });
+    });
     $('#settings input[type!="checkbox"][exclude!="true"]').blur(function () {
         setSettings($(this));
     });
@@ -79,7 +87,9 @@
         if(status != undefined && status != "" && status != "stop") {
             stopUpdate = true;
             mouseDown = true;
-            $(progressBarColor).stop().css('width', e.pageX + "px");
+            $('#progressBarColor').stop().css('width', e.pageX + "px"); 
+            console.log("hey");
+            $('#progressBar').attr('title', oldState.timeposition);
         }
     });
     $('#karaInfo').mouseup(function (e) {
@@ -87,7 +97,7 @@
     });
     $('#karaInfo').mousemove(function (e) {
         if (mouseDown) {
-            $(progressBarColor).stop().css('width', e.pageX + "px");
+            $('#progressBarColor').stop().css('width', e.pageX + "px");
         }
     });
     $('#karaInfo').mouseout(function (e) {
@@ -119,7 +129,7 @@
         stopUpdate = stop;
     }
 
-    fillPlaylistSelects("admin");
+    fillPlaylistSelects(true);
     getSettings();
 
     pseudo = "Administrateur";
@@ -130,6 +140,7 @@
 
     mouseDown = false;
     scope = 'admin';
+    panel1Default = -1;
 
     setupAjax = function (passwordAdmin) {
 
@@ -258,6 +269,11 @@
             });
     }
 
+
+    $('#flag1, #flag2').on('click', 'button', function(){
+        var val = $(this).val();
+        console.log(val);
+    });
 }));
 	
 
