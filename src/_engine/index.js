@@ -292,10 +292,10 @@ module.exports = {
 						kara.id_kara,
 						kara.gain
 					);
-					module.exports._states.currentlyPlayingKara = kara.id_kara;
+					module.exports._states.currentlyPlayingKara = kara.kara_id;
 					module.exports._broadcastStates();
 					//Add a view to the viewcount
-					module.exports.addViewcount(kara.id_kara,kara.kid);
+					module.exports.addViewcount(kara.kara_id,kara.kid);
 				})
 				.catch(function(){
 					logger.info('Cannot find a song to play');
