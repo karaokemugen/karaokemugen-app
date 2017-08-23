@@ -26,10 +26,6 @@ $(document).ready(function () {
     }
   });
 
-  $.ajax({ url: 'public/playlists/current', }).done(function (data) {
-    publicPlaylistId = data.id_playlist;
-  });
-
   $('input[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event) {
     if ($(this).val() == 0) {
       $('#playlist1').parent().show();
@@ -65,6 +61,6 @@ var date = new Date();
 date.setFullYear(date.getFullYear + 10);
 var scope = 'public';
 var settingsPublic = {}
-var publicPlaylistId = 1;
+var playlistAjoutId;
 pseudo ="Anonymous";
 refreshTime = 2000;

@@ -37,7 +37,6 @@
         var val = $(this).val();
         var dataAjax = { command: val };
         if ($(this).attr('options') != undefined) dataAjax['options'] = $(this).attr('options');
-
         $.ajax({
             url: 'admin/player',
             type: 'PUT',
@@ -73,13 +72,15 @@
     });
 
     $('#karaInfo').click(function (e) {
-        refreshCommandStates(goToPosition, e);
+        if(status != undefined && status != "" && status != "stop") { refreshCommandStates(goToPosition, e); }
     });
 
     $('#karaInfo').on('mousedown touchstart', function (e) {
-        stopUpdate = true;
-        mouseDown = true;
-        $(progressBarColor).stop().css('width', e.pageX + "px");
+        if(status != undefined && status != "" && status != "stop") {
+            stopUpdate = true;
+            mouseDown = true;
+            $(progressBarColor).stop().css('width', e.pageX + "px");
+        }
     });
     $('#karaInfo').mouseup(function (e) {
         mouseDown = false;
@@ -166,7 +167,7 @@
                 input = $('[name="' + i + '"]');
                 // console.log(i, val);
                 if (input.length == 1 && i != nameExclude) {
-                    if (input.attr('type') !== "checkbox") {
+                    if (input.attr('type') !== "checkbox") { 
                         input.val(val);
                     } else {
                         input.bootstrapSwitch('state', val, true);
@@ -229,7 +230,6 @@
                     kara_id: $(e).parent().attr('idKara')
                 }
             }).done(function (data) {
-                console.log(data);
                 $(e).parent().clone().appendTo('#playlist' + newNum);
             });
         } else {
@@ -248,7 +248,6 @@
         var presentTimeX = $(progressBarColor).width();
         var futurTimeSec = Math.round(songLength * futurTimeX / barInnerwidth);
         $(progressBarColor).stop().css('width', 100 * futurTimeSec / songLength + "%");
-
         $.ajax({
             url: 'admin/player',
             type: 'PUT',

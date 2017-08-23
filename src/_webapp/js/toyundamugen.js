@@ -1,3 +1,4 @@
+var status;
 var mode;
 var mouseDown;
 var scope;
@@ -103,7 +104,7 @@ var showFullTextButton;
                     data = { blcriteria_type: 1001, blcriteria_value: idKara };
                 } else if (idPlaylistTo == -3) {
                     url = scope + '/whitelist';
-                    data = { id_kara: idKara, reason: prompt("Raison d'ajout à la whitelist") };
+                    data = { kara_id: idKara, reason: prompt("Raison d'ajout à la whitelist") };
                 }
 
                 console.log("ACTION : ", idPlaylistTo, url, type, data);
@@ -267,7 +268,6 @@ var showFullTextButton;
             canAddKara = true;
         }
         urlFiltre = url + "?filter=" + filter;
-        console.log("AHHHH : " + url, scope, mode === "list");
 
         console.time('ajax');
         if (ajaxSearch[url]) { ajaxSearch[url].abort(); }
@@ -280,7 +280,7 @@ var showFullTextButton;
                 for (var key in data) {
                     if (data.hasOwnProperty(key)) {
                         if (data[key].language === null) data[key].language = "";
-                        htmlContent += "<li idKara='" + data[key].id_kara + "' idplaylistcontent='" + data[key].playlistcontent_id + "' class='list-group-item'>"
+                        htmlContent += "<li idKara='" + data[key].kara_id + "' idplaylistcontent='" + data[key].playlistcontent_id + "' class='list-group-item'>"
                             + "<div class='btnDiv'>" + html + "</div><div class='infoDiv'>" + infoKaraHtml + "</div><div class='contentDiv''>"
                             + [data[key].language.toUpperCase(), data[key].serie, data[key].songtype_i18n_short, data[key].title].join(" - ")
                             + "</span><span class='badge'>" + data[key].language.toUpperCase() + "</span></div>"
@@ -324,17 +324,17 @@ var showFullTextButton;
         $.ajax({ url: scope + '/playlists', }).done(function (data) {
             playlistList = data;
             if (scope === "admin") {
-                playlistList.push({ "id_playlist": -1, "name": "Karas" });
-                playlistList.push({ "id_playlist": -2, "name": "Blacklist" });
-                playlistList.push({ "id_playlist": -3, "name": "Whitelist" });
+                playlistList.push({ "playlist_id": -1, "name": "Karas" });
+                playlistList.push({ "playlist_id": -2, "name": "Blacklist" });
+                playlistList.push({ "playlist_id": -3, "name": "Whitelist" });
             } else if (scope === "public") {
-                if (settingsPublic['EngineAllowViewBlacklist'] == 1) playlistList.push({ "id_playlist": -2, "name": "Blacklist" });
-                if (settingsPublic['EngineAllowViewWhitelist'] == 1) playlistList.push({ "id_playlist": -3, "name": "Whitelist" });
+                if (settingsPublic['EngineAllowViewBlacklist'] == 1) playlistList.push({ "playlist_id": -2, "name": "Blacklist" });
+                if (settingsPublic['EngineAllowViewWhitelist'] == 1) playlistList.push({ "playlist_id": -3, "name": "Whitelist" });
             }
 
             $.each(playlistList, function (key, value) {
                 $("select[type='playlist_select']").append('<option current="' + value.flag_current + '" public="' + value.flag_public
-                    + '" visible="' + value.flag_visible + '" value=' + value.id_playlist + '>' + value.name + '</option>');
+                    + '" visible="' + value.flag_visible + '" value=' + value.playlist_id + '>' + value.name + '</option>');
             });
 
             $(".select2").select2({ theme: "bootstrap", templateResult: formatPlaylist });
@@ -343,8 +343,18 @@ var showFullTextButton;
             $("#selectPlaylist1").val(-1).change();
             if (scope === "admin") {
                 $("#selectPlaylist2").val(1).change();
-            } else if (scope === "public") {
-                $("#selectPlaylist2").val(settingsPublic['EnginePrivateMode'] == "1" ? 1 : 2).change();
+            } else if (scope === "public") { // tester si playlistAjoutId existe et sinon trigger le code mis dans une fonction ?
+                if (playlistAjoutId == undefined) {
+                    $.ajax({ url: 'public/player' }).done(function (data) {
+                        var playlistAjout = data['private'] == 1 ? "current" : "public";
+                        $.ajax({ url: 'public/playlists/' + playlistAjout, }).done(function (data) {
+                            playlistAjoutId = data.playlist_id;
+                            $("#selectPlaylist2").val(playlistAjoutId).change();
+                        });
+                    });
+                } else {
+                    $("#selectPlaylist2").val(playlistAjoutId).change();
+                }
             }
 
         }).fail(function (data) {
@@ -366,13 +376,13 @@ var showFullTextButton;
     refreshCommandStates = function (callback, param1) {
         $.ajax({ url: 'public/player' }).done(function (data) {
             if (oldState != data) {
-                var newWidth = 100 * (data.timeposition + refreshTime / 1000) / $('#karaInfo').attr('length') + '%';
-                if (data.timeposition != oldState.timeposition && $('#karaInfo').attr('length') != 0) {
+                var newWidth = 100 * (data.timePosition + refreshTime / 1000) / $('#karaInfo').attr('length') + '%';
+                if (data.timePosition != oldState.timePosition && $('#karaInfo').attr('length') != 0) {
                     $('#progressBarColor').stop().animate({ width: newWidth }, refreshTime, 'linear');
                 }
-                if (oldState.status != data.status || oldState.playerstatus != data.playerstatus) {
-                    var status = data.status === "stop" ? "stop" : data.playerstatus;
-                    //console.log("status : " + status + " enginestatus : " + data.status  + " playerstatus : " + data.playerstatus );
+                if (oldState.status != data.status || oldState.playerStatus != data.playerStatus) {
+                    status = data.status === "stop" ? "stop" : data.playerStatus;
+                    //console.log("status : " + status + " enginestatus : " + data.status  + " playerStatus : " + data.playerStatus );
                     switch (status) {
                         case "play":
                             $('#play').find('i').attr('class', 'glyphicon glyphicon-pause');
@@ -390,16 +400,16 @@ var showFullTextButton;
                             console.log("ERR : Kara status unknown : " + status);
                     }
                 }
-                if (data.currentlyplaying !== oldState.currentlyplaying && data.currentlyplaying > 0) {
+                if (data.currentlyPlaying !== oldState.currentlyPlaying && data.currentlyPlaying > 0) {
                     $('#progressBarColor').stop().css('width', newWidth);
-                    $.ajax({ url: 'public/karas/' + data.currentlyplaying }).done(function (dataKara) {
-                        $('#karaInfo').attr('idKara', dataKara[0].id_kara);
+                    $.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
+                        $('#karaInfo').attr('idKara', dataKara[0].kara_id);
                         $('#karaInfo > span').text([dataKara[0].language.toUpperCase(), dataKara[0].serie, dataKara[0].songtype_i18n_short, dataKara[0].title].join(" - "));
                         $('#karaInfo').attr('length', dataKara[0].duration);
                     });
                 }
-                if (data.mutestatus != oldState.mutestatus) {
-                    if (data.mutestatus) {
+                if (data.muteStatus != oldState.muteStatus) {
+                    if (data.muteStatus) {
                         $('#volume').find('i').attr('class', 'glyphicon glyphicon-volume-off');
                         $('#volume').val('unmute');
                     } else {
