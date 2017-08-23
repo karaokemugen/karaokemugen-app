@@ -214,7 +214,7 @@ var showFullTextButton;
     animTime = $(window).width() < 1000 ? 0 : 400;
     
     mode = "list";
-    refreshTime = 1700;
+    refreshTime = 1850;
     stopUpdate = false;
     oldState = {};
     oldSearchVal = "";
@@ -413,8 +413,8 @@ var showFullTextButton;
                 }
                 if($('input[name="lyrics"]').is(':checked')) {
                     var text = data['subText'];
-                    if(text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) { console.log(text.indexOf(oldState['subText']) ,text);
-                        text.replace(oldState['subText'], "<span style='background-color: #888;'>" + oldState['subText'] + "</span>");console.log(text);
+                    if(oldState['subText'] && text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) {
+                        text.replace(oldState['subText'], "<span style='background-color: #888;'>" + oldState['subText'] + "</span>");
                     }
                     $('#karaInfo > span').html(text);
                 }
