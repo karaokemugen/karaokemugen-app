@@ -1,12 +1,12 @@
 <div id="header" class="header">
-    <button class="btn btn-default btn-dark pull-right">
+    <button action="poweroff" class="btn btn-default btn-dark pull-right">
             <i class="glyphicon glyphicon-off"></i></button>
     <button action="command" value="mute" id="volume" class="btn btn-default btn-dark pull-right">
             <i class="glyphicon glyphicon-volume-up"></i></button>
     <div class="pull-left btn-group" style="width: 129px;">
         <input type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> Privé"
             data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large" />
-        <input type="checkbox" name="kara_panel" class="btn btn-default pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
+        <input type="checkbox" checked name="kara_panel" class="btn btn-default pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
             data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large" />
     </div>
     <div class="pull-left btn-group">
@@ -44,13 +44,13 @@
                             <button class="btn btn-lg btn-default" name="export">
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
-                            <button class="btn btn-lg btn-default" name="current">
+                            <button class="btn btn-lg btn-default" name="flag_current">
                                 <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
-                            <button class="btn btn-lg btn-default" name="public">
+                            <button class="btn btn-lg btn-default" name="flag_public">
                                 <i class="glyphicon glyphicon-indent-left"></i>
                             </button>
-                            <button class="btn btn-lg btn-default" name="visible">
+                            <button class="btn btn-lg btn-default" name="flag_visible">
                                 <i class="glyphicon glyphicon-eye-close"></i>
                             </button>
                         </div>
@@ -62,29 +62,29 @@
                         </div>
                 </div>
             </div>
-            <ul id="playlist1" class="list-group">
+            <ul id="playlist1" num="1" class="list-group">
                 <li class="list-group-item"></li>
             </ul>
         </div>
         
         <div class="panel col-lg-6 col-xs-6">
                <div class="panel-heading container-fluid">            
-                    <div class="col-lg-6 col-sm-12 col-xs-12">
+                    <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
                         <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control">
                             </select>
                     </div>
-                    <div class="col-lg-6 col-sm-12 col-xs-12">
+                    <div class="col-lg-7 col-md-8 col-sm-12 col-xs-12">
                         <div class="btn-group pull-right" id="flag2">
                             <button class="btn btn-lg btn-default" name="export">
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
-                            <button class="btn btn-lg btn-default" name="current">
+                            <button class="btn btn-lg btn-default" name="flag_current">
                                 <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
-                            <button class="btn btn-lg btn-default" name="public">
+                            <button class="btn btn-lg btn-default" name="flag_public">
                                 <i class="glyphicon glyphicon-indent-left"></i>
                             </button>
-                            <button class="btn btn-lg btn-default" name="visible">
+                            <button class="btn btn-lg btn-default" name="flag_visible">
                                 <i class="glyphicon glyphicon-eye-close"></i>
                             </button>
                         </div>
@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <ul id="playlist2" class="list-group">
+            <ul id="playlist2" num="2" class="list-group">
                 <li class="list-group-item"></li>
             </ul>
         </div>

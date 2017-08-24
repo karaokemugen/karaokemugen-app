@@ -90,13 +90,18 @@ body {
   top: 75px;
 }
 
+.playlist-main {
+  padding: 7px;
+}
+
 .panel {
-	border: 15px solid #1E2124;
-    border-right: 0px;
+	border: 7px solid #1E2124;
     background-color: #2d2d2f;
     margin: 0px;
     padding: 0px;
 }
+
+
 .panel-heading > div {
 	padding: 2px;
 }
@@ -143,16 +148,6 @@ div.bootstrap-switch-container {
 	line-height: 2.2;
 }
 
-.addKara {
-	margin-right: 10px;
-}
-
-.addKara button {
-	background-color: #393939;
-	color: white;
-	border-width: 2px;
-}
-
 .btn, .bootstrap-switch, .bootstrap-switch-secondary, .bootstrap-switch-container > span  {
 	border-radius: 0px !important;
 }
@@ -183,8 +178,15 @@ select.form-control {
 	background-color: #3b3e44;
 	border-color: #9e9e9e;
 	overflow: auto;
-	padding: 5px;
+	padding: 0px;
+	min-height: calc(35px + 10px - .5vw);
+	line-height: calc(35px + 10px - .5vw);
 }
+.list-group-item[currentlyPlaying] {
+	background-color: #3a5064;
+	border-color: #9e9e9e;
+}
+
 .list-group-item > div {
 	padding: 3px;
 }
@@ -273,16 +275,17 @@ select.form-control {
 	border: 1px solid #9e9e9e;
 }
 .dropdown-menu > li >a {
-			color : #eee;
+	color : #eee;
 }
 
 .dropdown-menu > li:hover > a {
-			color : #222;
-			background-color: #9e9e9e;
+	color : #222;
+	background-color: #9e9e9e;
 }
 
 .select2 {
 	width: 100% !important;
+	height: 100%;
 }
 .select2-container--bootstrap .select2-selection--single {
 	height: 100%;
@@ -299,10 +302,12 @@ select.form-control {
 .select2-container--default .select2-results__option[aria-disabled=true] {
     display: none;
 }
-.select2-results__option > span > i {
+.select2-results__option > span > i, .select2-selection > span > span > i  {
 	float: right;
 }
-
+.select2-selection > span > span > i {
+	line-height: 2.3;
+}
 
 /* theme negatif boutons */
 /*

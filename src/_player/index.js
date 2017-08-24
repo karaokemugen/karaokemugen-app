@@ -301,7 +301,8 @@ module.exports = {
 		module.exports.timeposition = 0;
 		module.exports._playing = false;
 		module.exports.playerstatus = 'stop'
-		module.exports._player.loadFile(module.exports.backgroundImageFile);
+		var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg') // TODO à supprimer
+		module.exports._player.loadFile(backgroundImageFile);
 	},
 	pause: function(){		
 		module.exports._player.pause();

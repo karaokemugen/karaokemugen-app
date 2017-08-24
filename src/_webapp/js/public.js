@@ -1,16 +1,29 @@
 $(document).ready(function () {
+
+  var mugenPseudo = document.cookie.match('(^|;) ?' + 'mugenPseudo' + '=([^;]*)(;|$)');
+  if(mugenPseudo) {
+    pseudo = mugenPseudo[2];
+  } else {
+    pseudo = prompt('Pseudo');
+  }  
+  var mugenPseudoList = document.cookie.match('(^|;) ?' + 'mugenPseudoList' + '=([^;]*)(;|$)');
+  if(mugenPseudoList) { 
+    mugenPseudoListObject = JSON.parse(mugenPseudoList[2]);
+    $.each(mugenPseudoListObject, function(k, v){
+      $('#pseudo').append($('<option>', {value: v}));
+    });
+  }
+
+  $('#choixPseudo').val(pseudo).blur();
+
   $.ajax({ url: 'public/settings', }).done(function (data) {
     settingsPublic = data;
-    fillPlaylistSelects();
+    fillPlaylistSelects(true);
       
     if(settingsPublic['EngineAllowNicknameChange'] == "1") {
       $('#pseudo').parent().show();
       $('#searchParent').css("width","");
     }
-  });
-
-  $.ajax({ url: 'public/playlists/current', }).done(function (data) {
-    publicPlaylistId = data.id_playlist;
   });
 
   $('input[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event) {
@@ -44,7 +57,11 @@ $(document).ready(function () {
   //  alert($(window).width() + "-" + $(window).height());
 });
 
+var date = new Date();
+date.setFullYear(date.getFullYear + 10);
 var scope = 'public';
 var settingsPublic = {}
-var publicPlaylistId = 1;
+var playlistAjoutId;
+pseudo ="Anonymous";
 refreshTime = 2000;
+panel1Default = -1;

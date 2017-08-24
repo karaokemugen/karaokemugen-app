@@ -580,7 +580,7 @@ module.exports = {
 					var sqlUpdateUserDB = '';
 
 					var pGetAllKaras = new Promise((resolve,reject) => {
-						var sqlGetAllKaras = 'SELECT pk_id_kara AS id_kara, kid FROM all_karas;';
+						var sqlGetAllKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
 						module.exports.db.all(sqlGetAllKaras,
 							function (err, playlist) {
 								if (err) {
@@ -922,7 +922,7 @@ module.exports = {
 					//Filling taglist, and let's go.
 					if (karaSerie.includes(' OAV') || karaSerie.includes(' OVA') || karaType.includes('OAV')) {
 						if (taglist.indexOf('TAG_OVA,7') == -1) {
-							taglist.push('TAG_OVA,2');
+							taglist.push('TAG_OVA,7');
 						}
 					}
 					if (karaType == 'LIVE' || karaType == 'MV') {

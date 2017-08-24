@@ -1,5 +1,5 @@
 SELECT 
-      ak.pk_id_kara AS kara_id,
+      ak.kara_id AS kara_id,
       ak.kid AS kid,
       ak.title AS title,
       ak.NORM_title AS NORM_title,
@@ -24,5 +24,5 @@ SELECT
       ak.subfile AS subfile,
       ak.videofile AS videofile
  FROM karasdb.all_karas AS ak 
-INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.pk_id_kara
+INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.kara_id
 ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title

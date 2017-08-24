@@ -23,13 +23,23 @@
 .header button {
     width: calc(61px + 48px - 2.5vw);
 }
-.header div {
+.header > div {
     height: 100%;
     padding: 0px;
 }
-
-.header .switchParent {
-    padding:10px;
+.header > div:first-child {
+    padding: 0px 7px;
+}
+.header > div > div {
+    height: 100%;
+    padding: 7px 0px 7px 7px;
+}
+.header .dropdown {
+    padding: 0px 0px 0px 7px;
+}
+.bootstrap-switch-container i {
+    font-size: calc(17px + 10px - .5vw);
+    line-height: calc(22px + 10px - .5vw);
 }
 div.bootstrap-switch-large{
     width: 100%;
@@ -42,10 +52,6 @@ div.bootstrap-switch-large{
    font-size : calc(12px + 19px - 1vw);
 }
 
-
-#searchParent {
-    padding: 10px;
-}
 #underHeader {
     top: calc(90px + 76px - 4vw);
     height : calc(100% - (90px + 96px - 5vw));
@@ -71,7 +77,14 @@ div.bootstrap-switch-large{
 }
 .panel-heading {
     font-size:  calc(17px + 19px - 1vw);
+    height: calc(63px + 15px + 48px - 2.5vw);
 }
+.panel-heading > div,.panel-heading > div > div, .panel-heading > div > div > div, .panel-heading > div > div > div > input {
+    height: 100%;
+}
+ .panel-heading > div > div , .panel-heading > div > div > div, .panel-heading > div > div > div > input {
+     width: 100%;
+ }
 .list-group-item {
     font-size:  calc(17px + 19px - 1vw);
 }
@@ -88,22 +101,42 @@ body {
     font-size: calc(12px + 19px - 1vw);
 }
 
-::-webkit-input-placeholder {
-    font-size:  calc(17px + 19px - 1vw);
-    top:  calc(0px + 10px - 0.5vw);
+
+.right-inner-addon i {
+  right: 0px;
+  left: auto;
 }
 
-:-moz-placeholder { /* Firefox 18- */
-    font-size:  calc(17px + 19px - 1vw);
-    top:  calc(0px + 10px - 0.5vw);
+#select2-selectPlaylist2-container {
+    font-size: calc(12px + 19px - 1vw);
+}
+
+::-webkit-input-placeholder {
+    font-size:  calc(12px + 19px - 1vw);
+    line-height:  calc(12px + 19px - 1vw);
 }
 
 ::-moz-placeholder {  /* Firefox 19+ */
-    font-size:  calc(17px + 19px - 1vw);
-    top:  calc(0px + 10px - 0.5vw);
+    font-size:  calc(12px + 19px - 1vw);
+    line-height:  calc(12px + 19px - 1vw);
 }
 
 :-ms-input-placeholder {
+    font-size:  calc(12px + 19px - 1vw);
+    line-height:  calc(12px + 19px - 1vw);
+}
+
+.header ::-webkit-input-placeholder {
+    font-size: calc(17px + 19px - 1vw);
+    line-height: calc(17px + 19px - 1vw);
+}
+
+.header  ::-moz-placeholder {  /* Firefox 19+ */
     font-size:  calc(17px + 19px - 1vw);
-    top:  calc(0px + 10px - 0.5vw);
+    line-height: calc(17px + 19px - 1vw);
+}
+
+.header  :-ms-input-placeholder {
+    font-size:  calc(17px + 19px - 1vw);
+    line-height: calc(17px + 19px - 1vw);
 }
