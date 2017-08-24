@@ -145,6 +145,7 @@
     setupAjax = function (passwordAdmin) {
 
         $.ajaxSetup({
+            cache: false,
             headers: { "Authorization": "Basic " + btoa("truc:" + passwordAdmin) },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.status + "  - " + textStatus + "  - " + errorThrown);

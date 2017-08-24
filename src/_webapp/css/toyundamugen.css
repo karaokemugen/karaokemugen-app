@@ -186,20 +186,45 @@ select.form-control {
 	background-color: #3a5064;
 	border-color: #9e9e9e;
 }
-
+.panel>.list-group .list-group-item.dragged {
+	border: none;
+	z-index: 200;
+	position: absolute;
+	width: auto;
+}
+.panel>.list-group .list-group-item.dragged > div{
+	border: 1px solid #9e9e9e;
+	width: auto;
+}
 .list-group-item > div {
 	padding: 3px;
 }
-/*.list-group-item > .btnDiv {
-	
-}*/
 
-#playlist2 .list-group-item > .infoDiv > button  {
+#playlist2 .list-group-item > .infoDiv > button, #playlist2 .list-group-item .dragHandle {
 	float: right;
 }
-#playlist1 .list-group-item > .btnDiv > button  {
+#playlist1 .list-group-item > .btnDiv > button, #playlist2 .list-group-item .dragHandle  {
 	float: left;
 }
+.list-group-item > .btnDiv > button {
+	z-index: 52;
+	position: relative;
+}
+
+.list-group-item.dragged .dragHandle {
+	margin-left: 0px;
+	margin-top:3px;
+	float: right;
+	padding: 0px;
+}
+.list-group-item .dragHandle {
+	height: 100%;
+	margin-left: 6px;
+    font-size: 21px;
+	cursor: -webkit-grab;
+	float: right;
+}
+
 
 .btn-action {
     border: 2px solid #9e9e9e;
@@ -270,6 +295,13 @@ select.form-control {
 	float: right;
 }
 
+.highlight-active ul {
+	outline: 3px solid #235a42;
+}
+.highlight-hover ul {
+	__background-color:  #233a35;
+	outline: 5px solid #235a42;
+}
 .dropdown-menu {
 	background-color: #3b3e44;
 	border: 1px solid #9e9e9e;
@@ -323,6 +355,31 @@ select.form-control {
 }
 */
 
+button.closePopupParent {
+	z-index: 9998;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: auto;
+	height: auto;
+}
+
+.popup {
+    background-color: #FFFFFF;
+    border: 2px solid #999999;
+    cursor: default;
+    display: none;
+    width: 700px;
+    top: 20px;
+    left: calc(50% - 350px);
+    position: fixed;
+    /* width: 394px; */
+    z-index: 9997;
+	padding: 0px;
+	margin: 0px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
 .right-inner-addon input {
 	padding-right: 30px;

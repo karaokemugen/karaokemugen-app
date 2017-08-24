@@ -1,14 +1,14 @@
 <div id="header" class="header">
     <div class="col-lg-8 col-md-7 col-sm-7 col-xs-7">
         <div class="col-lg-10 col-md-8 col-sm-7 col-xs-6" id="searchParent" style="width: 100%;">
-            <input type="text" class="form-control" id="searchPlaylist1" num="1" placeholder="Recherche..." name="searchPlaylist"/>
-                
+            <input type="text" class="form-control" id="searchPlaylist1" num="1" placeholder="Recherche..." name="searchPlaylist" />
+
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-5 col-xs-6" style="display: none;">    
-            <input list="pseudo" type="text" id="choixPseudo" class="form-control" placeholder="Pseudo"/>  
-                <datalist id="pseudo">
-    
-                </datalist>
+        <div class="col-lg-2 col-md-4 col-sm-5 col-xs-6" style="display: none;">
+            <input list="pseudo" type="text" id="choixPseudo" class="form-control" placeholder="Pseudo" />
+            <datalist id="pseudo">
+
+            </datalist>
         </div>
     </div>
     <div class="col-lg-4 col-md-5 col-sm-5 col-xs-5">
@@ -16,8 +16,7 @@
             <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
             </span><i class="glyphicon glyphicon-cog"></i></button>
             <ul class="dropdown-menu">
-                <li><a href="#">Changer pseudo</a></li>
-                <li><a href="#">Settings</a></li>
+                <li><a href="#" id="showSettings">Settings</a></li>
                 <li><a href="#">Fin du monde</a></li>
             </ul>
         </div>
@@ -39,7 +38,7 @@
 </div>
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
-        <div class="panel col-lg-8 col-md-7 col-sm-12 col-xs-12">
+        <div class="panel col-lg-8 col-md-7 col-sm-7 col-xs-12">
              <div>
                 <div>
                     <select id="selectPlaylist1" num="1" hidden >
@@ -52,7 +51,7 @@
            
         </div>
          
-        <div class="panel col-lg-4 col-md-5 col-sm-12 col-xs-12">
+        <div class="panel col-lg-4 col-md-5 col-sm-5 col-xs-12">
            <div class="panel-heading container-fluid">
                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6">
                     <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control">
@@ -88,97 +87,33 @@
 
         </div>
     </div>
-    <div class="row" id="manage" hidden>
-        <div class="col-lg-2 col-xs-0"></div>
-        <div class="panel col-lg-8 col-xs-12">
-
-            <div class="panel-heading">
-                <div class="col-lg-6 col-xs-6">
-                    <div class="pull-right">
-                        <h4> Gestion </h4>
-                    </div>
-                </div>
+</div>
+ <div class="popup" id="settingsPublic" hidden>
+    <div class="panel col-lg-12 col-xs-12">
+        <div class="panel-heading">
+            <div class="col-lg-12 col-xs-12">
+                   <center> <h4> Settings </h4> </center>
             </div>
-            <br/>
-            <form class="form-horizontal" id="status">
-                <div class="form-group">
-                    <label for="toggleAlwaysOnTop" class="col-xs-4 control-label">Toujours au-dessus</label>
-                    <div class="col-xs-6">
-                        <input action="command" switch="onoff" type="checkbox" name="toggleAlwaysOnTop">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="toggleFullscreen" class="col-xs-4 control-label">Plein écran</label>
-                    <div class="col-xs-6">
-                        <input action="command" switch="onoff" type="checkbox" name="toggleFullscreen">
-                    </div>
-                </div>
-            </form>
-            <form class="form-horizontal" id="settings">
-                <hr>
-                <div class="form-group">
-                    <label for="AdminPassword" class="col-xs-4 control-label">Changer mot de passe admin</label>
-                    <div class="col-xs-3">
-                        <input id="password" type="password" exclude="true" class="form-control" placeholder="Mot de passe">
-                    </div>
-                    <div class="col-xs-3">
-                        <input id="confirmPassword" type="password" exclude="true" class="form-control" placeholder="Confirmez le mot de passe">
-                    </div>
-                    <button type="button" id="sendPassword" class="btn btn-danger" name="AdminPassword" oldvalue="{{mdpAdmin}}" disabled>
-                            <i class="glyphicon glyphicon-floppy-disk" value="">  </i>                     
-                        </button>
-                </div>
-                <div class="form-group">
-                    <label for="EngineSongsPerPerson" class="col-xs-4 control-label">Chansons par personne</label>
-                    <div class="col-xs-6">
-                        <input type="number" class="form-control" name="EngineSongsPerPerson" placeholder="1000">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="PlayerScreen" class="col-xs-4 control-label">Numéro d'écran d'affichage</label>
-                    <div class="col-xs-6">
-                        <select type="number" class="form-control" name="PlayerScreen">
-                                <option value="1" default> 1 </option>
-                            </select>
-                    </div>
-                </div>
-                <div id="pipSettings" style="background-color:transparent;border: solid #585b65; border-width: 2px 0px;" class="well well-sm">
-                    <div class="form-group">
-                        <label for="PlayerPIPSize" class="col-xs-4 control-label">Taille vidéo (%)</label>
-                        <div class="col-xs-6">
-                            <input type="range" name="PlayerPIPSize">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="PlayerPIPPositionX" class="col-xs-4 control-label">Position vidéo X</label>
-                        <div class="col-xs-6">
-                            <select type="number" class="form-control" name="PlayerPIPPositionX">
-                                <option value="Left" > Gauche </option>
-                                <option value="Center" default> Centre </option>
-                                <option value="Right" > Droit </option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="PlayerPIPPositionY" class="col-xs-4 control-label">Position vidéo Y</label>
-                        <div class="col-xs-6">
-                            <select type="number" class="form-control" name="PlayerPIPPositionY">
-                                <option value="Bottom" > Bas </option>
-                                <option value="Center" default> Centre </option>
-                                <option value="Top" > Haut </option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
         </div>
-        <div class="col-lg-2 col-xs-0"></div>
+        <br/>
+         <div class="col-lg-3 col-xs-3"></div>
+         <div class="col-lg-3 col-xs-3" style="text-align:right">
+                <b>Mode</b> : 
+                <br/>
+                <b>Version</b> :
+                <br/>
+        </div>
+        <div class="col-lg-3 col-xs-3">
+                <span id="mode"></span>
+                <br/>
+                 <span id="version"></span>
+                <br/>
+        </div>
+         <div class="col-lg-3 col-xs-3"></div>
+        <br/> <br/> <br/> 
     </div>
 </div>
-
 <script>
     var mdpAdmin = "{{mdpAdmin}}";
+
 </script>
