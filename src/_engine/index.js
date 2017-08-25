@@ -434,7 +434,7 @@ module.exports = {
 									resolve(err);
 								});							
 							} else {
-								resolve(karalist);
+								resolve(karalist.slice(from,to));
 							}
 						})
 						.catch(function(err){
@@ -803,7 +803,7 @@ module.exports = {
 											resolve(err);
 										});
 								} else {
-									resolve(karalist);
+									resolve(karalist.slice(from,to));
 								}
 								
 							})
@@ -859,7 +859,7 @@ module.exports = {
 													resolve(err);
 												});
 										} else {
-											resolve(karalist);
+											resolve(karalist.slice(from,to));
 										}
 									})
 									.catch(function(err){
@@ -923,7 +923,7 @@ module.exports = {
 													resolve(err);
 												});
 										} else {
-											resolve(karalist);
+											resolve(karalist.slice(from,to));
 										}
 									})
 									.catch(function(err){
