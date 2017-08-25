@@ -16,7 +16,7 @@
 	z-index: 1337;
 	background-color: #1E2124;
     top: calc(30px + 28px - 1.5vw);
-	height: calc(60px + 48px - 2.5vw);
+	height: calc(60px + 28px - 1.5vw);
 	width: 100%;
 	border-bottom: 2px solid #9e9e9e;
 }
@@ -38,8 +38,8 @@
     padding: 0px 0px 0px 7px;
 }
 .bootstrap-switch-container i {
-    font-size: calc(17px + 10px - .5vw);
-    line-height: calc(22px + 10px - .5vw);
+    font-size: calc(20px + 10px - .5vw);
+    top: calc(3px + .5vw - 10px);
 }
 div.bootstrap-switch-large{
     width: 100%;
@@ -86,7 +86,7 @@ div.bootstrap-switch-large{
      width: 100%;
  }
 .list-group-item {
-    font-size:  calc(17px + 19px - 1vw);
+    font-size:  calc(14px + 10px - .5vw);
 }
 body {
     font-size:  calc(155x + 28px - 1.5vw);
@@ -139,4 +139,9 @@ body {
 .header  :-ms-input-placeholder {
     font-size:  calc(17px + 19px - 1vw);
     line-height: calc(17px + 19px - 1vw);
+}
+
+
+#playlist1[canTransferKara="true"] > li {
+    cursor : pointer;
 }

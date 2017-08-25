@@ -15,7 +15,9 @@ var transferKaraHtml;
 var infoKaraHtml;
 var buttonHtmlPublic;
 var closeButton;
+var closePopupButton;
 var showFullTextButton;
+var dragHandleHtml;
 
 (function (yourcode) {
     // The global jQuery object is passed as a parameter
@@ -23,20 +25,25 @@ var showFullTextButton;
 }(function ($, window, document) {
     $(function () {
 
-
         refreshCommandStates();
         initSwitchs();
+
         setInterval(function () {
             if (!stopUpdate) {
                 refreshCommandStates("refresh");
             }
         }, refreshTime);
+
         setInterval(function () {
-            if(!($('#selectPlaylist2').data('select2').isOpen() || $('#selectPlaylist1').data('select2') && $('#selectPlaylist1').data('select2').isOpen())) { fillPlaylistSelects(); }
+            if(!($('#selectPlaylist2').data('select2').isOpen() || $('#selectPlaylist1').data('select2')
+                && $('#selectPlaylist1').data('select2').isOpen())) { 
+                    scope === "public" ? getPublicSettings(false) : fillPlaylistSelects(); 
+                }
             if($('#selectPlaylist1').val() != -1) { fillPlaylist(1); }
             if($('#selectPlaylist2').val() != -1) { fillPlaylist(2); }
         }, refreshTime * 3);
 
+        
         // méthode intelligente, on attend 80ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on relance
         $('#searchPlaylist1, #searchPlaylist2').on('input', function () {
             var num = $(this).attr('num');
@@ -208,7 +215,30 @@ var showFullTextButton;
             //alert($(this).is(':checked'));
             $(this).val($(this).is(':checked') ? 1 : 0);
         });
+        popup = function(element, easing, callback) {
+            el = $(element);
+            el.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, function(){
+                el.css('max-height', $(window).height() - 100);
+                el.css('top', 50);
+                el.css('max-width',$(window).width() * .95);
+                el.css('left', ($(window).width() - el.width()) / 2);
 
+                $('body > div[class!="popup"]').css('opacity','.5');
+                el.prepend(closePopupButton);
+            });
+        }
+        $('body').on('click', '.closePopupParent', function (e) {
+            var el = $(this);
+            el.closest('.popup').fadeOut(animTime);
+            el.remove();
+            $('body > div[class!="popup"]').css('opacity','1');
+        });
+        //prevent the virtual keyboard popup when on touchscreen by not focusing the search input
+        if(isTouchScreen) {
+            $('select').on('select2:open', function() {
+                $('.select2-search input').prop('focus', 0);
+            });
+        }
         $(window).trigger('resize');
     });
     animTime = $(window).width() < 1000 ? 0 : 400;
@@ -226,9 +256,11 @@ var showFullTextButton;
         + '<i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i></button>'
     infoKaraHtml = '<button name="infoKara" class="btn btn-sm btn-action"><i class="glyphicon glyphicon-info-sign"></i></button>';
     closeButton = '<button class="closeParent btn btn-sm btn-action"><i class="glyphicon glyphicon-remove"></i></button>';
+    closePopupButton = '<button class="closePopupParent btn btn-action"><i class="glyphicon glyphicon-remove"></i></button>';
     showFullTextButton = "<button class='fullLyrics btn btn-action'><i class='glyphicon glyphicon-align-justify'></i></button>";
     buttonHtmlPublic = '';
-
+    dragHandleHtml =  "<span class='dragHandle'><i class='glyphicon glyphicon-option-vertical'></i></span>";
+    isTouchScreen =  "ontouchstart" in document.documentElement;
 
     $.ajaxPrefilter(function (options) {
         options.url = window.location.protocol + "//" + window.location.hostname + ":1339/api/v1/" + options.url
@@ -243,7 +275,7 @@ var showFullTextButton;
     fillPlaylist = function (num, idKara) {
         var idPlaylist = $("#selectPlaylist" + num).val();
         var filter = $("#searchPlaylist" + num).val();
-        var url, html, canTransferKara, canAddKara;
+        var url, html, canTransferKara, canAddKara, dragHandle;
         if (idPlaylist > 0) {
             url = scope + '/playlists/' + idPlaylist + '/karas';
             html = scope === "admin" ? transferKaraHtml + deleteKaraHtml + addKaraHtml : '';
@@ -265,6 +297,11 @@ var showFullTextButton;
             canTransferKara = true;
             canAddKara = true;
         }
+        
+        canAddKara = scope === "admin" ? canAddKara : $("#selectPlaylist" + num + " > option:selected").attr("flag_" + playlistToAdd) == "1";
+
+        dragHandle = isTouchScreen && idPlaylist == -1 && num == 1 ? dragHandleHtml : "";
+        
         urlFiltre = url + "?filter=" + filter;
         console.log(url);
         console.time('ajax');
@@ -280,42 +317,84 @@ var showFullTextButton;
                         if (data[key].language === null) data[key].language = "";
                         htmlContent += "<li idKara='" + data[key].kara_id + "' idplaylistcontent='" + data[key].playlistcontent_id + " 'class='list-group-item' "
                             + (data[key].flag_playing ? "currentlyPlaying" : "" ) + ">"
-                            + "<div class='btnDiv'>" + html + "</div><div class='infoDiv'>" + infoKaraHtml + "</div><div class='contentDiv''>"
-                            + [data[key].language.toUpperCase(), data[key].serie, data[key].songtype_i18n_short, data[key].title].join(" - ")
-                            + "</span><span class='badge'>" + data[key].language.toUpperCase() + "</span></div>"
-                            + "<div class='detailsKara alert alert-info' style='display: none;'></div>"
-
+                            + "<div class='btnDiv'>" + html + dragHandle + "</div>" + "</div><div class='infoDiv'>" + infoKaraHtml + "</div><div class='contentDiv''>"
+                            + [data[key].serie, data[key].songtype_i18n_short, data[key].title].join(" - ") + "</span>"
+                            + (isTouchScreen ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
+                            + "</div><div class='detailsKara alert alert-info' style='display: none;'></div>"
                             + "</li>";
 
                     }
                 }
             }
-            if (scope == "admin") {
-                $('#playlist' + non(num)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
-            }
+      
+            $('#playlist' + non(num)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
 
             var time = console.timeEnd('html');
             
 
             document.getElementById("playlist" + num).innerHTML = htmlContent;
-
+        
             if (idKara !== undefined) { scrollToKara(num, idKara); }
+
+            // drag & drop part
+            if (scope === "public") {
+                var draggableLi =  isTouchScreen ? $("#playlist" + 1 + " > li .dragHandle") : $("#playlist" + 1 + " > li");
+                var dropZone = $('#playlist' + non(1)).parent();
+                if(draggableLi.draggable('instance') != undefined) {
+                    if($("#playlist" + 1).attr('canaddkara') == "true")  {
+                        draggableLi.draggable('enable')
+                        dropZone.droppable('enable');
+                    } else {
+                        draggableLi.draggable('disable');
+                        dropZone.droppable('disable');
+                    }
+                } else if( $("#playlist" + 1).attr('canaddkara') == "true") {
+                    draggableLi.draggable({
+                        cursorAt: { top: 20, right: 15 },
+                        helper:  function(){
+                            var li = $(this).closest('li');
+                            return $("<div class='list-group-item dragged'></div>")
+                                .append(li.find('.dragHandle').clone(),li.find('.contentDiv').clone())  },
+                        appendTo: dropZone,
+                        zIndex: 9999,
+                        delay: 0, 
+                        distance: 0
+                    });
+                    dropZone.droppable({
+                        accept : '.list-group-item',
+                         classes: {
+                            "ui-droppable-hover": "highlight-hover",
+                            "ui-droppable-active": "highlight-active"
+                            },
+                        drop : function(e, ui){console.log( $(ui.draggable)); $(ui.draggable).find('.btnDiv > [name=addKara]').click(); }
+                    }).bind('dropout', function () {
+                        console.log('dropout');
+                    });
+                }
+            }
         });
     }
 
     scrollToKara = function (num, idKara) {
         $playlist = $("#playlist" + num);
         $kara = $playlist.find("li[idkara='" + idKara + "']");
-        if ($kara.length > 0) { scrollToElement($playlist, $kara); }
-        // TODO higlight change background color on focus then get back to normal on blur
-        $kara.find('.contentDiv').hide().show(animTime, 'linear');
-        $kara.focus();
+        if ($kara.length > 0) {
+            scrollToElement($playlist, $kara, true); 
+        }
     }
 
-    scrollToElement = function (parent, element) {
+    scrollToElement = function (parent, element, highlight) {
+        var willParentSroll = parent[0].scrollTop != parent[0].clientTop || (parent[0].clientHeight != parent[0].scrollHeight
+                                && parent.scrollTop() + element.offset().top - parent.offset().top != 0)
+        console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
         parent.animate({
             scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
-        }, animTime);
+        }, willParentSroll ? animTime * 1.4 : 0 , function(){
+            if(highlight) {
+                element.effect( "highlight", {color: '#234a35'}, 1000 );
+                element.focus();
+            }
+        });
     }
     
     fillPlaylistSelects = function (triggerChange, num) {
@@ -344,7 +423,7 @@ var showFullTextButton;
             select1.val(val1? val1 : panel1Default);
             select2.val(val2? val2 : select2.find("option[flag_current='1']").val());
 
-            $(".select2").select2({ theme: "bootstrap", templateResult: formatPlaylist, templateSelection : formatPlaylistSelect });
+            $(".select2").select2({ theme: "bootstrap", templateResult: formatPlaylist, templateSelection : formatPlaylistSelect, minimumResultsForSearch: 2 });
             
             // TODO recup player.private et décider public ou current pour l'appli public / à voir pour se rappeler de la playlist selectionnée dans les cookies pour l'admin ?
 
@@ -493,6 +572,7 @@ var showFullTextButton;
     non = function (num) {
         return 3 - parseInt(num);
     }
+
 
     $(window).resize(function () {
         //  initSwitchs();$
