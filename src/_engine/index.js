@@ -418,7 +418,7 @@ module.exports = {
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
 		module.exports._services.apiserver.onTest = module.exports.test;
-		module.exports._services.apiserver.onKaras = function(filter,lang){
+		module.exports._services.apiserver.onKaras = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
@@ -427,7 +427,7 @@ module.exports = {
 							if (filter) {
 								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 								.then(function(filtered_pl){
-									resolve(filtered_pl)
+									resolve(filtered_pl.slice(from,to))
 								})
 								.catch(function(err){
 									logger.error('[Engine] PLC filterPlaylist : '+err);	
@@ -786,7 +786,7 @@ module.exports = {
 					});
 			});
 		}
-		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser){
+		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,to){
 			logger.debug('[Engine] onPlaylistSingleContents Args : '+JSON.stringify(arguments));
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)
@@ -796,7 +796,7 @@ module.exports = {
 								if (filter) {
 									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 										.then(function(filtered_pl){
-										resolve(filtered_pl)
+										resolve(filtered_pl.slice(from,to))
 										})
 										.catch(function(err){
 											logger.error('[Engine] PLC filterPlaylist : '+err);	
@@ -841,7 +841,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistCurrentContents = function(filter,lang){
+		module.exports._services.apiserver.onPlaylistCurrentContents = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
 					.then(function(id_playlist){
@@ -852,7 +852,7 @@ module.exports = {
 										if (filter) {
 											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 												.then(function(filtered_pl){
-												resolve(filtered_pl)
+												resolve(filtered_pl.slice(from,to))
 												})
 												.catch(function(err){
 													logger.error('[Engine] PLC filterPlaylist : '+err);	
@@ -905,7 +905,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistPublicContents = function(filter,lang){
+		module.exports._services.apiserver.onPlaylistPublicContents = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isAPublicPlaylist()
 					.then(function(id_playlist){
@@ -916,7 +916,7 @@ module.exports = {
 										if (filter) {
 											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 												.then(function(filtered_pl){
-												resolve(filtered_pl)
+												resolve(filtered_pl.slice(from,to))
 												})
 												.catch(function(err){
 													logger.error('[Engine] PLC filterPlaylist : '+err);	

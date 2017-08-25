@@ -301,7 +301,18 @@ module.exports = {
 				var playlist_id = req.params.pl_id;
 				var filter = req.query.filter;
 				var lang = req.query.lang;
-				module.exports.onPlaylistSingleContents(playlist_id,filter,lang)
+				if (!req.query.to) {
+					var to = 999999;
+				} else {
+					var to = req.query.to;
+				}				
+
+				if (!req.query.from) {
+					var from = 0;
+				} else {
+					var from = req.query.from;
+				}
+				module.exports.onPlaylistSingleContents(playlist_id,filter,lang,from,to)
 					.then(function(playlist){
 						if (playlist == []) res.statusCode = 404;
 						res.json(playlist);
@@ -842,8 +853,19 @@ module.exports = {
 				var playlist_id = req.params.pl_id;
 				var filter = req.query.filter;
 				var lang = req.query.lang;
+				if (!req.query.to) {
+					var to = 999999;
+				} else {
+					var to = req.query.to;
+				}
+
+				if (!req.query.from) {
+					var from = 0;
+				} else {
+					var from = req.query.from;
+				}
 				var seenFromUser = true;
-				module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser)
+				module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,to)
 					.then(function(playlist){
 						if (playlist == null) res.statusCode = 404;
 						res.json(playlist);
@@ -964,7 +986,20 @@ module.exports = {
 				// then the playlist returned gets filtered with the text.
 				var filter = req.query.filter;
 				var lang = req.query.lang;
-				module.exports.onKaras(filter,lang)
+				
+				if (!req.query.to) {
+					var to = 999999;
+				} else {
+					var to = req.query.to;
+				}
+
+				if (!req.query.from) {
+					var from = 0;
+				} else {
+					var from = req.query.from;
+				}
+
+				module.exports.onKaras(filter,lang,from,to)
 					.then(function(karas){
 						res.json(karas);
 					})
@@ -1049,7 +1084,18 @@ module.exports = {
 				// Get current Playlist
 				var lang = req.query.lang;
 				var filter = req.query.filter;
-				module.exports.onPlaylistCurrentContents(filter, lang)
+				if (!req.query.from) {
+					var from = 0;
+				} else {
+					var from = req.query.from;
+				}
+
+				if (!req.query.to) {
+					var to = 999999;
+				} else {
+					var to = req.query.to;
+				}
+				module.exports.onPlaylistCurrentContents(filter, lang, from, to)
 					.then(function(playlist){
 						res.json(playlist);
 					})
@@ -1077,7 +1123,18 @@ module.exports = {
 				// Get current Playlist
 				var lang = req.query.lang;
 				var filter = req.query.filter;
-				module.exports.onPlaylistPublicContents(filter, lang)
+				if (!req.query.to) {
+					var to = 999999;
+				} else {
+					var to = req.query.to;
+				}
+
+				if (!req.query.from) {
+					var from = 0;
+				} else {
+					var from = req.query.from;
+				}
+				module.exports.onPlaylistPublicContents(filter, lang, from, to)
 					.then(function(playlist){
 						res.json(playlist);
 					})
