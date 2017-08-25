@@ -12,8 +12,9 @@ require('moment-duration-format');
 const ffmpegPath = require('ffmpeg-downloader').path;
 
 module.exports = {
-	getLyrics:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile){
+	getLyrics:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder){
 		return new Promise(function(resolve,reject){
+			var uuid = uuidv4();
 			var lyrics = [];			
 			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
 				var err = 'Video not found : '+videofile
