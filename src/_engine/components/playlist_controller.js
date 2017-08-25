@@ -250,7 +250,8 @@ module.exports = {
 								module.exports.SETTINGS.PathSubs,
 								module.exports.SETTINGS.PathVideos,
 								kara.subfile,
-								kara.videofile
+								kara.videofile,
+								module.exports.SETTINGS.PathTemp
 								)
 								.then(function(lyrics) {
 									resolve(lyrics);
