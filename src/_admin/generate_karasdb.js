@@ -913,7 +913,7 @@ module.exports = {
 
 			function addTags(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
-					var karaWOExtension = L.trim(karadata.karafile,'.kara');
+					var karaWOExtension = L.trimEnd(karadata.karafile,'.kara');
 					var karaInfos = karaWOExtension.split(' - ');
 					var karaSerie = karaInfos[1];
 					var karaType = karaInfos[2];
