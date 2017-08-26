@@ -913,7 +913,7 @@ module.exports = {
 
 			function addTags(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
-					var karaWOExtension = L.trim(karadata.karafile,'.kara');
+					var karaWOExtension = L.trimEnd(karadata.karafile,'.kara');
 					var karaInfos = karaWOExtension.split(' - ');
 					var karaSerie = karaInfos[1];
 					var karaType = karaInfos[2];
@@ -950,6 +950,15 @@ module.exports = {
 							var tag = author.trimLeft();
 							if (taglist.indexOf(tag + ',6') == -1) {
 								taglist.push(tag + ',6');
+							}
+						});
+					}					
+					if (!L.isEmpty(karadata.tags)) {
+						var misctags = karadata.tags.split(',');
+						misctags.forEach(function(misctag) {
+							var tag = misctag.trimLeft();
+							if (taglist.indexOf(tag + ',7') == -1) {
+								taglist.push(tag + ',7');
 							}
 						});
 					}
