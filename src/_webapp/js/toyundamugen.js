@@ -186,11 +186,14 @@ var playlistToAdd;
         $('.playlist-main').on('click', '.infoDiv > button[name="infoKara"]', function (e) {
             var liKara = $(this).closest('li');
             var idKara = parseInt(liKara.attr('idkara'));
+            var idPlc = parseInt(liKara.attr('idplaylistcontent'));
             var idPlaylist = $('#selectPlaylist' + $(this).closest('ul').attr('num')).val();
             var infoKara = liKara.find('.detailsKara');
             
             if (infoKara.length == 0) {
-                $.ajax({ url: 'public/karas/' + idKara }).done(function (data) {
+                //var urlInfoKara = idPlaylist > 0 ? 'admin/playlist/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
+                var urlInfoKara = 'public/karas/' + idKara;
+                $.ajax({ url: urlInfoKara }).done(function (data) {
                     var detailsHtml = buildDetailsKara(data[0]);
                     detailsHtml = $(detailsHtml).hide()
                     liKara.append(detailsHtml);
@@ -427,7 +430,7 @@ var playlistToAdd;
     }
 
     scrollToKara = function (num, idKara) {
-        $playlist = $("#playlist" + num);
+        $playlist = $("#playlist" + num).parent();
         $kara = $playlist.find("li[idkara='" + idKara + "']");
         if ($kara.length > 0) {
             scrollToElement($playlist, $kara, true); 
@@ -437,12 +440,12 @@ var playlistToAdd;
     scrollToElement = function (parent, element, highlight) {
         var willParentSroll = parent[0].scrollTop != parent[0].clientTop || (parent[0].clientHeight != parent[0].scrollHeight
                                 && parent.scrollTop() + element.offset().top - parent.offset().top != 0)
-       //console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
-        parent.animate({
+        // console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
+         parent.animate({
             scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
         }, willParentSroll ? 400 : 0 , function(){
             if(highlight) {
-                element.effect( "highlight", {color: '#234a35'}, 1000 );
+                element.finish().effect( "highlight", {color: '#234a35'}, 1000 );
                 element.focus();
             }
         });
@@ -637,7 +640,7 @@ var playlistToAdd;
                 "Author": data['author']
                 , "Viewcount": data['viewcount']
                 , "Creator": data['creator']
-                , "Duration": data['duration']
+                , "Duration": data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ":" + data['duration'] % 60
                 , "Language": data['language_i18n']
                 , "Misc": data['misc_i18n']
                 , "Series": data['series']
@@ -682,9 +685,11 @@ var playlistToAdd;
     }
     displayMessage = function(type, title, message) {
         var messageDiv = $('#message');
-        messageDiv.attr('class','alert alert-' + type);
-        messageDiv.html('<strong>' + title + '</strong> : ' + message);
-        messageDiv.fadeIn(600).delay(2200).fadeOut(600);
+        messageDiv.promise().done(function(){
+            messageDiv.attr('class','alert alert-' + type);
+            messageDiv.html('<strong>' + title + '</strong> : ' + message);
+            messageDiv.fadeIn(600).delay(2200).fadeOut(600);
+        });
     }
     $(window).resize(function () {
         //  initSwitchs();$
