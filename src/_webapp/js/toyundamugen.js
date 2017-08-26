@@ -18,10 +18,12 @@ var closeButton;
 var closePopupButton;
 var showFullTextButton;
 var dragHandleHtml;
+var playKaraHtml;
 var dragAndDrop;
 var karaParPage;
 var toleranceDynamicPixels;
 var saveLastDetailsKara;
+var playlistToAdd;
 
 (function (yourcode) {
     // The global jQuery object is passed as a parameter
@@ -39,13 +41,15 @@ var saveLastDetailsKara;
         }, refreshTime);
 
         setInterval(function () {
-            if(!($('#selectPlaylist2').data('select2').isOpen() || $('#selectPlaylist1').data('select2')
-                && $('#selectPlaylist1').data('select2').isOpen())) { 
-                    scope === "public" ? getPublicSettings(false) : fillPlaylistSelects(); 
-                }
-            if($('#selectPlaylist1').val() != -1 && $('#playlist1 .lyricsKara:visible').length == 0) { fillPlaylist(1); }
-            if($('#selectPlaylist2').val() != -1 && $('#playlist2 .lyricsKara:visible').length == 0) { fillPlaylist(2); }
-        }, refreshTime * 3);
+            if (!stopUpdate) {
+                if(!($('#selectPlaylist2').data('select2').isOpen() || $('#selectPlaylist1').data('select2')
+                    && $('#selectPlaylist1').data('select2').isOpen())) { 
+                        scope === "public" ? getPublicSettings(false) : fillPlaylistSelects(); 
+                    }
+                if($('#selectPlaylist1').val() != -1 && $('#playlist1 .lyricsKara:visible').length == 0) { fillPlaylist(1); }
+                if($('#selectPlaylist2').val() != -1 && $('#playlist2 .lyricsKara:visible').length == 0) { fillPlaylist(2); }
+            }
+        }, refreshTime * 2.5);
 
         
         // méthode intelligente, on attend 80ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on relance
@@ -56,7 +60,11 @@ var saveLastDetailsKara;
             timer = setTimeout(function () {
                 fillPlaylist(num);
             }, 80);
-        });
+        }).keypress(function (e) { // allow pressing enter to validate a setting
+        if (e.which == 13) {
+            $(this).blur();
+        }
+    });
 
         /* // méthode de base, on écrit, ça recherche
         $('#search').on('input', function () {
@@ -156,6 +164,20 @@ var saveLastDetailsKara;
             }
         });
         
+        $('.playlist-main').on('click', '.infoDiv > button.playKara', function (e) {
+            var liKara = $(this).closest('li');
+            var idPlc = parseInt(liKara.attr('idplaylistcontent'));
+            var idPlaylist = $('#selectPlaylist' + $(this).closest('ul').attr('num')).val();
+
+            $.ajax({
+                type : 'PUT',
+                url: scope + '/playlists/' + idPlaylist +'/karas/' + idPlc,
+                data: { flag_playing: "1" }
+            }).done(function (data) {
+               console.log("Kara plc_id " + idPlc + " flag_playing set to true");                     
+            });
+        });
+
         $('.playlist-main').on('click', '.infoDiv > button[name="infoKara"]', function (e) {
             var liKara = $(this).closest('li');
             var idKara = parseInt(liKara.attr('idkara'));
@@ -254,9 +276,9 @@ var saveLastDetailsKara;
 
     dragAndDrop = true;
     mode = "list";
-    refreshTime = 1850;
+    refreshTime = 2000;
     stopUpdate = false;
-    karaParPage = 100;
+    karaParPage = 80;
     oldState = {};
     oldSearchVal = "";
     ajaxSearch = {}, timer;
@@ -271,6 +293,7 @@ var saveLastDetailsKara;
     showFullTextButton = "<button class='fullLyrics btn btn-action'><i class='glyphicon glyphicon-align-justify'></i></button>";
     buttonHtmlPublic = '';
     dragHandleHtml =  "<span class='dragHandle'><i class='glyphicon glyphicon-option-vertical'></i></span>";
+    playKaraHtml = "<button class='btn btn-sm btn-action playKara'><i class='glyphicon glyphicon-play'></i></btn>"
     isTouchScreen =  "ontouchstart" in document.documentElement;
 
     $.ajaxPrefilter(function (options) {
@@ -289,7 +312,7 @@ var saveLastDetailsKara;
         
         var idPlaylist = $("#selectPlaylist" + num).val();
         var filter = $("#searchPlaylist" + num).val();
-        var url, html, canTransferKara, canAddKara, dragHandle;
+        var url, html, canTransferKara, canAddKara, dragHandle, playKara;
         if (idPlaylist > 0) {
             url = scope + '/playlists/' + idPlaylist + '/karas';
             html = scope === "admin" ? transferKaraHtml + deleteKaraHtml + addKaraHtml : '';
@@ -316,17 +339,17 @@ var saveLastDetailsKara;
         }
         
         canAddKara = scope === "admin" ? canAddKara : $("#selectPlaylist" + num + " > option:selected").attr("flag_" + playlistToAdd) == "1";
+        playKara = scope === "admin" && idPlaylist > 0 ? playKaraHtml : "";
 
         dragHandle = isTouchScreen && idPlaylist == -1 && num == 1 ? dragHandleHtml : "";
-        
         urlFiltre = url + "?filter=" + filter;
 
-        console.time('ajax');
+        //console.time('ajax');
         if (ajaxSearch[url]) { ajaxSearch[url].abort(); }
         ajaxSearch[url] = $.ajax({ url: urlFiltre }).done(function (data) {
             var time = console.timeEnd('ajax');
-            console.time('html');
-            console.log(urlFiltre + " : " + data.length + " résultats");
+            //console.time('html');
+            //console.log(urlFiltre + " : " + data.length + " résultats");
             if(saveLastDetailsKara[idPlaylist] == undefined) { saveLastDetailsKara[idPlaylist] = []; }
             var htmlContent = "";
             if (mode === "list") {
@@ -336,9 +359,10 @@ var saveLastDetailsKara;
                         if (data[key].language === null) data[key].language = "";
                         htmlContent += "<li idKara='" + data[key].kara_id + "' idplaylistcontent='" + data[key].playlistcontent_id + " 'class='list-group-item' "
                             + (data[key].flag_playing ? "currentlyPlaying" : "" ) + ">"
-                            + "<div class='btnDiv'>" + html + dragHandle + "</div>" + "</div><div class='infoDiv'>" + infoKaraHtml + "</div>"
-                            + "<div class='contentDiv''>" + [data[key].serie, data[key].songtype_i18n_short, data[key].title].join(" - ")
-                            + (isTouchScreen ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
+                            + "<div class='btnDiv'>" + html + dragHandle + "</div>"
+                            + "</div><div class='infoDiv'>" + infoKaraHtml + playKara + "</div>"
+                            + "<div class='contentDiv''>" + [data[key].language.toUpperCase(), data[key].serie, data[key].songtype_i18n_short, data[key].title].join(" - ")
+                            + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                             + "</div>"
                             + (saveLastDetailsKara[idPlaylist].indexOf(data[key].kara_id) > -1 ? buildDetailsKara(data[key]) : "")
                             + "</li>";
@@ -350,7 +374,7 @@ var saveLastDetailsKara;
             $('#playlist' + non(num)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
             
             document.getElementById("playlist" + num).innerHTML = htmlContent;
-            var time = console.timeEnd('html'); console.log(data.length);
+            //var time = console.timeEnd('html'); console.log(data.length);
             
             $('#playlist' + num).parent().find('.playlistLoading').fadeOut(400);
             if (idKara) { scrollToKara(num, idKara); }
@@ -380,12 +404,11 @@ var saveLastDetailsKara;
                         distance: 0
                     });
                     dropZone.droppable({
-                        accept : '.list-group-item,.dragHandle',
                          classes: {
                             "ui-droppable-hover": "highlight-hover",
                             "ui-droppable-active": "highlight-active"
                             },
-                        drop : function(e, ui){ $(ui.draggable).find('.btnDiv > [name=addKara]').click(); }
+                        drop : function(e, ui){ $(ui.draggable).closest('li').find('.btnDiv > [name=addKara]').click(); }
                     }).bind('touch', function () {
                         alert('drop it again!');
                     });
@@ -416,7 +439,7 @@ var saveLastDetailsKara;
         });
     }
     
-    fillPlaylistSelects = function (triggerChange, num) {
+    fillPlaylistSelects = function (triggerChange, num, newVal) {
         var playlistList = {};
         var select1 = $("#selectPlaylist1"), select2 = $("#selectPlaylist2");
         var val1 = select1.val(), val2 = select2.val();
@@ -442,9 +465,27 @@ var saveLastDetailsKara;
             select1.val(val1? val1 : panel1Default);
             select2.val(val2? val2 : select2.find("option[flag_current='1']").val());
 
-            $(".select2").select2({ theme: "bootstrap", templateResult: formatPlaylist, templateSelection : formatPlaylistSelect, minimumResultsForSearch: 2 });
+            if(newVal != undefined & num != undefined) {
+                $("#selectPlaylist" + num).val(newVal);
+            }
+
+            $(".select2").select2({ theme: "bootstrap",
+                                    templateResult: formatPlaylist,
+                                    templateSelection : formatPlaylistSelect,
+                                    tags: true,
+                                    minimumResultsForSearch: 2 });
             
             // TODO recup player.private et décider public ou current pour l'appli public / à voir pour se rappeler de la playlist selectionnée dans les cookies pour l'admin ?
+            if(scope === "public" && typeof playlistAjoutId == "undefined") {
+                $.ajax({ url: 'public/player' }).done(function (data) {
+                    playlistToAdd = data['private'] == 1 ? "current" : "public";
+                    console.log(playlistToAdd);
+                    $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
+                        playlistAjoutId = data.playlist_id;
+                        $("#selectPlaylist2").val(playlistAjoutId).change();
+                    });
+                });
+            }
 
             var selectList = scope === "admin" ? [select1, select2] : []; // add [select2] to 2nd part to update the flag buttons in public app (atm not shown so w/e)
             for (var i in selectList) {
@@ -456,7 +497,7 @@ var saveLastDetailsKara;
                     if (option.attr(e) == "1") { flagPanel.find("button[name='" + e + "']").removeClass('btn-default').addClass('btn-primary'); }
                     else { flagPanel.find("button[name='" + e + "']").removeClass('btn-primary').addClass('btn-default'); }
                 });
-                flagPanel.find("button[name='visible'] > i").attr('class', option.attr('visible') ? 'glyphicon glyphicon-eye-open' : 'glyphicon glyphicon-eye-close');   
+                flagPanel.find("button[name='flag_visible'] > i").attr('class', option.attr('flag_visible') == "1" ? 'glyphicon glyphicon-eye-open' : 'glyphicon glyphicon-eye-close');   
             }
             
             if(triggerChange) {
@@ -511,7 +552,7 @@ var saveLastDetailsKara;
                 }
                 if($('input[name="lyrics"]').is(':checked')) {
                     var text = data['subText'];
-                    if(oldState['subText'] && text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) {
+                    if(oldState['subText'] != null && text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) {
                         text.replace(oldState['subText'], "<span style='background-color: #888;'>" + oldState['subText'] + "</span>");
                     }
                     $('#karaInfo > span').html(text);

@@ -200,11 +200,16 @@ select.form-control {
 	padding: 3px;
 }
 
-#playlist2 .list-group-item > .infoDiv > button, #playlist2 .list-group-item .dragHandle {
+.playlistContainer > ul[num="2"] .list-group-item > .infoDiv > button, .playlistContainer > ul[num="1"] .list-group-item > .btnDiv > button, .playlistContainer > ul[num="2"] .list-group-item .dragHandle {
 	float: right;
+	display: block;
+	margin: 1px;
 }
-#playlist1 .list-group-item > .btnDiv > button, #playlist2 .list-group-item .dragHandle  {
+
+.playlistContainer > ul[num="1"].list-group-item > .infoDiv > button, .playlistContainer > ul[num="2"] .list-group-item > .btnDiv > button, .playlistContainer > ul[num="2"] .list-group-item .dragHandle  {
 	float: left;
+	display: block;
+	margin: 1px;
 }
 .list-group-item > .btnDiv > button {
 	z-index: 52;
@@ -227,7 +232,7 @@ select.form-control {
 
 
 .btn-action {
-    border: 2px solid #9e9e9e;
+    border: 1px solid #9e9e9e;
 	background-color: #393939;
 	color: white;
 	width: calc(35px + 19px - 1vw);
@@ -239,9 +244,18 @@ select.form-control {
 	background-color: #292929;
 	color: white;
 }
+
 .btn-action:active:focus{
 	background-color: #444;
 	color: white;
+}
+
+.playKara {
+	__border-color: transparent;
+}
+
+.playKara:hover {
+	background-color: #286090;
 }
 
 .list-group-item .detailsKara, .list-group-item .lyricsKara {
