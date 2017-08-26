@@ -953,6 +953,15 @@ module.exports = {
 							}
 						});
 					}
+					if (!L.isEmpty(karadata.tags)) {
+						var tags = karadata.tags.split(',');
+						tags.forEach(function(misctag) {
+							var tag = misctag.trimLeft();
+							if (taglist.indexOf(tag + ',6') == -1) {
+								taglist.push(tag + ',6');
+							}
+						});
+					}
 					if (!L.isEmpty(karadata.creator)) {
 						var creators = karadata.creator.split(',');
 						creators.forEach(function(creator) {
