@@ -99,13 +99,15 @@ var playlistToAdd;
             actions on karas in the playlists
         */
         $('.playlist-main').on('click', '.btnDiv > button', function (e) {
+            var li = $(this).closest('li');
             var num = $(this).closest('ul.list-group').attr('num');
             var idPlaylistFrom = $('#selectPlaylist' + num).val();
             var idPlaylistTo = $('#selectPlaylist' + non(num)).val();
-            var idKara = $(this).closest('li').attr('idkara');
-            var idKaraPlaylist = $(this).closest('li').attr('idplaylistcontent');
+            var idKara = li.attr('idkara');
+            var idKaraPlaylist = li.attr('idplaylistcontent');
             var action = $(this).attr('name');
             console.log(action, num, idPlaylistFrom, idPlaylistTo, idKara);
+
             var url, data, type
             if (action === "addKara" || action === "transferKara") {
                 url = "", data = {}, type = "";
@@ -115,6 +117,7 @@ var playlistToAdd;
                     url = scope + (scope === "public" ? '/karas/' + idKara : '/playlists/' + idPlaylistTo + '/karas');
                     data = { requestedby: pseudo, kara_id: idKara }; // pos : 
                 } else if (idPlaylistTo == -1) {
+                    displayMessage('warning', 'Error',"can't add kara to the kara list from database");
                     console.log("ERR: can't add kara to the kara list from database");
                 } else if (idPlaylistTo == -2) {
                     url = scope + '/blacklist/criterias'
@@ -132,10 +135,12 @@ var playlistToAdd;
                         data: data
                     }).done(function (data) {
                         fillPlaylist(non(num), idKara);
+                        displayMessage('success', 'Success', "Kara added to playlist <i>" +$("#selectPlaylist" + non(num) + " > option[value='" + idPlaylistTo + "']").text() + "</i>.");
                         console.log("Kara " + idKara + " ajouté à la playlist (" + idPlaylistTo + ") "
                             + $("#selectPlaylist" + non(num) + " > option[value='" + idPlaylistTo + "']").text() + ".");
                     }).fail(function (data) {
                         scrollToKara(non(num), idKara);
+                        displayMessage('warning', 'Error', data.responseText);
                         console.log("ERR : ", data.responseText);
                     });
                 }
@@ -668,19 +673,23 @@ var playlistToAdd;
 
         return $option;
     }
-
-    /* opposite number of playlist : 1 or 2 */
-    non = function (num) {
-        return 3 - parseInt(num);
+    displayMessage = function(type, title, message) {
+        var messageDiv = $('#message');
+        messageDiv.attr('class','alert alert-' + type);
+        messageDiv.html('<strong>' + title + '</strong> : ' + message);
+        messageDiv.fadeIn(600).delay(1800).fadeOut(600);
     }
-
-
     $(window).resize(function () {
         //  initSwitchs();$
         var topHeight = $('.panel-heading.container-fluid').height();
         $('#playlist1').parent().css('height', 'calc(100% - ' + (scope === "public" ? 0 : topHeight) + 'px  ');
         $('#playlist2').parent().css('height', 'calc(100% - ' + topHeight + 'px  ');
     });
+
+    /* opposite number of playlist : 1 or 2 */
+    non = function (num) {
+        return 3 - parseInt(num);
+    }
 
 }));
 

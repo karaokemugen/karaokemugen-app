@@ -365,6 +365,15 @@ select.form-control {
 	line-height: 2.3;
 }
 
+#message {
+	display: none;
+    width: 400px;
+    top: 3px;
+    left: calc(50% - 200px);
+    position: fixed;
+    z-index: 9998;
+    box-shadow: 4px 4px 3px #a5a5a5;
+}
 .contentDiv h {
 	background-color : #82bdad;
 	color: black;
