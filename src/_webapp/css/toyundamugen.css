@@ -275,6 +275,7 @@ select.form-control {
 
 .playlistContainer {
 	overflow: auto;
+	 -webkit-overflow-scrolling: touch;
 }
 .playlistLoading {
 	position: absolute;
