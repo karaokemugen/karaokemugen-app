@@ -218,9 +218,11 @@ var playlistToAdd;
             var idKara = liKara.attr('idkara');
             var detailsKara = liKara.find('.detailsKara');
 
-            $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
+            $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) { console.log(data);
                 liKara.append("<div class='lyricsKara alert alert-info'>" + closeButton + data.join('<br/>') + closeButton + "</div>");
                 scrollToElement(playlist, detailsKara);
+            }).fail(function(data){
+                displayMessage('warning','Error','could not find lyrics for this song.');
             });
         });
 
@@ -658,7 +660,12 @@ var playlistToAdd;
         if (!playlist.id) { return playlist.text; }
         if (!$(playlist.element).attr('flag_current') == "1" && !$(playlist.element).attr('flag_public') == "1") { return playlist.text; }
     
-        var icon = $(playlist.element).attr('flag_current') == "1" ? '<i class="glyphicon glyphicon-facetime-video"></i>': '<i class="glyphicon glyphicon-indent-left"></i>';
+        var icon = "";
+        if ($(playlist.element).attr('flag_current') == "1") {
+            icon =  '<i class="glyphicon glyphicon-facetime-video"></i>'
+        } else if ($(playlist.element).attr('flag_public') == "1") {
+            icon = '<i class="glyphicon glyphicon-indent-left"></i>';
+        }
         var $option = $('<span>' + icon + ' ' + playlist.text + '</span>');
 
         return $option;
@@ -677,7 +684,7 @@ var playlistToAdd;
         var messageDiv = $('#message');
         messageDiv.attr('class','alert alert-' + type);
         messageDiv.html('<strong>' + title + '</strong> : ' + message);
-        messageDiv.fadeIn(600).delay(1800).fadeOut(600);
+        messageDiv.fadeIn(600).delay(2200).fadeOut(600);
     }
     $(window).resize(function () {
         //  initSwitchs();$
