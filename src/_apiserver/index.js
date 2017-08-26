@@ -312,7 +312,8 @@ module.exports = {
 				} else {
 					var from = req.query.from;
 				}
-				module.exports.onPlaylistSingleContents(playlist_id,filter,lang,from,to)
+				var seenFromUser = false;
+				module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,to)
 					.then(function(playlist){
 						if (playlist == []) res.statusCode = 404;
 						res.json(playlist);
