@@ -365,19 +365,10 @@ select.form-control {
 	line-height: 2.3;
 }
 
-/* theme negatif boutons */
-/*
-.btn-default {
-	border-color: #aaa;
-	background-color: #9e9e9e;
-	color: white;
+.contentDiv h {
+	background-color : #82bdad
+	color: black;
 }
-
-.btn-default:hover {
-	background-color: #ccc;
-	color: #333;
-}
-*/
 
 button.closePopupParent {
 	z-index: 9998;

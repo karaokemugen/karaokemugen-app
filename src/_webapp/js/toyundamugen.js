@@ -191,16 +191,18 @@ var playlistToAdd;
                     liKara.append(detailsHtml);
                     detailsHtml.fadeIn(animTime);
                     liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
-                    if(saveLastDetailsKara[idPlaylist].indexOf(idKara) == -1) { saveLastDetailsKara[idPlaylist].push(idKara); }
+                    if(saveLastDetailsKara[idPlaylist + 1000].indexOf(idKara) == -1) {
+                        saveLastDetailsKara[idPlaylist + 1000].push(idKara); }
                 });
             } else if (infoKara.is(':visible')) {
-                if(saveLastDetailsKara[idPlaylist].indexOf(idKara) > -1) saveLastDetailsKara[idPlaylist].pop(idKara);
-                infoKara.hide(animTime);
+                if(saveLastDetailsKara[idPlaylist + 1000].indexOf(idKara) > -1) {
+                    saveLastDetailsKara[idPlaylist + 1000].pop(idKara); }
+                infoKara.fadeOut(animTime);
                 liKara.find('[name="infoKara"]').css('border-color', '');
             } else {
-                if(saveLastDetailsKara[idPlaylist].indexOf(idKara) == -1) saveLastDetailsKara[idPlaylist].push(idKara);
-                saveLastDetailsKara = idKara;
-                infoKara.show(animTime);
+                if(saveLastDetailsKara[idPlaylist + 1000].indexOf(idKara) == -1) {
+                    saveLastDetailsKara[idPlaylist + 1000].push(idKara);}
+                infoKara.fadeIn(animTime);
                 liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
             }
         });
@@ -312,6 +314,7 @@ var playlistToAdd;
         
         var idPlaylist = $("#selectPlaylist" + num).val();
         var filter = $("#searchPlaylist" + num).val();
+        var fromTo = "";
         var url, html, canTransferKara, canAddKara, dragHandle, playKara;
         if (idPlaylist > 0) {
             url = scope + '/playlists/' + idPlaylist + '/karas';
@@ -325,7 +328,7 @@ var playlistToAdd;
             canAddKara = false;
             from = from ? from : 0;
             to = to ? to : karaParPage;
-            filter += "&from=" + from + "&to=" + to;
+            fromTo += "&from=" + from + "&to=" + to;
         } else if (idPlaylist == -2) {
             url = scope + '/blacklist';
             html = scope === "admin" ? '' : '';
@@ -342,29 +345,28 @@ var playlistToAdd;
         playKara = scope === "admin" && idPlaylist > 0 ? playKaraHtml : "";
 
         dragHandle = isTouchScreen && idPlaylist == -1 && num == 1 ? dragHandleHtml : "";
-        urlFiltre = url + "?filter=" + filter;
+        urlFiltre = url + "?filter=" + filter + fromTo;
 
         //console.time('ajax');
         if (ajaxSearch[url]) { ajaxSearch[url].abort(); }
         ajaxSearch[url] = $.ajax({ url: urlFiltre }).done(function (data) {
-            var time = console.timeEnd('ajax');
+            //var time = console.timeEnd('ajax');
             //console.time('html');
             //console.log(urlFiltre + " : " + data.length + " résultats");
-            if(saveLastDetailsKara[idPlaylist] == undefined) { saveLastDetailsKara[idPlaylist] = []; }
+            if(saveLastDetailsKara[idPlaylist + 1000] == undefined) { saveLastDetailsKara[idPlaylist + 1000] = []; }
             var htmlContent = "";
             if (mode === "list") {
                 for (var key in data) {
                     if (data.hasOwnProperty(key)) {
-                        
                         if (data[key].language === null) data[key].language = "";
                         htmlContent += "<li idKara='" + data[key].kara_id + "' idplaylistcontent='" + data[key].playlistcontent_id + " 'class='list-group-item' "
                             + (data[key].flag_playing ? "currentlyPlaying" : "" ) + ">"
                             + "<div class='btnDiv'>" + html + dragHandle + "</div>"
                             + "</div><div class='infoDiv'>" + infoKaraHtml + playKara + "</div>"
-                            + "<div class='contentDiv''>" + [data[key].language.toUpperCase(), data[key].serie, data[key].songtype_i18n_short, data[key].title].join(" - ")
+                            + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
                             + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                             + "</div>"
-                            + (saveLastDetailsKara[idPlaylist].indexOf(data[key].kara_id) > -1 ? buildDetailsKara(data[key]) : "")
+                            + (saveLastDetailsKara[idPlaylist + 1000].indexOf(data[key].kara_id) > -1 ? buildDetailsKara(data[key]) : "")
                             + "</li>";
                       
                     }
@@ -562,7 +564,7 @@ var playlistToAdd;
                     $.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
                         $('#karaInfo').attr('idKara', dataKara[0].kara_id);
                         $('#karaInfo').attr('length', dataKara[0].duration);
-                        $('#karaInfo > span').text( [dataKara[0].language.toUpperCase(), dataKara[0].serie, dataKara[0].songtype_i18n_short, dataKara[0].title].join(" - ")  );
+                        $('#karaInfo > span').text( buildKaraTitle(dataKara[0]) );
                     });
                     var panel = $('[type="playlist_select"] > option:selected[flag_current="1"]').closest('.panel');
                     panel.find('.list-group-item[currentlyPlaying]').removeAttr('currentlyPlaying');
@@ -608,7 +610,20 @@ var playlistToAdd;
         });
     }
 
+    buildKaraTitle = function(data, search) {
+        var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer,
+            data.songtype_i18n_short + (data.songorder > 1 ? " " + data.songorder : ""), data.title], Boolean);
+        var titleClean = Object.keys(titleArray).map(function (k) {
+                return titleArray[k] ? titleArray[k] : "";
+            });
+        var titleText = titleClean.join(" - ");
 
+        if(search) {
+            var search_regexp = new RegExp("(" + search + ")", "gi");
+            titleText = titleText.replace(search_regexp,"<h>$1</h>");
+        }
+           return titleText;
+    }
     buildDetailsKara = function(data) {
         console.log(data);
         var details = {
@@ -662,7 +677,7 @@ var playlistToAdd;
 
     $(window).resize(function () {
         //  initSwitchs();$
-        var topHeight = $('.panel-heading.container-fluid').outerHeight();
+        var topHeight = $('.panel-heading.container-fluid').height();
         $('#playlist1').parent().css('height', 'calc(100% - ' + (scope === "public" ? 0 : topHeight) + 'px  ');
         $('#playlist2').parent().css('height', 'calc(100% - ' + topHeight + 'px  ');
     });
