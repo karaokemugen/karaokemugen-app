@@ -636,11 +636,12 @@ var playlistToAdd;
     }
     buildDetailsKara = function(data) {
         console.log(data);
+
         var details = {
                 "Author": data['author']
                 , "Viewcount": data['viewcount']
                 , "Creator": data['creator']
-                , "Duration": data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ":" + data['duration'] % 60
+                , "Duration": data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ":" + (data['duration'] % 60 < 10 ? "0" : "") + data['duration'] % 60
                 , "Language": data['language_i18n']
                 , "Misc": data['misc_i18n']
                 , "Series": data['series']
