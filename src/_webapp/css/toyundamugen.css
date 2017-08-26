@@ -273,8 +273,17 @@ select.form-control {
 	padding: 7px;
 }
 
-#playlist1, #playlist2 {
+.playlistContainer {
 	overflow: auto;
+}
+.playlistLoading {
+	position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    background-color: #3a5774;
+	font-weight: 500;
+	font-size: 16px;
 }
 
 #playlist1.list-group > li.list-group-item  > div:first-child, #playlist1.list-group > li.list-group-item  > div:first-child > span, 
@@ -295,10 +304,10 @@ select.form-control {
 	float: right;
 }
 
-.highlight-active ul {
+.highlight-active.playlistContainer {
 	outline: 3px solid #235a42;
 }
-.highlight-hover ul {
+.highlight-hover.playlistContainer {
 	__background-color:  #233a35;
 	outline: 5px solid #235a42;
 }

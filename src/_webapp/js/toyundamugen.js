@@ -18,6 +18,8 @@ var closeButton;
 var closePopupButton;
 var showFullTextButton;
 var dragHandleHtml;
+var dragAndDrop;
+var karaParPage;
 
 (function (yourcode) {
     // The global jQuery object is passed as a parameter
@@ -215,6 +217,16 @@ var dragHandleHtml;
             //alert($(this).is(':checked'));
             $(this).val($(this).is(':checked') ? 1 : 0);
         });
+
+        $('.playlistContainer').scroll(function() {
+            var container = $(this);
+            if(container.scrollTop() + container.innerHeight() >= container[0].scrollHeight) {
+                container.find(".playlistLoading").fadeIn(400);
+                console.log("Ajout de " + karaParPage + " karas aux " + container.find('li').length + " existants.");
+                fillPlaylist(container.find('ul').attr('num'), null, 0, container.find('li').length + karaParPage);
+            }
+        });
+
         popup = function(element, easing, callback) {
             el = $(element);
             el.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, function(){
@@ -227,6 +239,7 @@ var dragHandleHtml;
                 el.prepend(closePopupButton);
             });
         }
+
         $('body').on('click', '.closePopupParent', function (e) {
             var el = $(this);
             el.closest('.popup').fadeOut(animTime);
@@ -241,11 +254,15 @@ var dragHandleHtml;
         }
         $(window).trigger('resize');
     });
+
+
     animTime = $(window).width() < 1000 ? 0 : 400;
     
+    dragAndDrop = true;
     mode = "list";
     refreshTime = 1850;
     stopUpdate = false;
+    karaParPage = 100;
     oldState = {};
     oldSearchVal = "";
     ajaxSearch = {}, timer;
@@ -270,9 +287,12 @@ var dragHandleHtml;
      * Fill playlist on screen with karas
      * @param {1, 2} num - which playlist on the screen
      * @param {Int} idKara - kara to highlight & scroll to at the end of the work
+     * @param {Int} from - returned results start from offset
+     * @param {Int} to - returned results have a max size of limit
      */
 
-    fillPlaylist = function (num, idKara) {
+    fillPlaylist = function (num, idKara, from, to) {
+        
         var idPlaylist = $("#selectPlaylist" + num).val();
         var filter = $("#searchPlaylist" + num).val();
         var url, html, canTransferKara, canAddKara, dragHandle;
@@ -286,6 +306,9 @@ var dragHandleHtml;
             html = addKaraHtml;
             canTransferKara = false;
             canAddKara = false;
+            from = from ? from : 0;
+            to = to ? to : karaParPage;
+            filter += "&from=" + from + "&to=" + to;
         } else if (idPlaylist == -2) {
             url = scope + '/blacklist';
             html = scope === "admin" ? '' : '';
@@ -303,12 +326,13 @@ var dragHandleHtml;
         dragHandle = isTouchScreen && idPlaylist == -1 && num == 1 ? dragHandleHtml : "";
         
         urlFiltre = url + "?filter=" + filter;
-        console.log(url);
+
         console.time('ajax');
         if (ajaxSearch[url]) { ajaxSearch[url].abort(); }
         ajaxSearch[url] = $.ajax({ url: urlFiltre }).done(function (data) {
             var time = console.timeEnd('ajax');
             console.time('html');
+            console.log(urlFiltre + " : " + data.length + " résultats");
 
             var htmlContent = "";
             if (mode === "list") {
@@ -317,27 +341,26 @@ var dragHandleHtml;
                         if (data[key].language === null) data[key].language = "";
                         htmlContent += "<li idKara='" + data[key].kara_id + "' idplaylistcontent='" + data[key].playlistcontent_id + " 'class='list-group-item' "
                             + (data[key].flag_playing ? "currentlyPlaying" : "" ) + ">"
-                            + "<div class='btnDiv'>" + html + dragHandle + "</div>" + "</div><div class='infoDiv'>" + infoKaraHtml + "</div><div class='contentDiv''>"
-                            + [data[key].serie, data[key].songtype_i18n_short, data[key].title].join(" - ") + "</span>"
+                            + "<div class='btnDiv'>" + html + dragHandle + "</div>" + "</div><div class='infoDiv'>" + infoKaraHtml + "</div>"
+                            + "<div class='contentDiv''>" + [data[key].serie, data[key].songtype_i18n_short, data[key].title].join(" - ")
                             + (isTouchScreen ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
-                            + "</div><div class='detailsKara alert alert-info' style='display: none;'></div>"
+                            + "</div>"
+                            + "<div class='detailsKara alert alert-info' style='display: none;'></div>"
                             + "</li>";
-
                     }
                 }
             }
-      
-            $('#playlist' + non(num)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
-
-            var time = console.timeEnd('html');
             
-
+            $('#playlist' + non(num)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
+            
             document.getElementById("playlist" + num).innerHTML = htmlContent;
-        
-            if (idKara !== undefined) { scrollToKara(num, idKara); }
+            var time = console.timeEnd('html'); console.log(data.length);
+            
+            $('#playlist' + num).parent().find('.playlistLoading').fadeOut(400);
+            if (idKara) { scrollToKara(num, idKara); }
 
             // drag & drop part
-            if (scope === "public") {
+            if (dragAndDrop && scope === "public") {
                 var draggableLi =  isTouchScreen ? $("#playlist" + 1 + " > li .dragHandle") : $("#playlist" + 1 + " > li");
                 var dropZone = $('#playlist' + non(1)).parent();
                 if(draggableLi.draggable('instance') != undefined) {
@@ -361,14 +384,14 @@ var dragHandleHtml;
                         distance: 0
                     });
                     dropZone.droppable({
-                        accept : '.list-group-item',
+                        accept : '.list-group-item,.dragHandle',
                          classes: {
                             "ui-droppable-hover": "highlight-hover",
                             "ui-droppable-active": "highlight-active"
                             },
-                        drop : function(e, ui){console.log( $(ui.draggable)); $(ui.draggable).find('.btnDiv > [name=addKara]').click(); }
-                    }).bind('dropout', function () {
-                        console.log('dropout');
+                        drop : function(e, ui){ $(ui.draggable).find('.btnDiv > [name=addKara]').click(); }
+                    }).bind('touch', function () {
+                        alert('drop it again!');
                     });
                 }
             }
@@ -386,10 +409,10 @@ var dragHandleHtml;
     scrollToElement = function (parent, element, highlight) {
         var willParentSroll = parent[0].scrollTop != parent[0].clientTop || (parent[0].clientHeight != parent[0].scrollHeight
                                 && parent.scrollTop() + element.offset().top - parent.offset().top != 0)
-        console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
+       //console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
         parent.animate({
             scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
-        }, willParentSroll ? animTime * 1.4 : 0 , function(){
+        }, willParentSroll ? 400 : 0 , function(){
             if(highlight) {
                 element.effect( "highlight", {color: '#234a35'}, 1000 );
                 element.focus();
@@ -546,7 +569,8 @@ var dragHandleHtml;
             "handleWidth": "65",
             "data-inverse": "false"
         });
-    };
+    }
+
 
     formatPlaylist = function (playlist) {
         if (!playlist.id) { return playlist.text; }
@@ -577,8 +601,8 @@ var dragHandleHtml;
     $(window).resize(function () {
         //  initSwitchs();$
         var topHeight = $('.panel-heading.container-fluid').outerHeight();
-        $('#playlist1').css('height', 'calc(100% - ' + (scope === "public" ? 0 : topHeight) + 'px  ');
-        $('#playlist2').css('height', 'calc(100% - ' + topHeight + 'px  ');
+        $('#playlist1').parent().css('height', 'calc(100% - ' + (scope === "public" ? 0 : topHeight) + 'px  ');
+        $('#playlist2').parent().css('height', 'calc(100% - ' + topHeight + 'px  ');
     });
 
 }));

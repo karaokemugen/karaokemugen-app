@@ -226,30 +226,7 @@
         }
     }
     
-    // TODO change everything, global PUT followed by playlist refresh showing right client infos
-    transfer = function (e) {
-        var num = $(e).attr('num');
-        var newNum = 3 - num;
-        var idPlaylistFrom = $("#selectPlaylist2"+ num).val();
-        var idPlaylistTo = $("#selectPlaylist2" + newNum).val();
-
-        if (idPlaylistFrom == -1) {
-            $.ajax({
-                type: 'POST',
-                url: 'admin/playlists/' + idPlaylistTo + '/karas',
-                data: {
-                    requestedby: 'admin',
-                    kara_id: $(e).parent().attr('idKara')
-                }
-            }).done(function (data) {
-                $(e).parent().clone().appendTo('#playlist' + newNum);
-            });
-        } else {
-            $(e).attr('num', newNum);
-            $(e).parent().detach().appendTo('#playlist' + newNum);
-        }
-    };
-
+  
     /* progression bar handlers part */
 
     goToPosition = function (e) {
