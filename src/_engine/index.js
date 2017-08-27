@@ -751,8 +751,25 @@ module.exports = {
 					module.exports.setPrivateOff();
 				}
 
-				// Other settings for now have to be toggled through API calls							
-				
+				// Other settings for now have to be toggled through API calls						
+
+				// Sending settins through WS. We only send public settings
+				var publicSettings = {}
+				for (var key in module.exports.SETTINGS) {
+					if (module.exports.SETTINGS.hasOwnProperty(key)) {
+
+						if (!key.startsWith('Path') &&
+							!key.startsWith('Admin') &&
+							!key.startsWith('Bin') &&
+							!key.startsWith('os')
+						) {
+							publicSettings[key] = module.exports.SETTINGS[key];
+						}
+					}
+				}
+
+				module.exports._services.ws.socket.emit('settingsUpdated',publicSettings);
+
 
 				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err, rep) {
 					if (err) {
