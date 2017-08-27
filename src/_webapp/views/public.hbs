@@ -46,9 +46,11 @@
                     </select>
                 </div>
             </div>
-            <ul id="playlist1" num="1" class="list-group">
-            </ul>
-           
+            <div class="playlistContainer">
+                <ul id="playlist1" num="1" class="list-group">
+                </ul>
+                <div class="playlistLoading"> Loading... </div>
+           </div>
         </div>
          
         <div class="panel col-lg-4 col-md-5 col-sm-5 col-xs-12">
@@ -81,12 +83,17 @@
                     </div>
                 </div>
             </div>
-            <ul id="playlist2" num="2" class="list-group">
-                <li class="list-group-item"></li>
-            </ul>
-
+            
+            <div class="playlistContainer">
+                <ul id="playlist2" num="2" class="list-group">
+                    <li class="list-group-item"></li>
+                </ul>
+                <div class="playlistLoading"> Loading... </div>
+            </div>
         </div>
     </div>
+</div>
+<div id="message" class="alert">
 </div>
  <div class="popup" id="settingsPublic" hidden>
     <div class="panel col-lg-12 col-xs-12">

@@ -1139,6 +1139,30 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get kara info from a playlist}
+	* @param  {number} plc_id {ID of playlist content to get info from}
+	* @return {array} {Array of karaoke objects}
+	*/
+	getKaraFromPlaylist:function(plc_id,seenFromUser) {
+		return new Promise(function(resolve,reject) {
+			module.exports.DB_INTERFACE.getPLContentInfo(plc_id)
+				.then(function(kara) {
+					if (kara) {
+						kara = [kara];
+						resolve(kara);
+					} else {
+						var err = 'PLCID unknown!';
+						logger.error('[PLC] getKaraFromPlaylist : '+err)
+						reject(err);
+					}						
+				})
+				.catch(function(err) {
+					logger.error('[PLC] GetKaraFromPlaylist : '+err)
+					reject(err);
+				});
+		});
+	},
+	/**
 	* @function {Get whitelist contents}
 	* @return {array} {Array of karaoke objects}
 	*/

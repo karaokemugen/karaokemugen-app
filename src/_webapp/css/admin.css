@@ -32,21 +32,19 @@
 }
 #playlist2 .list-group-item > .btnDiv > button[name="transferKara"]  {
 	float: left; 
-    margin-top: 1px;
 }
 #playlist1 .list-group-item > .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-left {
 	display: none; 
 }
 #playlist1 .list-group-item > .btnDiv > button[name="transferKara"]  {
 	float: right; 
-    margin-top: 1px;
 }
 
-.panel ul[canTransferKara="false"] button[name="transferKara"] {
+.playlistContainer > ul[cantransferkara="false"] .list-group-item > .btnDiv > button[name="transferKara"] {
 	display: none;
 }
 
-.panel ul[canAddKara="false"] button[name="addKara"] {
+.playlistContainer > ul[canaddkara="false"] .list-group-item > .btnDiv > button[name="addKara"] {
 	display: none;
 }
 

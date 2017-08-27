@@ -55,5 +55,9 @@
 	"PUBLIC_PLAYLIST": "Liste de lecture publique",
 	"UNDEFINED_LANGUAGE": "Langue indéfinie",
 	"UNKNOWN_LANGUAGE": "Langue inconnue",
-	"GO_TO": "Allez sur"
+	"GO_TO": "Allez sur",
+	"TAG_VOICELESS": "Sans paroles",
+	"Concert": "Concert",
+	"TAG_ROMANCE": "Romance",
+	"TAG_AMV": "AMV"	
 }

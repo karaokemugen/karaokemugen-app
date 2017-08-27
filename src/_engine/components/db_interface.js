@@ -531,7 +531,7 @@ module.exports = {
 					});
 			});
 		});
-	},
+	},	
 	/**
 	* @function {Get all playlist contents no matter the playlist}
 	* @return {Object} {Playlist object}
@@ -616,12 +616,15 @@ module.exports = {
 	* @function {Get karaoke info from a playlistcontent_id}
 	* @return {object} {Karaoke object}
 	*/
-	getPLContentInfo:function(playlistcontent_id){
+	getPLContentInfo:function(playlistcontent_id,seenFromUser){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
 			var sqlGetPLContentInfo = fs.readFileSync(path.join(__dirname,'../../_common/db/select_plcontent_info.sql'),'utf-8');
+			if (seenFromUser) {
+				sqlGetPLContentInfo += " AND p.flag_visible = 1";
+			}
 			module.exports._user_db_handler.get(sqlGetPLContentInfo,
 				{
 					$playlistcontent_id: playlistcontent_id

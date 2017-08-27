@@ -200,11 +200,16 @@ select.form-control {
 	padding: 3px;
 }
 
-#playlist2 .list-group-item > .infoDiv > button, #playlist2 .list-group-item .dragHandle {
+.playlistContainer > ul[num="2"] .list-group-item > .infoDiv > button, .playlistContainer > ul[num="1"] .list-group-item > .btnDiv > button, .playlistContainer > ul[num="2"] .list-group-item .dragHandle {
 	float: right;
+	display: block;
+	margin: 1px;
 }
-#playlist1 .list-group-item > .btnDiv > button, #playlist2 .list-group-item .dragHandle  {
+
+.playlistContainer > ul[num="1"].list-group-item > .infoDiv > button, .playlistContainer > ul[num="2"] .list-group-item > .btnDiv > button, .playlistContainer > ul[num="2"] .list-group-item .dragHandle  {
 	float: left;
+	display: block;
+	margin: 1px;
 }
 .list-group-item > .btnDiv > button {
 	z-index: 52;
@@ -227,7 +232,7 @@ select.form-control {
 
 
 .btn-action {
-    border: 2px solid #9e9e9e;
+    border: 1px solid #9e9e9e;
 	background-color: #393939;
 	color: white;
 	width: calc(35px + 19px - 1vw);
@@ -239,9 +244,18 @@ select.form-control {
 	background-color: #292929;
 	color: white;
 }
+
 .btn-action:active:focus{
 	background-color: #444;
 	color: white;
+}
+
+.playKara {
+	__border-color: transparent;
+}
+
+.playKara:hover {
+	background-color: #286090;
 }
 
 .list-group-item .detailsKara, .list-group-item .lyricsKara {
@@ -273,8 +287,18 @@ select.form-control {
 	padding: 7px;
 }
 
-#playlist1, #playlist2 {
+.playlistContainer {
 	overflow: auto;
+	 -webkit-overflow-scrolling: touch;
+}
+.playlistLoading {
+	position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    background-color: #3a5774;
+	font-weight: 500;
+	font-size: 16px;
 }
 
 #playlist1.list-group > li.list-group-item  > div:first-child, #playlist1.list-group > li.list-group-item  > div:first-child > span, 
@@ -295,10 +319,10 @@ select.form-control {
 	float: right;
 }
 
-.highlight-active ul {
+.highlight-active.playlistContainer {
 	outline: 3px solid #235a42;
 }
-.highlight-hover ul {
+.highlight-hover.playlistContainer {
 	__background-color:  #233a35;
 	outline: 5px solid #235a42;
 }
@@ -341,19 +365,19 @@ select.form-control {
 	line-height: 2.3;
 }
 
-/* theme negatif boutons */
-/*
-.btn-default {
-	border-color: #aaa;
-	background-color: #9e9e9e;
-	color: white;
+#message {
+	display: none;
+    width: 400px;
+    top: 3px;
+    left: calc(50% - 200px);
+    position: fixed;
+    z-index: 9998;
+    box-shadow: 4px 4px 3px #a5a5a5;
 }
-
-.btn-default:hover {
-	background-color: #ccc;
-	color: #333;
+.contentDiv h {
+	background-color : #82bdad;
+	color: black;
 }
-*/
 
 button.closePopupParent {
 	z-index: 9998;

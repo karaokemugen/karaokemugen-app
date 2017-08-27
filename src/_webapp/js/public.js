@@ -35,25 +35,17 @@ $(document).ready(function () {
 
   getPublicSettings(true);
 
-  $.ajax({ url: 'public/player' }).done(function (data) {
-      playlistToAdd = data['private'] == 1 ? "current" : "public";
-      $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
-          playlistAjoutId = data.playlist_id;
-          $("#selectPlaylist2").val(playlistAjoutId).change();
-      });
-  });
-
   $('#showSettings').click(function(){
     popup('#settingsPublic');
   });
 
   $('input[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event) {
     if ($(this).val() == 0) {
-      $('#playlist1').parent().show();
-      $('#playlist2').parent().css('width', '');
+      $('#playlist1').closest('.panel').show();
+      $('#playlist2').closest('.panel').css('width', '');
     } else {
-      $('#playlist1').parent().hide();
-      $('#playlist2').parent().css('width', '100%');
+      $('#playlist1').closest('.panel').hide();
+      $('#playlist2').closest('.panel').css('width', '100%');
     }
 
   });
@@ -65,7 +57,6 @@ var date = new Date();
 date.setFullYear(date.getFullYear() + 10);
 var scope = 'public';
 var settingsPublic = {}
-var playlistToAdd;
 pseudo ="Anonymous";
 refreshTime = 2000;
 panel1Default = -1;

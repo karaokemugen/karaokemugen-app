@@ -36,7 +36,7 @@ SELECT ak.kara_id AS kara_id,
 	      THEN 1
         ELSE 0
       END) AS flag_blacklisted
- FROM karasdb.all_karas AS ak 
+FROM karasdb.all_karas AS ak 
 INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara

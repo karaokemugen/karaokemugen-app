@@ -434,7 +434,7 @@ module.exports = {
 									resolve(err);
 								});							
 							} else {
-								resolve(karalist);
+								resolve(karalist.slice(from,to));
 							}
 						})
 						.catch(function(err){
@@ -583,6 +583,25 @@ module.exports = {
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC getKara : '+err);	
+						reject(err);
+					});
+			});
+		}
+		module.exports._services.apiserver.onPLCInfo = function(id_plc,lang,seenFromUser){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.getKaraFromPlaylist(id_plc,seenFromUser)
+					.then(function(kara){
+						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
+							.then(function(karalist){
+								resolve(karalist);
+							})
+							.catch(function(err){
+								logger.error('[Engine] PLC translateKaraInfo : '+err);	
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC getKaraFromPlaylist : '+err);	
 						reject(err);
 					});
 			});
@@ -803,7 +822,7 @@ module.exports = {
 											resolve(err);
 										});
 								} else {
-									resolve(karalist);
+									resolve(karalist.slice(from,to));
 								}
 								
 							})
@@ -859,7 +878,7 @@ module.exports = {
 													resolve(err);
 												});
 										} else {
-											resolve(karalist);
+											resolve(karalist.slice(from,to));
 										}
 									})
 									.catch(function(err){
@@ -923,7 +942,7 @@ module.exports = {
 													resolve(err);
 												});
 										} else {
-											resolve(karalist);
+											resolve(karalist.slice(from,to));
 										}
 									})
 									.catch(function(err){

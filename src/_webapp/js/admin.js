@@ -108,6 +108,24 @@
         }
     });
 
+
+   $('.select2').on('select2:select', function(e){
+        var select = $(this);
+        if(select.find("option[value='" + e.params.data.id + "'][name]").length == 0) {
+            var playlistName = e.params.data.text
+            $.ajax({
+                url: 'admin/playlists',
+                type : 'POST',
+                data : { name : playlistName, flag_visible : 0, flag_current: 0, flag_public: 0 } })
+                .done(function (idNewPlaylist) {
+                    $("#selectPlaylist1").val(idNewPlaylist)
+                    fillPlaylistSelects(true, select.attr('num'), idNewPlaylist);
+
+                });
+        }
+    });
+
+
     /* password case handlers */
 
     $('#confirmPassword, #password').on("input", function () {
@@ -226,30 +244,7 @@
         }
     }
     
-    // TODO change everything, global PUT followed by playlist refresh showing right client infos
-    transfer = function (e) {
-        var num = $(e).attr('num');
-        var newNum = 3 - num;
-        var idPlaylistFrom = $("#selectPlaylist2"+ num).val();
-        var idPlaylistTo = $("#selectPlaylist2" + newNum).val();
-
-        if (idPlaylistFrom == -1) {
-            $.ajax({
-                type: 'POST',
-                url: 'admin/playlists/' + idPlaylistTo + '/karas',
-                data: {
-                    requestedby: 'admin',
-                    kara_id: $(e).parent().attr('idKara')
-                }
-            }).done(function (data) {
-                $(e).parent().clone().appendTo('#playlist' + newNum);
-            });
-        } else {
-            $(e).attr('num', newNum);
-            $(e).parent().detach().appendTo('#playlist' + newNum);
-        }
-    };
-
+  
     /* progression bar handlers part */
 
     goToPosition = function (e) {
@@ -272,9 +267,35 @@
 
 
     $('#flag1, #flag2').on('click', 'button', function(){
-        var val = $(this).val();
-        console.log(val);
+        var btn = $(this);
+        var name = btn.attr('name');
+        var selector = btn.closest('.panel-heading').find('[type="playlist_select"]');
+        var playlistId = selector.val();
+        var namePlaylist = selector.find('option[value="' + playlistId + '"]').attr('name');
+        var data = {}, urlEnd = "";
+
+        if(name === "flag_current" && !btn.hasClass('btn-primary')) {
+           urlEnd = "/setCurrent";
+        } else if (name === "flag_public" && !btn.hasClass('btn-primary')) {
+           urlEnd = "/setPublic";
+        } else if (name === "flag_visible") {
+            urlEnd = "";
+            if(btn.find('i').hasClass('glyphicon-eye-close')) {
+                data = { name : namePlaylist, flag_visible : 1 };
+            } else if(btn.find('i').hasClass('glyphicon-eye-open')) {
+                data = { name : namePlaylist, flag_visible : 0 };
+            }
+        }
+          $.ajax({
+            url: 'admin/playlists/' + playlistId + urlEnd,
+            type: 'PUT',
+            data: data
+        }).done(function (data) {
+            fillPlaylistSelects();
+        });
     });
+    
+ 
 }));
 	
 

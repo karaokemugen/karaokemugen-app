@@ -877,7 +877,7 @@ module.exports = {
 
 			function addSeries(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
-					var karaWOExtension = L.trimEnd(karadata.karafile,'.kara');
+					var karaWOExtension = karadata.karafile.substr(0, karadata.karafile.lastIndexOf('.'));
 					var karaInfos = karaWOExtension.split(' - ');
 					var karaType = karaInfos[2];
 					var serieslist = [];
@@ -913,7 +913,7 @@ module.exports = {
 
 			function addTags(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
-					var karaWOExtension = L.trim(karadata.karafile,'.kara');
+					var karaWOExtension = karadata.karafile.substr(0, karadata.karafile.lastIndexOf('.'));
 					var karaInfos = karaWOExtension.split(' - ');
 					var karaSerie = karaInfos[1];
 					var karaType = karaInfos[2];
@@ -950,6 +950,15 @@ module.exports = {
 							var tag = author.trimLeft();
 							if (taglist.indexOf(tag + ',6') == -1) {
 								taglist.push(tag + ',6');
+							}
+						});
+					}					
+					if (!L.isEmpty(karadata.tags)) {
+						var misctags = karadata.tags.split(',');
+						misctags.forEach(function(misctag) {
+							var tag = misctag.trimLeft();
+							if (taglist.indexOf(tag + ',7') == -1) {
+								taglist.push(tag + ',7');
 							}
 						});
 					}
@@ -1101,8 +1110,8 @@ module.exports = {
 							timestamp.round = true;
 							kara['dateadded'] = timestamp.now();
 							kara['datemodif'] = kara['dateadded'];
-							// Take out .kara from the filename
-							var karaWOExtension = L.trimEnd(karafile,'.kara');
+							// Take out .kara from the filename							
+							var karaWOExtension = karafile.substr(0, karafile.lastIndexOf('.'));
 							// Cut name into different fields.
 							var karaInfos = karaWOExtension.split(' - ');
 							if (karaInfos[3] == undefined) {
