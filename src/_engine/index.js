@@ -29,6 +29,7 @@ module.exports = {
 		admin_port:1338,
 		frontend_port:1337,
 		apiserver_port:1339,
+		ws_port:1340,
 		playlist:null,
 		timeposition:0,
 		currentlyPlayingKara:undefined,
@@ -38,6 +39,7 @@ module.exports = {
 		playlist_controller: null,
 		player:null,
 		apiserver:null,
+		ws:null,
 	},
 	/**
 	 * Base method for starting up the engine.
@@ -64,6 +66,7 @@ module.exports = {
 			module.exports._start_admin();
 			module.exports._start_frontend();
 			module.exports._start_apiserver();
+			module.exports._start_wsserver();
 			module.exports._broadcastStates();
 		}).catch(function(response){
 			logger.error(response);
@@ -405,6 +408,18 @@ module.exports = {
 	},
 	/**
 	* @function
+	* Starts the websocket server on the selected port
+	* Broadcasts syspath and settings to that module.
+	*/
+	_start_wsserver:function(){
+		module.exports._services.ws = require(path.resolve(__dirname,'../_ws/index.js'));
+		module.exports._services.ws.LISTEN = module.exports._states.ws_port;
+		module.exports._services.ws.SYSPATH = module.exports.SYSPATH;
+		module.exports._services.ws.SETTINGS = module.exports.SETTINGS;		
+		module.exports._services.ws.init();
+	},
+	/**
+	* @function
 	* Starts the API webservice on the selected port
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
@@ -524,6 +539,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
 					.then(function(){
+						module.exports._services.ws.socket.emit('blacklistUpdated',{});					
 						resolve();
 					})
 					.catch(function(err){
@@ -536,6 +552,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){				
 				module.exports._services.playlist_controller.deleteBlacklistCriteria(blc_id)
 					.then(function(){
+						module.exports._services.ws.socket.emit('blacklistUpdated',{});					
 						resolve();
 					})
 					.catch(function(err){
@@ -548,6 +565,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editBlacklistCriteria(blc_id,blctype,blcvalue)
 					.then(function(){
+						module.exports._services.ws.socket.emit('blacklistUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -560,6 +578,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.shufflePlaylist(pl_id)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistContentsUpdated',pl_id);
 						resolve();
 					})
 					.catch(function(err){
@@ -622,6 +641,8 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.createPlaylist(playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
 					.then(function (new_playlist){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',new_playlist);
+						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve(new_playlist);
 					})
 					.catch(function(err){						
@@ -646,6 +667,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deletePlaylist(id_playlist)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -657,7 +679,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleKaraDelete = function(playlistcontent_id){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromPlaylist(playlistcontent_id)
-					.then(function(){
+					.then(function(playlist_id){
+						module.exports._services.ws.socket.emit('playlistContentsUpdated',playlist_id);
 						resolve();
 					})
 					.catch(function(err){
@@ -670,6 +693,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromWhitelist(wl_id)
 					.then(function(){
+						module.exports._services.ws.socket.emit('whitelistUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -682,6 +706,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editWhitelistKara(wl_id,reason)
 					.then(function(){
+						module.exports._services.ws.socket.emit('whitelistUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -693,7 +718,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
-					.then(function(){
+					.then(function(playlist_id){
+						module.exports._services.ws.socket.emit('playlistContentsUpdated',playlist_id);
 						resolve();
 					})
 					.catch(function(err){
@@ -736,7 +762,25 @@ module.exports = {
 					module.exports.setPrivateOff();
 				}
 
-				// Other settings for now have to be toggled through API calls												
+				// Other settings for now have to be toggled through API calls						
+
+				// Sending settins through WS. We only send public settings
+				var publicSettings = {}
+				for (var key in module.exports.SETTINGS) {
+					if (module.exports.SETTINGS.hasOwnProperty(key)) {
+
+						if (!key.startsWith('Path') &&
+							!key.startsWith('Admin') &&
+							!key.startsWith('Bin') &&
+							!key.startsWith('os')
+						) {
+							publicSettings[key] = module.exports.SETTINGS[key];
+						}
+					}
+				}
+
+				module.exports._services.ws.socket.emit('settingsUpdated',publicSettings);
+
 
 				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err, rep) {
 					if (err) {
@@ -752,6 +796,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
 						resolve();
 					})
 					.catch(function(err){
@@ -764,6 +809,8 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
+						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -776,6 +823,8 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.setPublicPlaylist(id_playlist)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
+						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -797,6 +846,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.emptyPlaylist(id_playlist)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);								
 						resolve();
 					})
 					.catch(function(err){
@@ -805,8 +855,7 @@ module.exports = {
 					});
 			});
 		}
-		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,to){
-			logger.debug('[Engine] onPlaylistSingleContents Args : '+JSON.stringify(arguments));
+		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,to){			
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)
 					.then(function(playlist){
@@ -970,7 +1019,8 @@ module.exports = {
 				if (module.exports._states.private) {
 					//If Kara mode is private, then add to current playlist
 					module.exports._services.playlist_controller.addKaraToCurrentPlaylist(id_kara,requester)
-						.then(function(){
+						.then(function(id_playlist){
+							module.exports._services.ws.socket.emit('playlistContentsUpdated',id_playlist);						
 							resolve();
 						})
 						.catch(function(err){
@@ -980,7 +1030,8 @@ module.exports = {
 				} else {
 					//If Kara mode is public, then add to public playlist
 					module.exports._services.playlist_controller.addKaraToPublicPlaylist(id_kara,requester)
-						.then(function(){
+						.then(function(id_playlist){
+							module.exports._services.ws.socket.emit('playlistContentsUpdated',id_playlist);						
 							resolve();
 						})
 						.catch(function(err){
@@ -994,6 +1045,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistContentsUpdated',playlist_id);						
 						resolve();
 					})
 					.catch(function(err){
@@ -1006,6 +1058,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
 					.then(function(){
+						module.exports._services.ws.socket.emit('whitelistUpdated',{});						
 						resolve();
 					})
 					.catch(function(err){
@@ -1185,6 +1238,21 @@ module.exports = {
 		module.exports._services.player.pippositionx = module.exports.SETTINGS.PlayerPIPPositionX;
 		module.exports._services.player.pippositiony = module.exports.SETTINGS.PlayerPIPPositionY;
 		module.exports._services.player.pipsize = module.exports.SETTINGS.PlayerPIPSize;
+		module.exports._services.player.onStatusChange = function(){				
+			var status = {
+				private: module.exports._states.private,
+				status: module.exports._states.status,
+				onTop: module.exports._states.ontop,
+				fullscreen: module.exports._states.fullscreen,
+				timePosition: module.exports._services.player.timeposition,				
+				duration: module.exports._services.player.duration,
+				muteStatus: module.exports._services.player.mutestatus,
+				playerStatus: module.exports._services.player.playerstatus,
+				currentlyPlaying: module.exports._states.currentlyPlayingKara,
+				subText: module.exports._services.player.subtext,
+			}			
+			module.exports._services.ws.socket.emit('playerStatus',status);
+		};
 		module.exports._services.player.init();
 	}
 };

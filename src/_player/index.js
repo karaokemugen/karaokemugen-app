@@ -228,7 +228,8 @@ module.exports = {
 				}
 				module.exports.mutestatus = status.mute;
 				module.exports.duration = status.duration;
-				module.exports.subtext = status['sub-text'];				
+				module.exports.subtext = status['sub-text'];
+				module.exports.onStatusChange();
 			});
 			module.exports._player.on('paused',function(){
 				module.exports.playing = false;
@@ -324,6 +325,7 @@ module.exports = {
 	unmute: function() {
 		module.exports._player.unmute();
 	},
+	onStatusChange:function(){},
 	onEnd:function(ref){
 		// événement émis pour quitter l'application
 		logger.error('Player :: onEnd not set');
