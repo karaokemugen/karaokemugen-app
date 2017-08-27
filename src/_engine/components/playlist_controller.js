@@ -1587,8 +1587,9 @@ module.exports = {
 									});
 							});
 							Promise.all([pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
-								.then(function() {
-									resolve();
+								.then(function() {									
+									// We return the playlist id so we can send a message update
+									resolve(playlist_id);
 								})
 								.catch(function(err) {
 									logger.error('[PLC] deleteKaraFromPlaylist : '+err)
@@ -1736,7 +1737,8 @@ module.exports = {
 							});
 							Promise.all([pUpdateLastEditTime,pReorderPlaylist])
 								.then(function() {
-									resolve();
+									// Return the playlist_id we modified so we can send a update message
+									resolve(playlist_id);
 								})
 								.catch(function(err) {
 									logger.error('[PLC] editKaraFromPlaylist : '+err)
@@ -2218,7 +2220,7 @@ module.exports = {
 														});
 														Promise.all([pRenameASS,pUpdatedPlaylistLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 															.then(function() {
-																resolve();
+																resolve(publicPlaylistID);
 															})
 															.catch(function(err) {
 																logger.error('[PLC] addKaraToPublicPlaylist : '+err);
@@ -2427,7 +2429,7 @@ module.exports = {
 														});
 														Promise.all([pRenameASS,pUpdatedPlaylistLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 															.then(function() {
-																resolve();
+																resolve(currentPlaylistID);
 															})
 															.catch(function(err) {
 																logger.error('[PLC] addKaraToCurrentPlaylist : '+err);

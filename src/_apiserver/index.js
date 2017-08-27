@@ -1185,7 +1185,7 @@ module.exports = {
 			// res.setHeader('Access-Control-Allow-Credentials', true);
 
 			if (req.method === 'OPTIONS') {
-				res.send(200);
+				res.statusCode = 200;
 			} else {
 				// Pass to next layer of middleware
 				next();

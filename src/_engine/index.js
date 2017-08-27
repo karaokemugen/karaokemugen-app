@@ -539,6 +539,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
 					.then(function(){
+						module.exports._services.ws.socket.emit('blacklistUpdated',{});					
 						resolve();
 					})
 					.catch(function(err){
@@ -551,6 +552,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){				
 				module.exports._services.playlist_controller.deleteBlacklistCriteria(blc_id)
 					.then(function(){
+						module.exports._services.ws.socket.emit('blacklistUpdated',{});					
 						resolve();
 					})
 					.catch(function(err){
@@ -563,6 +565,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editBlacklistCriteria(blc_id,blctype,blcvalue)
 					.then(function(){
+						module.exports._services.ws.socket.emit('blacklistUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -575,6 +578,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.shufflePlaylist(pl_id)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistContentsUpdated',pl_id);
 						resolve();
 					})
 					.catch(function(err){
@@ -637,6 +641,8 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.createPlaylist(playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
 					.then(function (new_playlist){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',new_playlist);
+						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve(new_playlist);
 					})
 					.catch(function(err){						
@@ -661,6 +667,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deletePlaylist(id_playlist)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -672,7 +679,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleKaraDelete = function(playlistcontent_id){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromPlaylist(playlistcontent_id)
-					.then(function(){
+					.then(function(playlist_id){
+						module.exports._services.ws.socket.emit('playlistContentsUpdated',playlist_id);
 						resolve();
 					})
 					.catch(function(err){
@@ -685,6 +693,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromWhitelist(wl_id)
 					.then(function(){
+						module.exports._services.ws.socket.emit('whitelistUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -697,6 +706,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editWhitelistKara(wl_id,reason)
 					.then(function(){
+						module.exports._services.ws.socket.emit('whitelistUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -708,7 +718,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
-					.then(function(){
+					.then(function(playlist_id){
+						module.exports._services.ws.socket.emit('playlistContentsUpdated',playlist_id);
 						resolve();
 					})
 					.catch(function(err){
@@ -785,6 +796,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
 						resolve();
 					})
 					.catch(function(err){
@@ -797,6 +809,8 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
+						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -809,6 +823,8 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.setPublicPlaylist(id_playlist)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
+						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -830,6 +846,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.emptyPlaylist(id_playlist)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);								
 						resolve();
 					})
 					.catch(function(err){
@@ -1002,7 +1019,8 @@ module.exports = {
 				if (module.exports._states.private) {
 					//If Kara mode is private, then add to current playlist
 					module.exports._services.playlist_controller.addKaraToCurrentPlaylist(id_kara,requester)
-						.then(function(){
+						.then(function(id_playlist){
+							module.exports._services.ws.socket.emit('playlistContentsUpdated',id_playlist);						
 							resolve();
 						})
 						.catch(function(err){
@@ -1012,7 +1030,8 @@ module.exports = {
 				} else {
 					//If Kara mode is public, then add to public playlist
 					module.exports._services.playlist_controller.addKaraToPublicPlaylist(id_kara,requester)
-						.then(function(){
+						.then(function(id_playlist){
+							module.exports._services.ws.socket.emit('playlistContentsUpdated',id_playlist);						
 							resolve();
 						})
 						.catch(function(err){
@@ -1026,6 +1045,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistContentsUpdated',playlist_id);						
 						resolve();
 					})
 					.catch(function(err){
@@ -1038,6 +1058,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
 					.then(function(){
+						module.exports._services.ws.socket.emit('whitelistUpdated',{});						
 						resolve();
 					})
 					.catch(function(err){
