@@ -29,6 +29,7 @@ module.exports = {
 		admin_port:1338,
 		frontend_port:1337,
 		apiserver_port:1339,
+		ws_port:1340,
 		playlist:null,
 		timeposition:0,
 		currentlyPlayingKara:undefined,
@@ -38,6 +39,7 @@ module.exports = {
 		playlist_controller: null,
 		player:null,
 		apiserver:null,
+		ws:null,
 	},
 	/**
 	 * Base method for starting up the engine.
@@ -64,6 +66,7 @@ module.exports = {
 			module.exports._start_admin();
 			module.exports._start_frontend();
 			module.exports._start_apiserver();
+			module.exports._start_wsserver();
 			module.exports._broadcastStates();
 		}).catch(function(response){
 			logger.error(response);
@@ -405,6 +408,18 @@ module.exports = {
 	},
 	/**
 	* @function
+	* Starts the websocket server on the selected port
+	* Broadcasts syspath and settings to that module.
+	*/
+	_start_wsserver:function(){
+		module.exports._services.ws = require(path.resolve(__dirname,'../_ws/index.js'));
+		module.exports._services.ws.LISTEN = module.exports._states.ws_port;
+		module.exports._services.ws.SYSPATH = module.exports.SYSPATH;
+		module.exports._services.ws.SETTINGS = module.exports.SETTINGS;		
+		module.exports._services.ws.init();
+	},
+	/**
+	* @function
 	* Starts the API webservice on the selected port
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
@@ -736,7 +751,8 @@ module.exports = {
 					module.exports.setPrivateOff();
 				}
 
-				// Other settings for now have to be toggled through API calls												
+				// Other settings for now have to be toggled through API calls							
+				
 
 				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err, rep) {
 					if (err) {
@@ -805,8 +821,7 @@ module.exports = {
 					});
 			});
 		}
-		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,to){
-			logger.debug('[Engine] onPlaylistSingleContents Args : '+JSON.stringify(arguments));
+		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,to){			
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)
 					.then(function(playlist){
@@ -1185,6 +1200,21 @@ module.exports = {
 		module.exports._services.player.pippositionx = module.exports.SETTINGS.PlayerPIPPositionX;
 		module.exports._services.player.pippositiony = module.exports.SETTINGS.PlayerPIPPositionY;
 		module.exports._services.player.pipsize = module.exports.SETTINGS.PlayerPIPSize;
+		module.exports._services.player.onStatusChange = function(){				
+			var status = {
+				private: module.exports._states.private,
+				status: module.exports._states.status,
+				onTop: module.exports._states.ontop,
+				fullscreen: module.exports._states.fullscreen,
+				timePosition: module.exports._services.player.timeposition,				
+				duration: module.exports._services.player.duration,
+				muteStatus: module.exports._services.player.mutestatus,
+				playerStatus: module.exports._services.player.playerstatus,
+				currentlyPlaying: module.exports._states.currentlyPlayingKara,
+				subText: module.exports._services.player.subtext,
+			}			
+			module.exports._services.ws.socket.emit('playerStatus',status);
+		};
 		module.exports._services.player.init();
 	}
 };
