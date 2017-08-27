@@ -1186,6 +1186,7 @@ module.exports = {
 
 			if (req.method === 'OPTIONS') {
 				res.statusCode = 200;
+                res.json()
 			} else {
 				// Pass to next layer of middleware
 				next();

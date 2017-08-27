@@ -42,7 +42,7 @@
             type: 'PUT',
             data: dataAjax
         }).done(function (data) {
-            refreshCommandStates();
+           // refreshCommandStates();
         });
     });
     $('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function (event) {
@@ -52,7 +52,7 @@
             type: 'PUT',
             data: { command: val }
         }).done(function (data) {
-            refreshCommandStates();
+           // refreshCommandStates();
         });
     });
     $('button[action="poweroff"]').click(function() {
@@ -80,7 +80,10 @@
     });
 
     $('#karaInfo').click(function (e) {
-        if(status != undefined && status != "" && status != "stop") { refreshCommandStates(goToPosition, e); }
+        if(status != undefined && status != "" && status != "stop") { 
+            //refreshCommandStates(goToPosition, e);
+            goToPosition(e);
+        }
     });
 
     $('#karaInfo').on('mousedown touchstart', function (e) {
@@ -104,24 +107,36 @@
         if (mouseDown) {
             stopUpdate = false;
             mouseDown = false;
-            refreshCommandStates();
+            //refreshCommandStates();
         }
     });
 
-
+    /**
+     * react to new select entry, creating a new playlist
+    */
    $('.select2').on('select2:select', function(e){
         var select = $(this);
         if(select.find("option[value='" + e.params.data.id + "'][name]").length == 0) {
             var playlistName = e.params.data.text
-            $.ajax({
-                url: 'admin/playlists',
-                type : 'POST',
-                data : { name : playlistName, flag_visible : 0, flag_current: 0, flag_public: 0 } })
-                .done(function (idNewPlaylist) {
-                    $("#selectPlaylist1").val(idNewPlaylist)
-                    fillPlaylistSelects(true, select.attr('num'), idNewPlaylist);
-
+            var create = confirm("Créer nouvelle playlist '" + playlistName + "' ?");
+            if(create) {
+                $.ajax({
+                    url: 'admin/playlists',
+                    type : 'POST',
+                    data : { name : playlistName, flag_visible : 0, flag_current: 0, flag_public: 0 } })
+                    .done(function (idNewPlaylist) {
+                        fillPlaylistSelects(true, select.attr('num'), idNewPlaylist);
+                        /*
+                        select.promise().then(function(){
+                            console.log(select,idNewPlaylist);
+                            select.val(idNewPlaylist).change();
+                        });
+                        */
                 });
+            } else {
+                select.val([]);
+            }
+           
         }
     });
 
@@ -261,7 +276,7 @@
             data: { command: 'goTo', options: futurTimeSec }
         })
             .done(function (data) {
-                refreshCommandStates(setStopUpdate, false);
+                setStopUpdate(false);
             });
     }
 
@@ -291,7 +306,7 @@
             type: 'PUT',
             data: data
         }).done(function (data) {
-            fillPlaylistSelects();
+            //fillPlaylistSelects();
         });
     });
     

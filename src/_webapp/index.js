@@ -2,6 +2,7 @@ const http = require('http');
 const path = require('path');
 const express = require('express');
 const exphbs = require('express-handlebars');
+const ip = require('ip');
 
 const logger = require('../_common/utils/logger.js');
 
@@ -46,10 +47,10 @@ module.exports = {
 			module.exports._server.use(express.static(__dirname + '/'));
 			
             module.exports._server.get('/', function (req, res) {
-                res.render('public', {"layout": "publicHeader"});
+                res.render('public', {"layout": "publicHeader", 'clientAdress' : 'http://'+ip.address() });
             });
             module.exports._server.get('/admin', function (req, res) {
-                res.render('admin', {"layout": "adminHeader", "mdpAdmin" : module.exports.SETTINGS.AdminPassword });
+                res.render('admin', {"layout": "adminHeader", 'clientAdress' : 'http://'+ip.address() , "mdpAdmin" : module.exports.SETTINGS.AdminPassword });
             });	
 			
             module.exports._server.use(function (req, res, next) {

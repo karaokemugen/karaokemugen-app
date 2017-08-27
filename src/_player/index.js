@@ -239,6 +239,7 @@ module.exports = {
 			module.exports._player.on('timeposition',function(position){
 				// Returns the position in seconds in the current song
 				module.exports.timeposition = position;
+				module.exports.onStatusChange();
 			});
 			logger.info('[Player] Player interface is READY');
 		})
