@@ -370,6 +370,16 @@ module.exports = {
 			});
 
 		routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+			.get(function(req,res){
+				module.exports.onPLCInfo(req.params.plc_id,req.query.lang)
+					.then(function(kara){
+						res.json(kara);
+					})
+					.catch(function(err){
+						res.statusCode = 500;
+						res.json(err);
+					});
+			})
 			.put(function(req,res){
 				//Update playlist's karaoke song
 				//Params: position				
@@ -876,7 +886,19 @@ module.exports = {
 						res.json(err);
 					});
 			});
-
+		
+		routerPublic.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+			.get(function(req,res){
+				var seenFromUser = true;
+				module.exports.onPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
+					.then(function(kara){
+						res.json(kara);
+					})
+					.catch(function(err){
+						res.statusCode = 500;
+						res.json(err);
+					});
+			})
 		routerPublic.route('/settings')
 			.get(function(req,res){
 				//We don't want to return all settings.
@@ -1177,8 +1199,9 @@ module.exports = {
 		// événement de test
 		logger.log('warning','onTest not set');
 	},
-	onKaras:function(filter){},
+	onKaras:function(){},
 	onKaraSingle:function(){},
+	onPLCInfo:function(){},
 	onPlaylists:function(){},
 	onPlaylistCreate:function(){},
 	onPlaylistSingleInfo:function(){},

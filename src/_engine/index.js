@@ -587,6 +587,25 @@ module.exports = {
 					});
 			});
 		}
+		module.exports._services.apiserver.onPLCInfo = function(id_plc,lang,seenFromUser){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.getKaraFromPlaylist(id_plc,seenFromUser)
+					.then(function(kara){
+						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
+							.then(function(karalist){
+								resolve(karalist);
+							})
+							.catch(function(err){
+								logger.error('[Engine] PLC translateKaraInfo : '+err);	
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC getKaraFromPlaylist : '+err);	
+						reject(err);
+					});
+			});
+		}
 		module.exports._services.apiserver.onPlaylists = function(seenFromUser){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylists(seenFromUser)
