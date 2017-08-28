@@ -266,6 +266,10 @@ select.form-control {
     border-color: #8aa9af;
 	border-radius: 0px;
 }
+.list-group-item .detailsKara tr > td:first-child {
+	font-weight: bold;
+	padding-right: 7px;
+}
 
 .list-group-item .lyricsKara {
 	background-color: #303340;

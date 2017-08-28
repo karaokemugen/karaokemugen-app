@@ -91,7 +91,6 @@
             stopUpdate = true;
             mouseDown = true;
             $('#progressBarColor').stop().css('width', e.pageX + "px"); 
-            console.log("hey");
             $('#progressBar').attr('title', oldState.timeposition);
         }
     });
@@ -124,8 +123,13 @@
                     url: 'admin/playlists',
                     type : 'POST',
                     data : { name : playlistName, flag_visible : 0, flag_current: 0, flag_public: 0 } })
-                    .done(function (idNewPlaylist) {
-                        fillPlaylistSelects(true, select.attr('num'), idNewPlaylist);
+                    .done(function (idNewPlaylist) { 
+                        console.log('step 3');
+                        select.promise().done(function(){                     
+                            console.log('step 4');
+                            select.val(idNewPlaylist).change()
+                        });
+                        //fillPlaylistSelects(true, select.attr('num'), idNewPlaylist);
                         /*
                         select.promise().then(function(){
                             console.log(select,idNewPlaylist);
@@ -268,7 +272,7 @@
         var barInnerwidth = karaInfo.innerWidth();
         var futurTimeX = e.pageX - karaInfo.offset().left;
         var presentTimeX = $(progressBarColor).width();
-        var futurTimeSec = Math.round(songLength * futurTimeX / barInnerwidth);
+        var futurTimeSec = songLength * futurTimeX / barInnerwidth;
         $(progressBarColor).stop().css('width', 100 * futurTimeSec / songLength + "%");
         $.ajax({
             url: 'admin/player',
