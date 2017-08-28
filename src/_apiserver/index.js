@@ -669,7 +669,7 @@ module.exports = {
 		routerAdmin.route('/blacklist/criterias')
 			.get(function(req,res){
 				//Get list of blacklisted karas
-				module.exports.onBlacklistCriterias()
+				module.exports.onBlacklistCriterias(req.query.lang)
 					.then(function(blc){
 						res.json(blc);
 					})
