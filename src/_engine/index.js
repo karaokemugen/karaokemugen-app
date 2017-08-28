@@ -538,8 +538,7 @@ module.exports = {
 		module.exports._services.apiserver.onBlacklistCriteriaAdd = function(blctype,blcvalue){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
-					.then(function(){
-						module.exports._services.ws.socket.emit('blacklistUpdated',{});					
+					.then(function(){						
 						resolve();
 					})
 					.catch(function(err){
@@ -551,8 +550,7 @@ module.exports = {
 		module.exports._services.apiserver.onBlacklistCriteriaDelete = function(blc_id){
 			return new Promise(function(resolve,reject){				
 				module.exports._services.playlist_controller.deleteBlacklistCriteria(blc_id)
-					.then(function(){
-						module.exports._services.ws.socket.emit('blacklistUpdated',{});					
+					.then(function(){						
 						resolve();
 					})
 					.catch(function(err){
@@ -564,8 +562,7 @@ module.exports = {
 		module.exports._services.apiserver.onBlacklistCriteriaEdit = function(blc_id,blctype,blcvalue){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editBlacklistCriteria(blc_id,blctype,blcvalue)
-					.then(function(){
-						module.exports._services.ws.socket.emit('blacklistUpdated',{});
+					.then(function(){						
 						resolve();
 					})
 					.catch(function(err){
@@ -577,9 +574,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistShuffle = function(pl_id){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.shufflePlaylist(pl_id)
-					.then(function(){
-						module.exports._services.ws.socket.emit('playlistContentsUpdated',pl_id);
-						resolve();
+					.then(function(){						
+						resolve(pl_id);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC shufflePlaylist : '+err);							
@@ -641,8 +637,6 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.createPlaylist(playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public)
 					.then(function (new_playlist){
-						module.exports._services.ws.socket.emit('playlistInfoUpdated',new_playlist);
-						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve(new_playlist);
 					})
 					.catch(function(err){						
@@ -667,7 +661,6 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deletePlaylist(id_playlist)
 					.then(function(){
-						module.exports._services.ws.socket.emit('playlistsUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -680,8 +673,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromPlaylist(playlistcontent_id)
 					.then(function(playlist_id){
-						module.exports._services.ws.socket.emit('playlistContentsUpdated',playlist_id);
-						resolve();
+						resolve(playlist_id);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC deleteKaraFromPlaylist : '+err);
@@ -693,7 +685,6 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromWhitelist(wl_id)
 					.then(function(){
-						module.exports._services.ws.socket.emit('whitelistUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -706,7 +697,6 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editWhitelistKara(wl_id,reason)
 					.then(function(){
-						module.exports._services.ws.socket.emit('whitelistUpdated',{});
 						resolve();
 					})
 					.catch(function(err){
@@ -719,8 +709,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
 					.then(function(playlist_id){
-						module.exports._services.ws.socket.emit('playlistContentsUpdated',playlist_id);
-						resolve();
+						resolve(playlist_id);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC editKaraFromPlaylist : '+err);
@@ -737,11 +726,10 @@ module.exports = {
 						if (defaultSettings[setting] != settings[setting]) {							
 							if (setting == 'os' ||
 							    setting == 'EngineDefaultLocale') {
-									// Do nothing
-									// We don't want to save these settings to file.
-									
+								// Do nothing
+								// We don't want to save these settings to file.									
 							} else {
-									settingsToSave[setting] = settings[setting];
+								settingsToSave[setting] = settings[setting];
 							}							
 						}							
 					}
@@ -778,17 +766,14 @@ module.exports = {
 						}
 					}
 				}
-
-				module.exports._services.ws.socket.emit('settingsUpdated',publicSettings);
-
-
+				
 				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err, rep) {
 					if (err) {
 						logger.error('[Engine] Unable to save settings : '+err);
 						reject(err);
 					}
 						logger.info('[Engine] Settings updated and saved to disk')
-						resolve();
+						resolve(publicSettings);
 					});				
 			});
 		};
@@ -808,10 +793,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleSetCurrent = function(id_playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
-					.then(function(){
-						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
-						module.exports._services.ws.socket.emit('playlistsUpdated',{});
-						resolve();
+					.then(function(id_playlist){
+						resolve(id_playlist);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC setCurrentPlaylist : '+err);
@@ -822,9 +805,7 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleSetPublic = function(id_playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.setPublicPlaylist(id_playlist)
-					.then(function(){
-						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
-						module.exports._services.ws.socket.emit('playlistsUpdated',{});
+					.then(function(id_playlist){
 						resolve();
 					})
 					.catch(function(err){
@@ -845,9 +826,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleEmpty = function(id_playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.emptyPlaylist(id_playlist)
-					.then(function(){
-						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);								
-						resolve();
+					.then(function(){						
+						resolve(id_playlist);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC emptyPlaylist : '+err);
@@ -1019,9 +999,8 @@ module.exports = {
 				if (module.exports._states.private) {
 					//If Kara mode is private, then add to current playlist
 					module.exports._services.playlist_controller.addKaraToCurrentPlaylist(id_kara,requester)
-						.then(function(id_playlist){
-							module.exports._services.ws.socket.emit('playlistContentsUpdated',id_playlist);						
-							resolve();
+						.then(function(id_playlist){							
+							resolve(id_playlist);
 						})
 						.catch(function(err){
 							logger.error('[Engine] PLC addKaraToCurrentPlaylist : '+err);
@@ -1031,8 +1010,7 @@ module.exports = {
 					//If Kara mode is public, then add to public playlist
 					module.exports._services.playlist_controller.addKaraToPublicPlaylist(id_kara,requester)
 						.then(function(id_playlist){
-							module.exports._services.ws.socket.emit('playlistContentsUpdated',id_playlist);						
-							resolve();
+							resolve(id_playlist);
 						})
 						.catch(function(err){
 							logger.error('[Engine] PLC addKaraToPublicPlaylist : '+err);
@@ -1044,9 +1022,8 @@ module.exports = {
 		module.exports._services.apiserver.onKaraAddToPlaylist = function(id_kara,requester,playlist_id,pos){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
-					.then(function(){
-						module.exports._services.ws.socket.emit('playlistContentsUpdated',playlist_id);						
-						resolve();
+					.then(function(){						
+						resolve(playlist_id);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC addKaraToPlaylist : '+err)
@@ -1058,7 +1035,6 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
 					.then(function(){
-						module.exports._services.ws.socket.emit('whitelistUpdated',{});						
 						resolve();
 					})
 					.catch(function(err){
@@ -1161,6 +1137,10 @@ module.exports = {
 						reject(err);
 					});
 			});
+		};
+		module.exports._services.apiserver.emitEvent = function(type,data){	
+			logger.debug('[Engine] Sending WS message '+type+' : '+data)		
+			module.exports._services.ws.socket.emit(type,data);					
 		};
 		// --------------------------------------------------------
 		// on démarre ensuite le service
