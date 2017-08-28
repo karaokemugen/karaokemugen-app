@@ -523,11 +523,18 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onBlacklistCriterias = function(){
+		module.exports._services.apiserver.onBlacklistCriterias = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistCriterias()
 					.then(function(blc){
-						resolve(blc);
+						module.exports._services.playlist_controller.translateBlacklistCriterias(blc,lang)
+							.then(function(blc_output){
+								resolve(blc_output);
+							})
+							.catch(function(err){
+								logger.error('[Engine] translateBlacklistCriterias : '+err);							
+								reject(err);
+							})
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC getBlacklistCriterias : '+err);							

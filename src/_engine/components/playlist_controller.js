@@ -7,6 +7,7 @@ const fs = require('fs');
 const L = require('lodash');
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
+const async = require('async');
 
 module.exports = {
 	SYSPATH:null,
@@ -1862,9 +1863,9 @@ module.exports = {
 	},
 	/**
 	* @function {Translate Kara Information}
-	* @param  {type} karalist {list of kara objects}
-	* @param  {type} lang     {language in ISO639-1 to translate into}
-	* @return {object} {Returns array of kara objects}
+	* @param  {array} karalist {list of kara objects}
+	* @param  {string} lang     {language in ISO639-1 to translate into}
+	* @return {array} {Returns array of kara objects}
 	*/
 	translateKaraInfo:function(karalist,lang){
 		return new Promise(function(resolve,reject) {
@@ -1936,6 +1937,102 @@ module.exports = {
 				}
 			});
 			resolve(karas);
+		});
+	},
+	/**
+	* @function {Translate Blacklist criterias information in human form}
+	* @param  {array} blc {list of BLC objects}
+	* @param  {string} lang     {language in ISO639-1 to translate into}
+	* @return {array} {Returns array of BLC objects}
+	*/
+	translateBlacklistCriterias:function(blclist,lang){
+		return new Promise(function(resolve,reject) {
+
+			// If lang is not provided, assume we're using node's system locale
+			if (!lang) lang = module.exports.SETTINGS.EngineDefaultLocale;
+			// Test if lang actually exists in ISO639-1 format
+			if (!langs.has('1',lang)) {
+				var err = 'Unknown language : '+lang
+				logger.error('[PLC] translateKaraInfo : '+err)
+				reject(err);
+			}
+			// Instanciate a translation object for our needs with the correct language.
+			const i18n = require('i18n'); // Needed for its own translation instance
+			i18n.configure({
+				directory: path.resolve(__dirname,'../../_common/locales'),
+			});
+			i18n.setLocale(lang);
+
+			// We need to read the detected locale in ISO639-1
+			var detectedLocale = langs.where('1',lang);
+			
+			async.eachOf(blclist, function(blc, index, callback){
+				var pTagName = new Promise((resolve,reject) => {
+					if (blc.type === 1){
+						// We just need to translate the tag name if there is a translation
+						if (blc.value.startsWith('TAG_')) {
+							blclist[index].value_i18n = i18n.__(blc.value);
+						} else {
+							blclist[index].value_i18n = blc.value;
+						}
+						resolve();
+					} else {
+						resolve();
+					}
+					
+				});
+				var pTagID = new Promise((resolve,reject) => {
+					if (blc.type >= 2 && blc.type <= 999) {
+						// We need to get the tag name and then translate it if needed
+						module.exports.DB_INTERFACE.getTag(blc.value)
+							.then(function (res){								
+								if (res.startsWith('TAG_')) {
+									blclist[index].value_i18n = i18n.__(res);
+								} else {
+									blclist[index].value_i18n = res;
+								}							
+								resolve();
+							})	
+							.catch(function (err) {
+								logger.error('[PLC] translateBlacklistCriterias : '+err);
+								reject(err);
+							});					
+					} else {
+						resolve();
+					}
+					 				
+				});
+				var pTagKaraID = new Promise((resolve,reject) => {
+					if (blc.type === 1001) {
+						// We have a kara ID, let's get the kara itself and append it to the value
+						module.exports.DB_INTERFACE.getKara(blc.value)
+							.then(function(kara){
+								blclist[index].value = kara;								
+								resolve();
+							})
+							.catch(function(err){
+								logger.error('[PLC] translateBlacklistCriterias : '+err);
+								reject(err);
+							});
+					} else {
+						resolve();
+					}
+				});
+				Promise.all([pTagKaraID,pTagName,pTagID])
+					.then(function(){
+						// No need to do anything, values have been modified if necessary						
+						callback();
+					})
+					.catch(function(err){
+						logger.error('[PLC] translateBlacklistCriterias : '+err);
+						callback(err);
+					});
+			},function(err){
+				if (err) {
+					reject(err);
+				}				
+				resolve(blclist);
+			});			
 		});
 	},
 	/**
