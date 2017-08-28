@@ -54,7 +54,7 @@
     left: calc(50% - 255*.5px);
 }
 #centerBtns > .btn-group {
-	width:100%;
+	width: 100%;
 	display: flex;
  	justify-content: center;
  	align-items: center; 

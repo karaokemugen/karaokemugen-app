@@ -169,9 +169,9 @@ module.exports = {
 								//Now we add playlist
 								module.exports.onPlaylistCreate(req.body)
 									.then(function(new_playlist){
+										module.exports.emitEvent('playlistsUpdated')
 										res.statusCode = 201;
-										res.json(new_playlist);
-										module.exports.emitEvent('playlistsUpdated')		
+										res.json(new_playlist);		
 									})
 									.catch(function(err){
 										res.statusCode = 500;
@@ -360,11 +360,11 @@ module.exports = {
 								if (req.body.pos != undefined) req.sanitize('pos').toInt();
 								module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
 									.then(function(pl_id){
+										module.exports.emitEvent('playlistInfoUpdated',pl_id);
+										module.exports.emitEvent('playlistContentsUpdated',pl_id);
 										res.statusCode = 201;
 										if (req.body.pos === undefined) var pos = 'last';
 										res.json('Karaoke '+req.body.kara_id+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
-										module.exports.emitEvent('playlistInfoUpdated',pl_id);
-										module.exports.emitEvent('playlistContentsUpdated',pl_id);
 									})
 									.catch(function(err){
 										res.statusCode = 500;
@@ -438,8 +438,8 @@ module.exports = {
 					module.exports.onPlaylistSingleKaraDelete(playlistcontent_id)
 						.then(function(pl_id){
 							res.json('Deleted PLCID '+playlistcontent_id);
-							module.exports.emitEvent('playlistInfoUpdated',pl_id);
-							module.exports.emitEvent('playlistContentsUpdated',pl_id);
+							module.exports.emitEvent('playlistInfoUpdated', pl_id);
+							module.exports.emitEvent('playlistContentsUpdated', pl_id);
 						})
 						.catch(function(err){
 							res.statusCode = 500;
@@ -1081,10 +1081,11 @@ module.exports = {
 							req.sanitize('requestedby').trim();
 							req.sanitize('requestedby').unescape();
 							module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
-								.then(function(pl_id){
-									res.statusCode = 201;
-									res.json('Karaoke '+req.params.kara_id+' added by '+req.body.requestedby);				module.exports.emitEvent('playlistContentsUpdated',pl_id);		
+								.then(function(pl_id){			
+									module.exports.emitEvent('playlistContentsUpdated',pl_id);		
 									module.exports.emitEvent('playlistInfoUpdated',pl_id);		
+									res.statusCode = 201;
+									res.json('Karaoke '+req.params.kara_id+' added by '+req.body.requestedby);	
 								})
 								.catch(function(err){
 									res.statusCode = 500;

@@ -123,19 +123,10 @@
                     url: 'admin/playlists',
                     type : 'POST',
                     data : { name : playlistName, flag_visible : 0, flag_current: 0, flag_public: 0 } })
-                    .done(function (idNewPlaylist) { 
-                        console.log('step 3');
-                        select.promise().done(function(){                     
-                            console.log('step 4');
+                    .done(function (idNewPlaylist) {
+                        playlistsUpdating.done(function() {   
                             select.val(idNewPlaylist).change()
                         });
-                        //fillPlaylistSelects(true, select.attr('num'), idNewPlaylist);
-                        /*
-                        select.promise().then(function(){
-                            console.log(select,idNewPlaylist);
-                            select.val(idNewPlaylist).change();
-                        });
-                        */
                 });
             } else {
                 select.val([]);
