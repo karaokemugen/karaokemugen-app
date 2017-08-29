@@ -74,9 +74,6 @@ PathDBUserFile = "userdata.sqlite3"
 PathAltname = "app/data/series_altnames.csv"
 
 
-VersionNo = "v2.0"
-VersionName = "Finé Fantastique"
-
 ; Video output driver for mpv
 ; If you have blue window issues in Windows, set mpvVideoOutput to "direct3d", otherwise don't touch this
 ; mpv should detect automatically which video output driver to use
