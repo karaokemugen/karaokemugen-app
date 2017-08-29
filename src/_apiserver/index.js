@@ -782,7 +782,10 @@ module.exports = {
 							   'seek',
 							   'goTo',
 							   'mute',
-							   'unmute'
+							   'unmute',
+							   'setVolume',
+							   'showSubs',
+							   'hideSubs',
 						]
 					);
 				req.getValidationResult().then(function(result) {
