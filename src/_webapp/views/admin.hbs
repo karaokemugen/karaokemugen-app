@@ -1,8 +1,12 @@
 <div id="header" class="header">
     <button action="poweroff" class="btn btn-default btn-dark pull-right">
-            <i class="glyphicon glyphicon-off"></i></button>
+		<i class="glyphicon glyphicon-off"></i></button>
     <button action="command" value="mute" id="volume" class="btn btn-default btn-dark pull-right">
-            <i class="glyphicon glyphicon-volume-up"></i></button>
+		<i class="glyphicon glyphicon-volume-up"></i>
+		<input action="command" type="range" name="setVolume"/>	
+	</button>
+    <button action="command" value="showSubs" class="btn btn-default btn-dark pull-right">
+		<i class="glyphicon glyphicon-subtitles"></i></button>
     <div class="pull-left btn-group" style="width: 129px;">
         <input type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> Privé"
             data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large" />

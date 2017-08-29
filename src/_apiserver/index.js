@@ -229,8 +229,8 @@ module.exports = {
 								//Now we add playlist
 								module.exports.onPlaylistSingleEdit(req.params.pl_id,req.body)
 									.then(function(){
-										res.json('Playlist '+req.params.pl_id+' updated');
 										module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
+										res.json('Playlist '+req.params.pl_id+' updated');
 									})
 									.catch(function(err){
 										res.statusCode = 500;
@@ -248,8 +248,8 @@ module.exports = {
 					var playlist_id = req.params.pl_id;
 					module.exports.onPlaylistSingleDelete(playlist_id)
 						.then(function(){
-							res.json('Deleted '+playlist_id);
 							module.exports.emitEvent('playlistsUpdated');
+							res.json('Deleted '+playlist_id);
 						})
 						.catch(function(err){
 							res.statusCode = 500;
@@ -263,9 +263,9 @@ module.exports = {
 
 				module.exports.onPlaylistSingleEmpty(req.params.pl_id)
 					.then(function(){
-						res.json('Playlist '+req.params.pl_id+' emptied');
 						module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
 						module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
+						res.json('Playlist '+req.params.pl_id+' emptied');
 					})
 					.catch(function(err){
 						res.statusCode = 500;
@@ -278,9 +278,9 @@ module.exports = {
 
 				module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
 					.then(function(){
-						res.json('Playlist '+req.params.pl_id+' is now current');
 						module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
 						module.exports.emitEvent('playlistsUpdated',req.params.pl_id);
+						res.json('Playlist '+req.params.pl_id+' is now current');
 					})
 					.catch(function(err){
 						res.statusCode = 500;
@@ -293,9 +293,9 @@ module.exports = {
 
 				module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
 					.then(function(){
-						res.json('Playlist '+req.params.pl_id+' is now public');
 						module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
 						module.exports.emitEvent('playlistsUpdated');
+						res.json('Playlist '+req.params.pl_id+' is now public');
 					})
 					.catch(function(err){
 						res.statusCode = 500;
@@ -413,9 +413,9 @@ module.exports = {
 								if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
 								module.exports.onPlaylistSingleKaraEdit(req.params.plc_id,req.body.pos,req.body.flag_playing)
 									.then(function(pl_id){
-										res.json('PLC '+req.params.plc_id+' edited in playlist '+pl_id);
 										module.exports.emitEvent('playlistInfoUpdated',pl_id);
 										module.exports.emitEvent('playlistContentsUpdated',pl_id);
+										res.json('PLC '+req.params.plc_id+' edited in playlist '+pl_id);
 									})
 									.catch(function(err){
 										res.statusCode = 500;
@@ -437,9 +437,9 @@ module.exports = {
 
 					module.exports.onPlaylistSingleKaraDelete(playlistcontent_id)
 						.then(function(pl_id){
-							res.json('Deleted PLCID '+playlistcontent_id);
 							module.exports.emitEvent('playlistInfoUpdated', pl_id);
 							module.exports.emitEvent('playlistContentsUpdated', pl_id);
+							res.json('Deleted PLCID '+playlistcontent_id);
 						})
 						.catch(function(err){
 							res.statusCode = 500;
@@ -565,8 +565,8 @@ module.exports = {
 							var SETTINGS = req.body;						
 							module.exports.onSettingsUpdate(SETTINGS)
 								.then(function(publicSettings){
-									res.json('Settings updated');
 									module.exports.emitEvent('settingsUpdated',publicSettings);
+									res.json('Settings updated');
 								})
 								.catch(function(err){
 									res.statusCode = 500;
@@ -612,9 +612,9 @@ module.exports = {
 							req.sanitize('kara_id').toInt();
 							module.exports.onKaraAddToWhitelist(req.body.kara_id,req.body.reason)
 								.then(function(){
+									module.exports.emitEvent('whitelistUpdated');									
 									res.statusCode = 201;
 									res.json('Karaoke '+req.body.kara_id+' added to whitelist with reason \''+req.body.reason+'\'');
-									module.exports.emitEvent('whitelistUpdated');									
 								})
 								.catch(function(err){
 									res.statusCode = 500;
@@ -648,8 +648,8 @@ module.exports = {
 					// Deletion is through whitelist ID.
 					module.exports.onWhitelistSingleKaraDelete(req.params.wl_id)
 						.then(function(){
-							res.json('Deleted WLID '+req.params.wl_id);
 							module.exports.emitEvent('whitelistUpdated');
+							res.json('Deleted WLID '+req.params.wl_id);
 						})
 						.catch(function(err){
 							res.statusCode = 500;
@@ -668,8 +668,8 @@ module.exports = {
 						if (result.isEmpty()) {
 							module.exports.onWhitelistSingleKaraEdit(req.params.wl_id,req.body.reason)
 								.then(function(){
-									res.json('Whitelist item '+req.params.wl_id+' edited with reason \''+req.body.reason+'\'');
 									module.exports.emitEvent('whitelistUpdated');
+									res.json('Whitelist item '+req.params.wl_id+' edited with reason \''+req.body.reason+'\'');
 								})
 								.catch(function(err){
 									res.statusCode = 500;
@@ -714,9 +714,9 @@ module.exports = {
 						if (result.isEmpty()) {
 							module.exports.onBlacklistCriteriaAdd(req.body.blcriteria_type,req.body.blcriteria_value)
 								.then(function(){
+									module.exports.emitEvent('blacklistUpdated');
 									res.statusCode = 201;
 									res.json('Blacklist criteria type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' added');
-									module.exports.emitEvent('blacklistUpdated');
 								})
 								.catch(function(err){
 									res.statusCode = 500;
@@ -736,8 +736,8 @@ module.exports = {
 
 					module.exports.onBlacklistCriteriaDelete(req.params.blc_id)
 						.then(function(){
-							res.json('Deleted BLCID '+req.params.blc_id);
 							module.exports.emitEvent('blacklistUpdated');
+							res.json('Deleted BLCID '+req.params.blc_id);
 						})
 						.catch(function(err){
 							res.statusCode = 500;
@@ -762,8 +762,8 @@ module.exports = {
 						if (result.isEmpty()) {
 							module.exports.onBlacklistCriteriaEdit(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value)
 								.then(function(){
-									res.json('Blacklist criteria '+req.params.blc_id+' type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' edited');
 									module.exports.emitEvent('blacklistUpdated');
+									res.json('Blacklist criteria '+req.params.blc_id+' type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' edited');
 								})
 								.catch(function(err){
 									res.statusCode = 500;
@@ -803,7 +803,11 @@ module.exports = {
 								'seek',
 								'goTo',
 								'mute',
-								'unmute'
+								'unmute',
+								'setVolume',
+								'showSubs',
+								'hideSubs',
+
 							]
 						);
 					req.getValidationResult().then(function(result) {
@@ -837,8 +841,8 @@ module.exports = {
 				.put(function(req,res){
 					module.exports.onPlaylistShuffle(req.params.pl_id)
 						.then(function(){
-							res.json('Playlist '+req.params.pl_id+' shuffled');
 							module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
+							res.json('Playlist '+req.params.pl_id+' shuffled');
 						})
 						.catch(function(err){
 							res.statusCode = 500;

@@ -93,8 +93,8 @@ var playKaraHtml;
         $('.playlist-main').on('click', '.btnDiv > button', function (e) {
             var li = $(this).closest('li');
             var num = $(this).closest('ul.list-group').attr('num');
-            var idPlaylistFrom = $('#selectPlaylist' + num).val();
-            var idPlaylistTo = $('#selectPlaylist' + non(num)).val();
+            var idPlaylistFrom = parseInt($('#selectPlaylist' + num).val());
+            var idPlaylistTo = parseInt($('#selectPlaylist' + non(num)).val());
             var idKara = li.attr('idkara');
             var idKaraPlaylist = li.attr('idplaylistcontent');
             var action = $(this).attr('name');
@@ -168,7 +168,7 @@ var playKaraHtml;
         $('.playlist-main').on('click', '.infoDiv > button.playKara', function (e) {
             var liKara = $(this).closest('li');
             var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-            var idPlaylist = $('#selectPlaylist' + $(this).closest('ul').attr('num')).val();
+            var idPlaylist = parseInt($('#selectPlaylist' + $(this).closest('ul').attr('num')).val());
 
             $.ajax({
                 type : 'PUT',
@@ -179,13 +179,13 @@ var playKaraHtml;
             });
         });
 
-        $('.playlist-main').on('click', '.infoDiv > button[name="infoKara"]', function (e) {
+        $('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', function (e) {
             var liKara = $(this).closest('li');
             var idKara = parseInt(liKara.attr('idkara'));
             var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-            var idPlaylist = $('#selectPlaylist' + $(this).closest('ul').attr('num')).val();
+            var idPlaylist = parseInt($('#selectPlaylist' + $(this).closest('ul').attr('num')).val());
             var infoKara = liKara.find('.detailsKara');
-            
+            console.log(idKara);
             if (infoKara.length == 0) {
                 var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 
@@ -195,17 +195,14 @@ var playKaraHtml;
                     liKara.append(detailsHtml);
                     detailsHtml.fadeIn(animTime);
                     liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
-                    if(saveLastDetailsKara[idPlaylist + 1000].indexOf(idKara) == -1) {
-                        saveLastDetailsKara[idPlaylist + 1000].push(idKara); }
+                    saveDetailsKara(idPlaylist, idKara, "add");
                 });
             } else if (infoKara.is(':visible')) {
-                if(saveLastDetailsKara[idPlaylist + 1000].indexOf(idKara) > -1) {
-                    saveLastDetailsKara[idPlaylist + 1000].pop(idKara); }
+				saveDetailsKara(idPlaylist, idKara, "remove");
                 infoKara.fadeOut(animTime);
                 liKara.find('[name="infoKara"]').css('border-color', '');
             } else {
-                if(saveLastDetailsKara[idPlaylist + 1000].indexOf(idKara) == -1) {
-                    saveLastDetailsKara[idPlaylist + 1000].push(idKara);}
+                saveDetailsKara(idPlaylist, idKara, "add");
                 infoKara.fadeIn(animTime);
                 liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
             }
@@ -337,9 +334,8 @@ var playKaraHtml;
      */
     // TODO supprimer idKara et reporter sur le reste du code
     fillPlaylist = function (num, idKara, from, to) {
-        console.log(num, idKara);
         var deferred = $.Deferred();
-        var idPlaylist = $("#selectPlaylist" + num).val();
+        var idPlaylist = parseInt($("#selectPlaylist" + num).val());
         var filter = $("#searchPlaylist" + num).val();
         var fromTo = "";
         var url, html, canTransferKara, canAddKara, dragHandle, playKara;
@@ -383,14 +379,13 @@ var playKaraHtml;
             //var time = console.timeEnd('ajax');
             //console.time('html');
             //console.log(urlFiltre + " : " + data.length + " résultats");
-            if(saveLastDetailsKara[idPlaylist + 1000] == undefined) { saveLastDetailsKara[idPlaylist + 1000] = []; }
+            
             var htmlContent = "";
             if (mode === "list") {
                 for (var key in data) {
                     if (data.hasOwnProperty(key)) {
                         // build the kara line
                         if (data[key].language === null) data[key].language = "";
-
                         htmlContent += "<li idKara='" + data[key].kara_id + "' idplaylistcontent='" + data[key].playlistcontent_id + " 'class='list-group-item' "
                             + (data[key].flag_playing ? "currentlyPlaying" : "" ) + ">"
                             + "<div class='btnDiv'>" + html + dragHandle + "</div>"
@@ -398,7 +393,7 @@ var playKaraHtml;
                             + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
                             + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                             + "</div>"
-                            + (saveLastDetailsKara[idPlaylist + 1000].indexOf(data[key].kara_id) > -1 ? buildKaraDetails(data[key]) : "")
+                            + (saveDetailsKara(idPlaylist, data[key].kara_id) ? buildKaraDetails(data[key]) : "")
                             + "</li>";
                       
                     }
@@ -444,6 +439,19 @@ var playKaraHtml;
                             "ui-droppable-active": "highlight-active"
                             },
                         drop : function(e, ui){ $(ui.draggable).closest('li').find('.btnDiv > [name=addKara]').click(); }
+                    });
+                }
+            } else if(dragAndDrop && scope === "admin") {
+                if(idPlaylist > 0) {
+                    var sortableUl = $("#playlist" + num);
+                    var sortableUl2 = $("#playlist" + non(num))
+                    sortableUl.sortable({
+                        appendTo: $('.playlist-main'),
+                        connectWith: sortableUl2
+                    });
+                    sortableUl2.sortable({
+                        appendTo: $('.playlist-main'),
+                        connectWith: sortableUl
                     });
                 }
             }
@@ -718,10 +726,30 @@ var playKaraHtml;
             });
 			var htmlTable = "<table>" + htmlDetails.join("") + "</table>";
             infoKaraTemp = "<div class='detailsKara alert alert-info'>" + closeButton + showFullTextButton + htmlTable + "</div>";
-			console.log(infoKaraTemp);
             return infoKaraTemp;
     }
-   
+	
+	/*
+	*	Manage memory of opened kara details
+	*	idPlaylist {Int} : id of the playlist the details are opened/closed in 
+	*	idKara {Int} : id of the kara having his details opened
+	*	command {Int} : command to execute, "add"/"remove" to add/remove to/from the list, nothing to just know if the details are opened
+	*/
+	saveDetailsKara = function(idPlaylist, idKara, command) {
+		if(isNaN(idPlaylist) || isNaN(idKara)) { return false; }
+		idPlaylist = parseInt(idPlaylist);
+		idKara = parseInt(idKara);
+		if(saveLastDetailsKara[idPlaylist + 1000] == undefined) { saveLastDetailsKara[idPlaylist + 1000] = []; }
+		if(command == "add") {
+			saveLastDetailsKara[idPlaylist + 1000].push(idKara);
+		} else if(command == "remove") {
+			saveLastDetailsKara[idPlaylist + 1000].pop(idKara);
+		} else {
+		console.log("ah",(-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000])));
+			return (-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000]));
+		}
+	}
+
     formatPlaylist = function (playlist) {
         if (!playlist.id) { return playlist.text; }
         if (!$(playlist.element).attr('flag_current') == "1" && !$(playlist.element).attr('flag_public') == "1") { return playlist.text; }

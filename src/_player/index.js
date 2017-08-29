@@ -25,6 +25,8 @@ module.exports = {
 	duration:0,
 	mutestatus:false,
 	subtext:'',
+	volume:null,
+	showsubs:true,
 	status:{},
 	pipmode:null,
 	pipsize:null,
@@ -149,6 +151,7 @@ module.exports = {
 				'--no-border',
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
+				'--volume=100',				
 			];			
 			if (module.exports.pipmode) {
 				mpvOptions.push('--autofit='+module.exports.pipsize+'%x'+module.exports.pipsize+'%');
@@ -213,7 +216,8 @@ module.exports = {
 			// Disabled loading the background at start during dev. Or not yet.
 			module.exports._player.loadFile(backgroundImageFile);
 			module.exports._player.observeProperty('sub-text',13);
-			
+			module.exports._player.observeProperty('volume',14);
+
 			module.exports._player.on('statuschange',function(status){
 				// si on affiche une image il faut considérer que c'est la pause d'après chanson
 				module.exports.status = status;
@@ -229,12 +233,14 @@ module.exports = {
 				module.exports.mutestatus = status.mute;
 				module.exports.duration = status.duration;
 				module.exports.subtext = status['sub-text'];
+				module.exports.volume = status['volume'];
 				module.exports.onStatusChange();
 			});
 			module.exports._player.on('paused',function(){
 				module.exports.playing = false;
 				module.exports._playing = false;
 				module.exports.playerstatus = 'pause';
+				module.exports.onStatusChange();
 			});			
 			module.exports._player.on('timeposition',function(position){
 				// Returns the position in seconds in the current song
@@ -258,8 +264,7 @@ module.exports = {
 			logger.debug('[Player] Audio gain adjustment : '+gain);
 			if (gain == undefined || gain == null) gain = 0;
 			module.exports._ref = reference;
-			module.exports._player.command("loadfile",[video,"replace","replaygain-fallback="+gain]);
-			module.exports._player.volume(100);
+			module.exports._player.command("loadfile",[video,"replace","replaygain-fallback="+gain]);			
 			module.exports._player.play();
 			module.exports.playerstatus = 'play'
 			// video may need some delay to play
@@ -325,6 +330,17 @@ module.exports = {
 	},
 	unmute: function() {
 		module.exports._player.unmute();
+	},
+	setVolume: function(volume) {
+		module.exports._player.volume(volume);
+	},
+	hideSubs: function() {
+		module.exports._player.hideSubtitles();
+		module.exports.showsubs = false;
+	},
+	showSubs: function() {
+		module.exports._player.showSubtitles();
+		module.exports.showsubs = true;
 	},
 	onStatusChange:function(){},
 	onEnd:function(ref){

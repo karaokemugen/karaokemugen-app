@@ -664,6 +664,31 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get one tag}
+	* @param  {number} tag_id {tag ID}
+	* @return {string} {name of tag}
+	*/
+	getTag:function(tag_id){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+
+			var sqlGetTag = fs.readFileSync(path.join(__dirname,'../../_common/db/select_tag.sql'),'utf-8');
+			module.exports._user_db_handler.get(sqlGetTag,
+				{
+					$tag_id: tag_id
+				},
+				function (err, tag) {
+					if (err) {
+						reject('Failed to get tag '+tag_id+' information : '+err);
+					} else {						
+						resolve(tag.name);
+					}
+				});
+		});
+	},
+	/**
 	* @function {getPlaylistInfo}
 	* @param  {number} playlist_id {Playlist ID}
 	* @return {Object} {Playlist object}

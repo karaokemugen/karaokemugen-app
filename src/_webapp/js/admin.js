@@ -33,7 +33,8 @@
     })
 
 
-    $('button[action="command"]').click(function () {
+    $('button[action="command"]').click(function (e) {
+		if(e.target.name == "setVolume") return false;
         var val = $(this).val();
         var dataAjax = { command: val };
         if ($(this).attr('options') != undefined) dataAjax['options'] = $(this).attr('options');
@@ -41,6 +42,22 @@
             url: 'admin/player',
             type: 'PUT',
             data: dataAjax
+        }).done(function (data) {
+           // refreshCommandStates();
+        });
+    });
+	$('input[action="command"][type="range"]').change(function (e) {
+        var val = parseInt($(this).val()), base = .04;
+		val = val / 100; 
+		val = (Math.pow(base,val)-1)/(base-1);
+		val = parseInt(val*100);
+        var name = $(this).attr('name');
+		console.log(val);
+		
+        $.ajax({
+            url: 'admin/player',
+            type: 'PUT',
+            data: { command : name, options : val }
         }).done(function (data) {
            // refreshCommandStates();
         });
@@ -55,6 +72,7 @@
            // refreshCommandStates();
         });
     });
+
     $('button[action="poweroff"]').click(function() {
           $.ajax({
             url: 'admin/shutdown',
