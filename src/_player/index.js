@@ -17,6 +17,7 @@ module.exports = {
 	stayontop: 0,
 	nohud: 0,
 	nobar: 0,
+	vo: null,
 	BINPATH:null,
 	SETTINGS:null,
 	SYSPATH:null,
@@ -181,6 +182,9 @@ module.exports = {
 						break;
 				}
 				mpvOptions.push('--geometry='+positionX+'%:'+positionY+'%');
+			}
+			if(module.exports.vo!==null && module.exports.vo !== "" && module.exports.vo !== undefined) {
+				mpvOptions.push('--vo='+module.exports.vo);
 			}
 			if(module.exports.screen!==null) {
 				mpvOptions.push('--screen='+module.exports.screen);

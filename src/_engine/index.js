@@ -1246,6 +1246,7 @@ module.exports = {
 		module.exports._services.player.pippositionx = module.exports.SETTINGS.PlayerPIPPositionX;
 		module.exports._services.player.pippositiony = module.exports.SETTINGS.PlayerPIPPositionY;
 		module.exports._services.player.pipsize = module.exports.SETTINGS.PlayerPIPSize;
+		module.exports._services.player.vo = module.exports.SETTINGS.mpvVideoOutput;
 		module.exports._services.player.onStatusChange = function(){				
 			var status = {
 				private: module.exports._states.private,
