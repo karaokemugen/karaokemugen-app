@@ -157,6 +157,15 @@ module.exports = {
 	reset:function(){
 		module.exports._services.player.reset();
 	},
+	setVolume:function(volume){
+		module.exports._services.player.setVolume(volume);
+	},
+	showSubs:function(){
+		module.exports._services.player.showSubs();
+	},
+	hideSubs:function(){
+		module.exports._services.player.hideSubs();
+	},
 	/**
 	 * @function {pause}
 	 * Pauses current song in the player and broadcasts new status.
@@ -523,11 +532,18 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onBlacklistCriterias = function(){
+		module.exports._services.apiserver.onBlacklistCriterias = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistCriterias()
 					.then(function(blc){
-						resolve(blc);
+						module.exports._services.playlist_controller.translateBlacklistCriterias(blc,lang)
+							.then(function(blc_output){
+								resolve(blc_output);
+							})
+							.catch(function(err){
+								logger.error('[Engine] translateBlacklistCriterias : '+err);							
+								reject(err);
+							})
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC getBlacklistCriterias : '+err);							
@@ -1084,6 +1100,12 @@ module.exports = {
 					case 'unmute':
 						module.exports.unmute();
 						break;
+					case 'showSubs':
+						module.exports.showSubs();
+						break;
+					case 'hideSubs':
+						module.exports.hideSubs();
+						break;
 					case 'seek':
 						if (!options && typeof options !== "undefined") options = 0;
 						if (isNaN(options)) reject('Command seek must have a numeric option value');
@@ -1094,6 +1116,10 @@ module.exports = {
 						if (isNaN(options)) reject('Command goTo must have a numeric option value');
 						module.exports.goTo(options);
 						break;
+					case 'setVolume':
+						if (!options && typeof options !== "undefined") reject('Command setVolume must have a value');
+						if (isNaN(options)) reject('Command setVolume must have a numeric option value');
+						module.exports.setVolume(options);
 				}
 				resolve();
 			});
@@ -1111,6 +1137,8 @@ module.exports = {
 					playerStatus: module.exports._services.player.playerstatus,
 					currentlyPlaying: module.exports._states.currentlyPlayingKara,
 					subText: module.exports._services.player.subtext,
+					volume: module.exports._services.player.volume,
+					showSubs: module.exports._services.player.showsubs,
 				});
 			});
 		};
@@ -1230,6 +1258,8 @@ module.exports = {
 				playerStatus: module.exports._services.player.playerstatus,
 				currentlyPlaying: module.exports._states.currentlyPlayingKara,
 				subText: module.exports._services.player.subtext,
+				showSubs: module.exports._services.player.showsubs,
+				volume: module.exports._services.player.volume,
 			}			
 			module.exports._services.ws.socket.emit('playerStatus',status);
 		};
