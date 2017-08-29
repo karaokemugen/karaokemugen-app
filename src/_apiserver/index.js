@@ -784,6 +784,8 @@ module.exports = {
 							   'mute',
 							   'unmute',
 							   'setVolume',
+							   'showSubs',
+							   'hideSubs',
 						]
 					);
 				req.getValidationResult().then(function(result) {

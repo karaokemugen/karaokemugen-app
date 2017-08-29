@@ -26,6 +26,7 @@ module.exports = {
 	mutestatus:false,
 	subtext:'',
 	volume:null,
+	showsubs:true,
 	status:{},
 	pipmode:null,
 	pipsize:null,
@@ -151,6 +152,7 @@ module.exports = {
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
 				'--volume=100',
+				'--vo=direct3d',
 			];			
 			if (module.exports.pipmode) {
 				mpvOptions.push('--autofit='+module.exports.pipsize+'%x'+module.exports.pipsize+'%');
@@ -239,6 +241,7 @@ module.exports = {
 				module.exports.playing = false;
 				module.exports._playing = false;
 				module.exports.playerstatus = 'pause';
+				module.exports.onStatusChange();
 			});			
 			module.exports._player.on('timeposition',function(position){
 				// Returns the position in seconds in the current song
@@ -330,6 +333,14 @@ module.exports = {
 	},
 	setVolume: function(volume) {
 		module.exports._player.volume(volume);
+	},
+	hideSubs: function() {
+		module.exports._player.hideSubtitles();
+		module.exports.showsubs = false;
+	},
+	showSubs: function() {
+		module.exports._player.showSubtitles();
+		module.exports.showsubs = true;
 	},
 	onStatusChange:function(){},
 	onEnd:function(ref){

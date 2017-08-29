@@ -160,6 +160,12 @@ module.exports = {
 	setVolume:function(volume){
 		module.exports._services.player.setVolume(volume);
 	},
+	showSubs:function(){
+		module.exports._services.player.showSubs();
+	},
+	hideSubs:function(){
+		module.exports._services.player.hideSubs();
+	},
 	/**
 	 * @function {pause}
 	 * Pauses current song in the player and broadcasts new status.
@@ -1118,6 +1124,12 @@ module.exports = {
 					case 'unmute':
 						module.exports.unmute();
 						break;
+					case 'showSubs':
+						module.exports.showSubs();
+						break;
+					case 'hideSubs':
+						module.exports.hideSubs();
+						break;
 					case 'seek':
 						if (!options && typeof options !== "undefined") options = 0;
 						if (isNaN(options)) reject('Command seek must have a numeric option value');
@@ -1150,6 +1162,7 @@ module.exports = {
 					currentlyPlaying: module.exports._states.currentlyPlayingKara,
 					subText: module.exports._services.player.subtext,
 					volume: module.exports._services.player.volume,
+					showSubs: module.exports._services.player.showsubs,
 				});
 			});
 		};
@@ -1265,6 +1278,8 @@ module.exports = {
 				playerStatus: module.exports._services.player.playerstatus,
 				currentlyPlaying: module.exports._states.currentlyPlayingKara,
 				subText: module.exports._services.player.subtext,
+				showSubs: module.exports._services.player.showsubs,
+				volume: module.exports._services.player.volume,
 			}			
 			module.exports._services.ws.socket.emit('playerStatus',status);
 		};
