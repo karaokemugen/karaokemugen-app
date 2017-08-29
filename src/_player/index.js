@@ -83,7 +83,7 @@ module.exports = {
 
 				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp');
 				var req = http.request({
-					host: 'toyundamugen.shelter.moe',
+					host: 'mugen.karaokes.moe',
 					port: 80,
 					path: '/'+mpvHTTP
 				});
