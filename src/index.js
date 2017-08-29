@@ -33,19 +33,9 @@ i18n.configure({
 	register: global
 });
 
-var detectedLocale = osLocale.sync().substring(0,2);
-i18n.setLocale(detectedLocale);
-logger.info('[Launcher] Locale detected : '+detectedLocale);
-
 if (argv.help) {
 
 	console.log(__('HELP_MSG'));
-	process.exit(0);
-}
-
-if (argv.version) {
-	console.log('Karaoke Mugen v2.0 - Finé Fantastique');
-	console.log('Database schema version : xxx');
 	process.exit(0);
 }
 
@@ -64,9 +54,22 @@ if(SYSPATH) {
 		extend(true,SETTINGS,configCustom);
 		logger.debug('[Launcher] Custom configuration merged.');
 	}
+	var version = ini.parse(fs.readFileSync(path.join(SYSPATH,'VERSION'), 'utf-8'));
+	extend(true,SETTINGS,version);
+
 	SETTINGS.os = process.platform;
-	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);
 	SETTINGS.EngineDefaultLocale = detectedLocale;	
+
+	if (argv.version) {
+		console.log('Karaoke Mugen '+SETTINGS.VersionNo+' - '+SETTINGS.VersionName);
+		console.log('Database schema version : xxx');
+		process.exit(0);
+	}
+
+	var detectedLocale = osLocale.sync().substring(0,2);
+	i18n.setLocale(detectedLocale);
+	logger.info('[Launcher] Locale detected : '+detectedLocale);
+	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);	
 
 	logger.info('[Launcher] Loaded configuration file');
 	logger.debug('[Launcher] Loaded configuration : '+JSON.stringify(SETTINGS,null,'\n'));
