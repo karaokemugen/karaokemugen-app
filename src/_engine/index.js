@@ -157,6 +157,9 @@ module.exports = {
 	reset:function(){
 		module.exports._services.player.reset();
 	},
+	setVolume:function(volume){
+		module.exports._services.player.setVolume(volume);
+	},
 	/**
 	 * @function {pause}
 	 * Pauses current song in the player and broadcasts new status.
@@ -1125,6 +1128,10 @@ module.exports = {
 						if (isNaN(options)) reject('Command goTo must have a numeric option value');
 						module.exports.goTo(options);
 						break;
+					case 'setVolume':
+						if (!options && typeof options !== "undefined") reject('Command setVolume must have a value');
+						if (isNaN(options)) reject('Command setVolume must have a numeric option value');
+						module.exports.setVolume(options);
 				}
 				resolve();
 			});
@@ -1142,6 +1149,7 @@ module.exports = {
 					playerStatus: module.exports._services.player.playerstatus,
 					currentlyPlaying: module.exports._states.currentlyPlayingKara,
 					subText: module.exports._services.player.subtext,
+					volume: module.exports._services.player.volume,
 				});
 			});
 		};
