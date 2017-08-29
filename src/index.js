@@ -57,6 +57,8 @@ if(SYSPATH) {
 	var version = ini.parse(fs.readFileSync(path.join(SYSPATH,'VERSION'), 'utf-8'));
 	extend(true,SETTINGS,version);
 
+	var detectedLocale = osLocale.sync().substring(0,2);
+	i18n.setLocale(detectedLocale);
 	SETTINGS.os = process.platform;
 	SETTINGS.EngineDefaultLocale = detectedLocale;	
 
@@ -65,9 +67,6 @@ if(SYSPATH) {
 		console.log('Database schema version : xxx');
 		process.exit(0);
 	}
-
-	var detectedLocale = osLocale.sync().substring(0,2);
-	i18n.setLocale(detectedLocale);
 	logger.info('[Launcher] Locale detected : '+detectedLocale);
 	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);	
 

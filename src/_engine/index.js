@@ -7,6 +7,7 @@ const logger = require('../_common/utils/logger.js');
 const extend = require('extend');
 const timestamp = require('unix-timestamp');
 const ini = require('ini');
+const async = require('async');
 
 /**
  * @module engine
@@ -1045,6 +1046,33 @@ module.exports = {
 						logger.error('[Engine] PLC addKaraToPlaylist : '+err)
 						reject(err);
 					});
+			});
+		};
+		module.exports._services.apiserver.onKarasAddToPlaylist = function(karaList,playlist_id){
+			return new Promise(function(resolve,reject){
+				// When adding a group of karaokes, they are added by user "Admin" by default.
+				// Also, they're added at the end of the list.
+				// No exceptions. :)
+				karaArray = karaList.split(',');
+				var requester = 'Admin';
+				async.eachLimit(karaArray, 5, function(kara_id, callback){
+					module.exports._services.playlist_controller.addKaraToPlaylist(kara_id,requester,playlist_id)
+						.then(function(){
+							logger.info('[Engine] Group add : Karaoke '+kara_id+' added to playlist '+playlist_id);
+							callback();
+						})
+						.catch(function(err){
+							logger.warn('[Engine] Group add : error adding karaoke '+kara_id+' to playlist '+playlist_id+' : '+err);
+							callback(err);
+						});
+				},function(err){
+					if (err) {
+						logger.warn('[Engine] Group add : one or more karaokes could not be added to playlist '+playlist_id+' : '+err);
+						reject(err);
+					} else {
+						resolve();
+					}					
+				});
 			});
 		};
 		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){
