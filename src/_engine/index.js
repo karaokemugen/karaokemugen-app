@@ -1055,7 +1055,8 @@ module.exports = {
 				// No exceptions. :)
 				karaArray = karaList.split(',');
 				var requester = 'Admin';
-				async.eachLimit(karaArray, 5, function(kara_id, callback){
+				logger.debug('[Engine] Group add of karas : '+karaList)
+				async.eachLimit(karaArray, 800, function(kara_id, callback){
 					module.exports._services.playlist_controller.addKaraToPlaylist(kara_id,requester,playlist_id)
 						.then(function(){
 							logger.info('[Engine] Group add : Karaoke '+kara_id+' added to playlist '+playlist_id);
@@ -1070,6 +1071,7 @@ module.exports = {
 						logger.warn('[Engine] Group add : one or more karaokes could not be added to playlist '+playlist_id+' : '+err);
 						reject(err);
 					} else {
+						logger.info('[Engine] All group karas added')
 						resolve();
 					}					
 				});
