@@ -61,7 +61,7 @@ module.exports = {
 			var routerAdmin = express.Router();
 
 			app.listen(module.exports.LISTEN, function () {
-				logger.info('API server is READY and listens on port '+module.exports.LISTEN);
+				logger.info('[API] API server is READY and listens on port '+module.exports.LISTEN);
 			});
 
 			routerAdmin.use(basicAuth({ authorizer: AdminPasswordSetting }));

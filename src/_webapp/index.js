@@ -68,14 +68,14 @@ module.exports = {
 
             module.exports._server.listen(module.exports.LISTEN);
 
-            logger.info('Webapp is READY and listens on port '+module.exports.LISTEN);
+            logger.info('[Webapp] Webapp is READY and listens on port '+module.exports.LISTEN);
             
             // trigger test event (call engine deffered method and log response)
             //console.log(module.exports.onTest());
         }
         else
         {
-            logger.error('Webapp already started');
+            logger.error('[Webapp] Webapp already started');
         }
     },
 

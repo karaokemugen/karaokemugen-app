@@ -18,23 +18,23 @@ module.exports = {
 			// démarre une instance de SQLITE
 
 			if(module.exports.SYSPATH === null) {
-				logger.error('_engine/components/db_interface.js : SYSPATH is null');
+				logger.error('[DBI] _engine/components/db_interface.js : SYSPATH is null');
 				process.exit();
 			}
 
 			var userDB_Test = new Promise(function(resolve,reject){
 				if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'))) {
-					logger.warn('User database not found');
+					logger.warn('[DBI] User database not found');
 					var db = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'));
 					var sqlCreateUserDB = fs.readFileSync(path.join(__dirname,'../../_common/db/userdata.sqlite3.sql'),'utf-8');
 					db.exec(sqlCreateUserDB, function (err){
 						if (err) {
-							logger.error('Failed creating user database : '+err);
+							logger.error('[DBI] Failed creating user database : '+err);
 							db.close();
 							reject(err);
 						} else {
 							db.close();
-							logger.info('User database created');
+							logger.info('[DBI] User database created');
 							resolve();
 						}
 					});
@@ -45,12 +45,12 @@ module.exports = {
 
 			var karasDB_Test = new Promise(function(resolve,reject){
 				if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'))) {
-					logger.warn('Karaoke database not found');
+					logger.warn('[DBI] Karaoke database not found');
 					var generator = require('../../_admin/generate_karasdb.js');
 					generator.SYSPATH = module.exports.SYSPATH;
 					generator.SETTINGS = module.exports.SETTINGS;
 					generator.onLog = function(type,message) {
-						logger.info('Generating database',message);
+						logger.info('[DBI] Generating database',message);
 					};
 					generator.run().then(function(response){
 						resolve();
@@ -68,12 +68,12 @@ module.exports = {
 			.then(function() {
 				module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
 					if (err) {
-						logger.error('Loading karaoke database failed : '+err);
+						logger.error('[DBI] Loading karaoke database failed : '+err);
 						process.exit();
 					} else {
 						module.exports._db_handler.run('PRAGMA foreign_keys = ON;', function (err) {
 							if (err) {
-								logger.error('Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
+								logger.error('[DBI] Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
 								process.exit();
 							}
 						});
@@ -82,13 +82,13 @@ module.exports = {
 
 				module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
 					if (err) {
-						logger.error('Loading user database failed : '+err);
+						logger.error('[DBI] Loading user database failed : '+err);
 						process.exit();
 					} else {
 						module.exports._user_db_handler.serialize(function() {
 							module.exports._user_db_handler.run('PRAGMA foreign_keys = ON;', function(err) {
 								if (err) {
-									logger.error('Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
+									logger.error('[DBI] Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
 									process.exit();
 								}
 							});
@@ -101,18 +101,18 @@ module.exports = {
 										module.exports._ready = true;
 										module.exports.getStats()
 											.then(function(stats) {
-												logger.info('Karaoke count   : ' + stats.totalcount);
-												logger.info('Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format(
+												logger.info('[DBI] Karaoke count   : ' + stats.totalcount);
+												logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format(
 													'D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-												logger.info('Total series    : ' + stats.totalseries);
-												logger.info('Total languages : ' + stats.totallanguages);
-												logger.info('Total artists   : ' + stats.totalartists);
-												logger.info('Total playlists : ' + stats.totalplaylists);
+												logger.info('[DBI] Total series    : ' + stats.totalseries);
+												logger.info('[DBI] Total languages : ' + stats.totallanguages);
+												logger.info('[DBI] Total artists   : ' + stats.totalartists);
+												logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
 											})
 											.catch(function(err) {
-												logger.warn('Failed to fetch statistics : ' + err);
+												logger.warn('[DBI] Failed to fetch statistics : ' + err);
 											});
-										logger.info('Database interface is READY');
+										logger.info('[DBI] Database interface is READY');
 										resolve();
 									}
 								});
@@ -166,7 +166,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateSeriesCount,
 					function (err, res) {
 						if (err) {
-							logger.warn('Failed to fetch series count : '+err);
+							logger.warn('[DBI] Failed to fetch series count : '+err);
 							stats.totalseries = 0;
 							resolve();
 						} else {
@@ -181,7 +181,7 @@ module.exports = {
 				module.exports._user_db_handler.get(sqlCalculatePlaylistCount,
 					function (err, res) {
 						if (err) {
-							logger.warn('Failed to fetch playlists count : '+err);
+							logger.warn('[DBI] Failed to fetch playlists count : '+err);
 							stats.totalplaylists = 0;
 							resolve();
 						} else {
@@ -195,7 +195,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateArtistCount,
 					function (err, res) {
 						if (err) {
-							logger.warn('Failed to fetch artists count : '+err);
+							logger.warn('[DBI] Failed to fetch artists count : '+err);
 							stats.totalartists = 0;
 							resolve();
 						} else {
@@ -209,7 +209,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateKaraCount,
 					function (err, res) {
 						if (err) {
-							logger.error('Failed to fetch karaoke count : '+err);
+							logger.error('[DBI] Failed to fetch karaoke count : '+err);
 							stats.totalcount = 0;
 							resolve();
 						} else {
@@ -223,7 +223,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateLanguageCount,
 					function (err, res) {
 						if (err) {
-							logger.error('Failed to fetch language count : '+err);
+							logger.error('[DBI] Failed to fetch language count : '+err);
 							stats.totallanguages = 0;
 							resolve();
 						} else {
@@ -237,7 +237,7 @@ module.exports = {
 				module.exports._db_handler.get(sqlCalculateTotalDuration,
 					function (err, res) {
 						if (err) {
-							logger.error('Failed to fetch duration data : '+err);
+							logger.error('[DBI] Failed to fetch duration data : '+err);
 							stats.totalduration = 'Unknown';
 							resolve();
 						} else {
@@ -386,7 +386,7 @@ module.exports = {
 	deleteBlacklistCriteria:function(blc_id) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				logger.error('DB_INTERFACE is not ready to work');
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
 				reject('Database interface is not ready yet');
 			}
 			var sqlDeleteBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_blacklist_criteria.sql'),'utf-8');
@@ -732,7 +732,7 @@ module.exports = {
 			module.exports._user_db_handler.all(sqlGetPlaylists,
 				function (err, playlists) {
 					if (err) {
-						logger.error('Failed to fetch list of playlists : '+err);
+						logger.error('[DBI] Failed to fetch list of playlists : '+err);
 						reject(err);
 					} else {
 						resolve(playlists);
@@ -753,7 +753,7 @@ module.exports = {
 			module.exports._user_db_handler.get(sqlTestCurrentPlaylistExists,
 				function (err, row) {
 					if (err) {
-						logger.error('Failed to find out if there is a current playlist : '+err);
+						logger.error('[DBI] Failed to find out if there is a current playlist : '+err);
 						reject();
 					} else {
 						if (row) {
@@ -778,7 +778,7 @@ module.exports = {
 			module.exports._user_db_handler.get(sqlTestPublicPlaylistExists,
 				function (err, row) {
 					if (err) {
-						logger.error('Failed to find out if there is a public playlist : '+err);
+						logger.error('[DBI] Failed to find out if there is a public playlist : '+err);
 						reject();
 					} else {
 						if (row) {
@@ -1195,7 +1195,7 @@ module.exports = {
 					$playlist_id: playlist_id
 				}, function(err) {
 					if (err) {
-						logger.error('Failed to empty playlist '+playlist_id+' : '+err);
+						logger.error('[DBI] Failed to empty playlist '+playlist_id+' : '+err);
 						reject(err);
 					} else {
 						resolve();
@@ -1211,7 +1211,7 @@ module.exports = {
 				$playlist_id: playlist_id
 			}, function(err) {
 				if (err) {
-					logger.error('Failed to delete playlist '+playlist_id+' : '+err);
+					logger.error('[DBI] Failed to delete playlist '+playlist_id+' : '+err);
 					reject()
 				}
 				resolve();
@@ -1228,7 +1228,7 @@ module.exports = {
 	addViewcount:function(kara_id,kid,datetime) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				logger.error('Database interface is not ready yet!');
+				logger.error('[DBI] Database interface is not ready yet!');
 				reject();
 			}
 			var sqlAddViewcount = fs.readFileSync(path.join(__dirname,'../../_common/db/add_viewcount.sql'),'utf-8');
@@ -1239,7 +1239,7 @@ module.exports = {
 				$modified_at: datetime
 			}, function (err, rep) {
 				if (err) {
-					logger.error('Failed to add viewcount for karaoke '+kara_id+' : '+err);
+					logger.error('[DBI] Failed to add viewcount for karaoke '+kara_id+' : '+err);
 					reject(err);					
 				} else {
 					resolve();
@@ -1250,7 +1250,7 @@ module.exports = {
 	updateTotalViewcounts:function(kid) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				logger.error('Database interface is not ready yet!');
+				logger.error('[DBI] Database interface is not ready yet!');
 				reject();
 			}
 			var sqlCalculateViewcount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_viewcount.sql'),'utf-8');
@@ -1259,7 +1259,7 @@ module.exports = {
 				$kid: kid
 			}, function (err, rep) {
 				if (err) {
-					logger.error('Failed to calculate viewcount for karaoke ID '+kid+' : '+err);
+					logger.error('[DBI] Failed to calculate viewcount for karaoke ID '+kid+' : '+err);
 					reject(err);					
 				} else {
 					resolve();
@@ -1282,7 +1282,7 @@ module.exports = {
 		logger.debug('[DBI] editPlaylist : args : '+JSON.stringify(arguments));
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				logger.error('Database interface is not ready yet!');
+				logger.error('[DBI] Database interface is not ready yet!');
 				reject();
 			}
 
@@ -1302,7 +1302,7 @@ module.exports = {
 				$flag_public: flag_public
 			}, function (err, rep) {
 				if (err) {
-					logger.error('Failed to edit playlist '+playlist_id+' : '+err);
+					logger.error('[DBI] Failed to edit playlist '+playlist_id+' : '+err);
 					reject(err);					
 				} else {
 					resolve();
@@ -1313,7 +1313,7 @@ module.exports = {
 	createPlaylist:function(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				logger.error('Database interface is not ready yet!');
+				logger.error('[DBI] Database interface is not ready yet!');
 				reject('Database not ready');
 			}
 
@@ -1330,7 +1330,7 @@ module.exports = {
 				$flag_public: flag_public
 			}, function (err, rep) {
 				if (err) {
-					logger.error('Failed to create playlist '+name+' : '+err);
+					logger.error('[DBI] Failed to create playlist '+name+' : '+err);
 					reject(err);
 				} else {					
 					resolve(this.lastID);
@@ -1341,7 +1341,7 @@ module.exports = {
 	editWhitelistKara:function(wlc_id,reason) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
-				logger.error('Database interface is not ready yet!');
+				logger.error('[DBI] Database interface is not ready yet!');
 				reject('Database not ready');
 			}
 

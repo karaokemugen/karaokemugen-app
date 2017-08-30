@@ -147,9 +147,9 @@ module.exports = {
 				});
 			});
 			module.exports._server.listen(module.exports.LISTEN);
-			logger.info('Dashboard is READY and listens on port '+module.exports.LISTEN);
+			logger.info('[Admin] Dashboard is READY and listens on port '+module.exports.LISTEN);
 		} else {
-			logger.error('Dashboard is already started!');
+			logger.error('[Admin] Dashboard is already started!');
 		}
 	},
 	open: function(){
@@ -160,7 +160,7 @@ module.exports = {
 		var os = require('os');
 
 		if(os.platform()=='linux') {
-			logger.info('Launcher::Serveur : Go to http://'+ip.address()+':'+module.exports.LISTEN);
+			logger.info('[Admin] Go to http://'+ip.address()+':'+module.exports.LISTEN);
 			cp.exec('firefox --new-tab http://'+ip.address()+':'+module.exports.LISTEN);
 		} else {
 			//open('http://'+ip.address()+':'+module.exports.LISTEN);
@@ -184,7 +184,7 @@ module.exports = {
 		module.exports.setLocalStates('generate_karabd',true);
 		// on coupe l'accès à la base de données
 		module.exports.DB_INTERFACE.close().then(function(){
-			logger.info('Admin starting generate db script...');
+			logger.info('[Admin] Admin starting generate db script...');
 			// on vide les logs
 			socket.emit('generate_karabd', {event:'cleanLog'});
 
@@ -192,7 +192,7 @@ module.exports = {
 			generator.SYSPATH = module.exports.SYSPATH;
 			generator.SETTINGS = module.exports.SETTINGS;
 			generator.onLog = function(type,message) {
-				logger.info('Database generation -',message);
+				logger.info('[Admin] Database generation -',message);
 				if(type!='notice')
 					socket.emit('generate_karabd', {event:'addLog',data:message});
 			};
