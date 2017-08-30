@@ -17,7 +17,7 @@
 	"TYPE_TRAILER_SHORT": "TRAILER",
 	"TYPE_OTHER": "Autre",
 	"TYPE_OTHER_SHORT": "OT",
-	"TYPE_PV": "Bande-annonce",
+	"TYPE_PV": "Vidéo Promo",
 	"TYPE_PV_SHORT": "PV",
 	"TAG_SPECIAL": "Special",
 	"TAG_GAMECUBE": "Gamecube",
@@ -46,7 +46,7 @@
 	"TAG_SEGACD": "Mega CD",
 	"TAG_REMIX": "Remix",
 	"REQUESTED_BY": "Demandé par",
-	"HELP_MSG": "Utilisation : \n\ntoyundamugen [--help] [--version] [--debug] [--testplaylist]\n\n\tOptions : \n\n\t\t--help     Affiche ce message d'aide\n\t\t--version  Affiche les infos de version\n\t\t--debug    Affiche les messages de debug\n\t\t--testplaylist    Lance une procédure de test du contrôleur de playlist\n\n",
+	"HELP_MSG": "Utilisation : \n\nkaraokemugen [--help] [--version] [--debug] [--testplaylist]\n\n\tOptions : \n\n\t\t--help     Affiche ce message d'aide\n\t\t--version  Affiche les infos de version\n\t\t--debug    Affiche les messages de debug\n\n",
 	"DAY": "jour(s)",
 	"HOUR": "heure(s)",
 	"MINUTE": "minute(s)",
@@ -56,8 +56,6 @@
 	"UNDEFINED_LANGUAGE": "Langue indéfinie",
 	"UNKNOWN_LANGUAGE": "Langue inconnue",
 	"GO_TO": "Allez sur",
-	"TAG_VOICELESS": "Sans paroles",
-	"Concert": "Concert",
-	"TAG_ROMANCE": "Romance",
-	"TAG_AMV": "AMV"	
+	"TAG_VOICELESS": "Sans paroles",	
+	"TAG_ROMANCE": "Romance",	
 }
