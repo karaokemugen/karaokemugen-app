@@ -13,3 +13,5 @@ doc/
 \.DS_Store
 *.backup
 config\.ini
+
+list\.txt
