@@ -43,6 +43,10 @@ module.exports = {
 							logger.error('[ASS] getLyrics : '+err);
 							reject(err);						
 						}
+						if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))){
+							subFile = 'vide.ass';
+							pathToSubFiles = 'src/_player/assets/';
+						}
 					} else {
 						// No .mkv or .mp4 detected, so we create a .ass from vide.ass
 						// Videofile is most probably a hardsubbed video.
@@ -168,6 +172,11 @@ module.exports = {
 							logger.error('[ASS] build : '+err);
 							reject(err);
 						}
+						// We test if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything, so we replace it with vide.ass
+						if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))){
+							subFile = 'vide.ass';
+							pathToSubFiles = 'src/_player/assets/';
+						}
 					} else {
 						// No .mkv or .mp4 detected, so we create a .ass from vide.ass
 						// Videofile is most probably a hardsubbed video.
@@ -184,7 +193,7 @@ module.exports = {
 					}
 				}
 				// Parsing the subFile provided, either vide.ass, the associated .ass file or the extracted .ass file from
-				// a .mkv/.mp4
+				// a .mkv/.mp4				
 				var assdata = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile), 'utf-8');
 				var script = assParser(assdata, { comments: true });
 				// Contents of script array :
