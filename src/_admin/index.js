@@ -155,16 +155,14 @@ module.exports = {
 	open: function(){
 		// enfin on lance le serveur web du launcher et on tente d'ouvrir un navigateur
 		var ip = require('ip');
-		var cp = require('child_process');
-		var open = require('open');
-		var os = require('os');
+		//var cp = require('child_process');
+		//var open = require('open');
+		//var os = require('os');
 
-		if(os.platform()=='linux') {
-			logger.info('[Admin] Go to http://'+ip.address()+':'+module.exports.LISTEN);
-			cp.exec('firefox --new-tab http://'+ip.address()+':'+module.exports.LISTEN);
-		} else {
-			//open('http://'+ip.address()+':'+module.exports.LISTEN);
-		}
+		logger.info('[Admin] Go to http://'+ip.address()+':'+module.exports.LISTEN);
+		//cp.exec('firefox --new-tab http://'+ip.address()+':'+module.exports.LISTEN);		
+		//open('http://'+ip.address()+':'+module.exports.LISTEN);
+		
 	},
 
 	setEngineStates:function(newStates) {
@@ -196,11 +194,11 @@ module.exports = {
 				if(type!='notice')
 					socket.emit('generate_karabd', {event:'addLog',data:message});
 			};
-			generator.run().then(function(response){
+			generator.run().then(function(){
 				// on relance l'interface de base de données et on sort du mode rebuild
 				module.exports.DB_INTERFACE.init();
 				module.exports.setLocalStates('generate_karabd',false);
-			}).catch(function(response,error){
+			}).catch(function(response){
 				console.log(response);
 				module.exports.DB_INTERFACE.init();
 				module.exports.setLocalStates('generate_karabd',false);
