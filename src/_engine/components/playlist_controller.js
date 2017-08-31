@@ -1365,6 +1365,7 @@ module.exports = {
 						// Adding karaoke song here
 						module.exports.getKara(kara_id)
 							.then(function(kara) {
+								var generatedASSFile;
 								var pBuildASS = new Promise((resolve,reject) => {
 									assBuilder.build(
 										module.exports.SETTINGS.PathSubs,
@@ -1376,11 +1377,9 @@ module.exports = {
 										kara.serie,
 										kara.songtype,
 										kara.songorder,
-										requester,
-										kara_id,
-										playlist_id
-									)
-										.then(function() {
+										requester)
+										.then(function(uuid) {											
+											generatedASSFile = uuid+'.ass';
 											resolve();
 										})
 										.catch(function(err){
@@ -1420,16 +1419,8 @@ module.exports = {
 
 								Promise.all([pBuildASS,pGetPos,pRaisePos])
 									.then(function() {
-										module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
-											.then(function(playlistcontent_id){
-												var pRenameASS = new Promise((resolve) => {
-													fs.renameSync(
-														path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,kara_id+'.'+playlist_id+'.ass'),
-														path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
-															playlistcontent_id+'.ass')
-													);
-													resolve();
-												});
+										module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing,generatedASSFile)
+											.then(function(){
 												var pUpdateLastEditTime = new Promise((resolve,reject) => {
 													module.exports.updatePlaylistLastEditTime(playlist_id)
 														.then(function(){
@@ -1470,7 +1461,7 @@ module.exports = {
 															reject(err);
 														});
 												});
-												Promise.all([pRenameASS,pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+												Promise.all([pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 													.then(function() {
 														resolve();
 													})
@@ -1519,13 +1510,15 @@ module.exports = {
 				logger.error('[PLC] deleteKaraFromPlaylist : '+err);
 				reject(err);
 			}
-			var playlist_id = undefined;
-			var kara_id = undefined;
+			var playlist_id;
+			var kara_id;
+			var subFile;
 			var pGetPLContentInfo = new Promise((resolve,reject) => {
 				module.exports.DB_INTERFACE.getPLContentInfo(playlistcontent_id)
 					.then(function(kara) {
 						playlist_id = kara.playlist_id;
 						kara_id = kara.kara_id;
+						subFile = kara.generated_subfile;
 						resolve();
 					})
 					.catch(function(err) {						
@@ -1536,8 +1529,7 @@ module.exports = {
 			Promise.all([pGetPLContentInfo])
 				.then(function() {
 					// Removing karaoke here.
-					var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
-						playlistcontent_id+'.ass');
+					var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,subFile);
 					if (fs.existsSync(assFile)) {
 						fs.unlinkSync(assFile);
 					} else {
@@ -2220,6 +2212,7 @@ module.exports = {
 								module.exports.getKara(kara_id)
 									.then(function(kara) {
 										var pos = 0;
+										var generatedSubFile;
 										var pBuildASS = new Promise((resolve,reject) => {
 
 											assBuilder.build(
@@ -2232,10 +2225,9 @@ module.exports = {
 												kara.serie,
 												kara.songtype,
 												kara.songorder,
-												requester,
-												kara_id,
-												publicPlaylistID)
-												.then(function() {
+												requester)
+												.then(function(uuid) {
+													generatedSubFile = uuid+'.ass';
 													resolve();
 												})
 												.catch(function(err){
@@ -2262,16 +2254,8 @@ module.exports = {
 
 										Promise.all([pBuildASS,pGetPos])
 											.then(function() {
-												module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,publicPlaylistID,pos,date_add,flag_playing)
-													.then(function(playlistcontent_id){
-														var pRenameASS = new Promise((resolve) => {
-															fs.renameSync(
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,kara_id+'.'+publicPlaylistID+'.ass'),
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
-																	playlistcontent_id+'.ass')
-															);
-															resolve();
-														});
+												module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,publicPlaylistID,pos,date_add,flag_playing,generatedSubFile)
+													.then(function(){			
 														var pUpdatedDuration = new Promise((resolve,reject) => {
 															module.exports.updatePlaylistDuration(publicPlaylistID)
 																.then(function(){
@@ -2312,7 +2296,7 @@ module.exports = {
 																	reject(err);
 																});
 														});
-														Promise.all([pRenameASS,pUpdatedPlaylistLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+														Promise.all([pUpdatedPlaylistLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 															.then(function() {
 																resolve(publicPlaylistID);
 															})
@@ -2429,6 +2413,7 @@ module.exports = {
 								module.exports.getKara(kara_id)
 									.then(function(kara) {
 										var pos = 0;
+										var generatedSubFile;
 										var pBuildASS = new Promise((resolve,reject) => {
 
 											assBuilder.build(
@@ -2441,10 +2426,10 @@ module.exports = {
 												kara.serie,
 												kara.songtype,
 												kara.songorder,
-												requester,
-												kara_id,
-												currentPlaylistID)
-												.then(function() {
+												requester
+											)
+												.then(function(uuid) {
+													generatedSubFile = uuid+'.ass';
 													resolve();
 												})
 												.catch(function(err){
@@ -2471,16 +2456,8 @@ module.exports = {
 
 										Promise.all([pBuildASS,pGetPos])
 											.then(function() {
-												module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,currentPlaylistID,pos,date_add,flag_playing)
-													.then(function(playlistcontent_id){
-														var pRenameASS = new Promise((resolve) => {
-															fs.renameSync(
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,kara_id+'.'+currentPlaylistID+'.ass'),
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
-																	playlistcontent_id+'.ass')
-															);
-															resolve();
-														});
+												module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,currentPlaylistID,pos,date_add,flag_playing,generatedSubFile)
+													.then(function(){
 														var pUpdatedDuration = new Promise((resolve,reject) => {
 															module.exports.updatePlaylistDuration(currentPlaylistID)
 																.then(function(){
@@ -2521,7 +2498,7 @@ module.exports = {
 																	reject(err);
 																});
 														});
-														Promise.all([pRenameASS,pUpdatedPlaylistLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+														Promise.all([pUpdatedPlaylistLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 															.then(function() {
 																resolve(currentPlaylistID);
 															})
@@ -2706,7 +2683,7 @@ module.exports = {
 						kara.playlist_id = playlist.id;
 						kara.path = {
 							video: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
-							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.playlistcontent_id+'.ass'),
+							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.generated_subfile),
 						};						
 						resolve(kara);
 					} else { 	

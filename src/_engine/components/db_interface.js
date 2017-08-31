@@ -1375,7 +1375,7 @@ module.exports = {
 	* @param  {number} flag_playing   {Is the song playing?}
 	* @return {promise} {Promise}
 	*/
-	addKaraToPlaylist:function(kara_id,requester,NORM_requester,playlist_id,pos,date_added,flag_playing) {
+	addKaraToPlaylist:function(kara_id,requester,NORM_requester,playlist_id,pos,date_added,flag_playing,generatedSubFile) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
@@ -1403,7 +1403,8 @@ module.exports = {
 									$kid: kid,
 									$created_at: date_added,
 									$pos: pos,
-									$flag_playing: flag_playing
+									$flag_playing: flag_playing,
+									$generated_subfile: generatedSubFile
 								}, function (err) {
 									if (err) {
 										reject('Failed to add karaoke '+kara_id+' to playlist '+playlist_id+' : '+err);
