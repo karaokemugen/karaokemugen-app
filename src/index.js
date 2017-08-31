@@ -13,6 +13,17 @@ const argv = require('minimist')(process.argv.slice(2));
 const logger = require('./_common/utils/logger.js');
 const i18n = require('i18n');
 const osLocale = require('os-locale');
+process.on('uncaughtException', function (exception) {
+  console.log(exception); // to see your exception details in the console
+  // if you are on production, maybe you can send the exception details to your
+  // email as well ?
+});
+
+process.on('uncaughtException', function (exception) {
+  console.log(exception); // to see your exception details in the console
+  // if you are on production, maybe you can send the exception details to your
+  // email as well ?
+});
 
 /**
  * Clear console - and welcome message
@@ -33,19 +44,9 @@ i18n.configure({
 	register: global
 });
 
-var detectedLocale = osLocale.sync().substring(0,2);
-i18n.setLocale(detectedLocale);
-logger.info('[Launcher] Locale detected : '+detectedLocale);
-
 if (argv.help) {
 
 	console.log(__('HELP_MSG'));
-	process.exit(0);
-}
-
-if (argv.version) {
-	console.log('Karaoke Mugen v2.0 - Finé Fantastique');
-	console.log('Database schema version : xxx');
 	process.exit(0);
 }
 
@@ -64,9 +65,21 @@ if(SYSPATH) {
 		extend(true,SETTINGS,configCustom);
 		logger.debug('[Launcher] Custom configuration merged.');
 	}
+	var version = ini.parse(fs.readFileSync(path.join(SYSPATH,'VERSION'), 'utf-8'));
+	extend(true,SETTINGS,version);
+
+	var detectedLocale = osLocale.sync().substring(0,2);
+	i18n.setLocale(detectedLocale);
 	SETTINGS.os = process.platform;
-	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);
 	SETTINGS.EngineDefaultLocale = detectedLocale;	
+
+	if (argv.version) {
+		console.log('Karaoke Mugen '+SETTINGS.VersionNo+' - '+SETTINGS.VersionName);
+		console.log('Database schema version : xxx');
+		process.exit(0);
+	}
+	logger.info('[Launcher] Locale detected : '+detectedLocale);
+	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);	
 
 	logger.info('[Launcher] Loaded configuration file');
 	logger.debug('[Launcher] Loaded configuration : '+JSON.stringify(SETTINGS,null,'\n'));
@@ -130,17 +143,17 @@ if(SYSPATH) {
 			process.exit();
 		}
 	}
-
+	
 	/**
 	 * Calling engine.
 	 */
-	var engine = require('./_engine/index.js');
+	var engine = require('./_engine/index.js');	
 	engine.SYSPATH = SYSPATH;
 	engine.SETTINGS = SETTINGS;
 
 	if(argv.testplaylist)
 		engine.test_playlist_controller();
-	else
+	else		
 		engine.run();
 } else {
 	logger.error('[Launcher] Unable to detect SysPath !');

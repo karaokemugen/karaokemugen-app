@@ -36,9 +36,7 @@ CREATE TABLE playlist_content (
     NORM_pseudo_add   TEXT COLLATE NOCASE,
     pos               REAL NOT NULL,
     flag_playing      INTEGER NOT NULL,
-    banned            INTEGER DEFAULT (0),
-    banned_at         INTEGER,
-    banned_reason     TEXT
+    generated_subfile TEXT
 );
 
 CREATE TABLE blacklist (

@@ -16,7 +16,7 @@ if (argv.debug) {
 			new (winston.transports.Console)({ timestamp: tsFormat, level: 'debug', colorize: true }),
 			new (winston.transports.File)({ timestap: tsFormat, filename: 'karaokemugen.log', level: 'debug', handleExceptions: true })
 		]		
-});
+	});
 	
 }
 
