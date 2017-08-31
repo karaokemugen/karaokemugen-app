@@ -52,7 +52,7 @@ module.exports = {
 							var array = input.split(',');
 							return array.some(numberTest);
 						} else { 
-							return false;
+							return numberTest(input);
 						}						
 					}
 				}
@@ -359,7 +359,7 @@ module.exports = {
 						'kara_id': {
 							in: 'body',
 							notEmpty: true,
-							isInt: true,
+							numbersArray: true,
 						},
 						'pos': {
 							in: 'body',
@@ -395,38 +395,7 @@ module.exports = {
 							}
 						});
 				})
-				.patch(function(req,res){
-					// Read an array of kara IDs and add them to the playlist
-					req.checkBody({
-						'karaList': {
-							in: 'body',
-							notEmpty: true,
-							numbersArray: true,
-						}
-					});
-					req.getValidationResult()
-						.then(function(result) {
-							if (result.isEmpty()) {
-								module.exports.onKarasAddToPlaylist(req.body.karaList,req.params.pl_id)
-									.then(function(){
-										module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-										module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
-										res.statusCode = 200;
-										res.json('Added a group of karas ('+req.body.karaList+') to playlist '+req.params.pl_id);
-									})
-									.catch(function(err){
-										res.statusCode = 500;
-										res.json(err);
-									});
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
-								res.json(result.mapped());
-							}
-						});
-				});
-
+				
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 				.get(function(req,res){
 					module.exports.onPLCInfo(req.params.plc_id,req.query.lang)

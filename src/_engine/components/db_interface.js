@@ -1372,52 +1372,41 @@ module.exports = {
 	* @param  {number} playlist_id    {ID of playlist to add the song to}
 	* @param  {number} pos            {Position in the playlist}
 	* @param  {number} date_add       {UNIX timestap of the date and time the song was added to the list}
-	* @param  {number} flag_playing   {Is the song playing?}
 	* @return {promise} {Promise}
 	*/
-	addKaraToPlaylist:function(kara_id,requester,NORM_requester,playlist_id,pos,date_added,flag_playing,generatedSubFile) {
+	addKaraToPlaylist:function(karas) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
-
-			//We need to get the KID of the karaoke we're adding.
-
-			var sqlGetKID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kid.sql'),'utf-8');
-			module.exports._db_handler.get(sqlGetKID,
-				{
-					$kara_id: kara_id
-				}, function (err, row) {
-					if (err) {
-						reject('Failed to get KID from karaoke song '+kara_id+' : '+err);
-					} else {
-						if (row) {
-							var kid = row.kid;
-							var sqlAddKaraToPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_playlist.sql'),'utf-8');
-							module.exports._user_db_handler.run(sqlAddKaraToPlaylist,
-								{
-									$playlist_id: playlist_id,
-									$pseudo_add: requester,
-									$NORM_pseudo_add: NORM_requester,
-									$kara_id: kara_id,
-									$kid: kid,
-									$created_at: date_added,
-									$pos: pos,
-									$flag_playing: flag_playing,
-									$generated_subfile: generatedSubFile
-								}, function (err) {
-									if (err) {
-										reject('Failed to add karaoke '+kara_id+' to playlist '+playlist_id+' : '+err);
-									} else {
-										//We return the playlist_content ID of the kara we just added.
-										resolve(this.lastID);
-									}
-								});
-						} else {
-							reject('No KID found for karaoke song '+kara_id);
-						}
-					}
+			
+			//We receive an array of kara requests, we need to add them to a statement.
+			//Even for one kara.				
+			var sqlAddKaraToPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_playlist.sql'),'utf-8');
+			var stmt_addKara = module.exports._user_db_handler.prepare(sqlAddKaraToPlaylist);
+			var karaList = [];
+			karas.forEach(function(kara) {				
+				karaList.push({
+					$playlist_id: kara.playlist_id,
+					$pseudo_add: kara.requester,
+					$NORM_pseudo_add: kara.NORM_requester,
+					$kara_id: kara.kara_id,
+					$created_at: kara.date_add,
+					$pos: kara.pos,
+					$generated_subfile: kara.generatedSubFile				
 				});
+			});			
+			karaList.forEach(function(data){
+				stmt_addKara.run(data,function(err){
+					if (err) {
+						reject('Failed to add karaoke to playlist : '+err);
+					} else {
+						//We return the playlist_content ID of the kara we just added.
+						resolve();
+					}						
+				});
+			});
+				
 		});
 	},
 	/**
@@ -1514,29 +1503,29 @@ module.exports = {
 					}
 				});
 		});
-	},
+	},	
 	/**
-	* @function {Raises position of a song in playlist}
+	* @function {Shifts positions in playlist}
 	* @param  {number} playlist_id        {ID of playlist to modify}
-	* @param  {number} pos        {Position to modify}
+	* @param  {number} pos                {Position to start from}
+	* @param  {number} shift              {number of positions to shift to}
 	* @return {promise} {Promise}
 	*/
-	raisePosInPlaylist:function(pos,playlist_id) {
+	shiftPosInPlaylist:function(pos,playlist_id,shift) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
 
-			var newpos = pos + 0.1;
-			var sqlRaisePosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_raise_pos_in_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlRaisePosInPlaylist,
+			var sqlShiftPosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_shift_pos_in_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlShiftPosInPlaylist,
 				{
-					$newpos: newpos,
+					$shift: shift,
 					$playlist_id: playlist_id,
 					$pos: pos
 				}, function (err) {
 					if (err) {
-						reject('Failed to update position in playlist '+playlist_id+' : '+err);
+						reject('Failed to shift position in playlist '+playlist_id+' : '+err);
 					} else {
 						resolve();
 					}

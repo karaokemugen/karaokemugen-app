@@ -1038,7 +1038,8 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onKaraAddToPlaylist = function(id_kara,requester,playlist_id,pos){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
+				var karas = id_kara.split(',');
+				module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id,pos)
 					.then(function(){						
 						resolve(playlist_id);
 					})
@@ -1047,36 +1048,7 @@ module.exports = {
 						reject(err);
 					});
 			});
-		};
-		module.exports._services.apiserver.onKarasAddToPlaylist = function(karaList,playlist_id){
-			return new Promise(function(resolve,reject){
-				// When adding a group of karaokes, they are added by user "Admin" by default.
-				// Also, they're added at the end of the list.
-				// No exceptions. :)
-				var karaArray = karaList.split(',');
-				var requester = 'Admin';
-				logger.debug('[Engine] Group add of karas : '+karaList)
-				async.eachLimit(karaArray, 800, function(kara_id, callback){
-					module.exports._services.playlist_controller.addKaraToPlaylist(kara_id,requester,playlist_id)
-						.then(function(){
-							logger.info('[Engine] Group add : Karaoke '+kara_id+' added to playlist '+playlist_id);
-							callback();
-						})
-						.catch(function(err){
-							logger.warn('[Engine] Group add : error adding karaoke '+kara_id+' to playlist '+playlist_id+' : '+err);
-							callback(err);
-						});
-				},function(err){
-					if (err) {
-						logger.warn('[Engine] Group add : one or more karaokes could not be added to playlist '+playlist_id+' : '+err);
-						reject(err);
-					} else {
-						logger.info('[Engine] All group karas added')
-						resolve();
-					}					
-				});
-			});
-		};
+		};		
 		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
