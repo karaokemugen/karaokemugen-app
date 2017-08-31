@@ -14,9 +14,6 @@ module.exports = {
 	SYSPATH: null,
 	SETTINGS: null,
 	run: function() {
-		process.on('uncaughtException', function (exception) {
-  			console.log(exception); 
-		});
 		module.exports.onLog('success', 'Starting database generation');
 		return new Promise(function(resolve, reject) {
 			if (module.exports.SYSPATH == null) {
@@ -32,8 +29,7 @@ module.exports = {
 			var L = require('lodash');
 			var async = require('async');
 			const uuidV4 = require('uuid/v4');
-			var csv = require('csv-string');
-			var iniread = require('node-ini');
+			var csv = require('csv-string');			
 			const exec = require('child_process');
 			const ffmpegPath = require('ffmpeg-downloader').path;
 			const langsModule = require('langs');
@@ -64,13 +60,13 @@ module.exports = {
 			var karafiles = [];
 			var doUpdateSeriesAltNames = false;
 
-			module.exports.db = new sqlite3.Database(karas_dbfile, function(err, rep) {
+			module.exports.db = new sqlite3.Database(karas_dbfile, function(err) {
 				if (err) {
 					module.exports.onLog('error', 'Failed opening karaoke database');
 					reject(err);
 				}
 			});
-			module.exports.userdb = new sqlite3.Database(karas_userdbfile, function(err, rep) {
+			module.exports.userdb = new sqlite3.Database(karas_userdbfile, function(err) {
 				if (err) {
 					module.exports.onLog('error', 'Error opening user database : '+err);
 					reject(err);
@@ -87,7 +83,7 @@ module.exports = {
 				 */
 				var pCreateKarasDB = new Promise((resolve,reject) => {
 					var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
-					module.exports.db.exec(sqlCreateKarasDB, function(err, rep) {
+					module.exports.db.exec(sqlCreateKarasDB, function(err) {
 						if (err) {
 							module.exports.onLog('error', 'Error creating database tables : '+err);						
 							reject(err);
@@ -104,7 +100,7 @@ module.exports = {
 						 */
 						var pCreateKarasDBViewAll = new Promise((resolve,reject) => {
 							var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
-							module.exports.db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
+							module.exports.db.exec(sqlCreateKarasDBViewAll, function(err) {
 								if (err) {
 									module.exports.onLog('error', 'Error creating views : '+err);								
 									reject(err);
@@ -136,7 +132,7 @@ module.exports = {
 				/**
 				 * Get data from .kara files
 				 */
-				var pCreateKaraFiles = new Promise((resolve,reject) => {
+				var pCreateKaraFiles = new Promise((resolve) => {
 					karafiles = fs.readdirSync(karasdir);
 					for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
 						if(!karafiles[indexToRemove].endsWith('.kara')) {
@@ -155,7 +151,7 @@ module.exports = {
 						 */
 						var pAddToKaras = new Promise((resolve,reject) => {
 								
-							logger.profile('AddKara')
+							logger.profile('AddKara');
 							async.eachLimit(karafiles, 5, function(kara, callback){
 								addKara(kara)
 									.then(function(){
@@ -168,7 +164,7 @@ module.exports = {
 								if (err) {
 									reject(err);
 								}
-								logger.profile('AddKara')
+								logger.profile('AddKara');
 								module.exports.onLog('success', 'Karaoke count : '+karas.length);
 								resolve();
 							});
@@ -178,7 +174,7 @@ module.exports = {
 								/**
 								 * Push to array sqlInsertKaras for sql statements from karas.
 								 */
-								var pPushSqlInsertKaras = new Promise((resolve,reject) => {
+								var pPushSqlInsertKaras = new Promise((resolve) => {
 									karas.forEach(function(kara, index) {
 										index++;
 										var titlenorm = L.deburr(kara['title']);
@@ -231,7 +227,7 @@ module.exports = {
 											/**
 											 * Push to array sqlInsertSeries for sql statements from series.
 											 */
-											var pPushSqlInsertSeries = new Promise((resolve,reject) => {
+											var pPushSqlInsertSeries = new Promise((resolve) => {
 												series.forEach(function(serie, index) {
 													index++;
 													var serienorm = L.deburr(serie);
@@ -246,7 +242,7 @@ module.exports = {
 											/**
 											 * Push to array sqlInsertKarasSeries for sql statements from karas_series.
 											 */
-											var pPushSqlInsertKarasSeries= new Promise((resolve,reject) => {
+											var pPushSqlInsertKarasSeries= new Promise((resolve) => {
 												karas_series.forEach(function(karaserie) {
 													karaserie = karaserie.split(',');
 													var id_serie = karaserie[0];
@@ -262,7 +258,7 @@ module.exports = {
 											/**
 											 * Working on altnerative names of series.
 											 */
-											var pCreateSeriesAltNames= new Promise((resolve,reject) => {
+											var pCreateSeriesAltNames= new Promise((resolve) => {
 												if (fs.existsSync(series_altnamesfile)) {
 													doUpdateSeriesAltNames = true;
 													var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
@@ -331,7 +327,7 @@ module.exports = {
 											/**
 											 * Push to array sqlInsertTags for sql statements from tags.
 											 */
-											var pPushSqlInsertTags = new Promise((resolve,reject) => {
+											var pPushSqlInsertTags = new Promise((resolve) => {
 												tags.forEach(function(tag, index) {
 													index++;
 													tag = tag.split(',');
@@ -351,7 +347,7 @@ module.exports = {
 											/**
 											 * Push to array sqlInsertKarasTags for sql statements from karas_tags.
 											 */
-											var pPushSqlInsertKarasTags = new Promise((resolve,reject) => {
+											var pPushSqlInsertKarasTags = new Promise((resolve) => {
 												karas_tags.forEach(function(karatag) {
 													karatag = karatag.split(',');
 													var id_tag = karatag[0];
@@ -722,7 +718,7 @@ module.exports = {
 									// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM blacklist WHERE kid = \'' + BLKara.kid + '\';';
-										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from blacklist');
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+BLKara.kid+' from blacklist');
 										UpdateNeeded = true;
 									}
 								});
@@ -744,7 +740,7 @@ module.exports = {
 									// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM rating WHERE kid = \'' + RKara.kid + '\';';
-										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from ratings');
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+RKara.kid+' from ratings');
 										UpdateNeeded = true;
 									}
 								});
@@ -766,7 +762,7 @@ module.exports = {
 									// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM viewcount WHERE kid = \'' + VKara.kid + '\';';
-										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from viewcounts');
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+VKara.kid+' from viewcounts');
 										UpdateNeeded = true;
 									}
 								});
@@ -805,7 +801,7 @@ module.exports = {
 										module.exports.onLog('error', 'Error updating database : '+err);										
 										reject();
 									} else {
-										module.exports.userdb.exec(sqlUpdateUserDB, function(err, rep) {
+										module.exports.userdb.exec(sqlUpdateUserDB, function(err) {
 											if (err) {
 												module.exports.onLog('error', 'Error updating database : '+err);										
 												reject();
@@ -829,8 +825,7 @@ module.exports = {
 				});
 			}
 			function getvideogain(videofile){
-				return new Promise((resolve,reject) => {
-					var videogain = 0;
+				return new Promise((resolve) => {					
 					var proc = exec.spawn(ffmpegPath, ['-i', videosdir + '/' + videofile, '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 
 					var audioGain = undefined;
@@ -838,7 +833,7 @@ module.exports = {
 
 					proc.stderr.on('data',(data) => {
 						output += data.toString();
-					})
+					});
 
 					proc.on('close', (code) => {
 						if (code !== 0) {
@@ -851,14 +846,14 @@ module.exports = {
 								audioGain = parseFloat(outputArray[index+2]);
 							}	
 							if (typeof audioGain === 'number') {
-								resolve(audioGain.toString())
+								resolve(audioGain.toString());
 							} else {
 								resolve(0);
 							}
 						}						
-					})
+					});
 
-				})
+				});
 			}
 			function getvideoduration(videofile) {
 				return new Promise((resolve,reject) => {
@@ -886,7 +881,7 @@ module.exports = {
 							// Don't do anything.
 						} else {
 							if (L.isEmpty(karaInfos[1])) {
-								reject('Karaoke series cannot be detected!')
+								reject('Karaoke series cannot be detected!');
 							} else {
 								serieslist.push(karaInfos[1]);
 							}									
@@ -894,7 +889,7 @@ module.exports = {
 					} else {
 						serieslist = karadata.series.split(',');
 						if (serieslist === [])  {
-							reject('Karaoke series cannot be detected!')
+							reject('Karaoke series cannot be detected!');
 						}
 					}
 					serieslist.forEach(function(serie) {
@@ -985,7 +980,8 @@ module.exports = {
 						var langs = karadata.lang.split(',');
 						langs.forEach(function(lang) {
 							var tag = lang.trimLeft();
-							if (!langsModule.has('2B',tag) && tag !== 'und') {					reject('Unknown language : '+tag);
+							if (!langsModule.has('2B',tag) && tag !== 'und') {
+								reject('Unknown language : '+tag);
 							} else {
 								if (taglist.indexOf(tag + ',5') == -1) {
 									taglist.push(tag + ',5');
@@ -1073,7 +1069,7 @@ module.exports = {
 						taglist.push('TAG_XBOX360,7');
 					}
 					if (!typeDetected) {
-						reject('Karaoke type cannot be detected! Got : '+karaType)
+						reject('Karaoke type cannot be detected! Got : '+karaType);
 					}
 					taglist.forEach(function(tag) {
 						tag = tag.trimLeft();
@@ -1123,7 +1119,7 @@ module.exports = {
 							var karaOrder = undefined;
 							var karaType = karaInfos[2];
 							if (L.isEmpty(karaType)) {
-								reject('Karaoke type is empty! Karaoke : '+karafile)
+								reject('Karaoke type is empty! Karaoke : '+karafile);
 							}
 							if (!isNaN(karaType.substr(karaType.length-2,2))) {
 								karaOrder = karaType.substr(karaType.length-2,2);
@@ -1146,7 +1142,7 @@ module.exports = {
 							}
 							
 							if (L.isEmpty(karadata.subfile)){
-								reject('Karaoke sub file empty! Karaoke '+karafile+' / data : '+karadata)
+								reject('Karaoke sub file empty! Karaoke '+karafile+' / data : '+karadata);
 							} else {
 								kara['subfile'] = karadata.subfile;
 							}
@@ -1155,7 +1151,7 @@ module.exports = {
 							//Calculate size.
 							
 							if (fs.existsSync(videosdir + '/' + kara['videofile'])) {
-								var videostats = fs.statSync(videosdir + '/' + kara['videofile'])								
+								var videostats = fs.statSync(videosdir + '/' + kara['videofile']);							
 								if (videostats.size != karadata.videosize) {
 									//Probe file for duration
 									//Calculate gain
@@ -1171,7 +1167,7 @@ module.exports = {
 											.catch(function(err){
 												kara['gain'] = 0;
 												reject(err);
-											})
+											});
 									});
 
 									var pGetVideoDuration = new Promise ((resolve,reject) => {
@@ -1212,7 +1208,7 @@ module.exports = {
 							Promise.all([pGetVideoDuration,pGetVideoGain])
 								.then(function(){
 									karas.push(kara);
-									fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err, rep) {
+									fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err) {
 										if (err) {
 											module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
 											reject(err);
@@ -1229,8 +1225,6 @@ module.exports = {
 			}
 		});
 	},
-	onLog: function(type, message) {
-		// Event to bring up messages into dashboard.
-		logger.warn('onLog not set');
-	}
+	onLog: function() {}
+
 };

@@ -4,6 +4,14 @@ const logger = require('../_common/utils/logger.js');
 const bodyParser = require('body-parser');
 const basicAuth = require('express-basic-auth');
 
+function numberTest(element) {
+	if (isNaN(element)) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
 module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
@@ -13,7 +21,7 @@ module.exports = {
 	_engine_states:{},
 	_local_states:{},
 	init:function() {
-		return new Promise(function(resolve,error){
+		return new Promise(function(resolve){
 			if(module.exports.SYSPATH === null) {
 				logger.error('SysPath is null!');
 				process.exit();
@@ -39,21 +47,13 @@ module.exports = {
 			app.use(expressValidator({
 				customValidators: {
 					enum: (input, options) => options.includes(input),
-					numbersArray: function(input, options) {
+					numbersArray: function(input) {
 						if (input.includes(',')) {
 							var array = input.split(',');
-							function numberTest(element,index,array) {
-								if (isNaN(element)) {
-									return false;
-								} else {
-									return true;
-								}
-							}
 							return array.some(numberTest);
 						} else { 
 							return false;
-						}
-						return true;
+						}						
 					}
 				}
 			}));
@@ -61,7 +61,7 @@ module.exports = {
 			var routerAdmin = express.Router();
 
 			app.listen(module.exports.LISTEN, function () {
-				logger.info('API server is READY and listens on port '+module.exports.LISTEN);
+				logger.info('[API] API server is READY and listens on port '+module.exports.LISTEN);
 			});
 
 			routerAdmin.use(basicAuth({ authorizer: AdminPasswordSetting }));
@@ -185,7 +185,7 @@ module.exports = {
 								//Now we add playlist
 								module.exports.onPlaylistCreate(req.body)
 									.then(function(new_playlist){
-										module.exports.emitEvent('playlistsUpdated')
+										module.exports.emitEvent('playlistsUpdated');
 										res.statusCode = 201;
 										res.json(new_playlist);		
 									})
@@ -274,50 +274,50 @@ module.exports = {
 				});
 			
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
-			.put(function(req,res){
+				.put(function(req,res){
 				// Empty playlist
 
-				module.exports.onPlaylistSingleEmpty(req.params.pl_id)
-					.then(function(){
-						res.json('Playlist '+req.params.pl_id+' emptied');
-						module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-						module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
-					})
-					.catch(function(err){
-						res.statusCode = 500;
-						res.json(err);
-					});
-				})
+					module.exports.onPlaylistSingleEmpty(req.params.pl_id)
+						.then(function(){
+							res.json('Playlist '+req.params.pl_id+' emptied');
+							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
+							module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
-			.put(function(req,res){
-				// set playlist to current
+				.put(function(req,res){
+					// set playlist to current
 
-				module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
-					.then(function(){
-						res.json('Playlist '+req.params.pl_id+' is now current');
-						module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-						module.exports.emitEvent('playlistsUpdated',req.params.pl_id);
-					})
-					.catch(function(err){
-						res.statusCode = 500;
-						res.json(err);
-					});
-				})
+					module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
+						.then(function(){
+							res.json('Playlist '+req.params.pl_id+' is now current');
+							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
+							module.exports.emitEvent('playlistsUpdated',req.params.pl_id);
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
-			.put(function(req,res){
-				// Empty playlist
+				.put(function(req,res){
+					// Empty playlist
 
-				module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
-					.then(function(){
-						res.json('Playlist '+req.params.pl_id+' is now public');
-						module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-						module.exports.emitEvent('playlistsUpdated');
-					})
-					.catch(function(err){
-						res.statusCode = 500;
-						res.json(err);
-					});
-				})	
+					module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
+						.then(function(){
+							res.json('Playlist '+req.params.pl_id+' is now public');
+							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
+							module.exports.emitEvent('playlistsUpdated');
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
 				.get(function(req,res){
 					//Access :pl_id by req.params.pl_id
@@ -325,16 +325,17 @@ module.exports = {
 					var playlist_id = req.params.pl_id;
 					var filter = req.query.filter;
 					var lang = req.query.lang;
+					var to;
 					if (!req.query.to) {
-						var to = 999999;
+						to = 999999;
 					} else {
-						var to = req.query.to;
+						to = req.query.to;
 					}				
-
+					var from;
 					if (!req.query.from) {
-						var from = 0;
+						from = 0;
 					} else {
-						var from = req.query.from;
+						from = req.query.from;
 					}
 					var seenFromUser = false;
 					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,to)
@@ -580,16 +581,16 @@ module.exports = {
 					req.checkBody('PlayerPIPPositionX')
 						.notEmpty()
 						.enum(['Left',
-								'Center',
-								'Right'
-							]
+							'Center',
+							'Right'
+						]
 						);					
 					req.checkBody('PlayerPIPPositionY')
 						.notEmpty()
 						.enum(['Top',
-								'Center',
-								'Bottom'
-							]
+							'Center',
+							'Bottom'
+						]
 						);
 					
 					req.getValidationResult().then(function(result) {
@@ -688,7 +689,7 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(err);
 						});
-				})
+				});
 			routerAdmin.route('/whitelist/:wl_id([0-9]+)')
 				.delete(function(req,res){
 					//Delete kara from whitelist
@@ -840,18 +841,18 @@ module.exports = {
 					req.checkBody('command')
 						.notEmpty()
 						.enum(['play',
-								'pause',
-								'stopNow',
-								'stopAfter',
-								'skip',
-								'prev',
-								'toggleFullscreen',
-								'toggleAlwaysOnTop',
-								'seek',
-								'goTo',
-								'mute',
-								'unmute'
-							]
+							'pause',
+							'stopNow',
+							'stopAfter',
+							'skip',
+							'prev',
+							'toggleFullscreen',
+							'toggleAlwaysOnTop',
+							'seek',
+							'goTo',
+							'mute',
+							'unmute'
+						]
 						);
 					req.getValidationResult().then(function(result) {
 						if (result.isEmpty()) {
@@ -872,6 +873,7 @@ module.exports = {
 					});
 				});
 
+			/* NOT IMPLEMENTED YET
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/portable')
 				.get(function(req,res){
 					// Returns the playlist and its contents in an exportable format (to save on disk)
@@ -879,6 +881,7 @@ module.exports = {
 				.post(function(req,res){
 					// Imports a playlist and its contents in an importable format (posted as a file)
 				});
+			*/
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
 				.put(function(req,res){
@@ -933,16 +936,17 @@ module.exports = {
 					var playlist_id = req.params.pl_id;
 					var filter = req.query.filter;
 					var lang = req.query.lang;
+					var to;
 					if (!req.query.to) {
-						var to = 999999;
+						to = 999999;
 					} else {
-						var to = req.query.to;
+						to = req.query.to;
 					}
-
+					var from;
 					if (!req.query.from) {
-						var from = 0;
+						from = 0;
 					} else {
-						var from = req.query.from;
+						from = req.query.from;
 					}
 					var seenFromUser = true;
 					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,to)
@@ -967,7 +971,7 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(err);
 						});
-				})
+				});
 			routerPublic.route('/settings')
 				.get(function(req,res){
 					//We don't want to return all settings.
@@ -1012,7 +1016,7 @@ module.exports = {
 								res.json(err);
 							});
 					} else {
-						res.StatusCode = 403
+						res.StatusCode = 403;
 						res.json('Displaying whitelist to public is disabled');
 					}				
 				});
@@ -1032,7 +1036,7 @@ module.exports = {
 								res.json(err);
 							});
 					} else {
-						res.StatusCode = 403
+						res.StatusCode = 403;
 						res.json('Displaying blacklist to public is disabled');
 					}				
 				});
@@ -1050,7 +1054,7 @@ module.exports = {
 								res.json(err);
 							});
 					} else {
-						res.StatusCode = 403
+						res.StatusCode = 403;
 						res.json('Displaying blacklist criterias to public is disabled');
 					}				
 				});
@@ -1078,17 +1082,17 @@ module.exports = {
 					// then the playlist returned gets filtered with the text.
 					var filter = req.query.filter;
 					var lang = req.query.lang;
-					
+					var to;
 					if (!req.query.to) {
-						var to = 999999;
+						to = 999999;
 					} else {
-						var to = req.query.to;
+						to = req.query.to;
 					}
-
+					var from;
 					if (!req.query.from) {
-						var from = 0;
+						from = 0;
 					} else {
-						var from = req.query.from;
+						from = req.query.from;
 					}
 
 					module.exports.onKaras(filter,lang,from,to)
@@ -1158,7 +1162,7 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(err);
 						});
-				})
+				});
 			routerPublic.route('/playlists/current')
 				.get(function(req,res){
 					// Get current Playlist
@@ -1178,16 +1182,17 @@ module.exports = {
 					// Get current Playlist
 					var lang = req.query.lang;
 					var filter = req.query.filter;
+					var from;
 					if (!req.query.from) {
-						var from = 0;
+						from = 0;
 					} else {
-						var from = req.query.from;
+						from = req.query.from;
 					}
-
+					var to;
 					if (!req.query.to) {
-						var to = 999999;
+						to = 999999;
 					} else {
-						var to = req.query.to;
+						to = req.query.to;
 					}
 					module.exports.onPlaylistCurrentContents(filter, lang, from, to)
 						.then(function(playlist){
@@ -1217,16 +1222,17 @@ module.exports = {
 					// Get current Playlist
 					var lang = req.query.lang;
 					var filter = req.query.filter;
+					var to;
 					if (!req.query.to) {
-						var to = 999999;
+						to = 999999;
 					} else {
-						var to = req.query.to;
+						to = req.query.to;
 					}
-
+					var from;
 					if (!req.query.from) {
-						var from = 0;
+						from = 0;
 					} else {
-						var from = req.query.from;
+						from = req.query.from;
 					}
 					module.exports.onPlaylistPublicContents(filter, lang, from, to)
 						.then(function(playlist){
@@ -1257,7 +1263,7 @@ module.exports = {
 
 				if (req.method === 'OPTIONS') {
 					res.statusCode = 200;
-					res.json()
+					res.json();
 				} else {
 					// Pass to next layer of middleware
 					next();

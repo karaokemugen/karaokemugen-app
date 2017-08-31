@@ -7,18 +7,16 @@ var L = require('lodash');
 var i18n = require('i18n');
 const uuidv4 = require('uuid/v4');
 const exec = require('child_process');
-const moment = require('moment');
-require('moment-duration-format');
 const ffmpegPath = require('ffmpeg-downloader').path;
 
 module.exports = {
 	getLyrics:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder){
-		return new Promise(function(resolve,reject){
-			var uuid = uuidv4();
+		return new Promise(function(resolve,reject){	
+			var uuid = uuidv4();		
 			var lyrics = [];			
 			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
-				var err = 'Video not found : '+videofile
-				logger.error('[ASS] getLyrics : '+err)
+				var err = 'Video not found : '+videoFile;
+				logger.error('[ASS] getLyrics : '+err);
 				reject(err);
 			} else {
 				//Testing if the subfile provided is dummy.ass
@@ -41,6 +39,10 @@ module.exports = {
 						if (proc.error) {
 							err = 'Failed to extract ASS file : '+proc.error;
 							logger.error('[ASS] getLyrics : '+err);
+							logger.debug('[ASS] ffmpegData : '+ffmpegData);
+							logger.debug('[ASS] errData : '+errData);
+							logger.debug('[ASS] exitCode : '+exitCode);
+							logger.debug('[ASS] start : '+start);
 							reject(err);						
 						}
 						if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))){
@@ -57,8 +59,8 @@ module.exports = {
 					// Checking if subFile exists. Abort if not.
 					//console.log(pathToSubFiles);
 					if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))) {
-						var err = ('Unable to find ASS file : '+subfile);
-						logger.error('[ASS] getLyrics : '+err)
+						err = ('Unable to find ASS file : '+subFile);
+						logger.error('[ASS] getLyrics : '+err);
 						reject(err);
 					}
 				}
@@ -66,29 +68,31 @@ module.exports = {
 				// a .mkv/.mp4
 				var assdata = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile), 'utf-8');
 				var script = assParser(assdata, { comments: true });
+				var DialogueSection;
 				script.forEach(function(ASSSection,index){
 					if (ASSSection.section == 'Events') {
 						DialogueSection = index;
 					}
 				});
-				script[DialogueSection].body.forEach(function(param,index){
-						if (param.key == 'Dialogue') {
-							lyrics.push(param.value.Text.replace(/\{(?:.|\n)*?\}/gm, ''));
-						}
+				script[DialogueSection].body.forEach(function(param){
+					if (param.key == 'Dialogue') {
+						lyrics.push(param.value.Text.replace(/\{(?:.|\n)*?\}/gm, ''));
+					}
 				});
 				resolve(lyrics);
 			}
-		})
+		});
 	},
 	toggleDisplayNickname:function(karalist,displayNickname,tempFolder){
-		return new Promise(function(resolve,reject){		
+		return new Promise(function(resolve){		
 			// If DisplayNickname is true, then try to add the requested by bit to the ASS again if it's not there already
 			// If it's false then find the Dialogue with the Pseudo style and delete it. 		
 			karalist.forEach(function(kara){			
 				//Open the .ass
-				var assFile = tempFolder+'/'+kara.playlistcontent_id+'.ass';
+				var assFile = tempFolder+'/'+kara.generated_subfile;
 				var assData = fs.readFileSync(path.resolve(module.exports.SYSPATH,assFile), 'utf-8');
 				var script = assParser(assData, { comments: true });			
+				var DialogueSection;
 				script.forEach(function(ASSSection,index){
 					if (ASSSection.section == 'Events') {
 						DialogueSection = index;
@@ -104,6 +108,7 @@ module.exports = {
 				if (displayNickname) {
 					// Check if the Dialogue bit of the .ass exists.
 					// If it doesn't, add it.
+					var outputFile;
 					if (dialogueIndex === undefined) {
 						var DialogueNickname = {
 							key: 'Dialogue',
@@ -121,7 +126,7 @@ module.exports = {
 							}
 						};
 						script[DialogueSection].body.push(DialogueNickname);
-						var outputFile = tempFolder+'/'+kara.playlistcontent_id+'.ass';
+						outputFile = tempFolder+'/'+kara.playlistcontent_id+'.ass';
 						fs.writeFileSync(outputFile, assStringify(script));					
 					} 				
 				} else {
@@ -130,7 +135,7 @@ module.exports = {
 					// We leave the style as it doesn't pose a threat.
 					if (dialogueIndex !== undefined) {
 						script[DialogueSection].body.splice(dialogueIndex,1);
-						var outputFile = tempFolder+'/'+kara.playlistcontent_id+'.ass';
+						outputFile = tempFolder+'/'+kara.generated_subfile;
 						fs.writeFileSync(outputFile, assStringify(script));
 					}				
 				}			
@@ -138,7 +143,7 @@ module.exports = {
 			resolve();		
 		});
 	},
-	build:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id){
+	build:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester){
 		var uuid = uuidv4();
 		logger.debug(module.exports.SYSPATH+' - '+pathToVideoFiles);
 		logger.debug('[ASS] args = '+JSON.stringify(arguments));
@@ -147,8 +152,8 @@ module.exports = {
 			//Testing if video file exists and which extension it has.
 
 			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
-				var err = 'Video not found : '+videoFile
-				logger.error('[ASS] build : '+err)
+				var err = 'Video not found : '+videoFile;
+				logger.error('[ASS] build : '+err);
 				reject(err);
 			} else {
 				//Testing if the subfile provided is dummy.ass
@@ -170,6 +175,10 @@ module.exports = {
 						if (proc.error) {
 							err = 'Failed to extract ASS file : '+proc.error;
 							logger.error('[ASS] build : '+err);
+							logger.debug('[ASS] ffmpegData : '+ffmpegData);
+							logger.debug('[ASS] errData : '+errData);
+							logger.debug('[ASS] exitCode : '+exitCode);
+							logger.debug('[ASS] start : '+start);
 							reject(err);
 						}
 						// We test if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything, so we replace it with vide.ass
@@ -187,8 +196,8 @@ module.exports = {
 					// Checking if subFile exists. Abort if not.
 					//console.log(pathToSubFiles);
 					if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))) {
-						var err = 'ASS file not found : '+subFile
-						logger.error('[ASS] build : '+err)
+						err = 'ASS file not found : '+subFile;
+						logger.error('[ASS] build : '+err);
 						reject(err);
 					}
 				}
@@ -215,29 +224,7 @@ module.exports = {
 				});
 
 				// Calculate font size to use for Credits and Nickname
-				// Based on size of first Style encountered.
-
-				/* Old method using PlayResX.
-
-				var CreditsSize = 15;
-				var NickSize = 8;
-				var PlayResXDetected = false;
-
-				script[0].body.forEach(function(param){
-					if (param.key = 'PlayResX') {
-						if (param.value = 1920) {
-							CreditsSize = 50;
-							NickSize = 25;
-							PlayResXDetected = true;
-						}
-						if (param.value = 1280) {
-							CreditsSize = 40;
-							NickSize = 20;
-							PlayResXDetected = true;
-						}
-					}
-				})
-				*/
+				// Based on size of first Style encountered.				
 
 				var styleFontSize = undefined;
 
@@ -375,14 +362,14 @@ module.exports = {
 
 				// Writing to the final ASS, which is the karaoke's ID.ass
 				// If writing is successfull, we return the path to the ASS file.
-				var outputFile = outputFolder+'/'+kara_id+'.'+playlist_id+'.ass';
-				fs.writeFile(outputFile, assStringify(script), function(err, rep) {
+				var outputFile = outputFolder+'/'+uuid+'.ass';
+				fs.writeFile(outputFile, assStringify(script), function(err) {
 					if (err) {
-						var err = 'Failed to write ASS file : '+err;
+						err = 'Failed to write ASS file : '+err;
 						logger.error('[ASS] build : '+err);
 						reject(err);
-					} else {
-						resolve(outputFile);
+					} else {						
+						resolve(uuid);
 					}
 				});
 			}
@@ -390,4 +377,4 @@ module.exports = {
 			
 		});
 	}
-}
+};

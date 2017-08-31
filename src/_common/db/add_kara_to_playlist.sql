@@ -1,1 +1,1 @@
-INSERT INTO playlist_content(fk_id_playlist,fk_id_kara,kid,created_at,pseudo_add,NORM_pseudo_add,pos,flag_playing) VALUES($playlist_id,$kara_id,$kid,$created_at,$pseudo_add,$NORM_pseudo_add,$pos,$flag_playing);
+INSERT INTO playlist_content(fk_id_playlist,fk_id_kara,kid,created_at,pseudo_add,NORM_pseudo_add,pos,flag_playing,generated_subfile) VALUES($playlist_id,$kara_id,$kid,$created_at,$pseudo_add,$NORM_pseudo_add,$pos,$flag_playing,$generated_subfile);

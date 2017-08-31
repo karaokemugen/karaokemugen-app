@@ -37,7 +37,7 @@ module.exports = {
 		var mpvBinary;
 		var mpvHTTP;
 		var pGenerateBackground = new Promise((resolve,reject) => {
-			generateBackground = require('./generate_background.js');
+			var generateBackground = require('./generate_background.js');
 			generateBackground.SYSPATH = module.exports.SYSPATH;
 			generateBackground.frontend_port = module.exports.frontend_port;
 			generateBackground.SETTINGS = module.exports.SETTINGS;
@@ -49,8 +49,8 @@ module.exports = {
 				.catch(function(err){
 					logger.error('[Player] Background generation error : '+err);
 					reject(err); 
-				})
-		})
+				});
+		});
 		var pIsmpvAvailable = new Promise((resolve,reject) => {
 			if (module.exports.SETTINGS.os == 'win32') {
 				mpvBinary = module.exports.BINPATH+'/mpv.exe';
@@ -75,7 +75,7 @@ module.exports = {
 				logger.warn('[Player] mpv not found in path : '+module.exports.BINPATH+' or '+mpvBinary);
 				if (process.platform == 'linux') {
 					logger.error('[Player] You need to have mpv installed first. Use apt-get/yum/etc. depending on your linux distribution.');
-					reject('mpv not installed!')
+					reject('mpv not installed!');
 				}
 
 				logger.warn('[Player] You can download it manually from http://mpv.io and place it in '+module.exports.BINPATH);
@@ -83,7 +83,7 @@ module.exports = {
 
 				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp');
 				var req = http.request({
-					host: 'toyundamugen.shelter.moe',
+					host: 'mugen.karaokes.moe',
 					port: 80,
 					path: '/'+mpvHTTP
 				});
@@ -144,7 +144,7 @@ module.exports = {
 		});
 
 		Promise.all([pIsmpvAvailable,pGenerateBackground]).then(function() {
-			logger.debug('[Player] mpv is available')
+			logger.debug('[Player] mpv is available');
 			var mpvOptions = [
 				'--keep-open=yes',
 				'--idle=yes',
@@ -160,30 +160,30 @@ module.exports = {
 				var positionX = 50;
 				var positionY = 50;
 				switch(module.exports.pippositionx){
-					case 'Left':
-						positionX = 1;
-						break;
-					case 'Center':
-						positionX = 50;
-						break;
-					case 'Right':
-						positionX = 99;
-						break;
+				case 'Left':
+					positionX = 1;
+					break;
+				case 'Center':
+					positionX = 50;
+					break;
+				case 'Right':
+					positionX = 99;
+					break;
 				}
 				switch(module.exports.pippositiony){
-					case 'Top':
-						positionY = 5;
-						break;
-					case 'Center':
-						positionY = 50;
-						break;
-					case 'Bottom':
-						positionY = 95;
-						break;
+				case 'Top':
+					positionY = 5;
+					break;
+				case 'Center':
+					positionY = 50;
+					break;
+				case 'Bottom':
+					positionY = 95;
+					break;
 				}
 				mpvOptions.push('--geometry='+positionX+'%:'+positionY+'%');
 			}
-			if(module.exports.vo!==null && module.exports.vo !== "" && module.exports.vo !== undefined) {
+			if(module.exports.vo!==null && module.exports.vo !== '' && module.exports.vo !== undefined) {
 				mpvOptions.push('--vo='+module.exports.vo);
 			}
 			if(module.exports.screen!==null) {
@@ -216,7 +216,7 @@ module.exports = {
 				},
 				mpvOptions
 			);
-			var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg')
+			var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 			// Disabled loading the background at start during dev. Or not yet.
 			module.exports._player.loadFile(backgroundImageFile);
 			module.exports._player.observeProperty('sub-text',13);
@@ -268,9 +268,9 @@ module.exports = {
 			logger.debug('[Player] Audio gain adjustment : '+gain);
 			if (gain == undefined || gain == null) gain = 0;
 			module.exports._ref = reference;
-			module.exports._player.command("loadfile",[video,"replace","replaygain-fallback="+gain]);			
+			module.exports._player.command('loadfile',[video,'replace','replaygain-fallback='+gain]);			
 			module.exports._player.play();
-			module.exports.playerstatus = 'play'
+			module.exports.playerstatus = 'play';
 			// video may need some delay to play
 			setTimeout(function(){
 				module.exports._playing = true;
@@ -284,7 +284,7 @@ module.exports = {
 				} else {
 					logger.info('[Player] Subs not needed');
 				}
-				var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg')
+				var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 				module.exports._player.loadFile(backgroundImageFile,'append');
 			},500);
 		} else {
@@ -311,17 +311,17 @@ module.exports = {
 		module.exports.playing = false;
 		module.exports.timeposition = 0;
 		module.exports._playing = false;
-		module.exports.playerstatus = 'stop'
-		var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg') // TODO à supprimer
+		module.exports.playerstatus = 'stop';
+		var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg'); // TODO à supprimer
 		module.exports._player.loadFile(backgroundImageFile);
 	},
 	pause: function(){		
 		module.exports._player.pause();
-		module.exports.playerstatus = 'pause'
+		module.exports.playerstatus = 'pause';
 	},
 	resume: function(){
 		module.exports._player.play();
-		module.exports.playerstatus = 'play'
+		module.exports.playerstatus = 'play';
 	},
 	seek: function(delta) {
 		module.exports._player.seek(delta);
@@ -347,7 +347,7 @@ module.exports = {
 		module.exports.showsubs = true;
 	},
 	onStatusChange:function(){},
-	onEnd:function(ref){
+	onEnd:function(){
 		// événement émis pour quitter l'application
 		logger.error('Player :: onEnd not set');
 	},
