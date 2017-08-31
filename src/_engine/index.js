@@ -1038,9 +1038,13 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onKaraAddToPlaylist = function(id_kara,requester,playlist_id,pos){
 			return new Promise(function(resolve,reject){
+				logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+id_kara);
+				logger.profile('AddKara')
 				var karas = id_kara.split(',');
 				module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id,pos)
-					.then(function(){						
+					.then(function(){
+						logger.profile('AddKara')						
+						logger.info('[Engine] Finished adding karaokes to playlist '+playlist_id);
 						resolve(playlist_id);
 					})
 					.catch(function(err){

@@ -1365,7 +1365,7 @@ module.exports = {
 						.then(function(isKaraInPL) {
 							//Karaoke song is in playlist, then we update the boolean and resolve the promise
 							//since we don't want duplicates in playlists.
-							if (isKaraInPL) {
+							if (isKaraInPL) {								
 								isKaraIDInPlaylist = kara_id;
 								isKaraInPlaylist = true;
 							}
@@ -1390,9 +1390,11 @@ module.exports = {
 						var err = 'A karaoke song '+isKaraIDInPlaylist+' is already in playlist '+playlist_id;
 						logger.error('[PLC] addKaraToPlaylist : '+err);
 						reject(err);
-					} else {						
-						var pBuildASS = new Promise((resolve,reject) => {								
+					} else {	
+						logger.debug('[PLC] addKaraToPlaylist : building ASS and setting positions');					
+						var pBuildASS = new Promise((resolve,reject) => {								logger.profile('ASSGeneration');
 							async.eachOf(karaList,function(karaToAdd, index, callback){
+								logger.debug('[PLC] addKaraToPlaylist : building ASS for kara ID '+karaToAdd.kara_id)
 								module.exports.getKara(karaToAdd.kara_id)
 									.then(function(kara) {
 										assBuilder.build(
@@ -1411,7 +1413,7 @@ module.exports = {
 												callback();
 											})
 											.catch(function(err){
-												logger.error('[PLC] ASS build : '+err);
+												logger.error('[PLC] ASS build (kara ID '+kara.kara_id+') (Video : '+kara.videofile+') : '+err);
 												callback(err);
 											});
 									})							
@@ -1423,6 +1425,7 @@ module.exports = {
 								if (err) {
 									reject(err);
 								} else {
+									logger.profile('ASSGeneration');
 									resolve();
 								}
 							});							
@@ -1431,7 +1434,7 @@ module.exports = {
 							// If pos is provided, we need to update all karas above that and add 
 							// karas.length to the position
 							// If pos is not provided, we need to get the maximum position in the PL
-							// And use that +1 to set our playlist position.
+							// And use that +1 to set our playlist position.						logger.profile('PositionManagement');	
 							if (pos) {
 								module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,karas.length)
 									.then(function(){
@@ -1451,6 +1454,7 @@ module.exports = {
 											karaList[index].pos = startpos+index;
 											index++;
 										});
+										logger.profile('PositionManagement');	
 										resolve();
 									})
 									.catch(function(err){
@@ -1460,12 +1464,17 @@ module.exports = {
 							}
 						});													
 						Promise.all([pBuildASS,pManagePos])
-							.then(function() {									
+							.then(function() {	
+								logger.debug('[PLC] addKaraToPlaylist : Adding to database');		logger.profile('DB_AddKaraToPlaylist');					
 								module.exports.DB_INTERFACE.addKaraToPlaylist(karaList)
 									.then(function(){
+										logger.profile('DB_AddKaraToPlaylist');					
+										logger.debug('[PLC] addKaraToPlaylist : updating playlist info');
 										var pUpdateLastEditTime = new Promise((resolve,reject) => {
+											logger.profile('DB_AddKaraToPlaylist_UpdateEditTime');				
 											module.exports.updatePlaylistLastEditTime(playlist_id)
 												.then(function(){
+													logger.profile('DB_AddKaraToPlaylist_UpdateEditTime');
 													resolve();
 												})
 												.catch(function(err){
@@ -1474,8 +1483,10 @@ module.exports = {
 												});
 										});
 										var pUpdatedDuration = new Promise((resolve,reject) => {
+											logger.profile('DB_AddKaraToPlaylist_UpdateDuration');
 											module.exports.updatePlaylistDuration(playlist_id)
 												.then(function(){
+													logger.profile('DB_AddKaraToPlaylist_UpdateDuration');
 													resolve();
 												})
 												.catch(function(err){
@@ -1484,8 +1495,10 @@ module.exports = {
 												});
 										});
 										var pUpdatedKarasCount = new Promise((resolve,reject) => {
+											logger.profile('DB_AddKaraToPlaylist_UpdateCount');
 											module.exports.updatePlaylistNumOfKaras(playlist_id)
 												.then(function(){
+													logger.profile('DB_AddKaraToPlaylist_UpdateCount');
 													resolve();
 												})
 												.catch(function(err){
@@ -1495,6 +1508,7 @@ module.exports = {
 										});										
 										Promise.all([pUpdateLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
 											.then(function() {
+												logger.profile('DB_AddKaraToPlaylist');				
 												resolve();
 											})
 											.catch(function(err) {

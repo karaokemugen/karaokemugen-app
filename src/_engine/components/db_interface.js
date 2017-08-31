@@ -5,6 +5,7 @@ const logger = require('../../_common/utils/logger.js');
 const moment = require('moment');
 require('moment-duration-format');
 moment.locale('fr');
+const async = require('async');
 
 module.exports = {
 	SYSPATH:null,
@@ -925,7 +926,7 @@ module.exports = {
 					if (err) {
 						reject('Failed to find if karaoke song '+kara_id+' is in playlist '+playlist_id+' or not : '+err);
 					} else {
-						if (row) {
+						if (row) {							
 							resolve(true);
 						} else {
 							resolve(false);
@@ -1395,18 +1396,39 @@ module.exports = {
 					$pos: kara.pos,
 					$generated_subfile: kara.generatedSubFile				
 				});
-			});			
-			karaList.forEach(function(data){
-				stmt_addKara.run(data,function(err){
+			});	
+			module.exports._user_db_handler.serialize(function() {		
+				module.exports._user_db_handler.run('begin transaction', function(err) {
 					if (err) {
-						reject('Failed to add karaoke to playlist : '+err);
+						reject('Failed to begin transaction : '+err);
 					} else {
-						//We return the playlist_content ID of the kara we just added.
-						resolve();
-					}						
-				});
+						async.each(karaList,function(data,callback){
+							stmt_addKara.run(data,function(err){
+								if (err) {
+									reject('Failed to add karaoke to playlist : '+err);				callback();					
+								} else {
+									callback();
+								}						
+							});
+						}, function(err){
+							if (err) {
+								reject('Failed to add one karaoke to playlist : '+err);
+							} else {
+								module.exports._user_db_handler.run('commit', function(err) {
+									if (err) {
+										reject(err);
+									} else {
+									// Close all statements just to be sure.
+										stmt_addKara.finalize();
+										resolve();
+									}				
+								});											
+							}
+						});						
+					}
+				});								
 			});
-				
+			resolve();	
 		});
 	},
 	/**

@@ -145,7 +145,6 @@ module.exports = {
 	},
 	build:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester){
 		var uuid = uuidv4();
-		logger.debug(module.exports.SYSPATH+' - '+pathToVideoFiles);
 		logger.debug('[ASS] args = '+JSON.stringify(arguments));
 		return new Promise(function(resolve, reject){
 
