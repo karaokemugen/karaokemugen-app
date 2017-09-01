@@ -2342,7 +2342,7 @@ module.exports = {
 			for (i = 1; i <= 5; i++) {				
 				logger.info('[PLC] Dummy Plug : Adding Kara '+i+' into current playlist');			
 				module.exports.addKaraToPlaylist(
-					i,
+					[i],
 					'Dummy user '+i,
 					playlist_id
 				)
