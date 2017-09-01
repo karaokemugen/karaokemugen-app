@@ -2037,8 +2037,15 @@ module.exports = {
 						// We have a kara ID, let's get the kara itself and append it to the value
 						module.exports.DB_INTERFACE.getKara(blc.value)
 							.then(function(kara){
-								blclist[index].value = kara;								
-								resolve();
+								module.exports.translateKaraInfo(kara,lang)
+									.then(function (karaTranslated){
+										blclist[index].value = karaTranslated;
+										resolve();
+									})
+									.catch(function (err){
+										logger.error('[PLC] translateBlacklistCriterias : translateKaraInfo : '+err);
+										reject(err);
+									});						
 							})
 							.catch(function(err){
 								logger.error('[PLC] translateBlacklistCriterias : '+err);
