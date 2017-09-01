@@ -2338,23 +2338,19 @@ module.exports = {
 	build_dummy_current_playlist:function(playlist_id){
 		logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...');
 		return new Promise(function(resolve,reject){
-			var i;
-			for (i = 1; i <= 5; i++) {				
-				logger.info('[PLC] Dummy Plug : Adding Kara '+i+' into current playlist');			
-				module.exports.addKaraToPlaylist(
-					[i],
-					'Dummy user '+i,
+			logger.info('[PLC] Dummy Plug : Adding 5 karas into current playlist');			
+			module.exports.addKaraToPlaylist(
+					[1,2,3,4,5],
+					'Dummy user',
 					playlist_id
 				)
 					.then(function(){
-					// Do nothing.
+						resolve();
 					})
 					.catch(function(message){
 						logger.error('[PLC] Dummy Plug : '+message);
 						reject(message);
-					});
-			}
-			resolve();
+					});			
 		});
 	},
 
