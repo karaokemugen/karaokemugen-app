@@ -3,11 +3,12 @@ var timestamp = require('unix-timestamp');
 timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
 const assBuilder = require('./ass_builder.js');
-const fs = require('fs');
+const fs = require('fs-extra');
 const L = require('lodash');
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
 const async = require('async');
+const uuidv4 = require('uuid/v4');
 
 module.exports = {
 	SYSPATH:null,
@@ -1345,16 +1346,22 @@ module.exports = {
 			});
 			var pIsKara = new Promise((resolve,reject) => {
 				// Need to do this for each karaoke.
-				karas.forEach(function(kara_id) {
+				async.each(karas,function(kara_id,callback) {				
 					module.exports.isKara(kara_id)
 						.then(function() {
-							// Do nothing
+							callback();
 						})
 						.catch(function(err) {
 							err = 'Karaoke song '+kara_id+' unknown';
 							logger.error('[PLC] isKara : '+err);
-							reject(err);
+							callback(err);
 						});
+				},function(err){
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
 				});
 				resolve();
 			});
@@ -1392,9 +1399,10 @@ module.exports = {
 						reject(err);
 					} else {	
 						logger.debug('[PLC] addKaraToPlaylist : building ASS and setting positions');					
-						var pBuildASS = new Promise((resolve,reject) => {								logger.profile('ASSGeneration');
+						var pBuildASS = new Promise((resolve,reject) => {
+							logger.profile('ASSGeneration');
 							async.eachOf(karaList,function(karaToAdd, index, callback){
-								logger.debug('[PLC] addKaraToPlaylist : building ASS for kara ID '+karaToAdd.kara_id)
+								logger.debug('[PLC] addKaraToPlaylist : building ASS for kara ID '+karaToAdd.kara_id);
 								module.exports.getKara(karaToAdd.kara_id)
 									.then(function(kara) {
 										assBuilder.build(
@@ -1450,7 +1458,7 @@ module.exports = {
 									.then(function(maxpos){
 										startpos = maxpos + 1.0;
 										var index = 0;
-										karaList.forEach(function(kara){
+										karaList.forEach(function(){
 											karaList[index].pos = startpos+index;
 											index++;
 										});
@@ -1532,6 +1540,223 @@ module.exports = {
 				})
 				.catch(function(err) {
 					logger.error('[PLC] addKaraToPlaylist : '+err);
+					reject(err);
+				});
+
+		});
+	},
+	/**
+	* @function {copy playlist contents to Playlist}
+	* @param  {number} plc_id     {ID of playlist contents to add}
+	* @param  {number} playlist_id {ID of playlist to add to}
+	* @param  {number} pos         {OPTIONAL : Position in playlist}
+	* @return {boolean} {Promise}
+	* If no position is provided, it will be maximum position in playlist + 1
+	*/
+	copyKaraToPlaylist:function(plcs,playlist_id,pos) {
+		// plcs is an array of plc_ids.
+		return new Promise(function(resolve,reject){
+			var date_add = timestamp.now();
+			// Let's build the complete array of kara objects
+			var plcList = [];
+			plcs.forEach(function(plc_id){
+				plcList.push({
+					plc_id: plc_id,
+					playlist_id: playlist_id,
+					date_add: date_add,				
+				});				
+			});
+
+			var pIsPlaylist = new Promise((resolve,reject) => {
+				module.exports.isPlaylist(playlist_id)
+					.then(function() {
+						resolve(true);
+					})
+					.catch(function(err) {
+						err = 'Playlist '+playlist_id+' unknown';
+						logger.error('[PLC] isPlaylist : '+err);
+						reject(err);
+					});
+			});
+			var pCheckPLCandKaraInPlaylist = new Promise((resolve,reject) => {
+				// Need to do this for each karaoke.
+				async.eachOf(plcList,function(playlistContent,index,callback) {				
+					module.exports.DB_INTERFACE.getPLContentInfo(playlistContent.plc_id)
+						.then(function(playlistContentData) {
+							if (playlistContentData) {
+								//We got a hit!
+								// Let's check if the kara we're trying to add is 
+								// already in the playlist we plan to copy it to.
+								module.exports.isKaraInPlaylist(playlistContentData.kara_id,playlist_id)
+									.then(function(isKaraInPL) {
+										//Karaoke song is already in playlist, abort mission
+										//since we don't want duplicates in playlists.
+										if (isKaraInPL) {
+											var err = 'Karaoke song '+playlistContentData.kara_id+' is already in playlist '+playlist_id;
+											callback(err);
+										} else {
+											// All OK. We need some info though.
+											plcList[index].generated_subfile = playlistContentData.generated_subfile;
+											plcList[index].kara_id = playlistContentData.kara_id;
+											plcList[index].requester = playlistContentData.pseudo_add;
+											plcList[index].NORM_requester = playlistContentData.NORM_pseudo_add;
+											callback();
+										}									
+									})
+									.catch(function(err) {
+										logger.error('[PLC] isKaraInPlaylist : '+err);
+										reject(err);
+									});							
+							} else {
+								var err = 'PLC '+playlistContent.plc_id+' does not exist';
+								callback(err);
+							}							
+						})
+						.catch(function(err) {						
+							logger.error('[PLC] GetPLContentInfo : '+err);
+							callback(err);
+						});				
+				}, function(err){
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
+				});
+
+			});
+			Promise.all([pCheckPLCandKaraInPlaylist,pIsPlaylist])
+				.then(function(){
+					logger.debug('[PLC] addKaraToPlaylist : copying ASS and setting positions');				
+					var pCopyASS = new Promise((resolve,reject) => {
+						logger.profile('ASSGeneration');
+						async.eachOf(plcList,function(plcToCopy, index, callback){
+							logger.debug('[PLC] copyKaraToPlaylist : copying ASS for PLC ID '+plcToCopy.plc_id);							
+							var uuid = uuidv4();
+							var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,plcToCopy.generated_subfile);
+							var assFileNew = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,uuid+'.ass');
+							if (fs.existsSync(assFile)) {
+								// Node doesn't have a copy method, so we're using fs-extra.
+								try {									
+									fs.copySync(assFile, assFileNew);
+									plcList[index].generatedSubFile = uuid+'.ass';
+									callback();
+								} catch (err) {
+									callback(err);
+								}
+							} else {
+								var err = 'ass file '+assFile+' does not exist for PLC '+plcToCopy.plc_id;
+								callback(err);
+							}							
+						}, function (err) {
+							if (err) {
+								reject(err);
+							} else {
+								logger.profile('ASSGeneration');
+								resolve();
+							}
+						});							
+					});
+					var pManagePos = new Promise((resolve,reject) => {
+						// If pos is provided, we need to update all karas above that and add 
+						// karas.length to the position
+						// If pos is not provided, we need to get the maximum position in the PL
+						// And use that +1 to set our playlist position.						logger.profile('PositionManagement');	
+						if (pos) {
+							module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,plcs.length)
+								.then(function(){
+									resolve();
+								})
+								.catch(function(err){
+									logger.error('[PLC] DBI shiftPosInPlaylist : '+err);
+									reject(err);
+								});								
+						} else {
+							var startpos;								
+							module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
+								.then(function(maxpos){
+									startpos = maxpos + 1.0;
+									var index = 0;
+									plcList.forEach(function(){
+										plcList[index].pos = startpos+index;
+										index++;
+									});
+									logger.profile('PositionManagement');	
+									resolve();
+								})
+								.catch(function(err){
+									logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
+									reject(err);
+								});
+						}
+					});													
+					Promise.all([pCopyASS,pManagePos])
+						.then(function() {	
+							logger.debug('[PLC] copyKaraToPlaylist : Copying PLCs in database wow wow');
+							logger.profile('DB_copyKaraToPlaylist');					
+							module.exports.DB_INTERFACE.addKaraToPlaylist(plcList)
+								.then(function(){
+									logger.profile('DB_copyKaraToPlaylist');					
+									logger.debug('[PLC] copyKaraToPlaylist : updating playlist info');
+									var pUpdateLastEditTime = new Promise((resolve,reject) => {
+										logger.profile('DB_copyKaraToPlaylist_UpdateEditTime');				
+										module.exports.updatePlaylistLastEditTime(playlist_id)
+											.then(function(){
+												logger.profile('DB_copyKaraToPlaylist_UpdateEditTime');
+												resolve();
+											})
+											.catch(function(err){
+												logger.error('[PLC] updatePlaylistLastEditTime : '+err);
+												reject(err);
+											});
+									});
+									var pUpdatedDuration = new Promise((resolve,reject) => {
+										logger.profile('DB_copyKaraToPlaylist_UpdateDuration');
+										module.exports.updatePlaylistDuration(playlist_id)
+											.then(function(){
+												logger.profile('DB_copyKaraToPlaylist_UpdateDuration');
+												resolve();
+											})
+											.catch(function(err){
+												logger.error('[PLC] updatePlaylistDuration : '+err);
+												reject(err);
+											});
+									});
+									var pUpdatedKarasCount = new Promise((resolve,reject) => {
+										logger.profile('DB_copyKaraToPlaylist_UpdateCount');
+										module.exports.updatePlaylistNumOfKaras(playlist_id)
+											.then(function(){
+												logger.profile('DB_copyKaraToPlaylist_UpdateCount');
+												resolve();
+											})
+											.catch(function(err){
+												logger.error('[PLC] updatePlaylistNumOfKaras : '+err);
+												reject(err);
+											});
+									});										
+									Promise.all([pUpdateLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
+										.then(function() {
+											logger.profile('DB_copyKaraToPlaylist');				
+											resolve();
+										})
+										.catch(function(err) {
+											logger.error('[PLC] copyKaraToPlaylist : '+err);
+											reject(err);
+										});
+								})
+								.catch(function(err) {
+									logger.error('[PLC] copyKaraToPlaylist : '+err);
+									reject(err);
+								});
+
+						})
+						.catch(function(err) {
+							logger.error('[PLC] copyKaraToPlaylist : '+err);
+							reject(err);
+						});					
+				})
+				.catch(function(err) {
+					logger.error('[PLC] copyKaraToPlaylist : '+err);
 					reject(err);
 				});
 
@@ -2385,17 +2610,17 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			logger.info('[PLC] Dummy Plug : Adding 5 karas into current playlist');			
 			module.exports.addKaraToPlaylist(
-					[1,2,3,4,5],
-					'Dummy user',
-					playlist_id
-				)
-					.then(function(){
-						resolve();
-					})
-					.catch(function(message){
-						logger.error('[PLC] Dummy Plug : '+message);
-						reject(message);
-					});			
+				[1,2,3,4,5],
+				'Dummy user',
+				playlist_id
+			)
+				.then(function(){
+					resolve();
+				})
+				.catch(function(message){
+					logger.error('[PLC] Dummy Plug : '+message);
+					reject(message);
+				});			
 		});
 	},
 

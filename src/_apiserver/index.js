@@ -395,7 +395,45 @@ module.exports = {
 							}
 						});
 				})
-				
+				.patch(function(req,res){
+					//add karas from a playlist to another
+					req.checkBody({
+						'plc_id': {
+							in: 'body',
+							notEmpty: true,
+							numbersArray: true,
+						},
+						'pos': {
+							in: 'body',
+							optional: true,
+							isInt: true,
+						}
+					});
+
+					req.getValidationResult()
+						.then(function(result) {
+							if (result.isEmpty()) {
+								if (req.body.pos != undefined) req.sanitize('pos').toInt();
+								module.exports.onKaraCopyToPlaylist(req.body.plc_id,req.params.pl_id,req.body.pos)
+									.then(function(pl_id){
+										module.exports.emitEvent('playlistInfoUpdated',pl_id);
+										module.exports.emitEvent('playlistContentsUpdated',pl_id);
+										res.statusCode = 201;
+										res.json('Playlist content(s) '+req.body.plc_id+' copied to playlist '+req.params.pl_id+' at position '+req.body.pos);
+									})
+									.catch(function(err){
+										res.statusCode = 500;
+										res.json(err);
+									});
+							} else {
+								// Errors detected
+								// Sending BAD REQUEST HTTP code and error object.
+								res.statusCode = 400;
+								res.json(result.mapped());
+							}
+						});
+				});
+
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 				.get(function(req,res){
 					module.exports.onPLCInfo(req.params.plc_id,req.query.lang)
@@ -1300,6 +1338,7 @@ module.exports = {
 	onStats:function(){},
 	onKaraSingleLyrics:function(){},
 	onShutdown:function(){},
+	onKaraCopyToPlaylist:function(){},
 	emitEvent:function(){},	
 	onTags:function(){},
 };
