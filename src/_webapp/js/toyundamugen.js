@@ -444,11 +444,12 @@ var tabTradToDelete;
                                     + 'Valeur : <input type="text" id="bcVal" class="input-sm"  style="color:black"/> '
                                     + '<button class="btn btn-sm btn-default btn-action pull-right addBlacklistCriteria"><i class="glyphicon glyphicon-plus"></i></button>'
                                     + '</span></div>');
-
+                    $.each(tabTradToDelete, function(k, v){
+                        blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: k.replace("TYPE_",""), text: v}));                        
+                    });
                     for (var key in data) {
                         if (data.hasOwnProperty(key)) {
-                            if(blacklistCriteriasHtml.find('#bcType > option[value="' + data[key].type + '"]').length == 0) {
-                                blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: data[key].type, text: tabTradToDelete["TYPE_" + data[key].type]}));
+                            if(blacklistCriteriasHtml.find('li[type="' + data[key].type + '"]').length == 0) {
                                 blacklistCriteriasHtml.append("<li class='list-group-item liType' type='" + data[key].type + "'>" + tabTradToDelete["TYPE_" + data[key].type] + "</li>");
                             }
                             // build the blacklist criteria line
