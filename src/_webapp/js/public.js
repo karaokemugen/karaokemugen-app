@@ -41,16 +41,20 @@ $(document).ready(function () {
 
   $('input[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event) {
     if ($(this).val() == 0) {
+      $('#searchPlaylist1').fadeIn(animTime);
+      // $('#searchPlaylist2').fadeOut(animTime);      
       $('#playlist1').closest('.panel').show();
       $('#playlist2').closest('.panel').css('width', '');
     } else {
+      $('#searchPlaylist1').fadeOut(animTime);
+      // $('#searchPlaylist2').fadeIn(animTime); 
       $('#playlist1').closest('.panel').hide();
       $('#playlist2').closest('.panel').css('width', '100%');
     }
 
   });
 
-  //  alert($(window).width() + "-" + $(window).height());
+  alert($(window).width() + "-" + $(window).height());
 });
 
 var date = new Date();

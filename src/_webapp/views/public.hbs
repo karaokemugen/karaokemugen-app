@@ -1,8 +1,7 @@
 <div id="header" class="header">
-    <div class="col-lg-8 col-md-7 col-sm-7 col-xs-7">
+    <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6">
         <div class="col-lg-10 col-md-8 col-sm-7 col-xs-6" id="searchParent" style="width: 100%;">
-            <input type="text" class="form-control" id="searchPlaylist1" num="1" placeholder="Recherche..." name="searchPlaylist" />
-
+            <input type="text" class="form-control" id="searchPlaylist1" num="1" placeholder="&#xe003;" name="searchPlaylist" />
         </div>
         <div class="col-lg-2 col-md-4 col-sm-5 col-xs-6" style="display: none;">
             <input list="pseudo" type="text" id="choixPseudo" class="form-control" placeholder="Pseudo" />
@@ -11,7 +10,7 @@
             </datalist>
         </div>
     </div>
-    <div class="col-lg-4 col-md-5 col-sm-5 col-xs-5">
+    <div class="col-lg-4 col-md-5 col-sm-6 col-xs-6">
         <div class="dropdown pull-right">
             <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
             </span><i class="glyphicon glyphicon-cog"></i></button>
@@ -21,8 +20,8 @@
             </ul>
         </div>
         <div class="pull-right btn-group switchParent">
-            <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-right" data-on-text="<i class='glyphicon glyphicon-search'></i>"
-                data-off-text="<i class='glyphicon glyphicon-menu-hamburger'></i>" data-size="large" />
+            <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-right" data-on-text="<i class='glyphicon glyphicon-menu-hamburger'></i>"
+                data-off-text="<i class='glyphicon glyphicon-search'></i>" data-size="large" />
             <input type="checkbox" value="1" name="lyrics" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-italic'></i>"
                 data-off-text="<i class='glyphicon glyphicon-subtitles'></i>" data-size="large" />
         </div>
@@ -38,7 +37,7 @@
 </div>
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
-        <div class="panel col-lg-8 col-md-7 col-sm-7 col-xs-12">
+        <div class="panel col-lg-8 col-md-7 col-sm-7 col-xs-12" id="panel1">
              <div>
                 <div>
                     <select id="selectPlaylist1" num="1" hidden >
@@ -53,7 +52,7 @@
            </div>
         </div>
          
-        <div class="panel col-lg-4 col-md-5 col-sm-5 col-xs-12">
+        <div class="panel col-lg-4 col-md-5 col-sm-5 col-xs-12" id="panel2">
            <div class="panel-heading container-fluid">
                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6">
                     <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control">
@@ -76,10 +75,7 @@
                         </button>
                     </div>
                     <div class="pull-left">
-                        <div class="right-inner-addon">
-                            <i class="glyphicon glyphicon-search"></i>
-                            <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="Recherche..." name="searchPlaylist"/>
-                        </div>
+                        <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
                     </div>
                 </div>
             </div>

@@ -9,6 +9,8 @@ var oldState;           // Object : last player state saved
 var oldSearchVal;       // String : previous search value
 var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a flood of search
 var pseudo;             // String : pseudo of the user
+var bcTags;             // Object : list of blacklist criterias tags
+
 
 var dragAndDrop;        // Boolean : allowing drag&drop
 var karaParPage;        // Int : number of karas disaplyed per "page" (per chunk)
@@ -30,6 +32,7 @@ var transferKaraHtml;
 var infoKaraHtml;
 var buttonHtmlPublic;
 var closeButton;
+var closeButtonBottom;
 var closePopupButton;
 var showFullTextButton;
 var dragHandleHtml;
@@ -42,6 +45,13 @@ var tabTradToDelete;
 }(function ($, window, document) {
     $(function () {
         // Once page is loaded
+        $.ajaxSetup({
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.status + "  - " + textStatus + "  - " + errorThrown + " : " + jqXHR.responseText);
+                displayMessage('warning','Error', jqXHR.responseText);;
+            }
+        });
+
         $.ajax({ url: 'public/player' }).done(function (data) {
             refreshCommandStates(data);
 
@@ -140,8 +150,6 @@ var tabTradToDelete;
                             + $("#selectPlaylist" + non(num) + " > option[value='" + idPlaylistTo + "']").text() + ".");
                     }).fail(function (data) {
                         scrollToKara(non(num), idKara);
-                        displayMessage('warning', 'Error', data.responseText);
-                        console.log("ERR : ", data.responseText);
                     });
                 }
             }
@@ -169,33 +177,6 @@ var tabTradToDelete;
             }
         });
 
-        $('.playlist-main').on('click', 'button.addBlacklistCriteria', function (e) {
-            // TODO check if type is valid maybe
-            var type = $('#bcType').val();
-            var val = $('#bcVal').val();
-            var data = { blcriteria_type: type, blcriteria_value: val };
-            $.ajax({
-                url: scope + '/blacklist/criterias',
-                type: 'POST',
-                data: data
-            }).done(function (data) {  
-                displayMessage('success','Success','Criteria ' + type + ' - ' + val + ' added to the list');
-            });
-        });
-
-        $('.playlist-main').on('click', '.infoDiv > button.playKara', function (e) {
-            var liKara = $(this).closest('li');
-            var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-            var idPlaylist = parseInt($('#selectPlaylist' + $(this).closest('ul').attr('num')).val());
-
-            $.ajax({
-                type : 'PUT',
-                url: scope + '/playlists/' + idPlaylist +'/karas/' + idPlc,
-                data: { flag_playing: "1" }
-            }).done(function (data) {
-               console.log("Kara plc_id " + idPlc + " flag_playing set to true");                     
-            });
-        });
 
         $('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', function (e) {
             var liKara = $(this).closest('li');
@@ -203,7 +184,7 @@ var tabTradToDelete;
             var idPlc = parseInt(liKara.attr('idplaylistcontent'));
             var idPlaylist = parseInt($('#selectPlaylist' + $(this).closest('ul').attr('num')).val());
             var infoKara = liKara.find('.detailsKara');
-            console.log(idKara);
+
             if (infoKara.length == 0) {
                 var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 
@@ -232,8 +213,8 @@ var tabTradToDelete;
             var idKara = liKara.attr('idkara');
             var detailsKara = liKara.find('.detailsKara');
 
-            $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) { console.log(data);
-                liKara.append("<div class='lyricsKara alert alert-info'>" + closeButton + data.join('<br/>') + closeButton + "</div>");
+            $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
+                liKara.append("<div class='lyricsKara alert alert-info'>" + closeButton + data.join('<br/>') + closeButtonBottom + "</div>");
                 scrollToElement(playlist, detailsKara);
             }).fail(function(data){
                 displayMessage('warning','Error','could not find lyrics for this song.');
@@ -288,10 +269,14 @@ var tabTradToDelete;
             $('body > div[class!="popup"]').css('opacity','1');
         });
 
+        $.ajax({ url: 'public/tags', }).done(function (data) {
+            bcTags = data;
+        });
+    
         /* display a fading message, useful to show success or errors */
         displayMessage = function(type, title, message) {
             var messageDiv = $('#message');
-            messageDiv.stop(300).hide();
+            messageDiv.finish().hide();
             messageDiv.attr('class','alert alert-' + type);
             messageDiv.html('<strong>' + title + '</strong> : ' + message);
             messageDiv.fadeIn(600).delay(2200).fadeOut(600);
@@ -304,12 +289,13 @@ var tabTradToDelete;
                 $('.select2-search input').prop('focus', 0);
             });
         }
+        
         $(window).trigger('resize');
     });
 
     socket = io( window.location.protocol + "//" + window.location.hostname + ":1340");
     
-    animTime = $(window).width() < 1000 ? 0 : 400;
+    animTime = $(window).width() < 1000 ? 400 : 400;
     refreshTime = 2000;
     toleranceDynamicPixels = 100;
     karaParPage = 80;
@@ -328,17 +314,17 @@ var tabTradToDelete;
 
     addKaraHtml = '<button name="addKara" class="btn btn-sm btn-action"><i class="glyphicon glyphicon-plus"></i></button>';
     deleteKaraHtml = '<button name="deleteKara" class="btn btn-sm btn-action"><i class="glyphicon glyphicon-minus"></i></button>';
-    deleteCriteriaHtml = '<button name="deleteCriteria" class="btn btn-sm btn-action deleteCriteria"><i class="glyphicon glyphicon-minus"></i></button>';
+    deleteCriteriaHtml = '<button name="deleteCriteria" class="btn btn-action deleteCriteria"><i class="glyphicon glyphicon-minus"></i></button>';
     transferKaraHtml = '<button name="transferKara" class="btn btn-sm btn-action">'
         + '<i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i></button>'
     infoKaraHtml = '<button name="infoKara" class="btn btn-sm btn-action"><i class="glyphicon glyphicon-info-sign"></i></button>';
     closeButton = '<button class="closeParent btn btn-action"><i class="glyphicon glyphicon-remove"></i></button>';
+    closeButtonBottom = '<button class="closeParent bottom btn btn-action"><i class="glyphicon glyphicon-remove"></i></button>';
     closePopupButton = '<button class="closePopupParent btn btn-action"><i class="glyphicon glyphicon-remove"></i></button>';
     showFullTextButton = "<button class='fullLyrics btn btn-action'><i class='glyphicon glyphicon-align-justify'></i></button>";
     buttonHtmlPublic = '';
     dragHandleHtml =  "<span class='dragHandle'><i class='glyphicon glyphicon-option-vertical'></i></span>";
     playKaraHtml = "<button class='btn btn-sm btn-action playKara'><i class='glyphicon glyphicon-play'></i></btn>"
-
 
     tabTradToDelete = { "TYPE_1001" : "Kara",
     "TYPE_1002" : "Plus long que (sec)",
@@ -368,6 +354,7 @@ var tabTradToDelete;
      * @param {Int} to - returned results end to this number
      */
     // TODO supprimer idKara et reporter sur le reste du code
+    // TODO if list is updated from another source (socket ?) keep the size of the playlist
     fillPlaylist = function (num, idKara, from, to) {
         console.log(num, idKara, from, to);
         var deferred = $.Deferred();
@@ -434,41 +421,62 @@ var tabTradToDelete;
                                 + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                                 + "</div>"
                                 + (saveDetailsKara(idPlaylist, data[key].kara_id) ? buildKaraDetails(data[key]) : "")
+                               
                                 + "</li>";
                         }
                     }
+
+                    document.getElementById("playlist" + num).innerHTML = htmlContent;
                 } else {
-                  
-                    var blacklistCriteriasHtml = $('<div><span class="list-group-item" style="padding:10px">'
-                                    + 'Type : <select type="text" id="bcType" class="input-sm" placeholder="Type"  style="color:black"/> '
-                                    + 'Valeur : <input type="text" id="bcVal" class="input-sm"  style="color:black"/> '
-                                    + '<button class="btn btn-sm btn-default btn-action pull-right addBlacklistCriteria"><i class="glyphicon glyphicon-plus"></i></button>'
-                                    + '</span></div>');
-                    $.each(tabTradToDelete, function(k, v){
-                        blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: k.replace("TYPE_",""), text: v}));                        
-                    });
+                    /* Blacklist criterias build */
+                    var blacklistCriteriasHtml = $("<div/>");
+                    var regenSelect2 = false;
+                    if (scope === "admin") {
+                        if ($('#blacklistCriteriasInputs').length > 0) {
+                            $('#blacklistCriteriasInputs').detach().appendTo(blacklistCriteriasHtml);
+                        } else {
+                            regenSelect2 = true;
+                            blacklistCriteriasHtml = $('<div><span id="blacklistCriteriasInputs" class="list-group-item" style="padding:10px">'
+                                + '<select id="bcType" class="input-sm" style="color:black"/> '
+                                + '<span id="bcValContainer" style="color:black"></span> '
+                                + '<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"><i class="glyphicon glyphicon-plus"></i></button>'
+                                + '</span></div>');
+                                $.each(tabTradToDelete, function(k, v){
+                                    blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: k.replace("TYPE_",""), text: v}));                        
+                                });
+                        }
+                    }
+                   
                     for (var key in data) {
                         if (data.hasOwnProperty(key)) {
                             if(blacklistCriteriasHtml.find('li[type="' + data[key].type + '"]').length == 0) {
                                 blacklistCriteriasHtml.append("<li class='list-group-item liType' type='" + data[key].type + "'>" + tabTradToDelete["TYPE_" + data[key].type] + "</li>");
                             }
                             // build the blacklist criteria line
-                            blacklistCriteriasHtml.find('li[type="' + data[key].type + '"]').append(
-                                "<li class='list-group-item' " + "> "
+                            var bcTagsFiltered = jQuery.grep(bcTags, function(obj) {
+                                return obj.tag_id == data[key].value;
+                            });
+                            var tagText = bcTagsFiltered.length == 1 ?  bcTagsFiltered[0].name_i18n : data[key].value;
+                            var textContent = data[key].type == 1001 ? buildKaraTitle(data[key].value[0]) : tagText;
+
+                            blacklistCriteriasHtml.find('li[type="' + data[key].type + '"]').after(
+                                "<li class='list-group-item liTag' blcriteria_id='" + data[key].blcriteria_id + "'> "
                                 + "<div class='btnDiv'>" + html + "</div>"
                                 + "<div class='typeDiv'>" + tabTradToDelete["TYPE_" + data[key].type] + "</div>"
-                                + "<div class='contentDiv''>" + (data[key].type == 1001 ? buildKaraTitle(data[key].value[0]) : data[key].value[0]) + "</div>"
+                                + "<div class='contentDiv''>" + textContent + "</div>"
                                 + "</li>");
                         }
                     }
-                    htmlContent = blacklistCriteriasHtml.html();
+                   //htmlContent = blacklistCriteriasHtml.html();
+                    $("#playlist" + num).empty().append(blacklistCriteriasHtml);
+                    if (regenSelect2) { $('#bcType').select2({ theme: "bootstrap", dropdownAutoWidth : true, minimumResultsForSearch: -1 }); }
+                    $('#bcType').change();
                 }
               
             }
             // depending on the playlist we're in, notify if the other playlist can add & transfer to us
             $('#playlist' + non(num)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
             
-            document.getElementById("playlist" + num).innerHTML = htmlContent;
             deferred.resolve();
             //var time = console.timeEnd('html'); console.log(data.length);
             
@@ -944,11 +952,7 @@ var tabTradToDelete;
         if(num && $('#playlist' + num + '.lyricsKara:visible').length == 0) {
             playlistContentUpdating = fillPlaylist(num);
         }
-        idPlaylist = -1;
-        var num = sideOfPlaylist(idPlaylist);
-        if(num && $('#playlist' + num + '.lyricsKara:visible').length == 0) {
-            playlistContentUpdating = fillPlaylist(num);
-        }
+       
     });
 
     socket.on('whitelistUpdated', function(idPlaylist){
