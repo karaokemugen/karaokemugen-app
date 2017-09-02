@@ -54,7 +54,7 @@ $(document).ready(function () {
 
   });
 
-  alert($(window).width() + "-" + $(window).height());
+  //alert($(window).width() + "-" + $(window).height());
 });
 
 var date = new Date();
