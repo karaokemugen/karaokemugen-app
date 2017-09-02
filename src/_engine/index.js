@@ -255,10 +255,10 @@ module.exports = {
 	*
 	*/
 	playingUpdated:function(){
-		return new Promise(function(resolve){
+		return new Promise(function(resolve,reject){
 			if(module.exports._states.status === 'play' && module.exports._services.player.playing) {
-				module.exports.stop(true);				
-				module.exports.play();
+				module.exports.stop(true)				
+				module.exports.play()
 				resolve();								
 			} else {
 				resolve();
