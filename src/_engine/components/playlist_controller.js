@@ -3,11 +3,12 @@ var timestamp = require('unix-timestamp');
 timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
 const assBuilder = require('./ass_builder.js');
-const fs = require('fs');
+const fs = require('fs-extra')
 const L = require('lodash');
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
 const async = require('async');
+const uuidv4 = require('uuid/v4');
 
 module.exports = {
 	SYSPATH:null,
@@ -1313,12 +1314,25 @@ module.exports = {
 	* @return {boolean} {Promise}
 	* If no position is provided, it will be maximum position in playlist + 1
 	*/
-	addKaraToPlaylist:function(kara_id,requester,playlist_id,pos) {
+	addKaraToPlaylist:function(karas,requester,playlist_id,pos) {
+		// Karas is an array of kara_ids.
 		return new Promise(function(resolve,reject){
 			var NORM_requester = L.deburr(requester);
 			var date_add = timestamp.now();
-			var flag_playing = 0;
-			var isKaraInPlaylist = undefined;
+			var isKaraInPlaylist = false;
+			var isKaraIDInPlaylist;
+			// Let's build the complete array of kara objects
+			var karaList = [];
+			karas.forEach(function(kara_id){
+				karaList.push({
+					kara_id: kara_id,
+					requester: requester,
+					NORM_requester: NORM_requester,
+					playlist_id: playlist_id,
+					date_add: date_add,				
+				});				
+			});
+
 			var pIsPlaylist = new Promise((resolve,reject) => {
 				module.exports.isPlaylist(playlist_id)
 					.then(function() {
@@ -1331,174 +1345,416 @@ module.exports = {
 					});
 			});
 			var pIsKara = new Promise((resolve,reject) => {
-				module.exports.isKara(kara_id)
-					.then(function() {
-						resolve(true);
-					})
-					.catch(function(err) {
-						err = 'Karaoke song '+kara_id+' unknown';
-						logger.error('[PLC] isKara : '+err);
+				// Need to do this for each karaoke.
+				async.each(karas,function(kara_id,callback) {				
+					module.exports.isKara(kara_id)
+						.then(function() {
+							callback();
+						})
+						.catch(function(err) {
+							err = 'Karaoke song '+kara_id+' unknown';
+							logger.error('[PLC] isKara : '+err);
+							callback(err);
+						});
+				},function(err){
+					if (err) {
 						reject(err);
-					});
+					} else {
+						resolve();
+					}
+				})
+				resolve();
 			});
 			var pIsKaraInPlaylist = new Promise((resolve,reject) => {
-				module.exports.isKaraInPlaylist(kara_id,playlist_id)
-					.then(function(isKaraInPL) {
-						//Karaoke song is in playlist, then we update the boolean and resolve the promise
-						//since we don't want duplicates in playlists.
-						isKaraInPlaylist = isKaraInPL;
-						resolve(isKaraInPL);
-					})
-					.catch(function(err) {
-						logger.error('[PLC] isKaraInPlaylist : '+err);
+				// Need to do this for each karaoke.
+				async.each(karas,function(kara_id,callback) {				
+					module.exports.isKaraInPlaylist(kara_id,playlist_id)
+						.then(function(isKaraInPL) {
+							//Karaoke song is in playlist, then we update the boolean and resolve the promise
+							//since we don't want duplicates in playlists.
+							if (isKaraInPL) {								
+								isKaraIDInPlaylist = kara_id;
+								isKaraInPlaylist = true;
+							}
+							callback();
+						})
+						.catch(function(err) {
+							logger.error('[PLC] isKaraInPlaylist : '+err);
+							callback(err);
+						});
+				},function(err){
+					if (err) {
 						reject(err);
-					});
+					} else {
+						resolve();
+					}
+				});
+				
 			});
 			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist])
 				.then(function(){
 					if (isKaraInPlaylist) {
-						var err = 'Karaoke song '+kara_id+' is already in playlist '+playlist_id;
+						var err = 'A karaoke song '+isKaraIDInPlaylist+' is already in playlist '+playlist_id;
 						logger.error('[PLC] addKaraToPlaylist : '+err);
 						reject(err);
-					} else {
-
-						// Adding karaoke song here
-						module.exports.getKara(kara_id)
-							.then(function(kara) {
-								var pBuildASS = new Promise((resolve,reject) => {
-									assBuilder.build(
-										module.exports.SETTINGS.PathSubs,
-										module.exports.SETTINGS.PathVideos,
-										kara.subfile,
-										kara.videofile,
-										module.exports.SETTINGS.PathTemp,
-										kara.title,
-										kara.serie,
-										kara.songtype,
-										kara.songorder,
-										requester,
-										kara_id,
-										playlist_id
-									)
-										.then(function() {
-											resolve();
-										})
-										.catch(function(err){
-											logger.error('[PLC] ASS build : '+err);
-											reject(err);
+					} else {	
+						logger.debug('[PLC] addKaraToPlaylist : building ASS and setting positions');					
+						var pBuildASS = new Promise((resolve,reject) => {								logger.profile('ASSGeneration');
+							async.eachOf(karaList,function(karaToAdd, index, callback){
+								logger.debug('[PLC] addKaraToPlaylist : building ASS for kara ID '+karaToAdd.kara_id)
+								module.exports.getKara(karaToAdd.kara_id)
+									.then(function(kara) {
+										assBuilder.build(
+											module.exports.SETTINGS.PathSubs,
+											module.exports.SETTINGS.PathVideos,
+											kara.subfile,
+											kara.videofile,
+											module.exports.SETTINGS.PathTemp,
+											kara.title,
+											kara.serie,
+											kara.songtype,
+											kara.songorder,
+											requester)
+											.then(function(uuid) {											
+												karaList[index].generatedSubFile = uuid+'.ass';	
+												callback();
+											})
+											.catch(function(err){
+												logger.error('[PLC] ASS build (kara ID '+kara.kara_id+') (Video : '+kara.videofile+') : '+err);
+												callback(err);
+											});
+									})							
+									.catch(function(err){
+										logger.error('[PLC] addKaraToPlaylist : '+err);
+										callback(err);
+									});
+							}, function (err) {
+								if (err) {
+									reject(err);
+								} else {
+									logger.profile('ASSGeneration');
+									resolve();
+								}
+							});							
+						});
+						var pManagePos = new Promise((resolve,reject) => {
+							// If pos is provided, we need to update all karas above that and add 
+							// karas.length to the position
+							// If pos is not provided, we need to get the maximum position in the PL
+							// And use that +1 to set our playlist position.						logger.profile('PositionManagement');	
+							if (pos) {
+								module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,karas.length)
+									.then(function(){
+										resolve();
+									})
+									.catch(function(err){
+										logger.error('[PLC] DBI shiftPosInPlaylist : '+err);
+										reject(err);
+									});								
+							} else {
+								var startpos;								
+								module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
+									.then(function(maxpos){
+										startpos = maxpos + 1.0;
+										var index = 0;
+										karaList.forEach(function(kara){
+											karaList[index].pos = startpos+index;
+											index++;
 										});
-								});
-								var pGetPos = new Promise((resolve,reject) => {
-									if (pos) {
+										logger.profile('PositionManagement');	
 										resolve();
-									} else {
-										module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
-											.then(function(maxpos){
-												pos = maxpos + 1.0;
-												resolve();
-											})
-											.catch(function(err){
-												logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
-												reject(err);
-											});
-									}
-								});
-								var pRaisePos = new Promise((resolve,reject) => {
-									if (pos) {
-										module.exports.raisePosInPlaylist(pos,playlist_id)
-											.then(function(){
-												resolve();
-											})
-											.catch(function(err){
-												logger.error('[PLC] raisePosInPlaylist : '+err);
-												reject(err);
-											});
-									} else {
-										resolve();
-									}
-								});
-
-								Promise.all([pBuildASS,pGetPos,pRaisePos])
-									.then(function() {
-										module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,playlist_id,pos,date_add,flag_playing)
-											.then(function(playlistcontent_id){
-												var pRenameASS = new Promise((resolve) => {
-													fs.renameSync(
-														path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,kara_id+'.'+playlist_id+'.ass'),
-														path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
-															playlistcontent_id+'.ass')
-													);
+									})
+									.catch(function(err){
+										logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
+										reject(err);
+									});
+							}
+						});													
+						Promise.all([pBuildASS,pManagePos])
+							.then(function() {	
+								logger.debug('[PLC] addKaraToPlaylist : Adding to database');		logger.profile('DB_AddKaraToPlaylist');					
+								module.exports.DB_INTERFACE.addKaraToPlaylist(karaList)
+									.then(function(){
+										logger.profile('DB_AddKaraToPlaylist');					
+										logger.debug('[PLC] addKaraToPlaylist : updating playlist info');
+										var pUpdateLastEditTime = new Promise((resolve,reject) => {
+											logger.profile('DB_AddKaraToPlaylist_UpdateEditTime');				
+											module.exports.updatePlaylistLastEditTime(playlist_id)
+												.then(function(){
+													logger.profile('DB_AddKaraToPlaylist_UpdateEditTime');
 													resolve();
+												})
+												.catch(function(err){
+													logger.error('[PLC] updatePlaylistLastEditTime : '+err);
+													reject(err);
 												});
-												var pUpdateLastEditTime = new Promise((resolve,reject) => {
-													module.exports.updatePlaylistLastEditTime(playlist_id)
-														.then(function(){
-															resolve();
-														})
-														.catch(function(err){
-															logger.error('[PLC] updatePlaylistLastEditTime : '+err);
-															reject(err);
-														});
+										});
+										var pUpdatedDuration = new Promise((resolve,reject) => {
+											logger.profile('DB_AddKaraToPlaylist_UpdateDuration');
+											module.exports.updatePlaylistDuration(playlist_id)
+												.then(function(){
+													logger.profile('DB_AddKaraToPlaylist_UpdateDuration');
+													resolve();
+												})
+												.catch(function(err){
+													logger.error('[PLC] updatePlaylistDuration : '+err);
+													reject(err);
 												});
-												var pUpdatedDuration = new Promise((resolve,reject) => {
-													module.exports.updatePlaylistDuration(playlist_id)
-														.then(function(){
-															resolve();
-														})
-														.catch(function(err){
-															logger.error('[PLC] updatePlaylistDuration : '+err);
-															reject(err);
-														});
+										});
+										var pUpdatedKarasCount = new Promise((resolve,reject) => {
+											logger.profile('DB_AddKaraToPlaylist_UpdateCount');
+											module.exports.updatePlaylistNumOfKaras(playlist_id)
+												.then(function(){
+													logger.profile('DB_AddKaraToPlaylist_UpdateCount');
+													resolve();
+												})
+												.catch(function(err){
+													logger.error('[PLC] updatePlaylistNumOfKaras : '+err);
+													reject(err);
 												});
-												var pUpdatedKarasCount = new Promise((resolve,reject) => {
-													module.exports.updatePlaylistNumOfKaras(playlist_id)
-														.then(function(){
-															resolve();
-														})
-														.catch(function(err){
-															logger.error('[PLC] updatePlaylistNumOfKaras : '+err);
-															reject(err);
-														});
-												});
-												var pReorderPlaylist = new Promise((resolve,reject) => {
-													module.exports.reorderPlaylist(playlist_id)
-														.then(function(){
-															resolve();
-														})
-														.catch(function(err){
-															logger.error('[PLC] reorderPlaylist : '+err);
-															reject(err);
-														});
-												});
-												Promise.all([pRenameASS,pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
-													.then(function() {
-														resolve();
-													})
-													.catch(function(err) {
-														logger.error('[PLC] addKaraToPlaylist : '+err);
-														reject(err);
-													});
+										});										
+										Promise.all([pUpdateLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
+											.then(function() {
+												logger.profile('DB_AddKaraToPlaylist');				
+												resolve();
 											})
 											.catch(function(err) {
 												logger.error('[PLC] addKaraToPlaylist : '+err);
 												reject(err);
 											});
-
 									})
 									.catch(function(err) {
 										logger.error('[PLC] addKaraToPlaylist : '+err);
 										reject(err);
 									});
+
 							})
-							.catch(function(err){
+							.catch(function(err) {
 								logger.error('[PLC] addKaraToPlaylist : '+err);
 								reject(err);
 							});
+							
 
 					}
 				})
 				.catch(function(err) {
 					logger.error('[PLC] addKaraToPlaylist : '+err);
+					reject(err);
+				});
+
+		});
+	},
+	/**
+	* @function {copy playlist contents to Playlist}
+	* @param  {number} plc_id     {ID of playlist contents to add}
+	* @param  {number} playlist_id {ID of playlist to add to}
+	* @param  {number} pos         {OPTIONAL : Position in playlist}
+	* @return {boolean} {Promise}
+	* If no position is provided, it will be maximum position in playlist + 1
+	*/
+	copyKaraToPlaylist:function(plcs,playlist_id,pos) {
+		// plcs is an array of plc_ids.
+		return new Promise(function(resolve,reject){
+			var date_add = timestamp.now();
+			// Let's build the complete array of kara objects
+			var plcList = [];
+			plcs.forEach(function(plc_id){
+				plcList.push({
+					plc_id: plc_id,
+					playlist_id: playlist_id,
+					date_add: date_add,				
+				});				
+			});
+
+			var pIsPlaylist = new Promise((resolve,reject) => {
+				module.exports.isPlaylist(playlist_id)
+					.then(function() {
+						resolve(true);
+					})
+					.catch(function(err) {
+						err = 'Playlist '+playlist_id+' unknown';
+						logger.error('[PLC] isPlaylist : '+err);
+						reject(err);
+					});
+			});
+			var pCheckPLCandKaraInPlaylist = new Promise((resolve,reject) => {
+				// Need to do this for each karaoke.
+				async.eachOf(plcList,function(playlistContent,index,callback) {				
+					module.exports.DB_INTERFACE.getPLContentInfo(playlistContent.plc_id)
+						.then(function(playlistContentData) {
+							if (playlistContentData) {
+								//We got a hit!
+								// Let's check if the kara we're trying to add is 
+								// already in the playlist we plan to copy it to.
+								module.exports.isKaraInPlaylist(playlistContentData.kara_id,playlist_id)
+									.then(function(isKaraInPL) {
+										//Karaoke song is already in playlist, abort mission
+										//since we don't want duplicates in playlists.
+										if (isKaraInPL) {
+											var err = 'Karaoke song '+playlistContentData.kara_id+' is already in playlist '+playlist_id;
+											callback(err);
+										} else {
+											// All OK. We need some info though.
+											plcList[index].generated_subfile = playlistContentData.generated_subfile;
+											plcList[index].kara_id = playlistContentData.kara_id;
+											plcList[index].requester = playlistContentData.pseudo_add;
+											plcList[index].NORM_requester = playlistContentData.NORM_pseudo_add;
+											callback();
+										}									
+									})
+									.catch(function(err) {
+										logger.error('[PLC] isKaraInPlaylist : '+err);
+										reject(err);
+									});							
+							} else {
+								var err = 'PLC '+playlistContent.plc_id+' does not exist';
+								callback(err);
+							}							
+						})
+						.catch(function(err) {						
+							logger.error('[PLC] GetPLContentInfo : '+err);
+							callback(err);
+						});				
+				}, function(err){
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
+				});
+
+			});
+			Promise.all([pCheckPLCandKaraInPlaylist,pIsPlaylist])
+				.then(function(){
+					logger.debug('[PLC] addKaraToPlaylist : copying ASS and setting positions')				
+					var pCopyASS = new Promise((resolve,reject) => {								logger.profile('ASSGeneration');
+						async.eachOf(plcList,function(plcToCopy, index, callback){
+							logger.debug('[PLC] copyKaraToPlaylist : copying ASS for PLC ID '+plcToCopy.plc_id)							
+							var uuid = uuidv4();
+							var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,plcToCopy.generated_subfile);
+							var assFileNew = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,uuid+'.ass');
+							if (fs.existsSync(assFile)) {
+								// Node doesn't have a copy method, so we're using fs-extra.
+								try {									
+									fs.copySync(assFile, assFileNew);
+									plcList[index].generatedSubFile = uuid+'.ass';
+									callback();
+								} catch (err) {
+									callback(err);
+								}
+							} else {
+								var err = 'ass file '+assFile+' does not exist for PLC '+plcToCopy.plc_id;
+								callback(err);
+							}							
+						}, function (err) {
+							if (err) {
+								reject(err);
+							} else {
+								logger.profile('ASSGeneration');
+								resolve();
+							}
+						});							
+					});
+					var pManagePos = new Promise((resolve,reject) => {
+						// If pos is provided, we need to update all karas above that and add 
+						// karas.length to the position
+						// If pos is not provided, we need to get the maximum position in the PL
+						// And use that +1 to set our playlist position.						logger.profile('PositionManagement');	
+						if (pos) {
+							module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,plcs.length)
+								.then(function(){
+									resolve();
+								})
+								.catch(function(err){
+									logger.error('[PLC] DBI shiftPosInPlaylist : '+err);
+									reject(err);
+								});								
+						} else {
+							var startpos;								
+							module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
+								.then(function(maxpos){
+									startpos = maxpos + 1.0;
+									var index = 0;
+									plcList.forEach(function(kara){
+										plcList[index].pos = startpos+index;
+										index++;
+									});
+									logger.profile('PositionManagement');	
+									resolve();
+								})
+								.catch(function(err){
+									logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
+									reject(err);
+								});
+						}
+					});													
+					Promise.all([pCopyASS,pManagePos])
+						.then(function() {	
+							logger.debug('[PLC] copyKaraToPlaylist : Copying PLCs in database wow wow');
+							logger.profile('DB_copyKaraToPlaylist');					
+							module.exports.DB_INTERFACE.addKaraToPlaylist(plcList)
+								.then(function(){
+									logger.profile('DB_copyKaraToPlaylist');					
+									logger.debug('[PLC] copyKaraToPlaylist : updating playlist info');
+									var pUpdateLastEditTime = new Promise((resolve,reject) => {
+										logger.profile('DB_copyKaraToPlaylist_UpdateEditTime');				
+										module.exports.updatePlaylistLastEditTime(playlist_id)
+											.then(function(){
+												logger.profile('DB_copyKaraToPlaylist_UpdateEditTime');
+												resolve();
+											})
+											.catch(function(err){
+												logger.error('[PLC] updatePlaylistLastEditTime : '+err);
+												reject(err);
+											});
+									});
+									var pUpdatedDuration = new Promise((resolve,reject) => {
+										logger.profile('DB_copyKaraToPlaylist_UpdateDuration');
+										module.exports.updatePlaylistDuration(playlist_id)
+											.then(function(){
+												logger.profile('DB_copyKaraToPlaylist_UpdateDuration');
+												resolve();
+											})
+											.catch(function(err){
+												logger.error('[PLC] updatePlaylistDuration : '+err);
+												reject(err);
+											});
+									});
+									var pUpdatedKarasCount = new Promise((resolve,reject) => {
+										logger.profile('DB_copyKaraToPlaylist_UpdateCount');
+										module.exports.updatePlaylistNumOfKaras(playlist_id)
+											.then(function(){
+												logger.profile('DB_copyKaraToPlaylist_UpdateCount');
+												resolve();
+											})
+											.catch(function(err){
+												logger.error('[PLC] updatePlaylistNumOfKaras : '+err);
+												reject(err);
+											});
+									});										
+									Promise.all([pUpdateLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
+										.then(function() {
+											logger.profile('DB_copyKaraToPlaylist');				
+											resolve();
+										})
+										.catch(function(err) {
+											logger.error('[PLC] copyKaraToPlaylist : '+err);
+											reject(err);
+										});
+								})
+								.catch(function(err) {
+									logger.error('[PLC] copyKaraToPlaylist : '+err);
+									reject(err);
+								});
+
+						})
+						.catch(function(err) {
+							logger.error('[PLC] copyKaraToPlaylist : '+err);
+							reject(err);
+						});					
+				})
+				.catch(function(err) {
+					logger.error('[PLC] copyKaraToPlaylist : '+err);
 					reject(err);
 				});
 
@@ -1519,13 +1775,15 @@ module.exports = {
 				logger.error('[PLC] deleteKaraFromPlaylist : '+err);
 				reject(err);
 			}
-			var playlist_id = undefined;
-			var kara_id = undefined;
+			var playlist_id;
+			var kara_id;
+			var subFile;
 			var pGetPLContentInfo = new Promise((resolve,reject) => {
 				module.exports.DB_INTERFACE.getPLContentInfo(playlistcontent_id)
 					.then(function(kara) {
 						playlist_id = kara.playlist_id;
 						kara_id = kara.kara_id;
+						subFile = kara.generated_subfile;
 						resolve();
 					})
 					.catch(function(err) {						
@@ -1536,8 +1794,7 @@ module.exports = {
 			Promise.all([pGetPLContentInfo])
 				.then(function() {
 					// Removing karaoke here.
-					var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
-						playlistcontent_id+'.ass');
+					var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,subFile);
 					if (fs.existsSync(assFile)) {
 						fs.unlinkSync(assFile);
 					} else {
@@ -2141,425 +2398,7 @@ module.exports = {
 				});
 		});
 	},
-	/**
-	* @function {Add Karaoke to Public playlist}
-	* @param  {number} kara_id     {ID of karaoke to add}
-	* @param  {string} requester   {Name of person submitting karaoke}
-	* @return {boolean} {Promise}
-	*/
-	addKaraToPublicPlaylist:function(kara_id,requester) {
-		return new Promise(function(resolve,reject){
-			var NORM_requester = L.deburr(requester);
-			var date_add = timestamp.now();
-			var flag_playing = 0;
-			var isKaraInPlaylist = undefined;
-			var isKaraBlacklisted = undefined;
-			var publicPlaylistID = undefined;
-			var pWhichPublicPlaylist = new Promise((resolve,reject) => {
-				module.exports.isAPublicPlaylist()
-					.then(function(playlist_id) {
-						publicPlaylistID = playlist_id;
-						resolve(true);
-					})
-					.catch(function(err) {
-						err = 'Public playlist not found : '+err;
-						logger.error('[PLC] isAPublicPlaylist : '+err);
-						reject(err);
-					});
-			});
-			var pIsKara = new Promise((resolve,reject) => {
-				module.exports.isKara(kara_id)
-					.then(function() {
-						resolve(true);
-					})
-					.catch(function(err) {
-						err = 'Karaoke '+kara_id+' not found : '+err;
-						logger.error('[PLC] isKara : '+err);
-						reject(err);
-					});
-			});
-			Promise.all([pIsKara,pWhichPublicPlaylist])
-				.then(function() {
-					var pIsKaraInPlaylist = new Promise((resolve,reject) => {
-						module.exports.isKaraInPlaylist(kara_id,publicPlaylistID)
-							.then(function(isKaraInPL) {
-								//Karaoke song is in playlist, then we update the boolean and resolve the promise
-								//since we don't want duplicates in playlists.
-								isKaraInPlaylist = isKaraInPL;
-								resolve(isKaraInPL);
-							})
-							.catch(function(err) {
-								logger.error('[PLC] isKaraInPlaylist : '+err);
-								reject(err);
-							});
-					});
-					var pIsKaraBlacklisted = new Promise((resolve,reject) => {
-						module.exports.isKaraInBlacklist(kara_id)
-							.then(function(isKaraInBL){
-								isKaraBlacklisted = isKaraInBL;
-								resolve();
-							})
-							.catch(function(err){
-								logger.error('[PLC] isKaraBlacklisted : '+err);
-								reject();
-							});
-					});
-					Promise.all([pIsKaraInPlaylist,pIsKaraBlacklisted])
-						.then(function() {							
-							var err;
-							if (isKaraInPlaylist) {
-								err = 'Karaoke song '+kara_id+' is already in playlist '+publicPlaylistID;
-								logger.error('[PLC] addKaraToPublicPlaylist : '+err);
-								reject(err);
-							} else if(isKaraBlacklisted) {
-								err = 'Karaoke song '+kara_id+' is blacklisted';
-								logger.error('[PLC] addKaraToPublicPlaylist : '+err);
-								reject(err);
-							} else {
-								// Adding karaoke song here
-								module.exports.getKara(kara_id)
-									.then(function(kara) {
-										var pos = 0;
-										var pBuildASS = new Promise((resolve,reject) => {
-
-											assBuilder.build(
-												module.exports.SETTINGS.PathSubs,
-												module.exports.SETTINGS.PathVideos,
-												kara.subfile,
-												kara.videofile,
-												module.exports.SETTINGS.PathTemp,
-												kara.title,
-												kara.serie,
-												kara.songtype,
-												kara.songorder,
-												requester,
-												kara_id,
-												publicPlaylistID)
-												.then(function() {
-													resolve();
-												})
-												.catch(function(err){
-													logger.error('[PLC] ASS build : '+err);
-													reject(err);
-												});
-										});
-										var pGetPos = new Promise((resolve,reject) => {
-											module.exports.DB_INTERFACE.getMaxPosInPlaylist(publicPlaylistID)
-												.then(function(maxpos){
-													if (maxpos) {
-														pos = maxpos + 1.0;
-													} else {
-														pos = 1;
-													}
-													resolve();
-												})
-												.catch(function(err){
-													logger.error('[PLC] DBI getMaxPosInPlaylist');
-													reject(err);
-												});
-
-										});
-
-										Promise.all([pBuildASS,pGetPos])
-											.then(function() {
-												module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,publicPlaylistID,pos,date_add,flag_playing)
-													.then(function(playlistcontent_id){
-														var pRenameASS = new Promise((resolve) => {
-															fs.renameSync(
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,kara_id+'.'+publicPlaylistID+'.ass'),
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
-																	playlistcontent_id+'.ass')
-															);
-															resolve();
-														});
-														var pUpdatedDuration = new Promise((resolve,reject) => {
-															module.exports.updatePlaylistDuration(publicPlaylistID)
-																.then(function(){
-																	resolve();
-																})
-																.catch(function(err){
-																	logger.error('[PLC] updatePlaylistDuration : '+err);
-																	reject(err);
-																});
-														});
-														var pUpdatedKarasCount = new Promise((resolve,reject) => {
-															module.exports.updatePlaylistNumOfKaras(publicPlaylistID)
-																.then(function(){
-																	resolve();
-																})
-																.catch(function(err){
-																	logger.error('[PLC] updatePlaylistNumOfKaras : '+err);
-																	reject(err);
-																});
-														});
-														var pReorderPlaylist = new Promise((resolve,reject) => {
-															module.exports.reorderPlaylist(publicPlaylistID)
-																.then(function(){
-																	resolve();
-																})
-																.catch(function(err){
-																	logger.error('[PLC] reorderPlaylist : '+err);
-																	reject(err);
-																});
-														});
-														var pUpdatedPlaylistLastEditTime = new Promise((resolve,reject) => {
-															module.exports.updatePlaylistLastEditTime(publicPlaylistID)
-																.then(function(){
-																	resolve();
-																})
-																.catch(function(err){
-																	logger.error('[PLC] updatePlaylistLastEditTime : '+err);
-																	reject(err);
-																});
-														});
-														Promise.all([pRenameASS,pUpdatedPlaylistLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
-															.then(function() {
-																resolve(publicPlaylistID);
-															})
-															.catch(function(err) {
-																logger.error('[PLC] addKaraToPublicPlaylist : '+err);
-																reject(err);
-															});
-													})
-													.catch(function(err) {
-														logger.error('[PLC] DBI addKaraToPlaylist : '+err);
-														reject(err);
-													});
-
-											})
-											.catch(function(err) {
-												logger.error('[PLC] addKaraToPublicPlaylist : '+err);
-												reject(err);
-											});
-
-									})
-									.catch(function(err) {
-										logger.error('[PLC] getKara : '+err);
-										reject(err);
-									});
-							}
-						})
-						.catch(function(err) {
-							logger.error('[PLC] addKaraToPublicPlaylist : '+err);
-							reject(err);
-						});
-				})
-				.catch(function(err) {
-					logger.error('[PLC] addKaraToPublicPlaylist : '+err);
-					reject(err);
-				});
-		});
-	},
-	/**
-	* @function {Add Karaoke to Current playlist}
-	* @param  {number} kara_id     {ID of karaoke to add}
-	* @param  {string} requester   {Name of person submitting karaoke}
-	* @return {boolean} {Promise}
-	*/
-	addKaraToCurrentPlaylist:function(kara_id,requester) {
-		return new Promise(function(resolve,reject){
-			var NORM_requester = L.deburr(requester);
-			var date_add = timestamp.now();
-			var flag_playing = 0;
-			var isKaraInPlaylist = undefined;
-			var isKaraBlacklisted = undefined;
-			var currentPlaylistID = undefined;
-			var pWhichCurrentPlaylist = new Promise((resolve,reject) => {
-				module.exports.isACurrentPlaylist()
-					.then(function(playlist_id) {
-						currentPlaylistID = playlist_id;
-						resolve(true);
-					})
-					.catch(function(err) {
-						err = 'Current playlist not found : '+err;
-						logger.error('[PLC] isACurrentPlaylist : '+err);
-						reject(err);
-					});
-			});
-			var pIsKara = new Promise((resolve,reject) => {
-				module.exports.isKara(kara_id)
-					.then(function() {
-						resolve(true);
-					})
-					.catch(function(err) {
-						err = 'Karaoke '+kara_id+' not found : '+err;
-						logger.error('[PLC] isKara : '+err);
-						reject(err);
-					});
-			});
-			Promise.all([pIsKara,pWhichCurrentPlaylist])
-				.then(function() {
-					var pIsKaraInPlaylist = new Promise((resolve,reject) => {
-						module.exports.isKaraInPlaylist(kara_id,currentPlaylistID)
-							.then(function(isKaraInPL) {
-								//Karaoke song is in playlist, then we update the boolean and resolve the promise
-								//since we don't want duplicates in playlists.
-								isKaraInPlaylist = isKaraInPL;
-								resolve(isKaraInPL);
-							})
-							.catch(function(err) {
-								logger.error('[PLC] isKaraInPlaylist : '+err);
-								reject(err);
-							});
-					});
-					var pIsKaraBlacklisted = new Promise((resolve,reject) => {
-						module.exports.isKaraInBlacklist(kara_id)
-							.then(function(isKaraInBL){
-								isKaraBlacklisted = isKaraInBL;
-								resolve();
-							})
-							.catch(function(err){
-								logger.error('[PLC] isKaraBlacklisted : '+err);
-								reject();
-							});
-					});
-					Promise.all([pIsKaraInPlaylist,pIsKaraBlacklisted])
-						.then(function() {							
-							var err;
-							if (isKaraInPlaylist) {
-								err = 'Karaoke song '+kara_id+' is already in playlist '+currentPlaylistID;
-								logger.error('[PLC] addKaraToCurrentPlaylist : '+err);
-								reject(err);
-							} else if(isKaraBlacklisted) {
-								err = 'Karaoke song '+kara_id+' is blacklisted';
-								logger.error('[PLC] addKaraToCurrentPlaylist : '+err);
-								reject(err);
-							} else {
-								// Adding karaoke song here
-								module.exports.getKara(kara_id)
-									.then(function(kara) {
-										var pos = 0;
-										var pBuildASS = new Promise((resolve,reject) => {
-
-											assBuilder.build(
-												module.exports.SETTINGS.PathSubs,
-												module.exports.SETTINGS.PathVideos,
-												kara.subfile,
-												kara.videofile,
-												module.exports.SETTINGS.PathTemp,
-												kara.title,
-												kara.serie,
-												kara.songtype,
-												kara.songorder,
-												requester,
-												kara_id,
-												currentPlaylistID)
-												.then(function() {
-													resolve();
-												})
-												.catch(function(err){
-													logger.error('[PLC] ASS build : '+err);
-													reject(err);
-												});
-										});
-										var pGetPos = new Promise((resolve,reject) => {
-											module.exports.DB_INTERFACE.getMaxPosInPlaylist(currentPlaylistID)
-												.then(function(maxpos){
-													if (maxpos) {
-														pos = maxpos + 1.0;
-													} else {
-														pos = 1;
-													}
-													resolve();
-												})
-												.catch(function(err){
-													logger.error('[PLC] DBI getMaxPosInPlaylist');
-													reject(err);
-												});
-
-										});
-
-										Promise.all([pBuildASS,pGetPos])
-											.then(function() {
-												module.exports.DB_INTERFACE.addKaraToPlaylist(kara_id,requester,NORM_requester,currentPlaylistID,pos,date_add,flag_playing)
-													.then(function(playlistcontent_id){
-														var pRenameASS = new Promise((resolve) => {
-															fs.renameSync(
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,kara_id+'.'+currentPlaylistID+'.ass'),
-																path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,
-																	playlistcontent_id+'.ass')
-															);
-															resolve();
-														});
-														var pUpdatedDuration = new Promise((resolve,reject) => {
-															module.exports.updatePlaylistDuration(currentPlaylistID)
-																.then(function(){
-																	resolve();
-																})
-																.catch(function(err){
-																	logger.error('[PLC] updatePlaylistDuration : '+err);
-																	reject(err);
-																});
-														});
-														var pUpdatedKarasCount = new Promise((resolve,reject) => {
-															module.exports.updatePlaylistNumOfKaras(currentPlaylistID)
-																.then(function(){
-																	resolve();
-																})
-																.catch(function(err){
-																	logger.error('[PLC] updatePlaylistNumOfKaras : '+err);
-																	reject(err);
-																});
-														});
-														var pReorderPlaylist = new Promise((resolve,reject) => {
-															module.exports.reorderPlaylist(currentPlaylistID)
-																.then(function(){
-																	resolve();
-																})
-																.catch(function(err){
-																	logger.error('[PLC] reorderPlaylist : '+err);
-																	reject(err);
-																});
-														});
-														var pUpdatedPlaylistLastEditTime = new Promise((resolve,reject) => {
-															module.exports.updatePlaylistLastEditTime(currentPlaylistID)
-																.then(function(){
-																	resolve();
-																})
-																.catch(function(err){
-																	logger.error('[PLC] updatePlaylistLastEditTime : '+err);
-																	reject(err);
-																});
-														});
-														Promise.all([pRenameASS,pUpdatedPlaylistLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
-															.then(function() {
-																resolve(currentPlaylistID);
-															})
-															.catch(function(err) {
-																logger.error('[PLC] addKaraToCurrentPlaylist : '+err);
-																reject(err);
-															});
-													})
-													.catch(function(err) {
-														logger.error('[PLC] DBI addKaraToPlaylist : '+err);
-														reject(err);
-													});
-
-											})
-											.catch(function(err) {
-												logger.error('[PLC] addKaraToCurrentPlaylist : '+err);
-												reject(err);
-											});
-
-									})
-									.catch(function(err) {
-										logger.error('[PLC] getKara : '+err);
-										reject(err);
-									});
-							}
-						})
-						.catch(function(err) {
-							logger.error('[PLC] addKaraToCurrentPlaylist : '+err);
-							reject(err);
-						});
-				})
-				.catch(function(err) {
-					logger.error('[PLC] addKaraToCurrentPlaylist : '+err);
-					reject(err);
-				});
-		});
-	},
-
+	
 	// ---------------------------------------------------------------------------
 	// Methodes rapides de gestion de la playlist courante
 	// prev / next / get_current
@@ -2674,9 +2513,6 @@ module.exports = {
 	},
 	current:function(){
 		// TODO : renommer en get_current_kara
-		// implémenter des méthode next et prev
-		// et coder sur engine en fin de morceau (event venant du player) => passer au morceau suivant avant de récupérer le morceau courant
-		// => next'n play
 		return new Promise(function(resolve,reject){
 			module.exports.current_playlist()
 				.then(function(playlist){					
@@ -2706,7 +2542,7 @@ module.exports = {
 						kara.playlist_id = playlist.id;
 						kara.path = {
 							video: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
-							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.playlistcontent_id+'.ass'),
+							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.generated_subfile),
 						};						
 						resolve(kara);
 					} else { 	
@@ -2725,23 +2561,19 @@ module.exports = {
 	build_dummy_current_playlist:function(playlist_id){
 		logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...');
 		return new Promise(function(resolve,reject){
-			var i;
-			for (i = 1; i <= 5; i++) {				
-				logger.info('[PLC] Dummy Plug : Adding Kara '+i+' into current playlist');			
-				module.exports.addKaraToPlaylist(
-					i,
-					'Dummy user '+i,
+			logger.info('[PLC] Dummy Plug : Adding 5 karas into current playlist');			
+			module.exports.addKaraToPlaylist(
+					[1,2,3,4,5],
+					'Dummy user',
 					playlist_id
 				)
 					.then(function(){
-					// Do nothing.
+						resolve();
 					})
 					.catch(function(message){
 						logger.error('[PLC] Dummy Plug : '+message);
 						reject(message);
-					});
-			}
-			resolve();
+					});			
 		});
 	},
 

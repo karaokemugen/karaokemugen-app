@@ -11,8 +11,8 @@ const ffmpegPath = require('ffmpeg-downloader').path;
 
 module.exports = {
 	getLyrics:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder){
-		return new Promise(function(resolve,reject){
-			var uuid = uuidv4();
+		return new Promise(function(resolve,reject){	
+			var uuid = uuidv4();		
 			var lyrics = [];			
 			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
 				var err = 'Video not found : '+videoFile;
@@ -44,6 +44,10 @@ module.exports = {
 							logger.debug('[ASS] exitCode : '+exitCode);
 							logger.debug('[ASS] start : '+start);
 							reject(err);						
+						}
+						if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))){
+							subFile = 'vide.ass';
+							pathToSubFiles = 'src/_player/assets/';
 						}
 					} else {
 						// No .mkv or .mp4 detected, so we create a .ass from vide.ass
@@ -85,7 +89,7 @@ module.exports = {
 			// If it's false then find the Dialogue with the Pseudo style and delete it. 		
 			karalist.forEach(function(kara){			
 				//Open the .ass
-				var assFile = tempFolder+'/'+kara.playlistcontent_id+'.ass';
+				var assFile = tempFolder+'/'+kara.generated_subfile;
 				var assData = fs.readFileSync(path.resolve(module.exports.SYSPATH,assFile), 'utf-8');
 				var script = assParser(assData, { comments: true });			
 				var DialogueSection;
@@ -131,7 +135,7 @@ module.exports = {
 					// We leave the style as it doesn't pose a threat.
 					if (dialogueIndex !== undefined) {
 						script[DialogueSection].body.splice(dialogueIndex,1);
-						outputFile = tempFolder+'/'+kara.playlistcontent_id+'.ass';
+						outputFile = tempFolder+'/'+kara.generated_subfile;
 						fs.writeFileSync(outputFile, assStringify(script));
 					}				
 				}			
@@ -139,9 +143,8 @@ module.exports = {
 			resolve();		
 		});
 	},
-	build:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester, kara_id, playlist_id){
+	build:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder, title, series, songType, songOrder, requester){
 		var uuid = uuidv4();
-		logger.debug(module.exports.SYSPATH+' - '+pathToVideoFiles);
 		logger.debug('[ASS] args = '+JSON.stringify(arguments));
 		return new Promise(function(resolve, reject){
 
@@ -177,6 +180,11 @@ module.exports = {
 							logger.debug('[ASS] start : '+start);
 							reject(err);
 						}
+						// We test if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything, so we replace it with vide.ass
+						if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))){
+							subFile = 'vide.ass';
+							pathToSubFiles = 'src/_player/assets/';
+						}
 					} else {
 						// No .mkv or .mp4 detected, so we create a .ass from vide.ass
 						// Videofile is most probably a hardsubbed video.
@@ -193,7 +201,7 @@ module.exports = {
 					}
 				}
 				// Parsing the subFile provided, either vide.ass, the associated .ass file or the extracted .ass file from
-				// a .mkv/.mp4
+				// a .mkv/.mp4				
 				var assdata = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile), 'utf-8');
 				var script = assParser(assdata, { comments: true });
 				// Contents of script array :
@@ -215,29 +223,7 @@ module.exports = {
 				});
 
 				// Calculate font size to use for Credits and Nickname
-				// Based on size of first Style encountered.
-
-				/* Old method using PlayResX.
-
-				var CreditsSize = 15;
-				var NickSize = 8;
-				var PlayResXDetected = false;
-
-				script[0].body.forEach(function(param){
-					if (param.key = 'PlayResX') {
-						if (param.value = 1920) {
-							CreditsSize = 50;
-							NickSize = 25;
-							PlayResXDetected = true;
-						}
-						if (param.value = 1280) {
-							CreditsSize = 40;
-							NickSize = 20;
-							PlayResXDetected = true;
-						}
-					}
-				})
-				*/
+				// Based on size of first Style encountered.				
 
 				var styleFontSize = undefined;
 
@@ -375,14 +361,14 @@ module.exports = {
 
 				// Writing to the final ASS, which is the karaoke's ID.ass
 				// If writing is successfull, we return the path to the ASS file.
-				var outputFile = outputFolder+'/'+kara_id+'.'+playlist_id+'.ass';
+				var outputFile = outputFolder+'/'+uuid+'.ass';
 				fs.writeFile(outputFile, assStringify(script), function(err) {
 					if (err) {
 						err = 'Failed to write ASS file : '+err;
 						logger.error('[ASS] build : '+err);
 						reject(err);
-					} else {
-						resolve(outputFile);
+					} else {						
+						resolve(uuid);
 					}
 				});
 			}

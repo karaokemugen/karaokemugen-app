@@ -7,7 +7,6 @@ const logger = require('../_common/utils/logger.js');
 const extend = require('extend');
 const timestamp = require('unix-timestamp');
 const ini = require('ini');
-const async = require('async');
 
 /**
  * @module engine
@@ -1013,33 +1012,55 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onKaraAddToModePlaylist = function(id_kara,requester){
 			return new Promise(function(resolve,reject){
+				var karas = id_kara.split(',');
 				if (module.exports._states.private) {
 					//If Kara mode is private, then add to current playlist
-					module.exports._services.playlist_controller.addKaraToCurrentPlaylist(id_kara,requester)
-						.then(function(id_playlist){							
-							resolve(id_playlist);
+					module.exports._services.playlist_controller.isACurrentPlaylist()
+						.then(function(playlist_id) {
+							module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
+								.then(function(id_playlist){							
+									resolve(id_playlist);
+								})
+								.catch(function(err){
+									logger.error('[Engine] PLC addKaraToCurrentPlaylist : '+err);
+									reject(err);
+								});		
 						})
-						.catch(function(err){
-							logger.error('[Engine] PLC addKaraToCurrentPlaylist : '+err);
+						.catch(function(err) {
+							err = 'Current playlist not found : '+err;
+							logger.error('[PLC] isACurrentPlaylist : '+err);
 							reject(err);
-						});
+						});					
 				} else {
 					//If Kara mode is public, then add to public playlist
-					module.exports._services.playlist_controller.addKaraToPublicPlaylist(id_kara,requester)
-						.then(function(id_playlist){
-							resolve(id_playlist);
+					module.exports._services.playlist_controller.isAPublicPlaylist()
+						.then(function(playlist_id) {
+							module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
+								.then(function(id_playlist){							
+									resolve(id_playlist);
+								})
+								.catch(function(err){
+									logger.error('[Engine] PLC addKaraToPublicPlaylist : '+err);
+									reject(err);
+								});		
 						})
-						.catch(function(err){
-							logger.error('[Engine] PLC addKaraToPublicPlaylist : '+err);
+						.catch(function(err) {
+							err = 'Current playlist not found : '+err;
+							logger.error('[PLC] isACurrentPlaylist : '+err);
 							reject(err);
-						});
+						});					
 				}
 			});
 		};
 		module.exports._services.apiserver.onKaraAddToPlaylist = function(id_kara,requester,playlist_id,pos){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
-					.then(function(){						
+				logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+id_kara);
+				logger.profile('AddKara');
+				var karas = id_kara.split(',');
+				module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id,pos)
+					.then(function(){
+						logger.profile('AddKara');				
+						logger.info('[Engine] Finished adding karaokes to playlist '+playlist_id);
 						resolve(playlist_id);
 					})
 					.catch(function(err){
@@ -1048,31 +1069,21 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onKarasAddToPlaylist = function(karaList,playlist_id){
+		module.exports._services.apiserver.onKaraCopyToPlaylist = function(plc_id,playlist_id,pos){
 			return new Promise(function(resolve,reject){
-				// When adding a group of karaokes, they are added by user "Admin" by default.
-				// Also, they're added at the end of the list.
-				// No exceptions. :)
-				var karaArray = karaList.split(',');
-				var requester = 'Admin';
-				async.eachLimit(karaArray, 5, function(kara_id, callback){
-					module.exports._services.playlist_controller.addKaraToPlaylist(kara_id,requester,playlist_id)
-						.then(function(){
-							logger.info('[Engine] Group add : Karaoke '+kara_id+' added to playlist '+playlist_id);
-							callback();
-						})
-						.catch(function(err){
-							logger.warn('[Engine] Group add : error adding karaoke '+kara_id+' to playlist '+playlist_id+' : '+err);
-							callback(err);
-						});
-				},function(err){
-					if (err) {
-						logger.warn('[Engine] Group add : one or more karaokes could not be added to playlist '+playlist_id+' : '+err);
+				logger.info('[Engine] Copying karaokes to playlist '+playlist_id+' : '+plc_id);
+				logger.profile('CopyKara');
+				var plcs = plc_id.split(',');
+				module.exports._services.playlist_controller.copyKaraToPlaylist(plcs,playlist_id,pos)
+					.then(function(){
+						logger.profile('CopyKara');				
+						logger.info('[Engine] Finished copying karaokes to playlist '+playlist_id);
+						resolve(playlist_id);
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC copyKaraToPlaylist : '+err);
 						reject(err);
-					} else {
-						resolve();
-					}					
-				});
+					});
 			});
 		};
 		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){

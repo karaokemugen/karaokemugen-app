@@ -52,7 +52,7 @@ module.exports = {
 							var array = input.split(',');
 							return array.some(numberTest);
 						} else { 
-							return false;
+							return numberTest(input);
 						}						
 					}
 				}
@@ -359,7 +359,7 @@ module.exports = {
 						'kara_id': {
 							in: 'body',
 							notEmpty: true,
-							isInt: true,
+							numbersArray: true,
 						},
 						'pos': {
 							in: 'body',
@@ -396,23 +396,30 @@ module.exports = {
 						});
 				})
 				.patch(function(req,res){
-					// Read an array of kara IDs and add them to the playlist
+					//add karas from a playlist to another
 					req.checkBody({
-						'karaList': {
+						'plc_id': {
 							in: 'body',
 							notEmpty: true,
 							numbersArray: true,
+						},
+						'pos': {
+							in: 'body',
+							optional: true,
+							isInt: true,
 						}
 					});
+
 					req.getValidationResult()
 						.then(function(result) {
 							if (result.isEmpty()) {
-								module.exports.onKarasAddToPlaylist(req.body.karaList,req.params.pl_id)
-									.then(function(){
-										module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-										module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
-										res.statusCode = 200;
-										res.json('Added a group of karas ('+req.body.karaList+') to playlist '+req.params.pl_id);
+								if (req.body.pos != undefined) req.sanitize('pos').toInt();
+								module.exports.onKaraCopyToPlaylist(req.body.plc_id,req.params.pl_id,req.body.pos)
+									.then(function(pl_id){
+										module.exports.emitEvent('playlistInfoUpdated',pl_id);
+										module.exports.emitEvent('playlistContentsUpdated',pl_id);
+										res.statusCode = 201;
+										res.json('Playlist content(s) '+req.body.plc_id+' copied to playlist '+req.params.pl_id+' at position '+req.body.pos);
 									})
 									.catch(function(err){
 										res.statusCode = 500;
@@ -1315,5 +1322,6 @@ module.exports = {
 	onStats:function(){},
 	onKaraSingleLyrics:function(){},
 	onShutdown:function(){},
+	onKaraCopyToPlaylist:function(){},
 	emitEvent:function(){},	
 };

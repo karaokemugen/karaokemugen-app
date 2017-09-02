@@ -13,6 +13,11 @@ const argv = require('minimist')(process.argv.slice(2));
 const logger = require('./_common/utils/logger.js');
 const i18n = require('i18n');
 const osLocale = require('os-locale');
+process.on('uncaughtException', function (exception) {
+  console.log(exception); // to see your exception details in the console
+  // if you are on production, maybe you can send the exception details to your
+  // email as well ?
+});
 
 process.on('uncaughtException', function (exception) {
   console.log(exception); // to see your exception details in the console
@@ -138,17 +143,17 @@ if(SYSPATH) {
 			process.exit();
 		}
 	}
-
+	
 	/**
 	 * Calling engine.
 	 */
-	var engine = require('./_engine/index.js');
+	var engine = require('./_engine/index.js');	
 	engine.SYSPATH = SYSPATH;
 	engine.SETTINGS = SETTINGS;
 
 	if(argv.testplaylist)
 		engine.test_playlist_controller();
-	else
+	else		
 		engine.run();
 } else {
 	logger.error('[Launcher] Unable to detect SysPath !');
