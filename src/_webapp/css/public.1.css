@@ -1,0 +1,147 @@
+
+#progressBar {
+    top: 0;
+    cursor: auto;
+    height:  calc(30px + 28px - 1.5vw);
+}
+#karaInfo {
+    line-height: calc(30px + 28px - 1.5vw);
+}
+
+.header button {
+    font-size : calc(17px + 19px - 1vw);
+}
+.header {
+	position: fixed;
+	z-index: 1337;
+	background-color: #1E2124;
+    top: calc(30px + 28px - 1.5vw);
+	height: calc(60px + 28px - 1.5vw);
+	width: 100%;
+	border-bottom: 2px solid #9e9e9e;
+}
+.header button {
+    width: calc(61px + 48px - 2.5vw);
+}
+.header > div {
+    height: 100%;
+    padding: 0px;
+}
+.header > div:first-child {
+    padding: 0px 7px;
+}
+.header > div > div {
+    height: 100%;
+    padding: 7px 0px 7px 7px;
+}
+.header .dropdown {
+    padding: 0px 0px 0px 7px;
+}
+.bootstrap-switch-container i {
+    font-size: calc(20px + 10px - .5vw);
+    top: calc(3px + .5vw - 10px);
+}
+div.bootstrap-switch-large{
+    width: 100%;
+	height: 100%;
+	background-color: #9e9e9e; ;
+}
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-secondary {
+   height: 120%;
+   line-height: calc(12px + 90px - 5vw);
+   font-size : calc(12px + 19px - 1vw);
+}
+
+#underHeader {
+    top: calc(90px + 76px - 4vw);
+    height : calc(100% - (90px + 96px - 5vw));
+}
+
+.dropdown-menu > li > a {
+    font-size :   calc(17px + 19px - 1vw);
+}
+
+.playlist-main {
+   height : 100%;
+}
+.panel {
+    height : 100%;
+}
+
+#playlist1 .list-group-item {
+    background-color: #393939;
+}
+
+#progressBar {
+    font-size:  calc(17px + 19px - 1vw);
+}
+.panel-heading {
+    font-size:  calc(17px + 19px - 1vw);
+    height: calc(63px + 15px + 48px - 2.5vw);
+}
+.panel-heading > div,.panel-heading > div > div, .panel-heading > div > div > div, .panel-heading > div > div > div > input {
+    height: 100%;
+}
+ .panel-heading > div > div , .panel-heading > div > div > div, .panel-heading > div > div > div > input {
+     width: 100%;
+ }
+.list-group-item {
+    font-size:  calc(14px + 10px - .5vw);
+}
+body {
+    font-size:  calc(155x + 28px - 1.5vw);
+}
+
+#header input {
+    height: 100%;
+    font-size:  calc(17px + 19px - 1vw);
+}
+
+.badge {
+    font-size: calc(12px + 19px - 1vw);
+}
+
+
+.right-inner-addon i {
+  right: 0px;
+  left: auto;
+}
+
+#select2-selectPlaylist2-container {
+    font-size: calc(12px + 19px - 1vw);
+}
+
+::-webkit-input-placeholder {
+    font-size:  calc(12px + 19px - 1vw);
+    line-height:  calc(12px + 19px - 1vw);
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+    font-size:  calc(12px + 19px - 1vw);
+    line-height:  calc(12px + 19px - 1vw);
+}
+
+:-ms-input-placeholder {
+    font-size:  calc(12px + 19px - 1vw);
+    line-height:  calc(12px + 19px - 1vw);
+}
+
+.header ::-webkit-input-placeholder {
+    font-size: calc(17px + 19px - 1vw);
+    line-height: calc(17px + 19px - 1vw);
+}
+
+.header  ::-moz-placeholder {  /* Firefox 19+ */
+    font-size:  calc(17px + 19px - 1vw);
+    line-height: calc(17px + 19px - 1vw);
+}
+
+.header  :-ms-input-placeholder {
+    font-size:  calc(17px + 19px - 1vw);
+    line-height: calc(17px + 19px - 1vw);
+}
+
+
+#playlist1[canTransferKara="true"] > li {
+    cursor : pointer;
+}

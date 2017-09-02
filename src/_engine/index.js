@@ -7,6 +7,7 @@ const logger = require('../_common/utils/logger.js');
 const extend = require('extend');
 const timestamp = require('unix-timestamp');
 const ini = require('ini');
+const async = require('async');
 
 /**
  * @module engine
@@ -29,6 +30,7 @@ module.exports = {
 		admin_port:1338,
 		frontend_port:1337,
 		apiserver_port:1339,
+		ws_port:1340,
 		playlist:null,
 		timeposition:0,
 		currentlyPlayingKara:undefined,
@@ -38,6 +40,7 @@ module.exports = {
 		playlist_controller: null,
 		player:null,
 		apiserver:null,
+		ws:null,
 	},
 	/**
 	 * Base method for starting up the engine.
@@ -64,6 +67,7 @@ module.exports = {
 			module.exports._start_admin();
 			module.exports._start_frontend();
 			module.exports._start_apiserver();
+			module.exports._start_wsserver();
 			module.exports._broadcastStates();
 		}).catch(function(response){
 			logger.error(response);
@@ -153,6 +157,15 @@ module.exports = {
 	},
 	reset:function(){
 		module.exports._services.player.reset();
+	},
+	setVolume:function(volume){
+		module.exports._services.player.setVolume(volume);
+	},
+	showSubs:function(){
+		module.exports._services.player.showSubs();
+	},
+	hideSubs:function(){
+		module.exports._services.player.hideSubs();
 	},
 	/**
 	 * @function {pause}
@@ -273,15 +286,15 @@ module.exports = {
 	*/
 	tryToReadKaraInPlaylist:function(){
 		module.exports._services.playlist_controller.current_playlist()
-		.then(function(playlist){
-			if(module.exports._states.playlist != playlist) {
-				module.exports._states.playlist = playlist;
-				module.exports._broadcastStates();
-			}
-		})
-		.catch(function(err){
-			logger.error('[Engine] Unable to get playlist!')			
-		})
+			.then(function(playlist){
+				if(module.exports._states.playlist != playlist) {
+					module.exports._states.playlist = playlist;
+					module.exports._broadcastStates();
+				}
+			})
+			.catch(function(err){
+				logger.error('[Engine] Unable to get playlist : '+err);			
+			});
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
 			module.exports._services.playlist_controller.current()
 				.then(function(kara){
@@ -292,10 +305,10 @@ module.exports = {
 						kara.id_kara,
 						kara.gain
 					);
-					module.exports._states.currentlyPlayingKara = kara.id_kara;
+					module.exports._states.currentlyPlayingKara = kara.kara_id;
 					module.exports._broadcastStates();
 					//Add a view to the viewcount
-					module.exports.addViewcount(kara.id_kara,kara.kid);
+					module.exports.addViewcount(kara.kara_id,kara.kid);
 				})
 				.catch(function(){
 					logger.info('Cannot find a song to play');
@@ -312,18 +325,18 @@ module.exports = {
 		// Add one viewcount to the table
 		var datetime = timestamp.now();
 		module.exports.DB_INTERFACE.addViewcount(kara_id,kid,datetime)		
-		.then(function(){
-			// Recalculate viewcount and edit it in karasdb
-			module.exports.DB_INTERFACE.updateTotalViewcounts(kid)
 			.then(function(){
+			// Recalculate viewcount and edit it in karasdb
+				module.exports.DB_INTERFACE.updateTotalViewcounts(kid)
+					.then(function(){
+					})
+					.catch(function(err){
+						logger.error('[Engine] Failed to update viewcounts on karaoke ID '+kid+' : '+err);
+					});
 			})
 			.catch(function(err){
-				logger.error('[Engine] Failed to update viewcounts on karaoke ID '+kid);
-			})
-		})
-		.catch(function(err){
-			logger.error('[Engine] Failed to add viewcount for karaoke '+kara_id);
-		})		
+				logger.error('[Engine] Failed to add viewcount for karaoke '+kara_id+' : '+err);
+			});		
 	},
 	// ------------------------------------------------------------------
 	// méthodes privées
@@ -405,6 +418,18 @@ module.exports = {
 	},
 	/**
 	* @function
+	* Starts the websocket server on the selected port
+	* Broadcasts syspath and settings to that module.
+	*/
+	_start_wsserver:function(){
+		module.exports._services.ws = require(path.resolve(__dirname,'../_ws/index.js'));
+		module.exports._services.ws.LISTEN = module.exports._states.ws_port;
+		module.exports._services.ws.SYSPATH = module.exports.SYSPATH;
+		module.exports._services.ws.SETTINGS = module.exports.SETTINGS;		
+		module.exports._services.ws.init();
+	},
+	/**
+	* @function
 	* Starts the API webservice on the selected port
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
@@ -418,29 +443,29 @@ module.exports = {
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
 		module.exports._services.apiserver.onTest = module.exports.test;
-		module.exports._services.apiserver.onKaras = function(filter,lang){
+		module.exports._services.apiserver.onKaras = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-						.then(function(karalist){
-							if (filter) {
-								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-								.then(function(filtered_pl){
-									resolve(filtered_pl)
-								})
-								.catch(function(err){
-									logger.error('[Engine] PLC filterPlaylist : '+err);	
-									resolve(err);
-								});							
-							} else {
-								resolve(karalist);
-							}
-						})
-						.catch(function(err){
-							logger.error('[Engine] PLC translateKaraInfo : '+err);	
-							reject(err);
-						});						
+							.then(function(karalist){
+								if (filter) {
+									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+										.then(function(filtered_pl){
+											resolve(filtered_pl.slice(from,to));
+										})
+										.catch(function(err){
+											logger.error('[Engine] PLC filterPlaylist : '+err);	
+											resolve(err);
+										});							
+								} else {
+									resolve(karalist.slice(from,to));
+								}
+							})
+							.catch(function(err){
+								logger.error('[Engine] PLC translateKaraInfo : '+err);	
+								reject(err);
+							});						
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC getAllKaras : '+err);	
@@ -453,24 +478,24 @@ module.exports = {
 				module.exports._services.playlist_controller.getWhitelistContents()
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-						.then(function(karalist){
-							if (filter) {
-								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-								.then(function(filtered_pl){
-									resolve(filtered_pl)
-								})
-								.catch(function(err){
-									logger.error('[Engine] PLC filterPlaylist : '+err);	
-									resolve(err);
-								});							
-							} else {
-								resolve(karalist);
-							}
-						})
-						.catch(function(err){
-							logger.error('[Engine] PLC translateKaraInfo : '+err);	
-							reject(err);
-						});						
+							.then(function(karalist){
+								if (filter) {
+									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+										.then(function(filtered_pl){
+											resolve(filtered_pl);
+										})
+										.catch(function(err){
+											logger.error('[Engine] PLC filterPlaylist : '+err);	
+											resolve(err);
+										});							
+								} else {
+									resolve(karalist);
+								}
+							})
+							.catch(function(err){
+								logger.error('[Engine] PLC translateKaraInfo : '+err);	
+								reject(err);
+							});						
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC getWhitelistContents : '+err);	
@@ -483,24 +508,24 @@ module.exports = {
 				module.exports._services.playlist_controller.getBlacklistContents()
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-						.then(function(karalist){
-							if (filter) {
-								module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-								.then(function(filtered_pl){
-									resolve(filtered_pl)
-								})
-								.catch(function(err){
-									logger.error('[Engine] PLC filterPlaylist : '+err);	
-									resolve(err);
-								});							
-							} else {
-								resolve(karalist);
-							}
-						})
-						.catch(function(err){
-							logger.error('[Engine] PLC translateKaraInfo : '+err);	
-							reject(err);
-						});						
+							.then(function(karalist){
+								if (filter) {
+									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+										.then(function(filtered_pl){
+											resolve(filtered_pl);
+										})
+										.catch(function(err){
+											logger.error('[Engine] PLC filterPlaylist : '+err);	
+											resolve(err);
+										});							
+								} else {
+									resolve(karalist);
+								}
+							})
+							.catch(function(err){
+								logger.error('[Engine] PLC translateKaraInfo : '+err);	
+								reject(err);
+							});						
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC getBlacklistContents : '+err);	
@@ -508,11 +533,18 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onBlacklistCriterias = function(){
+		module.exports._services.apiserver.onBlacklistCriterias = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistCriterias()
 					.then(function(blc){
-						resolve(blc);
+						module.exports._services.playlist_controller.translateBlacklistCriterias(blc,lang)
+							.then(function(blc_output){
+								resolve(blc_output);
+							})
+							.catch(function(err){
+								logger.error('[Engine] translateBlacklistCriterias : '+err);							
+								reject(err);
+							});
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC getBlacklistCriterias : '+err);							
@@ -523,7 +555,7 @@ module.exports = {
 		module.exports._services.apiserver.onBlacklistCriteriaAdd = function(blctype,blcvalue){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
-					.then(function(){
+					.then(function(){						
 						resolve();
 					})
 					.catch(function(err){
@@ -535,7 +567,7 @@ module.exports = {
 		module.exports._services.apiserver.onBlacklistCriteriaDelete = function(blc_id){
 			return new Promise(function(resolve,reject){				
 				module.exports._services.playlist_controller.deleteBlacklistCriteria(blc_id)
-					.then(function(){
+					.then(function(){						
 						resolve();
 					})
 					.catch(function(err){
@@ -547,7 +579,7 @@ module.exports = {
 		module.exports._services.apiserver.onBlacklistCriteriaEdit = function(blc_id,blctype,blcvalue){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editBlacklistCriteria(blc_id,blctype,blcvalue)
-					.then(function(){
+					.then(function(){						
 						resolve();
 					})
 					.catch(function(err){
@@ -559,8 +591,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistShuffle = function(pl_id){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.shufflePlaylist(pl_id)
-					.then(function(){
-						resolve();
+					.then(function(){						
+						resolve(pl_id);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC shufflePlaylist : '+err);							
@@ -586,7 +618,26 @@ module.exports = {
 						reject(err);
 					});
 			});
-		}
+		};
+		module.exports._services.apiserver.onPLCInfo = function(id_plc,lang,seenFromUser){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.getKaraFromPlaylist(id_plc,seenFromUser)
+					.then(function(kara){
+						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
+							.then(function(karalist){
+								resolve(karalist);
+							})
+							.catch(function(err){
+								logger.error('[Engine] PLC translateKaraInfo : '+err);	
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC getKaraFromPlaylist : '+err);	
+						reject(err);
+					});
+			});
+		};
 		module.exports._services.apiserver.onPlaylists = function(seenFromUser){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylists(seenFromUser)
@@ -610,7 +661,7 @@ module.exports = {
 						reject(err);
 					});
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistSingleInfo = function(id_playlist,seenFromUser){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistInfo(id_playlist,seenFromUser)
@@ -623,9 +674,9 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistSingleDelete = function(id_playlist,id_newplaylist){
+		module.exports._services.apiserver.onPlaylistSingleDelete = function(id_playlist){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.deletePlaylist(id_playlist,id_newplaylist)
+				module.exports._services.playlist_controller.deletePlaylist(id_playlist)
 					.then(function(){
 						resolve();
 					})
@@ -638,8 +689,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleKaraDelete = function(playlistcontent_id){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.deleteKaraFromPlaylist(playlistcontent_id)
-					.then(function(){
-						resolve();
+					.then(function(playlist_id){
+						resolve(playlist_id);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC deleteKaraFromPlaylist : '+err);
@@ -674,8 +725,8 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
-					.then(function(){
-						resolve();
+					.then(function(playlist_id){
+						resolve(playlist_id);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC editKaraFromPlaylist : '+err);
@@ -689,8 +740,14 @@ module.exports = {
 				var defaultSettings = ini.parse(fs.readFileSync(path.join(module.exports.SYSPATH,'config.ini.default'), 'utf-8'));				
 				for (var setting in settings){
 					if (settings.hasOwnProperty(setting)){
-						if (defaultSettings[setting] != settings[setting]) {
-							settingsToSave[setting] = settings[setting];
+						if (defaultSettings[setting] != settings[setting]) {							
+							if (setting == 'os' ||
+								setting == 'EngineDefaultLocale') {
+								// Do nothing
+								// We don't want to save these settings to file.									
+							} else {
+								settingsToSave[setting] = settings[setting];
+							}							
 						}							
 					}
 				}
@@ -710,22 +767,38 @@ module.exports = {
 					module.exports.setPrivateOff();
 				}
 
-				// Other settings for now have to be toggled through API calls												
+				// Other settings for now have to be toggled through API calls						
 
-				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err, rep) {
+				// Sending settins through WS. We only send public settings
+				var publicSettings = {};
+				for (var key in module.exports.SETTINGS) {
+					if (module.exports.SETTINGS.hasOwnProperty(key)) {
+
+						if (!key.startsWith('Path') &&
+							!key.startsWith('Admin') &&
+							!key.startsWith('Bin') &&
+							!key.startsWith('os')
+						) {
+							publicSettings[key] = module.exports.SETTINGS[key];
+						}
+					}
+				}
+				
+				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err) {
 					if (err) {
 						logger.error('[Engine] Unable to save settings : '+err);
 						reject(err);
 					}
-						logger.info('[Engine] Settings updated and saved to disk')
-						resolve();
-					});				
+					logger.info('[Engine] Settings updated and saved to disk');
+					resolve(publicSettings);
+				});				
 			});
 		};
 		module.exports._services.apiserver.onPlaylistSingleEdit = function(id_playlist,playlist){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible,playlist.flag_current,playlist.flag_public,playlist.newplaylist_id)
+				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible)
 					.then(function(){
+						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
 						resolve();
 					})
 					.catch(function(err){
@@ -733,35 +806,71 @@ module.exports = {
 						reject(err);						
 					});
 			});
-		}
-		module.exports._services.apiserver.onShutdown = function(){
+		};
+		module.exports._services.apiserver.onPlaylistSingleSetCurrent = function(id_playlist){
 			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
+					.then(function(id_playlist){
+						resolve(id_playlist);
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC setCurrentPlaylist : '+err);
+						reject(err);						
+					});
+			});
+		};
+		module.exports._services.apiserver.onPlaylistSingleSetPublic = function(id_playlist){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.setPublicPlaylist(id_playlist)
+					.then(function(id_playlist){
+						resolve(id_playlist);
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC setPublicPlaylist : '+err);
+						reject(err);						
+					});
+			});
+		};
+		module.exports._services.apiserver.onShutdown = function(){
+			return new Promise(function(resolve){
 				logger.info('[Engine] Dropping the mic, shutting down!');
 				resolve();
 				setTimeout(function(){
-					process.exit(0)
+					process.exit(0);
 				},1000);
 			});
-		}
+		};
 		module.exports._services.apiserver.onPlaylistSingleEmpty = function(id_playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.emptyPlaylist(id_playlist)
-					.then(function(){
-						resolve();
+					.then(function(){						
+						resolve(id_playlist);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC emptyPlaylist : '+err);
 						reject(err);						
 					});
 			});
-		}
-		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,lang,seenFromUser){
+		};
+		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,to){			
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 							.then(function(karalist){
-								resolve(karalist);
+								if (filter) {
+									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+										.then(function(filtered_pl){
+											resolve(filtered_pl.slice(from,to));
+										})
+										.catch(function(err){
+											logger.error('[Engine] PLC filterPlaylist : '+err);	
+											resolve(err);
+										});
+								} else {
+									resolve(karalist.slice(from,to));
+								}
+								
 							})
 							.catch(function(err){
 								logger.error('[Engine] PLC translateKaraInfo : '+err);
@@ -797,7 +906,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistCurrentContents = function(lang){
+		module.exports._services.apiserver.onPlaylistCurrentContents = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
 					.then(function(id_playlist){
@@ -805,7 +914,18 @@ module.exports = {
 							.then(function(playlist){
 								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 									.then(function(karalist){
-										resolve(karalist);
+										if (filter) {
+											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+												.then(function(filtered_pl){
+													resolve(filtered_pl.slice(from,to));
+												})
+												.catch(function(err){
+													logger.error('[Engine] PLC filterPlaylist : '+err);	
+													resolve(err);
+												});
+										} else {
+											resolve(karalist.slice(from,to));
+										}
 									})
 									.catch(function(err){
 										logger.error('[Engine] PLC translateKaraInfo : '+err);
@@ -850,7 +970,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistPublicContents = function(lang){
+		module.exports._services.apiserver.onPlaylistPublicContents = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isAPublicPlaylist()
 					.then(function(id_playlist){
@@ -858,7 +978,18 @@ module.exports = {
 							.then(function(playlist){
 								module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
 									.then(function(karalist){
-										resolve(karalist);
+										if (filter) {
+											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
+												.then(function(filtered_pl){
+													resolve(filtered_pl.slice(from,to));
+												})
+												.catch(function(err){
+													logger.error('[Engine] PLC filterPlaylist : '+err);	
+													resolve(err);
+												});
+										} else {
+											resolve(karalist.slice(from,to));
+										}
 									})
 									.catch(function(err){
 										logger.error('[Engine] PLC translateKaraInfo : '+err);
@@ -885,8 +1016,8 @@ module.exports = {
 				if (module.exports._states.private) {
 					//If Kara mode is private, then add to current playlist
 					module.exports._services.playlist_controller.addKaraToCurrentPlaylist(id_kara,requester)
-						.then(function(){
-							resolve();
+						.then(function(id_playlist){							
+							resolve(id_playlist);
 						})
 						.catch(function(err){
 							logger.error('[Engine] PLC addKaraToCurrentPlaylist : '+err);
@@ -895,8 +1026,8 @@ module.exports = {
 				} else {
 					//If Kara mode is public, then add to public playlist
 					module.exports._services.playlist_controller.addKaraToPublicPlaylist(id_kara,requester)
-						.then(function(){
-							resolve();
+						.then(function(id_playlist){
+							resolve(id_playlist);
 						})
 						.catch(function(err){
 							logger.error('[Engine] PLC addKaraToPublicPlaylist : '+err);
@@ -908,13 +1039,40 @@ module.exports = {
 		module.exports._services.apiserver.onKaraAddToPlaylist = function(id_kara,requester,playlist_id,pos){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToPlaylist(id_kara,requester,playlist_id,pos)
-					.then(function(){
-						resolve();
+					.then(function(){						
+						resolve(playlist_id);
 					})
 					.catch(function(err){
-						logger.error('[Engine] PLC addKaraToPlaylist : '+err)
+						logger.error('[Engine] PLC addKaraToPlaylist : '+err);
 						reject(err);
 					});
+			});
+		};
+		module.exports._services.apiserver.onKarasAddToPlaylist = function(karaList,playlist_id){
+			return new Promise(function(resolve,reject){
+				// When adding a group of karaokes, they are added by user "Admin" by default.
+				// Also, they're added at the end of the list.
+				// No exceptions. :)
+				var karaArray = karaList.split(',');
+				var requester = 'Admin';
+				async.eachLimit(karaArray, 5, function(kara_id, callback){
+					module.exports._services.playlist_controller.addKaraToPlaylist(kara_id,requester,playlist_id)
+						.then(function(){
+							logger.info('[Engine] Group add : Karaoke '+kara_id+' added to playlist '+playlist_id);
+							callback();
+						})
+						.catch(function(err){
+							logger.warn('[Engine] Group add : error adding karaoke '+kara_id+' to playlist '+playlist_id+' : '+err);
+							callback(err);
+						});
+				},function(err){
+					if (err) {
+						logger.warn('[Engine] Group add : one or more karaokes could not be added to playlist '+playlist_id+' : '+err);
+						reject(err);
+					} else {
+						resolve();
+					}					
+				});
 			});
 		};
 		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){
@@ -924,7 +1082,7 @@ module.exports = {
 						resolve();
 					})
 					.catch(function(err){
-						logger.error('[Engine] PLC addKaraToWhitelist : '+err)
+						logger.error('[Engine] PLC addKaraToWhitelist : '+err);
 						reject(err);
 					});
 			});
@@ -940,63 +1098,75 @@ module.exports = {
 				// toggleFullscreen - as it says
 				// toggleAlwaysOnTop - as it says
 				switch (command) {
-					case 'play':
-						module.exports.play();
-						break;
-					case 'stopNow':
-						module.exports.stop(true);
-						break;
-					case 'pause':
-						module.exports.pause();
-						break;
-					case 'stopAfter':
-						module.exports.stop();
-						break;
-					case 'skip':
-						module.exports.next();
-						break;
-					case 'prev':
-						module.exports.prev();
-						break;
-					case 'toggleFullscreen':
-						module.exports.toggleFullscreen();
-						break;
-					case 'toggleAlwaysOnTop':
-						module.exports.toggleOnTop();
-						break;
-					case 'mute':
-						module.exports.mute();
-						break;
-					case 'unmute':
-						module.exports.unmute();
-						break;
-					case 'seek':
-						if (!options && typeof options !== "undefined") options = 0;
-						if (isNaN(options)) reject('Command seek must have a numeric option value');
-						module.exports.seek(options)
-						break;
-					case 'goTo':
-						if (!options && typeof options !== "undefined") options = 0;
-						if (isNaN(options)) reject('Command goTo must have a numeric option value');
-						module.exports.goTo(options);
-						break;
+				case 'play':
+					module.exports.play();
+					break;
+				case 'stopNow':
+					module.exports.stop(true);
+					break;
+				case 'pause':
+					module.exports.pause();
+					break;
+				case 'stopAfter':
+					module.exports.stop();
+					break;
+				case 'skip':
+					module.exports.next();
+					break;
+				case 'prev':
+					module.exports.prev();
+					break;
+				case 'toggleFullscreen':
+					module.exports.toggleFullscreen();
+					break;
+				case 'toggleAlwaysOnTop':
+					module.exports.toggleOnTop();
+					break;
+				case 'mute':
+					module.exports.mute();
+					break;
+				case 'unmute':
+					module.exports.unmute();
+					break;
+				case 'showSubs':
+					module.exports.showSubs();
+					break;
+				case 'hideSubs':
+					module.exports.hideSubs();
+					break;
+				case 'seek':
+					if (!options && typeof options !== 'undefined') options = 0;
+					if (isNaN(options)) reject('Command seek must have a numeric option value');
+					module.exports.seek(options);
+					break;
+				case 'goTo':
+					if (!options && typeof options !== 'undefined') options = 0;
+					if (isNaN(options)) reject('Command goTo must have a numeric option value');
+					module.exports.goTo(options);
+					break;
+				case 'setVolume':
+					if (!options && typeof options !== 'undefined') reject('Command setVolume must have a value');
+					if (isNaN(options)) reject('Command setVolume must have a numeric option value');
+					module.exports.setVolume(options);
 				}
 				resolve();
 			});
 		};
 		module.exports._services.apiserver.onPlayerStatus = function(){
-			return new Promise(function(resolve,reject){				
+			return new Promise(function(resolve){				
 				resolve({
 					private: module.exports._states.private,
 					status: module.exports._states.status,
-					ontop: module.exports._states.ontop,
+					onTop: module.exports._states.ontop,
 					fullscreen: module.exports._states.fullscreen,
-					timeposition: module.exports._services.player.timeposition,				
+					timePosition: module.exports._services.player.timeposition,				
 					duration: module.exports._services.player.duration,
-					mutestatus: module.exports._services.player.mutestatus,
-					playerstatus: module.exports._services.player.playerstatus,
-					currentlyplaying: module.exports._states.currentlyPlayingKara,
-					subtext: module.exports._services.player.subtext,
+					muteStatus: module.exports._services.player.mutestatus,
+					playerStatus: module.exports._services.player.playerstatus,
+					currentlyPlaying: module.exports._states.currentlyPlayingKara,
+					subText: module.exports._services.player.subtext,
+					volume: module.exports._services.player.volume,
+					showSubs: module.exports._services.player.showsubs,
 				});
 			});
 		};
@@ -1007,7 +1177,7 @@ module.exports = {
 						resolve(stats);
 					})
 					.catch(function(err){
-						logger.error('[Engine] DBI getStats : '+err)
+						logger.error('[Engine] DBI getStats : '+err);
 						reject(err);
 					});
 			});
@@ -1019,10 +1189,14 @@ module.exports = {
 						resolve(lyrics);
 					})
 					.catch(function(err){							
-						logger.error('[Engine] PLC getKaraLyrics : '+err)
+						logger.error('[Engine] PLC getKaraLyrics : '+err);
 						reject(err);
 					});
 			});
+		};
+		module.exports._services.apiserver.emitEvent = function(type,data){	
+			logger.debug('[Engine] Sending WS message '+type+' : '+data);		
+			module.exports._services.ws.socket.emit(type,data);					
 		};
 		// --------------------------------------------------------
 		// on démarre ensuite le service
@@ -1100,6 +1274,24 @@ module.exports = {
 		module.exports._services.player.pippositionx = module.exports.SETTINGS.PlayerPIPPositionX;
 		module.exports._services.player.pippositiony = module.exports.SETTINGS.PlayerPIPPositionY;
 		module.exports._services.player.pipsize = module.exports.SETTINGS.PlayerPIPSize;
+		module.exports._services.player.vo = module.exports.SETTINGS.mpvVideoOutput;
+		module.exports._services.player.onStatusChange = function(){				
+			var status = {
+				private: module.exports._states.private,
+				status: module.exports._states.status,
+				onTop: module.exports._states.ontop,
+				fullscreen: module.exports._states.fullscreen,
+				timePosition: module.exports._services.player.timeposition,				
+				duration: module.exports._services.player.duration,
+				muteStatus: module.exports._services.player.mutestatus,
+				playerStatus: module.exports._services.player.playerstatus,
+				currentlyPlaying: module.exports._states.currentlyPlayingKara,
+				subText: module.exports._services.player.subtext,
+				showSubs: module.exports._services.player.showsubs,
+				volume: module.exports._services.player.volume,
+			};			
+			module.exports._services.ws.socket.emit('playerStatus',status);
+		};
 		module.exports._services.player.init();
 	}
 };

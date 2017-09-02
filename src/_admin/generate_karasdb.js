@@ -26,11 +26,10 @@ module.exports = {
 			var ini = require('ini');
 			var timestamp = require('unix-timestamp');
 			var probe = require('../_common/modules/node-ffprobe');
-			var S = require('string');
+			var L = require('lodash');
 			var async = require('async');
 			const uuidV4 = require('uuid/v4');
-			var csv = require('csv-string');
-			var iniread = require('node-ini');
+			var csv = require('csv-string');			
 			const exec = require('child_process');
 			const ffmpegPath = require('ffmpeg-downloader').path;
 			const langsModule = require('langs');
@@ -61,13 +60,13 @@ module.exports = {
 			var karafiles = [];
 			var doUpdateSeriesAltNames = false;
 
-			module.exports.db = new sqlite3.Database(karas_dbfile, function(err, rep) {
+			module.exports.db = new sqlite3.Database(karas_dbfile, function(err) {
 				if (err) {
 					module.exports.onLog('error', 'Failed opening karaoke database');
 					reject(err);
 				}
 			});
-			module.exports.userdb = new sqlite3.Database(karas_userdbfile, function(err, rep) {
+			module.exports.userdb = new sqlite3.Database(karas_userdbfile, function(err) {
 				if (err) {
 					module.exports.onLog('error', 'Error opening user database : '+err);
 					reject(err);
@@ -84,7 +83,7 @@ module.exports = {
 				 */
 				var pCreateKarasDB = new Promise((resolve,reject) => {
 					var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
-					module.exports.db.exec(sqlCreateKarasDB, function(err, rep) {
+					module.exports.db.exec(sqlCreateKarasDB, function(err) {
 						if (err) {
 							module.exports.onLog('error', 'Error creating database tables : '+err);						
 							reject(err);
@@ -101,7 +100,7 @@ module.exports = {
 						 */
 						var pCreateKarasDBViewAll = new Promise((resolve,reject) => {
 							var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
-							module.exports.db.exec(sqlCreateKarasDBViewAll, function(err, rep) {
+							module.exports.db.exec(sqlCreateKarasDBViewAll, function(err) {
 								if (err) {
 									module.exports.onLog('error', 'Error creating views : '+err);								
 									reject(err);
@@ -133,10 +132,10 @@ module.exports = {
 				/**
 				 * Get data from .kara files
 				 */
-				var pCreateKaraFiles = new Promise((resolve,reject) => {
+				var pCreateKaraFiles = new Promise((resolve) => {
 					karafiles = fs.readdirSync(karasdir);
 					for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
-						if(!S(karafiles[indexToRemove]).endsWith('.kara')) {
+						if(!karafiles[indexToRemove].endsWith('.kara')) {
 							karafiles.splice(indexToRemove, 1);
 						}
 					}
@@ -152,7 +151,7 @@ module.exports = {
 						 */
 						var pAddToKaras = new Promise((resolve,reject) => {
 								
-							logger.profile('AddKara')
+							logger.profile('AddKara');
 							async.eachLimit(karafiles, 5, function(kara, callback){
 								addKara(kara)
 									.then(function(){
@@ -165,7 +164,7 @@ module.exports = {
 								if (err) {
 									reject(err);
 								}
-								logger.profile('AddKara')
+								logger.profile('AddKara');
 								module.exports.onLog('success', 'Karaoke count : '+karas.length);
 								resolve();
 							});
@@ -175,10 +174,10 @@ module.exports = {
 								/**
 								 * Push to array sqlInsertKaras for sql statements from karas.
 								 */
-								var pPushSqlInsertKaras = new Promise((resolve,reject) => {
+								var pPushSqlInsertKaras = new Promise((resolve) => {
 									karas.forEach(function(kara, index) {
 										index++;
-										var titlenorm = S(kara['title']).latinise().s;
+										var titlenorm = L.deburr(kara['title']);
 										sqlInsertKaras.push({
 											$id_kara : index,
 											$kara_KID : kara['KID'],
@@ -228,10 +227,10 @@ module.exports = {
 											/**
 											 * Push to array sqlInsertSeries for sql statements from series.
 											 */
-											var pPushSqlInsertSeries = new Promise((resolve,reject) => {
+											var pPushSqlInsertSeries = new Promise((resolve) => {
 												series.forEach(function(serie, index) {
 													index++;
-													var serienorm = S(serie).latinise().s;
+													var serienorm = L.deburr(serie);
 													sqlInsertSeries.push({
 														$id_serie : index,
 														$serie : serie,
@@ -243,7 +242,7 @@ module.exports = {
 											/**
 											 * Push to array sqlInsertKarasSeries for sql statements from karas_series.
 											 */
-											var pPushSqlInsertKarasSeries= new Promise((resolve,reject) => {
+											var pPushSqlInsertKarasSeries= new Promise((resolve) => {
 												karas_series.forEach(function(karaserie) {
 													karaserie = karaserie.split(',');
 													var id_serie = karaserie[0];
@@ -259,7 +258,7 @@ module.exports = {
 											/**
 											 * Working on altnerative names of series.
 											 */
-											var pCreateSeriesAltNames= new Promise((resolve,reject) => {
+											var pCreateSeriesAltNames= new Promise((resolve) => {
 												if (fs.existsSync(series_altnamesfile)) {
 													doUpdateSeriesAltNames = true;
 													var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
@@ -267,8 +266,8 @@ module.exports = {
 													csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie) {
 														var serie_name = serie[0];
 														var serie_altnames = serie[1];
-														if (!S(serie_altnames).isEmpty() || !S(serie_name).isEmpty()) {
-															var serie_altnamesnorm = S(serie[1]).latinise().s;
+														if (!L.isEmpty(serie_altnames) || !L.isEmpty(serie_name)) {
+															var serie_altnamesnorm = L.deburr(serie[1]);
 															sqlUpdateSeriesAltNames.push({
 																$serie_altnames : serie_altnames,
 																$serie_altnamesnorm : serie_altnamesnorm,
@@ -328,12 +327,12 @@ module.exports = {
 											/**
 											 * Push to array sqlInsertTags for sql statements from tags.
 											 */
-											var pPushSqlInsertTags = new Promise((resolve,reject) => {
+											var pPushSqlInsertTags = new Promise((resolve) => {
 												tags.forEach(function(tag, index) {
 													index++;
 													tag = tag.split(',');
 													var tagname = tag[0];
-													var tagnamenorm = S(tagname).latinise().s;
+													var tagnamenorm = L.deburr(tagname);
 													var tagtype = tag[1];
 													sqlInsertTags.push({
 														$id_tag : index,
@@ -348,7 +347,7 @@ module.exports = {
 											/**
 											 * Push to array sqlInsertKarasTags for sql statements from karas_tags.
 											 */
-											var pPushSqlInsertKarasTags = new Promise((resolve,reject) => {
+											var pPushSqlInsertKarasTags = new Promise((resolve) => {
 												karas_tags.forEach(function(karatag) {
 													karatag = karatag.split(',');
 													var id_tag = karatag[0];
@@ -577,7 +576,7 @@ module.exports = {
 					var sqlUpdateUserDB = '';
 
 					var pGetAllKaras = new Promise((resolve,reject) => {
-						var sqlGetAllKaras = 'SELECT pk_id_kara AS id_kara, kid FROM all_karas;';
+						var sqlGetAllKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
 						module.exports.db.all(sqlGetAllKaras,
 							function (err, playlist) {
 								if (err) {
@@ -719,7 +718,7 @@ module.exports = {
 									// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM blacklist WHERE kid = \'' + BLKara.kid + '\';';
-										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from blacklist');
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+BLKara.kid+' from blacklist');
 										UpdateNeeded = true;
 									}
 								});
@@ -741,7 +740,7 @@ module.exports = {
 									// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM rating WHERE kid = \'' + RKara.kid + '\';';
-										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from ratings');
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+RKara.kid+' from ratings');
 										UpdateNeeded = true;
 									}
 								});
@@ -763,7 +762,7 @@ module.exports = {
 									// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 									if (!KaraFound) {
 										sqlUpdateUserDB += 'DELETE FROM viewcount WHERE kid = \'' + VKara.kid + '\';';
-										module.exports.onLog('warn', 'Deleted Karaoke ID '+WLKara.kid+' from viewcounts');
+										module.exports.onLog('warn', 'Deleted Karaoke ID '+VKara.kid+' from viewcounts');
 										UpdateNeeded = true;
 									}
 								});
@@ -795,20 +794,29 @@ module.exports = {
 								});
 							}
 							if (UpdateNeeded) {
-								module.exports.userdb.exec(sqlUpdateUserDB, function(err, rep) {
+								// Disabling constraints check for this procedure 
+								// Since we'll be renumbering some karas which might have switched places, two entries might have, for a split second, the same number.
+								module.exports.userdb.run('PRAGMA foreign_keys = OFF;', function (err) {
 									if (err) {
 										module.exports.onLog('error', 'Error updating database : '+err);										
 										reject();
 									} else {
-										module.exports.onLog('success', 'Database updated due to integrity checks');										
-										resolve();
+										module.exports.userdb.exec(sqlUpdateUserDB, function(err) {
+											if (err) {
+												module.exports.onLog('error', 'Error updating database : '+err);										
+												reject();
+											} else {
+												module.exports.onLog('success', 'Database updated due to integrity checks');										
+												resolve();
+											}
+										});
 									}
 								});
 							} else {
 								module.exports.onLog('success', 'No update needed to user database');
 								module.exports.onLog('success', 'Integrity checks complete!');
-								resolve();
-							}
+								resolve();	
+							}								
 						})
 						.catch(function(err) {
 							module.exports.onLog('error', 'Error during integrity checks : '+err);
@@ -817,8 +825,7 @@ module.exports = {
 				});
 			}
 			function getvideogain(videofile){
-				return new Promise((resolve,reject) => {
-					var videogain = 0;
+				return new Promise((resolve) => {					
 					var proc = exec.spawn(ffmpegPath, ['-i', videosdir + '/' + videofile, '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 
 					var audioGain = undefined;
@@ -826,7 +833,7 @@ module.exports = {
 
 					proc.stderr.on('data',(data) => {
 						output += data.toString();
-					})
+					});
 
 					proc.on('close', (code) => {
 						if (code !== 0) {
@@ -836,17 +843,17 @@ module.exports = {
 							var outputArray = output.split(' ');
 							var index = outputArray.indexOf('track_gain');
 							if ( index != -1) {
-								audioGain = S(outputArray[index+2]).toFloat();
+								audioGain = parseFloat(outputArray[index+2]);
 							}	
 							if (typeof audioGain === 'number') {
-								resolve(audioGain.toString())
+								resolve(audioGain.toString());
 							} else {
 								resolve(0);
 							}
 						}						
-					})
+					});
 
-				})
+				});
 			}
 			function getvideoduration(videofile) {
 				return new Promise((resolve,reject) => {
@@ -865,16 +872,16 @@ module.exports = {
 
 			function addSeries(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
-					var karaWOExtension = S(karadata.karafile).chompRight('.kara');
+					var karaWOExtension = karadata.karafile.substr(0, karadata.karafile.lastIndexOf('.'));
 					var karaInfos = karaWOExtension.split(' - ');
 					var karaType = karaInfos[2];
 					var serieslist = [];
-					if (S(karadata.series).isEmpty()) {
+					if (L.isEmpty(karadata.series)) {
 						if (karaType == 'LIVE' || karaType == 'MV') {
 							// Don't do anything.
 						} else {
-							if (S(karaInfos[1]).isEmpty()) {
-								reject('Karaoke series cannot be detected!')
+							if (L.isEmpty(karaInfos[1])) {
+								reject('Karaoke series cannot be detected!');
 							} else {
 								serieslist.push(karaInfos[1]);
 							}									
@@ -882,11 +889,11 @@ module.exports = {
 					} else {
 						serieslist = karadata.series.split(',');
 						if (serieslist === [])  {
-							reject('Karaoke series cannot be detected!')
+							reject('Karaoke series cannot be detected!');
 						}
 					}
 					serieslist.forEach(function(serie) {
-						serie = S(serie).trimLeft().s;
+						serie = serie.trimLeft();
 						if (series.indexOf(serie) == -1) {
 							series.push(serie);
 						}
@@ -901,70 +908,80 @@ module.exports = {
 
 			function addTags(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
-					var karaWOExtension = S(karadata.karafile).chompRight('.kara');
+					var karaWOExtension = karadata.karafile.substr(0, karadata.karafile.lastIndexOf('.'));
 					var karaInfos = karaWOExtension.split(' - ');
 					var karaSerie = karaInfos[1];
 					var karaType = karaInfos[2];
 					var taglist = [];
 					var singers;
 					//Filling taglist, and let's go.
-					if (S(karaSerie).contains(' OAV') || S(karaSerie).contains(' OVA') || S(karaType).contains('OAV')) {
+					if (karaSerie.includes(' OAV') || karaSerie.includes(' OVA') || karaType.includes('OAV')) {
 						if (taglist.indexOf('TAG_OVA,7') == -1) {
-							taglist.push('TAG_OVA,2');
+							taglist.push('TAG_OVA,7');
 						}
 					}
 					if (karaType == 'LIVE' || karaType == 'MV') {
 						//If LIVE or MV, we add the series as artist.
 						singers = karaSerie.split(',');
 						singers.forEach(function(singer) {
-							var tag = S(singer).trimLeft().s;
+							var tag = singer.trimLeft();
 							if (taglist.indexOf(tag + ',2') == -1) {
 								taglist.push(tag + ',2');
 							}
 						});
 					}
-					if (!S(karadata.singer).isEmpty()) {
+					if (!L.isEmpty(karadata.singer)) {
 						singers = karadata.singer.split(',');
 						singers.forEach(function(singer) {
-							var tag = S(singer).trimLeft().s;
+							var tag = singer.trimLeft();
 							if (taglist.indexOf(tag + ',2') == -1) {
 								taglist.push(tag + ',2');
 							}
 						});
 					}
-					if (!S(karadata.author).isEmpty()) {
+					if (!L.isEmpty(karadata.author)) {
 						var authors = karadata.author.split(',');
 						authors.forEach(function(author) {
-							var tag = S(author).trimLeft().s;
+							var tag = author.trimLeft();
 							if (taglist.indexOf(tag + ',6') == -1) {
 								taglist.push(tag + ',6');
 							}
 						});
+					}					
+					if (!L.isEmpty(karadata.tags)) {
+						var misctags = karadata.tags.split(',');
+						misctags.forEach(function(misctag) {
+							var tag = misctag.trimLeft();
+							if (taglist.indexOf(tag + ',7') == -1) {
+								taglist.push(tag + ',7');
+							}
+						});
 					}
-					if (!S(karadata.creator).isEmpty()) {
+					if (!L.isEmpty(karadata.creator)) {
 						var creators = karadata.creator.split(',');
 						creators.forEach(function(creator) {
-							var tag = S(creator).trimLeft().s;
+							var tag = creator.trimLeft();
 							if (taglist.indexOf(tag + ',4') == -1) {
 								taglist.push(tag + ',4');
 							}
 						});
 					}
-					if (!S(karadata.songwriter).isEmpty()) {
+					if (!L.isEmpty(karadata.songwriter)) {
 						var songwriters = karadata.songwriter.split(',');
 						songwriters.forEach(function(songwriter) {
-							var tag = S(songwriter).trimLeft().s;
+							var tag = songwriter.trimLeft();
 							if (taglist.indexOf(tag + ',8') == -1) {
 								taglist.push(tag + ',8');
 							}
 						});
 					}
-					karadata.lang = S(karadata.lang).strip('"');							
-					if (!S(karadata.lang).isEmpty()) {
+					karadata.lang = L.trim(karadata.lang,'"');							
+					if (!L.isEmpty(karadata.lang)) {
 						var langs = karadata.lang.split(',');
 						langs.forEach(function(lang) {
-							var tag = S(lang).trimLeft().s;
-							if (!langsModule.has('2B',tag) && tag !== 'und') {					reject('Unknown language : '+tag);
+							var tag = lang.trimLeft();
+							if (!langsModule.has('2B',tag) && tag !== 'und') {
+								reject('Unknown language : '+tag);
 							} else {
 								if (taglist.indexOf(tag + ',5') == -1) {
 									taglist.push(tag + ',5');
@@ -974,88 +991,88 @@ module.exports = {
 					}
 					// Check du type de song
 					var typeDetected = false;
-					if (S(karaType).contains('AMV') && taglist.indexOf('TYPE_AMV,3') == -1) {
+					if (karaType.includes('AMV') && taglist.indexOf('TYPE_AMV,3') == -1) {
 						typeDetected = true;
 						taglist.push('TYPE_AMV,3');
 					}
-					if (S(karaType).contains('CM') && taglist.indexOf('TYPE_CM,3') == -1) {
+					if (karaType.includes('CM') && taglist.indexOf('TYPE_CM,3') == -1) {
 						typeDetected = true;
 						taglist.push('TYPE_CM,3');
 					}
-					if (S(karaType).contains('ED') && taglist.indexOf('TYPE_ED,3') == -1) {
+					if (karaType.includes('ED') && taglist.indexOf('TYPE_ED,3') == -1) {
 						typeDetected = true;
 						taglist.push('TYPE_ED,3');
 					}
-					if (S(karaType).contains('GAME') && taglist.indexOf('TAG_VIDEOGAME,7') == -1) {
+					if (karaType.includes('GAME') && taglist.indexOf('TAG_VIDEOGAME,7') == -1) {
 						typeDetected = true;
 						taglist.push('TAG_VIDEOGAME,7');
 					}
-					if (S(karaType).contains('GC') && taglist.indexOf('TAG_GAMECUBE,7') == -1) {
+					if (karaType.includes('GC') && taglist.indexOf('TAG_GAMECUBE,7') == -1) {
 						typeDetected = true;
 						taglist.push('TAG_GAMECUBE,7');
 					}
-					if (S(karaType).contains('IN') && taglist.indexOf('TYPE_INSERTSONG,3') == -1) {
+					if (karaType.includes('IN') && taglist.indexOf('TYPE_INSERTSONG,3') == -1) {
 						typeDetected = true;
 						taglist.push('TYPE_INSERTSONG,3');
 					}
-					if (S(karaType).contains('LIVE') && taglist.indexOf('TYPE_LIVE,3') == -1) {
+					if (karaType.includes('LIVE') && taglist.indexOf('TYPE_LIVE,3') == -1) {
 						typeDetected = true;
 						taglist.push('TYPE_LIVE,3');
 					}
-					if (S(karaType).contains('MOVIE') && taglist.indexOf('TAG_MOVIE,7') == -1) {
+					if (karaType.includes('MOVIE') && taglist.indexOf('TAG_MOVIE,7') == -1) {
 						taglist.push('TAG_MOVIE,7');
 					}
-					if (S(karaType).contains('OAV') && taglist.indexOf('TAG_OVA,7') == -1) {
+					if (karaType.includes('OAV') && taglist.indexOf('TAG_OVA,7') == -1) {
 						taglist.push('TAG_OVA,7');
 					}
-					if (S(karaType).contains('OP') && taglist.indexOf('TYPE_OP,3') == -1) {
+					if (karaType.includes('OP') && taglist.indexOf('TYPE_OP,3') == -1) {
 						typeDetected = true;
 						taglist.push('TYPE_OP,3');
 					}
-					if (S(karaType).startsWith('MV') && taglist.indexOf('TYPE_MUSIC,3') == -1) {
+					if (karaType.startsWith('MV') && taglist.indexOf('TYPE_MUSIC,3') == -1) {
 						typeDetected = true;
 						taglist.push('TYPE_MUSIC,3');
 					}
-					if (S(karaType).contains('OT') && taglist.indexOf('TYPE_OTHER,3') == -1) {
+					if (karaType.includes('OT') && taglist.indexOf('TYPE_OTHER,3') == -1) {
 						typeDetected = true;
 						taglist.push('TYPE_OTHER,3');
 					}
-					if (S(karaType).contains('PS3') && taglist.indexOf('TAG_PS3,7') == -1) {
+					if (karaType.includes('PS3') && taglist.indexOf('TAG_PS3,7') == -1) {
 						taglist.push('TAG_PS3,7');
 					}
-					if (S(karaType).contains('PS2') && taglist.indexOf('TAG_PS2,7') == -1) {
+					if (karaType.includes('PS2') && taglist.indexOf('TAG_PS2,7') == -1) {
 						taglist.push('TAG_PS2,7');
 					}
-					if (S(karaType).contains('PSV') && taglist.indexOf('TAG_PSV,7') == -1) {
+					if (karaType.includes('PSV') && taglist.indexOf('TAG_PSV,7') == -1) {
 						taglist.push('TAG_PSV,7');
 					}
-					if (S(karaType).contains('PSX') && taglist.indexOf('TAG_PSX,7') == -1) {
+					if (karaType.includes('PSX') && taglist.indexOf('TAG_PSX,7') == -1) {
 						taglist.push('TAG_PSX,7');
 					}
-					if (S(karaType).contains('PV') && taglist.indexOf('TYPE_PV,3') == -1) {
+					if (karaType.includes('PV') && taglist.indexOf('TYPE_PV,3') == -1) {
 						typeDetected = true;
 						taglist.push('TYPE_PV,3');
 					}
-					if (S(karaType).contains('R18') && taglist.indexOf('TAG_R18,7') == -1) {
+					if (karaType.includes('R18') && taglist.indexOf('TAG_R18,7') == -1) {
 						taglist.push('TAG_R18,7');
 					}
-					if (S(karaType).contains('REMIX') && taglist.indexOf('TAG_REMIX,7') == -1) {
+					if (karaType.includes('REMIX') && taglist.indexOf('TAG_REMIX,7') == -1) {
 						taglist.push('TAG_REMIX,7');
 					}
-					if (S(karaType).contains('SPECIAL') && taglist.indexOf('TAG_SPECIAL,7') == -1) {
+					if (karaType.includes('SPECIAL') && taglist.indexOf('TAG_SPECIAL,7') == -1) {
 						taglist.push('TAG_SPECIAL,7');
 					}
-					if (S(karaType).contains('VOCA') && taglist.indexOf('TAG_VOCALOID,7') == -1) {
+					if (karaType.includes('VOCA') && taglist.indexOf('TAG_VOCALOID,7') == -1) {
 						taglist.push('TAG_VOCALOID,7');
 					}
-					if (S(karaType).contains('XBOX360') && taglist.indexOf('TAG_XBOX360,7') == -1) {
+					if (karaType.includes('XBOX360') && taglist.indexOf('TAG_XBOX360,7') == -1) {
 						taglist.push('TAG_XBOX360,7');
 					}
 					if (!typeDetected) {
-						reject('Karaoke type cannot be detected! Got : '+karaType)
+						reject('Karaoke type cannot be detected! Got : '+karaType);
 					}
 					taglist.forEach(function(tag) {
-						tag = S(tag).trimLeft().s;
+						tag = tag.trimLeft();
 						if (tags.indexOf(tag) == -1) {
 							tags.push(tag);
 						}
@@ -1089,8 +1106,8 @@ module.exports = {
 							timestamp.round = true;
 							kara['dateadded'] = timestamp.now();
 							kara['datemodif'] = kara['dateadded'];
-							// Take out .kara from the filename
-							var karaWOExtension = S(karafile).chompRight('.kara');
+							// Take out .kara from the filename							
+							var karaWOExtension = karafile.substr(0, karafile.lastIndexOf('.'));
 							// Cut name into different fields.
 							var karaInfos = karaWOExtension.split(' - ');
 							if (karaInfos[3] == undefined) {
@@ -1101,30 +1118,31 @@ module.exports = {
 							// Songorder : find it after the songtype
 							var karaOrder = undefined;
 							var karaType = karaInfos[2];
-							if (S(karaType).isEmpty()) {
-								reject('Karaoke type is empty! Karaoke : '+karafile)
+							if (L.isEmpty(karaType)) {
+								reject('Karaoke type is empty! Karaoke : '+karafile);
 							}
-							if (S(S(karaType).right(2)).isNumeric()) {
-								karaOrder = S(karaType).right(2).s;
-								if (S(karaOrder).left(1) == '0') {
-									karaOrder = S(karaOrder).right(1).s;
+							if (!isNaN(karaType.substr(karaType.length-2,2))) {
+								karaOrder = karaType.substr(karaType.length-2,2);
+								if (karaOrder.substr(0,1) == '0') {
+									karaOrder = karaOrder.substr(karaOrder.length-1,1);
 								}
 							} else {
-								if (S(S(karaType).right(1)).isNumeric()) {
-									karaOrder = S(karaType).right(1).s;
+								if (!isNaN(karaType.substr(karaType.length-1,1))) {
+									karaOrder = karaType.substr(karaType.length-1,1);
 								} else {
 									karaOrder = 1;
 								}
 							}
-							kara['songorder'] = karaOrder;
-							if (S(karadata.videofile).isEmpty()) {
+							
+							kara['songorder'] = karaOrder;							
+							if (L.isEmpty(karadata.videofile)) {
 								reject('Karaoke video file empty! Karaoke '+karafile+' / data : '+karadata);
 							} else {
 								kara['videofile'] = karadata.videofile;	
 							}
 							
-							if (S(karadata.subfile).isEmpty()){
-								reject('Karaoke sub file empty! Karaoke '+karafile+' / data : '+karadata)
+							if (L.isEmpty(karadata.subfile)){
+								reject('Karaoke sub file empty! Karaoke '+karafile+' / data : '+karadata);
 							} else {
 								kara['subfile'] = karadata.subfile;
 							}
@@ -1133,7 +1151,7 @@ module.exports = {
 							//Calculate size.
 							
 							if (fs.existsSync(videosdir + '/' + kara['videofile'])) {
-								var videostats = fs.statSync(videosdir + '/' + kara['videofile'])								
+								var videostats = fs.statSync(videosdir + '/' + kara['videofile']);							
 								if (videostats.size != karadata.videosize) {
 									//Probe file for duration
 									//Calculate gain
@@ -1149,7 +1167,7 @@ module.exports = {
 											.catch(function(err){
 												kara['gain'] = 0;
 												reject(err);
-											})
+											});
 									});
 
 									var pGetVideoDuration = new Promise ((resolve,reject) => {
@@ -1186,11 +1204,11 @@ module.exports = {
 							kara['songwriter'] = karadata.songwriter;
 							kara['creator'] = karadata.creator;
 							kara['author'] = karadata.author;
-							kara['serie'] = karadata.series;
+							kara['serie'] = karadata.series;							
 							Promise.all([pGetVideoDuration,pGetVideoGain])
 								.then(function(){
 									karas.push(kara);
-									fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err, rep) {
+									fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err) {
 										if (err) {
 											module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
 											reject(err);
@@ -1207,8 +1225,6 @@ module.exports = {
 			}
 		});
 	},
-	onLog: function(type, message) {
-		// Event to bring up messages into dashboard.
-		logger.warn('onLog not set');
-	}
+	onLog: function() {}
+
 };

@@ -1,18 +1,18 @@
 <div id="header" class="header">
-    <button class="btn btn-default btn-dark pull-right">
+    <button action="poweroff" class="btn btn-default btn-dark pull-right">
             <i class="glyphicon glyphicon-off"></i></button>
     <button action="command" value="mute" id="volume" class="btn btn-default btn-dark pull-right">
             <i class="glyphicon glyphicon-volume-up"></i></button>
     <div class="pull-left btn-group" style="width: 129px;">
         <input type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> Privé"
-            data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large">
-        <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
-            data-off-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large">
+            data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large" />
+        <input type="checkbox" checked name="kara_panel" class="btn btn-default pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
+            data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large" />
     </div>
     <div class="pull-left btn-group">
         <button action="command" value="stopAfter" id="stopAfter" class="btn btn-danger-low" style="width: 50px;"><i class="glyphicon glyphicon-time"></i></button>
         <button action="command" value="stopNow" id="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
-        <button action="command" value="reset" id="reset" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
+        <button action="command" value="goTo" options="0" id="goTo" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
     </div>
     <div id="centerBtns" class="header">
         <div class="btn-group">
@@ -28,68 +28,89 @@
     </div>
 </div>
 <div id="progressBar" class="underHeader">
-    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"> Kara information </div>
+    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>Kara information<span></div>
     <div id="progressBarColor" style="width:0%;"></div>
 </div>
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
         <div class="panel col-lg-6 col-xs-6">
-            <div class="panel-heading">
-                <div class="col-lg-6 col-xs-6">
-                    <select type="playlist_select" num="1" class="select2 form-control">
-                        </select>
-                </div>
-                <div class="col-lg-6 col-xs-6">
-                    <div class="pull-right">
-                        <button class="btn btn-lg btn-default ">
+            <div class="panel-heading container-fluid">            
+                    <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
+                        <select id="selectPlaylist1" num="1" type="playlist_select" class="select2 form-control">
+                            </select>
+                    </div>
+                    <div class="col-lg-7 col-md-8 col-sm-12 col-xs-12">
+                        <div class="btn-group pull-right" id="flag1">
+                            <button class="btn btn-lg btn-default" name="export">
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
-                        <button class="btn btn-lg btn-default ">
+                            <button class="btn btn-lg btn-default" name="flag_current">
                                 <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
-                        <button class="btn btn-lg btn-default ">
+                            <button class="btn btn-lg btn-default" name="flag_public">
+                                <i class="glyphicon glyphicon-indent-left"></i>
+                            </button>
+                            <button class="btn btn-lg btn-default" name="flag_visible">
                                 <i class="glyphicon glyphicon-eye-close"></i>
                             </button>
-                    </div>
+                        </div>
+                        <div class="pull-left" style="width:calc(100% - 210px);">
+                            <div class="right-inner-addon">
+                                <i class="glyphicon glyphicon-search"></i>
+                                <input type="text" class="form-control input-lg" num="1" id="searchPlaylist1" placeholder="Recherche..." />
+                            </div>
+                        </div>
                 </div>
             </div>
-
-            <ul id="playlist1" class="list-group">
-                <li class="list-group-item"></li>
-            </ul>
+            <div class="playlistContainer">
+                <ul id="playlist1" num="1" class="list-group">
+                    <li class="list-group-item"></li>
+                </ul>
+                <div class="playlistLoading"> Loading... </div>
+            </div>
         </div>
-
+        
         <div class="panel col-lg-6 col-xs-6">
-            <div class="panel-heading">
-                <div class="col-lg-6 col-xs-6">
-                    <select type="playlist_select" num="2" class="select2 form-control form-control-lg">
-                        </select>
-                </div>
-                <div class="col-lg-6 col-xs-6">
-                    <div class="pull-right">
-                        <button class="btn btn-lg btn-default ">
+               <div class="panel-heading container-fluid">            
+                    <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
+                        <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control">
+                            </select>
+                    </div>
+                    <div class="col-lg-7 col-md-8 col-sm-12 col-xs-12">
+                        <div class="btn-group pull-right" id="flag2">
+                            <button class="btn btn-lg btn-default" name="export">
                                 <i class="glyphicon glyphicon-export"></i>
                             </button>
-                        <button class="btn btn-lg btn-default ">
+                            <button class="btn btn-lg btn-default" name="flag_current">
                                 <i class="glyphicon glyphicon-facetime-video"></i>
                             </button>
-                        <button class="btn  btn-lg btn-default ">
+                            <button class="btn btn-lg btn-default" name="flag_public">
+                                <i class="glyphicon glyphicon-indent-left"></i>
+                            </button>
+                            <button class="btn btn-lg btn-default" name="flag_visible">
                                 <i class="glyphicon glyphicon-eye-close"></i>
                             </button>
-                    </div>
+                        </div>
+                        <div class="pull-left" style="width:calc(100% - 210px);">
+                            <div class="right-inner-addon">
+                                <i class="glyphicon glyphicon-search"></i>
+                                <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="Recherche..." />
+                            </div>
+                        </div>
                 </div>
             </div>
-            <ul id="playlist2" class="list-group">
-                <li class="list-group-item"></li>
-            </ul>
-
+            <div class="playlistContainer">
+                <ul id="playlist2" num="2" class="list-group">
+                    <li class="list-group-item"></li>
+                </ul>
+                <div class="playlistLoading"> Loading... </div>
+            </div>
         </div>
     </div>
     <div class="row" id="manage" hidden>
         <div class="col-lg-2 col-xs-0"></div>
         <div class="panel col-lg-8 col-xs-12">
-
-            <div class="panel-heading">
+            <div class="panel-heading container-fluid">
                 <div class="col-lg-6 col-xs-6">
                     <div class="pull-right">
                         <h4> Gestion </h4>
@@ -174,6 +195,8 @@
         </div>
         <div class="col-lg-2 col-xs-0"></div>
     </div>
+    
+<div id="message" class="alert"></div>
 </div>
 
 <script>

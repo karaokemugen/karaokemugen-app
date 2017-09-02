@@ -1,44 +1,17 @@
+.underHeader {
+	top: 105px;
+	height: calc(100% - 105px);
+}
+.playlist-main, .panel  {
+	height: 100%;
+}
+
 #manage .bootstrap-switch-container > span {
 	line-height: 2.25;
 }
 
 .form-horizontal {
 	padding: 0px 40px;
-}
-
-.panel {
-	border: 20px solid #1E2124;
-    background-color: #3b3e44;
-    margin: 0px;
-    padding: 0px;
-    __min-height: 700px;
-}
-.panel-heading > div {
-	padding: 0px;
-}
-.panel-heading {
-	border-bottom: 15px solid #1E2124;
-	display: flex;
-}
-	
-.select2 {
-	width: 100% !important;
-	height: 100%;
-}
-.select2-container--bootstrap .select2-selection--single {
-	height: 100%;
-	line-height: 2.3;
-}
-.select2-container--bootstrap .select2-selection--single, .select2-dropdown {
-	border-radius: 0 !important;
-	background-color: #f3f3f3;
-	font-weight: 600;
-}
-.select2-container--bootstrap .select2-results__option {
-	color: #555;
-}
-.select2-container--default .select2-results__option[aria-disabled=true] {
-    display: none;
 }
 
 .list-group > li > button {
@@ -53,15 +26,26 @@
 	border-left-width: 0;
 	border-right-width: 3px;
 }
-#playlist2.list-group > li > button > i.glyphicon-arrow-right {
+
+#playlist2 .list-group-item > .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-right {
 	display: none; 
 }
-#playlist1.list-group > li > button > i.glyphicon-arrow-left {
+#playlist2 .list-group-item > .btnDiv > button[name="transferKara"]  {
+	float: left; 
+}
+#playlist1 .list-group-item > .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-left {
 	display: none; 
+}
+#playlist1 .list-group-item > .btnDiv > button[name="transferKara"]  {
+	float: right; 
 }
 
-.list-group > li:hover > button {
-	display: block;
+.playlistContainer > ul[cantransferkara="false"] .list-group-item > .btnDiv > button[name="transferKara"] {
+	display: none;
+}
+
+.playlistContainer > ul[canaddkara="false"] .list-group-item > .btnDiv > button[name="addKara"] {
+	display: none;
 }
 
 #centerBtns {
@@ -70,7 +54,7 @@
     left: calc(50% - 255*.5px);
 }
 #centerBtns > .btn-group {
-	width:100%;
+	width: 100%;
 	display: flex;
  	justify-content: center;
  	align-items: center; 
@@ -99,39 +83,8 @@
 	color: white;
 }
 
-
-#progressBar {
-	cursor: pointer;
-	height: 25px;
+div.bootstrap-switch-large{
 	width: 100%;
-	top: 85px;
-	position: fixed;
-	z-index: 1337;
-	border-bottom: solid 2px #9e9e9e;
-	background-color: #1E2124;
-}
-#progressBarColor {
-	background-color: #337ab7;
-	z-index: 9;
-	height: 100%;
-    position: absolute;
-    top: 0;
-}
-#progressBar:hover > #progressBarColor {
-	background-color: #286faa;
-}
-#progressBar:active > #progressBarColor {
-	background-color: #18617a;
-}
-#karaInfo {
-    line-height: 1.85;
-	text-align: center;
-	z-index: 10;
-    position: absolute;
-    top: 0;
-    width: 100%;
-}
-
-.underHeader {
-	top: 100px;
+	height: 50%;
+	background-color: #9e9e9e; ;
 }

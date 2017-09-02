@@ -1,0 +1,126 @@
+<div id="header" class="header">
+    <div class="col-lg-8 col-md-7 col-sm-7 col-xs-7">
+        <div class="col-lg-10 col-md-8 col-sm-7 col-xs-6" id="searchParent" style="width: 100%;">
+            <input type="text" class="form-control" id="searchPlaylist1" num="1" placeholder="Recherche..." name="searchPlaylist" />
+
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-5 col-xs-6" style="display: none;">
+            <input list="pseudo" type="text" id="choixPseudo" class="form-control" placeholder="Pseudo" />
+            <datalist id="pseudo">
+
+            </datalist>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-5 col-sm-5 col-xs-5">
+        <div class="dropdown pull-right">
+            <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
+            </span><i class="glyphicon glyphicon-cog"></i></button>
+            <ul class="dropdown-menu">
+                <li><a href="#" id="showSettings">Settings</a></li>
+                <li><a href="#">Fin du monde</a></li>
+            </ul>
+        </div>
+        <div class="pull-right btn-group switchParent">
+            <input type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-right" data-on-text="<i class='glyphicon glyphicon-search'></i>"
+                data-off-text="<i class='glyphicon glyphicon-menu-hamburger'></i>" data-size="large" />
+            <input type="checkbox" value="1" name="lyrics" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-italic'></i>"
+                data-off-text="<i class='glyphicon glyphicon-subtitles'></i>" data-size="large" />
+        </div>
+    </div>
+    <div class="pull-right btn-group hidden">
+        <img src="https://lab.shelter.moe/uploads/-/system/project/avatar/18/tmugen2.jpg" alt="logo kara" class="pull-right">
+        <strike class="pull-right" style="margin-right: 19px;    line-height: 47px;    font-size: 22px;">TOYUNDA</strike>
+    </div>
+</div>
+<div id="progressBar" class="underHeader">
+    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>En attente...<span></div>
+    <div id="progressBarColor" style="width:0%;"></div>
+</div>
+<div id="underHeader" class="underHeader container-fluid">
+    <div class="playlist-main row" id="playlist">
+        <div class="panel col-lg-8 col-md-7 col-sm-7 col-xs-12">
+             <div>
+                <div>
+                    <select id="selectPlaylist1" num="1" hidden >
+                        <option value="-1" default></option>
+                    </select>
+                </div>
+            </div>
+            <div class="playlistContainer">
+                <ul id="playlist1" num="1" class="list-group">
+                </ul>
+                <div class="playlistLoading"> Loading... </div>
+           </div>
+        </div>
+         
+        <div class="panel col-lg-4 col-md-5 col-sm-5 col-xs-12">
+           <div class="panel-heading container-fluid">
+                <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6">
+                    <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control">
+                        <option value="" selected>...</option>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-md-5 col-sm-6 col-xs-6">
+                    <div class="btn-group pull-right hidden" id="flag2">
+                        <button class="btn btn-lg btn-default" name="export">
+                            <i class="glyphicon glyphicon-export"></i>
+                        </button>
+                        <button class="btn btn-lg btn-default" name="flag_current">
+                            <i class="glyphicon glyphicon-facetime-video"></i>
+                        </button>
+                        <button class="btn btn-lg btn-default" name="flag_public">
+                            <i class="glyphicon glyphicon-indent-left"></i>
+                        </button>
+                        <button class="btn btn-lg btn-default" name="flag_visible">
+                            <i class="glyphicon glyphicon-eye-close"></i>
+                        </button>
+                    </div>
+                    <div class="pull-left">
+                        <div class="right-inner-addon">
+                            <i class="glyphicon glyphicon-search"></i>
+                            <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="Recherche..." name="searchPlaylist"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="playlistContainer">
+                <ul id="playlist2" num="2" class="list-group">
+                    <li class="list-group-item"></li>
+                </ul>
+                <div class="playlistLoading"> Loading... </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="message" class="alert">
+</div>
+ <div class="popup" id="settingsPublic" hidden>
+    <div class="panel col-lg-12 col-xs-12">
+        <div class="panel-heading">
+            <div class="col-lg-12 col-xs-12">
+                   <center> <h4> Settings </h4> </center>
+            </div>
+        </div>
+        <br/>
+         <div class="col-lg-3 col-xs-3"></div>
+         <div class="col-lg-3 col-xs-3" style="text-align:right">
+                <b>Mode</b> : 
+                <br/>
+                <b>Version</b> :
+                <br/>
+        </div>
+        <div class="col-lg-3 col-xs-3">
+                <span id="mode"></span>
+                <br/>
+                 <span id="version"></span>
+                <br/>
+        </div>
+         <div class="col-lg-3 col-xs-3"></div>
+        <br/> <br/> <br/> 
+    </div>
+</div>
+<script>
+    var mdpAdmin = "{{mdpAdmin}}";
+
+</script>
