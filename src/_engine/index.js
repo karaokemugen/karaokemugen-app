@@ -1068,7 +1068,24 @@ module.exports = {
 						reject(err);
 					});
 			});
-		};		
+		};
+		module.exports._services.apiserver.onKaraCopyToPlaylist = function(plc_id,playlist_id,pos){
+			return new Promise(function(resolve,reject){
+				logger.info('[Engine] Copying karaokes to playlist '+playlist_id+' : '+plc_id);
+				logger.profile('CopyKara');
+				var plcs = plc_id.split(',');
+				module.exports._services.playlist_controller.copyKaraToPlaylist(plcs,playlist_id,pos)
+					.then(function(){
+						logger.profile('CopyKara');				
+						logger.info('[Engine] Finished copying karaokes to playlist '+playlist_id);
+						resolve(playlist_id);
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC copyKaraToPlaylist : '+err);
+						reject(err);
+					});
+			});
+		};
 		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
