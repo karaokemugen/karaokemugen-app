@@ -694,6 +694,27 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get all tags}	
+	* @return {string} {array of tags}
+	*/
+	getAllTags:function(){
+		return new Promise(function(resolve,reject){			
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+
+			var sqlGetTags = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_tags.sql'),'utf-8');
+			module.exports._user_db_handler.all(sqlGetTags,
+				function (err, tags) {
+					if (err) {
+						reject('Failed to get tag '+tag_id+' information : '+err);
+					} else {	
+						resolve(tags);
+					}
+				});
+		});
+	},
+	/**
 	* @function {getPlaylistInfo}
 	* @param  {number} playlist_id {Playlist ID}
 	* @return {Object} {Playlist object}

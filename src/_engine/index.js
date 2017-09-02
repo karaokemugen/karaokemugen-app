@@ -532,6 +532,25 @@ module.exports = {
 					});
 			});
 		};
+		module.exports._services.apiserver.onTags = function(lang){
+			return new Promise(function(resolve,reject){				
+				module.exports.DB_INTERFACE.getAllTags()
+					.then(function(tags){						
+						module.exports._services.playlist_controller.translateTags(tags,lang)
+							.then(function(tags_output){
+								resolve(tags_output);
+							})
+							.catch(function(err){
+								logger.error('[Engine] translateTags : '+err);							
+								reject(err);
+							});
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC getTags : '+err);							
+						reject(err);
+					});
+			});
+		};
 		module.exports._services.apiserver.onBlacklistCriterias = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistCriterias()

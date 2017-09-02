@@ -1217,6 +1217,18 @@ module.exports = {
 						});
 				});
 
+			routerPublic.route('/tags')
+				.get(function(req,res){
+					module.exports.onTags(req.query.lang)
+						.then(function(tags){
+							if (tags == []) res.statusCode = 404;
+							res.json(tags);
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				})
 
 			// Add headers
 			app.use(function (req, res, next) {
@@ -1289,4 +1301,5 @@ module.exports = {
 	onKaraSingleLyrics:function(){},
 	onShutdown:function(){},
 	emitEvent:function(){},	
+	onTags:function(){},
 };
