@@ -2563,17 +2563,17 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			logger.info('[PLC] Dummy Plug : Adding 5 karas into current playlist');			
 			module.exports.addKaraToPlaylist(
-					[1,2,3,4,5],
-					'Dummy user',
-					playlist_id
-				)
-					.then(function(){
-						resolve();
-					})
-					.catch(function(message){
-						logger.error('[PLC] Dummy Plug : '+message);
-						reject(message);
-					});			
+				[1,2,3,4,5],
+				'Dummy user',
+				playlist_id
+			)
+				.then(function(){
+					resolve();
+				})
+				.catch(function(message){
+					logger.error('[PLC] Dummy Plug : '+message);
+					reject(message);
+				});			
 		});
 	},
 
