@@ -2100,7 +2100,7 @@ module.exports = {
 			
 			taglist.forEach(function(tag, index){
 				if (tag.type >= 2 && tag.type <= 999) {
-					if (tag.name.startsWith('TAG_')) {
+					if (tag.name.startsWith('TAG_') || tag.name.startsWith('TYPE_')) {
 						taglist[index].name_i18n = i18n.__(tag.name);
 					} else {
 						taglist[index].name_i18n = tag.name;
