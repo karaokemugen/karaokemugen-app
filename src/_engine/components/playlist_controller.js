@@ -3,7 +3,7 @@ var timestamp = require('unix-timestamp');
 timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
 const assBuilder = require('./ass_builder.js');
-const fs = require('fs-extra')
+const fs = require('fs-extra');
 const L = require('lodash');
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
@@ -1362,7 +1362,7 @@ module.exports = {
 					} else {
 						resolve();
 					}
-				})
+				});
 				resolve();
 			});
 			var pIsKaraInPlaylist = new Promise((resolve,reject) => {
@@ -1399,9 +1399,10 @@ module.exports = {
 						reject(err);
 					} else {	
 						logger.debug('[PLC] addKaraToPlaylist : building ASS and setting positions');					
-						var pBuildASS = new Promise((resolve,reject) => {								logger.profile('ASSGeneration');
+						var pBuildASS = new Promise((resolve,reject) => {
+							logger.profile('ASSGeneration');
 							async.eachOf(karaList,function(karaToAdd, index, callback){
-								logger.debug('[PLC] addKaraToPlaylist : building ASS for kara ID '+karaToAdd.kara_id)
+								logger.debug('[PLC] addKaraToPlaylist : building ASS for kara ID '+karaToAdd.kara_id);
 								module.exports.getKara(karaToAdd.kara_id)
 									.then(function(kara) {
 										assBuilder.build(
@@ -1457,7 +1458,7 @@ module.exports = {
 									.then(function(maxpos){
 										startpos = maxpos + 1.0;
 										var index = 0;
-										karaList.forEach(function(kara){
+										karaList.forEach(function(){
 											karaList[index].pos = startpos+index;
 											index++;
 										});
@@ -1626,10 +1627,11 @@ module.exports = {
 			});
 			Promise.all([pCheckPLCandKaraInPlaylist,pIsPlaylist])
 				.then(function(){
-					logger.debug('[PLC] addKaraToPlaylist : copying ASS and setting positions')				
-					var pCopyASS = new Promise((resolve,reject) => {								logger.profile('ASSGeneration');
+					logger.debug('[PLC] addKaraToPlaylist : copying ASS and setting positions');				
+					var pCopyASS = new Promise((resolve,reject) => {
+						logger.profile('ASSGeneration');
 						async.eachOf(plcList,function(plcToCopy, index, callback){
-							logger.debug('[PLC] copyKaraToPlaylist : copying ASS for PLC ID '+plcToCopy.plc_id)							
+							logger.debug('[PLC] copyKaraToPlaylist : copying ASS for PLC ID '+plcToCopy.plc_id);							
 							var uuid = uuidv4();
 							var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,plcToCopy.generated_subfile);
 							var assFileNew = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,uuid+'.ass');
@@ -1675,7 +1677,7 @@ module.exports = {
 								.then(function(maxpos){
 									startpos = maxpos + 1.0;
 									var index = 0;
-									plcList.forEach(function(kara){
+									plcList.forEach(function(){
 										plcList[index].pos = startpos+index;
 										index++;
 									});
