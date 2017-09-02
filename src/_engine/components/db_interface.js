@@ -683,8 +683,12 @@ module.exports = {
 				function (err, tag) {
 					if (err) {
 						reject('Failed to get tag '+tag_id+' information : '+err);
-					} else {						
-						resolve(tag.name);
+					} else {	
+						if (!tag) {
+							reject('Tag '+tag_id+' unknown');
+						} else {
+							resolve(tag.name);
+						}											
 					}
 				});
 		});
