@@ -59,6 +59,26 @@
  	justify-content: center;
  	align-items: center; 
 }
+
+#status[name="play"] > i.pause {
+	display: none;
+}
+#status[name="pause"] > i.play {
+	display: none;
+}
+#showSubs[name="showSubs"] > i.hideSubs {
+	display: none;
+}
+#showSubs[name="hideSubs"] > i.showSubs {
+	display: none;
+}
+#mutestatus[name="mute"] > i.unmute {
+	display: none;
+}
+#mutestatus[name="unmute"] > i.mute {
+	display: none;
+}
+
 .btn-stop {
 	height: 100%;
 }

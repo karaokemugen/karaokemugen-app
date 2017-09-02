@@ -186,6 +186,10 @@ select.form-control {
 	background-color: #3a5064;
 	border-color: #9e9e9e;
 }
+.list-group-item.liType {
+	background-color: #607e97;
+	padding-left: 20px;
+}
 .panel>.list-group .list-group-item.dragged {
 	border: none;
 	z-index: 200;
@@ -196,6 +200,11 @@ select.form-control {
 	border: 1px solid #9e9e9e;
 	width: auto;
 }
+
+#playlistCommand1, #playlistCommand1 {
+	display: none;
+}
+
 .list-group-item > div {
 	padding: 3px;
 }
@@ -237,6 +246,14 @@ select.form-control {
 	color: white;
 	width: calc(35px + 19px - 1vw);
 	height: calc(35px + 19px - 1vw);
+	display: inline-block;
+}
+.btn-action.deleteCriteria {
+    border: 1px solid #9e9e9e;
+	background-color: #393939;
+	width: auto;
+	height: auto;
+	color: white;
 	display: inline-block;
 }
 
@@ -287,6 +304,12 @@ select.form-control {
 	padding: 3px 7px;
 	overflow: auto;
 }
+.list-group-item > .typeDiv {
+	border-right : solid 1px #9e9e9e;
+	float: left;
+	padding: 0px 3px;
+}
+
 .list-group-item > span {
 	padding: 7px;
 }
@@ -344,7 +367,8 @@ select.form-control {
 }
 
 .select2 {
-	width: 100% !important;
+	width: auto !important;
+	overflow:hidden;
 	height: 100%;
 }
 .select2-container--bootstrap .select2-selection--single {
