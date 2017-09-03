@@ -82,7 +82,7 @@ Certaines sont encore à venir, mais ça doit vous donner une idée de l'étendu
    - En mode public, les karaokés sont ajoutés à une liste de suggestions et c'est à l'administrateur de décider quelles chansons ajouter !
 - Export/import de playlists
 - API REST pour le développement d'autres interfaces ou de clients mobiles
-- 
+
 
 ## Comment ça fonctionne
 
