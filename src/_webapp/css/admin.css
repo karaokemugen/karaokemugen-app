@@ -59,6 +59,26 @@
  	justify-content: center;
  	align-items: center; 
 }
+
+#status[name="play"] > i.pause {
+	display: none;
+}
+#status[name="pause"] > i.play {
+	display: none;
+}
+#showSubs[name="showSubs"] > i.hideSubs {
+	display: none;
+}
+#showSubs[name="hideSubs"] > i.showSubs {
+	display: none;
+}
+#mutestatus[name="mute"] > i.unmute {
+	display: none;
+}
+#mutestatus[name="unmute"] > i.mute {
+	display: none;
+}
+
 .btn-stop {
 	height: 100%;
 }
@@ -68,18 +88,18 @@
 }
 
 .btn-danger-low, .btn-danger-low:focus {
-	background-color: #7d0318;
-	border: 0px solid #7d0318;
+	background-color: #1E2124;
+	border: 0px solid #1E2124;
 	color: white;
 }
 
 .btn-danger-low:hover {
-	background-color: #6d0308;
+	background-color: #973b3b;
 	color: white;
 }
 
 .btn-danger-low:active {
-	background-color: #5d0038;
+	background-color: #773b3b;
 	color: white;
 }
 

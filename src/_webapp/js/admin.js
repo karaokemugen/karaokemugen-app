@@ -1,4 +1,4 @@
-  (function(yourcode) {
+(function(yourcode) {
     // The global jQuery object is passed as a parameter
   	yourcode(window.jQuery, window, document);
   }(function($, window, document) {
@@ -33,10 +33,21 @@
     })
 
 
-    $('button[action="command"]').click(function () {
-        var val = $(this).val();
-        var dataAjax = { command: val };
-        if ($(this).attr('options') != undefined) dataAjax['options'] = $(this).attr('options');
+    $('button[action="command"]').click(function (e) {
+        var name = $(this).attr('name');
+        var dataAjax = { command: name };
+
+        if ($(this).val() != "") dataAjax['options'] = $(this).val();
+
+        if(e.target.name == "setVolume") {
+            var btn = $(e.target);
+            var val = parseInt(btn.val()), base = .04;
+            val = val / 100; 
+            val = (Math.pow(base,val)-1)/(base-1);
+            val = parseInt(val*100);
+            dataAjax = { command: btn.attr('name'), options: val };
+        }
+
         $.ajax({
             url: 'admin/player',
             type: 'PUT',
@@ -45,6 +56,7 @@
            // refreshCommandStates();
         });
     });
+
     $('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function (event) {
         val = $(this).attr('name');
         $.ajax({
@@ -55,6 +67,7 @@
            // refreshCommandStates();
         });
     });
+
     $('button[action="poweroff"]').click(function() {
           $.ajax({
             url: 'admin/shutdown',
@@ -77,6 +90,72 @@
         if (e.which == 13) {
             $(this).blur();
         }
+    });
+    $('.playlist-main').on('keypress', '#bcVal', function (e) {
+        if (e.which == 13) {
+            $('#blacklistCriteriasInputs').find('#bcAdd').click();
+        }
+    });
+    
+    $('.playlist-main').on('click', 'button.addBlacklistCriteria', function (e) {
+        // TODO check if type is valid maybe
+        var type = $('#bcType').val();
+        var val = $('#bcVal').val();
+        var data = { blcriteria_type: type, blcriteria_value: val };
+        $.ajax({
+            url: scope + '/blacklist/criterias',
+            type: 'POST',
+            data: data
+        }).done(function (data) {  
+            displayMessage('success','Success','Criteria ' + type + ' - ' + val + ' added to the list');
+        })
+    });
+
+    $('.playlist-main').on('click', '.deleteCriteria', function (e) {
+        // TODO check if type is valid maybe
+        var bcId = $(this).closest('li').attr('blcriteria_id');
+        $.ajax({
+            url: scope + '/blacklist/criterias/' + bcId,
+            type: 'DELETE'
+        }).done(function (data) {  
+            displayMessage('success','Success','Blacklist criteria ' + bcId + ' deleted');
+        });
+    });
+    $('.playlist-main').on('change', '#bcType', function (e) {
+        var bcType = $(this).val();
+        var bcTagsFiltered = jQuery.grep(bcTags, function(obj) {
+            return obj.type == bcType
+        });
+
+        var $bcValInput;
+        if (bcTagsFiltered.length > 0) {
+            bcValInput = $('<select id="bcVal" class="input-sm"></select>');
+            $.each(bcTagsFiltered, function (i, o) {    
+                var $option = $("<option/>").attr("value", o.tag_id).text(o.name_i18n);
+                bcValInput.append($option);
+            });
+        } else {
+            bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
+        }
+        $('#bcValContainer').empty().append(bcValInput);
+        
+        if (bcTagsFiltered.length > 0) {
+            $('#bcVal').select2({ theme: "bootstrap", dropdownAutoWidth : true, minimumResultsForSearch: 7 });
+            
+        }
+    });
+    $('.playlist-main').on('click', '.infoDiv > button.playKara', function (e) {
+        var liKara = $(this).closest('li');
+        var idPlc = parseInt(liKara.attr('idplaylistcontent'));
+        var idPlaylist = parseInt($('#selectPlaylist' + $(this).closest('ul').attr('num')).val());
+
+        $.ajax({
+            type : 'PUT',
+            url: scope + '/playlists/' + idPlaylist +'/karas/' + idPlc,
+            data: { flag_playing: "1" }
+        }).done(function (data) {
+           console.log("Kara plc_id " + idPlc + " flag_playing set to true");                     
+        });
     });
 
     $('#karaInfo').click(function (e) {
@@ -174,10 +253,7 @@
 
         $.ajaxSetup({
             cache: false,
-            headers: { "Authorization": "Basic " + btoa("truc:" + passwordAdmin) },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR.status + "  - " + textStatus + "  - " + errorThrown);
-            }
+            headers: { "Authorization": "Basic " + btoa("truc:" + passwordAdmin) }
         });
     }
 
@@ -197,6 +273,7 @@
             htmlSettings += html;
         }
     });
+    
     $('#settings').append(htmlSettings);
 
     // nameExclude = input not being updated (most likely user is on it)
@@ -304,8 +381,6 @@
             //fillPlaylistSelects();
         });
     });
-    
- 
 }));
 	
 

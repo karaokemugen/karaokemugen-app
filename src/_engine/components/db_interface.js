@@ -683,8 +683,33 @@ module.exports = {
 				function (err, tag) {
 					if (err) {
 						reject('Failed to get tag '+tag_id+' information : '+err);
-					} else {						
-						resolve(tag.name);
+					} else {	
+						if (!tag) {
+							reject('Tag '+tag_id+' unknown');
+						} else {
+							resolve(tag.name);
+						}											
+					}
+				});
+		});
+	},
+	/**
+	* @function {Get all tags}	
+	* @return {string} {array of tags}
+	*/
+	getAllTags:function(){
+		return new Promise(function(resolve,reject){			
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+
+			var sqlGetTags = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_tags.sql'),'utf-8');
+			module.exports._user_db_handler.all(sqlGetTags,
+				function (err, tags) {
+					if (err) {
+						reject('Failed to get tag '+tag_id+' information : '+err);
+					} else {	
+						resolve(tags);
 					}
 				});
 		});

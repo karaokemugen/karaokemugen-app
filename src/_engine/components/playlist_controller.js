@@ -2262,8 +2262,15 @@ module.exports = {
 						// We have a kara ID, let's get the kara itself and append it to the value
 						module.exports.DB_INTERFACE.getKara(blc.value)
 							.then(function(kara){
-								blclist[index].value = kara;								
-								resolve();
+								module.exports.translateKaraInfo(kara,lang)
+									.then(function (karaTranslated){
+										blclist[index].value = karaTranslated;
+										resolve();
+									})
+									.catch(function (err){
+										logger.error('[PLC] translateBlacklistCriterias : translateKaraInfo : '+err);
+										reject(err);
+									});						
 							})
 							.catch(function(err){
 								logger.error('[PLC] translateBlacklistCriterias : '+err);
@@ -2288,6 +2295,44 @@ module.exports = {
 				}				
 				resolve(blclist);
 			});			
+		});
+	},
+	/**
+	* @function {Translate tag list in human form}
+	* @param  {array} blc {list of tags objects}
+	* @param  {string} lang     {language in ISO639-1 to translate into}
+	* @return {array} {Returns array of tags}
+	*/
+	translateTags:function(taglist,lang){
+		return new Promise(function(resolve,reject) {
+
+			// If lang is not provided, assume we're using node's system locale
+			if (!lang) lang = module.exports.SETTINGS.EngineDefaultLocale;
+			// Test if lang actually exists in ISO639-1 format
+			if (!langs.has('1',lang)) {
+				var err = 'Unknown language : '+lang;
+				logger.error('[PLC] translateKaraInfo : '+err);
+				reject(err);
+			}
+			// Instanciate a translation object for our needs with the correct language.
+			const i18n = require('i18n'); // Needed for its own translation instance
+			i18n.configure({
+				directory: path.resolve(__dirname,'../../_common/locales'),
+			});
+			i18n.setLocale(lang);
+
+			// We need to read the detected locale in ISO639-1
+			
+			taglist.forEach(function(tag, index){
+				if (tag.type >= 2 && tag.type <= 999) {
+					if (tag.name.startsWith('TAG_') || tag.name.startsWith('TYPE_')) {
+						taglist[index].name_i18n = i18n.__(tag.name);
+					} else {
+						taglist[index].name_i18n = tag.name;
+					}							
+				}
+			});
+			resolve(taglist);			
 		});
 	},
 	/**

@@ -10,7 +10,7 @@ body {
 }
 
 .form-control {
-	background-color: #f5f5f5;
+	background-color: #f3f3f3;
 }
 
 .btn-default {
@@ -24,7 +24,7 @@ body {
 	top: 0;
 	height: 85px;
 	width: 100%;
-	border-bottom: 2px solid #9e9e9e;
+	border-bottom: 1px solid #9e9e9e;
 }
 
 .header button {
@@ -32,7 +32,7 @@ body {
 	width: 85px;
 	padding: 0px;
 	margin: 0px;
-	font-size: 140%;
+	font-size: 2rem;
 }
 
 .header > .btn-group, #header img {
@@ -41,12 +41,12 @@ body {
 
 #progressBar {
 	cursor: pointer;
-	height: 25px;
+	height: 24px;
 	width: 100%;
 	top: 85px;
 	position: fixed;
 	z-index: 1337;
-	border-bottom: solid 2px #9e9e9e;
+	border-bottom: solid 1px #9e9e9e;
 	background-color: #1E2124;
 }
 #progressBarColor {
@@ -63,7 +63,7 @@ body {
 	background-color: #18617a;
 }
 #karaInfo {
-    line-height: 1.85;
+    line-height: 1.83;
 	text-align: center;
 	z-index: 10;
     position: absolute;
@@ -71,9 +71,12 @@ body {
 	width: 100%;
 	font-weight: 600;
 }
+.btn-primary {
+	background-color: #37679a;
+}
 .btn-danger {
-	background-color: #a55250;
-	border-color: #a55250;
+	background-color: #973b3b;
+	border-color: transparent;
 }
 .btn-danger:hover {
 	background-color: #994240;
@@ -86,7 +89,7 @@ body {
 }
 
 .underHeader {
-	position: relative;	
+  position: relative;	
   top: 75px;
 }
 
@@ -155,7 +158,7 @@ div.bootstrap-switch-container {
 .btn-dark, .btn-dark:focus {
 	background-color: #1E2124;
 	border: 0px solid #9e9e9e;
-	border-left-width: 3px;
+	border-left-width: 2px;
 	color: white;
 }
 .btn-dark:hover {
@@ -179,13 +182,31 @@ select.form-control {
 	border-color: #9e9e9e;
 	overflow: auto;
 	padding: 0px;
-	min-height: calc(35px + 10px - .5vw);
-	line-height: calc(35px + 10px - .5vw);
+	_min-height: calc(30px + 19px - 1vw);
+	line-height: 3rem;
 }
 .list-group-item[currentlyPlaying] {
 	background-color: #3a5064;
 	border-color: #9e9e9e;
 }
+.list-group-item.liType {
+	background-color: #607e97;
+	padding-left: 20px;
+	min-height: 20px;
+	line-height: 24px;
+}
+.list-group-item.liTag {
+	min-height: auto;
+	line-height: 36px;
+}
+.list-group-item.liTag > .btnDiv {
+	padding: 0;
+}
+.list-group-item.liTag > div {
+	padding-top:0;
+	padding-bottom:0;
+}
+
 .panel>.list-group .list-group-item.dragged {
 	border: none;
 	z-index: 200;
@@ -196,6 +217,11 @@ select.form-control {
 	border: 1px solid #9e9e9e;
 	width: auto;
 }
+
+#playlistCommand1, #playlistCommand2 {
+	display: none;
+}
+
 .list-group-item > div {
 	padding: 3px;
 }
@@ -203,13 +229,11 @@ select.form-control {
 .playlistContainer > ul[num="2"] .list-group-item > .infoDiv > button, .playlistContainer > ul[num="1"] .list-group-item > .btnDiv > button, .playlistContainer > ul[num="2"] .list-group-item .dragHandle {
 	float: right;
 	display: block;
-	margin: 1px;
 }
 
-.playlistContainer > ul[num="1"].list-group-item > .infoDiv > button, .playlistContainer > ul[num="2"] .list-group-item > .btnDiv > button, .playlistContainer > ul[num="2"] .list-group-item .dragHandle  {
+.playlistContainer > ul[num="1"] .list-group-item > .infoDiv > button, .playlistContainer > ul[num="2"] .list-group-item > .btnDiv > button, .playlistContainer > ul[num="2"] .list-group-item .dragHandle  {
 	float: left;
 	display: block;
-	margin: 1px;
 }
 .list-group-item > .btnDiv > button {
 	z-index: 52;
@@ -225,7 +249,7 @@ select.form-control {
 .list-group-item .dragHandle {
 	height: 100%;
 	margin-left: 6px;
-    font-size: 21px;
+    font-size: 2rem;
 	cursor: -webkit-grab;
 	float: right;
 }
@@ -235,8 +259,18 @@ select.form-control {
     border: 1px solid #9e9e9e;
 	background-color: #393939;
 	color: white;
-	width: calc(35px + 19px - 1vw);
-	height: calc(35px + 19px - 1vw);
+	display: inline-block;
+}
+.btn-action.btn-sm {
+	__width: calc(30px + 19px - 1vw);
+	__height: calc(30px + 19px - 1vw);
+}
+.btn-action.deleteCriteria {
+    border: 1px solid #9e9e9e;
+	background-color: #393939;
+	width: auto;
+	height: auto;
+	color: white;
 	display: inline-block;
 }
 
@@ -265,6 +299,7 @@ select.form-control {
     background-color: #30393e;
     border-color: #8aa9af;
 	border-radius: 0px;
+	position: relative;
 }
 .list-group-item .detailsKara tr > td:first-child {
 	font-weight: bold;
@@ -278,16 +313,30 @@ select.form-control {
  }
 
 .list-group-item .fullLyrics, button.closeParent  {
-	float: right;
-	width: auto;
-	height: auto;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+.list-group-item .fullLyrics  {
+	right: 49px;
 }
 
+button.closeParent.bottom  {
+	bottom: 10px;
+	top: auto;
+}
 .list-group-item > .contentDiv {
 	padding: 3px 7px;
 	overflow: auto;
 }
-.list-group-item > span {
+.list-group-item > .typeDiv {
+	border-right : solid 1px #9e9e9e;
+	float: left;
+	padding: 0px 7px;
+	display: none;
+}
+
+li.list-group-item > span {
 	padding: 7px;
 }
 
@@ -302,7 +351,7 @@ select.form-control {
     text-align: center;
     background-color: #3a5774;
 	font-weight: 500;
-	font-size: 16px;
+	font-size: 1.6rem;
 }
 
 #playlist1.list-group > li.list-group-item  > div:first-child, #playlist1.list-group > li.list-group-item  > div:first-child > span, 
@@ -343,11 +392,24 @@ select.form-control {
 	background-color: #9e9e9e;
 }
 
-.select2 {
-	width: 100% !important;
-	height: 100%;
+#blacklistCriteriasInputs .select2 {
+	display: inline-block;
 }
-.select2-container--bootstrap .select2-selection--single {
+#blacklistCriteriasInputs input {
+	height: 34px;
+}
+.select2-dropdown {
+	z-index: 10000;
+}
+.panel-heading .select2 {
+	width: auto !important;
+	overflow:hidden;
+}
+.panel-heading button.btn-lg {
+	height: 46px;
+}
+
+.panel-heading .select2-container--bootstrap .select2-selection--single {
 	height: 100%;
 	line-height: 2.3;
 }
@@ -394,7 +456,7 @@ button.closePopupParent {
 
 .popup {
     background-color: #FFFFFF;
-    border: 2px solid #999999;
+    border: 1px solid #999999;
     cursor: default;
     display: none;
     width: 700px;
@@ -409,23 +471,48 @@ button.closePopupParent {
     overflow-x: hidden;
 }
 
-.right-inner-addon input {
-	padding-right: 30px;
+.input-lg {
 	border-radius: 0;
+	padding-top: 15px;
 }
 
-.right-inner-addon i {
-  position: absolute;
-  color: #ccc;
-  left: calc(100% - 253px);
-  padding: 10px 12px;
-  pointer-events: none;
-  top: 4px;
-  font-size: 20px;
+/* Range input sliders */
+
+/* standard slider */
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: calc(100% - 2*5px);
+  margin: 20px 5px 2px 5px;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.03), 0px 0px 1px rgba(13, 13, 13, 0.03);
+  background: #ffffff;
+  border-radius: 0px;
+  border: 0.1px solid rgba(0, 1, 1, 0.36);
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 0px solid #000000;
+  height: 24px;
+  width: 11px;
+  border-radius: 0px;
+  background: #e6e6e6;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -8px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #ffffff;
 }
 
-
-/** range CSS */
+/* settings slider */
 
 #settings input[type=range] {
   -webkit-appearance: none;
@@ -512,3 +599,54 @@ button.closePopupParent {
 #settings input[type=range]:focus::-ms-fill-upper {
   background: #ffffff;
 }
+
+
+/* placeholders */
+
+::-webkit-input-placeholder {
+    font-size: 2rem;
+	line-height:  21px;
+	height: 20px;
+    text-align:right; 
+    font-family: 'Glyphicons Halflings'; 
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+	font-size: 2rem;
+	line-height:  21px;
+	height: 20px;
+    text-align:right; 
+    font-family: 'Glyphicons Halflings'; 
+}
+:-ms-input-placeholder {
+	font-size: 2rem;
+	line-height:  21px;
+	height: 20px;
+    text-align:right; 
+    font-family: 'Glyphicons Halflings'; 
+}
+
+.header ::-webkit-input-placeholder {
+	font-size: 2rem;
+	line-height:  21px;
+	height: 20px;
+    text-align:right; 
+    font-family: 'Glyphicons Halflings'; 
+}
+
+.header  ::-moz-placeholder {  /* Firefox 19+ */
+	font-size: 2rem;
+	line-height:  21px;
+	height: 20px;
+    text-align:right; 
+    font-family: 'Glyphicons Halflings'; 
+}
+
+.header  :-ms-input-placeholder {
+	font-size: 2rem;
+	line-height:  21px;
+	height: 20px;
+    text-align:right; 
+    font-family: 'Glyphicons Halflings'; 
+}
+
