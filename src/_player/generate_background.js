@@ -49,7 +49,10 @@ module.exports = {
 					});
 					Promise.all([pf1,pf2])
 						.then(function(){
-							images[0].write(backgroundImageFile);				
+							images[0].write(backgroundImageFile);
+							fs.unlink(qrcodeImageFile,function(){
+								logger.debug('[Player] QR Code image deleted');								
+							});
 							resolve();
 						})
 						.catch(function(err){
