@@ -806,7 +806,7 @@ module.exports = {
 												module.exports.onLog('error', 'Error updating database : '+err);										
 												reject();
 											} else {
-												module.exports.onLog('success', 'Database updated due to integrity checks');										
+												module.exports.onLog('success', 'Database updated due to integrity checks');							module.exports.onLog('success', 'PLEASE VERIFY YOUR BLACKLIST CRITERIAS BEFORE YOUR NEXT KARAOKE SESSION');
 												resolve();
 											}
 										});
