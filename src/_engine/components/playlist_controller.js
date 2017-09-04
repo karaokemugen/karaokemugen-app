@@ -1870,6 +1870,27 @@ module.exports = {
 
 	},
 	/**
+	* @function {Raises position of kara in a playlist}
+	* @param  {number} playlist_id     {ID of playlist to modify order of}
+	* @param  {number} order           {Order to raise}
+	* @return {boolean} {Promise}
+	* This utility function raises the position of a song in a playlist by 0.1
+	* This allows the reorderPlaylist function, called immediately after, to
+	* reorder the new playlist correctly.
+	*/
+	raisePosInPlaylist:function(pos,playlist_id) {
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.raisePosInPlaylist(pos,playlist_id)
+				.then(function() {
+					resolve();
+				})
+				.catch(function(err) {
+					logger.error('[PLC] DBI raisePosInPlaylist : '+err)
+					reject(err);
+				});
+		});
+	},
+	/**
 	* @function {Update karaoke from playlist}
 	* @param  {number} playlistcontent_id     {ID of karaoke to remove}
 	* @param  {number} pos {New position of karaoke, optional}
@@ -1953,9 +1974,9 @@ module.exports = {
 					var pUpdatePos = new Promise((resolve,reject) => {
 						if (pos) {
 							module.exports.raisePosInPlaylist(pos,playlist_id)
-								.then(function(){
+								.then(function(){									
 									module.exports.DB_INTERFACE.setPos(playlistcontent_id,pos)
-										.then(function(){
+										.then(function(){									
 											resolve();
 										})
 										.catch(function(err){
@@ -1972,7 +1993,7 @@ module.exports = {
 						}
 					});
 					Promise.all([pUpdatePos,pUpdatePlaying])
-						.then(function(){
+						.then(function(){							
 							var pReorderPlaylist = new Promise((resolve,reject) => {
 								module.exports.reorderPlaylist(playlist_id)
 									.then(function(){

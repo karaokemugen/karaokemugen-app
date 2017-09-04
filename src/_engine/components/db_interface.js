@@ -935,6 +935,34 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Raises position of a song in playlist}
+	* @param  {number} playlist_id        {ID of playlist to modify}
+	* @param  {number} pos        {Position to modify}
+	* @return {promise} {Promise}
+	*/
+	raisePosInPlaylist:function(pos,playlist_id) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+
+			var newpos = pos + 0.1;
+			var sqlRaisePosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_raise_pos_in_playlist.sql'),'utf-8');
+			module.exports._user_db_handler.run(sqlRaisePosInPlaylist,
+				{
+					$newpos: newpos,
+					$playlist_id: playlist_id,
+					$pos: pos
+				}, function (err, rep) {
+					if (err) {
+						reject('Failed to update position in playlist '+playlist_id+' : '+err)
+					} else {
+						resolve();
+					}
+				});
+		});
+	},
+	/**
 	* @function {Is the kara in the playlist?}
 	* @param  {number} kara_id {ID of karaoke to search for}
 	* @param  {number} playlist_id {ID of playlist to search in}
