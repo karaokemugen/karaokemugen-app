@@ -68,6 +68,7 @@ module.exports = {
 			module.exports._start_apiserver();
 			module.exports._start_wsserver();
 			module.exports._broadcastStates();
+			module.exports._cleanup();
 		}).catch(function(response){
 			logger.error(response);
 		});
@@ -344,6 +345,18 @@ module.exports = {
 	_broadcastStates:function() {
 		// diffuse l'état courant à tout les services concerné (normalement les webapp)
 		module.exports._services.admin.setEngineStates(module.exports._states);
+	},
+
+	_cleanup:function() {
+		// Launching clean up method to get rid of any unneeded files in tmp
+		var cleanUp = require('../_admin/cleanup.js');
+		module.exports.DB_INTERFACE.getAllPlaylistContents()
+			.then(function(karalist){
+				cleanUp.run(path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp),karalist);
+			})
+			.catch(function(err){
+				logger.error('[Engine] Cleanup : DBI getAllPlaylist : '+err);				
+			});
 	},
 
 	// ------------------------------------------------------------------
