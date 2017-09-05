@@ -56,6 +56,11 @@
 	"UNDEFINED_LANGUAGE": "Langue indéfinie",
 	"UNKNOWN_LANGUAGE": "Langue inconnue",
 	"GO_TO": "Allez sur",
-	"TAG_VOICELESS": "Sans paroles",	
-	"TAG_ROMANCE": "Romance"
+	"TAG_VOICELESS": "Sans paroles",
+	"TAG_ROMANCE": "Romance",
+	"NICKNAME": "Pseudo",
+	"SETTINGS": "SETTINGS",
+	"4TH_IMPACT": "4TH_IMPACT",
+	"DISPLAY_KARALIST": "DISPLAY_KARALIST",
+	"DISPLAY_LYRICS": "DISPLAY_LYRICS"
 }

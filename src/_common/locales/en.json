@@ -56,6 +56,7 @@
 	"UNDEFINED_LANGUAGE": "Undefined",
 	"UNKNOWN_LANGUAGE": "Unknown",
 	"GO_TO": "Go to",
-	"TAG_VOICELESS": "Lyricsless",	
-	"TAG_ROMANCE": "Romance"
-}	
+	"TAG_VOICELESS": "Lyricsless",
+	"TAG_ROMANCE": "Romance",
+	"NICKNAME": "Nickname"
+}

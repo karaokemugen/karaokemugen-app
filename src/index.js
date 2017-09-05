@@ -14,15 +14,15 @@ const logger = require('./_common/utils/logger.js');
 const i18n = require('i18n');
 const osLocale = require('os-locale');
 process.on('uncaughtException', function (exception) {
-  console.log(exception); // to see your exception details in the console
-  // if you are on production, maybe you can send the exception details to your
-  // email as well ?
+	console.log(exception); // to see your exception details in the console
+	// if you are on production, maybe you can send the exception details to your
+	// email as well ?
 });
 
 process.on('uncaughtException', function (exception) {
-  console.log(exception); // to see your exception details in the console
-  // if you are on production, maybe you can send the exception details to your
-  // email as well ?
+	console.log(exception); // to see your exception details in the console
+	// if you are on production, maybe you can send the exception details to your
+	// email as well ?
 });
 
 /**
@@ -41,6 +41,7 @@ console.log('\n');
 i18n.configure({
 	directory: path.resolve(__dirname,'_common/locales'),
 	defaultLocale: 'en',
+	cookie: 'locale', 
 	register: global
 });
 
@@ -150,7 +151,7 @@ if(SYSPATH) {
 	var engine = require('./_engine/index.js');	
 	engine.SYSPATH = SYSPATH;
 	engine.SETTINGS = SETTINGS;
-
+	engine.i18n = i18n;
 	if(argv.testplaylist)
 		engine.test_playlist_controller();
 	else		
