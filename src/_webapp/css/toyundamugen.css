@@ -190,7 +190,7 @@ select.form-control {
 	background-color: #3a5064;
 	border-color: #9e9e9e;
 }
-.list-group-item.liType {
+.playlist-main .list-group-item.liType {
 	background-color: #607e97;
 	padding-left: 20px;
 	min-height: 20px;

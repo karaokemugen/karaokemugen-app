@@ -124,3 +124,16 @@ div.bootstrap-switch-large{
 .playlist-main .list-group-item.ui-sortable-helper {
 	background-color: #222;
 }
+
+.panel-heading {
+	display: flex;
+	flex-wrap: wrap;
+}
+.panel-heading > div:nth-child(1) {
+    flex-grow: 100;
+    float: left;
+}
+.panel-heading > div:nth-child(3) {
+    flex-grow: 100;
+    float: right;
+}

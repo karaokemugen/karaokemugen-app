@@ -677,7 +677,11 @@ var tabTradToDelete;
                     if (option.attr(e) == "1") { flagPanel.find("button[name='" + e + "']").removeClass('btn-default').addClass('btn-primary'); }
                     else { flagPanel.find("button[name='" + e + "']").removeClass('btn-primary').addClass('btn-default'); }
                 });
-                flagPanel.find("button[name='flag_visible'] > i").attr('class', option.attr('flag_visible') == "1" ? 'glyphicon glyphicon-eye-open' : 'glyphicon glyphicon-eye-close');   
+                flagPanel.find("button[name='flag_visible'] > i").attr('class', option.attr('flag_visible') == "1" ? 'glyphicon glyphicon-eye-open' : 'glyphicon glyphicon-eye-close');  
+                
+                flagPanel.find('button').show().parent().show();
+                if(option.val() == -1) { flagPanel.find("[name='flag_current']").parent().hide(); }
+                if(option.val() < -1)  { flagPanel.find("[name='flag_current'], [name='flag_public']").hide(); }
             }
             
             if(triggerChange) {
@@ -827,7 +831,6 @@ var tabTradToDelete;
                 , "Series_altname": data['series_altname']
                 , "Singer": data['singer']
                 , "Type ": data['songtype_i18n'] + data['songorder'] > 1 ? " " + data['songorder'] : ""
-                , "Pos": data['pos']
                 , "series": data['series']
                 , "series_altname": data['series_altname']
             }
@@ -893,10 +896,11 @@ var tabTradToDelete;
     }
 
     $(window).resize(function () {
-        //  initSwitchs();$
-        var topHeight = $('.panel-heading.container-fluid').outerHeight();
-        $('#playlist1').parent().css('height', 'calc(100% - ' + (scope === "public" ? 0 : topHeight) + 'px ');
-        $('#playlist2').parent().css('height', 'calc(100% - ' + topHeight + 'px  ');
+        //  initSwitchs();
+        var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
+        var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
+        $('#playlist1').parent().css('height', 'calc(100% - ' + (scope === "public" ? 0 : topHeight1) + 'px ');
+        $('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
     });
 
     /* opposite number of playlist : 1 or 2 */

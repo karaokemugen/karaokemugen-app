@@ -17,57 +17,51 @@
             data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  {{i18n "PLAYLISTS"}}" data-size="large" />
     </div>
     <div class="pull-left btn-group">
-        <button title="{{i18n "STOP_AFTER"}}" action="command"    id="stopAfter" name="stopAfter"  class="btn btn-danger-low" style="width: 50px;">
+        <button title="{{i18n "STOP_AFTER"}}" action="command" id="stopAfter" name="stopAfter" class="btn btn-danger-low" style="width: 50px;">
 			<i class="glyphicon glyphicon-stop"></i><i class="glyphicon glyphicon-time secondaryIcon"></i></button>
-        <button title="{{i18n "STOP_NOW"}}" action="command"    id="stopNow"   name="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
-        <button title="{{i18n "REWIND"}}" action="command"    id="goTo"      name="goTo" value="0" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
+        <button title="{{i18n "STOP_NOW"}}" action="command" id="stopNow" name="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
+        <button title="{{i18n "REWIND"}}" action="command" id="goTo" name="goTo" value="0" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
     </div>
     <div id="centerBtns" class="header">
         <div class="btn-group">
-            <button title="{{i18n "PREVIOUS_SONG"}}" action="command"    id="prev"   name="prev"  class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
-            <button title="{{i18n "PLAY_PAUSE"}}" action="command"    id="status" name="play"  class="btn btn-primary"><i class="glyphicon glyphicon-play play"></i><i class="glyphicon glyphicon-pause pause"></i></button>
-            <button title="{{i18n "NEXT_SONG"}}" action="command"    id="skip"   name="skip"  class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
+            <button title="{{i18n "PREVIOUS_SONG"}}" action="command" id="prev" name="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
+            <button title="{{i18n "PLAY_PAUSE"}}" action="command" id="status" name="play" class="btn btn-primary"><i class="glyphicon glyphicon-play play"></i><i class="glyphicon glyphicon-pause pause"></i></button>
+            <button title="{{i18n "NEXT_SONG"}}" action="command" id="skip" name="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
             <button class="btn btn-default hidden"></button>
         </div>
-    </div>
-    <div class="pull-right btn-group hidden">
-        <img src="https://lab.shelter.moe/uploads/-/system/project/avatar/18/tmugen2.jpg" alt="logo kara" class="pull-right">
-        <strike class="pull-right" style="margin-right: 19px;    line-height: 64px;    font-size: 22px;">TOYUNDA</strike>
     </div>
 </div>
 <div id="progressBar" class="underHeader">
     <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
-    <div id="progressBarColor" style="width:0%;"></div>
+    <div id="progressBarColor" style="width: 0%;"></div>
 </div>
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
         <div class="panel col-lg-6 col-xs-6" id="panel1">
             <div class="panel-heading container-fluid">            
-               <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
-                        <button class="btn btn-lg btn-default pull-left" name="commandPlaylist" num="1">
-                            <i class="glyphicon glyphicon-wrench"></i>
-                        </button>
-                        <select id="selectPlaylist1" num="1" type="playlist_select" class="select2" style="overflow:hidden">
-                            </select>
+                <div>
+                    <button class="btn btn-lg btn-default pull-left" name="commandPlaylist" num="1">
+                        <i class="glyphicon glyphicon-wrench"></i>
+                    </button>
+                    <select id="selectPlaylist1" num="1" type="playlist_select" class="select2" style="overflow:hidden">
+                    </select>
                 </div>
-                <div class="col-lg-7 col-md-8 col-sm-12 col-xs-12">
-                    <div class="btn-group pull-right" id="flag1">
-                        <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-lg btn-default" name="export">
-                            <i class="glyphicon glyphicon-export"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_CURRENT"}}' class="btn btn-lg btn-default" name="flag_current">
-                            <i class="glyphicon glyphicon-facetime-video"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_PUBLIC"}}' class="btn btn-lg btn-default" name="flag_public">
-                            <i class="glyphicon glyphicon-indent-left"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_VISIBLE"}}' class="btn btn-lg btn-default" name="flag_visible">
-                            <i class="glyphicon glyphicon-eye-close"></i>
-                        </button>
-                    </div>  
-                    <div class="pull-left" style="width:calc(100% - 210px);">
-                        <input type="text" class="form-control input-lg" num="1" id="searchPlaylist1" placeholder="&#xe003;" />
-                    </div>
+                <div class="btn-group pull-right" id="flag1">
+                    <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-lg btn-default" name="export">
+                        <i class="glyphicon glyphicon-export"></i>
+                    </button>
+                    <button title='{{i18n "PLAYLIST_CURRENT"}}' class="btn btn-lg btn-default" name="flag_current">
+                        <i class="glyphicon glyphicon-facetime-video"></i>
+                    </button>
+                    <button title='{{i18n "PLAYLIST_PUBLIC"}}' class="btn btn-lg btn-default" name="flag_public">
+                        <i class="glyphicon glyphicon-indent-left"></i>
+                    </button>
+                    <button title='{{i18n "PLAYLIST_VISIBLE"}}' class="btn btn-lg btn-default" name="flag_visible">
+                        <i class="glyphicon glyphicon-eye-close"></i>
+                    </button>
+                </div>  
+                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-5">
+                    <input type="text" class="form-control input-lg" num="1" id="searchPlaylist1" placeholder="&#xe003;" />
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xd-12" id="playlistCommand1">
                 </div>
@@ -82,31 +76,29 @@
         
         <div class="panel col-lg-6 col-xs-6" id="panel2">
             <div class="panel-heading container-fluid">            
-                <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
+                <div>
                         <button class="btn btn-lg btn-default pull-left" name="commandPlaylist" num="2">
                             <i class="glyphicon glyphicon-wrench"></i>
                         </button>
                         <select id="selectPlaylist2" num="2" type="playlist_select" class="select2" style="overflow:hidden">
                             </select>
                 </div>
-                <div class="col-lg-7 col-md-8 col-sm-12 col-xs-12">
-                    <div class="btn-group pull-right" id="flag2">
-                        <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-lg btn-default" name="export">
-                            <i class="glyphicon glyphicon-export"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_CURRENT"}}' class="btn btn-lg btn-default" name="flag_current">
-                            <i class="glyphicon glyphicon-facetime-video"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_PUBLIC"}}' class="btn btn-lg btn-default" name="flag_public">
-                            <i class="glyphicon glyphicon-indent-left"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_VISIBLE"}}' class="btn btn-lg btn-default" name="flag_visible">
-                            <i class="glyphicon glyphicon-eye-close"></i>
-                        </button>
-                    </div>
-                    <div class="pull-left" style="width:calc(100% - 210px);">
-                            <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="&#xe003;" />
-                    </div>
+                <div class="btn-group pull-right" id="flag2">
+                    <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-lg btn-default" name="export">
+                        <i class="glyphicon glyphicon-export"></i>
+                    </button>
+                    <button title='{{i18n "PLAYLIST_CURRENT"}}' class="btn btn-lg btn-default" name="flag_current">
+                        <i class="glyphicon glyphicon-facetime-video"></i>
+                    </button>
+                    <button title='{{i18n "PLAYLIST_PUBLIC"}}' class="btn btn-lg btn-default" name="flag_public">
+                        <i class="glyphicon glyphicon-indent-left"></i>
+                    </button>
+                    <button title='{{i18n "PLAYLIST_VISIBLE"}}' class="btn btn-lg btn-default" name="flag_visible">
+                        <i class="glyphicon glyphicon-eye-close"></i>
+                    </button>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-4 col-xs-5">
+                    <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="&#xe003;" />
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xd-12" id="playlistCommand2">
                 </div>
@@ -215,14 +207,15 @@
 
 <script>
     var mdpAdmin = "{{mdpAdmin}}";
-    var settingsOnOff = {     "PlayerPIP" : 	"{{i18n "PLAYERPIP"}}"
-                            , "EngineAllowNicknameChange" : 	"{{i18n "ENGINEALLOWNICKNAMECHANGE"}}"
-                            , "EngineAllowViewBlacklist" : 	"{{i18n "ENGINEALLOWVIEWBLACKLIST"}}"
-                            , "EngineAllowViewBlacklistCriterias" : 	"{{i18n "ENGINEALLOWVIEWBLACKLISTCRITERIAS"}}"
-                            , "EngineAllowViewWhitelist" : 	"{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
-                            , "EngineDisplayNickname" : 	"{{i18n "ENGINEDISPLAYNICKNAME"}}"
-                            , "PlayerFullscreen" : 	"{{i18n "PLAYERFULLSCREEN"}}"
-                            , "PlayerStayOnTop" : 	"{{i18n "PLAYERSTAYONTOP"}}"
-                            , "PlayerNoBar" : 	"{{i18n "PLAYERNOBAR"}}"
-                            , "PlayerNoHud" : 	"{{i18n "PLAYERNOHUD"}}" };
-</script>   
+    var settingsOnOff = {
+        "PlayerPIP": "{{i18n "PLAYERPIP"}}"
+        , "EngineAllowNicknameChange": "{{i18n "ENGINEALLOWNICKNAMECHANGE"}}"
+        , "EngineAllowViewBlacklist": "{{i18n "ENGINEALLOWVIEWBLACKLIST"}}"
+        , "EngineAllowViewBlacklistCriterias": "{{i18n "ENGINEALLOWVIEWBLACKLISTCRITERIAS"}}"
+        , "EngineAllowViewWhitelist": "{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
+        , "EngineDisplayNickname": "{{i18n "ENGINEDISPLAYNICKNAME"}}"
+        , "PlayerFullscreen": "{{i18n "PLAYERFULLSCREEN"}}"
+        , "PlayerStayOnTop": "{{i18n "PLAYERSTAYONTOP"}}"
+        , "PlayerNoBar": "{{i18n "PLAYERNOBAR"}}"
+        , "PlayerNoHud": "{{i18n "PLAYERNOHUD"}}" };
+</script>
