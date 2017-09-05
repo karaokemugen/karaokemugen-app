@@ -45,6 +45,12 @@ var tabTradToDelete;
 }(function ($, window, document) {
     $(function () {
         // Once page is loaded
+        var rdmFlip = Math.floor(Math.random() * 2) + 1;    
+        $('#panel' + rdmFlip + ' > .playlistContainer').attr('flipped', true);
+        $('#panel' + non(rdmFlip) + ' > .playlistContainer').attr('flipped', false);
+        var rdmColor = Math.floor(Math.random() * 20) + 1; 
+        if (rdmColor == 20) { $('.playlistContainer').attr('noGreyFace', true); }
+
         $.ajaxSetup({
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log(jqXHR.status + "  - " + textStatus + "  - " + errorThrown + " : " + jqXHR.responseText);
@@ -64,8 +70,10 @@ var tabTradToDelete;
 
         initSwitchs();
         $('.bootstrap-switch').promise().then(function(){
-            $(this).attr('title', $(this).find('input').attr('title'));
-        });;
+            $(this).each(function(){
+                $(this).attr('title', $(this).find('input').attr('title'));
+            });
+        });
         
         // méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
         $('#searchPlaylist1, #searchPlaylist2').on('input', function () {
@@ -745,7 +753,7 @@ var tabTradToDelete;
                     $('#mutestatus').attr('name','unmute');
                 }
             }
-            if (data.ontop != oldState.ontop) {
+            if (data.onTop != oldState.onTop) {
                 $('input[name="toggleAlwaysOnTop"]').bootstrapSwitch('state', data.ontop, true);
             }
             if (data.fullscreen != oldState.fullscreen) {

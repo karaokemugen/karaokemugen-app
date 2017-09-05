@@ -4,16 +4,16 @@
     <button title="{{i18n "MUTE_UNMUTE"}}" action="command" id="mutestatus" name="mute" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-volume-up unmute"></i>
 		<i class="glyphicon glyphicon-volume-off mute"></i>
-		<input action="command" name="setVolume" id="volume" value="100" type="range" />	
+		<input title='{{i18n "VOLUME_LEVEL"}}' action="command" name="setVolume" id="volume" value="100" type="range" />	
 	</button>
     <button title="{{i18n "SHOW_HIDE_SUBS"}}" action="command" id="showSubs" name="hideSubs" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-subtitles hideSubs"></i>
         <i class="glyphicon glyphicon glyphicon-question-sign showSubs"></i>
         </button>
     <div class="pull-left btn-group" style="width: 129px;">
-        <input type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
+        <input title='{{i18n "SWITCH_PRIVATE"}}' type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
             data-off-text="<i class='glyphicon glyphicon-eye-open'></i> {{i18n "PUBLIC"}}" data-size="large" />
-        <input type="checkbox" checked name="kara_panel" class="btn btn-default pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  {{i18n "OPTIONS"}}"
+        <input title='{{i18n "SWITCH_OPTIONS"}}' type="checkbox" checked name="kara_panel" class="btn btn-default pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  {{i18n "OPTIONS"}}"
             data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  {{i18n "PLAYLISTS"}}" data-size="large" />
     </div>
     <div class="pull-left btn-group">
@@ -41,7 +41,7 @@
 </div>
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
-        <div class="panel col-lg-6 col-xs-6">
+        <div class="panel col-lg-6 col-xs-6" id="panel1">
             <div class="panel-heading container-fluid">            
                <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
                         <button class="btn btn-lg btn-default pull-left" name="commandPlaylist" num="1">
@@ -52,16 +52,16 @@
                 </div>
                 <div class="col-lg-7 col-md-8 col-sm-12 col-xs-12">
                     <div class="btn-group pull-right" id="flag1">
-                        <button class="btn btn-lg btn-default" name="export">
+                        <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-lg btn-default" name="export">
                             <i class="glyphicon glyphicon-export"></i>
                         </button>
-                        <button class="btn btn-lg btn-default" name="flag_current">
+                        <button title='{{i18n "PLAYLIST_CURRENT"}}' class="btn btn-lg btn-default" name="flag_current">
                             <i class="glyphicon glyphicon-facetime-video"></i>
                         </button>
-                        <button class="btn btn-lg btn-default" name="flag_public">
+                        <button title='{{i18n "PLAYLIST_PUBLIC"}}' class="btn btn-lg btn-default" name="flag_public">
                             <i class="glyphicon glyphicon-indent-left"></i>
                         </button>
-                        <button class="btn btn-lg btn-default" name="flag_visible">
+                        <button title='{{i18n "PLAYLIST_VISIBLE"}}' class="btn btn-lg btn-default" name="flag_visible">
                             <i class="glyphicon glyphicon-eye-close"></i>
                         </button>
                     </div>  
@@ -80,7 +80,7 @@
             </div>
         </div>
         
-        <div class="panel col-lg-6 col-xs-6">
+        <div class="panel col-lg-6 col-xs-6" id="panel2">
             <div class="panel-heading container-fluid">            
                 <div class="col-lg-5 col-md-4 col-sm-12 col-xs-12">
                         <button class="btn btn-lg btn-default pull-left" name="commandPlaylist" num="2">
@@ -91,16 +91,16 @@
                 </div>
                 <div class="col-lg-7 col-md-8 col-sm-12 col-xs-12">
                     <div class="btn-group pull-right" id="flag2">
-                        <button class="btn btn-lg btn-default" name="export">
+                        <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-lg btn-default" name="export">
                             <i class="glyphicon glyphicon-export"></i>
                         </button>
-                        <button class="btn btn-lg btn-default" name="flag_current">
+                        <button title='{{i18n "PLAYLIST_CURRENT"}}' class="btn btn-lg btn-default" name="flag_current">
                             <i class="glyphicon glyphicon-facetime-video"></i>
                         </button>
-                        <button class="btn btn-lg btn-default" name="flag_public">
+                        <button title='{{i18n "PLAYLIST_PUBLIC"}}' class="btn btn-lg btn-default" name="flag_public">
                             <i class="glyphicon glyphicon-indent-left"></i>
                         </button>
-                        <button class="btn btn-lg btn-default" name="flag_visible">
+                        <button title='{{i18n "PLAYLIST_VISIBLE"}}' class="btn btn-lg btn-default" name="flag_visible">
                             <i class="glyphicon glyphicon-eye-close"></i>
                         </button>
                     </div>
@@ -215,4 +215,14 @@
 
 <script>
     var mdpAdmin = "{{mdpAdmin}}";
-</script>
+    var settingsOnOff = {     "PlayerPIP" : 	"{{i18n "PLAYERPIP"}}"
+                            , "EngineAllowNicknameChange" : 	"{{i18n "ENGINEALLOWNICKNAMECHANGE"}}"
+                            , "EngineAllowViewBlacklist" : 	"{{i18n "ENGINEALLOWVIEWBLACKLIST"}}"
+                            , "EngineAllowViewBlacklistCriterias" : 	"{{i18n "ENGINEALLOWVIEWBLACKLISTCRITERIAS"}}"
+                            , "EngineAllowViewWhitelist" : 	"{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
+                            , "EngineDisplayNickname" : 	"{{i18n "ENGINEDISPLAYNICKNAME"}}"
+                            , "PlayerFullscreen" : 	"{{i18n "PLAYERFULLSCREEN"}}"
+                            , "PlayerStayOnTop" : 	"{{i18n "PLAYERSTAYONTOP"}}"
+                            , "PlayerNoBar" : 	"{{i18n "PLAYERNOBAR"}}"
+                            , "PlayerNoHud" : 	"{{i18n "PLAYERNOHUD"}}" };
+</script>   
