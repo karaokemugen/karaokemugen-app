@@ -371,7 +371,7 @@ li.list-group-item > span {
 	z-index: 40;
 	background-color: #2d2d2f;
 }
-.playlistContainer:after {
+.playlistContainer[flipped]:after {
     content : "";
     display: block;
     position: absolute;
@@ -384,9 +384,21 @@ li.list-group-item > span {
     height: 100%;
     opacity : 0.18;
 	z-index: -1;
-	filter: grayscale(78%); /* Current draft standard */
-   
+	filter: grayscale(74%);
 }
+.playlistContainer[flipped="true"]:after {
+	-moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+.playlistContainer[noGreyFace]:after {
+	filter: grayscale(18%);
+    opacity : 0.38;
+}
+
 #playlist1.list-group > li.list-group-item  > div:first-child, #playlist1.list-group > li.list-group-item  > div:first-child > span, 
 #playlist2.list-group > li.list-group-item  > .infoDiv {
 	float: right;

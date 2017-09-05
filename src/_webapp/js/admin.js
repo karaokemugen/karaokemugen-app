@@ -263,13 +263,10 @@
     setupAjax(mdpAdmin);
 
     // dynamic creation of switchable settings 
-    var settingsOnOff = ["PlayerPIP", "EngineAllowNicknameChange", "EngineAllowViewBlacklist", "EngineAllowViewBlacklistCriterias"
-        , "EngineAllowViewWhitelist", "EngineDisplayNickname", "PlayerFullscreen", "PlayerStayOnTop"
-        , "PlayerNoBar", "PlayerNoHud"];
     var htmlSettings = ""
     $.each(settingsOnOff, function (e, val) {
-        html = '<div class="form-group"><label for="' + val + '" class="col-xs-4 control-label">' + val + '</label>'
-            + '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + val + '"></div></div>';
+        html = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
+            + '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
         if (val === "PlayerPIP") {
             $(html).insertBefore('#pipSettings')
         } else {
