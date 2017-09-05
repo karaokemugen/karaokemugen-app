@@ -52,9 +52,7 @@ module.exports = {
 			module.exports._server.use(cookieParser());
 			module.exports._server.use(module.exports.i18n.init);
 			module.exports._server.use(express.static(__dirname + '/'));
-			
-			
-
+			module.exports._server.use('/locales',express.static(__dirname + '/../_common/locales/'));
 			module.exports._server.get('/', function (req, res) {
 				res.render('public', {'layout': 'publicHeader', 'clientAdress' : 'http://'+ip.address() });
 			});
