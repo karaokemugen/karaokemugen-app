@@ -3,7 +3,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const cookieParser = require('cookie-parser')
 const ip = require('ip');
-
+const si = require('systeminformation');
 const logger = require('../_common/utils/logger.js');
 
 module.exports = {
@@ -57,9 +57,16 @@ module.exports = {
 				res.render('public', {'layout': 'publicHeader', 'clientAdress' : 'http://'+ip.address() });
 			});
 			module.exports._server.get('/admin', function (req, res) {
-				res.render('admin', {'layout': 'adminHeader', 'clientAdress' : 'http://'+ip.address() , 'mdpAdmin' : module.exports.SETTINGS.AdminPassword });
-			});				
-
+				si.graphics().then( function(data) {
+					res.render('admin', {'layout': 'adminHeader',
+						'clientAdress' : 'http://'+ip.address(),
+						'mdpAdmin' : module.exports.SETTINGS.AdminPassword,
+						'displays' : data.displays
+						});
+				});		
+			});
+			
+			
 			module.exports._server.use(function (req, res) {
 				res.status(404);
 

@@ -236,7 +236,9 @@
         setStopUpdate = function (stop) {
             stopUpdate = stop;
         }
-
+		$('select[name="PlayerScreen"] > option').each(function(i) {
+			$(this).text(i+1 + " - " + $(this).text());
+		});
         fillPlaylistSelects(true);
         getSettings();
 
@@ -384,6 +386,7 @@
 
     changeKaraPos = function (e) {
         var liKara = e.closest('li');
+        var idKara = liKara.attr('idKara');
         var num = liKara.closest('ul').attr('num');
         var posFromPrev = parseInt(liKara.prev('li').attr('pos')) + 1;
         var posFromNext = parseInt(liKara.next('li').attr('pos'));
@@ -407,6 +410,7 @@
             }).fail(function (data) {
                 fillPlaylist(num);
             });
+            scrollToKara(num, idKara); 
         }
     }
 }));

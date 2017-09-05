@@ -35,7 +35,7 @@ body {
 	font-size: 2rem;
 }
 
-.header > .btn-group, #header img {
+.header > .btn-group, .header img {
 	height: 100%
 }
 
@@ -208,15 +208,17 @@ select.form-control {
 	padding-bottom:0;
 }
 
-.panel>.list-group .list-group-item.dragged {
+.list-group-item.dragged {
 	border: none;
 	z-index: 200;
 	position: absolute;
 	width: auto;
+	background-color: #222 !important;
 }
-.panel>.list-group .list-group-item.dragged > div{
+.list-group-item.dragged > div{
 	border: 1px solid #9e9e9e;
 	width: auto;
+	background-color: #222;
 }
 
 #playlistCommand1, #playlistCommand2 {

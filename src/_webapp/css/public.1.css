@@ -209,7 +209,7 @@ body {
     .dragHandle {
         display: none;
     }
-    
+     
     .panel:after {
         background-position: 0 0;
     }
@@ -224,6 +224,16 @@ body {
         line-height: 40px;
         height: 100%;
     }
+    
+    
+    #choixPseudo::-webkit-input-placeholder {
+        font-size: 50px;
+        line-height: 50px;
+        height: 80px;
+        text-align:left; 
+        padding-right: 190px;
+    }
+
 
     #searchParent ::-webkit-input-placeholder {
         font-size: 60px;

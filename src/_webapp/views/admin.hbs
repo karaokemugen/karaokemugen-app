@@ -17,7 +17,8 @@
             data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  {{i18n "PLAYLISTS"}}" data-size="large" />
     </div>
     <div class="pull-left btn-group">
-        <button title="{{i18n "STOP_AFTER"}}" action="command"    id="stopAfter" name="stopAfter"  class="btn btn-danger-low" style="width: 50px;"><i class="glyphicon glyphicon-time"></i></button>
+        <button title="{{i18n "STOP_AFTER"}}" action="command"    id="stopAfter" name="stopAfter"  class="btn btn-danger-low" style="width: 50px;">
+			<i class="glyphicon glyphicon-stop"></i><i class="glyphicon glyphicon-time secondaryIcon"></i></button>
         <button title="{{i18n "STOP_NOW"}}" action="command"    id="stopNow"   name="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
         <button title="{{i18n "REWIND"}}" action="command"    id="goTo"      name="goTo" value="0" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
     </div>
@@ -167,7 +168,9 @@
                     <label for="PlayerScreen" class="col-xs-4 control-label">{{i18n "MONITOR_NUMBER"}}</label>
                     <div class="col-xs-6">
                         <select type="number" class="form-control" name="PlayerScreen">
-                                <option value="1" default> 1 </option>
+								{{#each displays}}
+									<option value="{{@index}}"> {{model}} ({{resolutionx}}x{{resolutiony}})</option>
+								{{/each}}
                             </select>
                     </div>
                 </div>

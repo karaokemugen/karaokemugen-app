@@ -73,10 +73,10 @@
 #showSubs[name="hideSubs"] > i.showSubs {
 	display: none;
 }
-#mutestatus[name="mute"] > i.unmute {
+#mutestatus[name="mute"] > i.mute {
 	display: none;
 }
-#mutestatus[name="unmute"] > i.mute {
+#mutestatus[name="unmute"] > i.unmute {
 	display: none;
 }
 
@@ -88,6 +88,14 @@
 	display: block;
 }
 
+.secondaryIcon {
+    font-size: 69%;
+    margin: 9px 0px 0px -10px;
+    color: hsla(0, 75%, 55%, 1);
+    color: black;
+    text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+
+	}
 .btn-danger-low, .btn-danger-low:focus {
 	background-color: #1E2124;
 	border: 0px solid #1E2124;
@@ -95,7 +103,7 @@
 }
 
 .btn-danger-low:hover {
-	background-color: #973b3b;
+	background-color: #793230;
 	color: white;
 }
 
@@ -114,6 +122,5 @@ div.bootstrap-switch-large{
 	background-color: rgba(57, 57, 57, 1.0)
 }
 .playlist-main .list-group-item.ui-sortable-helper {
-	__background-color: hsla(147, 20%, 25%, 0.90);
 	background-color: #222;
 }

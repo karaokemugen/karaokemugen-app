@@ -63,6 +63,9 @@ var tabTradToDelete;
         });
 
         initSwitchs();
+        $('.bootstrap-switch').promise().then(function(){
+            $(this).attr('title', $(this).find('input').attr('title'));
+        });;
         
         // méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
         $('#searchPlaylist1, #searchPlaylist2').on('input', function () {
@@ -72,7 +75,8 @@ var tabTradToDelete;
             timer = setTimeout(function () {
                 fillPlaylist(num);
             }, 100);
-        }).keypress(function (e) { // allow pressing enter to validate a setting
+        });
+        $('#searchPlaylist1, #searchPlaylist2, #choixPseudo').keypress(function (e) { // allow pressing enter to validate a setting
             if (e.which == 13) {
                 $(this).blur();
             }
@@ -213,11 +217,12 @@ var tabTradToDelete;
             var idKara = liKara.attr('idkara');
             var detailsKara = liKara.find('.detailsKara');
 
+            if(liKara.find('.lyricsKara').length == 0) {
+                liKara.append("<div class='lyricsKara alert alert-info'>" + closeButton + "<div class='lyricsKaraLoad'>...</div>" + closeButtonBottom + "</div>");                
+            }
             $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-                liKara.append("<div class='lyricsKara alert alert-info'>" + closeButton + data.join('<br/>') + closeButtonBottom + "</div>");
+                liKara.find('.lyricsKaraLoad').html(data.join('<br/>'));
                 scrollToElement(playlist, detailsKara);
-            }).fail(function(data){
-                displayMessage('warning','Error','could not find lyrics for this song.');
             });
         });
 
@@ -734,7 +739,7 @@ var tabTradToDelete;
                 }
             }
             if (data.muteStatus != oldState.muteStatus) {
-                if (data.muteStatus) {
+                if (!data.muteStatus) {
                     $('#mutestatus').attr('name','mute');
                 } else {
                     $('#mutestatus').attr('name','unmute');
@@ -770,7 +775,7 @@ var tabTradToDelete;
             "labelWidth": "0",
             "handleWidth": "65",
             "data-inverse": "false"
-        });
+        })
     }
  
     /** 
