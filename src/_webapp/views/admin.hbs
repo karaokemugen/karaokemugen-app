@@ -1,31 +1,32 @@
 <div id="header" class="header">
-    <button action="poweroff" class="btn btn-default btn-dark pull-right">
+    <button title="{{i18n "SHUTDOWN"}}" action="poweroff" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-off"></i></button>
-    <button action="command" id="mutestatus" name="mute" class="btn btn-default btn-dark pull-right">
+    <button title="{{i18n "MUTE_UNMUTE"}}" action="command" id="mutestatus" name="mute" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-volume-up unmute"></i>
 		<i class="glyphicon glyphicon-volume-off mute"></i>
 		<input action="command" name="setVolume" id="volume" value="100" type="range" />	
 	</button>
-    <button action="command" id="showSubs" name="hideSubs" class="btn btn-default btn-dark pull-right">
+    <button title="{{i18n "SHOW_HIDE_SUBS"}}" action="command" id="showSubs" name="hideSubs" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-subtitles hideSubs"></i>
         <i class="glyphicon glyphicon glyphicon-question-sign showSubs"></i>
         </button>
     <div class="pull-left btn-group" style="width: 129px;">
-        <input type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> Privé"
-            data-off-text="<i class='glyphicon glyphicon-eye-open'></i>  Publique" data-size="large" />
-        <input type="checkbox" checked name="kara_panel" class="btn btn-default pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  Gestion"
-            data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  Playlist" data-size="large" />
+        <input type="checkbox" name="EnginePrivateMode" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
+            data-off-text="<i class='glyphicon glyphicon-eye-open'></i> {{i18n "PUBLIC"}}" data-size="large" />
+        <input type="checkbox" checked name="kara_panel" class="btn btn-default pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  {{i18n "OPTIONS"}}"
+            data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  {{i18n "PLAYLISTS"}}" data-size="large" />
     </div>
     <div class="pull-left btn-group">
-        <button action="command"    id="stopAfter" name="stopAfter"  class="btn btn-danger-low" style="width: 50px;"><i class="glyphicon glyphicon-time"></i></button>
-        <button action="command"    id="stopNow"   name="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
-        <button action="command"    id="goTo"      name="goTo" value="0" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
+        <button title="{{i18n "STOP_AFTER"}}" action="command"    id="stopAfter" name="stopAfter"  class="btn btn-danger-low" style="width: 50px;">
+			<i class="glyphicon glyphicon-stop"></i><i class="glyphicon glyphicon-time secondaryIcon"></i></button>
+        <button title="{{i18n "STOP_NOW"}}" action="command"    id="stopNow"   name="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
+        <button title="{{i18n "REWIND"}}" action="command"    id="goTo"      name="goTo" value="0" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
     </div>
     <div id="centerBtns" class="header">
         <div class="btn-group">
-            <button action="command"    id="prev"   name="prev"  class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
-            <button action="command"    id="status" name="play"  class="btn btn-primary"><i class="glyphicon glyphicon-play play"></i><i class="glyphicon glyphicon-pause pause"></i></button>
-            <button action="command"    id="skip"   name="skip"  class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
+            <button title="{{i18n "PREVIOUS_SONG"}}" action="command"    id="prev"   name="prev"  class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
+            <button title="{{i18n "PLAY_PAUSE"}}" action="command"    id="status" name="play"  class="btn btn-primary"><i class="glyphicon glyphicon-play play"></i><i class="glyphicon glyphicon-pause pause"></i></button>
+            <button title="{{i18n "NEXT_SONG"}}" action="command"    id="skip"   name="skip"  class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
             <button class="btn btn-default hidden"></button>
         </div>
     </div>
@@ -35,7 +36,7 @@
     </div>
 </div>
 <div id="progressBar" class="underHeader">
-    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>Kara information<span></div>
+    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
     <div id="progressBarColor" style="width:0%;"></div>
 </div>
 <div id="underHeader" class="underHeader container-fluid">
@@ -75,7 +76,7 @@
                 <ul id="playlist1" num="1" class="list-group">
                     <li class="list-group-item"></li>
                 </ul>
-                <div class="playlistLoading"> Loading... </div>
+                <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             </div>
         </div>
         
@@ -114,7 +115,7 @@
                 <ul id="playlist2" num="2" class="list-group">
                     <li class="list-group-item"></li>
                 </ul>
-                <div class="playlistLoading"> Loading... </div>
+                <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             </div>
         </div>
     </div>
@@ -124,20 +125,20 @@
             <div class="panel-heading container-fluid">
                 <div class="col-lg-6 col-xs-6">
                     <div class="pull-right">
-                        <h4> Gestion </h4>
+                        <h4> {{i18n "OPTIONS"}} </h4>
                     </div>
                 </div>
             </div>
             <br/>
             <form class="form-horizontal" id="status">
                 <div class="form-group">
-                    <label for="toggleAlwaysOnTop" class="col-xs-4 control-label">Toujours au-dessus</label>
+                    <label for="toggleAlwaysOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
                     <div class="col-xs-6">
                         <input action="command" switch="onoff" type="checkbox" name="toggleAlwaysOnTop">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="toggleFullscreen" class="col-xs-4 control-label">Plein écran</label>
+                    <label for="toggleFullscreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
                     <div class="col-xs-6">
                         <input action="command" switch="onoff" type="checkbox" name="toggleFullscreen">
                     </div>
@@ -146,57 +147,59 @@
             <form class="form-horizontal" id="settings">
                 <hr>
                 <div class="form-group">
-                    <label for="AdminPassword" class="col-xs-4 control-label">Changer mot de passe admin</label>
+                    <label for="AdminPassword" class="col-xs-4 control-label">{{i18n "ADMIN_PASSWORD_CHANGE"}}</label>
                     <div class="col-xs-3">
-                        <input id="password" type="password" exclude="true" class="form-control" placeholder="Mot de passe">
+                        <input id="password" type="password" exclude="true" class="form-control" placeholder="{{i18n "PASSWORD"}}">
                     </div>
                     <div class="col-xs-3">
-                        <input id="confirmPassword" type="password" exclude="true" class="form-control" placeholder="Confirmez le mot de passe">
+                        <input id="confirmPassword" type="password" exclude="true" class="form-control" placeholder="{{i18n "CONFIRM_PASSWORD"}}">
                     </div>
                     <button type="button" id="sendPassword" class="btn btn-danger" name="AdminPassword" oldvalue="{{mdpAdmin}}" disabled>
                             <i class="glyphicon glyphicon-floppy-disk" value="">  </i>                     
                         </button>
                 </div>
                 <div class="form-group">
-                    <label for="EngineSongsPerPerson" class="col-xs-4 control-label">Chansons par personne</label>
+                    <label for="EngineSongsPerPerson" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
                     <div class="col-xs-6">
                         <input type="number" class="form-control" name="EngineSongsPerPerson" placeholder="1000">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="PlayerScreen" class="col-xs-4 control-label">Numéro d'écran d'affichage</label>
+                    <label for="PlayerScreen" class="col-xs-4 control-label">{{i18n "MONITOR_NUMBER"}}</label>
                     <div class="col-xs-6">
                         <select type="number" class="form-control" name="PlayerScreen">
-                                <option value="1" default> 1 </option>
+								{{#each displays}}
+									<option value="{{@index}}"> {{model}} ({{resolutionx}}x{{resolutiony}})</option>
+								{{/each}}
                             </select>
                     </div>
                 </div>
                 <div id="pipSettings" style="background-color:transparent;border: solid #585b65; border-width: 2px 0px;" class="well well-sm">
                     <div class="form-group">
-                        <label for="PlayerPIPSize" class="col-xs-4 control-label">Taille vidéo (%)</label>
+                        <label for="PlayerPIPSize" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}} (%)</label>
                         <div class="col-xs-6">
                             <input type="range" name="PlayerPIPSize">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="PlayerPIPPositionX" class="col-xs-4 control-label">Position vidéo X</label>
+                        <label for="PlayerPIPPositionX" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_X"}}</label>
                         <div class="col-xs-6">
                             <select type="number" class="form-control" name="PlayerPIPPositionX">
-                                <option value="Left" > Gauche </option>
-                                <option value="Center" default> Centre </option>
-                                <option value="Right" > Droit </option>
+                                <option value="Left" > {{i18n "LEFT"}} </option>
+                                <option value="Center" default> {{i18n "CENTER"}} </option>
+                                <option value="Right" > {{i18n "RIGHT"}} </option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="PlayerPIPPositionY" class="col-xs-4 control-label">Position vidéo Y</label>
+                        <label for="PlayerPIPPositionY" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_Y"}}</label>
                         <div class="col-xs-6">
                             <select type="number" class="form-control" name="PlayerPIPPositionY">
-                                <option value="Bottom" > Bas </option>
-                                <option value="Center" default> Centre </option>
-                                <option value="Top" > Haut </option>
+                                <option value="Bottom" > {{i18n "BOTTOM"}} </option>
+                                <option value="Center" default> {{i18n "CENTER"}} </option>
+                                <option value="Top" > {{i18n "TOP"}} </option>
                             </select>
                         </div>
                     </div>

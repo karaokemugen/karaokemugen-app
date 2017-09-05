@@ -16,6 +16,7 @@ module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
 	DB_INTERFACE:null,
+	i18n:null,
 	/**
 	 * @private
 	 * Engine status.
@@ -420,6 +421,7 @@ module.exports = {
 		module.exports._services.frontend.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;
 		module.exports._services.frontend.DB_INTERFACE = module.exports.DB_INTERFACE;
+		module.exports._services.frontend.i18n = module.exports.i18n;
 		// --------------------------------------------------------
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------

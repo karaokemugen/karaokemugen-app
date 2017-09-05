@@ -63,6 +63,9 @@ var tabTradToDelete;
         });
 
         initSwitchs();
+        $('.bootstrap-switch').promise().then(function(){
+            $(this).attr('title', $(this).find('input').attr('title'));
+        });;
         
         // méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
         $('#searchPlaylist1, #searchPlaylist2').on('input', function () {
@@ -72,7 +75,8 @@ var tabTradToDelete;
             timer = setTimeout(function () {
                 fillPlaylist(num);
             }, 100);
-        }).keypress(function (e) { // allow pressing enter to validate a setting
+        });
+        $('#searchPlaylist1, #searchPlaylist2, #choixPseudo').keypress(function (e) { // allow pressing enter to validate a setting
             if (e.which == 13) {
                 $(this).blur();
             }
@@ -213,11 +217,12 @@ var tabTradToDelete;
             var idKara = liKara.attr('idkara');
             var detailsKara = liKara.find('.detailsKara');
 
+            if(liKara.find('.lyricsKara').length == 0) {
+                liKara.append("<div class='lyricsKara alert alert-info'>" + closeButton + "<div class='lyricsKaraLoad'>...</div>" + closeButtonBottom + "</div>");                
+            }
             $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-                liKara.append("<div class='lyricsKara alert alert-info'>" + closeButton + data.join('<br/>') + closeButtonBottom + "</div>");
+                liKara.find('.lyricsKaraLoad').html(data.join('<br/>'));
                 scrollToElement(playlist, detailsKara);
-            }).fail(function(data){
-                displayMessage('warning','Error','could not find lyrics for this song.');
             });
         });
 
@@ -356,7 +361,7 @@ var tabTradToDelete;
     // TODO supprimer idKara et reporter sur le reste du code
     // TODO if list is updated from another source (socket ?) keep the size of the playlist
     fillPlaylist = function (num, idKara, from, to) {
-        console.log(num, idKara, from, to);
+        // console.log(num, idKara, from, to);
         var deferred = $.Deferred();
         var idPlaylist = parseInt($("#selectPlaylist" + num).val());
         var filter = $("#searchPlaylist" + num).val();
@@ -413,10 +418,12 @@ var tabTradToDelete;
                         if (data.hasOwnProperty(key)) {
                             // build the kara line
                             if (data[key].language === null) data[key].language = "";
-                            htmlContent += "<li idKara='" + data[key].kara_id + "' idplaylistcontent='" + data[key].playlistcontent_id + " 'class='list-group-item' "
-                                + (data[key].flag_playing ? "currentlyPlaying" : "" ) + ">"
+                            htmlContent += "<li class='list-group-item' idKara='" + data[key].kara_id + "' "
+                                + (idPlaylist > 0 ? " idplaylistcontent='" + data[key].playlistcontent_id + "' pos='" + data[key].pos + "' " : "")
+                                + (data[key].flag_playing ? "currentlyPlaying" : "" )
+                                + ">"
                                 + "<div class='btnDiv'>" + html + dragHandle + "</div>"
-                                + "</div><div class='infoDiv'>" + infoKaraHtml + playKara + "</div>"
+                                + "<div class='infoDiv'>" + infoKaraHtml + playKara + "</div>"
                                 + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
                                 + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                                 + "</div>"
@@ -515,18 +522,35 @@ var tabTradToDelete;
                         drop : function(e, ui){ $(ui.draggable).closest('li').find('.btnDiv > [name=addKara]').click(); }
                     });
                 }
-            } else if(false && dragAndDrop && scope === "admin") {
+            } else if(dragAndDrop && scope === "admin") {
                 if(idPlaylist > 0) {
                     var sortableUl = $("#playlist" + num);
-                    var sortableUl2 = $("#playlist" + non(num))
                     sortableUl.sortable({
-                        appendTo: $('.playlist-main'),
-                        connectWith: sortableUl2
+                        appendTo: sortableUl,
+                        update: function(event, ui) { changeKaraPos(ui.item) },
+                       // connectWith: sortableUl2,
+                       axis : "y"
                     });
+                }
+                if ($('#selectPlaylist' + non(num)).val() > 0) {
+                    var sortableUl2 = $("#playlist" + non(num));
                     sortableUl2.sortable({
-                        appendTo: $('.playlist-main'),
-                        connectWith: sortableUl
+                        appendTo: sortableUl2,
+                        update: function(event, ui) { changeKaraPos(ui.item) },
+                       // connectWith: sortableUl,
+                       axis : "y"
                     });
+
+                    /*
+                    helper: function(event, ui){ 
+                        var li = $(ui);
+                        li.find('.detailsKara, .lyricsKara').remove();
+                        li.css('height', 'auto');
+                        return li.clone()},
+                        start: function(e, ui){
+                            ui.placeholder.height(ui.item.height());
+                        },
+                        */
                 }
             }
         });
@@ -715,7 +739,7 @@ var tabTradToDelete;
                 }
             }
             if (data.muteStatus != oldState.muteStatus) {
-                if (data.muteStatus) {
+                if (!data.muteStatus) {
                     $('#mutestatus').attr('name','mute');
                 } else {
                     $('#mutestatus').attr('name','unmute');
@@ -751,7 +775,7 @@ var tabTradToDelete;
             "labelWidth": "0",
             "handleWidth": "65",
             "data-inverse": "false"
-        });
+        })
     }
  
     /** 
@@ -823,7 +847,7 @@ var tabTradToDelete;
 		} else if(command == "remove") {
 			saveLastDetailsKara[idPlaylist + 1000].pop(idKara);
 		} else {
-		console.log("ah",(-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000])));
+		//console.log("ah",(-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000])));
 			return (-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000]));
 		}
 	}

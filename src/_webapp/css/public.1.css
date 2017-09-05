@@ -41,6 +41,7 @@
 .underHeader {
     position: relative;	
     top: calc(60px + 28px - 1.5vw + 30px + 28px - 1.5vw);
+    height: calc(100% - (60px + 28px - 1.5vw + 30px + 28px - 1.5vw));
 }  
 .bootstrap-switch-container i {
     font-size: calc(20px + 10px - .5vw);
@@ -66,10 +67,6 @@ div.bootstrap-switch-large{
 }
 .panel {
     height : 100%;
-}
-
-#playlist1 .list-group-item {
-    background-color: #393939;
 }
 
 #progressBar {
@@ -111,6 +108,17 @@ body {
     cursor : pointer;
 }
 
+#searchParent ::-webkit-input-placeholder {
+	font-size: 2rem;
+	line-height:  21px;
+	height: 30px;
+    text-align:right; 
+	font-family: 'Glyphicons Halflings'; 
+}
+
+.popup .panel-heading {
+    display: flex;
+}
 
 /* mobile */
 
@@ -186,13 +194,6 @@ body {
         min-height: 40px;
         line-height: 44px;
     }
-    .header ::-webkit-input-placeholder {
-        font-size: 60px;
-        line-height:  80px;
-        height: 80px;
-        text-align:right; 
-        font-family: 'Glyphicons Halflings'; 
-    }
 
     .header i {
         font-size: 45px;
@@ -208,6 +209,11 @@ body {
     .dragHandle {
         display: none;
     }
+     
+    .panel:after {
+        background-position: 0 0;
+    }
+
     .panel-heading {
         height: 115px;
     }
@@ -218,8 +224,26 @@ body {
         line-height: 40px;
         height: 100%;
     }
+    
+    
+    #choixPseudo::-webkit-input-placeholder {
+        font-size: 50px;
+        line-height: 50px;
+        height: 80px;
+        text-align:left; 
+        padding-right: 190px;
+    }
 
-    ::-webkit-input-placeholder {
+
+    #searchParent ::-webkit-input-placeholder {
+        font-size: 60px;
+        line-height:  80px;
+        height: 80px;
+        text-align:right; 
+        font-family: 'Glyphicons Halflings'; 
+    }
+    
+    .panel-heading ::-webkit-input-placeholder {
         font-size: 40px;
         line-height: 40px;
         height: 60px;
@@ -227,6 +251,7 @@ body {
         font-family: 'Glyphicons Halflings'; 
     }
 
+    
     .select2.select2-container {
         height: 76px;
     }
@@ -240,120 +265,3 @@ body {
 }
 
 /* tablet */
-
-@media (max-width: 13px) {
-    html { font-size : 14px }
-    .header {
-        position: fixed;
-        z-index: 1337;
-        background-color: #1E2124;
-        top: 60px;
-        height: 115px;
-        width: 100%;
-        border-bottom: 2px solid #9e9e9e;
-    }
-    .header button {
-        width: 115px;
-    }
-    .header input {
-        padding-top: 15px; 
-        padding-right: 20px;
-        font-size: 60px;
-        line-height: 60px;
-    }
-    #progressBar {
-        height: 60px;
-    }
-    #karaInfo {
-        line-height: 60px;
-    }
-    .underHeader {
-        top: calc(115px + 60px);
-        height: calc(100% - 115px - 60px);
-    }
-    .btn-action {
-        width: 70px;
-        height: 70px;
-        font-size: 28px;
-        line-height: 28px;
-    }
-
-    .btn-action.btn-sm {
-        width: 100px;
-        height: 100px;
-        font-size: 45px;
-        line-height: 30px;
-    }
-
-    td, div, span {
-        font-size: 30px;
-        line-height: 50px;
-    }
-
-    .list-group-item .detailsKara, .list-group-item .lyricsKara {
-        padding: 20px;
-    } 
-    .list-group-item .fullLyrics  {
-        right: 80px;
-    }
-    .list-group-item, .contentDiv {
-        font-size: 2rem;
-        line-height: 100px;
-    }
-    .list-group-item.liType {
-        min-height: 40px;
-        line-height: 44px;
-    }
-    .header ::-webkit-input-placeholder {
-        font-size: 60px;
-        line-height:  80px;
-        height: 80px;
-        text-align:right; 
-        font-family: 'Glyphicons Halflings'; 
-    }
-
-    .header i {
-        font-size: 45px;
-        line-height: 75px;
-        top: 0px;
-    }
-    div.bootstrap-switch-large{
-        width: 100%;
-        height: 100%;
-        background-color: #9e9e9e; ;
-    }
-
-    .dragHandle {
-        display: none;
-    }
-    .panel-heading {
-        height: 115px;
-    }
-    .panel-heading .input-lg {
-        padding-top: 15px;
-        padding-right: 20px;
-        font-size: 40px;
-        line-height: 40px;
-        height: 100%;
-    }
-
-    ::-webkit-input-placeholder {
-        font-size: 40px;
-        line-height: 40px;
-        height: 60px;
-        text-align:right; 
-        font-family: 'Glyphicons Halflings'; 
-    }
-
-    .select2.select2-container {
-        height: 76px;
-    }
-    .select2-selection__rendered > span, .select2-selection > span > span > i {
-        line-height: 65px;
-    }
-
-    .deleteCriteria {
-        display: none !important;
-    }
-}
-
