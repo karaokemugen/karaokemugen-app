@@ -566,6 +566,18 @@ module.exports = {
 					});
 			});
 		};
+		module.exports._services.apiserver.onPlaylistExport = function(playlist_id){
+			return new Promise(function(resolve,reject){				
+				module.exports._services.playlist_controller.exportPlaylist(playlist_id)
+					.then(function(playlist){						
+						resolve(playlist);
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC exportPlaylist : '+err);							
+						reject(err);
+					});
+			});
+		};
 		module.exports._services.apiserver.onBlacklistCriterias = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistCriterias()

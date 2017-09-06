@@ -277,47 +277,47 @@ module.exports = {
 				.put(function(req,res){
 				// Empty playlist
 
-				module.exports.onPlaylistSingleEmpty(req.params.pl_id)
-					.then(function(){
-						module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-						module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
-						res.json('Playlist '+req.params.pl_id+' emptied');
-					})
-					.catch(function(err){
-						res.statusCode = 500;
-						res.json(err);
-					});
-				})
+					module.exports.onPlaylistSingleEmpty(req.params.pl_id)
+						.then(function(){
+							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
+							module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
+							res.json('Playlist '+req.params.pl_id+' emptied');
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
 				.put(function(req,res){
 					// set playlist to current
 
-				module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
-					.then(function(){
-						module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-						module.exports.emitEvent('playlistsUpdated',req.params.pl_id);
-						res.json('Playlist '+req.params.pl_id+' is now current');
-					})
-					.catch(function(err){
-						res.statusCode = 500;
-						res.json(err);
-					});
-				})
+					module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
+						.then(function(){
+							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
+							module.exports.emitEvent('playlistsUpdated',req.params.pl_id);
+							res.json('Playlist '+req.params.pl_id+' is now current');
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
 				.put(function(req,res){
 					// Empty playlist
 
-				module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
-					.then(function(){
-						module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-						module.exports.emitEvent('playlistsUpdated');
-						res.json('Playlist '+req.params.pl_id+' is now public');
-					})
-					.catch(function(err){
-						res.statusCode = 500;
-						res.json(err);
-					});
-				})	
+					module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
+						.then(function(){
+							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
+							module.exports.emitEvent('playlistsUpdated');
+							res.json('Playlist '+req.params.pl_id+' is now public');
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				});	
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
 				.get(function(req,res){
 					//Access :pl_id by req.params.pl_id
@@ -848,22 +848,22 @@ module.exports = {
 					req.checkBody('command')
 						.notEmpty()
 						.enum(['play',
-								'pause',
-								'stopNow',
-								'stopAfter',
-								'skip',
-								'prev',
-								'toggleFullscreen',
-								'toggleAlwaysOnTop',
-								'seek',
-								'goTo',
-								'mute',
-								'unmute',
-								'setVolume',
-								'showSubs',
-								'hideSubs',
+							'pause',
+							'stopNow',
+							'stopAfter',
+							'skip',
+							'prev',
+							'toggleFullscreen',
+							'toggleAlwaysOnTop',
+							'seek',
+							'goTo',
+							'mute',
+							'unmute',
+							'setVolume',
+							'showSubs',
+							'hideSubs',
 
-							]
+						]
 						);
 					req.getValidationResult().then(function(result) {
 						if (result.isEmpty()) {
@@ -884,15 +884,23 @@ module.exports = {
 					});
 				});
 
-			/* NOT IMPLEMENTED YET
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/portable')
+			
+			routerAdmin.route('/playlists/:pl_id([0-9]+)/portable')				
 				.get(function(req,res){
 					// Returns the playlist and its contents in an exportable format (to save on disk)
+					module.exports.onPlaylistExport(req.params.pl_id)
+						.then(function(playlist){
+							res.json(playlist);
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
 				})
 				.post(function(req,res){
 					// Imports a playlist and its contents in an importable format (posted as a file)
 				});
-			*/
+			
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
 				.put(function(req,res){
@@ -1266,7 +1274,7 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(err);
 						});
-				})
+				});
 
 			// Add headers
 			app.use(function (req, res, next) {
@@ -1341,4 +1349,5 @@ module.exports = {
 	onKaraCopyToPlaylist:function(){},
 	emitEvent:function(){},	
 	onTags:function(){},
+	onPlaylistExport(){},
 };
