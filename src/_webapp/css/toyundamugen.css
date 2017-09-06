@@ -105,7 +105,6 @@ body {
 	z-index: 0;
 }
 
-
 .panel-heading > div {
 	padding: 2px;
 }
@@ -221,10 +220,6 @@ select.form-control {
 	background-color: #222;
 }
 
-#playlistCommand1, #playlistCommand2 {
-	display: none;
-}
-
 .list-group-item > div {
 	padding: 3px;
 }
@@ -296,6 +291,7 @@ select.form-control {
 }
 
 .list-group-item .detailsKara, .list-group-item .lyricsKara {
+	min-height: 56px;
 	padding: 10px;
 	margin: 7px;
 	color: #cee1ea;

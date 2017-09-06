@@ -137,3 +137,36 @@ div.bootstrap-switch-large{
     flex-grow: 100;
     float: right;
 }
+
+.playlistCommands {
+	position: absolute;
+	bottom: 0;
+	overflow: hidden;
+}
+.playlistCommands > span {
+    position: relative;
+    overflow: hidden;
+}
+#playlistCommand1 {
+	left: 0;
+}
+#playlistCommand2 {
+	right: 0;
+}
+
+.playlistCommands .showPlaylistCommands {
+	opacity: .7;
+	z-index: 900;
+}
+.playlistCommands .showPlaylistCommands:hover, .playlistCommands .showPlaylistCommands.btn-primary {
+	opacity: 1.0;
+}
+span.hideCommands {
+	position: relative;
+    margin-left: -270px !important;
+    transition: all .5s ease;
+}
+span:not(.hideCommands) {
+    transition: all .5s ease;
+    margin-right: 0;
+}

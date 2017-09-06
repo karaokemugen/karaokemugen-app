@@ -157,7 +157,12 @@
                 console.log("Kara plc_id " + idPlc + " flag_playing set to true");
             });
         });
-
+        $('.playlist-main').on('click', 'button.showPlaylistCommands', function (e) {
+            var div = $(this).closest('.playlistCommands');
+            div.find('span').toggleClass('hideCommands');
+            $(this).toggleClass('btn-primary');
+        });
+        
         $('#karaInfo').click(function (e) {
             if (status != undefined && status != "" && status != "stop") {
                 //refreshCommandStates(goToPosition, e);
