@@ -116,9 +116,9 @@ var tabTradToDelete;
         });
 
         /*  main actions on karas in the playlists */
-        $('.playlist-main').on('click', '.btnDiv > button', function (e) {
+        $('.playlist-main').on('click', '.btnDiv > button, [name="addKara"]', function (e) {
             var li = $(this).closest('li');
-            var num = $(this).closest('ul.list-group').attr('num');
+            var num = $(this).closest('ul').attr('num');
             var idPlaylistFrom = parseInt($('#selectPlaylist' + num).val());
             var idPlaylistTo = parseInt($('#selectPlaylist' + non(num)).val());
             var idKara = li.attr('idkara');
@@ -162,6 +162,7 @@ var tabTradToDelete;
                             + $("#selectPlaylist" + non(num) + " > option[value='" + idPlaylistTo + "']").text() + ".");
                     }).fail(function (data) {
                         scrollToKara(non(num), idKara);
+                        if (mode === "mobile") { fillPlaylist(1) }
                     });
                 }
             }
@@ -420,28 +421,48 @@ var tabTradToDelete;
             //console.log(urlFiltre + " : " + data.length + " résultats");
             
             var htmlContent = "";
-            if (mode === "list") {
+            
                 if(idPlaylist != -4) {
                     for (var key in data) {
                         if (data.hasOwnProperty(key)) {
                             // build the kara line
                             if (data[key].language === null) data[key].language = "";
-                            htmlContent += "<li class='list-group-item' idKara='" + data[key].kara_id + "' "
+
+                            if (mode === "list") {
+                                htmlContent += "<li class='list-group-item' idKara='" + data[key].kara_id + "' "
+                                    + (idPlaylist > 0 ? " idplaylistcontent='" + data[key].playlistcontent_id + "' pos='" + data[key].pos + "' " : "")
+                                    + (data[key].flag_playing ? "currentlyPlaying" : "" )
+                                    + ">"
+                                    + "<div class='btnDiv'>" + html + dragHandle + "</div>"
+                                    + "<div class='infoDiv'>" + infoKaraHtml + playKara + "</div>"
+                                    + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
+                                    + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
+                                    + "</div>"
+                                    + (saveDetailsKara(idPlaylist, data[key].kara_id) ? buildKaraDetails(data[key]) : "")
+                                
+                                    + "</li>";
+                            } else if (mode === "mobile") {
+                                
+                                htmlContent += "<li class='collection-item' idKara='" + data[key].kara_id + "' "
                                 + (idPlaylist > 0 ? " idplaylistcontent='" + data[key].playlistcontent_id + "' pos='" + data[key].pos + "' " : "")
                                 + (data[key].flag_playing ? "currentlyPlaying" : "" )
                                 + ">"
-                                + "<div class='btnDiv'>" + html + dragHandle + "</div>"
-                                + "<div class='infoDiv'>" + infoKaraHtml + playKara + "</div>"
+                                + "<div class='infoDiv right circle'>" + infoKaraHtml + html + "</div>"
                                 + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
                                 + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                                 + "</div>"
+                                + "<div class='btnDiv right'>" + "</div>"
                                 + (saveDetailsKara(idPlaylist, data[key].kara_id) ? buildKaraDetails(data[key]) : "")
-                               
+
                                 + "</li>";
+                                
+                                
+                            }
                         }
                     }
 
                     document.getElementById("playlist" + num).innerHTML = htmlContent;
+                    if( mode === "mobile" ) { swipSwippables(); }
                 } else {
                     /* Blacklist criterias build */
                     var blacklistCriteriasHtml = $("<div/>");
@@ -488,7 +509,8 @@ var tabTradToDelete;
                     $('#bcType').change();
                 }
               
-            }
+                
+           
             // depending on the playlist we're in, notify if the other playlist can add & transfer to us
             $('#playlist' + non(num)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
             
@@ -499,8 +521,8 @@ var tabTradToDelete;
           
             // drag & drop part
             // TODO revoir pour bien définir le drag&drop selon les droits
-            if (dragAndDrop && scope === "public") {
-                var draggableLi =  isTouchScreen ? $("#playlist" + 1 + " > li .dragHandle") : $("#playlist" + 1 + " > li");
+            if (dragAndDrop && scope === "public" && mode != "mobile") {
+                var draggableLi =  isTouchScreen  ? $("#playlist" + 1 + " > li .dragHandle") : $("#playlist" + 1 + " > li");
                 var dropZone = $('#playlist' + non(1)).parent();
                 if(draggableLi.draggable('instance') != undefined) {
                     if($("#playlist" + 1).attr('canaddkara') == "true")  {
@@ -972,6 +994,7 @@ var tabTradToDelete;
 
     socket.on('playlistContentsUpdated', function(idPlaylist){
         var num = sideOfPlaylist(idPlaylist);
+        console.log(num, idPlaylist);
         if(num && $('#playlist' + num + '.lyricsKara:visible').length == 0) {
             playlistContentUpdating = fillPlaylist(num);
         }

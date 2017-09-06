@@ -1,0 +1,73 @@
+<div class="navbar-fixed">
+    <nav>
+        <div class="nav-wrapper"  id="progressBar">
+            <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false" class="truncate center"><span><span></div>
+            <div id="progressBarColor" style="width:0%;"></div>
+            <center style="font-size: 1.5rem;">KaraMugen</center>
+            <a href="#" data-activates="playlist2" class="button-collapse right"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+                <li><a href="sass.html">Sass</a></li>
+            </ul>
+            <ul class="side-nav" id="mobile-demo">
+                <li><a href="sass.html">Sass</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<nav id="searchNav">
+    <div class="nav-wrapper blue-grey darken-2">
+            <div class="input-field large">
+                <input type="search" class="" name="searchPlaylist" id="searchPlaylist1" num="1">
+                <label class="label-icon" for="search" style="top: -9px;"><i class="material-icons">search</i></label>
+                <i class="material-icons">close</i>
+            </div>
+    </div>
+</nav>
+<div id="underHeader" class="underHeader">
+    <div class="playlist-main row" id="playlist">
+        <div id="panel1">
+             <div>
+                <div>
+                    <select id="selectPlaylist1" num="1" hidden >
+                        <option value="-1" default></option>
+                    </select>
+                </div>
+            </div>
+            <div class="playlistContainer">
+                <ul id="playlist1" num="1" class="collection swipable">
+                </ul>
+                <div class="playlistLoading"> {{i18n "LOADING"}} </div>
+           </div>
+        </div>
+        <ul id="playlist2" num="2" class="list-group collection side-nav">
+                    <li class="list-group-item"></li>
+                </ul>
+                <div class="playlistLoading"> {{i18n "LOADING"}} </div>
+      
+        <ul id="panel2" hidden>
+           <li class="panel-heading container-fluid">
+                <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6">
+                    <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control">
+                        <option value="" selected>...</option>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-md-5 col-sm-6 col-xs-6">
+                   
+                    <div class="pull-left">
+                        <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
+                    </div>
+                </div>
+            </li>
+            
+            
+        </div>
+    </div>
+</div>
+<div id="message" class="alert">
+<style>
+
+ /* label underline focus color */
+</style>
+<script>
+
+</script>

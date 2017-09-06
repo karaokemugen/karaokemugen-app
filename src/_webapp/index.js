@@ -32,7 +32,7 @@ module.exports = {
 			logger.error('Webapp :: DB Interface not set !');
 			process.exit(1);
 		}
-
+		
 		// Création d'un server http pour diffuser l'appli web du launcher
 		if(module.exports._server==null) {
 			module.exports._server = express();
@@ -56,6 +56,13 @@ module.exports = {
 			module.exports._server.get('/', function (req, res) {
 				res.render('public', {'layout': 'publicHeader', 'clientAdress' : 'http://'+ip.address() });
 			});
+			module.exports._server.get('/mobile', function (req, res) {	
+				
+				res.render('publicMobile', {'layout': 'publicMobileHeader', 'clientAdress' : 'http://'+ip.address() });
+				
+			});
+			
+
 			module.exports._server.get('/admin', function (req, res) {
 				si.graphics().then( function(data) {
 					res.render('admin', {'layout': 'adminHeader',
@@ -64,8 +71,7 @@ module.exports = {
 						'displays' : data.displays
 						});
 				});		
-			});
-			
+			});			
 			
 			module.exports._server.use(function (req, res) {
 				res.status(404);

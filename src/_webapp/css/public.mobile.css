@@ -1,0 +1,121 @@
+html, body {
+	height: 100%;
+}
+.header {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 150;
+}
+.underHeader {
+    margin-top: -6px;
+    height:calc(100% - 56px);
+}
+body {
+    color: white;
+    background-color: #444;
+}
+
+.input-field.large input[type=search], .input-field.large i {
+    font-size: 2rem;
+}
+.collection-item i.right.small {
+    margin-top: -4px;
+}
+.navbar-fixed-2 {
+    height: 56px;
+    z-index: 997;
+    position: fixed;
+    width: 100%;
+    top: 0;
+}
+
+.collection-item {
+    display: flex;
+    align-items: center;
+}
+.contentDiv {
+    flex-grow: 100;
+    padding: 5px;
+    padding-left: 5px;
+}
+
+.btn, .btn-large {
+    color: #fff;
+}
+
+.collection .collection-item {
+    padding: 0px;
+}
+
+.collection, .collection .collection-item {
+    border-color: hsla(0, 0%, 93%, .6);    
+}
+
+
+ul.side-nav {
+    background-color: #444;
+}
+
+#playlist2 {
+    outline: 5px solid #486986;
+}
+
+.btn-small {
+    margin: 3px;
+    padding: 0 1rem;
+}
+
+#karaInfo {
+    padding: 0px 10px;
+	z-index: 1000;
+    position: relative;
+    top: 0;
+}
+
+#progressBarColor {
+	background-color: #337ab7;
+	z-index: 0;
+	height: 100%;
+    position: absolute;
+    top: 0;
+}
+
+
+#progressBar a.right {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.dragged  {
+   overflow: hidden;
+}   
+.dragged .contentDiv {
+    white-space: nowrap;
+}
+
+#searchNav {
+    z-index: 7000;
+}
+
+.side-nav {
+    z-index: 8000;
+}
+
+
+button[name="addKara"] {
+    display: none;
+}
+
+
+#message {
+	display: none;
+    width: 300px;
+    top: 3px;
+    left: calc(50% - 150px);
+    position: fixed;
+    z-index: 9998;
+    box-shadow: 4px 4px 3px #a5a5a5;
+}
