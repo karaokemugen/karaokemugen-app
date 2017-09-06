@@ -1868,28 +1868,7 @@ module.exports = {
 
 
 
-	},
-	/**
-	* @function {Raises position of kara in a playlist}
-	* @param  {number} playlist_id     {ID of playlist to modify order of}
-	* @param  {number} order           {Order to raise}
-	* @return {boolean} {Promise}
-	* This utility function raises the position of a song in a playlist by 0.1
-	* This allows the reorderPlaylist function, called immediately after, to
-	* reorder the new playlist correctly.
-	*/
-	raisePosInPlaylist:function(pos,playlist_id) {
-		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.raisePosInPlaylist(pos,playlist_id)
-				.then(function() {
-					resolve();
-				})
-				.catch(function(err) {
-					logger.error('[PLC] DBI raisePosInPlaylist : '+err)
-					reject(err);
-				});
-		});
-	},
+	},	
 	/**
 	* @function {Update karaoke from playlist}
 	* @param  {number} playlistcontent_id     {ID of karaoke to remove}
@@ -2135,6 +2114,88 @@ module.exports = {
 				})
 				.catch(function(err) {
 					logger.error('[PLC] reorderPlaylist : '+err);
+					reject(err);
+				});
+		});
+	},
+	/**
+	* @function {export a playlist}
+	* @param  {number} playlist_id {ID of playlist to sort}
+	* @return {array} {Playlist array of karaoke objects.}
+	*/
+	exportPlaylist:function(playlist_id) {
+		return new Promise(function(resolve,reject){
+			var pIsPlaylist = new Promise((resolve,reject) => {
+				module.exports.isPlaylist(playlist_id)
+					.then(function() {
+						resolve(true);
+					})
+					.catch(function(err) {
+						err = 'Playlist '+playlist_id+' unknown';
+						logger.error('[PLC] isPlaylist : '+err);
+						reject(err);
+					});
+			});
+			Promise.all([pIsPlaylist])
+				.then(function() {
+					var PLContents;
+					var PLInfo;
+					var pGetPLContents = new Promise((resolve,reject) => {
+						module.exports.getPlaylistContents(playlist_id)
+							.then(function(playlist){
+								PLContents = playlist;
+								resolve();
+							})
+							.catch(function(err){
+								logger.error('[PLC] getPlaylistContents : '+err);
+								reject(err);
+							});
+					});	
+					var pGetPLInfo = new Promise((resolve,reject) => {
+						module.exports.getPlaylistInfo(playlist_id)
+							.then(function(playlist) {
+								PLInfo = playlist;
+								resolve();
+							})
+							.catch(function(err){
+								logger.error('[PLC] DBI getPlaylistInfo : '+err);					
+								reject(err);
+							});
+					});
+					Promise.all([pGetPLContents,pGetPLInfo])
+						.then(function(){
+							var playlist = {};
+							PLInfo.playlist_id = undefined;
+							PLInfo.num_karas = undefined;
+							PLInfo.flag_current = undefined;
+							PLInfo.flag_public = undefined;
+							PLInfo.length = undefined;							
+
+							var PLCFiltered = [];
+							PLContents.forEach(function(plc){
+								var PLCObject = {};
+								PLCObject.kid = plc.kid;
+								PLCObject.pos = plc.pos;
+								PLCFiltered.push(PLCObject);
+							});
+
+							playlist.Header = {
+								version: 1,
+								description: 'Karaoke Mugen Playlist File',
+							};
+
+							playlist.PlaylistInformation = PLInfo;
+							playlist.PlaylistContents = PLCFiltered;
+							
+							resolve(playlist);
+						})
+						.catch(function(err){
+							logger.error('[PLC] exportPlaylist : '+err);					
+							reject(err);
+						});
+				})
+				.catch(function(err) {
+					logger.error('[PLC] exportPlaylist : '+err);
 					reject(err);
 				});
 		});
