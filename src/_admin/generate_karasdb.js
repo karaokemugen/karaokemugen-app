@@ -826,7 +826,7 @@ module.exports = {
 			}
 			function getvideogain(videofile){
 				return new Promise((resolve) => {					
-					var proc = exec.spawn(ffmpegPath, ['-i', videosdir + '/' + videofile, '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
+					var proc = exec.spawn(ffmpegPath, ['-i', videosdir + '/' + videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 
 					var audioGain = undefined;
 					var output = '';
