@@ -9,6 +9,7 @@ const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
 const async = require('async');
 const uuidv4 = require('uuid/v4');
+const validator = require('validator');
 
 module.exports = {
 	SYSPATH:null,
@@ -1249,6 +1250,24 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get karaoke by KID}
+	* @param  {string} kid {KID of karaoke to fetch infos from}
+	* @return {Object} {karaoke object}
+	*/
+	getKaraByKID:function(kid) {
+		return new Promise(function(resolve,reject) {
+			// Get karaoke list
+			module.exports.DB_INTERFACE.getKaraByKID(kid)
+				.then(function(kara){
+					resolve(kara);
+				})
+				.catch(function(err){
+					logger.error('[PLC] DBI getKaraByKID : '+err);
+					reject(err);
+				});
+		});
+	},
+	/**
 	* @function {Filter playlist with a text}
 	* @param  {object} playlist   {playlist array of karaoke objects}
 	* @param  {string} searchText {Words separated by a space}
@@ -1868,28 +1887,7 @@ module.exports = {
 
 
 
-	},
-	/**
-	* @function {Raises position of kara in a playlist}
-	* @param  {number} playlist_id     {ID of playlist to modify order of}
-	* @param  {number} order           {Order to raise}
-	* @return {boolean} {Promise}
-	* This utility function raises the position of a song in a playlist by 0.1
-	* This allows the reorderPlaylist function, called immediately after, to
-	* reorder the new playlist correctly.
-	*/
-	raisePosInPlaylist:function(pos,playlist_id) {
-		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.raisePosInPlaylist(pos,playlist_id)
-				.then(function() {
-					resolve();
-				})
-				.catch(function(err) {
-					logger.error('[PLC] DBI raisePosInPlaylist : '+err)
-					reject(err);
-				});
-		});
-	},
+	},	
 	/**
 	* @function {Update karaoke from playlist}
 	* @param  {number} playlistcontent_id     {ID of karaoke to remove}
@@ -2137,6 +2135,173 @@ module.exports = {
 					logger.error('[PLC] reorderPlaylist : '+err);
 					reject(err);
 				});
+		});
+	},
+	/**
+	* @function {export a playlist}
+	* @param  {number} playlist_id {ID of playlist to sort}
+	* @return {array} {Playlist array of karaoke objects.}
+	*/
+	exportPlaylist:function(playlist_id) {
+		return new Promise(function(resolve,reject){
+			var pIsPlaylist = new Promise((resolve,reject) => {
+				module.exports.isPlaylist(playlist_id)
+					.then(function() {
+						resolve(true);
+					})
+					.catch(function(err) {
+						err = 'Playlist '+playlist_id+' unknown';
+						logger.error('[PLC] isPlaylist : '+err);
+						reject(err);
+					});
+			});
+			Promise.all([pIsPlaylist])
+				.then(function() {
+					var PLContents;
+					var PLInfo;
+					var pGetPLContents = new Promise((resolve,reject) => {
+						module.exports.getPlaylistContents(playlist_id)
+							.then(function(playlist){
+								PLContents = playlist;
+								resolve();
+							})
+							.catch(function(err){
+								logger.error('[PLC] getPlaylistContents : '+err);
+								reject(err);
+							});
+					});	
+					var pGetPLInfo = new Promise((resolve,reject) => {
+						module.exports.getPlaylistInfo(playlist_id)
+							.then(function(playlist) {
+								PLInfo = playlist;
+								resolve();
+							})
+							.catch(function(err){
+								logger.error('[PLC] DBI getPlaylistInfo : '+err);					
+								reject(err);
+							});
+					});
+					Promise.all([pGetPLContents,pGetPLInfo])
+						.then(function(){
+							var playlist = {};
+							PLInfo.playlist_id = undefined;
+							PLInfo.num_karas = undefined;
+							PLInfo.flag_current = undefined;
+							PLInfo.flag_public = undefined;
+							PLInfo.length = undefined;							
+
+							var PLCFiltered = [];
+							PLContents.forEach(function(plc){
+								var PLCObject = {};
+								PLCObject.kid = plc.kid;
+								PLCFiltered.push(PLCObject);
+							});
+
+							playlist.Header = {
+								version: 1,
+								description: 'Karaoke Mugen Playlist File',
+							};
+
+							playlist.PlaylistInformation = PLInfo;
+							playlist.PlaylistContents = PLCFiltered;
+							
+							resolve(playlist);
+						})
+						.catch(function(err){
+							logger.error('[PLC] exportPlaylist : '+err);					
+							reject(err);
+						});
+				})
+				.catch(function(err) {
+					logger.error('[PLC] exportPlaylist : '+err);
+					reject(err);
+				});
+		});
+	},
+	/**
+	* @function {Import a playlist}
+	* @param  {object} playlist {Playlist object}
+	* @return {number} {Playlist ID newly created}
+	*/
+	importPlaylist:function(playlist) {
+		return new Promise(function(resolve,reject){
+			// Check if format is valid :
+			// Header must contain :
+			// description = Karaoke Mugen Playlist File
+			// version = 1
+			// 
+			// PlaylistContents array must contain at least one element.
+			// That element needs to have at least kid and pos.
+			// pos must be integer
+			// kid must be uuid
+			// Test each element for those.
+			//
+			// PlaylistInformation must contain :
+			// - created_at : (number)
+			// - flag_visible : (0 / 1)
+			// - modified_at : (number)
+			// - name : playlist name
+			//
+			// If all tests pass, then add playlist, then add karas
+			// Playlist can end up empty if no karaokes are found in database			
+			var err;
+			if (playlist.Header.description !== 'Karaoke Mugen Playlist File') err = 'Not a .kmplaylist file';
+			// This test will change if we make several versions of the .kmplaylist format
+			if (playlist.Header.version !== 1) err = 'Cannot import this version ('+playlist.Header.version+')';
+
+			if (playlist.PlaylistContents === undefined) err = 'No PlaylistContents section';
+			playlist.PlaylistContents.forEach(function(kara){				
+				if (!validator.isUUID(kara.kid)) err = 'KID is not a valid UUID!';
+			});
+
+			if (isNaN(playlist.PlaylistInformation.created_at)) err = 'Creation time is not valid';
+			if (isNaN(playlist.PlaylistInformation.modified_at)) err = 'Modification time is not valid';
+			if (playlist.PlaylistInformation.flag_visible !== 0 && 
+				playlist.PlaylistInformation.flag_visible !== 1) err = 'Visible flag must be boolean';
+			if (L.isEmpty(playlist.PlaylistInformation.name)) err = 'Playlist name must not be empty';
+
+			// Validations done. First creating playlist.
+			if (err) {
+				reject(err);
+			} else {
+				module.exports.createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0)
+					.then(function(playlist_id){
+						var karasToImport = [];
+						var karasUnknown = [];
+						async.eachSeries(playlist.PlaylistContents,function(kara,callback){
+							module.exports.getKaraByKID(kara.kid)
+								.then(function(karaFromDB) {
+									if (karaFromDB) {
+										karasToImport.push(karaFromDB.kara_id);
+										callback();
+									} else {
+										logger.warn('[PLC] importPlaylist : KID '+kara.kid+' unknown');
+										karasUnknown.push(kara.kid);
+										callback();
+									}
+								})
+								.catch(function(err) {
+									logger.error('[PLC] getKaraByKID : '+err);
+									callback(err);
+								});
+						}, function(err) {
+							if (err) {
+								reject(err);
+							} else {																
+								module.exports.addKaraToPlaylist(karasToImport,'Admin',playlist_id)
+									.then(function(){
+										resolve(karasUnknown);
+									});
+							}
+						});
+					})
+					.catch(function(err){
+						logger.error('[PLC] importPlaylist : '+err);
+						reject(err);
+					});
+
+			}
+			
 		});
 	},
 	/**
