@@ -578,6 +578,18 @@ module.exports = {
 					});
 			});
 		};
+		module.exports._services.apiserver.onPlaylistImport = function(playlist){
+			return new Promise(function(resolve,reject){				
+				module.exports._services.playlist_controller.importPlaylist(playlist)
+					.then(function(karasUnknown){						
+						resolve(karasUnknown);
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC importPlaylist : '+err);							
+						reject(err);
+					});
+			});
+		};
 		module.exports._services.apiserver.onBlacklistCriterias = function(lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistCriterias()

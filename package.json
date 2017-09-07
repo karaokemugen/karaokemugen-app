@@ -75,6 +75,7 @@
     "systeminformation": "^3.26.2",
     "unix-timestamp": "^0.2.0",
     "uuid": "^3.1.0",
+    "validator": "^8.1.0",
     "winston": "^2.3.1"
   },
   "devDependencies": {
