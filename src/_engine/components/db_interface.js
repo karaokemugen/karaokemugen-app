@@ -665,6 +665,31 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get one karaoke by KID}
+	* @param  {string} kid {KID}
+	* @return {Object} {karaoke object}
+	*/
+	getKaraByKID:function(kid){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+
+			var sqlGetKaraByKID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kara_by_kid.sql'),'utf-8');
+			module.exports._db_handler.get(sqlGetKaraByKID,
+				{
+					$kid: kid
+				},
+				function (err, kara) {
+					if (err) {
+						reject('Failed to get karaoke song '+kid+' information : '+err);
+					} else {
+						resolve(kara);
+					}
+				});
+		});
+	},
+	/**
 	* @function {Get one tag}
 	* @param  {number} tag_id {tag ID}
 	* @return {string} {name of tag}
@@ -707,7 +732,7 @@ module.exports = {
 			module.exports._user_db_handler.all(sqlGetTags,
 				function (err, tags) {
 					if (err) {
-						reject('Failed to get tag '+tag_id+' information : '+err);
+						reject('Failed to get tags information : '+err);
 					} else {	
 						resolve(tags);
 					}
@@ -953,9 +978,9 @@ module.exports = {
 					$newpos: newpos,
 					$playlist_id: playlist_id,
 					$pos: pos
-				}, function (err, rep) {
+				}, function (err) {
 					if (err) {
-						reject('Failed to update position in playlist '+playlist_id+' : '+err)
+						reject('Failed to update position in playlist '+playlist_id+' : '+err);
 					} else {
 						resolve();
 					}

@@ -885,7 +885,7 @@ module.exports = {
 				});
 
 			
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/portable')				
+			routerAdmin.route('/playlists/:pl_id([0-9]+)/export')				
 				.get(function(req,res){
 					// Returns the playlist and its contents in an exportable format (to save on disk)
 					module.exports.onPlaylistExport(req.params.pl_id)
@@ -896,9 +896,42 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(err);
 						});
-				})
+				});
+			routerAdmin.route('/playlists/import')
 				.post(function(req,res){
-					// Imports a playlist and its contents in an importable format (posted as a file)
+					// Imports a playlist and its contents in an importable format (posted as JSON data)					
+					req.check({
+						'playlist': {
+							in: 'body',
+							notEmpty: true,
+							isJSON: true,
+						}						
+					});
+					req.getValidationResult().then(function(result) {
+						if (result.isEmpty()) {
+							module.exports.onPlaylistImport(JSON.parse(req.body.playlist))
+								.then(function(karasUnknown){
+									var response = {
+										message: 'Playlist imported'								
+									};									
+									if (karasUnknown) {										
+										response.unknownKaras = karasUnknown;
+									}
+									module.exports.emitEvent('playlistsUpdated');
+									res.json(response);
+									
+								})
+								.catch(function(err){
+									res.statusCode = 500;
+									res.json(err);
+								});
+						} else {
+							// Errors detected
+							// Sending BAD REQUEST HTTP code and error object.
+							res.statusCode = 400;
+							res.json(result.mapped());
+						}
+					});
 				});
 			
 
