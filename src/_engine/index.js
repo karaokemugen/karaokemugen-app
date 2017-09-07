@@ -1076,8 +1076,8 @@ module.exports = {
 					module.exports._services.playlist_controller.isACurrentPlaylist()
 						.then(function(playlist_id) {
 							module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
-								.then(function(id_playlist){							
-									resolve(id_playlist);
+								.then(function(){							
+									resolve(playlist_id);
 								})
 								.catch(function(err){
 									logger.error('[Engine] PLC addKaraToCurrentPlaylist : '+err);
@@ -1094,8 +1094,8 @@ module.exports = {
 					module.exports._services.playlist_controller.isAPublicPlaylist()
 						.then(function(playlist_id) {
 							module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
-								.then(function(id_playlist){							
-									resolve(id_playlist);
+								.then(function(){							
+									resolve(playlist_id);
 								})
 								.catch(function(err){
 									logger.error('[Engine] PLC addKaraToPublicPlaylist : '+err);
