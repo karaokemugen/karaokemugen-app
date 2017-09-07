@@ -87,7 +87,7 @@ Certaines sont encore à venir, mais ça doit vous donner une idée de l'étendu
 ## Comment ça fonctionne
 
 * Voir la partie téléchargement
-* Placez des karaoké à l'intérieur d'un dossier `app/data`. Voir https://lab.shelter.moe/karaokemugen/karaokemugen-base 
+* Placez des karaoké à l'intérieur d'un dossier `app/data`. Voir https://lab.shelter.moe/karaokemugen/karaokebase
 * L'interface web écoute par défaut sur le port 1337 : http://localhost:1337 - celle-ci est encore en travaux sur une branche dédiée du code
 * L'interface API écoute sur le port 1339
 * Un panel web admin pour les tâches de gestion comme la génération de la base de données où les mises à jour est sur le port 1338. 
