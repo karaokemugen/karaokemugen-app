@@ -118,6 +118,9 @@ module.exports = {
 		}
 
 	},
+	sendMessageToPlayer:function(message,duration){		
+		module.exports._services.player.message(message,duration);
+	},
 	/**
 	* @function {stop}
 	* @param  {boolean} now {If set, stops karaoke immediately. If not, karaoke will stop at end of current song}
@@ -608,7 +611,7 @@ module.exports = {
 						reject(err);
 					});
 			});
-		};
+		};		
 		module.exports._services.apiserver.onBlacklistCriteriaAdd = function(blctype,blcvalue){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
@@ -1154,6 +1157,13 @@ module.exports = {
 						logger.error('[Engine] PLC addKaraToWhitelist : '+err);
 						reject(err);
 					});
+			});
+		};
+		module.exports._services.apiserver.onMessage = function(message,duration){
+			return new Promise(function(resolve){
+				logger.debug('[Engine] Sending message "'+message+'" to OSD');
+				module.exports.sendMessageToPlayer(message,duration);
+				resolve();		
 			});
 		};
 		module.exports._services.apiserver.onPlayerCommand = function(command,options){

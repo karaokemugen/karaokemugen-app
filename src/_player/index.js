@@ -361,6 +361,9 @@ module.exports = {
 		module.exports._player.showSubtitles();
 		module.exports.showsubs = true;
 	},
+	message: function(message,duration) {		
+		module.exports._player.command('show-text',[message,duration,0]);
+	},
 	onStatusChange:function(){},
 	onEnd:function(){
 		// événement émis pour quitter l'application
