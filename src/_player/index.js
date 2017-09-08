@@ -216,9 +216,9 @@ module.exports = {
 				},
 				mpvOptions
 			);
-			var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 			// Disabled loading the background at start during dev. Or not yet.
-			module.exports._player.loadFile(backgroundImageFile);
+			module.exports._player.load(backgroundImageFile);
 			module.exports._player.observeProperty('sub-text',13);
 			module.exports._player.observeProperty('volume',14);
 
@@ -234,6 +234,7 @@ module.exports = {
 					module.exports.onEnd(module.exports._ref);
 					module.exports._ref = null;
 				}
+				
 				module.exports.mutestatus = status.mute;
 				module.exports.duration = status.duration;
 				module.exports.subtext = status['sub-text'];
@@ -241,11 +242,19 @@ module.exports = {
 				module.exports.onStatusChange();
 			});
 			module.exports._player.on('paused',function(){
+				logger.debug('[Player] Paused event triggered');
 				module.exports.playing = false;
 				module.exports._playing = false;
 				module.exports.playerstatus = 'pause';
 				module.exports.onStatusChange();
-			});			
+			});
+			module.exports._player.on('resumed',function(){
+				logger.debug('[Player] Resumed event triggered');
+				module.exports.playing = true;
+				module.exports._playing = true;
+				module.exports.playerstatus = 'play';
+				module.exports.onStatusChange();
+			});
 			module.exports._player.on('timeposition',function(position){
 				// Returns the position in seconds in the current song
 				module.exports.timeposition = position;
@@ -262,11 +271,12 @@ module.exports = {
 			});
 	},
 	play: function(video,subtitle,reference,gain){
+		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
 		if(fs.existsSync(video)){
 			logger.info('[Player] Video : '+video);
 			logger.debug('[Player] Audio gain adjustment : '+gain);
-			if (gain == undefined || gain == null) gain = 0;
+			if (gain == undefined || gain == null) gain = 0;			
 			module.exports._ref = reference;
 			module.exports._player.command('loadfile',[video,'replace','replaygain-fallback='+gain]);			
 			module.exports._player.play();
@@ -284,8 +294,8 @@ module.exports = {
 				} else {
 					logger.info('[Player] Subs not needed');
 				}
-				var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-				module.exports._player.loadFile(backgroundImageFile,'append');
+				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+				module.exports._player.load(backgroundImageFile,'append');
 			},500);
 		} else {
 			module.exports.playing = false;
@@ -308,19 +318,24 @@ module.exports = {
 	stop:function() {
 		// on stop do not trigger onEnd event
 		// => setting internal playing = false prevent this behavior
+		logger.debug('[Player] Stop event triggered');
 		module.exports.playing = false;
 		module.exports.timeposition = 0;
 		module.exports._playing = false;
 		module.exports.playerstatus = 'stop';
-		var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg'); // TODO à supprimer
-		module.exports._player.loadFile(backgroundImageFile);
+		var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+		module.exports._player.load(backgroundImageFile);
 	},
 	pause: function(){		
+		logger.debug('[Player] Pause event triggered');
 		module.exports._player.pause();
 		module.exports.playerstatus = 'pause';
 	},
 	resume: function(){
+		logger.debug('[Player] Resume event triggered');
 		module.exports._player.play();
+		module.exports.playing = true;
+		module.exports._playing = true;
 		module.exports.playerstatus = 'play';
 	},
 	seek: function(delta) {
@@ -345,6 +360,9 @@ module.exports = {
 	showSubs: function() {
 		module.exports._player.showSubtitles();
 		module.exports.showsubs = true;
+	},
+	message: function(message,duration) {		
+		module.exports._player.command('show-text',[message,duration,0]);
 	},
 	onStatusChange:function(){},
 	onEnd:function(){

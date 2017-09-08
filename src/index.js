@@ -96,49 +96,49 @@ if(SYSPATH) {
 	 */
 	var ret;
 	logger.info('[Launcher] Checking data folders');
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathKaras))) {
-		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathKaras));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathKaras));
+	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathKaras))) {
+		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathKaras));
+		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathKaras));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathSubs))) {
-		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathSubs));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathSubs));
+	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathSubs))) {
+		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathSubs));
+		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathSubs));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathVideos))) {
-		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathVideos));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathVideos));
+	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathVideos))) {
+		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathVideos));
+		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathVideos));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathDB))) {
-		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathDB));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathDB));
+	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathDB))) {
+		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathDB));
+		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathDB));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathTemp))) {
-		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathTemp));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathTemp));
+	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathTemp))) {
+		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathTemp));
+		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathTemp));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
-	if(!fs.existsSync(path.join(SYSPATH,SETTINGS.PathBin))) {
-		logger.warn('[Launcher] Creating folder '+path.join(SYSPATH,SETTINGS.PathBin));
-		ret = mkdirp.sync(path.join(SYSPATH,SETTINGS.PathBin));
+	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathBin))) {
+		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathBin));
+		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathBin));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();

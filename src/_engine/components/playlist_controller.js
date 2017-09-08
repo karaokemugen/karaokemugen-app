@@ -2774,8 +2774,8 @@ module.exports = {
 						// on enrichie l'objet pour fournir son contexte et les chemins système prêt à l'emploi
 						kara.playlist_id = playlist.id;
 						kara.path = {
-							video: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
-							subtitle: path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.generated_subfile),
+							video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
+							subtitle: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.generated_subfile),
 						};						
 						resolve(kara);
 					} else { 	
