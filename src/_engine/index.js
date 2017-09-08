@@ -356,7 +356,7 @@ module.exports = {
 		var cleanUp = require('../_admin/cleanup.js');
 		module.exports.DB_INTERFACE.getAllPlaylistContents()
 			.then(function(karalist){
-				cleanUp.run(path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp),karalist);
+				cleanUp.run(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp),karalist);
 			})
 			.catch(function(err){
 				logger.error('[Engine] Cleanup : DBI getAllPlaylist : '+err);				

@@ -216,7 +216,7 @@ module.exports = {
 				},
 				mpvOptions
 			);
-			var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 			// Disabled loading the background at start during dev. Or not yet.
 			module.exports._player.load(backgroundImageFile);
 			module.exports._player.observeProperty('sub-text',13);
@@ -294,7 +294,7 @@ module.exports = {
 				} else {
 					logger.info('[Player] Subs not needed');
 				}
-				var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 				module.exports._player.load(backgroundImageFile,'append');
 			},500);
 		} else {
@@ -323,7 +323,7 @@ module.exports = {
 		module.exports.timeposition = 0;
 		module.exports._playing = false;
 		module.exports.playerstatus = 'stop';
-		var backgroundImageFile = path.join(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg'); // TODO à supprimer
+		var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 		module.exports._player.load(backgroundImageFile);
 	},
 	pause: function(){		

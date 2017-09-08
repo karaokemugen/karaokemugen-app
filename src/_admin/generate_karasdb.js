@@ -33,11 +33,11 @@ module.exports = {
 			const exec = require('child_process');
 			const ffmpegPath = require('ffmpeg-downloader').path;
 			const langsModule = require('langs');
-			const karasdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
-			const videosdir = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
-			const karas_dbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
-			const karas_userdbfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBUserFile);
-			const series_altnamesfile = path.join(module.exports.SYSPATH, module.exports.SETTINGS.PathAltname);
+			const karasdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
+			const videosdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
+			const karas_dbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
+			const karas_userdbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBUserFile);
+			const series_altnamesfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathAltname);
 			const sqlCreateKarasDBfile = path.join(__dirname, '../_common/db/karas.sqlite3.sql');
 			const sqlCreateKarasDBViewAllfile = path.join(__dirname, '../_common/db/view_all.view.sql');
 
