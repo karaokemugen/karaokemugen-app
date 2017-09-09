@@ -11,8 +11,7 @@ module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
 	_ready: false,
-	_db_handler: null,
-	_user_db_handler:null,
+	_db_handler: null,	
 
 	init: function(){
 		return new Promise(function(resolve){
@@ -67,34 +66,20 @@ module.exports = {
 
 			Promise.all([ userDB_Test, karasDB_Test ])
 				.then(function() {
-					module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'), function(err){
-						if (err) {
-							logger.error('[DBI] Loading karaoke database failed : '+err);
-							process.exit();
-						} else {
-							module.exports._db_handler.run('PRAGMA foreign_keys = ON;', function (err) {
-								if (err) {
-									logger.error('[DBI] Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
-									process.exit();
-								}
-							});
-						}
-					});
-
-					module.exports._user_db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
+					module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
 						if (err) {
 							logger.error('[DBI] Loading user database failed : '+err);
 							process.exit();
 						} else {
-							module.exports._user_db_handler.serialize(function() {
-								module.exports._user_db_handler.run('PRAGMA foreign_keys = ON;', function(err) {
+							module.exports._db_handler.serialize(function() {
+								module.exports._db_handler.run('PRAGMA foreign_keys = ON;', function(err) {
 									if (err) {
 										logger.error('[DBI] Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
 										process.exit();
 									}
 								});
 
-								module.exports._user_db_handler.run('ATTACH DATABASE "' + path.join(module.exports.SYSPATH, 'app/db/karas.sqlite3') + '" as karasdb;',
+								module.exports._db_handler.run('ATTACH DATABASE "' + path.join(module.exports.SYSPATH, 'app/db/karas.sqlite3') + '" as karasdb;',
 									function(err) {
 										if (err) {
 											logger.error(err);
@@ -132,14 +117,9 @@ module.exports = {
 				if(err) {
 					console.log(err);
 					reject(err);
-				}
-				module.exports._user_db_handler.close(function(err){
-					if(err) {
-						console.log(err);
-						reject(err);
-					}
+				} else {
 					resolve();
-				});
+				}
 			});
 		});
 	},
@@ -179,7 +159,7 @@ module.exports = {
 
 			var pGetPlaylistCount = new Promise((resolve) => {
 				var sqlCalculatePlaylistCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_count.sql'),'utf-8');
-				module.exports._user_db_handler.get(sqlCalculatePlaylistCount,
+				module.exports._db_handler.get(sqlCalculatePlaylistCount,
 					function (err, res) {
 						if (err) {
 							logger.warn('[DBI] Failed to fetch playlists count : '+err);
@@ -273,7 +253,7 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlCalculatePlaylistNumOfKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_numofkaras.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlCalculatePlaylistNumOfKaras,
+			module.exports._db_handler.get(sqlCalculatePlaylistNumOfKaras,
 				{
 					$playlist_id: playlist_id
 				}, function (err, num_karas) {
@@ -296,18 +276,17 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlCalculatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_duration.sql'),'utf-8');
-			module.exports._user_db_handler.serialize(function(){
-				module.exports._user_db_handler.get(sqlCalculatePlaylistDuration,
-					{
-						$playlist_id: playlist_id
-					}, function (err, duration) {
-						if (err) {
-							reject('Failed to calculate playlist duration : '+err);
-						} else {
-							resolve(duration);
-						}
-					});
-			});
+			module.exports._db_handler.get(sqlCalculatePlaylistDuration,
+				{
+					$playlist_id: playlist_id
+				}, function (err, duration) {
+					if (err) {
+						reject('Failed to calculate playlist duration : '+err);
+					} else {
+						resolve(duration);
+					}
+				});
+			
 		});
 	},
 	/**
@@ -321,7 +300,7 @@ module.exports = {
 			}
 			var sqlGenerateBlacklist = fs.readFileSync(path.join(__dirname,'../../_common/db/generate_blacklist.sql'),'utf-8');
 
-			module.exports._user_db_handler.exec(sqlGenerateBlacklist,
+			module.exports._db_handler.exec(sqlGenerateBlacklist,
 				function (err) {
 					if (err) {
 						reject('Failed to generate blacklist : '+err);
@@ -342,7 +321,7 @@ module.exports = {
 			}
 			var sqlGetBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_criterias.sql'),'utf-8');
 
-			module.exports._user_db_handler.all(sqlGetBlacklistCriterias,
+			module.exports._db_handler.all(sqlGetBlacklistCriterias,
 				function (err, blcriterias) {
 					if (err) {
 						reject('Failed to fetch blacklist criterias :'+err);
@@ -365,7 +344,7 @@ module.exports = {
 			}
 			var sqlAddBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/insert_blacklist_criteria.sql'),'utf-8');
 
-			module.exports._user_db_handler.run(sqlAddBlacklistCriterias,
+			module.exports._db_handler.run(sqlAddBlacklistCriterias,
 				{
 					$blctype: blctype,
 					$blcvalue: blcvalue
@@ -392,7 +371,7 @@ module.exports = {
 			}
 			var sqlDeleteBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_blacklist_criteria.sql'),'utf-8');
 
-			module.exports._user_db_handler.run(sqlDeleteBlacklistCriterias,
+			module.exports._db_handler.run(sqlDeleteBlacklistCriterias,
 				{
 					$blc_id: blc_id
 				},
@@ -419,7 +398,7 @@ module.exports = {
 			}
 			var sqlEditBlacklistCriteria = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_blacklist_criteria.sql'),'utf-8');
 
-			module.exports._user_db_handler.run(sqlEditBlacklistCriteria,
+			module.exports._db_handler.run(sqlEditBlacklistCriteria,
 				{
 					$blc_id: blc_id,
 					$blctype: blctype,
@@ -440,7 +419,7 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlUpdatePlaylistNumOfKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_numofkaras.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlUpdatePlaylistNumOfKaras,
+			module.exports._db_handler.run(sqlUpdatePlaylistNumOfKaras,
 				{
 					$playlist_id: playlist_id,
 					$num_karas: num_karas
@@ -470,7 +449,7 @@ module.exports = {
 			playlist.forEach(function(kara) {
 				newpos++;
 				logger.debug('Updating '+kara.playlistcontent_id+' to position '+newpos);
-				module.exports._user_db_handler.run(sqlUpdateKaraPosition,
+				module.exports._db_handler.run(sqlUpdateKaraPosition,
 					{
 						$pos: newpos,
 						$playlistcontent_id: kara.playlistcontent_id
@@ -495,7 +474,7 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlUpdatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_duration.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlUpdatePlaylistDuration,
+			module.exports._db_handler.run(sqlUpdatePlaylistDuration,
 				{
 					$playlist_id: playlist_id,
 					$duration: duration
@@ -519,8 +498,8 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
-			module.exports._user_db_handler.serialize(function(){
-				module.exports._user_db_handler.all(sqlGetPlaylistContents,
+			module.exports._db_handler.serialize(function(){
+				module.exports._db_handler.all(sqlGetPlaylistContents,
 					{
 						$playlist_id: playlist_id
 					}, function (err, playlist) {
@@ -543,7 +522,7 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}			
 			var sqlGetAllPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_playlist_contents.sql'),'utf-8');
-			module.exports._user_db_handler.all(sqlGetAllPlaylistContents,
+			module.exports._db_handler.all(sqlGetAllPlaylistContents,
 				function (err, playlist) {
 					if (err) {
 						reject('Failed to get all playlists contents : '+err);
@@ -563,7 +542,7 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlGetWhitelistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_whitelist_contents.sql'),'utf-8');
-			module.exports._user_db_handler.all(sqlGetWhitelistContents,
+			module.exports._db_handler.all(sqlGetWhitelistContents,
 				function (err, playlist) {
 					if (err) {
 						reject('Failed to get whitelist contents :'+err);
@@ -583,7 +562,7 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlGetBlacklistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_contents.sql'),'utf-8');
-			module.exports._user_db_handler.all(sqlGetBlacklistContents,
+			module.exports._db_handler.all(sqlGetBlacklistContents,
 				function (err, playlist) {
 					if (err) {
 						reject('Failed to get blacklist contents :'+err);
@@ -603,7 +582,7 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlGetAllKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_karas.sql'),'utf-8');
-			module.exports._user_db_handler.all(sqlGetAllKaras,
+			module.exports._db_handler.all(sqlGetAllKaras,
 				function (err, playlist) {
 					if (err) {
 						reject('Failed to fetch all karaokes : '+err);
@@ -626,7 +605,7 @@ module.exports = {
 			if (seenFromUser) {
 				sqlGetPLContentInfo += ' AND p.flag_visible = 1';
 			}
-			module.exports._user_db_handler.get(sqlGetPLContentInfo,
+			module.exports._db_handler.get(sqlGetPLContentInfo,
 				{
 					$playlistcontent_id: playlistcontent_id
 				},
@@ -701,7 +680,7 @@ module.exports = {
 			}
 
 			var sqlGetTag = fs.readFileSync(path.join(__dirname,'../../_common/db/select_tag.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlGetTag,
+			module.exports._db_handler.get(sqlGetTag,
 				{
 					$tag_id: tag_id
 				},
@@ -729,7 +708,7 @@ module.exports = {
 			}
 
 			var sqlGetTags = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_tags.sql'),'utf-8');
-			module.exports._user_db_handler.all(sqlGetTags,
+			module.exports._db_handler.all(sqlGetTags,
 				function (err, tags) {
 					if (err) {
 						reject('Failed to get tags information : '+err);
@@ -751,7 +730,7 @@ module.exports = {
 			if (seenFromUser) {
 				sqlGetPlaylistInfo += ' AND flag_visible = 1';
 			}
-			module.exports._user_db_handler.get(sqlGetPlaylistInfo,
+			module.exports._db_handler.get(sqlGetPlaylistInfo,
 				{
 					$playlist_id: playlist_id
 				}, function (err, row) {
@@ -780,7 +759,7 @@ module.exports = {
 			if (seenFromUser) {
 				sqlGetPlaylists += ' WHERE flag_visible = 1';
 			}
-			module.exports._user_db_handler.all(sqlGetPlaylists,
+			module.exports._db_handler.all(sqlGetPlaylists,
 				function (err, playlists) {
 					if (err) {
 						logger.error('[DBI] Failed to fetch list of playlists : '+err);
@@ -801,7 +780,7 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlTestCurrentPlaylistExists = fs.readFileSync(path.join(__dirname,'../../_common/db/test_current_playlist_exists.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlTestCurrentPlaylistExists,
+			module.exports._db_handler.get(sqlTestCurrentPlaylistExists,
 				function (err, row) {
 					if (err) {
 						logger.error('[DBI] Failed to find out if there is a current playlist : '+err);
@@ -826,7 +805,7 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlTestPublicPlaylistExists = fs.readFileSync(path.join(__dirname,'../../_common/db/test_public_playlist_exists.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlTestPublicPlaylistExists,
+			module.exports._db_handler.get(sqlTestPublicPlaylistExists,
 				function (err, row) {
 					if (err) {
 						logger.error('[DBI] Failed to find out if there is a public playlist : '+err);
@@ -844,7 +823,7 @@ module.exports = {
 	isPublicPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlIsPlaylistPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_public_flag.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlIsPlaylistPublic,
+			module.exports._db_handler.get(sqlIsPlaylistPublic,
 				{
 					$playlist_id: playlist_id
 				}, function (err, row) {
@@ -867,7 +846,7 @@ module.exports = {
 	isCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlIsPlaylistCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_current_flag.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlIsPlaylistCurrent,
+			module.exports._db_handler.get(sqlIsPlaylistCurrent,
 				{
 					$playlist_id: playlist_id
 				}, function (err, row) {
@@ -919,7 +898,7 @@ module.exports = {
 	isBLCriteria:function(blc_id) {
 		return new Promise(function(resolve,reject){
 			var sqlIsBLC = fs.readFileSync(path.join(__dirname,'../../_common/db/test_blacklist_criteria.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlIsBLC,
+			module.exports._db_handler.get(sqlIsBLC,
 				{
 					$blc_id: blc_id
 				}, function (err, row) {
@@ -943,7 +922,7 @@ module.exports = {
 	isWLC:function(wlc_id) {
 		return new Promise(function(resolve,reject){
 			var sqlIsWLC = fs.readFileSync(path.join(__dirname,'../../_common/db/test_whitelist.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlIsWLC,
+			module.exports._db_handler.get(sqlIsWLC,
 				{
 					$wlc_id: wlc_id
 				}, function (err, row) {
@@ -973,7 +952,7 @@ module.exports = {
 
 			var newpos = pos + 0.1;
 			var sqlRaisePosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_raise_pos_in_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlRaisePosInPlaylist,
+			module.exports._db_handler.run(sqlRaisePosInPlaylist,
 				{
 					$newpos: newpos,
 					$playlist_id: playlist_id,
@@ -996,7 +975,7 @@ module.exports = {
 	isKaraInPlaylist:function(kara_id,playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlIsKaraInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara_in_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlIsKaraInPlaylist,
+			module.exports._db_handler.get(sqlIsKaraInPlaylist,
 				{
 					$kara_id: kara_id,
 					$playlist_id: playlist_id
@@ -1021,7 +1000,7 @@ module.exports = {
 	isKaraInBlacklist:function(kara_id) {
 		return new Promise(function(resolve,reject){
 			var sqlIsKaraInBlacklist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara_in_blacklist.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlIsKaraInBlacklist,
+			module.exports._db_handler.get(sqlIsKaraInBlacklist,
 				{
 					$kara_id: kara_id,
 				}, function (err, row) {
@@ -1045,7 +1024,7 @@ module.exports = {
 	isKaraInWhitelist:function(kara_id) {
 		return new Promise(function(resolve,reject){
 			var sqlIsKaraInWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara_in_whitelist.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlIsKaraInWhitelist,
+			module.exports._db_handler.get(sqlIsKaraInWhitelist,
 				{
 					$kara_id: kara_id
 				}, function (err, row) {
@@ -1072,7 +1051,7 @@ module.exports = {
 			if (seenFromUser) {
 				sqlIsPlaylist += ' AND flag_visible = 1';
 			}
-			module.exports._user_db_handler.get(sqlIsPlaylist,
+			module.exports._db_handler.get(sqlIsPlaylist,
 				{
 					$playlist_id: playlist_id
 				}, function (err, row) {
@@ -1091,7 +1070,7 @@ module.exports = {
 	setCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlSetCurrentPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_current.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlSetCurrentPlaylist,
+			module.exports._db_handler.run(sqlSetCurrentPlaylist,
 				{
 					$playlist_id: playlist_id
 				}, function (err, rep) {
@@ -1111,7 +1090,7 @@ module.exports = {
 	setVisiblePlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlSetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_visible.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlSetVisiblePlaylist,
+			module.exports._db_handler.run(sqlSetVisiblePlaylist,
 				{
 					$playlist_id: playlist_id
 				}, function (err, rep) {
@@ -1133,7 +1112,7 @@ module.exports = {
 
 			//Unset playing flag everywhere on this playlist
 			var sqlUnsetPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_unset_playing.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlUnsetPlaying,
+			module.exports._db_handler.run(sqlUnsetPlaying,
 				{
 					$playlist_id: playlist_id
 				}, function (err) {
@@ -1141,7 +1120,7 @@ module.exports = {
 						reject(err);
 					} else {
 						var sqlSetPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_playing.sql'),'utf-8');
-						module.exports._user_db_handler.run(sqlSetPlaying,
+						module.exports._db_handler.run(sqlSetPlaying,
 							{
 								$playlistcontent_id: playlistcontent_id
 							}, function (err) {
@@ -1165,7 +1144,7 @@ module.exports = {
 
 			//Unset playing flag everywhere on this playlist
 			var sqlSetPos = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_pos.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlSetPos,
+			module.exports._db_handler.run(sqlSetPos,
 				{
 					$playlistcontent_id: playlistcontent_id,
 					$pos: pos
@@ -1186,7 +1165,7 @@ module.exports = {
 	unsetVisiblePlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlUnsetVisiblePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_visible.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlUnsetVisiblePlaylist,
+			module.exports._db_handler.run(sqlUnsetVisiblePlaylist,
 				{
 					$playlist_id: playlist_id
 				}, function (err, rep) {
@@ -1201,7 +1180,7 @@ module.exports = {
 	setPublicPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlSetPublicPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_public.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlSetPublicPlaylist,
+			module.exports._db_handler.run(sqlSetPublicPlaylist,
 				{
 					$playlist_id: playlist_id
 				}, function (err, rep) {
@@ -1220,7 +1199,7 @@ module.exports = {
 			}
 
 			var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
-			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err) {
+			module.exports._db_handler.exec(sqlUpdatePlaylistsUnsetPublic, function (err) {
 				if (err) {
 					reject('Failed to unset public flag on all playlists : '+err);
 				} else {
@@ -1236,7 +1215,7 @@ module.exports = {
 			}
 
 			var sqlUpdatePlaylistLastEditTime = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_last_edit_time.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlUpdatePlaylistLastEditTime,
+			module.exports._db_handler.run(sqlUpdatePlaylistLastEditTime,
 				{
 					$playlist_id: playlist_id,
 					$modified_at: lastEditTime
@@ -1256,7 +1235,7 @@ module.exports = {
 			}
 
 			var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
-			module.exports._user_db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err) {
+			module.exports._db_handler.exec(sqlUpdatePlaylistsUnsetCurrent, function (err) {
 				if (err) {
 					reject('Failed to unset current flag on all playlists : '+err);
 				} else {
@@ -1269,7 +1248,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			// Empties playlist
 			var sqlEmptyPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlEmptyPlaylist,
+			module.exports._db_handler.run(sqlEmptyPlaylist,
 				{
 					$playlist_id: playlist_id
 				}, function(err) {
@@ -1290,7 +1269,7 @@ module.exports = {
 	deletePlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlDeletePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlDeletePlaylist,
+			module.exports._db_handler.run(sqlDeletePlaylist,
 				{
 					$playlist_id: playlist_id
 				}, function(err) {
@@ -1316,7 +1295,7 @@ module.exports = {
 				reject();
 			}
 			var sqlAddViewcount = fs.readFileSync(path.join(__dirname,'../../_common/db/add_viewcount.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlAddViewcount,
+			module.exports._db_handler.run(sqlAddViewcount,
 				{
 					$kara_id: kara_id,
 					$kid: kid,
@@ -1338,7 +1317,7 @@ module.exports = {
 				reject();
 			}
 			var sqlCalculateViewcount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_viewcount.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlCalculateViewcount,
+			module.exports._db_handler.run(sqlCalculateViewcount,
 				{
 					$kid: kid
 				}, function (err) {
@@ -1375,7 +1354,7 @@ module.exports = {
 			// Retourne l'ID de la playlist nouvellement crée.
 
 			var sqlEditPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlEditPlaylist,
+			module.exports._db_handler.run(sqlEditPlaylist,
 				{
 					$playlist_id: playlist_id,
 					$name: name,
@@ -1403,7 +1382,7 @@ module.exports = {
 
 			// Creating playlist
 			var sqlCreatePlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/create_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlCreatePlaylist,
+			module.exports._db_handler.run(sqlCreatePlaylist,
 				{
 					$name: name,
 					$NORM_name: NORM_name,
@@ -1430,7 +1409,7 @@ module.exports = {
 			}
 
 			var sqlEditWhitelistKara = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_whitelist_kara.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlEditWhitelistKara,
+			module.exports._db_handler.run(sqlEditWhitelistKara,
 				{
 					$wlc_id: wlc_id,
 					$reason: reason
@@ -1462,7 +1441,7 @@ module.exports = {
 			//We receive an array of kara requests, we need to add them to a statement.
 			//Even for one kara.				
 			var sqlAddKaraToPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_playlist.sql'),'utf-8');
-			var stmt_addKara = module.exports._user_db_handler.prepare(sqlAddKaraToPlaylist);
+			var stmt_addKara = module.exports._db_handler.prepare(sqlAddKaraToPlaylist);
 			var karaList = [];
 			karas.forEach(function(kara) {				
 				karaList.push({
@@ -1475,8 +1454,8 @@ module.exports = {
 					$generated_subfile: kara.generatedSubFile				
 				});
 			});	
-			module.exports._user_db_handler.serialize(function() {		
-				module.exports._user_db_handler.run('begin transaction', function(err) {
+			module.exports._db_handler.serialize(function() {		
+				module.exports._db_handler.run('begin transaction', function(err) {
 					if (err) {
 						reject('Failed to begin transaction : '+err);
 					} else {
@@ -1492,7 +1471,7 @@ module.exports = {
 							if (err) {
 								reject('Failed to add one karaoke to playlist : '+err);
 							} else {
-								module.exports._user_db_handler.run('commit', function(err) {
+								module.exports._db_handler.run('commit', function(err) {
 									if (err) {
 										reject(err);
 									} else {
@@ -1535,7 +1514,7 @@ module.exports = {
 						if (row) {
 							var kid = row.kid;
 							var sqlAddKaraToWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_whitelist.sql'),'utf-8');
-							module.exports._user_db_handler.run(sqlAddKaraToWhitelist, {
+							module.exports._db_handler.run(sqlAddKaraToWhitelist, {
 								$reason: reason,
 								$kara_id: kara_id,
 								$kid: kid,
@@ -1567,7 +1546,7 @@ module.exports = {
 			}
 
 			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlRemoveKaraFromPlaylist,
+			module.exports._db_handler.run(sqlRemoveKaraFromPlaylist,
 				{
 					$playlistcontent_id: playlistcontent_id
 				}, function (err) {
@@ -1591,7 +1570,7 @@ module.exports = {
 			}
 
 			var sqlRemoveKaraFromWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_whitelist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlRemoveKaraFromWhitelist,
+			module.exports._db_handler.run(sqlRemoveKaraFromWhitelist,
 				{
 					$wlc_id: wlc_id
 				}, function (err) {
@@ -1618,7 +1597,7 @@ module.exports = {
 			}
 
 			var sqlShiftPosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_shift_pos_in_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.run(sqlShiftPosInPlaylist,
+			module.exports._db_handler.run(sqlShiftPosInPlaylist,
 				{
 					$shift: shift,
 					$playlist_id: playlist_id,
@@ -1644,7 +1623,7 @@ module.exports = {
 			}
 
 			var sqlGetMaxPosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/select_max_pos_in_playlist.sql'),'utf-8');
-			module.exports._user_db_handler.get(sqlGetMaxPosInPlaylist,
+			module.exports._db_handler.get(sqlGetMaxPosInPlaylist,
 				{
 					$playlist_id: playlist_id
 				}, function (err, row) {
