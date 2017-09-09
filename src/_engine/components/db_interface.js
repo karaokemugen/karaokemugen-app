@@ -99,6 +99,12 @@ module.exports = {
 													logger.warn('[DBI] Failed to fetch statistics : ' + err);
 												});
 											logger.info('[DBI] Database interface is READY');
+											// Trace event. DO NOT UNCOMMENT
+											// unless you want to flood your console.
+											/*module.exports._db_handler.on('trace',function(sql){
+												console.log(sql);
+												
+											});*/
 											resolve();
 										}
 									});
@@ -510,6 +516,32 @@ module.exports = {
 						}
 					});
 			});
+		});
+	},	
+	/**
+	* @function {Get PLC of kara by date added}
+	* @param  {number} playlist_id {ID of playlist to get a list of songs from}
+	* @param  {number} date_added {Date in unix timestamp}
+	* @return {Object} {Playlist object}
+	*/
+	getPLCIDByDate:function(playlist_id,date_added){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+			var sqlGetPLCIDByDate = fs.readFileSync(path.join(__dirname,'../../_common/db/select_plcid_by_date.sql'),'utf-8');
+			module.exports._db_handler.all(sqlGetPLCIDByDate,
+				{
+					$playlist_id: playlist_id,
+					$date_added: date_added
+				}, function (err, plcid) {
+					if (err) {
+						reject('Failed to get PLCID from '+playlist_id+' with date '+date_added+' : '+err);
+					} else {						
+						console.log(plcid[0]);
+						resolve(plcid[0].playlistcontent_id);
+					}
+				});			
 		});
 	},	
 	/**
@@ -965,7 +997,7 @@ module.exports = {
 					}
 				});
 		});
-	},
+	},	
 	/**
 	* @function {Is the kara in the playlist?}
 	* @param  {number} kara_id {ID of karaoke to search for}
@@ -1067,6 +1099,30 @@ module.exports = {
 				});
 		});
 	},
+	/**
+	* @function {Does the playlist have a flag_playing set inside it?}
+	* @param  {number} playlist_id {Playlist ID to check}
+	* @return {type} {Returns true or false}
+	*/
+	isPlaylistFlagPlaying:function(playlist_id) {
+		return new Promise(function(resolve,reject){
+			var sqlIsPlaylistFlagPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/test_playlist_flag_playing.sql'),'utf-8');
+			module.exports._db_handler.get(sqlIsPlaylistFlagPlaying,
+				{
+					$playlist_id: playlist_id
+				}, function (err, row) {
+					if (err) {
+						reject('Failed to test if playlist '+playlist_id+' has a flag_playing song : '+err);
+					} else {
+						if (row) {
+							resolve(true);
+						} else {
+							resolve(false);
+						}
+					}
+				});
+		});
+	},
 	setCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			var sqlSetCurrentPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_set_current.sql'),'utf-8');
@@ -1103,11 +1159,11 @@ module.exports = {
 		});
 	},
 	/**
-	* @function {Sets Flag Playing on a PL content}
-	* @param  {number} playlistcontent_id {ID of playlist content to set to playing}
+	* @function {unsets Flag Playing on a playlist}
+	* @param  {number} playlist_id {ID of playlist where to unset the flag}
 	* @return {string} {error}
 	*/
-	setPlaying:function(playlistcontent_id,playlist_id) {
+	unsetPlaying:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 
 			//Unset playing flag everywhere on this playlist
@@ -1119,18 +1175,36 @@ module.exports = {
 					if (err) {
 						reject(err);
 					} else {
-						var sqlSetPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_playing.sql'),'utf-8');
-						module.exports._db_handler.run(sqlSetPlaying,
-							{
-								$playlistcontent_id: playlistcontent_id
-							}, function (err) {
-								if (err) {
-									reject(err);
-								} else {
-									resolve();
-								}
-							});
+						resolve();
 					}
+				});
+		});
+	},
+	/**
+	* @function {Sets Flag Playing on a PL content}
+	* @param  {number} playlistcontent_id {ID of playlist content to set to playing}
+	* @return {string} {error}
+	*/
+	setPlaying:function(playlistcontent_id,playlist_id) {
+		return new Promise(function(resolve,reject){
+
+			//Unset playing flag everywhere on this playlist
+			module.exports.unsetPlaying(playlist_id)
+				.then(function() {
+					var sqlSetPlaying = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_playing.sql'),'utf-8');
+					module.exports._db_handler.run(sqlSetPlaying,
+						{
+							$playlistcontent_id: playlistcontent_id
+						}, function (err) {
+							if (err) {
+								reject(err);
+							} else {
+								resolve();
+							}
+						});
+				})
+				.catch(function(err){
+					reject(err);
 				});
 		});
 	},
@@ -1484,8 +1558,7 @@ module.exports = {
 						});						
 					}
 				});								
-			});
-			resolve();	
+			});			
 		});
 	},
 	/**
