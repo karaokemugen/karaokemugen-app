@@ -21,5 +21,5 @@ SELECT ak.kara_id AS kara_id,
       ak.videofile AS videofile,
 	  ak.videolength AS duration,
 	  ak.gain AS gain
- FROM all_karas AS ak
+ FROM karasdb.all_karas AS ak
 WHERE ak.kara_id = $kara_id;

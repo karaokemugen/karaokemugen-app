@@ -1,1 +1,1 @@
-SELECT pk_id_kara FROM kara WHERE pk_id_kara = $kara_id;
+SELECT pk_id_kara FROM karasdb.kara WHERE pk_id_kara = $kara_id;

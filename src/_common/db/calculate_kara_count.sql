@@ -1,1 +1,1 @@
-SELECT COUNT(*) AS karacount FROM kara;
+SELECT COUNT(*) AS karacount FROM karasdb.kara;
