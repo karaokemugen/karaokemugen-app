@@ -1284,7 +1284,7 @@ module.exports = {
 
 				var searchWordID = 0;
 				searchWords.forEach(function(searchWord) {
-					searchOK[searchWordID] = false;
+					searchOK[searchWordID] = false;					
 					if (!L.isEmpty(kara.NORM_title)) {
 						if (kara.NORM_title.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
@@ -1306,13 +1306,12 @@ module.exports = {
 					if (!L.isEmpty(kara.misc_i18n)) {
 						if (kara.misc_i18n.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
-					if (!L.isEmpty(kara.language_i18n)) {
-						if (kara.language_i18n.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+					if (!L.isEmpty(kara.language_i18n)) {						
+						if (L.deburr(kara.language_i18n).toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;						
 					}
 
 					searchWordID++;
 				});
-				
 				if (searchOK.indexOf(false) > -1 ) {
 					return false;
 				} else {

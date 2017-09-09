@@ -1,1 +1,1 @@
-SELECT SUM(videolength) AS totalduration FROM kara;
+SELECT SUM(videolength) AS totalduration FROM karasdb.kara;
