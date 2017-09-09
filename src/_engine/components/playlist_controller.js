@@ -2659,8 +2659,8 @@ module.exports = {
 						var kara = pl_content[readpos];
 						if(kara) {
 							// mise à jour du pointeur de lecture
-							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
+							module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
+								module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
 							});
 							resolve();
 						} else {
@@ -2698,8 +2698,8 @@ module.exports = {
 							var kara = pl_content[readpos];
 							if(kara) {
 								// mise à jour du pointeur de lecture
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-									module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
+								module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
+									module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
 								});
 								resolve();
 							} else {
@@ -2765,8 +2765,8 @@ module.exports = {
 						// si il n'y avait pas de morceau en lecture on marque le premier de la playlist
 						if(update_playing_kara) {
 							// mise à jour du pointeur de lecture
-							module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._user_db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
+							module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
+								module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
 							});
 						}
 
