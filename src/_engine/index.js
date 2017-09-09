@@ -17,6 +17,8 @@ module.exports = {
 	SETTINGS:null,
 	DB_INTERFACE:null,
 	i18n:null,
+	endOfPlaylist:false,
+	currentPlaylistID:null,
 	/**
 	 * @private
 	 * Engine status.
@@ -186,8 +188,8 @@ module.exports = {
 			});
 	},
 	/**
-	 * @function {pause}
-	 * Pauses current song in the player and broadcasts new status.
+	 * @function {next}
+	 * If next song is available, play it.
 	 */
 	next:function(){
 		module.exports.stop(true);
@@ -195,7 +197,8 @@ module.exports = {
 			.then(function(){
 				module.exports.play();
 			}).catch(function(){
-				logger.warn('Next song is not available');
+				module.exports._services.ws.socket.emit('playlistContentsUpdated',module.exports.currentPlaylistID);			
+				logger.warn('[Engine] Next song is not available');
 			});
 	},
 
@@ -279,7 +282,8 @@ module.exports = {
 			.then(function(){
 				module.exports.tryToReadKaraInPlaylist();
 			}).catch(function(){
-				logger.warn('Next song is not available');
+				module.exports._services.ws.socket.emit('playlistContentsUpdated',module.exports.currentPlaylistID);							
+				logger.warn('[Engine] Next song is not available');
 				module.exports.stop();
 			});
 	},
@@ -871,6 +875,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
 					.then(function(id_playlist){
+						module.exports.currentPlaylistID = id_playlist;
 						resolve(id_playlist);
 					})
 					.catch(function(err){
@@ -1297,8 +1302,9 @@ module.exports = {
 		module.exports._services.playlist_controller.init();
 		//Test if a playlist with flag_current exists. If not create one.
 		module.exports._services.playlist_controller.isACurrentPlaylist()
-			.then(function(){
-				//A playlist exists, nothing to do.
+			.then(function(playlist_id){
+				//A playlist exists, setting currentPlaylistID
+				module.exports.currentPlaylistID = playlist_id;
 			})
 			.catch(function(){
 				//No playlist exists, creating one.

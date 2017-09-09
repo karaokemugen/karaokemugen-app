@@ -109,6 +109,24 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Returns the PLCID of the latest added kara, by date}
+	* @param {number} {Playlist ID}
+	* @param {number} {Date added in Unix Timestap}
+	* @return {number} {PLC ID}
+	*/
+	getPLCIDByDate:function(playlist_id,date_added) {		
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.getPLCIDByDate(playlist_id,date_added)
+				.then(function(plcid){
+					resolve(plcid);
+				})
+				.catch(function(err){
+					logger.error('[PLC] DBI getPLCIDByDate : '+err);
+					reject(err);
+				});
+		});
+	},
+	/**
 	* @function {(Re)generate blacklist}
 	* @return {boolean} {Promise}
 	*/
@@ -443,6 +461,27 @@ module.exports = {
 				})
 				.catch(function(err){
 					logger.error('[PLC] DBI isPlaylist : '+err);
+					reject(err);
+				});
+		});
+	},
+	/**
+	* @function {Does the playlist have a flag_playing set somewhere?}
+	* @param  {number} playlist_id {ID of playlist to check}
+	* @return {promise} Promise
+	*/
+	isPlaylistFlagPlaying:function(playlist_id) {
+		return new Promise(function(resolve,reject){			
+			module.exports.DB_INTERFACE.isPlaylistFlagPlaying(playlist_id)
+				.then(function(res){
+					if (res == true) {
+						resolve(true);
+					} else {
+						resolve(false);
+					}
+				})
+				.catch(function(err){
+					logger.error('[PLC] DBI isPlaylistFlagPlaying : '+err);
 					reject(err);
 				});
 		});
@@ -1491,10 +1530,11 @@ module.exports = {
 						});													
 						Promise.all([pBuildASS,pManagePos])
 							.then(function() {	
-								logger.debug('[PLC] addKaraToPlaylist : Adding to database');		logger.profile('DB_AddKaraToPlaylist');					
+								logger.debug('[PLC] addKaraToPlaylist : Adding to database');
+								logger.profile('DB_AddKaraToPlaylist');					
 								module.exports.DB_INTERFACE.addKaraToPlaylist(karaList)
 									.then(function(){
-										logger.profile('DB_AddKaraToPlaylist');					
+										logger.profile('DB_AddKaraToPlaylist');	
 										logger.debug('[PLC] addKaraToPlaylist : updating playlist info');
 										var pUpdateLastEditTime = new Promise((resolve,reject) => {
 											logger.profile('DB_AddKaraToPlaylist_UpdateEditTime');				
@@ -1531,8 +1571,42 @@ module.exports = {
 													logger.error('[PLC] updatePlaylistNumOfKaras : '+err);
 													reject(err);
 												});
-										});										
-										Promise.all([pUpdateLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
+										});
+										var pSetPlaying = new Promise ((resolve,reject) => {
+											logger.profile('DB_AddKaraToPlaylist_SetPlaying');
+											// Checking if a flag_playing is present inside the playlist.
+											// If not, we'll have to set the karaoke we just added as the currently playing one. 
+											module.exports.isPlaylistFlagPlaying(playlist_id)
+												.then(function(res){																			// Playlist has no song with flag_playing!
+													// Now setting.
+													if (!res) {														
+														module.exports.getPLCIDByDate(playlist_id,date_add)
+															.then(function(plcid){
+																module.exports.DB_INTERFACE.setPlaying(plcid,playlist_id)
+																	.then(function(){
+																		resolve();
+																		logger.profile('DB_AddKaraToPlaylist_SetPlaying');
+																	})
+																	.catch(function(err){
+																		logger.error('[PLC] DBI setPlaying : '+err);
+																		reject(err);
+																	});
+															})
+															.catch(function(err){
+																logger.error('[PLC] getPLCIDByDate : '+err);
+																reject(err);
+															});																												
+													} else {
+														resolve();
+														logger.profile('DB_AddKaraToPlaylist_SetPlaying');
+													}
+												})
+												.catch(function(err){
+													logger.error('[PLC] isPlaylistFlagPlaying : '+err);
+													reject(err);
+												});
+										});
+										Promise.all([pSetPlaying,pUpdateLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
 											.then(function() {
 												logger.profile('DB_AddKaraToPlaylist');				
 												resolve();
@@ -2641,7 +2715,7 @@ module.exports = {
 			module.exports.isACurrentPlaylist().then(function(playlist_id){
 				module.exports.getPlaylistContents(playlist_id).then(function(pl_content){
 					if(pl_content.length==0) {
-						logger.error('[PLC] prev : pl_content is empty!');
+						logger.warn('[PLC] prev : pl_content is empty!');
 						reject('Playlist is empty!');
 					} else {
 						var readpos = 0;
@@ -2652,17 +2726,20 @@ module.exports = {
 						});
 						// Beginning of playlist
 						if(readpos<0) {
-							logger.error('[PLC] prev : current position is first song!');
+							logger.warn('[PLC] prev : current position is first song!');
 							reject('Current position is first song!');
 						}
 
 						var kara = pl_content[readpos];
 						if(kara) {
 							// mise à jour du pointeur de lecture
-							module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
-							});
-							resolve();
+							module.exports.DB_INTERFACE.setPlaying(kara.playlistcontent_id,playlist_id)
+								.then(function(){
+									resolve();
+								})
+								.catch(function(err){
+									reject(err);
+								});	
 						} else {
 							var err = 'Received an empty karaoke!';
 							logger.error('[PLC] prev : '+err);
@@ -2692,16 +2769,26 @@ module.exports = {
 						});
 						// on est la fin de la playlist
 						if(readpos >= pl_content.length) {
-							logger.error('[PLC] next : current position is last song!');
-							reject('Current position is last song!');
+							logger.info('[PLC] next : current position is last song');
+							// Unset flag_playing on all karas from the playlist
+							module.exports.DB_INTERFACE.unsetPlaying(playlist_id)
+								.then(function(){
+									reject('Current position is last song!');										
+								})
+								.catch(function(err){
+									reject(err);
+								});
 						} else {
 							var kara = pl_content[readpos];
 							if(kara) {
 								// mise à jour du pointeur de lecture
-								module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-									module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
-								});
-								resolve();
+								module.exports.DB_INTERFACE.setPlaying(kara.playlistcontent_id,playlist_id)
+									.then(function(){
+										resolve();
+									})
+									.catch(function(err){
+										reject(err);
+									});								
 							} else {
 								var err = 'Received an empty karaoke!';
 								logger.error('[PLC] next : '+err);
@@ -2765,9 +2852,13 @@ module.exports = {
 						// si il n'y avait pas de morceau en lecture on marque le premier de la playlist
 						if(update_playing_kara) {
 							// mise à jour du pointeur de lecture
-							module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=0;',function(){
-								module.exports.DB_INTERFACE._db_handler.run('UPDATE playlist_content SET flag_playing=1 WHERE pk_id_plcontent = '+kara.playlistcontent_id+';');
-							});
+							module.exports.DB_INTERFACE.setPlaying(kara.playlistcontent_id,playlist.id)
+								.then(function(){
+									resolve();
+								})
+								.catch(function(err){
+									reject(err);
+								});	
 						}
 
 						// on enrichie l'objet pour fournir son contexte et les chemins système prêt à l'emploi
