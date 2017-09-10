@@ -750,10 +750,12 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistSingleKaraDelete = function(playlistcontent_id){
+		module.exports._services.apiserver.onPlaylistSingleKaraDelete = function(plc_ids,playlist_id){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.deleteKaraFromPlaylist(playlistcontent_id)
-					.then(function(playlist_id){
+				logger.info('[Engine] Deleting karaokes from playlist '+playlist_id+' : '+plc_ids);
+				var karas = plc_ids.split(',');				
+				module.exports._services.playlist_controller.deleteKaraFromPlaylist(karas,playlist_id)
+					.then(function(){
 						resolve(playlist_id);
 					})
 					.catch(function(err){
