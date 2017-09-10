@@ -288,15 +288,16 @@ module.exports = {
 					if(fs.existsSync(subtitle)){
 						logger.info('[Player] Subs : '+subtitle);
 						module.exports._player.addSubtitles(subtitle);//, flag, title, lang)
+						logger.profile('StartPlaying');
 					} else {
 						logger.error('[Player] Subs NOT FOUND : '+subtitle);
 					}
 				} else {
-					logger.info('[Player] Subs not needed');
+					logger.info('[Player] Subs not needed');					
 				}
 				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 				module.exports._player.load(backgroundImageFile,'append');
-			},500);
+			},10);
 		} else {
 			module.exports.playing = false;
 			logger.error('[Player] Video NOT FOUND : '+video);
