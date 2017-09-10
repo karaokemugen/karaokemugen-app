@@ -48,12 +48,17 @@ module.exports = {
 				customValidators: {
 					enum: (input, options) => options.includes(input),
 					numbersArray: function(input) {
-						if (input.includes(',')) {
-							var array = input.split(',');
-							return array.some(numberTest);
-						} else { 
-							return numberTest(input);
-						}						
+						if (input) {
+							if (input.includes(',')) {
+								var array = input.split(',');
+								return array.some(numberTest);
+							} else { 
+								return numberTest(input);
+							}						
+						} else {
+							return false;
+						}
+						
 					}
 				}
 			}));
