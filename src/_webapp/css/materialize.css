@@ -40,19 +40,19 @@
 .materialize-red-text.text-darken-1 {
   color: #d0181e !important; }
 
-.materialize-red.darken-2, .collection .materialize-red.collection-item.dragged {
+.materialize-red.darken-2 {
   background-color: #b9151b !important; }
 
 .materialize-red-text.text-darken-2 {
   color: #b9151b !important; }
 
-.materialize-red.darken-3 {
+.materialize-red.darken-3, .collection .materialize-red.collection-item.dragged, .collection .materialize-red.collection-item.pressed {
   background-color: #a21318 !important; }
 
 .materialize-red-text.text-darken-3 {
   color: #a21318 !important; }
 
-.materialize-red.darken-4, .collection .materialize-red.collection-item:not(.dragged) {
+.materialize-red.darken-4, .collection .materialize-red.collection-item:not(.dragged):not(.pressed) {
   background-color: #8b1014 !important; }
 
 .materialize-red-text.text-darken-4, .input-field input.materialize-red-text[type=search]:focus, .input-field input[type=search]:focus + label i.materialize-red-text {
@@ -100,19 +100,19 @@
 .red-text.text-darken-1 {
   color: #E53935 !important; }
 
-.red.darken-2, .collection .red.collection-item.dragged {
+.red.darken-2 {
   background-color: #D32F2F !important; }
 
 .red-text.text-darken-2 {
   color: #D32F2F !important; }
 
-.red.darken-3 {
+.red.darken-3, .collection .red.collection-item.dragged, .collection .red.collection-item.pressed {
   background-color: #C62828 !important; }
 
 .red-text.text-darken-3 {
   color: #C62828 !important; }
 
-.red.darken-4, .collection .red.collection-item:not(.dragged) {
+.red.darken-4, .collection .red.collection-item:not(.dragged):not(.pressed) {
   background-color: #B71C1C !important; }
 
 .red-text.text-darken-4, .input-field input.red-text[type=search]:focus, .input-field input[type=search]:focus + label i.red-text {
@@ -184,19 +184,19 @@
 .pink-text.text-darken-1 {
   color: #d81b60 !important; }
 
-.pink.darken-2, .collection .pink.collection-item.dragged {
+.pink.darken-2 {
   background-color: #c2185b !important; }
 
 .pink-text.text-darken-2 {
   color: #c2185b !important; }
 
-.pink.darken-3 {
+.pink.darken-3, .collection .pink.collection-item.dragged, .collection .pink.collection-item.pressed {
   background-color: #ad1457 !important; }
 
 .pink-text.text-darken-3 {
   color: #ad1457 !important; }
 
-.pink.darken-4, .collection .pink.collection-item:not(.dragged) {
+.pink.darken-4, .collection .pink.collection-item:not(.dragged):not(.pressed) {
   background-color: #880e4f !important; }
 
 .pink-text.text-darken-4, .input-field input.pink-text[type=search]:focus, .input-field input[type=search]:focus + label i.pink-text {
@@ -268,19 +268,19 @@
 .purple-text.text-darken-1 {
   color: #8e24aa !important; }
 
-.purple.darken-2, .collection .purple.collection-item.dragged {
+.purple.darken-2 {
   background-color: #7b1fa2 !important; }
 
 .purple-text.text-darken-2 {
   color: #7b1fa2 !important; }
 
-.purple.darken-3 {
+.purple.darken-3, .collection .purple.collection-item.dragged, .collection .purple.collection-item.pressed {
   background-color: #6a1b9a !important; }
 
 .purple-text.text-darken-3 {
   color: #6a1b9a !important; }
 
-.purple.darken-4, .collection .purple.collection-item:not(.dragged) {
+.purple.darken-4, .collection .purple.collection-item:not(.dragged):not(.pressed) {
   background-color: #4a148c !important; }
 
 .purple-text.text-darken-4, .input-field input.purple-text[type=search]:focus, .input-field input[type=search]:focus + label i.purple-text {
@@ -352,19 +352,19 @@
 .deep-purple-text.text-darken-1 {
   color: #5e35b1 !important; }
 
-.deep-purple.darken-2, .collection .deep-purple.collection-item.dragged {
+.deep-purple.darken-2 {
   background-color: #512da8 !important; }
 
 .deep-purple-text.text-darken-2 {
   color: #512da8 !important; }
 
-.deep-purple.darken-3 {
+.deep-purple.darken-3, .collection .deep-purple.collection-item.dragged, .collection .deep-purple.collection-item.pressed {
   background-color: #4527a0 !important; }
 
 .deep-purple-text.text-darken-3 {
   color: #4527a0 !important; }
 
-.deep-purple.darken-4, .collection .deep-purple.collection-item:not(.dragged) {
+.deep-purple.darken-4, .collection .deep-purple.collection-item:not(.dragged):not(.pressed) {
   background-color: #311b92 !important; }
 
 .deep-purple-text.text-darken-4, .input-field input.deep-purple-text[type=search]:focus, .input-field input[type=search]:focus + label i.deep-purple-text {
@@ -436,19 +436,19 @@
 .indigo-text.text-darken-1 {
   color: #3949ab !important; }
 
-.indigo.darken-2, .collection .indigo.collection-item.dragged {
+.indigo.darken-2 {
   background-color: #303f9f !important; }
 
 .indigo-text.text-darken-2 {
   color: #303f9f !important; }
 
-.indigo.darken-3 {
+.indigo.darken-3, .collection .indigo.collection-item.dragged, .collection .indigo.collection-item.pressed {
   background-color: #283593 !important; }
 
 .indigo-text.text-darken-3 {
   color: #283593 !important; }
 
-.indigo.darken-4, .collection .indigo.collection-item:not(.dragged) {
+.indigo.darken-4, .collection .indigo.collection-item:not(.dragged):not(.pressed) {
   background-color: #1a237e !important; }
 
 .indigo-text.text-darken-4, .input-field input.indigo-text[type=search]:focus, .input-field input[type=search]:focus + label i.indigo-text {
@@ -520,19 +520,19 @@
 .blue-text.text-darken-1 {
   color: #1E88E5 !important; }
 
-.blue.darken-2, .collection .blue.collection-item.dragged {
+.blue.darken-2 {
   background-color: #1976D2 !important; }
 
 .blue-text.text-darken-2 {
   color: #1976D2 !important; }
 
-.blue.darken-3 {
+.blue.darken-3, .collection .blue.collection-item.dragged, .collection .blue.collection-item.pressed {
   background-color: #1565C0 !important; }
 
 .blue-text.text-darken-3 {
   color: #1565C0 !important; }
 
-.blue.darken-4, .collection .blue.collection-item:not(.dragged) {
+.blue.darken-4, .collection .blue.collection-item:not(.dragged):not(.pressed) {
   background-color: #0D47A1 !important; }
 
 .blue-text.text-darken-4, .input-field input.blue-text[type=search]:focus, .input-field input[type=search]:focus + label i.blue-text {
@@ -604,19 +604,19 @@
 .light-blue-text.text-darken-1 {
   color: #039be5 !important; }
 
-.light-blue.darken-2, .collection .light-blue.collection-item.dragged {
+.light-blue.darken-2 {
   background-color: #0288d1 !important; }
 
 .light-blue-text.text-darken-2 {
   color: #0288d1 !important; }
 
-.light-blue.darken-3 {
+.light-blue.darken-3, .collection .light-blue.collection-item.dragged, .collection .light-blue.collection-item.pressed {
   background-color: #0277bd !important; }
 
 .light-blue-text.text-darken-3 {
   color: #0277bd !important; }
 
-.light-blue.darken-4, .collection .light-blue.collection-item:not(.dragged) {
+.light-blue.darken-4, .collection .light-blue.collection-item:not(.dragged):not(.pressed) {
   background-color: #01579b !important; }
 
 .light-blue-text.text-darken-4, .input-field input.light-blue-text[type=search]:focus, .input-field input[type=search]:focus + label i.light-blue-text {
@@ -688,19 +688,19 @@
 .cyan-text.text-darken-1 {
   color: #00acc1 !important; }
 
-.cyan.darken-2, .collection .cyan.collection-item.dragged {
+.cyan.darken-2 {
   background-color: #0097a7 !important; }
 
 .cyan-text.text-darken-2 {
   color: #0097a7 !important; }
 
-.cyan.darken-3 {
+.cyan.darken-3, .collection .cyan.collection-item.dragged, .collection .cyan.collection-item.pressed {
   background-color: #00838f !important; }
 
 .cyan-text.text-darken-3 {
   color: #00838f !important; }
 
-.cyan.darken-4, .collection .cyan.collection-item:not(.dragged) {
+.cyan.darken-4, .collection .cyan.collection-item:not(.dragged):not(.pressed) {
   background-color: #006064 !important; }
 
 .cyan-text.text-darken-4, .input-field input.cyan-text[type=search]:focus, .input-field input[type=search]:focus + label i.cyan-text {
@@ -772,19 +772,19 @@
 .teal-text.text-darken-1 {
   color: #00897b !important; }
 
-.teal.darken-2, .collection .teal.collection-item.dragged {
+.teal.darken-2 {
   background-color: #00796b !important; }
 
 .teal-text.text-darken-2 {
   color: #00796b !important; }
 
-.teal.darken-3 {
+.teal.darken-3, .collection .teal.collection-item.dragged, .collection .teal.collection-item.pressed {
   background-color: #00695c !important; }
 
 .teal-text.text-darken-3 {
   color: #00695c !important; }
 
-.teal.darken-4, .collection .teal.collection-item:not(.dragged) {
+.teal.darken-4, .collection .teal.collection-item:not(.dragged):not(.pressed) {
   background-color: #004d40 !important; }
 
 .teal-text.text-darken-4, .input-field input.teal-text[type=search]:focus, .input-field input[type=search]:focus + label i.teal-text {
@@ -856,19 +856,19 @@
 .green-text.text-darken-1 {
   color: #43A047 !important; }
 
-.green.darken-2, .collection .green.collection-item.dragged {
+.green.darken-2 {
   background-color: #388E3C !important; }
 
 .green-text.text-darken-2 {
   color: #388E3C !important; }
 
-.green.darken-3 {
+.green.darken-3, .collection .green.collection-item.dragged, .collection .green.collection-item.pressed {
   background-color: #2E7D32 !important; }
 
 .green-text.text-darken-3 {
   color: #2E7D32 !important; }
 
-.green.darken-4, .collection .green.collection-item:not(.dragged) {
+.green.darken-4, .collection .green.collection-item:not(.dragged):not(.pressed) {
   background-color: #1B5E20 !important; }
 
 .green-text.text-darken-4, .input-field input.green-text[type=search]:focus, .input-field input[type=search]:focus + label i.green-text {
@@ -940,19 +940,19 @@
 .light-green-text.text-darken-1 {
   color: #7cb342 !important; }
 
-.light-green.darken-2, .collection .light-green.collection-item.dragged {
+.light-green.darken-2 {
   background-color: #689f38 !important; }
 
 .light-green-text.text-darken-2 {
   color: #689f38 !important; }
 
-.light-green.darken-3 {
+.light-green.darken-3, .collection .light-green.collection-item.dragged, .collection .light-green.collection-item.pressed {
   background-color: #558b2f !important; }
 
 .light-green-text.text-darken-3 {
   color: #558b2f !important; }
 
-.light-green.darken-4, .collection .light-green.collection-item:not(.dragged) {
+.light-green.darken-4, .collection .light-green.collection-item:not(.dragged):not(.pressed) {
   background-color: #33691e !important; }
 
 .light-green-text.text-darken-4, .input-field input.light-green-text[type=search]:focus, .input-field input[type=search]:focus + label i.light-green-text {
@@ -1024,19 +1024,19 @@
 .lime-text.text-darken-1 {
   color: #c0ca33 !important; }
 
-.lime.darken-2, .collection .lime.collection-item.dragged {
+.lime.darken-2 {
   background-color: #afb42b !important; }
 
 .lime-text.text-darken-2 {
   color: #afb42b !important; }
 
-.lime.darken-3 {
+.lime.darken-3, .collection .lime.collection-item.dragged, .collection .lime.collection-item.pressed {
   background-color: #9e9d24 !important; }
 
 .lime-text.text-darken-3 {
   color: #9e9d24 !important; }
 
-.lime.darken-4, .collection .lime.collection-item:not(.dragged) {
+.lime.darken-4, .collection .lime.collection-item:not(.dragged):not(.pressed) {
   background-color: #827717 !important; }
 
 .lime-text.text-darken-4, .input-field input.lime-text[type=search]:focus, .input-field input[type=search]:focus + label i.lime-text {
@@ -1108,19 +1108,19 @@
 .yellow-text.text-darken-1 {
   color: #fdd835 !important; }
 
-.yellow.darken-2, .collection .yellow.collection-item.dragged {
+.yellow.darken-2 {
   background-color: #fbc02d !important; }
 
 .yellow-text.text-darken-2 {
   color: #fbc02d !important; }
 
-.yellow.darken-3 {
+.yellow.darken-3, .collection .yellow.collection-item.dragged, .collection .yellow.collection-item.pressed {
   background-color: #f9a825 !important; }
 
 .yellow-text.text-darken-3 {
   color: #f9a825 !important; }
 
-.yellow.darken-4, .collection .yellow.collection-item:not(.dragged) {
+.yellow.darken-4, .collection .yellow.collection-item:not(.dragged):not(.pressed) {
   background-color: #f57f17 !important; }
 
 .yellow-text.text-darken-4, .input-field input.yellow-text[type=search]:focus, .input-field input[type=search]:focus + label i.yellow-text {
@@ -1192,19 +1192,19 @@
 .amber-text.text-darken-1 {
   color: #ffb300 !important; }
 
-.amber.darken-2, .collection .amber.collection-item.dragged {
+.amber.darken-2 {
   background-color: #ffa000 !important; }
 
 .amber-text.text-darken-2 {
   color: #ffa000 !important; }
 
-.amber.darken-3 {
+.amber.darken-3, .collection .amber.collection-item.dragged, .collection .amber.collection-item.pressed {
   background-color: #ff8f00 !important; }
 
 .amber-text.text-darken-3 {
   color: #ff8f00 !important; }
 
-.amber.darken-4, .collection .amber.collection-item:not(.dragged) {
+.amber.darken-4, .collection .amber.collection-item:not(.dragged):not(.pressed) {
   background-color: #ff6f00 !important; }
 
 .amber-text.text-darken-4, .input-field input.amber-text[type=search]:focus, .input-field input[type=search]:focus + label i.amber-text {
@@ -1276,19 +1276,19 @@
 .orange-text.text-darken-1 {
   color: #fb8c00 !important; }
 
-.orange.darken-2, .collection .orange.collection-item.dragged {
+.orange.darken-2 {
   background-color: #f57c00 !important; }
 
 .orange-text.text-darken-2 {
   color: #f57c00 !important; }
 
-.orange.darken-3 {
+.orange.darken-3, .collection .orange.collection-item.dragged, .collection .orange.collection-item.pressed {
   background-color: #ef6c00 !important; }
 
 .orange-text.text-darken-3 {
   color: #ef6c00 !important; }
 
-.orange.darken-4, .collection .orange.collection-item:not(.dragged) {
+.orange.darken-4, .collection .orange.collection-item:not(.dragged):not(.pressed) {
   background-color: #e65100 !important; }
 
 .orange-text.text-darken-4, .input-field input.orange-text[type=search]:focus, .input-field input[type=search]:focus + label i.orange-text {
@@ -1360,19 +1360,19 @@
 .deep-orange-text.text-darken-1 {
   color: #f4511e !important; }
 
-.deep-orange.darken-2, .collection .deep-orange.collection-item.dragged {
+.deep-orange.darken-2 {
   background-color: #e64a19 !important; }
 
 .deep-orange-text.text-darken-2 {
   color: #e64a19 !important; }
 
-.deep-orange.darken-3 {
+.deep-orange.darken-3, .collection .deep-orange.collection-item.dragged, .collection .deep-orange.collection-item.pressed {
   background-color: #d84315 !important; }
 
 .deep-orange-text.text-darken-3 {
   color: #d84315 !important; }
 
-.deep-orange.darken-4, .collection .deep-orange.collection-item:not(.dragged) {
+.deep-orange.darken-4, .collection .deep-orange.collection-item:not(.dragged):not(.pressed) {
   background-color: #bf360c !important; }
 
 .deep-orange-text.text-darken-4, .input-field input.deep-orange-text[type=search]:focus, .input-field input[type=search]:focus + label i.deep-orange-text {
@@ -1444,79 +1444,79 @@
 .brown-text.text-darken-1 {
   color: #6d4c41 !important; }
 
-.brown.darken-2, .collection .brown.collection-item.dragged {
+.brown.darken-2 {
   background-color: #5d4037 !important; }
 
 .brown-text.text-darken-2 {
   color: #5d4037 !important; }
 
-.brown.darken-3 {
+.brown.darken-3, .collection .brown.collection-item.dragged, .collection .brown.collection-item.pressed {
   background-color: #4e342e !important; }
 
 .brown-text.text-darken-3 {
   color: #4e342e !important; }
 
-.brown.darken-4, .collection .brown.collection-item:not(.dragged) {
+.brown.darken-4, .collection .brown.collection-item:not(.dragged):not(.pressed) {
   background-color: #3e2723 !important; }
 
 .brown-text.text-darken-4, .input-field input.brown-text[type=search]:focus, .input-field input[type=search]:focus + label i.brown-text {
   color: #3e2723 !important; }
 
-.blue-grey, .input-field input[type=search]:focus, .collection .collection-item:not(.dragged), .collection .collection-item.dragged {
+.blue-grey, .input-field input[type=search]:focus, .collection .collection-item:not(.dragged):not(.pressed), .collection .collection-item.dragged, .collection .collection-item.pressed {
   background-color: #607d8b !important; }
 
 .blue-grey-text, .secondary-content {
   color: #607d8b !important; }
 
-.blue-grey.lighten-5, .input-field input.lighten-5[type=search]:focus, .collection .lighten-5.collection-item:not(.dragged), .collection .lighten-5.collection-item.dragged {
+.blue-grey.lighten-5, .input-field input.lighten-5[type=search]:focus, .collection .lighten-5.collection-item:not(.dragged):not(.pressed), .collection .lighten-5.collection-item.dragged, .collection .lighten-5.collection-item.pressed {
   background-color: #eceff1 !important; }
 
 .blue-grey-text.text-lighten-5, .text-lighten-5.secondary-content {
   color: #eceff1 !important; }
 
-.blue-grey.lighten-4, .input-field input[type=search]:focus, .collection .lighten-4.collection-item:not(.dragged), .collection .lighten-4.collection-item.dragged {
+.blue-grey.lighten-4, .input-field input[type=search]:focus, .collection .lighten-4.collection-item:not(.dragged):not(.pressed), .collection .input-field input.collection-item[type=search]:not(.dragged):not(.pressed):focus, .input-field .collection input.collection-item[type=search]:not(.dragged):not(.pressed):focus, .collection .lighten-4.collection-item.dragged, .collection .lighten-4.collection-item.pressed {
   background-color: #cfd8dc !important; }
 
 .blue-grey-text.text-lighten-4, .secondary-content {
   color: #cfd8dc !important; }
 
-.blue-grey.lighten-3, .input-field input.lighten-3[type=search]:focus, .collection .lighten-3.collection-item:not(.dragged), .collection .lighten-3.collection-item.dragged {
+.blue-grey.lighten-3, .input-field input.lighten-3[type=search]:focus, .collection .lighten-3.collection-item:not(.dragged):not(.pressed), .collection .lighten-3.collection-item.dragged, .collection .lighten-3.collection-item.pressed {
   background-color: #b0bec5 !important; }
 
 .blue-grey-text.text-lighten-3, .text-lighten-3.secondary-content {
   color: #b0bec5 !important; }
 
-.blue-grey.lighten-2, .input-field input.lighten-2[type=search]:focus, .collection .lighten-2.collection-item:not(.dragged), .collection .lighten-2.collection-item.dragged {
+.blue-grey.lighten-2, .input-field input.lighten-2[type=search]:focus, .collection .lighten-2.collection-item:not(.dragged):not(.pressed), .collection .lighten-2.collection-item.dragged, .collection .lighten-2.collection-item.pressed {
   background-color: #90a4ae !important; }
 
 .blue-grey-text.text-lighten-2, .text-lighten-2.secondary-content {
   color: #90a4ae !important; }
 
-.blue-grey.lighten-1, .input-field input.lighten-1[type=search]:focus, .collection .lighten-1.collection-item:not(.dragged), .collection .lighten-1.collection-item.dragged {
+.blue-grey.lighten-1, .input-field input.lighten-1[type=search]:focus, .collection .lighten-1.collection-item:not(.dragged):not(.pressed), .collection .lighten-1.collection-item.dragged, .collection .lighten-1.collection-item.pressed {
   background-color: #78909c !important; }
 
 .blue-grey-text.text-lighten-1, .text-lighten-1.secondary-content {
   color: #78909c !important; }
 
-.blue-grey.darken-1, .input-field input.darken-1[type=search]:focus, .collection .darken-1.collection-item:not(.dragged), .collection .darken-1.collection-item.dragged {
+.blue-grey.darken-1, .input-field input.darken-1[type=search]:focus, .collection .darken-1.collection-item:not(.dragged):not(.pressed), .collection .darken-1.collection-item.dragged, .collection .darken-1.collection-item.pressed {
   background-color: #546e7a !important; }
 
 .blue-grey-text.text-darken-1, .text-darken-1.secondary-content {
   color: #546e7a !important; }
 
-.blue-grey.darken-2, .input-field input.darken-2[type=search]:focus, .input-field .collection input[type=search].collection-item.dragged:focus, .collection .input-field input[type=search].collection-item.dragged:focus, .collection .darken-2.collection-item:not(.dragged), .collection .collection-item.dragged {
+.blue-grey.darken-2, .input-field input.darken-2[type=search]:focus, .collection .darken-2.collection-item:not(.dragged):not(.pressed), .collection .darken-2.collection-item.dragged, .collection .darken-2.collection-item.pressed {
   background-color: #455a64 !important; }
 
 .blue-grey-text.text-darken-2, .text-darken-2.secondary-content {
   color: #455a64 !important; }
 
-.blue-grey.darken-3, .input-field input.darken-3[type=search]:focus, .collection .darken-3.collection-item:not(.dragged), .collection .darken-3.collection-item.dragged {
+.blue-grey.darken-3, .input-field input.darken-3[type=search]:focus, .input-field .collection input[type=search].collection-item.dragged:focus, .collection .input-field input[type=search].collection-item.dragged:focus, .input-field .collection input[type=search].collection-item.pressed:focus, .collection .input-field input[type=search].collection-item.pressed:focus, .collection .darken-3.collection-item:not(.dragged):not(.pressed), .collection .collection-item.dragged:not(.dragged):not(.pressed), .collection .collection-item.pressed:not(.dragged):not(.pressed), .collection .collection-item.dragged, .collection .collection-item.pressed {
   background-color: #37474f !important; }
 
 .blue-grey-text.text-darken-3, .text-darken-3.secondary-content {
   color: #37474f !important; }
 
-.blue-grey.darken-4, .input-field input.darken-4[type=search]:focus, .input-field .collection input[type=search].collection-item:focus:not(.dragged), .collection .input-field input[type=search].collection-item:focus:not(.dragged), .collection .collection-item:not(.dragged), .collection .darken-4.collection-item.dragged {
+.blue-grey.darken-4, .input-field input.darken-4[type=search]:focus, .collection .collection-item:not(.dragged):not(.pressed), .collection .darken-4.collection-item.dragged, .collection .darken-4.collection-item.pressed {
   background-color: #263238 !important; }
 
 .blue-grey-text.text-darken-4, .text-darken-4.secondary-content, .input-field input.secondary-content[type=search]:focus, .input-field input[type=search]:focus + label i.secondary-content, .input-field input.blue-grey-text[type=search]:focus, .input-field input[type=search]:focus + label i.blue-grey-text {
@@ -1564,19 +1564,19 @@
 .grey-text.text-darken-1 {
   color: #757575 !important; }
 
-.grey.darken-2, .collection .grey.collection-item.dragged {
+.grey.darken-2 {
   background-color: #616161 !important; }
 
 .grey-text.text-darken-2 {
   color: #616161 !important; }
 
-.grey.darken-3 {
+.grey.darken-3, .collection .grey.collection-item.dragged, .collection .grey.collection-item.pressed {
   background-color: #424242 !important; }
 
 .grey-text.text-darken-3 {
   color: #424242 !important; }
 
-.grey.darken-4, .collection .grey.collection-item:not(.dragged) {
+.grey.darken-4, .collection .grey.collection-item:not(.dragged):not(.pressed) {
   background-color: #212121 !important; }
 
 .grey-text.text-darken-4, .input-field input.grey-text[type=search]:focus, .input-field input[type=search]:focus + label i.grey-text {
@@ -1599,6 +1599,10 @@
 
 .transparent-text {
   color: transparent !important; }
+
+.modal, .modal .modal-content, .modal .modal-footer {
+  background-color: #37474f !important;
+  color: white !important; }
 
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 /**

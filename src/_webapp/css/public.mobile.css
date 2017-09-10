@@ -48,7 +48,7 @@ body {
 }
 
 .collection .collection-item {
-    padding: 0px;
+    padding: 3px;
 }
 
 .collection, .collection .collection-item {
@@ -61,7 +61,7 @@ ul.side-nav {
 }
 
 #playlist2 {
-    outline: 5px solid #486986;
+    outline: 1px solid #486986;
 }
 
 .btn-small {
@@ -77,11 +77,20 @@ ul.side-nav {
 }
 
 #progressBarColor {
-	background-color: #337ab7;
+	background-color: #337ab7
 	z-index: 0;
 	height: 100%;
     position: absolute;
     top: 0;
+    -webkit-transition: width 1s linear;
+    -moz-transition: width 1s linear;
+    -o-transition: width 1s linear;
+    transition: width 1s linear;
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 
@@ -99,7 +108,7 @@ ul.side-nav {
 }
 
 #searchNav {
-    z-index: 7000;
+    z-index: 1000;
 }
 
 .side-nav {
@@ -120,4 +129,94 @@ button[name="addKara"] {
     position: fixed;
     z-index: 9998;
     box-shadow: 4px 4px 3px #a5a5a5;
+}
+
+
+.detailsKara, .lyricsKara {
+	min-height: 56px;
+	padding: 10px;
+	margin: 7px;
+	color: #DFE9EF;
+    background-color: #30393e;
+    border-color: #8aa9af;
+	border-radius: 0px;
+	position: relative;
+}
+.detailsKara tr > td:first-child {
+	font-weight: bold;
+	padding-right: 7px;
+    width: 1px;
+}
+
+.detailsKara  td, .detailsKara  th {
+    padding: 5px 5px;
+}
+
+.fullLyricsMobile {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 5px;
+}
+
+.collection-item {
+    touch-action: pan-y;
+    -webkit-user-drag: none; 
+}
+
+#lyricsModal {
+    text-align: center;
+}
+.fixed-action-btn {
+    z-index: 5000;
+}
+.btn-floating.btn-large  {
+    font-size: 28px;
+}
+.btn-floating.btn-large > i {
+    font-size: 28px;
+}
+
+#switchInfoBar.showLyrics > i.infos {
+    display: none;
+}
+#switchInfoBar:not(.showLyrics) > i.lyrics {
+    display: none;
+}
+
+.noTransform {
+    transform: translateX(0) !important;
+}
+
+.carousel-item:not(.active) ~ select {
+    display: block !important;
+    background-color: transparent;
+    color: black;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+select[num=2] > option {
+    background-color: transparent;
+    color: black;
+}
+
+.indicators {
+    display:none;
+}
+
+
+.modal-content {
+    border-radius: 0;
+    border: 1px;
+}
+
+#playlist {
+    height: 100% !important;
+}
+
+.fixed-action-btn.left {
+    left: 23px;
+    right: auto;
 }

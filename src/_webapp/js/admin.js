@@ -158,12 +158,12 @@
             });
         });
         $('.playlist-main').on('click', 'button.showPlaylistCommands', function (e) {
-            var div = $(this).closest('.playlistDashboard').toggleClass('advanced');
+            $(this).closest('.playlistDashboard').toggleClass('advanced');
             $(window).resize();
             
-            if( div.is(':visible') && ($('#playlist1').parent().height() < 400 ||  $('#playlist2').parent().height() <  400) ) {
+            if( $('.playlistDashboard').hasClass('advanced') && ($('#playlist1').parent().height() < 400 ||  $('#playlist2').parent().height() <  400) ) {
                 $('body').addClass('hiddenHeader');
-            } else {
+            } else if(!$('.playlistDashboard').hasClass('advanced')) {
                 $('body').removeClass('hiddenHeader');
             }
                 
