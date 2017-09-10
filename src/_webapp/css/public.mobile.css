@@ -32,6 +32,8 @@ body {
 }
 
 .collection-item {
+}
+.subKara {
     display: flex;
     align-items: center;
 }
