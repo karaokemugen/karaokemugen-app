@@ -1376,8 +1376,6 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			var NORM_requester = L.deburr(requester);
 			var date_add = timestamp.now();
-			var isKaraInPlaylist = false;
-			var isKaraIDInPlaylist;
 			// Let's build the complete array of kara objects
 			var karaList = [];
 			karas.forEach(function(kara_id){
@@ -1429,9 +1427,10 @@ module.exports = {
 						.then(function(isKaraInPL) {
 							//Karaoke song is in playlist, then we update the boolean and resolve the promise
 							//since we don't want duplicates in playlists.
-							if (isKaraInPL) {								
-								isKaraIDInPlaylist = kara_id;
-								isKaraInPlaylist = true;
+							if (isKaraInPL) {
+								//Search kara_id in karaList and then delete that index from the array. 
+								//Karaoke song won't be added since it already exists in destination playlist.								
+								karaList = L.filter(karaList, element => element.kara_id !== kara_id);
 							}
 							callback();
 						})
@@ -1450,8 +1449,9 @@ module.exports = {
 			});
 			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist])
 				.then(function(){
-					if (isKaraInPlaylist) {
-						var err = 'A karaoke song '+isKaraIDInPlaylist+' is already in playlist '+playlist_id;
+					
+					if (karaList.length === 0) {
+						var err = 'No karaoke could be added, all are in destination playlist already (PLID : '+playlist_id+')';
 						logger.error('[PLC] addKaraToPlaylist : '+err);
 						reject(err);
 					} else {	
@@ -1499,17 +1499,20 @@ module.exports = {
 							// If pos is provided, we need to update all karas above that and add 
 							// karas.length to the position
 							// If pos is not provided, we need to get the maximum position in the PL
-							// And use that +1 to set our playlist position.						logger.profile('PositionManagement');	
+							// And use that +1 to set our playlist position.				
+							logger.profile('PositionManagement');	
 							if (pos) {
 								module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,karas.length)
 									.then(function(){
+										logger.profile('PositionManagement');	
 										resolve();
 									})
 									.catch(function(err){
+										logger.profile('PositionManagement');	
 										logger.error('[PLC] DBI shiftPosInPlaylist : '+err);
 										reject(err);
 									});								
-							} else {
+							} else {								
 								var startpos;								
 								module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
 									.then(function(maxpos){
@@ -1523,6 +1526,7 @@ module.exports = {
 										resolve();
 									})
 									.catch(function(err){
+										logger.profile('PositionManagement');	
 										logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
 										reject(err);
 									});
@@ -1533,7 +1537,7 @@ module.exports = {
 								logger.debug('[PLC] addKaraToPlaylist : Adding to database');
 								logger.profile('DB_AddKaraToPlaylist');					
 								module.exports.DB_INTERFACE.addKaraToPlaylist(karaList)
-									.then(function(){
+									.then(function(){										
 										logger.profile('DB_AddKaraToPlaylist');	
 										logger.debug('[PLC] addKaraToPlaylist : updating playlist info');
 										var pUpdateLastEditTime = new Promise((resolve,reject) => {
@@ -1607,9 +1611,12 @@ module.exports = {
 												});
 										});
 										Promise.all([pSetPlaying,pUpdateLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
-											.then(function() {
-												logger.profile('DB_AddKaraToPlaylist');				
-												resolve();
+											.then(function() {								
+												var karaAdded = [];
+												karaList.forEach(function(kara) {
+													karaAdded.push(kara.kara_id);
+												});
+												resolve(karaAdded);
 											})
 											.catch(function(err) {
 												logger.error('[PLC] addKaraToPlaylist : '+err);
@@ -1753,13 +1760,16 @@ module.exports = {
 						// If pos is provided, we need to update all karas above that and add 
 						// karas.length to the position
 						// If pos is not provided, we need to get the maximum position in the PL
-						// And use that +1 to set our playlist position.						logger.profile('PositionManagement');	
+						// And use that +1 to set our playlist position.					
+						logger.profile('PositionManagement');	
 						if (pos) {
 							module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,plcs.length)
 								.then(function(){
+									logger.profile('PositionManagement');	
 									resolve();
 								})
 								.catch(function(err){
+									logger.profile('PositionManagement');	
 									logger.error('[PLC] DBI shiftPosInPlaylist : '+err);
 									reject(err);
 								});								
@@ -1777,6 +1787,7 @@ module.exports = {
 									resolve();
 								})
 								.catch(function(err){
+									logger.profile('PositionManagement');	
 									logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
 									reject(err);
 								});

@@ -381,12 +381,12 @@ module.exports = {
 								req.sanitize('playlist_id').toInt();
 								if (req.body.pos != undefined) req.sanitize('pos').toInt();
 								module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
-									.then(function(pl_id){
-										module.exports.emitEvent('playlistInfoUpdated',pl_id);
-										module.exports.emitEvent('playlistContentsUpdated',pl_id);
+									.then(function(result){
+										module.exports.emitEvent('playlistInfoUpdated',result.playlist_id);
+										module.exports.emitEvent('playlistContentsUpdated',result.playlist_id);
 										res.statusCode = 201;
 										if (req.body.pos === undefined) var pos = 'last';
-										res.json('Karaoke '+req.body.kara_id+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
+										res.json('Karaoke '+result.karaAdded+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
 									})
 									.catch(function(err){
 										res.statusCode = 500;

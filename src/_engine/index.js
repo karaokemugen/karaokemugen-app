@@ -1122,14 +1122,19 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+id_kara);
 				logger.profile('AddKara');
-				var karas = id_kara.split(',');
+				var karas = id_kara.split(',');				
 				module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id,pos)
-					.then(function(){
-						logger.profile('AddKara');				
+					.then(function(karaAdded){
+						logger.profile('AddKara');
 						logger.info('[Engine] Finished adding karaokes to playlist '+playlist_id);
-						resolve(playlist_id);
+						var result = {
+							playlist_id: playlist_id,
+							karaAdded: karaAdded
+						};
+						resolve(result);
 					})
 					.catch(function(err){
+						logger.profile('AddKara');				
 						logger.error('[Engine] PLC addKaraToPlaylist : '+err);
 						reject(err);
 					});
