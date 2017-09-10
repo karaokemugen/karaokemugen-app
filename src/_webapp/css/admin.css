@@ -9,7 +9,16 @@
 #manage .bootstrap-switch-container > span {
 	line-height: 2.25;
 }
-
+.hiddenHeader .header {
+	display: none;
+}
+.hiddenHeader #progressBar {
+	top: 0;
+}
+.hiddenHeader #underHeader {
+	top: 24px;
+	height: calc(100% - 24px);
+}
 .form-horizontal {
 	padding: 0px 40px;
 }
@@ -28,24 +37,51 @@
 	border-right-width: 3px;
 }
 
-#playlist2 .list-group-item > .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-right {
-	display: none; 
-}
-#playlist2 .list-group-item > .btnDiv > button[name="transferKara"]  {
-	float: left; 
-}
-#playlist1 .list-group-item > .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-left {
-	display: none; 
-}
-#playlist1 .list-group-item > .btnDiv > button[name="transferKara"]  {
-	float: right; 
+.btnDiv {
+	display: flex;
+	flex-direction: row;
+	float: right;
 }
 
-.playlistContainer > ul[cantransferkara="false"] .list-group-item > .btnDiv > button[name="transferKara"] {
+#panel2 .btnDiv {
+	flex-direction: row-reverse;
+}
+
+#panel2 .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-right {
+	display: none; 
+}
+#panel1 .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-left {
+	display: none; 
+}
+button[name="selectAllKaras"][value="1"] > i.glyphicon-unchecked {
+	display: none;
+}
+button[name="selectAllKaras"][value="0"] > i.glyphicon-check {
 	display: none;
 }
 
-.playlistContainer > ul[canaddkara="false"] .list-group-item > .btnDiv > button[name="addKara"] {
+
+span[name="checkboxKara"] {
+	padding: 2px;
+	font-size: 19px;
+    float: right;
+}
+#panel2 span[name="checkboxKara"] {
+	float: left;
+}
+
+.playlistDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 
+	display: none;
+}
+.playlistDashboard.advanced + .playlistContainer .btnDiv { 
+	display: none;
+}
+
+panel[cantransferkara="false"] .btnDiv > button[name="transferKara"] {
+	display: none;
+}
+
+panel[canaddkara="false"] .btnDiv > button[name="addKara"] {
 	display: none;
 }
 
@@ -125,17 +161,24 @@ div.bootstrap-switch-large{
 	background-color: #222;
 }
 
-.panel-heading {
+.playlistDashboard {
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: space-between;
 }
-.panel-heading > div:nth-child(1) {
-    flex-grow: 100;
+.playlistDashboard .plSelect {
+	flex-grow: 100;
+	flex-basis: 40%;
     float: left;
 }
-.panel-heading > div:nth-child(3) {
+.playlistDashboard .plSearch {
     flex-grow: 100;
+	flex-basis: 30%;
     float: right;
+}
+
+.playlistDashboard:not(.advanced) .plCommandsContainer {
+	display: none;    
 }
 
 .playlistCommands {
@@ -169,4 +212,79 @@ span.hideCommands {
 span:not(.hideCommands) {
     transition: all .5s ease;
     margin-right: 0;
+}
+
+span.hideCommands {
+	position: relative;
+    margin-left: -270px !important;
+    transition: all .5s ease;
+}
+span:not(.hideCommands) {
+    transition: all .5s ease;
+    margin-right: 0;
+}
+
+#panel2 .btnDiv {
+	float: left;
+}
+
+#panel1 .btnDivContainer {
+    margin-left: auto;
+}
+
+#panel2 .btnDivContainer {
+    margin-right: auto;
+}
+
+.playlistDashboard[flag_visible="true"] [name="flag_visible"] > i.glyphicon-eye-close {
+	display: none;
+}
+.playlistDashboard[flag_visible="false"] [name="flag_visible"] > i.glyphicon-eye-open {
+	display: none;
+}
+
+.playlistDashboard .flags {
+    margin-left: auto;
+}
+
+.playlistDashboard[idPlaylist="-1"] .flagsContainer {
+	display: none;
+	padding: 0px;
+}
+.playlistDashboard[idPlaylist^="-"] .flagsContainer button {
+	display: none;
+}
+
+.playlistDashboard[idPlaylist="-2"] button[name="flag_visible"],
+.playlistDashboard[idPlaylist="-3"] button[name="flag_visible"],
+.playlistDashboard[idPlaylist="-4"] button[name="flag_visible"]
+{
+	display: block;
+}
+
+
+
+
+.panel-heading ::-webkit-input-placeholder {
+    font-size: 17px;
+	line-height: 24px;
+	padding-top:10px;
+	height: 20px;
+    text-align:right; 
+    font-family: 'Glyphicons Halflings'; 
+}
+
+.panel-heading  ::-moz-placeholder {  /* Firefox 19+ */
+	font-size: 2rem;
+	line-height:  21px;
+	height: 20px;
+    text-align:right; 
+    font-family: 'Glyphicons Halflings'; 
+}
+.panel-heading  :-ms-input-placeholder {
+	font-size: 2rem;
+	line-height:  21px;
+	height: 20px;
+    text-align:right; 
+    font-family: 'Glyphicons Halflings'; 
 }

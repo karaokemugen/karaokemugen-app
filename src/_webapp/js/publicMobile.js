@@ -13,7 +13,7 @@ $(document).ready(function () {
       onOpen: function(el) { /* Do Stuff */ }, // A function to be called when sideNav is opened
       onClose: function(el) { /* Do Stuff */ }, // A function to be called when sideNav is closed
   });
-  
+
   pseudo = "mobileUser";
 
 });
@@ -22,7 +22,7 @@ $(document).ready(function () {
   addKaraHtml = '<button class="btn btn-small waves-effect waves-light" name="addKara"><i class="material-icons">add</i></button>';  
   infoKaraHtml = '<button name="infoKara" class="btn btn-small btn-action waves-effect waves-light"><i class="material-icons">info_outline</i></button>';
   dragHandleHtml = '<button class="btn btn-small waves-effect waves-light"><i class="material-icons">drag_handle</i></button>';  
-
+  karaParPage = 100;
   // Dismissible Collections
   dragDraggables = function() {
     draggableLi = $("#playlist" + 1 + " > li");
