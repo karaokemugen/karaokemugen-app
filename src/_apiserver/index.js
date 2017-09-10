@@ -437,6 +437,40 @@ module.exports = {
 								res.json(result.mapped());
 							}
 						});
+				})
+				.delete(function(req,res){
+					// Delete kara from playlist
+					// Deletion is through playlist content's ID.
+					// There is actually no need for a playlist number to be used at this moment.
+					req.checkBody({
+						'plc_id': {
+							in: 'body',
+							notEmpty: true,
+							numbersArray: true,
+						}						
+					});
+
+					req.getValidationResult()
+						.then(function(result) {
+							if (result.isEmpty()) {
+								module.exports.onPlaylistSingleKaraDelete(req.body.plc_id,req.params.pl_id)
+									.then(function(pl_id){
+										module.exports.emitEvent('playlistInfoUpdated',pl_id);
+										module.exports.emitEvent('playlistContentsUpdated',pl_id);
+										res.statusCode = 200;
+										res.json('Playlist content(s) '+req.body.plc_id+' deleted');
+									})
+									.catch(function(err){
+										res.statusCode = 500;
+										res.json(err);
+									});
+							} else {
+								// Errors detected
+								// Sending BAD REQUEST HTTP code and error object.
+								res.statusCode = 400;
+								res.json(result.mapped());
+							}
+						});
 				});
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
@@ -488,24 +522,7 @@ module.exports = {
 								res.json(result.mapped());
 							}
 						});
-				})
-				.delete(function(req,res){
-					// Delete kara from playlist
-					// Deletion is through playlist content's ID.
-					// There is actually no need for a playlist number to be used at this moment.
-					var playlistcontent_id = req.params.plc_id;
-
-					module.exports.onPlaylistSingleKaraDelete(playlistcontent_id)
-						.then(function(pl_id){
-							module.exports.emitEvent('playlistInfoUpdated', pl_id);
-							module.exports.emitEvent('playlistContentsUpdated', pl_id);
-							res.json('Deleted PLCID '+playlistcontent_id);
-						})
-						.catch(function(err){
-							res.statusCode = 500;
-							res.json(err);
-						});
-				});
+				});				
 
 			routerAdmin.route('/settings')
 				.get(function(req,res){

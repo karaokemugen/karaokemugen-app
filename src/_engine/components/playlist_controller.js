@@ -1417,8 +1417,7 @@ module.exports = {
 					} else {
 						resolve();
 					}
-				});
-				resolve();
+				});				
 			});
 			var pIsKaraInPlaylist = new Promise((resolve,reject) => {
 				// Need to do this for each karaoke.
@@ -1870,43 +1869,73 @@ module.exports = {
 	},
 	/**
 	* @function {Remove karaoke from playlist}
-	* @param  {number} playlistcontent_id     {ID of karaoke to remove}
+	* @param  {number} playlistcontent_id     {IDs of karaoke to remove}
+	* @param  {number} playlist_id {ID of playlist karas will be removed from}
 	* @return {boolean} {Promise}
 	*/
-	deleteKaraFromPlaylist:function(playlistcontent_id) {
-		return new Promise(function(resolve,reject){
-			if (L.isEmpty(playlistcontent_id)) {
-				var err = 'PLCID empty';
-				logger.error('[PLC] deleteKaraFromPlaylist : '+err);
-				reject(err);
-			}
-			var playlist_id;
-			var kara_id;
-			var subFile;
-			var pGetPLContentInfo = new Promise((resolve,reject) => {
-				module.exports.DB_INTERFACE.getPLContentInfo(playlistcontent_id)
-					.then(function(kara) {
-						playlist_id = kara.playlist_id;
-						kara_id = kara.kara_id;
-						subFile = kara.generated_subfile;
-						resolve();
+	deleteKaraFromPlaylist:function(playlistcontent_id,playlist_id) {
+		return new Promise(function(resolve,reject){			
+			var karaList = [];
+			playlistcontent_id.forEach(function(plc_id){
+				karaList.push({
+					plc_id: plc_id					
+				});				
+			});
+			var pIsPlaylist = new Promise((resolve,reject) => {
+				module.exports.isPlaylist(playlist_id)
+					.then(function() {
+						resolve(true);
 					})
-					.catch(function(err) {						
-						logger.error('[PLC] GetPLContentInfo : '+err);
+					.catch(function(err) {
+						err = 'Playlist '+playlist_id+' unknown';
+						logger.error('[PLC] isPlaylist : '+err);
 						reject(err);
 					});
 			});
-			Promise.all([pGetPLContentInfo])
+			var pGetPLContentInfo = new Promise((resolve,reject) => {
+				async.eachOf(karaList,function(plc,index,callback) {				
+					module.exports.DB_INTERFACE.getPLContentInfo(plc.plc_id)
+						.then(function(plcFromDB) {							
+							if (plcFromDB) {
+								karaList[index].kara_id = plcFromDB.kara_id;
+								karaList[index].subFile = plcFromDB.generated_subfile;
+								callback();
+							} else {
+								callback('[PLC] GetPLContentInfo : PLCID '+plc.plc_id+' unknown');								
+							}
+						})
+						.catch(function(err) {						
+							logger.error('[PLC] GetPLContentInfo : '+err);
+							callback(err);
+						});
+				},function(err){
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
+				});
+			});
+			Promise.all([pGetPLContentInfo,pIsPlaylist])
 				.then(function() {
 					// Removing karaoke here.
-					var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,subFile);
-					if (fs.existsSync(assFile)) {
-						fs.unlinkSync(assFile);
-					} else {
-						logger.warn('[PLC] deleteKaraFromPlaylist : Unable to find ASS file : '+assFile);
-					}
 					module.exports.DB_INTERFACE.removeKaraFromPlaylist(playlistcontent_id)
 						.then(function(){
+							var pRemoveAllASS = new Promise((resolve) => {
+								async.each(karaList,function(karaToRemove,callback){
+									var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,karaToRemove.subFile);
+									if (fs.existsSync(assFile)) {
+										fs.unlinkSync(assFile);
+										callback();
+									} else {
+										logger.warn('[PLC] deleteKaraFromPlaylist : Unable to find ASS file : '+assFile);
+										callback();
+									}									
+								},function(){
+									resolve();
+								});
+								resolve();
+							});
 							var pUpdatedDuration = new Promise((resolve,reject) => {
 								module.exports.updatePlaylistDuration(playlist_id)
 									.then(function(){
@@ -1947,7 +1976,7 @@ module.exports = {
 										reject(err);
 									});
 							});
-							Promise.all([pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
+							Promise.all([pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount,pRemoveAllASS])
 								.then(function() {									
 									// We return the playlist id so we can send a message update
 									resolve(playlist_id);
@@ -1961,9 +1990,10 @@ module.exports = {
 							logger.error('[PLC] deleteKaraFromPlaylist : '+err);
 							reject(err);
 						});
+					
 				})
 				.catch(function(err) {
-					logger.error('[PLC] DBI removeKaraFromPlaylist : '+err);
+					logger.error('[PLC] DeleteKaraFromPlaylist : '+err);
 					reject(err);
 				});
 

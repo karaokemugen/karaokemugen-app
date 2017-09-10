@@ -55,8 +55,7 @@ module.exports = {
 					generator.run().then(function(){
 						resolve();
 					}).catch(function(response,error){
-						// erreur ?
-						console.log(response);
+						// erreur ?						
 						reject(error);
 					});
 				} else {
@@ -537,8 +536,7 @@ module.exports = {
 				}, function (err, plcid) {
 					if (err) {
 						reject('Failed to get PLCID from '+playlist_id+' with date '+date_added+' : '+err);
-					} else {						
-						console.log(plcid[0]);
+					} else {												
 						resolve(plcid[0].playlistcontent_id);
 					}
 				});			
@@ -1612,23 +1610,50 @@ module.exports = {
 	* @param  {number} playlistcontent_id        {ID of karaoke song to remove from playlist}
 	* @return {promise} {Promise}
 	*/
-	removeKaraFromPlaylist:function(playlistcontent_id) {
+	removeKaraFromPlaylist:function(karas) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
 
 			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
-			module.exports._db_handler.run(sqlRemoveKaraFromPlaylist,
-				{
-					$playlistcontent_id: playlistcontent_id
-				}, function (err) {
-					if (err) {
-						reject('Failed to remove playlist item '+playlistcontent_id+' : '+err);
-					} else {
-						resolve();
-					}
+			var stmt_delKara = module.exports._db_handler.prepare(sqlRemoveKaraFromPlaylist);var karaList = [];
+			karas.forEach(function(kara) {
+				karaList.push({
+					$playlistcontent_id: kara
 				});
+			});		
+			module.exports._db_handler.serialize(function() {		
+				module.exports._db_handler.run('begin transaction', function(err) {
+					if (err) {
+						reject('Failed to begin transaction : '+err);
+					} else {
+						async.each(karaList,function(data,callback){
+							stmt_delKara.run(data,function(err){
+								if (err) {
+									reject('Failed to delete karaoke to playlist : '+err);				callback();					
+								} else {
+									callback();
+								}						
+							});
+						}, function(err){
+							if (err) {
+								reject('Failed to add one karaoke to playlist : '+err);
+							} else {
+								module.exports._db_handler.run('commit', function(err) {
+									if (err) {
+										reject(err);
+									} else {
+									// Close all statements just to be sure.
+										stmt_delKara.finalize();
+										resolve();
+									}				
+								});											
+							}
+						});						
+					}
+				});								
+			});									
 		});
 	},
 	/**
