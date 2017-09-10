@@ -13,6 +13,9 @@ const argv = require('minimist')(process.argv.slice(2));
 const logger = require('./_common/utils/logger.js');
 const i18n = require('i18n');
 const osLocale = require('os-locale');
+
+const net = require('net');
+
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
 	// if you are on production, maybe you can send the exception details to your
@@ -145,6 +148,28 @@ if(SYSPATH) {
 		}
 	}
 	
+	/** 
+	 * Test if network ports are available
+	 */
+	
+	var ports = [1337,1338,1339,1340];
+	ports.forEach(function(port){
+		var server = net.createServer();
+		server.once('error', function(err) {
+			if (err.code === 'EADDRINUSE') {
+				logger.error('[Launcher] Port '+port+' is already in use.');
+				logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node")');
+				logger.error('[Launcher] Then restart the app.');
+				process.exit(1);
+			}
+		});
+  
+		server.once('listening', function() {
+			// close the server if listening doesn't fail
+			server.close();
+		});
+		server.listen(port);
+	});
 	/**
 	 * Calling engine.
 	 */
