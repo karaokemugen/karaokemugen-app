@@ -750,10 +750,12 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistSingleKaraDelete = function(playlistcontent_id){
+		module.exports._services.apiserver.onPlaylistSingleKaraDelete = function(plc_ids,playlist_id){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.deleteKaraFromPlaylist(playlistcontent_id)
-					.then(function(playlist_id){
+				logger.info('[Engine] Deleting karaokes from playlist '+playlist_id+' : '+plc_ids);
+				var karas = plc_ids.split(',');				
+				module.exports._services.playlist_controller.deleteKaraFromPlaylist(karas,playlist_id)
+					.then(function(){
 						resolve(playlist_id);
 					})
 					.catch(function(err){
@@ -1122,14 +1124,19 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+id_kara);
 				logger.profile('AddKara');
-				var karas = id_kara.split(',');
+				var karas = id_kara.split(',');				
 				module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id,pos)
-					.then(function(){
-						logger.profile('AddKara');				
+					.then(function(karaAdded){
+						logger.profile('AddKara');
 						logger.info('[Engine] Finished adding karaokes to playlist '+playlist_id);
-						resolve(playlist_id);
+						var result = {
+							playlist_id: playlist_id,
+							karaAdded: karaAdded
+						};
+						resolve(result);
 					})
 					.catch(function(err){
+						logger.profile('AddKara');				
 						logger.error('[Engine] PLC addKaraToPlaylist : '+err);
 						reject(err);
 					});

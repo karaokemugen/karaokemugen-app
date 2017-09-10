@@ -157,7 +157,24 @@
                 console.log("Kara plc_id " + idPlc + " flag_playing set to true");
             });
         });
-
+        $('.playlist-main').on('click', 'button.showPlaylistCommands', function (e) {
+            var div = $(this).closest('.playlistDashboard').toggleClass('advanced');
+            $(window).resize();
+            
+            if( div.is(':visible') && ($('#playlist1').parent().height() < 400 ||  $('#playlist2').parent().height() <  400) ) {
+                $('body').addClass('hiddenHeader');
+            } else {
+                $('body').removeClass('hiddenHeader');
+            }
+                
+            $(this).toggleClass('btn-primary');
+        });
+        
+        $('.playlist-main').on('click', 'span[name="checkboxKara"]', function (e) {
+          $(this).attr('value', 1 - $(this).attr('value'));
+          $(this).find('i').toggleClass('glyphicon-check')
+            .toggleClass('glyphicon-unchecked')
+        });
         $('#karaInfo').click(function (e) {
             if (status != undefined && status != "" && status != "stop") {
                 //refreshCommandStates(goToPosition, e);
@@ -214,7 +231,7 @@
 
             }
         });
-
+        
 
         /* password case handlers */
 
@@ -378,6 +395,53 @@
             data: data
         }).done(function (data) {
             //fillPlaylistSelects();
+        });
+    });
+    
+    $('.controls button').click(function (e) {
+        var name = $(this).attr('name');
+        var dashBoard = $(this).closest('.playlistDashboard');
+        var selectedOption = dashBoard.find('[type="playlist_select"] > option:selected');
+        var playlistName = selectedOption.attr('name');
+        var idPlaylist = parseInt(dashBoard.attr('idPlaylist'));
+        
+        var url = scope + '/playlists/' + idPlaylist
+        var type = "", data = {};
+
+        if(name == "shuffle") {
+            url += "/shuffle";
+            type = "PUT";
+        } else if (name == "export") {
+            url += "/export";
+            type = "GET";
+        } else if (name == "import") {
+            url = scope + "/playlists/import";
+            type = "POST";
+            data['playlist'] = prompt('Collez votre JSON ci-dessous');
+        } else if (name == "editName") {
+            type = "PUT"
+           $.each(["flag_current", "flag_visible", "flag_public"], function(k, v){
+                data[v] = selectedOption.attr(v);
+            });
+            data['name'] = prompt("Donner un meilleur nom à " + playlistName + " : ", playlistName);
+            if(!data['name']) return false;
+        } else if (name == "delete") {
+            url += "";
+            type = confirm("Supprimer la playlist " + playlistName + " pour toujours ?") ? "DELETE" : "ABORT";
+        }
+        $.ajax({
+            type: type,
+            url: url,
+            data: data
+        }).done(function (data) {
+            console.log(data);
+            if(name == "export") {
+                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+                var dlAnchorElem = document.getElementById('downloadAnchorElem');
+                dlAnchorElem.setAttribute("href",     dataStr     );
+                dlAnchorElem.setAttribute("download", ["KaraMugen", "playlist", idPlaylist, playlistName, Date.now()].join('_') + ".json");
+                dlAnchorElem.click();
+            }
         });
     });
 

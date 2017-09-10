@@ -48,12 +48,17 @@ module.exports = {
 				customValidators: {
 					enum: (input, options) => options.includes(input),
 					numbersArray: function(input) {
-						if (input.includes(',')) {
-							var array = input.split(',');
-							return array.some(numberTest);
-						} else { 
-							return numberTest(input);
-						}						
+						if (input) {
+							if (input.includes(',')) {
+								var array = input.split(',');
+								return array.some(numberTest);
+							} else { 
+								return numberTest(input);
+							}						
+						} else {
+							return false;
+						}
+						
 					}
 				}
 			}));
@@ -376,12 +381,12 @@ module.exports = {
 								req.sanitize('playlist_id').toInt();
 								if (req.body.pos != undefined) req.sanitize('pos').toInt();
 								module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
-									.then(function(pl_id){
-										module.exports.emitEvent('playlistInfoUpdated',pl_id);
-										module.exports.emitEvent('playlistContentsUpdated',pl_id);
+									.then(function(result){
+										module.exports.emitEvent('playlistInfoUpdated',result.playlist_id);
+										module.exports.emitEvent('playlistContentsUpdated',result.playlist_id);
 										res.statusCode = 201;
 										if (req.body.pos === undefined) var pos = 'last';
-										res.json('Karaoke '+req.body.kara_id+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
+										res.json('Karaoke '+result.karaAdded+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
 									})
 									.catch(function(err){
 										res.statusCode = 500;
@@ -420,6 +425,40 @@ module.exports = {
 										module.exports.emitEvent('playlistContentsUpdated',pl_id);
 										res.statusCode = 201;
 										res.json('Playlist content(s) '+req.body.plc_id+' copied to playlist '+req.params.pl_id+' at position '+req.body.pos);
+									})
+									.catch(function(err){
+										res.statusCode = 500;
+										res.json(err);
+									});
+							} else {
+								// Errors detected
+								// Sending BAD REQUEST HTTP code and error object.
+								res.statusCode = 400;
+								res.json(result.mapped());
+							}
+						});
+				})
+				.delete(function(req,res){
+					// Delete kara from playlist
+					// Deletion is through playlist content's ID.
+					// There is actually no need for a playlist number to be used at this moment.
+					req.checkBody({
+						'plc_id': {
+							in: 'body',
+							notEmpty: true,
+							numbersArray: true,
+						}						
+					});
+
+					req.getValidationResult()
+						.then(function(result) {
+							if (result.isEmpty()) {
+								module.exports.onPlaylistSingleKaraDelete(req.body.plc_id,req.params.pl_id)
+									.then(function(pl_id){
+										module.exports.emitEvent('playlistInfoUpdated',pl_id);
+										module.exports.emitEvent('playlistContentsUpdated',pl_id);
+										res.statusCode = 200;
+										res.json('Playlist content(s) '+req.body.plc_id+' deleted');
 									})
 									.catch(function(err){
 										res.statusCode = 500;
@@ -483,24 +522,7 @@ module.exports = {
 								res.json(result.mapped());
 							}
 						});
-				})
-				.delete(function(req,res){
-					// Delete kara from playlist
-					// Deletion is through playlist content's ID.
-					// There is actually no need for a playlist number to be used at this moment.
-					var playlistcontent_id = req.params.plc_id;
-
-					module.exports.onPlaylistSingleKaraDelete(playlistcontent_id)
-						.then(function(pl_id){
-							module.exports.emitEvent('playlistInfoUpdated', pl_id);
-							module.exports.emitEvent('playlistContentsUpdated', pl_id);
-							res.json('Deleted PLCID '+playlistcontent_id);
-						})
-						.catch(function(err){
-							res.statusCode = 500;
-							res.json(err);
-						});
-				});
+				});				
 
 			routerAdmin.route('/settings')
 				.get(function(req,res){
