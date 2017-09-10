@@ -1,6 +1,5 @@
 $(document).ready(function () {
 
-
   $('#choixPseudo').focus(function(){
     //this.setSelectionRange(0, this.value.length);
     this.value = "";
