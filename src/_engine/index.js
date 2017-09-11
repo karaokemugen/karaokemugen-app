@@ -70,8 +70,7 @@ module.exports = {
 			module.exports._start_frontend();
 			module.exports._start_apiserver();
 			module.exports._start_wsserver();
-			module.exports._broadcastStates();
-			module.exports._cleanup();
+			module.exports._broadcastStates();			
 		}).catch(function(response){
 			logger.error(response);
 		});
@@ -109,9 +108,9 @@ module.exports = {
 				module.exports._services.player.resume();
 				module.exports._broadcastStates();		
 			}
-			if (module.exports._states.status === 'stop') {
+			if (module.exports._states.status === 'stop') {				
 				module.exports._states.status = 'play';
-				module.exports.tryToReadKaraInPlaylist();
+				module.exports.tryToReadKaraInPlaylist();				
 				module.exports._broadcastStates();		
 			}							
 		} else if(module.exports._states.status === 'play') {
@@ -293,20 +292,11 @@ module.exports = {
 	* Try to read next karaoke in playlist.
 	*/
 	tryToReadKaraInPlaylist:function(){
-		module.exports._services.playlist_controller.current_playlist()
-			.then(function(playlist){
-				if(module.exports._states.playlist != playlist) {
-					module.exports._states.playlist = playlist;
-					module.exports._broadcastStates();
-				}
-			})
-			.catch(function(err){
-				logger.error('[Engine] Unable to get playlist : '+err);			
-			});
-		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
+		logger.profile('StartPlaying');		
+		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {			
 			module.exports._services.playlist_controller.current()
-				.then(function(kara){
-					logger.info('Start playing '+kara.path.video);
+				.then(function(kara){					
+					logger.info('[Engine] Start playing '+kara.path.video);					
 					module.exports._services.player.play(
 						kara.path.video,
 						kara.path.subtitle,
@@ -353,18 +343,6 @@ module.exports = {
 	_broadcastStates:function() {
 		// diffuse l'état courant à tout les services concerné (normalement les webapp)
 		module.exports._services.admin.setEngineStates(module.exports._states);
-	},
-
-	_cleanup:function() {
-		// Launching clean up method to get rid of any unneeded files in tmp
-		var cleanUp = require('../_admin/cleanup.js');
-		module.exports.DB_INTERFACE.getAllPlaylistContents()
-			.then(function(karalist){
-				cleanUp.run(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp),karalist);
-			})
-			.catch(function(err){
-				logger.error('[Engine] Cleanup : DBI getAllPlaylist : '+err);				
-			});
 	},
 
 	// ------------------------------------------------------------------

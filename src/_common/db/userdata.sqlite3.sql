@@ -35,8 +35,7 @@ CREATE TABLE playlist_content (
     pseudo_add        TEXT,
     NORM_pseudo_add   TEXT COLLATE NOCASE,
     pos               REAL NOT NULL,
-    flag_playing      INTEGER NOT NULL,
-    generated_subfile TEXT
+    flag_playing      INTEGER NOT NULL    
 );
 
 CREATE TABLE blacklist (
