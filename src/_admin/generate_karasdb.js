@@ -1177,7 +1177,7 @@ module.exports = {
 											reject(err);
 										}
 										// We test if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything, so we replace it with vide.ass
-										tmpsubfile = 'kara_extract.'+kara.kid+'.ass';
+										tmpsubfile = 'kara_extract.'+kara.KID+'.ass';
 										pathToSubFiles = tmpdir;
 										if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile))){
 											tmpsubfile = 'vide.ass';
@@ -1190,8 +1190,7 @@ module.exports = {
 										pathToSubFiles = 'src/_player/assets/';
 									}
 								} else {
-									// Checking if subFile exists. Abort if not.
-									//console.log(pathToSubFiles);
+									// Checking if subFile exists. Abort if not.									
 									if(!fs.existsSync(path.resolve(module.exports.SYSPATH,lyricsdir,kara.subfile))) {
 										err = 'ASS file not found : '+tmpsubfile;
 										module.exports.onLog('error', err);
@@ -1202,10 +1201,11 @@ module.exports = {
 									}
 								}
 								//Let's read our ASS and get it into a variable
+																
 								kara.ass = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile), 'utf-8');
-								fs.unlinkSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile));							
-								
-								
+								if (tmpsubfile === 'kara_extract.'+kara.KID+'.ass') {
+									fs.unlinkSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile));
+								}
 								var videostats = fs.statSync(videosdir + '/' + kara['videofile']);							
 								if (videostats.size != karadata.videosize) {
 									//Probe file for duration
