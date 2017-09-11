@@ -1522,8 +1522,7 @@ module.exports = {
 					$NORM_pseudo_add: kara.NORM_requester,
 					$kara_id: kara.kara_id,
 					$created_at: kara.date_add,
-					$pos: kara.pos,
-					$generated_subfile: kara.generatedSubFile				
+					$pos: kara.pos,					
 				});
 			});	
 			module.exports._db_handler.serialize(function() {		
