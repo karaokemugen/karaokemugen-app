@@ -10,77 +10,23 @@ const exec = require('child_process');
 const ffmpegPath = require('ffmpeg-downloader').path;
 
 module.exports = {
-	getLyrics:function(pathToSubFiles, pathToVideoFiles, subFile, videoFile, outputFolder){
+	ASSToLyrics:function(ass){
 		return new Promise(function(resolve,reject){	
-			var uuid = uuidv4();		
 			var lyrics = [];			
-			if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile))) {
-				var err = 'Video not found : '+videoFile;
-				logger.error('[ASS] getLyrics : '+err);
-				reject(err);
-			} else {
-				//Testing if the subfile provided is dummy.ass
-				//In which case we will work with either an empty ass file or
-				// the one provided by the mkv or mp4 file.
-				if (subFile == 'dummy.ass') {
-					if (videoFile.toLowerCase().includes('.mkv') || videoFile.toLowerCase().includes('.mp4')) {
-				
-						// Using ffmpeg
-
-						var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(module.exports.SYSPATH,pathToVideoFiles,videoFile), outputFolder+'/kara_extract.'+uuid+'.ass'], { encoding : 'utf8' }),
-							ffmpegData = [],
-							errData = [],
-							exitCode = null,
-							start = Date.now();
-
-						pathToSubFiles = outputFolder;
-						subFile = 'kara_extract.'+uuid+'.ass';
-
-						if (proc.error) {
-							err = 'Failed to extract ASS file : '+proc.error;
-							logger.error('[ASS] getLyrics : '+err);
-							logger.debug('[ASS] ffmpegData : '+ffmpegData);
-							logger.debug('[ASS] errData : '+errData);
-							logger.debug('[ASS] exitCode : '+exitCode);
-							logger.debug('[ASS] start : '+start);
-							reject(err);						
-						}
-						if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))){
-							subFile = 'vide.ass';
-							pathToSubFiles = 'src/_player/assets/';
-						}
-					} else {
-						// No .mkv or .mp4 detected, so we create a .ass from vide.ass
-						// Videofile is most probably a hardsubbed video.
-						subFile = 'vide.ass';
-						pathToSubFiles = 'src/_player/assets/';
-					}
-				} else {
-					// Checking if subFile exists. Abort if not.
-					//console.log(pathToSubFiles);
-					if(!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile))) {
-						err = ('Unable to find ASS file : '+subFile);
-						logger.error('[ASS] getLyrics : '+err);
-						reject(err);
-					}
+						
+			var script = assParser(ass, { comments: true });
+			var DialogueSection;
+			script.forEach(function(ASSSection,index){
+				if (ASSSection.section == 'Events') {
+					DialogueSection = index;
 				}
-				// Parsing the subFile provided, either vide.ass, the associated .ass file or the extracted .ass file from
-				// a .mkv/.mp4
-				var assdata = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,subFile), 'utf-8');
-				var script = assParser(assdata, { comments: true });
-				var DialogueSection;
-				script.forEach(function(ASSSection,index){
-					if (ASSSection.section == 'Events') {
-						DialogueSection = index;
-					}
-				});
-				script[DialogueSection].body.forEach(function(param){
-					if (param.key == 'Dialogue') {
-						lyrics.push(param.value.Text.replace(/\{(?:.|\n)*?\}/gm, ''));
-					}
-				});
-				resolve(lyrics);
-			}
+			});
+			script[DialogueSection].body.forEach(function(param){
+				if (param.key == 'Dialogue') {
+					lyrics.push(param.value.Text.replace(/\{(?:.|\n)*?\}/gm, ''));
+				}
+			});
+			resolve(lyrics);			
 		});
 	},
 	build:function(ass, title, series, songType, songOrder, requester){

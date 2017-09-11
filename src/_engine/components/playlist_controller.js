@@ -247,13 +247,7 @@ module.exports = {
 				.then(function(){									
 					module.exports.getKara(kara_id)
 						.then(function(kara) {							
-							assBuilder.getLyrics(
-								module.exports.SETTINGS.PathSubs,
-								module.exports.SETTINGS.PathVideos,
-								kara.subfile,
-								kara.videofile,
-								module.exports.SETTINGS.PathTemp
-							)
+							assBuilder.ASSToLyrics(kara.ass)
 								.then(function(lyrics) {
 									resolve(lyrics);
 								})
