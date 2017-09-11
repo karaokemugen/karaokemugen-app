@@ -54,7 +54,7 @@ module.exports = {
 					};
 					generator.run().then(function(){
 						resolve();
-					}).catch(function(response,error){
+					}).catch(function(error){
 						// erreur ?						
 						reject(error);
 					});
@@ -448,23 +448,49 @@ module.exports = {
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
-			var sqlUpdateKaraPosition = fs.readFileSync(path.join(__dirname,'../../_common/db/update_kara_position.sql'),'utf-8');
+			var sqlUpdateKaraPosition = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_pos.sql'),'utf-8');
 
 			var newpos = 0;
-			playlist.forEach(function(kara) {
+			var stmt_updateKaraPosition = module.exports._db_handler.prepare(sqlUpdateKaraPosition);
+			var karaList = [];
+			playlist.forEach(function(kara) {				
 				newpos++;
-				logger.debug('Updating '+kara.playlistcontent_id+' to position '+newpos);
-				module.exports._db_handler.run(sqlUpdateKaraPosition,
-					{
-						$pos: newpos,
-						$playlistcontent_id: kara.playlistcontent_id
-					}, function (err) {
-						if (err) {
-							reject('Failed to reorder playlist '+playlist_id+' : '+err);
-						}
-					});
+				karaList.push({
+					$pos: newpos,	
+					$playlistcontent_id: kara.playlistcontent_id
+				});
 			});
-			resolve();
+			module.exports._db_handler.serialize(function() {		
+				module.exports._db_handler.run('begin transaction', function(err) {
+					if (err) {
+						reject('Failed to begin transaction : '+err);
+					} else {
+						async.each(karaList,function(data,callback){
+							stmt_updateKaraPosition.run(data,function(err){
+								if (err) {
+									reject('Failed to reorder karaoke in playlist : '+err);	callback(err);					
+								} else {
+									callback();
+								}						
+							});
+						}, function(err){
+							if (err) {
+								reject('Failed to reorder one karaoke to playlist : '+err);
+							} else {
+								module.exports._db_handler.run('commit', function(err) {
+									if (err) {
+										reject(err);
+									} else {
+										// Close all statements just to be sure.
+										stmt_updateKaraPosition.finalize();
+										resolve();
+									}				
+								});											
+							}
+						});						
+					}
+				});								
+			});						
 		});
 	},
 	/**
@@ -495,14 +521,21 @@ module.exports = {
 	/**
 	* @function {Get contents of playlist}
 	* @param  {number} playlist_id {ID of playlist to get a list of songs from}
+	* @param  {number} forPlayer (if it's for the player, we get a smaller set of data)
 	* @return {Object} {Playlist object}
 	*/
-	getPlaylistContents:function(playlist_id){
+	getPlaylistContents:function(playlist_id,forPlayer){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
-			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
+			var sqlGetPlaylistContents;
+			if (forPlayer) {
+				sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents_for_player.sql'),'utf-8');
+			} else {
+				sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
+			}
+			
 			module.exports._db_handler.serialize(function(){
 				module.exports._db_handler.all(sqlGetPlaylistContents,
 					{
@@ -669,6 +702,31 @@ module.exports = {
 						reject('Failed to get karaoke song '+kara_id+' information : '+err);
 					} else {
 						resolve(kara);
+					}
+				});
+		});
+	},
+	/**
+	* @function {Get one karaoke's ASS data}
+	* @param  {number} kara_id {Karaoke ID}
+	* @return {Object} {ASS Object}
+	*/
+	getASS:function(kara_id){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+
+			var sqlGetASS = fs.readFileSync(path.join(__dirname,'../../_common/db/select_ass.sql'),'utf-8');
+			module.exports._db_handler.get(sqlGetASS,
+				{
+					$kara_id: kara_id
+				},
+				function (err, ass) {
+					if (err) {
+						reject('Failed to get karaoke song '+kara_id+' ASS : '+err);
+					} else {
+						resolve(ass);
 					}
 				});
 		});
@@ -1522,8 +1580,7 @@ module.exports = {
 					$NORM_pseudo_add: kara.NORM_requester,
 					$kara_id: kara.kara_id,
 					$created_at: kara.date_add,
-					$pos: kara.pos,
-					$generated_subfile: kara.generatedSubFile				
+					$pos: kara.pos,					
 				});
 			});	
 			module.exports._db_handler.serialize(function() {		

@@ -35,6 +35,10 @@ module.exports = {
 			const langsModule = require('langs');
 			const karasdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
 			const videosdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
+
+			// These are not resolved : they will be later on when extracting / reading ASS
+			const lyricsdir = module.exports.SETTINGS.PathSubs;	
+			const tmpdir = module.exports.SETTINGS.PathTemp;
 			const karas_dbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
 			const karas_userdbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBUserFile);
 			const series_altnamesfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathAltname);
@@ -57,7 +61,7 @@ module.exports = {
 			var tags = [];
 			var karas_series = [];
 			var karas_tags = [];
-			var karafiles = [];
+			var karafiles = [];			
 			var doUpdateSeriesAltNames = false;
 
 			module.exports.db = new sqlite3.Database(karas_dbfile, function(err) {
@@ -185,14 +189,13 @@ module.exports = {
 											$titlenorm : titlenorm,
 											$kara_year : kara['year'],
 											$kara_songorder : kara['songorder'],
-											$kara_videofile : kara['videofile'],
-											$kara_subfile : kara['subfile'],
+											$kara_videofile : kara['videofile'],			
 											$kara_dateadded : kara['dateadded'],
 											$kara_datemodif : kara['datemodif'],
 											$kara_rating : kara['rating'],
 											$kara_viewcount : kara['viewcount'],
 											$kara_gain : kara['gain'],
-											$kara_videolength : kara['videolength'],
+											$kara_videolength : kara['videolength']			
 										});
 									});
 									resolve();
@@ -295,7 +298,7 @@ module.exports = {
 										.catch(function(err){
 											reject(err);
 										});
-								});
+								});								
 								/**
 								 * Create arrays for series
 								 */
@@ -451,7 +454,8 @@ module.exports = {
 						/*
 						* Building SQL queries for insertion
 						*/
-						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, subfile, created_at, modified_at, rating, viewcount, gain, videolength ) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_subfile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength);');
+						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at, modified_at, rating, viewcount, gain, videolength) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength);');
+						var stmt_InsertASS = module.exports.db.prepare('INSERT INTO ass (fk_id_kara,ass) VALUES ($id_kara, $ass);');
 						var stmt_InsertSeries = module.exports.db.prepare('INSERT INTO serie(pk_id_serie,name,NORM_name) VALUES( $id_serie, $serie, $serienorm );');
 						var stmt_InsertTags = module.exports.db.prepare('INSERT INTO tag(pk_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );');
 						var stmt_InsertKarasTags = module.exports.db.prepare('INSERT INTO kara_tag(fk_id_tag,fk_id_kara) VALUES( $id_tag, $id_kara );');
@@ -463,6 +467,18 @@ module.exports = {
 						*/
 						sqlInsertKaras.forEach(function(data){
 							stmt_InsertKaras.run(data, function (err) {
+								if(err) {
+									reject(err);
+								}
+							});
+						});
+						karas.forEach(function(kara, index) {
+							index++;
+							var data = {
+								$id_kara: index,
+								$ass: kara.ass
+							};
+							stmt_InsertASS.run(data, function (err) {
 								if(err) {
 									reject(err);
 								}
@@ -528,6 +544,7 @@ module.exports = {
 								stmt_InsertKarasTags.finalize();
 								stmt_InsertTags.finalize();
 								stmt_InsertKaras.finalize();
+								stmt_InsertASS.finalize();
 								resolve();
 							}
 						});
@@ -1151,6 +1168,57 @@ module.exports = {
 							//Calculate size.
 							
 							if (fs.existsSync(videosdir + '/' + kara['videofile'])) {
+								
+								//Reading ASS file directly
+								//or extract it from the video
+								//Testing if the subfile provided is dummy.ass
+								//In which case we will work with either an empty ass file or
+								// the one provided by the mkv or mp4 file.							
+								var pathToSubFiles;
+								var tmpsubfile;								
+								if (kara['subfile'] === 'dummy.ass') {
+									if (kara.videofile.toLowerCase().includes('.mkv') || kara.videofile.toLowerCase().includes('.mp4')) {	
+										var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(videosdir,kara.videofile), path.resolve(module.exports.SYSPATH,tmpdir,'kara_extract.'+kara.KID+'.ass')], { encoding : 'utf8' }),
+											ffmpegData = [],
+											errData = [],
+											exitCode = null,
+											start = Date.now();
+
+										if (proc.error) {
+											err = 'Failed to extract ASS file : '+proc.error;
+											module.exports.onLog('error', err);
+											reject(err);
+										}
+										// We test if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything, so we replace it with vide.ass
+										tmpsubfile = 'kara_extract.'+kara.KID+'.ass';
+										pathToSubFiles = tmpdir;
+										if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile))){
+											tmpsubfile = 'vide.ass';
+											pathToSubFiles = 'src/_player/assets/';
+										} 
+									} else {
+										// No .mkv or .mp4 detected, so we create a .ass from vide.ass
+										// Videofile is most probably a hardsubbed video.
+										tmpsubfile = 'vide.ass';
+										pathToSubFiles = 'src/_player/assets/';
+									}
+								} else {
+									// Checking if subFile exists. Abort if not.									
+									if(!fs.existsSync(path.resolve(module.exports.SYSPATH,lyricsdir,kara.subfile))) {
+										err = 'ASS file not found : '+tmpsubfile;
+										module.exports.onLog('error', err);
+										reject(err);
+									} else {
+										tmpsubfile = kara.subfile;
+										pathToSubFiles = lyricsdir;
+									}
+								}
+								//Let's read our ASS and get it into a variable
+																
+								kara.ass = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile), 'utf-8');
+								if (tmpsubfile === 'kara_extract.'+kara.KID+'.ass') {
+									fs.unlinkSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile));
+								}
 								var videostats = fs.statSync(videosdir + '/' + kara['videofile']);							
 								if (videostats.size != karadata.videosize) {
 									//Probe file for duration
