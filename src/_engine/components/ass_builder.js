@@ -1,17 +1,12 @@
 const logger = require('../../_common/utils/logger.js');
-var path = require('path');
-var fs = require('fs');
 var assParser = require('ass-parser');
 var assStringify = require('ass-stringify');
 var L = require('lodash');
 var i18n = require('i18n');
-const uuidv4 = require('uuid/v4');
-const exec = require('child_process');
-const ffmpegPath = require('ffmpeg-downloader').path;
 
 module.exports = {
 	ASSToLyrics:function(ass){
-		return new Promise(function(resolve,reject){	
+		return new Promise(function(resolve){	
 			var lyrics = [];			
 						
 			var script = assParser(ass, { comments: true });
