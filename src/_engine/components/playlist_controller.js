@@ -1151,9 +1151,11 @@ module.exports = {
 	/**
 	* @function {Get playlist contents}
 	* @param  {number} playlist_id {ID of playlist to get contents from}
+	* @param  {boolean} seenFromUser {is it viewed by the user or not?}
+	* @param  {boolean} forPlayer {is it for the player or for display?}
 	* @return {array} {Array of karaoke objects}
 	*/
-	getPlaylistContents:function(playlist_id,seenFromUser) {
+	getPlaylistContents:function(playlist_id,seenFromUser,forPlayer) {
 		return new Promise(function(resolve,reject) {
 			var pIsPlaylist = new Promise((resolve,reject) => {
 				module.exports.isPlaylist(playlist_id,seenFromUser)
@@ -1169,7 +1171,7 @@ module.exports = {
 			Promise.all([pIsPlaylist])
 				.then(function() {
 					// Get karaoke list
-					module.exports.DB_INTERFACE.getPlaylistContents(playlist_id)
+					module.exports.DB_INTERFACE.getPlaylistContents(playlist_id,forPlayer)
 						.then(function(playlist){
 							resolve(playlist);
 						})
@@ -1177,6 +1179,7 @@ module.exports = {
 							logger.error('[PLC] DBI getPlaylistContents : '+err);
 							reject(err);
 						});
+					
 				})
 				.catch(function(err) {
 					logger.error('[PLC] getPlaylistContents : '+err);
@@ -2742,8 +2745,8 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			module.exports.isACurrentPlaylist()
 				.then(function(playlist_id){
-					module.exports.getPlaylistContents(playlist_id)
-						.then(function(pl_content){
+					module.exports.getPlaylistContents(playlist_id,false,true)
+						.then(function(pl_content){												
 							// Setting readpos to 0. If no flag_playing is found in current playlist
 							// Then karaoke will begin at the first element of the playlist (0)
 							var readpos = 0;
@@ -2767,8 +2770,10 @@ module.exports = {
 	current:function(){
 		// TODO : renommer en get_current_kara
 		return new Promise(function(resolve,reject){
+			logger.profile('GetPlaylist');			
 			module.exports.current_playlist()
-				.then(function(playlist){					
+				.then(function(playlist){										
+					logger.profile('GetPlaylist');					
 					var readpos = false;
 					playlist.content.forEach(function(element, index) {
 						if(element.flag_playing)
@@ -2782,7 +2787,7 @@ module.exports = {
 					}
 
 					var kara = playlist.content[readpos];
-					if(kara) {
+					if(kara) {						
 						// si il n'y avait pas de morceau en lecture on marque le premier de la playlist
 						if(update_playing_kara) {
 							// mise à jour du pointeur de lecture
@@ -2797,17 +2802,21 @@ module.exports = {
 
 						// on enrichie l'objet pour fournir son contexte et les chemins système prêt à l'emploi
 						kara.playlist_id = playlist.id;
+						logger.profile('GetASS');						
 						module.exports.getASS(kara.kara_id)
 							.then(function(ass){								
+								logger.profile('GetASS');						
 								logger.debug(kara);
 								var requester;
 								if (module.exports.SETTINGS.EngineDisplayNickname === 1){
-									requester = kara.pseudo;
+									requester = kara.pseudo_add;
 								} else {
 									requester = undefined;
 								}
+								logger.profile('BuildASS');						
 								assBuilder.build(ass,kara.title,kara.serie,kara.songtype,kara.songorder,requester)
 									.then(function(ass){
+										logger.profile('BuildASS');						
 										kara.path = {
 											video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
 											subtitle: ass

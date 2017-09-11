@@ -109,8 +109,9 @@ module.exports = {
 				module.exports._broadcastStates();		
 			}
 			if (module.exports._states.status === 'stop') {
+				logger.profile('StartPlayingFromStop');
 				module.exports._states.status = 'play';
-				module.exports.tryToReadKaraInPlaylist();
+				module.exports.tryToReadKaraInPlaylist();				
 				module.exports._broadcastStates();		
 			}							
 		} else if(module.exports._states.status === 'play') {
@@ -292,7 +293,7 @@ module.exports = {
 	* Try to read next karaoke in playlist.
 	*/
 	tryToReadKaraInPlaylist:function(){		
-		module.exports._services.playlist_controller.current_playlist()
+		/* module.exports._services.playlist_controller.current_playlist()
 			.then(function(playlist){
 				if(module.exports._states.playlist != playlist) {
 					module.exports._states.playlist = playlist;
@@ -302,10 +303,12 @@ module.exports = {
 			.catch(function(err){
 				logger.error('[Engine] Unable to get playlist : '+err);			
 			});
+		*/
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
+			console.log('Starting.')			
 			logger.profile('StartPlaying');
 			module.exports._services.playlist_controller.current()
-				.then(function(kara){
+				.then(function(kara){					
 					logger.info('[Engine] Start playing '+kara.path.video);					
 					module.exports._services.player.play(
 						kara.path.video,

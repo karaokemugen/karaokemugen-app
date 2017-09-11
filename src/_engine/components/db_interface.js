@@ -495,14 +495,21 @@ module.exports = {
 	/**
 	* @function {Get contents of playlist}
 	* @param  {number} playlist_id {ID of playlist to get a list of songs from}
+	* @param  {number} forPlayer (if it's for the player, we get a smaller set of data)
 	* @return {Object} {Playlist object}
 	*/
-	getPlaylistContents:function(playlist_id){
+	getPlaylistContents:function(playlist_id,forPlayer){
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
-			var sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
+			var sqlGetPlaylistContents;
+			if (forPlayer) {
+				sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents_for_player.sql'),'utf-8');
+			} else {
+				sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
+			}
+			
 			module.exports._db_handler.serialize(function(){
 				module.exports._db_handler.all(sqlGetPlaylistContents,
 					{

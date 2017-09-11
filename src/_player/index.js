@@ -273,7 +273,9 @@ module.exports = {
 	play: function(video,subtitle,reference,gain){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
+		logger.profile('VideoCheck');
 		if(fs.existsSync(video)){
+			logger.profile('VideoCheck');
 			logger.debug('[Player] Audio gain adjustment : '+gain);
 			if (gain == undefined || gain == null) gain = 0;			
 			module.exports._ref = reference;
@@ -284,10 +286,11 @@ module.exports = {
 			setTimeout(function(){
 				module.exports._playing = true;
 				module.exports._player.addSubtitles('memory://'+subtitle);//, flag, title, lang)
-				logger.profile('StartPlaying');				
+				logger.profile('StartPlaying');
+				logger.profile('StartPlayingFromStop');
 				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 				module.exports._player.load(backgroundImageFile,'append');
-			},10);
+			},500);
 		} else {
 			module.exports.playing = false;
 			logger.error('[Player] Video NOT FOUND : '+video);

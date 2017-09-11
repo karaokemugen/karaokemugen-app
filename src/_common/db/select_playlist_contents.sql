@@ -24,8 +24,7 @@ SELECT ak.kara_id AS kara_id,
       pc.pk_id_plcontent AS playlistcontent_id,
       pc.flag_playing AS flag_playing,      
       ak.videofile AS videofile,
-	  ak.videolength AS duration,
-	  ak.gain AS gain,
+	  ak.videolength AS duration,	  
 	  ak.viewcount AS viewcount,
       (CASE WHEN wl.fk_id_kara = ak.kara_id
 	     	THEN 1
