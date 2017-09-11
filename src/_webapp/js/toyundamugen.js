@@ -131,10 +131,15 @@ var tabTradToDelete;
                 var idKara, idKaraPlaylist;
                 
                 if($(this).parent().hasClass('plCommands')) {
-                    var checkedList = $('[name="checkboxKara"][value="1"]').map(function (k, v) {
+                    var checkedList = $(this).closest('ul').find('[name="checkboxKara"][value="1"]');
+                    var idKaraList = checkedList.map(function (k, v) {
                         return $(v).closest('li').attr('idkara');
                     });
-                    var idKara = Array.prototype.slice.apply(checkedList).join();
+                    var idKaraPlaylistList = checkedList.map(function (k, v) {
+                        return $(v).closest('li').attr('idplaylistcontent');
+                    });
+                    var idKara = Array.prototype.slice.apply(idKaraList).join();
+                    var idKaraPlaylist = Array.prototype.slice.apply(idKaraPlaylistList).join();
                 } else {
                     idKara = li.attr('idkara');
                     idKaraPlaylist = li.attr('idplaylistcontent');
@@ -188,18 +193,20 @@ var tabTradToDelete;
                     url = "", data = {}, type = "";
                     type = "DELETE"
                     if (idPlaylistFrom > 0) {
-                        url = scope + '/playlists/42/karas/' + idKaraPlaylist;
+                        url = scope + '/playlists/' + idPlaylistFrom + '/karas/';
+                        data['plc_id'] = idKaraPlaylist;
                     } else if (idPlaylistFrom == -1) {
                         console.log("ERR: can't delete kara from the kara list from database");
                     } else if (idPlaylistFrom == -2) {
                         console.log("ERR: can't delete kara directly from the blacklist");
                     } else if (idPlaylistFrom == -3) {
-                        url = scope + '/whitelist/' + idKara;
+                        url = scope + '/whitelist/' + li.attr('idwhitelist');
                     }
                     if (url !== "") {
                         $.ajax({
                             type: 'DELETE',
-                            url: url
+                            url: url,
+                            data: data
                         }).done(function (data) {
                             //fillPlaylist(num);
                         });
@@ -423,6 +430,7 @@ var tabTradToDelete;
                             if (data[key].language === null) data[key].language = "";
                             
                             var karaDataAttributes = " idKara='" + data[key].kara_id + "' "
+                            + (idPlaylist == -3 ? " idwhitelist='" + data[key].whitelist_id  + "'" : "")
                             + (idPlaylist > 0 ? " idplaylistcontent='" + data[key].playlistcontent_id + "' pos='" + data[key].pos + "' " : "")
                             + (data[key].flag_playing ? "currentlyPlaying" : "" ) + " "
                             + (data[key].pseudo_add == pseudo ? "user" : "" )
@@ -687,7 +695,7 @@ var tabTradToDelete;
             var selectList = scope === "admin" ? [select1, select2] : []; // add [select2] to 2nd part to update the flag buttons in public app (atm not shown so w/e)
             for (var i in selectList) {
                 var select = selectList[i];
-                var flagPanel = $('#flag' + select.attr('num')).closest('.playlistDashboard');
+                var flagPanel = $('#flag' + select.attr('num')).closest('.plDashboard');
                 var option = select.find("option:selected");
                 // managing flags
                 ["flag_current", "flag_public"].forEach(function (e) {
@@ -836,7 +844,7 @@ var tabTradToDelete;
         var liKara = el.closest('li');
         var idKara = parseInt(liKara.attr('idkara'));
         var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-        var idPlaylist = parseInt( $(this).closest('.playlistDashboard').attr('idPlaylist'));
+        var idPlaylist = parseInt( $(this).closest('.plDashboard').attr('idPlaylist'));
         var infoKara = liKara.find('.detailsKara');
 
         if (infoKara.length == 0) {
