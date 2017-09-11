@@ -1457,7 +1457,6 @@ module.exports = {
 						logger.error('[PLC] addKaraToPlaylist : '+err);
 						reject(err);
 					} else {	
-						logger.debug('[PLC] addKaraToPlaylist : building ASS and setting positions');					
 						var pManagePos = new Promise((resolve,reject) => {
 							// If pos is provided, we need to update all karas above that and add 
 							// karas.length to the position
