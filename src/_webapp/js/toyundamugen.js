@@ -212,17 +212,23 @@ var tabTradToDelete;
             }
         });
         if(mode != "mobile") {
-            $('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', { el : $(this) }, toggleDetailsKara);
+            $('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', function(e) {
+                toggleDetailsKara($(this));
+            });
         }
 
         $('.playlist-main').on('click', '.fullLyrics', function (e) {
             var playlist = $(this).closest('ul');
             var liKara = $(this).closest('li');
+            var lyricsKara = liKara.find('.lyricsKara');
             var idKara = liKara.attr('idkara');
             var detailsKara = liKara.find('.detailsKara');
 
-            if(liKara.find('.lyricsKara').length == 0) {
-                liKara.append("<div class='lyricsKara alert alert-info'>" + closeButton + "<div class='lyricsKaraLoad'>...</div>" + closeButtonBottom + "</div>");                
+            if(lyricsKara.length == 0) {
+                liKara.append($("<div class='lyricsKara alert alert-info'>" + closeButton + "<div class='lyricsKaraLoad'>...</div>" + closeButtonBottom + "</div>")
+                    .hide().fadeIn(animTime));                
+            } else if (!lyricsKara.is(':visible')) {
+                lyricsKara.fadeIn(animTime);
             }
             $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
                 liKara.find('.lyricsKaraLoad').html(data.join('<br/>'));
@@ -293,7 +299,7 @@ var tabTradToDelete;
 
     socket = io( window.location.protocol + "//" + window.location.hostname + ":1340");
     
-    animTime = $(window).width() < 1000 ? 400 : 400;
+    animTime = $(window).width() < 1000 ? 200 : 300;
     refreshTime = 2000;
     toleranceDynamicPixels = 100;
     karaParPage = 80;
@@ -541,7 +547,7 @@ var tabTradToDelete;
                     var sortableUl = $("#playlist" + num);
                     sortableUl.sortable({
                         appendTo: sortableUl,
-                        handle : isTouchScreen || true ? ".btnDiv" : false,
+                        handle : isTouchScreen ? ".btnDiv" : false,
                         cancel : "",
                         update: function(event, ui) { changeKaraPos(ui.item) },
                        // connectWith: sortableUl2,
@@ -826,7 +832,7 @@ var tabTradToDelete;
            return titleText;
     }
  
-    toggleDetailsKara = function (el, truc) {
+    toggleDetailsKara = function (el) {
         var liKara = el.closest('li');
         var idKara = parseInt(liKara.attr('idkara'));
         var idPlc = parseInt(liKara.attr('idplaylistcontent'));
@@ -839,7 +845,8 @@ var tabTradToDelete;
             $.ajax({ url: urlInfoKara }).done(function (data) {
                 var detailsHtml = buildKaraDetails(data[0], mode);
                 detailsHtml = $(detailsHtml).hide()
-                liKara.append(detailsHtml);
+                liKara.find('.contentDiv').after(detailsHtml);
+
                 if(mode == "mobile") {
                     liKara.find('.fullLyricsMobile').hammer().on('tap', function (e) {
                         var playlist = $(this).closest('ul');
@@ -852,6 +859,7 @@ var tabTradToDelete;
                             $('#lyricsModal').modal('open');
                         });
                     });
+                    
                 }
                 detailsHtml.fadeIn(animTime);
                 liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
@@ -859,7 +867,8 @@ var tabTradToDelete;
             });
         } else if (infoKara.is(':visible')) {
             saveDetailsKara(idPlaylist, idKara, "remove");
-            infoKara.fadeOut(animTime);
+            infoKara.add(liKara.find('.lyricsKara')).fadeOut(animTime);
+            
             liKara.find('[name="infoKara"]').css('border-color', '');
         } else {
             saveDetailsKara(idPlaylist, idKara, "add");
@@ -1018,7 +1027,6 @@ var tabTradToDelete;
     }, refreshTime * 2.5);
 */
     /* partie socket */
-
     socket.on('playerStatus', function(data){
         refreshCommandStates(data)
     });
@@ -1036,8 +1044,8 @@ var tabTradToDelete;
 
     socket.on('playlistInfoUpdated', function(idPlaylist){
         if (idPlaylist) {
-            var num = sideOfPlaylist(idPlaylist);
-            if(num && !($('#selectPlaylist' + num).data('select2') && $('#selectPlaylist' + num).data('select2').isOpen())) {
+          if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
+                || $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
                 fillPlaylistSelects();
             }
         }
@@ -1073,6 +1081,18 @@ var tabTradToDelete;
         }
     });
 
+    var onevent = socket.onevent;
+    socket.onevent = function (packet) {
+        var args = packet.data || [];
+        onevent.call (this, packet);    // original call
+        packet.data = ["*"].concat(args);
+        onevent.call(this, packet);      // additional call to catch-all
+    };
+
+    
+    socket.on('*', function(e, data) {
+        console.log(e, data);
+    });
 }));
 
 
