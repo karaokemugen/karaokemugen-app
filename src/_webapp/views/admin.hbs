@@ -38,7 +38,7 @@
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
         <div class="panel col-lg-6 col-xs-6" id="panel1" num="1">
-            <div class="panel-heading container-fluid playlistDashboard">            
+            <div class="panel-heading container-fluid plDashboard">            
                 <div class="plSelect">
                     <button class="btn btn-default pull-left showPlaylistCommands" num="1">
                         <i class="glyphicon glyphicon-wrench"></i>
@@ -46,7 +46,7 @@
                     <select id="selectPlaylist1" num="1" type="playlist_select" class="select2" style="overflow:hidden">
                     </select>
                 </div>
-                  <div class="plCommandsContainer">
+                  <div class="controlsContainer">
                     <div class="btn-group plCommands controls">
                         <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
                             <i class="glyphicon glyphicon-pencil"></i>
@@ -70,7 +70,7 @@
                 <div class="plSearch">
                     <input type="text" class="form-control input-md" num="1" id="searchPlaylist1" placeholder="&#xe003;" />
                 </div>
-                <div class="plCommandsContainer flagsContainer">
+                <div class=" flagsContainer">
                     <div class="btn-group plCommands flags" id="flag1">
                         <button title='{{i18n "PLAYLIST_CURRENT"}}' class="btn btn-default" name="flag_current">
                             <i class="glyphicon glyphicon-facetime-video"></i>
@@ -86,18 +86,18 @@
               
                 <div class="plCommandsContainer btnDivContainer">
                     <div class="btn-group plCommands btnDiv">
-                        <button name="selectAllKaras" value="0" class="btn btn-default">
-                            <i class="glyphicon glyphicon-unchecked"></i>
-                            <i class="glyphicon glyphicon-check"></i>
-                        </button>
-                        <button name="transferKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i>
+                        <button name="addKara" class="btn btn-default">
+                            <i class="glyphicon glyphicon-plus"></i>
                         </button>
                         <button name="deleteKara" class="btn btn-default">
                             <i class="glyphicon glyphicon-minus"></i>
                         </button>
-                        <button name="addKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-plus"></i>
+                        <button name="transferKara" class="btn btn-default">
+                            <i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i>
+                        </button>
+                        <button name="selectAllKaras" value="0" class="btn btn-default">
+                            <i class="glyphicon glyphicon-unchecked"></i>
+                            <i class="glyphicon glyphicon-check"></i>
                         </button>
                     </div>
                 </div>
@@ -111,7 +111,7 @@
         </div>
         
         <div class="panel col-lg-6 col-xs-6" id="panel2" num="2">
-            <div class="panel-heading container-fluid playlistDashboard">            
+            <div class="panel-heading container-fluid plDashboard">            
                 <div class="plSelect">
                     <button class="btn btn-default pull-left showPlaylistCommands" num="1">
                         <i class="glyphicon glyphicon-wrench"></i>
@@ -119,7 +119,7 @@
                     <select id="selectPlaylist2" num="2" type="playlist_select" class="select2" style="overflow:hidden">
                         </select>
                 </div>
-                 <div class="plCommandsContainer">
+                 <div class="controlsContainer">
                     <div class="btn-group plCommands controls">
                         <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
                             <i class="glyphicon glyphicon-pencil"></i>
@@ -127,9 +127,9 @@
                         <button title='{{i18n "PLAYLIST_DELETE"}}' class="btn btn-default" name="delete">
                             <i class="glyphicon glyphicon-remove red"></i>
                         </button>
-                         <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
+                        <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
                             <i class="glyphicon glyphicon-random"></i>
-                         </button>    
+                        </button>    
                         <button title='{{i18n "PLAYLIST_IMPORT"}}' class="btn btn-default" name="import">
                             <i class="glyphicon glyphicon-import"></i>
                         </button>
@@ -142,22 +142,22 @@
                 
                  <div class="plCommandsContainer btnDivContainer">
                     <div class="btn-group plCommands btnDiv">
-                        <button name="selectAllKaras" value="0" class="btn btn-default">
-                            <i class="glyphicon glyphicon-unchecked"></i>
-                            <i class="glyphicon glyphicon-check"></i>
-                        </button>
-                        <button name="transferKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i>
+                        <button name="addKara" class="btn btn-default">
+                            <i class="glyphicon glyphicon-plus"></i>
                         </button>
                         <button name="deleteKara" class="btn btn-default">
                             <i class="glyphicon glyphicon-minus"></i>
                         </button>
-                        <button name="addKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-plus"></i>
+                        <button name="transferKara" class="btn btn-default">
+                            <i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i>
+                        </button>
+                        <button name="selectAllKaras" value="0" class="btn btn-default">
+                            <i class="glyphicon glyphicon-unchecked"></i>
+                            <i class="glyphicon glyphicon-check"></i>
                         </button>
                     </div>
                 </div>
-                <div class="plCommandsContainer flagsContainer">
+                <div class=" flagsContainer">
                     <div class="btn-group plCommands flags" id="flag2">
                         <button title='{{i18n "PLAYLIST_CURRENT"}}' class="btn btn-default" name="flag_current">
                             <i class="glyphicon glyphicon-facetime-video"></i>

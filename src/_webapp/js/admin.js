@@ -158,12 +158,12 @@
             });
         });
         $('.playlist-main').on('click', 'button.showPlaylistCommands', function (e) {
-            $(this).closest('.playlistDashboard').toggleClass('advanced');
+            $(this).closest('.plDashboard').toggleClass('advanced');
             $(window).resize();
             
-            if( $('.playlistDashboard').hasClass('advanced') && ($('#playlist1').parent().height() < 400 ||  $('#playlist2').parent().height() <  400) ) {
+            if( $('.plDashboard').hasClass('advanced') && ($('#playlist1').parent().height() < 400 ||  $('#playlist2').parent().height() <  400) ) {
                 $('body').addClass('hiddenHeader');
-            } else if(!$('.playlistDashboard').hasClass('advanced')) {
+            } else if(!$('.plDashboard').hasClass('advanced')) {
                 $('body').removeClass('hiddenHeader');
             }
                 
@@ -383,7 +383,7 @@
             urlEnd = "/setPublic";
         } else if (name === "flag_visible") {
             urlEnd = "";
-            data = { name: namePlaylist, flag_visible: btn.closest('.playlistDashboard').attr('flag_visible') == "true" ? 0 : 1 };
+            data = { name: namePlaylist, flag_visible: btn.closest('.plDashboard').attr('flag_visible') == "true" ? 0 : 1 };
         }
         $.ajax({
             url: 'admin/playlists/' + playlistId + urlEnd,
@@ -396,7 +396,7 @@
     
     $('.controls button').click(function (e) {
         var name = $(this).attr('name');
-        var dashBoard = $(this).closest('.playlistDashboard');
+        var dashBoard = $(this).closest('.plDashboard');
         var selectedOption = dashBoard.find('[type="playlist_select"] > option:selected');
         var playlistName = selectedOption.attr('name');
         var idPlaylist = parseInt(dashBoard.attr('idPlaylist'));
