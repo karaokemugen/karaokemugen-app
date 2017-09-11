@@ -245,14 +245,8 @@ module.exports = {
 				.then(function(){									
 					module.exports.getKara(kara_id)
 						.then(function(kara) {							
-							assBuilder.ASSToLyrics(kara.ass)
-								.then(function(lyrics) {
-									resolve(lyrics);
-								})
-								.catch(function(err){
-									logger.error('[PLC] ASS getLyrics : '+err);
-									reject(err);
-								});
+							var lyrics = assBuilder.ASSToLyrics(kara.ass);
+							resolve(lyrics);							
 						})
 						.catch(function(err){
 							logger.error('[PLC] getKara : '+err);
@@ -2818,19 +2812,14 @@ module.exports = {
 									requester = undefined;
 								}
 								logger.profile('BuildASS');								
-								assBuilder.build(ass,kara.title,kara.serie,kara.singer,kara.songtype,kara.songorder,requester)
-									.then(function(ass){
-										logger.profile('BuildASS');						
-										kara.path = {
-											video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
-											subtitle: ass
-										};													
-										resolve(kara);
-									})
-									.catch(function(err){
-										logger.error('[PLC] ASS Build : '+err);
-										reject(err);
-									});								
+								ass = assBuilder.build(ass,kara.title,kara.serie,kara.singer,kara.songtype,kara.songorder,requester);
+								logger.profile('BuildASS');						
+								kara.path = {
+									video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
+									subtitle: ass
+								};													
+								resolve(kara);
+									
 							})
 							.catch(function(err){
 								logger.error('[PLC] getASS : '+err);
