@@ -54,7 +54,7 @@ module.exports = {
 					};
 					generator.run().then(function(){
 						resolve();
-					}).catch(function(response,error){
+					}).catch(function(error){
 						// erreur ?						
 						reject(error);
 					});
@@ -448,7 +448,7 @@ module.exports = {
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
-			var sqlUpdateKaraPosition = fs.readFileSync(path.join(__dirname,'../../_common/db/update_kara_position.sql'),'utf-8');
+			var sqlUpdateKaraPosition = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_pos.sql'),'utf-8');
 
 			var newpos = 0;
 			playlist.forEach(function(kara) {
@@ -1522,8 +1522,7 @@ module.exports = {
 					$NORM_pseudo_add: kara.NORM_requester,
 					$kara_id: kara.kara_id,
 					$created_at: kara.date_add,
-					$pos: kara.pos,
-					$generated_subfile: kara.generatedSubFile				
+					$pos: kara.pos,					
 				});
 			});	
 			module.exports._db_handler.serialize(function() {		

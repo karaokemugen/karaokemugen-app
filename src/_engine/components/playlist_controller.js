@@ -35,26 +35,6 @@ module.exports = {
 
 		logger.info('[PLC] Playlist controller is READY');
 	},
-	toggleDisplayNickname:function(displayNickname) {
-		//Get the list of karas currently in playlists and pass it over to the assBuilder		
-		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.getAllPlaylistContents()
-				.then(function(karalist){
-					assBuilder.toggleDisplayNickname(karalist,displayNickname,module.exports.SETTINGS.PathTemp)
-						.then(function(){					
-							resolve();
-						})
-						.catch(function(err){
-							logger.error('[PLC] ASS toggleDisplayNickname : '+err);
-							reject(err);
-						});
-				})
-				.catch(function(err){
-					logger.error('[PLC] DBI getAllPlaylist : '+err);
-					reject(err);
-				});
-		});
-	},
 	isCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
@@ -267,13 +247,7 @@ module.exports = {
 				.then(function(){									
 					module.exports.getKara(kara_id)
 						.then(function(kara) {							
-							assBuilder.getLyrics(
-								module.exports.SETTINGS.PathSubs,
-								module.exports.SETTINGS.PathVideos,
-								kara.subfile,
-								kara.videofile,
-								module.exports.SETTINGS.PathTemp
-							)
+							assBuilder.ASSToLyrics(kara.ass)
 								.then(function(lyrics) {
 									resolve(lyrics);
 								})
@@ -281,6 +255,40 @@ module.exports = {
 									logger.error('[PLC] ASS getLyrics : '+err);
 									reject(err);
 								});
+						})
+						.catch(function(err){
+							logger.error('[PLC] getKara : '+err);
+							reject(err);
+						});
+				})
+				.catch(function(err){
+					logger.error('[PLC] getKaraLyrics : '+err);
+					reject(err);
+				});
+		});
+	},
+	/**
+	* @function {Get karaoke ASS data}
+	* @param  {number} id_kara {Karaoke ID}
+	* @return {string} {ASS}
+	*/
+	getASS:function(kara_id) {
+		return new Promise(function(resolve,reject){
+			var pIsKara = new Promise((resolve,reject) => {
+				module.exports.isKara(kara_id)
+					.then(function() {
+						resolve(true);
+					})
+					.catch(function(err) {
+						logger.error('[PLC] isKara : '+err);
+						reject(err);
+					});
+			});
+			Promise.all([pIsKara])
+				.then(function(){									
+					module.exports.getKara(kara_id)
+						.then(function(kara) {							
+							resolve(kara.ass);
 						})
 						.catch(function(err){
 							logger.error('[PLC] getKara : '+err);
@@ -1455,45 +1463,6 @@ module.exports = {
 						reject(err);
 					} else {	
 						logger.debug('[PLC] addKaraToPlaylist : building ASS and setting positions');					
-						var pBuildASS = new Promise((resolve,reject) => {
-							logger.profile('ASSGeneration');
-							async.eachOf(karaList,function(karaToAdd, index, callback){
-								logger.debug('[PLC] addKaraToPlaylist : building ASS for kara ID '+karaToAdd.kara_id);
-								module.exports.getKara(karaToAdd.kara_id)
-									.then(function(kara) {
-										assBuilder.build(
-											module.exports.SETTINGS.PathSubs,
-											module.exports.SETTINGS.PathVideos,
-											kara.subfile,
-											kara.videofile,
-											module.exports.SETTINGS.PathTemp,
-											kara.title,
-											kara.serie,
-											kara.songtype,
-											kara.songorder,
-											requester)
-											.then(function(uuid) {											
-												karaList[index].generatedSubFile = uuid+'.ass';	
-												callback();
-											})
-											.catch(function(err){
-												logger.error('[PLC] ASS build (kara ID '+kara.kara_id+') (Video : '+kara.videofile+') : '+err);
-												callback(err);
-											});
-									})							
-									.catch(function(err){
-										logger.error('[PLC] addKaraToPlaylist : '+err);
-										callback(err);
-									});
-							}, function (err) {
-								if (err) {
-									reject(err);
-								} else {
-									logger.profile('ASSGeneration');
-									resolve();
-								}
-							});							
-						});
 						var pManagePos = new Promise((resolve,reject) => {
 							// If pos is provided, we need to update all karas above that and add 
 							// karas.length to the position
@@ -1531,7 +1500,7 @@ module.exports = {
 									});
 							}
 						});													
-						Promise.all([pBuildASS,pManagePos])
+						Promise.all([pManagePos])
 							.then(function() {	
 								logger.debug('[PLC] addKaraToPlaylist : Adding to database');
 								logger.profile('DB_AddKaraToPlaylist');					
@@ -1921,21 +1890,6 @@ module.exports = {
 					// Removing karaoke here.
 					module.exports.DB_INTERFACE.removeKaraFromPlaylist(playlistcontent_id)
 						.then(function(){
-							var pRemoveAllASS = new Promise((resolve) => {
-								async.each(karaList,function(karaToRemove,callback){
-									var assFile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathTemp,karaToRemove.subFile);
-									if (fs.existsSync(assFile)) {
-										fs.unlinkSync(assFile);
-										callback();
-									} else {
-										logger.warn('[PLC] deleteKaraFromPlaylist : Unable to find ASS file : '+assFile);
-										callback();
-									}									
-								},function(){
-									resolve();
-								});
-								resolve();
-							});
 							var pUpdatedDuration = new Promise((resolve,reject) => {
 								module.exports.updatePlaylistDuration(playlist_id)
 									.then(function(){
@@ -1976,7 +1930,7 @@ module.exports = {
 										reject(err);
 									});
 							});
-							Promise.all([pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount,pRemoveAllASS])
+							Promise.all([pUpdateLastEditTime,pReorderPlaylist,pUpdatedDuration,pUpdatedKarasCount])
 								.then(function() {									
 									// We return the playlist id so we can send a message update
 									resolve(playlist_id);
@@ -2904,11 +2858,32 @@ module.exports = {
 
 						// on enrichie l'objet pour fournir son contexte et les chemins système prêt à l'emploi
 						kara.playlist_id = playlist.id;
-						kara.path = {
-							video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
-							subtitle: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp, kara.generated_subfile),
-						};						
-						resolve(kara);
+						module.exports.getASS(kara.kara_id)
+							.then(function(ass){								
+								logger.debug(kara);
+								var requester;
+								if (module.exports.SETTINGS.EngineDisplayNickname === 1){
+									requester = kara.pseudo;
+								} else {
+									requester = undefined;
+								}
+								assBuilder.build(ass,kara.title,kara.serie,kara.songtype,kara.songorder,requester)
+									.then(function(ass){
+										kara.path = {
+											video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
+											subtitle: ass
+										};													
+										resolve(kara);
+									})
+									.catch(function(err){
+										logger.error('[PLC] ASS Build : '+err);
+										reject(err);
+									});								
+							})
+							.catch(function(err){
+								logger.error('[PLC] getASS : '+err);
+								reject(err);
+							});						
 					} else { 	
 						var err = 'No karaoke found in playlist object';
 						logger.error('[PLC] current : '+err);						

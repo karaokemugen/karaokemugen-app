@@ -16,10 +16,11 @@ SELECT ak.kara_id AS kara_id,
       ak.author AS author,
       ak.NORM_author AS NORM_author,
       ak.misc AS misc,
-	  ak.viewcount AS viewcount,
-      ak.subfile AS subfile,
+	  ak.viewcount AS viewcount,      
       ak.videofile AS videofile,
 	  ak.videolength AS duration,
-	  ak.gain AS gain
- FROM karasdb.all_karas AS ak
-WHERE ak.kara_id = $kara_id;
+	  ak.gain AS gain,
+	  k.ass AS ass
+ FROM karasdb.all_karas AS ak, karasdb.kara AS k
+WHERE ak.kara_id = $kara_id
+  AND k.pk_id_kara = $kara_id;

@@ -292,7 +292,7 @@ module.exports = {
 	* @function
 	* Try to read next karaoke in playlist.
 	*/
-	tryToReadKaraInPlaylist:function(){
+	tryToReadKaraInPlaylist:function(){		
 		module.exports._services.playlist_controller.current_playlist()
 			.then(function(playlist){
 				if(module.exports._states.playlist != playlist) {
@@ -304,9 +304,10 @@ module.exports = {
 				logger.error('[Engine] Unable to get playlist : '+err);			
 			});
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
+			logger.profile('StartPlaying');
 			module.exports._services.playlist_controller.current()
 				.then(function(kara){
-					logger.info('Start playing '+kara.path.video);
+					logger.info('[Engine] Start playing '+kara.path.video);					
 					module.exports._services.player.play(
 						kara.path.video,
 						kara.path.subtitle,

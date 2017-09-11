@@ -33,13 +33,13 @@ CREATE TABLE kara (
     year                 TEXT,
     songorder            INTEGER NOT NULL,
     videofile            TEXT NOT NULL,
-    subfile              TEXT NOT NULL,
     videolength          INTEGER,
     gain                 REAL DEFAULT (0),
     created_at           INTEGER NOT NULL,
     modified_at          INTEGER NOT NULL,
     rating               REAL,
-    viewcount            INTEGER DEFAULT (0)
+    viewcount            INTEGER DEFAULT (0),
+	ass                  TEXT	
 );
 
 CREATE INDEX index_kara_tag_id_tag ON kara_tag (fk_id_tag );
