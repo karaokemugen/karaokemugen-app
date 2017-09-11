@@ -35,26 +35,6 @@ module.exports = {
 
 		logger.info('[PLC] Playlist controller is READY');
 	},
-	toggleDisplayNickname:function(displayNickname) {
-		//Get the list of karas currently in playlists and pass it over to the assBuilder		
-		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.getAllPlaylistContents()
-				.then(function(karalist){
-					assBuilder.toggleDisplayNickname(karalist,displayNickname,module.exports.SETTINGS.PathTemp)
-						.then(function(){					
-							resolve();
-						})
-						.catch(function(err){
-							logger.error('[PLC] ASS toggleDisplayNickname : '+err);
-							reject(err);
-						});
-				})
-				.catch(function(err){
-					logger.error('[PLC] DBI getAllPlaylist : '+err);
-					reject(err);
-				});
-		});
-	},
 	isCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
@@ -2887,7 +2867,13 @@ module.exports = {
 						module.exports.getASS(kara.kara_id)
 							.then(function(ass){								
 								logger.debug(kara);
-								assBuilder.build(ass,kara.title,kara.serie,kara.songtype,kara.songorder,kara.pseudo_add)
+								var requester;
+								if (module.exports.SETTINGS.EngineDisplayNickname === 1){
+									requester = kara.pseudo;
+								} else {
+									requester = undefined;
+								}
+								assBuilder.build(ass,kara.title,kara.serie,kara.songtype,kara.songorder,requester)
 									.then(function(ass){
 										kara.path = {
 											video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),

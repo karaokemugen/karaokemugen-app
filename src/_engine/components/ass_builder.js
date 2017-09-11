@@ -83,66 +83,6 @@ module.exports = {
 			}
 		});
 	},
-	toggleDisplayNickname:function(karalist,displayNickname,tempFolder){
-		return new Promise(function(resolve){		
-			// If DisplayNickname is true, then try to add the requested by bit to the ASS again if it's not there already
-			// If it's false then find the Dialogue with the Pseudo style and delete it. 		
-			karalist.forEach(function(kara){			
-				//Open the .ass
-				var assFile = tempFolder+'/'+kara.generated_subfile;
-				var assData = fs.readFileSync(path.resolve(module.exports.SYSPATH,assFile), 'utf-8');
-				var script = assParser(assData, { comments: true });			
-				var DialogueSection;
-				script.forEach(function(ASSSection,index){
-					if (ASSSection.section == 'Events') {
-						DialogueSection = index;
-					}
-				});
-				var dialogueIndex = undefined;
-				script[DialogueSection].body.some(function(param,index){
-					if (param.key == 'Dialogue' && param.value.Style == 'Pseudo') {
-						dialogueIndex = index;
-						return true;
-					}
-				});
-				if (displayNickname) {
-					// Check if the Dialogue bit of the .ass exists.
-					// If it doesn't, add it.
-					var outputFile;
-					if (dialogueIndex === undefined) {
-						var DialogueNickname = {
-							key: 'Dialogue',
-							value: {
-								Layer: '0',
-								Start: '0:00:00.00',
-								End: '0:00:08.00',
-								Style: 'Pseudo',
-								Name: '',
-								MarginL: '0',
-								MarginR: '0',
-								MarginV: '0',
-								Effect: '',
-								Text: '{\\fad(800,250)\\i1}'+__('REQUESTED_BY')+'{\\i0}\\N{\\u0}'+kara.pseudo_add+'{\\u1}'
-							}
-						};
-						script[DialogueSection].body.push(DialogueNickname);
-						outputFile = tempFolder+'/'+kara.playlistcontent_id+'.ass';
-						fs.writeFileSync(outputFile, assStringify(script));					
-					} 				
-				} else {
-					// Check if the Dialogue bit of the .ass exists.
-					// If it does, delete it.
-					// We leave the style as it doesn't pose a threat.
-					if (dialogueIndex !== undefined) {
-						script[DialogueSection].body.splice(dialogueIndex,1);
-						outputFile = tempFolder+'/'+kara.generated_subfile;
-						fs.writeFileSync(outputFile, assStringify(script));
-					}				
-				}			
-			});
-			resolve();		
-		});
-	},
 	build:function(ass, title, series, songType, songOrder, requester){
 		logger.debug('[ASS] args = '+JSON.stringify(arguments));
 		return new Promise(function(resolve){
@@ -260,10 +200,31 @@ module.exports = {
 				}
 			};
 
-			// Pushing the styles into the ASS script's Styles section.
-			script[StylesSection].body.push(StyleCredits);
-			script[StylesSection].body.push(StyleNickname);
+			// If requester isn't set, don't add the nickname section in the
+			// bottom right corner.
+			// Requester isn't set if EngineDisplayNickname is false.
+			if (requester) {
+				script[StylesSection].body.push(StyleNickname);
+				var DialogueNickname = {
+					key: 'Dialogue',
+					value: {
+						Layer: '0',
+						Start: '0:00:00.00',
+						End: '0:00:08.00',
+						Style: 'Pseudo',
+						Name: '',
+						MarginL: '0',
+						MarginR: '0',
+						MarginV: '0',
+						Effect: '',
+						Text: '{\\fad(800,250)\\i1}'+__('REQUESTED_BY')+'{\\i0}\\N{\\u0}'+requester+'{\\u1}'
+					}
+				};
+				script[DialogueSection].body.push(DialogueNickname);
+			}
 
+			script[StylesSection].body.push(StyleCredits);
+			
 			// If title is empty, do not display - after songtype and order
 			if (!L.isEmpty(title)) {
 				title = ' - '+title;
@@ -284,27 +245,10 @@ module.exports = {
 					Effect: '',
 					Text: '{\\fad(800,250)\\i1}'+series+'{\\i0}\\N{\\u0}'+i18n.__(songType+'_SHORT')+songOrder+title+'{\\u1}'
 				}};
-			var DialogueNickname = {
-				key: 'Dialogue',
-				value: {
-					Layer: '0',
-					Start: '0:00:00.00',
-					End: '0:00:08.00',
-					Style: 'Pseudo',
-					Name: '',
-					MarginL: '0',
-					MarginR: '0',
-					MarginV: '0',
-					Effect: '',
-					Text: '{\\fad(800,250)\\i1}'+__('REQUESTED_BY')+'{\\i0}\\N{\\u0}'+requester+'{\\u1}'
-				}
-			};
-
+			
 			script[DialogueSection].body.push(DialogueCredits);
-			script[DialogueSection].body.push(DialogueNickname);
 
-			// Writing to the final ASS, which is the karaoke's ID.ass
-			// If writing is successfull, we return the path to the ASS file.
+			// Writing the final ASS.			
 			resolve(assStringify(script));
 		});
 	}
