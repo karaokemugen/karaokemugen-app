@@ -61,7 +61,7 @@ module.exports = {
 			var tags = [];
 			var karas_series = [];
 			var karas_tags = [];
-			var karafiles = [];
+			var karafiles = [];			
 			var doUpdateSeriesAltNames = false;
 
 			module.exports.db = new sqlite3.Database(karas_dbfile, function(err) {
@@ -195,8 +195,7 @@ module.exports = {
 											$kara_rating : kara['rating'],
 											$kara_viewcount : kara['viewcount'],
 											$kara_gain : kara['gain'],
-											$kara_videolength : kara['videolength'],
-											$kara_ass : kara['ass']
+											$kara_videolength : kara['videolength']			
 										});
 									});
 									resolve();
@@ -299,7 +298,7 @@ module.exports = {
 										.catch(function(err){
 											reject(err);
 										});
-								});
+								});								
 								/**
 								 * Create arrays for series
 								 */
@@ -455,7 +454,8 @@ module.exports = {
 						/*
 						* Building SQL queries for insertion
 						*/
-						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at, modified_at, rating, viewcount, gain, videolength,ass) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength, $kara_ass);');
+						var stmt_InsertKaras = module.exports.db.prepare('INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at, modified_at, rating, viewcount, gain, videolength) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength);');
+						var stmt_InsertASS = module.exports.db.prepare('INSERT INTO ass (fk_id_kara,ass) VALUES ($id_kara, $ass);');
 						var stmt_InsertSeries = module.exports.db.prepare('INSERT INTO serie(pk_id_serie,name,NORM_name) VALUES( $id_serie, $serie, $serienorm );');
 						var stmt_InsertTags = module.exports.db.prepare('INSERT INTO tag(pk_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );');
 						var stmt_InsertKarasTags = module.exports.db.prepare('INSERT INTO kara_tag(fk_id_tag,fk_id_kara) VALUES( $id_tag, $id_kara );');
@@ -467,6 +467,18 @@ module.exports = {
 						*/
 						sqlInsertKaras.forEach(function(data){
 							stmt_InsertKaras.run(data, function (err) {
+								if(err) {
+									reject(err);
+								}
+							});
+						});
+						karas.forEach(function(kara, index) {
+							index++;
+							var data = {
+								$id_kara: index,
+								$ass: kara.ass
+							};
+							stmt_InsertASS.run(data, function (err) {
 								if(err) {
 									reject(err);
 								}
@@ -532,6 +544,7 @@ module.exports = {
 								stmt_InsertKarasTags.finalize();
 								stmt_InsertTags.finalize();
 								stmt_InsertKaras.finalize();
+								stmt_InsertASS.finalize();
 								resolve();
 							}
 						});

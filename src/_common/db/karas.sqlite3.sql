@@ -38,11 +38,17 @@ CREATE TABLE kara (
     created_at           INTEGER NOT NULL,
     modified_at          INTEGER NOT NULL,
     rating               REAL,
-    viewcount            INTEGER DEFAULT (0),
-	ass                  TEXT	
+    viewcount            INTEGER DEFAULT (0)	
+);
+
+CREATE TABLE ass (
+	pk_id_ass			 INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
+	fk_id_kara           INTEGER NOT NULL REFERENCES kara,
+	ass                  TEXT
 );
 
 CREATE INDEX index_kara_tag_id_tag ON kara_tag (fk_id_tag );
 CREATE INDEX index_kara_tag_id_kara ON kara_tag (fk_id_kara );
+CREATE INDEX index_kara_ass ON ass (fk_id_kara );
 CREATE INDEX index_kara_serie_id_serie ON kara_serie (fk_id_serie );
 CREATE INDEX index_kara_serie_id_kara ON kara_serie (fk_id_kara );

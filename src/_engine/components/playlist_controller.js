@@ -284,17 +284,17 @@ module.exports = {
 			});
 			Promise.all([pIsKara])
 				.then(function(){									
-					module.exports.getKara(kara_id)
-						.then(function(kara) {							
-							resolve(kara.ass);
+					module.exports.DB_INTERFACE.getASS(kara_id)
+						.then(function(ass) {							
+							resolve(ass.ass);
 						})
 						.catch(function(err){
-							logger.error('[PLC] getKara : '+err);
+							logger.error('[PLC] DBI getASS : '+err);
 							reject(err);
 						});
 				})
 				.catch(function(err){
-					logger.error('[PLC] getKaraLyrics : '+err);
+					logger.error('[PLC] getASS : '+err);
 					reject(err);
 				});
 		});
@@ -2003,14 +2003,18 @@ module.exports = {
 					Promise.all([pUpdatePos,pUpdatePlaying])
 						.then(function(){							
 							var pReorderPlaylist = new Promise((resolve,reject) => {
-								module.exports.reorderPlaylist(playlist_id)
-									.then(function(){
-										resolve();
-									})
-									.catch(function(err){
-										logger.error('[PLC] reorderPlaylist : '+err);
-										reject(err);
-									});
+								if (pos) {
+									module.exports.reorderPlaylist(playlist_id)
+										.then(function(){
+											resolve();
+										})
+										.catch(function(err){
+											logger.error('[PLC] reorderPlaylist : '+err);
+											reject(err);
+										});
+								} else {
+									resolve();
+								}
 							});
 							var pUpdateLastEditTime = new Promise((resolve,reject) => {
 								module.exports.updatePlaylistLastEditTime(playlist_id)
@@ -2650,7 +2654,7 @@ module.exports = {
 	prev:function(){
 		return new Promise(function(resolve,reject){
 			module.exports.isACurrentPlaylist().then(function(playlist_id){
-				module.exports.getPlaylistContents(playlist_id).then(function(pl_content){
+				module.exports.getPlaylistContents(playlist_id,false,true).then(function(pl_content){
 					if(pl_content.length==0) {
 						logger.warn('[PLC] prev : pl_content is empty!');
 						reject('Playlist is empty!');
@@ -2694,7 +2698,7 @@ module.exports = {
 	next:function(){
 		return new Promise(function(resolve,reject){
 			module.exports.isACurrentPlaylist().then(function(playlist_id){
-				module.exports.getPlaylistContents(playlist_id).then(function(pl_content){
+				module.exports.getPlaylistContents(playlist_id,false,true).then(function(pl_content){
 					if(pl_content.length==0) {
 						logger.error('[PLC] prev : pl_content is empty!');
 						reject('Playlist is empty!');
@@ -2770,9 +2774,9 @@ module.exports = {
 	current:function(){
 		// TODO : renommer en get_current_kara
 		return new Promise(function(resolve,reject){
-			logger.profile('GetPlaylist');			
+			logger.profile('GetPlaylist');									
 			module.exports.current_playlist()
-				.then(function(playlist){										
+				.then(function(playlist){
 					logger.profile('GetPlaylist');					
 					var readpos = false;
 					playlist.content.forEach(function(element, index) {
@@ -2804,16 +2808,16 @@ module.exports = {
 						kara.playlist_id = playlist.id;
 						logger.profile('GetASS');						
 						module.exports.getASS(kara.kara_id)
-							.then(function(ass){								
+							.then(function(ass){
 								logger.profile('GetASS');						
 								logger.debug(kara);
 								var requester;
-								if (module.exports.SETTINGS.EngineDisplayNickname === 1){
+								if (module.exports.SETTINGS.EngineDisplayNickname){
 									requester = kara.pseudo_add;
 								} else {
 									requester = undefined;
 								}
-								logger.profile('BuildASS');						
+								logger.profile('BuildASS');								
 								assBuilder.build(ass,kara.title,kara.serie,kara.songtype,kara.songorder,requester)
 									.then(function(ass){
 										logger.profile('BuildASS');						

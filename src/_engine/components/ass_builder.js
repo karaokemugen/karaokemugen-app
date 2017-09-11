@@ -24,8 +24,7 @@ module.exports = {
 			resolve(lyrics);			
 		});
 	},
-	build:function(ass, title, series, songType, songOrder, requester){
-		logger.debug('[ASS] args = '+JSON.stringify(arguments));
+	build:function(ass, title, series, songType, songOrder, requester){		
 		return new Promise(function(resolve){
 					
 			var script = assParser(ass, { comments: true });

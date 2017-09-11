@@ -286,11 +286,10 @@ module.exports = {
 			setTimeout(function(){
 				module.exports._playing = true;
 				module.exports._player.addSubtitles('memory://'+subtitle);//, flag, title, lang)
-				logger.profile('StartPlaying');
-				logger.profile('StartPlayingFromStop');
+				logger.profile('StartPlaying');				
 				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 				module.exports._player.load(backgroundImageFile,'append');
-			},500);
+			},90);
 		} else {
 			module.exports.playing = false;
 			logger.error('[Player] Video NOT FOUND : '+video);
