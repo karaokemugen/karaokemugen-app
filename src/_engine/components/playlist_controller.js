@@ -2818,7 +2818,7 @@ module.exports = {
 									requester = undefined;
 								}
 								logger.profile('BuildASS');								
-								assBuilder.build(ass,kara.title,kara.serie,kara.songtype,kara.songorder,requester)
+								assBuilder.build(ass,kara.title,kara.serie,kara.singer,kara.songtype,kara.songorder,requester)
 									.then(function(ass){
 										logger.profile('BuildASS');						
 										kara.path = {

@@ -24,7 +24,7 @@ module.exports = {
 			resolve(lyrics);			
 		});
 	},
-	build:function(ass, title, series, songType, songOrder, requester){		
+	build:function(ass, title, series, singer, songType, songOrder, requester){		
 		return new Promise(function(resolve){
 					
 			var script = assParser(ass, { comments: true });
@@ -168,6 +168,9 @@ module.exports = {
 			// If title is empty, do not display - after songtype and order
 			if (!L.isEmpty(title)) {
 				title = ' - '+title;
+			}
+			if (L.isEmpty(series)) {
+				series = singer; 
 			}
 			// Doing the same with the subs we're adding.
 			// 8 seconds is enough to display the name of the video and who requested it.
