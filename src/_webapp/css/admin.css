@@ -288,3 +288,37 @@ span:not(.hideCommands) {
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
+
+
+@media (min-width: 1416px) {
+	.playlistDashboard .plSelect {
+		flex-basis : 64%;
+	}
+	#panel2 .plSearch {
+		order: 2;
+	}
+	#panel2 .flagsContainer {
+		order: 1;
+	}
+  }
+  
+@media (max-width: 1415px) {	
+	.playlistDashboard .plSelect {
+	flex-basis : 50%;
+	}
+}
+
+@media (max-width: 880px) {	
+	.playlistDashboard .plSelect {
+	flex-basis : 50%;
+	}
+	#panel2 .plSearch {
+		order: 1;
+	}
+	#panel2 .btnDivContainer {
+		order: 2;
+	}
+	#panel2 .flagsContainer {
+		order: 3;
+	}
+}

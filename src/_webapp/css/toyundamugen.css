@@ -54,7 +54,7 @@ body {
 	z-index: 9;
 	height: 100%;
     position: absolute;
-    top: 0;
+	top: 0;
 }
 #progressBar:hover > #progressBarColor {
 	background-color: #286faa;
@@ -295,7 +295,7 @@ select.form-control {
 	background-color: #286090;
 }
 
-.list-group-item .detailsKara, .list-group-item .lyricsKara {
+ .detailsKara, .lyricsKara {
 	min-height: 56px;
 	padding: 10px;
 	margin: 7px;
@@ -305,7 +305,7 @@ select.form-control {
 	border-radius: 0px;
 	position: relative;
 }
-.list-group-item .detailsKara tr > td:first-child {
+.detailsKara tr > td:first-child {
 	font-weight: bold;
 	padding-right: 7px;
 }
