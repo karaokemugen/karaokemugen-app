@@ -187,7 +187,7 @@ select.form-control {
 }
 .playlist-main li.list-group-item[currentlyPlaying] {
 	background-color: #3a5064;
-	border-color: #9e9e9e;
+	
 }
 .playlist-main .list-group-item.liType {
 	background-color: #607e97;
@@ -201,7 +201,8 @@ select.form-control {
 }
 
 .playlist-main .list-group-item[user] {
-	background-color: hsla(293, 9%, 27%, 1);
+	__background-color: hsla(293, 9%, 27%, 1);
+	border-left: 5px solid hsl(0, 0%, 83%)
 }
 
 .list-group-item.liTag > .btnDiv {
@@ -295,7 +296,7 @@ select.form-control {
 	background-color: #286090;
 }
 
- .detailsKara, .lyricsKara {
+.list-group-item > div.detailsKara, .lyricsKara {
 	min-height: 56px;
 	padding: 10px;
 	margin: 7px;

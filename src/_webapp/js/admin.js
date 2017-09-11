@@ -383,11 +383,7 @@
             urlEnd = "/setPublic";
         } else if (name === "flag_visible") {
             urlEnd = "";
-            if (btn.find('i').hasClass('glyphicon-eye-close')) {
-                data = { name: namePlaylist, flag_visible: 1 };
-            } else if (btn.find('i').hasClass('glyphicon-eye-open')) {
-                data = { name: namePlaylist, flag_visible: 0 };
-            }
+            data = { name: namePlaylist, flag_visible: btn.closest('.playlistDashboard').attr('flag_visible') == "true" ? 0 : 1 };
         }
         $.ajax({
             url: 'admin/playlists/' + playlistId + urlEnd,
