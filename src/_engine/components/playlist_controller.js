@@ -1642,7 +1642,6 @@ module.exports = {
 											callback(err);
 										} else {
 											// All OK. We need some info though.
-											plcList[index].generated_subfile = playlistContentData.generated_subfile;
 											plcList[index].kara_id = playlistContentData.kara_id;
 											plcList[index].requester = playlistContentData.pseudo_add;
 											plcList[index].NORM_requester = playlistContentData.NORM_pseudo_add;
