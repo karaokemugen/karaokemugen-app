@@ -53,7 +53,7 @@
                 type: 'PUT',
                 data: dataAjax
             }).done(function (data) {
-                // refreshCommandStates();
+                // refreshPlayerInfos();
             });
         });
 
@@ -64,7 +64,7 @@
                 type: 'PUT',
                 data: { command: val }
             }).done(function (data) {
-                // refreshCommandStates();
+                // refreshPlayerInfos();
             });
         });
 
@@ -177,7 +177,7 @@
         });
         $('#karaInfo').click(function (e) {
             if (status != undefined && status != "" && status != "stop") {
-                //refreshCommandStates(goToPosition, e);
+                //refreshPlayerInfos(goToPosition, e);
                 goToPosition(e);
             }
         });
@@ -202,7 +202,7 @@
             if (mouseDown) {
                 stopUpdate = false;
                 mouseDown = false;
-                //refreshCommandStates();
+                //refreshPlayerInfos();
             }
         });
 
@@ -226,7 +226,7 @@
                             });
                         });
                 } else {
-                    select.val([]);
+                    select.val([]).change();
                 }
 
             }
