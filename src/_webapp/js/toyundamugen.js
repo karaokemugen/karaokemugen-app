@@ -131,15 +131,20 @@ var tabTradToDelete;
                 var idKara, idKaraPlaylist;
                 
                 if($(this).parent().hasClass('plCommands')) {
-                    var checkedList = $(this).closest('ul').find('[name="checkboxKara"][value="1"]');
+                    var checkedList = $(this).closest('.panel').find('[name="checkboxKara"][value="1"]');
                     var idKaraList = checkedList.map(function (k, v) {
                         return $(v).closest('li').attr('idkara');
                     });
                     var idKaraPlaylistList = checkedList.map(function (k, v) {
                         return $(v).closest('li').attr('idplaylistcontent');
                     });
+                    
                     var idKara = Array.prototype.slice.apply(idKaraList).join();
                     var idKaraPlaylist = Array.prototype.slice.apply(idKaraPlaylistList).join();
+                    if(!idKara && !idKaraPlaylist) {
+                        console.log("No kara selected");
+                        return false;
+                    }
                 } else {
                     idKara = li.attr('idkara');
                     idKaraPlaylist = li.attr('idplaylistcontent');
@@ -148,6 +153,7 @@ var tabTradToDelete;
                 var action = $(this).attr('name');
                 console.log(action, num, idPlaylistFrom, idPlaylistTo, idKara);
 
+                var promise = $.Deferred();
                 var url, data, type
                 if (action === "addKara" || action === "transferKara") {
                     url = "", data = {}, type = "";
@@ -155,7 +161,8 @@ var tabTradToDelete;
 
                     if (idPlaylistTo > 0) {
                         url = scope + (scope === "public" ? '/karas/' + idKara : '/playlists/' + idPlaylistTo + '/karas');
-                        data = { requestedby: pseudo, kara_id: idKara }; // pos : 
+                        var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? pseudo : li.data('pseudo_add');
+                        data = { requestedby: requestedby, kara_id: idKara };
                     } else if (idPlaylistTo == -1) {
                         displayMessage('warning', 'Error',"can't add kara to the kara list from database");
                         console.log("ERR: can't add kara to the kara list from database");
@@ -174,6 +181,7 @@ var tabTradToDelete;
                             type: type,
                             data: data
                         }).done(function (data) {
+                            promise.resolve();
                             //fillPlaylist(non(num), idKara);
                             playlistContentUpdating.done( function() {
                                 scrollToKara(non(num), idKara); 
@@ -187,30 +195,35 @@ var tabTradToDelete;
                             if (mode === "mobile") { fillPlaylist(1) }
                         });
                     }
+                } else {
+                    promise.resolve();
                 }
                 if (action === "transferKara" || action === "deleteKara") {
-                    $(this).closest('li').fadeOut(500);
-                    url = "", data = {}, type = "";
-                    type = "DELETE"
-                    if (idPlaylistFrom > 0) {
-                        url = scope + '/playlists/' + idPlaylistFrom + '/karas/';
-                        data['plc_id'] = idKaraPlaylist;
-                    } else if (idPlaylistFrom == -1) {
-                        console.log("ERR: can't delete kara from the kara list from database");
-                    } else if (idPlaylistFrom == -2) {
-                        console.log("ERR: can't delete kara directly from the blacklist");
-                    } else if (idPlaylistFrom == -3) {
-                        url = scope + '/whitelist/' + li.attr('idwhitelist');
-                    }
-                    if (url !== "") {
-                        $.ajax({
-                            type: 'DELETE',
-                            url: url,
-                            data: data
-                        }).done(function (data) {
-                            //fillPlaylist(num);
-                        });
-                    }
+                    // temp solution to database transaction issue
+                    promise.done( function() {
+                        li.addClass('deleted');
+                        url = "", data = {}, type = "";
+                        type = "DELETE"
+                        if (idPlaylistFrom > 0) {
+                            url = scope + '/playlists/' + idPlaylistFrom + '/karas/';
+                            data['plc_id'] = idKaraPlaylist;
+                        } else if (idPlaylistFrom == -1) {
+                            console.log("ERR: can't delete kara from the kara list from database");
+                        } else if (idPlaylistFrom == -2) {
+                            console.log("ERR: can't delete kara directly from the blacklist");
+                        } else if (idPlaylistFrom == -3) {
+                            url = scope + '/whitelist/' + li.attr('idwhitelist');
+                        }
+                        if (url !== "") {
+                            $.ajax({
+                                type: 'DELETE',
+                                url: url,
+                                data: data
+                            }).done(function (data) {
+                                //fillPlaylist(num);
+                            });
+                        }
+                    });
                 }
                 
             } else { // (un)select all karas
@@ -431,7 +444,8 @@ var tabTradToDelete;
                             
                             var karaDataAttributes = " idKara='" + data[key].kara_id + "' "
                             + (idPlaylist == -3 ? " idwhitelist='" + data[key].whitelist_id  + "'" : "")
-                            + (idPlaylist > 0 ? " idplaylistcontent='" + data[key].playlistcontent_id + "' pos='" + data[key].pos + "' " : "")
+                            + (idPlaylist > 0 ? " idplaylistcontent='" + data[key].playlistcontent_id + "' pos='"
+                                    + data[key].pos + "' data-pseudo_add='" + data[key].pseudo_add + "'" : "")
                             + (data[key].flag_playing ? "currentlyPlaying" : "" ) + " "
                             + (data[key].pseudo_add == pseudo ? "user" : "" )
 
@@ -844,9 +858,8 @@ var tabTradToDelete;
         var liKara = el.closest('li');
         var idKara = parseInt(liKara.attr('idkara'));
         var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-        var idPlaylist = parseInt( $(this).closest('.plDashboard').attr('idPlaylist'));
+        var idPlaylist = parseInt( el.closest('.panel').find('.plDashboard').attr('idPlaylist'));
         var infoKara = liKara.find('.detailsKara');
-
         if (infoKara.length == 0) {
             var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 

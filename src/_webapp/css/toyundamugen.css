@@ -185,6 +185,12 @@ select.form-control {
 	_min-height: calc(30px + 19px - 1vw);
 	line-height: 3rem;
 }
+.playlist-main li.list-group-item {
+	transition-property: all;
+    transition-duration: 0.1s;
+    transition-timing-function: linear;
+    transition-delay: unset;
+}
 .playlist-main li.list-group-item[currentlyPlaying] {
 	background-color: #3a5064;
 	
