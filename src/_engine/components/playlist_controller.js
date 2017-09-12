@@ -243,9 +243,9 @@ module.exports = {
 			});
 			Promise.all([pIsKara])
 				.then(function(){									
-					module.exports.getKara(kara_id)
-						.then(function(kara) {							
-							var lyrics = assBuilder.ASSToLyrics(kara.ass);
+					module.exports.getASS(kara_id)
+						.then(function(ass) {							
+							var lyrics = assBuilder.ASSToLyrics(ass);
 							resolve(lyrics);							
 						})
 						.catch(function(err){
@@ -1283,6 +1283,7 @@ module.exports = {
 			// Get karaoke list
 			module.exports.DB_INTERFACE.getKara(kara_id)
 				.then(function(kara){
+					logger.debug('GetKara : '+kara+' from '+kara_id);
 					resolve(kara);
 				})
 				.catch(function(err){
@@ -1457,7 +1458,6 @@ module.exports = {
 						logger.error('[PLC] addKaraToPlaylist : '+err);
 						reject(err);
 					} else {	
-						logger.debug('[PLC] addKaraToPlaylist : building ASS and setting positions');					
 						var pManagePos = new Promise((resolve,reject) => {
 							// If pos is provided, we need to update all karas above that and add 
 							// karas.length to the position
@@ -1642,7 +1642,6 @@ module.exports = {
 											callback(err);
 										} else {
 											// All OK. We need some info though.
-											plcList[index].generated_subfile = playlistContentData.generated_subfile;
 											plcList[index].kara_id = playlistContentData.kara_id;
 											plcList[index].requester = playlistContentData.pseudo_add;
 											plcList[index].NORM_requester = playlistContentData.NORM_pseudo_add;

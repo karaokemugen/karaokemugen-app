@@ -62,7 +62,7 @@ button[name="selectAllKaras"][value="0"] > i.glyphicon-check {
 
 
 span[name="checkboxKara"] {
-	padding: 2px;
+	padding: 2px 6px;
 	font-size: 19px;
     float: right;
 }
@@ -70,10 +70,10 @@ span[name="checkboxKara"] {
 	float: left;
 }
 
-.playlistDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 
+.plDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 
 	display: none;
 }
-.playlistDashboard.advanced + .playlistContainer .btnDiv { 
+.plDashboard.advanced + .playlistContainer .btnDiv { 
 	display: none;
 }
 
@@ -161,23 +161,23 @@ div.bootstrap-switch-large{
 	background-color: #222;
 }
 
-.playlistDashboard {
+.plDashboard {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
 }
-.playlistDashboard .plSelect {
+.plDashboard .plSelect {
 	flex-grow: 100;
-	flex-basis: 40%;
+	flex-basis: 30%;
     float: left;
 }
-.playlistDashboard .plSearch {
+.plDashboard .plSearch {
     flex-grow: 100;
-	flex-basis: 30%;
+	flex-basis: 25%;
     float: right;
 }
 
-.playlistDashboard:not(.advanced) .plCommandsContainer {
+.plDashboard:not(.advanced) .plCommandsContainer {
 	display: none;    
 }
 
@@ -236,28 +236,28 @@ span:not(.hideCommands) {
     margin-right: auto;
 }
 
-.playlistDashboard[flag_visible="true"] [name="flag_visible"] > i.glyphicon-eye-close {
+.plDashboard[flag_visible="true"] [name="flag_visible"] > i.glyphicon-eye-close {
 	display: none;
 }
-.playlistDashboard[flag_visible="false"] [name="flag_visible"] > i.glyphicon-eye-open {
+.plDashboard[flag_visible="false"] [name="flag_visible"] > i.glyphicon-eye-open {
 	display: none;
 }
 
-.playlistDashboard .flags {
+.plDashboard .flags {
     margin-left: auto;
 }
 
-.playlistDashboard[idPlaylist="-1"] .flagsContainer {
+.plDashboard[idPlaylist="-1"] .flagsContainer {
 	display: none;
 	padding: 0px;
 }
-.playlistDashboard[idPlaylist^="-"] .flagsContainer button {
+.plDashboard[idPlaylist^="-"] .flagsContainer button {
 	display: none;
 }
 
-.playlistDashboard[idPlaylist="-2"] button[name="flag_visible"],
-.playlistDashboard[idPlaylist="-3"] button[name="flag_visible"],
-.playlistDashboard[idPlaylist="-4"] button[name="flag_visible"]
+.plDashboard[idPlaylist="-2"] button[name="flag_visible"],
+.plDashboard[idPlaylist="-3"] button[name="flag_visible"],
+.plDashboard[idPlaylist="-4"] button[name="flag_visible"]
 {
 	display: block;
 }
@@ -290,27 +290,35 @@ span:not(.hideCommands) {
 }
 
 
-@media (min-width: 1416px) {
-	.playlistDashboard .plSelect {
-		flex-basis : 64%;
-	}
-	#panel2 .plSearch {
-		order: 2;
-	}
-	#panel2 .flagsContainer {
-		order: 1;
-	}
-  }
-  
+.plDashboard[idPlaylist="-1"] .flagsContainer {
+	display: none;	
+}
+.plDashboard[idPlaylist="-1"] .controlsContainer {
+	display: none;	
+}
+
+.panel[num="2"] .advanced .btnDivContainer {
+	__order: -1;
+}
+.plSearch {
+	order: 2;
+}
+.flagsContainer {
+	order: 1;
+}
+.advanced .btnDivContainer {
+	order: 3
+}
+
 @media (max-width: 1415px) {	
-	.playlistDashboard .plSelect {
+	.plDashboard .plSelect {
 	flex-basis : 50%;
 	}
 }
 
 @media (max-width: 880px) {	
-	.playlistDashboard .plSelect {
-	flex-basis : 50%;
+	.plDashboard .plSelect {
+		flex-basis : 50%;
 	}
 	#panel2 .plSearch {
 		order: 1;

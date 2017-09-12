@@ -21,7 +21,6 @@ SELECT
       ak.videolength AS duration,
       bl.created_at AS created_at,
       bl.reason AS reason_add,
-      ak.subfile AS subfile,
       ak.videofile AS videofile
  FROM karasdb.all_karas AS ak 
 INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.kara_id

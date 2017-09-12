@@ -1583,36 +1583,54 @@ module.exports = {
 					$pos: kara.pos,					
 				});
 			});	
-			module.exports._db_handler.serialize(function() {		
-				module.exports._db_handler.run('begin transaction', function(err) {
-					if (err) {
-						reject('Failed to begin transaction : '+err);
-					} else {
-						async.each(karaList,function(data,callback){
-							stmt_addKara.run(data,function(err){
-								if (err) {
-									reject('Failed to add karaoke to playlist : '+err);				callback();					
-								} else {
-									callback();
-								}						
-							});
-						}, function(err){
+			module.exports._db_handler.serialize(function() {
+				//We retry the transaction several times because when two transactions overlap there can be an error.
+				async.retry(
+					{ 
+						times: 5,
+						interval: 100,
+					},
+					function(callback){
+						module.exports._db_handler.run('begin transaction', function(err) {
 							if (err) {
-								reject('Failed to add one karaoke to playlist : '+err);
+								logger.error('Failed to begin transaction : '+err);
+								callback(err);
 							} else {
-								module.exports._db_handler.run('commit', function(err) {
+								async.each(karaList,function(data,callback){
+									stmt_addKara.run(data,function(err){
+										if (err) {
+											logger.error('Failed to add karaoke to playlist : '+err);				
+											callback(err);					
+										} else {
+											callback();
+										}						
+									});
+								}, function(err){
 									if (err) {
-										reject(err);
+										logger.error('Failed to add one karaoke to playlist : '+err);
+										callback(err);
 									} else {
-									// Close all statements just to be sure.
-										stmt_addKara.finalize();
-										resolve();
-									}				
-								});											
+										module.exports._db_handler.run('commit', function(err) {
+											if (err) {
+												callback(err);
+											} else {
+											// Close all statements just to be sure.
+												stmt_addKara.finalize();
+												callback();
+											}				
+										});											
+									}
+								});
 							}
-						});						
+						});														
+					},function(err){
+						if (err){
+							reject(err);
+						} else {
+							resolve();
+						}
 					}
-				});								
+				);					
 			});			
 		});
 	},
@@ -1681,36 +1699,54 @@ module.exports = {
 				});
 			});		
 			module.exports._db_handler.serialize(function() {		
-				module.exports._db_handler.run('begin transaction', function(err) {
-					if (err) {
-						reject('Failed to begin transaction : '+err);
-					} else {
-						async.each(karaList,function(data,callback){
-							stmt_delKara.run(data,function(err){
-								if (err) {
-									reject('Failed to delete karaoke to playlist : '+err);				callback();					
-								} else {
-									callback();
-								}						
-							});
-						}, function(err){
+				//We retry the transaction several times because when two transactions overlap there can be an error.
+				//Example two delete or add kara at the very same time.
+				async.retry(
+					{
+						times: 5,
+						interval: 100
+					},
+					function(callback){
+						module.exports._db_handler.run('begin transaction', function(err) {
 							if (err) {
-								reject('Failed to add one karaoke to playlist : '+err);
+								callback(err);
+								logger.warn(err+' (will retry in 100ms)');
 							} else {
-								module.exports._db_handler.run('commit', function(err) {
+								async.each(karaList,function(data,callback){
+									stmt_delKara.run(data,function(err){
+										if (err) {
+											logger.err('Failed to delete karaoke to playlist : '+err);			
+											callback(err);					
+										} else {
+											callback();
+										}						
+									});
+								}, function(err){
 									if (err) {
-										reject(err);
+										logger.err('Failed to add one karaoke to playlist : '+err);
+										callback(err);
 									} else {
-									// Close all statements just to be sure.
-										stmt_delKara.finalize();
-										resolve();
-									}				
-								});											
+										module.exports._db_handler.run('commit', function(err) {
+											if (err) {
+												callback(err);
+											} else {
+											// Close all statements just to be sure.
+												stmt_delKara.finalize();
+												callback();											
+											}				
+										});											
+									}
+								});						
 							}
-						});						
-					}
-				});								
-			});									
+						});					
+					}, function(err){
+						if (err) {
+							reject(err);
+						} else {
+							resolve();
+						}
+					});								
+			});							
 		});
 	},
 	/**
