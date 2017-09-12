@@ -1374,6 +1374,11 @@ module.exports = {
 			});
 		});
 	},
+	/**
+	* @function {Empties a playlist}
+	* @param  {number} playlist_id {ID of playlist}
+	* @return {Promise} {yakusoku da yo}
+	*/
 	emptyPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			// Empties playlist
@@ -1389,6 +1394,40 @@ module.exports = {
 						resolve();
 					}
 				});
+		});
+	},
+	/**
+	* @function {Empties whitelist}
+	* @return {Promise} {yakusoku da yo}
+	*/
+	emptyWhitelist:function() {
+		return new Promise(function(resolve,reject){
+			var sqlEmptyWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_whitelist.sql'),'utf-8');
+			module.exports._db_handler.run(sqlEmptyWhitelist,function(err) {
+				if (err) {
+					logger.error('[DBI] Failed to empty whitelist : '+err);
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
+		});
+	},
+	/**
+	* @function {Empties blacklist Criterias}
+	* @return {Promise} {yakusoku da yo}
+	*/
+	emptyBlacklistCriterias:function() {
+		return new Promise(function(resolve,reject){
+			var sqlEmptyBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_blacklist_criterias.sql'),'utf-8');
+			module.exports._db_handler.run(sqlEmptyBlacklistCriterias,function(err) {
+				if (err) {
+					logger.error('[DBI] Failed to empty blacklist criterias : '+err);
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
 		});
 	},
 	/**
