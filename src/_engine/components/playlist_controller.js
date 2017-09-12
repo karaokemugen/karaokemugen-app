@@ -243,9 +243,9 @@ module.exports = {
 			});
 			Promise.all([pIsKara])
 				.then(function(){									
-					module.exports.getKara(kara_id)
-						.then(function(kara) {							
-							var lyrics = assBuilder.ASSToLyrics(kara.ass);
+					module.exports.getASS(kara_id)
+						.then(function(ass) {							
+							var lyrics = assBuilder.ASSToLyrics(ass);
 							resolve(lyrics);							
 						})
 						.catch(function(err){
@@ -1283,6 +1283,7 @@ module.exports = {
 			// Get karaoke list
 			module.exports.DB_INTERFACE.getKara(kara_id)
 				.then(function(kara){
+					logger.debug('GetKara : '+kara+' from '+kara_id);
 					resolve(kara);
 				})
 				.catch(function(err){
