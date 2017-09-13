@@ -5,7 +5,7 @@ $(document).ready(function () {
     this.value = "";
   });
   $('#choixPseudo').blur(function(){
-    if(settingsPublic['EngineAllowNicknameChange'] == "1") {
+    if(settings['EngineAllowNicknameChange'] == "1") {
       pseudo = $(this).val();
       $('#choixPseudo').val(pseudo);
       if($('#pseudo > option[value="' + pseudo +'"]').length == 0) {
@@ -60,7 +60,7 @@ var date = new Date();
 date.setFullYear(date.getFullYear() + 10);
 
 var scope = 'public';
-var settingsPublic = {}
+var settings = {}
 pseudo ="Anonymous";
 refreshTime = 2000;
 panel1Default = -1;
@@ -69,16 +69,22 @@ panel1Default = -1;
 getPublicSettings = function(trigger) {
   var promise = $.Deferred();
   $.ajax({ url: 'public/settings', }).done(function (data) {
-    settingsPublic = data;
+    
+    playlistToAdd = data['private'] == 1 ? "current" : "public";
+    $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
+        playlistToAddId = data.playlist_id;
+    });
+
+    settings = data;
     fillPlaylistSelects(trigger);
       
-    if(settingsPublic['EngineAllowNicknameChange'] == "1") {
+    if(settings['EngineAllowNicknameChange'] == "1") {
       $('#pseudo').parent().show();
       $('#searchParent').css("width","");
     }
 
-    $('#version').text(settingsPublic['VersionName'] + " " + settingsPublic['VersionNo']);
-    $('#mode').text(settingsPublic['private'] == "1" ? "Privé" : "Public");
+    $('#version').text(settings['VersionName'] + " " + settings['VersionNo']);
+    $('#mode').text(settings['private'] == "1" ? "Privé" : "Public");
     promise.resolve();
   }); 
   return promise.promise();

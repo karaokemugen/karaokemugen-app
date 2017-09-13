@@ -19,7 +19,7 @@ body {
 
 .header {
 	position: fixed;
-	z-index: 1337;
+	z-index: 2337;
 	background-color: #1E2124;
 	top: 0;
 	height: 85px;
@@ -367,6 +367,8 @@ button.closeParent.bottom  {
     background-color: #3a5774;
 	font-weight: 500;
 	font-size: 1.6rem;
+	z-index: 50;
+	
 }
 
 .playlist-main .list-group-item {
@@ -573,6 +575,14 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   background: #ffffff;
 }
 
+.flipped {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
+
+
 /* settings slider */
 
 #settings input[type=range] {
@@ -661,6 +671,62 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   background: #ffffff;
 }
 
+#progressBarColor.cssTransition {
+	background-color: #337ab7;
+	z-index: 0;
+	height: 100%;
+    position: absolute;
+    top: 0;
+    -webkit-transition: width 1s linear;
+    -moz-transition: width 1s linear;
+    -o-transition: width 1s linear;
+    transition: width 1s linear;
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+.plDashboard, .playlistContainer, #progressBar {
+	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.30), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
+	
+}
+
+#header {
+	box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.23), 0 1px 13px 0 rgba(0, 0, 0, 0.17), 0 3px 3px -1px rgba(0, 0, 0, 0.26);
+}
+#progressBar {
+	box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.37), 0 1px 18px 0 rgba(0, 0, 0, 0.32), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
+	
+}
+.plInfos {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+	z-index: 40;
+    font-size: 1.2rem;
+    background-color: hsla(107, 17%, 25%, 0.95);
+	padding: 2px;
+	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.30), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
+}
+
+
+.plDashboard {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+.plDashboard .plSelect {
+	flex-grow: 100;
+	flex-basis: 30%;
+    float: left;
+}
+.plDashboard .plSearch {
+    flex-grow: 100;
+	flex-basis: 25%;
+    float: right;
+}
 
 /* placeholders */
 

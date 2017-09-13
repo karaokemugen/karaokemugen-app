@@ -51,8 +51,8 @@
                         <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
                             <i class="glyphicon glyphicon-pencil"></i>
                         </button>
-                        <button title='{{i18n "PLAYLIST_DELETE"}}' class="btn btn-default" name="delete">
-                            <i class="glyphicon glyphicon-remove red"></i>
+                        <button title='{{i18n "PLAYLIST_DELETE"}}' class="btn btn-danger" name="delete">
+                            <i class="glyphicon glyphicon-remove"></i>
                         </button>
                         
                          <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
@@ -70,22 +70,28 @@
                 <div class="plSearch">
                     <input type="text" class="form-control input-md" side="1" id="searchPlaylist1" placeholder="&#xe003;" />
                 </div>
-                <div class=" flagsContainer">
+                <div class="flagsContainer">
                     <div class="btn-group plCommands flags" id="flag1">
                         <button title='{{i18n "PLAYLIST_CURRENT"}}' class="btn btn-default" name="flag_current">
                             <i class="glyphicon glyphicon-facetime-video"></i>
                         </button>
                         <button title='{{i18n "PLAYLIST_PUBLIC"}}' class="btn btn-default" name="flag_public">
-                            <i class="glyphicon glyphicon-indent-left"></i>
+                            <i class="glyphicon glyphicon-globe"></i>
                         </button>
                         <button title='{{i18n "PLAYLIST_VISIBLE"}}' class="btn btn-default" name="flag_visible">
                             <i class="glyphicon glyphicon-eye-close"></i><i class="glyphicon glyphicon-eye-open"></i>
                         </button>
                     </div>
-                    </div>
+                </div>
               
                 <div class="plCommandsContainer btnDivContainer">
                     <div class="btn-group plCommands btnDiv">
+                        <button name="addAllKaras" class="btn btn-danger groupAction">
+                            <i class="glyphicon glyphicon-share"></i>
+                        </button>
+                        <button name="deleteAllKaras" class="btn btn-danger groupAction">
+                            <i class="glyphicon glyphicon-erase"></i>
+                        </button>
                         <button name="addKara" class="btn btn-default">
                             <i class="glyphicon glyphicon-plus"></i>
                         </button>
@@ -95,7 +101,7 @@
                         <button name="transferKara" class="btn btn-default">
                             <i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i>
                         </button>
-                        <button name="selectAllKaras" value="0" class="btn btn-default">
+                        <button name="selectAllKaras" value="0" class="btn btn-default groupAction">
                             <i class="glyphicon glyphicon-unchecked"></i>
                             <i class="glyphicon glyphicon-check"></i>
                         </button>
@@ -108,6 +114,7 @@
                 </ul> 
                 <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             </div>
+            <div class="plInfos"></div>
         </div>
         
         <div class="panel col-lg-6 col-xs-6" id="panel2" side="2">
@@ -124,7 +131,7 @@
                         <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
                             <i class="glyphicon glyphicon-pencil"></i>
                         </button>
-                        <button title='{{i18n "PLAYLIST_DELETE"}}' class="btn btn-default" name="delete">
+                        <button title='{{i18n "PLAYLIST_DELETE"}}' class="btn btn-danger" name="delete">
                             <i class="glyphicon glyphicon-remove red"></i>
                         </button>
                         <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
@@ -136,12 +143,17 @@
                         <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-default" name="export">
                             <i class="glyphicon glyphicon-export"></i>
                         </button>
-                        
                     </div>
                 </div>
                 
                  <div class="plCommandsContainer btnDivContainer">
                     <div class="btn-group plCommands btnDiv">
+                          <button name="addAllKaras" class="btn btn-danger flipped groupAction">
+                            <i class="glyphicon glyphicon-share"></i>
+                        </button>
+                        <button name="deleteAllKaras" class="btn btn-danger groupAction">
+                            <i class="glyphicon glyphicon-erase"></i>
+                        </button>
                         <button name="addKara" class="btn btn-default">
                             <i class="glyphicon glyphicon-plus"></i>
                         </button>
@@ -151,7 +163,7 @@
                         <button name="transferKara" class="btn btn-default">
                             <i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i>
                         </button>
-                        <button name="selectAllKaras" value="0" class="btn btn-default">
+                        <button name="selectAllKaras" value="0" class="btn btn-default groupAction">
                             <i class="glyphicon glyphicon-unchecked"></i>
                             <i class="glyphicon glyphicon-check"></i>
                         </button>
@@ -163,7 +175,7 @@
                             <i class="glyphicon glyphicon-facetime-video"></i>
                         </button>
                         <button title='{{i18n "PLAYLIST_PUBLIC"}}' class="btn btn-default" name="flag_public">
-                            <i class="glyphicon glyphicon-indent-left"></i>
+                            <i class="glyphicon glyphicon-globe"></i>
                         </button>
                         <button title='{{i18n "PLAYLIST_VISIBLE"}}' class="btn btn-default" name="flag_visible">
                             <i class="glyphicon glyphicon-eye-close"></i><i class="glyphicon glyphicon-eye-open"></i>
@@ -181,6 +193,7 @@
                 </ul>
                 <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             </div>
+            <div class="plInfos"></div>
         </div>
     </div>
     <div class="row" id="manage" hidden>

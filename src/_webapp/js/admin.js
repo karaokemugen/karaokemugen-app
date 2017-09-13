@@ -187,6 +187,7 @@
                 stopUpdate = true;
                 mouseDown = true;
                 $('#progressBarColor').stop().css('width', e.pageX + "px");
+               
                 $('#progressBar').attr('title', oldState.timeposition);
             }
         });
@@ -196,6 +197,7 @@
         $('#karaInfo').mousemove(function (e) {
             if (mouseDown) {
                 $('#progressBarColor').stop().css('width', e.pageX + "px");
+                
             }
         });
         $('#karaInfo').mouseout(function (e) {
@@ -298,7 +300,7 @@
         var promise = $.Deferred();
         var playlistList = {};
         $.ajax({ url: 'admin/settings' }).done(function (data) {
-            settingsAdmin = data;
+            settings = data;
             $.each(data, function (i, val) {
                 input = $('[name="' + i + '"]');
                 // DEBUG && console.log(i, val);
@@ -362,15 +364,20 @@
         var songLength = karaInfo.attr('length');
         var barInnerwidth = karaInfo.innerWidth();
         var futurTimeX = e.pageX - karaInfo.offset().left;
-        var presentTimeX = $(progressBarColor).width();
+        var presentTimeX = $('#progressBarColor').width();
         var futurTimeSec = songLength * futurTimeX / barInnerwidth;
-        $(progressBarColor).stop().css('width', 100 * futurTimeSec / songLength + "%");
+        $('#progressBarColor').stop().css('width', 100 * futurTimeSec / songLength + "%");
+
+        var start_time = new Date().getTime();
         $.ajax({
             url: 'admin/player',
             type: 'PUT',
-            data: { command: 'goTo', options: futurTimeSec }
+            data: { command: 'goTo', options: futurTimeSec}
         })
             .done(function (data) {
+                var request_time = new Date().getTime() - start_time;
+                console.log(request_time);
+               // $('#progressBarColor').stop().velocity({ width: 100 * (futurTimeSec + 2*refreshTime/1000) / songLength + "%" }, Math.abs(2*refreshTime), 'linear');
                 setStopUpdate(false);
             });
     }

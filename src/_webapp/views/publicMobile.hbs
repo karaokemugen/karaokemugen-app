@@ -32,8 +32,8 @@
 <div id="underHeader" class="underHeader">
     <div id="playlist" class="playlist-main carousel_ carousel-slider_" data-indicators="true">
         <div id="panel1" class="carousel-item" href="#one!">
-             <div>
-                <div>
+             <div class="plDashboard">
+                <div class="plSelect">
                     <select id="selectPlaylist1" side="1" hidden >
                         <option value="-1" default></option>
                     </select>
@@ -47,19 +47,21 @@
         </div>
         
         <div id="panel2" class="carousel-item" href="#two!">
-            <div class="pull-left" hidden>
-                <input type="text" class="form-control input-lg" side="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
-            </div>
-           <div>
-                <select id="selectPlaylist2" side="2" type="playlist_select">
-                    <option value="" selected>...</option>
-                </select>
-            <div class="playlistContainer">
             
-                <ul id="playlist2" side="2" class="collection">
-                </ul>
-                <div class="playlistLoading"> {{i18n "LOADING"}} </div>
-            </div>
+            <div class="plDashboard">
+                <div class="plSelect">
+                    <select id="selectPlaylist2" side="2" type="playlist_select">
+                        <option value="" selected>...</option>
+                    </select>
+                </div>
+                <div class="pull-left plSearch" hidden>
+                    <input type="text" class="form-control input-lg" side="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
+                </div>
+                <div class="playlistContainer">
+                
+                    <ul id="playlist2" side="2" class="collection">
+                    </ul>
+                    <div class="playlistLoading"> {{i18n "LOADING"}} </div>
                 </div>
             </div>
         </div>

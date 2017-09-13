@@ -70,6 +70,7 @@ span[name="checkboxKara"] {
 	float: left;
 }
 
+
 .plDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 
 	display: none;
 }
@@ -166,21 +167,6 @@ div.bootstrap-switch-large{
 	opacity: .2;
 }
 
-.plDashboard {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-}
-.plDashboard .plSelect {
-	flex-grow: 100;
-	flex-basis: 30%;
-    float: left;
-}
-.plDashboard .plSearch {
-    flex-grow: 100;
-	flex-basis: 25%;
-    float: right;
-}
 
 .plDashboard:not(.advanced) .plCommandsContainer {
 	display: none;    
