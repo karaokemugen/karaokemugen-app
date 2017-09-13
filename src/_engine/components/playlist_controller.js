@@ -2616,7 +2616,7 @@ module.exports = {
 						.then(function(playlist){
 							if (IsCurrent === false) {
 								playlist = L.shuffle(playlist);
-							} else  {
+							} else {
 								// If it's current playlist, we'll make two arrays out of the playlist :
 								// One before (and including) the current song being played (flag_playing = 1)
 								// One after.
@@ -2636,6 +2636,10 @@ module.exports = {
 								});
 								AfterPlaying = L.shuffle(AfterPlaying);
 								playlist = BeforePlaying.concat(AfterPlaying);
+								// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
+								if (ReachedPlaying == false) {
+									playlist = L.shuffle(playlist);
+								}
 							}
 							var newpos = 0;
 							var arraypos = 0;
