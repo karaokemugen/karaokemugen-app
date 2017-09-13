@@ -461,35 +461,49 @@ module.exports = {
 				});
 			});
 			module.exports._db_handler.serialize(function() {		
-				module.exports._db_handler.run('begin transaction', function(err) {
-					if (err) {
-						reject('Failed to begin transaction : '+err);
-					} else {
-						async.each(karaList,function(data,callback){
-							stmt_updateKaraPosition.run(data,function(err){
-								if (err) {
-									reject('Failed to reorder karaoke in playlist : '+err);	callback(err);					
-								} else {
-									callback();
-								}						
-							});
-						}, function(err){
+				async.retry(
+					{ 
+						times: 5,
+						interval: 100,
+					},
+					function(callback){
+						module.exports._db_handler.run('begin transaction', function(err) {
 							if (err) {
-								reject('Failed to reorder one karaoke to playlist : '+err);
+								callback('Failed to begin transaction : '+err);
 							} else {
-								module.exports._db_handler.run('commit', function(err) {
+								async.each(karaList,function(data,callback){
+									stmt_updateKaraPosition.run(data,function(err){
+										if (err) {
+											logger.error('Failed to reorder karaoke in playlist : '+err);
+											callback(err);					
+										} else {
+											callback();
+										}						
+									});
+								}, function(err){
 									if (err) {
-										reject(err);
+										callback('Failed to reorder one karaoke to playlist : '+err);
 									} else {
-										// Close all statements just to be sure.
-										stmt_updateKaraPosition.finalize();
-										resolve();
-									}				
-								});											
+										module.exports._db_handler.run('commit', function(err) {
+											if (err) {
+												callback(err);
+											} else {
+												// Close all statements just to be sure.
+												stmt_updateKaraPosition.finalize();
+												callback();
+											}				
+										});											
+									}
+								});						
 							}
-						});						
-					}
-				});								
+						});
+					},function(err){
+						if (err){
+							reject(err);
+						} else {
+							resolve();
+						}
+					});
 			});						
 		});
 	},
@@ -1374,6 +1388,11 @@ module.exports = {
 			});
 		});
 	},
+	/**
+	* @function {Empties a playlist}
+	* @param  {number} playlist_id {ID of playlist}
+	* @return {Promise} {yakusoku da yo}
+	*/
 	emptyPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			// Empties playlist
@@ -1389,6 +1408,40 @@ module.exports = {
 						resolve();
 					}
 				});
+		});
+	},
+	/**
+	* @function {Empties whitelist}
+	* @return {Promise} {yakusoku da yo}
+	*/
+	emptyWhitelist:function() {
+		return new Promise(function(resolve,reject){
+			var sqlEmptyWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_whitelist.sql'),'utf-8');
+			module.exports._db_handler.run(sqlEmptyWhitelist,function(err) {
+				if (err) {
+					logger.error('[DBI] Failed to empty whitelist : '+err);
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
+		});
+	},
+	/**
+	* @function {Empties blacklist Criterias}
+	* @return {Promise} {yakusoku da yo}
+	*/
+	emptyBlacklistCriterias:function() {
+		return new Promise(function(resolve,reject){
+			var sqlEmptyBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_blacklist_criterias.sql'),'utf-8');
+			module.exports._db_handler.run(sqlEmptyBlacklistCriterias,function(err) {
+				if (err) {
+					logger.error('[DBI] Failed to empty blacklist criterias : '+err);
+					reject(err);
+				} else {
+					resolve();
+				}
+			});
 		});
 	},
 	/**

@@ -11,6 +11,8 @@ var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a
 var pseudo;             // String : pseudo of the user
 var bcTags;             // Object : list of blacklist criterias tags
 
+var DEBUG;
+var SOCKETDEBUG;
 
 var dragAndDrop;        // Boolean : allowing drag&drop
 var karaParPage;        // Int : number of karas disaplyed per "page" (per chunk)
@@ -20,9 +22,12 @@ var playlistToAdd;          // Int : id of playlist users are adding their kara 
 var newKara;                // [Int] : for each playlist side, id of the new kara added
 var socket;
 
+var settings;
+
 /* promises */
 var playlistsUpdating;
 var playlistContentUpdating;
+var settingsUpdating;
 
 /* html */
 var addKaraHtml;      
@@ -40,203 +45,301 @@ var dragHandleHtml;
 var playKaraHtml;
 
 var tabTradToDelete;
+var plData;
 
 (function (yourcode) {
     yourcode(window.jQuery, window, document);
 }(function ($, window, document) {
     $(function () {
         // Once page is loaded
+
+        plData = {  "0" : {
+            name: "Standard playlists",
+            url : scope + '/playlists/pl_id/karas',
+            html : scope === "admin" ? deleteKaraHtml + addKaraHtml + transferKaraHtml : '',
+            canTransferKara : true,
+            canAddKara : true,
+            },
+        "-1" : {
+            name : "Kara list",
+            url : 'public/karas',
+            html : addKaraHtml,
+            canTransferKara : false,
+            canAddKara : false,
+            },
+        "-2" : {
+            name : "Blacklist",
+            url : scope + '/blacklist',
+            html : scope === "admin" ? '' : '',
+            canTransferKara : false,
+            canAddKara : true,
+        },
+        "-3" : {
+            name : "Whitelist",
+            url : scope + '/whitelist',
+            html : scope === "admin" ? deleteKaraHtml + addKaraHtml + transferKaraHtml : '',
+            canTransferKara : true,
+            canAddKara : true,
+        },
+        "-4" : {
+            name : "Blacklist criterias",
+            url : scope + '/blacklist/criterias',
+            html : deleteCriteriaHtml,
+            canTransferKara : false,
+            canAddKara : true,
+        }
+    }
+        // Background things
         var rdmFlip = Math.floor(Math.random() * 2) + 1;    
         $('#panel' + rdmFlip + ' > .playlistContainer').attr('flipped', true);
         $('#panel' + non(rdmFlip) + ' > .playlistContainer').attr('flipped', false);
         var rdmColor = Math.floor(Math.random() * 20) + 1; 
         if (rdmColor == 20) { $('.playlistContainer').attr('noGreyFace', true); }
 
+        // Setup
         $.ajaxSetup({
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR.status + "  - " + textStatus + "  - " + errorThrown + " : " + jqXHR.responseText);
+                DEBUG && console.log(jqXHR.status + "  - " + textStatus + "  - " + errorThrown + " : " + jqXHR.responseText);
                 if(jqXHR.status != 0) {
                     displayMessage('warning','Error', jqXHR.responseText);
                 }
             }
         });
-
+        // Init with player infos, set the playlist's id where users can add their karas
         $.ajax({ url: 'public/player' }).done(function (data) {
-            refreshCommandStates(data);
+            refreshPlayerInfos(data);
 
             playlistToAdd = data['private'] == 1 ? "current" : "public";
             $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
-                playlistAjoutId = data.playlist_id;
+                playlistToAddId = data.playlist_id;
             });
 
         });
+        // Some html init
+        settingsUpdating = scope ===  "admin" ?  getSettings() : getPublicSettings();
+        console.log(11);
+        settingsUpdating.done( function() {        console.log(12);
+            fillPlaylistSelects().done(function () {
+                refreshPlaylistDashboard(1);
+                refreshPlaylistDashboard(2);
+                fillPlaylist(1);
+                fillPlaylist(2);
+                $(window).trigger('resize');
+             });
+        });
 
         initSwitchs();
+
         $('.bootstrap-switch').promise().then(function(){
             $(this).each(function(){
                 $(this).attr('title', $(this).find('input').attr('title'));
             });
         });
         
-        // méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
+        // Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
         $('#searchPlaylist1, #searchPlaylist2').on('input', function () {
-            var num = $(this).attr('num');
+            var side = $(this).attr('side');
 
             clearTimeout(timer);
             timer = setTimeout(function () {
-                fillPlaylist(num);
+                fillPlaylist(side);
             }, 100);
         });
-        $('#searchPlaylist1, #searchPlaylist2, #choixPseudo').keypress(function (e) { // allow pressing enter to validate a setting
+
+        // Allow pressing enter to validate a setting
+        $('#searchPlaylist1, #searchPlaylist2, #choixPseudo').keypress(function (e) {
             if (e.which == 13) {
                 $(this).blur();
             }
         });
-        
-        /* // méthode cyclique, toutes les 300ms on vérifie si la valeur de recherche a changé et lance la recherche
-         setInterval(function () {
-             checkSearch();
-         }, 300);*/
 
-        /* when user selects a playlist */
+        
+        // When user selects a playlist
         $("#selectPlaylist1, #selectPlaylist2").change(function (e) {
-            var val = $(this).val();
+            var val = $(this).val(), oldVal;
+            var side = $(this).attr('side');
             var isNew = $(this).find('[data-select2-tag="true"][value="' + val + '"]');
             if(isNew.length > 0) {
                 e.preventDefault(); // si c'est une nouvelle entrée, le serveur nous dira quand elle sera crée
+                fillPlaylistSelects();
+            } else if(val == $("select[type='playlist_select'][side!='" + side + "'] > option:selected[value='" + val + "']").val()) {
+                oldVal = $(this).closest('.plDashboard').data('playlist_id');
+                $("select[type='playlist_select'][side!='" + side + "']").val(oldVal);
+                fillPlaylistSelects().done( function() {
+                    $("select[type='playlist_select']").change();
+                });
             } else {
-                var num = $(this).attr('num');
-                console.log(val, num);
+                createCookie("plVal" + side, val, 365);
+
+                $("#playlist" + side).empty();
+                $("#searchPlaylist" + side).val("");
+
+                fillPlaylist(side);
+                refreshPlaylistDashboard(side);
+                /*
                 // prevent selecting 2 times the same playlist
                 if (scope === "admin") {
-                    $("select[type='playlist_select'][id!='selectPlaylist" + num + "'] > option").prop("disabled", false);
-                    $("select[type='playlist_select'][id!='selectPlaylist" + num + "'] > option[value='" + val + "']").prop("disabled", true);
+                    $("select[type='playlist_select'][side!='" + side + "'] > option").attr("disabled", false);
+                    $("select[type='playlist_select'][side!='" + side + "'] > option[value='" + val + "']").attr("disabled", true);
                 }
-                $("#playlist" + num).empty();
-                $("#searchPlaylist" + num).val("");
-                fillPlaylistSelects(true, num);
+                */
             }
         });
 
-        /*  main actions on karas in the playlists */
-        $('.playlist-main').on('click', '.btnDiv > button, [name="addKara"]', function (e) {
+        // main actions on karas in the playlists
+        $('.playlist-main').on('click', '.btnDiv > button:not(.groupAction), [name="addKara"]', function (e) {
             
-            var num = $(this).closest('.panel').attr('num');
+            var side = $(this).closest('.panel').attr('side');
+        
+            var li = $(this).closest('li');
+            var idPlaylistFrom = parseInt($('#selectPlaylist' + side).val());
+            var idPlaylistTo = parseInt($('#selectPlaylist' + non(side)).val());
+            var idKara, idKaraPlaylist;
             
-            if($(this).attr('name') != "selectAllKaras") {
-
-                var li = $(this).closest('li');
-                var idPlaylistFrom = parseInt($('#selectPlaylist' + num).val());
-                var idPlaylistTo = parseInt($('#selectPlaylist' + non(num)).val());
-                var idKara, idKaraPlaylist;
+            if($(this).parent().hasClass('plCommands')) {
+                var checkedList = $(this).closest('.panel').find('li:has(span[name="checkboxKara"][value="1"])');
+                var idKaraList = checkedList.map(function (k, v) {
+                    return $(v).attr('idkara');
+                });
+                var idKaraPlaylistList = checkedList.map(function (k, v) {
+                    return $(v).attr('idplaylistcontent');
+                });
                 
-                if($(this).parent().hasClass('plCommands')) {
-                    var checkedList = $(this).closest('.panel').find('[name="checkboxKara"][value="1"]');
-                    var idKaraList = checkedList.map(function (k, v) {
-                        return $(v).closest('li').attr('idkara');
-                    });
-                    var idKaraPlaylistList = checkedList.map(function (k, v) {
-                        return $(v).closest('li').attr('idplaylistcontent');
-                    });
-                    
-                    var idKara = Array.prototype.slice.apply(idKaraList).join();
-                    var idKaraPlaylist = Array.prototype.slice.apply(idKaraPlaylistList).join();
-                    if(!idKara && !idKaraPlaylist) {
-                        console.log("No kara selected");
-                        return false;
-                    }
-                } else {
-                    idKara = li.attr('idkara');
-                    idKaraPlaylist = li.attr('idplaylistcontent');
+                li = checkedList;
+                var idKara = Array.prototype.slice.apply(idKaraList).join();
+                var idKaraPlaylist = Array.prototype.slice.apply(idKaraPlaylistList).join();
+                if(!idKara && !idKaraPlaylist) {
+                    DEBUG && console.log("No kara selected");
+                    return false;
+                }
+            } else {
+                idKara = li.attr('idkara');
+                idKaraPlaylist = li.attr('idplaylistcontent');
+            }
+
+            var action = $(this).attr('name');
+            DEBUG && console.log(action, side, idPlaylistFrom, idPlaylistTo, idKara);
+
+            var promise = $.Deferred();
+            var url, data, type
+            if (action === "addKara" || action === "transferKara") {
+                url = "", data = {}, type = "";
+                type = "POST";
+
+                if (idPlaylistTo > 0) {
+                    url = scope + (scope === "public" ? '/karas/' + idKara : '/playlists/' + idPlaylistTo + '/karas');
+                    var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? pseudo : li.data('pseudo_add');
+                    data = { requestedby: requestedby, kara_id: idKara };
+                } else if (idPlaylistTo == -1) {
+                    displayMessage('warning', 'Error',"can't add kara to the kara list from database");
+                    DEBUG && console.log("ERR: can't add kara to the kara list from database");
+                } else if (idPlaylistTo == -2) {
+                    url = scope + '/blacklist/criterias'
+                    data = { blcriteria_type: 1001, blcriteria_value: idKara };
+                } else if (idPlaylistTo == -3) {
+                    url = scope + '/whitelist';
+                    data = { kara_id: idKara, reason: prompt("Raison d'ajout à la whitelist") };
                 }
 
-                var action = $(this).attr('name');
-                console.log(action, num, idPlaylistFrom, idPlaylistTo, idKara);
-
-                var promise = $.Deferred();
-                var url, data, type
-                if (action === "addKara" || action === "transferKara") {
+                DEBUG && console.log("ACTION : ", idPlaylistTo, url, type, data);
+                if (url !== "") {
+                    $.ajax({
+                        url: url,
+                        type: type,
+                        data: data
+                    }).done(function (data) {
+                        DEBUG && console.log(data);
+                        promise.resolve();
+                        //fillPlaylist(non(side), idKara);
+                        playlistContentUpdating.done( function() {
+                            scrollToKara(non(side), idKara); 
+                        });
+                        displayMessage('success', '', (li.length > 1 ? li.length + " karas ajoutés" : "Kara ajouté")
+                            + " à la playlist <i>" +$("#selectPlaylist" + non(side) + " > option[value='" + idPlaylistTo + "']").text() + "</i>.");
+                        
+                        DEBUG && console.log("Kara " + idKara + " ajouté à la playlist (" + idPlaylistTo + ") "
+                            + $("#selectPlaylist" + non(side) + " > option[value='" + idPlaylistTo + "']").text() + ".");
+                    }).fail(function (data) {
+                        scrollToKara(non(side), idKara);
+                        if (mode === "mobile") { fillPlaylist(1) }
+                    });
+                }
+            } else {
+                promise.resolve();
+            }
+            if (action === "transferKara" || action === "deleteKara") {
+                // temp solution to database transaction issue
+                promise.done( function() {
+                    li.addClass('deleted');
                     url = "", data = {}, type = "";
-                    type = "POST";
-
-                    if (idPlaylistTo > 0) {
-                        url = scope + (scope === "public" ? '/karas/' + idKara : '/playlists/' + idPlaylistTo + '/karas');
-                        var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? pseudo : li.data('pseudo_add');
-                        data = { requestedby: requestedby, kara_id: idKara };
-                    } else if (idPlaylistTo == -1) {
-                        displayMessage('warning', 'Error',"can't add kara to the kara list from database");
-                        console.log("ERR: can't add kara to the kara list from database");
-                    } else if (idPlaylistTo == -2) {
-                        url = scope + '/blacklist/criterias'
-                        data = { blcriteria_type: 1001, blcriteria_value: idKara };
-                    } else if (idPlaylistTo == -3) {
-                        url = scope + '/whitelist';
-                        data = { kara_id: idKara, reason: prompt("Raison d'ajout à la whitelist") };
+                    type = "DELETE"
+                    if (idPlaylistFrom > 0) {
+                        url = scope + '/playlists/' + idPlaylistFrom + '/karas/';
+                        data['plc_id'] = idKaraPlaylist;
+                    } else if (idPlaylistFrom == -1) {
+                        DEBUG && console.log("ERR: can't delete kara from the kara list from database");
+                    } else if (idPlaylistFrom == -2) {
+                        DEBUG && console.log("ERR: can't delete kara directly from the blacklist");
+                    } else if (idPlaylistFrom == -3) {
+                        url = scope + '/whitelist/' + li.attr('idwhitelist');
                     }
-
-                    console.log("ACTION : ", idPlaylistTo, url, type, data);
                     if (url !== "") {
                         $.ajax({
+                            type: 'DELETE',
                             url: url,
-                            type: type,
                             data: data
                         }).done(function (data) {
-                            promise.resolve();
-                            //fillPlaylist(non(num), idKara);
-                            playlistContentUpdating.done( function() {
-                                scrollToKara(non(num), idKara); 
-                            });
-                            displayMessage('success', 'Success', "Kara added to playlist <i>" +$("#selectPlaylist" + non(num) + " > option[value='" + idPlaylistTo + "']").text() + "</i>.");
-                            
-                            console.log("Kara " + idKara + " ajouté à la playlist (" + idPlaylistTo + ") "
-                                + $("#selectPlaylist" + non(num) + " > option[value='" + idPlaylistTo + "']").text() + ".");
-                        }).fail(function (data) {
-                            scrollToKara(non(num), idKara);
-                            if (mode === "mobile") { fillPlaylist(1) }
+                            li.hide();
+                            //fillPlaylist(side);
                         });
                     }
-                } else {
-                    promise.resolve();
-                }
-                if (action === "transferKara" || action === "deleteKara") {
-                    // temp solution to database transaction issue
-                    promise.done( function() {
-                        li.addClass('deleted');
-                        url = "", data = {}, type = "";
-                        type = "DELETE"
-                        if (idPlaylistFrom > 0) {
-                            url = scope + '/playlists/' + idPlaylistFrom + '/karas/';
-                            data['plc_id'] = idKaraPlaylist;
-                        } else if (idPlaylistFrom == -1) {
-                            console.log("ERR: can't delete kara from the kara list from database");
-                        } else if (idPlaylistFrom == -2) {
-                            console.log("ERR: can't delete kara directly from the blacklist");
-                        } else if (idPlaylistFrom == -3) {
-                            url = scope + '/whitelist/' + li.attr('idwhitelist');
-                        }
-                        if (url !== "") {
-                            $.ajax({
-                                type: 'DELETE',
-                                url: url,
-                                data: data
-                            }).done(function (data) {
-                                //fillPlaylist(num);
-                            });
-                        }
-                    });
-                }
-                
-            } else { // (un)select all karas
-                $('#playlist' + num + ' [name="checkboxKara"][value="' +  $(this).attr('value') + '"]').click();
-                $(this).attr('value', $(this).attr('value') == "1" ? "0" : "1");
+                });
             }
         });
+        
+        // (de)select all karas button
+        $('.playlist-main').on('click', '.btnDiv > button.groupAction', function() {
+            var $this = $(this);
+            var name = $this.attr('name');
+            var side = $this.closest('.panel').attr('side');
+            var idPlaylist = $this.closest('.plDashboard').data('playlist_id');
+            var idPlaylistTo = $('#panel' + non(side) + ' .plDashboard').data('playlist_id');
+            var url = getPlData(idPlaylist).url;
+
+            if (name === "selectAllKaras") {
+                $('#playlist' + side + ' [name="checkboxKara"][value="' +  $this.attr('value') + '"]').click();
+                $this.attr('value', $this.attr('value') == "1" ? "0" : "1");
+            } else if (name === "addAllKaras") {
+                $.ajax({ url: url }).done(function (data) {
+                    displayMessage("info", "Info", "Ajout de " + data.length + "karas à la playlist " + $('#panel' + non(side) + ' .plDashboard').data('name'))
+                    var karaList = data.map(function(a) {return a.kara_id }).join();
+                    var urlPost = getPlData(idPlaylistTo).url;
+                   
+                    $.ajax({
+                        url: urlPost,
+                        type: "POST",
+                        data: { kara_id : karaList, requestedby : pseudo }
+                    }).done(function (data) {
+                        DEBUG && console.log(karaList + " added to playlist " + idPlaylistTo);
+                    });
+                });
+            } else if (name === "deleteAllKaras") {
+                $.ajax({
+                    url: url.replace("/karas","") + "/empty",
+                    type: "PUT"
+                }).done(function (data) {
+                    DEBUG && console.log("Playlist " + idPlaylist + " emptied");
+                });
+            }
+        });
+
         if(mode != "mobile") {
             $('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', function(e) {
                 toggleDetailsKara($(this));
             });
         }
 
+        // show full lyrics of a given kara
         $('.playlist-main').on('click', '.fullLyrics', function (e) {
             var playlist = $(this).closest('ul');
             var liKara = $(this).closest('li');
@@ -256,6 +359,7 @@ var tabTradToDelete;
             });
         });
 
+        // generic close button
         $('.playlist-main').on('click', '.closeParent', function (e) {
             var el = $(this);
             el.parent().fadeOut(animTime, function(){
@@ -274,28 +378,15 @@ var tabTradToDelete;
             var container = $(this);
             var nbKaraInPlaylist = container.find('li').length;
             var loading = container.find(".playlistLoading")
-            //console.log(container.scrollTop(), container.innerHeight(), container[0].scrollHeight, loading.css('display'), loading.css('opacity'));
-            if(container.scrollTop() + container.innerHeight() + toleranceDynamicPixels >= container[0].scrollHeight & loading.css('opacity') > .95
+            //DEBUG && console.log(container.scrollTop(), container.innerHeight(), container[0].scrollHeight, loading.css('display'), loading.css('opacity'));
+            if(container.scrollTop() + container.innerHeight() + toleranceDynamicPixels >= container[0].scrollHeight && loading.css('opacity') > .95
             && nbKaraInPlaylist >= karaParPage ) {
                 container.find(".playlistLoading").fadeIn(400);
-                console.log("Ajout de " + karaParPage + " karas aux " + nbKaraInPlaylist + " existants.");
-                fillPlaylist(container.find('ul').attr('num'), null, 0, container.find('li').length + karaParPage);
+                DEBUG && console.log("Ajout de " + karaParPage + " karas aux " + nbKaraInPlaylist + " existants.");
+                fillPlaylist(container.find('ul').attr('side'), null, 0, container.find('li').length + karaParPage);
             }
         });
 
-        /* display an element as closable popup */
-        popup = function(element, easing, callback) {
-            el = $(element);
-            el.velocity({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, function(){
-                el.css('max-height', $(window).height() - 100);
-                el.css('top', 50);
-                el.css('max-width',$(window).width() * .95);
-                el.css('left', ($(window).width() - el.width()) / 2);
-
-                $('body > div[class!="popup"]').css('opacity','.5');
-                el.prepend(closePopupButton);
-            });
-        }
         /* close closable popup */
         $('body').on('click', '.closePopupParent', function (e) {
             var el = $(this);
@@ -312,6 +403,7 @@ var tabTradToDelete;
             $('select').on('select2:open', function() {
                 $('.select2-search input').prop('focus', 0);
             });
+            $('#progressBarColor').addClass('cssTransition');
         }
         
         $(window).trigger('resize');
@@ -319,22 +411,25 @@ var tabTradToDelete;
 
     socket = io( window.location.protocol + "//" + window.location.hostname + ":1340");
     
+    isTouchScreen =  "ontouchstart" in document.documentElement || new URL(window.location.href).searchParams.get("TOUCHSCREEN") != null;
     animTime = $(window).width() < 1000 ? 200 : 300;
     refreshTime = 2000;
     toleranceDynamicPixels = 100;
-    karaParPage = 80;
+    karaParPage = isTouchScreen ? 70 : 110;
     mode = "list";
     pseudo = "Anonymous";
 
     dragAndDrop = true;
     stopUpdate = false;
+    
+    DEBUG = new URL(window.location.href).searchParams.get("DEBUG") != null;
+    SOCKETDEBUG = new URL(window.location.href).searchParams.get("SOCKETDEBUG") != null;
 
-    newKara = [];
+    newKara = [] != null;
     saveLastDetailsKara = [[]];
     ajaxSearch = {}, timer;
     oldState = {};
     oldSearchVal = "";
-    isTouchScreen =  "ontouchstart" in document.documentElement;
 
     addKaraHtml = '<button name="addKara" class="btn btn-sm btn-action"><i class="glyphicon glyphicon-plus"></i></button>';
     deleteKaraHtml = '<button name="deleteKara" class="btn btn-sm btn-action"><i class="glyphicon glyphicon-minus"></i></button>';
@@ -373,18 +468,18 @@ var tabTradToDelete;
 
     /**
      * Fill a playlist on screen with karas
-     * @param {1, 2} num - which playlist on the screen
+     * @param {1, 2} side - which playlist on the screen
      * @param {Int} idKara - kara to highlight & scroll to at the end of the work
-     * @param {Int} from - returned results start from this number
-     * @param {Int} to - returned results end to this number
+     * @param {Int} from - returned results start from this sideber
+     * @param {Int} to - returned results end to this sideber
      */
     // TODO supprimer idKara et reporter sur le reste du code
     // TODO if list is updated from another source (socket ?) keep the size of the playlist
-    fillPlaylist = function (num, idKara, from, to) {
-        // console.log(num, idKara, from, to);
+    fillPlaylist = function (side, idKara, from, to) {
+        // DEBUG && console.log(side, idKara, from, to);
         var deferred = $.Deferred();
-        var idPlaylist = parseInt($("#selectPlaylist" + num).val());
-        var filter = $("#searchPlaylist" + num).val();
+        var idPlaylist = parseInt($("#selectPlaylist" + side).val());
+        var filter = $("#searchPlaylist" + side).val();
         var fromTo = "";
         var url, html, canTransferKara, canAddKara, dragHandle, playKara;
 
@@ -393,46 +488,30 @@ var tabTradToDelete;
         fromTo += "&from=" + from + "&to=" + to;
 
         // setup variables depending on which playlist is selected : -1 = database kara list, -2 = blacklist, -3 = whitelist, -4 = blacklist criterias
-        if (idPlaylist > 0) {
-            url = scope + '/playlists/' + idPlaylist + '/karas';
-            html = scope === "admin" ? deleteKaraHtml + addKaraHtml + transferKaraHtml : '';
-            canTransferKara = true;
-            canAddKara = true;
-        } else if (idPlaylist == -1) {
-            url = 'public/karas';
-            html = addKaraHtml;
-            canTransferKara = false;
-            canAddKara = false;
-        } else if (idPlaylist == -2) {
-            url = scope + '/blacklist';
-            html = scope === "admin" ? '' : '';
-            canTransferKara = false;
-            canAddKara = true;
-        } else if (idPlaylist == -3) {
-            url = scope + '/whitelist';
-            html = scope === "admin" ? deleteKaraHtml + addKaraHtml + transferKaraHtml : '';
-            canTransferKara = true;
-            canAddKara = true;
-        } else if (idPlaylist == -4) {
-            url = scope + '/blacklist/criterias';
-            html = deleteCriteriaHtml;
-            canTransferKara = false;
-            canAddKara = true;
-        }
+
+        var singlePlData = getPlData(idPlaylist);
+        console.log(singlePlData, "ah",  side, idPlaylist);
+        url = singlePlData.url;
+        html = singlePlData.html;
+        canTransferKara = singlePlData.canTransferKara;
+        canAddKara = singlePlData.canAddKara;
         
-        canAddKara = scope === "admin" ? canAddKara : $("#selectPlaylist" + num + " > option:selected").attr("flag_" + playlistToAdd) == "1";
+
+        dragHandle = isTouchScreen && (scope == "public" && idPlaylist == -1 && side == 1
+                || scope == "admin" && idPlaylist > 0) ? dragHandleHtml : "";
         playKara = scope === "admin" && idPlaylist > 0 ? playKaraHtml : "";
 
-        dragHandle = isTouchScreen && (scope == "public" && idPlaylist == -1 && num == 1
-                    || scope == "admin" && idPlaylist > 0) ? dragHandleHtml : "";
-                    
+        // public users can add kara to one list, current or public
+        canAddKara = scope === "admin" ? canAddKara : $("#selectPlaylist" + side + " > option:selected").data("flag_" + playlistToAdd) == "1";
+     
         urlFiltre = url + "?filter=" + filter + fromTo;
 
         // ask for the kara list from given playlist
         if (ajaxSearch[url]) { ajaxSearch[url].abort(); }
+
         ajaxSearch[url] = $.ajax({ url: urlFiltre }).done(function (data) {
             //var time = console.timeEnd('ajax');
-            //console.log(urlFiltre + " : " + data.length + " résultats");
+            //DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
             
             var htmlContent = "";
             
@@ -457,7 +536,7 @@ var tabTradToDelete;
                                     + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
                                     + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                                     + "</div>"
-                                    + (saveDetailsKara(idPlaylist, data[key].kara_id) ? buildKaraDetails(data[key]) : "")
+                                    + (saveDetailsKara(idPlaylist, data[key].kara_id) ? buildKaraDetails(data[key], mode) : "")
                                     + "</li>"; 
                             } else if (mode === "mobile") {
                                 htmlContent += "<li class='collection-item' " + karaDataAttributes + ">"
@@ -473,8 +552,8 @@ var tabTradToDelete;
                         }
                     }
 
-                    document.getElementById("playlist" + num).innerHTML = htmlContent;
-                    if( mode === "mobile") { swipSwippables(num); }
+                    document.getElementById("playlist" + side).innerHTML = htmlContent;
+                    if( mode === "mobile") { swipSwippables(side); }
                 } else {
                     /* Blacklist criterias build */
                     var blacklistCriteriasHtml = $("<div/>");
@@ -516,7 +595,7 @@ var tabTradToDelete;
                         }
                     }
                    //htmlContent = blacklistCriteriasHtml.html();
-                    $("#playlist" + num).empty().append(blacklistCriteriasHtml);
+                    $("#playlist" + side).empty().append(blacklistCriteriasHtml);
                     if (regenSelect2) { $('#bcType').select2({ theme: "bootstrap", dropdownAutoWidth : true, minimumResultsForSearch: -1 }); }
                     $('#bcType').change();
                 }
@@ -524,12 +603,12 @@ var tabTradToDelete;
                 
            
             // depending on the playlist we're in, notify if the other playlist can add & transfer to us
-            $('#panel' + non(num)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
+            $('#panel' + non(side)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
             
             deferred.resolve();
-            //var time = console.timeEnd('html'); console.log(data.length);
+            //var time = console.timeEnd('html'); DEBUG && console.log(data.length);
             
-            $('#playlist' + num).parent().find('.playlistLoading').fadeOut(400);
+            $('#playlist' + side).parent().find('.playlistLoading').fadeOut(400);
           
             // drag & drop part
             // TODO revoir pour bien définir le drag&drop selon les droits
@@ -566,7 +645,7 @@ var tabTradToDelete;
                 }
             } else if(dragAndDrop && scope === "admin") {
                 if(idPlaylist > 0) {
-                    var sortableUl = $("#playlist" + num);
+                    var sortableUl = $("#playlist" + side);
                     sortableUl.sortable({
                         appendTo: sortableUl,
                         handle : isTouchScreen ? ".btnDiv" : false,
@@ -577,8 +656,8 @@ var tabTradToDelete;
                     });
                 }
                 /*
-                if ($('#selectPlaylist' + non(num)).val() > 0) {
-                    var sortableUl2 = $("#playlist" + non(num));
+                if ($('#selectPlaylist' + non(side)).val() > 0) {
+                    var sortableUl2 = $("#playlist" + non(side));
                     sortableUl2.sortable({
                         appendTo: sortableUl2,
                         helper : isTouchScreen ? ".dragHandle" : false,
@@ -605,16 +684,16 @@ var tabTradToDelete;
     }
     /**
      * Scroll to a kara in a playlist and highlight it
-     * @param {1, 2} num - which playlist on the screen
+     * @param {1, 2} side - which playlist on the screen
      * @param {Int} idKara - kara to highlight & scroll
      */
-    scrollToKara = function (num, idKara) {
-        var parent = $("#playlist" + num).parent();
+    scrollToKara = function (side, idKara) {
+        var parent = $("#playlist" + side).parent();
         var element = parent.find("li[idkara='" + idKara + "']");
         if (element.length > 0) {
             var willParentSroll = parent[0].scrollTop != parent[0].clientTop|| (parent[0].clientHeight != parent[0].scrollHeight
                                     && parent.scrollTop() + element.offset().top - parent.offset().top != 0)
-            // console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
+            // DEBUG && console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
             parent.velocity({
                 scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
             }, willParentSroll ? 400 : 0 , function(){
@@ -634,7 +713,7 @@ var tabTradToDelete;
     scrollToElement = function (parent, element, highlight) {
         var willParentSroll = parent[0].scrollTop != parent[0].clientTop || (parent[0].clientHeight != parent[0].scrollHeight
                                 && parent.scrollTop() + element.offset().top - parent.offset().top != 0)
-        // console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
+        // DEBUG && console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
          parent.velocity({
             scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
         }, willParentSroll ? 400 : 0 , function(){
@@ -646,12 +725,9 @@ var tabTradToDelete;
     }
      
     /** 
-    * Fill playlist lists & refresh the playlist panels
-    * @param {Boolean} triggerChange - (optional) trigger a change of playlist to show a new list of karas
-    * @param {1,2} num - (optional) num of the playlist to trigger the change on
-    * @param {Int} newVal - set new Id for the playlist num
+    * Fill playlist lists
     */
-    fillPlaylistSelects = function (triggerChange, num, newVal) {
+    fillPlaylistSelects = function () {
         var deferred = $.Deferred();
 
         var playlistList = {};
@@ -660,98 +736,106 @@ var tabTradToDelete;
         
         $.ajax({ url: scope + '/playlists', }).done(function (data) {
             playlistList = data; // object containing all the playlists
-            if (scope === "admin") {
-                playlistList.push({ "playlist_id": -1, "name": "Karas" });
-                playlistList.push({ "playlist_id": -2, "name": "Blacklist" });
-                playlistList.push({ "playlist_id": -4, "name": "Blacklist criterias" });
-                playlistList.push({ "playlist_id": -3, "name": "Whitelist" });
-            } else if (scope === "public") {
-                if (settingsPublic['EngineAllowViewBlacklist'] == 1) playlistList.push({ "playlist_id": -2, "name": "Blacklist" });
-                if (settingsPublic['EngineAllowViewBlacklistCriterias'] == 1) playlistList.push({ "playlist_id": -4, "name": "Blacklist criterias" });
-                if (settingsPublic['EngineAllowViewWhitelist'] == 1) playlistList.push({ "playlist_id": -3, "name": "Whitelist" });
-            }
-            
+            if (scope === "admin")                                                              playlistList.push({ "playlist_id": -1, "name": "Karas" });
+            if (scope === "admin" || settings['EngineAllowViewBlacklist'] == 1)           playlistList.push({ "playlist_id": -2, "name": "Blacklist", "flag_visible" : settings['EngineAllowViewBlacklist'] });
+            if (scope === "admin" || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.push({ "playlist_id": -4, "name": "Blacklist criterias", "flag_visible" : settings['EngineAllowViewBlacklistCriterias']});
+            if (scope === "admin" || settings['EngineAllowViewWhitelist'] == 1)           playlistList.push({ "playlist_id": -3, "name": "Whitelist", "flag_visible" :  settings['EngineAllowViewWhitelist']});
+        
             // building the options
             var optionHtml = "";
-            $("select[type='playlist_select']").empty();
             $.each(playlistList, function (key, value) {
-                var params = Object.keys(value).map(function (k, v) {  return k + "='" +  value[k] + "'" }).join(" ");
+                var params = Object.keys(value).map(function (k, v) {  return "data-" + k + "='" +  value[k] + "'" }).join(" ");
                 optionHtml += "<option " + params + "  value=" + value.playlist_id + "> " + value.name + "</option>";
             });
-            $("select[type='playlist_select']").html(optionHtml);
-            // setting the right values
-            select1.val(val1? val1 : panel1Default);
-            select2.val(val2? val2 : select2.find("option[flag_current='1']").val());
+            $("select[type='playlist_select']").empty().html(optionHtml);
 
-            if(newVal != undefined & num != undefined) {
-                $("#selectPlaylist" + num).val(newVal);
-            }
-        
-            $(".select2").select2({ theme: "bootstrap",
-                                    templateResult: formatPlaylist,
-                                    templateSelection : formatPlaylistSelect,
-                                    tags: true,
-                                    minimumResultsForSearch: 2 });
-            deferred.resolve()
-            // TODO recup player.private et décider public ou current pour l'appli public / à voir pour se rappeler de la playlist selectionnée dans les cookies pour l'admin ?
-            if(scope === "public" && typeof playlistAjoutId == "undefined") {
+            // setting the right values to newly refreshed selects
+            // for public interface, panel1Default to keep kara list, playlistToAddId to show the playlist where users can add
+            // for admin, check cookies
+            if(scope === "public" && typeof playlistToAddId == "undefined") {
+                select1.val(val1? val1 : panel1Default);
                 $.ajax({ url: 'public/player' }).done(function (data) {
                     playlistToAdd = data['private'] == 1 ? "current" : "public";
-                    console.log(playlistToAdd);
-                    $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
-                        playlistAjoutId = data.playlist_id;
-                        $("#selectPlaylist2").val(playlistAjoutId).change();
+                    
+                    $.ajax({ url: 'public/playlists/' + playlistToAdd, async: true }).done(function (data) {
+                        playlistToAddId = data.playlist_id;
+                        select2.val(val2? val2 : playlistToAddId);
                     });
                 });
+            } else {
+                var plVal1Cookie = readCookie("plVal1");
+                var plVal2Cookie = readCookie("plVal2");
+                select1.val(val1? val1 : plVal1Cookie ? plVal1Cookie : -1);
+                select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : 1);
             }
             
-            // update the flag part of the panel
-            var selectList = scope === "admin" ? [select1, select2] : []; // add [select2] to 2nd part to update the flag buttons in public app (atm not shown so w/e)
-            for (var i in selectList) {
-                var select = selectList[i];
-                var flagPanel = $('#flag' + select.attr('num')).closest('.plDashboard');
-                var option = select.find("option:selected");
-                // managing flags
-                ["flag_current", "flag_public"].forEach(function (e) {
-                    if (option.attr(e) == "1") { flagPanel.find("button[name='" + e + "']").removeClass('btn-default').addClass('btn-primary'); }
-                    else { flagPanel.find("button[name='" + e + "']").removeClass('btn-primary').addClass('btn-default'); }
-                });
-                flagPanel.attr('flag_visible', option.attr('flag_visible') == "1");
-                flagPanel.attr('flag_current', option.attr('flag_current') == "1");
-                flagPanel.attr('flag_public', option.attr('flag_public') == "1");
-                flagPanel.attr('idPlaylist', option.val());
+/*
+            if(newVal != undefined & side != undefined) {
+                $("#selectPlaylist" + side).val(newVal);
             }
-            
-            if(triggerChange) {
-                if (num != 1) { fillPlaylist(2); }
-                if (num != 2) { fillPlaylist(1); }
-            }
-
+*/    
+            $(".select2").select2({ theme: "bootstrap",
+                                    templateResult: formatPlaylist,
+                                    templateSelection : formatPlaylist,
+                                    tags: true,
+                                    minimumResultsForSearch: 2
+                                });
+            deferred.resolve();
         }).fail(function (data) {
-            console.log(data);
+            DEBUG && console.log(data);
         });
         return deferred.promise();
     };
-   
+
+    /** refresh playlist dashboard infos
+    * @param {1,2} side - (optional) side of the playlist to trigger the change on
+    */
+   refreshPlaylistDashboard = function(side) {
+        var dashboard = $("#panel" + side + " .plDashboard");
+        var select = dashboard.find('select[type="playlist_select"]');
+        var option = select.find("option:selected");
+        // managing flags
+        ["flag_current", "flag_public"].forEach(function (e) {
+            if (option.data(e) == "1") { dashboard.find("button[name='" + e + "']").removeClass('btn-default').addClass('btn-primary'); }
+            else { dashboard.find("button[name='" + e + "']").removeClass('btn-primary').addClass('btn-default'); }
+        });
+
+        // overcomplicated stuff because storing var as data in html via jquery doesn't affect actual html attributes...
+        var optionAttrList = option.prop("attributes");
+        var attrList = dashboard.prop("attributes");
+        var attrListStr = Object.keys(attrList).map(function(k,v){return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : "" }).join(" ");
+        dashboard.removeAttr(attrListStr);
+
+        $.each(optionAttrList, function() {
+            dashboard.attr(this.name, this.value);
+        });
+        dashboard.data(option.data());
+        var val =  option.val();
+        var plInfos = val && val != -1 ? dashboard.data('num_karas') + " karas / dur " + secondsTimeSpanToHMS(dashboard.data('length')) : "";
+        dashboard.parent().find('.plInfos').text(plInfos);
+    }
+
     /** 
     * refresh the player infos
     * @param {Function} callback - function to call at the end of the refresh
     * @param {anything} param1 - param to give to this function
     */
-    refreshCommandStates = function (data, callback, param1) {
+    refreshPlayerInfos = function (data, callback, param1) {
         if (oldState != data) {
             var newWidth = 100 * parseInt(10000 * ( data.timePosition + refreshTime/1000) / $('#karaInfo').attr('length')) / 10000 + '%';
             if (data.timePosition != oldState.timePosition && $('#karaInfo').attr('length') != 0) {
-                if (mode != "mobile") {
-                    $('#progressBarColor').stop().animate({ width: newWidth }, 1000 * (data.timePosition - oldState.timePosition), 'linear');
-                } else {
-                    $('#progressBarColor').width($('#progressBarColor').width());
+                if (mode == "mobile" || $('#progressBarColor').hasClass('cssTransition')) {
+                    //$('#progressBarColor').width($('#progressBarColor').width());
                     $('#progressBarColor').width(newWidth);
+                } else {
+                    if(data.timePosition > oldState.timePosition) {
+                        $('#progressBarColor').animate({ width: newWidth }, Math.abs(1000 * (data.timePosition - oldState.timePosition)), 'linear');
+                    }
                 }
             }
             if (oldState.status != data.status || oldState.playerStatus != data.playerStatus) {
                 status = data.status === "stop" ? "stop" : data.playerStatus;
-                //console.log("status : " + status + " enginestatus : " + data.status  + " playerStatus : " + data.playerStatus );
+                //DEBUG && console.log("status : " + status + " enginestatus : " + data.status  + " playerStatus : " + data.playerStatus );
                 switch (status) {
                     case "play":
                         $('#status').attr('name','pause');
@@ -765,7 +849,7 @@ var tabTradToDelete;
                         $('#progressBarColor').clearQueue().stop();
                         break;
                     default:
-                        console.log("ERR : Kara status unknown : " + status);
+                        DEBUG && console.log("ERR : Kara status unknown : " + status);
                 }
             }
             if($('input[name="lyrics"]').is(':checked') || mode == "mobile" && $('#switchInfoBar').hasClass('showLyrics')) {
@@ -776,7 +860,12 @@ var tabTradToDelete;
                 $('#karaInfo > span').html(text);
             }
             if (data.currentlyPlaying !== oldState.currentlyPlaying && data.currentlyPlaying > 0) {
-                $('#progressBarColor').stop().css('width', newWidth);
+                
+                var barCss = $('#progressBarColor.cssTransition');
+                barCss.removeClass('cssTransition');
+                $('#progressBarColor').stop().css({width : newWidth});
+                barCss.addClass('cssTransition');
+
                 $.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
                     $('#karaInfo').attr('idKara', dataKara[0].kara_id);
                     $('#karaInfo').attr('length', dataKara[0].duration);
@@ -827,8 +916,8 @@ var tabTradToDelete;
         $("[name='EnginePrivateMode'],[name='kara_panel'],[name='lyrics']").bootstrapSwitch({
             "wrapperClass": "btn btn-default",
             "data-size": "large",
-            "labelWidth": "0",
-            "handleWidth": "65",
+            "labelWidth": "15",
+            "handleWidth": "59",
             "data-inverse": "false"
         })
     }
@@ -858,7 +947,7 @@ var tabTradToDelete;
         var liKara = el.closest('li');
         var idKara = parseInt(liKara.attr('idkara'));
         var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-        var idPlaylist = parseInt( el.closest('.panel').find('.plDashboard').attr('idPlaylist'));
+        var idPlaylist = parseInt( el.closest('.panel').find('.plDashboard').data('playlist_id'));
         var infoKara = liKara.find('.detailsKara');
         if (infoKara.length == 0) {
             var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
@@ -950,36 +1039,26 @@ var tabTradToDelete;
 		} else if(command == "remove") {
 			saveLastDetailsKara[idPlaylist + 1000].pop(idKara);
 		} else {
-		//console.log("ah",(-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000])));
+		//DEBUG && console.log("ah",(-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000])));
 			return (-1 != $.inArray(idKara, saveLastDetailsKara[idPlaylist + 1000]));
 		}
 	}
 
     formatPlaylist = function (playlist) {
         if (!playlist.id) { return playlist.text; }
-        if (!$(playlist.element).attr('flag_current') == "1" && !$(playlist.element).attr('flag_public') == "1") { return playlist.text; }
+        if (!$(playlist.element).data('flag_current') == "1"
+            && !$(playlist.element).data('flag_public') == "1"
+            && !$(playlist.element).data('flag_visible') == "0")
+            { return playlist.text; }
     
         var icon = "";
-        if ($(playlist.element).attr('flag_current') == "1") {
+        if ($(playlist.element).data('flag_current') == "1") {
             icon =  '<i class="glyphicon glyphicon-facetime-video"></i>'
-        } else if ($(playlist.element).attr('flag_public') == "1") {
-            icon = '<i class="glyphicon glyphicon-indent-left"></i>';
+        } else if ($(playlist.element).data('flag_public') == "1") {
+            icon = '<i class="glyphicon glyphicon-globe"></i>';
         }
-
-        var $option = $('<span>' + icon + ' ' + playlist.text + '</span>');
-
-        return $option;
-    }
-    formatPlaylistSelect = function (playlist, container) {
-        
-        if (!playlist.id) { return playlist.text; }
-        if (!$(playlist.element).attr('flag_current') == "1" && !$(playlist.element).attr('flag_public') == "1") { return playlist.text; }
-
-        var icon = "";
-        if ($(playlist.element).attr('flag_current') == "1") {
-            icon =  '<i class="glyphicon glyphicon-facetime-video"></i>'
-        } else if ($(playlist.element).attr('flag_public') == "1") {
-            icon = '<i class="glyphicon glyphicon-indent-left"></i>';
+        if ($(playlist.element).data('flag_visible') == "0") {
+            icon +=  ' <i class="glyphicon glyphicon-eye-close"></i> '
         }
 
         var $option = $('<span>' + icon + ' ' + playlist.text + '</span>');
@@ -987,6 +1066,19 @@ var tabTradToDelete;
         return $option;
     }
 
+    /* display an element as closable popup */
+    popup = function(element, easing, callback) {
+        el = $(element);
+        el.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, function(){
+            el.css('max-height', $(window).height() - 100);
+            el.css('top', 50);
+            el.css('max-width',$(window).width() * .95);
+            el.css('left', ($(window).width() - el.width()) / 2);
+
+            $('body > div[class!="popup"]').css('opacity','.5');
+            el.prepend(closePopupButton);
+        });
+    }
 
     /* display a fading message, useful to show success or errors */
     displayMessage = function(type, title, message) {
@@ -1006,54 +1098,80 @@ var tabTradToDelete;
         $('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
     });
 
-    /* opposite number of playlist : 1 or 2 */
-    non = function (num) {
-        return 3 - parseInt(num);
+    /* opposite sideber of playlist : 1 or 2 */
+    non = function (side) {
+        return 3 - parseInt(side);
+    }
+
+    secondsTimeSpanToHMS = function(s) {
+        var h = Math.floor(s/3600);
+        s -= h*3600;
+        var m = Math.floor(s/60);
+        s -= m*60;
+        return (h > 0 ? h+"h" : "") +(m < 10 ? '0'+m : m)+"m"+(s < 10 ? '0'+s : s ) + 's'; 
+    }
+
+    getPlData = function(idPl) {
+        var idPlNorm = Math.min(0, idPl);
+        var singlePlData = plData[idPlNorm] ? jQuery.extend({}, plData[idPlNorm]) : null;
+
+        singlePlData.url = singlePlData.url.replace("pl_id", idPl);
+        
+        return singlePlData;
     }
 
     sideOfPlaylist = function(idPlaylist) {
-        var num = $('[type="playlist_select"] > option:selected[value="' + idPlaylist + '"]').parent().attr('num');
-        return num;
+        var side = $('[type="playlist_select"] > option:selected[value="' + idPlaylist + '"]').parent().attr('side');
+        return side;
     }
 
-     /*
-    checkSearch = function () {
-        if ($('#search').val() != oldSearchVal) {
-            oldSearchVal = $('#search').val();
-            console.time('public/karas?filter=' + oldSearchVal);
-            fillPlaylist(1);
-        } else {
-            console.log("recherche identique");
+    /* cookies */
+        
+    createCookie = function(name,value,days) {
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            var expires = "; expires="+date.toGMTString();
         }
+        else var expires = "";
+        document.cookie = name+"="+value+expires+"; path=/";
     }
-    */
 
-    // repetitive ajax calls to refresh infos on the screen
-    /*
-    setInterval(function () {
-        if (false & !stopUpdate) {
-            refreshCommandStates("refresh");
+    readCookie = function(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
         }
-    }, refreshTime);
+        return null;
+    }
 
-    setInterval(function () {
-        if (!stopUpdate) {
-            if(!(($('#selectPlaylist2').data('select2') && $('#selectPlaylist2').data('select2').isOpen()) || ($('#selectPlaylist1').data('select2')
-                && $('#selectPlaylist1').data('select2').isOpen()))) { 
-                    scope === "public" ? getPublicSettings(false) : fillPlaylistSelects(); 
-                }
-            if($('#selectPlaylist1').val() != -1 && $('#playlist1 .lyricsKara:visible').length == 0) { fillPlaylist(1); }
-            if($('#selectPlaylist2').val() != -1 && $('#playlist2 .lyricsKara:visible').length == 0) { fillPlaylist(2); }
-        }
-    }, refreshTime * 2.5);
-*/
+    eraseCookie = function(name) {
+        createCookie(name,"",-1);
+    }
+
     /* partie socket */
     socket.on('playerStatus', function(data){
-        refreshCommandStates(data)
+        refreshPlayerInfos(data)
     });
     
     socket.on('settingsUpdated', function(data){
-        scope === "admin" ? getSettings() : getPublicSettings(false);
+        settingsUpdating = scope === "admin" ? getSettings() : getPublicSettings(false);
+
+        settingsUpdating.done(function (){
+            if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
+                || $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+                playlistsUpdating = fillPlaylistSelects();
+    
+                playlistsUpdating.done(function () {
+                    refreshPlaylistDashboard(1);
+                    refreshPlaylistDashboard(2);
+            
+                });
+            }
+        });
     });
 
     socket.on('playlistsUpdated', function(){
@@ -1067,38 +1185,48 @@ var tabTradToDelete;
         if (idPlaylist) {
           if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
                 || $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
-                fillPlaylistSelects();
+                playlistsUpdating = fillPlaylistSelects();
+
+                var side = sideOfPlaylist(idPlaylist); DEBUG && console.log("b" +side);
+                if (side) {
+                    playlistsUpdating.done(function () {DEBUG && console.log("ah" + side);
+                        refreshPlaylistDashboard(side);
+                     });
+                }
+               
             }
         }
     });
 
     socket.on('playlistContentsUpdated', function(idPlaylist){
-        var num = sideOfPlaylist(idPlaylist);
-        console.log(num, idPlaylist);
-        if(num && $('#playlist' + num + '.lyricsKara:visible').length == 0) {
-            playlistContentUpdating = fillPlaylist(num);
+        var side = sideOfPlaylist(idPlaylist);
+        DEBUG && console.log(side, idPlaylist);
+        if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
+            playlistContentUpdating = fillPlaylist(side);
         }
     });
 
     socket.on('blacklistUpdated', function(){
         var idPlaylist = -2;
-        var num = sideOfPlaylist(idPlaylist);
-        if(num && $('#playlist' + num + '.lyricsKara:visible').length == 0) {
-            playlistContentUpdating = fillPlaylist(num);
+        var side = sideOfPlaylist(idPlaylist);
+
+        if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
+            playlistContentUpdating = fillPlaylist(side);
         }
         idPlaylist = -4;
-        var num = sideOfPlaylist(idPlaylist);
-        if(num && $('#playlist' + num + '.lyricsKara:visible').length == 0) {
-            playlistContentUpdating = fillPlaylist(num);
+        var side = sideOfPlaylist(idPlaylist);
+        if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
+            playlistContentUpdating = fillPlaylist(side);
         }
        
     });
 
     socket.on('whitelistUpdated', function(idPlaylist){
         var idPlaylist = -3;
-        var num = sideOfPlaylist(idPlaylist);
-        if(num && $('#playlist' + num + '.lyricsKara:visible').length == 0) {
-            playlistContentUpdating = fillPlaylist(num);
+        var side = sideOfPlaylist(idPlaylist);
+
+        if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
+            playlistContentUpdating = fillPlaylist(side);
         }
     });
 
@@ -1109,10 +1237,9 @@ var tabTradToDelete;
         packet.data = ["*"].concat(args);
         onevent.call(this, packet);      // additional call to catch-all
     };
-
     
     socket.on('*', function(e, data) {
-        console.log(e, data);
+        SOCKETDEBUG && DEBUG && console.log(e, data);
     });
 }));
 

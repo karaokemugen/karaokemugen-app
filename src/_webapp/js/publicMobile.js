@@ -53,17 +53,17 @@ $(document).ready(function () {
   
   karaParPage = 80;
   
-  swipSwippables = function(num) {
+  swipSwippables = function(side) {
     var swipeLeft = false;
     var swipeRight = false;
 
-    swipable = $('.collection[num="' + num + '"] > li');
+    swipable = $('.collection[side="' + side + '"] > li');
     swipable.each(function () {
       $(this).hammer({
         prevent_default: false
       });
     })
-    if(num == 1) {
+    if(side == 1) {
       swipable.on('touchstart', function (e) {
         if($(e.target).hasClass('contentDiv')) { $(this).addClass('pressed'); }
         $('#panel1').addClass('noTransform');

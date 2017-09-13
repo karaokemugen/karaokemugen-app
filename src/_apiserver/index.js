@@ -293,6 +293,34 @@ module.exports = {
 							res.json(err);
 						});
 				});
+			routerAdmin.route('/whitelist/empty')
+				.put(function(req,res){
+				// Empty whitelist
+
+					module.exports.onWhitelistEmpty()
+						.then(function(){
+							module.exports.emitEvent('blacklistUpdated');
+							res.json('Whitelist emptied');
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				});
+			routerAdmin.route('/blacklist/criterias/empty')
+				.put(function(req,res){
+				// Empty blacklist criterias
+
+					module.exports.onBlacklistEmpty()
+						.then(function(){
+							module.exports.emitEvent('blacklistUpdated');
+							res.json('Blacklist criterias emptied');
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
 				.put(function(req,res){
 					// set playlist to current
@@ -1439,6 +1467,8 @@ module.exports = {
 	onKaraCopyToPlaylist:function(){},
 	emitEvent:function(){},	
 	onTags:function(){},
-	onPlaylistExport(){},
-	onMessage(){},
+	onPlaylistExport:function(){},
+	onMessage:function(){},
+	onWhitelistEmpty:function(){},
+	onBlacklistEmpty:function(){},
 };

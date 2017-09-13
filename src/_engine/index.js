@@ -897,6 +897,30 @@ module.exports = {
 					});
 			});
 		};
+		module.exports._services.apiserver.onBlacklistCriteriasEmpty = function(){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.emptyBlacklistCriterias()
+					.then(function(){						
+						resolve();
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC emptyBlacklist : '+err);
+						reject(err);						
+					});
+			});
+		};
+		module.exports._services.apiserver.onWhitelistEmpty = function(){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.emptyWhitelist()
+					.then(function(){						
+						resolve();
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC emptyWhitelist : '+err);
+						reject(err);						
+					});
+			});
+		};
 		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,to){			
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)

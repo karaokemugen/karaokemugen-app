@@ -70,6 +70,7 @@ span[name="checkboxKara"] {
 	float: left;
 }
 
+
 .plDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 
 	display: none;
 }
@@ -77,7 +78,9 @@ span[name="checkboxKara"] {
 	display: none;
 }
 
-.panel[cantransferkara="false"] .btnDiv > button[name="transferKara"] {
+.panel[cantransferkara="false"] .btnDiv > button[name="transferKara"], 
+.plDashboard[data-playlist_id="-1"]  .btnDiv > button[name="transferKara"],
+.plDashboard[data-playlist_id="-4"]  .btnDiv > button[name="transferKara"]{
 	display: none;
 }
 
@@ -164,21 +167,6 @@ div.bootstrap-switch-large{
 	opacity: .2;
 }
 
-.plDashboard {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-between;
-}
-.plDashboard .plSelect {
-	flex-grow: 100;
-	flex-basis: 30%;
-    float: left;
-}
-.plDashboard .plSearch {
-    flex-grow: 100;
-	flex-basis: 25%;
-    float: right;
-}
 
 .plDashboard:not(.advanced) .plCommandsContainer {
 	display: none;    
@@ -239,10 +227,10 @@ span:not(.hideCommands) {
     margin-right: auto;
 }
 
-.plDashboard[flag_visible="true"] [name="flag_visible"] > i.glyphicon-eye-close {
+.plDashboard[data-flag_visible="1"] [name="flag_visible"] > i.glyphicon-eye-close {
 	display: none;
 }
-.plDashboard[flag_visible="false"] [name="flag_visible"] > i.glyphicon-eye-open {
+.plDashboard[data-flag_visible="0"] [name="flag_visible"] > i.glyphicon-eye-open {
 	display: none;
 }
 
@@ -250,71 +238,73 @@ span:not(.hideCommands) {
     margin-left: auto;
 }
 
-.plDashboard[idPlaylist="-1"] .flagsContainer {
+.plDashboard[data-playlist_id="-1"] .flagsContainer {
 	display: none;
 	padding: 0px;
 }
-.plDashboard[idPlaylist="-4"] .btnDivContainer {
+.plDashboard[data-playlist_id="-4"] .btnDivContainer {
 	display: none;
 }
-.plDashboard[idPlaylist^="-"] .flagsContainer button {
+.plDashboard[data-playlist_id^="-"] .flagsContainer button {
 	display: none;
 }
 
-.plDashboard[idPlaylist="-2"] button[name="flag_visible"],
-.plDashboard[idPlaylist="-3"] button[name="flag_visible"],
-.plDashboard[idPlaylist="-4"] button[name="flag_visible"]
+.plDashboard[data-playlist_id="-2"] button[name="flag_visible"],
+.plDashboard[data-playlist_id="-3"] button[name="flag_visible"],
+.plDashboard[data-playlist_id="-4"] button[name="flag_visible"]
 {
 	display: block;
 }
 
 
-.plDashboard[idPlaylist="-1"] .btnDiv > button[name="deleteKara"] {
+.plDashboard[data-playlist_id="-1"] .btnDiv > button[name="deleteKara"] {
 	display: none;
 }
 
-.plDashboard[idPlaylist="-4"] .btnDiv > button[name="deleteKara"] {
+.plDashboard[data-playlist_id="-4"] .btnDiv > button[name="deleteKara"] {
 	display: none;
 }
 
 
 .panel-heading ::-webkit-input-placeholder {
-    font-size: 17px;
-	line-height: 24px;
-	padding-top:10px;
-	height: 20px;
+	font-size: 17px;
+	line-height: 34px;
+	padding-top: 0px;
+	height: 34px;
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
 
 .panel-heading  ::-moz-placeholder {  /* Firefox 19+ */
-	font-size: 2rem;
-	line-height:  21px;
-	height: 20px;
+	font-size: 17px;
+	line-height: 20px;
+	padding-top: 0px;
+	height: 34px;
     text-align:right; 
-    font-family: 'Glyphicons Halflings'; 
+    font-family: 'Glyphicons Halflings';  
 }
 .panel-heading  :-ms-input-placeholder {
-	font-size: 2rem;
-	line-height:  21px;
-	height: 20px;
+	font-size: 17px;
+	line-height: 34px;
+	padding-top: 0px;
+	height: 34px;
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
 
 
-.plDashboard[idPlaylist="-1"] .flagsContainer {
+.plDashboard[data-playlist_id="-1"] .flagsContainer {
 	display: none;	
 }
-.plDashboard[idPlaylist="-1"] .controlsContainer,
-.plDashboard[idPlaylist="-2"] .controlsContainer,
-.plDashboard[idPlaylist="-3"] .controlsContainer,
-.plDashboard[idPlaylist="-4"] .controlsContainer  {
+.plDashboard[data-playlist_id="-1"] .controlsContainer,
+.plDashboard[data-playlist_id="-2"] .controlsContainer,
+.plDashboard[data-playlist_id="-3"] .controlsContainer,
+.plDashboard[data-playlist_id="-4"] .controlsContainer  {
 	display: none;	
 }
 
 
-.panel[num="2"] .advanced .btnDivContainer {
+.panel[side="2"] .advanced .btnDivContainer {
 	__order: -1;
 }
 .plSearch {

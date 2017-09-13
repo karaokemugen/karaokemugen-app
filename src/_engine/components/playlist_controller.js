@@ -815,6 +815,52 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Empty Whitelist}
+	* @return {promise} {Promise}
+	*/
+	emptyWhitelist:function() {		
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.emptyWhitelist()
+				.then(function(){
+					module.exports.generateBlacklist()
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){
+							logger.error('[PLC] generateBlacklist : '+err);
+							reject(err);							
+						});		
+				})
+				.catch(function(err) {
+					logger.error('[PLC] DBI emptyWhitelist : '+err);
+					reject(err);
+				});			
+		});
+	},
+	/**
+	* @function {Empty blacklist criterias}
+	* @return {promise} {Promise}
+	*/
+	emptyBlacklistCriterias:function() {		
+		return new Promise(function(resolve,reject){
+			module.exports.DB_INTERFACE.emptyBlacklistCriterias()
+				.then(function(){
+					module.exports.generateBlacklist()
+						.then(function(){
+							resolve();
+						})
+						.catch(function(err){
+							logger.error('[PLC] generateBlacklist : '+err);
+							reject(err);							
+						});		
+				})
+				.catch(function(err) {
+					logger.error('[PLC] DBI emptyBlacklistCriterias : '+err);
+					reject(err);
+				});			
+		});
+	},
+	/**
 	* @function {editPlaylist}
 	* Edits properties of a playlist
 	* @param  {number} playlist_id  {Playlist ID to edit}
@@ -2570,7 +2616,7 @@ module.exports = {
 						.then(function(playlist){
 							if (IsCurrent === false) {
 								playlist = L.shuffle(playlist);
-							} else  {
+							} else {
 								// If it's current playlist, we'll make two arrays out of the playlist :
 								// One before (and including) the current song being played (flag_playing = 1)
 								// One after.
@@ -2590,6 +2636,10 @@ module.exports = {
 								});
 								AfterPlaying = L.shuffle(AfterPlaying);
 								playlist = BeforePlaying.concat(AfterPlaying);
+								// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
+								if (ReachedPlaying == false) {
+									playlist = L.shuffle(playlist);
+								}
 							}
 							var newpos = 0;
 							var arraypos = 0;
