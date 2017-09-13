@@ -58,6 +58,7 @@ $(document).ready(function () {
 
 var date = new Date();
 date.setFullYear(date.getFullYear() + 10);
+
 var scope = 'public';
 var settingsPublic = {}
 pseudo ="Anonymous";
@@ -66,6 +67,7 @@ panel1Default = -1;
 
 
 getPublicSettings = function(trigger) {
+  var promise = $.Deferred();
   $.ajax({ url: 'public/settings', }).done(function (data) {
     settingsPublic = data;
     fillPlaylistSelects(trigger);
@@ -77,5 +79,7 @@ getPublicSettings = function(trigger) {
 
     $('#version').text(settingsPublic['VersionName'] + " " + settingsPublic['VersionNo']);
     $('#mode').text(settingsPublic['private'] == "1" ? "Privé" : "Public");
+    promise.resolve();
   }); 
+  return promise.promise();
 }

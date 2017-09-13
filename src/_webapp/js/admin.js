@@ -147,7 +147,7 @@
         $('.playlist-main').on('click', '.infoDiv > button.playKara', function (e) {
             var liKara = $(this).closest('li');
             var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-            var idPlaylist = parseInt($('#selectPlaylist' + $(this).closest('ul').attr('num')).val());
+            var idPlaylist = parseInt($('#selectPlaylist' + $(this).closest('ul').attr('side')).val());
 
             $.ajax({
                 type: 'PUT',
@@ -211,7 +211,7 @@
         */
         $('.select2').on('select2:select', function (e) {
             var select = $(this);
-            if (select.find("option[value='" + e.params.data.id + "'][name]").length == 0) {
+            if (select.find("option[value='" + e.params.data.id + "'][data-name]").length == 0) {
                 var playlistName = e.params.data.text
                 var create = confirm("Créer nouvelle playlist '" + playlistName + "' ?");
                 if (create) {
@@ -220,7 +220,7 @@
                         type: 'POST',
                         data: { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 }
                     })
-                        .done(function (idNewPlaylist) {
+                    .done(function (idNewPlaylist) {
                             playlistsUpdating.done(function () {
                                 select.val(idNewPlaylist).change()
                             });
@@ -255,8 +255,8 @@
         }
 		$('select[name="PlayerScreen"] > option').each(function(i) {
 			$(this).text(i+1 + " - " + $(this).text());
-		});
-        fillPlaylistSelects(true);
+        });
+        
         getSettings();
 
         pseudo = "Administrateur";
@@ -295,8 +295,10 @@
 
     // nameExclude = input not being updated (most likely user is on it)
     getSettings = function (nameExclude) {
+        var promise = $.Deferred();
         var playlistList = {};
         $.ajax({ url: 'admin/settings' }).done(function (data) {
+            settingsAdmin = data;
             $.each(data, function (i, val) {
                 input = $('[name="' + i + '"]');
                 // console.log(i, val);
@@ -312,7 +314,11 @@
                     }
                 }
             });
+
+            promise.resolve();
         });
+
+        return promise.promise();
     }
 
     setSettings = function (e, changeAdminPass) {
@@ -374,7 +380,7 @@
         var name = btn.attr('name');
         var selector = btn.closest('.panel-heading').find('[type="playlist_select"]');
         var playlistId = selector.val();
-        var namePlaylist = selector.find('option[value="' + playlistId + '"]').attr('name');
+        var namePlaylist = selector.find('option[value="' + playlistId + '"]').data('name');
         var data = {}, urlEnd = "";
 
         if (name === "flag_current" && !btn.hasClass('btn-primary')) {
@@ -383,7 +389,7 @@
             urlEnd = "/setPublic";
         } else if (name === "flag_visible") {
             urlEnd = "";
-            data = { name: namePlaylist, flag_visible: btn.closest('.plDashboard').attr('flag_visible') == "true" ? 0 : 1 };
+            data = { name: namePlaylist, flag_visible: btn.closest('.plDashboard').data('flag_visible') == "1" ? 0 : 1 };
         }
         $.ajax({
             url: 'admin/playlists/' + playlistId + urlEnd,
@@ -398,8 +404,8 @@
         var name = $(this).attr('name');
         var dashBoard = $(this).closest('.plDashboard');
         var selectedOption = dashBoard.find('[type="playlist_select"] > option:selected');
-        var playlistName = selectedOption.attr('name');
-        var idPlaylist = parseInt(dashBoard.attr('idPlaylist'));
+        var playlistName = selectedOption.data('name');
+        var idPlaylist = parseInt(dashBoard.data('playlist_id'));
         
         var url = scope + '/playlists/' + idPlaylist
         var type = "", data = {};
@@ -416,8 +422,8 @@
             data['playlist'] = prompt('Collez votre JSON ci-dessous');
         } else if (name == "editName") {
             type = "PUT"
-           $.each(["flag_current", "flag_visible", "flag_public"], function(k, v){
-                data[v] = selectedOption.attr(v);
+            $.each(["flag_current", "flag_visible", "flag_public"], function(k, v){
+                data[v] = selectedOption.data(v);
             });
             data['name'] = prompt("Donner un meilleur nom à " + playlistName + " : ", playlistName);
             if(!data['name']) return false;
@@ -444,7 +450,7 @@
     changeKaraPos = function (e) {
         var liKara = e.closest('li');
         var idKara = liKara.attr('idKara');
-        var num = liKara.closest('ul').attr('num');
+        var side = liKara.closest('ul').attr('side');
         var posFromPrev = parseInt(liKara.prev('li').attr('pos')) + 1;
         var posFromNext = parseInt(liKara.next('li').attr('pos'));
         posFromPrev = isNaN(posFromPrev) ? posFromNext : posFromPrev;
@@ -452,11 +458,11 @@
 
         if (posFromPrev != posFromNext || isNaN(posFromPrev) && isNaN(posFromNext)) {
             displayMessage("warning", "Error:", "Kara positions in this playlist are messed up, refreshing it. <br/>Please try again.");
-            fillPlaylist(num);
+            fillPlaylist(side);
             return false;
         } else {
             var idPlc = parseInt(liKara.attr('idplaylistcontent'));
-            var idPlaylist = parseInt($('#selectPlaylist' + num).val());
+            var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 
             $.ajax({
                 type: 'PUT',
@@ -465,9 +471,9 @@
             }).done(function (data) {
                 console.log("Kara plc_id " + posFromPrev + " pos changed");
             }).fail(function (data) {
-                fillPlaylist(num);
+                fillPlaylist(side);
             });
-            scrollToKara(num, idKara); 
+            scrollToKara(side, idKara); 
         }
     }
 }));

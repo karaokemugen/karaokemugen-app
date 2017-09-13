@@ -1,7 +1,7 @@
 <div id="header" class="header">
     <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6">
         <div class="col-lg-10 col-md-8 col-sm-7 col-xs-6" id="searchParent" style="width: 100%;">
-            <input type="text" class="form-control" id="searchPlaylist1" num="1" placeholder="&#xe003;" name="searchPlaylist" />
+            <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist" />
         </div>
         <div class="col-lg-2 col-md-4 col-sm-5 col-xs-6" style="display: none;">
             <input list="pseudo" type="text" id="choixPseudo" class="form-control" placeholder="{{i18n "NICKNAME"}}" />
@@ -32,25 +32,25 @@
 </div>
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
-        <div class="panel col-lg-8 col-md-7 col-sm-7 col-xs-12" id="panel1" num="1">
+        <div class="panel col-lg-8 col-md-7 col-sm-7 col-xs-12" id="panel1" side="1">
              <div>
                 <div>
-                    <select id="selectPlaylist1" num="1" hidden >
+                    <select id="selectPlaylist1" side="1" hidden >
                         <option value="-1" default></option>
                     </select>
                 </div>
             </div>
             <div class="playlistContainer">
-                <ul id="playlist1" num="1" class="list-group">
+                <ul id="playlist1" side="1" class="list-group">
                 </ul>
                 <div class="playlistLoading"> {{i18n "LOADING"}} </div>
            </div>
         </div>
          
-        <div class="panel col-lg-4 col-md-5 col-sm-5 col-xs-12" id="panel2" num="2">
+        <div class="panel col-lg-4 col-md-5 col-sm-5 col-xs-12" id="panel2" side="2">
            <div class="panel-heading container-fluid">
                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6">
-                    <select id="selectPlaylist2" num="2" type="playlist_select" class="select2 form-control">
+                    <select id="selectPlaylist2" side="2" type="playlist_select" class="select2 form-control">
                         <option value="" selected>...</option>
                     </select>
                 </div>
@@ -70,13 +70,13 @@
                         </button>
                     </div>
                     <div class="pull-left">
-                        <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
+                        <input type="text" class="form-control input-lg" side="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
                     </div>
                 </div>
             </div>
             
             <div class="playlistContainer">
-                <ul id="playlist2" num="2" class="list-group">
+                <ul id="playlist2" side="2" class="list-group">
                     <li class="list-group-item"></li>
                 </ul>
                 <div class="playlistLoading"> {{i18n "LOADING"}} </div>

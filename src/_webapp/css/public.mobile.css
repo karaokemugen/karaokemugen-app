@@ -197,7 +197,7 @@ button[name="addKara"] {
     top: 0;
 }
 
-select[num=2] > option {
+select[side=2] > option {
     background-color: transparent;
     color: black;
 }

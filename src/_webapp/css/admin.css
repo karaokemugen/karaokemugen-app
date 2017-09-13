@@ -77,7 +77,9 @@ span[name="checkboxKara"] {
 	display: none;
 }
 
-.panel[cantransferkara="false"] .btnDiv > button[name="transferKara"] {
+.panel[cantransferkara="false"] .btnDiv > button[name="transferKara"], 
+.plDashboard[data-playlist_id="-1"]  .btnDiv > button[name="transferKara"],
+.plDashboard[data-playlist_id="-4"]  .btnDiv > button[name="transferKara"]{
 	display: none;
 }
 
@@ -239,10 +241,10 @@ span:not(.hideCommands) {
     margin-right: auto;
 }
 
-.plDashboard[flag_visible="true"] [name="flag_visible"] > i.glyphicon-eye-close {
+.plDashboard[data-flag_visible="1"] [name="flag_visible"] > i.glyphicon-eye-close {
 	display: none;
 }
-.plDashboard[flag_visible="false"] [name="flag_visible"] > i.glyphicon-eye-open {
+.plDashboard[data-flag_visible="0"] [name="flag_visible"] > i.glyphicon-eye-open {
 	display: none;
 }
 
@@ -250,30 +252,30 @@ span:not(.hideCommands) {
     margin-left: auto;
 }
 
-.plDashboard[idPlaylist="-1"] .flagsContainer {
+.plDashboard[data-playlist_id="-1"] .flagsContainer {
 	display: none;
 	padding: 0px;
 }
-.plDashboard[idPlaylist="-4"] .btnDivContainer {
+.plDashboard[data-playlist_id="-4"] .btnDivContainer {
 	display: none;
 }
-.plDashboard[idPlaylist^="-"] .flagsContainer button {
+.plDashboard[data-playlist_id^="-"] .flagsContainer button {
 	display: none;
 }
 
-.plDashboard[idPlaylist="-2"] button[name="flag_visible"],
-.plDashboard[idPlaylist="-3"] button[name="flag_visible"],
-.plDashboard[idPlaylist="-4"] button[name="flag_visible"]
+.plDashboard[data-playlist_id="-2"] button[name="flag_visible"],
+.plDashboard[data-playlist_id="-3"] button[name="flag_visible"],
+.plDashboard[data-playlist_id="-4"] button[name="flag_visible"]
 {
 	display: block;
 }
 
 
-.plDashboard[idPlaylist="-1"] .btnDiv > button[name="deleteKara"] {
+.plDashboard[data-playlist_id="-1"] .btnDiv > button[name="deleteKara"] {
 	display: none;
 }
 
-.plDashboard[idPlaylist="-4"] .btnDiv > button[name="deleteKara"] {
+.plDashboard[data-playlist_id="-4"] .btnDiv > button[name="deleteKara"] {
 	display: none;
 }
 
@@ -303,18 +305,18 @@ span:not(.hideCommands) {
 }
 
 
-.plDashboard[idPlaylist="-1"] .flagsContainer {
+.plDashboard[data-playlist_id="-1"] .flagsContainer {
 	display: none;	
 }
-.plDashboard[idPlaylist="-1"] .controlsContainer,
-.plDashboard[idPlaylist="-2"] .controlsContainer,
-.plDashboard[idPlaylist="-3"] .controlsContainer,
-.plDashboard[idPlaylist="-4"] .controlsContainer  {
+.plDashboard[data-playlist_id="-1"] .controlsContainer,
+.plDashboard[data-playlist_id="-2"] .controlsContainer,
+.plDashboard[data-playlist_id="-3"] .controlsContainer,
+.plDashboard[data-playlist_id="-4"] .controlsContainer  {
 	display: none;	
 }
 
 
-.panel[num="2"] .advanced .btnDivContainer {
+.panel[side="2"] .advanced .btnDivContainer {
 	__order: -1;
 }
 .plSearch {

@@ -196,6 +196,7 @@ select.form-control {
 	background-color: #3a5064;
 	
 }
+
 .playlist-main .list-group-item.liType {
 	background-color: #607e97;
 	padding-left: 20px;
@@ -242,12 +243,12 @@ select.form-control {
 	padding: 3px;
 }
 
-.playlistContainer > ul[num="2"] .list-group-item > .infoDiv > button, .playlistContainer > ul[num="1"] .list-group-item > .btnDiv > button, .playlistContainer > ul[num="2"] .list-group-item .dragHandle {
+.playlistContainer > ul[side="2"] .list-group-item > .infoDiv > button, .playlistContainer > ul[side="1"] .list-group-item > .btnDiv > button, .playlistContainer > ul[side="2"] .list-group-item .dragHandle {
 	float: right;
 	display: block;
 }
 
-.playlistContainer > ul[num="1"] .list-group-item > .infoDiv > button, .playlistContainer > ul[num="2"] .list-group-item > .btnDiv > button, .playlistContainer > ul[num="2"] .list-group-item .dragHandle  {
+.playlistContainer > ul[side="1"] .list-group-item > .infoDiv > button, .playlistContainer > ul[side="2"] .list-group-item > .btnDiv > button, .playlistContainer > ul[side="2"] .list-group-item .dragHandle  {
 	float: left;
 	display: block;
 }

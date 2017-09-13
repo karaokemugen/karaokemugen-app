@@ -9,7 +9,7 @@
 <nav id="searchNav">
     <div class="nav-wrapper blue-grey darken-2">
             <div class="input-field large">
-                <input type="search" class="" name="searchPlaylist" id="searchPlaylist1" num="1">
+                <input type="search" class="" name="searchPlaylist" id="searchPlaylist1" side="1">
                 <label class="label-icon" for="search" style="top: -9px;"><i class="material-icons">search</i></label>
                 <i class="material-icons">close</i>
             </div>
@@ -34,13 +34,13 @@
         <div id="panel1" class="carousel-item" href="#one!">
              <div>
                 <div>
-                    <select id="selectPlaylist1" num="1" hidden >
+                    <select id="selectPlaylist1" side="1" hidden >
                         <option value="-1" default></option>
                     </select>
                 </div>
             </div>
             <div class="playlistContainer">
-                <ul id="playlist1" num="1" class="collection swipable">
+                <ul id="playlist1" side="1" class="collection swipable">
                 </ul>
                 <div class="playlistLoading"> {{i18n "LOADING"}} </div>
            </div>
@@ -48,15 +48,15 @@
         
         <div id="panel2" class="carousel-item" href="#two!">
             <div class="pull-left" hidden>
-                <input type="text" class="form-control input-lg" num="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
+                <input type="text" class="form-control input-lg" side="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
             </div>
            <div>
-                <select id="selectPlaylist2" num="2" type="playlist_select">
+                <select id="selectPlaylist2" side="2" type="playlist_select">
                     <option value="" selected>...</option>
                 </select>
             <div class="playlistContainer">
             
-                <ul id="playlist2" num="2" class="collection">
+                <ul id="playlist2" side="2" class="collection">
                 </ul>
                 <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             </div>
