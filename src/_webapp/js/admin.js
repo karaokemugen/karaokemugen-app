@@ -73,7 +73,7 @@
                 url: 'admin/shutdown',
                 type: 'POST',
             }).done(function (data) {
-                console.log("Extinction de l'appli");
+                DEBUG && console.log("Extinction de l'appli");
                 stopUpdate = true;
             });
         });
@@ -154,7 +154,7 @@
                 url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
                 data: { flag_playing: "1" }
             }).done(function (data) {
-                console.log("Kara plc_id " + idPlc + " flag_playing set to true");
+                DEBUG && console.log("Kara plc_id " + idPlc + " flag_playing set to true");
             });
         });
         $('.playlist-main').on('click', 'button.showPlaylistCommands', function (e) {
@@ -301,7 +301,7 @@
             settingsAdmin = data;
             $.each(data, function (i, val) {
                 input = $('[name="' + i + '"]');
-                // console.log(i, val);
+                // DEBUG && console.log(i, val);
                 if (input.length == 1 && i != nameExclude) {
                     if (input.attr('type') !== "checkbox") {
                         input.val(val);
@@ -322,7 +322,7 @@
     }
 
     setSettings = function (e, changeAdminPass) {
-        //    console.log( $(e).attr('name'), $(e).val(), $(e));
+        //    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
         if (e.attr('oldValue') !== e.val() || e.attr('type') === "checkbox") {
             getSettings(e.attr('name'));
 
@@ -337,7 +337,7 @@
                 settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
                 settingsArray['AdminPassword'] = changeAdminPass ? $('button[name="AdminPassword"]').val() : $('button[name="AdminPassword"]').attr('oldValue');
 
-                console.log("setSettings : ", settingsArray);
+                DEBUG && console.log("setSettings : ", settingsArray);
 
                 $.ajax({
                     type: 'PUT',
@@ -436,7 +436,7 @@
             url: url,
             data: data
         }).done(function (data) {
-            console.log(data);
+            DEBUG && console.log(data);
             if(name == "export") {
                 var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
                 var dlAnchorElem = document.getElementById('downloadAnchorElem');
@@ -469,7 +469,7 @@
                 url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
                 data: { pos : posFromPrev }
             }).done(function (data) {
-                console.log("Kara plc_id " + posFromPrev + " pos changed");
+                DEBUG && console.log("Kara plc_id " + posFromPrev + " pos changed");
             }).fail(function (data) {
                 fillPlaylist(side);
             });

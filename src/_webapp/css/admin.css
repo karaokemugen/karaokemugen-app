@@ -281,25 +281,27 @@ span:not(.hideCommands) {
 
 
 .panel-heading ::-webkit-input-placeholder {
-    font-size: 17px;
-	line-height: 24px;
-	padding-top:10px;
-	height: 20px;
+	font-size: 17px;
+	line-height: 34px;
+	padding-top: 0px;
+	height: 34px;
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
 
 .panel-heading  ::-moz-placeholder {  /* Firefox 19+ */
-	font-size: 2rem;
-	line-height:  21px;
-	height: 20px;
+	font-size: 17px;
+	line-height: 20px;
+	padding-top: 0px;
+	height: 34px;
     text-align:right; 
-    font-family: 'Glyphicons Halflings'; 
+    font-family: 'Glyphicons Halflings';  
 }
 .panel-heading  :-ms-input-placeholder {
-	font-size: 2rem;
-	line-height:  21px;
-	height: 20px;
+	font-size: 17px;
+	line-height: 34px;
+	padding-top: 0px;
+	height: 34px;
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
