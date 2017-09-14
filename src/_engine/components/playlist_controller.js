@@ -2850,8 +2850,7 @@ module.exports = {
 						logger.profile('GetASS');						
 						module.exports.getASS(kara.kara_id)
 							.then(function(ass){
-								logger.profile('GetASS');						
-								logger.debug(kara);
+								logger.profile('GetASS');								
 								var requester;
 								if (module.exports.SETTINGS.EngineDisplayNickname){
 									if (!kara.pseudo_add === 'Administrateur') {
