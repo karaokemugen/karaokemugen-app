@@ -2854,9 +2854,13 @@ module.exports = {
 								logger.debug(kara);
 								var requester;
 								if (module.exports.SETTINGS.EngineDisplayNickname){
-									requester = kara.pseudo_add;
-								} else {
-									requester = undefined;
+									if (!kara.pseudo_add === 'Administrateur') {
+										requester = __('REQUESTED_BY')+' '+kara.pseudo_add;
+									} else {
+										requester = '';
+									}									
+								} else {									
+									requester = '';
 								}
 								if (!L.isEmpty(kara.title)) {
 									kara.title = ' - '+kara.title;
@@ -2865,7 +2869,7 @@ module.exports = {
 								if (L.isEmpty(kara.serie)) {
 									series = kara.singer; 
 								}
-								kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'\\N{\\i1}{\\fscx50}{\\fscy50}'+__('REQUESTED_BY')+' '+requester+'{\\i0}';								
+								kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;								
 								kara.path = {
 									video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
 									subtitle: ass,									
