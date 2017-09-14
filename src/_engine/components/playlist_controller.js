@@ -2,7 +2,7 @@ var path = require('path');
 var timestamp = require('unix-timestamp');
 timestamp.round = true;
 const logger = require('../../_common/utils/logger.js');
-const assBuilder = require('./ass_builder.js');
+const assManager = require('./ass.js');
 const L = require('lodash');
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
@@ -28,8 +28,6 @@ module.exports = {
 			logger.error('_engine/components/playlist_controller.js : DB_INTERFACE is null');
 			process.exit();
 		}
-
-		assBuilder.SYSPATH = module.exports.SYSPATH;
 
 		logger.info('[PLC] Playlist controller is READY');
 	},
@@ -245,7 +243,7 @@ module.exports = {
 				.then(function(){									
 					module.exports.getASS(kara_id)
 						.then(function(ass) {							
-							var lyrics = assBuilder.ASSToLyrics(ass);
+							var lyrics = assManager.ASSToLyrics(ass);
 							resolve(lyrics);							
 						})
 						.catch(function(err){
@@ -1283,7 +1281,7 @@ module.exports = {
 			// Get karaoke list
 			module.exports.DB_INTERFACE.getKara(kara_id)
 				.then(function(kara){
-					logger.debug('GetKara : '+kara+' from '+kara_id);
+					logger.debug('[PLC] GetKara : '+JSON.stringify(kara)+' from '+kara_id);
 					resolve(kara);
 				})
 				.catch(function(err){
@@ -2810,12 +2808,17 @@ module.exports = {
 								} else {
 									requester = undefined;
 								}
-								logger.profile('BuildASS');								
-								ass = assBuilder.build(ass,kara.title,kara.serie,kara.singer,kara.songtype,kara.songorder,requester);
-								logger.profile('BuildASS');						
+								if (!L.isEmpty(kara.title)) {
+									kara.title = ' - '+kara.title;
+								}
+								var series = kara.serie;
+								if (L.isEmpty(kara.serie)) {
+									series = kara.singer; 
+								}
+								kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'\\N{\\i1}{\\fscx50}{\\fscy50}'+__('REQUESTED_BY')+' '+requester+'{\\i0}';								
 								kara.path = {
 									video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
-									subtitle: ass
+									subtitle: ass,									
 								};													
 								resolve(kara);
 									

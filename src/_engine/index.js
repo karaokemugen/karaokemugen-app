@@ -301,7 +301,8 @@ module.exports = {
 						kara.path.video,
 						kara.path.subtitle,
 						kara.id_kara,
-						kara.gain
+						kara.gain,
+						kara.infos,
 					);
 					module.exports._states.currentlyPlayingKara = kara.kara_id;
 					module.exports._broadcastStates();

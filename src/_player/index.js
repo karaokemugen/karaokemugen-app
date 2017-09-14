@@ -269,7 +269,7 @@ module.exports = {
 				});
 			});
 	},
-	play: function(video,subtitle,reference,gain){
+	play: function(video,subtitle,reference,gain,infos){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
 		logger.profile('VideoCheck');
@@ -286,6 +286,15 @@ module.exports = {
 				module.exports._playing = true;
 				module.exports._player.addSubtitles('memory://'+subtitle);//, flag, title, lang)
 				logger.profile('StartPlaying');				
+				var command = {
+					command: [
+						'expand-properties',
+						'show-text',
+						'${osd-ass-cc/0}{\\an1}'+infos,
+						8000,
+					]
+				};				
+				module.exports._player.freeCommand(JSON.stringify(command));
 				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 				module.exports._player.load(backgroundImageFile,'append');
 			},90);
