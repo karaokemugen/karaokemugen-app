@@ -658,7 +658,7 @@ module.exports = {
 					});
 				});
 
-			routerAdmin.route('/message')
+			routerAdmin.route('/player/message')
 				.post(function(req,res){				
 					req.check({
 						'duration': {

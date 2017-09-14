@@ -147,12 +147,11 @@ module.exports = {
 			logger.debug('[Player] mpv is available');
 			var mpvOptions = [
 				'--keep-open=yes',
-				'--idle=yes',
 				'--fps=60',
 				'--no-border',
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
-				'--volume=100',				
+				'--volume=100',					
 			];			
 			if (module.exports.pipmode) {
 				mpvOptions.push('--autofit='+module.exports.pipsize+'%x'+module.exports.pipsize+'%');
@@ -354,8 +353,16 @@ module.exports = {
 		module.exports._player.showSubtitles();
 		module.exports.showsubs = true;
 	},
-	message: function(message,duration) {		
-		module.exports._player.command('show-text',[message,duration,0]);
+	message: function(message,duration) {				
+		var command = {
+			command: [
+				'expand-properties',
+				'show-text',
+				'${osd-ass-cc/0}{\\an5}'+message,
+				duration,
+			]
+		};
+		module.exports._player.freeCommand(JSON.stringify(command));
 	},
 	onStatusChange:function(){},
 	onEnd:function(){
