@@ -264,10 +264,10 @@ module.exports = {
 		})
 			.catch(function(err) {				
 				logger.error('[Player] Player interface is NOT READY : '+err);
-				fs.unlink(module.exports.BINPATH+'/mpvtemp.exe', (err) => {
-					if (err) throw err;
-					process.exit();
-				});
+				if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'))) {
+					fs.unlinkSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'));
+				}
+				process.exit();									
 			});
 	},
 	play: function(video,subtitle,reference,gain,infos){
