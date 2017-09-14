@@ -298,7 +298,7 @@ module.exports = {
 				module.exports._player.freeCommand(JSON.stringify(command));
 				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
 				module.exports._player.load(backgroundImageFile,'append');				
-			},90);
+			},500);
 		} else {
 			module.exports.playing = false;
 			logger.error('[Player] Video NOT FOUND : '+video);
