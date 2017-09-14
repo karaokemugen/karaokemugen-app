@@ -364,7 +364,8 @@ module.exports = {
 		module.exports._player.showSubtitles();
 		module.exports.showsubs = true;
 	},
-	message: function(message,duration) {				
+	message: function(message,duration) {
+		if (!duration) duration = 10000;				
 		var command = {
 			command: [
 				'expand-properties',
@@ -374,6 +375,11 @@ module.exports = {
 			]
 		};
 		module.exports._player.freeCommand(JSON.stringify(command));
+		if (module.exports.playing === false) {
+			setTimeout(function(){
+				module.exports.enhanceBackground();
+			},duration);			
+		}
 	},
 	enhanceBackground: function(){
 		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;			
