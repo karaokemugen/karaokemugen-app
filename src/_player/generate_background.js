@@ -17,8 +17,9 @@ module.exports = {
 			if (fs.existsSync(backgroundImageFile)) fs.unlinkSync(backgroundImageFile);
 
 			var url = 'http://'+ip.address()+':'+module.exports.frontend_port;			
+			logger.debug('[Background] URL detected : '+url);
 			
-			qrcode.toFile(qrcodeImageFile, url, {version: 2}, function (err) {
+			qrcode.toFile(qrcodeImageFile, url, {}, function (err) {
 				if (err) {				
 					logger.error('[Background] Error generating QR Code : '+err);
 					reject(err);
