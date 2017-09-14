@@ -277,6 +277,7 @@ module.exports = {
 	* Function triggered on player ending its current song.
 	*/
 	playerEnding:function(){
+		module.exports._services.player.enhanceBackground();
 		module.exports._services.playlist_controller.next()
 			.then(function(){
 				module.exports.tryToReadKaraInPlaylist();
@@ -302,7 +303,7 @@ module.exports = {
 						kara.path.subtitle,
 						kara.id_kara,
 						kara.gain,
-						kara.infos,
+						kara.infos
 					);
 					module.exports._states.currentlyPlayingKara = kara.kara_id;
 					module.exports._broadcastStates();

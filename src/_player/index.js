@@ -4,6 +4,7 @@ const logger = require('../_common/utils/logger.js');
 var ProgressBar = require('progress');
 var http = require('http');
 var extract = require('extract-zip');
+const ip = require('ip');
 
 module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
@@ -39,7 +40,6 @@ module.exports = {
 		var pGenerateBackground = new Promise((resolve,reject) => {
 			var generateBackground = require('./generate_background.js');
 			generateBackground.SYSPATH = module.exports.SYSPATH;
-			generateBackground.frontend_port = module.exports.frontend_port;
 			generateBackground.SETTINGS = module.exports.SETTINGS;
 			generateBackground.build()
 				.then(function(){
@@ -218,6 +218,7 @@ module.exports = {
 			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 			// Disabled loading the background at start during dev. Or not yet.
 			module.exports._player.load(backgroundImageFile);
+			module.exports.enhanceBackground();
 			module.exports._player.observeProperty('sub-text',13);
 			module.exports._player.observeProperty('volume',14);
 
@@ -295,8 +296,8 @@ module.exports = {
 					]
 				};				
 				module.exports._player.freeCommand(JSON.stringify(command));
-				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-				module.exports._player.load(backgroundImageFile,'append');
+				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
+				module.exports._player.load(backgroundImageFile,'append');				
 			},90);
 		} else {
 			module.exports.playing = false;
@@ -326,6 +327,7 @@ module.exports = {
 		module.exports.playerstatus = 'stop';
 		var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 		module.exports._player.load(backgroundImageFile);
+		module.exports.enhanceBackground();
 	},
 	pause: function(){		
 		logger.debug('[Player] Pause event triggered');
@@ -372,6 +374,21 @@ module.exports = {
 			]
 		};
 		module.exports._player.freeCommand(JSON.stringify(command));
+	},
+	enhanceBackground: function(){
+		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;			
+		var imageCaption = 'Karaoke Mugen - '+__('GO_TO')+' '+url+' !';
+		var imageSign = module.exports.SETTINGS.VersionNo+' - '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
+		var message = '{\\fscx80}{\\fscy80}'+imageCaption+'\\N{\\fscx30}{\\fscy30}{\\i1}'+imageSign+'{\\i0}';
+		var command = {
+			command: [
+				'expand-properties',
+				'show-text',
+				'${osd-ass-cc/0}{\\an1}'+message,
+				100000000,
+			]
+		};
+		module.exports._player.freeCommand(JSON.stringify(command));			
 	},
 	onStatusChange:function(){},
 	onEnd:function(){
