@@ -474,6 +474,19 @@ module.exports = {
 					});
 			});
 		};
+		module.exports._services.apiserver.onKaraRandom = function(){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.getRandomKara(module.exports.currentPlaylistID)
+					.then(function(kara_id){
+						logger.debug('[Engine] Sending random kara_id : '+kara_id);
+						resolve(kara_id);
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC getAllKaras : '+err);	
+						reject(err);
+					});
+			});
+		};
 		module.exports._services.apiserver.onWhitelist = function(filter,lang){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getWhitelistContents()

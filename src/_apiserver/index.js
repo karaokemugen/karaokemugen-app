@@ -1240,7 +1240,23 @@ module.exports = {
 						});
 				});
 
-
+			routerPublic.route('/karas/random')
+				.get(function(req,res){
+					module.exports.onKaraRandom()
+						.then(function(kara_id){
+							if (!kara_id) {
+								res.statusCode = 500;
+								res.json('No selectable karaoke. Are all songs already in current playlist?');
+							} else {
+								res.json(kara_id);
+							}
+							
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(err);
+						});
+				});
 			routerPublic.route('/karas/:kara_id([0-9]+)')
 				.get(function(req,res){
 					module.exports.onKaraSingle(req.params.kara_id,req.query.lang)
@@ -1469,4 +1485,5 @@ module.exports = {
 	onMessage:function(){},
 	onWhitelistEmpty:function(){},
 	onBlacklistEmpty:function(){},
+	onKaraRandom:function(){},
 };

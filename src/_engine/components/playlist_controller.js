@@ -1355,6 +1355,44 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get a random kara_id}
+	* @return {number} {Random kara_id}
+	*/
+	getRandomKara:function(playlist_id) {
+		return new Promise(function(resolve,reject) {
+			// Get karaoke list
+			module.exports.getAllKaras()
+				.then(function(allKaras){
+					//Strip allKaras to just kara IDs
+					allKaras.forEach(function(elem,index){
+						allKaras[index] = elem.kara_id;
+					});
+					//Now, get current playlist's contents.
+					module.exports.getPlaylistContents(playlist_id)
+						.then(function(playlist){
+							//Strip allKaras to just kara IDs
+							playlist.forEach(function(elem,index){
+								playlist[index] = elem.kara_id;
+							});
+							var allKarasNotInCurrentPlaylist = [];
+							allKarasNotInCurrentPlaylist = allKaras.filter(function(el){
+								return playlist.indexOf(el) < 0;
+							});
+							var randomKara = L.sample(allKarasNotInCurrentPlaylist);
+							resolve(randomKara);
+						})
+						.catch(function(err){
+							logger.error('[PLC] getPlaylistContents : '+err);
+							reject(err);
+						});
+				})
+				.catch(function(err){
+					logger.error('[PLC] getAllKaras : '+err);
+					reject(err);
+				});
+		});
+	},
+	/**
 	* @function {Get karaoke by ID}
 	* @param  {number} kara_id {ID of karaoke to fetch infos from}
 	* @return {Object} {karaoke object}
