@@ -1147,7 +1147,7 @@ module.exports = {
 								if (!isNaN(karaType.substr(karaType.length-1,1))) {
 									karaOrder = karaType.substr(karaType.length-1,1);
 								} else {
-									karaOrder = 1;
+									karaOrder = 0;
 								}
 							}
 							
