@@ -1394,9 +1394,7 @@ module.exports = {
 			if (JSON.stringify(status) !== JSON.stringify(module.exports.archivedStatus)) {
 				module.exports._services.ws.socket.emit('playerStatus',status);
 				module.exports.archivedStatus = status;
-			} else {
-				logger.debug('Status not changed, not sending');
-			}
+			} 
 		};
 		module.exports._services.player.init();
 	}
