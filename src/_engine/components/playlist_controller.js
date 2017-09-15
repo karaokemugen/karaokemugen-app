@@ -2906,6 +2906,9 @@ module.exports = {
 								if (L.isEmpty(kara.serie)) {
 									series = kara.singer; 
 								}
+								if (kara.songorder === 0) {
+									kara.songorder = '';
+								}
 								kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;								
 								kara.path = {
 									video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),

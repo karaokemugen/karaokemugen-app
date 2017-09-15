@@ -244,14 +244,12 @@ module.exports = {
 			module.exports._player.on('paused',function(){
 				logger.debug('[Player] Paused event triggered');
 				module.exports.playing = false;
-				module.exports._playing = false;
 				module.exports.playerstatus = 'pause';
 				module.exports.onStatusChange();
 			});
 			module.exports._player.on('resumed',function(){
 				logger.debug('[Player] Resumed event triggered');
 				module.exports.playing = true;
-				module.exports._playing = true;
 				module.exports.playerstatus = 'play';
 				module.exports.onStatusChange();
 			});
@@ -273,9 +271,7 @@ module.exports = {
 	play: function(video,subtitle,reference,gain,infos){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
-		logger.profile('VideoCheck');
 		if(fs.existsSync(video)){
-			logger.profile('VideoCheck');
 			logger.debug('[Player] Audio gain adjustment : '+gain);
 			if (gain == undefined || gain == null) gain = 0;			
 			module.exports._ref = reference;
@@ -283,22 +279,27 @@ module.exports = {
 			module.exports._player.play();
 			module.exports.playerstatus = 'play';
 			// video may need some delay to play
+			// Resetting text displayed on screen			
+			var command = {
+				command: [
+					'expand-properties',
+					'show-text',
+					'${osd-ass-cc/0}{\\an1}'+infos,
+					8000,
+				]
+			};	
+			module.exports._player.freeCommand(JSON.stringify(command));
+			module.exports._player.addSubtitles('memory://'+subtitle);						
+			logger.profile('StartPlaying');								
+			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
+			module.exports._player.load(backgroundImageFile,'append');				
+			//This is delayed or else it will be set to false again by statuschange event triggered by mpv
+			//and songs will not be playing correctly.
+			// 1500 ms seems to be the right answer.
+			var timeout = 1500;
 			setTimeout(function(){
-				module.exports._playing = true;
-				module.exports._player.addSubtitles('memory://'+subtitle);//, flag, title, lang)
-				logger.profile('StartPlaying');				
-				var command = {
-					command: [
-						'expand-properties',
-						'show-text',
-						'${osd-ass-cc/0}{\\an1}'+infos,
-						8000,
-					]
-				};				
-				module.exports._player.freeCommand(JSON.stringify(command));
-				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
-				module.exports._player.load(backgroundImageFile,'append');				
-			},1000);
+				module.exports._playing = true;				
+			},timeout);
 		} else {
 			module.exports.playing = false;
 			logger.error('[Player] Video NOT FOUND : '+video);
