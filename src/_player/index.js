@@ -4,6 +4,7 @@ const logger = require('../_common/utils/logger.js');
 var ProgressBar = require('progress');
 var http = require('http');
 var extract = require('extract-zip');
+const ip = require('ip');
 
 module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
@@ -39,7 +40,6 @@ module.exports = {
 		var pGenerateBackground = new Promise((resolve,reject) => {
 			var generateBackground = require('./generate_background.js');
 			generateBackground.SYSPATH = module.exports.SYSPATH;
-			generateBackground.frontend_port = module.exports.frontend_port;
 			generateBackground.SETTINGS = module.exports.SETTINGS;
 			generateBackground.build()
 				.then(function(){
@@ -147,12 +147,11 @@ module.exports = {
 			logger.debug('[Player] mpv is available');
 			var mpvOptions = [
 				'--keep-open=yes',
-				'--idle=yes',
 				'--fps=60',
 				'--no-border',
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
-				'--volume=100',				
+				'--volume=100',					
 			];			
 			if (module.exports.pipmode) {
 				mpvOptions.push('--autofit='+module.exports.pipsize+'%x'+module.exports.pipsize+'%');
@@ -219,6 +218,7 @@ module.exports = {
 			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 			// Disabled loading the background at start during dev. Or not yet.
 			module.exports._player.load(backgroundImageFile);
+			module.exports.enhanceBackground();
 			module.exports._player.observeProperty('sub-text',13);
 			module.exports._player.observeProperty('volume',14);
 
@@ -264,13 +264,13 @@ module.exports = {
 		})
 			.catch(function(err) {				
 				logger.error('[Player] Player interface is NOT READY : '+err);
-				fs.unlink(module.exports.BINPATH+'/mpvtemp.exe', (err) => {
-					if (err) throw err;
-					process.exit();
-				});
+				if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'))) {
+					fs.unlinkSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'));
+				}
+				process.exit();									
 			});
 	},
-	play: function(video,subtitle,reference,gain){
+	play: function(video,subtitle,reference,gain,infos){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
 		logger.profile('VideoCheck');
@@ -287,9 +287,18 @@ module.exports = {
 				module.exports._playing = true;
 				module.exports._player.addSubtitles('memory://'+subtitle);//, flag, title, lang)
 				logger.profile('StartPlaying');				
-				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-				module.exports._player.load(backgroundImageFile,'append');
-			},90);
+				var command = {
+					command: [
+						'expand-properties',
+						'show-text',
+						'${osd-ass-cc/0}{\\an1}'+infos,
+						8000,
+					]
+				};				
+				module.exports._player.freeCommand(JSON.stringify(command));
+				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
+				module.exports._player.load(backgroundImageFile,'append');				
+			},1000);
 		} else {
 			module.exports.playing = false;
 			logger.error('[Player] Video NOT FOUND : '+video);
@@ -318,6 +327,7 @@ module.exports = {
 		module.exports.playerstatus = 'stop';
 		var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
 		module.exports._player.load(backgroundImageFile);
+		module.exports.enhanceBackground();
 	},
 	pause: function(){		
 		logger.debug('[Player] Pause event triggered');
@@ -354,8 +364,37 @@ module.exports = {
 		module.exports._player.showSubtitles();
 		module.exports.showsubs = true;
 	},
-	message: function(message,duration) {		
-		module.exports._player.command('show-text',[message,duration,0]);
+	message: function(message,duration) {
+		if (!duration) duration = 10000;				
+		var command = {
+			command: [
+				'expand-properties',
+				'show-text',
+				'${osd-ass-cc/0}{\\an5}'+message,
+				duration,
+			]
+		};
+		module.exports._player.freeCommand(JSON.stringify(command));
+		if (module.exports.playing === false) {
+			setTimeout(function(){
+				module.exports.enhanceBackground();
+			},duration);			
+		}
+	},
+	enhanceBackground: function(){
+		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;			
+		var imageCaption = 'Karaoke Mugen - '+__('GO_TO')+' '+url+' !';
+		var imageSign = module.exports.SETTINGS.VersionNo+' - '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
+		var message = '{\\fscx80}{\\fscy80}'+imageCaption+'\\N{\\fscx30}{\\fscy30}{\\i1}'+imageSign+'{\\i0}';
+		var command = {
+			command: [
+				'expand-properties',
+				'show-text',
+				'${osd-ass-cc/0}{\\an1}'+message,
+				100000000,
+			]
+		};
+		module.exports._player.freeCommand(JSON.stringify(command));			
 	},
 	onStatusChange:function(){},
 	onEnd:function(){

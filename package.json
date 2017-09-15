@@ -2,6 +2,7 @@
   "name": "karaokemugen-app",
   "version": "2.0.0",
   "description": "Karaoke playlist manager / player",
+  "bin": "src/index.js",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -37,7 +38,17 @@
   "license": "MIT",
   "private": true,
   "pkg": {
-    "assets": "src/_admin/httpdocs/*, src/_common/db/*, src/_common/locales/*, src/_player/assets/*, src/_webapp/**/*"
+    "assets": [
+      "src/_admin/httpdocs/*",
+      "src/_common/db/*",
+      "src/_common/locales/*",
+      "src/_player/assets/*",
+      "src/_webapp/views/*",
+      "src/_webapp/fonts/*",
+      "src/_webapp/css/*",
+      "src/**/*.js",
+      "node_modules/**/*"
+    ]
   },
   "dependencies": {
     "ass-parser": "^0.1.2",
