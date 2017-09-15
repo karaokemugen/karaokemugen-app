@@ -283,8 +283,7 @@ module.exports = {
 			module.exports._player.play();
 			module.exports.playerstatus = 'play';
 			// video may need some delay to play
-			// Resetting text displayed on screen
-			var timeout = 1500;			
+			// Resetting text displayed on screen			
 			var command = {
 				command: [
 					'expand-properties',
@@ -298,9 +297,12 @@ module.exports = {
 			logger.profile('StartPlaying');								
 			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
 			module.exports._player.load(backgroundImageFile,'append');				
+			//This is delayed or else it will be set to false again by statuschange event triggered by mpv
+			//and songs will not be playing correctly.
+			// 1500 ms seems to be the right answer.
+			var timeout = 1500;
 			setTimeout(function(){
-				module.exports._playing = true;
-				
+				module.exports._playing = true;				
 			},timeout);
 		} else {
 			module.exports.playing = false;
