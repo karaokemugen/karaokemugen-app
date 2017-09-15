@@ -20,6 +20,7 @@ module.exports = {
 	endOfPlaylist:false,
 	currentPlaylistID:null,
 	currentPlayingPLC:null,
+	archivedStatus:null,
 	/**
 	 * @private
 	 * Engine status.
@@ -1389,8 +1390,11 @@ module.exports = {
 				subText: module.exports._services.player.subtext,
 				showSubs: module.exports._services.player.showsubs,
 				volume: module.exports._services.player.volume,
-			};			
-			module.exports._services.ws.socket.emit('playerStatus',status);
+			};
+			if (status != module.exports.archivedStatus) {
+				module.exports._services.ws.socket.emit('playerStatus',status);
+				module.exports.archivedStatus = status;
+			}			
 		};
 		module.exports._services.player.init();
 	}
