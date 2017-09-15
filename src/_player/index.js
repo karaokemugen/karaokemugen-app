@@ -288,8 +288,7 @@ module.exports = {
 					8000,
 				]
 			};	
-			module.exports._player.freeCommand(JSON.stringify(command));
-			module.exports._player.addSubtitles('memory://'+subtitle);						
+			module.exports._player.freeCommand(JSON.stringify(command));			
 			logger.profile('StartPlaying');								
 			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
 			module.exports._player.load(backgroundImageFile,'append');				
@@ -298,6 +297,7 @@ module.exports = {
 			// 1500 ms seems to be the right answer.
 			var timeout = 1500;
 			setTimeout(function(){
+				module.exports._player.addSubtitles('memory://'+subtitle);						
 				module.exports._playing = true;				
 			},timeout);
 		} else {
