@@ -1391,10 +1391,12 @@ module.exports = {
 				showSubs: module.exports._services.player.showsubs,
 				volume: module.exports._services.player.volume,
 			};
-			if (status != module.exports.archivedStatus) {
+			if (JSON.stringify(status) !== JSON.stringify(module.exports.archivedStatus)) {
 				module.exports._services.ws.socket.emit('playerStatus',status);
 				module.exports.archivedStatus = status;
-			}			
+			} else {
+				logger.debug('Status not changed, not sending');
+			}
 		};
 		module.exports._services.player.init();
 	}
