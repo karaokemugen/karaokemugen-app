@@ -535,8 +535,6 @@ module.exports = {
 								if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
 								module.exports.onPlaylistSingleKaraEdit(req.params.plc_id,req.body.pos,req.body.flag_playing)
 									.then(function(pl_id){
-										module.exports.emitEvent('playlistInfoUpdated',pl_id);
-										module.exports.emitEvent('playlistContentsUpdated',pl_id);
 										res.json('PLC '+req.params.plc_id+' edited in playlist '+pl_id);
 									})
 									.catch(function(err){

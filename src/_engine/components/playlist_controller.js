@@ -85,6 +85,43 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Sets the flag playing of a playlist}
+	* @param {number} {Playlist ID}
+	* @param {number} {PLCID}
+	* @return {promise} {Promise}
+	*/
+	setPlaying:function(plc_id,playlist_id){
+		return new Promise(function(resolve,reject) {
+			if (plc_id) {
+				module.exports.DB_INTERFACE.setPlaying(plc_id,playlist_id)
+					.then(function(){
+						module.exports.emitEvent('playingUpdated',{
+							playlist_id: playlist_id,
+							plc_id: plc_id,
+						});
+						resolve();
+					})
+					.catch(function(err){
+						logger.error('[PLC] DBI setPlaying : '+err);
+						reject(err);
+					});
+			} else {
+				module.exports.DB_INTERFACE.unsetPlaying(playlist_id)
+					.then(function(){
+						module.exports.emitEvent('playingUpdated',{
+							playlist_id: playlist_id,
+							plc_id: null,
+						});
+						resolve();
+					})
+					.catch(function(err){
+						logger.error('[PLC] DBI setPlaying : '+err);
+						reject(err);
+					});
+			}			
+		});
+	},
+	/**
 	* @function {Returns the PLCID of the latest added kara, by date}
 	* @param {number} {Playlist ID}
 	* @param {number} {Date added in Unix Timestap}
@@ -1579,7 +1616,7 @@ module.exports = {
 													if (!res) {														
 														module.exports.getPLCIDByDate(playlist_id,date_add)
 															.then(function(plcid){
-																module.exports.DB_INTERFACE.setPlaying(plcid,playlist_id)
+																module.exports.setPlaying(plcid,playlist_id)
 																	.then(function(){
 																		resolve();
 																	})
@@ -1986,7 +2023,7 @@ module.exports = {
 					// Updating karaoke here.
 					var pUpdatePlaying = new Promise((resolve,reject) => {
 						if (flag_playing) {
-							module.exports.DB_INTERFACE.setPlaying(playlistcontent_id,playlist_id)
+							module.exports.setPlaying(playlistcontent_id,playlist_id)
 								.then(function(){
 									module.exports.isCurrentPlaylist(playlist_id)
 										.then(function(res){
@@ -2065,7 +2102,7 @@ module.exports = {
 							});
 							Promise.all([pUpdateLastEditTime,pReorderPlaylist])
 								.then(function() {
-									// Return the playlist_id we modified so we can send a update message
+									// Return the playlist_id we modified so we can send a update message									
 									resolve(playlist_id);
 								})
 								.catch(function(err) {
@@ -2145,6 +2182,7 @@ module.exports = {
 			var pIsPlaylist = new Promise((resolve,reject) => {
 				module.exports.isPlaylist(playlist_id)
 					.then(function() {
+						module.exports.emitEvent('playlistContentsUpdated',playlist_id);
 						resolve(true);
 					})
 					.catch(function(err) {
@@ -2715,7 +2753,7 @@ module.exports = {
 						var kara = pl_content[readpos];
 						if(kara) {
 							// mise à jour du pointeur de lecture
-							module.exports.DB_INTERFACE.setPlaying(kara.playlistcontent_id,playlist_id)
+							module.exports.setPlaying(kara.playlistcontent_id,playlist_id)
 								.then(function(){
 									resolve();
 								})
@@ -2753,7 +2791,7 @@ module.exports = {
 						if(readpos >= pl_content.length) {
 							logger.info('[PLC] next : current position is last song');
 							// Unset flag_playing on all karas from the playlist
-							module.exports.DB_INTERFACE.unsetPlaying(playlist_id)
+							module.exports.setPlaying(null,playlist_id)
 								.then(function(){
 									reject('Current position is last song!');										
 								})
@@ -2764,7 +2802,7 @@ module.exports = {
 							var kara = pl_content[readpos];
 							if(kara) {
 								// mise à jour du pointeur de lecture
-								module.exports.DB_INTERFACE.setPlaying(kara.playlistcontent_id,playlist_id)
+								module.exports.setPlaying(kara.playlistcontent_id,playlist_id)
 									.then(function(){
 										resolve();
 									})
@@ -2836,7 +2874,7 @@ module.exports = {
 						// si il n'y avait pas de morceau en lecture on marque le premier de la playlist
 						if(update_playing_kara) {
 							// mise à jour du pointeur de lecture
-							module.exports.DB_INTERFACE.setPlaying(kara.playlistcontent_id,playlist.id)
+							module.exports.setPlaying(kara.playlistcontent_id,playlist.id)
 								.then(function(){
 									resolve();
 								})
@@ -2916,6 +2954,7 @@ module.exports = {
 	// Evenements à référencer par le composant  parent
 	// ---------------------------------------------------------------------------
 
+	emitEvent:function(){},
 	onPlaylistUpdated:function(){
 		// événement émis pour quitter l'application
 		logger.error('_engine/components/playlist_controller.js :: onPlaylistUpdated not set');

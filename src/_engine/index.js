@@ -19,6 +19,7 @@ module.exports = {
 	i18n:null,
 	endOfPlaylist:false,
 	currentPlaylistID:null,
+	currentPlayingPLC:null,
 	/**
 	 * @private
 	 * Engine status.
@@ -196,7 +197,6 @@ module.exports = {
 			.then(function(){
 				module.exports.play();
 			}).catch(function(){
-				module.exports._services.ws.socket.emit('playlistContentsUpdated',module.exports.currentPlaylistID);			
 				logger.warn('[Engine] Next song is not available');
 			});
 	},
@@ -282,7 +282,6 @@ module.exports = {
 			.then(function(){
 				module.exports.tryToReadKaraInPlaylist();
 			}).catch(function(){
-				module.exports._services.ws.socket.emit('playlistContentsUpdated',module.exports.currentPlaylistID);							
 				logger.warn('[Engine] Next song is not available');
 				module.exports.stop();
 			});
@@ -443,7 +442,7 @@ module.exports = {
 		// --------------------------------------------------------
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
-		module.exports._services.apiserver.onTest = module.exports.test;
+		module.exports._services.apiserver.emitEvent = module.exports.emitEvent;
 		module.exports._services.apiserver.onKaras = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getAllKaras()
@@ -771,7 +770,7 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
-					.then(function(playlist_id){
+					.then(function(playlist_id){						
 						resolve(playlist_id);
 					})
 					.catch(function(err){
@@ -1288,14 +1287,18 @@ module.exports = {
 						reject(err);
 					});
 			});
-		};
-		module.exports._services.apiserver.emitEvent = function(type,data){	
-			logger.debug('[Engine] Sending WS message '+type+' : '+data);		
-			module.exports._services.ws.socket.emit(type,data);					
-		};
+		};					
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();
+	},
+	/**
+	* @function
+	* Emit Event to the WS clients
+	*/
+	emitEvent:function(type,data){	
+		logger.debug('[Engine] Sending WS message '+type+' : '+JSON.stringify(data));		
+		module.exports._services.ws.socket.emit(type,data);					
 	},
 	/**
 	* @function
@@ -1310,6 +1313,7 @@ module.exports = {
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.onPlayingUpdated =
 		module.exports.playingUpdated;
+		module.exports._services.playlist_controller.emitEvent = module.exports.emitEvent;	
 		module.exports._services.playlist_controller.init();
 		//Test if a playlist with flag_current exists. If not create one.
 		module.exports._services.playlist_controller.isACurrentPlaylist()
