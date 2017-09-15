@@ -244,14 +244,12 @@ module.exports = {
 			module.exports._player.on('paused',function(){
 				logger.debug('[Player] Paused event triggered');
 				module.exports.playing = false;
-				module.exports._playing = false;
 				module.exports.playerstatus = 'pause';
 				module.exports.onStatusChange();
 			});
 			module.exports._player.on('resumed',function(){
 				logger.debug('[Player] Resumed event triggered');
 				module.exports.playing = true;
-				module.exports._playing = true;
 				module.exports.playerstatus = 'play';
 				module.exports.onStatusChange();
 			});
@@ -273,9 +271,7 @@ module.exports = {
 	play: function(video,subtitle,reference,gain,infos){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
-		logger.profile('VideoCheck');
 		if(fs.existsSync(video)){
-			logger.profile('VideoCheck');
 			logger.debug('[Player] Audio gain adjustment : '+gain);
 			if (gain == undefined || gain == null) gain = 0;			
 			module.exports._ref = reference;
