@@ -47,19 +47,35 @@ body {
 	position: fixed;
 	z-index: 1337;
 	border-bottom: solid 1px #9e9e9e;
-	background-color: #1E2124;
+	background-color: #337ab7;
 }
 #progressBarColor {
-	background-color: #337ab7;
 	z-index: 9;
 	height: 100%;
     position: absolute;
-	top: 0;
+	background-color: #1E2124;
+	z-index: 0;
+    position: absolute;
+	left: 0;
+    top: 0;
+	width: 100%;
+	-webkit-backface-visibility: hidden;
+	-webkit-perspective: 1000;
+	backface-visibility: hidden;
+	perspective: 1000;
+	will-change: transform;
+    transition: transform 0s linear;
 }
-#progressBar:hover > #progressBarColor {
+
+#progressBarColor.cssTransform,
+.cssTransform {
+    transition: transform 1s linear;
+}
+
+#progressBar:hover  {
 	background-color: #286faa;
 }
-#progressBar:active > #progressBarColor {
+#progressBar:active {
 	background-color: #18617a;
 }
 #karaInfo {
@@ -368,7 +384,6 @@ button.closeParent.bottom  {
 	font-weight: 500;
 	font-size: 1.6rem;
 	z-index: 50;
-	
 }
 
 .playlist-main .list-group-item {
@@ -391,7 +406,7 @@ button.closeParent.bottom  {
     position: absolute;
     top: 0;
     left: 0;
-    __background: url(https://puu.sh/xq19T/80b857cfa7.jpg) no-repeat;
+    background: url(https://puu.sh/xq19T/80b857cfa7.jpg) no-repeat;
 	background-size: 100%;
 	background-position: 0 20%;
     width: 100%;
@@ -413,6 +428,9 @@ button.closeParent.bottom  {
     opacity : 0.38;
 }
 
+.playlistContainer > ul, .playlistContainer {
+	will-change: transform;
+}
 #playlist1.list-group > li.list-group-item  > div:first-child, #playlist1.list-group > li.list-group-item  > div:first-child > span, 
 #playlist2.list-group > li.list-group-item  > .infoDiv {
 	float: right;
@@ -671,21 +689,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
   background: #ffffff;
 }
 
-#progressBarColor.cssTransition {
-	background-color: #337ab7;
-	z-index: 0;
-	height: 100%;
-    position: absolute;
-    top: 0;
-    transition: width 1s linear;
-	transform:  translate3d(0, 0, 0);
-	-webkit-backface-visibility: hidden;
-	-webkit-perspective: 1000;
-	backface-visibility: hidden;
-	perspective: 1000;
-	will-change: transform;
-	
-}
 
 .secondaryIcon {
     font-size: 69%;

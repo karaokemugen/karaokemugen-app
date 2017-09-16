@@ -70,7 +70,6 @@ span[name="checkboxKara"] {
 	float: left;
 }
 
-
 .plDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 
 	display: none;
 }
@@ -84,7 +83,8 @@ span[name="checkboxKara"] {
 	display: none;
 }
 
-.panel[canaddkara="false"] .btnDiv > button[name="addKara"] {
+.panel[canaddkara="false"] .btnDiv > button[name="addKara"]
+.panel[canaddkara="false"] .btnDiv > button[name="adAllKara"] {
 	display: none;
 }
 
@@ -248,12 +248,20 @@ span:not(.hideCommands) {
 	display: block;
 }
 
-
-.plDashboard[data-playlist_id="-1"] .btnDiv > button[name="deleteKara"] {
+.plDashboard[data-playlist_id="-1"] button[name="deleteAllKaras"],
+.plDashboard[data-playlist_id="-2"] button[name="deleteAllKaras"],
+.plDashboard[data-playlist_id="-4"] button[name="deleteAllKaras"]
+{
 	display: none;
 }
 
-.plDashboard[data-playlist_id="-4"] .btnDiv > button[name="deleteKara"] {
+.panel[canAddKara="false"] button[name="addAllKaras"] {
+	display: none;
+}
+
+
+.plDashboard[data-playlist_id="-1"] .btnDiv > button[name="deleteKara"],
+.plDashboard[data-playlist_id="-4"] .btnDiv > button[name="deleteKara"]  {
 	display: none;
 }
 
@@ -283,7 +291,9 @@ span:not(.hideCommands) {
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
-
+.plDashboard[data-playlist_id="-2"] .btnDiv {
+	display: none;
+}
 
 .plDashboard[data-playlist_id="-1"] .flagsContainer {
 	display: none;	
