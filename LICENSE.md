@@ -30,7 +30,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 # Autres modules
 
-Sauf mention contraire, les modules dont dépend Toyunda Mugen sont installés par npm.
+Sauf mention contraire, les modules dont dépend Karaoke Mugen sont installés par npm.
 
 ## node-ffprobe
 
