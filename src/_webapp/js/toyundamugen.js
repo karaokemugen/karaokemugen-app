@@ -955,9 +955,10 @@ var plData;
             }
             if($('input[name="lyrics"]').is(':checked') || mode == "mobile" && $('#switchInfoBar').hasClass('showLyrics')) {
                 var text = data['subText'];
-                if(oldState['subText'] != null && text != null && text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) {
-                    text.replace(oldState['subText'], "<span style='background-color: #888;'>" + oldState['subText'] + "</span>");
-                }
+               /* if(oldState['subText'] != null && text != null && text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) {
+                    text.replace(oldState['subText'], "<span style='color:red;'>" + oldState['subText'] + "</span>");
+                }*/
+                if (text) text = text.indexOf('\n') == -1 ? text:  text.substring(0, text.indexOf('\n') );
                 $('#karaInfo > span').html(text);
             } else {
 
