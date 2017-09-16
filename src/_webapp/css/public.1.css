@@ -91,13 +91,13 @@ body {
 
 .header input {
     height: 100%;
+    border-radius: 0px;
     font-size:  calc(17px + 19px - 1vw);
 }
 
 .badge {
     font-size: calc(12px + 19px - 1vw);
 }
-
 
 .right-inner-addon i {
   right: 0px;
@@ -106,6 +106,23 @@ body {
 
 #playlist1[canTransferKara="true"] > li {
     cursor : pointer;
+}
+
+#searchParent {
+    display: flex;
+}
+
+.header .getLucky {
+    width: 50px;
+    font-size: 17px;
+    line-height: 17px;
+    padding: 4px;
+    margin-left: 6px;
+
+}
+.header .getLucky > span  {
+    margin-top: 6px;
+    color: hsla(161, 43%, 46%, 1);
 }
 
 #searchParent ::-webkit-input-placeholder {
@@ -259,7 +276,6 @@ body {
     .deleteCriteria {
         display: none !important;
     }
-    
 }
 
 /* tablet */

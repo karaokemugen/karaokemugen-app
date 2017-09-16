@@ -677,17 +677,21 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 	height: 100%;
     position: absolute;
     top: 0;
-    -webkit-transition: width 1s linear;
-    -moz-transition: width 1s linear;
-    -o-transition: width 1s linear;
     transition: width 1s linear;
-    -webkit-transform: translateZ(0);
-    -moz-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    -o-transform: translateZ(0);
-    transform: translateZ(0);
+	transform:  translate3d(0, 0, 0);
+	-webkit-backface-visibility: hidden;
+	-webkit-perspective: 1000;
+	backface-visibility: hidden;
+	perspective: 1000;
 }
 
+.secondaryIcon {
+    font-size: 69%;
+    margin: 9px 0px 0px -10px;
+    color: black;
+    text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+	}
+	
 .plDashboard, .playlistContainer, #progressBar {
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.30), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
 	
