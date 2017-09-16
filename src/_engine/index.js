@@ -649,6 +649,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.shufflePlaylist(pl_id)
 					.then(function(){						
+						logger.info('[Engine] Playlist '+pl_id+' shuffled');
 						resolve(pl_id);
 					})
 					.catch(function(err){
