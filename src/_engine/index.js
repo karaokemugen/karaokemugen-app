@@ -19,6 +19,8 @@ module.exports = {
 	i18n:null,
 	endOfPlaylist:false,
 	currentPlaylistID:null,
+	currentPlayingPLC:null,
+	archivedStatus:null,
 	/**
 	 * @private
 	 * Engine status.
@@ -196,7 +198,6 @@ module.exports = {
 			.then(function(){
 				module.exports.play();
 			}).catch(function(){
-				module.exports._services.ws.socket.emit('playlistContentsUpdated',module.exports.currentPlaylistID);			
 				logger.warn('[Engine] Next song is not available');
 			});
 	},
@@ -282,7 +283,6 @@ module.exports = {
 			.then(function(){
 				module.exports.tryToReadKaraInPlaylist();
 			}).catch(function(){
-				module.exports._services.ws.socket.emit('playlistContentsUpdated',module.exports.currentPlaylistID);							
 				logger.warn('[Engine] Next song is not available');
 				module.exports.stop();
 			});
@@ -443,7 +443,7 @@ module.exports = {
 		// --------------------------------------------------------
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
-		module.exports._services.apiserver.onTest = module.exports.test;
+		module.exports._services.apiserver.emitEvent = module.exports.emitEvent;
 		module.exports._services.apiserver.onKaras = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getAllKaras()
@@ -467,6 +467,19 @@ module.exports = {
 								logger.error('[Engine] PLC translateKaraInfo : '+err);	
 								reject(err);
 							});						
+					})
+					.catch(function(err){
+						logger.error('[Engine] PLC getAllKaras : '+err);	
+						reject(err);
+					});
+			});
+		};
+		module.exports._services.apiserver.onKaraRandom = function(){
+			return new Promise(function(resolve,reject){
+				module.exports._services.playlist_controller.getRandomKara(module.exports.currentPlaylistID)
+					.then(function(kara_id){
+						logger.debug('[Engine] Sending random kara_id : '+kara_id);
+						resolve(kara_id);
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC getAllKaras : '+err);	
@@ -636,6 +649,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.shufflePlaylist(pl_id)
 					.then(function(){						
+						logger.info('[Engine] Playlist '+pl_id+' shuffled');
 						resolve(pl_id);
 					})
 					.catch(function(err){
@@ -771,7 +785,7 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
-					.then(function(playlist_id){
+					.then(function(playlist_id){						
 						resolve(playlist_id);
 					})
 					.catch(function(err){
@@ -1288,14 +1302,18 @@ module.exports = {
 						reject(err);
 					});
 			});
-		};
-		module.exports._services.apiserver.emitEvent = function(type,data){	
-			logger.debug('[Engine] Sending WS message '+type+' : '+data);		
-			module.exports._services.ws.socket.emit(type,data);					
-		};
+		};					
 		// --------------------------------------------------------
 		// on démarre ensuite le service
 		module.exports._services.apiserver.init();
+	},
+	/**
+	* @function
+	* Emit Event to the WS clients
+	*/
+	emitEvent:function(type,data){	
+		logger.debug('[Engine] Sending WS message '+type+' : '+JSON.stringify(data));		
+		module.exports._services.ws.socket.emit(type,data);					
 	},
 	/**
 	* @function
@@ -1310,6 +1328,7 @@ module.exports = {
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.onPlayingUpdated =
 		module.exports.playingUpdated;
+		module.exports._services.playlist_controller.emitEvent = module.exports.emitEvent;	
 		module.exports._services.playlist_controller.init();
 		//Test if a playlist with flag_current exists. If not create one.
 		module.exports._services.playlist_controller.isACurrentPlaylist()
@@ -1385,8 +1404,11 @@ module.exports = {
 				subText: module.exports._services.player.subtext,
 				showSubs: module.exports._services.player.showsubs,
 				volume: module.exports._services.player.volume,
-			};			
-			module.exports._services.ws.socket.emit('playerStatus',status);
+			};
+			if (JSON.stringify(status) !== JSON.stringify(module.exports.archivedStatus)) {
+				module.exports._services.ws.socket.emit('playerStatus',status);
+				module.exports.archivedStatus = status;
+			} 
 		};
 		module.exports._services.player.init();
 	}

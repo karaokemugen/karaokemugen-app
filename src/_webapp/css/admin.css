@@ -127,14 +127,6 @@ span[name="checkboxKara"] {
 	display: block;
 }
 
-.secondaryIcon {
-    font-size: 69%;
-    margin: 9px 0px 0px -10px;
-    color: hsla(0, 75%, 55%, 1);
-    color: black;
-    text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
-
-	}
 .btn-danger-low, .btn-danger-low:focus {
 	background-color: #1E2124;
 	border: 0px solid #1E2124;

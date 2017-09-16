@@ -288,17 +288,18 @@ module.exports = {
 					8000,
 				]
 			};	
-			module.exports._player.freeCommand(JSON.stringify(command));
-			module.exports._player.addSubtitles('memory://'+subtitle);						
-			logger.profile('StartPlaying');								
-			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
-			module.exports._player.load(backgroundImageFile,'append');				
+			module.exports._player.freeCommand(JSON.stringify(command));			
+			logger.profile('StartPlaying');												
 			//This is delayed or else it will be set to false again by statuschange event triggered by mpv
 			//and songs will not be playing correctly.
 			// 1500 ms seems to be the right answer.
 			var timeout = 1500;
 			setTimeout(function(){
+				
+				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
+				module.exports._player.load(backgroundImageFile,'append');				
 				module.exports._playing = true;				
+				module.exports._player.addSubtitles('memory://'+subtitle);						
 			},timeout);
 		} else {
 			module.exports.playing = false;

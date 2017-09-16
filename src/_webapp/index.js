@@ -1,10 +1,22 @@
 const path = require('path');
 const express = require('express');
 const exphbs = require('express-handlebars');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 const ip = require('ip');
 const si = require('systeminformation');
 const logger = require('../_common/utils/logger.js');
+
+const basicAuth = require('express-basic-auth');
+
+function AdminPasswordAuth(username, password){
+	return password === module.exports.SETTINGS.AdminPassword;
+}
+
+function getUnauthorizedResponse(req) {
+	return req.auth ?
+		('Credentials ' + req.auth.user + ':' + req.auth.password + ' rejected') :
+		'No credentials provided'
+}
 
 module.exports = {
 	SYSPATH:null,
@@ -34,9 +46,9 @@ module.exports = {
 		}
 		
 		// Création d'un server http pour diffuser l'appli web du launcher
-		if(module.exports._server==null) {
-			module.exports._server = express();
-			module.exports._server.engine('hbs', exphbs({
+		if(app==null) {
+			var app = express();
+			app.engine('hbs', exphbs({
 				layoutsDir: path.join(__dirname, 'views/layouts/'), 
 				extname: '.hbs',
 				helpers: {
@@ -47,33 +59,43 @@ module.exports = {
 					}
 				}
 			}));
-			module.exports._server.set('view engine', 'hbs');
-			module.exports._server.set('views', path.join(__dirname, 'views/'));
-			module.exports._server.use(cookieParser());
-			module.exports._server.use(module.exports.i18n.init);
-			module.exports._server.use(express.static(__dirname + '/'));
-			module.exports._server.use('/locales',express.static(__dirname + '/../_common/locales/'));
-			module.exports._server.get('/', function (req, res) {
+			var routerAdmin = express.Router();
+			routerAdmin.use(basicAuth({ 
+				authorizer: AdminPasswordAuth,
+				challenge: true,
+				realm: 'Karaoke Mugen Admin',
+				unauthorizedResponse: getUnauthorizedResponse
+			}));			
+			routerAdmin.use(function(req,res,next) {
+				next();
+			});
+			app.set('view engine', 'hbs');
+			app.set('views', path.join(__dirname, 'views/'));
+			app.use(cookieParser());
+			app.use(module.exports.i18n.init);
+			app.use(express.static(__dirname + '/'));
+			app.use('/locales',express.static(__dirname + '/../_common/locales/'));
+			app.use('/admin', routerAdmin);		
+			app.get('/', function (req, res) {
 				res.render('public', {'layout': 'publicHeader', 'clientAdress' : 'http://'+ip.address() });
 			});
-			module.exports._server.get('/mobile', function (req, res) {	
+			app.get('/mobile', function (req, res) {	
 				
 				res.render('publicMobile', {'layout': 'publicMobileHeader', 'clientAdress' : 'http://'+ip.address() });
 				
-			});
+			});			
 			
-
-			module.exports._server.get('/admin', function (req, res) {
+			routerAdmin.get('/', function (req, res) {
 				si.graphics().then( function(data) {
 					res.render('admin', {'layout': 'adminHeader',
 						'clientAdress' : 'http://'+ip.address(),
 						'mdpAdmin' : module.exports.SETTINGS.AdminPassword,
 						'displays' : data.displays
-						});
+					});
 				});		
 			});			
 			
-			module.exports._server.use(function (req, res) {
+			app.use(function (req, res) {
 				res.status(404);
 
 				// respond with html page
@@ -86,7 +108,7 @@ module.exports = {
 				res.type('txt').send('Not found');
 			});
 
-			module.exports._server.listen(module.exports.LISTEN);
+			app.listen(module.exports.LISTEN);
 
 			logger.info('[Webapp] Webapp is READY and listens on port '+module.exports.LISTEN);
             

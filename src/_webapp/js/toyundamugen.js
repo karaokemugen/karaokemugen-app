@@ -359,6 +359,28 @@ var plData;
             });
         });
 
+        // show full lyrics of a given kara
+        $('.getLucky').on('click', function (e) {
+            $.ajax({ url: 'public/karas/random' }).done(function (data) {
+                var chosenOne = data;
+                $.ajax({ url: 'public/karas/' + chosenOne }).done(function (data) {
+                    data = data[0];
+                    alert("Vous allez ajouter " + buildKaraTitle(data)
+                        + (pseudo ? " sous le pseudo " + pseudo : "") + ".\nFélicitations.");
+                    $.ajax({
+                        url: scope + '/karas/' + chosenOne,
+                        type: 'POST',
+                        data: { requestedby : pseudo }
+                    }).done(function (data) {
+                        playlistContentUpdating.done( function() {
+                            scrollToKara(2, chosenOne); 
+                        });
+                        displayMessage('success', 'Succès', "Kara ajouté à la playlist <i>" + playlistToAdd + "</i>.");
+                    });
+                });
+            });
+        });
+
         // generic close button
         $('.playlist-main').on('click', '.closeParent', function (e) {
             var el = $(this);
@@ -376,15 +398,61 @@ var plData;
         /* handling dynamic loading */
         $('.playlistContainer').scroll(function() {
             var container = $(this);
-            var nbKaraInPlaylist = container.find('li').length;
-            var loading = container.find(".playlistLoading")
-            //DEBUG && console.log(container.scrollTop(), container.innerHeight(), container[0].scrollHeight, loading.css('display'), loading.css('opacity'));
-            if(container.scrollTop() + container.innerHeight() + toleranceDynamicPixels >= container[0].scrollHeight && loading.css('opacity') > .95
-            && nbKaraInPlaylist >= karaParPage ) {
-                container.find(".playlistLoading").fadeIn(400);
-                DEBUG && console.log("Ajout de " + karaParPage + " karas aux " + nbKaraInPlaylist + " existants.");
-                fillPlaylist(container.find('ul').attr('side'), null, 0, container.find('li').length + karaParPage);
+
+            if(container.attr('flagScroll') == "true") { 
+                container.attr('flagScroll', false);
+            } else {
+                var playlist = container.find('ul').first();
+                var dashboard = container.prev('.plDashboard');
+                var idPlaylist = dashboard.find('select').val();
+                var from =  getPlaylistRange(idPlaylist).from;
+                var to = getPlaylistRange(idPlaylist).to;
+                var KaraLast, yPosition;
+                var nbKaraInPlaylist = container.find('li').length;
+                var loading = container.find(".playlistLoading")
+    
+                toleranceDynamicPixels = 50;
+    
+                var scrollX;
+                //DEBUG && console.log(container.scrollTop(), container.innerHeight(), container[0].scrollHeight, loading.css('display'), loading.css('opacity'));
+                var scrollTop = container.scrollTop() + container.innerHeight() + toleranceDynamicPixels >= container[0].scrollHeight && nbKaraInPlaylist >= karaParPage;
+                var scrollBottom = container.scrollTop() < toleranceDynamicPixels && from > 0;
+                DEBUG &&    console.log(container.scrollTop() + container.innerHeight() + toleranceDynamicPixels , container[0].scrollHeight,nbKaraInPlaylist >= karaParPage, scrollTop, loading.css('opacity') > .95);
+                if ( (scrollTop || scrollBottom)  && loading.css('opacity') > .95 ) {
+                    container.find(".playlistLoading").fadeIn(400);
+                    if(scrollTop) {  // scroll down 
+                       // playlist.find('li').slice(0, karaParPage).hide(0);
+                        scrollX = container.scrollTop();
+                        karaPos = playlist.find('li').last();
+                        
+                        yPosition = karaPos.offset().top - toleranceDynamicPixels; // - playlist.innerHeight() + scrollX + container.innerHeight();
+                        
+                        from += karaParPage;
+                        to += karaParPage;
+                    } else if( scrollBottom ) {  // scroll down 
+                        
+                        scrollX = container.scrollTop();
+                        karaPos = playlist.find('li').first();
+                        yPosition = karaPos.offset().top + scrollX;
+    
+                        container.find(".playlistLoading").fadeIn(400);
+                        from = Math.max(0, from - karaParPage);
+                        to = from + karaParPage * 2;
+                    }
+                    DEBUG && console.log(scrollX + "Affichage des karas de " + from + " à " + to);
+                    playlistRange[idPlaylist] = { from : from, to : to };
+    
+                    fillPlaylist(container.closest('.panel').attr('side')).done(function(){
+                        var kara = playlist.find('li[idkara="' + karaPos.attr('idkara') + '"]');
+                        var yPositionNew = kara.offset().top;
+                        var y = container.scrollTop() + yPositionNew - yPosition;
+                      
+                        container.attr('flagScroll', true);
+                        container.scrollTop(y);
+                    });
+                }
             }
+           
         });
 
         /* close closable popup */
@@ -399,7 +467,7 @@ var plData;
             bcTags = data;
         });
         /* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
-        if(isTouchScreen) {
+        if(isTouchScreen || true) {
             $('select').on('select2:open', function() {
                 $('.select2-search input').prop('focus', 0);
             });
@@ -413,20 +481,21 @@ var plData;
     
     isTouchScreen =  "ontouchstart" in document.documentElement || new URL(window.location.href).searchParams.get("TOUCHSCREEN") != null;
     animTime = $(window).width() < 1000 ? 200 : 300;
-    refreshTime = 2000;
+    refreshTime = 1000;
     toleranceDynamicPixels = 100;
-    karaParPage = isTouchScreen ? 70 : 110;
     mode = "list";
     pseudo = "Anonymous";
 
     dragAndDrop = true;
     stopUpdate = false;
     
+    karaParPage = new URL(window.location.href).searchParams.get("karaNum") ? parseInt(new URL(window.location.href).searchParams.get("karaNum")) : isTouchScreen ? 40 : 60;
     DEBUG = new URL(window.location.href).searchParams.get("DEBUG") != null;
     SOCKETDEBUG = new URL(window.location.href).searchParams.get("SOCKETDEBUG") != null;
 
     newKara = [] != null;
     saveLastDetailsKara = [[]];
+    playlistRange = {};
     ajaxSearch = {}, timer;
     oldState = {};
     oldSearchVal = "";
@@ -483,13 +552,16 @@ var plData;
         var fromTo = "";
         var url, html, canTransferKara, canAddKara, dragHandle, playKara;
 
-        from = from ? from : 0;
-        to = to ? to : karaParPage;
+        var range = getPlaylistRange(idPlaylist);
+        from = range.from;
+        to = range.to;
+
         fromTo += "&from=" + from + "&to=" + to;
 
         // setup variables depending on which playlist is selected : -1 = database kara list, -2 = blacklist, -3 = whitelist, -4 = blacklist criterias
 
         var singlePlData = getPlData(idPlaylist);
+        if(!singlePlData) return false;
         console.log(singlePlData, "ah",  side, idPlaylist);
         url = singlePlData.url;
         html = singlePlData.html;
@@ -792,7 +864,7 @@ var plData;
     */
    refreshPlaylistDashboard = function(side) {
         var dashboard = $("#panel" + side + " .plDashboard");
-        var select = dashboard.find('select[type="playlist_select"]');
+        var select = dashboard.find('.plSelect select');
         var option = select.find("option:selected");
         // managing flags
         ["flag_current", "flag_public"].forEach(function (e) {
@@ -810,9 +882,13 @@ var plData;
             dashboard.attr(this.name, this.value);
         });
         dashboard.data(option.data());
-        var val =  option.val();
-        var plInfos = val && val != -1 ? dashboard.data('num_karas') + " karas / dur " + secondsTimeSpanToHMS(dashboard.data('length')) : "";
+        var idPlaylist =  option.val();
+        var plInfos = idPlaylist && idPlaylist != -1 ? dashboard.data('num_karas') + " karas / dur " + secondsTimeSpanToHMS(dashboard.data('length')) : "";
         dashboard.parent().find('.plInfos').text(plInfos);
+        
+        if (playlistRange[idPlaylist] == undefined) {
+            playlistRange[idPlaylist] = {from : 0, to : karaParPage * 2}
+        }
     }
 
     /** 
@@ -822,11 +898,12 @@ var plData;
     */
     refreshPlayerInfos = function (data, callback, param1) {
         if (oldState != data) {
-            var newWidth = 100 * parseInt(10000 * ( data.timePosition + refreshTime/1000) / $('#karaInfo').attr('length')) / 10000 + '%';
+            var newWidth = $('#karaInfo').width() * parseInt(10000 * ( data.timePosition + refreshTime/1000) / $('#karaInfo').attr('length')) / 10000 + 'px';
+          
             if (data.timePosition != oldState.timePosition && $('#karaInfo').attr('length') != 0) {
                 if (mode == "mobile" || $('#progressBarColor').hasClass('cssTransition')) {
-                    //$('#progressBarColor').width($('#progressBarColor').width());
-                    $('#progressBarColor').width(newWidth);
+                    var elm = document.getElementById('progressBarColor');
+                    elm.style.width =  newWidth;
                 } else {
                     if(data.timePosition > oldState.timePosition) {
                         $('#progressBarColor').animate({ width: newWidth }, Math.abs(1000 * (data.timePosition - oldState.timePosition)), 'linear');
@@ -1111,15 +1188,19 @@ var plData;
         return (h > 0 ? h+"h" : "") +(m < 10 ? '0'+m : m)+"m"+(s < 10 ? '0'+s : s ) + 's'; 
     }
 
+    getPlaylistRange = function(idPl) {
+        return playlistRange[idPl] ? playlistRange[idPl] : { from : 0, to : karaParPage * 2 };
+    }
+
     getPlData = function(idPl) {
         var idPlNorm = Math.min(0, idPl);
         var singlePlData = plData[idPlNorm] ? jQuery.extend({}, plData[idPlNorm]) : null;
 
-        singlePlData.url = singlePlData.url.replace("pl_id", idPl);
+        if(singlePlData) singlePlData.url = singlePlData.url.replace("pl_id", idPl);
         
         return singlePlData;
     }
-
+    
     sideOfPlaylist = function(idPlaylist) {
         var side = $('[type="playlist_select"] > option:selected[value="' + idPlaylist + '"]').parent().attr('side');
         return side;
@@ -1198,6 +1279,13 @@ var plData;
         }
     });
 
+    socket.on('playingUpdated', function(data){
+        var side = sideOfPlaylist(data.playlist_id);
+        DEBUG && console.log(side, data.playlist_id);
+        $('#playlist' + side + ' > li[currentlyplaying]').removeAttr('currentlyplaying');
+        $('#playlist' + side + ' > li[idplaylistcontent="' + data.plc_id + '"]').attr('currentlyplaying', true);
+    });
+
     socket.on('playlistContentsUpdated', function(idPlaylist){
         var side = sideOfPlaylist(idPlaylist);
         DEBUG && console.log(side, idPlaylist);
@@ -1239,7 +1327,7 @@ var plData;
     };
     
     socket.on('*', function(e, data) {
-        SOCKETDEBUG && DEBUG && console.log(e, data);
+        true && SOCKETDEBUG && DEBUG && console.log(e, data);
     });
 }));
 
