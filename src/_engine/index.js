@@ -796,8 +796,10 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onSettingsUpdate = function(settings) {
 			return new Promise(function(resolve,reject){								
-				var settingsToSave = {};				
-				var defaultSettings = ini.parse(fs.readFileSync(path.join(module.exports.SYSPATH,'config.ini.default'), 'utf-8'));				
+				var settingsToSave = {};
+				//We re-read config.ini.default and compare it with the settings we have
+				//If a setting is different, it is added to the settings to save.
+				var defaultSettings = ini.parse(fs.readFileSync(path.resolve(module.exports.SYSPATH,'config.ini.default'), 'utf-8'));				
 				for (var setting in settings){
 					if (settings.hasOwnProperty(setting)){
 						if (defaultSettings[setting] != settings[setting]) {							
@@ -810,6 +812,16 @@ module.exports = {
 							}							
 						}							
 					}
+				}
+
+				//We need to add to settingsToSave system settings that might be in config.ini
+				var customSettings = ini.parse(fs.readFileSync(path.resolve(module.exports.SYSPATH,'config.ini'), 'utf-8'));				
+				for (setting in customSettings){
+					if (setting.startsWith('Path') || 
+						setting.startsWith('Bin') ||
+						setting.startsWith('mpv')) {
+						settingsToSave[setting] = customSettings[setting];
+					}					
 				}
 
 				extend(true,module.exports.SETTINGS,settings);
@@ -829,7 +841,7 @@ module.exports = {
 
 				// Other settings for now have to be toggled through API calls						
 
-				// Sending settins through WS. We only send public settings
+				// Sending settings through WS. We only send public settings
 				var publicSettings = {};
 				for (var key in module.exports.SETTINGS) {
 					if (module.exports.SETTINGS.hasOwnProperty(key)) {
