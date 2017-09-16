@@ -44,6 +44,8 @@ module.exports = {
 			app.use(bodyParser.json());
 			// Calling express validator with a custom validator, used for the player commands
 			// to check if they're from the allowed list.
+			// We use another custom validator to test for array of numbers
+			// used mainly with adding/removing lists of karaokes
 			app.use(expressValidator({
 				customValidators: {
 					enum: (input, options) => options.includes(input),
