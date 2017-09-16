@@ -237,6 +237,11 @@ span:not(.hideCommands) {
 .plDashboard[data-playlist_id="-4"] .btnDivContainer {
 	display: none;
 }
+.plDashboard[data-playlist_id="-4"] .showPlaylistCommands,
+.plDashboard[data-playlist_id="-2"] .showPlaylistCommands {
+	pointer-events: none;
+	color: #9e9e9e
+}
 .plDashboard[data-playlist_id^="-"] .flagsContainer button {
 	display: none;
 }
@@ -298,6 +303,7 @@ span:not(.hideCommands) {
 .plDashboard[data-playlist_id="-1"] .flagsContainer {
 	display: none;	
 }
+
 .plDashboard[data-playlist_id="-1"] .controlsContainer,
 .plDashboard[data-playlist_id="-2"] .controlsContainer,
 .plDashboard[data-playlist_id="-3"] .controlsContainer,

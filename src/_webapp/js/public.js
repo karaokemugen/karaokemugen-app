@@ -38,6 +38,12 @@ $(document).ready(function () {
     popup('#settingsPublic');
   });
 
+  $('input[name="lyrics"]').on('switchChange.bootstrapSwitch', function (event) {
+    if(!$(this).is(':checked')) {   
+      $('#karaInfo > span').text( $('#karaInfo > span').data('text') );
+    }
+  });
+
   $('input[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event) {
     if ($(this).val() == 0) {
       $('#searchPlaylist1').fadeIn(animTime);
@@ -88,4 +94,41 @@ getPublicSettings = function(trigger) {
     promise.resolve();
   }); 
   return promise.promise();
+}
+
+
+endOfTheWorldAsWeKnowIt = function() {
+  var things = $('body *');
+
+  displayMessage('danger', "", '<center>Oh no</center>');
+  $('html').attr('style', 'background-color: hsla(39, 100%, 34%, 0.9); opacity: .85; z-index: 99999;');
+
+
+  setInterval(function () {
+   
+        endOfTheWorldAsWeKnowItloop();
+     
+  }, 50);
+}
+
+function endOfTheWorldAsWeKnowItloop(){
+  var things = $('body *');
+  var randomColor = Math.floor(Math.random()*16777215).toString(16);
+  var random = Math.floor(Math.random()*things.length);
+  el = things.eq(random);
+  el.css('transition','all 5s linear');
+  el.css('width', Math.floor(Math.random()*400));
+  el.css('height', Math.floor(Math.random()*400));
+  el.css('position', 'fixed');
+  el.css('top', Math.floor(Math.random()*$(window).height() ));
+  el.css('left', Math.floor(Math.random()*$(window).width() ));
+  if(Math.random() > .85) el.css('background-color', '#' + randomColor );
+  el.css('opacity',Math.random()/2 + .4);
+  el.draggable({
+    container: 'body',
+    appendTo: 'body',
+    
+  });
+
+ 
 }

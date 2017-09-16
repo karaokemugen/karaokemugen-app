@@ -18,6 +18,7 @@
             </span><i class="glyphicon glyphicon-cog"></i></button>
             <ul class="dropdown-menu">
                 <li><a href="#" id="showSettings">{{i18n "SETTINGS"}}</a></li>
+                <li><a href="/admin" id="logAdmin" target="_blank">Admin</a></li>
                 <li><a href="#">{{i18n "4TH_IMPACT"}}</a></li>
             </ul>
         </div>
@@ -31,7 +32,7 @@
 </div>
 <div id="progressBar" class="underHeader">
     <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
-    <div id="progressBarColor" style="width:0%;"></div>
+    <div id="progressBarColor" class="cssTransform"></div>
 </div>
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
@@ -46,8 +47,8 @@
             <div class="playlistContainer">
                 <ul id="playlist1" side="1" class="list-group">
                 </ul>
-                <div class="playlistLoading"> {{i18n "LOADING"}} </div>
            </div>
+            <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             <div class="plInfos"></div>
         </div>
          
@@ -83,8 +84,8 @@
                 <ul id="playlist2" side="2" class="list-group">
                     <li class="list-group-item"></li>
                 </ul>
-                <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             </div>
+            <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             <div class="plInfos"></div>
         </div>
     </div>

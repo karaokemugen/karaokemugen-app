@@ -428,8 +428,8 @@ button.closeParent.bottom  {
     opacity : 0.38;
 }
 
-.playlistContainer > ul, .playlistContainer {
-	will-change: transform;
+.playlistContainer > ul {
+	will-change: -moz-transform;
 }
 #playlist1.list-group > li.list-group-item  > div:first-child, #playlist1.list-group > li.list-group-item  > div:first-child > span, 
 #playlist2.list-group > li.list-group-item  > .infoDiv {

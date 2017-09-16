@@ -392,8 +392,8 @@
         var btn = $(this);
         var name = btn.attr('name');
         var selector = btn.closest('.panel-heading').find('[type="playlist_select"]');
-        var playlistId = selector.val();
-        var namePlaylist = selector.find('option[value="' + playlistId + '"]').data('name');
+        var idPlaylist = selector.val();
+        var namePlaylist = selector.find('option[value="' + idPlaylist + '"]').data('name');
         var data = {}, urlEnd = "";
 
         if (name === "flag_current" && !btn.hasClass('btn-primary')) {
@@ -402,10 +402,18 @@
             urlEnd = "/setPublic";
         } else if (name === "flag_visible") {
             urlEnd = "";
-            data = { name: namePlaylist, flag_visible: btn.closest('.plDashboard').data('flag_visible') == "1" ? 0 : 1 };
+            setTo = btn.closest('.plDashboard').data('flag_visible') == "1" ? 0 : 1;
+        
+            if(idPlaylist > 0) {
+                data = { name: namePlaylist, flag_visible: setTo };
+            } else {
+                var list = { "-2" : "Blacklist", "-3" : "Whitelist", "-4" : "BlacklistCriterias" };
+                $('input[name="EngineAllowView' + list[idPlaylist] + '"]').val(1).bootstrapSwitch('state', setTo);
+                return false;
+            }
         }
         $.ajax({
-            url: 'admin/playlists/' + playlistId + urlEnd,
+            url: 'admin/playlists/' + idPlaylist + urlEnd,
             type: 'PUT',
             data: data
         }).done(function (data) {

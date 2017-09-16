@@ -118,8 +118,8 @@ var plData;
         });
         // Some html init
         settingsUpdating = scope ===  "admin" ?  getSettings() : getPublicSettings();
-        console.log(11);
-        settingsUpdating.done( function() {        console.log(12);
+        
+        settingsUpdating.done( function() {
             fillPlaylistSelects().done(function () {
                 playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
                 refreshPlaylistDashboard(1);
@@ -380,7 +380,7 @@ var plData;
                             scrollToKara(2, chosenOne); 
                         });
                         displayMessage('success', 'Succès', "Kara ajouté à la playlist <i>" + playlistToAdd + "</i>.");
-                    });
+                    })
                 });
             });
         });
@@ -398,9 +398,10 @@ var plData;
             //alert($(this).is(':checked'));
             $(this).val($(this).is(':checked') ? 1 : 0);
         });
-
+     
+        
         /* handling dynamic loading */
-        $('.playlistContainer').scroll(function() {
+        $('.playlistContainer').scroll(function(e) {
             var container = $(this);
 
             if(container.attr('flagScroll') == "true") { 
@@ -416,7 +417,7 @@ var plData;
                 var nbKaraInPlaylist = container.find('li').length;
                 var loading = dashboard.parent().find(".playlistLoading")
     
-                toleranceDynamicPixels = 100;
+                toleranceDynamicPixels = 200;
     
                 var scrollX;
                 //DEBUG && console.log(container.scrollTop(), container.innerHeight(), container[0].scrollHeight, loading.css('display'), loading.css('opacity'));
@@ -448,8 +449,10 @@ var plData;
                     DEBUG && console.log(scrollX + "Affichage des karas de " + from + " à " + to);
                     
                     setPlaylistRange(idPlaylist, from, to);
-    
+                   
                     scrollUpdating = fillPlaylist(side);
+                   
+                    
                     scrollUpdating.done( function(){
 
                         var kara = playlist.find('li[idkara="' + karaPos.attr('idkara') + '"]');
@@ -503,7 +506,7 @@ var plData;
     dragAndDrop = true;
     stopUpdate = false;
     
-    karaParPage = new URL(window.location.href).searchParams.get("karaNum") ? parseInt(new URL(window.location.href).searchParams.get("karaNum")) : isTouchScreen ? 60 : 70;
+    karaParPage = new URL(window.location.href).searchParams.get("karaNum") ? parseInt(new URL(window.location.href).searchParams.get("karaNum")) : isTouchScreen ? 45 : 55;
     DEBUG = new URL(window.location.href).searchParams.get("DEBUG") != null;
     SOCKETDEBUG = new URL(window.location.href).searchParams.get("SOCKETDEBUG") != null;
 
@@ -576,7 +579,6 @@ var plData;
 
         var singlePlData = getPlData(idPlaylist);
         if(!singlePlData) return false;
-        console.log(singlePlData, "ah",  side, idPlaylist);
         url = singlePlData.url;
         html = singlePlData.html;
         canTransferKara = singlePlData.canTransferKara;
@@ -594,9 +596,7 @@ var plData;
 
         // ask for the kara list from given playlist
         if (ajaxSearch[url]) { ajaxSearch[url].abort(); }
-console.time('ajax');
         ajaxSearch[url] = $.ajax({ url: urlFiltre }).done(function (data) {
-            var time = console.timeEnd('ajax');
             //DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
             
             var htmlContent = "";
@@ -939,14 +939,15 @@ console.time('ajax');
                 switch (status) {
                     case "play":
                         $('#status').attr('name','pause');
+                        $('#progressBarColor').addClass('cssTransform');
                         break;
                     case "pause":
                         $('#status').attr('name', 'play');
-                        $('#progressBarColor').clearQueue().stop();
+                        $('#progressBarColor').removeClass('cssTransform');
                         break;
                     case "stop":
                         $('#status').attr('name', 'play');
-                        $('#progressBarColor').clearQueue().stop();
+                        $('#progressBarColor').removeClass('cssTransform');
                         break;
                     default:
                         DEBUG && console.log("ERR : Kara status unknown : " + status);
@@ -958,6 +959,8 @@ console.time('ajax');
                     text.replace(oldState['subText'], "<span style='background-color: #888;'>" + oldState['subText'] + "</span>");
                 }
                 $('#karaInfo > span').html(text);
+            } else {
+
             }
             if (data.currentlyPlaying !== oldState.currentlyPlaying && data.currentlyPlaying > 0) {
                 
@@ -970,6 +973,7 @@ console.time('ajax');
                     $('#karaInfo').attr('idKara', dataKara[0].kara_id);
                     $('#karaInfo').attr('length', dataKara[0].duration);
                     $('#karaInfo > span').text( buildKaraTitle(dataKara[0]) );
+                    $('#karaInfo > span').data('text', buildKaraTitle(dataKara[0]) );
                 });
                 var panel = $('[type="playlist_select"] > option:selected[flag_current="1"]').closest('.panel');
                 panel.find('.list-group-item[currentlyPlaying]').removeAttr('currentlyPlaying');
@@ -1185,7 +1189,7 @@ console.time('ajax');
         var messageDiv = $('#message');
         messageDiv.finish().hide();
         messageDiv.attr('class','alert alert-' + type);
-        messageDiv.html('<strong>' + title + '</strong> : ' + message);
+        messageDiv.html('<strong>' + title + '</strong> ' + message);
         messageDiv.fadeIn(600).delay(2200).fadeOut(600);
         
     }
