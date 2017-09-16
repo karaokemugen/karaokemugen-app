@@ -399,12 +399,12 @@ var plData;
         $('.playlistContainer').scroll(function() {
             var container = $(this);
 
-            if(container.attr('flagScroll') != "false") { 
+            if(container.attr('flagScroll') == "true") { 
                 container.attr('flagScroll', false);
             } else {
                 var playlist = container.find('ul').first();
                 var dashboard = container.prev('.plDashboard');
-                var idPlaylist = dashboard.data("playlist_id");
+                var idPlaylist = dashboard.find('select').val();
                 var from =  getPlaylistRange(idPlaylist).from;
                 var to = getPlaylistRange(idPlaylist).to;
                 var KaraLast, yPosition;
@@ -417,7 +417,7 @@ var plData;
                 //DEBUG && console.log(container.scrollTop(), container.innerHeight(), container[0].scrollHeight, loading.css('display'), loading.css('opacity'));
                 var scrollTop = container.scrollTop() + container.innerHeight() + toleranceDynamicPixels >= container[0].scrollHeight && nbKaraInPlaylist >= karaParPage;
                 var scrollBottom = container.scrollTop() < toleranceDynamicPixels && from > 0;
-    
+                DEBUG &&    console.log(container.scrollTop() + container.innerHeight() + toleranceDynamicPixels , container[0].scrollHeight,nbKaraInPlaylist >= karaParPage, scrollTop, loading.css('opacity') > .95);
                 if ( (scrollTop || scrollBottom)  && loading.css('opacity') > .95 ) {
                     container.find(".playlistLoading").fadeIn(400);
                     if(scrollTop) {  // scroll down 
@@ -489,7 +489,7 @@ var plData;
     dragAndDrop = true;
     stopUpdate = false;
     
-    karaParPage = new URL(window.location.href).searchParams.get("karaNum") ? parseInt(new URL(window.location.href).searchParams.get("karaNum")) : isTouchScreen ? 40 : 70;
+    karaParPage = new URL(window.location.href).searchParams.get("karaNum") ? parseInt(new URL(window.location.href).searchParams.get("karaNum")) : isTouchScreen ? 40 : 60;
     DEBUG = new URL(window.location.href).searchParams.get("DEBUG") != null;
     SOCKETDEBUG = new URL(window.location.href).searchParams.get("SOCKETDEBUG") != null;
 
@@ -886,10 +886,8 @@ var plData;
         var plInfos = idPlaylist && idPlaylist != -1 ? dashboard.data('num_karas') + " karas / dur " + secondsTimeSpanToHMS(dashboard.data('length')) : "";
         dashboard.parent().find('.plInfos').text(plInfos);
         
-        if (getPlaylistRange(idPlaylist) == null) {
-            playlistRange[idPlaylist] = {from : 0, to : karaParPage * 2};
-            console.log(
-                    playlistRange[idPlaylist]);
+        if (playlistRange[idPlaylist] == undefined) {
+            playlistRange[idPlaylist] = {from : 0, to : karaParPage * 2}
         }
     }
 
