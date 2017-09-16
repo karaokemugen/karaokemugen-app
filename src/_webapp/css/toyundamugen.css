@@ -683,6 +683,8 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 	-webkit-perspective: 1000;
 	backface-visibility: hidden;
 	perspective: 1000;
+	will-change: transform;
+	
 }
 
 .secondaryIcon {
