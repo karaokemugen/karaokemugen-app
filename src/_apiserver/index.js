@@ -302,6 +302,7 @@ module.exports = {
 					module.exports.onWhitelistEmpty()
 						.then(function(){
 							module.exports.emitEvent('blacklistUpdated');
+							module.exports.emitEvent('whitelistUpdated');
 							res.json('Whitelist emptied');
 						})
 						.catch(function(err){
@@ -752,7 +753,8 @@ module.exports = {
 							req.sanitize('kara_id').toInt();
 							module.exports.onKaraAddToWhitelist(req.body.kara_id,req.body.reason)
 								.then(function(){
-									module.exports.emitEvent('whitelistUpdated');									
+									module.exports.emitEvent('whitelistUpdated');			
+									module.exports.emitEvent('blacklistUpdated');			
 									res.statusCode = 201;
 									res.json('Karaoke '+req.body.kara_id+' added to whitelist with reason \''+req.body.reason+'\'');
 								})
@@ -789,6 +791,7 @@ module.exports = {
 					module.exports.onWhitelistSingleKaraDelete(req.params.wl_id)
 						.then(function(){
 							module.exports.emitEvent('whitelistUpdated');
+							module.exports.emitEvent('blacklistUpdated');
 							res.json('Deleted WLID '+req.params.wl_id);
 						})
 						.catch(function(err){
