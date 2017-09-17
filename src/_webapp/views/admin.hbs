@@ -46,25 +46,11 @@
                     <select id="selectPlaylist1" side="1" type="playlist_select" class="select2" style="overflow:hidden">
                     </select>
                 </div>
-                  <div class="controlsContainer">
+                <div class="controlsContainer">
                     <div class="btn-group plCommands controls">
-                        <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
-                            <i class="glyphicon glyphicon-pencil"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_DELETE"}}' class="btn btn-danger" name="delete">
-                            <i class="glyphicon glyphicon-remove"></i>
-                        </button>
-                        
-                         <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
+                        <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
                             <i class="glyphicon glyphicon-random"></i>
-                              </button> 
-                        <button title='{{i18n "PLAYLIST_IMPORT"}}' class="btn btn-default" name="import">
-                            <i class="glyphicon glyphicon-import"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-default" name="export">
-                            <i class="glyphicon glyphicon-export"></i>
-                        </button>
-                      
+                        </button> 
                     </div>
                 </div>
                 <div class="plSearch">
@@ -85,6 +71,23 @@
                 </div>
               
                 <div class="plCommandsContainer btnDivContainer">
+                    <div class="btn-group plCommands controls">
+                        <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                        </button>
+                        <button title='{{i18n "PLAYLIST_ADD"}}' class="btn btn-default plGenericButton" name="add">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                        </button>
+                        <button title='{{i18n "PLAYLIST_DELETE"}}' class="btn btn-danger" name="delete">
+                            <i class="glyphicon glyphicon-remove red"></i>
+                        </button>
+                        <button title='{{i18n "PLAYLIST_IMPORT"}}' class="btn btn-default plGenericButton" name="import">
+                            <i class="glyphicon glyphicon-import"></i>
+                        </button>
+                        <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-default" name="export">
+                            <i class="glyphicon glyphicon-export"></i>
+                        </button>
+                    </div>
                     <div class="btn-group plCommands btnDiv">
                         <button title="{{i18n "ADD_ALL_KARAS"}}" name="addAllKaras" class="btn btn-danger groupAction">
                             <i class="glyphicon glyphicon-share"></i>
@@ -126,28 +129,19 @@
                     <select id="selectPlaylist2" side="2" type="playlist_select" class="select2" style="overflow:hidden">
                         </select>
                 </div>
-                 <div class="controlsContainer">
+
+                <div class="controlsContainer">
                     <div class="btn-group plCommands controls">
-                        <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
-                            <i class="glyphicon glyphicon-pencil"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_DELETE"}}' class="btn btn-danger" name="delete">
-                            <i class="glyphicon glyphicon-remove red"></i>
-                        </button>
                         <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
                             <i class="glyphicon glyphicon-random"></i>
                         </button>    
-                        <button title='{{i18n "PLAYLIST_IMPORT"}}' class="btn btn-default" name="import">
-                            <i class="glyphicon glyphicon-import"></i>
-                        </button>
-                        <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-default" name="export">
-                            <i class="glyphicon glyphicon-export"></i>
-                        </button>
                     </div>
                 </div>
                 
                  <div class="plCommandsContainer btnDivContainer">
+                   
                     <div class="btn-group plCommands btnDiv">
+
                           <button title="{{i18n "ADD_ALL_KARAS"}}" name="addAllKaras" class="btn btn-danger flipped groupAction">
                             <i class="glyphicon glyphicon-share"></i>
                         </button>
@@ -166,6 +160,23 @@
                         <button title="{{i18n "SELECT_ALL"}}" name="selectAllKaras" value="0" class="btn btn-default groupAction">
                             <i class="glyphicon glyphicon-unchecked"></i>
                             <i class="glyphicon glyphicon-check"></i>
+                        </button>
+                    </div>  
+                    <div class="btn-group plCommands controls">
+                        <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                        </button>
+                        <button title='{{i18n "PLAYLIST_ADD"}}' class="btn btn-default plGenericButton" name="add">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                        </button>
+                        <button title='{{i18n "PLAYLIST_DELETE"}}' class="btn btn-danger" name="delete">
+                            <i class="glyphicon glyphicon-remove red"></i>
+                        </button>
+                        <button title='{{i18n "PLAYLIST_IMPORT"}}' class="btn btn-default plGenericButton" name="import">
+                            <i class="glyphicon glyphicon-import"></i>
+                        </button>
+                        <button title='{{i18n "PLAYLIST_EXPORT"}}' class="btn btn-default" name="export">
+                            <i class="glyphicon glyphicon-export"></i>
                         </button>
                     </div>
                 </div>
@@ -288,6 +299,31 @@
     </div>
 
 <div id="message" class="alert"></div>
+<div class="modal fade" id="modalBox" role="dialog" tabindex="2">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="modal-message">
+                
+                </div>
+                <div class="form">
+                    <input type="text" class="form-control" id="modalInput" name="modalInput"    />
+                </div>
+            </div>
+             <div class="modal-footer">
+                <button type="button" class="btn btn-action btn-primary other" data-dismiss="modal">
+                    <i class="glyphicon glyphicon-remove"></i>
+                </button>
+                <button type="button" class="btn btn-action btn-default ok" data-dismiss="modal">
+                    <i class="glyphicon glyphicon-ok"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <a id="downloadAnchorElem"></a>
 </div>
 

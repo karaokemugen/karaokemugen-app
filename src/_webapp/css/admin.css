@@ -73,7 +73,18 @@ span[name="checkboxKara"] {
 .plDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 
 	display: none;
 }
-.plDashboard.advanced + .playlistContainer .btnDiv { 
+
+.plDashboard[data-playlist_id="-2"] + .playlistContainer span[name="checkboxKara"],
+.plDashboard[data-playlist_id="-4"] + .playlistContainer span[name="checkboxKara"] { 
+	display: none;
+}
+
+.plDashboard.advanced:not([data-playlist_id="-4"])  + .playlistContainer .btnDiv { 
+	display: none;
+}
+
+.plDashboard[data-playlist_id="-3"]  .btnDivContainer  button[name="transferKara"],
+.plDashboard[data-playlist_id="-3"]  .btnDivContainer  button[name="deleteKara"] {
 	display: none;
 }
 
@@ -84,7 +95,7 @@ span[name="checkboxKara"] {
 }
 
 .panel[canaddkara="false"] .btnDiv > button[name="addKara"]
-.panel[canaddkara="false"] .btnDiv > button[name="adAllKara"] {
+.panel[canaddkara="false"] .btnDiv > button[name="addAllKara"] {
 	display: none;
 }
 
@@ -131,6 +142,10 @@ span[name="checkboxKara"] {
 	background-color: #1E2124;
 	border: 0px solid #1E2124;
 	color: white;
+}
+.btn-danger-low[name="stopAfter"] {
+    border: 0px solid #9e9e9e;
+    border-left-width: 2px;
 }
 
 .btn-danger-low:hover {
@@ -218,7 +233,9 @@ span:not(.hideCommands) {
 #panel2 .btnDivContainer {
     margin-right: auto;
 }
-
+.panel-heading > div > div:nth-child(2) {
+	padding-left: 4px;
+}
 .plDashboard[data-flag_visible="1"] [name="flag_visible"] > i.glyphicon-eye-close {
 	display: none;
 }
@@ -234,14 +251,10 @@ span:not(.hideCommands) {
 	display: none;
 	padding: 0px;
 }
-.plDashboard[data-playlist_id="-4"] .btnDivContainer {
+.plDashboard[data-playlist_id="-4"] .btnDiv {
 	display: none;
 }
-.plDashboard[data-playlist_id="-4"] .showPlaylistCommands,
-.plDashboard[data-playlist_id="-2"] .showPlaylistCommands {
-	pointer-events: none;
-	color: #9e9e9e
-}
+
 .plDashboard[data-playlist_id^="-"] .flagsContainer button {
 	display: none;
 }
@@ -256,6 +269,14 @@ span:not(.hideCommands) {
 .plDashboard[data-playlist_id="-1"] button[name="deleteAllKaras"],
 .plDashboard[data-playlist_id="-2"] button[name="deleteAllKaras"],
 .plDashboard[data-playlist_id="-4"] button[name="deleteAllKaras"]
+{
+	display: none;
+}
+
+.plDashboard[data-playlist_id="-1"] .btnDivContainer .controls button:not(.plGenericButton),
+.plDashboard[data-playlist_id="-2"] .btnDivContainer .controls button:not(.plGenericButton),
+.plDashboard[data-playlist_id="-3"] .btnDivContainer .controls button:not(.plGenericButton),
+.plDashboard[data-playlist_id="-4"] .btnDivContainer .controls button:not(.plGenericButton)
 {
 	display: none;
 }

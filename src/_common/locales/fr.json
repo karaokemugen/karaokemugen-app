@@ -123,5 +123,7 @@
 	"ADD_KARA": "Ajouter kara",
 	"DELETE_KARA": "Supprimer kara",
 	"TRANSFER_KARA": "Transférer kara",
-	"SELECT_ALL": "Tout sélectionner"
+	"SELECT_ALL": "Tout sélectionner",
+	"PLAYLIST_ADD": "Créer une playlist",
+	"DB_PLAYLIST_UNKNOWN": "Playlist inconnue"
 }

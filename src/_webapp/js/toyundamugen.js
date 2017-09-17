@@ -159,15 +159,24 @@ var plData;
         
         // When user selects a playlist
         $("#selectPlaylist1, #selectPlaylist2").change(function (e) {
-            var val = $(this).val(), oldVal;
+            var val = $(this).val();
+            var oldVal = $(this).closest('.plDashboard').data('playlist_id');
+           
+            if(!val) {
+                var newSelection = sideOfPlaylist("-1") ? "-2" : "-1";
+                $(this).val(newSelection).change();
+                e.preventDefault();
+                return false;
+            }
             var side = $(this).attr('side');
             var isNew = $(this).find('[data-select2-tag="true"][value="' + val + '"]');
+            
             if(isNew.length > 0) {
                 e.preventDefault(); // si c'est une nouvelle entrée, le serveur nous dira quand elle sera crée
                 fillPlaylistSelects();
-            } else if(val == $("select[type='playlist_select'][side!='" + side + "'] > option:selected[value='" + val + "']").val()) {
-                oldVal = $(this).closest('.plDashboard').data('playlist_id');
+            } else if(val != oldVal && val == $("select[type='playlist_select'][side!='" + side + "'] > option:selected[value='" + val + "']").val()) {
                 $("select[type='playlist_select'][side!='" + side + "']").val(oldVal);
+               
                 fillPlaylistSelects().done( function() {
                     $("select[type='playlist_select']").change();
                 });
@@ -177,9 +186,9 @@ var plData;
                 $("#playlist" + side).empty();
                 $("#searchPlaylist" + side).val("");
 
-                fillPlaylist(side).done( function() {
-                    refreshPlaylistDashboard(side);
-                });
+                playlistContentUpdating = fillPlaylist(side);
+                refreshPlaylistDashboard(side);
+                
                 /*
                 // prevent selecting 2 times the same playlist
                 if (scope === "admin") {
@@ -242,7 +251,11 @@ var plData;
                     data = { blcriteria_type: 1001, blcriteria_value: idKara };
                 } else if (idPlaylistTo == -3) {
                     url = scope + '/whitelist';
-                    data = { kara_id: idKara, reason: prompt("Raison d'ajout à la whitelist") };
+                    displayModal("prompt","Raison d'ajout à la whitelist", "", function(reason){
+                        data = { kara_id: idKara, reason: reason };
+                        ajx(type, url, data);
+                    });
+                    return false;
                 }
 
                 DEBUG && console.log("ACTION : ", idPlaylistTo, url, type, data);
@@ -337,13 +350,11 @@ var plData;
             }
         });
 
-        if(mode != "mobile") {
+        if(mode != "mobile" && !isTouchScreen) {
             $('.playlist-main').on('click', '.infoDiv > button[name="infoKara"], .detailsKara > button.closeParent', function(e) {
                 toggleDetailsKara($(this));
             });
-        }
-
-        // show full lyrics of a given kara
+              // show full lyrics of a given kara
         $('.playlist-main').on('click', '.fullLyrics', function (e) {
             var playlist = $(this).closest('ul');
             var liKara = $(this).closest('li');
@@ -362,6 +373,9 @@ var plData;
                 scrollToElement(playlist, detailsKara);
             });
         });
+        }
+
+      
 
         // show full lyrics of a given kara
         $('.getLucky').on('click', function (e) {
@@ -369,18 +383,19 @@ var plData;
                 var chosenOne = data;
                 $.ajax({ url: 'public/karas/' + chosenOne }).done(function (data) {
                     data = data[0];
-                    alert("Vous allez ajouter " + buildKaraTitle(data)
-                        + (pseudo ? " sous le pseudo " + pseudo : "") + ".\nFélicitations.");
-                    $.ajax({
-                        url: scope + '/karas/' + chosenOne,
-                        type: 'POST',
-                        data: { requestedby : pseudo }
-                    }).done(function (data) {
-                        playlistContentUpdating.done( function() {
-                            scrollToKara(2, chosenOne); 
-                        });
-                        displayMessage('success', 'Succès', "Kara ajouté à la playlist <i>" + playlistToAdd + "</i>.");
-                    })
+                    displayModal("confirm","Félicitations","Vous allez ajouter <i>" + buildKaraTitle(data)
+                    + (pseudo ? "</i> sous le pseudo <b>" + pseudo : "</b>") + ".", function(confirm){
+                        $.ajax({
+                            url: scope + '/karas/' + chosenOne,
+                            type: 'POST',
+                            data: { requestedby : pseudo }
+                        }).done(function (data) {
+                            playlistContentUpdating.done( function() {
+                                scrollToKara(2, chosenOne); 
+                            });
+                            displayMessage('success', 'Succès', "Kara ajouté à la playlist <i>" + playlistToAdd + "</i>.");
+                        })
+                    },"lucky");
                 });
             });
         });
@@ -414,18 +429,18 @@ var plData;
                 var from =  getPlaylistRange(idPlaylist).from;
                 var to = getPlaylistRange(idPlaylist).to;
                 var KaraLast, yPosition;
-                var nbKaraInPlaylist = container.find('li').length;
+                var nbKaraInPlaylist = parseInt(dashboard.parent().find('.plInfos').data('to')) - parseInt(dashboard.parent().find('.plInfos').data('from'));
                 var loading = dashboard.parent().find(".playlistLoading")
     
-                toleranceDynamicPixels = 200;
+                toleranceDynamicPixels = 250;
     
                 var scrollX;
-                //DEBUG && console.log(container.scrollTop(), container.innerHeight(), container[0].scrollHeight, loading.css('display'), loading.css('opacity'));
+                DEBUG && console.log(container.scrollTop(), container.innerHeight(),  toleranceDynamicPixels, container[0].scrollHeight, " - ",  nbKaraInPlaylist , karaParPage * 2);
                 var scrollTop = container.scrollTop() + container.innerHeight() + toleranceDynamicPixels >= container[0].scrollHeight && nbKaraInPlaylist >= karaParPage * 2;
                 var scrollBottom = container.scrollTop() < toleranceDynamicPixels && from > 0;
                 //DEBUG && console.log(container.scrollTop() + container.innerHeight() + toleranceDynamicPixels , container[0].scrollHeight,nbKaraInPlaylist >= karaParPage * 2, scrollTop, loading.css('opacity') > .95);
              
-
+                DEBUG && console.log(scrollUpdating, scrollTop, scrollBottom);
                 if (  (!scrollUpdating || scrollUpdating.state() == "resolved")  && (scrollTop || scrollBottom)) {
                     loading.fadeIn(400);
                     
@@ -446,7 +461,7 @@ var plData;
                         to = from + karaParPage * 2;
                     }
 
-                    DEBUG && console.log(scrollX + "Affichage des karas de " + from + " à " + to);
+                    DEBUG && console.log("Affichage des karas de " + from + " à " + to);
                     
                     setPlaylistRange(idPlaylist, from, to);
                    
@@ -459,7 +474,6 @@ var plData;
                         var yPositionNew = kara && kara.offset() ? kara.offset().top : yPosition;
                         var y = container.scrollTop() + yPositionNew - yPosition;
 
-                        console.log(container, y);
                         container.scrollTop(y);
                         
                         container.attr('flagScroll', true);
@@ -470,6 +484,16 @@ var plData;
                 }
             }
            
+        });
+
+        $('#modalBox').on('shown.bs.modal', function () {
+            input = $('#modalInput');
+            if(input.is(':visible')) { $('#modalInput').focus(); }
+            else {$('#modalBox').find('button.ok').focus(); }
+        });
+        $('#modalBox').on('keydown', function(e) {
+            var keyCode = e.keyCode || e.which;
+            if (keyCode == '13'){ $(this).find('button.ok').click(); }
         });
 
         /* close closable popup */
@@ -546,6 +570,7 @@ var plData;
     "TYPE_7"    : "Divers",
     "TYPE_8"    : "Compositeur"
     };
+    
 
     /* simplify the ajax calls */
     $.ajaxPrefilter(function (options) {
@@ -585,8 +610,7 @@ var plData;
         canAddKara = singlePlData.canAddKara;
         
 
-        dragHandle = isTouchScreen && (scope == "public" && idPlaylist == -1 && side == 1
-                || scope == "admin" && idPlaylist > 0) ? dragHandleHtml : "";
+        dragHandle = isTouchScreen && scope == "admin" && idPlaylist > 0 ? dragHandleHtml : "";
         playKara = scope === "admin" && idPlaylist > 0 ? playKaraHtml : "";
 
         // public users can add kara to one list, current or public
@@ -615,10 +639,10 @@ var plData;
                             + (data[key].pseudo_add == pseudo ? "user" : "" )
 
                             if (mode === "list") {
-                                htmlContent += "<li class='list-group-item' " + karaDataAttributes + ">"
-                                    + "<div class='btnDiv'>" + html + dragHandle + "</div>"
+                                htmlContent += "<li class='list-group-item collection-item' " + karaDataAttributes + ">"
+                                    + (isTouchScreen ? "" : "<div class='btnDiv'>" + html + dragHandle + "</div>")
                                     + (scope == "admin" ? checkboxKaraHtml : "")
-                                    + "<div class='infoDiv'>" + infoKaraHtml + playKara + "</div>"
+                                    + (isTouchScreen ? "" : "<div class='infoDiv'>" + infoKaraHtml + playKara + "</div>")
                                     + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
                                     + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                                     + "</div>"
@@ -639,7 +663,7 @@ var plData;
                     }
 
                     document.getElementById("playlist" + side).innerHTML = htmlContent;
-                    if( mode === "mobile") { swipSwippables(side); }
+               
                 } else {
                     /* Blacklist criterias build */
                     var blacklistCriteriasHtml = $("<div/>");
@@ -698,7 +722,7 @@ var plData;
           
             // drag & drop part
             // TODO revoir pour bien définir le drag&drop selon les droits
-            if (dragAndDrop && scope === "public" && mode != "mobile") {
+            if (dragAndDrop && scope === "public" && mode != "mobile" && !isTouchScreen) {
                 var draggableLi =  isTouchScreen  ? $("#playlist" + 1 + " > li .dragHandle") : $("#playlist" + 1 + " > li");
                 var dropZone = $('#playlist' + non(1)).parent();
                 if(draggableLi.draggable('instance') != undefined) {
@@ -780,7 +804,7 @@ var plData;
             var willParentSroll = parent[0].scrollTop != parent[0].clientTop|| (parent[0].clientHeight != parent[0].scrollHeight
                                     && parent.scrollTop() + element.offset().top - parent.offset().top != 0)
             // DEBUG && console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
-            parent.velocity({
+            parent.animate({
                 scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
             }, willParentSroll ? 400 : 0 , function(){
                     element = parent.find("li[idkara='" + idKara + "']"); // element may be lost in the meantime
@@ -840,12 +864,12 @@ var plData;
             // for admin, check cookies
             if(scope === "public" && typeof playlistToAddId == "undefined") {
                 select1.val(val1? val1 : panel1Default);
-                $.ajax({ url: 'public/player' }).done(function (data) {
+                $.ajax({ url: 'public/player', async: false}).done(function (data) {
                     playlistToAdd = data['private'] == 1 ? "current" : "public";
                     
-                    $.ajax({ url: 'public/playlists/' + playlistToAdd, async: true }).done(function (data) {
+                    $.ajax({ url: 'public/playlists/' + playlistToAdd, async: false }).done(function (data) {
                         playlistToAddId = data.playlist_id;
-                        select2.val(val2? val2 : playlistToAddId);
+                        select2.val(val2? val2 : playlistToAddId).change();
                     });
                 });
             } else {
@@ -854,18 +878,13 @@ var plData;
                 select1.val(val1? val1 : plVal1Cookie ? plVal1Cookie : -1);
                 select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : 1);
             }
-            
-/*
-            if(newVal != undefined & side != undefined) {
-                $("#selectPlaylist" + side).val(newVal);
-            }
-*/    
             $(".select2").select2({ theme: "bootstrap",
                                     templateResult: formatPlaylist,
                                     templateSelection : formatPlaylist,
-                                    tags: true,
-                                    minimumResultsForSearch: 2
+                                    tags: false,
+                                    minimumResultsForSearch: 3
                                 });
+
             deferred.resolve();
         }).fail(function (data) {
             DEBUG && console.log(data);
@@ -910,13 +929,14 @@ var plData;
         var dashboard =  $("#panel" + side + " .plDashboard");
         var idPlaylist = dashboard.find('.plSelect select > option:selected').val();
         var range = getPlaylistRange(idPlaylist);
+        
         var max = range.from + $('#playlist' + side + ' > li ').length;
 
         var plInfos = "";
         if(idPlaylist) {
             plInfos = range.from + "-" + max;
-            plInfos += (idPlaylist != -1) ? " / " + dashboard.data('num_karas') + " karas ~ dur " + secondsTimeSpanToHMS(dashboard.data('length')) : "";
-            dashboard.parent().find('.plInfos').text(plInfos);
+            plInfos += (idPlaylist > -1) ? " / " + dashboard.data('num_karas') + " karas ~ dur " + secondsTimeSpanToHMS(dashboard.data('length')) : "";
+            dashboard.parent().find('.plInfos').text(plInfos).data('from', range.from).data('to', max);
         }
     }
 
@@ -1062,20 +1082,6 @@ var plData;
                 detailsHtml = $(detailsHtml).hide()
                 liKara.find('.contentDiv').after(detailsHtml);
 
-                if(mode == "mobile") {
-                    liKara.find('.fullLyricsMobile').hammer().on('tap', function (e) {
-                        var playlist = $(this).closest('ul');
-                        var liKara = $(this).closest('li');
-                        var idKara = liKara.attr('idkara');
-                        var detailsKara = liKara.find('.detailsKara');
-                  
-                        $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-                            $('#lyricsModalText').html(data.join('<br/>'));
-                            $('#lyricsModal').modal('open');
-                        });
-                    });
-                    
-                }
                 detailsHtml.fadeIn(animTime);
                 liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
                 saveDetailsKara(idPlaylist, idKara, "add");
@@ -1195,6 +1201,63 @@ var plData;
         
     }
 
+   /* display a modal (really?) */
+    displayModal = function(type, title, message, callback, placeholder) {
+        var modal = $('#modalBox'); 
+        var okButton = modal.find('.modal-footer > button.ok').unbind().show();
+        var otherButton = modal.find('.modal-footer > button.other').prop('disabled', false).unbind().show();
+        var body =  modal.find('.modal-body').show();
+        var form = body.find('.form').show();
+        var input = form.find('input').show();
+
+        body.find('.modal-message').html(message).show();
+        modal.find('.modal-title').html(title);
+       
+        if(type !== "confirm" && type !== "prompt") otherButton.hide();
+        if(type !== "prompt") {
+            form.hide();
+            if(!message || message === "") { body.hide(); }
+        } 
+
+        if(typeof callback != "undefined") {
+            if(type === "confirm") {
+                okButton.click(function(){ callback(true) });
+                otherButton.click(function(){ callback(false) });
+                if(placeholder == "lucky") {
+                    if(isTouchScreen) {
+                        otherButton.prop('disabled', true);
+                    } else {
+                        otherButton.on('mouseenter', function(){
+                            $(this).css('order', 1 - parseInt($(this).css('order')));
+                        });
+                    }
+                }
+            } else if ( type === "prompt") {
+                input.val(placeholder ? placeholder : "");
+                okButton.click(function(){ callback(input.val()) });
+            } else {
+                okButton.click(function(){ callback() });
+            }
+        }
+
+        modal.modal('show');
+    }
+
+
+    ajx = function(type, url, data, doneCallback) {
+        $.ajax({
+            url: url,
+            type: type,
+            data: data
+        })
+        .done(function (data) {
+            if(typeof doneCallback != "undefined"){
+                doneCallback(data)
+            }
+        });
+    }
+
+
     $(window).resize(function () {
         //  initSwitchs();
         var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
@@ -1292,9 +1355,10 @@ var plData;
     });
 
     socket.on('playlistsUpdated', function(){
+    
         if(!(($('#selectPlaylist2').data('select2') && $('#selectPlaylist2').data('select2').isOpen())
                 || ($('#selectPlaylist1').data('select2') && $('#selectPlaylist1').data('select2').isOpen()))) { 
-            playlistsUpdating = fillPlaylistSelects(); 
+            playlistsUpdating = fillPlaylistSelects();
         }
     });
 

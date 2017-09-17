@@ -77,6 +77,9 @@
                 stopUpdate = true;
             });
         });
+        $('#settings select').change(function () {
+            setSettings($(this));
+        });
         $('#settings input[type!="checkbox"][exclude!="true"]').blur(function () {
             setSettings($(this));
         });
@@ -212,33 +215,6 @@
             }
         });
 
-        /**
-         * react to new select entry, creating a new playlist
-        */
-        $('.select2').on('select2:select', function (e) {
-            var select = $(this);
-            if (select.find("option[value='" + e.params.data.id + "'][data-name]").length == 0) {
-                var playlistName = e.params.data.text
-                var create = confirm("Créer nouvelle playlist '" + playlistName + "' ?");
-                if (create) {
-                    $.ajax({
-                        url: 'admin/playlists',
-                        type: 'POST',
-                        data: { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 }
-                    })
-                    .done(function (idNewPlaylist) {
-                            playlistsUpdating.done(function () {
-                                select.val(idNewPlaylist).change()
-                            });
-                        });
-                } else {
-                    select.val([]).change();
-                }
-
-            }
-        });
-        
-
         /* password case handlers */
 
         $('#confirmPassword, #password').on("input", function () {
@@ -327,10 +303,10 @@
         return promise.promise();
     }
 
-    setSettings = function (e, changeAdminPass) {
+    setSettings = function (el, changeAdminPass) {
         //    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
-        if (e.attr('oldValue') !== e.val() || e.attr('type') === "checkbox") {
-            getSettings(e.attr('name'));
+        if (el.attr('oldValue') !== el.val() || el.attr('type') === "checkbox") {
+            getSettings(el.attr('name'));
 
             $('#settings').promise().then(function () {
                 settingsArray = {};
@@ -354,7 +330,6 @@
                         mdpAdmin = $('button[name="AdminPassword"]').val();
                         setupAjax(mdpAdmin);
                     }
-                    getSettings();
                 });
             });
         }
@@ -424,48 +399,75 @@
     $('.controls button').click(function (e) {
         var name = $(this).attr('name');
         var dashBoard = $(this).closest('.plDashboard');
+        var select = dashBoard.find('.plSelect select');
         var selectedOption = dashBoard.find('[type="playlist_select"] > option:selected');
         var playlistName = selectedOption.data('name');
         var idPlaylist = parseInt(dashBoard.data('playlist_id'));
         
-        var url = scope + '/playlists/' + idPlaylist
+        var url = scope + '/playlists/' + idPlaylist;
         var type = "", data = {};
 
         if(name == "shuffle") {
             url += "/shuffle";
             type = "PUT";
+            ajx(type, url, data);
         } else if (name == "export") {
             url += "/export";
             type = "GET";
+            ajx(type, url, data, function(data) {
+                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+                var dlAnchorElem = document.getElementById('downloadAnchorElem');
+                dlAnchorElem.setAttribute("href", dataStr);
+                dlAnchorElem.setAttribute("download", ["KaraMugen", "playlist", idPlaylist, playlistName, Date.now()].join('_') + ".json");
+                dlAnchorElem.click();
+            });
         } else if (name == "import") {
             url = scope + "/playlists/import";
             type = "POST";
-            data['playlist'] = prompt('Collez votre JSON ci-dessous');
+            
+            displayModal("prompt","Collez votre JSON ci-dessous", "", function(json){
+                data['playlist'] = json;
+                ajx(type, url, data);
+            });
         } else if (name == "editName") {
             type = "PUT"
             $.each(["flag_current", "flag_visible", "flag_public"], function(k, v){
                 data[v] = selectedOption.data(v);
             });
-            data['name'] = prompt("Donner un meilleur nom à " + playlistName + " : ", playlistName);
-            if(!data['name']) return false;
+            
+            displayModal("prompt","Renommez " + playlistName, "", function(newName){
+                data['name']  = newName;
+                ajx(type, url, data);
+            });
+        } else if (name == "add") {
+            type = 'POST';
+            url = 'admin/playlists';
+
+            displayModal("prompt","Créer une nouvelle playlist","",
+                function(playlistName) {
+                    data = { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 };
+                    ajx(type, url, data, function (idNewPlaylist) {
+                        playlistsUpdating.done(function () {
+                            select.val(idNewPlaylist).change()
+                        });
+                    });
+                }
+            );
         } else if (name == "delete") {
             url += "";
-            type = confirm("Supprimer la playlist " + playlistName + " pour toujours ?") ? "DELETE" : "ABORT";
+            type = "DELETE";
+            displayModal("confirm","Supprimer la playlist " + playlistName + " pour toujours ?", "", function(confirm){
+                if( confirm ) {
+                    ajx(type, url, data, function(data) {
+                        playlistsUpdating.done(function() {
+                            select.change(); 
+                        }) 
+                    });
+                }
+            });
         }
-        $.ajax({
-            type: type,
-            url: url,
-            data: data
-        }).done(function (data) {
-            DEBUG && console.log(data);
-            if(name == "export") {
-                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
-                var dlAnchorElem = document.getElementById('downloadAnchorElem');
-                dlAnchorElem.setAttribute("href",     dataStr     );
-                dlAnchorElem.setAttribute("download", ["KaraMugen", "playlist", idPlaylist, playlistName, Date.now()].join('_') + ".json");
-                dlAnchorElem.click();
-            }
-        });
+      
+       
     });
 
     changeKaraPos = function (e) {

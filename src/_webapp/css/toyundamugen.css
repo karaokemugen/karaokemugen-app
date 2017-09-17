@@ -202,13 +202,7 @@ select.form-control {
 	_min-height: calc(30px + 19px - 1vw);
 	line-height: 3rem;
 }
-/*
-.playlist-main li.list-group-item {
-	transition-property: all;
-    transition-duration: 0.1s;
-    transition-timing-function: linear;
-    transition-delay: unset;
-}*/
+
 .playlist-main li.list-group-item[currentlyPlaying] {
 	background-color: #3a5064;
 	
@@ -431,12 +425,13 @@ button.closeParent.bottom  {
 .playlistContainer > ul {
 	will-change: -moz-transform;
 }
-#playlist1.list-group > li.list-group-item  > div:first-child, #playlist1.list-group > li.list-group-item  > div:first-child > span, 
+
+#playlist1.list-group > li.list-group-item  > .btnDiv, #playlist1.list-group > li.list-group-item  > .btnDiv > span, 
 #playlist2.list-group > li.list-group-item  > .infoDiv {
 	float: right;
 }
 
-#playlist2.list-group > li.list-group-item  > div:first-child, #playlist2.list-group > li.list-group-item  > div:first-child > span,
+#playlist2.list-group > li.list-group-item  > .btnDiv, #playlist2.list-group > li.list-group-item  > .btnDiv > span,
 #playlist1.list-group > li.list-group-item  > .infoDiv {
 	float: left;
 }
@@ -735,6 +730,32 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     flex-grow: 100;
 	flex-basis: 25%;
     float: right;
+}
+
+#modalBox {
+	z-index: 10000;
+}
+
+#modalBox .modal-body {
+	max-height:  calc(100vh - 117px);
+	overflow-y: auto;
+}
+
+#modalBox .modal-content {
+	color: #eee;
+	background-color:#3a3c45
+}
+#modalBox .modal-footer {
+	display: flex;
+    justify-content: flex-end;
+	padding: 5px;
+}
+#modalBox .modal-footer > button {
+	order: 0;
+	margin-left: 5px;
+}
+#modalBox .modal-header {
+	padding: 12px 15px;
 }
 
 /* placeholders */
