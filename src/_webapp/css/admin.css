@@ -70,7 +70,6 @@ span[name="checkboxKara"] {
 	float: left;
 }
 
-
 .plDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 
 	display: none;
 }
@@ -84,7 +83,8 @@ span[name="checkboxKara"] {
 	display: none;
 }
 
-.panel[canaddkara="false"] .btnDiv > button[name="addKara"] {
+.panel[canaddkara="false"] .btnDiv > button[name="addKara"]
+.panel[canaddkara="false"] .btnDiv > button[name="adAllKara"] {
 	display: none;
 }
 
@@ -237,6 +237,11 @@ span:not(.hideCommands) {
 .plDashboard[data-playlist_id="-4"] .btnDivContainer {
 	display: none;
 }
+.plDashboard[data-playlist_id="-4"] .showPlaylistCommands,
+.plDashboard[data-playlist_id="-2"] .showPlaylistCommands {
+	pointer-events: none;
+	color: #9e9e9e
+}
 .plDashboard[data-playlist_id^="-"] .flagsContainer button {
 	display: none;
 }
@@ -248,12 +253,20 @@ span:not(.hideCommands) {
 	display: block;
 }
 
-
-.plDashboard[data-playlist_id="-1"] .btnDiv > button[name="deleteKara"] {
+.plDashboard[data-playlist_id="-1"] button[name="deleteAllKaras"],
+.plDashboard[data-playlist_id="-2"] button[name="deleteAllKaras"],
+.plDashboard[data-playlist_id="-4"] button[name="deleteAllKaras"]
+{
 	display: none;
 }
 
-.plDashboard[data-playlist_id="-4"] .btnDiv > button[name="deleteKara"] {
+.panel[canAddKara="false"] button[name="addAllKaras"] {
+	display: none;
+}
+
+
+.plDashboard[data-playlist_id="-1"] .btnDiv > button[name="deleteKara"],
+.plDashboard[data-playlist_id="-4"] .btnDiv > button[name="deleteKara"]  {
 	display: none;
 }
 
@@ -283,11 +296,14 @@ span:not(.hideCommands) {
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
-
+.plDashboard[data-playlist_id="-2"] .btnDiv {
+	display: none;
+}
 
 .plDashboard[data-playlist_id="-1"] .flagsContainer {
 	display: none;	
 }
+
 .plDashboard[data-playlist_id="-1"] .controlsContainer,
 .plDashboard[data-playlist_id="-2"] .controlsContainer,
 .plDashboard[data-playlist_id="-3"] .controlsContainer,

@@ -186,7 +186,9 @@
             if (status != undefined && status != "" && status != "stop") {
                 stopUpdate = true;
                 mouseDown = true;
-                $('#progressBarColor').stop().css('width', e.pageX + "px");
+                $('#progressBarColor').removeClass('cssTransform')
+                    .css('transform', 'translateX(' + e.pageX + 'px)')
+                    .addClass('');
                
                 $('#progressBar').attr('title', oldState.timeposition);
             }
@@ -196,12 +198,14 @@
         });
         $('#karaInfo').mousemove(function (e) {
             if (mouseDown) {
-                $('#progressBarColor').stop().css('width', e.pageX + "px");
-                
+                $('#progressBarColor').removeClass('cssTransform')
+                    .css('transform', 'translateX(' + e.pageX + 'px)')
+                    .addClass('');       
             }
         });
         $('#karaInfo').mouseout(function (e) {
             if (mouseDown) {
+                $('#progressBarColor').addClass('cssTransform');
                 stopUpdate = false;
                 mouseDown = false;
                 //refreshPlayerInfos();
@@ -366,19 +370,21 @@
         var futurTimeX = e.pageX - karaInfo.offset().left;
         var presentTimeX = $('#progressBarColor').width();
         var futurTimeSec = songLength * futurTimeX / barInnerwidth;
-        $('#progressBarColor').stop().css('width', 100 * futurTimeSec / songLength + "%");
+        
+        $('#progressBarColor').removeClass('cssTransform')
+        .css('transform', 'translateX(' + e.pageX + 'px)')
+        .addClass('');
 
         var start_time = new Date().getTime();
         $.ajax({
             url: 'admin/player',
             type: 'PUT',
-            data: { command: 'goTo', options: futurTimeSec}
+            data: { command: 'goTo', options: futurTimeSec},
+            complete : function() { $('#progressBarColor').addClass('cssTransform'); }
         })
             .done(function (data) {
                 var request_time = new Date().getTime() - start_time;
-                console.log(request_time);
-               // $('#progressBarColor').stop().velocity({ width: 100 * (futurTimeSec + 2*refreshTime/1000) / songLength + "%" }, Math.abs(2*refreshTime), 'linear');
-                setStopUpdate(false);
+                 setStopUpdate(false);
             });
     }
 
@@ -386,8 +392,8 @@
         var btn = $(this);
         var name = btn.attr('name');
         var selector = btn.closest('.panel-heading').find('[type="playlist_select"]');
-        var playlistId = selector.val();
-        var namePlaylist = selector.find('option[value="' + playlistId + '"]').data('name');
+        var idPlaylist = selector.val();
+        var namePlaylist = selector.find('option[value="' + idPlaylist + '"]').data('name');
         var data = {}, urlEnd = "";
 
         if (name === "flag_current" && !btn.hasClass('btn-primary')) {
@@ -396,10 +402,18 @@
             urlEnd = "/setPublic";
         } else if (name === "flag_visible") {
             urlEnd = "";
-            data = { name: namePlaylist, flag_visible: btn.closest('.plDashboard').data('flag_visible') == "1" ? 0 : 1 };
+            setTo = btn.closest('.plDashboard').data('flag_visible') == "1" ? 0 : 1;
+        
+            if(idPlaylist > 0) {
+                data = { name: namePlaylist, flag_visible: setTo };
+            } else {
+                var list = { "-2" : "Blacklist", "-3" : "Whitelist", "-4" : "BlacklistCriterias" };
+                $('input[name="EngineAllowView' + list[idPlaylist] + '"]').val(1).bootstrapSwitch('state', setTo);
+                return false;
+            }
         }
         $.ajax({
-            url: 'admin/playlists/' + playlistId + urlEnd,
+            url: 'admin/playlists/' + idPlaylist + urlEnd,
             type: 'PUT',
             data: data
         }).done(function (data) {
