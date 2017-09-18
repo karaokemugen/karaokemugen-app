@@ -688,7 +688,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 
 #header {
-	box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.23), 0 1px 13px 0 rgba(0, 0, 0, 0.17), 0 3px 3px -1px rgba(0, 0, 0, 0.26);
+	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.23), 0 1px 12px 0 rgba(0, 0, 0, 0.17), 0 2px 2px -1px rgba(0, 0, 0, 0.26)
 }
 #progressBar {
 	box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.37), 0 1px 18px 0 rgba(0, 0, 0, 0.32), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
