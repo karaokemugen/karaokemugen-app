@@ -34,8 +34,8 @@ $(document).ready(function () {
 
   getPublicSettings(true);
 
-  $('#showSettings').click(function(){
-    popup('#settingsPublic');
+  $('.showSettings').click(function(){
+    displayModal("alert", $('#settingsPublicTitle').text(), $('#settingsPublicContent').html());
   });
 
   $('input[name="lyrics"]').on('switchChange.bootstrapSwitch', function (event) {
@@ -59,7 +59,30 @@ $(document).ready(function () {
 
   });
 
-  //alert($(window).width() + "-" + $(window).height());
+  $('#menuMobile').click(function(){
+    var opened = $(this).data('opened');
+    opened = !opened;
+
+    $(this).parent().find('ul').css('opacity', opened ? '1' : '0');
+    $(this).data('opened', opened);
+  });
+  
+  $('#switchInfoBar').click(function(){
+    $(this).toggleClass('showLyrics');
+    if(  $(this).hasClass('showLyrics') ) {
+      $('input[name="lyrics"]').prop('checked', true);
+    } else {
+      $('input[name="lyrics"]').prop('checked', false);
+    }
+    $('input[name="lyrics"]').trigger('switchChange.bootstrapSwitch');
+  });
+
+  $('#changePseudo').click( function() {
+    displayModal("prompt","Pseudo","", function(newPseudo){
+      pseudo = newPseudo;
+    }, pseudo);
+  });
+  
 });
 
 var date = new Date();
@@ -101,8 +124,11 @@ endOfTheWorldAsWeKnowIt = function() {
   var things = $('body *');
 
   displayMessage('danger', "", '<center>Oh no</center>');
-  $('html').attr('style', 'background-color: hsla(39, 100%, 34%, 0.9); opacity: .85; z-index: 99999;');
-
+  $('html').attr('style', 'background-color: hsla(39, 100%, 34%, 0.86); opacity: .1;z-index: 99999;transition: all 5s linear');
+   
+  setTimeout(function(){
+    $('html').attr('style', 'background-color: hsla(39, 100%, 34%, 0.96); opacity: 0.95;  z-index: 99999;transition: all 5s linear');
+   }, 3000);
 
   setInterval(function () {
    
@@ -111,24 +137,218 @@ endOfTheWorldAsWeKnowIt = function() {
   }, 50);
 }
 
-function endOfTheWorldAsWeKnowItloop(){
+endOfTheWorldAsWeKnowItloop = function(){
   var things = $('body *');
   var randomColor = Math.floor(Math.random()*16777215).toString(16);
   var random = Math.floor(Math.random()*things.length);
   el = things.eq(random);
-  el.css('transition','all 5s linear');
-  el.css('width', Math.floor(Math.random()*400));
-  el.css('height', Math.floor(Math.random()*400));
-  el.css('position', 'fixed');
-  el.css('top', Math.floor(Math.random()*$(window).height() ));
-  el.css('left', Math.floor(Math.random()*$(window).width() ));
+  el.css({'transition': 'all 5s linear',
+          'width': Math.floor(Math.random()*400),
+          'height': Math.floor(Math.random()*400),
+          'position': 'fixed',
+          'top': Math.floor(Math.random()*$(window).height() ),
+          'left': Math.floor(Math.random()*$(window).width() ),
+          'opacity': Math.random()/2 + .4 });
+  
   if(Math.random() > .85) el.css('background-color', '#' + randomColor );
-  el.css('opacity',Math.random()/2 + .4);
+
   el.draggable({
     container: 'body',
     appendTo: 'body',
     
   });
 
- 
+}
+
+
+if (isTouchScreen) {
+  
+Hammer.Manager.prototype.emit = function (originalEmit) {
+  return function (type, data) {
+    originalEmit.call(this, type, data);
+    $(this.element).trigger({
+      type: type,
+      gesture: data
+    });
+  };
+}(Hammer.Manager.prototype.emit);
+
+
+var elem = $('.playlist-main');
+var swipeManager = new Hammer.Manager(elem[0],{
+  prevent_default: false
+});
+
+var swipe = new Hammer.Swipe({'threshold' : 20});
+swipeManager.add(swipe);
+swipeManager.on('swipe', function (e) {
+  
+  panelWidth =  $('#panel1').width();
+  var elem = $('#panel1, #panel2')
+  elem.css({transition: 'transform 1s ease'});
+  if(e.direction == 2 ) {
+    elem.css({transform: 'translateX('+ -1 * panelWidth+'px)'});
+  } else if (e.direction == 4) {
+    elem.css({transform: 'translateX(0)'});
+  }
+});
+
+  /* tap on full lyrics */
+
+  var elem = $('.playlist-main');
+  var managerLyrics = new Hammer.Manager(elem[0],{
+    prevent_default: false
+  });
+  var tapper = new Hammer.Tap();
+  managerLyrics.add(tapper);
+  managerLyrics.on('tap', function (e) {
+
+      $this = $(e.target).closest('.fullLyrics');
+      if($this.length > 0) {
+        e.preventDefault();
+        
+        var liKara = $this.closest('li');
+        var playlist = liKara.closest('ul');
+        var idKara = liKara.attr('idkara');
+        var detailsKara = liKara.find('.detailsKara');
+    
+        $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
+            if (mode == "mobile") {
+              $('#lyricsModalText').html(data.join('<br/>'));
+              $('#lyricsModal').modal('open');
+            } else {
+              displayModal("alert","Lyrics", "<center>" + data.join('<br/>') + "</center");
+            }
+        });
+      }
+    });
+
+
+  swipSwippables = function(side) {
+    var swipeLeft = false;
+    var swipeRight = false;
+
+    swipable = $('.collection[side="' + side + '"]');
+    
+      
+      var manager = new Hammer.Manager(swipable[0],{
+        prevent_default: false
+      });
+      
+      var panner = new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 100 });
+      var tapper = new Hammer.Tap();
+      
+      manager.add(panner);
+      manager.add(tapper);
+
+      
+      swipable.on('touchstart', function (e) {
+        var $this = $(e.target).closest('li');
+        $this.addClass('pressed');
+      }).on('touchend', function (e) {
+          var $this = $(e.target).closest('li');
+          $this.removeClass('drag');
+          $this.removeClass('pressed');
+      })
+
+      manager.on('tap', function (e) {
+        e.gesture = e;
+        
+        if($(e.gesture.target).closest('.fullLyrics').length > 0) {
+          return false;
+        }
+        var $this = $(e.gesture.target).closest('li');
+      
+        if($this.hasClass('pressed')) { toggleDetailsKara($this); }   
+        $this.removeClass('pressed');
+        $this.toggleClass('z-depth-3').toggleClass('active');
+
+      })
+      
+    if(side == 1) {
+        manager.on('pan', function (e) {
+        e.gesture = e;
+      
+        if (e.gesture.pointerType === "touch" || e.gesture.pointerType === "mouse") {
+          var $this = $(e.gesture.target).closest('li');
+          var direction = e.gesture.direction;
+          var x = e.gesture.deltaX;
+          var velocityX = e.gesture.velocityX;
+           console.log(e,direction,x );
+          if(direction != 4) {
+            return false;
+          }
+          
+          $this.addClass('drag');
+          if(x > $this.innerWidth() * .10) {
+          $this.velocity({ translateX: x
+          }, { duration: 50, queue: false, easing: 'easeOutQuad' });
+
+          }
+    
+          // Swipe Left
+          if (direction === 4 && (x > $this.innerWidth() / 2 || velocityX < -0.75)) {
+            swipeLeft = true;
+          }
+          // Swipe Right
+          if (direction === 2 && (x < -1 * $this.innerWidth() / 2 || velocityX > 0.75)) {
+            swipeRight = true;
+          }
+        }
+      }).on('panend', function (e) {
+        e.gesture = e;
+        var $this = $(e.gesture.target).closest('li');
+          // Reset if collection is moved back into original position
+          if (Math.abs(e.gesture.deltaX) < $this.innerWidth() / 2) {
+            swipeRight = false;
+            swipeLeft = false;
+          }
+    
+          if (e.gesture.pointerType === "touch" || e.gesture.pointerType === "mouse") {
+            if (swipeLeft || swipeRight) {
+              var fullWidth;
+              if (swipeLeft) {
+                fullWidth = $this.innerWidth();
+              } else {
+                fullWidth = -1 * $this.innerWidth();
+              }
+    
+              $this.velocity({ translateX: fullWidth
+              }, { duration: 100, queue: false, easing: 'easeOutQuad', complete: function () {
+                  $this.css('border', 'none');
+                  $this.velocity({ height: 0, padding: 0
+                  }, { duration: 200, queue: false, easing: 'easeOutQuad', complete: function () {
+                        if( $this.is(':visible') ) {
+                            var idKara = $this.attr('idkara');
+
+                            ajx( "POST", "public/karas/" + idKara, { requestedby : pseudo }, function() {
+                              playlistContentUpdating.done( function() {
+                                scrollToKara(2, idKara); 
+                              });
+                              displayMessage('success', 'Succès', "Kara ajouté à la playlist <i>" + playlistToAdd + "</i>.");
+                            });
+                        }
+                        
+                        $this.remove();
+                    }
+                  });
+                }
+              });
+              
+            } else {
+              $this.velocity({ translateX: 0
+              }, { duration: 100, queue: false, easing: 'easeOutQuad',  complete: function () {
+              }
+            });
+            }
+            swipeLeft = false;
+            swipeRight = false;
+          }
+      });
+    } 
+
+  }
+  swipSwippables(1);
+  swipSwippables(2);
+
 }

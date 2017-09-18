@@ -57,29 +57,34 @@ $(document).ready(function () {
     var swipeLeft = false;
     var swipeRight = false;
 
-    swipable = $('.collection[side="' + side + '"] > li');
+    swipable = $('.collection[side="' + side + '"]');
     swipable.each(function () {
-      $(this).hammer({
+      $this = $(this);
+      $this.data("hammer", new Hammer($this[0], {
         prevent_default: false
-      });
+      }));
     })
     if(side == 1) {
       swipable.on('touchstart', function (e) {
-        if($(e.target).hasClass('contentDiv')) { $(this).addClass('pressed'); }
+        var $this = $(e.target).closest('li');
+        if($(e.target).hasClass('contentDiv')) { $this.addClass('pressed'); }
         $('#panel1').addClass('noTransform');
       }).on('touchend', function (e) {
-        $(this).removeClass('dragged');
-        $(this).removeClass('pressed');
+          var $this = $(e.target).closest('li');
+          $this.removeClass('dragged');
+          $this.removeClass('pressed');
       }).on('tap', function (e) {
-          if($(this).hasClass('pressed')) { toggleDetailsKara($(this)); }
-          $(this).toggleClass('z-depth-3').toggleClass('active');
+        var $this = $(e.gesture.target).closest('li');
+          if($this.hasClass('pressed')) { toggleDetailsKara($this); }
+          $this.toggleClass('z-depth-3').toggleClass('active');
       }).on('pan', function (e) {
+        console.log(e);
         if (e.gesture.pointerType === "touch") {
-          var $this = $(this);
+          var $this = $(e.gesture.target).closest('li');
           var direction = e.gesture.direction;
           var x = e.gesture.deltaX;
           var velocityX = e.gesture.velocityX;
-        
+          // console.log($(this),e,direction,x , $this, $this.innerWidth());
           if(direction != 4) {
             if(direction == 2) {
               $('#panel1').removeClass('noTransform');  
@@ -87,7 +92,7 @@ $(document).ready(function () {
             return false;
           }
           
-          $(this).addClass('dragged');
+          $this.addClass('dragged');
     
           if(x > $this.innerWidth() * .2) {
           $this.velocity({ translateX: x
@@ -105,14 +110,14 @@ $(document).ready(function () {
           }
         }
       }).on('panend', function (e) {
+        var $this = $(e.gesture.target).closest('li');
           // Reset if collection is moved back into original position
-          if (Math.abs(e.gesture.deltaX) < $(this).innerWidth() / 2) {
+          if (Math.abs(e.gesture.deltaX) < $this.innerWidth() / 2) {
             swipeRight = false;
             swipeLeft = false;
           }
     
           if (e.gesture.pointerType === "touch") {
-            var $this = $(this);
             if (swipeLeft || swipeRight) {
               var fullWidth;
               if (swipeLeft) {

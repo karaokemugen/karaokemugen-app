@@ -3,26 +3,30 @@
 #progressBar {
     top: 0;
     cursor: auto;
-    height:  calc(30px + 28px - 1.5vw);
+    height: 30px;
 }
 #karaInfo {
-    line-height: calc(30px + 28px - 1.5vw);
+    padding: 0px 5px;
+    line-height: 30px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .header button {
-    font-size : calc(17px + 19px - 1vw);
+    font-size : 17px;
 }
 .header {
 	position: fixed;
 	z-index: 1337;
 	background-color: #1E2124;
-    top: calc(30px + 28px - 1.5vw);
-	height: calc(60px + 28px - 1.5vw);
+    top: 30px;
+	height: 60px;
 	width: 100%;
-	border-bottom: 2px solid #9e9e9e;
+	border-bottom: 1px solid #9e9e9e;
 }
 .header button {
-    width: calc(61px + 48px - 2.5vw);
+    width: 60px;
 }
 .header > div {
     height: 100%;
@@ -40,12 +44,12 @@
 }
 .underHeader {
     position: relative;	
-    top: calc(60px + 28px - 1.5vw + 30px + 28px - 1.5vw);
-    height: calc(100% - (60px + 28px - 1.5vw + 30px + 28px - 1.5vw));
+    top: calc( 60px + 30px );
+    height: calc(100% - 60px - 30px );
 }  
 .bootstrap-switch-container i {
-    font-size: calc(20px + 10px - .5vw);
-    top: calc(3px + .5vw - 10px);
+    font-size: 20px;
+    top: 3px;
 }
 div.bootstrap-switch-large{
     width: 100%;
@@ -54,12 +58,12 @@ div.bootstrap-switch-large{
 }
 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-secondary {
    height: 120%;
-   line-height: calc(12px + 90px - 5vw);
-   font-size : calc(12px + 19px - 1vw);
+   line-height: 12px;
+   font-size : 12px;
 }
 
 .dropdown-menu > li > a {
-    font-size :   calc(17px + 19px - 1vw);
+    font-size :   17px;
 }
 
 .playlist-main {
@@ -70,12 +74,9 @@ div.bootstrap-switch-large{
 }
 
 #progressBar {
-    font-size:  calc(17px + 19px - 1vw);
+    font-size:  17px;
 }
-.panel-heading {
-    __font-size:  calc(17px + 19px - 1vw);
-    __height: calc(63px + 15px + 48px - 2.5vw);
-}
+
 .panel-heading > div,.panel-heading > div > div, .panel-heading > div > div > div, .panel-heading > div > div > div > input {
     height: 100%;
 }
@@ -83,20 +84,17 @@ div.bootstrap-switch-large{
      width: 100%;
  }
 .list-group-item {
-    font-size:  calc(14px + 10px - .5vw);
-}
-body {
-    font-size:  calc(155x + 28px - 1.5vw);
+    font-size: 14px;
 }
 
 .header input {
     height: 100%;
     border-radius: 0px;
-    font-size:  calc(17px + 19px - 1vw);
+    font-size:  17px;
 }
 
 .badge {
-    font-size: calc(12px + 19px - 1vw);
+    font-size: 12px;
 }
 
 .right-inner-addon i {
@@ -113,169 +111,245 @@ body {
 }
 
 .header .getLucky {
-    width: 50px;
+    max-width: 60px;
     font-size: 17px;
     line-height: 17px;
     padding: 4px;
     margin-left: 6px;
-
+    background-color: hsla(0, 0%, 18%, 1);
+    border-color: #888;
+    box-shadow: 0 4px 7px 0 rgba(0, 0, 0, 0.40), 0 1px 18px 0 rgba(0, 0, 0, 0.02), 0 3px 5px -1px rgba(0, 0, 0, 0.26);
 }
-.header .getLucky > span  {
-    margin-top: 6px;
-    color: hsla(161, 43%, 46%, 1);
+.header .getLucky:hover {
+    background-color: hsla(0, 0%, 14%, 1);
+    border-color: #444;
+}
+
+.header .getLucky:active:focus {
+    background-color: hsla(0, 0%, 11%, 1);
+    border-color: #222;
 }
 
 #searchParent ::-webkit-input-placeholder {
 	font-size: 2rem;
-	line-height:  21px;
+	line-height:  3rem;
 	height: 30px;
     text-align:right; 
 	font-family: 'Glyphicons Halflings'; 
 }
 
+#searchParent  ::-moz-placeholder {  /* Firefox 19+ */
+	font-size: 2rem;
+	line-height:  3rem;
+	height: 30px;
+    text-align:right; 
+	font-family: 'Glyphicons Halflings'; 
+}
+
+#searchParent :-ms-input-placeholder {
+	font-size: 2rem;
+	line-height:  3rem;
+	height: 30px;
+    text-align:right; 
+	font-family: 'Glyphicons Halflings'; 
+}
+
+
 .popup .panel-heading {
     display: flex;
 }
 
+/* tablet */
+
+.panel {
+    border: 3px solid #1E2124;
+}
+.playlist-main {
+    padding:2px;
+}
+.list-group > li.list-group-item {
+    border-radius: 0;
+}
+.drag  {
+    overflow: hidden;
+ }   
+ .dragged .contentDiv {
+     white-space: nowrap;
+ }
+ .list-group-item.pressed {
+    background-color: rgba(18, 35, 53, 0.70);
+    background-color: rgba(18, 43, 31, 0.60);
+ }
+ .list-group-item.active,
+ .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: hsla(210, 6%, 15%, 0.83);
+    border-color: rgba(177, 177, 177, 0.65);
+ }
+ .list-group-item > .contentDiv {
+    overflow: hidden;
+}
+.list-group-item {
+    overflow: hidden;
+}
+
+#mobileHelp, #mobileActions {
+    display: none;
+}
+
 /* mobile */
 
-@media (max-width: 980px) and (orientation: portrait) {
-    
-    #panel2 { 
-        width: 100%;
+@media (max-width: 990px) {
+    .panel {
+        border: 0px solid #1E2124;
     }
-    #panel1 { 
-        width: 100%;
+    .playlist-main {
+        padding: 0px;
     }
-
-    html { font-size : 14px }
-    
-    .header {
-        position: fixed;
-        z-index: 1337;
-        background-color: #1E2124;
-        top: 60px;
-        height: 115px;
-        width: 100%;
-        border-bottom: 2px solid #9e9e9e;
-    }
-    .header button {
-        width: 115px;
-    }
-    .header input {
-        padding-top: 15px; 
-        padding-right: 20px;
-        font-size: 60px;
-        line-height: 60px;
-    }
-    #progressBar {
-        height: 60px;
-    }
-    #karaInfo {
-        line-height: 60px;
-    }
-    .underHeader {
-        top: calc(115px + 60px);
-        height: calc(100% - 115px - 60px);
-    }
-    .btn-action {
-        width: 70px;
-        height: 70px;
-        font-size: 28px;
-        line-height: 28px;
-    }
-
-    .btn-action.btn-sm {
-        width: 100px;
-        height: 100px;
-        font-size: 45px;
-        line-height: 30px;
-    }
-
-    td, div, span {
-        font-size: 30px;
-        line-height: 50px;
-    }
-
-    .list-group-item .detailsKara, .list-group-item .lyricsKara {
-        padding: 20px;
-    } 
-    .list-group-item .fullLyrics  {
-        right: 80px;
-    }
-    .list-group-item, .contentDiv {
-        font-size: 2rem;
-        line-height: 100px;
-    }
-    .list-group-item.liType {
-        min-height: 40px;
-        line-height: 44px;
-    }
-
-    .header i {
-        font-size: 45px;
-        line-height: 75px;
-        top: 0px;
-    }
-    div.bootstrap-switch-large{
-        width: 100%;
-        height: 100%;
-        background-color: #9e9e9e; ;
-    }
-
-    .dragHandle {
-        display: none;
-    }
-     
-    .panel:after {
-        background-position: 0 0;
-    }
-
-    .panel-heading {
-        height: 115px;
-    }
-    .panel-heading .input-lg {
-        padding-top: 15px;
-        padding-right: 20px;
-        font-size: 40px;
-        line-height: 40px;
-        height: 100%;
-    }
-    
-    #choixPseudo::-webkit-input-placeholder {
-        font-size: 50px;
-        line-height: 50px;
-        height: 50px;
-        text-align:left; 
-        padding-right: 190px;
-    }
-
-    #searchParent ::-webkit-input-placeholder {
-        font-size: 60px;
-        line-height:  80px;
-        height: 80px;
-        text-align:right; 
-        font-family: 'Glyphicons Halflings'; 
-    }
-    
-    .panel-heading ::-webkit-input-placeholder {
-        font-size: 40px;
-        line-height: 40px;
-        height: 60px;
-        text-align:right; 
-        font-family: 'Glyphicons Halflings'; 
-    }
-    
-    .select2.select2-container {
-        height: 76px;
-    }
-    .select2-selection__rendered > span, .select2-selection > span > span > i {
-        line-height: 65px;
-    }
-
     .deleteCriteria {
         display: none !important;
     }
+    .list-group-item:first-child {
+        border-top-width: 0px;
+    }
+
+    .playlist-main {
+        width: 200vw;
+        display: flex;
+    }
+    .header > div:first-child, .header > div > div {
+        padding: 0px;
+    }
+    #searchPlaylist1 {
+        height: inherit;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        width: calc(100% - 0rem);
+        border: 0;
+        box-shadow: none;
+        font-size: 2.3rem;
+        line-height: 2.3rem;
+        background-color: transparent;
+        outline: none;
+        margin: 0 0 20px 0;
+        padding: 0;
+        box-sizing: content-box;
+        transition: all 0.3s;
+    }
+
+    #searchPlaylist1:focus {
+        background-color: #cfd8dc;
+        border-bottom: 1px solid #546e7a;
+        box-shadow: 0 1px 0 0 #546e7a;
+    }
+      
+    
+        
+    #searchParent ::-webkit-input-placeholder {
+        font-size: 2rem;
+        line-height:  3rem;
+        height: 60px;
+    }
+
+    #searchParent  ::-moz-placeholder {  /* Firefox 19+ */
+        font-size: 3rem;
+        line-height:  6rem;
+        height: 60px;
+    }
+
+    #searchParent :-ms-input-placeholder {
+        font-size: 2rem;
+        line-height:  3rem;
+        height: 60px;
+    }
+
+    .fixed-action-btn.left {
+        bottom: 17px;
+        left: 17px;
+        right: auto;
+        position: fixed;
+        padding-top: 15px;
+        z-index: 9876;
+    }
+    .btn-floating.btn-large {
+        font-size: 23px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        transition: .3s;
+        cursor: pointer;
+        vertical-align: middle;
+        display: inline-block;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        line-height: 40px;
+        padding: 0;
+        background-color: #546e7a;
+        text-align: center;
+    }
+    .btn-large > i {
+        line-height: 60px;
+        font-weight: 30px;
+        text-align: center;
+        __left: 31%;
+    }
+    .fixed-action-btn ul {
+        left: 0;
+        right: 0;
+        text-align: center;
+        position: absolute;
+        bottom: 64px;
+        margin: 0;
+        opacity: 0;
+        transition: all .5s ease;
+    }
+    .fixed-action-btn ul li {
+        margin-bottom: 7px;
+        list-style-type: none;
+    }
+    .fixed-action-btn ul {
+        padding-left: 0px;
+    }
+    .fixed-action-btn ul li a {
+        transform: scaleY(0.9) scaleX(0.9) translateY(0px) translateX(0px);
+    }
+    .z-depth-3 {
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    #progressBar {
+        box-shadow: none;
+    }
+
+    #switchInfoBar.showLyrics > i.infos {
+        display: none;
+    }
+    #switchInfoBar:not(.showLyrics) > i.lyrics {
+        display: none;
+    }
+    
+   #mobileHelp, #mobileActions {
+       display: block;
+   }
+
+   .list-group-item .fullLyrics {
+       right: 10px;
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+    
+   }
+   .list-group-item > div.detailsKara {
+    min-height: 56px;
+    padding: 10px;
+    margin: 7px;
+    color: #DFE9EF;
+    background-color: #30393e;
+    border-color: #8aa9af;
+    border-radius: 0px;
+    position: relative;
+    border-color: hsla(190, 13%, 43%, 1);
+    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+
 }
 
-/* tablet */
+}
