@@ -447,7 +447,7 @@ var plData;
                     if(scrollTop) {  // scroll down 
                         scrollX = container.scrollTop();
                         karaPos = playlist.find('li').last();
-                        yPosition = karaPos.offset().top - toleranceDynamicPixels + 15; // - playlist.innerHeight() + scrollX + container.innerHeight();
+                        yPosition = (karaPos ? karaPos.offset().top : 0) - toleranceDynamicPixels + 15; // TODO try to make this 100% accurate // - playlist.innerHeight() + scrollX + container.innerHeight();
                         
                         from += karaParPage;
                         to = from + karaParPage * 2;
@@ -455,7 +455,7 @@ var plData;
                         
                         scrollX = container.scrollTop();
                         karaPos = playlist.find('li').first();
-                        yPosition = karaPos.offset().top + scrollX;
+                        yPosition = (karaPos ? karaPos.offset().top : 0) + scrollX;
     
                         from = Math.max(0, from - karaParPage -20);
                         to = from + karaParPage * 2;
@@ -1281,6 +1281,7 @@ var plData;
 
     getPlaylistRange = function(idPl) {
         var search = $("#searchPlaylist" + sideOfPlaylist(idPl)).val()
+        
         if(!playlistRange[idPl]) playlistRange[idPl] = {};
         return playlistRange[idPl][search] ? playlistRange[idPl][search] : { from : 0, to : karaParPage * 2 };
     }
@@ -1301,7 +1302,7 @@ var plData;
     }
     
     sideOfPlaylist = function(idPlaylist) {
-        var side = $('[type="playlist_select"] > option:selected[value="' + idPlaylist + '"]').parent().attr('side');
+        var side = $('.plSelect select option:selected[value="' + idPlaylist + '"]').parent().attr('side');
         return side;
     }
 
