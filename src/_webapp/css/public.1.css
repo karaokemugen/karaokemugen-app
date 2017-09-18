@@ -205,6 +205,7 @@ div.bootstrap-switch-large{
 /* mobile */
 
 @media (max-width: 990px) {
+    
     .panel {
         border: 0px solid #1E2124;
         position: absolute;
@@ -215,6 +216,11 @@ div.bootstrap-switch-large{
         left: 100%;
     }
 
+    #message {
+        width: 300px;
+        top: 3px;
+        left: calc(50% - 150px);
+    }
     .fullLyrics {
         width: 46px;
         height: 46px;
