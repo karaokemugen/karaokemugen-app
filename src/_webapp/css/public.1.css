@@ -1,5 +1,3 @@
-/* old css */
-
 #progressBar {
     top: 0;
     cursor: auto;
@@ -24,6 +22,10 @@
 	height: 60px;
 	width: 100%;
 	border-bottom: 1px solid #9e9e9e;
+}
+
+.pseudoChange {
+    display: none;
 }
 .header button {
     width: 60px;

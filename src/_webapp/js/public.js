@@ -4,6 +4,15 @@ $(document).ready(function () {
     //this.setSelectionRange(0, this.value.length);
     this.value = "";
   });
+  
+  $('#changePseudo').click( function() {
+    displayModal("prompt","Pseudo","", function(newPseudo){
+      pseudo = newPseudo;
+      document.cookie = 'mugenPseudo=' + pseudo + ';expires=' +  date.toUTCString();
+      document.cookie = 'mugenPseudoList=' + JSON.stringify($('#pseudo > option').map(function(i,e){return e.value})) + ';expires=' +  date.toUTCString();
+    }, pseudo);
+  });
+
   $('#choixPseudo').blur(function(){
     if(settings['EngineAllowNicknameChange'] == "1") {
       pseudo = $(this).val();
@@ -17,11 +26,11 @@ $(document).ready(function () {
   });
 
   var mugenPseudo = document.cookie.match('(^|;) ?' + 'mugenPseudo' + '=([^;]*)(;|$)');
-  
-  if(mugenPseudo) {
+
+  if(mugenPseudo && mugenPseudo[2]) {
     pseudo = mugenPseudo[2];
   } else {
-    pseudo = prompt('Pseudo');
+    $('#changePseudo').click();
   }  
   var mugenPseudoList = document.cookie.match('(^|;) ?' + 'mugenPseudoList' + '=([^;]*)(;|$)');
   if(mugenPseudoList) { 
@@ -79,14 +88,7 @@ $(document).ready(function () {
       $('input[name="lyrics"]').prop('checked', false);
     }
     $('input[name="lyrics"]').trigger('switchChange.bootstrapSwitch');
-  });
-
-  $('#changePseudo').click( function() {
-    displayModal("prompt","Pseudo","", function(newPseudo){
-      pseudo = newPseudo;
-    }, pseudo);
-  });
-  
+  });  
 });
 
 var date = new Date();
@@ -94,7 +96,7 @@ date.setFullYear(date.getFullYear() + 10);
 
 var scope = 'public';
 var settings = {}
-pseudo ="Anonymous";
+pseudo ="";
 refreshTime = 2000;
 panel1Default = -1;
 
@@ -113,8 +115,11 @@ getPublicSettings = function(trigger) {
     fillPlaylistSelects(trigger);
       
     if(settings['EngineAllowNicknameChange'] == "1") {
-      $('#pseudo').parent().show();
+      $('.pseudoChange').show();
       $('#searchParent').css("width","");
+    } else {
+      $('.pseudoChange').hide();
+      $('#searchParent').css("width","100%");
     }
 
     $('#version').text(settings['VersionName'] + " " + settings['VersionNo']);
