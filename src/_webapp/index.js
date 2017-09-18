@@ -88,7 +88,6 @@ module.exports = {
 			routerAdmin.get('/', function (req, res) {
 				si.graphics().then( function(data) {
 					Object.keys(data.displays).forEach(function(key) {
-						console.log(data.displays[key].model);
 						data.displays[key].model = data.displays[key].model.replace("�","e");
 					  });
 					res.render('admin', {'layout': 'adminHeader',
