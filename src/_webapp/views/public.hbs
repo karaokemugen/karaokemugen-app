@@ -1,18 +1,18 @@
 <div id="header" class="header">
-    <div class="col-lg-8 col-md-7 col-sm-7 col-xs-12">
-        <div class="col-lg-10 col-md-8 col-sm-7 col-xs-12 plSearch" id="searchParent" style="width: 100%;">
+    <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
+        <div class="col-lg-10 col-md-8 col-sm-12 col-xs-12 plSearch" id="searchParent" style="width: 100%;">
             <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist" />
-            <button title="{{i18n "GET_LUCKY"}}" class="btn btn-lg btn-action btn-default getLucky hidden-xs">
+            <button title="{{i18n "GET_LUCKY"}}" class="btn btn-lg btn-action btn-default getLucky hidden-xs hidden-sm">
               <img src="/fonts/clover.png">
             </button>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-5 hidden-xs" style="display: none;">
+        <div class="col-lg-2 col-md-4 hidden-sm hidden-xs" style="display: none;">
             <input list="pseudo" type="text" id="choixPseudo" class="form-control" placeholder="{{i18n "NICKNAME"}}" />
             <datalist id="pseudo">
             </datalist>
         </div>
     </div>
-    <div class="col-lg-4 col-md-5 col-sm-5 hidden-xs">
+    <div class="col-lg-4 col-md-5 hidden-sm hidden-xs">
         <div class="dropdown pull-right">
             <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
             </span><i class="glyphicon glyphicon-cog"></i></button>
@@ -36,7 +36,7 @@
 </div>
 <div id="underHeader" class="underHeader container-fluid">
     <div class="playlist-main row" id="playlist">
-        <div class="panel col-lg-8 col-md-7 col-sm-7 col-xs-12" id="panel1" side="1">
+        <div class="panel col-lg-8 col-md-7 col-sm-12 col-xs-12" id="panel1" side="1">
              <div class="plDashboard">
                 <div class="plSelect">
                     <select id="selectPlaylist1" side="1" hidden >
@@ -52,7 +52,7 @@
             <div class="plInfos"></div>
         </div>
          
-        <div class="panel col-lg-4 col-md-5 col-sm-5 col-xs-12" id="panel2" side="2">
+        <div class="panel col-lg-4 col-md-5 col-sm-12 col-xs-12" id="panel2" side="2">
            <div class="panel-heading container-fluid plDashboard">
                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6 plSelect">
                     <select id="selectPlaylist2" side="2" type="playlist_select" class="select2 form-control">

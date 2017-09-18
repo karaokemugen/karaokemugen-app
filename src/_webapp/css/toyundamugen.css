@@ -381,6 +381,8 @@ button.closeParent.bottom  {
 }
 
 .playlist-main .list-group-item {
+	border-left: 0px;
+	border-right: 0px;
 	z-index: 20;
 	background-color: rgba(57, 57, 57, .65)
 }
@@ -528,22 +530,6 @@ button.closePopupParent {
 	height: auto;
 }
 
-.popup {
-    background-color: #FFFFFF;
-    border: 1px solid #999999;
-    cursor: default;
-    display: none;
-    width: 700px;
-    top: 20px;
-    left: calc(50% - 350px);
-    position: fixed;
-    /* width: 394px; */
-    z-index: 9997;
-	padding: 0px;
-	margin: 0px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
 
 .input-lg, .input-md {
 	border-radius: 0;
@@ -756,6 +742,13 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 #modalBox .modal-header {
 	padding: 12px 15px;
+}
+
+#modalBox button.ok {
+	background-color: hsla(139, 14%, 22%, 1);
+}
+#modalBox button:not(.ok) {
+	background-color: hsla(0, 17%, 22%, 1);
 }
 
 /* placeholders */

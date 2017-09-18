@@ -132,11 +132,28 @@ div.bootstrap-switch-large{
 
 #searchParent ::-webkit-input-placeholder {
 	font-size: 2rem;
-	line-height:  21px;
+	line-height:  3rem;
 	height: 30px;
     text-align:right; 
 	font-family: 'Glyphicons Halflings'; 
 }
+
+#searchParent  ::-moz-placeholder {  /* Firefox 19+ */
+	font-size: 2rem;
+	line-height:  3rem;
+	height: 30px;
+    text-align:right; 
+	font-family: 'Glyphicons Halflings'; 
+}
+
+#searchParent :-ms-input-placeholder {
+	font-size: 2rem;
+	line-height:  3rem;
+	height: 30px;
+    text-align:right; 
+	font-family: 'Glyphicons Halflings'; 
+}
+
 
 .popup .panel-heading {
     display: flex;
@@ -181,7 +198,7 @@ div.bootstrap-switch-large{
 
 /* mobile */
 
-@media (max-width: 980px) {
+@media (max-width: 990px) {
     .panel {
         border: 0px solid #1E2124;
     }
@@ -231,7 +248,7 @@ div.bootstrap-switch-large{
         right: auto;
         position: fixed;
         padding-top: 15px;
-        z-index: 98765;
+        z-index: 9876;
     }
     .btn-floating.btn-large {
         font-size: 23px;

@@ -268,12 +268,12 @@ swipeManager.on('swipe', function (e) {
         manager.on('pan', function (e) {
         e.gesture = e;
       
-        if (e.gesture.pointerType === "touch") {
+        if (e.gesture.pointerType === "touch" || e.gesture.pointerType === "mouse") {
           var $this = $(e.gesture.target).closest('li');
           var direction = e.gesture.direction;
           var x = e.gesture.deltaX;
           var velocityX = e.gesture.velocityX;
-          // console.log($(this),e,direction,x , $this, $this.innerWidth());
+           console.log(e,direction,x );
           if(direction != 4) {
             return false;
           }
@@ -303,7 +303,7 @@ swipeManager.on('swipe', function (e) {
             swipeLeft = false;
           }
     
-          if (e.gesture.pointerType === "touch") {
+          if (e.gesture.pointerType === "touch" || e.gesture.pointerType === "mouse") {
             if (swipeLeft || swipeRight) {
               var fullWidth;
               if (swipeLeft) {
