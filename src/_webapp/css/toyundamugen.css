@@ -349,6 +349,10 @@ select.form-control {
 .list-group-item .fullLyrics  {
 	right: 49px;
 }
+.list-group-item .fullLyrics.mobile {
+	right: 10px;
+	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+}
 
 button.closeParent.bottom  {
 	bottom: 10px;
@@ -723,7 +727,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 
 #modalBox .modal-body {
-	max-height:  calc(100vh - 117px);
+	max-height:  calc(100vh - 150px);
 	overflow-y: auto;
 }
 

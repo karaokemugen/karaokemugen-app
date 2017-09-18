@@ -271,7 +271,8 @@ var plData;
                         playlistContentUpdating.done( function() {
                             scrollToKara(non(side), idKara); 
                         });
-                        displayMessage('success', '', (li.length > 1 ? li.length + " karas ajoutés" : "Kara ajouté")
+                        var ajout = (li.length > 1 ? li.length + " karas" : "'" + li.find('.contentDiv').text() + "'");
+                        displayMessage('success', ajout, " ajouté" +  (li.length > 1 ? "s" : "")
                             + " à la playlist <i>" +$("#selectPlaylist" + non(side) + " > option[value='" + idPlaylistTo + "']").text() + "</i>.");
                         
                         DEBUG && console.log("Kara " + idKara + " ajouté à la playlist (" + idPlaylistTo + ") "
@@ -393,7 +394,7 @@ var plData;
                             playlistContentUpdating.done( function() {
                                 scrollToKara(2, chosenOne); 
                             });
-                            displayMessage('success', 'Succès', "Kara ajouté à la playlist <i>" + playlistToAdd + "</i>.");
+                            displayMessage('success', '', "Kara ajouté à la playlist <i>" + playlistToAdd + "</i>.");
                         })
                     },"lucky");
                 });
@@ -515,13 +516,15 @@ var plData;
             $('#progressBarColor').addClass('cssTransition');
         }
         
+        $(window).on('touchmove',function(e){e.preventDefault();})
         $(window).trigger('resize');
     });
 
     socket = io( window.location.protocol + "//" + window.location.hostname + ":1340");
     
     isTouchScreen =  "ontouchstart" in document.documentElement || new URL(window.location.href).searchParams.get("TOUCHSCREEN") != null; 
-    animTime = $(window).width() < 1000 ? 200 : 300;
+    isSmall = $(window).width() < 991;
+    animTime = isSmall ? 200 : 300;
     refreshTime = 1000;
     toleranceDynamicPixels = 100;
     mode = "list";
@@ -551,7 +554,8 @@ var plData;
     closeButton = '<button class="closeParent btn btn-action"><i class="glyphicon glyphicon-remove"></i></button>';
     closeButtonBottom = '<button class="closeParent bottom btn btn-action"><i class="glyphicon glyphicon-remove"></i></button>';
     closePopupButton = '<button class="closePopupParent btn btn-action"><i class="glyphicon glyphicon-remove"></i></button>';
-    showFullTextButton = "<button class='fullLyrics btn btn-action'><i class='glyphicon glyphicon-align-justify'></i></button>";
+    showFullTextButton = "<button class='fullLyrics " + (isTouchScreen ? "mobile" : "") + " btn btn-action'><i class='glyphicon glyphicon-align-justify'></i></button>";
+    
     buttonHtmlPublic = '';
     dragHandleHtml =  "<span class='dragHandle'><i class='glyphicon glyphicon-option-vertical'></i></span>";
     playKaraHtml = "<button class='btn btn-sm btn-action playKara'><i class='glyphicon glyphicon-play'></i></btn>"
@@ -571,6 +575,78 @@ var plData;
     "TYPE_8"    : "Compositeur"
     };
     
+    
+if (isTouchScreen) {
+    
+  Hammer.Manager.prototype.emit = function (originalEmit) {
+    return function (type, data) {
+      originalEmit.call(this, type, data);
+      $(this.element).trigger({
+        type: type,
+        gesture: data
+      });
+    };
+  }(Hammer.Manager.prototype.emit);
+  
+  
+    /* tap on full lyrics */
+  
+    var elem = $('.playlist-main');
+    var managerLyrics = new Hammer.Manager(elem[0],{
+      prevent_default: false
+    });
+    var tapper = new Hammer.Tap();
+    managerLyrics.add(tapper);
+    managerLyrics.on('tap', function (e) {
+    $this = $(e.target).closest('.fullLyrics');
+    
+    if($this.length > 0) {
+      e.preventDefault();
+      
+      var liKara = $this.closest('li');
+      var playlist = liKara.closest('ul');
+      var idKara = liKara.attr('idkara');
+      var detailsKara = liKara.find('.detailsKara');
+  
+      $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
+          if (mode == "mobile") {
+            $('#lyricsModalText').html(data.join('<br/>'));
+            $('#lyricsModal').modal('open');
+          } else {
+            displayModal("alert","Lyrics", "<center>" + data.join('<br/>') + "</center");
+          }
+      });
+    }
+  });
+  
+  managerLyrics.on('tap click', function (e) {
+    e.gesture = e;
+    var target = $(e.gesture.target);
+    
+    if(target.closest('.fullLyrics').length > 0
+    || target.closest('.btnDiv').length > 0
+    || target.closest('.infoDiv').length > 0
+    || target.closest('[name="checkboxKara"]').length > 0 ) {
+      return false;
+    }
+    var $this = target.closest('li');
+  
+    if($this.hasClass('pressed')) { toggleDetailsKara($this); }   
+    $this.removeClass('pressed');
+    $this.toggleClass('z-depth-3').toggleClass('active');
+  
+  })
+  
+    
+  $('.playlistContainer').on('touchstart mousedown', 'li', function (e) {
+    var $this = $(e.target).closest('li');
+    $this.addClass('pressed');
+  }).on('touchend mouseup', 'li', function (e) {
+      var $this = $(e.target).closest('li');
+      $this.removeClass('drag');
+      $this.removeClass('pressed');
+  })
+}  
 
     /* simplify the ajax calls */
     $.ajaxPrefilter(function (options) {
@@ -642,7 +718,8 @@ var plData;
                                 htmlContent += "<li class='list-group-item collection-item' " + karaDataAttributes + ">"
                                     + (isTouchScreen && scope !== "admin" ? "" : "<div class='btnDiv'>" + html + dragHandle + "</div>")
                                     + (scope == "admin" ? checkboxKaraHtml : "")
-                                    + (isTouchScreen && scope !== "admin" ? "" : "<div class='infoDiv'>" + infoKaraHtml + playKara + "</div>")
+                                    + (isTouchScreen && scope !== "admin" ? "" : "<div class='infoDiv'>"
+                                    + (isTouchScreen ? "" : infoKaraHtml) + playKara + "</div>")
                                     + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
                                     + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                                     + "</div>"
@@ -651,12 +728,9 @@ var plData;
                             } else if (mode === "mobile") {
                                 htmlContent += "<li class='collection-item' " + karaDataAttributes + ">"
                                     + "<div class='subKara'>"
-                                //    + "<div class='infoDiv right circle'>" + infoKaraHtml + html + "</div>"
                                     + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
                                     + "</div>"
-                                //    + "<div class='btnDiv right'>" + "</div>"
                                     + "</div>"
-                                //    + (saveDetailsKara(idPlaylist, data[key].kara_id) ? buildKaraDetails(data[key]) : "")
                                     + "</li>"; 
                             }
                         }
@@ -1260,6 +1334,7 @@ var plData;
 
     $(window).resize(function () {
         //  initSwitchs();
+        isSmall = $(window).width() < 991;        
         var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
         var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
         $('#playlist1').parent().css('height', 'calc(100% - ' + (scope === "public" ? 0 : topHeight1) + 'px ');

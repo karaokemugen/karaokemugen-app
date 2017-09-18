@@ -167,9 +167,17 @@ div.bootstrap-switch-large{
 .playlist-main {
     padding:2px;
 }
-.list-group > li.list-group-item {
-    border-radius: 0;
+
+/* experimental, à vérifier */
+* {
+    touch-action: none;
 }
+
+.playlist-main, .panel, .playlistContainer, .list-group, .list-group > li.list-group-item, .list-group .contentDiv {
+    border-radius: 0;
+    touch-action: pan-y !important;
+}
+
 .drag  {
     overflow: hidden;
  }   
@@ -201,6 +209,18 @@ div.bootstrap-switch-large{
 @media (max-width: 990px) {
     .panel {
         border: 0px solid #1E2124;
+        position: absolute;
+        transform: translateX(0%);
+    }
+
+    #panel2 {
+        left: 100%;
+    }
+
+    .fullLyrics {
+        width: 46px;
+        height: 46px;
+        font-size: 18px;
     }
     .playlist-main {
         padding: 0px;
@@ -213,8 +233,7 @@ div.bootstrap-switch-large{
     }
 
     .playlist-main {
-        width: 200vw;
-        display: flex;
+        width: 100%;
     }
     .header > div:first-child, .header > div > div {
         padding: 0px;
@@ -333,11 +352,7 @@ div.bootstrap-switch-large{
        display: block;
    }
 
-   .list-group-item .fullLyrics {
-       right: 10px;
-        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
-    
-   }
+  
    .list-group-item > div.detailsKara {
     min-height: 56px;
     padding: 10px;
