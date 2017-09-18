@@ -328,7 +328,7 @@ var plData;
                 $this.attr('value', $this.attr('value') == "1" ? "0" : "1");
             } else if (name === "addAllKaras") {
                 $.ajax({ url: url }).done(function (data) {
-                    displayMessage("info", "Info", "Ajout de " + data.length + "karas à la playlist " + $('#panel' + non(side) + ' .plDashboard').data('name'))
+                    displayMessage("info", "Info", "Ajout de " + data.length + " karas à la playlist " + $('#panel' + non(side) + ' .plDashboard').data('name'))
                     var karaList = data.map(function(a) {return a.kara_id }).join();
                     var urlPost = getPlData(idPlaylistTo).url;
                    
@@ -520,7 +520,7 @@ var plData;
 
     socket = io( window.location.protocol + "//" + window.location.hostname + ":1340");
     
-    isTouchScreen =  "ontouchstart" in document.documentElement || new URL(window.location.href).searchParams.get("TOUCHSCREEN") != null;
+    isTouchScreen =  "ontouchstart" in document.documentElement || new URL(window.location.href).searchParams.get("TOUCHSCREEN") != null; 
     animTime = $(window).width() < 1000 ? 200 : 300;
     refreshTime = 1000;
     toleranceDynamicPixels = 100;
@@ -530,7 +530,7 @@ var plData;
     dragAndDrop = true;
     stopUpdate = false;
     
-    karaParPage = new URL(window.location.href).searchParams.get("karaNum") ? parseInt(new URL(window.location.href).searchParams.get("karaNum")) : isTouchScreen ? 45 : 55;
+    karaParPage = new URL(window.location.href).searchParams.get("karaNum") ? parseInt(new URL(window.location.href).searchParams.get("karaNum")) : isTouchScreen ? 55 : 60;
     DEBUG = new URL(window.location.href).searchParams.get("DEBUG") != null;
     SOCKETDEBUG = new URL(window.location.href).searchParams.get("SOCKETDEBUG") != null;
 
@@ -640,9 +640,9 @@ var plData;
 
                             if (mode === "list") {
                                 htmlContent += "<li class='list-group-item collection-item' " + karaDataAttributes + ">"
-                                    + (isTouchScreen ? "" : "<div class='btnDiv'>" + html + dragHandle + "</div>")
+                                    + (isTouchScreen && scope !== "admin" ? "" : "<div class='btnDiv'>" + html + dragHandle + "</div>")
                                     + (scope == "admin" ? checkboxKaraHtml : "")
-                                    + (isTouchScreen ? "" : "<div class='infoDiv'>" + infoKaraHtml + playKara + "</div>")
+                                    + (isTouchScreen && scope !== "admin" ? "" : "<div class='infoDiv'>" + infoKaraHtml + playKara + "</div>")
                                     + "<div class='contentDiv''>" + buildKaraTitle(data[key], filter)
                                     + (isTouchScreen || true ? "" : "<span class='badge'>" + data[key].language.toUpperCase() + "</span>")
                                     + "</div>"
@@ -1127,7 +1127,7 @@ var plData;
 
             infoKaraTemp = "no mode specified";
             if (htmlMode == "list") {
-                infoKaraTemp = "<div class='detailsKara alert alert-info'>" + closeButton + showFullTextButton + htmlTable + "</div>";
+                infoKaraTemp = "<div class='detailsKara alert alert-info'>" + (isTouchScreen ? "" : closeButton) + showFullTextButton + htmlTable + "</div>";
             } else if (htmlMode == "mobile") {
                 infoKaraTemp = "<div class='detailsKara z-depth-1'>" + showFullTextButton + htmlTable + "</div>";
             }

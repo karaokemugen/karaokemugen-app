@@ -179,16 +179,17 @@ var swipeManager = new Hammer.Manager(elem[0],{
   prevent_default: false
 });
 
-var swipe = new Hammer.Swipe({'threshold' : 50});
+var swipe = new Hammer.Swipe({'threshold' : 20});
 swipeManager.add(swipe);
 swipeManager.on('swipe', function (e) {
   
   panelWidth =  $('#panel1').width();
-  $('.playlist-main').css({transition: 'transform 1s ease'});
+  var elem = $('#panel1, #panel2')
+  elem.css({transition: 'transform 1s ease'});
   if(e.direction == 2 ) {
-    $('.playlist-main').css({transform: 'translateX('+ -1 * panelWidth+'px)'});
+    elem.css({transform: 'translateX('+ -1 * panelWidth+'px)'});
   } else if (e.direction == 4) {
-    $('.playlist-main').css({transform: 'translateX(0)'});
+    elem.css({transform: 'translateX(0)'});
   }
 });
 
@@ -279,7 +280,7 @@ swipeManager.on('swipe', function (e) {
           }
           
           $this.addClass('drag');
-          if(x > $this.innerWidth() * .05) {
+          if(x > $this.innerWidth() * .10) {
           $this.velocity({ translateX: x
           }, { duration: 50, queue: false, easing: 'easeOutQuad' });
 

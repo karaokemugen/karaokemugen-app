@@ -94,6 +94,13 @@
                 $(this).blur();
             }
         });
+
+        $('[name="searchPlaylist"]').keypress(function (e) { // allow pressing enter to validate a setting
+            if (e.which == 13) {
+                $(this).blur();
+            }
+        });
+        
         $('.playlist-main').on('keypress', '#bcVal', function (e) {
             if (e.which == 13) {
                 $('#blacklistCriteriasInputs').find('#bcAdd').click();

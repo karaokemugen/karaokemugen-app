@@ -241,6 +241,26 @@ div.bootstrap-switch-large{
         border-bottom: 1px solid #546e7a;
         box-shadow: 0 1px 0 0 #546e7a;
     }
+      
+    
+        
+    #searchParent ::-webkit-input-placeholder {
+        font-size: 2rem;
+        line-height:  3rem;
+        height: 60px;
+    }
+
+    #searchParent  ::-moz-placeholder {  /* Firefox 19+ */
+        font-size: 3rem;
+        line-height:  6rem;
+        height: 60px;
+    }
+
+    #searchParent :-ms-input-placeholder {
+        font-size: 2rem;
+        line-height:  3rem;
+        height: 60px;
+    }
 
     .fixed-action-btn.left {
         bottom: 17px;
@@ -312,5 +332,24 @@ div.bootstrap-switch-large{
    #mobileHelp, #mobileActions {
        display: block;
    }
+
+   .list-group-item .fullLyrics {
+       right: 10px;
+        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+    
+   }
+   .list-group-item > div.detailsKara {
+    min-height: 56px;
+    padding: 10px;
+    margin: 7px;
+    color: #DFE9EF;
+    background-color: #30393e;
+    border-color: #8aa9af;
+    border-radius: 0px;
+    position: relative;
+    border-color: hsla(190, 13%, 43%, 1);
+    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+
+}
 
 }

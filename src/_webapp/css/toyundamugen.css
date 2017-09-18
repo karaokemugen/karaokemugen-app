@@ -678,7 +678,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
 	}
 	
-.plDashboard, .playlistContainer, #progressBar {
+.plDashboard, #progressBar {
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.30), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
 	
 }
@@ -775,3 +775,4 @@ input[type=range]:focus::-webkit-slider-runnable-track {
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
+
