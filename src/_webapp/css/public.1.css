@@ -289,6 +289,7 @@ div.bootstrap-switch-large{
         padding-top: 15px;
         z-index: 9876;
     }
+    
     .btn-floating.btn-large {
         font-size: 23px;
         width: 60px;
@@ -323,6 +324,7 @@ div.bootstrap-switch-large{
         opacity: 0;
         transition: all .5s ease;
     }
+
     .fixed-action-btn ul li {
         margin-bottom: 7px;
         list-style-type: none;

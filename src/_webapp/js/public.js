@@ -63,7 +63,11 @@ $(document).ready(function () {
     var opened = $(this).data('opened');
     opened = !opened;
 
-    $(this).parent().find('ul').css('opacity', opened ? '1' : '0');
+    ul = $(this).parent().find('ul');
+    if(opened) ul.show();
+    ul.css('opacity', opened ? '1' : '0');
+    setTimeout(function() {if(!opened) ul.hide(); }, 500);    
+    
     $(this).data('opened', opened);
   });
   
@@ -93,6 +97,7 @@ var settings = {}
 pseudo ="Anonymous";
 refreshTime = 2000;
 panel1Default = -1;
+
 
 
 getPublicSettings = function(trigger) {
@@ -125,7 +130,8 @@ endOfTheWorldAsWeKnowIt = function() {
 
   displayMessage('danger', "", '<center>Oh no</center>');
   $('html').attr('style', 'background-color: hsla(39, 100%, 34%, 0.86); opacity: .1;z-index: 99999;transition: all 5s linear');
-   
+  $('body').css('background-color','#4E5154');
+  $('body').css('opacity','.95');
   setTimeout(function(){
     $('html').attr('style', 'background-color: hsla(39, 100%, 34%, 0.96); opacity: 0.95;  z-index: 99999;transition: all 5s linear');
    }, 3000);
@@ -150,14 +156,17 @@ endOfTheWorldAsWeKnowItloop = function(){
           'left': Math.floor(Math.random()*$(window).width() ),
           'opacity': Math.random()/2 + .4 });
   
-  if(Math.random() > .85) el.css('background-color', '#' + randomColor );
+  if(Math.random() > .85) el.css('background-color', '#' + randomColor );  
+  if(Math.random() > .992) el.css({'background': 'url(/img/4thimpact.png) no-repeat',
+    'background-color': 'transparent',
+    'background-size': 'contain'});
 
+  
   el.draggable({
     container: 'body',
     appendTo: 'body',
     
   });
-
 }
 
 
@@ -165,6 +174,7 @@ if (isTouchScreen) {
 
 var swipeLeft = false;
 var swipeRight = false;
+var sensibility = .28;
 
 var elem = $('.playlist-main');
 var swipeManager = new Hammer.Manager(elem[0],{
@@ -242,11 +252,11 @@ swipeManager.on('swipe', function (e) {
         }
   
         // Swipe Left
-        if (direction === 4 && (x > $this.innerWidth() / 2 || velocityX < -0.75)) {
+        if (direction === 4 && (x > $this.innerWidth()  * sensibility || velocityX < -0.75)) {
           swipeLeft = true;
         }
         // Swipe Right
-        if (direction === 2 && (x < -1 * $this.innerWidth() / 2 || velocityX > 0.75)) {
+        if (direction === 2 && (x < -1 * $this.innerWidth()  * sensibility  || velocityX > 0.75)) {
           swipeRight = true;
         }
       }
@@ -254,7 +264,7 @@ swipeManager.on('swipe', function (e) {
       e.gesture = e;
       var $this = $(e.gesture.target).closest('li');
         // Reset if collection is moved back into original position
-        if (Math.abs(e.gesture.deltaX) < $this.innerWidth() / 2) {
+        if (Math.abs(e.gesture.deltaX) < $this.innerWidth() * sensibility) {
           swipeRight = false;
           swipeLeft = false;
         }
