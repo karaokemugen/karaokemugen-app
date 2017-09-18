@@ -516,7 +516,6 @@ var plData;
             $('#progressBarColor').addClass('cssTransition');
         }
         
-        $(window).on('touchmove',function(e){e.preventDefault();})
         $(window).trigger('resize');
     });
 

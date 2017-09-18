@@ -204,7 +204,6 @@ swipeManager.on('swipe', function (e) {
   }
 });
 
-    $(window).on('touchmove',function(e){e.preventDefault();});
 
 [1,2].forEach(function(side){
     
