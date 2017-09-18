@@ -169,9 +169,7 @@ div.bootstrap-switch-large{
 }
 
 /* experimental, à vérifier */
-* {
-    touch-action: none;
-}
+
 
 .playlist-main, .panel, .playlistContainer, .list-group, .list-group > li.list-group-item, .list-group .contentDiv {
     border-radius: 0;
