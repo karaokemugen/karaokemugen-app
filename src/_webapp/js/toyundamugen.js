@@ -522,7 +522,7 @@ var plData;
     socket = io( window.location.protocol + "//" + window.location.hostname + ":1340");
     
     isTouchScreen =  "ontouchstart" in document.documentElement || new URL(window.location.href).searchParams.get("TOUCHSCREEN") != null; 
-    isSmall = $(window).width() < 991;
+    isSmall = $(window).width() < 1025;
     animTime = isSmall ? 200 : 300;
     refreshTime = 1000;
     toleranceDynamicPixels = 100;
@@ -1333,7 +1333,7 @@ if (isTouchScreen) {
 
     $(window).resize(function () {
         //  initSwitchs();
-        isSmall = $(window).width() < 991;        
+        isSmall = $(window).width() < 1025;        
         var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
         var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
         $('#playlist1').parent().css('height', 'calc(100% - ' + (scope === "public" ? 0 : topHeight1) + 'px ');
