@@ -1,5 +1,3 @@
-/* old css */
-
 #progressBar {
     top: 0;
     cursor: auto;
@@ -24,6 +22,10 @@
 	height: 60px;
 	width: 100%;
 	border-bottom: 1px solid #9e9e9e;
+}
+
+.pseudoChange {
+    display: none;
 }
 .header button {
     width: 60px;
@@ -167,9 +169,15 @@ div.bootstrap-switch-large{
 .playlist-main {
     padding:2px;
 }
-.list-group > li.list-group-item {
+
+/* experimental, à vérifier */
+
+
+.playlist-main, .panel, .playlistContainer, .list-group, .list-group > li.list-group-item, .list-group .contentDiv {
     border-radius: 0;
+    touch-action: pan-y !important;
 }
+
 .drag  {
     overflow: hidden;
  }   
@@ -198,9 +206,27 @@ div.bootstrap-switch-large{
 
 /* mobile */
 
-@media (max-width: 990px) {
+@media (max-width: 1025px) {
+    
     .panel {
         border: 0px solid #1E2124;
+        position: absolute;
+        transform: translateX(0%);
+    }
+
+    #panel2 {
+        left: 100%;
+    }
+
+    #message {
+        width: 300px;
+        top: 3px;
+        left: calc(50% - 150px);
+    }
+    .fullLyrics {
+        width: 46px;
+        height: 46px;
+        font-size: 18px;
     }
     .playlist-main {
         padding: 0px;
@@ -213,8 +239,7 @@ div.bootstrap-switch-large{
     }
 
     .playlist-main {
-        width: 200vw;
-        display: flex;
+        width: 100%;
     }
     .header > div:first-child, .header > div > div {
         padding: 0px;
@@ -270,6 +295,7 @@ div.bootstrap-switch-large{
         padding-top: 15px;
         z-index: 9876;
     }
+    
     .btn-floating.btn-large {
         font-size: 23px;
         width: 60px;
@@ -304,6 +330,7 @@ div.bootstrap-switch-large{
         opacity: 0;
         transition: all .5s ease;
     }
+
     .fixed-action-btn ul li {
         margin-bottom: 7px;
         list-style-type: none;
@@ -333,11 +360,7 @@ div.bootstrap-switch-large{
        display: block;
    }
 
-   .list-group-item .fullLyrics {
-       right: 10px;
-        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
-    
-   }
+  
    .list-group-item > div.detailsKara {
     min-height: 56px;
     padding: 10px;
@@ -350,6 +373,16 @@ div.bootstrap-switch-large{
     border-color: hsla(190, 13%, 43%, 1);
     box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
 
+    }
+
 }
 
+/* special size for iPad pro */
+@media (max-width: 1025px) and (min-width: 992px) {
+    .hidden-msm {
+        display: none!important;
+    }
+    .col-msm-12 {
+        width: 100% !important;
+    }
 }
