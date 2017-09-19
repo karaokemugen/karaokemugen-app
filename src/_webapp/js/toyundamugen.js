@@ -208,9 +208,11 @@ var plData;
             var idPlaylistFrom = parseInt($('#selectPlaylist' + side).val());
             var idPlaylistTo = parseInt($('#selectPlaylist' + non(side)).val());
             var idKara, idKaraPlaylist;
-            
+            var groupAction = false;
+
             if($(this).parent().hasClass('plCommands')) {
-                var checkedList = $(this).closest('.panel').find('li:has(span[name="checkboxKara"][value="1"])');
+                groupAction = true;
+                var checkedList = $(this).closest('.panel').find('li:has(span[name="checkboxKara"][checked])');
                 var idKaraList = checkedList.map(function (k, v) {
                     return $(v).attr('idkara');
                 });
@@ -267,14 +269,15 @@ var plData;
                     }).done(function (data) {
                         DEBUG && console.log(data);
                         promise.resolve();
-                        //fillPlaylist(non(side), idKara);
                         playlistContentUpdating.done( function() {
                             scrollToKara(non(side), idKara); 
                         });
-                        var ajout = (li.length > 1 ? li.length + " karas" : "'" + li.find('.contentDiv').text() + "'");
-                        displayMessage('success', ajout, " ajouté" +  (li.length > 1 ? "s" : "")
-                            + " à la playlist <i>" +$("#selectPlaylist" + non(side) + " > option[value='" + idPlaylistTo + "']").text() + "</i>.");
+                        var ajout = groupAction ?   li.length + " karas"
+                                                    : "'" + li.find('.contentDiv').text() + "'";
+                        if(groupAction) { li.find('span[name="checkboxKara"][checked]').attr('checked', false); }
                         
+                        displayMessage('success', ajout, " ajouté" +  (groupAction ? "s" : "")
+                            + " à la playlist <i>" +$("#selectPlaylist" + non(side) + " > option[value='" + idPlaylistTo + "']").text() + "</i>.");
                         DEBUG && console.log("Kara " + idKara + " ajouté à la playlist (" + idPlaylistTo + ") "
                             + $("#selectPlaylist" + non(side) + " > option[value='" + idPlaylistTo + "']").text() + ".");
                     }).fail(function (data) {
@@ -325,8 +328,9 @@ var plData;
             var url = getPlData(idPlaylist).url;
 
             if (name === "selectAllKaras") {
-                $('#playlist' + side + ' [name="checkboxKara"][value="' +  $this.attr('value') + '"]').click();
-                $this.attr('value', $this.attr('value') == "1" ? "0" : "1");
+                var checked = !$this.attr('checked');
+                $this.attr('checked', checked);
+                $('#playlist' + side + ' [name="checkboxKara"]').attr('checked', checked);
             } else if (name === "addAllKaras") {
                 $.ajax({ url: url }).done(function (data) {
                     displayMessage("info", "Info", "Ajout de " + data.length + " karas à la playlist " + $('#panel' + non(side) + ' .plDashboard').data('name'))
@@ -339,6 +343,7 @@ var plData;
                         data: { kara_id : karaList, requestedby : pseudo }
                     }).done(function (data) {
                         DEBUG && console.log(karaList + " added to playlist " + idPlaylistTo);
+
                     });
                 });
             } else if (name === "deleteAllKaras") {
@@ -548,7 +553,7 @@ var plData;
     deleteCriteriaHtml = '<button name="deleteCriteria" class="btn btn-action deleteCriteria"><i class="glyphicon glyphicon-minus"></i></button>';
     transferKaraHtml = '<button name="transferKara" class="btn btn-sm btn-action">'
         + '<i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i></button>';
-    checkboxKaraHtml = '<span name="checkboxKara" value=0><i class="glyphicon glyphicon-unchecked"></i></span>';
+    checkboxKaraHtml = '<span name="checkboxKara"></span>';
     infoKaraHtml = '<button name="infoKara" class="btn btn-sm btn-action"><i class="glyphicon glyphicon-info-sign"></i></button>';
     closeButton = '<button class="closeParent btn btn-action"><i class="glyphicon glyphicon-remove"></i></button>';
     closeButtonBottom = '<button class="closeParent bottom btn btn-action"><i class="glyphicon glyphicon-remove"></i></button>';

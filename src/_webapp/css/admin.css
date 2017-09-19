@@ -53,13 +53,6 @@
 #panel1 .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-left {
 	display: none; 
 }
-button[name="selectAllKaras"][value="1"] > i.glyphicon-unchecked {
-	display: none;
-}
-button[name="selectAllKaras"][value="0"] > i.glyphicon-check {
-	display: none;
-}
-
 
 span[name="checkboxKara"] {
 	padding: 2px 6px;
@@ -68,6 +61,18 @@ span[name="checkboxKara"] {
 }
 #panel2 span[name="checkboxKara"] {
 	float: left;
+}
+
+span[name="checkboxKara"], [name="selectAllKaras"] {
+	font-family: 'Glyphicons Halflings'; 
+}
+
+span[name="checkboxKara"]:not([checked]):before, [name="selectAllKaras"]:not([checked]):before  {
+	content:"\e157";
+}
+
+span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:before {		
+	content:"\e067";
 }
 
 .plDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 

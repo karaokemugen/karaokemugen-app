@@ -181,10 +181,10 @@
         });
         
         $('.playlist-main').on('click', 'span[name="checkboxKara"]', function (e) {
-          $(this).attr('value', 1 - $(this).attr('value'));
-          $(this).find('i').toggleClass('glyphicon-check')
-            .toggleClass('glyphicon-unchecked')
+          var checked = $(this).attr('checked');
+          $(this).attr('checked', !checked);
         });
+        
         $('#karaInfo').click(function (e) {
             if (status != undefined && status != "" && status != "stop") {
                 //refreshPlayerInfos(goToPosition, e);
