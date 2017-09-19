@@ -1358,33 +1358,41 @@ module.exports = {
 	* @function {Get a random kara_id}
 	* @return {number} {Random kara_id}
 	*/
-	getRandomKara:function(playlist_id) {
+	getRandomKara:function(playlist_id,filter) {
 		return new Promise(function(resolve,reject) {
 			// Get karaoke list
 			module.exports.getAllKaras()
 				.then(function(allKaras){
-					//Strip allKaras to just kara IDs
-					allKaras.forEach(function(elem,index){
-						allKaras[index] = elem.kara_id;
-					});
-					//Now, get current playlist's contents.
-					module.exports.getPlaylistContents(playlist_id)
-						.then(function(playlist){
+					module.exports.filterPlaylist(allKaras,filter)
+						.then(function(playlistFiltered){
 							//Strip allKaras to just kara IDs
-							playlist.forEach(function(elem,index){
-								playlist[index] = elem.kara_id;
+							playlistFiltered.forEach(function(elem,index){
+								playlistFiltered[index] = elem.kara_id;
 							});
-							var allKarasNotInCurrentPlaylist = [];
-							allKarasNotInCurrentPlaylist = allKaras.filter(function(el){
-								return playlist.indexOf(el) < 0;
-							});
-							var randomKara = L.sample(allKarasNotInCurrentPlaylist);
-							resolve(randomKara);
+							//Now, get current playlist's contents.
+							module.exports.getPlaylistContents(playlist_id)
+								.then(function(playlist){
+									//Strip allKaras to just kara IDs
+									playlist.forEach(function(elem,index){
+										playlist[index] = elem.kara_id;
+									});
+									var allKarasNotInCurrentPlaylist = [];
+									allKarasNotInCurrentPlaylist = playlistFiltered.filter(function(el){
+										return playlist.indexOf(el) < 0;
+									});
+									var randomKara = L.sample(allKarasNotInCurrentPlaylist);
+									resolve(randomKara);
+								})
+								.catch(function(err){
+									logger.error('[PLC] getPlaylistContents : '+err);
+									reject(err);
+								});
 						})
 						.catch(function(err){
-							logger.error('[PLC] getPlaylistContents : '+err);
+							logger.error('[PLC] filterPlaylist : '+err)
 							reject(err);
-						});
+						})
+					
 				})
 				.catch(function(err){
 					logger.error('[PLC] getAllKaras : '+err);
