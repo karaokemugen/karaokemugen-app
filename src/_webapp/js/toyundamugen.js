@@ -1178,20 +1178,20 @@ if (isTouchScreen) {
     * @return {String} the details, as html
     */
     buildKaraDetails = function(data, htmlMode) {
-        var details = {
-                  "Added ": (data['date_add'] ? data['date_add'] : "") + (data['pseudo_add'] ? " by " + data['pseudo_add'] : "")
-                , "Author": data['author']
-                , "Viewcount": data['viewcount']
-                , "Creator": data['creator']
-                , "Duration": data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ":" + (data['duration'] % 60 < 10 ? "0" : "") + data['duration'] % 60
-                , "Language": data['language_i18n']
-                , "Misc": data['misc_i18n']
-                , "Series": data['series']
-                , "Series_altname": data['series_altname']
-                , "Singer": data['singer']
+            var details = {
+                  "Ajouté ": (data['date_add'] ? data['date_add'] : "") + (data['pseudo_add'] ? " par " + data['pseudo_add'] : "")
+                , "Auteur": data['author']
+                , "Vues": data['viewcount']
+                , "Créateur": data['creator']
+                , "Durée": data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ":" + (data['duration'] % 60 < 10 ? "0" : "") + data['duration'] % 60
+                , "Langue": data['language_i18n']
+                , "Divers": data['misc_i18n']
+                , "Série": data['serie']
+                , "Série alt": data['serie_altname']
+                , "Chanteur": data['singer']
                 , "Type ": data['songtype_i18n'] + data['songorder'] > 1 ? " " + data['songorder'] : ""
-                , "series": data['series']
-                , "series_altname": data['series_altname']
+                , "Année": data['year']
+                , "Compositeur": data['songwriter']
             }
             var htmlDetails = Object.keys(details).map(function (k) {
                 return details[k] ? "<tr><td>" + k + "</td><td>" + details[k] + "</td><tr/>" : "";
