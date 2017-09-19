@@ -131,6 +131,7 @@ module.exports = {
 							res.json('Shutdown in progress.');
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -143,6 +144,7 @@ module.exports = {
 							res.json(playlists);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -197,6 +199,7 @@ module.exports = {
 										res.json(new_playlist);
 									})
 									.catch(function(err){
+										logger.error(err);
 										res.statusCode = 500;
 										res.json(err);
 									});
@@ -220,6 +223,7 @@ module.exports = {
 							res.json(playlist);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -256,6 +260,7 @@ module.exports = {
 										res.json('Playlist '+req.params.pl_id+' updated');
 									})
 									.catch(function(err){
+										logger.error(err);
 										res.statusCode = 500;
 										res.json(err);
 									});
@@ -275,6 +280,7 @@ module.exports = {
 							res.json('Deleted '+playlist_id);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -291,6 +297,7 @@ module.exports = {
 							res.json('Playlist '+req.params.pl_id+' emptied');
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -306,6 +313,7 @@ module.exports = {
 							res.json('Whitelist emptied');
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -320,6 +328,7 @@ module.exports = {
 							res.json('Blacklist criterias emptied');
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -335,6 +344,7 @@ module.exports = {
 							res.json('Playlist '+req.params.pl_id+' is now current');
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -350,6 +360,7 @@ module.exports = {
 							res.json('Playlist '+req.params.pl_id+' is now public');
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -380,6 +391,7 @@ module.exports = {
 							res.json(playlist);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -420,6 +432,7 @@ module.exports = {
 										res.json('Karaoke '+result.karaAdded+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
 									})
 									.catch(function(err){
+										logger.error(err);
 										res.statusCode = 500;
 										res.json(err);
 									});
@@ -458,6 +471,7 @@ module.exports = {
 										res.json('Playlist content(s) '+req.body.plc_id+' copied to playlist '+req.params.pl_id+' at position '+req.body.pos);
 									})
 									.catch(function(err){
+										logger.error(err);
 										res.statusCode = 500;
 										res.json(err);
 									});
@@ -492,6 +506,7 @@ module.exports = {
 										res.json('Playlist content(s) '+req.body.plc_id+' deleted');
 									})
 									.catch(function(err){
+										logger.error(err);
 										res.statusCode = 500;
 										res.json(err);
 									});
@@ -511,6 +526,7 @@ module.exports = {
 							res.json(kara);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -541,6 +557,7 @@ module.exports = {
 										res.json('PLC '+req.params.plc_id+' edited in playlist '+pl_id);
 									})
 									.catch(function(err){
+										logger.error(err);
 										res.statusCode = 500;
 										res.json(err);
 									});
@@ -675,6 +692,7 @@ module.exports = {
 									res.json('Settings updated');
 								})
 								.catch(function(err){
+									logger.error(err);
 									res.statusCode = 500;
 									res.json(err);
 								});
@@ -710,6 +728,7 @@ module.exports = {
 									res.json('Your message has been displayed');
 								})
 								.catch(function(err){
+									logger.error(err);
 									res.statusCode = 500;
 									res.json(err);
 								});
@@ -731,6 +750,7 @@ module.exports = {
 							res.json(karas);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -759,6 +779,7 @@ module.exports = {
 									res.json('Karaoke '+req.body.kara_id+' added to whitelist with reason \''+req.body.reason+'\'');
 								})
 								.catch(function(err){
+									logger.error(err);
 									res.statusCode = 500;
 									res.json(err);
 								});
@@ -780,6 +801,7 @@ module.exports = {
 							res.json(karas);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -795,6 +817,7 @@ module.exports = {
 							res.json('Deleted WLID '+req.params.wl_id);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -815,6 +838,7 @@ module.exports = {
 									res.json('Whitelist item '+req.params.wl_id+' edited with reason \''+req.body.reason+'\'');
 								})
 								.catch(function(err){
+									logger.error(err);
 									res.statusCode = 500;
 									res.json(err);
 								});
@@ -835,6 +859,7 @@ module.exports = {
 							res.json(blc);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -862,6 +887,7 @@ module.exports = {
 									res.json('Blacklist criteria type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' added');
 								})
 								.catch(function(err){
+									logger.error(err);
 									res.statusCode = 500;
 									res.json(err);
 								});
@@ -883,6 +909,7 @@ module.exports = {
 							res.json('Deleted BLCID '+req.params.blc_id);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -909,6 +936,7 @@ module.exports = {
 									res.json('Blacklist criteria '+req.params.blc_id+' type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' edited');
 								})
 								.catch(function(err){
+									logger.error(err);
 									res.statusCode = 500;
 									res.json(err);
 								});
@@ -960,6 +988,7 @@ module.exports = {
 									res.json('Command '+req.body.command+' executed');
 								})
 								.catch(function(err){
+									logger.error(err);
 									res.statusCode = 500;
 									res.json(err);
 								});
@@ -981,6 +1010,7 @@ module.exports = {
 							res.json(playlist);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1010,6 +1040,7 @@ module.exports = {
 
 								})
 								.catch(function(err){
+									logger.error(err);
 									res.statusCode = 500;
 									res.json(err);
 								});
@@ -1031,6 +1062,7 @@ module.exports = {
 							res.json('Playlist '+req.params.pl_id+' shuffled');
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1065,6 +1097,7 @@ module.exports = {
 							res.json(playlist);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1095,6 +1128,7 @@ module.exports = {
 							res.json(playlist);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1108,6 +1142,7 @@ module.exports = {
 							res.json(kara);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1136,6 +1171,7 @@ module.exports = {
 							res.json(stats);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1152,6 +1188,7 @@ module.exports = {
 								res.json(karas);
 							})
 							.catch(function(err){
+								logger.error(err);
 								res.statusCode = 500;
 								res.json(err);
 							});
@@ -1172,6 +1209,7 @@ module.exports = {
 								res.json(karas);
 							})
 							.catch(function(err){
+								logger.error(err);
 								res.statusCode = 500;
 								res.json(err);
 							});
@@ -1190,6 +1228,7 @@ module.exports = {
 								res.json(blc);
 							})
 							.catch(function(err){
+								logger.error(err);
 								res.statusCode = 500;
 								res.json(err);
 							});
@@ -1211,6 +1250,7 @@ module.exports = {
 							res.json(status);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1240,6 +1280,7 @@ module.exports = {
 							res.json(karas);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1258,6 +1299,7 @@ module.exports = {
 
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1270,6 +1312,7 @@ module.exports = {
 							res.json(kara);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1295,6 +1338,7 @@ module.exports = {
 									res.json('Karaoke '+req.params.kara_id+' added by '+req.body.requestedby);
 								})
 								.catch(function(err){
+									logger.error(err);
 									res.statusCode = 500;
 									res.json(err);
 								});
@@ -1315,6 +1359,7 @@ module.exports = {
 							res.json(kara);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1328,6 +1373,7 @@ module.exports = {
 							res.json(playlist);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1355,6 +1401,7 @@ module.exports = {
 							res.json(playlist);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1368,6 +1415,7 @@ module.exports = {
 							res.json(playlist);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1395,6 +1443,7 @@ module.exports = {
 							res.json(playlist);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
@@ -1408,6 +1457,7 @@ module.exports = {
 							res.json(tags);
 						})
 						.catch(function(err){
+							logger.error(err);
 							res.statusCode = 500;
 							res.json(err);
 						});
