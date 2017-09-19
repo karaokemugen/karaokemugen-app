@@ -51,16 +51,16 @@ module.exports = {
 					enum: (input, options) => options.includes(input),
 					numbersArray: function(input) {
 						if (input) {
-							if (input.includes(',')) {
+							if (typeof input === 'string' && input.includes(',')) {
 								var array = input.split(',');
 								return array.some(numberTest);
-							} else { 
+							} else {
 								return numberTest(input);
-							}						
+							}
 						} else {
 							return false;
 						}
-						
+
 					}
 				}
 			}));
@@ -125,9 +125,9 @@ module.exports = {
 			routerAdmin.route('/shutdown')
 				.post(function(req,res){
 					// Sends command to shutdown the app.
-					
+
 					module.exports.onShutdown()
-						.then(function(){						
+						.then(function(){
 							res.json('Shutdown in progress.');
 						})
 						.catch(function(err){
@@ -194,7 +194,7 @@ module.exports = {
 									.then(function(new_playlist){
 										module.exports.emitEvent('playlistsUpdated');
 										res.statusCode = 201;
-										res.json(new_playlist);		
+										res.json(new_playlist);
 									})
 									.catch(function(err){
 										res.statusCode = 500;
@@ -277,9 +277,9 @@ module.exports = {
 						.catch(function(err){
 							res.statusCode = 500;
 							res.json(err);
-						});				
+						});
 				});
-			
+
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
 				.put(function(req,res){
 				// Empty playlist
@@ -353,7 +353,7 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(err);
 						});
-				});	
+				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
 				.get(function(req,res){
 					//Access :pl_id by req.params.pl_id
@@ -366,7 +366,7 @@ module.exports = {
 						to = 999999;
 					} else {
 						to = req.query.to;
-					}				
+					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
@@ -478,7 +478,7 @@ module.exports = {
 							in: 'body',
 							notEmpty: true,
 							numbersArray: true,
-						}						
+						}
 					});
 
 					req.getValidationResult()
@@ -517,7 +517,7 @@ module.exports = {
 				})
 				.put(function(req,res){
 					//Update playlist's karaoke song
-					//Params: position				
+					//Params: position
 					req.checkBody({
 						'pos': {
 							in: 'body',
@@ -533,7 +533,7 @@ module.exports = {
 
 					req.getValidationResult()
 						.then(function(result) {
-							if (result.isEmpty()) {							
+							if (result.isEmpty()) {
 								if (req.body.pos != undefined) req.sanitize('pos').toInt();
 								if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
 								module.exports.onPlaylistSingleKaraEdit(req.params.plc_id,req.body.pos,req.body.flag_playing)
@@ -551,7 +551,7 @@ module.exports = {
 								res.json(result.mapped());
 							}
 						});
-				});				
+				});
 
 			routerAdmin.route('/settings')
 				.get(function(req,res){
@@ -634,15 +634,15 @@ module.exports = {
 							notEmpty: true,
 							isInt: true,
 						}
-					});		
-					
+					});
+
 					req.checkBody('PlayerPIPPositionX')
 						.notEmpty()
 						.enum(['Left',
 							'Center',
 							'Right'
 						]
-						);					
+						);
 					req.checkBody('PlayerPIPPositionY')
 						.notEmpty()
 						.enum(['Top',
@@ -650,7 +650,7 @@ module.exports = {
 							'Bottom'
 						]
 						);
-					
+
 					req.getValidationResult().then(function(result) {
 						if (result.isEmpty()) {
 							req.sanitize('EngineAllowNicknameChange').toInt();
@@ -668,7 +668,7 @@ module.exports = {
 							req.sanitize('PlayerPIP').toInt();
 							req.sanitize('PlayerPIPSize').toInt();
 
-							var SETTINGS = req.body;						
+							var SETTINGS = req.body;
 							module.exports.onSettingsUpdate(SETTINGS)
 								.then(function(publicSettings){
 									module.exports.emitEvent('settingsUpdated',publicSettings);
@@ -688,7 +688,7 @@ module.exports = {
 				});
 
 			routerAdmin.route('/player/message')
-				.post(function(req,res){				
+				.post(function(req,res){
 					req.check({
 						'duration': {
 							in: 'body',
@@ -735,7 +735,7 @@ module.exports = {
 							res.json(err);
 						});
 				})
-				.post(function(req,res){				
+				.post(function(req,res){
 					req.check({
 						'kara_id': {
 							in: 'body',
@@ -753,8 +753,8 @@ module.exports = {
 							req.sanitize('kara_id').toInt();
 							module.exports.onKaraAddToWhitelist(req.body.kara_id,req.body.reason)
 								.then(function(){
-									module.exports.emitEvent('whitelistUpdated');			
-									module.exports.emitEvent('blacklistUpdated');			
+									module.exports.emitEvent('whitelistUpdated');
+									module.exports.emitEvent('blacklistUpdated');
 									res.statusCode = 201;
 									res.json('Karaoke '+req.body.kara_id+' added to whitelist with reason \''+req.body.reason+'\'');
 								})
@@ -921,12 +921,12 @@ module.exports = {
 					});
 				});
 
-			routerAdmin.route('/player')			
+			routerAdmin.route('/player')
 				.put(function(req,res){
 					// Update status of player (play/pause/stopNow/stopNext)
 					// Commands:
 					// play - starts off kara / resumes from pause
-					// pause - pauses player in mid song 
+					// pause - pauses player in mid song
 					// stopNow - stops the karaoke NOW
 					// stopAfter - stops the karaoke after the current song finishes
 					// skip - skips to next song
@@ -972,8 +972,8 @@ module.exports = {
 					});
 				});
 
-			
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/export')				
+
+			routerAdmin.route('/playlists/:pl_id([0-9]+)/export')
 				.get(function(req,res){
 					// Returns the playlist and its contents in an exportable format (to save on disk)
 					module.exports.onPlaylistExport(req.params.pl_id)
@@ -987,27 +987,27 @@ module.exports = {
 				});
 			routerAdmin.route('/playlists/import')
 				.post(function(req,res){
-					// Imports a playlist and its contents in an importable format (posted as JSON data)					
+					// Imports a playlist and its contents in an importable format (posted as JSON data)
 					req.check({
 						'playlist': {
 							in: 'body',
 							notEmpty: true,
 							isJSON: true,
-						}						
+						}
 					});
 					req.getValidationResult().then(function(result) {
 						if (result.isEmpty()) {
 							module.exports.onPlaylistImport(JSON.parse(req.body.playlist))
 								.then(function(karasUnknown){
 									var response = {
-										message: 'Playlist imported'								
-									};									
-									if (karasUnknown) {										
+										message: 'Playlist imported'
+									};
+									if (karasUnknown) {
 										response.unknownKaras = karasUnknown;
 									}
 									module.exports.emitEvent('playlistsUpdated');
 									res.json(response);
-									
+
 								})
 								.catch(function(err){
 									res.statusCode = 500;
@@ -1021,7 +1021,7 @@ module.exports = {
 						}
 					});
 				});
-			
+
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
 				.put(function(req,res){
@@ -1038,7 +1038,7 @@ module.exports = {
 
 			// Public routes
 
-			
+
 			routerPublic.route('/playlists')
 				.get(function(req,res){
 					// Get list of playlists, only return the visible ones
@@ -1099,7 +1099,7 @@ module.exports = {
 							res.json(err);
 						});
 				});
-			
+
 			routerPublic.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 				.get(function(req,res){
 					var seenFromUser = true;
@@ -1158,7 +1158,7 @@ module.exports = {
 					} else {
 						res.StatusCode = 403;
 						res.json('Displaying whitelist to public is disabled');
-					}				
+					}
 				});
 
 			routerPublic.route('/blacklist')
@@ -1178,7 +1178,7 @@ module.exports = {
 					} else {
 						res.StatusCode = 403;
 						res.json('Displaying blacklist to public is disabled');
-					}				
+					}
 				});
 
 			routerPublic.route('/blacklist/criterias')
@@ -1196,14 +1196,14 @@ module.exports = {
 					} else {
 						res.StatusCode = 403;
 						res.json('Displaying blacklist criterias to public is disabled');
-					}				
+					}
 				});
 
 			routerPublic.route('/player')
 				.get(function(req,res){
 					// Get player status
 					// What's playing, time in seconds, duration of song
-					
+
 					//return status of the player
 
 					module.exports.onPlayerStatus()
@@ -1214,7 +1214,7 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(err);
 						});
-					
+
 				});
 			routerPublic.route('/karas')
 				.get(function(req,res){
@@ -1237,7 +1237,7 @@ module.exports = {
 
 					module.exports.onKaras(filter,lang,from,to)
 						.then(function(karas){
-							res.json(karas);							
+							res.json(karas);
 						})
 						.catch(function(err){
 							res.statusCode = 500;
@@ -1255,7 +1255,7 @@ module.exports = {
 							} else {
 								res.json(kara_id);
 							}
-							
+
 						})
 						.catch(function(err){
 							res.statusCode = 500;
@@ -1288,11 +1288,11 @@ module.exports = {
 							req.sanitize('requestedby').trim();
 							req.sanitize('requestedby').unescape();
 							module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
-								.then(function(pl_id){			
-									module.exports.emitEvent('playlistContentsUpdated',pl_id);		
-									module.exports.emitEvent('playlistInfoUpdated',pl_id);		
+								.then(function(pl_id){
+									module.exports.emitEvent('playlistContentsUpdated',pl_id);
+									module.exports.emitEvent('playlistInfoUpdated',pl_id);
 									res.statusCode = 201;
-									res.json('Karaoke '+req.params.kara_id+' added by '+req.body.requestedby);	
+									res.json('Karaoke '+req.params.kara_id+' added by '+req.body.requestedby);
 								})
 								.catch(function(err){
 									res.statusCode = 500;
@@ -1439,7 +1439,7 @@ module.exports = {
 			});
 
 			app.use('/api/v1/public', routerPublic);
-			app.use('/api/v1/admin', routerAdmin);		
+			app.use('/api/v1/admin', routerAdmin);
 			resolve();
 		});
 	},
@@ -1484,7 +1484,7 @@ module.exports = {
 	onKaraSingleLyrics:function(){},
 	onShutdown:function(){},
 	onKaraCopyToPlaylist:function(){},
-	emitEvent:function(){},	
+	emitEvent:function(){},
 	onTags:function(){},
 	onPlaylistExport:function(){},
 	onMessage:function(){},
