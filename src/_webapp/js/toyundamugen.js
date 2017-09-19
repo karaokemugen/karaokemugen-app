@@ -376,11 +376,11 @@ var plData;
         });
         }
 
-      
-
-        // show full lyrics of a given kara
+        // pick a random kara & add it after (not) asking user's confirmation
         $('.getLucky').on('click', function (e) {
-            $.ajax({ url: 'public/karas/random' }).done(function (data) {
+            var filter = $("#searchPlaylist" + 1).val();
+            
+            $.ajax({ url: 'public/karas/random?filter=' + filter }).done(function (data) {
                 var chosenOne = data;
                 $.ajax({ url: 'public/karas/' + chosenOne }).done(function (data) {
                     data = data[0];

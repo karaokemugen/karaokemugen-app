@@ -474,9 +474,9 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onKaraRandom = function(){
+		module.exports._services.apiserver.onKaraRandom = function(filter){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.getRandomKara(module.exports.currentPlaylistID)
+				module.exports._services.playlist_controller.getRandomKara(module.exports.currentPlaylistID,filter)
 					.then(function(kara_id){
 						logger.debug('[Engine] Sending random kara_id : '+kara_id);
 						resolve(kara_id);

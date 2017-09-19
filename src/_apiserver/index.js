@@ -1247,7 +1247,7 @@ module.exports = {
 
 			routerPublic.route('/karas/random')
 				.get(function(req,res){
-					module.exports.onKaraRandom()
+					module.exports.onKaraRandom(req.query.filter)
 						.then(function(kara_id){
 							if (!kara_id) {
 								res.statusCode = 500;
