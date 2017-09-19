@@ -2,6 +2,10 @@
 
 (décrivez de façon concise le bug rencontré)
 
+# Quelle version de Karaoke Mugen ?
+
+(indiquez la version ici)
+
 # Comment le reproduire
 
 (si possible, indiquez comment reproduire le bug)
