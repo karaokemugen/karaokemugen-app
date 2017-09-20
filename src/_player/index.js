@@ -287,32 +287,30 @@ module.exports = {
 			logger.debug('[Player] Audio gain adjustment : '+gain);
 			if (gain == undefined || gain == null) gain = 0;			
 			module.exports._ref = reference;
-			module.exports._player.command('loadfile',[video,'replace','replaygain-fallback='+gain]);			
-			module.exports._player.play();
-			module.exports.playerstatus = 'play';
-			// video may need some delay to play
-			// Resetting text displayed on screen			
-			var command = {
-				command: [
-					'expand-properties',
-					'show-text',
-					'${osd-ass-cc/0}{\\an1}'+infos,
-					8000,
-				]
-			};	
-			module.exports._player.freeCommand(JSON.stringify(command));			
-			logger.profile('StartPlaying');												
-			//This is delayed or else it will be set to false again by statuschange event triggered by mpv
-			//and songs will not be playing correctly.
-			// 1500 ms seems to be the right answer.
-			var timeout = 1500;
-			setTimeout(function(){
-				
-				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
-				module.exports._player.load(backgroundImageFile,'append');		
-				module.exports._playing = true;				
-				module.exports._player.addSubtitles('memory://'+subtitle);						
-			},timeout);
+			module.exports._player.load(video,'replace',['replaygain-fallback='+gain])
+				.then(() => {
+					module.exports._player.play();
+					module.exports.playerstatus = 'play';
+					module.exports._player.addSubtitles('memory://'+subtitle);					
+					// video may need some delay to play
+					// Resetting text displayed on screen			
+					var command = {
+						command: [
+							'expand-properties',
+							'show-text',
+							'${osd-ass-cc/0}{\\an1}'+infos,
+							8000,
+						]
+					};	
+					module.exports._player.freeCommand(JSON.stringify(command));			
+					logger.profile('StartPlaying');												
+					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
+					module.exports._player.load(backgroundImageFile,'append');		
+					module.exports._playing = true;									
+				})
+				.catch((err) => {
+					logger.error('[Player] Error loading video '+video+' ('+err+')');				
+				});
 		} else {
 			module.exports.playing = false;
 			logger.error('[Player] Video NOT FOUND : '+video);
