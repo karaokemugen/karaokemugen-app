@@ -15,7 +15,7 @@ $(document).ready(function () {
 
   $('#choixPseudo').blur(function(){
     if(settings['EngineAllowNicknameChange'] == "1") {
-      pseudo = $(this).val();
+      if($(this).val()) pseudo = $(this).val();
       $('#choixPseudo').val(pseudo);
       if($('#pseudo > option[value="' + pseudo +'"]').length == 0) {
         $('#pseudo').append($('<option>', {value: pseudo}));
@@ -95,8 +95,7 @@ var date = new Date();
 date.setFullYear(date.getFullYear() + 10);
 
 var scope = 'public';
-var settings = {}
-pseudo ="";
+var settings = {};
 refreshTime = 2000;
 panel1Default = -1;
 

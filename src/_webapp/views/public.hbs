@@ -1,12 +1,12 @@
 <div id="header" class="header">
-    <div class="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12">
-        <div class="col-lg-10 col-md-8 col-msm-12 col-sm-12 col-xs-12 plSearch" id="searchParent" style="width: 100%;">
+    <div class="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12 headerInputs">
+        <div class="plSearch" id="searchParent" style="width: 100%;">
             <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist" />
-            <button title="{{i18n "GET_LUCKY"}}" class="btn btn-lg btn-action btn-default getLucky  hidden-msm hidden-xs hidden-sm">
-              <img src="/fonts/clover.png">
-            </button>
         </div>
-        <div class="col-lg-2 col-md-4 hidden-msm hidden-sm hidden-xs pseudoChange">
+        <button title="{{i18n "GET_LUCKY"}}" class="btn btn-lg btn-action btn-default getLucky  hidden-msm hidden-xs hidden-sm">
+            <img src="/fonts/clover.png">
+        </button>
+        <div class="hidden-msm hidden-sm hidden-xs pseudoChange">
             <input list="pseudo" type="text" id="choixPseudo" class="form-control" placeholder="{{i18n "NICKNAME"}}" />
             <datalist id="pseudo">
             </datalist>
@@ -25,7 +25,7 @@
         <div class="pull-right btn-group switchParent">
             <input title='{{i18n "SWITCH_SEARCH_VIEW"}}' type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-right" data-on-text="<i class='glyphicon glyphicon-menu-hamburger'></i>"
                 data-off-text="<i class='glyphicon glyphicon-search'></i>" data-size="large" />
-            <input title='{{i18n "SWITCH_BAR_INFOS"}}' type="checkbox" value="1" name="lyrics" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-italic'></i>"
+            <input title='{{i18n "SWITCH_BAR_INFOS"}}' type="checkbox" value="1" name="lyrics" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-info-sign'></i>"
                 data-off-text="<i class='glyphicon glyphicon-subtitles'></i>" data-size="large" />
         </div>
     </div>
