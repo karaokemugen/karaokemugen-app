@@ -77,7 +77,7 @@
     "mkdirp": "^0.5.1",
     "moment": "^2.18.1",
     "moment-duration-format": "^1.3.0",
-    "node-mpv": "^1.2.1",
+    "node-mpv": "github:00SteinsGate00/Node-MPV#Node-MPV-2",
     "os-locale": "^2.1.0",
     "progress": "^2.0.0",
     "qrcode": "^0.8.2",
