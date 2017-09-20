@@ -206,6 +206,7 @@ module.exports = {
 			var mpvAPI = require('node-mpv');
 			module.exports._player = new mpvAPI(
 				{
+					auto_restart: true,
 					audio_only: false,
 					binary: mpvBinary,
 					socket: '\\\\.\\pipe\\mpvsocket',
@@ -215,13 +216,24 @@ module.exports = {
 				},
 				mpvOptions
 			);
-			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-			// Disabled loading the background at start during dev. Or not yet.
-			module.exports._player.load(backgroundImageFile);
-			module.exports.enhanceBackground();
-			module.exports._player.observeProperty('sub-text',13);
-			module.exports._player.observeProperty('volume',14);
 
+			// Starting up mpv
+			module.exports._player.start()
+				.then(() => {
+					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+					// Disabled loading the background at start during dev. Or not yet.
+					module.exports._player.load(backgroundImageFile)
+						.then(() => {
+							module.exports.enhanceBackground();
+						});
+					
+					module.exports._player.observeProperty('sub-text',13);
+					module.exports._player.observeProperty('volume',14);
+				})
+				.catch((err) => {
+					logger.error('[Player] mpvAPI : '+err);
+				});
+			
 			module.exports._player.on('statuschange',function(status){
 				// si on affiche une image il faut considérer que c'est la pause d'après chanson
 				module.exports.status = status;
@@ -297,7 +309,7 @@ module.exports = {
 			setTimeout(function(){
 				
 				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
-				module.exports._player.load(backgroundImageFile,'append');				
+				module.exports._player.load(backgroundImageFile,'append');		
 				module.exports._playing = true;				
 				module.exports._player.addSubtitles('memory://'+subtitle);						
 			},timeout);
@@ -328,8 +340,10 @@ module.exports = {
 		module.exports._playing = false;
 		module.exports.playerstatus = 'stop';
 		var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-		module.exports._player.load(backgroundImageFile);
-		module.exports.enhanceBackground();
+		module.exports._player.load(backgroundImageFile)
+			.then(() => {
+				module.exports.enhanceBackground();
+			});		
 	},
 	pause: function(){		
 		logger.debug('[Player] Pause event triggered');
