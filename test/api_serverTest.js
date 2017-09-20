@@ -2,7 +2,6 @@ const assert = require('assert');
 const supertest = require('supertest');
 const request = supertest('http://localhost:1339');
 const fs = require('fs');
-const path = require('path');
 const ini = require('ini');
 const extend = require('extend');
 
@@ -18,7 +17,7 @@ var password = SETTINGS.AdminPassword;
 
 
 
-describe('Test public API', function() {	
+describe('Test public API', function() {
 	it('Basic connection test', function(done) {
 		request
 			.get('/api/v1/public/')
@@ -51,40 +50,40 @@ describe('Test public API', function() {
 			.get('/api/v1/public/karas/1/lyrics')
 			.set('Accept', 'application/json')
 			.expect('Content-Type', /json/)
-			.expect(200)			
+			.expect(200);
 	});
 	it('Get stats', function() {
 		return request
 			.get('/api/v1/public/stats')
 			.set('Accept', 'application/json')
 			.expect('Content-Type', /json/)
-			.expect(200)
+			.expect(200);
 	});
 	it('List public playlist information', function() {
 		return request
 			.get('/api/v1/public/playlists/public')
 			.set('Accept', 'application/json')
 			.expect('Content-Type', /json/)
-			.expect(200)
+			.expect(200);
 	});
 	it('List current playlist information', function() {
 		return request
 			.get('/api/v1/public/playlists/current/karas')
 			.set('Accept', 'application/json')
 			.expect('Content-Type', /json/)
-			.expect(200)
+			.expect(200);
 	});
 	it('List public playlist contents', function() {
 		return request
 			.get('/api/v1/public/playlists/public')
 			.set('Accept', 'application/json')
 			.expect('Content-Type', /json/)
-			.expect(200)
-	});	
+			.expect(200);
+	});
 	it('Add karaoke 6 to playlist depending on mode', function() {
 		var data = {
 			requestedby: 'Test'
-		}
+		};
 		return request
 			.post('/api/v1/public/karas/6')
 			.set('Accept', 'application/json')
@@ -94,13 +93,13 @@ describe('Test public API', function() {
 			.then(function(response) {
 				assert.equal(response.body,'Karaoke 6 added by '+data.requestedby);
 			});
-	});	
+	});
 	var plc_id;
 	it('List contents from current playlist', function() {
 		return request
 			.get('/api/v1/public/playlists/current/karas')
 			.set('Accept', 'application/json')
-			.auth('admin', password)			
+			.auth('admin', password)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
@@ -111,18 +110,24 @@ describe('Test public API', function() {
 				assert.equal(result, true);
 			});
 	});
+
 	it('Delete karaoke 6 from playlist 1', function() {
+		var data = {
+			'plc_id': plc_id
+		};
 		return request
-			.delete('/api/v1/admin/playlists/1/karas/'+plc_id)
+			.delete('/api/v1/admin/playlists/1/karas/')
 			.set('Accept', 'application/json')
 			.auth('admin', password)
-			.expect('Content-Type', /json/)
+			.send(data)
+			.expect('Content-Type',  /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body,'Deleted PLCID '+plc_id);
+				assert.equal(response.body,'Playlist content(s) '+plc_id+' deleted');
 			});
 	});
 });
+
 
 describe('Player tests', function() {
 	it('Read player status', function() {
@@ -130,8 +135,8 @@ describe('Player tests', function() {
 			.get('/api/v1/public/player')
 			.set('Accept', 'application/json')
 			.expect('Content-Type', /json/)
-			.expect(200)
-	});	
+			.expect(200);
+	});
 });
 
 describe('Managing karaokes in playlists', function() {
@@ -140,7 +145,7 @@ describe('Managing karaokes in playlists', function() {
 		var data = {
 			'kara_id': 6,
 			'requestedby': 'Test'
-		}
+		};
 		return request
 			.post('/api/v1/admin/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
@@ -157,7 +162,7 @@ describe('Managing karaokes in playlists', function() {
 		return request
 			.get('/api/v1/admin/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
-			.auth('admin', password)			
+			.auth('admin', password)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
@@ -170,7 +175,7 @@ describe('Managing karaokes in playlists', function() {
 		var data = {
 			'kara_id': 6,
 			'requestedby': 'Test'
-		}
+		};
 		return request
 			.post('/api/v1/admin/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
@@ -179,14 +184,15 @@ describe('Managing karaokes in playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.equal(response.body,'Karaoke song '+data.kara_id+' is already in playlist '+playlist);
+				assert.equal(response.body,'No karaoke could be added,'+
+				' all are in destination playlist already (PLID : '+playlist+')');
 			});
 	});
 	it('Add an unknown karaoke to playlist 1 to see if it fails', function() {
 		var data = {
 			'kara_id': 10000,
 			'requestedby': 'Test'
-		}
+		};
 		return request
 			.post('/api/v1/admin/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
@@ -202,7 +208,7 @@ describe('Managing karaokes in playlists', function() {
 		var data = {
 			'kara_id': 6,
 			'requestedby': 'Test'
-		}
+		};
 		return request
 			.post('/api/v1/admin/playlists/10000/karas')
 			.set('Accept', 'application/json')
@@ -256,17 +262,21 @@ describe('Managing karaokes in playlists', function() {
 			});
 	});
 	it('Delete karaoke 6 from playlist 1', function() {
+		var data = {
+			'plc_id': plc_id
+		};
 		return request
-			.delete('/api/v1/admin/playlists/1/karas/'+plc_id)
+			.delete('/api/v1/admin/playlists/1/karas/')
 			.set('Accept', 'application/json')
 			.auth('admin', password)
-			.expect('Content-Type', /json/)
+			.send(data)
+			.expect('Content-Type',  /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body,'Deleted PLCID '+plc_id);
+				assert.equal(response.body,'Playlist content(s) '+plc_id+' deleted');
 			});
 	});
-})
+});
 
 describe('Managing settings', function(){
 	it('Read settings', function() {
@@ -278,9 +288,9 @@ describe('Managing settings', function(){
 			.expect(200)
 			.then(function(response){
 				SETTINGS = response.body;
-			})
+			});
 	});
-	it('Update settings', function() {		
+	it('Update settings', function() {
 		var data = SETTINGS;
 		return request
 			.put('/api/v1/admin/settings')
@@ -288,19 +298,19 @@ describe('Managing settings', function(){
 			.auth('admin', password)
 			.send(data)
 			.expect('Content-Type', /json/)
-			.expect(200)			
+			.expect(200)
 			.then(function(response){
 				assert.equal(response.body,'Settings updated');
-			})
+			});
 	});
-})
+});
 
 describe('Managing whitelist', function() {
 	it('Add karaoke 1 to whitelist', function() {
 		var data = {
 			'kara_id': 1,
 			'reason': 'Because reasons'
-		}
+		};
 		return request
 			.post('/api/v1/admin/whitelist')
 			.set('Accept', 'application/json')
@@ -328,7 +338,7 @@ describe('Managing whitelist', function() {
 	it('Edit karaoke 1 from whitelist', function() {
 		var data = {
 			reason: 'Because reasons.'
-		}
+		};
 		return request
 			.put('/api/v1/admin/whitelist/'+wlc_id)
 			.set('Accept', 'application/json')
@@ -357,7 +367,7 @@ describe('Managing blacklist', function() {
 		var data = {
 			'blcriteria_type': 1001,
 			'blcriteria_value': 1
-		}
+		};
 		return request
 			.post('/api/v1/admin/blacklist/criterias')
 			.set('Accept', 'application/json')
@@ -388,7 +398,7 @@ describe('Managing blacklist', function() {
 		var data = {
 			blcriteria_type: 1001,
 			blcriteria_value: 2
-		}
+		};
 		return request
 			.put('/api/v1/admin/blacklist/criterias/'+blc_id)
 			.set('Accept', 'application/json')
@@ -420,11 +430,11 @@ describe('Managing blacklist', function() {
 			.auth('admin', password)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {				
+			.then(function(response) {
 				assert.equal(response.body,'Deleted BLCID '+blc_id);
 			});
-	});	
-})
+	});
+});
 describe('Managing playlists', function() {
 	var playlist = {
 		name:'new_playlist',
@@ -457,7 +467,7 @@ describe('Managing playlists', function() {
 			.then(function(response) {
 				var result = false;
 				if (response.body.length >= 2) result = true;
-				assert.equal(result, true);								
+				assert.equal(result, true);
 			});
 	});
 	it('List single playlist information', function() {
@@ -511,7 +521,7 @@ describe('Managing playlists', function() {
 		name:'new_playlist',
 		flag_visible: true
 	};
-	
+
 	it('Edit a playlist', function() {
 		return request
 			.put('/api/v1/admin/playlists/'+new_playlist_id)
@@ -523,7 +533,7 @@ describe('Managing playlists', function() {
 			.then(function(response) {
 				assert.equal(response.body,'Playlist '+new_playlist_id+' updated')
 			});
-	});	
+	});
 	it('Try to delete a CURRENT playlist (should fail)', function() {
 		return request
 			.delete('/api/v1/admin/playlists/'+new_playlist_current_id)
@@ -545,7 +555,7 @@ describe('Managing playlists', function() {
 			.then(function(response) {
 				assert.equal(response.body,'Playlist to delete is public. Unable to delete it')
 			});
-	});	
+	});
 	it('Delete a playlist', function() {
 		return request
 			.delete('/api/v1/admin/playlists/'+new_playlist_id)
@@ -569,9 +579,9 @@ describe('Managing playlists', function() {
 			});
 	});
 });
-
+/*
 describe('Ending tests', function() {
-	it('Sending shutdown command', function() {		
+	it('Sending shutdown command', function() {
 		return request
 			.post('/api/v1/admin/shutdown')
 			.set('Accept', 'application/json')
@@ -582,4 +592,4 @@ describe('Ending tests', function() {
 				assert.equal(response.body,'Shutdown in progress.');
 			})
 	});
-});
+});*/
