@@ -215,6 +215,8 @@ module.exports = {
 				socket = '\\\\.\\pipe\\mpvsocket';
 				break;
 			case 'darwin':										
+				socket = '/tmp/km-node-mpvsocket';
+				break;
 			case 'linux':
 				socket = '/tmp/km-node-mpvsocket';
 				break;
