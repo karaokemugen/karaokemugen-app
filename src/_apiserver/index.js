@@ -678,7 +678,7 @@ module.exports = {
 							req.sanitize('PlayerFullscreen').toInt();
 							req.sanitize('PlayerNoBar').toInt();
 							req.sanitize('PlayerNoHud').toInt();
-							req.sanitize('PlayerAlwaysOnTop').toInt();
+							req.sanitize('PlayerStayOnTop').toInt();
 							req.sanitize('PlayerScreen').toInt();
 							req.sanitize('EngineSongsPerPerson').toInt();
 							req.sanitize('EnginePrivateMode').toInt();
