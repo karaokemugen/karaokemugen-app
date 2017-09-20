@@ -15,7 +15,7 @@ $(document).ready(function () {
 
   $('#choixPseudo').blur(function(){
     if(settings['EngineAllowNicknameChange'] == "1") {
-      pseudo = $(this).val();
+      if($(this).val()) pseudo = $(this).val();
       $('#choixPseudo').val(pseudo);
       if($('#pseudo > option[value="' + pseudo +'"]').length == 0) {
         $('#pseudo').append($('<option>', {value: pseudo}));

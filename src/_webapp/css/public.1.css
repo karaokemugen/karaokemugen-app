@@ -90,13 +90,12 @@ div.bootstrap-switch-large{
     font-size: 14px;
 }
 .playlist-main .list-group-item[user] {
-	color: hsla(115, 42%, 60%, 1);
+	color: hsla(110, 35%, 78%, 1);
 }
 
 .header input {
     height: 100%;
     border-radius: 0px;
-    font-size:  17px;    
 }
 
 .badge {
@@ -219,41 +218,6 @@ div.bootstrap-switch-large{
 .plSearch {
     flex-grow: 1000;
 }
-
-#searchPlaylist1, #searchPlaylist2, #choixPseudo {
-    height: inherit;
-    width: calc(100% - 0rem);
-    border: 0;
-    box-shadow: none;
-    font-size: 2.3rem;
-    line-height: 2.3rem;
-    background-color: transparent;
-    outline: none;
-    margin: 0;
-    padding: 0;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    transition: all 0.3s;
-}
-#searchPlaylist2 {
-    border: 1px #9e9e9e solid;
-    border-width: 0px 0px 1px 0px;
-    height: 34px;
-    font-size: 1.8rem;
-    line-height: 1.8rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    
-    
-}
-
-#searchPlaylist1:focus, #searchPlaylist2:focus, #choixPseudo:focus {
-    background-color: #cfd8dc;
-    border-bottom: 0px solid #546e7a;
-    box-shadow: 0 1px 0 0 #546e7a;
-}
-  
-
 
 /* mobile */
 

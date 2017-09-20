@@ -1117,7 +1117,7 @@ if (isTouchScreen) {
             "data-size": "normal"
         });
         $("[name='EnginePrivateMode'],[name='kara_panel'],[name='lyrics']").bootstrapSwitch({
-            "wrapperClass": "btn btn-default",
+            "wrapperClass": "btn",
             "data-size": "large",
             "labelWidth": "15",
             "handleWidth": "59",
@@ -1281,7 +1281,7 @@ if (isTouchScreen) {
 
    /* display a modal (really?) */
     displayModal = function(type, title, message, callback, placeholder) {
-        var modal = $('#modalBox'); 
+        var modal = $('#modalBox').attr('type', type);
         var okButton = modal.find('.modal-footer > button.ok').unbind().show();
         var otherButton = modal.find('.modal-footer > button.other').prop('disabled', false).unbind().show();
         var body =  modal.find('.modal-body').show();
