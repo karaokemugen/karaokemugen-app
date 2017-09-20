@@ -202,6 +202,11 @@ module.exports = {
 			if(module.exports.nobar==1) {
 				mpvOptions.push('--no-osd-bar');
 			}
+			//If we're on macOS, add --no-native-fs to get a real
+			// fullscreen experience on recent macOS versions.
+			if(module.exports.SETTINGS.os === 'darwin') {
+				mpvOptions.push('--no-native-fs');
+			}
 			logger.debug('[Player] mpv options : '+mpvOptions);
 			var mpvAPI = require('node-mpv');
 			module.exports._player = new mpvAPI(
