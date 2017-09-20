@@ -95,8 +95,7 @@ var date = new Date();
 date.setFullYear(date.getFullYear() + 10);
 
 var scope = 'public';
-var settings = {}
-pseudo ="";
+var settings = {};
 refreshTime = 2000;
 panel1Default = -1;
 
