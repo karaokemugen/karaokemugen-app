@@ -815,13 +815,15 @@ module.exports = {
 				}
 
 				//We need to add to settingsToSave system settings that might be in config.ini
-				var customSettings = ini.parse(fs.readFileSync(path.resolve(module.exports.SYSPATH,'config.ini'), 'utf-8'));				
-				for (setting in customSettings){
-					if (setting.startsWith('Path') || 
-						setting.startsWith('Bin') ||
-						setting.startsWith('mpv')) {
-						settingsToSave[setting] = customSettings[setting];
-					}					
+				if (fs.existsSync(path.resolve(module.exports.SYSPATH,'config.ini'))) {
+					var customSettings = ini.parse(fs.readFileSync(path.resolve(module.exports.SYSPATH,'config.ini'), 'utf-8'));				
+					for (setting in customSettings){
+						if (setting.startsWith('Path') || 
+							setting.startsWith('Bin') ||
+							setting.startsWith('mpv')) {
+							settingsToSave[setting] = customSettings[setting];
+						}					
+					}
 				}
 
 				extend(true,module.exports.SETTINGS,settings);
