@@ -209,12 +209,23 @@ module.exports = {
 			}
 			logger.debug('[Player] mpv options : '+mpvOptions);
 			var mpvAPI = require('node-mpv');
+			var socket;
+			switch(module.exports.SETTINGS.os) {
+			case 'win32':
+				socket = '\\\\.\\pipe\\mpvsocket';
+				break;
+			case 'darwin':										
+			case 'linux':
+				socket = '/tmp/km-node-mpvsocket';
+				break;
+			}
+
 			module.exports._player = new mpvAPI(
 				{
 					auto_restart: true,
 					audio_only: false,
 					binary: mpvBinary,
-					socket: '\\\\.\\pipe\\mpvsocket',
+					socket: socket,
 					time_update: 1,
 					verbose: false,
 					debug: false,
