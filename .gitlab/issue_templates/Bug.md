@@ -6,6 +6,12 @@
 
 (indiquez la version ici)
 
+# Quel OS ? 
+
+(Windows/Linux/Mac)
+
+(Si Linux, quelle distribution?)
+
 # Comment le reproduire
 
 (si possible, indiquez comment reproduire le bug)
