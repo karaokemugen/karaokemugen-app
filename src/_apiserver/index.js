@@ -40,8 +40,8 @@ module.exports = {
 			}
 
 			var app = express();
-			app.use(bodyParser.urlencoded({ extended: true }));
-			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+			app.use(bodyParser.json());			
 			// Calling express validator with a custom validator, used for the player commands
 			// to check if they're from the allowed list.
 			// We use another custom validator to test for array of numbers
