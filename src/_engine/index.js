@@ -312,7 +312,8 @@ module.exports = {
 				})
 				.catch(function(){
 					logger.info('Cannot find a song to play');
-					module.exports._broadcastStates();
+					module.exports.stop(true);
+					module.exports._broadcastStates();					
 				});
 		}
 	},
