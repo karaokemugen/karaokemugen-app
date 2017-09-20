@@ -78,8 +78,7 @@ module.exports = {
 				.then(function(playlist_id){
 					resolve(playlist_id);
 				})
-				.catch(function(err){
-					logger.error('[PLC] DBI isACurrentPlaylist : '+err);
+				.catch(function(err){					
 					reject(err);
 				});
 		});
@@ -474,7 +473,6 @@ module.exports = {
 					resolve(playlist_id);
 				})
 				.catch(function (err) {					
-					logger.error('[PLC] isAPublicPlaylist : '+err);
 					reject(err);
 				});
 		});
@@ -1389,9 +1387,9 @@ module.exports = {
 								});
 						})
 						.catch(function(err){
-							logger.error('[PLC] filterPlaylist : '+err)
+							logger.error('[PLC] filterPlaylist : '+err);
 							reject(err);
-						})
+						});
 					
 				})
 				.catch(function(err){
