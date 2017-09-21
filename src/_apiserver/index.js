@@ -1030,9 +1030,10 @@ module.exports = {
 						if (result.isEmpty()) {
 							module.exports.onPlaylistImport(JSON.parse(req.body.playlist))
 								.then(function(result){
+									
 									var response = {
 										message: 'Playlist imported',
-										playlist_id: res.playlist_id
+										playlist_id: result.playlist_id
 									};
 									if (result.karasUnknown) {
 										response.unknownKaras = result.karasUnknown;

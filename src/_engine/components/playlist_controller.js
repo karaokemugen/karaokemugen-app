@@ -2454,11 +2454,10 @@ module.exports = {
 											.then(function(PLCToPlay){
 												module.exports.setPlaying(PLCToPlay.playlistcontent_id,playlist_id)
 													.then(function(){
-														var res = {
+														var response = {
 															playlist_id: playlist_id,
 															karasUnknown: karasUnknown
-														};
-														resolve(res);
+														};																							resolve(response);
 													})
 													.catch(function(err){
 														logger.error('[PLC] setPlaying : '+err);
@@ -2467,9 +2466,8 @@ module.exports = {
 											})
 											.catch(function(err){
 												logger.error('[PLC] getPLCByKID : '+err);
-												resolve(err);
-											});
-										resolve(karasUnknown);
+												reject(err);
+											});										
 									});
 							}
 						});
