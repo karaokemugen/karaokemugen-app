@@ -120,7 +120,7 @@ var plData;
         settingsUpdating = scope ===  "admin" ?  getSettings() : getPublicSettings();
         
         settingsUpdating.done( function() {
-            fillPlaylistSelects().done(function () {
+            refreshPlaylistSelects().done(function () {
                 playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
                 refreshPlaylistDashboard(1);
                 refreshPlaylistDashboard(2);
@@ -130,7 +130,6 @@ var plData;
         });
 
         initSwitchs();
-
         $('.bootstrap-switch').promise().then(function(){
             $(this).each(function(){
                 $(this).attr('title', $(this).find('input').attr('title'));
@@ -159,25 +158,28 @@ var plData;
         
         // When user selects a playlist
         $("#selectPlaylist1, #selectPlaylist2").change(function (e) {
-            var val = $(this).val();
-            var oldVal = $(this).closest('.plDashboard').data('playlist_id');
+            var $this = $(this);
+            var val = $this.val(); console.log(val);
+            var oldVal = $this.closest('.plDashboard').data('playlist_id');
            
             if(!val) {
-                var newSelection = sideOfPlaylist("-1") ? "-2" : "-1";
-                $(this).val(newSelection).change();
+                var newSelection = sideOfPlaylist("-1") ?
+                        (scope == "public" ? playlistToAddId : "-2")  : "-1";
+                $this.val(newSelection)
+                if($this.val()) { $this.change(); }
                 e.preventDefault();
                 return false;
             }
-            var side = $(this).attr('side');
-            var isNew = $(this).find('[data-select2-tag="true"][value="' + val + '"]');
+            var side = $this.attr('side');
+            var isNew = $this.find('[data-select2-tag="true"][value="' + val + '"]');
             
             if(isNew.length > 0) {
                 e.preventDefault(); // si c'est une nouvelle entrée, le serveur nous dira quand elle sera crée
-                fillPlaylistSelects();
+                refreshPlaylistSelects();
             } else if(val != oldVal && val == $("select[type='playlist_select'][side!='" + side + "'] > option:selected[value='" + val + "']").val()) {
                 $("select[type='playlist_select'][side!='" + side + "']").val(oldVal);
                
-                fillPlaylistSelects().done( function() {
+                refreshPlaylistSelects().done( function() {
                     $("select[type='playlist_select']").change();
                 });
             } else {
@@ -188,14 +190,6 @@ var plData;
 
                 playlistContentUpdating = fillPlaylist(side);
                 refreshPlaylistDashboard(side);
-                
-                /*
-                // prevent selecting 2 times the same playlist
-                if (scope === "admin") {
-                    $("select[type='playlist_select'][side!='" + side + "'] > option").attr("disabled", false);
-                    $("select[type='playlist_select'][side!='" + side + "'] > option[value='" + val + "']").attr("disabled", true);
-                }
-                */
             }
         });
 
@@ -579,78 +573,80 @@ var plData;
     "TYPE_8"    : "Compositeur"
     };
     
-    
-if (isTouchScreen) {
-    
-  Hammer.Manager.prototype.emit = function (originalEmit) {
-    return function (type, data) {
-      originalEmit.call(this, type, data);
-      $(this.element).trigger({
-        type: type,
-        gesture: data
-      });
-    };
-  }(Hammer.Manager.prototype.emit);
-  
-  
-    /* tap on full lyrics */
-  
-    var elem = $('.playlist-main');
-    var managerLyrics = new Hammer.Manager(elem[0],{
-      prevent_default: false
+
+/* touchscreen event handling part */
+
+    if (isTouchScreen) {
+        
+        Hammer.Manager.prototype.emit = function (originalEmit) {
+            return function (type, data) {
+            originalEmit.call(this, type, data);
+            $(this.element).trigger({
+                type: type,
+                gesture: data
+            });
+            };
+        }(Hammer.Manager.prototype.emit);
+        
+        
+            /* tap on full lyrics */
+        
+            var elem = $('.playlist-main');
+            var managerLyrics = new Hammer.Manager(elem[0],{
+            prevent_default: false
+            });
+            var tapper = new Hammer.Tap();
+            managerLyrics.add(tapper);
+            managerLyrics.on('tap', function (e) {
+            $this = $(e.target).closest('.fullLyrics');
+            
+            if($this.length > 0) {
+            e.preventDefault();
+            
+            var liKara = $this.closest('li');
+            var playlist = liKara.closest('ul');
+            var idKara = liKara.attr('idkara');
+            var detailsKara = liKara.find('.detailsKara');
+        
+            $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
+                if (mode == "mobile") {
+                    $('#lyricsModalText').html(data.join('<br/>'));
+                    $('#lyricsModal').modal('open');
+                } else {
+                    displayModal("alert","Lyrics", "<center>" + data.join('<br/>') + "</center");
+                }
+            });
+        }
     });
-    var tapper = new Hammer.Tap();
-    managerLyrics.add(tapper);
-    managerLyrics.on('tap', function (e) {
-    $this = $(e.target).closest('.fullLyrics');
     
-    if($this.length > 0) {
-      e.preventDefault();
-      
-      var liKara = $this.closest('li');
-      var playlist = liKara.closest('ul');
-      var idKara = liKara.attr('idkara');
-      var detailsKara = liKara.find('.detailsKara');
-  
-      $.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-          if (mode == "mobile") {
-            $('#lyricsModalText').html(data.join('<br/>'));
-            $('#lyricsModal').modal('open');
-          } else {
-            displayModal("alert","Lyrics", "<center>" + data.join('<br/>') + "</center");
-          }
-      });
-    }
-  });
-  
-  managerLyrics.on('tap click', function (e) {
-    e.gesture = e;
-    var target = $(e.gesture.target);
+    managerLyrics.on('tap click', function (e) {
+        e.gesture = e;
+        var target = $(e.gesture.target);
+        
+        if(target.closest('.fullLyrics').length > 0
+        || target.closest('.btnDiv').length > 0
+        || target.closest('.infoDiv').length > 0
+        || target.closest('[name="checkboxKara"]').length > 0 ) {
+        return false;
+        }
+        var $this = target.closest('li');
     
-    if(target.closest('.fullLyrics').length > 0
-    || target.closest('.btnDiv').length > 0
-    || target.closest('.infoDiv').length > 0
-    || target.closest('[name="checkboxKara"]').length > 0 ) {
-      return false;
-    }
-    var $this = target.closest('li');
-  
-    if($this.hasClass('pressed')) { toggleDetailsKara($this); }   
-    $this.removeClass('pressed');
-    $this.toggleClass('z-depth-3').toggleClass('active');
-  
-  })
-  
+        if($this.hasClass('pressed')) { toggleDetailsKara($this); }   
+        $this.removeClass('pressed');
+        $this.toggleClass('z-depth-3').toggleClass('active');
     
-  $('.playlistContainer').on('touchstart mousedown', 'li', function (e) {
-    var $this = $(e.target).closest('li');
-    $this.addClass('pressed');
-  }).on('touchend mouseup', 'li', function (e) {
-      var $this = $(e.target).closest('li');
-      $this.removeClass('drag');
-      $this.removeClass('pressed');
-  })
-}  
+    })
+    
+        
+    $('.playlistContainer').on('touchstart mousedown', 'li', function (e) {
+            var $this = $(e.target).closest('li');
+            $this.addClass('pressed');
+        }).on('touchend mouseup', 'li', function (e) {
+            var $this = $(e.target).closest('li');
+            $this.removeClass('drag');
+            $this.removeClass('pressed');
+        })
+    }  
 
     /* simplify the ajax calls */
     $.ajaxPrefilter(function (options) {
@@ -660,14 +656,10 @@ if (isTouchScreen) {
     /**
      * Fill a playlist on screen with karas
      * @param {1, 2} side - which playlist on the screen
-     * @param {Int} idKara - kara to highlight & scroll to at the end of the work
-     * @param {Int} from - returned results start from this sideber
-     * @param {Int} to - returned results end to this sideber
      */
-    // TODO supprimer idKara et reporter sur le reste du code
     // TODO if list is updated from another source (socket ?) keep the size of the playlist
-    fillPlaylist = function (side, idKara, from, to) {
-        DEBUG && console.log(side, idKara, from, to);
+    fillPlaylist = function (side) {
+        DEBUG && console.log(side);
         var deferred = $.Deferred();
         var idPlaylist = parseInt($("#selectPlaylist" + side).val());
         var filter = $("#searchPlaylist" + side).val();
@@ -914,18 +906,18 @@ if (isTouchScreen) {
             }
         });
     }
-     
+
     /** 
-    * Fill playlist lists
+    * refresh playlist lists
     */
-    fillPlaylistSelects = function () {
+    refreshPlaylistSelects = function () {
         var deferred = $.Deferred();
 
         var playlistList = {};
         var select1 = $("#selectPlaylist1"), select2 = $("#selectPlaylist2");
         var val1 = select1.val(), val2 = select2.val();
         
-        $.ajax({ url: scope + '/playlists', }).done(function (data) {
+        $.ajax({ url: scope + '/playlists', }).done(function (data) {console.log(data);
             playlistList = data; // object containing all the playlists
             if (scope === "admin")                                                              playlistList.push({ "playlist_id": -1, "name": "Karas" });
             if (scope === "admin" || settings['EngineAllowViewBlacklist'] == 1)           playlistList.push({ "playlist_id": -2, "name": "Blacklist", "flag_visible" : settings['EngineAllowViewBlacklist'] });
@@ -1110,25 +1102,6 @@ if (isTouchScreen) {
     };
  
     /** 
-    * Init bootstrapSwitchs
-    */
-    initSwitchs = function () {
-        $("input[switch='onoff'],[name='EnginePrivateMode'],[name='kara_panel'],[name='lyrics']").bootstrapSwitch('destroy', true);
-
-        $("input[switch='onoff']").bootstrapSwitch({
-            wrapperClass: "btn btn-default",
-            "data-size": "normal"
-        });
-        $("[name='EnginePrivateMode'],[name='kara_panel'],[name='lyrics']").bootstrapSwitch({
-            "wrapperClass": "btn",
-            "data-size": "large",
-            "labelWidth": "15",
-            "handleWidth": "59",
-            "data-inverse": "false"
-        })
-    }
- 
-    /** 
     * Build kara title for users depending on the data
     * @param {Object} data - data from the kara
     * @param {String} search - (optional) search made by the user
@@ -1258,87 +1231,6 @@ if (isTouchScreen) {
         return $option;
     }
 
-    /* display an element as closable popup */
-    popup = function(element, easing, callback) {
-        el = $(element);
-        el.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, function(){
-            el.css('max-height', $(window).height() - 100);
-            el.css('top', 50);
-            el.css('max-width',$(window).width() * .95);
-            el.css('left', ($(window).width() - el.width()) / 2);
-
-            $('body > div[class!="popup"]').css('opacity','.5');
-            el.prepend(closePopupButton);
-        });
-    }
-
-    /* display a fading message, useful to show success or errors */
-    displayMessage = function(type, title, message) {
-        var messageDiv = $('#message');
-        messageDiv.finish().hide();
-        messageDiv.attr('class','alert alert-' + type);
-        messageDiv.html('<strong>' + title + '</strong> ' + message);
-        messageDiv.fadeIn(600).delay(2200).fadeOut(600);
-        
-    }
-
-   /* display a modal (really?) */
-    displayModal = function(type, title, message, callback, placeholder) {
-        var modal = $('#modalBox').attr('type', type);
-        var okButton = modal.find('.modal-footer > button.ok').unbind().show();
-        var otherButton = modal.find('.modal-footer > button.other').prop('disabled', false).unbind().show();
-        var body =  modal.find('.modal-body').show();
-        var form = body.find('.form').show();
-        var input = form.find('input').show();
-
-        body.find('.modal-message').html(message).show();
-        modal.find('.modal-title').html(title);
-       
-        if(type !== "confirm" && type !== "prompt") otherButton.hide();
-        if(type !== "prompt") {
-            form.hide();
-            if(!message || message === "") { body.hide(); }
-        } 
-
-        if(typeof callback != "undefined") {
-            if(type === "confirm") {
-                okButton.click(function(){ callback(true) });
-                otherButton.click(function(){ callback(false) });
-                if(placeholder == "lucky") {
-                    if(isTouchScreen) {
-                        otherButton.prop('disabled', true);
-                    } else {
-                        otherButton.on('mouseenter', function(){
-                            $(this).css('order', 1 - parseInt($(this).css('order')));
-                        });
-                    }
-                }
-            } else if ( type === "prompt") {
-                input.val(placeholder ? placeholder : "");
-                okButton.click(function(){ callback(input.val()) });
-            } else {
-                okButton.click(function(){ callback() });
-            }
-        }
-
-        modal.modal('show');
-    }
-
-
-    ajx = function(type, url, data, doneCallback) {
-        $.ajax({
-            url: url,
-            type: type,
-            data: data
-        })
-        .done(function (data) {
-            if(typeof doneCallback != "undefined"){
-                doneCallback(data)
-            }
-        });
-    }
-
-
     $(window).resize(function () {
         //  initSwitchs();
         isSmall = $(window).width() < 1025;        
@@ -1348,18 +1240,30 @@ if (isTouchScreen) {
         $('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
     });
 
+    /** 
+    * Init bootstrapSwitchs
+    */
+    initSwitchs = function () {
+        $("input[switch='onoff'],[name='EnginePrivateMode'],[name='kara_panel'],[name='lyrics']").bootstrapSwitch('destroy', true);
+
+        $("input[switch='onoff']").bootstrapSwitch({
+            wrapperClass: "btn btn-default",
+            "data-size": "normal"
+        });
+        $("[name='EnginePrivateMode'],[name='kara_panel'],[name='lyrics']").bootstrapSwitch({
+            "wrapperClass": "btn",
+            "data-size": "large",
+            "labelWidth": "15",
+            "handleWidth": "59",
+            "data-inverse": "false"
+        })
+    }
+
     /* opposite sideber of playlist : 1 or 2 */
     non = function (side) {
         return 3 - parseInt(side);
     }
 
-    secondsTimeSpanToHMS = function(s) {
-        var h = Math.floor(s/3600);
-        s -= h*3600;
-        var m = Math.floor(s/60);
-        s -= m*60;
-        return (h > 0 ? h+"h" : "") +(m < 10 ? '0'+m : m)+"m"+(s < 10 ? '0'+s : s ) + 's'; 
-    }
 
     getPlaylistRange = function(idPl) {
         var search = $("#searchPlaylist" + sideOfPlaylist(idPl)).val()
@@ -1388,32 +1292,6 @@ if (isTouchScreen) {
         return side;
     }
 
-    /* cookies */
-        
-    createCookie = function(name,value,days) {
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime()+(days*24*60*60*1000));
-            var expires = "; expires="+date.toGMTString();
-        }
-        else var expires = "";
-        document.cookie = name+"="+value+expires+"; path=/";
-    }
-
-    readCookie = function(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0;i < ca.length;i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1,c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-        }
-        return null;
-    }
-
-    eraseCookie = function(name) {
-        createCookie(name,"",-1);
-    }
 
     /* partie socket */
     socket.on('playerStatus', function(data){
@@ -1426,7 +1304,7 @@ if (isTouchScreen) {
         settingsUpdating.done(function (){
             if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
                 || $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
-                playlistsUpdating = fillPlaylistSelects();
+                playlistsUpdating = refreshPlaylistSelects();
     
                 playlistsUpdating.done(function () {
                     refreshPlaylistDashboard(1);
@@ -1441,7 +1319,7 @@ if (isTouchScreen) {
     
         if(!(($('#selectPlaylist2').data('select2') && $('#selectPlaylist2').data('select2').isOpen())
                 || ($('#selectPlaylist1').data('select2') && $('#selectPlaylist1').data('select2').isOpen()))) { 
-            playlistsUpdating = fillPlaylistSelects();
+            playlistsUpdating = refreshPlaylistSelects();
         }
     });
 
@@ -1449,7 +1327,7 @@ if (isTouchScreen) {
         if (idPlaylist) {
           if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
                 || $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
-                playlistsUpdating = fillPlaylistSelects();
+                playlistsUpdating = refreshPlaylistSelects();
 
                 var side = sideOfPlaylist(idPlaylist); DEBUG && console.log("b" +side);
                 if (side) {

@@ -195,7 +195,7 @@ select.form-control {
 	background-color : #5b5e54;
 }
 .playlist-main .list-group-item,.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-	background-color: hsla(0, 0%, 20%, .83);
+	background-color: hsla(0, 0%, 20%, .7);
 	border-color: hsla(0, 0%, 35%, 1);
 	border-width: 0px;
 	z-index: 20;
@@ -205,14 +205,14 @@ select.form-control {
 }
 
 .playlist-main .list-group-item:nth-child(even) {
-	background-color: hsla(0, 0%, 27%, 0.73);
+	background-color: hsla(0, 0%, 27%, 0.6);
 }
 
 .playlist-main .list-group-item:nth-child(even):hover {
-	background-color: hsla(0, 0%, 15%, .99);
+	background-color: hsla(0, 0%, 15%, .9);
 }
 .playlist-main .list-group-item:hover {
-	background-color: hsla(0, 0%, 15%, .95);
+	background-color: hsla(0, 0%, 15%, .8);
 }
 
 .playlist-main li.list-group-item[currentlyPlaying] {
