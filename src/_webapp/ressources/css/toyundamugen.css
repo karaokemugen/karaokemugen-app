@@ -189,6 +189,9 @@ div.bootstrap-switch-large {
 
 select.form-control {
 	width: 100% !important;
+	background-color: #343434;
+    color: white;
+    border-radius: 0;
 }
 
 .list-group-item:focus {
