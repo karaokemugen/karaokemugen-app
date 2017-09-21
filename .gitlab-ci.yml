@@ -5,15 +5,11 @@ cache:
   - node_modules/
 
 before_script:
-# - apt-get update -y
-# - apt-get install software-properties-common -y
-# - add-apt-repository ppa:blinxwang/mpv-builds
-# - apt-get install mpv -y
   - npm install
-# - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
-# - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
-# - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
-# - export LANG=en_US
+  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
+  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
+  - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
+  - export LANG=en_US
 
 stages:
   - test
@@ -22,9 +18,8 @@ stages:
 test:
   stage: test
   script:
-    - echo "toto"
-  # - node src/index.js --debug &disown
-  # - bash test/run.sh
+    - node src/index.js --debug --test &disown
+    - bash test/run.sh
 
 deploy:
   stage: deploy
