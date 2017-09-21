@@ -184,7 +184,7 @@
           var checked = $(this).attr('checked');
           $(this).attr('checked', !checked);
         });
-        
+
         $('#karaInfo').click(function (e) {
             if (status != undefined && status != "" && status != "stop") {
                 //refreshPlayerInfos(goToPosition, e);
@@ -402,7 +402,33 @@
             //fillPlaylistSelects();
         });
     });
-    
+
+    $('.import-file').change(function() {
+        if ( ! window.FileReader ) { return alert( 'FileReader API is not supported by your browser.' ); }
+        var dashBoard = $(this).closest('.plDashboard');
+        var select = dashBoard.find('.plSelect select');
+		var input = this;
+		if ( input.files && input.files[0] ) {
+			file = input.files[0]; 
+            fr = new FileReader();
+            fr.onload = function () {
+                var data = {};
+                data['playlist'] = fr['result'];
+                var name = JSON.parse(fr.result).PlaylistInformation.name;
+                ajx("POST", scope + "/playlists/import", data, function(response) {
+                   displayMessage('success', "Playlist importée" + ' : ', name);
+                   if(response.unknownKaras.length > 0) {
+                        displayMessage('warning', "Karas inconnus" + ' : ', response.unknownKaras );
+                    }
+                   playlistsUpdating.done( function() {
+                        select.val(response.playlist_id).change();
+                   });
+                });
+			};
+            fr.readAsText( file );
+        } 
+    });
+
     $('.controls button').click(function (e) {
         var name = $(this).attr('name');
         var dashBoard = $(this).closest('.plDashboard');
@@ -422,13 +448,13 @@
             url += "/export";
             type = "GET";
             ajx(type, url, data, function(data) {
-                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data,null,4));
                 var dlAnchorElem = document.getElementById('downloadAnchorElem');
                 dlAnchorElem.setAttribute("href", dataStr);
-                dlAnchorElem.setAttribute("download", ["KaraMugen", "playlist", idPlaylist, playlistName, Date.now()].join('_') + ".json");
+                dlAnchorElem.setAttribute("download", ["KaraMugen", playlistName, new Date().toLocaleDateString().replace("\\","-")].join('_') + ".kmplaylist");
                 dlAnchorElem.click();
             });
-        } else if (name == "import") {
+        } else if (false && name == "import") {
             url = scope + "/playlists/import";
             type = "POST";
             
@@ -445,7 +471,7 @@
             displayModal("prompt","Renommez " + playlistName, "", function(newName){
                 data['name']  = newName;
                 ajx(type, url, data);
-            });
+            }, playlistName);
         } else if (name == "add") {
             type = 'POST';
             url = 'admin/playlists';
@@ -506,6 +532,22 @@
             scrollToKara(side, idKara); 
         }
     }
+
+    // you know what it is
+    var k = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65],
+    n = 0;
+    $(document).keydown(function (e) {
+        if (e.keyCode === k[n++]) {
+            if (n === k.length) {
+                displayModal("alert", "<span style='color:red'>World destruction panel</span>", "<button class='btn btn-danger'> NON </button>");
+                n = 0;
+                return false;
+            }
+        }
+        else {
+            n = 0;
+        }
+    });
 }));
 
 
