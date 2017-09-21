@@ -1,27 +1,33 @@
-image: node:8
+image: node:8-stretch
 
 cache:
   paths:
   - node_modules/
 
 before_script:
+# - apt-get update -y
+# - apt-get install software-properties-common -y
+# - add-apt-repository ppa:blinxwang/mpv-builds
+# - apt-get install mpv -y
   - npm install
-#  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
-#  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
-#  - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/ 
+# - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
+# - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
+# - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
+# - export LANG=en_US
 
-stages: 
-#  - test
+stages:
+  # - test
   - deploy
 
-#test:
-#  stage: test
-#  script: 
-#    - bash test/run.sh
+test:
+  stage: test
+  script:
+    - node src/index.js --debug &disown
+    - bash test/run.sh
 
 deploy:
   stage: deploy
   script: "echo lol2"
-  only: 
+  only:
     - master
 
