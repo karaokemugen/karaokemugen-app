@@ -1214,8 +1214,7 @@ module.exports = {
 										pathToSubFiles = lyricsdir;
 									}
 								}
-								//Let's read our ASS and get it into a variable
-								console.log(tmpsubfile+' - '+pathToSubFiles);
+								//Let's read our ASS and get it into a variable								
 								if (tmpsubfile !== '') {
 									kara.ass = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile), 'utf-8');
 									if (tmpsubfile === 'kara_extract.'+kara.KID+'.ass') {

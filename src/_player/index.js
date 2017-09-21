@@ -13,16 +13,11 @@ module.exports = {
 	_playing:false, // internal delay flag	
 	_player:null,
 	_ref:null,	
-	screen: 1,
-	fullscreen: 0,
-	stayontop: 0,
-	nohud: 0,
-	nobar: 0,
-	vo: null,
 	BINPATH:null,
 	SETTINGS:null,
 	SYSPATH:null,
 	frontend_port:null,
+	mpvBinary:null,
 	timeposition:0,
 	duration:0,
 	mutestatus:false,
@@ -30,12 +25,7 @@ module.exports = {
 	volume:null,
 	showsubs:true,
 	status:{},
-	pipmode:null,
-	pipsize:null,
-	pippositionx:null,
-	pippositiony:null,
 	init:function(){
-		var mpvBinary;
 		var mpvHTTP;
 		var pGenerateBackground = new Promise((resolve,reject) => {
 			var generateBackground = require('./generate_background.js');
@@ -53,26 +43,26 @@ module.exports = {
 		});
 		var pIsmpvAvailable = new Promise((resolve,reject) => {
 			if (module.exports.SETTINGS.os == 'win32') {
-				mpvBinary = module.exports.BINPATH+'/mpv.exe';
+				module.exports.mpvBinary = module.exports.BINPATH+'/mpv.exe';
 				mpvHTTP = '/mpv.exe';
 			} else if (module.exports.SETTINGS.os == 'darwin') {
 				// if mpv is installed with MacPorts
-				mpvBinary = '/Applications/MacPorts/mpv.app/Contents/MacOS/mpv';
+				module.exports.mpvBinary = '/Applications/MacPorts/mpv.app/Contents/MacOS/mpv';
 				// if mpv is installed with Homebrew
-				if (!fs.existsSync(mpvBinary)) {
-					mpvBinary = '/usr/bin/mpv';
+				if (!fs.existsSync(module.exports.mpvBinary)) {
+					module.exports.mpvBinary = '/usr/bin/mpv';
 				}
 				// if mpv is installed locally or not installed
-				if (!fs.existsSync(mpvBinary)) {
-					mpvBinary = module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv';
+				if (!fs.existsSync(module.exports.mpvBinary)) {
+					module.exports.mpvBinary = module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv';
 					mpvHTTP = '/mpv-osx.zip';
 				}
 			} else if (module.exports.SETTINGS.os == 'linux') {
-				mpvBinary = '/usr/bin/mpv';
+				module.exports.mpvBinary = '/usr/bin/mpv';
 			}
 
-			if(!fs.existsSync(mpvBinary)){
-				logger.warn('[Player] mpv not found in path : '+module.exports.BINPATH+' or '+mpvBinary);
+			if(!fs.existsSync(module.exports.mpvBinary)){
+				logger.warn('[Player] mpv not found in path : '+module.exports.BINPATH+' or '+module.exports.mpvBinary);
 				if (process.platform == 'linux') {
 					logger.error('[Player] You need to have mpv installed first. Use apt-get/yum/etc. depending on your linux distribution.');
 					reject('mpv not installed!');
@@ -107,7 +97,7 @@ module.exports = {
 						console.log('\n');
 						if (module.exports.SETTINGS.os == 'win32') {
 							fs.rename(module.exports.BINPATH+'/mpvtemp',
-								mpvBinary,
+								module.exports.mpvBinary,
 								function(err) {
 									if (err) {
 										logger.error('[Player] Unable to rename mpv : '+err);
@@ -145,151 +135,15 @@ module.exports = {
 
 		Promise.all([pIsmpvAvailable,pGenerateBackground]).then(function() {
 			logger.debug('[Player] mpv is available');
-			var mpvOptions = [
-				'--keep-open=yes',
-				'--fps=60',
-				'--no-border',
-				'--osd-level=0',
-				'--sub-codepage=UTF-8-BROKEN',
-				'--volume=100',					
-			];			
-			if (module.exports.pipmode) {
-				mpvOptions.push('--autofit='+module.exports.pipsize+'%x'+module.exports.pipsize+'%');
-				// By default, center.
-				var positionX = 50;
-				var positionY = 50;
-				switch(module.exports.pippositionx){
-				case 'Left':
-					positionX = 1;
-					break;
-				case 'Center':
-					positionX = 50;
-					break;
-				case 'Right':
-					positionX = 99;
-					break;
-				}
-				switch(module.exports.pippositiony){
-				case 'Top':
-					positionY = 5;
-					break;
-				case 'Center':
-					positionY = 50;
-					break;
-				case 'Bottom':
-					positionY = 95;
-					break;
-				}
-				mpvOptions.push('--geometry='+positionX+'%:'+positionY+'%');
-			}
-			if(module.exports.vo!==null && module.exports.vo !== '' && module.exports.vo !== undefined) {
-				mpvOptions.push('--vo='+module.exports.vo);
-			}
-			if(module.exports.screen!==null) {
-				mpvOptions.push('--screen='+module.exports.screen);
-				mpvOptions.push('--fs-screen='+module.exports.screen);
-			}
-			// Fullscreen is disabled if pipmode is set. 
-			if(module.exports.fullscreen==1 && !module.exports.pipmode) {
-				mpvOptions.push('--fullscreen');
-			}
-			if(module.exports.stayontop==1) {
-				mpvOptions.push('--ontop');
-			}
-			if(module.exports.nohud==1) {
-				mpvOptions.push('--no-osc');
-			}
-			if(module.exports.nobar==1) {
-				mpvOptions.push('--no-osd-bar');
-			}
-			//If we're on macOS, add --no-native-fs to get a real
-			// fullscreen experience on recent macOS versions.
-			//if(module.exports.SETTINGS.os === 'darwin') {
-			//	mpvOptions.push('--no-native-fs');
-			//}
 			
-			logger.debug('[Player] mpv options : '+mpvOptions);
-			var mpvAPI = require('node-mpv');
-			var socket;
-			switch(module.exports.SETTINGS.os) {
-			case 'win32':
-				socket = '\\\\.\\pipe\\mpvsocket';
-				break;
-			case 'darwin':										
-				socket = '/tmp/km-node-mpvsocket';
-				break;
-			case 'linux':
-				socket = '/tmp/km-node-mpvsocket';
-				break;
-			}
-
-			module.exports._player = new mpvAPI(
-				{
-					auto_restart: true,
-					audio_only: false,
-					binary: mpvBinary,
-					socket: socket,
-					time_update: 1,
-					verbose: false,
-					debug: false,
-				},
-				mpvOptions
-			);
-
-			// Starting up mpv
-			module.exports._player.start()
+			module.exports.startmpv()
 				.then(() => {
-					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-					// Disabled loading the background at start during dev. Or not yet.
-					module.exports._player.load(backgroundImageFile)
-						.then(() => {
-							module.exports.enhanceBackground();
-						});
-					
-					module.exports._player.observeProperty('sub-text',13);
-					module.exports._player.observeProperty('volume',14);
+					logger.info('[Player] Player interface is READY');
 				})
 				.catch((err) => {
-					logger.error('[Player] mpvAPI : '+err);
+					logger.error('[Player] mpv is not ready : '+err);
 				});
-			
-			module.exports._player.on('statuschange',function(status){
-				// si on affiche une image il faut considérer que c'est la pause d'après chanson
-				module.exports.status = status;
-				if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i)) {
-					// immediate switch to Playing = False to avoid multiple trigger
-					module.exports.playing = false;
-					module.exports._playing = false;
-					module.exports.playerstatus = 'stop';
-					module.exports._player.pause();
-					module.exports.onEnd(module.exports._ref);
-					module.exports._ref = null;
-				}
-				
-				module.exports.mutestatus = status.mute;
-				module.exports.duration = status.duration;
-				module.exports.subtext = status['sub-text'];
-				module.exports.volume = status['volume'];
-				module.exports.onStatusChange();
-			});
-			module.exports._player.on('paused',function(){
-				logger.debug('[Player] Paused event triggered');
-				module.exports.playing = false;
-				module.exports.playerstatus = 'pause';
-				module.exports.onStatusChange();
-			});
-			module.exports._player.on('resumed',function(){
-				logger.debug('[Player] Resumed event triggered');
-				module.exports.playing = true;
-				module.exports.playerstatus = 'play';
-				module.exports.onStatusChange();
-			});
-			module.exports._player.on('timeposition',function(position){
-				// Returns the position in seconds in the current song
-				module.exports.timeposition = position;
-				module.exports.onStatusChange();
-			});
-			logger.info('[Player] Player interface is READY');
+
 		})
 			.catch(function(err) {				
 				logger.error('[Player] Player interface is NOT READY : '+err);
@@ -434,5 +288,183 @@ module.exports = {
 	onEnd:function(){
 		// événement émis pour quitter l'application
 		logger.error('Player :: onEnd not set');
+	},
+	restartmpv:function(){
+		return new Promise(function(resolve,reject){
+			module.exports.quitmpv()
+				.then(() => { 
+					logger.debug('[Player] Stopped mpv (restarting)');
+					module.exports.startmpv()
+						.then(() => {
+							logger.debug('[Player] restarted mpv');
+							resolve();
+						})
+						.catch((err) => {
+							logger.error('[Player] Unable to start mpv : '+err);
+							reject(err);
+						});
+				})
+				.catch((err) => {
+					logger.error('[Player] Unable to quit mpv : '+err);
+					reject(err);
+				});
+		});
+	},
+	startmpv:function(){
+		return new Promise(function(resolve,reject){
+			var mpvOptions = [
+				'--keep-open=yes',
+				'--fps=60',
+				'--no-border',
+				'--osd-level=0',
+				'--sub-codepage=UTF-8-BROKEN',
+				'--volume=100',					
+			];			
+			if (module.exports.SETTINGS.PlayerPIP) {
+				mpvOptions.push('--autofit='+module.exports.SETTINGS.PlayerPIPSize+'%x'+module.exports.SETTINGS.PlayerPIPSize+'%');
+				// By default, center.
+				var positionX = 50;
+				var positionY = 50;
+				switch(module.exports.SETTINGS.PlayerPIPPositionX){
+				case 'Left':
+					positionX = 1;
+					break;
+				case 'Center':
+					positionX = 50;
+					break;
+				case 'Right':
+					positionX = 99;
+					break;
+				}
+				switch(module.exports.SETTINGS.PlayerPIPPositionY){
+				case 'Top':
+					positionY = 5;
+					break;
+				case 'Center':
+					positionY = 50;
+					break;
+				case 'Bottom':
+					positionY = 95;
+					break;
+				}
+				mpvOptions.push('--geometry='+positionX+'%:'+positionY+'%');
+			}
+			if(module.exports.SETTINGS.mpvVideoOutput !== null && module.exports.SETTINGS.mpvVideoOutput !== '' && module.exports.SETTINGS.mpvVideoOutput !== undefined) {
+				mpvOptions.push('--vo='+module.exports.SETTINGS.mpvVideoOutput);
+			}
+			if(module.exports.SETTINGS.PlayerScreen!==null) {
+				mpvOptions.push('--screen='+module.exports.SETTINGS.PlayerScreen);
+				mpvOptions.push('--fs-screen='+module.exports.SETTINGS.PlayerScreen);
+			}
+			// Fullscreen is disabled if pipmode is set. 
+			if(module.exports.SETTINGS.PlayerFullscreen == 1 && !module.exports.PlayerPIP) {
+				mpvOptions.push('--fullscreen');
+			}
+			if(module.exports.SETTINGS.PlayerStayOnTop==1) {
+				mpvOptions.push('--ontop');
+			}
+			if(module.exports.SETTINGS.PlayerNoHud==1) {
+				mpvOptions.push('--no-osc');
+			}
+			if(module.exports.SETTINGS.PlayerNoBar==1) {
+				mpvOptions.push('--no-osd-bar');
+			}
+			//If we're on macOS, add --no-native-fs to get a real
+			// fullscreen experience on recent macOS versions.
+			//if(module.exports.SETTINGS.os === 'darwin') {
+			//	mpvOptions.push('--no-native-fs');
+			//}
+				
+			logger.debug('[Player] mpv options : '+mpvOptions);
+			var mpvAPI = require('node-mpv');
+			var socket;
+			switch(module.exports.SETTINGS.os) {
+			case 'win32':
+				socket = '\\\\.\\pipe\\mpvsocket';
+				break;
+			case 'darwin':										
+				socket = '/tmp/km-node-mpvsocket';
+				break;
+			case 'linux':
+				socket = '/tmp/km-node-mpvsocket';
+				break;
+			}
+
+			module.exports._player = new mpvAPI(
+				{
+					auto_restart: true,
+					audio_only: false,
+					binary: module.exports.mpvBinary,
+					socket: socket,
+					time_update: 1,
+					verbose: false,
+					debug: false,
+				},
+				mpvOptions
+			);			
+			// Starting up mpv
+			module.exports._player.start()
+				.then(() => {
+					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+					// Disabled loading the background at start during dev. Or not yet.
+					module.exports._player.load(backgroundImageFile)
+						.then(() => {
+							module.exports.enhanceBackground();
+						});
+					module.exports._player.observeProperty('sub-text',13);
+					module.exports._player.observeProperty('volume',14);
+					module.exports._player.on('statuschange',function(status){
+						// si on affiche une image il faut considérer que c'est la pause d'après chanson
+						module.exports.status = status;
+						if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i)) {
+							// immediate switch to Playing = False to avoid multiple trigger
+							module.exports.playing = false;
+							module.exports._playing = false;
+							module.exports.playerstatus = 'stop';
+							module.exports._player.pause();
+							module.exports.onEnd(module.exports._ref);
+							module.exports._ref = null;
+						}
+				
+						module.exports.mutestatus = status.mute;
+						module.exports.duration = status.duration;
+						module.exports.subtext = status['sub-text'];
+						module.exports.volume = status['volume'];
+						module.exports.onStatusChange();
+					});
+					module.exports._player.on('paused',function(){
+						logger.debug('[Player] Paused event triggered');
+						module.exports.playing = false;
+						module.exports.playerstatus = 'pause';
+						module.exports.onStatusChange();
+					});
+					module.exports._player.on('resumed',function(){
+						logger.debug('[Player] Resumed event triggered');
+						module.exports.playing = true;
+						module.exports.playerstatus = 'play';
+						module.exports.onStatusChange();
+					});
+					module.exports._player.on('timeposition',function(position){
+						// Returns the position in seconds in the current song
+						module.exports.timeposition = position;
+						module.exports.onStatusChange();
+					});
+					logger.debug('[Player] mpv initialized successfully');
+					resolve();
+				})
+				.catch((err) => {
+					logger.error('[Player] mpvAPI : '+err);
+					reject();
+				});
+		});
+	},
+	quitmpv:function(){
+		return new Promise(function(resolve){
+			logger.debug('[Player] quitting mpv');
+			module.exports._player.quit();			
+			// Destroy mpv instance.
+			module.exports._player = null;
+			resolve();			
+		});	
 	},
 };
