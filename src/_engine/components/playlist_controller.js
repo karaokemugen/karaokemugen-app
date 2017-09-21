@@ -1436,6 +1436,24 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get playlist content by KID}
+	* @param  {string} kid {KID of karaoke to fetch infos from}
+	* @return {Object} {karaoke object}
+	*/
+	getPLCByKID:function(kid,playlist_id) {
+		return new Promise(function(resolve,reject) {
+			// Get karaoke list
+			module.exports.DB_INTERFACE.getPLCByKID(kid,playlist_id)
+				.then(function(kara){
+					resolve(kara);
+				})
+				.catch(function(err){
+					logger.error('[PLC] DBI getPLCByKID : '+err);
+					reject(err);
+				});
+		});
+	},
+	/**
 	* @function {Filter playlist with a text}
 	* @param  {object} playlist   {playlist array of karaoke objects}
 	* @param  {string} searchText {Words separated by a space}
@@ -2327,17 +2345,19 @@ module.exports = {
 							PLContents.forEach(function(plc){
 								var PLCObject = {};
 								PLCObject.kid = plc.kid;
+								if (plc.flag_playing === 1) {
+									PLCObject.flag_playing = 1;
+								}
 								PLCFiltered.push(PLCObject);
 							});
 
 							playlist.Header = {
-								version: 1,
+								version: 2,
 								description: 'Karaoke Mugen Playlist File',
 							};
 
 							playlist.PlaylistInformation = PLInfo;
-							playlist.PlaylistContents = PLCFiltered;
-							
+							playlist.PlaylistContents = PLCFiltered;						
 							resolve(playlist);
 						})
 						.catch(function(err){
@@ -2361,11 +2381,10 @@ module.exports = {
 			// Check if format is valid :
 			// Header must contain :
 			// description = Karaoke Mugen Playlist File
-			// version = 1
+			// version <= 2
 			// 
 			// PlaylistContents array must contain at least one element.
-			// That element needs to have at least kid and pos.
-			// pos must be integer
+			// That element needs to have at least kid. flag_playing is optionnal
 			// kid must be uuid
 			// Test each element for those.
 			//
@@ -2378,15 +2397,23 @@ module.exports = {
 			// If all tests pass, then add playlist, then add karas
 			// Playlist can end up empty if no karaokes are found in database			
 			var err;
+			var playingKara;
 			if (playlist.Header.description !== 'Karaoke Mugen Playlist File') err = 'Not a .kmplaylist file';
 			// This test will change if we make several versions of the .kmplaylist format
-			if (playlist.Header.version !== 1) err = 'Cannot import this version ('+playlist.Header.version+')';
+			if (playlist.Header.version > 2) err = 'Cannot import this version ('+playlist.Header.version+')';
 
 			if (playlist.PlaylistContents === undefined) err = 'No PlaylistContents section';
 			playlist.PlaylistContents.forEach(function(kara){				
-				if (!validator.isUUID(kara.kid)) err = 'KID is not a valid UUID!';
+				if (!validator.isUUID(kara.kid)) err = 'KID is not a valid UUID!';				
+				if (!isNaN(kara.flag_playing)) {
+					if (kara.flag_playing === 1) {
+						playingKara = kara.kid;						
+					} else {
+						err = 'flag_playing must be 1 or not present!';
+					}
+				}
 			});
-
+			
 			if (isNaN(playlist.PlaylistInformation.created_at)) err = 'Creation time is not valid';
 			if (isNaN(playlist.PlaylistInformation.modified_at)) err = 'Modification time is not valid';
 			if (playlist.PlaylistInformation.flag_visible !== 0 && 
@@ -2421,8 +2448,23 @@ module.exports = {
 							if (err) {
 								reject(err);
 							} else {																
-								module.exports.addKaraToPlaylist(karasToImport,'Admin',playlist_id)
+								module.exports.addKaraToPlaylist(karasToImport,'Administrateur',playlist_id)
 									.then(function(){
+										module.exports.getPLCByKID(playingKara,playlist_id)
+											.then(function(PLCToPlay){
+												module.exports.setPlaying(PLCToPlay.playlistcontent_id,playlist_id)
+													.then(function(){
+														resolve(karasUnknown);
+													})
+													.catch(function(err){
+														logger.error('[PLC] setPlaying : '+err);
+														reject(err);
+													});
+											})
+											.catch(function(err){
+												logger.error('[PLC] getPLCByKID : '+err);
+												resolve(err);
+											});
 										resolve(karasUnknown);
 									});
 							}

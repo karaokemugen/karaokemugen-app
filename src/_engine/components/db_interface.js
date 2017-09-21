@@ -771,6 +771,32 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get one PLC by KID}
+	* @param  {string} kid {KID}
+	* @param  {string} playlist_id {playlist ID}
+	* @return {Object} {karaoke object}
+	*/
+	getPLCByKID:function(kid,playlist_id){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}			
+			var sqlGetPLCByKID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_plcontent_by_kid.sql'),'utf-8');
+			module.exports._db_handler.get(sqlGetPLCByKID,
+				{
+					$kid: kid,
+					$playlist_id: playlist_id
+				},
+				function (err, kara) {					
+					if (err) {
+						reject('Failed to get PLC song '+kid+' information : '+err);
+					} else {
+						resolve(kara);
+					}
+				});
+		});
+	},
+	/**
 	* @function {Get one tag}
 	* @param  {number} tag_id {tag ID}
 	* @return {string} {name of tag}
