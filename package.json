@@ -43,9 +43,11 @@
       "src/_common/db/*",
       "src/_common/locales/*",
       "src/_player/assets/*",
-      "src/_webapp/views/*",
-      "src/_webapp/fonts/*",
-      "src/_webapp/css/*",
+	  "src/_webapp/ressources/views/**",
+	  "src/_webapp/ressources/css/*",
+	  "src/_webapp/ressources/img/*",
+	  "src/_webapp/vendors/css/*",
+	  "src/_webapp/vendors/fonts/**",
       "src/**/*.js",
       "node_modules/**/*"
     ]
@@ -94,7 +96,7 @@
     "jsdoc": "^3.5.4",
     "mocha": "^3.5.0",
     "nodemon": "^1.11.0",
-    "pkg": "^4.2.3",
+    "pkg": "^4.2.4",
     "supertest": "^3.0.0"
   },
   "false": {}
