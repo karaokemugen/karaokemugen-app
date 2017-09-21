@@ -700,7 +700,10 @@ if (isTouchScreen) {
 
         // ask for the kara list from given playlist
         if (ajaxSearch[url]) { ajaxSearch[url].abort(); }
-        ajaxSearch[url] = $.ajax({ url: urlFiltre }).done(function (data) {
+        ajaxSearch[url] = $.ajax({  url: urlFiltre,
+                                    type: "GET",
+                                    dataType: "json" })
+        .done(function (data) {
             //DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
             
             var htmlContent = "";
