@@ -21,6 +21,7 @@ module.exports = {
 	currentPlaylistID:null,
 	currentPlayingPLC:null,
 	archivedStatus:null,
+	playerNeedsRestart:false,
 	/**
 	 * @private
 	 * Engine status.
@@ -278,14 +279,38 @@ module.exports = {
 	* Function triggered on player ending its current song.
 	*/
 	playerEnding:function(){
-		module.exports._services.player.enhanceBackground();
-		module.exports._services.playlist_controller.next()
-			.then(function(){
-				module.exports.tryToReadKaraInPlaylist();
-			}).catch(function(){
-				logger.warn('[Engine] Next song is not available');
-				module.exports.stop();
-			});
+		var pNeedsRestart = new Promise((resolve,reject) => {
+			if (module.exports.playerNeedsRestart) {
+				logger.info('[Engine] Player restarts, please wait');
+				module.exports.playerNeedsRestart = false;				
+				module.exports._services.player.restartmpv()
+					.then(() => {
+						logger.debug('[Engine] Player restart complete');
+						resolve();
+					})
+					.catch((err) => {
+						reject(err);
+					});
+				
+			} else {
+				resolve();
+			}
+		});
+		Promise.all([pNeedsRestart])
+			.then(() => {
+				module.exports._services.playlist_controller.next()
+					.then(function(){
+						module.exports.tryToReadKaraInPlaylist();
+					})
+					.catch(function(){
+						module.exports._services.player.enhanceBackground();				
+						logger.warn('[Engine] Next song is not available');
+						module.exports.stop();
+					});
+			})
+			.catch((err) => {
+				logger.error('[Engine] NeedsRestart Promise failed : '+err);
+			});		
 	},
 
 	/**
@@ -803,10 +828,11 @@ module.exports = {
 		module.exports._services.apiserver.onSettingsUpdate = function(settings) {
 			return new Promise(function(resolve,reject){
 				var settingsToSave = {};
+				var setting;
 				//We re-read config.ini.default and compare it with the settings we have
 				//If a setting is different, it is added to the settings to save.
 				var defaultSettings = ini.parse(fs.readFileSync(path.resolve(module.exports.SYSPATH,'config.ini.default'), 'utf-8'));
-				for (var setting in settings){
+				for (setting in settings){
 					if (settings.hasOwnProperty(setting)){
 						if (defaultSettings[setting] != settings[setting]) {
 							if (setting == 'os' ||
@@ -831,6 +857,17 @@ module.exports = {
 						}
 					}
 				}
+				// Other settings for now have to be toggled through API calls
+				// Let's detect which settings have changed. If any Player setting has been 
+				// changed, we set the playerNeedsRestart to true
+				for (setting in settings) {
+					if (setting.startsWith('Player')) {
+						if (module.exports.SETTINGS[setting] != settings[setting]) {
+							module.exports.playerNeedsRestart = true;
+							logger.info('[Engine] Setting mpv to restart after next song');
+						}
+					}
+				}
 
 				extend(true,module.exports.SETTINGS,settings);
 
@@ -845,9 +882,7 @@ module.exports = {
 					module.exports.setPrivateOn();
 				} else {
 					module.exports.setPrivateOff();
-				}
-
-				// Other settings for now have to be toggled through API calls
+				}				
 
 				// Sending settings through WS. We only send public settings
 				var publicSettings = {};
@@ -1405,16 +1440,6 @@ module.exports = {
 		// TODO : Wallpaper is not yet configurable : this will be reworked later
 		/*if(module.exports.SETTINGS.PlayerWallpaper && fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper)))
 			module.exports._services.player.background = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper); */
-		module.exports._services.player.screen = module.exports.SETTINGS.PlayerScreen;
-		module.exports._services.player.fullscreen = module.exports.SETTINGS.PlayerFullscreen>0;
-		module.exports._services.player.stayontop = module.exports.SETTINGS.PlayerStayOnTop>0;
-		module.exports._services.player.nohud = module.exports.SETTINGS.PlayerNoHud>0;
-		module.exports._services.player.nobar = module.exports.SETTINGS.PlayerNoBar>0;
-		module.exports._services.player.pipmode = module.exports.SETTINGS.PlayerPIP>0;
-		module.exports._services.player.pippositionx = module.exports.SETTINGS.PlayerPIPPositionX;
-		module.exports._services.player.pippositiony = module.exports.SETTINGS.PlayerPIPPositionY;
-		module.exports._services.player.pipsize = module.exports.SETTINGS.PlayerPIPSize;
-		module.exports._services.player.vo = module.exports.SETTINGS.mpvVideoOutput;
 		module.exports._services.player.onStatusChange = function(){
 			var status = {
 				private: module.exports._states.private,
