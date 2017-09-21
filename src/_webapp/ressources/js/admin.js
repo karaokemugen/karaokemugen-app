@@ -77,6 +77,15 @@
                 stopUpdate = true;
             });
         });
+
+        $('#adminMessage').click(function () {
+            displayModal("prompt", "Message indispensable",
+                "<select class='form-control' name='destination'><option>screen</option><option>users</option><option>all</option></select>"
+                + "<input type='text' value='5000' name='duration' placeholder='Duration(ms)'/>", function(data){
+                    ajx("POST", "admin/player/message", { message: data.modalInput, duration : data.duration, destination : data.destination });
+                }
+            );
+        });
         $('#settings select').change(function () {
             setSettings($(this));
         });
