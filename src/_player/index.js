@@ -137,45 +137,13 @@ module.exports = {
 			logger.debug('[Player] mpv is available');
 			
 			module.exports.startmpv()
-				.then(() => {					
-					module.exports._player.on('statuschange',function(status){
-						// si on affiche une image il faut considérer que c'est la pause d'après chanson
-						module.exports.status = status;
-						if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i)) {
-							// immediate switch to Playing = False to avoid multiple trigger
-							module.exports.playing = false;
-							module.exports._playing = false;
-							module.exports.playerstatus = 'stop';
-							module.exports._player.pause();
-							module.exports.onEnd(module.exports._ref);
-							module.exports._ref = null;
-						}
-				
-						module.exports.mutestatus = status.mute;
-						module.exports.duration = status.duration;
-						module.exports.subtext = status['sub-text'];
-						module.exports.volume = status['volume'];
-						module.exports.onStatusChange();
-					});
-					module.exports._player.on('paused',function(){
-						logger.debug('[Player] Paused event triggered');
-						module.exports.playing = false;
-						module.exports.playerstatus = 'pause';
-						module.exports.onStatusChange();
-					});
-					module.exports._player.on('resumed',function(){
-						logger.debug('[Player] Resumed event triggered');
-						module.exports.playing = true;
-						module.exports.playerstatus = 'play';
-						module.exports.onStatusChange();
-					});
-					module.exports._player.on('timeposition',function(position){
-						// Returns the position in seconds in the current song
-						module.exports.timeposition = position;
-						module.exports.onStatusChange();
-					});
+				.then(() => {
 					logger.info('[Player] Player interface is READY');
+				})
+				.catch((err) => {
+					logger.error('[Player] mpv is not ready : '+err);
 				});
+
 		})
 			.catch(function(err) {				
 				logger.error('[Player] Player interface is NOT READY : '+err);
@@ -445,6 +413,43 @@ module.exports = {
 						});
 					module.exports._player.observeProperty('sub-text',13);
 					module.exports._player.observeProperty('volume',14);
+					module.exports._player.on('statuschange',function(status){
+						// si on affiche une image il faut considérer que c'est la pause d'après chanson
+						module.exports.status = status;
+						if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i)) {
+							// immediate switch to Playing = False to avoid multiple trigger
+							module.exports.playing = false;
+							module.exports._playing = false;
+							module.exports.playerstatus = 'stop';
+							module.exports._player.pause();
+							module.exports.onEnd(module.exports._ref);
+							module.exports._ref = null;
+						}
+				
+						module.exports.mutestatus = status.mute;
+						module.exports.duration = status.duration;
+						module.exports.subtext = status['sub-text'];
+						module.exports.volume = status['volume'];
+						module.exports.onStatusChange();
+					});
+					module.exports._player.on('paused',function(){
+						logger.debug('[Player] Paused event triggered');
+						module.exports.playing = false;
+						module.exports.playerstatus = 'pause';
+						module.exports.onStatusChange();
+					});
+					module.exports._player.on('resumed',function(){
+						logger.debug('[Player] Resumed event triggered');
+						module.exports.playing = true;
+						module.exports.playerstatus = 'play';
+						module.exports.onStatusChange();
+					});
+					module.exports._player.on('timeposition',function(position){
+						// Returns the position in seconds in the current song
+						module.exports.timeposition = position;
+						module.exports.onStatusChange();
+					});
+					logger.debug('[Player] mpv initialized successfully');
 					resolve();
 				})
 				.catch((err) => {
