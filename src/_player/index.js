@@ -310,9 +310,10 @@ module.exports = {
 				.then(() => {
 					module.exports._player.play();
 					module.exports.playerstatus = 'play';
-					module.exports._player.addSubtitles('memory://'+subtitle);					
-					// video may need some delay to play
-					// Resetting text displayed on screen			
+					if (subtitle) {
+						module.exports._player.addSubtitles('memory://'+subtitle);			
+					}						
+					// Displaying infos about current song on screen.
 					var command = {
 						command: [
 							'expand-properties',
@@ -322,7 +323,7 @@ module.exports = {
 						]
 					};	
 					module.exports._player.freeCommand(JSON.stringify(command));			
-					logger.profile('StartPlaying');												
+					//logger.profile('StartPlaying');												
 					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
 					module.exports._player.load(backgroundImageFile,'append');		
 					module.exports._playing = true;									

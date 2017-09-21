@@ -314,7 +314,13 @@ module.exports = {
 				.then(function(){									
 					module.exports.DB_INTERFACE.getASS(kara_id)
 						.then(function(ass) {							
-							resolve(ass.ass);
+							// ass can be empty if we're viewing a hardsub
+							// or a kara without ass
+							if (ass) {
+								resolve(ass.ass);
+							} else {
+								resolve();
+							}							
 						})
 						.catch(function(err){
 							logger.error('[PLC] DBI getASS : '+err);
