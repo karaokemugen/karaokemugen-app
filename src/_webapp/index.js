@@ -49,7 +49,7 @@ module.exports = {
 		if(app==null) {
 			var app = express();
 			app.engine('hbs', exphbs({
-				layoutsDir: path.join(__dirname, 'views/layouts/'), 
+				layoutsDir: path.join(__dirname, 'ressources/views/layouts/'), 
 				extname: '.hbs',
 				helpers: {
 					i18n: function() {
@@ -70,7 +70,7 @@ module.exports = {
 				next();
 			});
 			app.set('view engine', 'hbs');
-			app.set('views', path.join(__dirname, 'views/'));
+			app.set('views', path.join(__dirname, 'ressources/views/'));
 			app.use(cookieParser());
 			app.use(module.exports.i18n.init);
 			app.use(express.static(__dirname + '/'));
