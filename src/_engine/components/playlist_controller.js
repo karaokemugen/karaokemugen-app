@@ -2454,7 +2454,11 @@ module.exports = {
 											.then(function(PLCToPlay){
 												module.exports.setPlaying(PLCToPlay.playlistcontent_id,playlist_id)
 													.then(function(){
-														resolve(karasUnknown);
+														var res = {
+															playlist_id: playlist_id,
+															karasUnknown: karasUnknown
+														};
+														resolve(res);
 													})
 													.catch(function(err){
 														logger.error('[PLC] setPlaying : '+err);
