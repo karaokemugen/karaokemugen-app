@@ -52,34 +52,46 @@ module.exports = {
 				});
 		});
 		var pIsmpvAvailable = new Promise((resolve,reject) => {
-			if (module.exports.SETTINGS.os == 'win32') {
-				mpvBinary = module.exports.BINPATH+'/mpv.exe';
+			if (module.exports.SETTINGS.os == 'win32') {					
+				mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerWindows);
 				mpvHTTP = '/mpv.exe';
 			} else if (module.exports.SETTINGS.os == 'darwin') {
-				// if mpv is installed with MacPorts
-				mpvBinary = '/Applications/MacPorts/mpv.app/Contents/MacOS/mpv';
+				// Test first if the path provided in the settings is valid and executable.
+				// If not, we'll try the different possibilities for mpv's install : 
+				// - Macports
+				// - Homebrew
+				// - Manual install
+				if (!fs.accessSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX),fs.constants.X_OK)) {
+					// if mpv is installed with MacPorts
+					mpvBinary = '/Applications/MacPorts/mpv.app/Contents/MacOS/mpv';
+				}				
 				// if mpv is installed with Homebrew
-				if (!fs.existsSync(mpvBinary)) {
+				if (!fs.accessSync(mpvBinary),fs.constants.X_OK) {
 					mpvBinary = '/usr/bin/mpv';
 				}
 				// if mpv is installed locally or not installed
-				if (!fs.existsSync(mpvBinary)) {
-					mpvBinary = module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv';
-					mpvHTTP = '/mpv-osx.zip';
+				if (!fs.accessSync(mpvBinary),fs.constants.X_OK) {
+					mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpv.app/Contents/MacOS/mpv');					
 				}
 			} else if (module.exports.SETTINGS.os == 'linux') {
-				mpvBinary = '/usr/bin/mpv';
+				mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerLinux);
 			}
 
 			if(!fs.existsSync(mpvBinary)){
-				logger.warn('[Player] mpv not found in path : '+module.exports.BINPATH+' or '+mpvBinary);
-				if (process.platform == 'linux') {
-					logger.error('[Player] You need to have mpv installed first. Use apt-get/yum/etc. depending on your linux distribution.');
+				logger.error('[Player] mpv not found or not accessable in path : '+mpvBinary);
+				if (module.exports.SETTINGS.os === 'linux') {
+					logger.silly('You need to have mpv installed first. Use apt-get/yum/etc. depending on your Linux distribution.');
+					logger.silly('See http://mpv.io/installation for more details.');
+					reject('mpv not installed!');
+				}
+				if (module.exports.SETTINGS.os === 'darwin') {
+					logger.silly('You need to have mpv installed first. Use Homebrew/Macports/etc. depending on your preference.');
+					logger.silly('See http://mpv.io/installation for more details.');		
 					reject('mpv not installed!');
 				}
 
-				logger.warn('[Player] You can download it manually from http://mpv.io and place it in '+module.exports.BINPATH);
 				logger.info('[Player] Downloading mpv from Shelter...');
+				logger.silly('You can download it manually from http://mpv.io and place it in '+mpvBinary+' if you dont trust the binary on Shelter.');				
 
 				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp');
 				var req = http.request({
@@ -117,20 +129,7 @@ module.exports = {
 										resolve();
 									}
 								});
-						}
-						if (module.exports.SETTINGS.os == 'darwin') {
-							logger.info('[Player] Extracting mpv from its archive...');
-							extract(module.exports.BINPATH+'/mpvtemp', {dir: module.exports.BINPATH}, function (err) {
-								if (err) {
-									logger.error('[Player] Failed to extract mpv : '+err);
-									reject();
-								}
-								fs.unlinkSync(module.exports.BINPATH+'/mpvtemp');
-								fs.chmodSync(module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv', '755');
-								logger.info('[Player] mpv extraction complete');
-								resolve();
-							});
-						}
+						}						
 					});
 					res.pipe(mpvFile);
 				});

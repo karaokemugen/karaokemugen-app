@@ -59,7 +59,7 @@ PlayerPIPPositionY = "Bottom"
 ; Paths to binaries for mpv. These are the defaults.
 ; Don't modify these unless you want to use another mpv binary.
 BinPlayerWindows = "app/bin/mpv.exe"
-BinPlayerOSX = "app/bin/mpv.osx"
+BinPlayerOSX = "/usr/local/bin/mpv"
 BinPlayerLinux = "/usr/bin/mpv"
 
 ; Paths - don't touch these until you know what you're doing.
