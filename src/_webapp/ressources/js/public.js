@@ -41,8 +41,6 @@ $(document).ready(function () {
   }
   $('#choixPseudo').val(pseudo).trigger('blur');
 
-  getPublicSettings(true);
-
   $('.showSettings').click(function(){
     displayModal("alert", $('#settingsPublicTitle').text(), $('#settingsPublicContent').html());
   });
@@ -101,18 +99,19 @@ panel1Default = -1;
 
 
 
-getPublicSettings = function(trigger) {
+getPublicSettings = function() {
   var promise = $.Deferred();
   $.ajax({ url: 'public/settings', }).done(function (data) {
-    
-    playlistToAdd = data['private'] == 1 ? "current" : "public";
+    playlistToAdd = data['EnginePrivateMode'] == 1 ? "current" : "public";
+
     $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
         playlistToAddId = data.playlist_id;
+        promise.resolve();
     });
 
+   // Init with player infos, set the playlist's id where users can add their karas
     settings = data;
-    refreshPlaylistSelects(trigger);
-      
+
     if(settings['EngineAllowNicknameChange'] == "1") {
       $('.pseudoChange').show();
       $('#searchParent').css("width","");
@@ -123,7 +122,6 @@ getPublicSettings = function(trigger) {
 
     $('#version').text(settings['VersionName'] + " " + settings['VersionNo']);
     $('#mode').text(settings['private'] == "1" ? "Privé" : "Public");
-    promise.resolve();
   }); 
   return promise.promise();
 }

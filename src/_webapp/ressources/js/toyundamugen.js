@@ -106,21 +106,13 @@ var plData;
                 }
             }
         });
-        // Init with player infos, set the playlist's id where users can add their karas
-        $.ajax({ url: 'public/player' }).done(function (data) {
-            refreshPlayerInfos(data);
 
-            playlistToAdd = data['private'] == 1 ? "current" : "public";
-            $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
-                playlistToAddId = data.playlist_id;
-            });
-
-        });
         // Some html init
         settingsUpdating = scope ===  "admin" ?  getSettings() : getPublicSettings();
         
         settingsUpdating.done( function() {
-            refreshPlaylistSelects().done(function () {
+            playlistsUpdating = refreshPlaylistSelects();
+            playlistsUpdating.done(function () {
                 playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
                 refreshPlaylistDashboard(1);
                 refreshPlaylistDashboard(2);
@@ -159,38 +151,45 @@ var plData;
         // When user selects a playlist
         $("#selectPlaylist1, #selectPlaylist2").change(function (e) {
             var $this = $(this);
-            var val = $this.val(); console.log(val);
+            var val = $this.val();
             var oldVal = $this.closest('.plDashboard').data('playlist_id');
-           
             if(!val) {
-                var newSelection = sideOfPlaylist("-1") ?
-                        (scope == "public" ? playlistToAddId : "-2")  : "-1";
-                $this.val(newSelection)
-                if($this.val()) { $this.change(); }
-                e.preventDefault();
-                return false;
-            }
-            var side = $this.attr('side');
-            var isNew = $this.find('[data-select2-tag="true"][value="' + val + '"]');
-            
-            if(isNew.length > 0) {
-                e.preventDefault(); // si c'est une nouvelle entrée, le serveur nous dira quand elle sera crée
-                refreshPlaylistSelects();
-            } else if(val != oldVal && val == $("select[type='playlist_select'][side!='" + side + "'] > option:selected[value='" + val + "']").val()) {
-                $("select[type='playlist_select'][side!='" + side + "']").val(oldVal);
-               
-                refreshPlaylistSelects().done( function() {
-                    $("select[type='playlist_select']").change();
-                });
+                settingsUpdating.done( function(){
+                    var newSelection = sideOfPlaylist("-1") ? "-2"  : "-1";
+                    if(scope == "public" && newSelection == "-2") {
+                        newSelection = playlistToAddId;
+                    }
+                    $this.val(newSelection);
+                    if($this.val()) { $this.change(); }
+    
+                    e.preventDefault();
+                    return false;
+                })
+              
             } else {
-                createCookie("plVal" + side, val, 365);
-
-                $("#playlist" + side).empty();
-                $("#searchPlaylist" + side).val("");
-
-                playlistContentUpdating = fillPlaylist(side);
-                refreshPlaylistDashboard(side);
+                var side = $this.attr('side');
+                var isNew = $this.find('[data-select2-tag="true"][value="' + val + '"]');
+                
+                if(isNew.length > 0) {
+                    e.preventDefault(); // si c'est une nouvelle entrée, le serveur nous dira quand elle sera crée
+                    refreshPlaylistSelects();
+                } else if(val != oldVal && val == $("select[type='playlist_select'][side!='" + side + "'] > option:selected[value='" + val + "']").val()) {
+                    $("select[type='playlist_select'][side!='" + side + "']").val(oldVal);
+                   
+                    refreshPlaylistSelects().done( function() {
+                        $("select[type='playlist_select']").change();
+                    });
+                } else {
+                    createCookie("plVal" + side, val, 365);
+    
+                    $("#playlist" + side).empty();
+                    $("#searchPlaylist" + side).val("");
+    
+                    playlistContentUpdating = fillPlaylist(side);
+                    refreshPlaylistDashboard(side);
+                }
             }
+          
         });
 
         // main actions on karas in the playlists
@@ -410,7 +409,6 @@ var plData;
 
         /* set the right value for switchs */
         $('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function (event) {
-            //alert($(this).is(':checked'));
             $(this).val($(this).is(':checked') ? 1 : 0);
         });
      
@@ -917,9 +915,9 @@ var plData;
         var select1 = $("#selectPlaylist1"), select2 = $("#selectPlaylist2");
         var val1 = select1.val(), val2 = select2.val();
         
-        $.ajax({ url: scope + '/playlists', }).done(function (data) {console.log(data);
+        $.ajax({ url: scope + '/playlists', }).done(function (data) {
             playlistList = data; // object containing all the playlists
-            if (scope === "admin")                                                              playlistList.push({ "playlist_id": -1, "name": "Karas" });
+            if (scope === "admin")                                                        playlistList.push({ "playlist_id": -1, "name": "Karas" });
             if (scope === "admin" || settings['EngineAllowViewBlacklist'] == 1)           playlistList.push({ "playlist_id": -2, "name": "Blacklist", "flag_visible" : settings['EngineAllowViewBlacklist'] });
             if (scope === "admin" || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.push({ "playlist_id": -4, "name": "Blacklist criterias", "flag_visible" : settings['EngineAllowViewBlacklistCriterias']});
             if (scope === "admin" || settings['EngineAllowViewWhitelist'] == 1)           playlistList.push({ "playlist_id": -3, "name": "Whitelist", "flag_visible" :  settings['EngineAllowViewWhitelist']});
@@ -935,21 +933,14 @@ var plData;
             // setting the right values to newly refreshed selects
             // for public interface, panel1Default to keep kara list, playlistToAddId to show the playlist where users can add
             // for admin, check cookies
-            if(scope === "public" && typeof playlistToAddId == "undefined") {
+            if(scope === "public") {
                 select1.val(val1? val1 : panel1Default);
-                $.ajax({ url: 'public/player', async: false}).done(function (data) {
-                    playlistToAdd = data['private'] == 1 ? "current" : "public";
-                    
-                    $.ajax({ url: 'public/playlists/' + playlistToAdd, async: false }).done(function (data) {
-                        playlistToAddId = data.playlist_id;
-                        select2.val(val2? val2 : playlistToAddId).change();
-                    });
-                });
+                select2.val(val2? val2 : playlistToAddId);
             } else {
                 var plVal1Cookie = readCookie("plVal1");
                 var plVal2Cookie = readCookie("plVal2");
                 select1.val(val1? val1 : plVal1Cookie ? plVal1Cookie : -1);
-                select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : 1);
+                select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : playlistToAddId);
             }
             $(".select2").select2({ theme: "bootstrap",
                                     templateResult: formatPlaylist,
@@ -957,7 +948,10 @@ var plData;
                                     tags: false,
                                     minimumResultsForSearch: 3
                                 });
-
+            if(!select2.val()) {
+                select2.next('.select2').find('.select2-selection').text("I'm invisible!");
+            }
+            
             deferred.resolve();
         }).fail(function (data) {
             DEBUG && console.log(data);
@@ -1299,7 +1293,7 @@ var plData;
     });
     
     socket.on('settingsUpdated', function(data){
-        settingsUpdating = scope === "admin" ? getSettings() : getPublicSettings(false);
+        settingsUpdating = scope === "admin" ? getSettings() : getPublicSettings();
 
         settingsUpdating.done(function (){
             if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 

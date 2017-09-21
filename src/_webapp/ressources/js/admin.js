@@ -304,7 +304,12 @@
                 }
             });
 
-            promise.resolve();
+            playlistToAdd = data['EnginePrivateMode'] == 1 ? "current" : "public";
+            
+            $.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
+                playlistToAddId = data.playlist_id;
+                promise.resolve();
+            });
         });
 
         return promise.promise();
