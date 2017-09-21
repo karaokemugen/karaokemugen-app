@@ -10,9 +10,9 @@ module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
 	playing:false,
 	playerstatus:'stop',
-	_playing:false, // internal delay flag	
+	_playing:false, // internal delay flag
 	_player:null,
-	_ref:null,	
+	_ref:null,
 	BINPATH:null,
 	SETTINGS:null,
 	SYSPATH:null,
@@ -38,7 +38,7 @@ module.exports = {
 				})
 				.catch(function(err){
 					logger.error('[Player] Background generation error : '+err);
-					reject(err); 
+					reject(err);
 				});
 		});
 		var pIsmpvAvailable = new Promise((resolve,reject) => {
@@ -133,40 +133,42 @@ module.exports = {
 			}
 		});
 
-		Promise.all([pIsmpvAvailable,pGenerateBackground]).then(function() {
-			logger.debug('[Player] mpv is available');
-			
-			module.exports.startmpv()
-				.then(() => {
-					logger.info('[Player] Player interface is READY');
-				})
-				.catch((err) => {
-					logger.error('[Player] mpv is not ready : '+err);
-				});
+		if (!module.exports.SETTINGS.isTest) {
+			Promise.all([pIsmpvAvailable,pGenerateBackground]).then(function() {
+				logger.debug('[Player] mpv is available');
 
-		})
-			.catch(function(err) {				
-				logger.error('[Player] Player interface is NOT READY : '+err);
-				if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'))) {
-					fs.unlinkSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'));
-				}
-				process.exit();									
-			});
+				module.exports.startmpv()
+					.then(() => {
+						logger.info('[Player] Player interface is READY');
+					})
+					.catch((err) => {
+						logger.error('[Player] mpv is not ready : '+err);
+					});
+
+			})
+				.catch(function(err) {
+					logger.error('[Player] Player interface is NOT READY : '+err);
+					if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'))) {
+						fs.unlinkSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'));
+					}
+					process.exit();
+				});
+		}
 	},
 	play: function(video,subtitle,reference,gain,infos){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
 		if(fs.existsSync(video)){
 			logger.debug('[Player] Audio gain adjustment : '+gain);
-			if (gain == undefined || gain == null) gain = 0;			
+			if (gain == undefined || gain == null) gain = 0;
 			module.exports._ref = reference;
 			module.exports._player.load(video,'replace',['replaygain-fallback='+gain])
 				.then(() => {
 					module.exports._player.play();
 					module.exports.playerstatus = 'play';
 					if (subtitle) {
-						module.exports._player.addSubtitles('memory://'+subtitle);			
-					}						
+						module.exports._player.addSubtitles('memory://'+subtitle);
+					}
 					// Displaying infos about current song on screen.
 					var command = {
 						command: [
@@ -175,15 +177,15 @@ module.exports = {
 							'${osd-ass-cc/0}{\\an1}'+infos,
 							8000,
 						]
-					};	
-					module.exports._player.freeCommand(JSON.stringify(command));			
-					//logger.profile('StartPlaying');												
-					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
-					module.exports._player.load(backgroundImageFile,'append');		
-					module.exports._playing = true;									
+					};
+					module.exports._player.freeCommand(JSON.stringify(command));
+					//logger.profile('StartPlaying');
+					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+					module.exports._player.load(backgroundImageFile,'append');
+					module.exports._playing = true;
 				})
 				.catch((err) => {
-					logger.error('[Player] Error loading video '+video+' ('+err+')');				
+					logger.error('[Player] Error loading video '+video+' ('+err+')');
 				});
 		} else {
 			module.exports.playing = false;
@@ -215,9 +217,9 @@ module.exports = {
 		module.exports._player.load(backgroundImageFile)
 			.then(() => {
 				module.exports.enhanceBackground();
-			});		
+			});
 	},
-	pause: function(){		
+	pause: function(){
 		logger.debug('[Player] Pause event triggered');
 		module.exports._player.pause();
 		module.exports.playerstatus = 'pause';
@@ -253,7 +255,7 @@ module.exports = {
 		module.exports.showsubs = true;
 	},
 	message: function(message,duration) {
-		if (!duration) duration = 10000;				
+		if (!duration) duration = 10000;
 		var command = {
 			command: [
 				'expand-properties',
@@ -266,11 +268,11 @@ module.exports = {
 		if (module.exports.playing === false) {
 			setTimeout(function(){
 				module.exports.enhanceBackground();
-			},duration);			
+			},duration);
 		}
 	},
 	enhanceBackground: function(){
-		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;			
+		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
 		var imageCaption = 'Karaoke Mugen - '+__('GO_TO')+' '+url+' !';
 		var imageSign = module.exports.SETTINGS.VersionNo+' - '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
 		var message = '{\\fscx80}{\\fscy80}'+imageCaption+'\\N{\\fscx30}{\\fscy30}{\\i1}'+imageSign+'{\\i0}';
@@ -282,7 +284,7 @@ module.exports = {
 				100000000,
 			]
 		};
-		module.exports._player.freeCommand(JSON.stringify(command));			
+		module.exports._player.freeCommand(JSON.stringify(command));
 	},
 	onStatusChange:function(){},
 	onEnd:function(){
@@ -292,7 +294,7 @@ module.exports = {
 	restartmpv:function(){
 		return new Promise(function(resolve,reject){
 			module.exports.quitmpv()
-				.then(() => { 
+				.then(() => {
 					logger.debug('[Player] Stopped mpv (restarting)');
 					module.exports.startmpv()
 						.then(() => {
@@ -318,8 +320,8 @@ module.exports = {
 				'--no-border',
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
-				'--volume=100',					
-			];			
+				'--volume=100',
+			];
 			if (module.exports.SETTINGS.PlayerPIP) {
 				mpvOptions.push('--autofit='+module.exports.SETTINGS.PlayerPIPSize+'%x'+module.exports.SETTINGS.PlayerPIPSize+'%');
 				// By default, center.
@@ -356,7 +358,7 @@ module.exports = {
 				mpvOptions.push('--screen='+module.exports.SETTINGS.PlayerScreen);
 				mpvOptions.push('--fs-screen='+module.exports.SETTINGS.PlayerScreen);
 			}
-			// Fullscreen is disabled if pipmode is set. 
+			// Fullscreen is disabled if pipmode is set.
 			if(module.exports.SETTINGS.PlayerFullscreen == 1 && !module.exports.PlayerPIP) {
 				mpvOptions.push('--fullscreen');
 			}
@@ -374,7 +376,7 @@ module.exports = {
 			//if(module.exports.SETTINGS.os === 'darwin') {
 			//	mpvOptions.push('--no-native-fs');
 			//}
-				
+
 			logger.debug('[Player] mpv options : '+mpvOptions);
 			var mpvAPI = require('node-mpv');
 			var socket;
@@ -382,7 +384,7 @@ module.exports = {
 			case 'win32':
 				socket = '\\\\.\\pipe\\mpvsocket';
 				break;
-			case 'darwin':										
+			case 'darwin':
 				socket = '/tmp/km-node-mpvsocket';
 				break;
 			case 'linux':
@@ -401,7 +403,7 @@ module.exports = {
 					debug: false,
 				},
 				mpvOptions
-			);			
+			);
 			// Starting up mpv
 			module.exports._player.start()
 				.then(() => {
@@ -425,7 +427,7 @@ module.exports = {
 							module.exports.onEnd(module.exports._ref);
 							module.exports._ref = null;
 						}
-				
+
 						module.exports.mutestatus = status.mute;
 						module.exports.duration = status.duration;
 						module.exports.subtext = status['sub-text'];
@@ -461,10 +463,10 @@ module.exports = {
 	quitmpv:function(){
 		return new Promise(function(resolve){
 			logger.debug('[Player] quitting mpv');
-			module.exports._player.quit();			
+			module.exports._player.quit();
 			// Destroy mpv instance.
 			module.exports._player = null;
-			resolve();			
-		});	
+			resolve();
+		});
 	},
 };

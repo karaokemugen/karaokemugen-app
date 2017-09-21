@@ -44,7 +44,7 @@ console.log('\n');
 i18n.configure({
 	directory: path.resolve(__dirname,'_common/locales'),
 	defaultLocale: 'en',
-	cookie: 'locale', 
+	cookie: 'locale',
 	register: global
 });
 
@@ -75,7 +75,7 @@ if(SYSPATH) {
 	var detectedLocale = osLocale.sync().substring(0,2);
 	i18n.setLocale(detectedLocale);
 	SETTINGS.os = process.platform;
-	SETTINGS.EngineDefaultLocale = detectedLocale;	
+	SETTINGS.EngineDefaultLocale = detectedLocale;
 
 	if (argv.version) {
 		console.log('Karaoke Mugen '+SETTINGS.VersionNo+' - '+SETTINGS.VersionName);
@@ -83,7 +83,7 @@ if(SYSPATH) {
 		process.exit(0);
 	}
 	logger.info('[Launcher] Locale detected : '+detectedLocale);
-	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);	
+	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);
 
 	logger.info('[Launcher] Loaded configuration file');
 	logger.debug('[Launcher] Loaded configuration : '+JSON.stringify(SETTINGS,null,'\n'));
@@ -147,11 +147,11 @@ if(SYSPATH) {
 			process.exit();
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Test if network ports are available
 	 */
-	
+
 	var ports = [1337,1338,1339,1340];
 	ports.forEach(function(port){
 		var server = net.createServer();
@@ -163,7 +163,7 @@ if(SYSPATH) {
 				process.exit(1);
 			}
 		});
-  
+
 		server.once('listening', function() {
 			// close the server if listening doesn't fail
 			server.close();
@@ -173,14 +173,20 @@ if(SYSPATH) {
 	/**
 	 * Calling engine.
 	 */
-	var engine = require('./_engine/index.js');	
+	var engine = require('./_engine/index.js');
 	engine.SYSPATH = SYSPATH;
 	engine.SETTINGS = SETTINGS;
 	engine.i18n = i18n;
 	if(argv.testplaylist)
 		engine.test_playlist_controller();
-	else		
+	else
 		engine.run();
+
+	if(argv.test) {
+		SETTINGS.isTest = true;
+	} else {
+		SETTINGS.isTest = false;
+	}
 } else {
 	logger.error('[Launcher] Unable to detect SysPath !');
 	process.exit(1);
