@@ -2691,7 +2691,7 @@ node-fingerprint@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/node-fingerprint/-/node-fingerprint-0.0.2.tgz#31cbabeb71a67ae7dd5a7dc042e51c3c75868501"
 
-node-mpv@00SteinsGate00/Node-MPV#Node-MPV-2:
+"node-mpv@github:00SteinsGate00/Node-MPV#Node-MPV-2":
   version "1.1.2"
   resolved "https://codeload.github.com/00SteinsGate00/Node-MPV/tar.gz/6eb73ae7a7d613ea6fec05686b6a1aba5f4eb4ae"
   dependencies:
