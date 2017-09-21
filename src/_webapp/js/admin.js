@@ -399,7 +399,6 @@
             type: 'PUT',
             data: data
         }).done(function (data) {
-            //fillPlaylistSelects();
         });
     });
 
