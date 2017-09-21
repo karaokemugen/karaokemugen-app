@@ -1007,7 +1007,8 @@ module.exports = {
 					// Returns the playlist and its contents in an exportable format (to save on disk)
 					module.exports.onPlaylistExport(req.params.pl_id)
 						.then(function(playlist){
-							res.json(playlist);
+							// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
+							res.send(playlist);
 						})
 						.catch(function(err){
 							logger.error(err);
@@ -1028,12 +1029,14 @@ module.exports = {
 					req.getValidationResult().then(function(result) {
 						if (result.isEmpty()) {
 							module.exports.onPlaylistImport(JSON.parse(req.body.playlist))
-								.then(function(karasUnknown){
+								.then(function(result){
+									
 									var response = {
-										message: 'Playlist imported'
+										message: 'Playlist imported',
+										playlist_id: result.playlist_id
 									};
-									if (karasUnknown) {
-										response.unknownKaras = karasUnknown;
+									if (result.karasUnknown) {
+										response.unknownKaras = result.karasUnknown;
 									}
 									module.exports.emitEvent('playlistsUpdated');
 									res.json(response);
