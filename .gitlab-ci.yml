@@ -16,14 +16,15 @@ before_script:
 # - export LANG=en_US
 
 stages:
-  # - test
+  - test
   - deploy
 
 test:
   stage: test
   script:
-    - node src/index.js --debug &disown
-    - bash test/run.sh
+    - echo "toto"
+  # - node src/index.js --debug &disown
+  # - bash test/run.sh
 
 deploy:
   stage: deploy
