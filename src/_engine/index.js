@@ -293,7 +293,7 @@ module.exports = {
 	* Try to read next karaoke in playlist.
 	*/
 	tryToReadKaraInPlaylist:function(){
-		logger.profile('StartPlaying');
+		//logger.profile('StartPlaying');
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
 			module.exports._services.playlist_controller.current()
 				.then(function(kara){

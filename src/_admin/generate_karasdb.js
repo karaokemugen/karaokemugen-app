@@ -474,15 +474,18 @@ module.exports = {
 						});
 						karas.forEach(function(kara, index) {
 							index++;
-							var data = {
-								$id_kara: index,
-								$ass: kara.ass
-							};
-							stmt_InsertASS.run(data, function (err) {
-								if(err) {
-									reject(err);
-								}
-							});
+							// If we have an empty ass data set, we're not adding it to the statement.
+							if (kara.ass !== '') {
+								var data = {
+									$id_kara: index,
+									$ass: kara.ass
+								};
+								stmt_InsertASS.run(data, function (err) {
+									if(err) {
+										reject(err);
+									}
+								});
+							}							
 						});
 						module.exports.onLog('info', 'Karaokes table filled');
 
@@ -1175,8 +1178,8 @@ module.exports = {
 								//In which case we will work with either an empty ass file or
 								// the one provided by the mkv or mp4 file.							
 								var pathToSubFiles;
-								var tmpsubfile;								
-								if (kara['subfile'] === 'dummy.ass') {
+								var tmpsubfile;												if (kara['subfile'] === 'dummy.ass') {
+										
 									if (kara.videofile.toLowerCase().includes('.mkv') || kara.videofile.toLowerCase().includes('.mp4')) {	
 										var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(videosdir,kara.videofile), path.resolve(module.exports.SYSPATH,tmpdir,'kara_extract.'+kara.KID+'.ass')], { encoding : 'utf8' }),
 											ffmpegData = [],
@@ -1189,18 +1192,16 @@ module.exports = {
 											module.exports.onLog('error', err);
 											reject(err);
 										}
-										// We test if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything, so we replace it with vide.ass
+										// We test if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything, so we replace it with nothing.
 										tmpsubfile = 'kara_extract.'+kara.KID+'.ass';
 										pathToSubFiles = tmpdir;
 										if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile))){
-											tmpsubfile = 'vide.ass';
-											pathToSubFiles = 'src/_player/assets/';
+											tmpsubfile = '';							
 										} 
 									} else {
-										// No .mkv or .mp4 detected, so we create a .ass from vide.ass
+										// if no .mkv or .mp4 detected, we return no ass.
 										// Videofile is most probably a hardsubbed video.
-										tmpsubfile = 'vide.ass';
-										pathToSubFiles = 'src/_player/assets/';
+										tmpsubfile = '';
 									}
 								} else {
 									// Checking if subFile exists. Abort if not.									
@@ -1214,11 +1215,16 @@ module.exports = {
 									}
 								}
 								//Let's read our ASS and get it into a variable
-																
-								kara.ass = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile), 'utf-8');
-								if (tmpsubfile === 'kara_extract.'+kara.KID+'.ass') {
-									fs.unlinkSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile));
-								}
+								console.log(tmpsubfile+' - '+pathToSubFiles);
+								if (tmpsubfile !== '') {
+									kara.ass = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile), 'utf-8');
+									if (tmpsubfile === 'kara_extract.'+kara.KID+'.ass') {
+										fs.unlinkSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile));
+									}
+								} else {
+									// No subfile. kara.ass will be empty.
+									kara.ass = '';
+								}							
 								var videostats = fs.statSync(videosdir + '/' + kara['videofile']);							
 								if (videostats.size != karadata.videosize) {
 									//Probe file for duration
