@@ -1029,13 +1029,13 @@ module.exports = {
 					req.getValidationResult().then(function(result) {
 						if (result.isEmpty()) {
 							module.exports.onPlaylistImport(JSON.parse(req.body.playlist))
-								.then(function(res){
+								.then(function(result){
 									var response = {
 										message: 'Playlist imported',
 										playlist_id: res.playlist_id
 									};
-									if (res.karasUnknown) {
-										response.unknownKaras = res.karasUnknown;
+									if (result.karasUnknown) {
+										response.unknownKaras = result.karasUnknown;
 									}
 									module.exports.emitEvent('playlistsUpdated');
 									res.json(response);
