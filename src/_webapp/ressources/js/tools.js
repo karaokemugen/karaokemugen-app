@@ -1,10 +1,11 @@
 /* display a fading message, useful to show success or errors */
-displayMessage = function(type, title, message) {
+displayMessage = function(type, title, message, time) {
+    if (!time) time = 2200;
     var messageDiv = $('#message');
     messageDiv.finish().hide();
     messageDiv.attr('class','alert alert-' + type);
     messageDiv.html('<strong>' + title + '</strong> ' + message);
-    messageDiv.fadeIn(600).delay(2200).fadeOut(600);
+    messageDiv.fadeIn(600).delay(time).fadeOut(600);
     
 }
 
@@ -41,7 +42,14 @@ displayModal = function(type, title, message, callback, placeholder) {
             }
         } else if ( type === "prompt") {
             input.val(placeholder ? placeholder : "");
-            okButton.click(function(){ callback(input.val()) });
+            okButton.click(function(){
+                var data = {};
+                if(body.find('input, select').length > 1) {
+                    body.find('input, select').map(function(k, v){ data[v.name] = $(v).val() });
+                } else {
+                    data = input.val();
+                 }
+                callback(data) });
         } else {
             okButton.click(function(){ callback() });
         }

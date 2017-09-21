@@ -1373,12 +1373,17 @@ var plData;
         }
     });
 
+    socket.on('adminMessage', function(data){
+        if( scope === "public") displayMessage('info','Message à caractère informatif <br/>', data.message, data.duration);
+    });
+
+
     var onevent = socket.onevent;
     socket.onevent = function (packet) {
         var args = packet.data || [];
-        onevent.call (this, packet);    // original call
+        onevent.call (this, packet);
         packet.data = ["*"].concat(args);
-        onevent.call(this, packet);      // additional call to catch-all
+        onevent.call(this, packet);
     };
     
     socket.on('*', function(e, data) {

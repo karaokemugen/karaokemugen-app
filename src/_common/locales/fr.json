@@ -125,5 +125,6 @@
 	"TRANSFER_KARA": "Transférer kara",
 	"SELECT_ALL": "Tout sélectionner",
 	"PLAYLIST_ADD": "Créer une playlist",
-	"DB_PLAYLIST_UNKNOWN": "Playlist inconnue"
+	"DB_PLAYLIST_UNKNOWN": "Playlist inconnue",
+	"MESSAGE": "Passer un message"
 }
