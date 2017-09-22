@@ -711,6 +711,7 @@ module.exports = {
 						'duration': {
 							in: 'body',
 							isInt: true,
+							optional: true
 						},
 						'message': {
 							in: 'body',
