@@ -43,7 +43,7 @@ module.exports = {
 		});
 		var pIsmpvAvailable = new Promise((resolve,reject) => {
 			if (module.exports.SETTINGS.os == 'win32') {
-				mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerWindows);
+				module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerWindows);
 				mpvHTTP = '/mpv.exe';
 			} else if (module.exports.SETTINGS.os == 'darwin') {
 				// Test first if the path provided in the settings is valid and executable.
@@ -53,23 +53,23 @@ module.exports = {
 				// - Manual install
 				if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX))) {
 					console.log("1")
-					mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX);
+					module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX);
 				} else {
 					// if mpv is installed with MacPorts
-					mpvBinary = '/opt/local/bin/mpv';
+					module.exports.mpvBinary = '/opt/local/bin/mpv';
 				}
 				// if mpv is installed with Homebrew
 				if (!fs.existsSync(module.exports.mpvBinary)) {
 					module.exports.mpvBinary = '/usr/bin/mpv';
 				}
 				// if mpv is installed locally or not installed
-				if (!fs.existsSync(mpvBinary)) {
-					mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpv.app/Contents/MacOS/mpv');
+				if (!fs.existsSync(module.exports.mpvBinary)) {
+					module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpv.app/Contents/MacOS/mpv');
 				}
 			} else if (module.exports.SETTINGS.os == 'linux') {
-				mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerLinux);
+				module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerLinux);
 			}
-			if(!fs.existsSync(mpvBinary)){
+			if(!fs.existsSync(module.exports.mpvBinary)){
 				logger.error('[Player] mpv not found or not accessable in path : '+mpvBinary);
 				if (module.exports.SETTINGS.os === 'linux') {
 					console.log('\n');
@@ -88,7 +88,7 @@ module.exports = {
 
 				if (module.exports.SETTINGS.os === 'win32') {
 					logger.info('[Player] Downloading mpv from Shelter...');
-					logger.info('You can download it manually from http://mpv.io and place it in '+mpvBinary+' if you dont trust the binary on Shelter.');
+					logger.info('You can download it manually from http://mpv.io and place it in '+module.exports.mpvBinary+' if you dont trust the binary on Shelter.');
 
 					var mpvFile = fs.createWriteStream(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpvtemp'));
 					var req = http.request({
@@ -116,7 +116,7 @@ module.exports = {
 							console.log('\n');
 							if (module.exports.SETTINGS.os == 'win32') {
 								fs.rename(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpvtemp'),
-									mpvBinary,
+									module.exports.mpvBinary,
 									function(err) {
 										if (err) {
 											logger.error('[Player] Unable to rename mpv : '+err);
@@ -386,6 +386,7 @@ module.exports = {
 			//}
 
 			logger.debug('[Player] mpv options : '+mpvOptions);
+			logger.debug('[Player] mpv binary : '+module.exports.mpvBinary);
 			var mpvAPI = require('node-mpv');
 			var socket;
 			switch(module.exports.SETTINGS.os) {
