@@ -139,7 +139,7 @@ module.exports = {
 				var pCreateKaraFiles = new Promise((resolve) => {
 					karafiles = fs.readdirSync(karasdir);
 					for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
-						if(!karafiles[indexToRemove].endsWith('.kara')) {
+						if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
 							karafiles.splice(indexToRemove, 1);
 						}
 					}

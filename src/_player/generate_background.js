@@ -8,6 +8,7 @@ const logger = require('../_common/utils/logger.js');
 module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
+	frontend_port:null,
 	build:function(){
 		logger.debug('[Background] Entered background builder');
 		return new Promise(function(resolve,reject){

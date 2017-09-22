@@ -30,6 +30,7 @@ module.exports = {
 			var generateBackground = require('./generate_background.js');
 			generateBackground.SYSPATH = module.exports.SYSPATH;
 			generateBackground.SETTINGS = module.exports.SETTINGS;
+			generateBackground.frontend_port = module.exports.frontend_port;
 			generateBackground.build()
 				.then(function(){
 					logger.info('[Player] Background generated');
