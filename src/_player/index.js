@@ -3,7 +3,6 @@ var path = require('path');
 const logger = require('../_common/utils/logger.js');
 var ProgressBar = require('progress');
 var http = require('http');
-var extract = require('extract-zip');
 const ip = require('ip');
 
 module.exports = {
@@ -107,20 +106,7 @@ module.exports = {
 										resolve();
 									}
 								});
-						}
-						if (module.exports.SETTINGS.os == 'darwin') {
-							logger.info('[Player] Extracting mpv from its archive...');
-							extract(module.exports.BINPATH+'/mpvtemp', {dir: module.exports.BINPATH}, function (err) {
-								if (err) {
-									logger.error('[Player] Failed to extract mpv : '+err);
-									reject();
-								}
-								fs.unlinkSync(module.exports.BINPATH+'/mpvtemp');
-								fs.chmodSync(module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv', '755');
-								logger.info('[Player] mpv extraction complete');
-								resolve();
-							});
-						}
+						}						
 					});
 					res.pipe(mpvFile);
 				});
