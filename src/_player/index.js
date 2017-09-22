@@ -43,78 +43,99 @@ module.exports = {
 		});
 		var pIsmpvAvailable = new Promise((resolve,reject) => {
 			if (module.exports.SETTINGS.os == 'win32') {
-				module.exports.mpvBinary = module.exports.BINPATH+'/mpv.exe';
+				mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerWindows);
 				mpvHTTP = '/mpv.exe';
 			} else if (module.exports.SETTINGS.os == 'darwin') {
-				// if mpv is installed with MacPorts
-				module.exports.mpvBinary = '/Applications/MacPorts/mpv.app/Contents/MacOS/mpv';
+				// Test first if the path provided in the settings is valid and executable.
+				// If not, we'll try the different possibilities for mpv's install :
+				// - Macports
+				// - Homebrew
+				// - Manual install
+				if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX))) {
+					console.log("1")
+					mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX);
+				} else {
+					// if mpv is installed with MacPorts
+					mpvBinary = '/opt/local/bin/mpv';
+				}
 				// if mpv is installed with Homebrew
 				if (!fs.existsSync(module.exports.mpvBinary)) {
 					module.exports.mpvBinary = '/usr/bin/mpv';
 				}
 				// if mpv is installed locally or not installed
-				if (!fs.existsSync(module.exports.mpvBinary)) {
-					module.exports.mpvBinary = module.exports.BINPATH+'/mpv.app/Contents/MacOS/mpv';
-					mpvHTTP = '/mpv-osx.zip';
+				if (!fs.existsSync(mpvBinary)) {
+					mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpv.app/Contents/MacOS/mpv');
 				}
 			} else if (module.exports.SETTINGS.os == 'linux') {
-				module.exports.mpvBinary = '/usr/bin/mpv';
+				mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerLinux);
 			}
-
-			if(!fs.existsSync(module.exports.mpvBinary)){
-				logger.warn('[Player] mpv not found in path : '+module.exports.BINPATH+' or '+module.exports.mpvBinary);
-				if (process.platform == 'linux') {
-					logger.error('[Player] You need to have mpv installed first. Use apt-get/yum/etc. depending on your linux distribution.');
+			if(!fs.existsSync(mpvBinary)){
+				logger.error('[Player] mpv not found or not accessable in path : '+mpvBinary);
+				if (module.exports.SETTINGS.os === 'linux') {
+					console.log('\n');
+					console.log('You need to have mpv installed first. Use apt-get/yum/etc. depending on your Linux distribution.');
+					console.log('See http://mpv.io/installation for more details.');
+					console.log('\n');
+					reject('mpv not installed!');
+				}
+				if (module.exports.SETTINGS.os === 'darwin') {
+					console.log('\n');
+					console.log('You need to have mpv installed first. Use Homebrew/Macports/etc. depending on your preference.');
+					console.log('See http://mpv.io/installation for more details.');
+					console.log('\n');
 					reject('mpv not installed!');
 				}
 
-				logger.warn('[Player] You can download it manually from http://mpv.io and place it in '+module.exports.BINPATH);
-				logger.info('[Player] Downloading mpv from Shelter...');
+				if (module.exports.SETTINGS.os === 'win32') {
+					logger.info('[Player] Downloading mpv from Shelter...');
+					logger.info('You can download it manually from http://mpv.io and place it in '+mpvBinary+' if you dont trust the binary on Shelter.');
 
-				var mpvFile = fs.createWriteStream(module.exports.BINPATH+'/mpvtemp');
-				var req = http.request({
-					host: 'mugen.karaokes.moe',
-					port: 80,
-					path: '/'+mpvHTTP
-				});
-
-				req.on('response', function(res){
-					var len = parseInt(res.headers['content-length'], 10);
-
-					console.log();
-					var bar = new ProgressBar('Downloading... '+' [:bar] :percent :etas', {
-						complete: '=',
-						incomplete: ' ',
-						width: 40,
-						total: len
+					var mpvFile = fs.createWriteStream(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpvtemp'));
+					var req = http.request({
+						host: 'mugen.karaokes.moe',
+						port: 80,
+						path: '/'+mpvHTTP
 					});
 
-					res.on('data', function (chunk) {
-						bar.tick(chunk.length);
-					});
+					req.on('response', function(res){
+						var len = parseInt(res.headers['content-length'], 10);
 
-					res.on('end', function () {
-						console.log('\n');
-						if (module.exports.SETTINGS.os == 'win32') {
-							fs.rename(module.exports.BINPATH+'/mpvtemp',
-								module.exports.mpvBinary,
-								function(err) {
-									if (err) {
-										logger.error('[Player] Unable to rename mpv : '+err);
-										reject();
-									} else {
-										logger.info('[Player] mpv successfully downloaded');
-										resolve();
-									}
-								});
-						}						
+						console.log();
+						var bar = new ProgressBar('Downloading... '+' [:bar] :percent :etas', {
+							complete: '=',
+							incomplete: ' ',
+							width: 40,
+							total: len
+						});
+
+						res.on('data', function (chunk) {
+							bar.tick(chunk.length);
+						});
+
+						res.on('end', function () {
+							console.log('\n');
+							if (module.exports.SETTINGS.os == 'win32') {
+								fs.rename(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpvtemp'),
+									mpvBinary,
+									function(err) {
+										if (err) {
+											logger.error('[Player] Unable to rename mpv : '+err);
+											reject();
+										} else {
+											logger.info('[Player] mpv successfully downloaded');
+											resolve();
+										}
+									});
+							}
+						});
+						res.pipe(mpvFile);
 					});
-					res.pipe(mpvFile);
-				});
-				req.on('error',function(err){
-					reject(err);
-				});
-				req.end();
+					req.on('error',function(err){
+						reject(err);
+					});
+					req.end();
+				}
+
 			} else {
 				resolve();
 			}
