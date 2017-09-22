@@ -893,7 +893,7 @@ module.exports = {
 			function addSeries(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
 					var karaWOExtension = karadata.karafile.substr(0, karadata.karafile.lastIndexOf('.'));
-					var karaInfos = karaWOExtension.split(' - ');
+					var karaInfos = karaWOExtension.split(/\s+\-\s+/);
 					var karaType = karaInfos[2];
 					var serieslist = [];
 					if (L.isEmpty(karadata.series)) {
@@ -929,7 +929,7 @@ module.exports = {
 			function addTags(karadata, id_kara) {
 				return new Promise((resolve,reject) => {
 					var karaWOExtension = karadata.karafile.substr(0, karadata.karafile.lastIndexOf('.'));
-					var karaInfos = karaWOExtension.split(' - ');
+					var karaInfos = karaWOExtension.split(/\s+\-\s+/);
 					var karaSerie = karaInfos[1];
 					var karaType = karaInfos[2];
 					var taglist = [];
@@ -1129,31 +1129,25 @@ module.exports = {
 							// Take out .kara from the filename							
 							var karaWOExtension = karafile.substr(0, karafile.lastIndexOf('.'));
 							// Cut name into different fields.
-							var karaInfos = karaWOExtension.split(' - ');
+							var karaInfos = karaWOExtension.split(/\s+\-\s+/);
 							if (karaInfos[3] == undefined) {
 								karaInfos[3] = '';
 							}
 							kara['title'] = karaInfos[3];
 							kara['year'] = karadata.year;
 							// Songorder : find it after the songtype
-							var karaOrder = undefined;
+							var karaOrder;
 							var karaType = karaInfos[2];
 							if (L.isEmpty(karaType)) {
 								reject('Karaoke type is empty! Karaoke : '+karafile);
 							}
-							if (!isNaN(karaType.substr(karaType.length-2,2))) {
-								karaOrder = karaType.substr(karaType.length-2,2);
-								if (karaOrder.substr(0,1) == '0') {
-									karaOrder = karaOrder.substr(karaOrder.length-1,1);
-								}
+							karaOrder = karaType.match(/([a-zA-Z]{2,10})(\d*)/);
+							if (karaOrder[2]) {
+								karaOrder = karaOrder[2];
 							} else {
-								if (!isNaN(karaType.substr(karaType.length-1,1))) {
-									karaOrder = karaType.substr(karaType.length-1,1);
-								} else {
-									karaOrder = 0;
-								}
+								karaOrder = 0;
 							}
-							
+														
 							kara['songorder'] = karaOrder;							
 							if (L.isEmpty(karadata.videofile)) {
 								reject('Karaoke video file empty! Karaoke '+karafile+' / data : '+karadata);
