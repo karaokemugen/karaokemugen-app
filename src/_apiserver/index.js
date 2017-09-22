@@ -724,14 +724,14 @@ module.exports = {
 					req.getValidationResult().then(function(result) {
 						if (result.isEmpty()) {
 							req.sanitize('duration').toInt();
-							if(req.body.destination !== "screen") {
+							if(req.body.destination !== 'screen') {
 								module.exports.emitEvent('adminMessage', req.body );
-								if (req.body.destination === "users") {
+								if (req.body.destination === 'users') {
 									res.statusCode = 200;
 									res.json('Your message has been displayed to the users');
 								}
 							}
-							if(req.body.destination !== "users") {
+							if(req.body.destination !== 'users') {
 								module.exports.onMessage(req.body.message,req.body.duration)
 									.then(function(){
 										res.statusCode = 200;
@@ -742,7 +742,7 @@ module.exports = {
 										res.statusCode = 500;
 										res.json(err);
 									});
-								}
+							}
 						} else {
 							// Errors detected
 							// Sending BAD REQUEST HTTP code and error object.
