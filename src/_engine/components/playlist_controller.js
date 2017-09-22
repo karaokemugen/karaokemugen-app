@@ -278,9 +278,14 @@ module.exports = {
 			Promise.all([pIsKara])
 				.then(function(){									
 					module.exports.getASS(kara_id)
-						.then(function(ass) {							
-							var lyrics = assManager.ASSToLyrics(ass);
-							resolve(lyrics);							
+						.then(function(ass) {
+							console.log(ass);
+							if (ass) { 
+								var lyrics = assManager.ASSToLyrics(ass);
+								resolve(lyrics);					
+							} else {								
+								resolve('Lyrics not available for this song');
+							}
 						})
 						.catch(function(err){
 							logger.error('[PLC] getKara : '+err);
