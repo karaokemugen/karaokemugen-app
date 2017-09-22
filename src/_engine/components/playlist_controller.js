@@ -2988,9 +2988,9 @@ module.exports = {
 						module.exports.getASS(kara.kara_id)
 							.then(function(ass){
 								logger.profile('GetASS');								
-								var requester;
+								var requester;								
 								if (module.exports.SETTINGS.EngineDisplayNickname){
-									if (!kara.pseudo_add === 'Administrateur') {
+									if (kara.pseudo_add !== 'Administrateur') {
 										requester = __('REQUESTED_BY')+' '+kara.pseudo_add;
 									} else {
 										requester = '';
@@ -2998,6 +2998,7 @@ module.exports = {
 								} else {									
 									requester = '';
 								}
+								console.log(requester);
 								if (!L.isEmpty(kara.title)) {
 									kara.title = ' - '+kara.title;
 								}
