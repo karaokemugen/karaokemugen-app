@@ -1,4 +1,6 @@
 {
+	"404": "Perdu sur le réseau local ?",
+	"404_2": "Pas de panique, on va vous aider",
 	"TYPE_AMV": "Anime Music Video",
 	"TYPE_AMV_SHORT": "AMV",
 	"TYPE_INSERTSONG": "Insert Song",
