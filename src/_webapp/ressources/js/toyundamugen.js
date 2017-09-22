@@ -41,6 +41,7 @@ var dragHandleHtml;
 var playKaraHtml;
 
 var tabTradToDelete;
+var tagAcrList;
 var plData;
 
 (function (yourcode) {
@@ -516,7 +517,7 @@ var plData;
 
 	socket = io( window.location.protocol + '//' + window.location.hostname + ':1340');
     
-	isTouchScreen =  'ontouchstart' in document.documentElement || new URL(window.location.href).searchParams.get('TOUCHSCREEN') != null; 
+	isTouchScreen =  'ontouchstart' in document.documentElement; 
 	isSmall = $(window).width() < 1025;
 	animTime = isSmall ? 200 : 300;
 	refreshTime = 1000;
@@ -527,9 +528,9 @@ var plData;
 	dragAndDrop = true;
 	stopUpdate = false;
     
-	karaParPage = new URL(window.location.href).searchParams.get('karaNum') ? parseInt(new URL(window.location.href).searchParams.get('karaNum')) : isTouchScreen ? 55 : 60;
-	DEBUG = new URL(window.location.href).searchParams.get('DEBUG') != null;
-	SOCKETDEBUG = new URL(window.location.href).searchParams.get('SOCKETDEBUG') != null;
+	karaParPage = isTouchScreen ? 55 : 60;
+	DEBUG = false;
+	SOCKETDEBUG = false;
 
 	saveLastDetailsKara = [[]];
 	playlistRange = {};
@@ -567,6 +568,34 @@ var plData;
 		'TYPE_7'    : 'Divers',
 		'TYPE_8'    : 'Compositeur'
 	};
+	tagAcrList = {  'TAG_SPECIAL': 'SPE',
+		'TAG_GAMECUBE': 'GCN',
+		'TAG_TOKU': 'TKU',
+		'TAG_OVA': 'OVA',
+		'TAG_CONCERT': 'CON',
+		'TAG_PARODY': 'PAR',
+		'TAG_HUMOR': 'HUM',
+		'TAG_ANIME': 'ANI',
+		'TAG_MECHA': 'MCH',
+		'TAG_REAL': 'IRL',
+		'TAG_VIDEOGAME': 'VG',
+		'TAG_MOVIE': 'MOV',
+		'TAG_TVSHOW': 'TV',
+		'TAG_SPOIL': 'SPL',
+		'TAG_LONG': 'LON',
+		'TAG_PS2': 'PS2',
+		'TAG_PS3': 'PS3',
+		'TAG_PSV': 'PSV',
+		'TAG_PSX': 'PSX',
+		'TAG_PSP': 'PSP',
+		'TAG_R18': 'R18',
+		'TAG_VOCALOID': 'VCA',
+		'TAG_XBOX360': 'XBX',
+		'TAG_PC': 'PC',
+		'TAG_SEGACD': 'SCD',
+		'TAG_REMIX': 'RMX',
+		'TAG_VOICELESS': 'NOV',
+		'TAG_ROMANCE': 'ROM' }
     
 
 	/* touchscreen event handling part */
@@ -695,16 +724,23 @@ var plData;
             
 				if(idPlaylist != -4) {
 					for (var key in data) {
+						// build the kara line
 						if (data.hasOwnProperty(key)) {
-							// build the kara line
-							if (data[key].language === null) data[key].language = '';
+							var kara = data[key];
+							if (kara.language === null) kara.language = '';
                             
-							var karaDataAttributes = ' idKara="' + data[key].kara_id + '" '
-							+	(idPlaylist == -3 ? ' idwhitelist="' + data[key].whitelist_id  + '"' : '')
-							+	(idPlaylist > 0 ? ' idplaylistcontent="' + data[key].playlistcontent_id + '" pos="'
-							+	data[key].pos + '" data-pseudo_add="' + data[key].pseudo_add + '"' : '')
-							+	(data[key].flag_playing ? 'currentlyPlaying' : '' ) + ' '
-							+	(data[key].pseudo_add == pseudo ? 'user' : '' );
+							var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
+							+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
+							+	(idPlaylist > 0 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
+							+	kara.pos + '" data-pseudo_add="' + kara.pseudo_add + '"' : '')
+							+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
+							+	(kara.pseudo_add == pseudo ? 'user' : '' );
+							var badges = '';
+							if(kara.misc) {
+								var badgesList = kara.misc.split(",").forEach(function(tag) {
+									badges += "<bdg>"  + tagAcrList[tag] + "</bdg>";
+								});
+							}
 
 							if (mode === 'list') {
 								htmlContent += '<li class="list-group-item collection-item" ' + karaDataAttributes + '>'
@@ -712,10 +748,10 @@ var plData;
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
 								+   (isTouchScreen ? '' : infoKaraHtml) + playKara + '</div>')
-								+   '<div class="contentDiv"">' + buildKaraTitle(data[key], filter)
-								/*  + (isTouchScreen ? '' : '<span class="badge">' + data[key].language.toUpperCase() + '</span>')  */
+								+   '<div class="contentDiv"">' + buildKaraTitle(kara, filter)
+								+	badges
 								+   '</div>'
-								+   (saveDetailsKara(idPlaylist, data[key].kara_id) ? buildKaraDetails(data[key], mode) : '')
+								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')
 								+   '</li>'; 
 							}
 						}
