@@ -10,9 +10,9 @@ module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
 	playing:false,
 	playerstatus:'stop',
-	_playing:false, // internal delay flag	
+	_playing:false, // internal delay flag
 	_player:null,
-	_ref:null,	
+	_ref:null,
 	screen: 1,
 	fullscreen: 0,
 	stayontop: 0,
@@ -48,54 +48,57 @@ module.exports = {
 				})
 				.catch(function(err){
 					logger.error('[Player] Background generation error : '+err);
-					reject(err); 
+					reject(err);
 				});
 		});
 		var pIsmpvAvailable = new Promise((resolve,reject) => {
-			if (module.exports.SETTINGS.os == 'win32') {					
+			if (module.exports.SETTINGS.os == 'win32') {
 				mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerWindows);
 				mpvHTTP = '/mpv.exe';
 			} else if (module.exports.SETTINGS.os == 'darwin') {
 				// Test first if the path provided in the settings is valid and executable.
-				// If not, we'll try the different possibilities for mpv's install : 
+				// If not, we'll try the different possibilities for mpv's install :
 				// - Macports
 				// - Homebrew
 				// - Manual install
-				if (!fs.accessSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX),fs.constants.X_OK)) {
+				if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX))) {
+					console.log("1")
+					mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX);
+				} else {
 					// if mpv is installed with MacPorts
-					mpvBinary = '/Applications/MacPorts/mpv.app/Contents/MacOS/mpv';
-				}				
+					mpvBinary = '/opt/local/bin/mpv';
+				}
 				// if mpv is installed with Homebrew
-				if (!fs.accessSync(mpvBinary),fs.constants.X_OK) {
+				if (!fs.existsSync(mpvBinary)) {
 					mpvBinary = '/usr/bin/mpv';
 				}
 				// if mpv is installed locally or not installed
-				if (!fs.accessSync(mpvBinary),fs.constants.X_OK) {
-					mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpv.app/Contents/MacOS/mpv');					
+				if (!fs.existsSync(mpvBinary)) {
+					mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpv.app/Contents/MacOS/mpv');
 				}
 			} else if (module.exports.SETTINGS.os == 'linux') {
 				mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerLinux);
-			}			
+			}
 			if(!fs.existsSync(mpvBinary)){
 				logger.error('[Player] mpv not found or not accessable in path : '+mpvBinary);
-				if (module.exports.SETTINGS.os === 'linux') {					
+				if (module.exports.SETTINGS.os === 'linux') {
 					console.log('\n');
 					console.log('You need to have mpv installed first. Use apt-get/yum/etc. depending on your Linux distribution.');
 					console.log('See http://mpv.io/installation for more details.');
 					console.log('\n');
 					reject('mpv not installed!');
 				}
-				if (module.exports.SETTINGS.os === 'darwin') {					
+				if (module.exports.SETTINGS.os === 'darwin') {
 					console.log('\n');
 					console.log('You need to have mpv installed first. Use Homebrew/Macports/etc. depending on your preference.');
-					console.log('See http://mpv.io/installation for more details.');		
+					console.log('See http://mpv.io/installation for more details.');
 					console.log('\n');
 					reject('mpv not installed!');
 				}
 
 				if (module.exports.SETTINGS.os === 'win32') {
 					logger.info('[Player] Downloading mpv from Shelter...');
-					logger.info('You can download it manually from http://mpv.io and place it in '+mpvBinary+' if you dont trust the binary on Shelter.');				
+					logger.info('You can download it manually from http://mpv.io and place it in '+mpvBinary+' if you dont trust the binary on Shelter.');
 
 					var mpvFile = fs.createWriteStream(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpvtemp'));
 					var req = http.request({
@@ -133,7 +136,7 @@ module.exports = {
 											resolve();
 										}
 									});
-							}						
+							}
 						});
 						res.pipe(mpvFile);
 					});
@@ -142,7 +145,7 @@ module.exports = {
 					});
 					req.end();
 				}
-				
+
 			} else {
 				resolve();
 			}
@@ -156,8 +159,8 @@ module.exports = {
 				'--no-border',
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
-				'--volume=100',					
-			];			
+				'--volume=100',
+			];
 			if (module.exports.pipmode) {
 				mpvOptions.push('--autofit='+module.exports.pipsize+'%x'+module.exports.pipsize+'%');
 				// By default, center.
@@ -194,7 +197,7 @@ module.exports = {
 				mpvOptions.push('--screen='+module.exports.screen);
 				mpvOptions.push('--fs-screen='+module.exports.screen);
 			}
-			// Fullscreen is disabled if pipmode is set. 
+			// Fullscreen is disabled if pipmode is set.
 			if(module.exports.fullscreen==1 && !module.exports.pipmode) {
 				mpvOptions.push('--fullscreen');
 			}
@@ -212,7 +215,7 @@ module.exports = {
 			//if(module.exports.SETTINGS.os === 'darwin') {
 			//	mpvOptions.push('--no-native-fs');
 			//}
-			
+
 			logger.debug('[Player] mpv options : '+mpvOptions);
 			var mpvAPI = require('node-mpv');
 			var socket;
@@ -220,7 +223,7 @@ module.exports = {
 			case 'win32':
 				socket = '\\\\.\\pipe\\mpvsocket';
 				break;
-			case 'darwin':										
+			case 'darwin':
 				socket = '/tmp/km-node-mpvsocket';
 				break;
 			case 'linux':
@@ -250,14 +253,14 @@ module.exports = {
 						.then(() => {
 							module.exports.enhanceBackground();
 						});
-					
+
 					module.exports._player.observeProperty('sub-text',13);
 					module.exports._player.observeProperty('volume',14);
 				})
 				.catch((err) => {
 					logger.error('[Player] mpvAPI : '+err);
 				});
-			
+
 			module.exports._player.on('statuschange',function(status){
 				// si on affiche une image il faut considérer que c'est la pause d'après chanson
 				module.exports.status = status;
@@ -270,7 +273,7 @@ module.exports = {
 					module.exports.onEnd(module.exports._ref);
 					module.exports._ref = null;
 				}
-				
+
 				module.exports.mutestatus = status.mute;
 				module.exports.duration = status.duration;
 				module.exports.subtext = status['sub-text'];
@@ -296,12 +299,12 @@ module.exports = {
 			});
 			logger.info('[Player] Player interface is READY');
 		})
-			.catch(function(err) {				
+			.catch(function(err) {
 				logger.error('[Player] Player interface is NOT READY : '+err);
 				if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'))) {
 					fs.unlinkSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'));
 				}
-				process.exit();									
+				process.exit();
 			});
 	},
 	play: function(video,subtitle,reference,gain,infos){
@@ -309,15 +312,15 @@ module.exports = {
 		module.exports.playing = true;
 		if(fs.existsSync(video)){
 			logger.debug('[Player] Audio gain adjustment : '+gain);
-			if (gain == undefined || gain == null) gain = 0;			
+			if (gain == undefined || gain == null) gain = 0;
 			module.exports._ref = reference;
 			module.exports._player.load(video,'replace',['replaygain-fallback='+gain])
 				.then(() => {
 					module.exports._player.play();
 					module.exports.playerstatus = 'play';
-					module.exports._player.addSubtitles('memory://'+subtitle);					
+					module.exports._player.addSubtitles('memory://'+subtitle);
 					// video may need some delay to play
-					// Resetting text displayed on screen			
+					// Resetting text displayed on screen
 					var command = {
 						command: [
 							'expand-properties',
@@ -325,15 +328,15 @@ module.exports = {
 							'${osd-ass-cc/0}{\\an1}'+infos,
 							8000,
 						]
-					};	
-					module.exports._player.freeCommand(JSON.stringify(command));			
-					logger.profile('StartPlaying');												
-					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');				
-					module.exports._player.load(backgroundImageFile,'append');		
-					module.exports._playing = true;									
+					};
+					module.exports._player.freeCommand(JSON.stringify(command));
+					logger.profile('StartPlaying');
+					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+					module.exports._player.load(backgroundImageFile,'append');
+					module.exports._playing = true;
 				})
 				.catch((err) => {
-					logger.error('[Player] Error loading video '+video+' ('+err+')');				
+					logger.error('[Player] Error loading video '+video+' ('+err+')');
 				});
 		} else {
 			module.exports.playing = false;
@@ -365,9 +368,9 @@ module.exports = {
 		module.exports._player.load(backgroundImageFile)
 			.then(() => {
 				module.exports.enhanceBackground();
-			});		
+			});
 	},
-	pause: function(){		
+	pause: function(){
 		logger.debug('[Player] Pause event triggered');
 		module.exports._player.pause();
 		module.exports.playerstatus = 'pause';
@@ -403,7 +406,7 @@ module.exports = {
 		module.exports.showsubs = true;
 	},
 	message: function(message,duration) {
-		if (!duration) duration = 10000;				
+		if (!duration) duration = 10000;
 		var command = {
 			command: [
 				'expand-properties',
@@ -416,11 +419,11 @@ module.exports = {
 		if (module.exports.playing === false) {
 			setTimeout(function(){
 				module.exports.enhanceBackground();
-			},duration);			
+			},duration);
 		}
 	},
 	enhanceBackground: function(){
-		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;			
+		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
 		var imageCaption = 'Karaoke Mugen - '+__('GO_TO')+' '+url+' !';
 		var imageSign = module.exports.SETTINGS.VersionNo+' - '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
 		var message = '{\\fscx80}{\\fscy80}'+imageCaption+'\\N{\\fscx30}{\\fscy30}{\\i1}'+imageSign+'{\\i0}';
@@ -432,7 +435,7 @@ module.exports = {
 				100000000,
 			]
 		};
-		module.exports._player.freeCommand(JSON.stringify(command));			
+		module.exports._player.freeCommand(JSON.stringify(command));
 	},
 	onStatusChange:function(){},
 	onEnd:function(){
