@@ -218,12 +218,6 @@ ass-parser@^0.1.2:
     regexp.execall "^1.0.2"
     zipmap "^1.1.1"
 
-ass-stringify@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/ass-stringify/-/ass-stringify-0.1.3.tgz#33def35e9572682f1333eb1ae1ece192de5312b9"
-  dependencies:
-    pick-values "^1.0.0"
-
 assert-plus@1.0.0, assert-plus@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/assert-plus/-/assert-plus-1.0.0.tgz#f12e0f3c5d77b0b1cdd9146942e4e96c1e4dd525"
@@ -2939,10 +2933,6 @@ pend@~1.2.0:
 performance-now@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-0.2.0.tgz#33ef30c5c77d4ea21c5a53869d91b56d8f2555e5"
-
-pick-values@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/pick-values/-/pick-values-1.0.1.tgz#67b2d7734e593eb5ba082a54a0477560e374254d"
 
 pify@^2.0.0, pify@^2.3.0:
   version "2.3.0"
