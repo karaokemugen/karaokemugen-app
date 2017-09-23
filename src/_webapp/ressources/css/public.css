@@ -186,20 +186,20 @@ div.bootstrap-switch-large{
 
 .drag  {
     overflow: hidden;
- }   
- .dragged .contentDiv {
-     white-space: nowrap;
- }
- .list-group-item.pressed {
-    background-color: rgba(18, 35, 53, 0.70);
-    background-color: rgba(18, 43, 31, 0.60);
- }
- .list-group-item.active,
- .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
-    background-color: hsla(210, 6%, 15%, 0.83);
-    border-color: rgba(177, 177, 177, 0.65);
- }
- .list-group-item > .contentDiv {
+}   
+.dragged .contentDiv {
+    white-space: nowrap;
+}
+.list-group-item.pressed {
+background-color: rgba(18, 35, 53, 0.70);
+background-color: rgba(18, 43, 31, 0.60);
+}
+.list-group-item.active,
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+background-color: hsla(210, 6%, 15%, 0.83);
+border-color: rgba(177, 177, 177, 0.65);
+}
+.list-group-item > .contentDiv {
     overflow: hidden;
 }
 .list-group-item {

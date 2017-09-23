@@ -14,22 +14,23 @@
     <link rel="stylesheet" href="/vendors/css/bootstrap-switch.min.css">
     <link rel="stylesheet" href="/vendors/css/select2.min.css">
     <link rel="stylesheet" href="/vendors/css/select2-bootstrap.min.css">
-    <link rel="stylesheet" href="/vendors/css/jquery-ui.min.css">
     <link rel="stylesheet" href="/ressources/css/toyundamugen.css">
-    <link rel="stylesheet" href="/ressources/css/public.1.css">
+    <link rel="stylesheet" href="/ressources/css/public.css">
     
 </head>
 
-<body>
+<body scope="public">
 	{{{ body }}}
 </body>
+    <script>
+        var query = {{{query}}};
+    </script>
     <script src="{{clientAdress}}:1340/socket.io/socket.io.js"></script>
     <script src="/vendors/js/assignIE.js"></script>
     <script src="/vendors/js/jquery-3.2.1.min.js"></script>
     <script src="/vendors/js/select2.min.js"></script>
     <script src="/vendors/js/bootstrap.min.js"></script>
     <script src="/vendors/js/bootstrap-switch.min.js"></script>
-    <script src="/vendors/js/jquery-ui.min.js"></script>
     <script src="/vendors/js/velocity.min.js"></script>
     <script src="/vendors/js/hammer.min.js"></script>
     <script src="/vendors/js/hammer-time.min.js"></script>

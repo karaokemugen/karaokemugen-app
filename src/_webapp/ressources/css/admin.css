@@ -37,21 +37,14 @@
 	border-right-width: 3px;
 }
 
-.btnDiv {
+.actionDiv {
 	display: flex;
 	flex-direction: row;
 	float: right;
 }
 
-#panel2 .btnDiv {
+#panel2 .actionDiv {
 	flex-direction: row-reverse;
-}
-
-#panel2 .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-right {
-	display: none; 
-}
-#panel1 .btnDiv > button[name="transferKara"] > i.glyphicon-arrow-left {
-	display: none; 
 }
 
 span[name="checkboxKara"] {
@@ -84,23 +77,23 @@ span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:befo
 	display: none;
 }
 
-.plDashboard.advanced:not([data-playlist_id="-4"])  + .playlistContainer .btnDiv { 
+.plDashboard.advanced:not([data-playlist_id="-4"])  + .playlistContainer .actionDiv { 
 	display: none;
 }
 
-.plDashboard[data-playlist_id="-3"]  .btnDivContainer  button[name="transferKara"],
-.plDashboard[data-playlist_id="-3"]  .btnDivContainer  button[name="deleteKara"] {
+.plDashboard[data-playlist_id="-3"]  .actionDivContainer  button[name="transferKara"],
+.plDashboard[data-playlist_id="-3"]  .actionDivContainer  button[name="deleteKara"] {
 	display: none;
 }
 
-.panel[cantransferkara="false"] .btnDiv > button[name="transferKara"], 
-.plDashboard[data-playlist_id="-1"]  .btnDiv > button[name="transferKara"],
-.plDashboard[data-playlist_id="-4"]  .btnDiv > button[name="transferKara"]{
+.panel[cantransferkara="false"] .actionDiv > button[name="transferKara"], 
+.plDashboard[data-playlist_id="-1"]  .actionDiv > button[name="transferKara"],
+.plDashboard[data-playlist_id="-4"]  .actionDiv > button[name="transferKara"]{
 	display: none;
 }
 
-.panel[canaddkara="false"] .btnDiv > button[name="addKara"]
-.panel[canaddkara="false"] .btnDiv > button[name="addAllKara"] {
+.panel[canaddkara="false"] .actionDiv > button[name="addKara"]
+.panel[canaddkara="false"] .actionDiv > button[name="addAllKara"] {
 	display: none;
 }
 
@@ -225,15 +218,15 @@ span:not(.hideCommands) {
     margin-right: 0;
 }
 
-#panel2 .btnDiv {
+#panel2 .actionDiv {
 	float: left;
 }
 
-#panel1 .btnDivContainer {
+#panel1 .actionDivContainer {
     margin-left: auto;
 }
 
-#panel2 .btnDivContainer {
+#panel2 .actionDivContainer {
     margin-right: auto;
 }
 .panel-heading > div > div:nth-child(2) {
@@ -254,7 +247,7 @@ span:not(.hideCommands) {
 	display: none;
 	padding: 0px;
 }
-.plDashboard[data-playlist_id="-4"] .btnDiv {
+.plDashboard[data-playlist_id="-4"] .actionDiv {
 	display: none;
 }
 
@@ -276,10 +269,10 @@ span:not(.hideCommands) {
 	display: none;
 }
 
-.plDashboard[data-playlist_id="-1"] .btnDivContainer .controls button:not(.plGenericButton),
-.plDashboard[data-playlist_id="-2"] .btnDivContainer .controls button:not(.plGenericButton),
-.plDashboard[data-playlist_id="-3"] .btnDivContainer .controls button:not(.plGenericButton),
-.plDashboard[data-playlist_id="-4"] .btnDivContainer .controls button:not(.plGenericButton)
+.plDashboard[data-playlist_id="-1"] .actionDivContainer .controls button:not(.plGenericButton),
+.plDashboard[data-playlist_id="-2"] .actionDivContainer .controls button:not(.plGenericButton),
+.plDashboard[data-playlist_id="-3"] .actionDivContainer .controls button:not(.plGenericButton),
+.plDashboard[data-playlist_id="-4"] .actionDivContainer .controls button:not(.plGenericButton)
 {
 	display: none;
 }
@@ -289,8 +282,8 @@ span:not(.hideCommands) {
 }
 
 
-.plDashboard[data-playlist_id="-1"] .btnDiv > button[name="deleteKara"],
-.plDashboard[data-playlist_id="-4"] .btnDiv > button[name="deleteKara"]  {
+.plDashboard[data-playlist_id="-1"] .actionDiv > button[name="deleteKara"],
+.plDashboard[data-playlist_id="-4"] .actionDiv > button[name="deleteKara"]  {
 	display: none;
 }
 
@@ -320,7 +313,7 @@ span:not(.hideCommands) {
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
-.plDashboard[data-playlist_id="-2"] .btnDiv {
+.plDashboard[data-playlist_id="-2"] .actionDiv {
 	display: none;
 }
 
@@ -336,7 +329,7 @@ span:not(.hideCommands) {
 }
 
 
-.panel[side="2"] .advanced .btnDivContainer {
+.panel[side="2"] .advanced .actionDivContainer {
 	__order: -1;
 }
 .plSearch {
@@ -345,7 +338,7 @@ span:not(.hideCommands) {
 .flagsContainer {
 	order: 1;
 }
-.advanced .btnDivContainer {
+.advanced .actionDivContainer {
 	order: 3
 }
 
@@ -374,7 +367,7 @@ span:not(.hideCommands) {
 	#panel2 .plSearch {
 		order: 1;
 	}
-	#panel2 .btnDivContainer {
+	#panel2 .actionDivContainer {
 		order: 2;
 	}
 	#panel2 .flagsContainer {

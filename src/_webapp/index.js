@@ -15,7 +15,7 @@ function AdminPasswordAuth(username, password){
 function getUnauthorizedResponse(req) {
 	return req.auth ?
 		('Credentials ' + req.auth.user + ':' + req.auth.password + ' rejected') :
-		'No credentials provided'
+		'No credentials provided';
 }
 
 module.exports = {
@@ -77,25 +77,24 @@ module.exports = {
 			app.use('/locales',express.static(__dirname + '/../_common/locales/'));
 			app.use('/admin', routerAdmin);		
 			app.get('/', function (req, res) {
-				res.render('public', {'layout': 'publicHeader', 'clientAdress' : 'http://'+ip.address() });
+				res.render('public', {'layout': 'publicHeader',
+					'clientAdress'	:		'http://'+ip.address(),
+					'query'			:	JSON.stringify(req.query)
+				});
 			});
-			app.get('/mobile', function (req, res) {	
-				
-				res.render('publicMobile', {'layout': 'publicMobileHeader', 'clientAdress' : 'http://'+ip.address() });
-				
-			});			
-			
+		
 			routerAdmin.get('/', function (req, res) {
 				si.graphics().then( function(data) {
 					Object.keys(data.displays).forEach(function(key) {
-						data.displays[key].model = data.displays[key].model.replace("�","e");
-					  });
+						data.displays[key].model = data.displays[key].model.replace('�','e');
+					});
 					res.render('admin', {'layout': 'adminHeader',
-						'clientAdress' : 'http://'+ip.address(),
-						'mdpAdmin' : module.exports.SETTINGS.AdminPassword,
-						'displays' : data.displays
-						})
-					});		
+						'clientAdress'	:	'http://'+ip.address(),
+						'mdpAdmin'		:	module.exports.SETTINGS.AdminPassword,
+						'displays'		:	data.displays,
+						'query'			:	JSON.stringify(req.query)
+					});
+				});		
 			});			
 			
 			app.use(function (req, res) {

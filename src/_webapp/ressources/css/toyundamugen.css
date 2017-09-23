@@ -206,6 +206,9 @@ select.form-control {
 	padding: 0px;
 	line-height: 3rem;
 }
+.playlistContainer ul > li {
+	__transition: height .7s ease !important;
+}
 
 .playlist-main .list-group-item:nth-child(even) {
 	background-color: hsla(0, 0%, 27%, 0.6);
@@ -233,8 +236,7 @@ select.form-control {
 	__line-height: 36px;
 }
 
-
-.list-group-item.liTag > .btnDiv {
+.list-group-item.liTag > .actionDiv {
 	padding: 0;
 }
 .list-group-item.liTag > div {
@@ -259,18 +261,49 @@ select.form-control {
 	padding: 3px;
 }
 
-.playlistContainer > ul[side="2"] .list-group-item > .infoDiv > button, .playlistContainer > ul[side="1"] .list-group-item > .btnDiv > button, .playlistContainer > ul[side="2"] .list-group-item .dragHandle {
+.playlistContainer > ul[side="2"] .list-group-item > .infoDiv > button, .playlistContainer > ul[side="1"] .list-group-item > .actionDiv > button, .playlistContainer > ul[side="2"] .list-group-item .dragHandle {
 	float: right;
 	display: block;
 }
 
-.playlistContainer > ul[side="1"] .list-group-item > .infoDiv > button, .playlistContainer > ul[side="2"] .list-group-item > .btnDiv > button, .playlistContainer > ul[side="2"] .list-group-item .dragHandle  {
+.playlistContainer > ul[side="1"] .list-group-item > .infoDiv > button, .playlistContainer > ul[side="2"] .list-group-item > .actionDiv > button, .playlistContainer > ul[side="2"] .list-group-item .dragHandle  {
 	float: left;
 	display: block;
 }
-.list-group-item > .btnDiv > button {
+.list-group-item > .actionDiv > button {
 	z-index: 52;
 	position: relative;
+}
+.btn-action, .actionDiv > button{
+	font-family: 'Glyphicons Halflings'; 
+}
+button[name="addKara"]:before {
+	content:"\2b";
+}
+button[name="deleteKara"]:before {
+	content:"\2212";
+}
+button[name="transferKara"]:before {
+	content:"\2b";
+}
+
+button[name="infoKara"]:before {
+	content:"\e086";
+}
+#panel2 .actionDiv > button[name="transferKara"]:before {
+	content:"\e091";
+}
+#panel1 .actionDiv > button[name="transferKara"]:before {
+	content:"\e092";
+}
+.closeParent:before, .closePopupParent:before {
+	content:"\e014";
+}
+.fullLyrics:before {
+	content:"\e055";
+}
+.playKara:before {
+	content:"\e072";
 }
 
 .list-group-item.dragged .dragHandle {
@@ -431,12 +464,12 @@ button.closeParent.bottom  {
 	will-change: -moz-transform;
 }
 
-#playlist1.list-group > li.list-group-item  > .btnDiv, #playlist1.list-group > li.list-group-item  > .btnDiv > span, 
+#playlist1.list-group > li.list-group-item  > .actionDiv, #playlist1.list-group > li.list-group-item  > .actionDiv > span, 
 #playlist2.list-group > li.list-group-item  > .infoDiv {
 	float: right;
 }
 
-#playlist2.list-group > li.list-group-item  > .btnDiv, #playlist2.list-group > li.list-group-item  > .btnDiv > span,
+#playlist2.list-group > li.list-group-item  > .actionDiv, #playlist2.list-group > li.list-group-item  > .actionDiv > span,
 #playlist1.list-group > li.list-group-item  > .infoDiv {
 	float: left;
 }

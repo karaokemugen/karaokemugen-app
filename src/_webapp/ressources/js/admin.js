@@ -169,6 +169,127 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			}
 		});
+
+		
+		// main actions on karas in the playlists
+		$('.playlist-main').on('click', '.actionDiv > button:not(.clusterAction)', function () {
+            
+			var side = $(this).closest('.panel').attr('side');
+        
+			var li = $(this).closest('li');
+			var idPlaylistFrom = parseInt($('#selectPlaylist' + side).val());
+			var idPlaylistTo = parseInt($('#selectPlaylist' + non(side)).val());
+			var idKara, idKaraPlaylist;
+			var clusterAction = false;
+
+			if($(this).parent().hasClass('plCommands')) {
+				clusterAction = true;
+				var checkedList = $(this).closest('.panel').find('li:has(span[name="checkboxKara"][checked])');
+				var idKaraList = checkedList.map(function (k, v) {
+					return $(v).attr('idkara');
+				});
+				var idKaraPlaylistList = checkedList.map(function (k, v) {
+					return $(v).attr('idplaylistcontent');
+				});
+                
+				li = checkedList;
+				idKara = Array.prototype.slice.apply(idKaraList).join();
+				idKaraPlaylist = Array.prototype.slice.apply(idKaraPlaylistList).join();
+				if(!idKara && !idKaraPlaylist) {
+					DEBUG && console.log('No kara selected');
+					return false;
+				}
+			} else {
+				idKara = li.attr('idkara');
+				idKaraPlaylist = li.attr('idplaylistcontent');
+			}
+
+			var action = $(this).attr('name');
+			DEBUG && console.log(action, side, idPlaylistFrom, idPlaylistTo, idKara);
+
+			var promise = $.Deferred();
+			var url, data, type;
+			if (action === 'addKara' || action === 'transferKara') {
+				url = '', data = {}, type = '';
+				type = 'POST';
+
+				if (idPlaylistTo > 0) {
+					url = scope + '/playlists/' + idPlaylistTo + '/karas';
+					var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? pseudo : li.data('pseudo_add');
+					data = { requestedby: requestedby, kara_id: idKara };
+				} else if (idPlaylistTo == -1) {
+					displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
+					DEBUG && console.log('ERR: can\'t add kara to the kara list from database');
+				} else if (idPlaylistTo == -2) {
+					url = scope + '/blacklist/criterias';
+					data = { blcriteria_type: 1001, blcriteria_value: idKara };
+				} else if (idPlaylistTo == -3) {
+					url = scope + '/whitelist';
+					displayModal('prompt','Raison d\'ajout à la whitelist', '', function(reason){
+						data = { kara_id: idKara, reason: reason };
+						ajx(type, url, data);
+					});
+					return false;
+				}
+
+				DEBUG && console.log('ACTION : ', idPlaylistTo, url, type, data);
+				if (url !== '') {
+					$.ajax({
+						url: url,
+						type: type,
+						data: data
+					}).done(function (data) {
+						DEBUG && console.log(data);
+						promise.resolve();
+						playlistContentUpdating.done( function() {
+							scrollToKara(non(side), idKara); 
+						});
+						var ajout = clusterAction ?   li.length + ' karas'
+							: '"' + li.find('.contentDiv').text() + '"';
+						if(clusterAction) li.find('span[name="checkboxKara"][checked]').attr('checked', false);
+                       
+						displayMessage('success', ajout, ' ajouté' +  (clusterAction ? 's' : '')
+							+ ' à la playlist <i>' +$('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').data('name') + '</i>.');
+						DEBUG && console.log('Kara ' + idKara + ' ajouté à la playlist (' + idPlaylistTo + ') '
+							+ $('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').text() + '.');
+					}).fail(function () {
+						scrollToKara(non(side), idKara);
+						if (mode === 'mobile') fillPlaylist(1);
+					});
+				}
+			} else {
+				promise.resolve();
+			}
+			if (action === 'transferKara' || action === 'deleteKara') {
+				// temp solution to database transaction issue
+				promise.done( function() {
+					li.addClass('deleted');
+					url = '', data = {}, type = '';
+					type = 'DELETE';
+					if (idPlaylistFrom > 0) {
+						url = scope + '/playlists/' + idPlaylistFrom + '/karas/';
+						data['plc_id'] = idKaraPlaylist;
+					} else if (idPlaylistFrom == -1) {
+						DEBUG && console.log('ERR: can\'t delete kara from the kara list from database');
+					} else if (idPlaylistFrom == -2) {
+						DEBUG && console.log('ERR: can\'t delete kara directly from the blacklist');
+					} else if (idPlaylistFrom == -3) {
+						url = scope + '/whitelist/' + li.attr('idwhitelist');
+					}
+					if (url !== '') {
+						$.ajax({
+							type: 'DELETE',
+							url: url,
+							data: data
+						}).done(function () {
+							li.hide();
+							//fillPlaylist(side);
+						});
+					}
+				});
+			}
+		});
+		
 		$('.playlist-main').on('click', '.infoDiv > button.playKara', function () {
 			var liKara = $(this).closest('li');
 			var idPlc = parseInt(liKara.attr('idplaylistcontent'));

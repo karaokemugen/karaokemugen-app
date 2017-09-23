@@ -72,7 +72,7 @@
                     </div>
                 </div>
               
-                <div class="plCommandsContainer btnDivContainer">
+                <div class="plCommandsContainer actionDivContainer">
                     <div class="btn-group plCommands controls">
                         <button title='{{i18n "PLAYLIST_EDIT"}}' class="btn btn-default" name="editName">
                             <i class="glyphicon glyphicon-pencil"></i>
@@ -91,23 +91,23 @@
                             <i class="glyphicon glyphicon-export"></i>
                         </button>
                     </div>
-                    <div class="btn-group plCommands btnDiv">
-                        <button title="{{i18n "ADD_ALL_KARAS"}}" name="addAllKaras" class="btn btn-danger groupAction">
+                    <div class="btn-group plCommands actionDiv">
+                        <button title="{{i18n "ADD_ALL_KARAS"}}" name="addAllKaras" class="btn btn-danger clusterAction">
                             <i class="glyphicon glyphicon-share"></i>
                         </button>
-                        <button title="{{i18n "EMPTY_LIST"}}" name="deleteAllKaras" class="btn btn-danger groupAction">
+                        <button title="{{i18n "EMPTY_LIST"}}" name="deleteAllKaras" class="btn btn-danger clusterAction">
                             <i class="glyphicon glyphicon-erase"></i>
                         </button>
                         <button title="{{i18n "ADD_KARA"}}" name="addKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-plus"></i>
+                           
                         </button>
                         <button title="{{i18n "DELETE_KARA"}}" name="deleteKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-minus"></i>
+                           
                         </button>
                         <button title="{{i18n "TRANSFER_KARA"}}" name="transferKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i>
+                         
                         </button>
-                        <button title="{{i18n "SELECT_ALL"}}" name="selectAllKaras" class="btn btn-default groupAction">
+                        <button title="{{i18n "SELECT_ALL"}}" name="selectAllKaras" class="btn btn-default clusterAction">
                         </button>
                     </div>
                 </div>
@@ -139,26 +139,26 @@
                     </div>
                 </div>
                 
-                 <div class="plCommandsContainer btnDivContainer">
+                 <div class="plCommandsContainer actionDivContainer">
                    
-                    <div class="btn-group plCommands btnDiv">
+                    <div class="btn-group plCommands actionDiv">
 
-                          <button title="{{i18n "ADD_ALL_KARAS"}}" name="addAllKaras" class="btn btn-danger flipped groupAction">
+                          <button title="{{i18n "ADD_ALL_KARAS"}}" name="addAllKaras" class="btn btn-danger flipped clusterAction">
                             <i class="glyphicon glyphicon-share"></i>
                         </button>
-                        <button title="{{i18n "EMPTY_LIST"}}" name="deleteAllKaras" class="btn btn-danger groupAction">
+                        <button title="{{i18n "EMPTY_LIST"}}" name="deleteAllKaras" class="btn btn-danger clusterAction">
                             <i class="glyphicon glyphicon-erase"></i>
                         </button>
                         <button title="{{i18n "ADD_KARA"}}" name="addKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-plus"></i>
+                           
                         </button>
                         <button title="{{i18n "DELETE_KARA"}}" name="deleteKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-minus"></i>
+                           
                         </button>
                         <button title="{{i18n "TRANSFER_KARA"}}" name="transferKara" class="btn btn-default">
-                            <i class="glyphicon glyphicon-arrow-left"></i><i class="glyphicon glyphicon-arrow-right"></i>
+                         
                         </button>
-                        <button title="{{i18n "SELECT_ALL"}}" name="selectAllKaras" class="btn btn-default groupAction">
+                        <button title="{{i18n "SELECT_ALL"}}" name="selectAllKaras" class="btn btn-default clusterAction">
                         </button>
                     </div>  
                     <div class="btn-group plCommands controls">
@@ -326,18 +326,3 @@
 </div>
 <a id="downloadAnchorElem"></a>
 </div>
-
-<script>
-    var mdpAdmin = "{{mdpAdmin}}";
-    var settingsOnOff = {
-        "PlayerPIP": "{{i18n "PLAYERPIP"}}"
-        , "EngineAllowNicknameChange": "{{i18n "ENGINEALLOWNICKNAMECHANGE"}}"
-        , "EngineAllowViewBlacklist": "{{i18n "ENGINEALLOWVIEWBLACKLIST"}}"
-        , "EngineAllowViewBlacklistCriterias": "{{i18n "ENGINEALLOWVIEWBLACKLISTCRITERIAS"}}"
-        , "EngineAllowViewWhitelist": "{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
-        , "EngineDisplayNickname": "{{i18n "ENGINEDISPLAYNICKNAME"}}"
-        , "PlayerFullscreen": "{{i18n "PLAYERFULLSCREEN"}}"
-        , "PlayerStayOnTop": "{{i18n "PLAYERSTAYONTOP"}}"
-        , "PlayerNoBar": "{{i18n "PLAYERNOBAR"}}"
-        , "PlayerNoHud": "{{i18n "PLAYERNOHUD"}}" };
-</script>

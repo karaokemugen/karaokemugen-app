@@ -99,11 +99,10 @@ var date = new Date();
 date.setFullYear(date.getFullYear() + 10);
 
 scope = 'public';
+var currentPanning;
 var settings = {};
 refreshTime = 2000;
 panel1Default = -1;
-
-
 
 getPublicSettings = function() {
 	var promise = $.Deferred();
@@ -112,6 +111,7 @@ getPublicSettings = function() {
 
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
 			playlistToAddId = data.playlist_id;
+			playlistToAddName = data.name;
 			promise.resolve();
 		});
 
@@ -133,104 +133,107 @@ getPublicSettings = function() {
 };
 
 /* touchscreen event handling part */
-if (isTouchScreen) {
 
-	var swipeLeft = false;
-	var swipeRight = false;
-	var sensibility = .28;
+var swipeLeft = false;
+var swipeRight = false;
+var sensibility = isTouchScreen ? .28 : .18;
 
-	var elem = $('.playlist-main');
-	var swipeManager = new Hammer.Manager(elem[0],{
-		prevent_default: true
-	});
+var elem = $('.playlist-main');
+var swipeManager = new Hammer.Manager(elem[0],{
+	prevent_default: true
+});
 
-	var swipe = new Hammer.Swipe({'threshold' : 10,  direction : Hammer.DIRECTION_HORIZONTAL });
+var swipe = new Hammer.Swipe({'threshold' : 10,  direction : Hammer.DIRECTION_HORIZONTAL });
 
-	swipeManager.add(swipe);
+swipeManager.add(swipe);
 
-	swipeManager.on('swipe', function (e) {
-		if(isSmall) {
-      
-			panelWidth =  $('#panel1').width();
-			var elem = $('#panel1, #panel2');
-			elem.css({transition: 'transform 1s ease'});
-			if(e.direction == 2 ) {
-				elem.css({transform: 'translateX('+ -1 * panelWidth+'px)'});
-			} else if (e.direction == 4) {
-				elem.css({transform: 'translateX(0)'});
-			}
+swipeManager.on('swipe', function (e) {
+	if(isSmall) {
+		panelWidth =  $('#panel1').width();
+		var elem = $('#panel1, #panel2');
+		elem.css({transition: 'transform 1s ease'});
+		if(e.direction == 2 ) {
+			elem.css({transform: 'translateX('+ -1 * panelWidth+'px)'});
+		} else if (e.direction == 4) {
+			elem.css({transform: 'translateX(0)'});
 		}
+	}
+});
+
+// for each side
+[1,2].forEach(function(side){
+	
+	swipable = $('.list-group[side="' + side + '"]');
+
+	
+	var manager = new Hammer.Manager(swipable[0],{
+		prevent_default: false
 	});
+	
+	var panner = new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 50 });
+	var tapper = new Hammer.Tap();
+	
+	manager.add(panner);
+	manager.add(tapper);
 
+	manager.on('tap', function (e) {
+		e.gesture = e;
+	
+		if($(e.gesture.target).closest('.fullLyrics').length > 0) {
+			return false;
+		}
+		var $this = $(e.gesture.target).closest('li');
+	
+		if($this.hasClass('pressed')) toggleDetailsKara($this);
+		$this.removeClass('pressed');
+		$this.toggleClass('z-depth-3').toggleClass('active');
 
-	[1,2].forEach(function(side){
-      
-		swipable = $('.collection[side="' + side + '"]');
-    
-      
-		var manager = new Hammer.Manager(swipable[0],{
-			prevent_default: false
+	});
+	
+	if(side == 1) {
+		manager.on('panstart', function (e) {
+			var target = $(e.target).closest('li').get(0);
+			if(target) currentPanning = target;
 		});
-      
-		var panner = new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 50 });
-		var tapper = new Hammer.Tap();
-      
-		manager.add(panner);
-		manager.add(tapper);
-
-		manager.on('tap', function (e) {
+		manager.on('pan', function (e) {
 			e.gesture = e;
-        
-			if($(e.gesture.target).closest('.fullLyrics').length > 0) {
-				return false;
-			}
-			var $this = $(e.gesture.target).closest('li');
-      
-			if($this.hasClass('pressed')) toggleDetailsKara($this);
-			$this.removeClass('pressed');
-			$this.toggleClass('z-depth-3').toggleClass('active');
-
-		});
-      
-		if(side == 1) {
-			manager.on('pan', function (e) {
-				e.gesture = e;
-      
-				if (e.gesture.pointerType === 'touch' || e.gesture.pointerType === 'mouse') {
-					var $this = $(e.gesture.target).closest('li');
-					var direction = e.gesture.direction;
-					var x = e.gesture.deltaX;
-					var velocityX = e.gesture.velocityX;
-					DEBUG && console.log(e,direction,x );
-					if(direction != 4) {
-						return false;
-					}
-          
-					$this.addClass('drag');
-					if(x > $this.innerWidth() * .10) {
-						$this.velocity({ translateX: x
-						}, { duration: 50, queue: false, easing: 'easeOutQuad' });
-
-					}
-    
-					// Swipe Left
-					if (direction === 4 && (x > $this.innerWidth()  * sensibility || velocityX < -0.75)) {
-						swipeLeft = true;
-					}
-					// Swipe Right
-					if (direction === 2 && (x < -1 * $this.innerWidth()  * sensibility  || velocityX > 0.75)) {
-						swipeRight = true;
-					}
+			
+			if ((e.gesture.pointerType === 'touch' || e.gesture.pointerType === 'mouse')) {
+				var $this = $(currentPanning);
+				var direction = e.gesture.direction;
+				var x = e.gesture.deltaX;
+				var velocityX = e.gesture.velocityX;
+				DEBUG && console.log(e,direction,x );
+				if(direction != 4) {
+					return false;
 				}
-			}).on('panend', function (e) {
+		
+				$this.addClass('drag');
+				if(x > $this.innerWidth() * .10) {
+					$this.velocity({ translateX: x
+					}, { duration: 50, queue: false, easing: 'easeOutQuad' });
+
+				}
+				
+				// Swipe Left
+				if (direction === 4 && (x > $this.innerWidth()  * sensibility || velocityX < -0.75)) {
+					swipeLeft = true;
+				}
+				// Swipe Right
+				if (direction === 2 && (x < -1 * $this.innerWidth()  * sensibility  || velocityX > 0.75)) {
+					swipeRight = true;
+				}
+			}
+		}).on('panend', function (e) {
+			if(currentPanning) {
 				e.gesture = e;
-				var $this = $(e.gesture.target).closest('li');
-				// Reset if collection is moved back into original position
+				var $this = $(currentPanning);
+				// Reset if list-group is moved back into original position
 				if (Math.abs(e.gesture.deltaX) < $this.innerWidth() * sensibility) {
 					swipeRight = false;
 					swipeLeft = false;
 				}
-    
+	
 				if (e.gesture.pointerType === 'touch' || e.gesture.pointerType === 'mouse') {
 					if (swipeLeft || swipeRight) {
 						var fullWidth;
@@ -239,29 +242,31 @@ if (isTouchScreen) {
 						} else {
 							fullWidth = -1 * $this.innerWidth();
 						}
-    
+						heightSave = $this.height();
 						$this.velocity({ translateX: fullWidth
 						}, { duration: 100, queue: false, easing: 'easeOutQuad', complete: function () {
-							$this.css('border', 'none');
-							$this.velocity({ height: 0, padding: 0
-							}, { duration: 200, queue: false, easing: 'easeOutQuad', complete: function () {
-								if( $this.is(':visible') ) {
-									var idKara = $this.attr('idkara');
-
-									ajx( 'POST', 'public/karas/' + idKara, { requestedby : pseudo }, function() {
-										playlistContentUpdating.done( function() {
-											scrollToKara(2, idKara); 
-										});
-										displayMessage('success', '"' + $this.find('.contentDiv').text() + '"', ' ajouté à la playlist <i>' + playlistToAdd + '</i>.');
-									});
-								}
-                        
-								$this.remove();
+							if( $this.is(':visible') ) {
+								$this.removeClass('list-group-item');
+								$this.velocity({ height: 0
+								}, { duration: 100, queue: false, easing: 'easeOutQuad', complete: function () {
+								}});
+								var idKara = $this.attr('idkara');
+								addKaraPublic(idKara, function() {
+									$this.remove();
+								}, function() {
+									$this.addClass('list-group-item');
+									//revert back the kara
+									$this.velocity('stop', true).velocity({ translateX: 0, 
+									}, { duration: 200, easing: 'easeOutQuad', complete: function () {
+										$this.velocity({ height: heightSave
+										}, { duration: 200, easing: 'easeOutQuad', complete: function () {
+											$this.height('auto');
+										}});
+									}});
+								});
 							}
-							});
-						}
-						});
-              
+						}});
+				
 					} else {
 						$this.velocity({ translateX: 0
 						}, { duration: 100, queue: false, easing: 'easeOutQuad',  complete: function () {
@@ -271,9 +276,9 @@ if (isTouchScreen) {
 					swipeLeft = false;
 					swipeRight = false;
 				}
-			});
-		} 
+			}
+			
+		});
+	} 
 
-	});
-
-}
+});
