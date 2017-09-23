@@ -2997,8 +2997,7 @@ module.exports = {
 									}									
 								} else {									
 									requester = '';
-								}
-								console.log(requester);
+								}								
 								if (!L.isEmpty(kara.title)) {
 									kara.title = ' - '+kara.title;
 								}
