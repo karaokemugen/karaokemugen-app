@@ -4,6 +4,7 @@ const logger = require('../_common/utils/logger.js');
 var ProgressBar = require('progress');
 var http = require('http');
 const ip = require('ip');
+const exec = require('child_process');
 
 module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
@@ -52,7 +53,6 @@ module.exports = {
 				// - Homebrew
 				// - Manual install
 				if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX))) {
-					console.log("1")
 					module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX);
 				} else {
 					// if mpv is installed with MacPorts
@@ -382,7 +382,17 @@ module.exports = {
 			//If we're on macOS, add --no-native-fs to get a real
 			// fullscreen experience on recent macOS versions.
 			if(module.exports.SETTINGS.os === 'darwin') {
-				mpvOptions.push('--no-native-fs');
+				var resultatCmd = exec.spawnSync(module.exports.mpvBinary,['--version'], {encoding: 'utf8'});
+				if (resultatCmd.stderr != '') {
+					logger.error('[Player] '+resultatCmd.stderr);
+				} else {
+					var mpvVersion = resultatCmd.stdout.split(' ')[1];
+					logger.debug('[Player] mpv version : '+mpvVersion);
+					var mpvVersionSplit = mpvVersion.split('.');
+					if (parseInt(mpvVersionSplit[1]) > 26) {
+						mpvOptions.push('--no-native-fs');
+					}
+				}
 			}
 
 			logger.debug('[Player] mpv options : '+mpvOptions);
