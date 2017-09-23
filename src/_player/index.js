@@ -381,9 +381,9 @@ module.exports = {
 			}
 			//If we're on macOS, add --no-native-fs to get a real
 			// fullscreen experience on recent macOS versions.
-			//if(module.exports.SETTINGS.os === 'darwin') {
-			//	mpvOptions.push('--no-native-fs');
-			//}
+			if(module.exports.SETTINGS.os === 'darwin') {
+				mpvOptions.push('--no-native-fs');
+			}
 
 			logger.debug('[Player] mpv options : '+mpvOptions);
 			logger.debug('[Player] mpv binary : '+module.exports.mpvBinary);
