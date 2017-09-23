@@ -833,10 +833,13 @@ var plData;
         
 		$.ajax({ url: scope + '/playlists', }).done(function (data) {
 			playlistList = data; // object containing all the playlists
-			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.unshift({ 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist']});
-			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.unshift({ 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias']});
-			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.unshift({ 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] });
-			if (scope === 'admin')                                                        playlistList.unshift({ 'playlist_id': -1, 'name': 'Karas' });
+			var shiftCount = 0;
+			if(playlistList[0] && (playlistList[0].flag_current == 1 || playlistList[0].flag_public == 1)) shiftCount++;
+			if(playlistList[1] && (playlistList[1].flag_current == 1 || playlistList[1].flag_public == 1)) shiftCount++;
+			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist']});
+			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias']});
+			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] });
+			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas' });
 			
 			// building the options
 			var optionHtml = '';
@@ -1329,5 +1332,3 @@ var plData;
 		true && SOCKETDEBUG && DEBUG && console.log(e, data);
 	});
 }));
-
-
