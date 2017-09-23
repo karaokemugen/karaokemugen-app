@@ -209,7 +209,7 @@ module.exports = {
 									 */
 									var pAddToSeries = new Promise((resolve,reject) => {
 										async.eachOf(karas, function(kara, index, callback){
-											index++;
+											index++;											
 											addSeries(kara, index)
 												.then(function(){
 													callback();
@@ -896,21 +896,20 @@ module.exports = {
 					var karaInfos = karaWOExtension.split(/\s+\-\s+/);
 					var karaType = karaInfos[2];
 					var serieslist = [];
-					if (L.isEmpty(karadata.series)) {
-						if (karaType == 'LIVE' || karaType == 'MV') {
-							// Don't do anything.
+					if (karaType === 'LIVE' || karaType === 'MV') {
+						console.log(karadata.videofile+' - '+karadata.serie);
+						if (L.isEmpty(karadata.serie)) {
+							// Don't do anything. No series is added.
 						} else {
-							if (L.isEmpty(karaInfos[1])) {
-								reject('Karaoke series cannot be detected!');
-							} else {
-								serieslist.push(karaInfos[1]);
-							}									
+							serieslist = karadata.serie.split(',');
 						}
 					} else {
-						serieslist = karadata.series.split(',');
-						if (serieslist === [])  {
+						if (L.isEmpty(karaInfos[1])) {
+							// Reject because we absolutely need a series if it's neither MV or LIVE.
 							reject('Karaoke series cannot be detected!');
-						}
+						} else {
+							serieslist.push(karaInfos[1]);
+						}									
 					}
 					serieslist.forEach(function(serie) {
 						serie = serie.trimLeft();
