@@ -1404,6 +1404,7 @@ module.exports = {
 						logger.info('[Engine] Current playlist created : '+new_playlist);
 						// Build a dummy playlist for testing purpose
 						module.exports._services.playlist_controller.build_dummy_current_playlist(new_playlist);
+						module.exports.currentPlaylistID = new_playlist;
 					})
 					.catch(function(err){
 						logger.error('[Engine] Failed to create current playlist :'+err);
