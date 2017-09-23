@@ -896,8 +896,7 @@ module.exports = {
 					var karaInfos = karaWOExtension.split(/\s+\-\s+/);
 					var karaType = karaInfos[2];
 					var serieslist = [];
-					if (karaType === 'LIVE' || karaType === 'MV') {
-						console.log(karadata.videofile+' - '+karadata.serie);
+					if (karaType === 'LIVE' || karaType === 'MV') {						
 						if (L.isEmpty(karadata.serie)) {
 							// Don't do anything. No series is added.
 						} else {
