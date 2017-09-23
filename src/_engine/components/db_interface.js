@@ -885,9 +885,9 @@ module.exports = {
 			// If seen from the user/public view, we're only showing playlists with
 			// visible flag
 			if (seenFromUser) {
-				sqlGetPlaylists += ' WHERE flag_visible = 1 ORDER BY name';
+				sqlGetPlaylists += ' WHERE flag_visible = 1 ORDER BY flag_current DESC, flag_public DESC, name';
 			} else {
-				sqlGetPlaylists += ' ORDER BY name';
+				sqlGetPlaylists += ' ORDER BY flag_current DESC, flag_public DESC, name';
 			}
 			module.exports._db_handler.all(sqlGetPlaylists,
 				function (err, playlists) {
