@@ -278,8 +278,7 @@ module.exports = {
 			Promise.all([pIsKara])
 				.then(function(){									
 					module.exports.getASS(kara_id)
-						.then(function(ass) {
-							console.log(ass);
+						.then(function(ass) {							
 							if (ass) { 
 								var lyrics = assManager.ASSToLyrics(ass);
 								resolve(lyrics);					
