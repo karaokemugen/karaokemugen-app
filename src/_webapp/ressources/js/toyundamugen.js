@@ -1218,6 +1218,7 @@ var plData;
 	};
 
 	addKaraPublic = function(idKara, doneCallback, failCallback) {
+		var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
 		
 		$.ajax({ url: 'public/karas/' + idKara,
 			type: 'POST',
@@ -1232,7 +1233,6 @@ var plData;
 			}
 		}).done(function() {
 			if(doneCallback) doneCallback();
-			var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
 			displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		}).fail(function() {
 			if(failCallback) failCallback();
