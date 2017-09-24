@@ -774,7 +774,7 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				logger.info('[Engine] Deleting karaokes from playlist '+playlist_id+' : '+plc_ids);
 				var karas;
-				if (typeof input === 'string') {
+				if (typeof plc_ids === 'string') {
 					karas = plc_ids.split(',');
 				} else {
 					karas = [plc_ids];
@@ -1198,7 +1198,7 @@ module.exports = {
 				logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+id_kara);
 				logger.profile('AddKara');
 				var karas;
-				if (typeof input === 'string') {
+				if (typeof id_kara === 'string') {
 					karas = id_kara.split(',');
 				} else {
 					karas = [id_kara];
