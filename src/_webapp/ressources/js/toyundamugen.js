@@ -530,7 +530,6 @@ var plData;
 		managerLyrics.on('tap click', function (e) {
 			e.gesture = e;
 			var target = $(e.gesture.target);
-        
 			if(target.closest('.fullLyrics').length > 0
 								|| target.closest('.actionDiv').length > 0
 								|| target.closest('.infoDiv').length > 0
@@ -538,11 +537,8 @@ var plData;
 				return false;
 			}
 			var $this = target.closest('li');
-	
-			if($this.hasClass('pressed')) {
-				$this.toggleClass('opened');
-				toggleDetailsKara($this);
-			} 
+			$this.toggleClass('opened');
+			toggleDetailsKara($this);
 			$this.removeClass('pressed');
     
 		});
