@@ -254,7 +254,7 @@ var plData;
 				}
 				$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
 					liKara.find('.lyricsKaraLoad').html(data.join('<br/>'));
-					scrollToElement(playlist, detailsKara);
+					scrollToElement(playlist.parent(), detailsKara,  liKara.find('.lyricsKara'));
 				});
 			});
 		}
@@ -404,6 +404,7 @@ var plData;
 	socket = io( window.location.protocol + '//' + window.location.hostname + ':1340');
     
 	isTouchScreen =  'ontouchstart' in document.documentElement || query.TOUCHSCREEN != undefined;
+	if(isTouchScreen) $('body').addClass('touch');
 	isSmall = $(window).width() < 1025;
 	animTime = isSmall ? 200 : 300;
 	refreshTime = 1000;
@@ -537,16 +538,20 @@ var plData;
 				return false;
 			}
 			var $this = target.closest('li');
-    
-			if($this.hasClass('pressed')) toggleDetailsKara($this);
+	
+			if($this.hasClass('pressed')) {
+				$this.toggleClass('opened');
+				toggleDetailsKara($this);
+			} 
 			$this.removeClass('pressed');
-			$this.toggleClass('z-depth-3').toggleClass('active');
     
 		});
     
         
 		$('.playlistContainer').on('touchstart mousedown', 'li', function (e) {
 			var $this = $(e.target).closest('li');
+			if($this) currentPanning = $this.get(0);
+		
 			$this.addClass('pressed');
 		}).on('touchend mouseup', 'li', function (e) {
 			var $this = $(e.target).closest('li');
@@ -620,6 +625,7 @@ var plData;
 							+	kara.pos + '" data-pseudo_add="' + kara.pseudo_add + '"' : '')
 							+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
 							+	(kara.pseudo_add == pseudo ? 'user' : '' );
+
 							var badges = '';
 							if(kara.misc) {
 								kara.misc.split(',').forEach(function(tag) {
@@ -628,6 +634,7 @@ var plData;
 							}
 							if (mode === 'list') {
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
+								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
@@ -784,22 +791,25 @@ var plData;
      * @param {1, 2} side - which playlist on the screen
      * @param {Int} idKara - kara to highlight & scroll
      */
-	scrollToKara = function (side, idKara) {
+	scrollToKara = function (side, idKara, lengthFactor) {
+		lengthFactor = lengthFactor ? lengthFactor : 1;
 		var parent = $('#playlist' + side).parent();
 		var element = parent.find('li[idkara="' + idKara + '"]');
+		
 		if (element.length > 0) {
-			var willParentSroll = parent[0].scrollTop != parent[0].clientTop|| (parent[0].clientHeight != parent[0].scrollHeight
-																																				&& parent.scrollTop() + element.offset().top - parent.offset().top != 0);
+			/*var willParentSroll = parent[0].scrollTop != parent[0].clientTop|| (parent[0].clientHeight != parent[0].scrollHeight
+									&& parent.scrollTop() + element.offset().top - parent.offset().top != 0);*/
 			// DEBUG && console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
+			var willParentSroll =  element.offset().top > parent.height() + parent.offset().top || element.offset().top < parent.offset().top;
 			parent.animate({
-				scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
+				scrollTop: willParentSroll ? parent.scrollTop() + element.offset().top - parent.offset().top : parent.scrollTop()
 			}, willParentSroll ? 400 : 0 , function(){
 				element = parent.find('li[idkara="' + idKara + '"]'); // element may be lost in the meantime
 				element.finish();
 				var hLight = $('<div class="hLight"/>');
 				element.prepend(hLight);
-				hLight.velocity({ opacity : 1.0 }, { duration: 350, easing: [.2,.75,.4,.8], complete: function() {
-					hLight.velocity({ opacity : 0 }, { duration: 650, easing:  [.75,.2, .8,.4], complete: function() {
+				hLight.velocity({ opacity : 1.0 }, { duration: 100 * lengthFactor, easing: [.2,.75,.4,.8], complete: function() {
+					hLight.velocity({ opacity : 0 }, { duration: 500 * lengthFactor,  easing:  [.75,.2, .8,.4], complete: function() {
 						hLight.remove();
 						element.focus();
 					}});
@@ -812,27 +822,15 @@ var plData;
     * Generic function scrolling to an element in its parent
     * @param {Element} parent - parent of the element
     * @param {Element} element - element to scroll to
-    * @param {Boolean} highlight - to highlight the element
+    * @param {Boolean} highlight - to highlight the element [discarded, see scrollToKara]
     */
-	scrollToElement = function (parent, element, highlight) {
-		var willParentSroll = parent[0].scrollTop != parent[0].clientTop || (parent[0].clientHeight != parent[0].scrollHeight
-																																&& parent.scrollTop() + element.offset().top - parent.offset().top != 0);
-		// DEBUG && console.log( parent[0].scrollTop, parent[0].clientTop, parent[0].clientHeight, parent[0].scrollHeight, parent.scrollTop() + element.offset().top - parent.offset().top);
-		parent.velocity({
-			scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
-		}, willParentSroll ? 400 : 0 , function(){
-			if(highlight) {
-				element.finish();
-				hLight = $('<div class="hLight"/>');
-				element.prepend(hLight);
-				hLight.velocity({ opacity : 1.0 }, { duration: 350, easing: [.2,.75,.4,.8], complete: function() {
-					hLight.velocity({ opacity : 0 }, { duration: 650, easing:  [.75,.2, .8,.4], complete: function() {
-						hLight.remove();
-						element.focus();
-					}});
-				}});
-			}
-		});
+	scrollToElement = function (parent, element, anchorElement) {
+		var willParentSroll =  anchorElement.offset().top > parent.height() + parent.offset().top || anchorElement.offset().top < parent.offset().top;
+		if(willParentSroll) {
+			parent.animate({
+				scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
+			}, 400 );
+		}
 	};
 
 	/** 

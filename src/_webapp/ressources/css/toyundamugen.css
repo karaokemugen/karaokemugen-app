@@ -214,10 +214,10 @@ select.form-control {
 	background-color: hsla(0, 0%, 27%, 0.6);
 }
 
-.playlist-main .list-group-item:nth-child(even):hover {
+body:not(.touch) .playlist-main .list-group-item:nth-child(even):hover {
 	background-color: hsla(0, 0%, 15%, .9);
 }
-.playlist-main .list-group-item:hover {
+body:not(.touch) .playlist-main .list-group-item:hover {
 	background-color: hsla(0, 0%, 15%, .8);
 }
 
@@ -361,13 +361,14 @@ button[name="infoKara"]:before {
 .list-group-item > div.detailsKara, .lyricsKara {
 	min-height: 56px;
 	padding: 10px;
-	margin: 7px;
+	margin: 0;
 	color: #cee1ea;
-    background-color: #30393e;
-    border-color: #8aa9af;
+	background-color: hsla(201, 13%, 22%, 0.9);
+	border-color: transparent;
 	border-radius: 0px;
 	position: relative;
 }
+
 .detailsKara tr > td:first-child {
 	font-weight: bold;
 	padding-right: 7px;
@@ -389,7 +390,9 @@ button[name="infoKara"]:before {
 }
 .list-group-item .fullLyrics.mobile {
 	right: 10px;
-	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+	border-color: transparent;
+	background-color: hsla(0, 0%, 32%, 0.87);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.10), 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.1);
 }
 
 button.closeParent.bottom  {
@@ -476,19 +479,20 @@ button.closeParent.bottom  {
 
 bdg {
 	background-color: hsl(213, 20%, 16%);
-	__background-color: hsla(174, 8%, 34%, .95);
 	padding: 0px 5px;
 	margin-left: 2px;
 	width: 45px;
 	text-align: center;
     font-weight: bold;
-    color: #D5D5D5;
+    color: #aaa;
     box-shadow: 0 6px 8px 2px rgba(0, 0, 0, 0.02), 0 1px 5px 2px rgba(0, 0, 0, 0.015), 0 2px 3px -1px rgba(0, 0, 0, 0.02);
 	float: right;
+	z-index: 250;
 }
 
 bdgc {
 	background-color: hsla(0, 0%, 35%, .91);
+	background-color: hsla(174, 8%, 34%, .95);
     color: hsla(0, 0%, 77%, 1);
 }
 

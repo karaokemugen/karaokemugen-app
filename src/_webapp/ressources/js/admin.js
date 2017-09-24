@@ -677,7 +677,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			}).fail(function () {
 				fillPlaylist(side);
 			});
-			scrollToKara(side, idKara); 
+			scrollToKara(side, idKara, .55); 
 		}
 	};
 

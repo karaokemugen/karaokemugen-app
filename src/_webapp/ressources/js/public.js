@@ -176,24 +176,10 @@ swipeManager.on('swipe', function (e) {
 	manager.add(panner);
 	manager.add(tapper);
 
-	manager.on('tap', function (e) {
-		e.gesture = e;
-	
-		if($(e.gesture.target).closest('.fullLyrics').length > 0) {
-			return false;
-		}
-		var $this = $(e.gesture.target).closest('li');
-	
-		if($this.hasClass('pressed')) toggleDetailsKara($this);
-		$this.removeClass('pressed');
-		$this.toggleClass('z-depth-3').toggleClass('active');
-
-	});
-	
 	if(side == 1) {
 		manager.on('panstart', function (e) {
-			var target = $(e.target).closest('li').get(0);
-			if(target) currentPanning = target;
+			/*var target = $(e.target).closest('li').get(0);
+			if(target) currentPanning = target;*/
 		});
 		manager.on('pan', function (e) {
 			e.gesture = e;
@@ -207,17 +193,19 @@ swipeManager.on('swipe', function (e) {
 				if(direction != 4) {
 					return false;
 				}
-		
-				$this.addClass('drag');
-				if(x > $this.innerWidth() * .10) {
+				
+				if(x > $this.innerWidth() * .12) {
 					$this.velocity({ translateX: x
 					}, { duration: 50, queue: false, easing: 'easeOutQuad' });
 
 				}
 				
+				
+				
 				// Swipe Left
 				if (direction === 4 && (x > $this.innerWidth()  * sensibility || velocityX < -0.75)) {
 					swipeLeft = true;
+					$this.attr('valid', true) ;
 				}
 				// Swipe Right
 				if (direction === 2 && (x < -1 * $this.innerWidth()  * sensibility  || velocityX > 0.75)) {
@@ -232,6 +220,7 @@ swipeManager.on('swipe', function (e) {
 				if (Math.abs(e.gesture.deltaX) < $this.innerWidth() * sensibility) {
 					swipeRight = false;
 					swipeLeft = false;
+					$this.attr('valid', false) ;
 				}
 	
 				if (e.gesture.pointerType === 'touch' || e.gesture.pointerType === 'mouse') {
@@ -242,6 +231,7 @@ swipeManager.on('swipe', function (e) {
 						} else {
 							fullWidth = -1 * $this.innerWidth();
 						}
+				
 						heightSave = $this.height();
 						$this.velocity({ translateX: fullWidth
 						}, { duration: 100, queue: false, easing: 'easeOutQuad', complete: function () {
@@ -253,7 +243,9 @@ swipeManager.on('swipe', function (e) {
 								var idKara = $this.attr('idkara');
 								addKaraPublic(idKara, function() {
 									$this.remove();
-								}, function() {
+								}, function() {	// if it fails
+									
+									$this.attr('valid', false) ;
 									$this.addClass('list-group-item');
 									//revert back the kara
 									$this.velocity('stop', true).velocity({ translateX: 0, 
@@ -270,8 +262,7 @@ swipeManager.on('swipe', function (e) {
 					} else {
 						$this.velocity({ translateX: 0
 						}, { duration: 100, queue: false, easing: 'easeOutQuad',  complete: function () {
-						}
-						});
+						}});
 					}
 					swipeLeft = false;
 					swipeRight = false;

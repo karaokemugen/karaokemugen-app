@@ -191,21 +191,65 @@ div.bootstrap-switch-large{
 .dragged .contentDiv {
     white-space: nowrap;
 }
-.list-group-item.pressed {
-background-color: rgba(18, 35, 53, 0.70);
-background-color: rgba(18, 43, 31, 0.60);
+
+.playlist-main  .list-group-item.opened,
+.playlist-main  .list-group-item.opened, .list-group-item.opened:focus, .list-group-item.opened:hover {
+    border-color: rgba(177, 177, 177, 0.65);
+    box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.1), 0 1px 9px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.15);
+    background-color: hsla(201, 33%, 22%, 0.8)
 }
-.list-group-item.active,
-.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
-background-color: hsla(210, 6%, 15%, 0.83);
-border-color: rgba(177, 177, 177, 0.65);
+
+.playlist-main  .list-group-item.pressed {
+    background-color: hsla(151, 31%, 12%, 0.6);
 }
-.list-group-item > .contentDiv {
+.playlist-main  .list-group-item[valid="true"] {
+    background-color: hsla(151, 37%, 25%, 0.7);
+}
+.list-group-item > .contentDiv, .playlist-main .list-group-item {
     overflow: hidden;
 }
-.list-group-item {
-    overflow: hidden;
+
+body.touch .playlist-main .list-group-item  {
+    width: calc(100% - 12px);
+    overflow: visible;
 }
+
+body.touch  .list-group-item:after { 
+    content:"";
+    position: absolute; 
+    top:0; 
+    right: -24px;
+    height: 36px;
+    width: 0;   
+    border-width: 18px 12px;
+    border-style:solid;
+    border-color: transparent;
+    border-left-color: hsla(0, 0%, 20%, .67);
+}
+body.touch  .list-group-item:nth-child(even):after {
+    border-left-color: hsla(0, 0%, 27%, 0.6);
+}
+body.touch .list-group-item.pressed:after { 
+    border-left-color: hsla(151, 31%, 12%, 0.6);
+}
+
+body.touch  .list-group-item[valid="true"]:after { 
+    border-left-color: hsla(151, 37%, 25%, 0.7);
+}
+
+/*
+.list-group-item > slide{
+    font-size: 28px;
+    line-height: 35px;
+    font-weight: bold;
+    color: hsla(0, 0%, 83%, 0.2);
+    float: right;
+}
+.list-group-item > slide:before{ 
+    font-family: 'Glyphicons Halflings';
+    content: "\e258";
+}
+*/
 
 #mobileHelp, #mobileActions {
     display: none;
@@ -352,22 +396,6 @@ border-color: rgba(177, 177, 177, 0.65);
    #mobileHelp, #mobileActions {
        display: block;
    }
-
-  
-   .list-group-item > div.detailsKara {
-    min-height: 56px;
-    padding: 10px;
-    margin: 7px;
-    color: #DFE9EF;
-    background-color: #30393e;
-    border-color: #8aa9af;
-    border-radius: 0px;
-    position: relative;
-    border-color: hsla(190, 13%, 43%, 1);
-    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
-
-    }
-
 }
 
 /* special size for iPad pro */
