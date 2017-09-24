@@ -330,7 +330,7 @@ var plData;
 					if(scrollTop) {  // scroll down 
 						scrollX = container.scrollTop();
 						karaPos = playlist.find('li').last();
-						yPosition = (karaPos ? karaPos.offset().top : 0) - toleranceDynamicPixels + 15; // TODO try to make this 100% accurate // - playlist.innerHeight() + scrollX + container.innerHeight();
+						yPosition = (karaPos && karaPos.offset() ? karaPos.offset().top : 0) - toleranceDynamicPixels + 15; // TODO try to make this 100% accurate // - playlist.innerHeight() + scrollX + container.innerHeight();
                         
 						from += karaParPage;
 						to = from + karaParPage * 2;
@@ -338,7 +338,7 @@ var plData;
                         
 						scrollX = container.scrollTop();
 						karaPos = playlist.find('li').first();
-						yPosition = (karaPos ? karaPos.offset().top : 0) + scrollX;
+						yPosition = (karaPos &&  karaPos.offset() ? karaPos.offset().top : 0) + scrollX;
     
 						from = Math.max(0, from - karaParPage -20);
 						to = from + karaParPage * 2;
@@ -795,8 +795,15 @@ var plData;
 				scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
 			}, willParentSroll ? 400 : 0 , function(){
 				element = parent.find('li[idkara="' + idKara + '"]'); // element may be lost in the meantime
-				element.finish().effect( 'highlight', {color: '#234a35'}, 1000 );
-				element.focus();
+				element.finish();
+				var hLight = $('<div class="hLight"/>');
+				element.prepend(hLight);
+				hLight.velocity({ opacity : 1.0 }, { duration: 350, easing: [.2,.75,.4,.8], complete: function() {
+					hLight.velocity({ opacity : 0 }, { duration: 650, easing:  [.75,.2, .8,.4], complete: function() {
+						hLight.remove();
+						element.focus();
+					}});
+				}});
 			});
 		}
 	};
@@ -815,8 +822,15 @@ var plData;
 			scrollTop: parent.scrollTop() + element.offset().top - parent.offset().top
 		}, willParentSroll ? 400 : 0 , function(){
 			if(highlight) {
-				element.finish().effect( 'highlight', {color: '#234a35'}, 1000 );
-				element.focus();
+				element.finish();
+				hLight = $('<div class="hLight"/>');
+				element.prepend(hLight);
+				hLight.velocity({ opacity : 1.0 }, { duration: 350, easing: [.2,.75,.4,.8], complete: function() {
+					hLight.velocity({ opacity : 0 }, { duration: 650, easing:  [.75,.2, .8,.4], complete: function() {
+						hLight.remove();
+						element.focus();
+					}});
+				}});
 			}
 		});
 	};
@@ -854,26 +868,29 @@ var plData;
 			// setting the right values to newly refreshed selects
 			// for public interface, panel1Default to keep kara list, playlistToAddId to show the playlist where users can add
 			// for admin, check cookies
-			if(scope === 'public') {
-				select1.val(val1? val1 : panel1Default);
-				select2.val(val2? val2 : playlistToAddId);
-			} else {
-				var plVal1Cookie = readCookie('plVal1');
-				var plVal2Cookie = readCookie('plVal2');
-				select1.val(val1? val1 : plVal1Cookie ? plVal1Cookie : -1);
-				select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : playlistToAddId);
-			}
-			if(!select2.val()) {
-				select2[0].selectedIndex = 0;
-			}
-			$('.select2').select2({ theme: 'bootstrap',
-				templateResult: formatPlaylist,
-				templateSelection : formatPlaylist,
-				tags: false,
-				minimumResultsForSearch: 3
+			settingsUpdating.done( function() {
+				if(scope === 'public') {
+					select1.val(val1? val1 : panel1Default);
+					select2.val(val2? val2 : playlistToAddId);
+				} else {
+					var plVal1Cookie = readCookie('plVal1');
+					var plVal2Cookie = readCookie('plVal2');
+					select1.val(val1? val1 : plVal1Cookie ? plVal1Cookie : -1);
+					select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : playlistToAddId);
+				}
+			
+				$('.select2').select2({ theme: 'bootstrap',
+					templateResult: formatPlaylist,
+					templateSelection : formatPlaylist,
+					tags: false,
+					minimumResultsForSearch: 3
+				});
+
+				if(!select2.val()) {
+					select2[0].selectedIndex = 0;
+				}
+				deferred.resolve();
 			});
-            
-			deferred.resolve();
 		}).fail(function (data) {
 			DEBUG && console.log(data);
 		});
@@ -984,9 +1001,6 @@ var plData;
 					$('#karaInfo > span').text( buildKaraTitle(dataKara[0]) );
 					$('#karaInfo > span').data('text', buildKaraTitle(dataKara[0]) );
 				});
-				var panel = $('[type="playlist_select"] > option:selected[flag_current="1"]').closest('.panel');
-				panel.find('.list-group-item[currentlyPlaying]').removeAttr('currentlyPlaying');
-				panel.find('.list-group-item[idkara="' + data.currentlyPlaying + '"]').attr('currentlyPlaying', '');
 			} 
 			if (data.showSubs != oldState.showSubs) {
 				if (data.showSubs) {
@@ -1210,20 +1224,21 @@ var plData;
 		
 		$.ajax({ url: 'public/karas/' + idKara,
 			type: 'POST',
-			data: { requestedby : pseudo }
+			data: { requestedby : pseudo },
+			complete: function() {
+				var side = 2;
+				if(sideOfPlaylist(playlistToAddId) == side) {
+					playlistContentUpdating.done( function() {
+						scrollToKara(side, idKara); 
+					});
+				}
+			}
 		}).done(function() {
 			if(doneCallback) doneCallback();
-			var side = 2;
-			if(sideOfPlaylist(playlistToAddId) == side) {
-				playlistContentUpdating.done( function() {
-					scrollToKara(side, idKara); 
-				});
-			}
-		
 			var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
 			displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		}).fail(function() {
-			failCallback();
+			if(failCallback) failCallback();
 		});
 	};
 
@@ -1278,8 +1293,17 @@ var plData;
 	socket.on('playingUpdated', function(data){
 		var side = sideOfPlaylist(data.playlist_id);
 		DEBUG && console.log(side, data.playlist_id);
-		$('#playlist' + side + ' > li[currentlyplaying]').removeAttr('currentlyplaying');
-		$('#playlist' + side + ' > li[idplaylistcontent="' + data.plc_id + '"]').attr('currentlyplaying', true);
+		if(side) {
+			var liKara = $('#playlist' + side + ' > li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]').get(0);
+			if(liKara) {
+				liKara.removeAttribute('currentlyPlaying');
+				// trick for IE/Edge not redrawing layout
+				var ul = $(liKara).closest('ul');
+				ul.css('height',  ul.height());
+				ul.css('height', 'auto');
+			}
+			$('#playlist' + side + ' > li[idplaylistcontent="' + data.plc_id + '"]').attr('currentlyplaying', '');
+		}
 	});
 
 	socket.on('playlistContentsUpdated', function(idPlaylist){

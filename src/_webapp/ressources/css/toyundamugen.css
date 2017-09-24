@@ -475,8 +475,8 @@ button.closeParent.bottom  {
 }
 
 bdg {
-	background-color: hsla(213, 18%, 14%, .95);
-	background-color: hsla(174, 8%, 34%, 0.95)
+	background-color: hsl(213, 20%, 16%);
+	__background-color: hsla(174, 8%, 34%, .95);
 	padding: 0px 5px;
 	margin-left: 2px;
 	width: 45px;
@@ -503,12 +503,11 @@ bdgc {
 .hLight {
 	position :absolute;
 	width: 100%;
-	z-index:9999;
+	z-index:-1;
 	left:0;
 	top:0;
 	height:100%;
-	background-color:#789456;
-	transition: opacity .4s ease;
+	background-color:rgba(120, 148, 86, 0.6);
 	opacity: 0;
 }
 
@@ -771,6 +770,7 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 .plDashboard .plSelect, .plDashboard .plSearch {
 	z-index:10;
 }
+
 .plDashboard .plSelect {
 	flex-grow: 100;
 	flex-basis: 30%;

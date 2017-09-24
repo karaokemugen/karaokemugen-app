@@ -254,7 +254,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 							+ $('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').text() + '.');
 					}).fail(function () {
 						scrollToKara(non(side), idKara);
-						if (mode === 'mobile') fillPlaylist(1);
 					});
 				}
 			} else {
@@ -306,8 +305,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		$('.playlist-main').on('click', 'button.showPlaylistCommands', function () {
 			$(this).closest('.plDashboard').toggleClass('advanced');
 			$(window).resize();
-            
-			if( $('.plDashboard').hasClass('advanced') && ($('#playlist1').parent().height() < 400 ||  $('#playlist2').parent().height() <  400) ) {
+		
+			if( $('.plDashboard').hasClass('advanced') && ($('#playlist1').parent().height() < 200 ||  $('#playlist2').parent().height() <  200) ) {
 				$('body').addClass('hiddenHeader');
 			} else if(!$('.plDashboard').hasClass('advanced')) {
 				$('body').removeClass('hiddenHeader');
