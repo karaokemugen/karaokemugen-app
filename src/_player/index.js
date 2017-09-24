@@ -70,7 +70,7 @@ module.exports = {
 				module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerLinux);
 			}
 			if(!fs.existsSync(module.exports.mpvBinary)){
-				logger.error('[Player] mpv not found or not accessable in path : '+mpvBinary);
+				logger.error('[Player] mpv not found or not accessable in path : '+module.exports.mpvBinary);
 				if (module.exports.SETTINGS.os === 'linux') {
 					console.log('\n');
 					console.log('You need to have mpv installed first. Use apt-get/yum/etc. depending on your Linux distribution.');
