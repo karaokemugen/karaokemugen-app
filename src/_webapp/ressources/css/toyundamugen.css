@@ -274,13 +274,13 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 	z-index: 52;
 	position: relative;
 }
-.btn-action, .actionDiv > button{
+.btn-action, .actionDiv > button {
 	font-family: 'Glyphicons Halflings'; 
 }
 button[name="addKara"]:before {
 	content:"\2b";
 }
-button[name="deleteKara"]:before {
+button[name="deleteKara"]:before, button.deleteCriteria:before {
 	content:"\2212";
 }
 button[name="transferKara"]:before {
@@ -536,6 +536,7 @@ bdgc {
 }
 #blacklistCriteriasInputs input {
 	height: 34px;
+	width: auto;
 }
 .select2-dropdown {
 	z-index: 10000;
@@ -887,14 +888,15 @@ input[type="text"]:focus {
 	color: hsla(210, 9%, 24%, 1);
 }
 
-.panel-heading input[type="text"] {
+.panel-heading input[type="text"],
+.playlistContainer input[type="text"] {
     border: 1px #9e9e9e solid;
     border-width: 0px 0px 1px 0px;
     height: 34px;
     font-size: 1.8rem;
     line-height: 1.8rem;
     padding-left: 1rem;
-    padding-right: 1rem;    
+	padding-right: 1rem;   
 }
 
 

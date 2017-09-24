@@ -662,7 +662,7 @@ var plData;
 							blacklistCriteriasHtml = $('<div><span id="blacklistCriteriasInputs" class="list-group-item" style="padding:10px">'
 							+	'<select id="bcType" class="input-sm" style="color:black"/> '
 							+	'<span id="bcValContainer" style="color:black"></span> '
-							+	'<button id="bcAdd" class="btn btn-sm btn-default btn-action addBlacklistCriteria"><i class="glyphicon glyphicon-plus"></i></button>'
+							+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
 							+	'</span></div>');
 							$.each(tabTradToDelete, function(k, v){
 								blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: k.replace('TYPE_',''), text: v}));                        

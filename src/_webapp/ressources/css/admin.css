@@ -56,8 +56,11 @@ span[name="checkboxKara"] {
 	float: left;
 }
 
-span[name="checkboxKara"], [name="selectAllKaras"] {
+span[name="checkboxKara"], [name="selectAllKaras"], .addBlacklistCriteria {
 	font-family: 'Glyphicons Halflings'; 
+}
+.addBlacklistCriteria:before {
+	content:"\2b";
 }
 
 span[name="checkboxKara"]:not([checked]):before, [name="selectAllKaras"]:not([checked]):before  {
