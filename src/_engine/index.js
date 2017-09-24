@@ -925,7 +925,7 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistSingleSetCurrent = function(id_playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
-					.then(function(id_playlist){
+					.then(function(){
 						module.exports.currentPlaylistID = id_playlist;
 						resolve(id_playlist);
 					})
