@@ -1102,7 +1102,10 @@ var plData;
 			, 'Compositeur': data['songwriter']
 		};
 		var htmlDetails = Object.keys(details).map(function (k) {
-			return details[k] ? '<tr><td>' + k + '</td><td>' + details[k] + '</td><tr/>' : '';
+			if(details[k]) {
+				var detailsLine = details[k].toString().replace(/,/g, ', ');
+				return '<tr><td>' + k + '</td><td>' + detailsLine + '</td><tr/>';
+			} else return '';
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
 
