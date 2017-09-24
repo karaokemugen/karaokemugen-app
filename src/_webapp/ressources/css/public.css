@@ -16,7 +16,9 @@
 }
 
 .header button {
-    font-size : 17px;
+    font-size : 21px;
+    line-height: 21px;
+    width: 60px;
 }
 .header {
 	position: fixed;
@@ -30,9 +32,6 @@
 
 .pseudoChange {
     display: none;
-}
-.header button {
-    width: 60px;
 }
 .header > div {
     height: 60px;
