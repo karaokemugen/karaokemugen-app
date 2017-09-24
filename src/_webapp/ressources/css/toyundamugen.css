@@ -124,8 +124,10 @@ body {
 .panel-heading {
 	border-bottom: 7px solid #1E2124;
 	padding: 7px 7px;
+	z-index: 40;
+	background-color: #2d2d2f;
+	position: relative;
 }
-
 .bootstrap-switch-large:hover, .bootstrap-switch-large:active:hover, .bootstrap-switch-large:focus, .bootstrap-switch-large:visited {
 	background-color: #9e9e9e;
 }
@@ -211,7 +213,7 @@ select.form-control {
 }
 
 .playlist-main .list-group-item:nth-child(even) {
-	background-color: hsla(0, 0%, 27%, 0.6);
+	background-color: hsla(0, 0%, 27%, 0.7);
 }
 
 body:not(.touch) .playlist-main .list-group-item:nth-child(even):hover {
@@ -431,10 +433,6 @@ button.closeParent.bottom  {
 #playlist1 {
 	__background-color: rgba(45, 45, 47, .5);
 }
-.panel-heading  {
-	z-index: 40;
-	background-color: #2d2d2f;
-}
 .playlistContainer[flipped]:after {
     content : "";
     display: block;
@@ -445,9 +443,9 @@ button.closeParent.bottom  {
 	background-size: 100%;
 	background-position: 0 20%;
     width: 100%;
-    height: 100%;
-    opacity : 0.18;
-	z-index: -1;
+	height: 100%;
+    opacity : 0.22;
+	z-index: 0;
 	filter: grayscale(74%);
 }
 .playlistContainer[flipped="true"]:after {
@@ -746,7 +744,6 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 	
 .plDashboard {
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.10), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
-	
 }
 #progressBar {
 	box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.24), 0 1px 8px 0 rgba(0, 0, 0, 0.21), 0 3px 4px -1px rgba(0, 0, 0, 0.24);

@@ -270,7 +270,7 @@ var plData;
 					displayModal('confirm','Félicitations','Vous allez ajouter <i>' + buildKaraTitle(data)
 						+ (pseudo ? '</i> sous le pseudo <b>' + pseudo : '</b>') + '.', function(){
 						$.ajax({
-							url: scope + '/karas/' + chosenOne,
+							url: 'public/karas/' + chosenOne,
 							type: 'POST',
 							data: { requestedby : pseudo }
 						}).done(function () {
@@ -533,7 +533,8 @@ var plData;
 			if(target.closest('.fullLyrics').length > 0
 								|| target.closest('.actionDiv').length > 0
 								|| target.closest('.infoDiv').length > 0
-								|| target.closest('[name="checkboxKara"]').length > 0 ) {
+								|| target.closest('[name="checkboxKara"]').length > 0
+								|| target.closest('li').length == 0 ) {
 				return false;
 			}
 			var $this = target.closest('li');
