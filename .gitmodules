@@ -1,0 +1,3 @@
+[submodule "app/data"]
+	path = app/data
+	url = https://lab.shelter.moe/karaokemugen/karaokebase.git

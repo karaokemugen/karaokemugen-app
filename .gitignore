@@ -3,7 +3,9 @@
 .npmrc
 .vscode
 node_modules
-app/
+app/bin
+app/db
+app/temp
 src/app/
 npm-debug.log
 *.exe
