@@ -1292,7 +1292,9 @@ var plData;
 		var side = sideOfPlaylist(data.playlist_id);
 		DEBUG && console.log(side, data.playlist_id);
 		if(side) {
-			var liKara = $('#playlist' + side + ' > li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]').get(0);
+			var playlist = $('#playlist' + side);
+			var liKara = playlist.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]').get(0);
+			
 			if(liKara) {
 				liKara.removeAttribute('currentlyPlaying');
 				// trick for IE/Edge not redrawing layout
