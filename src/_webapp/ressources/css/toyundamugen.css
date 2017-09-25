@@ -463,6 +463,8 @@ button.closeParent.bottom  {
 
 .playlistContainer > ul {
 	will-change: -moz-transform;
+	position: relative;
+	z-index: 1;
 }
 
 #playlist1.list-group > li.list-group-item  > .actionDiv, #playlist1.list-group > li.list-group-item  > .actionDiv > span, 
