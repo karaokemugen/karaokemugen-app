@@ -469,7 +469,9 @@ module.exports = {
 					function(callback){
 						module.exports._db_handler.run('begin transaction', function(err) {
 							if (err) {
-								callback('Failed to begin transaction : '+err);
+								logger.error('[DBI] Failed to begin transaction : '+err);
+								logger.error('[DBI] Transaction will be retried');
+								callback(err);
 							} else {
 								async.each(karaList,function(data,callback){
 									stmt_updateKaraPosition.run(data,function(err){
@@ -1674,7 +1676,8 @@ module.exports = {
 					function(callback){
 						module.exports._db_handler.run('begin transaction', function(err) {
 							if (err) {
-								logger.error('Failed to begin transaction : '+err);
+								logger.error('[DBI] Failed to begin transaction : '+err);
+								logger.error('[DBI] Transaction will be retried');
 								callback(err);
 							} else {
 								async.each(karaList,function(data,callback){
@@ -1790,8 +1793,9 @@ module.exports = {
 					function(callback){
 						module.exports._db_handler.run('begin transaction', function(err) {
 							if (err) {
+								logger.error('[DBI] Failed to begin transaction : '+err);
+								logger.error('[DBI] Transaction will be retried');
 								callback(err);
-								logger.warn(err+' (will retry in 100ms)');
 							} else {
 								async.each(karaList,function(data,callback){
 									stmt_delKara.run(data,function(err){
