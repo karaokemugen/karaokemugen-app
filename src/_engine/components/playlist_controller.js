@@ -1364,6 +1364,8 @@ module.exports = {
 	},
 	/**
 	* @function {Get a random kara_id}
+	* @param {number} playlist_id {Playlist ID for current playlist, to check against (not adding karaokes from that list)}
+	* @param {string} filter {text filter to get random numbers only from a set of karas.}
 	* @return {number} {Random kara_id}
 	*/
 	getRandomKara:function(playlist_id,filter) {
@@ -3036,18 +3038,36 @@ module.exports = {
 		logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...');
 		return new Promise(function(resolve,reject){
 			logger.info('[PLC] Dummy Plug : Adding 5 karas into current playlist');			
-			module.exports.addKaraToPlaylist(
-				[1,2,3,4,5],
-				'Dummy user',
-				playlist_id
-			)
-				.then(function(){
+			async.timesSeries(5,function(n,next) {				
+				module.exports.getRandomKara(playlist_id)
+					.then(function(kara_id) {
+						logger.debug('[PLC] Dummy Plug : random kara selected : '+kara_id);
+						module.exports.addKaraToPlaylist(
+							[kara_id],
+							'Dummy Plug System',
+							playlist_id
+						)				
+							.then(function() {
+								logger.info('[PLC] Dummy Plug : Added karaoke '+kara_id+' to sample playlist');
+								next();
+							})		
+							.catch(function(err){
+								logger.error('[PLC] Dummy Plug : '+err);
+								next(err);
+							});
+					})
+					.catch(function(err) {
+						logger.error('[PLC] Dummy Plug : failure to get random karaokes to add : '+err);
+						next(err);
+					});
+			},function(err){
+				if (err) {
+					reject(err);
+				} else {
+					logger.info('[PLC] Dummy Plug : activation complete');
 					resolve();
-				})
-				.catch(function(message){
-					logger.error('[PLC] Dummy Plug : '+message);
-					reject(message);
-				});			
+				}
+			});
 		});
 	},
 
