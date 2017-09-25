@@ -4,6 +4,7 @@ const jimp = require('jimp');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../_common/utils/logger.js');
+const sizeOf = require('image-size');
 
 module.exports = {
 	SYSPATH:null,
@@ -33,16 +34,21 @@ module.exports = {
 				logger.warn('[Background] Unable to find background file '+origBackgroundFile+', reverting to default one');
 				origBackgroundFile = path.resolve(module.exports.SYSPATH,'src/_player/assets/background.jpg');
 			}
-			
+
+			// Get dimensions of background image
+			var dimensions = sizeOf(origBackgroundFile);
+
 			var p1 = jimp.read(origBackgroundFile);
 			var p2 = jimp.read(qrcodeImageFile);
 
 
 			Promise.all([p1,p2])
 				.then(images => {
-
-					images[1].resize(255,255);
-					images[0].composite(images[1], 20, 900);
+					var QRCodeWidth = Math.floor(dimensions.width*0.10);
+					var QRCodeHeight = QRCodeWidth;
+					
+					images[1].resize(QRCodeWidth,QRCodeHeight);
+					images[0].composite(images[1], Math.floor(dimensions.width*0.015), Math.floor(dimensions.height*0.70));
 					fs.unlink(qrcodeImageFile,function(err){
 						if (err) {
 							logger.warn('[Player] Could not delete QR code image');
