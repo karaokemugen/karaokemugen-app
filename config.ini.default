@@ -29,6 +29,10 @@ EngineAllowViewBlacklistCriterias = 1
 ; Songs already played don't count towards this limit.
 EngineSongsPerPerson = 10000
 
+; Set the player's background.
+; Specify the filename, it will be searched in the app/backgrounds folder
+PlayerBackground = ""
+
 ; Set the player to a different screen
 ;0 = Main screen
 ;1 = Second screen
@@ -72,7 +76,7 @@ PathTemp = "app/temp"
 PathDBKarasFile = "karas.sqlite3"
 PathDBUserFile = "userdata.sqlite3"
 PathAltname = "app/data/series_altnames.csv"
-
+PathBackgrounds = "app/backgrounds"
 
 ; Video output driver for mpv
 ; If you have blue window issues in Windows, set mpvVideoOutput to "direct3d", otherwise don't touch this
