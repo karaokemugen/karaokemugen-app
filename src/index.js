@@ -3,11 +3,10 @@
  */
 
 const clc = require('cli-color');
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const ini = require('ini');
 const extend = require('extend');
-const mkdirp = require('mkdirp');
 const argv = require('minimist')(process.argv.slice(2));
 
 const logger = require('./_common/utils/logger.js');
@@ -95,7 +94,7 @@ if(SYSPATH) {
 	logger.info('[Launcher] Checking data folders');
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathKaras))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathKaras));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathKaras));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathKaras));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -103,7 +102,7 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathSubs))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathSubs));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathSubs));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathSubs));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -111,7 +110,7 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathVideos))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathVideos));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathVideos));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathVideos));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -119,7 +118,7 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathDB))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathDB));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathDB));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathDB));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -127,7 +126,7 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathTemp))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathTemp));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathTemp));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathTemp));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -135,12 +134,15 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathBin))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathBin));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathBin));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathBin));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
+
+	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
+	fs.copySync(path.resolve('src/_player/assets/input.conf'),path.resolve(SYSPATH,SETTINGS.PathTemp,'input.conf'),{ overwrite: true });
 
 	/**
 	 * Test if network ports are available
