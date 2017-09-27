@@ -20,6 +20,7 @@ var playlistToAdd;          // Int : id of playlist users are adding their kara 
 
 var socket;
 var settings;
+var i18n;
 
 /* promises */
 var scrollUpdating;
@@ -96,10 +97,35 @@ var plData;
 
 		// Setup
 		$.ajaxSetup({
-			error: function (jqXHR, textStatus, errorThrown) {
-				DEBUG && console.log(jqXHR.status + '  - ' + textStatus + '  - ' + errorThrown + ' : ' + jqXHR.responseText);
-				if(jqXHR.status != 0) {
-					displayMessage('warning','Error', jqXHR.responseText);
+			dataFilter: function(res) {
+				
+				res = JSON.parse(res);
+				var data = res.data;
+				if(res.code) {
+					// TODO recoder la fonction pour interpréter comme i18n server
+					var args = res.args;
+					console.log(res.code, args);
+					var errMessage = i18n.__(res.code, args);
+					console.log(errMessage);
+					displayMessage('warning','Error', errMessage);
+				}
+				
+				DEBUG && res.message && console.log(res.message);
+				return JSON.stringify(data);
+			},
+			error: function (res, textStatus, errorThrown) {
+				console.log(res.status + '  - ' + textStatus + '  - ' + errorThrown + ' : ' +  res.responseJSON.message);
+				if(res.status != 0 && res.status != 200) {
+					var errMessage = 'unknown';
+					if(res.responseJSON.code) {
+						var args = Object.keys(res.responseJSON.args).map(function(e) {
+							return res.responseJSON.args[e];
+						});
+						errMessage = i18n.__(res.responseJSON.code, args);
+					} else {
+						errMessage = res.responseJSON.message;
+					}
+					displayMessage('warning','Error', errMessage);
 				}
 			}
 		});
@@ -277,7 +303,7 @@ var plData;
 							playlistContentUpdating.done( function() {
 								scrollToKara(2, chosenOne); 
 							});
-							displayMessage('success', '', 'Kara ajouté à la playlist <i>' + playlistToAdd + '</i>.');
+							//displayMessage('success', '', 'Kara ajouté à la playlist <i>' + playlistToAdd + '</i>.');
 						});
 					},'lucky');
 				});
@@ -557,6 +583,14 @@ var plData;
 		});
 	}  
 
+	//Will make a request to /locales/en.json and then cache the results
+	i18n = new I18n({
+		//these are the default values, you can omit
+		directory: '/locales',
+		locale: 'fr',
+		extension: '.json'
+	});
+	
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
 		options.url = window.location.protocol + '//' + window.location.hostname + ':1339/api/v1/' + options.url;
@@ -1219,7 +1253,7 @@ var plData;
 	};
 
 	addKaraPublic = function(idKara, doneCallback, failCallback) {
-		var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
+		//var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
 		
 		$.ajax({ url: 'public/karas/' + idKara,
 			type: 'POST',
@@ -1234,7 +1268,7 @@ var plData;
 			}
 		}).done(function() {
 			if(doneCallback) doneCallback();
-			displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
+			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		}).fail(function() {
 			if(failCallback) failCallback();
 		});
