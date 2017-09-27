@@ -8,43 +8,46 @@ generator.run().then(function(response){
 });
 */
 const logger = require('../_common/utils/logger.js');
+
+var path = require('path');
+var sqlite3 = require('sqlite3').verbose();
+var fs = require('fs-extra');
+var ini = require('ini');
+var timestamp = require('unix-timestamp');
+var probe = require('../_common/modules/node-ffprobe');
+var L = require('lodash');
+var async = require('async');
+const uuidV4 = require('uuid/v4');
+var csv = require('csv-string');			
+const exec = require('child_process');
+const ffmpegPath = require('ffmpeg-downloader').path;
+const langsModule = require('langs');
+
 module.exports = {
 	db:null,
 	userdb:null,
 	SYSPATH: null,
 	SETTINGS: null,
 	run: function() {
+		// These are not resolved : they will be later on when extracting / reading ASS
+		const lyricsdir = module.exports.SETTINGS.PathSubs;	
+		const tmpdir = module.exports.SETTINGS.PathTemp;
+		const karas_dbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
+		const karas_userdbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBUserFile);
+		const series_altnamesfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathAltname);
+		const sqlCreateKarasDBfile = path.join(__dirname, '../_common/db/karas.sqlite3.sql');
+		const sqlCreateKarasDBViewAllfile = path.join(__dirname, '../_common/db/view_all.view.sql');
+
+		const karasdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
+		const videosdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
+
 		module.exports.onLog('success', 'Starting database generation');
 		return new Promise(function(resolve, reject) {
 			if (module.exports.SYSPATH == null) {
 				module.exports.onLog('error', 'SYSPATH is not defined');
 				reject();
 			}
-			var path = require('path');
-			var sqlite3 = require('sqlite3').verbose();
-			var fs = require('fs');
-			var ini = require('ini');
-			var timestamp = require('unix-timestamp');
-			var probe = require('../_common/modules/node-ffprobe');
-			var L = require('lodash');
-			var async = require('async');
-			const uuidV4 = require('uuid/v4');
-			var csv = require('csv-string');			
-			const exec = require('child_process');
-			const ffmpegPath = require('ffmpeg-downloader').path;
-			const langsModule = require('langs');
-			const karasdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
-			const videosdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
-
-			// These are not resolved : they will be later on when extracting / reading ASS
-			const lyricsdir = module.exports.SETTINGS.PathSubs;	
-			const tmpdir = module.exports.SETTINGS.PathTemp;
-			const karas_dbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
-			const karas_userdbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBUserFile);
-			const series_altnamesfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathAltname);
-			const sqlCreateKarasDBfile = path.join(__dirname, '../_common/db/karas.sqlite3.sql');
-			const sqlCreateKarasDBViewAllfile = path.join(__dirname, '../_common/db/view_all.view.sql');
-
+			
 			// Deleting karasdb first to start over.
 			if (fs.existsSync(karas_dbfile)) {
 				fs.unlinkSync(karas_dbfile);
@@ -133,6 +136,19 @@ module.exports = {
 			 * Creating arrays for use in sql statements
 			 */
 			var pCreateKaraArrays = new Promise((resolve,reject) => {
+				
+				// Backing up .kara folder first
+				if (fs.existsSync(karasdir+'_backup')) {
+					fs.removeSync(karasdir+'_backup');
+				}
+				
+				fs.mkdirsSync(karasdir+'_backup');
+				
+				fs.copySync(karasdir,karasdir+'_backup',{
+					overwrite: true,
+					preserveTimestamps: true
+				});
+				
 				/**
 				 * Get data from .kara files
 				 */
@@ -401,6 +417,10 @@ module.exports = {
 								.then(function(){
 									closeDatabaseConnection()
 										.then(function(){
+											//Generation is finished, cleaning up backup karas dir
+											if (fs.existsSync(karasdir+'_backup')) {
+												fs.removeSync(karasdir+'_backup');
+											}	
 											resolve();
 										})
 										.catch(function(err){
@@ -827,14 +847,13 @@ module.exports = {
 												reject();
 											} else {
 												module.exports.onLog('success', 'Database updated due to integrity checks');							module.exports.onLog('success', 'PLEASE VERIFY YOUR BLACKLIST CRITERIAS BEFORE YOUR NEXT KARAOKE SESSION');
-												resolve();
-											}
+												resolve();																				}
 										});
 									}
 								});
 							} else {
 								module.exports.onLog('success', 'No update needed to user database');
-								module.exports.onLog('success', 'Integrity checks complete!');
+								module.exports.onLog('success', 'Integrity checks complete!');								
 								resolve();	
 							}								
 						})
@@ -1290,6 +1309,21 @@ module.exports = {
 			}
 		});
 	},
-	onLog: function() {}
-
+	onLog: function() {},
+	cleanUp: function() {
+		// This function is called when the generation aborted.
+		// It cleans up its mess and restores the kara folder in case it's been corrupted.
+		const karas_dbfile = path.resolve(module.exports.SYSPATH, 
+			module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
+		const karasdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
+		
+		if (fs.existsSync(karas_dbfile)) {
+			fs.unlinkSync(karas_dbfile);
+		}
+		//Restoring kara folder		
+		fs.copySync(karasdir,karasdir+'_backup',{
+			overwrite: true,
+			preserveTimestamps: true
+		});
+	}
 };
