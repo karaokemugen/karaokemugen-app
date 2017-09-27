@@ -379,21 +379,34 @@ module.exports = {
 			if(module.exports.SETTINGS.PlayerNoBar==1) {
 				mpvOptions.push('--no-osd-bar');
 			}
+			
+			//On all platforms, check if we're using mpv at least version 0.20 or abort saying the mpv provided is too old. 
+			//Assume UNKNOWN is a compiled version, and thus the most recent one.
+			var resultatCmd = exec.spawnSync(module.exports.mpvBinary,['--version'], {encoding: 'utf8'});
+			if (resultatCmd.stderr != '') {
+				logger.error('[Player] '+resultatCmd.stderr);
+				logger.error('[Player] Unable to detect mpv version, exiting.');
+				process.exit(1);
+			} else {
+				var mpvVersion = resultatCmd.stdout.split(' ')[1];
+				logger.debug('[Player] mpv version : '+mpvVersion);
+				var mpvVersionSplit = mpvVersion.split('.');
+			}
 			//If we're on macOS, add --no-native-fs to get a real
 			// fullscreen experience on recent macOS versions.
+			if (parseInt(mpvVersionSplit[1]) < 25) {
+				// Version is too old. Abort.
+				logger.error('[Player] mpv version detected is too old ('+mpvVersion+'). Upgrade your mpv from http://mpv.io to at least version 0.25');
+				logger.error('[Player] mpv binary : '+module.exports.mpvBinary);
+				logger.error('[Player] Exiting due to obsolete mpv version');
+				process.exit(1);
+			}
 			if(module.exports.SETTINGS.os === 'darwin') {
-				var resultatCmd = exec.spawnSync(module.exports.mpvBinary,['--version'], {encoding: 'utf8'});
-				if (resultatCmd.stderr != '') {
-					logger.error('[Player] '+resultatCmd.stderr);
-				} else {
-					var mpvVersion = resultatCmd.stdout.split(' ')[1];
-					logger.debug('[Player] mpv version : '+mpvVersion);
-					var mpvVersionSplit = mpvVersion.split('.');
-					if (parseInt(mpvVersionSplit[1]) > 26) {
-						mpvOptions.push('--no-native-fs');
-					}
+				if (parseInt(mpvVersionSplit[1]) > 26) {
+					mpvOptions.push('--no-native-fs');
 				}
 			}
+
 
 			logger.debug('[Player] mpv options : '+mpvOptions);
 			logger.debug('[Player] mpv binary : '+module.exports.mpvBinary);
