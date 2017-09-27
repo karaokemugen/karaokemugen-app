@@ -1,4 +1,4 @@
-var sqlite3 = require('sqlite')
+var db = require('sqlite');
 var path = require('path');
 var fs = require('fs');
 const logger = require('../../_common/utils/logger.js');
@@ -25,19 +25,24 @@ module.exports = {
 			var userDB_Test = new Promise(function(resolve,reject){
 				if(!fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))) {
 					logger.warn('[DBI] User database not found');
-					var db = new sqlite3.Database(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile));
-					var sqlCreateUserDB = fs.readFileSync(path.join(__dirname,'../../_common/db/userdata.sqlite3.sql'),'utf-8');
-					db.exec(sqlCreateUserDB)
+					db.open(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))
 						.then(() => {
-							db.close();
-							logger.info('[DBI] User database created');
-							resolve();							
+							var sqlCreateUserDB = fs.readFileSync(path.join(__dirname,'../../_common/db/userdata.sqlite3.sql'),'utf-8');
+							db.exec(sqlCreateUserDB)
+								.then(() => {
+									db.close();
+									logger.info('[DBI] User database created');
+									resolve();							
+								})
+								.catch((err) => {
+									logger.error('[DBI] Failed creating user database : '+err);
+									db.close();
+									reject(err);
+								});					
 						})
 						.catch((err) => {
-							logger.error('[DBI] Failed creating user database : '+err);
-							db.close();
 							reject(err);
-						});					
+						});
 				} else {
 					resolve();
 				}
@@ -67,43 +72,41 @@ module.exports = {
 
 			Promise.all([ userDB_Test, karasDB_Test ])
 				.then(function() {
-					module.exports._db_handler = new sqlite3.Database(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))
+					module.exports._db_handler = db;
+					module.exports._db_handler.open(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))
 						.then(() => {
-							module.exports._db_handler.serialize().then(function() {
-								module.exports._db_handler.run('PRAGMA foreign_keys = ON;')
-									.catch((err) => {
-										logger.error('[DBI] Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
-										process.exit(1);
-									});
-								module.exports._db_handler.run('ATTACH DATABASE "' + path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile) + '" as karasdb;')
-									.then(() => {
-										module.exports._ready = true;
-										module.exports.getStats()
-											.then(function(stats) {
-												logger.info('[DBI] Karaoke count   : ' + stats.totalcount);								
-												logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-												logger.info('[DBI] Total series    : ' + stats.totalseries);
-												logger.info('[DBI] Total languages : ' + stats.totallanguages);
-												logger.info('[DBI] Total artists   : ' + stats.totalartists);
-												logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
-											})
-											.catch(function(err) {
-												logger.warn('[DBI] Failed to fetch statistics : ' + err);
-											});
-										logger.info('[DBI] Database interface is READY');
-										// Trace event. DO NOT UNCOMMENT
-										// unless you want to flood your console.
-										/*module.exports._db_handler.on('trace',function(sql){
+							module.exports._db_handler.run('PRAGMA foreign_keys = ON;')
+								.catch((err) => {
+									logger.error('[DBI] Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
+									process.exit(1);
+								});
+							module.exports._db_handler.run('ATTACH DATABASE "' + path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile) + '" as karasdb;')
+								.then(() => {
+									module.exports._ready = true;
+									module.exports.getStats()
+										.then(function(stats) {
+											logger.info('[DBI] Karaoke count   : ' + stats.totalcount);								
+											logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
+											logger.info('[DBI] Total series    : ' + stats.totalseries);
+											logger.info('[DBI] Total languages : ' + stats.totallanguages);
+											logger.info('[DBI] Total artists   : ' + stats.totalartists);
+											logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
+										})
+										.catch(function(err) {
+											logger.warn('[DBI] Failed to fetch statistics : ' + err);
+										});
+									logger.info('[DBI] Database interface is READY');
+									// Trace event. DO NOT UNCOMMENT
+									// unless you want to flood your console.
+									/*module.exports._db_handler.on('trace',function(sql){
 												console.log(sql);
 											});*/
-										resolve();						
-									})
-									.catch((err) => {
-										logger.error('[DBI] Unable to attach karaoke database : '+err);
-										process.exit(1);
-									});
-							}
-							);
+									resolve();						
+								})
+								.catch((err) => {
+									logger.error('[DBI] Unable to attach karaoke database : '+err);
+									process.exit(1);
+								});
 						})
 						.catch((err) => {
 							logger.error('[DBI] Loading user database failed : '+err);
@@ -446,52 +449,52 @@ module.exports = {
 					$playlistcontent_id: kara.playlistcontent_id
 				});
 			});
-			module.exports._db_handler.serialize(function() {		
-				async.retry(
-					{ 
-						times: 5,
-						interval: 100,
-					},
-					function(callback){
-						module.exports._db_handler.run('begin transaction')
-							.then(() => {
-								async.each(karaList,function(data,callback){
-									stmt_updateKaraPosition.run(data)
+			
+			async.retry(
+				{ 
+					times: 5,
+					interval: 100,
+				},
+				function(callback){
+					module.exports._db_handler.run('begin transaction')
+						.then(() => {
+							async.each(karaList,function(data,callback){
+								stmt_updateKaraPosition.run(data)
+									.then(() => {
+										callback();
+									})
+									.catch((err) => {
+										logger.error('Failed to reorder karaoke in playlist : '+err);
+										callback(err);					
+									});
+							}, function(err){
+								if (err) {
+									callback('Failed to reorder one karaoke to playlist : '+err);
+								} else {
+									module.exports._db_handler.run('commit')
 										.then(() => {
+											stmt_updateKaraPosition.finalize();
 											callback();
 										})
 										.catch((err) => {
-											logger.error('Failed to reorder karaoke in playlist : '+err);
-											callback(err);					
-										});
-								}, function(err){
-									if (err) {
-										callback('Failed to reorder one karaoke to playlist : '+err);
-									} else {
-										module.exports._db_handler.run('commit')
-											.then(() => {
-												stmt_updateKaraPosition.finalize();
-												callback();
-											})
-											.catch((err) => {
-												callback(err);
-											});								
-									}
-								});		
-							})
-							.catch((err) => {
-								logger.error('[DBI] Failed to begin transaction : '+err);
-								logger.error('[DBI] Transaction will be retried');
-								callback(err);
-							}); 					
-					},function(err){
-						if (err){
-							reject(err);
-						} else {
-							resolve();
-						}
-					});
-			});						
+											callback(err);
+										});								
+								}
+							});		
+						})
+						.catch((err) => {
+							logger.error('[DBI] Failed to begin transaction : '+err);
+							logger.error('[DBI] Transaction will be retried');
+							callback(err);
+						}); 					
+				},function(err){
+					if (err){
+						reject(err);
+					} else {
+						resolve();
+					}
+				});
+			
 		});
 	},
 	/**
@@ -537,18 +540,17 @@ module.exports = {
 				sqlGetPlaylistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_contents.sql'),'utf-8');
 			}
 			
-			module.exports._db_handler.serialize(function(){
-				module.exports._db_handler.all(sqlGetPlaylistContents,
-					{
-						$playlist_id: playlist_id
-					})
-					.then((playlist) => {
-						resolve(playlist);
-					})
-					.catch((err) => {
-						reject('Failed to get contents of playlist '+playlist_id+' : '+err);
-					});
-			});
+			module.exports._db_handler.all(sqlGetPlaylistContents,
+				{
+					$playlist_id: playlist_id
+				})
+				.then((playlist) => {
+					resolve(playlist);
+				})
+				.catch((err) => {
+					reject('Failed to get contents of playlist '+playlist_id+' : '+err);
+				});
+			
 		});
 	},	
 	/**
@@ -1635,60 +1637,54 @@ module.exports = {
 					$pos: kara.pos,					
 				});
 			});	
-			module.exports._db_handler.serialize()
-				.then(() => {
-					//We retry the transaction several times because when two transactions overlap there can be an error.
-					async.retry(
-						{ 
-							times: 5,
-							interval: 100,
-						},
-						function(callback){
-							module.exports._db_handler.run('begin transaction')
-								.then(() => {
-									async.each(karaList,function(data,callback){
-										stmt_addKara.run(data)
-											.then(() => {
-												callback();
-											})
-											.catch((err) => {
-												logger.error('Failed to add karaoke to playlist : '+err);				
-												callback(err);
-											});										
-									}, function(err){
-										if (err) {
-											logger.error('Failed to add one karaoke to playlist : '+err);
-											callback(err);
-										} else {
-											module.exports._db_handler.run('commit')
-												.then(() => {
-													// Close all statements just to be sure.
-													stmt_addKara.finalize();
-													callback();	
-												})
-												.catch((err) => {
-													callback(err);
-												});
-										}
-									});
-								})
-								.catch((err) => {
-									logger.error('[DBI] Failed to begin transaction : '+err);
-									logger.error('[DBI] Transaction will be retried');
+			//We retry the transaction several times because when two transactions overlap there can be an error.
+			async.retry(
+				{ 
+					times: 5,
+					interval: 100,
+				},
+				function(callback){
+					module.exports._db_handler.run('begin transaction')
+						.then(() => {
+							async.each(karaList,function(data,callback){
+								stmt_addKara.run(data)
+									.then(() => {
+										callback();
+									})
+									.catch((err) => {
+										logger.error('Failed to add karaoke to playlist : '+err);				
+										callback(err);
+									});										
+							}, function(err){
+								if (err) {
+									logger.error('Failed to add one karaoke to playlist : '+err);
 									callback(err);
-								});
-						},function(err){
-							if (err){
-								reject(err);
-							} else {
-								resolve();
-							}
-						});					
-				})
-				.catch((err) => {
-					logger.error('[DBI] Failed to serialize queries : '+err);
-					reject(err);
+								} else {
+									module.exports._db_handler.run('commit')
+										.then(() => {
+											// Close all statements just to be sure.
+											stmt_addKara.finalize();
+											callback();	
+										})
+										.catch((err) => {
+											callback(err);
+										});
+								}
+							});
+						})
+						.catch((err) => {
+							logger.error('[DBI] Failed to begin transaction : '+err);
+							logger.error('[DBI] Transaction will be retried');
+							callback(err);
+						});
+				},function(err){
+					if (err){
+						reject(err);
+					} else {
+						resolve();
+					}
 				});					
+				
 		});
 	},
 	/**
@@ -1755,56 +1751,55 @@ module.exports = {
 					$playlistcontent_id: kara
 				});
 			});		
-			module.exports._db_handler.serialize(function() {		
-				//We retry the transaction several times because when two transactions overlap there can be an error.
-				//Example two delete or add kara at the very same time.
-				async.retry(
-					{
-						times: 5,
-						interval: 100
-					},
-					function(callback){
-						module.exports._db_handler.run('begin transaction')
-							.then(() => {
-								async.each(karaList,function(data,callback){
-									stmt_delKara.run(data)
+			//We retry the transaction several times because when two transactions overlap there can be an error.
+			//Example two delete or add kara at the very same time.
+			async.retry(
+				{
+					times: 5,
+					interval: 100
+				},
+				function(callback){
+					module.exports._db_handler.run('begin transaction')
+						.then(() => {
+							async.each(karaList,function(data,callback){
+								stmt_delKara.run(data)
+									.then(() => {
+										callback();
+									})
+									.catch((err) => {
+										logger.err('Failed to delete karaoke to playlist : '+err);			
+										callback(err);					
+									});
+							}, function(err){
+								if (err) {
+									logger.err('Failed to add one karaoke to playlist : '+err);
+									callback(err);
+								} else {
+									module.exports._db_handler.run('commit')
 										.then(() => {
+											// Close all statements just to be sure.
+											stmt_delKara.finalize();
 											callback();
 										})
 										.catch((err) => {
-											logger.err('Failed to delete karaoke to playlist : '+err);			
-											callback(err);					
+											callback(err);
 										});
-								}, function(err){
-									if (err) {
-										logger.err('Failed to add one karaoke to playlist : '+err);
-										callback(err);
-									} else {
-										module.exports._db_handler.run('commit')
-											.then(() => {
-												// Close all statements just to be sure.
-												stmt_delKara.finalize();
-												callback();
-											})
-											.catch((err) => {
-												callback(err);
-											});
-									}
-								});														
-							})
-							.catch((err) => {
-								logger.error('[DBI] Failed to begin transaction : '+err);
-								logger.error('[DBI] Transaction will be retried');
-								callback(err);
+								}
 							});														
-					}, function(err){
-						if (err) {
-							reject(err);
-						} else {
-							resolve();
-						}
-					});								
-			});							
+						})
+						.catch((err) => {
+							logger.error('[DBI] Failed to begin transaction : '+err);
+							logger.error('[DBI] Transaction will be retried');
+							callback(err);
+						});														
+				}, function(err){
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
+				});								
+
 		});
 	},
 	/**
