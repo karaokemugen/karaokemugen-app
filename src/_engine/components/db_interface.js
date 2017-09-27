@@ -439,8 +439,7 @@ module.exports = {
 			}
 			var sqlUpdateKaraPosition = fs.readFileSync(path.join(__dirname,'../../_common/db/update_plc_set_pos.sql'),'utf-8');
 
-			var newpos = 0;
-			var stmt_updateKaraPosition = module.exports._db_handler.prepare(sqlUpdateKaraPosition);
+			var newpos = 0;			
 			var karaList = [];
 			playlist.forEach(function(kara) {				
 				newpos++;
@@ -459,21 +458,23 @@ module.exports = {
 					module.exports._db_handler.run('begin transaction')
 						.then(() => {
 							async.each(karaList,function(data,callback){
-								stmt_updateKaraPosition.run(data)
-									.then(() => {
-										callback();
-									})
-									.catch((err) => {
-										logger.error('Failed to reorder karaoke in playlist : '+err);
-										callback(err);					
+								module.exports._db_handler.prepare(sqlUpdateKaraPosition)
+									.then((stmt) => {
+										stmt.run(data)
+											.then(() => {
+												callback();
+											})
+											.catch((err) => {
+												logger.error('Failed to reorder karaoke in playlist : '+err);
+												callback(err);					
+											});
 									});
 							}, function(err){
 								if (err) {
 									callback('Failed to reorder one karaoke to playlist : '+err);
 								} else {
 									module.exports._db_handler.run('commit')
-										.then(() => {
-											stmt_updateKaraPosition.finalize();
+										.then(() => {	
 											callback();
 										})
 										.catch((err) => {
@@ -1625,7 +1626,6 @@ module.exports = {
 			//We receive an array of kara requests, we need to add them to a statement.
 			//Even for one kara.				
 			var sqlAddKaraToPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_playlist.sql'),'utf-8');
-			var stmt_addKara = module.exports._db_handler.prepare(sqlAddKaraToPlaylist);
 			var karaList = [];
 			karas.forEach(function(kara) {				
 				karaList.push({
@@ -1647,14 +1647,17 @@ module.exports = {
 					module.exports._db_handler.run('begin transaction')
 						.then(() => {
 							async.each(karaList,function(data,callback){
-								stmt_addKara.run(data)
-									.then(() => {
-										callback();
-									})
-									.catch((err) => {
-										logger.error('Failed to add karaoke to playlist : '+err);				
-										callback(err);
-									});										
+								module.exports._db_handler.prepare(sqlAddKaraToPlaylist)
+									.then((stmt) => {
+										stmt.run(data)
+											.then(() => {										callback();
+											})
+											.catch((err) => {
+												logger.error('Failed to add karaoke to playlist : '+err);				
+												callback(err);
+											});										
+									});
+								
 							}, function(err){
 								if (err) {
 									logger.error('Failed to add one karaoke to playlist : '+err);
@@ -1662,8 +1665,6 @@ module.exports = {
 								} else {
 									module.exports._db_handler.run('commit')
 										.then(() => {
-											// Close all statements just to be sure.
-											stmt_addKara.finalize();
 											callback();	
 										})
 										.catch((err) => {
@@ -1745,7 +1746,7 @@ module.exports = {
 			}
 
 			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
-			var stmt_delKara = module.exports._db_handler.prepare(sqlRemoveKaraFromPlaylist);var karaList = [];
+			var karaList = [];
 			karas.forEach(function(kara) {
 				karaList.push({
 					$playlistcontent_id: kara
@@ -1762,14 +1763,18 @@ module.exports = {
 					module.exports._db_handler.run('begin transaction')
 						.then(() => {
 							async.each(karaList,function(data,callback){
-								stmt_delKara.run(data)
-									.then(() => {
-										callback();
-									})
-									.catch((err) => {
-										logger.err('Failed to delete karaoke to playlist : '+err);			
-										callback(err);					
+								module.exports._db_handler.prepare(sqlRemoveKaraFromPlaylist)
+									.then((stmt) => {
+										stmt.run(data)
+											.then(() => {
+												callback();
+											})
+											.catch((err) => {
+												logger.err('Failed to delete karaoke to playlist : '+err);			
+												callback(err);					
+											});
 									});
+								
 							}, function(err){
 								if (err) {
 									logger.err('Failed to add one karaoke to playlist : '+err);
@@ -1778,7 +1783,6 @@ module.exports = {
 									module.exports._db_handler.run('commit')
 										.then(() => {
 											// Close all statements just to be sure.
-											stmt_delKara.finalize();
 											callback();
 										})
 										.catch((err) => {
