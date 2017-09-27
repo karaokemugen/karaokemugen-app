@@ -329,6 +329,7 @@ module.exports = {
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
 				'--volume=100',
+				'--input-conf='+path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'input.conf'),
 			];
 			if (module.exports.SETTINGS.PlayerPIP) {
 				mpvOptions.push('--autofit='+module.exports.SETTINGS.PlayerPIPSize+'%x'+module.exports.SETTINGS.PlayerPIPSize+'%');
