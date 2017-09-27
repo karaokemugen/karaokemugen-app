@@ -12,6 +12,22 @@ function numberTest(element) {
 	}
 }
 
+function errMessage(code,message,args) {
+	return {
+		code: code,
+		args: args,
+		message: message
+	};
+}
+
+function OKMessage(data,code,args) {
+	return {
+		code: code,
+		args: args,		
+		data: data,		
+	};
+}
+
 module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
@@ -128,7 +144,7 @@ module.exports = {
 
 					module.exports.onShutdown()
 						.then(function(){
-							res.json('Shutdown in progress.');
+							res.json('Shutdown in progress');
 						})
 						.catch(function(err){
 							logger.error(err);
@@ -141,12 +157,12 @@ module.exports = {
 					// Get list of playlists
 					module.exports.onPlaylists()
 						.then(function(playlists){
-							res.json(playlists);
+							res.json(OKMessage(playlists));
 						})
 						.catch(function(err){
 							logger.error(err);
-							res.statusCode = 500;
-							res.json(err);
+							res.statusCode = 500;							
+							res.json(errMessage('PL_LIST_ERROR',err));
 						});
 				})
 				.post(function(req,res){
@@ -196,17 +212,16 @@ module.exports = {
 									.then(function(new_playlist){
 										module.exports.emitEvent('playlistsUpdated');
 										res.statusCode = 201;
-										res.json(new_playlist);
+										res.json(OKMessage(new_playlist,'PL_CREATED',req.body.name));
 									})
 									.catch(function(err){
 										logger.error(err);
-										res.statusCode = 500;
-										res.json(err);
+										res.statusCode = 500;								res.json(errMessage('PL_CREATE_ERROR',err,req.body.name));
 									});
 							} else {
 								// Errors detected
 								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
+								res.statusCode = 400;								
 								res.json(result.mapped());
 							}
 						});
@@ -219,13 +234,12 @@ module.exports = {
 
 					module.exports.onPlaylistSingleInfo(playlist_id)
 						.then(function(playlist){
-							if (playlist == []) res.statusCode = 404;
-							res.json(playlist);
+							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_ERROR',err,req.params.pl_id));
 						});
 				})
 				.put(function(req,res){
@@ -257,12 +271,12 @@ module.exports = {
 								module.exports.onPlaylistSingleEdit(req.params.pl_id,req.body)
 									.then(function(){
 										module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-										res.json('Playlist '+req.params.pl_id+' updated');
+										res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));	
 									})
 									.catch(function(err){
 										logger.error(err);
 										res.statusCode = 500;
-										res.json(err);
+										res.json(errMessage('PL_UPDATE_ERROR',err,req.params.pl_id));
 									});
 							} else {
 								// Errors detected
@@ -272,17 +286,16 @@ module.exports = {
 							}
 						});
 				})
-				.delete(function(req,res){
-					var playlist_id = req.params.pl_id;
-					module.exports.onPlaylistSingleDelete(playlist_id)
+				.delete(function(req,res){					
+					module.exports.onPlaylistSingleDelete(req.params.pl_id)
 						.then(function(){
 							module.exports.emitEvent('playlistsUpdated');
-							res.json('Deleted '+playlist_id);
+							res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_DELETE_ERROR',err,req.params.pl_id));
 						});
 				});
 
@@ -294,11 +307,12 @@ module.exports = {
 						.then(function(){
 							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
 							module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
-							res.json('Playlist '+req.params.pl_id+' emptied');
+							res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));							
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
+							res.json(errMessage('PL_EMPTY_ERROR',err,req.params.pl_id));
 							res.json(err);
 						});
 				});
@@ -310,12 +324,12 @@ module.exports = {
 						.then(function(){
 							module.exports.emitEvent('blacklistUpdated');
 							module.exports.emitEvent('whitelistUpdated');
-							res.json('Whitelist emptied');
+							res.json(OKMessage(null,'WL_EMPTIED'));							
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('WL_EMPTY_ERROR',err));						
 						});
 				});
 			routerAdmin.route('/blacklist/criterias/empty')
@@ -325,12 +339,12 @@ module.exports = {
 					module.exports.onBlacklistEmpty()
 						.then(function(){
 							module.exports.emitEvent('blacklistUpdated');
-							res.json('Blacklist criterias emptied');
+							res.json(OKMessage(null,'BLC_EMPTIED'));							
 						})
 						.catch(function(err){
 							logger.error(err);
-							res.statusCode = 500;
-							res.json(err);
+							res.statusCode = 500;							
+							res.json(errMessage('BLC_EMPTY_ERROR',err));
 						});
 				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
@@ -341,12 +355,12 @@ module.exports = {
 						.then(function(){
 							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
 							module.exports.emitEvent('playlistsUpdated',req.params.pl_id);
-							res.json('Playlist '+req.params.pl_id+' is now current');
+							res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_SET_CURRENT_ERROR',err,req.params.pl_id));
 						});
 				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
@@ -357,12 +371,12 @@ module.exports = {
 						.then(function(){
 							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
 							module.exports.emitEvent('playlistsUpdated');
-							res.json('Playlist '+req.params.pl_id+' is now public');
+							res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_SET_PUBLIC_ERROR',err,req.params.pl_id));
 						});
 				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
@@ -386,14 +400,13 @@ module.exports = {
 					}
 					var seenFromUser = false;
 					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,to)
-						.then(function(playlist){
-							if (playlist == []) res.statusCode = 404;
-							res.json(playlist);
+						.then(function(playlist){							
+							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_SONGS_ERROR',err,req.params.pl_id));
 						});
 				})
 				.post(function(req,res){
@@ -427,14 +440,18 @@ module.exports = {
 									.then(function(result){
 										module.exports.emitEvent('playlistInfoUpdated',result.playlist_id);
 										module.exports.emitEvent('playlistContentsUpdated',result.playlist_id);
-										res.statusCode = 201;
-										if (req.body.pos === undefined) var pos = 'last';
-										res.json('Karaoke '+result.karaAdded+' added by '+req.body.requestedby+' to playlist '+playlist_id+' at position '+pos);
+										res.statusCode = 201;		
+										var args = {
+											kara_ids: req.body.kara_id,
+											playlist: playlist_id,
+											requester: req.body.requestedby
+										};
+										res.json(OKMessage(null,'PL_SONG_ADDED',args));
 									})
 									.catch(function(err){
 										logger.error(err);
 										res.statusCode = 500;
-										res.json(err);
+										res.json(errMessage('PL_ADD_SONG_ERROR',err,playlist_id));										
 									});
 							} else {
 								// Errors detected
@@ -468,12 +485,16 @@ module.exports = {
 										module.exports.emitEvent('playlistInfoUpdated',pl_id);
 										module.exports.emitEvent('playlistContentsUpdated',pl_id);
 										res.statusCode = 201;
-										res.json('Playlist content(s) '+req.body.plc_id+' copied to playlist '+req.params.pl_id+' at position '+req.body.pos);
+										var args = {
+											kara_ids: req.body.plc_id,
+											playlist: req.params.pl_id					
+										};
+										res.json(OKMessage(null,'PL_SONG_MOVED',args));
 									})
 									.catch(function(err){
 										logger.error(err);
 										res.statusCode = 500;
-										res.json(err);
+										res.json(errMessage('PL_MOVE_SONG_ERROR',err,req.params.pl_id));
 									});
 							} else {
 								// Errors detected
@@ -503,12 +524,12 @@ module.exports = {
 										module.exports.emitEvent('playlistInfoUpdated',pl_id);
 										module.exports.emitEvent('playlistContentsUpdated',pl_id);
 										res.statusCode = 200;
-										res.json('Playlist content(s) '+req.body.plc_id+' deleted');
+										res.json(OKMessage(null,'PL_SONG_DELETED',pl_id));
 									})
 									.catch(function(err){
 										logger.error(err);
 										res.statusCode = 500;
-										res.json(err);
+										res.json(errMessage('PL_DELETE_SONG_ERROR',err,req.params.pl_id));
 									});
 							} else {
 								// Errors detected
@@ -523,12 +544,12 @@ module.exports = {
 				.get(function(req,res){
 					module.exports.onPLCInfo(req.params.plc_id,req.query.lang)
 						.then(function(kara){
-							res.json(kara);
+							res.json(OKMessage(kara));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_CONTENT_ERROR',err,req.params.plc_id));
 						});
 				})
 				.put(function(req,res){
@@ -553,13 +574,14 @@ module.exports = {
 								if (req.body.pos != undefined) req.sanitize('pos').toInt();
 								if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
 								module.exports.onPlaylistSingleKaraEdit(req.params.plc_id,req.body.pos,req.body.flag_playing)
-									.then(function(pl_id){
-										res.json('PLC '+req.params.plc_id+' edited in playlist '+pl_id);
+									.then(function(){
+										// pl_id is returned from this promise
+										res.json(OKMessage('PL_CONTENT_MODIFIED',req.params.plc_id));
 									})
 									.catch(function(err){
 										logger.error(err);
 										res.statusCode = 500;
-										res.json(err);
+										res.json(errMessage('PL_MODIFY_CONTENT_ERROR',err,req.params.plc_id));
 									});
 							} else {
 								// Errors detected
@@ -572,7 +594,7 @@ module.exports = {
 
 			routerAdmin.route('/settings')
 				.get(function(req,res){
-					res.json(module.exports.SETTINGS);
+					res.json(OKMessage(module.exports.SETTINGS));
 				})
 				.put(function(req,res){
 					//Update settings
@@ -689,12 +711,12 @@ module.exports = {
 							module.exports.onSettingsUpdate(SETTINGS)
 								.then(function(publicSettings){
 									module.exports.emitEvent('settingsUpdated',publicSettings);
-									res.json('Settings updated');
+									res.json(OKMessage(module.export.SETTINGS,'SETTINGS_UPDATED'));
 								})
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(err);
+									res.json(errMessage('SETTINGS_UPDATE_ERROR',err));
 								});
 						} else {
 							// Errors detected
@@ -718,7 +740,8 @@ module.exports = {
 							notEmpty: true,
 						},
 						'destination': {
-							in: 'body'
+							in: 'body',
+							optional: true
 						}
 					});
 
@@ -729,19 +752,19 @@ module.exports = {
 								module.exports.emitEvent('adminMessage', req.body );
 								if (req.body.destination === 'users') {
 									res.statusCode = 200;
-									res.json('Your message has been displayed to the users');
+									res.json(OKMessage(req.body,'MESSAGE_SENT'));
 								}
 							}
 							if(req.body.destination !== 'users') {
 								module.exports.onMessage(req.body.message,req.body.duration)
 									.then(function(){
 										res.statusCode = 200;
-										res.json('Your message has been displayed');
+										res.json(OKMessage(req.body,'MESSAGE_SENT'));
 									})
 									.catch(function(err){
 										logger.error(err);
 										res.statusCode = 500;
-										res.json(err);
+										res.json(errMessage('MESSAGE_SEND_ERROR',err));
 									});
 							}
 						} else {
@@ -759,12 +782,12 @@ module.exports = {
 					var filter = req.query.filter;
 					module.exports.onWhitelist(filter,lang)
 						.then(function(karas){
-							res.json(karas);
+							res.json(OKMessage(karas));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('WL_VIEW_ERROR',err));
 						});
 				})
 				.post(function(req,res){
@@ -788,12 +811,12 @@ module.exports = {
 									module.exports.emitEvent('whitelistUpdated');
 									module.exports.emitEvent('blacklistUpdated');
 									res.statusCode = 201;
-									res.json('Karaoke '+req.body.kara_id+' added to whitelist with reason \''+req.body.reason+'\'');
+									res.json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));									
 								})
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(err);
+									res.json(errMessage('WL_ADD_SONG_ERROR',err));
 								});
 						} else {
 							// Errors detected
@@ -810,12 +833,12 @@ module.exports = {
 					var filter = req.query.filter;
 					module.exports.onBlacklist(filter,lang)
 						.then(function(karas){
-							res.json(karas);
+							res.json(OKMessage(karas));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('BL_VIEW_ERROR',err));
 						});
 				});
 			routerAdmin.route('/whitelist/:wl_id([0-9]+)')
@@ -826,12 +849,12 @@ module.exports = {
 						.then(function(){
 							module.exports.emitEvent('whitelistUpdated');
 							module.exports.emitEvent('blacklistUpdated');
-							res.json('Deleted WLID '+req.params.wl_id);
+							res.json(OKMessage(req.params.wl_id,'WL_SONG_DELETED',req.params.wl_id));							
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('WL_DELETE_SONG_ERROR',err,req.params.wl_id));
 						});
 				})
 				.put(function(req,res){
@@ -847,12 +870,12 @@ module.exports = {
 							module.exports.onWhitelistSingleKaraEdit(req.params.wl_id,req.body.reason)
 								.then(function(){
 									module.exports.emitEvent('whitelistUpdated');
-									res.json('Whitelist item '+req.params.wl_id+' edited with reason \''+req.body.reason+'\'');
+									res.json(OKMessage(null,'WL_SONG_UPDATED',req.params.wl_id));									
 								})
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(err);
+									res.json(errMessage('WL_UPDATE_SONG_ERROR',err,req.params.wl_id));
 								});
 						} else {
 							// Errors detected
@@ -868,12 +891,12 @@ module.exports = {
 					//Get list of blacklisted karas
 					module.exports.onBlacklistCriterias()
 						.then(function(blc){
-							res.json(blc);
+							res.json(OKMessage(blc));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('BLC_VIEW_ERROR',err));
 						});
 				})
 				.post(function(req,res){
@@ -896,12 +919,12 @@ module.exports = {
 								.then(function(){
 									module.exports.emitEvent('blacklistUpdated');
 									res.statusCode = 201;
-									res.json('Blacklist criteria type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' added');
+									res.json(OKMessage(req.body,'BLC_ADDED'));
 								})
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(err);
+									res.json(errMessage('BLC_ADD_ERROR',err));
 								});
 						} else {
 							// Errors detected
@@ -918,12 +941,12 @@ module.exports = {
 					module.exports.onBlacklistCriteriaDelete(req.params.blc_id)
 						.then(function(){
 							module.exports.emitEvent('blacklistUpdated');
-							res.json('Deleted BLCID '+req.params.blc_id);
+							res.json(OKMessage(req.params.blc_id,'BLC_DELETED',req.params.blc_id));							
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('BLC_DELETE_ERROR',err,req.params.blc_id));	
 						});
 				})
 				.put(function(req,res){
@@ -945,12 +968,12 @@ module.exports = {
 							module.exports.onBlacklistCriteriaEdit(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value)
 								.then(function(){
 									module.exports.emitEvent('blacklistUpdated');
-									res.json('Blacklist criteria '+req.params.blc_id+' type '+req.body.blcriteria_type+' with value \''+req.body.blcriteria_value+'\' edited');
+									res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
 								})
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(err);
+									res.json(errMessage('BLC_UPDATE_ERROR',err,req.params.blc_id));
 								});
 						} else {
 							// Errors detected
@@ -997,12 +1020,12 @@ module.exports = {
 						if (result.isEmpty()) {
 							module.exports.onPlayerCommand(req.body.command,req.body.options)
 								.then(function(){
-									res.json('Command '+req.body.command+' executed');
+									res.json(OKMessage(req.body,'COMMAND_SENT'));			
 								})
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(err);
+									res.json(errMessage('COMMAND_SEND_ERROR',err));
 								});
 						} else {
 							// Errors detected
@@ -1020,12 +1043,12 @@ module.exports = {
 					module.exports.onPlaylistExport(req.params.pl_id)
 						.then(function(playlist){
 							// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
-							res.send(playlist);
+							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_EXPORT_ERROR',err,req.params.pl_id));
 						});
 				});
 			routerAdmin.route('/playlists/import')
@@ -1051,13 +1074,13 @@ module.exports = {
 										response.unknownKaras = result.karasUnknown;
 									}
 									module.exports.emitEvent('playlistsUpdated');
-									res.json(response);
+									res.json(OKMessage(response,'PL_IMPORTED',result.playlist_id));
 
 								})
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(err);
+									res.json(errMessage('PL_IMPORT_ERROR',err,req.params.pl_id));
 								});
 						} else {
 							// Errors detected
@@ -1074,12 +1097,12 @@ module.exports = {
 					module.exports.onPlaylistShuffle(req.params.pl_id)
 						.then(function(){
 							module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
-							res.json('Playlist '+req.params.pl_id+' shuffled');
+							res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));							
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_SHUFFLE_ERROR',err));
 						});
 				});
 
@@ -1092,11 +1115,11 @@ module.exports = {
 					var seenFromUser = true;
 					module.exports.onPlaylists(seenFromUser)
 						.then(function(playlists){
-							res.json(playlists);
+							res.json(OKMessage(playlists));
 						})
 						.catch(function(err){
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_LIST_ERROR',err));	
 						});
 				});
 			routerPublic.route('/playlists/:pl_id([0-9]+)')
@@ -1104,24 +1127,21 @@ module.exports = {
 					// Get playlist, only if visible
 					//Access :pl_id by req.params.pl_id
 					// This get route gets infos from a playlist
-					var playlist_id = req.params.pl_id;
 					var seenFromUser = true;
-					module.exports.onPlaylistSingleInfo(playlist_id,seenFromUser)
-						.then(function(playlist){
-							if (playlist == null) res.statusCode = 404;
-							res.json(playlist);
+					module.exports.onPlaylistSingleInfo(req.params.pl_id,seenFromUser)
+						.then(function(playlist){							
+							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_ERROR',err,req.params.pl_id));
 						});
 				});
 			routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
 				.get(function(req,res){
 					// Get playlist contents, only if visible
-					//Access :pl_id by req.params.pl_id
-					var playlist_id = req.params.pl_id;
+					//Access :pl_id by req.params.pl_id					
 					var filter = req.query.filter;
 					var lang = req.query.lang;
 					var to;
@@ -1137,15 +1157,15 @@ module.exports = {
 						from = req.query.from;
 					}
 					var seenFromUser = true;
-					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,to)
+					module.exports.onPlaylistSingleContents(req.params.pl_id,filter,lang,seenFromUser,from,to)
 						.then(function(playlist){
 							if (playlist == null) res.statusCode = 404;
-							res.json(playlist);
+							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_SONGS_ERROR',err,req.params.pl_id));
 						});
 				});
 
@@ -1154,12 +1174,12 @@ module.exports = {
 					var seenFromUser = true;
 					module.exports.onPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
 						.then(function(kara){
-							res.json(kara);
+							res.json(OKMessage(kara));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_CONTENT_ERROR',err,req.params.plc_id));
 						});
 				});
 			routerPublic.route('/settings')
@@ -1177,18 +1197,18 @@ module.exports = {
 							}
 						}
 					}
-					res.json(settings);
+					res.json(OKMessage(settings));
 				});
 			routerPublic.route('/stats')
 				.get(function(req,res){
 					module.exports.onStats()
 						.then(function(stats){
-							res.json(stats);
+							res.json(OKMessage(stats));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('STATS_ERROR',err));
 						});
 				});
 
@@ -1200,16 +1220,16 @@ module.exports = {
 						var filter = req.query.filter;
 						module.exports.onWhitelist(filter,lang)
 							.then(function(karas){
-								res.json(karas);
+								res.json(OKMessage(karas));
 							})
 							.catch(function(err){
 								logger.error(err);
 								res.statusCode = 500;
-								res.json(err);
+								res.json(errMessage('WL_VIEW_ERROR',err));
 							});
 					} else {
 						res.StatusCode = 403;
-						res.json('Displaying whitelist to public is disabled');
+						res.json(errMessage('WL_VIEW_FORBIDDEN'));
 					}
 				});
 
@@ -1221,16 +1241,16 @@ module.exports = {
 						var filter = req.query.filter;
 						module.exports.onBlacklist(filter,lang)
 							.then(function(karas){
-								res.json(karas);
+								res.json(OKMessage(karas));
 							})
 							.catch(function(err){
 								logger.error(err);
 								res.statusCode = 500;
-								res.json(err);
+								res.json(errMessage('BL_VIEW_ERROR',err));
 							});
 					} else {
 						res.StatusCode = 403;
-						res.json('Displaying blacklist to public is disabled');
+						res.json(errMessage('BL_VIEW_FORBIDDEN'));
 					}
 				});
 
@@ -1240,16 +1260,16 @@ module.exports = {
 					if (module.exports.SETTINGS.EngineAllowViewBlacklistCriterias == 1) {
 						module.exports.onBlacklistCriterias()
 							.then(function(blc){
-								res.json(blc);
+								res.json(OKMessage(blc));
 							})
 							.catch(function(err){
 								logger.error(err);
 								res.statusCode = 500;
-								res.json(err);
+								res.json(errMessage('BLC_VIEW_ERROR',err));
 							});
 					} else {
 						res.StatusCode = 403;
-						res.json('Displaying blacklist criterias to public is disabled');
+						res.json(errMessage('BLC_VIEW_FORBIDDEN'));
 					}
 				});
 
@@ -1262,12 +1282,12 @@ module.exports = {
 
 					module.exports.onPlayerStatus()
 						.then(function(status){
-							res.json(status);
+							res.json(OKMessage(status));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PLAYER_STATUS_ERROR',err));
 						});
 
 				});
@@ -1292,12 +1312,12 @@ module.exports = {
 
 					module.exports.onKaras(filter,lang,from,to)
 						.then(function(karas){
-							res.json(karas);
+							res.json(OKMessage(karas));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('SONG_LIST_ERROR',err));
 						});
 				});
 
@@ -1307,29 +1327,28 @@ module.exports = {
 						.then(function(kara_id){
 							if (!kara_id) {
 								res.statusCode = 500;
-								res.json('No selectable karaoke. Are all songs already in current playlist?');
+								res.json(errMessage('GET_UNLUCKY'));
 							} else {
-								res.json(kara_id);
+								res.json(OKMessage(kara_id));
 							}
 
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('GET_LUCKY_ERROR',err));
 						});
 				});
 			routerPublic.route('/karas/:kara_id([0-9]+)')
 				.get(function(req,res){
 					module.exports.onKaraSingle(req.params.kara_id,req.query.lang)
-						.then(function(kara){
-							if (kara == []) res.statusCode = 404;
-							res.json(kara);
+						.then(function(kara){							
+							res.json(OKMessage(kara));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('SONG_VIEW_ERROR',err));
 						});
 				})
 				.post(function(req,res){
@@ -1345,17 +1364,22 @@ module.exports = {
 						if (result.isEmpty()) {
 							req.sanitize('requestedby').trim();
 							req.sanitize('requestedby').unescape();
+							var data = {
+								kara_id: req.params.kara_id,
+								requester: req.body.requestedby
+							};									
 							module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
 								.then(function(pl_id){
+									data.pl_id = pl_id;
 									module.exports.emitEvent('playlistContentsUpdated',pl_id);
 									module.exports.emitEvent('playlistInfoUpdated',pl_id);
 									res.statusCode = 201;
-									res.json('Karaoke '+req.params.kara_id+' added by '+req.body.requestedby);
+									res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
 								})
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(err);
+									res.json(errMessage('PLAYLIST_MODE_ADD_SONG_ERROR',err,data));
 								});
 						} else {
 							// Errors detected
@@ -1369,14 +1393,13 @@ module.exports = {
 			routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')
 				.get(function(req,res){
 					module.exports.onKaraSingleLyrics(req.params.kara_id)
-						.then(function(kara){
-							if (kara == []) res.statusCode = 404;
-							res.json(kara);
+						.then(function(kara){							
+							res.json(OKMessage(kara));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('LYRICS_VIEW_ERROR',err));
 						});
 				});
 			routerPublic.route('/playlists/current')
@@ -1385,12 +1408,12 @@ module.exports = {
 
 					module.exports.onPlaylistCurrentInfo()
 						.then(function(playlist){
-							res.json(playlist);
+							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_CURRENT_ERROR',err));
 						});
 				});
 
@@ -1413,12 +1436,12 @@ module.exports = {
 					}
 					module.exports.onPlaylistCurrentContents(filter, lang, from, to)
 						.then(function(playlist){
-							res.json(playlist);
+							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 						});
 				});
 
@@ -1427,12 +1450,12 @@ module.exports = {
 					// Get current Playlist
 					module.exports.onPlaylistPublicInfo()
 						.then(function(playlist){
-							res.json(playlist);
+							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_PUBLIC_ERROR',err));
 						});
 				});
 
@@ -1455,12 +1478,12 @@ module.exports = {
 					}
 					module.exports.onPlaylistPublicContents(filter, lang, from, to)
 						.then(function(playlist){
-							res.json(playlist);
+							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 						});
 				});
 
@@ -1468,13 +1491,12 @@ module.exports = {
 				.get(function(req,res){
 					module.exports.onTags(req.query.lang)
 						.then(function(tags){
-							if (tags == []) res.statusCode = 404;
-							res.json(tags);
+							res.json(OKMessage(tags));
 						})
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(err);
+							res.json(errMessage('TAGS_LIST_ERROR',err));
 						});
 				});
 
