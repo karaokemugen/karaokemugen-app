@@ -62,7 +62,7 @@ if(SYSPATH) {
 		extend(true,SETTINGS,configCustom);
 		logger.debug('[Launcher] Custom configuration merged.');
 	}
-	var version = ini.parse(fs.readFileSync(path.join(SYSPATH,'VERSION'), 'utf-8'));
+	var version = ini.parse(fs.readFileSync(path.resolve(__dirname,'VERSION'), 'utf-8'));
 	extend(true,SETTINGS,version);
 
 	var detectedLocale = osLocale.sync().substring(0,2);
@@ -142,7 +142,7 @@ if(SYSPATH) {
 	}
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	fs.copySync(path.resolve('src/_player/assets/input.conf'),path.resolve(SYSPATH,SETTINGS.PathTemp,'input.conf'),{ overwrite: true });
+	fs.copySync(path.join(__dirname,'/_player/assets/input.conf'),path.resolve(SYSPATH,SETTINGS.PathTemp,'input.conf'),{ overwrite: true });
 
 	/**
 	 * Test if network ports are available

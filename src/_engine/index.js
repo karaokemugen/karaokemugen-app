@@ -383,7 +383,7 @@ module.exports = {
 	* Requires the db_interface.js script
 	*/
 	_start_db_interface: function() {
-		module.exports.DB_INTERFACE = require(path.resolve(__dirname,'components/db_interface.js'));
+		module.exports.DB_INTERFACE = require(path.join(__dirname,'components/db_interface.js'));
 		module.exports.DB_INTERFACE.SYSPATH = module.exports.SYSPATH;
 		module.exports.DB_INTERFACE.SETTINGS = module.exports.SETTINGS;
 		return module.exports.DB_INTERFACE.init();
@@ -394,7 +394,7 @@ module.exports = {
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
 	_start_admin:function(){
-		module.exports._services.admin = require(path.resolve(__dirname,'../_admin/index.js'));
+		module.exports._services.admin = require(path.join(__dirname,'../_admin/index.js'));
 		module.exports._services.admin.LISTEN = module.exports._states.admin_port;
 		module.exports._services.admin.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.admin.SETTINGS = module.exports.SETTINGS;
@@ -429,7 +429,7 @@ module.exports = {
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
 	_start_frontend:function(){
-		module.exports._services.frontend = require(path.resolve(__dirname,'../_webapp/index.js'));
+		module.exports._services.frontend = require(path.join(__dirname,'../_webapp/index.js'));
 		module.exports._services.frontend.LISTEN = module.exports._states.frontend_port;
 		module.exports._services.frontend.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;
@@ -449,7 +449,7 @@ module.exports = {
 	* Broadcasts syspath and settings to that module.
 	*/
 	_start_wsserver:function(){
-		module.exports._services.ws = require(path.resolve(__dirname,'../_ws/index.js'));
+		module.exports._services.ws = require(path.join(__dirname,'../_ws/index.js'));
 		module.exports._services.ws.LISTEN = module.exports._states.ws_port;
 		module.exports._services.ws.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.ws.SETTINGS = module.exports.SETTINGS;
@@ -461,7 +461,7 @@ module.exports = {
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
 	_start_apiserver:function(){
-		module.exports._services.apiserver = require(path.resolve(__dirname,'../_apiserver/index.js'));
+		module.exports._services.apiserver = require(path.join(__dirname,'../_apiserver/index.js'));
 		module.exports._services.apiserver.LISTEN = module.exports._states.apiserver_port;
 		module.exports._services.apiserver.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
@@ -1381,7 +1381,7 @@ module.exports = {
 	* Broadcasts syspath, database, and the playlistUpdated method
 	*/
 	_start_playlist_controller:function(){
-		module.exports._services.playlist_controller = require(path.resolve(__dirname,'components/playlist_controller.js'));
+		module.exports._services.playlist_controller = require(path.join(__dirname,'components/playlist_controller.js'));
 		module.exports._services.playlist_controller.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
 		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
@@ -1432,15 +1432,12 @@ module.exports = {
 	* This is used to drive mpv or whatever video player is used.
 	*/
 	_start_player:function() {
-		module.exports._services.player = require(path.resolve(__dirname,'../_player/index.js'));
+		module.exports._services.player = require(path.join(__dirname,'../_player/index.js'));
 		module.exports._services.player.BINPATH = path.resolve(module.exports.SYSPATH,'app/bin');
 		module.exports._services.player.SETTINGS = module.exports.SETTINGS;
 		module.exports._services.player.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.player.frontend_port = module.exports._states.frontend_port;
 		module.exports._services.player.onEnd = module.exports.playerEnding;
-		// TODO : Wallpaper is not yet configurable : this will be reworked later
-		/*if(module.exports.SETTINGS.PlayerWallpaper && fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper)))
-			module.exports._services.player.background = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PlayerWallpaper); */
 		module.exports._services.player.onStatusChange = function(){
 			var status = {
 				private: module.exports._states.private,

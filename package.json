@@ -38,17 +38,24 @@
   "license": "MIT",
   "private": true,
   "pkg": {
+	"scripts": [
+		"node_modules/image-size/lib/types/*.js",
+		"node_modules/sqlite3/node_modules/node-pre-gyp/lib/*.js",
+		"node_modules/sqlite3/node_modules/node-pre-gyp/lib/util/*.js*"
+	],
     "assets": [
+	  "node_modules/ffmpeg-downloader/bin/win32/x64/*.exe",
       "src/_admin/httpdocs/*",
       "src/_common/db/*",
       "src/_common/locales/*",
       "src/_player/assets/*",
-      "src/_webapp/ressources/views/**",
+	  "src/_webapp/ressources/views/**",
       "src/_webapp/ressources/css/*",
       "src/_webapp/ressources/img/*",
       "src/_webapp/vendors/css/*",
       "src/_webapp/vendors/fonts/**",
       "src/**/*.js",
+	  "src/VERSION",
       "node_modules/**/*"
     ]
   },
