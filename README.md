@@ -20,19 +20,25 @@ Photos non contractuelles, tout ça.
 
 ![](docs/sample_web_admin.png)
 
+Pour des captures d'écran à jour, merci de consulter le [site web](http://mugen.karaokes.moe)
+
 ## Téléchargement
 
-L'application est déjà bien avancée et utilisable, l'interface Web n'est pas encore terminée par contre, mais l'API est fonctionelle pour piloter l'app.
+Pour installer, clonez le dépôt, puis utilisez `yarn`. 
 
-Pour installer, clonez le dépôt, puis
+Si vous n'avez pas `yarn` :
 
 ```
-npm install
+npm install -g yarn
 ```
 
-Attention, si votre dossier d'installation contient des espaces, le module `ffmpeg-downloader` va planter à l'installation.
+Puis lancez `yarn` pour installer les dépendances.
 
-Créez un dossier `app/data` puis balancez le contenu du dossier `samples` dedans, pour tester. 
+```
+yarn install
+```
+
+Créez un dossier `app/data` puis balancez le contenu du dossier `samples` dedans, pour tester.
 
 Pour lancer l'app :
 
@@ -40,20 +46,21 @@ Pour lancer l'app :
 npm start
 ```
 
-La génération de la base de données est nécessaire à la première utilisation, vous pouvez la déclencher en vous connectant sur http://localhost:1338 (mot de passe par défaut `gurdil`) et en ayant placé des karaokés dans app/data/ (voir plus bas)
+La génération de la base de données est nécessaire à la première utilisation, vous pouvez la déclencher en vous connectant sur http://localhost:1338 (mot de passe par défaut `gurdil`) et en ayant placé des karaokés dans `app/data/` (voir plus bas)
 
 ## Pré-requis système
 
-N'importe quoi qui fait tourner node.js (l'application sera prépackagée).
-
 L'application fonctionne sous OSX/Linux/Windows.
 
-Sous Linux vous aurez cependant besoin de :
-* mpv
+* NodeJS 8
+* npm 5
+
+A placer dans le dossier `app/bin` (le créer s'il n'existe pas). 
+
+* mpv 0.25 minimum, 0.27 sous OSX
 * ffmpeg / ffprobe
 
-Sous Windows et OSX les binaires seront téléchargés automatiquement.
-
+Vous pouvez également spécifier les chemins menant vers ces binaires dans votre fichier de configuration `config.ini`
     
 ## Langages
 
@@ -82,27 +89,27 @@ Certaines sont encore à venir, mais ça doit vous donner une idée de l'étendu
    - En mode public, les karaokés sont ajoutés à une liste de suggestions et c'est à l'administrateur de décider quelles chansons ajouter !
 - Export/import de playlists
 - API REST pour le développement d'autres interfaces ou de clients mobiles
-
+- Et plein d'autres choses : 
 
 ## Comment ça fonctionne
 
 * Voir la partie téléchargement
-* Placez des karaoké à l'intérieur d'un dossier `app/data`. Voir https://lab.shelter.moe/karaokemugen/karaokebase
+* Placez des karaoké à l'intérieur d'un dossier `app/data`. Voir https://lab.shelter.moe/karaokemugen/karaokebase 
 * L'interface web écoute par défaut sur le port 1337 : http://localhost:1337 - celle-ci est encore en travaux sur une branche dédiée du code
-* L'interface API écoute sur le port 1339
-* Un panel web admin pour les tâches de gestion comme la génération de la base de données où les mises à jour est sur le port 1338. 
+
 Sur le dépôt cité plus haut, vous trouverez une base de karaokés déjà prête à l'emploi. Attention, celle-ci pèse 160 Go une fois les vidéos téléchargées.
+
+Pour en savoir plus, [lisez le site de documentation !](http://mugen.karaokes.moe/docs/)
 
 ## Comment participer au code
 
-Lisez le Wiki ! 
-https://lab.shelter.moe/karaokemugen/karaokemugen-app/wikis/home
+Il y a une [section dédiée sur le site de documentation](http://mugen.karaokes.moe/docs/dev-guide/code/) !
 
-Tout y est expliqué, ou presque, et si vous avez des questions, il y a un lien vers le Discord où nous échangeons quotidiennement !
+Tout y est expliqué, ou presque, et si vous avez des questions, venez sur [notre Discord](https://discord.gg/a8dMYek) !
 
 ## Ancienne version
 
 Une version "legacy" en PHP existe sur ce dépôt :
 https://lab.shelter.moe/karaokemugen/toyundamugen-app-legacy
 
-Cette version est fonctionelle mais assez basique.
+Cette version est fonctionelle mais assez basique. Elle n'est par contre plus maintenue.
