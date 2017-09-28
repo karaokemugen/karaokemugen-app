@@ -1650,7 +1650,8 @@ module.exports = {
 								module.exports._db_handler.prepare(sqlAddKaraToPlaylist)
 									.then((stmt) => {
 										stmt.run(data)
-											.then(() => {										callback();
+											.then(() => {
+												callback();
 											})
 											.catch((err) => {
 												logger.error('Failed to add karaoke to playlist : '+err);				
