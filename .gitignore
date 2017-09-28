@@ -6,6 +6,7 @@ node_modules
 app/bin
 app/db
 app/temp
+app/data/videos
 src/app/
 npm-debug.log
 *.exe
