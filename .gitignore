@@ -3,11 +3,7 @@
 .npmrc
 .vscode
 node_modules
-app/bin
-app/db
-app/temp
-app/data/videos
-src/app/
+app/
 npm-debug.log
 *.exe
 karaokemugen.log
@@ -16,9 +12,6 @@ doc/
 \.DS_Store
 *.backup
 config\.ini
-
 *.bak
-
 karaokemugen-app-linux
-
 karaokemugen-app-macos
