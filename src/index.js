@@ -142,6 +142,7 @@ if(SYSPATH) {
 	}
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
+	logger.debug('[Launcher] Copying input.conf into '+path.resolve(SYSPATH,SETTINGS.PathTemp));
 	fs.copySync(path.join(__dirname,'/_player/assets/input.conf'),path.resolve(SYSPATH,SETTINGS.PathTemp,'input.conf'),{ overwrite: true });
 
 	/**
@@ -166,6 +167,19 @@ if(SYSPATH) {
 		});
 		server.listen(port);
 	});
+
+	/**
+	 * Test if binaries are available
+	 */
+	logger.info('[Launcher] Checking if binaries are available');
+	var binaries = require('./_common/utils/binchecker.js');
+	binaries.SYSPATH = SYSPATH;
+	binaries.SETTINGS = SETTINGS;
+	binaries.check();
+	SETTINGS.BinffmpegPath = binaries.ffmpegPath;
+	SETTINGS.BinffprobePath = binaries.ffprobePath;
+	SETTINGS.BinmpvPath = binaries.mpvPath;
+
 	/**
 	 * Calling engine.
 	 */

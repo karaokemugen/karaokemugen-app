@@ -20,7 +20,6 @@ var async = require('async');
 const uuidV4 = require('uuid/v4');
 var csv = require('csv-string');			
 const exec = require('child_process');
-const ffmpegPath = require('ffmpeg-downloader').path;
 const langsModule = require('langs');
 
 module.exports = {
@@ -865,7 +864,7 @@ module.exports = {
 			}
 			function getvideogain(videofile){
 				return new Promise((resolve) => {					
-					var proc = exec.spawn(ffmpegPath, ['-i', videosdir + '/' + videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
+					var proc = exec.spawn(module.exports.SETTINGS.BinffmpegPath, ['-i', videosdir + '/' + videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 
 					var audioGain = undefined;
 					var output = '';
@@ -897,6 +896,7 @@ module.exports = {
 			function getvideoduration(videofile) {
 				return new Promise((resolve,reject) => {
 					var videolength = 0;
+					probe.ffprobePath = module.exports.SETTINGS.BinffprobePath;
 					probe(videosdir + '/' + videofile, function(err, videodata) {
 						if (err) {
 							module.exports.onLog('error', 'Video '+videofile+' probe error : '+err);
@@ -1192,7 +1192,7 @@ module.exports = {
 								var tmpsubfile;												if (kara['subfile'] === 'dummy.ass') {
 										
 									if (kara.videofile.toLowerCase().includes('.mkv') || kara.videofile.toLowerCase().includes('.mp4')) {	
-										var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(videosdir,kara.videofile), path.resolve(module.exports.SYSPATH,tmpdir,'kara_extract.'+kara.KID+'.ass')], { encoding : 'utf8' }),
+										var proc = exec.spawnSync(module.exports.SETTINGS.BinffmpegPath, ['-y', '-i', path.resolve(videosdir,kara.videofile), path.resolve(module.exports.SYSPATH,tmpdir,'kara_extract.'+kara.KID+'.ass')], { encoding : 'utf8' }),
 											ffmpegData = [],
 											errData = [],
 											exitCode = null,
