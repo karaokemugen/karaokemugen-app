@@ -895,9 +895,8 @@ module.exports = {
 			}
 			function getvideoduration(videofile) {
 				return new Promise((resolve,reject) => {
-					var videolength = 0;
-					probe.ffprobePath = module.exports.SETTINGS.BinffprobePath;
-					probe(videosdir + '/' + videofile, function(err, videodata) {
+					var videolength = 0;					
+					probe(module.exports.SETTINGS.BinffprobePath, videosdir + '/' +videofile, function(err, videodata) {
 						if (err) {
 							module.exports.onLog('error', 'Video '+videofile+' probe error : '+err);
 							reject(err);

@@ -44,7 +44,6 @@
       "node_modules/sqlite3/node_modules/node-pre-gyp/lib/util/*.js*"
     ],
     "assets": [
-      "node_modules/ffmpeg-downloader/bin/win32/x64/*.exe",
       "src/_admin/httpdocs/*",
       "src/_common/db/*",
       "src/_common/locales/*",
