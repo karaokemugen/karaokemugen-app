@@ -32,7 +32,7 @@ module.exports = {
 			if (!fs.existsSync(origBackgroundFile) || module.exports.SETTINGS.PlayerBackground === '') {
 				// Background provided in config file doesn't exist, reverting to default one provided.
 				logger.warn('[Background] Unable to find background file '+origBackgroundFile+', reverting to default one');
-				origBackgroundFile = path.resolve(module.exports.SYSPATH,'src/_player/assets/background.jpg');
+				origBackgroundFile = path.join(__dirname,'assets/background.jpg');
 			}
 
 			// Get dimensions of background image
