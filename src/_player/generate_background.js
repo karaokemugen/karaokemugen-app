@@ -32,7 +32,7 @@ module.exports = {
 				module.exports.SETTINGS.PlayerBackground !== undefined &&
 				module.exports.SETTINGS.PlayerBackground !== null
 			) {
-				var origBackgroundFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,module.exports.SETTINGS.PlayerBackground);			
+				origBackgroundFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,module.exports.SETTINGS.PlayerBackground);			
 				if (!fs.existsSync(origBackgroundFile)) {
 				// Background provided in config file doesn't exist, reverting to default one provided.
 					logger.warn('[Background] Unable to find background file '+origBackgroundFile+', reverting to default one');
