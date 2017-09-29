@@ -41,6 +41,7 @@ module.exports = {
 		const videosdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
 
 		module.exports.onLog('success', 'Starting database generation');
+		module.exports.onLog('success', 'GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		return new Promise(function(resolve, reject) {
 			if (module.exports.SYSPATH == null) {
 				module.exports.onLog('error', 'SYSPATH is not defined');

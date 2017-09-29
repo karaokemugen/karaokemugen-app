@@ -50,7 +50,7 @@ module.exports = {
 					generator.SYSPATH = module.exports.SYSPATH;
 					generator.SETTINGS = module.exports.SETTINGS;
 					generator.onLog = function(type,message) {
-						logger.info('[DBI] Generating database',message);
+						logger.info('[DBI] Generating database -',message);
 					};
 					generator.run().then(function(){
 						resolve();
