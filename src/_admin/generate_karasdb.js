@@ -175,6 +175,7 @@ module.exports = {
 							async.eachLimit(karafiles, 5, function(kara, callback){
 								addKara(kara)
 									.then(function(){
+										module.exports.onLog('success', 'Added : '+kara);
 										callback();
 									})
 									.catch(function(err){
@@ -227,7 +228,8 @@ module.exports = {
 										async.eachOf(karas, function(kara, index, callback){
 											index++;											
 											addSeries(kara, index)
-												.then(function(){
+												.then(function(serie){
+													module.exports.onLog('success', 'Added series : '+serie+' (from '+kara+')');
 													callback();
 												})
 												.catch(function(err){
@@ -261,7 +263,7 @@ module.exports = {
 											/**
 											 * Push to array sqlInsertKarasSeries for sql statements from karas_series.
 											 */
-											var pPushSqlInsertKarasSeries= new Promise((resolve) => {
+											var pPushSqlInsertKarasSeries = new Promise((resolve) => {
 												karas_series.forEach(function(karaserie) {
 													karaserie = karaserie.split(',');
 													var id_serie = karaserie[0];
@@ -292,6 +294,7 @@ module.exports = {
 																$serie_altnamesnorm : serie_altnamesnorm,
 																$serie_name : serie_name,
 															});
+															module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
 														}
 													});
 													module.exports.onLog('success', 'Alternative series name file found');
@@ -326,7 +329,8 @@ module.exports = {
 										async.eachOf(karas, function(kara, index, callback){
 											index++;
 											addTags(kara, index)
-												.then(function(){
+												.then(function(tags){
+													module.exports.onLog('success', 'Added tags "'+tags+'" to '+kara);
 													callback();
 												})
 												.catch(function(err){
@@ -939,7 +943,7 @@ module.exports = {
 						seriesIDX++;
 						karas_series.push(seriesIDX + ',' + id_kara);
 					});
-					resolve();						
+					resolve(serieslist);						
 				});
 			}
 
@@ -1118,7 +1122,7 @@ module.exports = {
 						tagsIDX++;
 						karas_tags.push(tagsIDX + ',' + id_kara);
 					});
-					resolve();					
+					resolve(taglist);					
 				});
 			}
 

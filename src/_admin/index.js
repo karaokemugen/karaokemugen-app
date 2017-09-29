@@ -190,7 +190,7 @@ module.exports = {
 			generator.SYSPATH = module.exports.SYSPATH;
 			generator.SETTINGS = module.exports.SETTINGS;
 			generator.onLog = function(type,message) {
-				logger.info('[Admin] Database generation -',message);
+				logger.info('[Admin] [Gen]',message);
 				if(type!='notice')
 					socket.emit('generate_karabd', {event:'addLog',data:message});
 			};
