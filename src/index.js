@@ -51,7 +51,6 @@ if (argv.help) {
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
 if(SYSPATH) {
 	logger.debug('[Launcher] SysPath detected : '+SYSPATH);
-	// Lecture de la configuration par défault
 	/**
 	 * Reading config.ini.default, then override it with config.ini if it exists.
 	 */
@@ -72,9 +71,10 @@ if(SYSPATH) {
 
 	if (argv.version) {
 		console.log('Karaoke Mugen '+SETTINGS.VersionNo+' - '+SETTINGS.VersionName);
-		console.log('Database schema version : xxx');
+		console.log('Database schema version : unknown');
 		process.exit(0);
 	}
+	
 	logger.info('[Launcher] Locale detected : '+detectedLocale);
 	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);
 
@@ -179,6 +179,27 @@ if(SYSPATH) {
 	SETTINGS.BinffmpegPath = binaries.ffmpegPath;
 	SETTINGS.BinffprobePath = binaries.ffprobePath;
 	SETTINGS.BinmpvPath = binaries.mpvPath;
+
+	/**
+	 * Check if backup folder for karaokes exists. If it does, it means previous generation aborted
+	 */
+	const karas_dbfile = path.resolve(SYSPATH,SETTINGS.PathDB, SETTINGS.PathDBKarasFile);
+	const karasdir = path.resolve(SYSPATH, SETTINGS.PathKaras);
+		
+	//Restoring kara folder		
+	if (fs.existsSync(karasdir+'_backup')) {
+		logger.info('[Launcher] Mahoro Mode : Backup folder exists, replacing karaokes folder with it.');
+		fs.copySync(karasdir+'_backup',karasdir,{
+			overwrite: true,
+			preserveTimestamps: true
+		});
+		fs.removeSync(karasdir+'_backup');
+		if (fs.existsSync(karas_dbfile)) {
+			logger.info('[Launcher] Mahoro Mode : clearing karas database : generation will occur shortly');
+			fs.unlinkSync(karas_dbfile);
+		}
+		
+	}
 
 	/**
 	 * Calling engine.

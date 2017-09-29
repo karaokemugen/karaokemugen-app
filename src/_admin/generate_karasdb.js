@@ -1308,21 +1308,5 @@ module.exports = {
 			}
 		});
 	},
-	onLog: function() {},
-	cleanUp: function() {
-		// This function is called when the generation aborted.
-		// It cleans up its mess and restores the kara folder in case it's been corrupted.
-		const karas_dbfile = path.resolve(module.exports.SYSPATH, 
-			module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
-		const karasdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
-		
-		if (fs.existsSync(karas_dbfile)) {
-			fs.unlinkSync(karas_dbfile);
-		}
-		//Restoring kara folder		
-		fs.copySync(karasdir,karasdir+'_backup',{
-			overwrite: true,
-			preserveTimestamps: true
-		});
-	}
+	onLog: function() {}	
 };

@@ -55,8 +55,6 @@ module.exports = {
 					generator.run().then(function(){
 						resolve();
 					}).catch(function(error){
-						// error ?
-						generator.cleanUp();
 						// error.
 						reject(error);
 					});

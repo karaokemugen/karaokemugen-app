@@ -202,7 +202,6 @@ module.exports = {
 				console.log(response);
 				module.exports.DB_INTERFACE.init();
 				module.exports.setLocalStates('generate_karabd',false);
-				generator.cleanUp();
 			});
 		});
 	},
