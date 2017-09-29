@@ -124,6 +124,9 @@ span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:befo
 #showSubs[name="hideSubs"] > i.showSubs {
 	display: none;
 }
+#mutestatus i {
+	top: 28px;
+}
 #mutestatus[name="mute"] > i.mute {
 	display: none;
 }

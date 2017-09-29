@@ -34,7 +34,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 
-		$('button[action="command"]').click(function (e) {
+		$('button[action="command"], a[action="command"]').click(function (e) {
 			var name = $(this).attr('name');
 			var dataAjax = { command: name };
 
@@ -42,10 +42,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			if (e.target.name == 'setVolume') {
 				var btn = $(e.target);
-				var val = parseInt(btn.val()), base = .04;
-				val = val / 100;
-				val = (Math.pow(base, val) - 1) / (base - 1);
-				val = parseInt(val * 100);
+				var val = parseInt(btn.val()), base = 100;
+				val = Math.log(val) / Math.log(base);
+				val = val * 100;
 				dataAjax = { command: btn.attr('name'), options: val };
 			}
 
