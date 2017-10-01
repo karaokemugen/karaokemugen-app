@@ -294,7 +294,7 @@ module.exports = {
 																$serie_altnamesnorm : serie_altnamesnorm,
 																$serie_name : serie_name,
 															});
-															if (!serie_altnames) {
+															if (serie_altnames) {
 																module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
 															}
 															
