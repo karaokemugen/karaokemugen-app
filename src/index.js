@@ -9,7 +9,6 @@ const ini = require('ini');
 const extend = require('extend');
 const argv = require('minimist')(process.argv.slice(2));
 
-const logger = require('./_common/utils/logger.js');
 const i18n = require('i18n');
 const osLocale = require('os-locale');
 
@@ -49,7 +48,8 @@ if (argv.help) {
 
 /** Call to resolveSyspath to get the app's path in all OS configurations */
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
-if(SYSPATH) {
+if(SYSPATH) {	
+	const logger = require('./_common/utils/logger.js');		
 	logger.debug('[Launcher] SysPath detected : '+SYSPATH);
 	/**
 	 * Reading config.ini.default, then override it with config.ini if it exists.

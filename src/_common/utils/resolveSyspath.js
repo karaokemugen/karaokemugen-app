@@ -3,7 +3,6 @@
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
-const logger = require('./logger.js');
 
 module.exports = function(testfile, callerDirname, paths){
 
@@ -36,6 +35,6 @@ module.exports = function(testfile, callerDirname, paths){
 			return path.join(basepath,paths[j]);
 	}
 
-	logger.error('utils/resolveSyspath Fail : Can not locate '+testfile);
+	console.log('utils/resolveSyspath Fail : Can not locate '+testfile);
 	return false;
 };
