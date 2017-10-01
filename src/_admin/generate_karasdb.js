@@ -294,7 +294,10 @@ module.exports = {
 																$serie_altnamesnorm : serie_altnamesnorm,
 																$serie_name : serie_name,
 															});
-															module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
+															if (!serie_altnames) {
+																module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
+															}
+															
 														}
 													});
 													module.exports.onLog('success', 'Alternative series name file found');
