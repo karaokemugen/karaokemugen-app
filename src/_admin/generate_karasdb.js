@@ -1140,6 +1140,8 @@ module.exports = {
 							//New way without "" in data
 							//var karadata = iniread.parseSync(karasdir + '/' + karafile);
 							var kara = [];
+							// Saving the values for later comparison
+							var karadata_old = karadata;
 							if (karadata.KID) {
 								kara['KID'] = karadata.KID;
 							} else {
@@ -1299,13 +1301,19 @@ module.exports = {
 							Promise.all([pGetVideoDuration,pGetVideoGain])
 								.then(function(){
 									karas.push(kara);
-									fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err) {
-										if (err) {
-											module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
-											reject(err);
-										}
+									if (karadata != karadata_old) {
+										fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err) {
+											if (err) {
+												module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
+												reject(err);
+											} else {												
+												resolve();
+											}											
+										});
+									} else {
 										resolve();
-									});
+									}
+									
 								})
 								.catch(function(err){
 									reject(err);
