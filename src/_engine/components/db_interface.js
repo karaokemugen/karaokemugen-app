@@ -21,11 +21,12 @@ module.exports = {
 				logger.error('[DBI] _engine/components/db_interface.js : SYSPATH is null');
 				process.exit();
 			}
-
+			const userdb_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile);
+			const db_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile);
 			var userDB_Test = new Promise(function(resolve,reject){
-				if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'))) {
+				if(!fs.existsSync(userdb_file)) {
 					logger.warn('[DBI] User database not found');
-					var db = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'));
+					var db = new sqlite3.Database(userdb_file);
 					var sqlCreateUserDB = fs.readFileSync(path.join(__dirname,'../../_common/db/userdata.sqlite3.sql'),'utf-8');
 					db.exec(sqlCreateUserDB, function (err){
 						if (err) {
@@ -44,7 +45,7 @@ module.exports = {
 			});
 
 			var karasDB_Test = new Promise(function(resolve,reject){
-				if(!fs.existsSync(path.join(module.exports.SYSPATH,'app/db/karas.sqlite3'))) {
+				if(!fs.existsSync(db_file)) {
 					logger.warn('[DBI] Karaoke database not found');
 					var generator = require('../../_admin/generate_karasdb.js');
 					generator.SYSPATH = module.exports.SYSPATH;
@@ -65,7 +66,7 @@ module.exports = {
 
 			Promise.all([ userDB_Test, karasDB_Test ])
 				.then(function() {
-					module.exports._db_handler = new sqlite3.Database(path.join(module.exports.SYSPATH,'app/db/userdata.sqlite3'), function (err) {
+					module.exports._db_handler = new sqlite3.Database(userdb_file, function (err) {
 						if (err) {
 							logger.error('[DBI] Loading user database failed : '+err);
 							process.exit();
@@ -78,7 +79,7 @@ module.exports = {
 									}
 								});
 
-								module.exports._db_handler.run('ATTACH DATABASE "' + path.join(module.exports.SYSPATH, 'app/db/karas.sqlite3') + '" as karasdb;',
+								module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;',
 									function(err) {
 										if (err) {
 											logger.error(err);
