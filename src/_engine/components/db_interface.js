@@ -1575,8 +1575,8 @@ module.exports = {
 					$flag_current: flag_current,
 					$flag_public: flag_public
 				})
-				.then(() => {
-					resolve();
+				.then((res) => {
+					resolve(res.lastID);
 				})
 				.catch((err) => {
 					logger.error('[DBI] Failed to create playlist '+name+' : '+err);		
@@ -1718,9 +1718,9 @@ module.exports = {
 							$kid: kid,
 							$created_at: date_added,
 						})
-							.then(() => {
+							.then((res) => {
 							//We return the whitelist_content ID of the kara we just added.
-								resolve(this.lastID);
+								resolve(res.lastID);
 							})
 							.catch((err) => {
 								reject('Failed to add karaoke '+kara_id+' to whitelist : '+err);

@@ -8,6 +8,10 @@ const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
 const async = require('async');
 const validator = require('validator');
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at:', p, 'reason:', reason);
+  // application specific logging, throwing an error, or other logic here
+});
 
 module.exports = {
 	SYSPATH:null,
