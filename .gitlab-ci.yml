@@ -21,7 +21,7 @@ test:
     - node src/index.js --debug --test &disown
     - bash test/run.sh
   only:
-    - test
+    - test_removed
 
 deploy:
   stage: deploy
