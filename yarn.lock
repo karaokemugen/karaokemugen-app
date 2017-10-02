@@ -1528,7 +1528,7 @@ has@^1.0.1, has@~1.0.1:
   dependencies:
     function-bind "^1.0.2"
 
-hawk@~3.1.3:
+hawk@3.1.3, hawk@~3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/hawk/-/hawk-3.1.3.tgz#078444bd7c1640b0fe540d2c9b73d59678e8e1c4"
   dependencies:
@@ -2537,7 +2537,7 @@ node-fingerprint@0.0.2:
   dependencies:
     cuid "^1.3.8"
 
-node-pre-gyp@^0.6.36, node-pre-gyp@~0.6.37:
+node-pre-gyp@^0.6.36:
   version "0.6.37"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.37.tgz#3c872b236b2e266e4140578fe1ee88f693323a05"
   dependencies:
@@ -2549,6 +2549,21 @@ node-pre-gyp@^0.6.36, node-pre-gyp@~0.6.37:
     rimraf "^2.6.1"
     semver "^5.3.0"
     tape "^4.6.3"
+    tar "^2.2.1"
+    tar-pack "^3.4.0"
+
+node-pre-gyp@~0.6.38:
+  version "0.6.38"
+  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.38.tgz#e92a20f83416415bb4086f6d1fb78b3da73d113d"
+  dependencies:
+    hawk "3.1.3"
+    mkdirp "^0.5.1"
+    nopt "^4.0.1"
+    npmlog "^4.0.2"
+    rc "^1.1.7"
+    request "2.81.0"
+    rimraf "^2.6.1"
+    semver "^5.3.0"
     tar "^2.2.1"
     tar-pack "^3.4.0"
 
@@ -3306,12 +3321,18 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
-sqlite3@^3.1.9:
-  version "3.1.11"
-  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-3.1.11.tgz#84421b181b3e9f4939b7a3d712263d7946cfc96d"
+sqlite3@^3.1.8:
+  version "3.1.13"
+  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-3.1.13.tgz#d990a05627392768de6278bafd1a31fdfe907dd9"
   dependencies:
     nan "~2.7.0"
-    node-pre-gyp "~0.6.37"
+    node-pre-gyp "~0.6.38"
+
+sqlite@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/sqlite/-/sqlite-2.8.0.tgz#acb6d1869a5241c57016c88606eca009f0f31b90"
+  dependencies:
+    sqlite3 "^3.1.8"
 
 sshpk@^1.7.0:
   version "1.13.1"
