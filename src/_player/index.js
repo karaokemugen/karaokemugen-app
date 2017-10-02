@@ -1,8 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 const logger = require('../_common/utils/logger.js');
-var ProgressBar = require('progress');
-var http = require('http');
 const ip = require('ip');
 const exec = require('child_process');
 
@@ -16,8 +14,7 @@ module.exports = {
 	BINPATH:null,
 	SETTINGS:null,
 	SYSPATH:null,
-	frontend_port:null,
-	mpvBinary:null,
+	frontend_port:null,	
 	timeposition:0,
 	duration:0,
 	mutestatus:false,
@@ -26,7 +23,6 @@ module.exports = {
 	showsubs:true,
 	status:{},
 	init:function(){
-		var mpvHTTP;
 		var pGenerateBackground = new Promise((resolve,reject) => {
 			var generateBackground = require('./generate_background.js');
 			generateBackground.SYSPATH = module.exports.SYSPATH;
@@ -42,109 +38,9 @@ module.exports = {
 					reject(err);
 				});
 		});
-		var pIsmpvAvailable = new Promise((resolve,reject) => {
-			if (module.exports.SETTINGS.os == 'win32') {
-				module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerWindows);
-				mpvHTTP = '/mpv.exe';
-			} else if (module.exports.SETTINGS.os == 'darwin') {
-				// Test first if the path provided in the settings is valid and executable.
-				// If not, we'll try the different possibilities for mpv's install :
-				// - Macports
-				// - Homebrew
-				// - Manual install
-				if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX))) {
-					module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX);
-				} else {
-					// if mpv is installed with MacPorts
-					module.exports.mpvBinary = '/opt/local/bin/mpv';
-				}
-				// if mpv is installed with Homebrew
-				if (!fs.existsSync(module.exports.mpvBinary)) {
-					module.exports.mpvBinary = '/usr/bin/mpv';
-				}
-				// if mpv is installed locally or not installed
-				if (!fs.existsSync(module.exports.mpvBinary)) {
-					module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpv.app/Contents/MacOS/mpv');
-				}
-			} else if (module.exports.SETTINGS.os == 'linux') {
-				module.exports.mpvBinary = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerLinux);
-			}
-			if(!fs.existsSync(module.exports.mpvBinary)){
-				logger.error('[Player] mpv not found or not accessable in path : '+module.exports.mpvBinary);
-				if (module.exports.SETTINGS.os === 'linux') {
-					console.log('\n');
-					console.log('You need to have mpv installed first. Use apt-get/yum/etc. depending on your Linux distribution.');
-					console.log('See http://mpv.io/installation for more details.');
-					console.log('\n');
-					reject('mpv not installed!');
-				}
-				if (module.exports.SETTINGS.os === 'darwin') {
-					console.log('\n');
-					console.log('You need to have mpv installed first. Use Homebrew/Macports/etc. depending on your preference.');
-					console.log('See http://mpv.io/installation for more details.');
-					console.log('\n');
-					reject('mpv not installed!');
-				}
-
-				if (module.exports.SETTINGS.os === 'win32') {
-					logger.info('[Player] Downloading mpv from Shelter...');
-					logger.info('You can download it manually from http://mpv.io and place it in '+module.exports.mpvBinary+' if you dont trust the binary on Shelter.');
-
-					var mpvFile = fs.createWriteStream(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpvtemp'));
-					var req = http.request({
-						host: 'mugen.karaokes.moe',
-						port: 80,
-						path: '/'+mpvHTTP
-					});
-
-					req.on('response', function(res){
-						var len = parseInt(res.headers['content-length'], 10);
-
-						console.log();
-						var bar = new ProgressBar('Downloading... '+' [:bar] :percent :etas', {
-							complete: '=',
-							incomplete: ' ',
-							width: 40,
-							total: len
-						});
-
-						res.on('data', function (chunk) {
-							bar.tick(chunk.length);
-						});
-
-						res.on('end', function () {
-							console.log('\n');
-							if (module.exports.SETTINGS.os == 'win32') {
-								fs.rename(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'/mpvtemp'),
-									module.exports.mpvBinary,
-									function(err) {
-										if (err) {
-											logger.error('[Player] Unable to rename mpv : '+err);
-											reject();
-										} else {
-											logger.info('[Player] mpv successfully downloaded');
-											resolve();
-										}
-									});
-							}
-						});
-						res.pipe(mpvFile);
-					});
-					req.on('error',function(err){
-						reject(err);
-					});
-					req.end();
-				}
-
-			} else {
-				resolve();
-			}
-		});
 
 		if (!module.exports.SETTINGS.isTest) {
-			Promise.all([pIsmpvAvailable,pGenerateBackground]).then(function() {
-				logger.debug('[Player] mpv is available');
-
+			Promise.all([pGenerateBackground]).then(function() {
 				module.exports.startmpv()
 					.then(() => {
 						logger.info('[Player] Player interface is READY');
@@ -329,6 +225,7 @@ module.exports = {
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
 				'--volume=100',
+				'--input-conf='+path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'input.conf'),
 			];
 			if (module.exports.SETTINGS.PlayerPIP) {
 				mpvOptions.push('--autofit='+module.exports.SETTINGS.PlayerPIPSize+'%x'+module.exports.SETTINGS.PlayerPIPSize+'%');
@@ -382,7 +279,7 @@ module.exports = {
 			
 			//On all platforms, check if we're using mpv at least version 0.20 or abort saying the mpv provided is too old. 
 			//Assume UNKNOWN is a compiled version, and thus the most recent one.
-			var resultatCmd = exec.spawnSync(module.exports.mpvBinary,['--version'], {encoding: 'utf8'});
+			var resultatCmd = exec.spawnSync(module.exports.SETTINGS.BinmpvPath,['--version'], {encoding: 'utf8'});
 			if (resultatCmd.stderr != '') {
 				logger.error('[Player] '+resultatCmd.stderr);
 				logger.error('[Player] Unable to detect mpv version, exiting.');
@@ -397,7 +294,7 @@ module.exports = {
 			if (parseInt(mpvVersionSplit[1]) < 25) {
 				// Version is too old. Abort.
 				logger.error('[Player] mpv version detected is too old ('+mpvVersion+'). Upgrade your mpv from http://mpv.io to at least version 0.25');
-				logger.error('[Player] mpv binary : '+module.exports.mpvBinary);
+				logger.error('[Player] mpv binary : '+module.exports.SETTINGS.BinmpvPath);
 				logger.error('[Player] Exiting due to obsolete mpv version');
 				process.exit(1);
 			}
@@ -409,7 +306,7 @@ module.exports = {
 
 
 			logger.debug('[Player] mpv options : '+mpvOptions);
-			logger.debug('[Player] mpv binary : '+module.exports.mpvBinary);
+			logger.debug('[Player] mpv binary : '+module.exports.SETTINGS.BinmpvPath);
 			var mpvAPI = require('node-mpv');
 			var socket;
 			switch(module.exports.SETTINGS.os) {
@@ -428,7 +325,7 @@ module.exports = {
 				{
 					auto_restart: true,
 					audio_only: false,
-					binary: module.exports.mpvBinary,
+					binary: module.exports.SETTINGS.BinmpvPath,
 					socket: socket,
 					time_update: 1,
 					verbose: false,

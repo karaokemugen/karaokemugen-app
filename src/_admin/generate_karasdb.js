@@ -20,7 +20,6 @@ var async = require('async');
 const uuidV4 = require('uuid/v4');
 var csv = require('csv-string');			
 const exec = require('child_process');
-const ffmpegPath = require('ffmpeg-downloader').path;
 const langsModule = require('langs');
 
 module.exports = {
@@ -42,6 +41,7 @@ module.exports = {
 		const videosdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
 
 		module.exports.onLog('success', 'Starting database generation');
+		module.exports.onLog('success', 'GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		return new Promise(function(resolve, reject) {
 			if (module.exports.SYSPATH == null) {
 				module.exports.onLog('error', 'SYSPATH is not defined');
@@ -166,6 +166,7 @@ module.exports = {
 								async.eachLimit(karafiles, 5, function(kara, callback){
 									addKara(kara)
 										.then(function(){
+											module.exports.onLog('success', 'Added : '+kara);										
 											callback();
 										})
 										.catch(function(err){
@@ -174,10 +175,11 @@ module.exports = {
 								},function(err){
 									if (err) {
 										reject(err);
+									} else {
+										logger.profile('AddKara');
+										module.exports.onLog('success', 'Karaoke count : '+karas.length);
+										resolve();
 									}
-									logger.profile('AddKara');
-									module.exports.onLog('success', 'Karaoke count : '+karas.length);
-									resolve();
 								});
 							});
 							Promise.all([pAddToKaras])
@@ -218,7 +220,8 @@ module.exports = {
 											async.eachOf(karas, function(kara, index, callback){
 												index++;											
 												addSeries(kara, index)
-													.then(function(){
+													.then(function(serie){
+														module.exports.onLog('success', 'Added series : '+serie);
 														callback();
 													})
 													.catch(function(err){
@@ -283,6 +286,9 @@ module.exports = {
 																	$serie_altnamesnorm : serie_altnamesnorm,
 																	$serie_name : serie_name,
 																});
+																if (serie_altnames) {
+																	module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
+																}
 															}
 														});
 														module.exports.onLog('success', 'Alternative series name file found');
@@ -318,9 +324,11 @@ module.exports = {
 												index++;
 												addTags(kara, index)
 													.then(function(){
+														module.exports.onLog('success', 'Added tags "'+tags+'" to '+kara);
 														callback();
 													})
 													.catch(function(err){
+
 														callback(err);
 													});
 											},function(err){
@@ -939,7 +947,7 @@ module.exports = {
 			}
 			function getvideogain(videofile){
 				return new Promise((resolve) => {					
-					var proc = exec.spawn(ffmpegPath, ['-i', videosdir + '/' + videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
+					var proc = exec.spawn(module.exports.SETTINGS.BinffmpegPath, ['-i', videosdir + '/' + videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 
 					var audioGain = undefined;
 					var output = '';
@@ -970,8 +978,8 @@ module.exports = {
 			}
 			function getvideoduration(videofile) {
 				return new Promise((resolve,reject) => {
-					var videolength = 0;
-					probe(videosdir + '/' + videofile, function(err, videodata) {
+					var videolength = 0;					
+					probe(module.exports.SETTINGS.BinffprobePath, videosdir + '/' +videofile, function(err, videodata) {
 						if (err) {
 							module.exports.onLog('error', 'Video '+videofile+' probe error : '+err);
 							reject(err);
@@ -1013,7 +1021,7 @@ module.exports = {
 						seriesIDX++;
 						karas_series.push(seriesIDX + ',' + id_kara);
 					});
-					resolve();						
+					resolve(serieslist);						
 				});
 			}
 
@@ -1192,7 +1200,7 @@ module.exports = {
 						tagsIDX++;
 						karas_tags.push(tagsIDX + ',' + id_kara);
 					});
-					resolve();					
+					resolve(taglist);					
 				});
 			}
 
@@ -1207,6 +1215,8 @@ module.exports = {
 							//New way without "" in data
 							//var karadata = iniread.parseSync(karasdir + '/' + karafile);
 							var kara = [];
+							// Saving the values for later comparison
+							var karadata_old = karadata;
 							if (karadata.KID) {
 								kara['KID'] = karadata.KID;
 							} else {
@@ -1266,7 +1276,7 @@ module.exports = {
 								var tmpsubfile;												if (kara['subfile'] === 'dummy.ass') {
 										
 									if (kara.videofile.toLowerCase().includes('.mkv') || kara.videofile.toLowerCase().includes('.mp4')) {	
-										var proc = exec.spawnSync(ffmpegPath, ['-y', '-i', path.resolve(videosdir,kara.videofile), path.resolve(module.exports.SYSPATH,tmpdir,'kara_extract.'+kara.KID+'.ass')], { encoding : 'utf8' }),
+										var proc = exec.spawnSync(module.exports.SETTINGS.BinffmpegPath, ['-y', '-i', path.resolve(videosdir,kara.videofile), path.resolve(module.exports.SYSPATH,tmpdir,'kara_extract.'+kara.KID+'.ass')], { encoding : 'utf8' }),
 											ffmpegData = [],
 											errData = [],
 											exitCode = null,
@@ -1366,13 +1376,19 @@ module.exports = {
 							Promise.all([pGetVideoDuration,pGetVideoGain])
 								.then(function(){
 									karas.push(kara);
-									fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err) {
-										if (err) {
-											module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
-											reject(err);
-										}
+									if (karadata != karadata_old) {
+										fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err) {
+											if (err) {
+												module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
+												reject(err);
+											} else {												
+												resolve();
+											}											
+										});
+									} else {
 										resolve();
-									});
+									}
+									
 								})
 								.catch(function(err){
 									reject(err);
@@ -1383,21 +1399,5 @@ module.exports = {
 			}
 		});
 	},
-	onLog: function() {},
-	cleanUp: function() {
-		// This function is called when the generation aborted.
-		// It cleans up its mess and restores the kara folder in case it's been corrupted.
-		const karas_dbfile = path.resolve(module.exports.SYSPATH, 
-			module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
-		const karasdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
-		
-		if (fs.existsSync(karas_dbfile)) {
-			fs.unlinkSync(karas_dbfile);
-		}
-		//Restoring kara folder		
-		fs.copySync(karasdir,karasdir+'_backup',{
-			overwrite: true,
-			preserveTimestamps: true
-		});
-	}
+	onLog: function() {}	
 };

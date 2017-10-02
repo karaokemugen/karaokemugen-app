@@ -27,13 +27,20 @@ module.exports = {
 					reject(err);
 				}
 			});
-
-			var origBackgroundFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,module.exports.SETTINGS.PlayerBackground);
-			if (!fs.existsSync(origBackgroundFile) || module.exports.SETTINGS.PlayerBackground === '') {
+			var origBackgroundFile = path.join(__dirname,'assets/background.jpg');
+			if (module.exports.SETTINGS.PlayerBackground !== '' && 
+				module.exports.SETTINGS.PlayerBackground !== undefined &&
+				module.exports.SETTINGS.PlayerBackground !== null
+			) {
+				origBackgroundFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,module.exports.SETTINGS.PlayerBackground);			
+				if (!fs.existsSync(origBackgroundFile)) {
 				// Background provided in config file doesn't exist, reverting to default one provided.
-				logger.warn('[Background] Unable to find background file '+origBackgroundFile+', reverting to default one');
-				origBackgroundFile = path.resolve(module.exports.SYSPATH,'src/_player/assets/background.jpg');
+					logger.warn('[Background] Unable to find background file '+origBackgroundFile+', reverting to default one');
+					origBackgroundFile = path.join(__dirname,'assets/background.jpg');
+				} 
+				
 			}
+			
 
 			// Get dimensions of background image
 			var dimensions = sizeOf(origBackgroundFile);

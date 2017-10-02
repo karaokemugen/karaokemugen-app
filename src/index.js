@@ -3,24 +3,16 @@
  */
 
 const clc = require('cli-color');
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const ini = require('ini');
 const extend = require('extend');
-const mkdirp = require('mkdirp');
 const argv = require('minimist')(process.argv.slice(2));
 
-const logger = require('./_common/utils/logger.js');
 const i18n = require('i18n');
 const osLocale = require('os-locale');
 
 const net = require('net');
-
-process.on('uncaughtException', function (exception) {
-	console.log(exception); // to see your exception details in the console
-	// if you are on production, maybe you can send the exception details to your
-	// email as well ?
-});
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
@@ -56,9 +48,9 @@ if (argv.help) {
 
 /** Call to resolveSyspath to get the app's path in all OS configurations */
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
-if(SYSPATH) {
+if(SYSPATH) {	
+	const logger = require('./_common/utils/logger.js');		
 	logger.debug('[Launcher] SysPath detected : '+SYSPATH);
-	// Lecture de la configuration par défault
 	/**
 	 * Reading config.ini.default, then override it with config.ini if it exists.
 	 */
@@ -69,7 +61,7 @@ if(SYSPATH) {
 		extend(true,SETTINGS,configCustom);
 		logger.debug('[Launcher] Custom configuration merged.');
 	}
-	var version = ini.parse(fs.readFileSync(path.join(SYSPATH,'VERSION'), 'utf-8'));
+	var version = ini.parse(fs.readFileSync(path.resolve(__dirname,'VERSION'), 'utf-8'));
 	extend(true,SETTINGS,version);
 
 	var detectedLocale = osLocale.sync().substring(0,2);
@@ -79,9 +71,10 @@ if(SYSPATH) {
 
 	if (argv.version) {
 		console.log('Karaoke Mugen '+SETTINGS.VersionNo+' - '+SETTINGS.VersionName);
-		console.log('Database schema version : xxx');
+		console.log('Database schema version : unknown');
 		process.exit(0);
 	}
+	
 	logger.info('[Launcher] Locale detected : '+detectedLocale);
 	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);
 
@@ -101,7 +94,7 @@ if(SYSPATH) {
 	logger.info('[Launcher] Checking data folders');
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathKaras))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathKaras));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathKaras));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathKaras));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -109,7 +102,7 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathSubs))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathSubs));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathSubs));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathSubs));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -117,7 +110,7 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathVideos))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathVideos));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathVideos));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathVideos));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -125,7 +118,7 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathDB))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathDB));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathDB));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathDB));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -133,7 +126,7 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathTemp))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathTemp));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathTemp));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathTemp));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
@@ -141,12 +134,16 @@ if(SYSPATH) {
 	}
 	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathBin))) {
 		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathBin));
-		ret = mkdirp.sync(path.resolve(SYSPATH,SETTINGS.PathBin));
+		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathBin));
 		if (!ret) {
 			logger.error('[Launcher] Failed to create folder');
 			process.exit();
 		}
 	}
+
+	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
+	logger.debug('[Launcher] Copying input.conf into '+path.resolve(SYSPATH,SETTINGS.PathTemp));
+	fs.copySync(path.join(__dirname,'/_player/assets/input.conf'),path.resolve(SYSPATH,SETTINGS.PathTemp,'input.conf'),{ overwrite: true });
 
 	/**
 	 * Test if network ports are available
@@ -170,6 +167,37 @@ if(SYSPATH) {
 		});
 		server.listen(port);
 	});
+
+	/**
+	 * Test if binaries are available
+	 */
+	logger.info('[Launcher] Checking if binaries are available');
+	var binaries = require('./_common/utils/binchecker.js');
+	binaries.SYSPATH = SYSPATH;
+	binaries.SETTINGS = SETTINGS;
+	binaries.check();
+	SETTINGS.BinffmpegPath = binaries.ffmpegPath;
+	SETTINGS.BinffprobePath = binaries.ffprobePath;
+	SETTINGS.BinmpvPath = binaries.mpvPath;
+
+	/**
+	 * Check if backup folder for karaokes exists. If it does, it means previous generation aborted
+	 */
+	const karas_dbfile = path.resolve(SYSPATH,SETTINGS.PathDB, SETTINGS.PathDBKarasFile);
+	const karasdir = path.resolve(SYSPATH,SETTINGS.PathKaras);
+		
+	//Restoring kara folder		
+	if (fs.existsSync(karasdir+'_backup')) {
+		logger.info('[Launcher] Mahoro Mode : Backup folder exists, replacing karaokes folder with it.');
+		fs.removeSync(karasdir);
+		fs.renameSync(karasdir+'_backup',karasdir);
+		if (fs.existsSync(karas_dbfile)) {
+			logger.info('[Launcher] Mahoro Mode : clearing karas database : generation will occur shortly');
+			fs.unlinkSync(karas_dbfile);
+		}
+		
+	}
+
 	/**
 	 * Calling engine.
 	 */

@@ -1017,6 +1017,13 @@ var plData;
 			if (data.fullscreen != oldState.fullscreen) {
 				$('input[name="toggleFullscreen"]').bootstrapSwitch('state', data.fullscreen, true);
 			}
+			if (data.volume != oldState.volume) {
+				var val = data.volume, base = 100;
+				val = val / 100;
+				val = Math.pow(base, val);
+				val = parseInt(val);
+				$('input[name="setVolume"]').val(val);
+			}
 
 			oldState = data;
 			if (callback && typeof callback === 'function' && typeof param1 != 'undefined') {

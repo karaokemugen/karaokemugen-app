@@ -21,9 +21,10 @@ module.exports = {
 				logger.error('[DBI] _engine/components/db_interface.js : SYSPATH is null');
 				process.exit();
 			}
-
+			const userdb_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile);
+			const db_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile);
 			var userDB_Test = new Promise(function(resolve,reject){
-				if(!fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))) {
+				if(!fs.existsSync(userdb_file)) {
 					logger.warn('[DBI] User database not found');
 					db.open(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))
 						.then(() => {
@@ -49,19 +50,17 @@ module.exports = {
 			});
 
 			var karasDB_Test = new Promise(function(resolve,reject){
-				if(!fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile))) {
+				if(!fs.existsSync(db_file)) {
 					logger.warn('[DBI] Karaoke database not found');
 					var generator = require('../../_admin/generate_karasdb.js');
 					generator.SYSPATH = module.exports.SYSPATH;
 					generator.SETTINGS = module.exports.SETTINGS;
 					generator.onLog = function(type,message) {
-						logger.info('[DBI] Generating database',message);
+						logger.info('[DBI] [Gen]',message);
 					};
 					generator.run().then(function(){
 						resolve();
 					}).catch(function(error){
-						// error ?
-						generator.cleanUp();
 						// error.
 						reject(error);
 					});
@@ -1650,7 +1649,8 @@ module.exports = {
 								module.exports._db_handler.prepare(sqlAddKaraToPlaylist)
 									.then((stmt) => {
 										stmt.run(data)
-											.then(() => {										callback();
+											.then(() => {
+												callback();
 											})
 											.catch((err) => {
 												logger.error('Failed to add karaoke to playlist : '+err);				

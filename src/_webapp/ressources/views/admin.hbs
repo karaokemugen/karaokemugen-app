@@ -1,11 +1,11 @@
 <div id="header" class="header">
     <button title="{{i18n "SHUTDOWN"}}" action="poweroff" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-off"></i></button>
-    <button title="{{i18n "MUTE_UNMUTE"}}" action="command" id="mutestatus" name="mute" class="btn btn-default btn-dark pull-right">
+    <a title="{{i18n "MUTE_UNMUTE"}}" action="command" id="mutestatus" name="mute" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-volume-up unmute"></i>
 		<i class="glyphicon glyphicon-volume-off mute"></i>
 		<input title='{{i18n "VOLUME_LEVEL"}}' action="command" name="setVolume" id="volume" value="100" type="range" />	
-	</button>
+	</a>
     <button title="{{i18n "SHOW_HIDE_SUBS"}}" action="command" id="showSubs" name="hideSubs" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-subtitles hideSubs"></i>
         <i class="glyphicon glyphicon glyphicon-question-sign showSubs"></i>

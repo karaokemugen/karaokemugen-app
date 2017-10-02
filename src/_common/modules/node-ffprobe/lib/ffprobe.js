@@ -1,7 +1,5 @@
 var spawn = require('child_process').spawnSync,
-		fs = require('fs'),
 		path = require('path');
-const ffprobePath = require('ffmpeg-downloader').probePath
 
 module.exports = (function() {
 	function findBlocks(raw) {
@@ -97,7 +95,7 @@ module.exports = (function() {
 		return { format: format, metadata: metadata };
 	};
 
-	function doProbe(file, callback) {
+	function doProbe(ffprobePath, file, callback) {
 		
 		var proc = spawn(ffprobePath, ['-show_streams', '-show_format', '-loglevel', 'warning', file], { encoding : 'utf8' }),
 				probeData = [],

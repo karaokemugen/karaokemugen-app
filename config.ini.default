@@ -63,8 +63,14 @@ PlayerPIPPositionY = "Bottom"
 ; Paths to binaries for mpv. These are the defaults.
 ; Don't modify these unless you want to use another mpv binary.
 BinPlayerWindows = "app/bin/mpv.exe"
-BinPlayerOSX = "/usr/local/bin/mpv"
+BinPlayerOSX = "app/bin/mpv.app/Contents/MacOS/mpv"
 BinPlayerLinux = "/usr/bin/mpv"
+BinffmpegWindows = "app/bin/ffmpeg.exe"
+BinffprobeWindows = "app/bin/ffprobe.exe"
+BinffmpegLinux = "/usr/bin/ffmpeg"
+BinffprobeLinux = "/usr/bin/ffprobe"
+BinffmpegOSX = "app/bin/ffmpeg"
+BinffprobeOSX = "app/bin/ffprobe"
 
 ; Paths - don't touch these until you know what you're doing.
 PathBin = "app/bin"

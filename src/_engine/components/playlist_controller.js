@@ -3037,37 +3037,54 @@ module.exports = {
 	build_dummy_current_playlist:function(playlist_id){
 		logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...');
 		return new Promise(function(resolve,reject){
-			logger.info('[PLC] Dummy Plug : Adding 5 karas into current playlist');			
-			async.timesSeries(5,function(n,next) {				
-				module.exports.getRandomKara(playlist_id)
-					.then(function(kara_id) {
-						logger.debug('[PLC] Dummy Plug : random kara selected : '+kara_id);
-						module.exports.addKaraToPlaylist(
-							[kara_id],
-							'Dummy Plug System',
-							playlist_id
-						)				
-							.then(function() {
-								logger.info('[PLC] Dummy Plug : Added karaoke '+kara_id+' to sample playlist');
-								next();
-							})		
-							.catch(function(err){
-								logger.error('[PLC] Dummy Plug : '+err);
-								next(err);
-							});
-					})
-					.catch(function(err) {
-						logger.error('[PLC] Dummy Plug : failure to get random karaokes to add : '+err);
-						next(err);
-					});
-			},function(err){
-				if (err) {
+			module.exports.DB_INTERFACE.getStats()
+				.then((stats) => {
+					var karaCount = stats.totalcount;
+					// Limiting to 5 sample karas to add if there's more. 
+					if (karaCount > 5) karaCount = 5;
+					if (karaCount > 0) {
+						logger.info('[PLC] Dummy Plug : Adding '+karaCount+' karas into current playlist');			
+						async.timesSeries(karaCount,function(n,next) {				
+							module.exports.getRandomKara(playlist_id)
+								.then(function(kara_id) {
+									logger.debug('[PLC] Dummy Plug : random kara selected : '+kara_id);
+									module.exports.addKaraToPlaylist(
+										[kara_id],
+										'Dummy Plug System',
+										playlist_id
+									)				
+										.then(function() {
+											logger.info('[PLC] Dummy Plug : Added karaoke '+kara_id+' to sample playlist');
+											next();
+										})		
+										.catch(function(err){
+											logger.error('[PLC] Dummy Plug : '+err);
+											next(err);
+										});
+								})
+								.catch(function(err) {
+									logger.error('[PLC] Dummy Plug : failure to get random karaokes to add : '+err);
+									next(err);
+								});
+						},function(err){
+							if (err) {
+								reject(err);
+							} else {
+								logger.info('[PLC] Dummy Plug : Activation complete. The current playlist has now '+karaCount+' sample songs in it.');
+								resolve();
+							}
+						});
+					} else {
+						logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
+						resolve();
+					}
+					
+				})
+				.catch((err) => {
+					logger.error('[PLC] Unable to get number of karaokes in database : '+err);
 					reject(err);
-				} else {
-					logger.info('[PLC] Dummy Plug : activation complete');
-					resolve();
-				}
-			});
+				});	
+			
 		});
 	},
 
