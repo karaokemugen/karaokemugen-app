@@ -20,6 +20,8 @@ test:
   script:
     - node src/index.js --debug --test &disown
     - bash test/run.sh
+  only:
+    - test
 
 deploy:
   stage: deploy
