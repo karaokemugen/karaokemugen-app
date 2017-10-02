@@ -90,7 +90,8 @@
     "unix-timestamp": "^0.2.0",
     "uuid": "^3.1.0",
     "validator": "^8.1.0",
-    "winston": "^2.3.1"
+    "winston": "^2.3.1",
+    "winston-daily-rotate-file": "^1.7.2"
   },
   "devDependencies": {
     "eslint": "^4.5.0",
