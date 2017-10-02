@@ -66,7 +66,7 @@ module.exports = {
 			var karas_tags = [];
 			var karafiles = [];			
 			var doUpdateSeriesAltNames = false;
-
+			logger.profile('CreateDatabase');
 			Promise.all([
 				sqlite.open(karas_dbfile, { Promise }),
 				sqlite.open(karas_userdbfile, { Promise })
@@ -95,13 +95,16 @@ module.exports = {
 					});
 					Promise.all([pCreateKarasDB])
 						.then(function(){
+							logger.profile('CreateDatabase');
 						/**
 						 * Creating views
 						 */
 							var pCreateKarasDBViewAll = new Promise((resolve,reject) => {
+								logger.profile('CreateView');
 								var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
 								module.exports.db.exec(sqlCreateKarasDBViewAll)
 									.then(() => {
+										logger.profile('CreateView');
 										module.exports.onLog('success', 'Views created');
 										resolve();
 									})
@@ -130,38 +133,42 @@ module.exports = {
 				
 				// Backing up .kara folder first
 					if (fs.existsSync(karasdir+'_backup')) {
+						logger.profile('RemoveBackup');
 						fs.removeSync(karasdir+'_backup');
+						logger.profile('RemoveBackup');
 					}
-				
+					logger.profile('CreateBackup');
 					fs.mkdirsSync(karasdir+'_backup');
-				
+
 					fs.copySync(karasdir,karasdir+'_backup',{
 						overwrite: true,
 						preserveTimestamps: true
 					});
-				
+					logger.profile('CreateBackup');				
+					
 					/**
 				 * Get data from .kara files
 				 */
 					var pCreateKaraFiles = new Promise((resolve) => {
+						logger.profile('ReadKaraDir');
 						karafiles = fs.readdirSync(karasdir);
 						for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
 							if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
 								karafiles.splice(indexToRemove, 1);
 							}
-						}
+						}						
 						module.exports.onLog('success', 'Karaoke data folder read');
 						resolve();
 					});
 					Promise.all([pCreateKaraFiles])
 						.then(function(){
+							logger.profile('ReadKaraDir');
 						/**
 						 * First analyze .kara
 						 * Then add UUID for each karaoke inside if it isn't there already
 						 * Then build karas table in one transaction.
 						 */
-							var pAddToKaras = new Promise((resolve,reject) => {
-								
+							var pAddToKaras = new Promise((resolve,reject) => {				
 								logger.profile('AddKara');
 								async.eachLimit(karafiles, 5, function(kara, callback){
 									addKara(kara)
@@ -183,7 +190,7 @@ module.exports = {
 								});
 							});
 							Promise.all([pAddToKaras])
-								.then(function(){								
+								.then(function(){									
 								/**
 								 * Push to array sqlInsertKaras for sql statements from karas.
 								 */
@@ -206,7 +213,7 @@ module.exports = {
 												$kara_gain : kara['gain'],
 												$kara_videolength : kara['videolength']			
 											});
-										});
+										});										
 										resolve();
 									});
 									/**
@@ -700,13 +707,15 @@ module.exports = {
 					var ViewcountKaras = [];
 					var BlacklistKaras = [];
 
-					var sqlUpdateUserDB = '';
+					var sqlUpdateUserDB = 'BEGIN TRANSACTION;';
 
 					var pGetAllKaras = new Promise((resolve,reject) => {
 						var sqlGetAllKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
+						logger.profile('ICSelectKaras');
 						module.exports.db.all(sqlGetAllKaras)
 							.then((playlist) => {
 								AllKaras = playlist;
+								logger.profile('ICSelectKaras');
 								resolve();
 							})
 							.catch((err) => {
@@ -715,10 +724,12 @@ module.exports = {
 					});
 					var pGetPlaylistKaras = new Promise((resolve,reject) => {
 						var sqlGetPlaylistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM playlist_content;';
+						logger.profile('ICSelectPLCs');
 						module.exports.userdb.all(sqlGetPlaylistKaras)
 							.then((playlist) => {
 								if (playlist) {
 									PlaylistKaras = playlist;
+									logger.profile('ICSelectPLCs');
 									resolve();
 								} else {
 									PlaylistKaras = [];
@@ -731,10 +742,12 @@ module.exports = {
 					});
 					var pGetWhitelistKaras = new Promise((resolve,reject) => {
 						var sqlGetWhitelistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM whitelist;';
+						logger.profile('ICSelectWLCs');
 						module.exports.userdb.all(sqlGetWhitelistKaras)
 							.then((playlist) => {
 								if (playlist) {
 									WhitelistKaras = playlist;
+									logger.profile('ICSelectWLCs');
 									resolve();
 								} else {
 									WhitelistKaras = [];
@@ -747,10 +760,12 @@ module.exports = {
 					});
 					var pGetBlacklistKaras = new Promise((resolve,reject) => {
 						var sqlGetBlacklistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM blacklist;';
+						logger.profile('ICSelectBLCs');
 						module.exports.userdb.all(sqlGetBlacklistKaras)
 							.then((playlist) => {
 								if (playlist) {
 									BlacklistKaras = playlist;
+									logger.profile('ICSelectBLCs');
 									resolve();
 								} else {
 									BlacklistKaras = [];
@@ -763,10 +778,12 @@ module.exports = {
 					});
 					var pGetRatingKaras = new Promise((resolve,reject) => {
 						var sqlGetRatingKaras = 'SELECT fk_id_kara AS id_kara, kid FROM rating;';
+						logger.profile('ICSelectRs');
 						module.exports.userdb.all(sqlGetRatingKaras)
 							.then((playlist) => {
 								if (playlist) {
 									RatingKaras = playlist;
+									logger.profile('ICSelectRs');
 									resolve();
 								} else {
 									RatingKaras = [];
@@ -779,10 +796,12 @@ module.exports = {
 					});
 					var pGetViewcountKaras = new Promise((resolve,reject) => {
 						var sqlGetViewcountKaras = 'SELECT fk_id_kara AS id_kara, kid FROM viewcount;';
+						logger.profile('ICSelectVCs');
 						module.exports.userdb.all(sqlGetViewcountKaras)
 							.then((playlist) => {
 								if (playlist) {
 									ViewcountKaras = playlist;
+									logger.profile('ICSelectVCs');
 									resolve();
 								} else {
 									ViewcountKaras = [];
@@ -799,6 +818,7 @@ module.exports = {
 							// We've got all of our lists, let's compare !
 							var KaraFound = false;
 							var UpdateNeeded = false;
+							logger.profile('ICCompareWL');
 							if (WhitelistKaras != []) {
 								WhitelistKaras.forEach(function(WLKara){
 									KaraFound = false;
@@ -821,7 +841,8 @@ module.exports = {
 									}
 								});
 							}
-
+							logger.profile('ICCompareWL');
+							logger.profile('ICCompareBL');
 							if (BlacklistKaras != []) {
 								BlacklistKaras.forEach(function(BLKara){
 									KaraFound = false;
@@ -844,6 +865,8 @@ module.exports = {
 									}
 								});
 							}
+							logger.profile('ICCompareBL');
+							logger.profile('ICCompareR');
 							if (RatingKaras != []) {
 								RatingKaras.forEach(function(RKara){
 									KaraFound = false;
@@ -866,6 +889,8 @@ module.exports = {
 									}
 								});
 							}
+							logger.profile('ICCompareR');
+							logger.profile('ICCompareVC');
 							if (ViewcountKaras != []) {
 								ViewcountKaras.forEach(function(VKara){
 									KaraFound = false;
@@ -888,7 +913,8 @@ module.exports = {
 									}
 								});
 							}
-
+							logger.profile('ICCompareVC');
+							logger.profile('ICComparePL');
 							if (PlaylistKaras != []) {
 								PlaylistKaras.forEach(function(PLKara){
 									KaraFound = false;
@@ -914,24 +940,24 @@ module.exports = {
 									}
 								});
 							}
+							logger.profile('ICComparePL');
 							if (UpdateNeeded) {
 								// Disabling constraints check for this procedure 
 								// Since we'll be renumbering some karas which might have switched places, two entries might have, for a split second, the same number.
+								sqlUpdateUserDB += "COMMIT;"
+								logger.profile('ICRunUpdates');
 								module.exports.userdb.run('PRAGMA foreign_keys = OFF;')
 									.then(() => {
 										module.exports.userdb.exec(sqlUpdateUserDB)
 											.then(() => {
 												module.exports.onLog('success', 'Database updated due to integrity checks');				
 												module.exports.onLog('success', 'PLEASE VERIFY YOUR BLACKLIST CRITERIAS BEFORE YOUR NEXT KARAOKE SESSION');
+												logger.profile('ICRunUpdates');
 												resolve();									
 											})
 											.catch((err) => {
 												module.exports.onLog('error', 'Error updating database : '+err);								reject(err);
-											})
-											.catch((err) => {
-												module.exports.onLog('error', 'Error updating database : '+err);	
-												reject();
-											});
+											});											
 									});
 							} else {
 								module.exports.onLog('success', 'No update needed to user database');
@@ -1385,7 +1411,7 @@ module.exports = {
 												resolve();
 											}											
 										});
-									} else {
+									} else {										
 										resolve();
 									}
 									
