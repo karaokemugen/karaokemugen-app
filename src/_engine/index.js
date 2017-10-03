@@ -322,7 +322,6 @@ module.exports = {
 		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
 			module.exports._services.playlist_controller.current()
 				.then(function(kara){
-					logger.info('[Engine] Start playing '+kara.path.video);
 					module.exports._services.player.play(
 						kara.path.video,
 						kara.path.subtitle,

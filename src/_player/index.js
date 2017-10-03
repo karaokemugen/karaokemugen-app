@@ -59,12 +59,23 @@ module.exports = {
 	play: function(video,subtitle,reference,gain,infos){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
-		if(fs.existsSync(video)){
+
+		//Search for video file in the different PathVideos
+		var PathsVideos = module.exports.SETTINGS.PathVideos.split('|');
+		var videoFile = undefined;
+		PathsVideos.forEach((PathVideos) => {
+			if (fs.existsSync(path.resolve(module.exports.SYSPATH,PathVideos,video))) {
+				// Video found in the current path
+				videoFile = path.resolve(module.exports.SYSPATH,PathVideos,video);
+			}
+		});
+		if(videoFile !== undefined){
 			logger.debug('[Player] Audio gain adjustment : '+gain);
+			logger.info('[Player] Loading video : '+videoFile);
 			if (gain == undefined || gain == null) gain = 0;
 			module.exports._ref = reference;
-			module.exports._player.load(video,'replace',['replaygain-fallback='+gain])
-				.then(() => {
+			module.exports._player.load(videoFile,'replace',['replaygain-fallback='+gain])
+				.then(() => {					
 					module.exports._player.play();
 					module.exports.playerstatus = 'play';
 					if (subtitle) {
@@ -93,7 +104,7 @@ module.exports = {
 				});
 		} else {
 			module.exports.playing = false;
-			logger.error('[Player] Video NOT FOUND : '+video);
+			logger.error('[Player] Video NOT FOUND : '+videoFile);
 		}
 	},
 	setFullscreen:function(fsState){

@@ -9,8 +9,8 @@ const isoCountriesLanguages = require('iso-countries-languages');
 const async = require('async');
 const validator = require('validator');
 process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at:', p, 'reason:', reason);
-  // application specific logging, throwing an error, or other logic here
+	console.log('Unhandled Rejection at:', p, 'reason:', reason);
+	// application specific logging, throwing an error, or other logic here
 });
 
 module.exports = {
@@ -3013,9 +3013,10 @@ module.exports = {
 								if (kara.songorder === 0) {
 									kara.songorder = '';
 								}
-								kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;								
+								kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;		
+													
 								kara.path = {
-									video: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathVideos, kara.videofile),
+									video: kara.videofile,
 									subtitle: ass,									
 								};													
 								resolve(kara);
