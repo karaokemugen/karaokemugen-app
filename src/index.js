@@ -47,9 +47,9 @@ if (argv.help) {
 }
 
 /** Call to resolveSyspath to get the app's path in all OS configurations */
+const logger = require('./_common/utils/logger.js');		
 const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
 if(SYSPATH) {	
-	const logger = require('./_common/utils/logger.js');		
 	logger.debug('[Launcher] SysPath detected : '+SYSPATH);
 	/**
 	 * Reading config.ini.default, then override it with config.ini if it exists.
@@ -71,7 +71,6 @@ if(SYSPATH) {
 
 	if (argv.version) {
 		console.log('Karaoke Mugen '+SETTINGS.VersionNo+' - '+SETTINGS.VersionName);
-		console.log('Database schema version : unknown');
 		process.exit(0);
 	}
 	
@@ -92,54 +91,34 @@ if(SYSPATH) {
 	 */
 	var ret;
 	logger.info('[Launcher] Checking data folders');
-	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathKaras))) {
-		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathKaras));
-		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathKaras));
-		if (!ret) {
-			logger.error('[Launcher] Failed to create folder');
-			process.exit();
+	var PathsToCheck = [];
+	var PathsKaras = SETTINGS.PathKaras.split('|');
+	PathsKaras.forEach(function(PathKaras){
+		PathsToCheck.push(PathKaras);		
+	});
+	var PathsSubs = SETTINGS.PathSubs.split('|');
+	PathsSubs.forEach(function(PathSubs){
+		PathsToCheck.push(PathSubs);		
+	});
+	var PathsVideos = SETTINGS.PathVideos.split('|');
+	PathsVideos.forEach(function(PathVideos){
+		PathsToCheck.push(PathVideos);		
+	});
+	PathsToCheck.push(SETTINGS.PathDB);
+	PathsToCheck.push(SETTINGS.PathTemp);
+	PathsToCheck.push(SETTINGS.PathBin);
+	
+	PathsToCheck.forEach((Path) => {
+		if(!fs.existsSync(path.resolve(SYSPATH,Path))) {
+			logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,Path));
+			ret = fs.mkdirsSync(path.resolve(SYSPATH,Path));
+			if (!ret) {
+				logger.error('[Launcher] Failed to create folder');
+				process.exit();
+			}
 		}
-	}
-	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathSubs))) {
-		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathSubs));
-		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathSubs));
-		if (!ret) {
-			logger.error('[Launcher] Failed to create folder');
-			process.exit();
-		}
-	}
-	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathVideos))) {
-		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathVideos));
-		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathVideos));
-		if (!ret) {
-			logger.error('[Launcher] Failed to create folder');
-			process.exit();
-		}
-	}
-	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathDB))) {
-		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathDB));
-		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathDB));
-		if (!ret) {
-			logger.error('[Launcher] Failed to create folder');
-			process.exit();
-		}
-	}
-	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathTemp))) {
-		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathTemp));
-		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathTemp));
-		if (!ret) {
-			logger.error('[Launcher] Failed to create folder');
-			process.exit();
-		}
-	}
-	if(!fs.existsSync(path.resolve(SYSPATH,SETTINGS.PathBin))) {
-		logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,SETTINGS.PathBin));
-		ret = fs.mkdirsSync(path.resolve(SYSPATH,SETTINGS.PathBin));
-		if (!ret) {
-			logger.error('[Launcher] Failed to create folder');
-			process.exit();
-		}
-	}
+	});
+	
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	logger.debug('[Launcher] Copying input.conf into '+path.resolve(SYSPATH,SETTINGS.PathTemp));
@@ -183,21 +162,28 @@ if(SYSPATH) {
 	/**
 	 * Check if backup folder for karaokes exists. If it does, it means previous generation aborted
 	 */
-	const karas_dbfile = path.resolve(SYSPATH,SETTINGS.PathDB, SETTINGS.PathDBKarasFile);
-	const karasdir = path.resolve(SYSPATH,SETTINGS.PathKaras);
+	const karas_dbfile = path.resolve(SYSPATH,SETTINGS.PathDB, SETTINGS.PathDBKarasFile);	
 		
-	//Restoring kara folder		
-	if (fs.existsSync(karasdir+'_backup')) {
-		logger.info('[Launcher] Mahoro Mode : Backup folder exists, replacing karaokes folder with it.');
-		fs.removeSync(karasdir);
-		fs.renameSync(karasdir+'_backup',karasdir);
-		if (fs.existsSync(karas_dbfile)) {
-			logger.info('[Launcher] Mahoro Mode : clearing karas database : generation will occur shortly');
-			fs.unlinkSync(karas_dbfile);
+	//Restoring kara folder
+	PathsKaras.forEach((PathKara) => {
+		var karasdir = path.resolve(SYSPATH,PathKara);
+		if (fs.existsSync(karasdir+'_backup')) {
+			logger.info('[Launcher] Mahoro Mode : Backup folder '+karasdir+'_backup exists, replacing karaokes folder with it.');
+			fs.removeSync(karasdir);
+			fs.renameSync(karasdir+'_backup',karasdir);
+			if (fs.existsSync(karas_dbfile)) {
+				logger.info('[Launcher] Mahoro Mode : clearing karas database : generation will occur shortly');
+				fs.unlinkSync(karas_dbfile);
+			}
 		}
-		
-	}
+	});
+	
 
+	if(argv.test) {
+		SETTINGS.isTest = true;
+	} else {
+		SETTINGS.isTest = false;
+	}
 	/**
 	 * Calling engine.
 	 */
@@ -210,11 +196,7 @@ if(SYSPATH) {
 	else
 		engine.run();
 
-	if(argv.test) {
-		SETTINGS.isTest = true;
-	} else {
-		SETTINGS.isTest = false;
-	}
+
 } else {
 	logger.error('[Launcher] Unable to detect SysPath !');
 	process.exit(1);

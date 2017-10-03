@@ -3,6 +3,10 @@ process.on('uncaughtException', function (exception) {
 	// if you are on production, maybe you can send the exception details to your
 	// email as well ?
 });
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  // application specific logging, throwing an error, or other logic here
+});
 
 
 /*
@@ -36,7 +40,7 @@ module.exports = {
 	SETTINGS: null,
 	run: function() {
 		// These are not resolved : they will be later on when extracting / reading ASS
-		const lyricsdir = module.exports.SETTINGS.PathSubs;	
+		const lyricsdirslist = module.exports.SETTINGS.PathSubs;	
 		const tmpdir = module.exports.SETTINGS.PathTemp;
 		const karas_dbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
 		const karas_userdbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBUserFile);
@@ -44,8 +48,8 @@ module.exports = {
 		const sqlCreateKarasDBfile = path.join(__dirname, '../_common/db/karas.sqlite3.sql');
 		const sqlCreateKarasDBViewAllfile = path.join(__dirname, '../_common/db/view_all.view.sql');
 
-		const karasdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
-		const videosdir = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
+		const karasdirslist = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
+		const videosdirslist = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
 
 		module.exports.onLog('success', 'Starting database generation');
 		module.exports.onLog('success', 'GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
@@ -139,37 +143,52 @@ module.exports = {
 				var pCreateKaraArrays = new Promise((resolve,reject) => {
 				
 				// Backing up .kara folder first
-					if (fs.existsSync(karasdir+'_backup')) {
-						logger.profile('RemoveBackup');
-						fs.removeSync(karasdir+'_backup');
-						logger.profile('RemoveBackup');
-					}
-					logger.profile('CreateBackup');
-					fs.mkdirsSync(karasdir+'_backup');
+					var karasdirs = karasdirslist.split('|');
+					karasdirs.forEach((karasdir) => {
+						if (fs.existsSync(karasdir+'_backup')) {
+							logger.debug('[Gen] Removing backup dir '+karasdir+'_backup');
+							logger.profile('RemoveBackup');
+							fs.removeSync(karasdir+'_backup');
+							logger.profile('RemoveBackup');
+						}
+						logger.debug('[Gen] Creating backup dir '+karasdir+'_backup');
+						logger.profile('CreateBackup');
+						fs.mkdirsSync(karasdir+'_backup');
 
-					fs.copySync(karasdir,karasdir+'_backup',{
-						overwrite: true,
-						preserveTimestamps: true
+						fs.copySync(karasdir,karasdir+'_backup',{
+							overwrite: true,
+							preserveTimestamps: true
+						});
+						logger.profile('CreateBackup');				
 					});
-					logger.profile('CreateBackup');				
+					
 					
 					/**
 				 * Get data from .kara files
 				 */
 					var pCreateKaraFiles = new Promise((resolve) => {
 						logger.profile('ReadKaraDir');
-						karafiles = fs.readdirSync(karasdir);
+						//Adding all kara files from all kara directories
+						karasdirs.forEach((karasdir) => {
+							var karafilestemp = fs.readdirSync(karasdir);
+							karafilestemp.forEach((karafiletemp,index) => {
+								karafilestemp[index] = path.resolve(module.exports.SYSPATH,karasdir,karafiletemp);
+							});
+							karafiles.push.apply(karafiles,karafilestemp);					
+						});
+
+						//Deleting non .kara files
 						for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
 							if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
 								karafiles.splice(indexToRemove, 1);
 							}
-						}						
+						}	
 						module.exports.onLog('success', 'Karaoke data folder read');
+						logger.profile('ReadKaraDir');
 						resolve();
 					});
 					Promise.all([pCreateKaraFiles])
 						.then(function(){
-							logger.profile('ReadKaraDir');
 							/**
 						 * First analyze .kara
 						 * Then add UUID for each karaoke inside if it isn't there already
@@ -431,9 +450,12 @@ module.exports = {
 										closeDatabaseConnection()
 											.then(function(){
 											//Generation is finished, cleaning up backup karas dir
-												if (fs.existsSync(karasdir+'_backup')) {
-													fs.removeSync(karasdir+'_backup');
-												}	
+												var karasdirs = karasdirslist.split('|');
+												karasdirs.forEach((karasdir) => {
+													if (fs.existsSync(karasdir+'_backup')) {
+														fs.removeSync(karasdir+'_backup');
+													}	
+												});
 												resolve();
 											})
 											.catch(function(err){
@@ -518,6 +540,9 @@ module.exports = {
 														resolve();
 													}
 												});									
+											})
+											.catch((err) => {
+												reject(err);
 											});
 									});
 			
@@ -535,11 +560,12 @@ module.exports = {
 															$ass: kara.ass
 														};
 														stmt.run(data)
-															.then(() => {																					callback();
+															.then(() => {
+																callback();
 															})
 															.catch((err) => {
 																callback(err);
-															});										
+															});								
 													} else {
 														callback();
 													}						
@@ -553,6 +579,9 @@ module.exports = {
 														resolve();
 													}
 												});
+											})
+											.catch((err) => {
+												reject(err);
 											});
 									});
 
@@ -576,7 +605,10 @@ module.exports = {
 														resolve();
 													}
 												});
-											});								
+											})
+											.catch((err) => {
+												reject(err);
+											});
 									});
 									var pInsertTags = new Promise((resolve,reject) => {
 										module.exports.db.prepare('INSERT INTO tag(pk_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );')
@@ -598,6 +630,9 @@ module.exports = {
 														resolve();
 													}
 												});
+											})
+											.catch((err) => {
+												reject(err);
 											});								
 									});
 									var pInsertKarasTags = new Promise((resolve,reject) => {
@@ -620,6 +655,9 @@ module.exports = {
 														resolve();
 													}
 												});
+											})
+											.catch((err) => {
+												reject(err);
 											});								
 									});
 									var pInsertKarasSeries = new Promise((resolve,reject) => {
@@ -642,6 +680,9 @@ module.exports = {
 														resolve();
 													}
 												});
+											})
+											.catch((err) => {
+												reject(err);
 											});								
 									});
 									var pUpdateSeries = new Promise((resolve,reject) => {
@@ -665,6 +706,9 @@ module.exports = {
 															resolve();
 														}
 													});
+												})
+												.catch((err) => {
+													reject(err);
 												});
 										} else {
 											resolve();
@@ -980,6 +1024,9 @@ module.exports = {
 												.catch((err) => {
 													module.exports.onLog('error', 'Error updating database : '+err);								reject(err);
 												});											
+										})
+										.catch((err) => {
+											reject(err);
 										});
 								} else {
 									module.exports.onLog('success', 'No update needed to user database');
@@ -994,12 +1041,12 @@ module.exports = {
 					})
 						.catch((err) => {
 							reject(err);
-						})
+						});
 				});
 			}
 			function getvideogain(videofile){
 				return new Promise((resolve) => {					
-					var proc = exec.spawn(module.exports.SETTINGS.BinffmpegPath, ['-i', videosdir + '/' + videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
+					var proc = exec.spawn(module.exports.SETTINGS.BinffmpegPath, ['-i', videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 
 					var audioGain = undefined;
 					var output = '';
@@ -1031,7 +1078,7 @@ module.exports = {
 			function getvideoduration(videofile) {
 				return new Promise((resolve,reject) => {
 					var videolength = 0;					
-					probe(module.exports.SETTINGS.BinffprobePath, videosdir + '/' +videofile, function(err, videodata) {
+					probe(module.exports.SETTINGS.BinffprobePath, videofile, function(err, videodata) {
 						if (err) {
 							module.exports.onLog('error', 'Video '+videofile+' probe error : '+err);
 							reject(err);
@@ -1258,7 +1305,7 @@ module.exports = {
 
 			function addKara(karafile) {
 				return new Promise(function(resolve, reject) {
-					fs.readFile(karasdir + '/' + karafile, 'utf-8', function(err,data){
+					fs.readFile(karafile, 'utf-8', function(err,data){
 						if (err) {
 							reject(err);
 						} else {
@@ -1315,105 +1362,122 @@ module.exports = {
 							}
 							
 
-							//Calculate size.
-							
-							if (fs.existsSync(videosdir + '/' + kara['videofile'])) {
-								
-								//Reading ASS file directly
-								//or extract it from the video
-								//Testing if the subfile provided is dummy.ass
-								//In which case we will work with either an empty ass file or
-								// the one provided by the mkv or mp4 file.							
-								var pathToSubFiles;
-								var tmpsubfile;												if (kara['subfile'] === 'dummy.ass') {
+							//Calculate size,gain,and get ASS file
+							//First we need to search for our video
+							var videosdirs = videosdirslist.split('|');
+							var lyricsdirs = lyricsdirslist.split('|');
+							var videoFound = false;
+							var pGetVideoDuration;
+							var pGetVideoGain;
+							videosdirs.forEach((videosdir) => {
+								if (fs.existsSync(videosdir + '/' + kara['videofile'])) {
+									videoFound = true;
+									//Reading ASS file directly
+									//or extract it from the video
+									//Testing if the subfile provided is dummy.ass
+									//In which case we will work with either an empty ass file or
+									// the one provided by the mkv or mp4 file.							
+									var pathToSubFiles;
+									var tmpsubfile;												if (kara['subfile'] === 'dummy.ass') {
 										
-									if (kara.videofile.toLowerCase().includes('.mkv') || kara.videofile.toLowerCase().includes('.mp4')) {	
-										var proc = exec.spawnSync(module.exports.SETTINGS.BinffmpegPath, ['-y', '-i', path.resolve(videosdir,kara.videofile), path.resolve(module.exports.SYSPATH,tmpdir,'kara_extract.'+kara.KID+'.ass')], { encoding : 'utf8' }),
-											ffmpegData = [],
-											errData = [],
-											exitCode = null,
-											start = Date.now();
+										if (kara.videofile.toLowerCase().includes('.mkv') || kara.videofile.toLowerCase().includes('.mp4')) {	
+											var proc = exec.spawnSync(module.exports.SETTINGS.BinffmpegPath, ['-y', '-i', path.resolve(videosdir,kara.videofile), path.resolve(module.exports.SYSPATH,tmpdir,'kara_extract.'+kara.KID+'.ass')], { encoding : 'utf8' }),
+												ffmpegData = [],
+												errData = [],
+												exitCode = null,
+												start = Date.now();
 
-										if (proc.error) {
-											err = 'Failed to extract ASS file : '+proc.error;
+											if (proc.error) {
+												err = 'Failed to extract ASS file : '+proc.error;
+												module.exports.onLog('error', err);
+												reject(err);
+											}
+											// We test if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything, so we replace it with nothing.
+											tmpsubfile = 'kara_extract.'+kara.KID+'.ass';
+											pathToSubFiles = tmpdir;
+											if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile))){
+												tmpsubfile = '';							
+											} 
+										} else {
+										// if no .mkv or .mp4 detected, we return no ass.
+										// Videofile is most probably a hardsubbed video.
+											tmpsubfile = '';
+											pathToSubFiles = '';
+										}
+									} else {
+									// Checking if subFile exists. Abort if not.			
+										var lyricsFound = false;
+										lyricsdirs.forEach((lyricsdir) => {
+											if(fs.existsSync(path.resolve(module.exports.SYSPATH,lyricsdir,kara.subfile))) {
+												tmpsubfile = kara.subfile;
+												pathToSubFiles = lyricsdir;
+												lyricsFound = true;
+											}	
+										});
+										if (!lyricsFound) {
+											err = 'ASS file not found : '+tmpsubfile+' (for karaoke '+kara.videofile;
 											module.exports.onLog('error', err);
 											reject(err);
 										}
-										// We test if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything, so we replace it with nothing.
-										tmpsubfile = 'kara_extract.'+kara.KID+'.ass';
-										pathToSubFiles = tmpdir;
-										if (!fs.existsSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile))){
-											tmpsubfile = '';							
-										} 
+									}
+									//Let's read our ASS and get it into a variable
+									if (tmpsubfile !== '' && tmpsubfile !== undefined) {
+										kara.ass = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile), 'utf-8');
+										if (tmpsubfile === 'kara_extract.'+kara.KID+'.ass') {
+											fs.unlinkSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile));
+										}
 									} else {
-										// if no .mkv or .mp4 detected, we return no ass.
-										// Videofile is most probably a hardsubbed video.
-										tmpsubfile = '';
-										pathToSubFiles = '';
+										// No subfile. kara.ass will be empty.
+										kara.ass = '';
 									}
-								} else {
-									// Checking if subFile exists. Abort if not.									
-									if(!fs.existsSync(path.resolve(module.exports.SYSPATH,lyricsdir,kara.subfile))) {
-										err = 'ASS file not found : '+tmpsubfile;
-										module.exports.onLog('error', err);
-										reject(err);
-									} else {
-										tmpsubfile = kara.subfile;
-										pathToSubFiles = lyricsdir;
-									}
-								}
-								//Let's read our ASS and get it into a variable								
-								if (tmpsubfile !== '' && tmpsubfile !== undefined) {
-									kara.ass = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile), 'utf-8');
-									if (tmpsubfile === 'kara_extract.'+kara.KID+'.ass') {
-										fs.unlinkSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile));
-									}
-								} else {
-									// No subfile. kara.ass will be empty.
-									kara.ass = '';
-								}							
-								var videostats = fs.statSync(videosdir + '/' + kara['videofile']);							
-								if (videostats.size != karadata.videosize) {
+										
+																	
+									var videostats = fs.statSync(videosdir + '/' + kara['videofile']);							
+									if (videostats.size != karadata.videosize) {
 									//Probe file for duration
 									//Calculate gain
 									// write duration and gain to .kara
 									
-									var pGetVideoGain = new Promise ((resolve,reject) => {
-										getvideogain(karadata.videofile)
-											.then(function(gain){												
-												kara['gain'] = gain;
-												karadata.videogain = gain;
-												resolve();
-											})
-											.catch(function(err){
-												kara['gain'] = 0;
-												reject(err);
-											});
-									});
+										pGetVideoGain = new Promise ((resolve,reject) => {
+											getvideogain(path.resolve(module.exports.SYSPATH,videosdir,karadata.videofile))
+												.then(function(gain){												
+													kara['gain'] = gain;
+													karadata.videogain = gain;
+													resolve();
+												})
+												.catch(function(err){
+													kara['gain'] = 0;
+													reject(err);
+												});
+										});
 
-									var pGetVideoDuration = new Promise ((resolve,reject) => {
-										getvideoduration(karadata.videofile)
-											.then(function(videolength){
-												kara['videolength'] = videolength;
-												karadata.videoduration = videolength;
-												resolve();
-											})
-											.catch(function(err){
-												kara['videolength'] = 0;
-												reject(err);
-											});
-									});
+										pGetVideoDuration = new Promise ((resolve,reject) => {
+											getvideoduration(path.resolve(module.exports.SYSPATH,videosdir,karadata.videofile))
+												.then(function(videolength){
+													kara['videolength'] = videolength;
+													karadata.videoduration = videolength;
+													resolve();
+												})
+												.catch(function(err){
+													kara['videolength'] = 0;
+													reject(err);
+												});
+										});
 
-									karadata.videosize = videostats.size;
-								} else {
-									kara['gain'] = karadata.videogain;
-									kara['videolength'] = karadata.videoduration;
+										karadata.videosize = videostats.size;
+									} else {
+										kara['gain'] = karadata.videogain;
+										kara['videolength'] = karadata.videoduration;
+									}
 								}
-							} else {
+							});
+							
+							if (!videoFound) {
 								module.exports.onLog('warning', 'Video file not found : '+kara['videofile']);
 								kara['gain'] = 0;
 								kara['size'] = 0;
 								kara['videolength'] = 0;
+								kara.ass = '';
 							}
 
 							kara['rating'] = 0;
@@ -1430,7 +1494,7 @@ module.exports = {
 								.then(function(){
 									karas.push(kara);
 									if (karadata != karadata_old) {
-										fs.writeFile(karasdir + '/' + karafile, ini.stringify(karadata), function(err) {
+										fs.writeFile(karafile, ini.stringify(karadata), function(err) {
 											if (err) {
 												module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
 												reject(err);
