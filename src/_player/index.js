@@ -52,9 +52,6 @@ module.exports = {
 			})
 				.catch(function(err) {
 					logger.error('[Player] Player interface is NOT READY : '+err);
-					if (fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'))) {
-						fs.unlinkSync(path.resolve(module.exports.SYSPATH,module.exports.BINPATH,'mpvtemp.exe'));
-					}
 					process.exit();
 				});
 		}
