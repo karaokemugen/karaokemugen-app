@@ -85,7 +85,10 @@ module.exports = {
 					module.exports._player.freeCommand(JSON.stringify(command));
 					//logger.profile('StartPlaying');
 					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-					module.exports._player.load(backgroundImageFile,'append');
+					module.exports._player.load(backgroundImageFile,'append')
+						.catch((err) => {
+							logger.error('[Player] Unable to load background in append mode (play) : '+err);
+						});
 					module.exports._playing = true;
 				})
 				.catch((err) => {
@@ -121,6 +124,9 @@ module.exports = {
 		module.exports._player.load(backgroundImageFile)
 			.then(() => {
 				module.exports.enhanceBackground();
+			})
+			.catch((err) => {
+				logger.error('[Player] Unable to load background at stop : '+err);
 			});
 	},
 	pause: function(){
@@ -341,6 +347,9 @@ module.exports = {
 					module.exports._player.load(backgroundImageFile)
 						.then(() => {
 							module.exports.enhanceBackground();
+						})
+						.catch((err) => {
+							logger.error('[Player] Unable to load background at start : '+err);
 						});
 					module.exports._player.observeProperty('sub-text',13);
 					module.exports._player.observeProperty('volume',14);
