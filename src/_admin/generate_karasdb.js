@@ -1309,16 +1309,13 @@ module.exports = {
 						if (err) {
 							reject(err);
 						} else {
-							
+							var isKaraModified = false;
 							var karadata = ini.parse(data);
-							//New way without "" in data
-							//var karadata = iniread.parseSync(karasdir + '/' + karafile);
-							var kara = [];
-							// Saving the values for later comparison
-							var karadata_old = karadata;
+							var kara = [];							
 							if (karadata.KID) {
 								kara['KID'] = karadata.KID;
 							} else {
+								isKaraModified = true;
 								var KID = uuidV4();
 								karadata.KID = KID;
 								kara['KID'] = karadata.KID;
@@ -1437,7 +1434,7 @@ module.exports = {
 									//Probe file for duration
 									//Calculate gain
 									// write duration and gain to .kara
-									
+										isKaraModified = true;
 										pGetVideoGain = new Promise ((resolve,reject) => {
 											getvideogain(path.resolve(module.exports.SYSPATH,videosdir,karadata.videofile))
 												.then(function(gain){												
@@ -1493,7 +1490,7 @@ module.exports = {
 							Promise.all([pGetVideoDuration,pGetVideoGain])
 								.then(function(){
 									karas.push(kara);
-									if (karadata != karadata_old) {
+									if (isKaraModified) {
 										fs.writeFile(karafile, ini.stringify(karadata), function(err) {
 											if (err) {
 												module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
