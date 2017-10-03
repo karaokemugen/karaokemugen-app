@@ -1,3 +1,10 @@
+process.on('uncaughtException', function (exception) {
+	console.log(exception); // to see your exception details in the console
+	// if you are on production, maybe you can send the exception details to your
+	// email as well ?
+});
+
+
 /*
 Usage
 
@@ -320,8 +327,8 @@ module.exports = {
 											});
 									});								
 									/**
-								 * Create arrays for series
-								 */
+									 * Create arrays for series
+									 */
 									var pCreateTags = new Promise((resolve,reject) => {
 									/**
 									 * Extracting tags.
@@ -516,9 +523,10 @@ module.exports = {
 			
 
 									var pInsertASS = new Promise((resolve,reject) => {
+										logger.profile('ASSFill');
 										module.exports.db.prepare('INSERT INTO ass (fk_id_kara,ass) VALUES ($id_kara, $ass);')
 											.then((stmt) => {
-												async.eachOf(sqlInsertKaras,function(kara,index,callback){
+												async.eachOf(karas,function(kara,index,callback){
 													index++;
 													// If we have an empty ass data set, we're not adding it to the statement.
 													if (kara.ass !== '') {
@@ -527,17 +535,19 @@ module.exports = {
 															$ass: kara.ass
 														};
 														stmt.run(data)
-															.then(() => {
-																callback();
+															.then(() => {																					callback();
 															})
 															.catch((err) => {
 																callback(err);
 															});										
-													}							
+													} else {
+														callback();
+													}						
 												},function(err){
 													if (err) {
 														reject(err);
 													} else {
+														logger.profile('ASSFill');
 														module.exports.onLog('success', 'ASS table filled');
 														stmt.finalize();
 														resolve();
