@@ -11,6 +11,7 @@ module.exports = {
 	_playing:false, // internal delay flag
 	_player:null,
 	_ref:null,
+	_states:null,
 	BINPATH:null,
 	SETTINGS:null,
 	SYSPATH:null,
@@ -69,7 +70,15 @@ module.exports = {
 				videoFile = path.resolve(module.exports.SYSPATH,PathVideos,video);
 			}
 		});
-		if(videoFile !== undefined){
+		if(videoFile == undefined) {
+			logger.warn('[Player] Video NOT FOUND : '+video);
+			if (module.exports.SETTINGS.PathVideosHTTP) {
+				videoFile = module.exports.SETTINGS.PathVideosHTTP+'/'+encodeURIComponent(video);	logger.info('[Player] Trying to play video directly from the configured http source : '+module.exports.SETTINGS.PathVideosHTTP);
+			} else {
+				logger.error('[Player] No other source available for this video.');
+			}			
+		}
+		if(videoFile !== undefined) {
 			logger.debug('[Player] Audio gain adjustment : '+gain);
 			logger.info('[Player] Loading video : '+videoFile);
 			if (gain == undefined || gain == null) gain = 0;
@@ -103,9 +112,13 @@ module.exports = {
 					logger.error('[Player] Error loading video '+video+' ('+err+')');
 				});
 		} else {
-			module.exports.playing = false;
-			logger.error('[Player] Video NOT FOUND : '+videoFile);
+			console.log(module.exports._states.status);
+			if (module.exports._states.status != 'stop') {
+				logger.warn('[Player] Skipping playback due to missing video');
+				module.exports.skip();
+			} 
 		}
+		
 	},
 	setFullscreen:function(fsState){
 		module.exports.fullscreen==fsState;
@@ -415,4 +428,5 @@ module.exports = {
 			resolve();
 		});
 	},
+	skip:function(){},
 };

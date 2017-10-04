@@ -370,6 +370,7 @@ module.exports = {
 	_broadcastStates:function() {
 		// diffuse l'état courant à tout les services concerné (normalement les webapp)
 		module.exports._services.admin.setEngineStates(module.exports._states);
+		module.exports._services.player._states = module.exports._states;
 	},
 
 	// ------------------------------------------------------------------
@@ -1444,8 +1445,10 @@ module.exports = {
 		module.exports._services.player.BINPATH = path.resolve(module.exports.SYSPATH,'app/bin');
 		module.exports._services.player.SETTINGS = module.exports.SETTINGS;
 		module.exports._services.player.SYSPATH = module.exports.SYSPATH;
-		module.exports._services.player.frontend_port = module.exports._states.frontend_port;
+		module.exports._services.player.frontend_port = module.exports._states.frontend_port;		
 		module.exports._services.player.onEnd = module.exports.playerEnding;
+		module.exports._services.player.skip = module.exports.next;
+		module.exports._services.player._states = module.exports._states;
 		module.exports._services.player.onStatusChange = function(){
 			var status = {
 				private: module.exports._states.private,
