@@ -1,6 +1,6 @@
 {
-	"404": "Perdu sur le réseau local ?", 
-	"404_2": "Pas de panique, on va vous aider", 
+	"404": "Perdu sur le réseau local ?",
+	"404_2": "Pas de panique, on va vous aider",
 	"TYPE_AMV": "Anime Music Video",
 	"TYPE_AMV_SHORT": "AMV",
 	"TYPE_INSERTSONG": "Insert Song",
@@ -128,5 +128,7 @@
 	"SELECT_ALL": "Tout sélectionner",
 	"PLAYLIST_ADD": "Créer une playlist",
 	"DB_PLAYLIST_UNKNOWN": "Playlist inconnue",
-	"MESSAGE": "Passer un message"
+	"MESSAGE": "Passer un message",
+	"ENGINEREPEATPLAYLIST": "Répéter playlist",
+	"ENGINEAUTOPLAY": "Lecture automatique sur 1er ajout"
 }
