@@ -28,8 +28,7 @@ module.exports = {
 					logger.warn('[DBI] User database not found');
 					db.open(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))
 						.then(() => {
-							var sqlCreateUserDB = fs.readFileSync(path.join(__dirname,'../../_common/db/userdata.sqlite3.sql'),'utf-8');
-							db.exec(sqlCreateUserDB)
+							db.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/userdata')})
 								.then(() => {
 									db.close();
 									logger.info('[DBI] User database created');

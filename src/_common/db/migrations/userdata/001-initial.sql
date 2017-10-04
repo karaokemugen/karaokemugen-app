@@ -1,3 +1,5 @@
+-- Up
+
 CREATE TABLE viewcount (
     pk_id_viewcount   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara        INTEGER NOT NULL,
@@ -66,3 +68,19 @@ CREATE INDEX index_playlist_id_playlist ON playlist (pk_id_playlist);
 CREATE INDEX index_playlist_content_fk_id_playlist ON playlist_content (fk_id_playlist);
 CREATE INDEX index_whitelist_fk_id_kara ON whitelist (fk_id_kara);
 CREATE INDEX index_blacklist_fk_id_kara ON blacklist (fk_id_kara);
+
+-- Down
+
+DROP INDEX index_viewcount_fk_id_kara;
+DROP INDEX index_rating_fk_id_kara;
+DROP INDEX index_playlist_id_playlist;
+DROP INDEX index_playlist_content_fk_id_playlist;
+DROP INDEX index_whitelist_fk_id_kara;
+DROP INDEX index_blacklist_fk_id_kara;
+DROP TABLE whitelist;
+DROP TABLE blacklist;
+DROP TABLE blacklist_criteria;
+DROP TABLE playlist_content;
+DROP TABLE playlist;
+DROP TABLE rating;
+DROP TABLE viewcount;
