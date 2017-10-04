@@ -616,6 +616,16 @@ module.exports = {
 							notEmpty: true,
 							isInt: true,
 						},
+						'EngineRepeatPlaylist': {
+							in: 'body',
+							notEmpty: true,
+							isInt: true,
+						},
+						'EngineAutoPlay': {
+							in: 'body',
+							notEmpty: true,
+							isInt: true,
+						},
 						'PlayerFullscreen': {
 							in: 'body',
 							notEmpty: true,
@@ -675,6 +685,8 @@ module.exports = {
 							req.sanitize('EngineAllowViewBlacklist').toInt();
 							req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
 							req.sanitize('EngineDisplayNickname').toInt();
+							req.sanitize('EngineAutoPlay').toInt();
+							req.sanitize('EngineRepeatPlaylist').toInt();
 							req.sanitize('PlayerFullscreen').toInt();
 							req.sanitize('PlayerNoBar').toInt();
 							req.sanitize('PlayerNoHud').toInt();

@@ -29,6 +29,12 @@ EngineAllowViewBlacklistCriterias = 1
 ; Songs already played don't count towards this limit.
 EngineSongsPerPerson = 10000
 
+; AutoPlay : if a karaoke song is added to the current playlist, start playing immediately if the karaoke is stopped.
+EngineAutoPlay = 0
+
+; RepeatPlaylist : when at the end of playlist, go back to position 1 and keep playing.
+EngineRepeatPlaylist = 1
+
 ; Set the player's background.
 ; Specify the filename, it will be searched in the app/backgrounds folder
 PlayerBackground = ""

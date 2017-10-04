@@ -1159,6 +1159,10 @@ module.exports = {
 						.then(function(playlist_id) {
 							module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
 								.then(function(){
+									if (module.exports.SETTINGS.EngineAutoPlay == 1 && 
+										module.exports._states.status == 'stop' ) {
+										module.exports.play();
+									}
 									resolve(playlist_id);
 								})
 								.catch(function(err){
@@ -1210,6 +1214,11 @@ module.exports = {
 							playlist_id: playlist_id,
 							karaAdded: karaAdded
 						};
+						if (module.exports.SETTINGS.EngineAutoPlay == 1 && 
+							playlist_id == module.exports.currentPlaylistID &&
+							module.exports._states.status == 'stop' ) {
+							module.exports.play();
+						}
 						resolve(result);
 					})
 					.catch(function(err){

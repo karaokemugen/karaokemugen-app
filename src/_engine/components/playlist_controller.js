@@ -2883,7 +2883,7 @@ module.exports = {
 			module.exports.isACurrentPlaylist().then(function(playlist_id){
 				module.exports.getPlaylistContents(playlist_id,false,true).then(function(pl_content){
 					if(pl_content.length==0) {
-						logger.error('[PLC] prev : pl_content is empty!');
+						logger.error('[PLC] next : pl_content is empty!');
 						reject('Playlist is empty!');
 					} else {
 						var readpos = 0;
@@ -2892,9 +2892,8 @@ module.exports = {
 								readpos = index+1;
 						});
 						// on est la fin de la playlist
-						if(readpos >= pl_content.length) {
-							logger.info('[PLC] next : current position is last song');
-							// Unset flag_playing on all karas from the playlist
+						if(readpos >= pl_content.length && module.exports.SETTINGS.EngineRepeatPlaylist == 0) {
+							logger.info('[PLC] next : current position is last song');		// Unset flag_playing on all karas from the playlist
 							module.exports.setPlaying(null,playlist_id)
 								.then(function(){
 									reject('Current position is last song!');										
@@ -2903,9 +2902,15 @@ module.exports = {
 									reject(err);
 								});
 						} else {
+							// If we're here, it means either we're beyond the length of the playlist
+							// OR that EngineRepeatPlaylist is set to 1. 
+							// We test again if we're at the end of the playlist. If so we go back to first song.
+							if (readpos >= pl_content.length) {
+								readpos = 0;
+							} 
 							var kara = pl_content[readpos];
 							if(kara) {
-								// mise à jour du pointeur de lecture
+								// Updating Playing flag.
 								module.exports.setPlaying(kara.playlistcontent_id,playlist_id)
 									.then(function(){
 										resolve();
