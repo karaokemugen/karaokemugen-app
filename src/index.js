@@ -104,6 +104,10 @@ if(SYSPATH) {
 	PathsVideos.forEach(function(PathVideos){
 		PathsToCheck.push(PathVideos);		
 	});
+	var PathsJingles = SETTINGS.PathJingles.split('|');
+	PathsJingles.forEach(function(PathJingles){
+		PathsToCheck.push(PathJingles);		
+	});
 	PathsToCheck.push(SETTINGS.PathDB);
 	PathsToCheck.push(SETTINGS.PathTemp);
 	PathsToCheck.push(SETTINGS.PathBin);
@@ -191,10 +195,7 @@ if(SYSPATH) {
 	engine.SYSPATH = SYSPATH;
 	engine.SETTINGS = SETTINGS;
 	engine.i18n = i18n;
-	if(argv.testplaylist)
-		engine.test_playlist_controller();
-	else
-		engine.run();
+	engine.run();
 
 
 } else {

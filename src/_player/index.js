@@ -3,6 +3,7 @@ var path = require('path');
 const logger = require('../_common/utils/logger.js');
 const ip = require('ip');
 const exec = require('child_process');
+const L = require('lodash');
 
 module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
@@ -10,7 +11,6 @@ module.exports = {
 	playerstatus:'stop',
 	_playing:false, // internal delay flag
 	_player:null,
-	_ref:null,
 	_states:null,
 	BINPATH:null,
 	SETTINGS:null,
@@ -57,7 +57,7 @@ module.exports = {
 				});
 		}
 	},
-	play: function(video,subtitle,reference,gain,infos){
+	play:function(video,subtitle,gain,infos){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
 
@@ -81,8 +81,7 @@ module.exports = {
 		if(videoFile !== undefined) {
 			logger.debug('[Player] Audio gain adjustment : '+gain);
 			logger.info('[Player] Loading video : '+videoFile);
-			if (gain == undefined || gain == null) gain = 0;
-			module.exports._ref = reference;
+			if (gain == undefined || gain == null) gain = 0;			
 			module.exports._player.load(videoFile,'replace',['replaygain-fallback='+gain])
 				.then(() => {					
 					module.exports._player.play();
@@ -111,8 +110,7 @@ module.exports = {
 				.catch((err) => {
 					logger.error('[Player] Error loading video '+video+' ('+err+')');
 				});
-		} else {
-			console.log(module.exports._states.status);
+		} else {			
 			if (module.exports._states.status != 'stop') {
 				logger.warn('[Player] Skipping playback due to missing video');
 				module.exports.skip();
@@ -383,8 +381,7 @@ module.exports = {
 							module.exports._playing = false;
 							module.exports.playerstatus = 'stop';
 							module.exports._player.pause();
-							module.exports.onEnd(module.exports._ref);
-							module.exports._ref = null;
+							module.exports.onEnd();							
 						}
 
 						module.exports.mutestatus = status.mute;
@@ -429,4 +426,43 @@ module.exports = {
 		});
 	},
 	skip:function(){},
+	playJingle:function(){
+		module.exports.playing = true;
+		// Preparing list of jingles from all jingle directories in config
+		const jingledirslist = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathJingles);
+		const jingledirs = jingledirslist.split('|');
+		var jinglefiles = [];
+		jingledirs.forEach((jingledir) => {
+			var jinglefilestemp = fs.readdirSync(jingledir);
+			jinglefilestemp.forEach((jinglefiletemp,index) => {
+				jinglefilestemp[index] = path.resolve(module.exports.SYSPATH,jingledir,jinglefiletemp);
+			});
+			jinglefiles.push.apply(jinglefiles,jinglefilestemp);					
+		});
+		//Get rid of all hidden files and files not ending in these extensions
+		for(var indexToRemove = jinglefiles.length - 1; indexToRemove >= 0; indexToRemove--) {
+			if((!jinglefiles[indexToRemove].endsWith('.avi') &&
+				!jinglefiles[indexToRemove].endsWith('.webm') &&
+				!jinglefiles[indexToRemove].endsWith('.mp4') &&
+				!jinglefiles[indexToRemove].endsWith('.mkv') &&
+				!jinglefiles[indexToRemove].endsWith('.mov')) || jinglefiles[indexToRemove].startsWith('.')) {
+				jinglefiles.splice(indexToRemove, 1);
+			}
+		}
+		// Picking up a jingle at random !
+		const jingle = L.sample(jinglefiles);
+
+		module.exports._player.load(jingle,'replace')
+			.then(() => {
+				module.exports._player.play();
+				module.exports.enhanceBackground();
+				module.exports.playerstatus = 'play';
+				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+				module.exports._player.load(backgroundImageFile,'append')
+					.catch((err) => {
+						logger.error('[Player] Unable to load background in append mode (play) : '+err);
+					});
+				module.exports._playing = true;
+			});
+	},
 };

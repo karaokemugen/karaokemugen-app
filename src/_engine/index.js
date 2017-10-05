@@ -39,6 +39,7 @@ module.exports = {
 		playlist:null,
 		timeposition:0,
 		currentlyPlayingKara:undefined,
+		counterToJingle:0,
 	},
 	_services:{
 		admin: null,
@@ -279,6 +280,7 @@ module.exports = {
 	* Function triggered on player ending its current song.
 	*/
 	playerEnding:function(){
+		logger.debug('[Engine] Player Ending event triggered');
 		var pNeedsRestart = new Promise((resolve,reject) => {
 			if (module.exports.playerNeedsRestart) {
 				logger.info('[Engine] Player restarts, please wait');
@@ -297,16 +299,23 @@ module.exports = {
 			}
 		});
 		Promise.all([pNeedsRestart])
-			.then(() => {
-				module.exports._services.playlist_controller.next()
-					.then(function(){
-						module.exports.tryToReadKaraInPlaylist();
-					})
-					.catch(function(){
-						module.exports._services.player.enhanceBackground();				
-						logger.warn('[Engine] Next song is not available');
-						module.exports.stop();
-					});
+			.then(() => {				
+				if (module.exports._states.counterToJingle == module.exports.SETTINGS.EngineJinglesInterval) { 
+					module.exports._services.player.playJingle();
+					module.exports._states.counterToJingle = 0;
+				} else {										
+					module.exports._services.playlist_controller.next()
+						.then(function(){
+							module.exports._services.player.enhanceBackground();				
+							module.exports.tryToReadKaraInPlaylist();
+							module.exports._states.counterToJingle++;
+						})
+						.catch(function(){
+							module.exports._services.player.enhanceBackground();				
+							logger.warn('[Engine] Next song is not available');
+							module.exports.stop();
+						});
+				}
 			})
 			.catch((err) => {
 				logger.error('[Engine] NeedsRestart Promise failed : '+err);
@@ -325,7 +334,6 @@ module.exports = {
 					module.exports._services.player.play(
 						kara.path.video,
 						kara.path.subtitle,
-						kara.id_kara,
 						kara.gain,
 						kara.infos
 					);

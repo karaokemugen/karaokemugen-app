@@ -616,6 +616,11 @@ module.exports = {
 							notEmpty: true,
 							isInt: true,
 						},
+						'EngineJinglesInterval': {
+							in: 'body',
+							notEmpty: true,
+							isInt: true,
+						},
 						'EngineRepeatPlaylist': {
 							in: 'body',
 							notEmpty: true,
@@ -687,6 +692,7 @@ module.exports = {
 							req.sanitize('EngineDisplayNickname').toInt();
 							req.sanitize('EngineAutoPlay').toInt();
 							req.sanitize('EngineRepeatPlaylist').toInt();
+							req.sanitize('EngineJinglesInterval').toInt();
 							req.sanitize('PlayerFullscreen').toInt();
 							req.sanitize('PlayerNoBar').toInt();
 							req.sanitize('PlayerNoHud').toInt();
