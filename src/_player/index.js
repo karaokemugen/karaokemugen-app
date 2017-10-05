@@ -10,7 +10,6 @@ module.exports = {
 	playerstatus:'stop',
 	_playing:false, // internal delay flag
 	_player:null,
-	_ref:null,
 	_states:null,
 	BINPATH:null,
 	SETTINGS:null,
@@ -57,7 +56,7 @@ module.exports = {
 				});
 		}
 	},
-	play: function(video,subtitle,reference,gain,infos){
+	play:function(video,subtitle,reference,gain,infos){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
 
@@ -81,8 +80,7 @@ module.exports = {
 		if(videoFile !== undefined) {
 			logger.debug('[Player] Audio gain adjustment : '+gain);
 			logger.info('[Player] Loading video : '+videoFile);
-			if (gain == undefined || gain == null) gain = 0;
-			module.exports._ref = reference;
+			if (gain == undefined || gain == null) gain = 0;			
 			module.exports._player.load(videoFile,'replace',['replaygain-fallback='+gain])
 				.then(() => {					
 					module.exports._player.play();
@@ -383,8 +381,7 @@ module.exports = {
 							module.exports._playing = false;
 							module.exports.playerstatus = 'stop';
 							module.exports._player.pause();
-							module.exports.onEnd(module.exports._ref);
-							module.exports._ref = null;
+							module.exports.onEnd();							
 						}
 
 						module.exports.mutestatus = status.mute;
@@ -395,6 +392,8 @@ module.exports = {
 					});
 					module.exports._player.on('paused',function(){
 						logger.debug('[Player] Paused event triggered');
+						console.log(module.exports._states);
+						console.log(module.exports.status);
 						module.exports.playing = false;
 						module.exports.playerstatus = 'pause';
 						module.exports.onStatusChange();
@@ -429,4 +428,14 @@ module.exports = {
 		});
 	},
 	skip:function(){},
+	playJingle:function(){
+		module.exports.playing = true;
+		module.exports._player.load('app/jingles/eyecatch_KM-GnoReco_2.mp4','replace')
+			.then(() => {
+				module.exports._player.play();
+				module.exports.enhanceBackground();
+				module.exports.playerstatus = 'play';
+				module.exports._playing = true;
+			});
+	},
 };
