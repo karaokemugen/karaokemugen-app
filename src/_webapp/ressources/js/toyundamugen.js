@@ -445,7 +445,6 @@ var plData;
 		'TYPE_1003' : 'Plus court que (sec)',
 		'TYPE_1000' : 'Titre contenant',
 		'TYPE_0'    : 'Tags',
-		'TYPE_1'    : 'Inutilisé',
 		'TYPE_2'    : 'Chanteur',
 		'TYPE_3'    : 'Type',
 		'TYPE_4'    : 'Créateur',
