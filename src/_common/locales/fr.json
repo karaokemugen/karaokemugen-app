@@ -128,6 +128,7 @@
 	"SELECT_ALL": "Tout sélectionner",
 	"PLAYLIST_ADD": "Créer une liste de lecture",	
 	"MESSAGE": "Passer un message",
+	"ERROR":"Erreur",
 	"PL_LIST_ERROR":"Impossible d'afficher les liste de lectures",
 	"PL_CREATE_ERROR":"Impossible de créer la liste de lecture %s",
 	"PL_CREATED":"Liste de lecture %s crée",

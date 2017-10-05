@@ -1,11 +1,29 @@
 /* display a fading message, useful to show success or errors */
+
 displayMessage = function(type, title, message, time) {
-	if (!time) time = 2200;
-	var messageDiv = $('#message');
-	messageDiv.finish().hide();
-	messageDiv.attr('class','alert alert-' + type);
+	var transition = 500;
+	if (!time) time = 3500;
+
+	var messageDiv = $('<div nb="' + 0 + '" class="toastMessage alert alert-' + type + '">');
 	messageDiv.html('<strong>' + title + '</strong> ' + message);
-	messageDiv.fadeIn(600).delay(time).fadeOut(600);
+	messageDiv.appendTo($('.toastMessageContainer'));
+	setTimeout(function(){
+		messageDiv.css('opacity', '1');
+	}, 0);
+	
+	setTimeout(function(){
+		messageDiv.addClass('dismiss');
+		setTimeout(function(){
+			messageDiv.remove();
+		}, transition);
+	}, time);
+
+	messageDiv.click( function() {
+		messageDiv.addClass('dismiss');
+		setTimeout(function(){
+			messageDiv.remove();
+		}, transition);
+	});
     
 };
 

@@ -575,15 +575,29 @@ bdgc {
 	line-height: 1.35;
 }
 
-#message {
-	display: none;
-    width: 400px;
-    top: 3px;
-    left: calc(50% - 200px);
+.toastMessageContainer {
+	position: absolute;
+	top: 0;
+	left: calc(50% - 200px);
     position: fixed;
-    z-index: 9998;
-    box-shadow: 4px 4px 3px #a5a5a5;
+    z-index: 7000;
 }
+.toastMessage {
+	cursor: pointer;
+	position: relative;
+	overflow: hidden;
+	width: 400px;
+	padding: 10px;
+	margin: 7px;
+    box-shadow: 2px 2px 1px #a5a5a5;
+	z-index: 1000;
+	opacity: 0;
+	transition: opacity ease .5s;
+}
+.toastMessage.dismiss {
+	opacity: 0 !important;
+}
+
 .contentDiv h {
 	background-color : #82bdad;
 	color: black;

@@ -107,7 +107,7 @@ var plData;
 					console.log(res.code, args);
 					var errMessage = i18n.__(res.code, args);
 					console.log(errMessage);
-					displayMessage('warning','Error', errMessage);
+					displayMessage('info','', errMessage);
 				}
 				
 				DEBUG && res.message && console.log(res.message);
@@ -118,14 +118,12 @@ var plData;
 				if(res.status != 0 && res.status != 200) {
 					var errMessage = 'unknown';
 					if(res.responseJSON.code) {
-						var args = Object.keys(res.responseJSON.args).map(function(e) {
-							return res.responseJSON.args[e];
-						});
+						var args = res.responseJSON.args;
 						errMessage = i18n.__(res.responseJSON.code, args);
 					} else {
 						errMessage = res.responseJSON.message;
 					}
-					displayMessage('warning','Error', errMessage);
+					displayMessage('warning', res.responseJSON.code + " :", errMessage);
 				}
 			}
 		});
