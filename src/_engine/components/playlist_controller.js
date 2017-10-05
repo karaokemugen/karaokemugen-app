@@ -166,31 +166,71 @@ module.exports = {
 	*/
 	addBlacklistCriteria:function(blctype,blcvalue) {		
 		return new Promise(function(resolve,reject){
-			if (blctype >= 0 && blctype <= 1003) {
-				if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (isNaN(blcvalue))) {
-					var err = 'Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!';
-					logger.error('[PLC] '+err);
-					reject(err);
-				} else {
-					module.exports.DB_INTERFACE.addBlacklistCriteria(blctype,blcvalue)
-						.then(function(){
-							// Regenerate blacklist to take new kara into account.
-							module.exports.generateBlacklist()
+			var uniqueValue;
+			if (blctype >= 0 && blctype <= 1003) {				
+				var pGetTagName = new Promise ((resolve,reject) => {
+					if (blctype > 0 && blctype < 1000) {
+						module.exports.DB_INTERFACE.getTag(blcvalue)
+							.then(function (res){								
+								uniqueValue = res.name;
+								resolve();
+							})	
+							.catch(function (err) {
+								logger.error('[PLC] getTagName : '+err);
+								reject(err);
+							});	
+					} else {
+						resolve();
+					}
+				});	
+				var pGetKID = new Promise ((resolve,reject) => {
+					if (blctype == 1001) {
+						module.exports.DB_INTERFACE.getKara(blcvalue)
+							.then(function(kara){
+								uniqueValue = kara.kid;
+								resolve();
+							})
+							.catch((err) => {
+								logger.error('[PLC] getKara : '+err);
+								reject(err);
+							});
+					} else {
+						resolve();
+					}
+				});	
+				Promise.all([pGetKID,pGetTagName])
+					.then(() => {
+
+					
+						if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (isNaN(blcvalue))) {
+							var err = 'Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!';
+							logger.error('[PLC] '+err);
+							reject(err);
+						} else {
+							module.exports.DB_INTERFACE.addBlacklistCriteria(blctype,blcvalue,uniqueValue)
 								.then(function(){
-									resolve();
+									// Regenerate blacklist to take new kara into account.
+									module.exports.generateBlacklist()
+										.then(function(){
+											resolve();
+										})
+										.catch(function(err){
+											logger.error('[PLC] addBlacklistCriteria : generateBlacklist : '+err);
+											reject(err);
+										});							
 								})
 								.catch(function(err){
-									logger.error('[PLC] addBlacklistCriteria : generateBlacklist : '+err);
+									logger.error('[PLC] DBI addBlacklistCriteria : '+err);
 									reject(err);
-								});							
-						})
-						.catch(function(err){
-							logger.error('[PLC] DBI addBlacklistCriteria : '+err);
-							reject(err);
-						});
-				}
+								});
+						}
+					})
+					.catch((err) => {
+						logger.error('[PLC] addBlacklistCriteria : '+err);
+						reject(err);
+					});
 			} else {
-				err = 'Blacklist criteria type error : '+blctype+' is incorrect';
+				var err = 'Blacklist criteria type error : '+blctype+' is incorrect';
 				logger.error('[PLC] '+err);
 				reject(err);
 			}
@@ -2639,12 +2679,18 @@ module.exports = {
 				var pTagName = new Promise((resolve) => {
 					if (blc.type === 1){
 						// We just need to translate the tag name if there is a translation
-						if (blc.value.startsWith('TAG_')) {
-							blclist[index].value_i18n = i18n.__(blc.value);
+						if (typeof blc.value === 'string') {
+							if (blc.value.startsWith('TAG_')) {
+								blclist[index].value_i18n = i18n.__(blc.value);
+							} else {
+								blclist[index].value_i18n = blc.value;
+							}
+							resolve();
 						} else {
-							blclist[index].value_i18n = blc.value;
+							var err = 'blc.value is not a string : '+blc.value;
+							reject(err);
 						}
-						resolve();
+						
 					} else {
 						resolve();
 					}
@@ -2653,14 +2699,20 @@ module.exports = {
 				var pTagID = new Promise((resolve,reject) => {
 					if (blc.type >= 2 && blc.type <= 999) {
 						// We need to get the tag name and then translate it if needed
+						
 						module.exports.DB_INTERFACE.getTag(blc.value)
 							.then(function (res){								
-								if (res.startsWith('TAG_')) {
-									blclist[index].value_i18n = i18n.__(res);
+								if (typeof res.name === 'string') {
+									if (res.name.startsWith('TAG_')) {
+										blclist[index].value_i18n = i18n.__(res.name);
+									} else {
+										blclist[index].value_i18n = res.name;
+									}							
+									resolve();
 								} else {
-									blclist[index].value_i18n = res;
-								}							
-								resolve();
+									var err = 'res.name is not a string : '+JSON.stringify(res);
+									reject(err);
+								}
 							})	
 							.catch(function (err) {
 								logger.error('[PLC] translateBlacklistCriterias : '+err);

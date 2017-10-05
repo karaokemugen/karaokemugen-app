@@ -761,12 +761,15 @@ module.exports = {
 				return new Promise(function(resolve,reject){
 					module.exports.onLog('info', 'Running user database integrity checks');
 					var AllKaras = [];
+					var AllTags = [];
 					var PlaylistKaras = [];
 					var WhitelistKaras = [];
 					var RatingKaras = [];
 					var ViewcountKaras = [];
 					var BlacklistKaras = [];
-
+					var BLCKaras = [];
+					var BLCTags = [];
+					
 					var sqlUpdateUserDB = 'BEGIN TRANSACTION;';
 					Promise.all([
 						sqlite.open(karas_dbfile, { Promise }),
@@ -775,6 +778,19 @@ module.exports = {
 						module.exports.db = db;
 						module.exports.userdb = userdb;
 
+						var pGetAllTags = new Promise((resolve,reject) => {
+							var sqlGetAllTags = 'SELECT pk_id_tag AS id_tag, tagtype, name FROM tag;';
+							logger.profile('ICSelectTags');
+							module.exports.db.all(sqlGetAllTags)
+								.then((tags) => {
+									AllTags = tags;
+									logger.profile('ICSelectTags');
+									resolve();
+								})
+								.catch((err) => {
+									reject('Error getting all tags : '+err);
+								});						
+						});
 						var pGetAllKaras = new Promise((resolve,reject) => {
 							var sqlGetAllKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
 							logger.profile('ICSelectKaras');
@@ -798,7 +814,6 @@ module.exports = {
 										logger.profile('ICSelectPLCs');
 										resolve();
 									} else {
-										PlaylistKaras = [];
 										resolve();
 									}
 								})
@@ -816,7 +831,6 @@ module.exports = {
 										logger.profile('ICSelectWLCs');
 										resolve();
 									} else {
-										WhitelistKaras = [];
 										resolve();
 									}
 								})
@@ -834,7 +848,40 @@ module.exports = {
 										logger.profile('ICSelectBLCs');
 										resolve();
 									} else {
-										BlacklistKaras = [];
+										resolve();
+									}
+								})
+								.catch((err) => {
+									reject('Error getting all karaokes from blacklist : '+err);
+								});							
+						});
+						var pGetBLCKaras = new Promise((resolve,reject) => {
+							var sqlGetBLCKaras = 'SELECT value AS id_kara, uniquevalue AS kid FROM blacklist_criteria WHERE type = 1001;';
+							logger.profile('ICSelectBLCKaras');
+							module.exports.userdb.all(sqlGetBLCKaras)
+								.then((kids) => {
+									if (kids) {
+										BLCKaras = kids;
+										logger.profile('ICSelectBLCKaras');
+										resolve();
+									} else {
+										resolve();
+									}
+								})
+								.catch((err) => {
+									reject('Error getting all karaokes from blacklist : '+err);
+								});							
+						});
+						var pGetBLCTags = new Promise((resolve,reject) => {
+							var sqlGetBLCTags = 'SELECT type, value AS id_tag, uniquevalue AS tagname FROM blacklist_criteria WHERE type > 0 AND type < 1000;';
+							logger.profile('ICSelectBLCKaras');
+							module.exports.userdb.all(sqlGetBLCTags)
+								.then((tags) => {
+									if (tags) {
+										BLCTags = tags;
+										logger.profile('ICSelectBLCTags');
+										resolve();
+									} else {
 										resolve();
 									}
 								})
@@ -852,7 +899,6 @@ module.exports = {
 										logger.profile('ICSelectRs');
 										resolve();
 									} else {
-										RatingKaras = [];
 										resolve();
 									}
 								})
@@ -870,7 +916,6 @@ module.exports = {
 										logger.profile('ICSelectVCs');
 										resolve();
 									} else {
-										ViewcountKaras = [];
 										resolve();
 									}
 								})
@@ -879,10 +924,11 @@ module.exports = {
 								});
 						});
 
-						Promise.all([pGetViewcountKaras,pGetRatingKaras,pGetWhitelistKaras,pGetBlacklistKaras,pGetPlaylistKaras,pGetAllKaras])
+						Promise.all([pGetViewcountKaras,pGetRatingKaras,pGetWhitelistKaras,pGetBlacklistKaras,pGetPlaylistKaras,pGetAllKaras,pGetAllTags,pGetBLCKaras,pGetBLCTags])
 							.then(function() {
 							// We've got all of our lists, let's compare !
 								var KaraFound = false;
+								var TagFound = false;
 								var UpdateNeeded = false;
 								logger.profile('ICCompareWL');
 								if (WhitelistKaras != []) {
@@ -908,6 +954,54 @@ module.exports = {
 									});
 								}
 								logger.profile('ICCompareWL');
+								logger.profile('ICCompareBLCK');
+								if (BLCKaras != []) {
+									BLCKaras.forEach(function(BLCKara){
+										KaraFound = false;
+										AllKaras.forEach(function(Kara){
+											if (Kara.kid == BLCKara.kid){
+											// Found a matching KID, checking if id_karas are the same
+												if (Kara.id_kara != BLCKara.id_kara){
+													sqlUpdateUserDB += 'UPDATE blacklist_criteria SET value = ' + Kara.id_kara
+													+ ' WHERE uniquevalue = \'' + BLCKara.kid + '\';';
+													UpdateNeeded = true;
+												}
+												KaraFound = true;
+											}
+										});
+										//If No Karaoke with this KID was found in the AllKaras table, delete the KID
+										if (!KaraFound) {
+											sqlUpdateUserDB += 'DELETE FROM blacklist_criteria WHERE uniquevalue = \'' + BLCKara.kid + '\';';
+											module.exports.onLog('warn', 'Deleted Karaoke ID '+BLCKara.kid+' from blacklist criteria (type 1001)');
+											UpdateNeeded = true;
+										}
+									});
+								}
+								logger.profile('ICCompareBLCK');
+								logger.profile('ICCompareBLT');
+								if (BLCTags != []) {
+									BLCTags.forEach(function(BLCTag){
+										TagFound = false;
+										AllTags.forEach(function(Tag){
+											if (Tag.name == BLCTag.tagname && Tag.tagtype == BLCTag.type){
+											// Found a matching Tagname, checking if id_tags are the same
+												if (Tag.id_tag != BLCTag.id_tag){
+													sqlUpdateUserDB += 'UPDATE blacklist_criteria SET value = ' + Tag.id_tag
+													+ ' WHERE uniquevalue = \'' + BLCTag.tagname + '\' AND type = ' + BLCTag.type+';';
+													UpdateNeeded = true;
+												}
+												TagFound = true;
+											}
+										});
+										//If No Tag with this name and type was found in the AllTags table, delete the Tag
+										if (!TagFound) {
+											sqlUpdateUserDB += 'DELETE FROM blacklist_criteria WHERE uniquevalue = \'' + BLCTag.tagname + '\' AND type = ' + BLCTag.type + ';';
+											module.exports.onLog('warn', 'Deleted Tag '+BLCTag.tagname+' from blacklist criteria (type '+BLCTag.type+')');
+											UpdateNeeded = true;
+										}
+									});
+								}
+								logger.profile('ICCompareBLT');
 								logger.profile('ICCompareBL');
 								if (BlacklistKaras != []) {
 									BlacklistKaras.forEach(function(BLKara){
@@ -1011,6 +1105,7 @@ module.exports = {
 								// Disabling constraints check for this procedure 
 								// Since we'll be renumbering some karas which might have switched places, two entries might have, for a split second, the same number.
 									sqlUpdateUserDB += 'COMMIT;';
+									logger.debug('[Gen] Userdata Update SQL : '+sqlUpdateUserDB);
 									logger.profile('ICRunUpdates');
 									module.exports.userdb.run('PRAGMA foreign_keys = OFF;')
 										.then(() => {

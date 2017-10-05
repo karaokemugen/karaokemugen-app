@@ -73,42 +73,51 @@ module.exports = {
 					module.exports._db_handler = db;
 					module.exports._db_handler.open(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))
 						.then(() => {
-							module.exports._db_handler.run('PRAGMA foreign_keys = ON;')
-								.catch((err) => {
-									logger.error('[DBI] Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
-									process.exit(1);
-								});
-							module.exports._db_handler.run('ATTACH DATABASE "' + path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile) + '" as karasdb;')
+							logger.info('[DBI] Updating user database (if needed)');
+							module.exports._db_handler.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/userdata')})
+								
 								.then(() => {
-									module.exports._ready = true;
-									module.exports.getStats()
-										.then(function(stats) {
-											logger.info('[DBI] Karaoke count   : ' + stats.totalcount);								
-											logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-											logger.info('[DBI] Total series    : ' + stats.totalseries);
-											logger.info('[DBI] Total languages : ' + stats.totallanguages);
-											logger.info('[DBI] Total artists   : ' + stats.totalartists);
-											logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
-										})
-										.catch(function(err) {
-											logger.warn('[DBI] Failed to fetch statistics : ' + err);
+									module.exports._db_handler.run('PRAGMA foreign_keys = ON;')
+										.catch((err) => {
+											logger.error('[DBI] Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
+											process.exit(1);
 										});
-									logger.info('[DBI] Database interface is READY');
-									// Trace event. DO NOT UNCOMMENT
-									// unless you want to flood your console.
-									/*module.exports._db_handler.on('trace',function(sql){
+									module.exports._db_handler.run('ATTACH DATABASE "' + path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile) + '" as karasdb;')
+										.then(() => {
+											module.exports._ready = true;
+											module.exports.getStats()
+												.then(function(stats) {
+													logger.info('[DBI] Karaoke count   : ' + stats.totalcount);								
+													logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
+													logger.info('[DBI] Total series    : ' + stats.totalseries);
+													logger.info('[DBI] Total languages : ' + stats.totallanguages);
+													logger.info('[DBI] Total artists   : ' + stats.totalartists);
+													logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
+												})
+												.catch(function(err) {
+													logger.warn('[DBI] Failed to fetch statistics : ' + err);
+												});
+											logger.info('[DBI] Database interface is READY');
+											// Trace event. DO NOT UNCOMMENT
+											// unless you want to flood your console.
+											/*module.exports._db_handler.on('trace',function(sql){
 												console.log(sql);
 											});*/
-									resolve();						
+											resolve();						
+										})
+										.catch((err) => {
+											logger.error('[DBI] Unable to attach karaoke database : '+err);
+											process.exit(1);
+										});
 								})
 								.catch((err) => {
-									logger.error('[DBI] Unable to attach karaoke database : '+err);
+									logger.error('[DBI] Failed to run migrations : '+err);
 									process.exit(1);
 								});
 						})
 						.catch((err) => {
 							logger.error('[DBI] Loading user database failed : '+err);
-							process.exit();
+							process.exit(1);
 						});													
 				});				
 		});		
@@ -332,7 +341,7 @@ module.exports = {
 	* @param {string} {value of criteria}
 	* @return {boolean} {promise}
 	*/
-	addBlacklistCriteria:function(blctype,blcvalue) {
+	addBlacklistCriteria:function(blcType,blcValue,uniqueValue) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
@@ -341,8 +350,9 @@ module.exports = {
 
 			module.exports._db_handler.run(sqlAddBlacklistCriterias,
 				{
-					$blctype: blctype,
-					$blcvalue: blcvalue
+					$blctype: blcType,
+					$blcvalue: blcValue,
+					$uniquevalue: uniqueValue
 				})
 				.then(() => {
 					resolve();
@@ -1769,14 +1779,14 @@ module.exports = {
 												callback();
 											})
 											.catch((err) => {
-												logger.err('Failed to delete karaoke to playlist : '+err);			
+												logger.error('Failed to delete karaoke to playlist : '+err);			
 												callback(err);					
 											});
 									});
 								
 							}, function(err){
 								if (err) {
-									logger.err('Failed to add one karaoke to playlist : '+err);
+									logger.error('Failed to add one karaoke to playlist : '+err);
 									callback(err);
 								} else {
 									module.exports._db_handler.run('commit')
