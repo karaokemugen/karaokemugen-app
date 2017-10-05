@@ -440,7 +440,7 @@ var plData;
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
 
-	tabTradToDelete = { 'TYPE_1001' : 'Kara',
+	tabTradToDelete = {
 		'TYPE_1002' : 'Plus long que (sec)',
 		'TYPE_1003' : 'Plus court que (sec)',
 		'TYPE_1000' : 'Titre contenant',
@@ -451,7 +451,8 @@ var plData;
 		'TYPE_5'    : 'Language',
 		'TYPE_6'    : 'Auteur du kara',
 		'TYPE_7'    : 'Divers',
-		'TYPE_8'    : 'Compositeur'
+		'TYPE_8'    : 'Compositeur',
+		'TYPE_1001' : 'Kara'
 	};
 	tagAcrList = {  'TAG_SPECIAL': 'SPE',
 		'TAG_GAMECUBE': 'GCN',
@@ -661,7 +662,7 @@ var plData;
 							+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
 							+	'</span></div>');
 							$.each(tabTradToDelete, function(k, v){
-								blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: k.replace('TYPE_',''), text: v}));                        
+								if(k !== 'TYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: k.replace('TYPE_',''), text: v}));                        
 							});
 						}
 					}

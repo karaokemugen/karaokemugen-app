@@ -219,7 +219,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				} else if (idPlaylistTo == -1) {
 					displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
 					DEBUG && console.log('ERR: can\'t add kara to the kara list from database');
-				} else if (idPlaylistTo == -2) {
+				} else if (idPlaylistTo == -2 || idPlaylistTo == -4) {
 					url = scope + '/blacklist/criterias';
 					data = { blcriteria_type: 1001, blcriteria_value: idKara };
 				} else if (idPlaylistTo == -3) {
