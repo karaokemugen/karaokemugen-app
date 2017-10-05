@@ -3,6 +3,7 @@ var path = require('path');
 const logger = require('../_common/utils/logger.js');
 const ip = require('ip');
 const exec = require('child_process');
+const L = require('lodash');
 
 module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
@@ -109,8 +110,7 @@ module.exports = {
 				.catch((err) => {
 					logger.error('[Player] Error loading video '+video+' ('+err+')');
 				});
-		} else {
-			console.log(module.exports._states.status);
+		} else {			
 			if (module.exports._states.status != 'stop') {
 				logger.warn('[Player] Skipping playback due to missing video');
 				module.exports.skip();
@@ -392,8 +392,6 @@ module.exports = {
 					});
 					module.exports._player.on('paused',function(){
 						logger.debug('[Player] Paused event triggered');
-						console.log(module.exports._states);
-						console.log(module.exports.status);
 						module.exports.playing = false;
 						module.exports.playerstatus = 'pause';
 						module.exports.onStatusChange();
@@ -430,11 +428,29 @@ module.exports = {
 	skip:function(){},
 	playJingle:function(){
 		module.exports.playing = true;
-		module.exports._player.load('app/jingles/eyecatch_KM-GnoReco_2.mp4','replace')
+		const jingledirslist = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathJingles);
+		const jingledirs = jingledirslist.split('|');
+		var jinglefiles = [];
+		jingledirs.forEach((jingledir) => {
+			var jinglefilestemp = fs.readdirSync(jingledir);
+			jinglefilestemp.forEach((jinglefiletemp,index) => {
+				jinglefilestemp[index] = path.resolve(module.exports.SYSPATH,jingledir,jinglefiletemp);
+			});
+			jinglefiles.push.apply(jinglefiles,jinglefilestemp);					
+		});
+		
+		var jingle = L.sample(jinglefiles);
+
+		module.exports._player.load(jingle,'replace')
 			.then(() => {
 				module.exports._player.play();
 				module.exports.enhanceBackground();
 				module.exports.playerstatus = 'play';
+				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+				module.exports._player.load(backgroundImageFile,'append')
+					.catch((err) => {
+						logger.error('[Player] Unable to load background in append mode (play) : '+err);
+					});
 				module.exports._playing = true;
 			});
 	},
