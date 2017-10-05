@@ -1622,32 +1622,66 @@ module.exports = {
 							// karas.length to the position
 							// If pos is not provided, we need to get the maximum position in the PL
 							// And use that +1 to set our playlist position.
-							if (pos) {
-								module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,karas.length)
-									.then(function(){										
-										resolve();
-									})
-									.catch(function(err){
-										logger.error('[PLC] DBI shiftPosInPlaylist : '+err);
-										reject(err);
-									});								
-							} else {								
-								var startpos;								
-								module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
-									.then(function(maxpos){
-										startpos = maxpos + 1.0;
-										var index = 0;
-										karaList.forEach(function(){
-											karaList[index].pos = startpos+index;
-											index++;
-										});
-										resolve();
-									})
-									.catch(function(err){
-										logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
-										reject(err);
-									});
+							// If pos is -1, we must add it after the currently flag_playing karaoke.
+							var PLCIDPlayingPos;								
+							function isPlaying(element) {
+								// Function to run in array.some of a playlist to check if a kara is a flag_playing one, and get its position.
+								if (element.flag_playing == 1) {
+									PLCIDPlayingPos = element.pos;
+									return true;
+								} else {
+									return false;
+								}
 							}
+							module.exports.getPlaylistContents(playlist_id)
+								.then((playlist) => {
+									// Browse Playlist to find out flag_playing. 
+									if (pos == -1) {
+
+										// Find out position of currently playing karaoke
+										// If no flag_playing is found, we'll add songs at the end of playlist.
+										var isASongFlagPlaying = playlist.some(isPlaying);
+										if (isASongFlagPlaying) {
+											pos = PLCIDPlayingPos;
+										} else {
+											pos = undefined;
+										}
+									}
+									if (pos) {
+										module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,karas.length)
+											.then(function(){
+												var startpos = pos + 1;
+												karaList.forEach(function(kara,index) {
+													karaList[index].pos = startpos+index;
+												});
+												resolve();
+											})
+											.catch(function(err){
+												logger.error('[PLC] DBI shiftPosInPlaylist : '+err);
+												reject(err);
+											});
+									} else {								
+										var startpos;								
+										module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
+											.then(function(maxpos){
+												startpos = maxpos + 1.0;
+												karaList.forEach(function(kara,index){
+													karaList[index].pos = startpos+index;
+												});
+												resolve();
+											})
+											.catch(function(err){
+												logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
+												reject(err);
+											});
+									}			
+										
+
+								})
+								.catch((err) => {
+									logger.error('[PLC] getPlaylistContents : '+err);
+								});
+							
 						});													
 						Promise.all([pManagePos])
 							.then(function() {	

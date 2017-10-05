@@ -33,7 +33,7 @@ EngineSongsPerPerson = 10000
 EngineAutoPlay = 0
 
 ; RepeatPlaylist : when at the end of playlist, go back to position 1 and keep playing.
-EngineRepeatPlaylist = 1
+EngineRepeatPlaylist = 0
 
 ; Set the player's background.
 ; Specify the filename, it will be searched in the app/backgrounds folder
