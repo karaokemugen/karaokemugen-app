@@ -39,7 +39,7 @@ module.exports = {
 		playlist:null,
 		timeposition:0,
 		currentlyPlayingKara:undefined,
-		playJingleNext:true,
+		counterToJingle:0,
 	},
 	_services:{
 		admin: null,
@@ -299,14 +299,15 @@ module.exports = {
 			}
 		});
 		Promise.all([pNeedsRestart])
-			.then(() => {
-				if (module.exports._states.playJingleNext) { 
+			.then(() => {				
+				if (module.exports._states.counterToJingle == module.exports.SETTINGS.EngineJinglesInterval) { 
 					module.exports._services.player.playJingle();
-					module.exports._states.playJingleNext = false;
-				} else {
+					module.exports._states.counterToJingle = 0;
+				} else {					
 					module.exports._services.playlist_controller.next()
 						.then(function(){
 							module.exports.tryToReadKaraInPlaylist();
+							module.exports._states.counterToJingle++;
 						})
 						.catch(function(){
 							module.exports._services.player.enhanceBackground();				

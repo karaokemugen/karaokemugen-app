@@ -428,6 +428,7 @@ module.exports = {
 	skip:function(){},
 	playJingle:function(){
 		module.exports.playing = true;
+		// Preparing list of jingles from all jingle directories in config
 		const jingledirslist = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathJingles);
 		const jingledirs = jingledirslist.split('|');
 		var jinglefiles = [];
@@ -438,8 +439,18 @@ module.exports = {
 			});
 			jinglefiles.push.apply(jinglefiles,jinglefilestemp);					
 		});
-		
-		var jingle = L.sample(jinglefiles);
+		//Get rid of all hidden files and files not ending in these extensions
+		for(var indexToRemove = jinglefiles.length - 1; indexToRemove >= 0; indexToRemove--) {
+			if((!jinglefiles[indexToRemove].endsWith('.avi') &&
+				!jinglefiles[indexToRemove].endsWith('.webm') &&
+				!jinglefiles[indexToRemove].endsWith('.mp4') &&
+				!jinglefiles[indexToRemove].endsWith('.mkv') &&
+				!jinglefiles[indexToRemove].endsWith('.mov')) || jinglefiles[indexToRemove].startsWith('.')) {
+				jinglefiles.splice(indexToRemove, 1);
+			}
+		}
+		// Picking up a jingle at random !
+		const jingle = L.sample(jinglefiles);
 
 		module.exports._player.load(jingle,'replace')
 			.then(() => {
