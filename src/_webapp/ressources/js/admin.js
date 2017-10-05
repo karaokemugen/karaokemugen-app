@@ -172,7 +172,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		
 		// main actions on karas in the playlists
 		$('.playlist-main').on('click contextmenu', '.actionDiv > button:not(.clusterAction)', function (e) {
-			e.preventDefault();
+			if(e.type === 'contextmenu') {
+				e.preventDefault();
+			}
 			var side = $(this).closest('.panel').attr('side');
         
 			var li = $(this).closest('li');

@@ -742,8 +742,8 @@ var plData;
 					}
 					*/
 				} else if(dragAndDrop && scope === 'admin') {
+					var sortableUl = $('#playlist' + side);
 					if(idPlaylist > 0) {
-						var sortableUl = $('#playlist' + side);
 						sortableUl.sortable({
 							appendTo: sortableUl,
 							handle : isTouchScreen ? '.actionDiv' : false,
@@ -751,10 +751,13 @@ var plData;
 							update: function(event, ui) {
 								changeKaraPos(ui.item);
 							},
+							distance: 10,
 							delay: 10,
 							// connectWith: sortableUl2,
 							axis : 'y'
 						});
+					} else if(sortableUl.hasClass('ui-sortable')) {
+						sortableUl.sortable('disable');
 					}
 					/*
                 if ($('#selectPlaylist' + non(side)).val() > 0) {
