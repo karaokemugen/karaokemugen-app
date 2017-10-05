@@ -171,8 +171,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 		
 		// main actions on karas in the playlists
-		$('.playlist-main').on('click', '.actionDiv > button:not(.clusterAction)', function () {
-            
+		$('.playlist-main').on('click contextmenu', '.actionDiv > button:not(.clusterAction)', function (e) {
+			e.preventDefault();
 			var side = $(this).closest('.panel').attr('side');
         
 			var li = $(this).closest('li');
@@ -229,6 +229,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						ajx(type, url, data);
 					});
 					return false;
+				}
+
+				if(e.type === 'contextmenu') {
+					data.pos = -1;
 				}
 
 				DEBUG && console.log('ACTION : ', idPlaylistTo, url, type, data);
