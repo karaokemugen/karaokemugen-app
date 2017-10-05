@@ -1,13 +1,13 @@
 -- Up
 
-CREATE TABLE viewcount (
+CREATE TABLE IF NOT EXISTS viewcount  (
     pk_id_viewcount   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara        INTEGER NOT NULL,
     kid               TEXT NOT NULL,
     modified_at       INTEGER NOT NULL
 );
 
-CREATE TABLE rating (
+CREATE TABLE IF NOT EXISTS rating (
     pk_id_rating   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara     INTEGER NOT NULL,
     kid            TEXT NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE rating (
     modified_at    INTEGER NOT NULL
 );
 
-CREATE TABLE playlist (
+CREATE TABLE IF NOT EXISTS playlist (
     pk_id_playlist   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     name             TEXT NOT NULL,
     NORM_name        TEXT COLLATE NOCASE NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE playlist (
     flag_public      INTEGER NOT NULL
 );
 
-CREATE TABLE playlist_content (
+CREATE TABLE IF NOT EXISTS playlist_content (
     pk_id_plcontent   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_playlist    INTEGER NOT NULL REFERENCES playlist ON DELETE CASCADE,
     fk_id_kara        INTEGER NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE playlist_content (
     flag_playing      INTEGER NOT NULL    
 );
 
-CREATE TABLE blacklist (
+CREATE TABLE IF NOT EXISTS blacklist (
     pk_id_blacklist   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara        INTEGER NOT NULL,
     kid               TEXT NOT NULL,
@@ -48,13 +48,13 @@ CREATE TABLE blacklist (
     reason            TEXT NOT NULL
 );
 
-CREATE TABLE blacklist_criteria (
+CREATE TABLE IF NOT EXISTS blacklist_criteria (
     pk_id_blcriteria   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     type             INTEGER NOT NULL,
     value   TEXT NOT NULL
 );
 
-CREATE TABLE whitelist (
+CREATE TABLE IF NOT EXISTS whitelist (
     pk_id_whitelist   INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
     fk_id_kara        INTEGER NOT NULL,
     kid               TEXT NOT NULL,
@@ -62,12 +62,12 @@ CREATE TABLE whitelist (
     reason            TEXT NOT NULL
 );
 
-CREATE INDEX index_viewcount_fk_id_kara ON viewcount (fk_id_kara);
-CREATE INDEX index_rating_fk_id_kara ON rating (fk_id_kara);
-CREATE INDEX index_playlist_id_playlist ON playlist (pk_id_playlist);
-CREATE INDEX index_playlist_content_fk_id_playlist ON playlist_content (fk_id_playlist);
-CREATE INDEX index_whitelist_fk_id_kara ON whitelist (fk_id_kara);
-CREATE INDEX index_blacklist_fk_id_kara ON blacklist (fk_id_kara);
+CREATE INDEX IF NOT EXISTS index_viewcount_fk_id_kara ON viewcount (fk_id_kara);
+CREATE INDEX IF NOT EXISTS index_rating_fk_id_kara ON rating (fk_id_kara);
+CREATE INDEX IF NOT EXISTS index_playlist_id_playlist ON playlist (pk_id_playlist);
+CREATE INDEX IF NOT EXISTS index_playlist_content_fk_id_playlist ON playlist_content (fk_id_playlist);
+CREATE INDEX IF NOT EXISTS index_whitelist_fk_id_kara ON whitelist (fk_id_kara);
+CREATE INDEX IF NOT EXISTS index_blacklist_fk_id_kara ON blacklist (fk_id_kara);
 
 -- Down
 
