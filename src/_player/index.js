@@ -57,7 +57,7 @@ module.exports = {
 				});
 		}
 	},
-	play:function(video,subtitle,reference,gain,infos){
+	play:function(video,subtitle,gain,infos){
 		logger.debug('[Player] Play event triggered');
 		module.exports.playing = true;
 

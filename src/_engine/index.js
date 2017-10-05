@@ -303,9 +303,10 @@ module.exports = {
 				if (module.exports._states.counterToJingle == module.exports.SETTINGS.EngineJinglesInterval) { 
 					module.exports._services.player.playJingle();
 					module.exports._states.counterToJingle = 0;
-				} else {					
+				} else {										
 					module.exports._services.playlist_controller.next()
 						.then(function(){
+							module.exports._services.player.enhanceBackground();				
 							module.exports.tryToReadKaraInPlaylist();
 							module.exports._states.counterToJingle++;
 						})
