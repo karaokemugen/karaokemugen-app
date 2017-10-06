@@ -108,6 +108,10 @@ if(SYSPATH) {
 	PathsJingles.forEach(function(PathJingles){
 		PathsToCheck.push(PathJingles);		
 	});
+	var PathsBackgrounds = SETTINGS.PathBackgrounds.split('|');
+	PathsBackgrounds.forEach(function(PathBackgrounds){
+		PathsToCheck.push(PathBackgrounds);		
+	});
 	PathsToCheck.push(SETTINGS.PathDB);
 	PathsToCheck.push(SETTINGS.PathBin);
 	PathsToCheck.push(SETTINGS.PathTemp);
