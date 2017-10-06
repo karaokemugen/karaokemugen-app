@@ -6,8 +6,22 @@ const exec = require('child_process');
 const L = require('lodash');
 const PathTemp = 'app/temp';
 
+function loadBackground(mode) {	
+	if (!mode) mode = 'replace';
+	var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
+	logger.debug('[Player] Background : '+backgroundImageFile);
+	module.exports._player.load(backgroundImageFile,mode)
+		.then(() => {
+			if (mode === 'replace') {
+				module.exports.displayInfo();
+			}
+		})
+		.catch((err) => {
+			logger.error('[Player] Unable to load background in '+mode+' mode : '+err);
+		});
+}
+
 module.exports = {
-	background:path.join(__dirname,'assets/background.jpg'), // default background
 	playing:false,
 	playerstatus:'stop',
 	_playing:false, // internal delay flag
@@ -101,11 +115,7 @@ module.exports = {
 					};
 					module.exports._player.freeCommand(JSON.stringify(command));
 					//logger.profile('StartPlaying');
-					var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
-					module.exports._player.load(backgroundImageFile,'append')
-						.catch((err) => {
-							logger.error('[Player] Unable to load background in append mode (play) : '+err);
-						});
+					loadBackground('append');
 					module.exports._playing = true;
 				})
 				.catch((err) => {
@@ -140,14 +150,7 @@ module.exports = {
 		module.exports.timeposition = 0;
 		module.exports._playing = false;
 		module.exports.playerstatus = 'stop';
-		var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
-		module.exports._player.load(backgroundImageFile)
-			.then(() => {
-				module.exports.enhanceBackground();
-			})
-			.catch((err) => {
-				logger.error('[Player] Unable to load background at stop : '+err);
-			});
+		loadBackground();
 	},
 	pause: function(){
 		logger.debug('[Player] Pause event triggered');
@@ -197,14 +200,14 @@ module.exports = {
 		module.exports._player.freeCommand(JSON.stringify(command));
 		if (module.exports.playing === false) {
 			setTimeout(function(){
-				module.exports.enhanceBackground();
+				module.exports.displayInfo();
 			},duration);
 		}
 	},
-	enhanceBackground: function(){
+	displayInfo: function(){
 		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
-		var imageCaption = 'Karaoke Mugen - '+__('GO_TO')+' '+url+' !';
-		var imageSign = module.exports.SETTINGS.VersionNo+' - '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
+		var imageCaption = __('GO_TO')+' '+url+' !';
+		var imageSign = 'Karaoke Mugen '+module.exports.SETTINGS.VersionNo+' '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
 		var message = '{\\fscx80}{\\fscy80}'+imageCaption+'\\N{\\fscx30}{\\fscy30}{\\i1}'+imageSign+'{\\i0}';
 		var command = {
 			command: [
@@ -217,10 +220,7 @@ module.exports = {
 		module.exports._player.freeCommand(JSON.stringify(command));
 	},
 	onStatusChange:function(){},
-	onEnd:function(){
-		// événement émis pour quitter l'application
-		logger.error('Player :: onEnd not set');
-	},
+	onEnd:function(){},
 	restartmpv:function(){
 		return new Promise(function(resolve,reject){
 			module.exports.quitmpv()
@@ -362,15 +362,7 @@ module.exports = {
 			// Starting up mpv
 			module.exports._player.start()
 				.then(() => {
-					var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
-					// Disabled loading the background at start during dev. Or not yet.
-					module.exports._player.load(backgroundImageFile)
-						.then(() => {
-							module.exports.enhanceBackground();
-						})
-						.catch((err) => {
-							logger.error('[Player] Unable to load background at start : '+err);
-						});
+					loadBackground();
 					module.exports._player.observeProperty('sub-text',13);
 					module.exports._player.observeProperty('volume',14);
 					module.exports._player.on('statuschange',function(status){
@@ -458,11 +450,7 @@ module.exports = {
 				module.exports._player.play();
 				module.exports.enhanceBackground();
 				module.exports.playerstatus = 'play';
-				var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
-				module.exports._player.load(backgroundImageFile,'append')
-					.catch((err) => {
-						logger.error('[Player] Unable to load background in append mode (play) : '+err);
-					});
+				loadBackground('append');
 				module.exports._playing = true;
 			});
 	},

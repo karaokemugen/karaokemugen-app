@@ -306,12 +306,12 @@ module.exports = {
 				} else {										
 					module.exports._services.playlist_controller.next()
 						.then(function(){
-							module.exports._services.player.enhanceBackground();				
+							module.exports._services.player.displayInfo();				
 							module.exports.tryToReadKaraInPlaylist();
 							module.exports._states.counterToJingle++;
 						})
 						.catch(function(){
-							module.exports._services.player.enhanceBackground();				
+							module.exports._services.player.displayInfo();				
 							logger.warn('[Engine] Next song is not available');
 							module.exports.stop();
 						});
