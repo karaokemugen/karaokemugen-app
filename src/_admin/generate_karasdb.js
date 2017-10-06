@@ -41,7 +41,7 @@ module.exports = {
 	run: function() {
 		// These are not resolved : they will be later on when extracting / reading ASS
 		const lyricsdirslist = module.exports.SETTINGS.PathSubs;	
-		const tmpdir = module.exports.SETTINGS.PathTemp;
+		const tmpdir = 'app/temp';
 		const karas_dbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
 		const karas_userdbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBUserFile);
 		const series_altnamesfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathAltname);

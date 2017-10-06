@@ -4,6 +4,7 @@ const logger = require('../_common/utils/logger.js');
 const ip = require('ip');
 const exec = require('child_process');
 const L = require('lodash');
+const PathTemp = 'app/temp';
 
 module.exports = {
 	background:path.join(__dirname,'assets/background.jpg'), // default background
@@ -100,7 +101,7 @@ module.exports = {
 					};
 					module.exports._player.freeCommand(JSON.stringify(command));
 					//logger.profile('StartPlaying');
-					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+					var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
 					module.exports._player.load(backgroundImageFile,'append')
 						.catch((err) => {
 							logger.error('[Player] Unable to load background in append mode (play) : '+err);
@@ -139,7 +140,7 @@ module.exports = {
 		module.exports.timeposition = 0;
 		module.exports._playing = false;
 		module.exports.playerstatus = 'stop';
-		var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+		var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
 		module.exports._player.load(backgroundImageFile)
 			.then(() => {
 				module.exports.enhanceBackground();
@@ -250,7 +251,7 @@ module.exports = {
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
 				'--volume=100',
-				'--input-conf='+path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'input.conf'),
+				'--input-conf='+path.resolve(module.exports.SYSPATH,PathTemp,'input.conf'),
 			];
 			if (module.exports.SETTINGS.PlayerPIP) {
 				mpvOptions.push('--autofit='+module.exports.SETTINGS.PlayerPIPSize+'%x'+module.exports.SETTINGS.PlayerPIPSize+'%');
@@ -361,7 +362,7 @@ module.exports = {
 			// Starting up mpv
 			module.exports._player.start()
 				.then(() => {
-					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+					var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
 					// Disabled loading the background at start during dev. Or not yet.
 					module.exports._player.load(backgroundImageFile)
 						.then(() => {
@@ -457,7 +458,7 @@ module.exports = {
 				module.exports._player.play();
 				module.exports.enhanceBackground();
 				module.exports.playerstatus = 'play';
-				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+				var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
 				module.exports._player.load(backgroundImageFile,'append')
 					.catch((err) => {
 						logger.error('[Player] Unable to load background in append mode (play) : '+err);

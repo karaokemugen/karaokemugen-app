@@ -13,8 +13,9 @@ module.exports = {
 	build:function(){
 		logger.debug('[Background] Entered background builder');
 		return new Promise(function(resolve,reject){
-			var qrcodeImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'qrcode.png');
-			var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
+			var PathTemp = 'app/temp';
+			var qrcodeImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'qrcode.png');
+			var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
 			if (fs.existsSync(qrcodeImageFile)) fs.unlinkSync(qrcodeImageFile);
 			if (fs.existsSync(backgroundImageFile)) fs.unlinkSync(backgroundImageFile);
 
