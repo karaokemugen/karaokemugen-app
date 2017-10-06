@@ -485,7 +485,7 @@ module.exports = {
 		module.exports._player.load(jingle,'replace')
 			.then(() => {
 				module.exports._player.play();
-				module.exports.enhanceBackground();
+				module.exports.displayInfo();
 				module.exports.playerstatus = 'play';
 				loadBackground('append');
 				module.exports._playing = true;
