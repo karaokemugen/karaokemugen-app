@@ -5,12 +5,22 @@ const ip = require('ip');
 const exec = require('child_process');
 const L = require('lodash');
 const PathTemp = 'app/temp';
+const sizeOf = require('image-size');
 
 function loadBackground(mode) {	
-	if (!mode) mode = 'replace';
+	if (!mode) mode = 'replace';		
 	var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
 	logger.debug('[Player] Background : '+backgroundImageFile);
-	module.exports._player.load(backgroundImageFile,mode)
+
+	var dimensions = sizeOf(backgroundImageFile);
+	var QRCodeWidth,QRCodeHeight;
+	QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
+
+	var posX = Math.floor(dimensions.width*0.015);
+	var posY = Math.floor(dimensions.height*0.70);
+
+	var videofilter = 'lavfi-complex="movie='+PathTemp+'/qrcode.png[logo]; [logo][vid1]scale2ref='+QRCodeWidth+':'+QRCodeHeight+'[logo1][base];[base][logo1] overlay='+posX+':'+posY+'[vo]"';
+	module.exports._player.load(backgroundImageFile,mode,videofilter)
 		.then(() => {
 			if (mode === 'replace') {
 				module.exports.displayInfo();
