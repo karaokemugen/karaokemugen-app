@@ -490,15 +490,22 @@ module.exports = {
 			}
 		}
 		// Picking up a jingle at random !
-		const jingle = L.sample(jinglefiles);
+		if (jinglefiles.length > 0) {
+			const jingle = L.sample(jinglefiles);
 
-		module.exports._player.load(jingle,'replace')
-			.then(() => {
-				module.exports._player.play();
-				module.exports.displayInfo();
-				module.exports.playerstatus = 'play';
-				loadBackground('append');
-				module.exports._playing = true;
-			});
+			module.exports._player.load(jingle,'replace')
+				.then(() => {
+					module.exports._player.play();
+					module.exports.displayInfo();
+					module.exports.playerstatus = 'play';
+					loadBackground('append');
+					module.exports._playing = true;
+				});
+		} else {
+			module.exports.playerstatus = 'play';
+			loadBackground();
+			module.exports.displayInfo();
+			module.exports._playing = true;
+		}
 	},
 };
