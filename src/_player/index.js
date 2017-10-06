@@ -4,7 +4,6 @@ const logger = require('../_common/utils/logger.js');
 const ip = require('ip');
 const exec = require('child_process');
 const L = require('lodash');
-const PathTemp = 'app/temp';
 const sizeOf = require('image-size');
 
 function loadBackground(mode) {	
@@ -41,12 +40,13 @@ function loadBackground(mode) {
 
 	var dimensions = sizeOf(backgroundImageFile);
 	var QRCodeWidth,QRCodeHeight;
-	QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.12);
+	QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
 
 	var posX = Math.floor(dimensions.width*0.015);
 	var posY = Math.floor(dimensions.height*0.70);
-
-	var videofilter = 'lavfi-complex="movie='+PathTemp+'/qrcode.png[logo]; [logo][vid1]scale2ref='+QRCodeWidth+':'+QRCodeHeight+'[logo1][base];[base][logo1] overlay='+posX+':'+posY+'[vo]"';
+	var qrCode = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'qrcode.png');
+	qrCode = qrCode.replace(/\\/g,'/');
+	var videofilter = 'lavfi-complex="movie=\\\''+qrCode+'\\\'[logo]; [logo][vid1]scale2ref='+QRCodeWidth+':'+QRCodeHeight+'[logo1][base];[base][logo1] overlay='+posX+':'+posY+'[vo]"';
 	module.exports._player.load(backgroundImageFile,mode,videofilter)
 		.then(() => {
 			if (mode === 'replace') {
@@ -54,7 +54,7 @@ function loadBackground(mode) {
 			}
 		})
 		.catch((err) => {
-			logger.error('[Player] Unable to load background in '+mode+' mode : '+err);
+			logger.error('[Player] Unable to load background in '+mode+' mode : '+JSON.stringify(err));
 		});
 }
 
@@ -79,6 +79,7 @@ module.exports = {
 		var pGenerateQRCode = new Promise((resolve,reject) => {
 			var qrCode = require('./qrcode.js');
 			qrCode.SYSPATH = module.exports.SYSPATH;
+			qrCode.SETTINGS = module.exports.SETTINGS;
 			var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
 			qrCode.build(url)
 				.then(function(){
@@ -287,7 +288,7 @@ module.exports = {
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
 				'--volume=100',
-				'--input-conf='+path.resolve(module.exports.SYSPATH,PathTemp,'input.conf'),
+				'--input-conf='+path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'input.conf'),
 			];
 			if (module.exports.SETTINGS.PlayerPIP) {
 				mpvOptions.push('--autofit='+module.exports.SETTINGS.PlayerPIPSize+'%x'+module.exports.SETTINGS.PlayerPIPSize+'%');

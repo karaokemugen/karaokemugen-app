@@ -4,15 +4,12 @@ const logger = require('../_common/utils/logger.js');
 
 module.exports = {
 	SYSPATH:null,
+	SETTINGS:null,
 	build:function(url){
 		logger.debug('[Background] Entered background builder');
-		return new Promise(function(resolve,reject){
-			var PathTemp = 'app/temp';
-			var qrcodeImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'qrcode.png');
-			
-			
+		return new Promise(function(resolve,reject){			
+			var qrcodeImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'qrcode.png');
 			logger.debug('[Background] URL detected : '+url);
-
 			qrcode.toFile(qrcodeImageFile, url, {}, function (err) {
 				if (err) {
 					logger.error('[Background] Error generating QR Code : '+err);
