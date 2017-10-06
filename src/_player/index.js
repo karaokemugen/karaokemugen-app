@@ -9,21 +9,39 @@ const sizeOf = require('image-size');
 
 function loadBackground(mode) {	
 	if (!mode) mode = 'replace';
+	// Default background
+	var backgroundFiles = [];	
+	var backgroundDirs = module.exports.SETTINGS.PathBackgrounds.split('|');
+
 	var backgroundImageFile = path.join(__dirname,'assets/background.jpg');
 	if (!L.isEmpty(module.exports.SETTINGS.PlayerBackground)) {
 		backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,module.exports.SETTINGS.PlayerBackground);	if (!fs.existsSync(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
-			logger.warn('[Background] Unable to find background file '+backgroundImageFile+', reverting to default one');
-			backgroundImageFile = path.join(__dirname,'assets/background.jpg');
+			logger.warn('[Player] Unable to find background file '+backgroundImageFile+', reverting to default one');
+			backgroundFiles.push(path.join(__dirname,'assets/background.jpg'));
 		} 				
 	} else {
 		// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
-	}	
+		
+		backgroundDirs.forEach((backgroundDir) => {
+			var backgroundFilesTemp = fs.readdirSync(backgroundDir);
+			backgroundFilesTemp.forEach((backgroundFileTemp,index) => {
+				backgroundFilesTemp[index] = path.resolve(module.exports.SYSPATH,backgroundDir,backgroundFileTemp);
+			});
+			backgroundFiles.push.apply(backgroundFiles,backgroundFilesTemp);
+		});
+		// If backgroundFiles is empty, it means no file was found in the directories scanned.
+		// Reverting to original, supplied background :
+		if (backgroundFiles.length === 0) {
+			backgroundFiles.push(path.join(__dirname,'assets/background.jpg'));
+		}
+	}
+	backgroundImageFile = L.sample(backgroundFiles);
 	logger.debug('[Player] Background : '+backgroundImageFile);
 
 	var dimensions = sizeOf(backgroundImageFile);
 	var QRCodeWidth,QRCodeHeight;
-	QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
+	QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.12);
 
 	var posX = Math.floor(dimensions.width*0.015);
 	var posY = Math.floor(dimensions.height*0.70);
