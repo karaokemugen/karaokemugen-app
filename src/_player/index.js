@@ -8,8 +8,17 @@ const PathTemp = 'app/temp';
 const sizeOf = require('image-size');
 
 function loadBackground(mode) {	
-	if (!mode) mode = 'replace';		
-	var backgroundImageFile = path.resolve(module.exports.SYSPATH,PathTemp,'background.jpg');
+	if (!mode) mode = 'replace';
+	var backgroundImageFile = path.join(__dirname,'assets/background.jpg');
+	if (!L.isEmpty(module.exports.SETTINGS.PlayerBackground)) {
+		backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,module.exports.SETTINGS.PlayerBackground);	if (!fs.existsSync(backgroundImageFile)) {
+			// Background provided in config file doesn't exist, reverting to default one provided.
+			logger.warn('[Background] Unable to find background file '+backgroundImageFile+', reverting to default one');
+			backgroundImageFile = path.join(__dirname,'assets/background.jpg');
+		} 				
+	} else {
+		// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
+	}	
 	logger.debug('[Player] Background : '+backgroundImageFile);
 
 	var dimensions = sizeOf(backgroundImageFile);
@@ -49,24 +58,23 @@ module.exports = {
 	showsubs:true,
 	status:{},
 	init:function(){
-		var pGenerateBackground = new Promise((resolve,reject) => {
-			var generateBackground = require('./generate_background.js');
-			generateBackground.SYSPATH = module.exports.SYSPATH;
-			generateBackground.SETTINGS = module.exports.SETTINGS;
-			generateBackground.frontend_port = module.exports.frontend_port;
-			generateBackground.build()
+		var pGenerateQRCode = new Promise((resolve,reject) => {
+			var qrCode = require('./qrcode.js');
+			qrCode.SYSPATH = module.exports.SYSPATH;
+			var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
+			qrCode.build(url)
 				.then(function(){
-					logger.info('[Player] Background generated');
+					logger.debug('[Player] QRCode generated');
 					resolve();
 				})
 				.catch(function(err){
-					logger.error('[Player] Background generation error : '+err);
+					logger.error('[Player] QRCode generation error : '+err);
 					reject(err);
 				});
 		});
 
 		if (!module.exports.SETTINGS.isTest) {
-			Promise.all([pGenerateBackground]).then(function() {
+			Promise.all([pGenerateQRCode]).then(function() {
 				module.exports.startmpv()
 					.then(() => {
 						logger.info('[Player] Player interface is READY');
