@@ -35,6 +35,16 @@ function loadBackground(mode) {
 			backgroundFiles.push(path.join(__dirname,'assets/background.jpg'));
 		}
 	}
+	//Deleting non image files
+	for(var indexToRemove = backgroundFiles.length - 1; indexToRemove >= 0; indexToRemove--) {
+		if((!backgroundFiles[indexToRemove].endsWith('.jpg') &&
+			!backgroundFiles[indexToRemove].endsWith('.jpeg') &&
+			!backgroundFiles[indexToRemove].endsWith('.png') &&
+			!backgroundFiles[indexToRemove].endsWith('.gif')) ||
+			backgroundFiles[indexToRemove].startsWith('.')) {
+			backgroundFiles.splice(indexToRemove, 1);
+		}
+	}
 	backgroundImageFile = L.sample(backgroundFiles);
 	logger.debug('[Player] Background : '+backgroundImageFile);
 
