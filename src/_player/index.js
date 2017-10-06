@@ -405,7 +405,7 @@ module.exports = {
 					module.exports._player.on('statuschange',function(status){
 						// si on affiche une image il faut considérer que c'est la pause d'après chanson
 						module.exports.status = status;
-						if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp?g|gif)/i)) {
+						if(module.exports._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
 							// immediate switch to Playing = False to avoid multiple trigger
 							module.exports.playing = false;
 							module.exports._playing = false;
