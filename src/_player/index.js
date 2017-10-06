@@ -4,9 +4,61 @@ const logger = require('../_common/utils/logger.js');
 const ip = require('ip');
 const exec = require('child_process');
 const L = require('lodash');
+const PathTemp = 'app/temp';
+const sizeOf = require('image-size');
+
+function loadBackground(mode) {	
+	if (!mode) mode = 'replace';
+	// Default background
+	var backgroundFiles = [];	
+	var backgroundDirs = module.exports.SETTINGS.PathBackgrounds.split('|');
+
+	var backgroundImageFile = path.join(__dirname,'assets/background.jpg');
+	if (!L.isEmpty(module.exports.SETTINGS.PlayerBackground)) {
+		backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,module.exports.SETTINGS.PlayerBackground);	if (!fs.existsSync(backgroundImageFile)) {
+			// Background provided in config file doesn't exist, reverting to default one provided.
+			logger.warn('[Player] Unable to find background file '+backgroundImageFile+', reverting to default one');
+			backgroundFiles.push(path.join(__dirname,'assets/background.jpg'));
+		} 				
+	} else {
+		// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
+		
+		backgroundDirs.forEach((backgroundDir) => {
+			var backgroundFilesTemp = fs.readdirSync(backgroundDir);
+			backgroundFilesTemp.forEach((backgroundFileTemp,index) => {
+				backgroundFilesTemp[index] = path.resolve(module.exports.SYSPATH,backgroundDir,backgroundFileTemp);
+			});
+			backgroundFiles.push.apply(backgroundFiles,backgroundFilesTemp);
+		});
+		// If backgroundFiles is empty, it means no file was found in the directories scanned.
+		// Reverting to original, supplied background :
+		if (backgroundFiles.length === 0) {
+			backgroundFiles.push(path.join(__dirname,'assets/background.jpg'));
+		}
+	}
+	backgroundImageFile = L.sample(backgroundFiles);
+	logger.debug('[Player] Background : '+backgroundImageFile);
+
+	var dimensions = sizeOf(backgroundImageFile);
+	var QRCodeWidth,QRCodeHeight;
+	QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.12);
+
+	var posX = Math.floor(dimensions.width*0.015);
+	var posY = Math.floor(dimensions.height*0.70);
+
+	var videofilter = 'lavfi-complex="movie='+PathTemp+'/qrcode.png[logo]; [logo][vid1]scale2ref='+QRCodeWidth+':'+QRCodeHeight+'[logo1][base];[base][logo1] overlay='+posX+':'+posY+'[vo]"';
+	module.exports._player.load(backgroundImageFile,mode,videofilter)
+		.then(() => {
+			if (mode === 'replace') {
+				module.exports.displayInfo();
+			}
+		})
+		.catch((err) => {
+			logger.error('[Player] Unable to load background in '+mode+' mode : '+err);
+		});
+}
 
 module.exports = {
-	background:path.join(__dirname,'assets/background.jpg'), // default background
 	playing:false,
 	playerstatus:'stop',
 	_playing:false, // internal delay flag
@@ -24,24 +76,23 @@ module.exports = {
 	showsubs:true,
 	status:{},
 	init:function(){
-		var pGenerateBackground = new Promise((resolve,reject) => {
-			var generateBackground = require('./generate_background.js');
-			generateBackground.SYSPATH = module.exports.SYSPATH;
-			generateBackground.SETTINGS = module.exports.SETTINGS;
-			generateBackground.frontend_port = module.exports.frontend_port;
-			generateBackground.build()
+		var pGenerateQRCode = new Promise((resolve,reject) => {
+			var qrCode = require('./qrcode.js');
+			qrCode.SYSPATH = module.exports.SYSPATH;
+			var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
+			qrCode.build(url)
 				.then(function(){
-					logger.info('[Player] Background generated');
+					logger.debug('[Player] QRCode generated');
 					resolve();
 				})
 				.catch(function(err){
-					logger.error('[Player] Background generation error : '+err);
+					logger.error('[Player] QRCode generation error : '+err);
 					reject(err);
 				});
 		});
 
 		if (!module.exports.SETTINGS.isTest) {
-			Promise.all([pGenerateBackground]).then(function() {
+			Promise.all([pGenerateQRCode]).then(function() {
 				module.exports.startmpv()
 					.then(() => {
 						logger.info('[Player] Player interface is READY');
@@ -100,11 +151,7 @@ module.exports = {
 					};
 					module.exports._player.freeCommand(JSON.stringify(command));
 					//logger.profile('StartPlaying');
-					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-					module.exports._player.load(backgroundImageFile,'append')
-						.catch((err) => {
-							logger.error('[Player] Unable to load background in append mode (play) : '+err);
-						});
+					loadBackground('append');
 					module.exports._playing = true;
 				})
 				.catch((err) => {
@@ -139,14 +186,7 @@ module.exports = {
 		module.exports.timeposition = 0;
 		module.exports._playing = false;
 		module.exports.playerstatus = 'stop';
-		var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-		module.exports._player.load(backgroundImageFile)
-			.then(() => {
-				module.exports.enhanceBackground();
-			})
-			.catch((err) => {
-				logger.error('[Player] Unable to load background at stop : '+err);
-			});
+		loadBackground();
 	},
 	pause: function(){
 		logger.debug('[Player] Pause event triggered');
@@ -196,14 +236,14 @@ module.exports = {
 		module.exports._player.freeCommand(JSON.stringify(command));
 		if (module.exports.playing === false) {
 			setTimeout(function(){
-				module.exports.enhanceBackground();
+				module.exports.displayInfo();
 			},duration);
 		}
 	},
-	enhanceBackground: function(){
+	displayInfo: function(){
 		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
-		var imageCaption = 'Karaoke Mugen - '+__('GO_TO')+' '+url+' !';
-		var imageSign = module.exports.SETTINGS.VersionNo+' - '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
+		var imageCaption = __('GO_TO')+' '+url+' !';
+		var imageSign = 'Karaoke Mugen '+module.exports.SETTINGS.VersionNo+' '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
 		var message = '{\\fscx80}{\\fscy80}'+imageCaption+'\\N{\\fscx30}{\\fscy30}{\\i1}'+imageSign+'{\\i0}';
 		var command = {
 			command: [
@@ -216,10 +256,7 @@ module.exports = {
 		module.exports._player.freeCommand(JSON.stringify(command));
 	},
 	onStatusChange:function(){},
-	onEnd:function(){
-		// événement émis pour quitter l'application
-		logger.error('Player :: onEnd not set');
-	},
+	onEnd:function(){},
 	restartmpv:function(){
 		return new Promise(function(resolve,reject){
 			module.exports.quitmpv()
@@ -250,7 +287,7 @@ module.exports = {
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
 				'--volume=100',
-				'--input-conf='+path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'input.conf'),
+				'--input-conf='+path.resolve(module.exports.SYSPATH,PathTemp,'input.conf'),
 			];
 			if (module.exports.SETTINGS.PlayerPIP) {
 				mpvOptions.push('--autofit='+module.exports.SETTINGS.PlayerPIPSize+'%x'+module.exports.SETTINGS.PlayerPIPSize+'%');
@@ -361,15 +398,7 @@ module.exports = {
 			// Starting up mpv
 			module.exports._player.start()
 				.then(() => {
-					var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-					// Disabled loading the background at start during dev. Or not yet.
-					module.exports._player.load(backgroundImageFile)
-						.then(() => {
-							module.exports.enhanceBackground();
-						})
-						.catch((err) => {
-							logger.error('[Player] Unable to load background at start : '+err);
-						});
+					loadBackground();
 					module.exports._player.observeProperty('sub-text',13);
 					module.exports._player.observeProperty('volume',14);
 					module.exports._player.on('statuschange',function(status){
@@ -457,11 +486,7 @@ module.exports = {
 				module.exports._player.play();
 				module.exports.enhanceBackground();
 				module.exports.playerstatus = 'play';
-				var backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'background.jpg');
-				module.exports._player.load(backgroundImageFile,'append')
-					.catch((err) => {
-						logger.error('[Player] Unable to load background in append mode (play) : '+err);
-					});
+				loadBackground('append');
 				module.exports._playing = true;
 			});
 	},
