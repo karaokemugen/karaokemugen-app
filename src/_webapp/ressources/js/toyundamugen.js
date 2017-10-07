@@ -132,7 +132,7 @@ var plData;
 			clearTimeout(timer);
 			timer = setTimeout(function () {
 				fillPlaylist(side).done( function() {
-					refreshFooterInfos(side);
+					refreshContentInfos(side);
 				});
 			}, 100);
 		});
@@ -360,7 +360,7 @@ var plData;
 						container.scrollTop(y);
                         
 						container.attr('flagScroll', true);
-						refreshFooterInfos(side);
+						refreshContentInfos(side);
 
 					});
                                           
@@ -889,50 +889,70 @@ var plData;
 				}
 				deferred.resolve();
 			});
-		}).fail(function (data) {
+		}).fail(function (data) {	
 			DEBUG && console.log(data);
 		});
 		return deferred.promise();
 	};
 
 	/** refresh playlist dashboard infos
-    * @param {1,2} side - (optional) side of the playlist to trigger the change on
+    * @param {1,2} side - side of the playlist to trigger the change on
+	* @param {boolean} freshData (optional) - refresh playlist data recorded in the option
     */
-	refreshPlaylistDashboard = function(side) {
+	refreshPlaylistDashboard = function(side, freshData) {
 		var dashboard = $('#panel' + side + ' .plDashboard');
 		var select = dashboard.find('.plSelect select');
 		var option = select.find('option:selected');
-		// managing flags
-		['flag_current', 'flag_public'].forEach(function (e) {
-			if (option.data(e) == '1') dashboard.find('button[name="' + e + '"]').removeClass('btn-default').addClass('btn-primary');
-			else dashboard.find('button[name="' + e + '"]').removeClass('btn-primary').addClass('btn-default');
-		});
-
-		// overcomplicated stuff because storing var as data in html via jquery doesn't affect actual html attributes...
-		var optionAttrList = option.prop('attributes');
-		var attrList = dashboard.prop('attributes');
-		var attrListStr = Object.keys(attrList).map(function(k,v){
-			return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
-		}).join(' ');
-		dashboard.removeAttr(attrListStr);
-
-		$.each(optionAttrList, function() {
-			dashboard.attr(this.name, this.value);
-		});
-		dashboard.data(option.data());
-		playlistContentUpdating.done( function(){
-			refreshFooterInfos(side);
-		});
 		var idPlaylist =  option.val();
-		if (playlistRange[idPlaylist] == undefined) {
-			setPlaylistRange(idPlaylist, 0, karaParPage * 2);
+		var deferred = $.Deferred();
+
+		if(!freshData) {
+			deferred.resolve();
+		} else {
+			$.ajax({ url: scope + '/playlists/' + idPlaylist, }).done(function (data) {
+				$.each(data, function(name, value) {
+					option.attr("data-" + name, value);
+					option.data(name, value);
+				});
+				deferred.resolve();
+			});
 		}
-		$(window).resize();
+
+		deferred.promise().done( function() {
+
+			// managing flags
+			['flag_current', 'flag_public'].forEach(function (e) {
+				if (option.data(e) == '1') dashboard.find('button[name="' + e + '"]').removeClass('btn-default').addClass('btn-primary');
+				else dashboard.find('button[name="' + e + '"]').removeClass('btn-primary').addClass('btn-default');
+			});
+			
+			// overcomplicated stuff to copy data about playlist from select to container
+			// because storing var as data in html via jquery doesn't affect actual html attributes...
+			var optionAttrList = option.prop('attributes');
+			var attrList = dashboard.prop('attributes');
+			var attrListStr = Object.keys(attrList).map(function(k,v){
+				return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
+			}).join(' ');
+			dashboard.removeAttr(attrListStr);
+
+			$.each(optionAttrList, function() {
+				dashboard.attr(this.name, this.value);
+			});
+			dashboard.data(option.data());
+			playlistContentUpdating.done( function(){
+				refreshContentInfos(side);
+			});
+			if (playlistRange[idPlaylist] == undefined) {
+				setPlaylistRange(idPlaylist, 0, karaParPage * 2);
+			}
+			$(window).resize();
+		});
 	};
 
-	refreshFooterInfos = function(side) {
+	refreshContentInfos = function(side) {
 		var dashboard =  $('#panel' + side + ' .plDashboard');
 		var idPlaylist = dashboard.find('.plSelect select > option:selected').val();
+
 		var range = getPlaylistRange(idPlaylist);
         
 		var max = range.from + $('#playlist' + side + ' > li ').length;
@@ -940,7 +960,10 @@ var plData;
 		var plInfos = '';
 		if(idPlaylist) {
 			plInfos = range.from + '-' + max;
-			plInfos += (idPlaylist > -1) ? ' / ' + dashboard.data('num_karas') + ' karas ~ dur ' + secondsTimeSpanToHMS(dashboard.data('length')) : '';
+			plInfos += (idPlaylist > -1) ?
+						' / ' + dashboard.data('num_karas') + ' karas ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length'))
+						+ ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'))
+						: '';
 			dashboard.parent().find('.plInfos').text(plInfos).data('from', range.from).data('to', max);
 		}
 	};
@@ -1313,6 +1336,8 @@ var plData;
 				ul.css('height', 'auto');
 			}
 			$('#playlist' + side + ' > li[idplaylistcontent="' + data.plc_id + '"]').attr('currentlyplaying', '');
+			
+			refreshPlaylistDashboard(side, true);
 		}
 	});
 
@@ -1321,6 +1346,7 @@ var plData;
 		DEBUG && console.log(side, idPlaylist);
 		if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
 			playlistContentUpdating = fillPlaylist(side);
+			refreshPlaylistDashboard(side, true);
 		}
 	});
 
