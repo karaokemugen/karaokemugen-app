@@ -1,0 +1,1 @@
+UPDATE playlist SET time_left=$time_left WHERE pk_id_playlist = $playlist_id;
