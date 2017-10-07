@@ -85,8 +85,9 @@ module.exports = {
 		
 			routerAdmin.get('/', function (req, res) {
 				si.graphics().then( function(data) {
+					logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
 					Object.keys(data.displays).forEach(function(key) {
-						data.displays[key].model = data.displays[key].model.replace('�','e');
+						if (data.displays[key].model) data.displays[key].model = data.displays[key].model.replace('�','e');
 					});
 					res.render('admin', {'layout': 'adminHeader',
 						'clientAdress'	:	'http://'+ip.address(),
