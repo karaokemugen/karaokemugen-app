@@ -921,7 +921,6 @@ module.exports = {
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editPlaylist(id_playlist,playlist.name,playlist.flag_visible)
 					.then(function(){
-						module.exports._services.ws.socket.emit('playlistInfoUpdated',id_playlist);
 						resolve();
 					})
 					.catch(function(err){
