@@ -122,10 +122,6 @@ module.exports = {
 						module.exports.updatePlaylistDuration(playlist_id)						
 							.then(() => {
 								logger.profile('UpdatePlaylistDurationSetPlaying');
-								module.exports.emitEvent('playlistInfoUpdated',{
-							playlist_id: playlist_id							
-						});
-						
 								resolve();
 							})
 							.catch((err) => {
@@ -146,9 +142,6 @@ module.exports = {
 						});						
 						module.exports.updatePlaylistDuration(playlist_id)
 							.then(() => {
-								module.exports.emitEvent('playlistInfoUpdated',{
-							playlist_id: playlist_id							
-						});
 								resolve();
 							})
 							.catch((err) => {
