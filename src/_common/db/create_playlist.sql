@@ -1,2 +1,2 @@
-INSERT INTO playlist(name,NORM_name,num_karas,length,created_at,modified_at,flag_visible,flag_current,flag_public)
- VALUES($name,$NORM_name,0,0,$created_at,$modified_at,$flag_visible,$flag_current,$flag_public);
+INSERT INTO playlist(name,NORM_name,num_karas,length,created_at,modified_at,flag_visible,flag_current,flag_public,time_left)
+ VALUES($name,$NORM_name,0,0,$created_at,$modified_at,$flag_visible,$flag_current,$flag_public,0);
