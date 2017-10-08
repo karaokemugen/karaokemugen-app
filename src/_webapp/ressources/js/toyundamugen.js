@@ -312,8 +312,7 @@ var saveKaraMarker;
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
-
-			if(container.attr('flagScroll') == 'true') { 
+			if(container.attr('flagScroll') == true) { 
 				container.attr('flagScroll', false);
 			} else {
 				var playlist = container.find('ul').first();
@@ -336,11 +335,12 @@ var saveKaraMarker;
 						//loading.fadeIn(400);
 						if(scrollDown) {  // scroll down 
 							from += karaParPage + shift;
-							to = from + karaParPage * 2 + shift;
+							to = from + karaParPage * 2;
 						} else if( scrollUp ) {  // scroll up 
 							from = Math.max(0, from - karaParPage - shift);
 							to = from + karaParPage * 2;
 						}
+						
 						DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
 						
 						setPlaylistRange(idPlaylist, from, to);
@@ -399,7 +399,7 @@ var saveKaraMarker;
 	dragAndDrop = true;
 	stopUpdate = false;
     
-	karaParPage = isTouchScreen ? 55 : 60;
+	karaParPage = isTouchScreen ? 54 : 60;
 	if (!isNaN(query.PAGELENGTH)) karaParPage = parseInt(query.PAGELENGTH);
 	
 	saveLastDetailsKara = [[]];
