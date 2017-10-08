@@ -462,6 +462,7 @@ button.closeParent.bottom  {
 }
 
 .playlistContainer > ul {
+	height: calc(100% + 1px);
 	margin-bottom: 10; /* SUPER IMPORTANT TO AVOID A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
 	will-change: -moz-transform;
 	position: relative;

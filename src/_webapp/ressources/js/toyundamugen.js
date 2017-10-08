@@ -330,8 +330,9 @@ var saveKaraMarker;
 					var scrollDown = container.offset().top + container.innerHeight() >= fillerBottom.offset().top && nbKaraInPlaylist >= karaParPage * 2;
 					var scrollUp = fillerTop.offset().top + fillerTop.innerHeight() > container.offset().top + 10 && from > 0;
 				
-					DEBUG && console.log(scrollUpdating, scrollDown, scrollUp);
+					DEBUG && console.log(scrollUpdating, (!scrollUpdating || scrollUpdating.state() == 'resolved') , scrollDown, scrollUp);
 					if (  (!scrollUpdating || scrollUpdating.state() == 'resolved')  && (scrollDown || scrollUp)) {
+						container.attr('flagScroll', true);
 						//loading.fadeIn(400);
 						if(scrollDown) {  // scroll down 
 							from += karaParPage + shift;
@@ -344,7 +345,6 @@ var saveKaraMarker;
 						DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
 						
 						setPlaylistRange(idPlaylist, from, to);
-						container.attr('flagScroll', true);
 						scrollUpdating = fillPlaylist(side, scrollUp ? "top" : "bottom");   
 						
 					}
@@ -586,13 +586,13 @@ var saveKaraMarker;
 
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
-		var start = window.performance.now();
+		//var start = window.performance.now();
 		ajaxSearch[url] = $.ajax({  url: urlFiltre,
 			type: 'GET',
 			dataType: 'json' })
 			.done(function (data) {
 				//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
-				var end = window.performance.now();
+				//var end = window.performance.now();
 				//alert(end - start);
 				var htmlContent = '';
             
@@ -655,9 +655,8 @@ var saveKaraMarker;
 						var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
 						var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
 						var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
-						
-						alert(y + '=' + container.scrollTop()+ '+' + newPosKaraMarker + '-' + posKaraMarker);
-						container.scrollTop(y);
+						container[0].scrollTop = y;
+						//container.scrollTop(y);
 						container.attr('flagScroll', true);
 					}
 					refreshFooterInfos(side);
