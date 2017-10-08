@@ -462,6 +462,7 @@ button.closeParent.bottom  {
 }
 
 .playlistContainer > ul {
+	margin-bottom: 10; /* SUPER IMPORTANT TO AVOID A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
 	will-change: -moz-transform;
 	position: relative;
 	z-index: 1;
@@ -840,11 +841,31 @@ input[type=range]:focus::-ms-fill-upper {
     font-family: 'Glyphicons Halflings'; 
 }
 
+body .playlist-main li.list-group-item.filler {
+    width: 100% !important;
+	overflow: hidden;
+	overflow: hidden;
+	background-color: hsla(0, 0%, 20%, .57);
+}
 
+.loader {
+	border: 16px solid #9e9e9e;
+	border-radius: 50%;
+	border-top: 16px solid #3498db;
+	left: calc(50% - 34px * 3/2);
+	top: calc(50% - 34px * 3/2);
+	position: absolute;
+	width: calc(34px * 3);
+	height: calc(34px * 3);
+	animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 /* dark theme */
-
-
 
 input[type="text"] {
     height: inherit;
