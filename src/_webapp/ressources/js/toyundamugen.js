@@ -644,7 +644,9 @@ var saveKaraMarker;
 								+	htmlContent
 								+	fillerBottom;
 					
+
 					if(scrollTo) {
+						$('.playlistContainer').css('overflow','hidden');
 						var karaMarker = scrollTo === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
 						var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
 					}
@@ -652,12 +654,15 @@ var saveKaraMarker;
 					document.getElementById('playlist' + side).innerHTML = htmlContent;
 					
 					if(scrollTo) {
+					
 						var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
 						var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
 						var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
 						container[0].scrollTop = y;
-						//container.scrollTop(y);
 						container.attr('flagScroll', true);
+						setTimeout(function() {
+							$('.playlistContainer').css('overflow','auto');
+						}, 30);
 					}
 					refreshFooterInfos(side);
                
