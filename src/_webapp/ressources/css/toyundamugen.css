@@ -463,7 +463,7 @@ button.closeParent.bottom  {
 }
 
 .playlistContainer > ul {
-	margin-bottom: 20; /* SUPER IMPORTANT TO AVOID A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
+	margin-bottom: 24px; /* SUPER IMPORTANT TO AVOID A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
 	will-change: -moz-transform;
 	position: relative;
 	z-index: 1;

@@ -312,8 +312,8 @@ var saveKaraMarker;
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
-			if(container.attr('flagScroll') == true) { 
-				container.attr('flagScroll', false);
+			if(container.attr('flagScroll') == true || container.attr('flagScroll') == "true" )  { 
+				//container.attr('flagScroll', false);
 			} else {
 				var playlist = container.find('ul').first();
 				var side = playlist.attr('side');
@@ -322,7 +322,7 @@ var saveKaraMarker;
 				var from =  getPlaylistRange(idPlaylist).from;
 				var to = getPlaylistRange(idPlaylist).to;
 				var nbKaraInPlaylist = parseInt(dashboard.parent().find('.plInfos').data('to')) - parseInt(dashboard.parent().find('.plInfos').data('from'));
-				var shift = 2 * parseInt(karaParPage/5);
+				var shift = 2 * parseInt(karaParPage/10);
 				var fillerBottom = playlist.find('.filler').last();
 				var fillerTop = playlist.find('.filler').first();
 				
@@ -332,12 +332,14 @@ var saveKaraMarker;
 				
 					DEBUG && console.log(scrollUpdating, (!scrollUpdating || scrollUpdating.state() == 'resolved') , scrollDown, scrollUp);
 					if (  (!scrollUpdating || scrollUpdating.state() == 'resolved')  && (scrollDown || scrollUp)) {
+
+
 						container.attr('flagScroll', true);
-						//loading.fadeIn(400);
-						if(scrollDown) {  // scroll down 
+
+						if(scrollDown) {
 							from += karaParPage + shift;
 							to = from + karaParPage * 2;
-						} else if( scrollUp ) {  // scroll up 
+						} else if( scrollUp ) {
 							from = Math.max(0, from - karaParPage - shift);
 							to = from + karaParPage * 2;
 						}
@@ -345,8 +347,7 @@ var saveKaraMarker;
 						DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
 						
 						setPlaylistRange(idPlaylist, from, to);
-						scrollUpdating = fillPlaylist(side, scrollUp ? "top" : "bottom");   
-						
+						scrollUpdating = fillPlaylist(side, scrollUp ? "top" : "bottom");
 					}
 				}
 			}
@@ -646,26 +647,29 @@ var saveKaraMarker;
 					
 
 					if(scrollTo) {
-						$('.playlistContainer').css('overflow','hidden');
+						container.css('overflow-y','hidden');
 						var karaMarker = scrollTo === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
 						var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
 					}
-					
-					document.getElementById('playlist' + side).innerHTML = htmlContent;
-					
-					if(scrollTo) {
-					
-						var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
-						var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
-						var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
-						container[0].scrollTop = y;
-						container.attr('flagScroll', true);
-						setTimeout(function() {
-							$('.playlistContainer').css('overflow','auto');
-						}, 30);
-					}
-					refreshFooterInfos(side);
-               
+		
+					window.requestAnimationFrame( function() {
+						document.getElementById('playlist' + side).innerHTML = htmlContent;
+						//window.requestAnimationFrame( function() {
+							if(scrollTo) {
+								
+								container.css('overflow-y','auto');
+								var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
+								var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
+								var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
+								container.scrollTop(y);
+								container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix							
+											
+								container.attr('flagScroll', false);
+							} 
+							refreshFooterInfos(side);
+						//});
+					});
+
 				} else {
 					/* Blacklist criterias build */
 					var blacklistCriteriasHtml = $('<div/>');
