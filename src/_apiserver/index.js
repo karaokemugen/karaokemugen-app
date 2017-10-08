@@ -292,7 +292,6 @@ module.exports = {
 
 					module.exports.onPlaylistSingleEmpty(req.params.pl_id)
 						.then(function(){
-							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
 							module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
 							res.json('Playlist '+req.params.pl_id+' emptied');
 						})
@@ -425,7 +424,6 @@ module.exports = {
 								if (req.body.pos != undefined) req.sanitize('pos').toInt();
 								module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
 									.then(function(result){
-										module.exports.emitEvent('playlistInfoUpdated',result.playlist_id);
 										module.exports.emitEvent('playlistContentsUpdated',result.playlist_id);
 										res.statusCode = 201;
 										if (req.body.pos === undefined) var pos = 'last';
@@ -465,7 +463,6 @@ module.exports = {
 								if (req.body.pos != undefined) req.sanitize('pos').toInt();
 								module.exports.onKaraCopyToPlaylist(req.body.plc_id,req.params.pl_id,req.body.pos)
 									.then(function(pl_id){
-										module.exports.emitEvent('playlistInfoUpdated',pl_id);
 										module.exports.emitEvent('playlistContentsUpdated',pl_id);
 										res.statusCode = 201;
 										res.json('Playlist content(s) '+req.body.plc_id+' copied to playlist '+req.params.pl_id+' at position '+req.body.pos);
@@ -500,7 +497,6 @@ module.exports = {
 							if (result.isEmpty()) {
 								module.exports.onPlaylistSingleKaraDelete(req.body.plc_id,req.params.pl_id)
 									.then(function(pl_id){
-										module.exports.emitEvent('playlistInfoUpdated',pl_id);
 										module.exports.emitEvent('playlistContentsUpdated',pl_id);
 										res.statusCode = 200;
 										res.json('Playlist content(s) '+req.body.plc_id+' deleted');
@@ -1366,7 +1362,6 @@ module.exports = {
 							module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
 								.then(function(pl_id){
 									module.exports.emitEvent('playlistContentsUpdated',pl_id);
-									module.exports.emitEvent('playlistInfoUpdated',pl_id);
 									res.statusCode = 201;
 									res.json('Karaoke '+req.params.kara_id+' added by '+req.body.requestedby);
 								})

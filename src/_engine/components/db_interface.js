@@ -119,7 +119,11 @@ module.exports = {
 							logger.error('[DBI] Loading user database failed : '+err);
 							process.exit(1);
 						});													
-				});				
+				})
+				.catch((err) => {
+					logger.error['[DBI] Initializing databases failed : '+err];
+					process.exit(1);
+				});
 		});		
 	},
 	// fermeture des instances SQLITE (unlock les fichiers)
@@ -270,29 +274,6 @@ module.exports = {
 				.catch((err) => {
 					reject('Failed to calculate playlist karaoke count : '+err);
 				});
-		});
-	},
-	/**
-	* @function {Calculate duration of a whole playlist}
-	* @param  {number} playlist_id {ID of playlist to recalculate duration for}
-	* @return {object} {duration object (duration.duration = number)}
-	*/
-	calculatePlaylistDuration:function(playlist_id) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlCalculatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_duration.sql'),'utf-8');
-			module.exports._db_handler.get(sqlCalculatePlaylistDuration,
-				{
-					$playlist_id: playlist_id
-				})
-				.then((duration) => {
-					resolve(duration);
-				})
-				.catch((err) => {
-					reject('Failed to calculate playlist duration : '+err);
-				});					
 		});
 	},
 	/**
@@ -512,7 +493,7 @@ module.exports = {
 	* @param  {number} duration    {Duration in seconds}
 	* @return {boolean} {Promise}
 	*/
-	updatePlaylistDuration:function(playlist_id,duration) {
+	updatePlaylistDuration:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
@@ -520,11 +501,35 @@ module.exports = {
 			var sqlUpdatePlaylistDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_duration.sql'),'utf-8');
 			module.exports._db_handler.run(sqlUpdatePlaylistDuration,
 				{
-					$playlist_id: playlist_id,
-					$duration: duration
+					$playlist_id: playlist_id
 				})
 				.then(() => {
-					resolve(duration);
+					resolve();
+				})
+				.catch((err) => {
+					reject('Failed to update duration of playlist '+playlist_id+' : '+err);
+				});						 
+		});
+	},
+	/**
+	* @function {Update playlist's time left}
+	* @param  {number} playlist_id {ID of playlist to update}
+	* @param  {number} timeLeft    {time left i nseconds}
+	* @return {boolean} {Promise}
+	*/
+	updatePlaylistTimeLeft:function(playlist_id,timeLeft) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+			var sqlUpdatePlaylistTimeLeft = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_time_left.sql'),'utf-8');
+			module.exports._db_handler.run(sqlUpdatePlaylistTimeLeft,
+				{
+					$playlist_id: playlist_id,
+					$time_left: timeLeft
+				})
+				.then(() => {
+					resolve();
 				})
 				.catch((err) => {
 					reject('Failed to update duration of playlist '+playlist_id+' : '+err);

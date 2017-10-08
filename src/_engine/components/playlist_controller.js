@@ -12,13 +12,29 @@ process.on('unhandledRejection', (reason, p) => {
 	console.log('Unhandled Rejection at:', p, 'reason:', reason);
 	// application specific logging, throwing an error, or other logic here
 });
+function playingPos(playlist) {
+	// Function to run in array.some of a playlist to check if a kara is a flag_playing one, and get its position.
+	var PLCIDPlayingPos;
+	var isASongFlagPlaying = playlist.some((element) => {
+		if (element.flag_playing == 1) {
+			PLCIDPlayingPos = element.pos;
+			return true;
+		} else {
+			return false;
+		}
+	});
+	if (isASongFlagPlaying) {
+		return PLCIDPlayingPos;
+	} else {
+		return undefined;
+	}
+}
+
 
 module.exports = {
 	SYSPATH:null,
 	DB_INTERFACE:null,
 	SETTINGS:null,
-	samplePlaylist:[],
-
 	/**
 	* @function {Initialization}
 	* Initializes our playlist controller
@@ -102,7 +118,16 @@ module.exports = {
 							playlist_id: playlist_id,
 							plc_id: plc_id,
 						});
-						resolve();
+						logger.profile('UpdatePlaylistDurationSetPlaying');
+						module.exports.updatePlaylistDuration(playlist_id)						
+							.then(() => {
+								logger.profile('UpdatePlaylistDurationSetPlaying');
+								resolve();
+							})
+							.catch((err) => {
+								logger.error('[PLC] updatePlaylistDuration : '+err);
+								reject(err);
+							});
 					})
 					.catch(function(err){
 						logger.error('[PLC] DBI setPlaying : '+err);
@@ -114,8 +139,15 @@ module.exports = {
 						module.exports.emitEvent('playingUpdated',{
 							playlist_id: playlist_id,
 							plc_id: null,
-						});
-						resolve();
+						});						
+						module.exports.updatePlaylistDuration(playlist_id)
+							.then(() => {
+								resolve();
+							})
+							.catch((err) => {
+								logger.error('[PLC] updatePlaylistDuration : '+err);
+								reject(err);
+							});
 					})
 					.catch(function(err){
 						logger.error('[PLC] DBI setPlaying : '+err);
@@ -1239,7 +1271,7 @@ module.exports = {
 			var pIsPlaylist = new Promise((resolve,reject) => {
 				module.exports.isPlaylist(playlist_id)
 					.then(function() {
-						resolve(true);
+						resolve();
 					})
 					.catch(function(err) {
 						err = 'Playlist '+playlist_id+' unknown';
@@ -1249,23 +1281,13 @@ module.exports = {
 			});
 			Promise.all([pIsPlaylist])
 				.then(function() {
-					// Get playlist duration
-					module.exports.DB_INTERFACE.calculatePlaylistDuration(playlist_id)
-						.then(function(duration){
-							if (duration.duration == null) {
-								duration.duration = 0;
-							}
-							module.exports.DB_INTERFACE.updatePlaylistDuration(playlist_id,duration.duration)
-								.then(function(duration){									
-									resolve(duration);
-								})
-								.catch(function(err){
-									logger.error('[PLC] DBI updatePlaylistDuration : '+err);
-									reject(err);
-								});
+					// Get playlist duration					
+					module.exports.DB_INTERFACE.updatePlaylistDuration(playlist_id)
+						.then(function(){									
+							resolve();
 						})
 						.catch(function(err){
-							logger.error('[PLC] DBI calculatePlaylistDuration : '+err);
+							logger.error('[PLC] DBI updatePlaylistDuration : '+err);
 							reject(err);
 						});
 				})
@@ -1663,16 +1685,6 @@ module.exports = {
 							// If pos is not provided, we need to get the maximum position in the PL
 							// And use that +1 to set our playlist position.
 							// If pos is -1, we must add it after the currently flag_playing karaoke.
-							var PLCIDPlayingPos;								
-							function isPlaying(element) {
-								// Function to run in array.some of a playlist to check if a kara is a flag_playing one, and get its position.
-								if (element.flag_playing == 1) {
-									PLCIDPlayingPos = element.pos;
-									return true;
-								} else {
-									return false;
-								}
-							}
 							module.exports.getPlaylistContents(playlist_id)
 								.then((playlist) => {
 									// Browse Playlist to find out flag_playing. 
@@ -1680,12 +1692,7 @@ module.exports = {
 
 										// Find out position of currently playing karaoke
 										// If no flag_playing is found, we'll add songs at the end of playlist.
-										var isASongFlagPlaying = playlist.some(isPlaying);
-										if (isASongFlagPlaying) {
-											pos = PLCIDPlayingPos;
-										} else {
-											pos = undefined;
-										}
+										pos = playingPos(playlist);									
 									}
 									if (pos) {
 										module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,karas.length)
@@ -1739,16 +1746,6 @@ module.exports = {
 													reject(err);
 												});
 										});
-										var pUpdatedDuration = new Promise((resolve,reject) => {
-											module.exports.updatePlaylistDuration(playlist_id)
-												.then(function(){
-													resolve();
-												})
-												.catch(function(err){
-													logger.error('[PLC] updatePlaylistDuration : '+err);
-													reject(err);
-												});
-										});
 										var pUpdatedKarasCount = new Promise((resolve,reject) => {
 											module.exports.updatePlaylistNumOfKaras(playlist_id)
 												.then(function(){
@@ -1763,7 +1760,8 @@ module.exports = {
 											// Checking if a flag_playing is present inside the playlist.
 											// If not, we'll have to set the karaoke we just added as the currently playing one. 
 											module.exports.isPlaylistFlagPlaying(playlist_id)
-												.then(function(res){																			// Playlist has no song with flag_playing!
+												.then(function(res){
+													// Playlist has no song with flag_playing!
 													// Now setting.
 													if (!res) {														
 														module.exports.getPLCIDByDate(playlist_id,date_add)
@@ -1782,7 +1780,15 @@ module.exports = {
 																reject(err);
 															});																												
 													} else {
-														resolve();
+														module.exports.updatePlaylistDuration(playlist_id)
+															.then(function(){
+																resolve();
+															})
+															.catch(function(err){
+																logger.error('[PLC] updatePlaylistDuration : '+err);
+																reject(err);
+															});
+													
 													}
 												})
 												.catch(function(err){
@@ -1790,7 +1796,7 @@ module.exports = {
 													reject(err);
 												});
 										});
-										Promise.all([pSetPlaying,pUpdateLastEditTime,pUpdatedDuration,pUpdatedKarasCount])
+										Promise.all([pSetPlaying,pUpdateLastEditTime,pUpdatedKarasCount])
 											.then(function() {								
 												var karaAdded = [];
 												karaList.forEach(function(kara) {
@@ -2944,12 +2950,12 @@ module.exports = {
 						if(kara) {
 							// mise à jour du pointeur de lecture
 							module.exports.setPlaying(kara.playlistcontent_id,playlist_id)
-								.then(function(){
+								.then(() => {
 									resolve();
 								})
 								.catch(function(err){
 									reject(err);
-								});	
+								});								
 						} else {
 							var err = 'Received an empty karaoke!';
 							logger.error('[PLC] prev : '+err);
@@ -2982,7 +2988,7 @@ module.exports = {
 							logger.info('[PLC] next : current position is last song');		// Unset flag_playing on all karas from the playlist
 							module.exports.setPlaying(null,playlist_id)
 								.then(function(){
-									reject('Current position is last song!');										
+									reject('Current position is last song!');						
 								})
 								.catch(function(err){
 									reject(err);
@@ -3189,10 +3195,7 @@ module.exports = {
 	// ---------------------------------------------------------------------------
 
 	emitEvent:function(){},
-	onPlaylistUpdated:function(){
-		// événement émis pour quitter l'application
-		logger.error('_engine/components/playlist_controller.js :: onPlaylistUpdated not set');
-	},
+	onPlaylistUpdated:function(){},
 	onPlayingUpdated:function(){
 		// event when the playing flag is changed in the current playlist
 	}
