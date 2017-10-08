@@ -650,10 +650,13 @@ var saveKaraMarker;
 					}
 					
 					document.getElementById('playlist' + side).innerHTML = htmlContent;
+					
 					if(scrollTo) {
 						var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
 						var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
 						var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
+						
+						alert(y + '=' + container.scrollTop()+ '+' + newPosKaraMarker + '-' + posKaraMarker);
 						container.scrollTop(y);
 						container.attr('flagScroll', true);
 					}
