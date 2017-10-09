@@ -689,7 +689,7 @@ module.exports = {
 										if (doUpdateSeriesAltNames) {
 											module.exports.db.prepare('UPDATE serie SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;')
 												.then((stmt) => {
-													async.each(sqlUpdateSeriesAltNames,function(data,callback){
+													async.eachSeries(sqlUpdateSeriesAltNames,function(data,callback){
 														stmt.run(data)
 															.then(() => {
 																callback();
