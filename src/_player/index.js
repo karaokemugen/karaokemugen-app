@@ -1,4 +1,4 @@
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 const logger = require('../_common/utils/logger.js');
 const ip = require('ip');
@@ -17,7 +17,8 @@ function loadBackground(mode) {
 		backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,module.exports.SETTINGS.PlayerBackground);	if (!fs.existsSync(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn('[Player] Unable to find background file '+backgroundImageFile+', reverting to default one');
-			backgroundFiles.push(path.join(__dirname,'assets/background.jpg'));
+			fs.copySync(path.join(__dirname,'assets/background.jpg'),path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,'default.jpg'));
+			backgroundFiles.push(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,'default.jpg'));
 		} 				
 	} else {
 		// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
@@ -32,7 +33,8 @@ function loadBackground(mode) {
 		// If backgroundFiles is empty, it means no file was found in the directories scanned.
 		// Reverting to original, supplied background :
 		if (backgroundFiles.length === 0) {
-			backgroundFiles.push(path.join(__dirname,'assets/background.jpg'));
+			fs.copySync(path.join(__dirname,'assets/background.jpg'),path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,'default.jpg'));
+			backgroundFiles.push(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,'default.jpg'));
 		}
 	}
 	//Deleting non image files
