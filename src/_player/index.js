@@ -22,8 +22,8 @@ function loadBackground(mode) {
 	} else {
 		// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
 		
-		backgroundDirs.forEach((backgroundDir) => {
-			var backgroundFilesTemp = fs.readdirSync(backgroundDir);
+		backgroundDirs.forEach((backgroundDir) => {			
+			var backgroundFilesTemp = fs.readdirSync(path.resolve(module.exports.SYSPATH,backgroundDir));
 			backgroundFilesTemp.forEach((backgroundFileTemp,index) => {
 				backgroundFilesTemp[index] = path.resolve(module.exports.SYSPATH,backgroundDir,backgroundFileTemp);
 			});
@@ -166,7 +166,7 @@ module.exports = {
 					module.exports._playing = true;
 				})
 				.catch((err) => {
-					logger.error('[Player] Error loading video '+video+' ('+err+')');
+					logger.error('[Player] Error loading video '+video+' ('+JSON.stringify(err)+')');
 				});
 		} else {			
 			if (module.exports._states.status != 'stop') {
@@ -473,7 +473,7 @@ module.exports = {
 		const jingledirs = jingledirslist.split('|');
 		var jinglefiles = [];
 		jingledirs.forEach((jingledir) => {
-			var jinglefilestemp = fs.readdirSync(jingledir);
+			var jinglefilestemp = fs.readdirSync(path.resolve(module.exports.SYSPATH,jingledir));
 			jinglefilestemp.forEach((jinglefiletemp,index) => {
 				jinglefilestemp[index] = path.resolve(module.exports.SYSPATH,jingledir,jinglefiletemp);
 			});
