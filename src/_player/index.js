@@ -166,7 +166,7 @@ module.exports = {
 					module.exports._playing = true;
 				})
 				.catch((err) => {
-					logger.error('[Player] Error loading video '+video+' ('+err+')');
+					logger.error('[Player] Error loading video '+video+' ('+JSON.stringify(err)+')');
 				});
 		} else {			
 			if (module.exports._states.status != 'stop') {
