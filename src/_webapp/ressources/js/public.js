@@ -241,9 +241,11 @@ swipeManager.on('swipe', function (e) {
 								}, { duration: 100, queue: false, easing: 'easeOutQuad', complete: function () {
 								}});
 								var idKara = $this.attr('idkara');
+								$this.hide();
 								addKaraPublic(idKara, function() {
 									$this.remove();
 								}, function() {	// if it fails
+									$this.show();
 									
 									$this.attr('valid', false) ;
 									$this.addClass('list-group-item');
