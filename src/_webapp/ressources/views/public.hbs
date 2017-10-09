@@ -48,7 +48,6 @@
                 <ul id="playlist1" side="1" class="list-group">
                 </ul>
            </div>
-            <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             <div class="plInfos"></div>
         </div>
          
@@ -85,7 +84,6 @@
                     <li class="list-group-item"></li>
                 </ul>
             </div>
-            <div class="playlistLoading"> {{i18n "LOADING"}} </div>
             <div class="plInfos"></div>
         </div>
     </div>
@@ -96,7 +94,7 @@
     <a class="btn-floating btn-large waves-effect z-depth-3" id="menuMobile"  style="background-color:#123456" data-opened=false>
         <i class="glyphicon glyphicon-menu-hamburger"></i>
     </a>
-    <ul>
+    <ul style="opacity: 0; display: none;">
         <li><a class="z-depth-3 btn-floating btn-large" onclick="endOfTheWorldAsWeKnowIt();" style="background-color:hsla(0, 71%, 14%, .4)"><i class="glyphicon glyphicon-gift"></i></a></li>
         <li><a class="z-depth-3 btn-floating btn-large getLucky"  style="background-color:#111">   <img style="height: 80%;margin-top: 10%" src="/ressources/img/clover.png"></a></li>
         <li><a class="z-depth-3 btn-floating btn-large showSettings" style="background-color:#613114"><i class="glyphicon glyphicon-question-sign"></i></a></li>
