@@ -1,3 +1,13 @@
+process.on('uncaughtException', function (exception) {
+	console.log(exception); // to see your exception details in the console
+	// if you are on production, maybe you can send the exception details to your
+	// email as well ?
+});
+process.on('unhandledRejection', (reason, p) => {
+	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+	// application specific logging, throwing an error, or other logic here
+});
+
 var db = require('sqlite');
 var path = require('path');
 var fs = require('fs');
@@ -23,55 +33,50 @@ module.exports = {
 			}
 			const userdb_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile);
 			const db_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile);
-			var userDB_Test = new Promise(function(resolve,reject){
-				if(!fs.existsSync(userdb_file)) {
-					logger.warn('[DBI] User database not found');
-					db.open(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))
-						.then(() => {
-							db.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/userdata')})
-								.then(() => {
-									db.close();
-									logger.info('[DBI] User database created');
-									resolve();							
-								})
-								.catch((err) => {
-									logger.error('[DBI] Failed creating user database : '+err);
-									db.close();
-									reject(err);
-								});					
-						})
-						.catch((err) => {
-							reject(err);
-						});
-				} else {
-					resolve();
-				}
-			});
-
 			var karasDB_Test = new Promise(function(resolve,reject){
-				if(!fs.existsSync(db_file)) {
-					logger.warn('[DBI] Karaoke database not found');
-					var generator = require('../../_admin/generate_karasdb.js');
-					generator.SYSPATH = module.exports.SYSPATH;
-					generator.SETTINGS = module.exports.SETTINGS;
-					generator.onLog = function(type,message) {
-						logger.info('[DBI] [Gen]',message);
-					};
-					generator.run().then(function(){
-						resolve();
-					}).catch(function(error){
-						// error.
-						reject(error);
-					});
-				} else {
-					resolve();
-				}
-			});
 
-			Promise.all([ userDB_Test, karasDB_Test ])
+				if(fs.existsSync(db_file)) fs.unlinkSync(db_file);
+				logger.warn('[DBI] Karaokes database not found');
+				db.open(db_file,{verbose: true})
+					.then(() => {
+						db.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/karasdb')})
+							.then(() => {
+								db.close()
+									.then(() => {
+										var generator = require('../../_admin/generate_karasdb.js');
+										generator.SYSPATH = module.exports.SYSPATH;
+										generator.SETTINGS = module.exports.SETTINGS;
+										generator.onLog = function(type,message) {
+											logger.info('[DBI] [Gen]',message);
+										};
+										generator.run().then(function(){
+											logger.info('[DBI] Karaokes database created');
+											resolve();
+										}).catch(function(error){
+											// error.
+											reject(error);
+										});
+									})
+									.catch((err) => {
+										logger.error('[DBI] Closing database : '+err);
+									});
+												
+							})
+							.catch((err) => {
+								logger.error('[DBI] Failed creating karaokes database : '+err);
+								db.close();
+								reject(err);
+							});					
+					})
+					.catch((err) => {
+						reject(err);
+					});				
+			});
+			
+			Promise.all([ karasDB_Test ])
 				.then(function() {
 					module.exports._db_handler = db;
-					module.exports._db_handler.open(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile))
+					module.exports._db_handler.open(path.resolve(userdb_file),{verbose: true})
 						.then(() => {
 							logger.info('[DBI] Updating user database (if needed)');
 							module.exports._db_handler.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/userdata')})
@@ -82,7 +87,7 @@ module.exports = {
 											logger.error('[DBI] Setting PRAGMA foreign_keys ON for karaoke database failed : ' + err);
 											process.exit(1);
 										});
-									module.exports._db_handler.run('ATTACH DATABASE "' + path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile) + '" as karasdb;')
+									module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;')
 										.then(() => {
 											module.exports._ready = true;
 											module.exports.getStats()

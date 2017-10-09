@@ -4,8 +4,8 @@ process.on('uncaughtException', function (exception) {
 	// email as well ?
 });
 process.on('unhandledRejection', (reason, p) => {
-  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-  // application specific logging, throwing an error, or other logic here
+	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+	// application specific logging, throwing an error, or other logic here
 });
 
 
@@ -32,6 +32,14 @@ const uuidV4 = require('uuid/v4');
 var csv = require('csv-string');			
 const exec = require('child_process');
 const langsModule = require('langs');
+const crypto = require('crypto');
+
+function checksum (str, algorithm, encoding) {
+	return crypto
+		.createHash(algorithm || 'md5')
+		.update(str, 'utf8')
+		.digest(encoding || 'hex');
+}
 
 module.exports = {
 	db:null,
@@ -45,9 +53,7 @@ module.exports = {
 		const karas_dbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBKarasFile);
 		const karas_userdbfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathDB, module.exports.SETTINGS.PathDBUserFile);
 		const series_altnamesfile = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathAltname);
-		const sqlCreateKarasDBfile = path.join(__dirname, '../_common/db/karas.sqlite3.sql');
-		const sqlCreateKarasDBViewAllfile = path.join(__dirname, '../_common/db/view_all.view.sql');
-
+		
 		const karasdirslist = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathKaras);
 		const videosdirslist = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathVideos);
 
@@ -60,10 +66,7 @@ module.exports = {
 			}
 			
 			// Deleting karasdb first to start over.
-			if (fs.existsSync(karas_dbfile)) {
-				fs.unlinkSync(karas_dbfile);
-			}
-
+			
 			var sqlInsertKaras = [];
 			var sqlInsertSeries = [];
 			var sqlInsertTags = [];
@@ -80,63 +83,11 @@ module.exports = {
 			logger.profile('CreateDatabase');
 			Promise.all([
 				sqlite.open(karas_dbfile, { verbose: true, Promise }),
-				sqlite.open(karas_userdbfile, { verbose:true, Promise })
+				sqlite.open(karas_userdbfile, { verbose: true, Promise })
 			]).then(([db,userdb]) => {
 				module.exports.onLog('success', 'Karaoke databases created');
 				module.exports.db = db;
 				module.exports.userdb = userdb;
-				/**
-				 * Creating tables and views
-			 	 */
-				var pCreateTableAndView = new Promise((resolve,reject) => {
-				/**
-				 * Creating tables
-				 */
-					var pCreateKarasDB = new Promise((resolve,reject) => {
-						var sqlCreateKarasDB = fs.readFileSync(sqlCreateKarasDBfile, 'utf-8');
-						module.exports.db.exec(sqlCreateKarasDB)
-							.then(() => {
-								module.exports.onLog('success', 'Database tables created');
-								resolve();
-							})
-							.catch((err) => {
-								module.exports.onLog('error', 'Error creating database tables : '+err);						
-								reject(err);
-							});						
-					});
-					Promise.all([pCreateKarasDB])
-						.then(function(){
-							logger.profile('CreateDatabase');
-							/**
-						 * Creating views
-						 */
-							var pCreateKarasDBViewAll = new Promise((resolve,reject) => {
-								logger.profile('CreateView');
-								var sqlCreateKarasDBViewAll = fs.readFileSync(sqlCreateKarasDBViewAllfile, 'utf8');
-								module.exports.db.exec(sqlCreateKarasDBViewAll)
-									.then(() => {
-										logger.profile('CreateView');
-										module.exports.onLog('success', 'Views created');
-										resolve();
-									})
-									.catch((err) => {
-										module.exports.onLog('error', 'Error creating views : '+err);								
-										reject(err);
-									});
-							});
-							Promise.all([pCreateKarasDBViewAll])
-								.then(function(){
-									resolve();
-								})
-								.catch(function(err){
-									reject(err);
-								});
-						})
-						.catch(function(err){
-							reject(err);
-						});
-				});
-
 				/**
 			 	 * Creating arrays for use in sql statements
 			 	 */
@@ -237,7 +188,8 @@ module.exports = {
 												$kara_rating : kara['rating'],
 												$kara_viewcount : kara['viewcount'],
 												$kara_gain : kara['gain'],
-												$kara_videolength : kara['videolength']			
+												$kara_videolength : kara['videolength'],
+												$kara_checksum : kara.checksum	
 											});
 										});										
 										resolve();
@@ -312,7 +264,8 @@ module.exports = {
 														csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie) {
 															var serie_name = serie[0];
 															var serie_altnames = serie[1];
-															if (!L.isEmpty(serie_altnames) && !L.isEmpty(serie_name)) {										var serie_altnamesnorm = L.deburr(serie[1]);
+															if (!L.isEmpty(serie_altnames) && !L.isEmpty(serie_name)) {
+																var serie_altnamesnorm = L.deburr(serie[1]);
 																sqlUpdateSeriesAltNames.push({
 																	$serie_altnames : serie_altnames,
 																	$serie_altnamesnorm : serie_altnamesnorm,
@@ -439,7 +392,7 @@ module.exports = {
 						});
 				});
 
-				Promise.all([pCreateTableAndView, pCreateKaraArrays])
+				Promise.all([pCreateKaraArrays])
 					.then(function(){
 						insertIntoDatabaseWowWow()
 							.then(function(){
@@ -509,7 +462,7 @@ module.exports = {
 					/*
 						* Now working with a transaction to bulk-add data.
 						*/
-					sqlite.open(karas_dbfile)
+					sqlite.open(karas_dbfile, {verbose: true})
 						.then((db) => {
 							module.exports.db = db;
 							module.exports.db.run('begin transaction')
@@ -519,7 +472,7 @@ module.exports = {
 								*/
 								
 									var pInsertKaras = new Promise((resolve,reject) => {
-										module.exports.db.prepare('INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at, modified_at, rating, viewcount, gain, videolength) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength);')
+										module.exports.db.prepare('INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at, modified_at, rating, viewcount, gain, videolength,checksum) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength, $kara_checksum);')
 											.then((stmt) => {
 												async.each(sqlInsertKaras,function(data,callback){
 													stmt.run(data)
@@ -547,7 +500,7 @@ module.exports = {
 
 									var pInsertASS = new Promise((resolve,reject) => {
 										logger.profile('ASSFill');
-										module.exports.db.prepare('INSERT INTO ass (fk_id_kara,ass) VALUES ($id_kara, $ass);')
+										module.exports.db.prepare('INSERT INTO ass (fk_id_kara,ass,checksum) VALUES ($id_kara, $ass, $checksum);')
 											.then((stmt) => {
 												async.eachOf(karas,function(kara,index,callback){
 													index++;
@@ -555,7 +508,8 @@ module.exports = {
 													if (kara.ass !== '') {
 														var data = {
 															$id_kara: index,
-															$ass: kara.ass
+															$ass: kara.ass,
+															$checksum: kara.ass_checksum
 														};
 														stmt.run(data)
 															.then(() => {
@@ -687,44 +641,44 @@ module.exports = {
 									Promise.all([pInsertASS,pInsertKaras,pInsertKarasSeries,pInsertKarasTags,pInsertSeries,pInsertTags])
 										.then(() => {
 											var pUpdateSeries = new Promise((resolve,reject) => {
-										if (doUpdateSeriesAltNames) {
-											module.exports.db.prepare('UPDATE serie SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;')
-												.then((stmt) => {
-													async.eachSeries(sqlUpdateSeriesAltNames,function(data,callback){
-														stmt.run(data)
-															.then(() => {
-																callback();
-															})
-															.catch((err) => {
-																callback(err);
-															});										
-													},function(err){
-														if (err) {
-															reject(err);
-														} else {
-															module.exports.onLog('success', 'Series table updated with alternative names');
-															stmt.finalize();
+												if (doUpdateSeriesAltNames) {
+													module.exports.db.prepare('UPDATE serie SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;')
+														.then((stmt) => {
+															async.eachSeries(sqlUpdateSeriesAltNames,function(data,callback){
+																stmt.run(data)
+																	.then(() => {
+																		callback();
+																	})
+																	.catch((err) => {
+																		callback(err);
+																	});										
+															},function(err){
+																if (err) {
+																	reject(err);
+																} else {
+																	module.exports.onLog('success', 'Series table updated with alternative names');
+																	stmt.finalize();
 															
-															resolve();
-														}
-													});
+																	resolve();
+																}
+															});
+														})
+														.catch((err) => {
+															reject(err);
+														});
+												} else {
+													resolve();
+												}
+											});
+											Promise.all([pUpdateSeries])
+												.then(() => {
+													module.exports.onLog('success', 'Database generation successful!');
+													module.exports.db.run('commit').then(() => resolve());
 												})
 												.catch((err) => {
+													module.exports.onLog('error', 'Update series alternative names failed');
 													reject(err);
 												});
-										} else {
-											resolve();
-										}
-									});
-										Promise.all([pUpdateSeries])
-											.then(() => {
-												module.exports.onLog('success', 'Database generation successful!');
-											module.exports.db.run('commit').then(() => resolve());
-											})
-											.catch((err) => {
-												module.exports.onLog('error', 'Update series alternative names failed');
-												reject(err);
-											})
 										})
 										.catch((err) => {
 											module.exports.onLog('error', 'Database generation failed :( '+err);
@@ -1521,6 +1475,7 @@ module.exports = {
 									//Let's read our ASS and get it into a variable
 									if (tmpsubfile !== '' && tmpsubfile !== undefined) {
 										kara.ass = fs.readFileSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile), 'utf-8');
+										kara.ass_checksum = checksum(kara.ass);
 										if (tmpsubfile === 'kara_extract.'+kara.KID+'.ass') {
 											fs.unlinkSync(path.resolve(module.exports.SYSPATH,pathToSubFiles,tmpsubfile));
 										}
@@ -1588,6 +1543,7 @@ module.exports = {
 							kara['creator'] = karadata.creator;
 							kara['author'] = karadata.author;
 							kara['serie'] = karadata.series;							
+							kara.checksum = checksum(ini.stringify(karadata));
 							Promise.all([pGetVideoDuration,pGetVideoGain])
 								.then(function(){
 									karas.push(kara);
@@ -1596,7 +1552,8 @@ module.exports = {
 											if (err) {
 												module.exports.onLog('error', 'Error writing .kara file '+karafile+' : '+err);
 												reject(err);
-											} else {												
+											} else {
+												kara.checksum = checksum(ini.stringify(karadata));
 												resolve();
 											}											
 										});
