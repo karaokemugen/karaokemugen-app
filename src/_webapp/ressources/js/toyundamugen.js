@@ -14,12 +14,12 @@ var SOCKETDEBUG;
 
 var dragAndDrop;        // Boolean : allowing drag&drop
 var karaParPage;        // Int : number of karas disaplyed per "page" (per chunk)
-var toleranceDynamicPixels; // Int (px) : number of pixel before reaching the end of a playlist to trigger a new chunk of karas to be requested
 var saveLastDetailsKara;    // Matrice saving the differents opened kara details to display them again when needed
 var playlistToAdd;          // Int : id of playlist users are adding their kara to
 
 var socket;
 var settings;
+var kmStats;
 
 /* promises */
 var scrollUpdating;
@@ -105,6 +105,15 @@ var plData;
 		});
 
 		// Some html init
+
+		$.ajax({ url: 'public/stats' }).done(function (data) {
+			kmStats = data;
+			if(scope === "public") {
+				$('#selectPlaylist1 > option[value=-1]')
+					.data('num_karas', kmStats.totalcount).attr('data-num_karas', kmStats.totalcount);
+			}
+		});
+
 		settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
         
 		settingsUpdating.done( function() {
@@ -301,9 +310,8 @@ var plData;
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
-
-			if(container.attr('flagScroll') == 'true') { 
-				container.attr('flagScroll', false);
+			if(container.attr('flagScroll') == true || container.attr('flagScroll') == "true" )  { 
+				//container.attr('flagScroll', false);
 			} else {
 				var playlist = container.find('ul').first();
 				var side = playlist.attr('side');
@@ -311,62 +319,36 @@ var plData;
 				var idPlaylist = dashboard.find('select').val();
 				var from =  getPlaylistRange(idPlaylist).from;
 				var to = getPlaylistRange(idPlaylist).to;
-				var yPosition;
 				var nbKaraInPlaylist = parseInt(dashboard.parent().find('.plInfos').data('to')) - parseInt(dashboard.parent().find('.plInfos').data('from'));
-				var loading = dashboard.parent().find('.playlistLoading');
-    
-				toleranceDynamicPixels = 250;
-    
-				var scrollX;
-				DEBUG && console.log(container.scrollTop(), container.innerHeight(),  toleranceDynamicPixels, container[0].scrollHeight, ' - ',  nbKaraInPlaylist , karaParPage * 2);
-				var scrollTop = container.scrollTop() + container.innerHeight() + toleranceDynamicPixels >= container[0].scrollHeight && nbKaraInPlaylist >= karaParPage * 2;
-				var scrollBottom = container.scrollTop() < toleranceDynamicPixels && from > 0;
-				//DEBUG && console.log(container.scrollTop() + container.innerHeight() + toleranceDynamicPixels , container[0].scrollHeight,nbKaraInPlaylist >= karaParPage * 2, scrollTop, loading.css('opacity') > .95);
-             
-				DEBUG && console.log(scrollUpdating, scrollTop, scrollBottom);
-				if (  (!scrollUpdating || scrollUpdating.state() == 'resolved')  && (scrollTop || scrollBottom)) {
-					loading.fadeIn(400);
-                    
-					if(scrollTop) {  // scroll down 
-						scrollX = container.scrollTop();
-						karaPos = playlist.find('li').last();
-						yPosition = (karaPos && karaPos.offset() ? karaPos.offset().top : 0) - toleranceDynamicPixels + 15; // TODO try to make this 100% accurate // - playlist.innerHeight() + scrollX + container.innerHeight();
-                        
-						from += karaParPage;
-						to = from + karaParPage * 2;
-					} else if( scrollBottom ) {  // scroll up 
-                        
-						scrollX = container.scrollTop();
-						karaPos = playlist.find('li').first();
-						yPosition = (karaPos &&  karaPos.offset() ? karaPos.offset().top : 0) + scrollX;
-    
-						from = Math.max(0, from - karaParPage -20);
-						to = from + karaParPage * 2;
-					}
+				var shift = 2 * parseInt(karaParPage/10);
+				var fillerBottom = playlist.find('.filler').last();
+				var fillerTop = playlist.find('.filler').first();
+				
+				if (fillerTop.length > 0 && fillerBottom.length > 0) {
+					var scrollDown = container.offset().top + container.innerHeight() >= fillerBottom.offset().top && nbKaraInPlaylist >= karaParPage * 2;
+					var scrollUp = fillerTop.offset().top + fillerTop.innerHeight() > container.offset().top + 10 && from > 0;
+				
+					DEBUG && console.log(scrollUpdating, (!scrollUpdating || scrollUpdating.state() == 'resolved') , scrollDown, scrollUp);
+					if (  (!scrollUpdating || scrollUpdating.state() == 'resolved')  && (scrollDown || scrollUp)) {
 
-					DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
-                    
-					setPlaylistRange(idPlaylist, from, to);
-                   
-					scrollUpdating = fillPlaylist(side);
-                   
-                    
-					scrollUpdating.done( function(){
 
-						var kara = playlist.find('li[idkara="' + karaPos.attr('idkara') + '"]');
-						var yPositionNew = kara && kara.offset() ? kara.offset().top : yPosition;
-						var y = container.scrollTop() + yPositionNew - yPosition;
-
-						container.scrollTop(y);
-                        
 						container.attr('flagScroll', true);
-						refreshContentInfos(side);
 
-					});
-                                          
+						if(scrollDown) {
+							from += karaParPage + shift;
+							to = from + karaParPage * 2;
+						} else if( scrollUp ) {
+							from = Math.max(0, from - karaParPage - shift);
+							to = from + karaParPage * 2;
+						}
+						
+						DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
+						
+						setPlaylistRange(idPlaylist, from, to);
+						scrollUpdating = fillPlaylist(side, scrollUp ? "top" : "bottom");
+					}
 				}
 			}
-           
 		});
 
 		$('#modalBox').on('shown.bs.modal', function () {
@@ -408,7 +390,6 @@ var plData;
 	isSmall = $(window).width() < 1025;
 	animTime = isSmall ? 200 : 300;
 	refreshTime = 1000;
-	toleranceDynamicPixels = 100;
 	mode = 'list';
 	pseudo = 'Anonymous';
 
@@ -417,7 +398,7 @@ var plData;
 	dragAndDrop = true;
 	stopUpdate = false;
     
-	karaParPage = isTouchScreen ? 55 : 60;
+	karaParPage = isTouchScreen ? 54 : 60;
 	if (!isNaN(query.PAGELENGTH)) karaParPage = parseInt(query.PAGELENGTH);
 	
 	saveLastDetailsKara = [[]];
@@ -502,12 +483,12 @@ var plData;
 		/* tap on full lyrics */
         
 		var elem = $('.playlist-main');
-		var managerLyrics = new Hammer.Manager(elem[0],{
+		var manager2 = new Hammer.Manager(elem[0],{
 			prevent_default: false
 		});
 		var tapper = new Hammer.Tap();
-		managerLyrics.add(tapper);
-		managerLyrics.on('tap', function (e) {
+		manager2.add(tapper);
+		manager2.on('tap', function (e) {
 			$this = $(e.target).closest('.fullLyrics');
             
 			if($this.length > 0) {
@@ -527,7 +508,7 @@ var plData;
 			}
 		});
     
-		managerLyrics.on('tap click', function (e) {
+		manager2.on('tap click', function (e) {
 			e.gesture = e;
 			var target = $(e.gesture.target);
 			if(target.closest('.fullLyrics').length > 0
@@ -565,11 +546,14 @@ var plData;
 	/**
      * Fill a playlist on screen with karas
      * @param {1, 2} side - which playlist on the screen
+     * @param {'top','bottom'} scrollTo (optional) - filling the playlist after  a scroll, allow to keep the scroll position on the same data
      */
 	// TODO if list is updated from another source (socket ?) keep the size of the playlist
-	fillPlaylist = function (side) {
+	fillPlaylist = function (side, scrollTo) {
 		DEBUG && console.log(side);
 		var deferred = $.Deferred();
+		var dashboard = $('#panel' + side + ' .plDashboard');
+		var container = $('#panel' + side + ' .playlistContainer');
 		var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
@@ -601,12 +585,14 @@ var plData;
 
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
+		//var start = window.performance.now();
 		ajaxSearch[url] = $.ajax({  url: urlFiltre,
 			type: 'GET',
 			dataType: 'json' })
 			.done(function (data) {
 				//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
-            
+				//var end = window.performance.now();
+				//alert(end - start);
 				var htmlContent = '';
             
 				if(idPlaylist != -4) {
@@ -645,8 +631,43 @@ var plData;
 						}
 					}
 
-					document.getElementById('playlist' + side).innerHTML = htmlContent;
-               
+					// creating filler space for dyanmic scrolling
+					var totalKara = dashboard.attr('data-num_karas');
+					var fillerTopH = Math.min(from * 34, container.height()/1.5);
+					var fillerBottomH = Math.min((totalKara - to) * 34, container.height()/1.5);
+					
+					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px"><div class="loader"><div></div></div></li>';
+					var fillerBottom = '<li class="list-group-item filler" style="height:' + fillerBottomH + 'px"><div class="loader"><div></div></div></li>';
+					
+					htmlContent =	fillerTop
+								+	htmlContent
+								+	fillerBottom;
+					
+
+					if(scrollTo) {
+						container.css('overflow-y','hidden');
+						var karaMarker = scrollTo === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
+						var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
+					}
+		
+					window.requestAnimationFrame( function() {
+						document.getElementById('playlist' + side).innerHTML = htmlContent;
+						//window.requestAnimationFrame( function() {
+							if(scrollTo) {
+								
+								container.css('overflow-y','auto');
+								var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
+								var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
+								var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
+								container.scrollTop(y);
+								container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix							
+											
+								container.attr('flagScroll', false);
+							} 
+							refreshContentInfos(side);
+						//});
+					});
+
 				} else {
 					/* Blacklist criterias build */
 					var blacklistCriteriasHtml = $('<div/>');
@@ -701,8 +722,6 @@ var plData;
 				deferred.resolve();
 				//var time = console.timeEnd('html'); DEBUG && console.log(data.length);
            
-				$('#panel' + side).find('.playlistLoading').fadeOut(400);
-          
 				// drag & drop part
 				// TODO revoir pour bien définir le drag&drop selon les droits
 				if (dragAndDrop && scope === 'public' && mode != 'mobile' && !isTouchScreen) {
@@ -744,18 +763,22 @@ var plData;
 				} else if(dragAndDrop && scope === 'admin') {
 					var sortableUl = $('#playlist' + side);
 					if(idPlaylist > 0) {
-						sortableUl.sortable({
-							appendTo: sortableUl,
-							handle : isTouchScreen ? '.actionDiv' : false,
-							cancel : '',
-							update: function(event, ui) {
-								changeKaraPos(ui.item);
-							},
-							distance: 10,
-							delay: 10,
-							// connectWith: sortableUl2,
-							axis : 'y'
-						});
+						if(sortableUl.hasClass('ui-sortable')) {
+							sortableUl.sortable('enable');
+						} else {
+							sortableUl.sortable({
+								appendTo: sortableUl,
+								handle : isTouchScreen ? '.actionDiv' : false,
+								cancel : '',
+								update: function(event, ui) {
+									changeKaraPos(ui.item);
+								},
+								distance: 10,
+								delay: 10,
+								// connectWith: sortableUl2,
+								axis : 'y'
+							});
+						}
 					} else if(sortableUl.hasClass('ui-sortable')) {
 						sortableUl.sortable('disable');
 					}
@@ -784,6 +807,7 @@ var plData;
                 
 				}
 			});
+		  
 		return deferred.promise();
 	};
 	/**
@@ -851,7 +875,7 @@ var plData;
 			if (scope === 'admin' || settings['EngineAllowViewWhitelist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -3, 'name': 'Whitelist', 'flag_visible' :  settings['EngineAllowViewWhitelist']});
 			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias']});
 			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] });
-			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas' });
+			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'num_karas' : kmStats.totalcount });
 			
 			// building the options
 			var optionHtml = '';
@@ -955,7 +979,7 @@ var plData;
 
 		var range = getPlaylistRange(idPlaylist);
         
-		var max = range.from + $('#playlist' + side + ' > li ').length;
+		var max = range.from + $('#playlist' + side + ' > li[idkara] ').length;
 
 		var plInfos = '';
 		if(idPlaylist) {
