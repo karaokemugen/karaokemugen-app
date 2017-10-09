@@ -140,9 +140,7 @@ var plData;
 
 			clearTimeout(timer);
 			timer = setTimeout(function () {
-				fillPlaylist(side).done( function() {
-					refreshContentInfos(side);
-				});
+				fillPlaylist(side);
 			}, 100);
 		});
 
@@ -589,7 +587,9 @@ var plData;
 		ajaxSearch[url] = $.ajax({  url: urlFiltre,
 			type: 'GET',
 			dataType: 'json' })
-			.done(function (data) {
+			.done(function (response) {
+				var data = response.content;
+				dashboard.attr('data-karaCount', response.infos.count);
 				//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
 				//var end = window.performance.now();
 				//alert(end - start);
@@ -632,9 +632,8 @@ var plData;
 					}
 
 					// creating filler space for dyanmic scrolling
-					var totalKara = dashboard.attr('data-num_karas');
 					var fillerTopH = Math.min(from * 34, container.height()/1.5);
-					var fillerBottomH = Math.min((totalKara - to) * 34, container.height()/1.5);
+					var fillerBottomH = Math.min((response.infos.count - to) * 34, container.height()/1.5);
 					
 					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px"><div class="loader"><div></div></div></li>';
 					var fillerBottom = '<li class="list-group-item filler" style="height:' + fillerBottomH + 'px"><div class="loader"><div></div></div></li>';
@@ -652,19 +651,20 @@ var plData;
 		
 					window.requestAnimationFrame( function() {
 						document.getElementById('playlist' + side).innerHTML = htmlContent;
+						deferred.resolve();
+						refreshContentInfos(side);
 						//window.requestAnimationFrame( function() {
-							if(scrollTo) {
-								
-								container.css('overflow-y','auto');
-								var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
-								var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
-								var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
-								container.scrollTop(y);
-								container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix							
-											
-								container.attr('flagScroll', false);
-							} 
-							refreshContentInfos(side);
+						if(scrollTo) {
+							
+							container.css('overflow-y','auto');
+							var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
+							var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
+							var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
+							container.scrollTop(y);
+							container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix							
+										
+							container.attr('flagScroll', false);
+						} 
 						//});
 					});
 
@@ -712,6 +712,7 @@ var plData;
 					$('#playlist' + side).empty().append(blacklistCriteriasHtml);
 					if (regenSelect2) $('#bcType').select2({ theme: 'bootstrap', dropdownAutoWidth : true, minimumResultsForSearch: -1 });
 					$('#bcType').change();
+					deferred.resolve();
 				}
               
                 
@@ -719,7 +720,6 @@ var plData;
 				// depending on the playlist we're in, notify if the other playlist can add & transfer to us
 				$('#panel' + non(side)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
             
-				deferred.resolve();
 				//var time = console.timeEnd('html'); DEBUG && console.log(data.length);
            
 				// drag & drop part
@@ -958,14 +958,13 @@ var plData;
 				return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
 			}).join(' ');
 			dashboard.removeAttr(attrListStr);
-
+			playlistContentUpdating.done(function() {
+				refreshContentInfos(side);
+			});
 			$.each(optionAttrList, function() {
 				dashboard.attr(this.name, this.value);
 			});
 			dashboard.data(option.data());
-			playlistContentUpdating.done( function(){
-				refreshContentInfos(side);
-			});
 			if (playlistRange[idPlaylist] == undefined) {
 				setPlaylistRange(idPlaylist, 0, karaParPage * 2);
 			}
@@ -979,15 +978,19 @@ var plData;
 
 		var range = getPlaylistRange(idPlaylist);
         
-		var max = range.from + $('#playlist' + side + ' > li[idkara] ').length;
-
+		var max = range.from + $('#playlist' + side + ' > li[idkara]').length;
+		
 		var plInfos = '';
 		if(idPlaylist) {
 			plInfos = range.from + '-' + max;
-			plInfos += (idPlaylist > -1) ?
-						' / ' + dashboard.data('num_karas') + ' karas ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length'))
-						+ ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'))
-						: '';
+			plInfos +=
+				(idPlaylist > -2 ?
+					' / ' + dashboard.attr('data-karacount') + ' karas'
+					: '') +
+				(idPlaylist > -1 ?
+					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length')) + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'))
+					: '');
+					
 			dashboard.parent().find('.plInfos').text(plInfos).data('from', range.from).data('to', max);
 		}
 	};

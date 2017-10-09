@@ -486,15 +486,23 @@ module.exports = {
 							.then(function(karalist){
 								if (filter) {
 									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
-										.then(function(filtered_pl){
-											resolve(filtered_pl.slice(from,to));
+										.then(function(filtered_pl){	
+											var response = {
+												infos: { count : filtered_pl.length },
+												content: filtered_pl.slice(from,to)
+											};
+											resolve(response);
 										})
 										.catch(function(err){
 											logger.error('[Engine] PLC filterPlaylist : '+err);
 											resolve(err);
 										});
 								} else {
-									resolve(karalist.slice(from,to));
+									var response = {
+										infos: { count : karalist.length },
+										content: karalist.slice(from,to)
+									};
+									resolve(response);
 								}
 							})
 							.catch(function(err){
@@ -1008,14 +1016,22 @@ module.exports = {
 								if (filter) {
 									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 										.then(function(filtered_pl){
-											resolve(filtered_pl.slice(from,to));
+											var response = {
+												infos: { count : filtered_pl.length },
+												content: filtered_pl.slice(from,to)
+											};
+											resolve(response);
 										})
 										.catch(function(err){
 											logger.error('[Engine] PLC filterPlaylist : '+err);
 											resolve(err);
 										});
 								} else {
-									resolve(karalist.slice(from,to));
+									var response = {
+										infos: { count : karalist.length },
+										content: karalist.slice(from,to)
+									};
+									resolve(response);
 								}
 
 							})
@@ -1064,14 +1080,22 @@ module.exports = {
 										if (filter) {
 											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 												.then(function(filtered_pl){
-													resolve(filtered_pl.slice(from,to));
+													var response = {
+														infos: { count : filtered_pl.length },
+														content: filtered_pl.slice(from,to)
+													};
+													resolve(response);
 												})
 												.catch(function(err){
 													logger.error('[Engine] PLC filterPlaylist : '+err);
 													resolve(err);
 												});
 										} else {
-											resolve(karalist.slice(from,to));
+											var response = {
+												infos: { count : karalist.length },
+												content: karalist.slice(from,to)
+											};
+											resolve(response);
 										}
 									})
 									.catch(function(err){
@@ -1128,14 +1152,22 @@ module.exports = {
 										if (filter) {
 											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 												.then(function(filtered_pl){
-													resolve(filtered_pl.slice(from,to));
+													var response = {
+														infos: { count : filtered_pl.length },
+														content: filtered_pl.slice(from,to)
+													};
+													resolve(response);
 												})
 												.catch(function(err){
 													logger.error('[Engine] PLC filterPlaylist : '+err);
 													resolve(err);
 												});
 										} else {
-											resolve(karalist.slice(from,to));
+											var response = {
+												infos: { count : karalist.length },
+												content: karalist.slice(from,to)
+											};
+											resolve(response);
 										}
 									})
 									.catch(function(err){
