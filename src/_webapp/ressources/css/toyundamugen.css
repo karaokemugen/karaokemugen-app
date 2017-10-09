@@ -747,18 +747,18 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 .ps__scrollbar-y,.ps>.ps__scrollbar-y-rail>.ps__scrollbar-y {
 	background-color: #ccc;
-	width: 9px;
+	width: 10px;
 	opacity: 1;
 }
 .ps>.ps__scrollbar-y-rail:hover>.ps__scrollbar-y,
 .ps>.ps__scrollbar-y-rail:active>.ps__scrollbar-y {
-	width: 9px;
+	width: 10px;
 }
 .ps:hover>.ps__scrollbar-y-rail:hover>.ps__scrollbar-y {
 	background-color: #ccc;
 }
 .ps--in-scrolling.ps--y>.ps__scrollbar-y-rail>.ps__scrollbar-y {
-	width: 9px !important;
+	width: 10px !important;
 }
 
 /********************************/
