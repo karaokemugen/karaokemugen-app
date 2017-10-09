@@ -10,7 +10,7 @@ process.on('unhandledRejection', (reason, p) => {
 
 var db = require('sqlite');
 var path = require('path');
-var fs = require('fs');
+var fs = require('fs-extra');
 const logger = require('../../_common/utils/logger.js');
 const moment = require('moment');
 require('moment-duration-format');
@@ -35,7 +35,8 @@ module.exports = {
 			const db_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile);
 			var karasDB_Test = new Promise(function(resolve,reject){
 
-				if(fs.existsSync(db_file)) fs.unlinkSync(db_file);
+				//if(fs.existsSync(db_file)) fs.unlinkSync(db_file);
+				fs.copySync(db_file+'_backup',db_file);
 				logger.warn('[DBI] Karaokes database not found');
 				db.open(db_file,{verbose: true})
 					.then(() => {

@@ -78,7 +78,13 @@ module.exports = {
 			var tags = [];
 			var karas_series = [];
 			var karas_tags = [];
-			var karafiles = [];			
+			var karafiles = [];
+			var existing_karas = [];
+			var existing_series = [];
+			var existing_tags = [];
+			var existing_karas_series = [];
+			var existing_karas_tags = [];			
+			var existing_ass = [];
 			var doUpdateSeriesAltNames = false;
 			logger.profile('CreateDatabase');
 			Promise.all([
@@ -91,171 +97,248 @@ module.exports = {
 				/**
 			 	 * Creating arrays for use in sql statements
 			 	 */
-				var pCreateKaraArrays = new Promise((resolve,reject) => {
-				
-				// Backing up .kara folder first
-					var karasdirs = karasdirslist.split('|');
-					karasdirs.forEach((karasdir) => {
-						if (fs.existsSync(karasdir+'_backup')) {
-							logger.debug('[Gen] Removing backup dir '+karasdir+'_backup');
-							logger.profile('RemoveBackup');
-							fs.removeSync(karasdir+'_backup');
-							logger.profile('RemoveBackup');
-						}
-						logger.debug('[Gen] Creating backup dir '+karasdir+'_backup');
-						logger.profile('CreateBackup');
-						fs.mkdirsSync(karasdir+'_backup');
-
-						fs.copySync(karasdir,karasdir+'_backup',{
-							overwrite: true,
-							preserveTimestamps: true
+				var pGetKaras = new Promise((resolve,reject) => {
+					db.all('SELECT * FROM kara')
+						.then((res) => {
+							existing_karas = res;
+							resolve();
+						})
+						.catch((err) => {
+							module.exports.onLog('error', 'Failed to get all karas : '+err);
+							reject(err);
 						});
-						logger.profile('CreateBackup');				
-					});
+				});
+				var pGetASS = new Promise((resolve,reject) => {
+					db.all('SELECT pk_id_ass,fk_id_kara,checksum FROM ass')
+						.then((res) => {
+							console.log('test');
+							existing_ass = res;
+							resolve();
+						})
+						.catch((err) => {
+							module.exports.onLog('error', 'Failed to get all ass : '+err);
+							reject(err);
+						});
+				});
+				var pGetTags = new Promise((resolve,reject) => {
+					db.all('SELECT * FROM tag')
+						.then((res) => {
+							existing_tags = res;
+							resolve();
+						})
+						.catch((err) => {
+							module.exports.onLog('error', 'Failed to get all tags : '+err);
+							reject(err);
+						});
+				});
+				var pGetSeries = new Promise((resolve,reject) => {
+					db.all('SELECT * FROM serie')
+						.then((res) => {
+							existing_series = res;
+							resolve();
+						})
+						.catch((err) => {
+							module.exports.onLog('error', 'Failed to get all series : '+err);
+							reject(err);
+						});
+				});
+				var pGetKarasTags = new Promise((resolve,reject) => {
+					db.all('SELECT * FROM kara_tag')
+						.then((res) => {
+							existing_karas_tags = res;
+							resolve();
+						})
+						.catch((err) => {
+							module.exports.onLog('error', 'Failed to get all karas/tags : '+err);
+							reject(err);
+						});
+				});
+				var pGetKarasSeries = new Promise((resolve,reject) => {
+					db.all('SELECT * FROM kara_serie')
+						.then((res) => {
+							existing_karas_series = res;
+							resolve();
+						})
+						.catch((err) => {
+							module.exports.onLog('error', 'Failed to get all karas/series : '+err);
+							reject(err);
+						});
+				});
+				Promise.all([pGetKarasSeries,pGetKarasTags,pGetSeries,pGetTags,pGetASS,pGetKaras])
+					.then(() => {
+						console.log(existing_karas);
+						console.log(existing_ass);
+						console.log(existing_series);
+						console.log(existing_tags);
+						console.log(existing_karas_series);
+						console.log(existing_karas_tags);
+
+						var pCreateKaraArrays = new Promise((resolve,reject) => {
+				
+							// Backing up .kara folder first
+							var karasdirs = karasdirslist.split('|');
+							karasdirs.forEach((karasdir) => {
+								if (fs.existsSync(karasdir+'_backup')) {
+									logger.debug('[Gen] Removing backup dir '+karasdir+'_backup');
+									logger.profile('RemoveBackup');
+									fs.removeSync(karasdir+'_backup');
+									logger.profile('RemoveBackup');
+								}
+								logger.debug('[Gen] Creating backup dir '+karasdir+'_backup');
+								logger.profile('CreateBackup');
+								fs.mkdirsSync(karasdir+'_backup');
+
+								fs.copySync(karasdir,karasdir+'_backup',{
+									overwrite: true,
+									preserveTimestamps: true
+								});
+								logger.profile('CreateBackup');				
+							});
 					
 					
-					/**
+							/**
 				 * Get data from .kara files
 				 */
-					var pCreateKaraFiles = new Promise((resolve) => {
-						logger.profile('ReadKaraDir');
-						//Adding all kara files from all kara directories
-						karasdirs.forEach((karasdir) => {
-							var karafilestemp = fs.readdirSync(karasdir);
-							karafilestemp.forEach((karafiletemp,index) => {
-								karafilestemp[index] = path.resolve(module.exports.SYSPATH,karasdir,karafiletemp);
-							});
-							karafiles.push.apply(karafiles,karafilestemp);					
-						});
+							var pCreateKaraFiles = new Promise((resolve) => {
+								logger.profile('ReadKaraDir');
+								//Adding all kara files from all kara directories
+								karasdirs.forEach((karasdir) => {
+									var karafilestemp = fs.readdirSync(karasdir);
+									karafilestemp.forEach((karafiletemp,index) => {
+										karafilestemp[index] = path.resolve(module.exports.SYSPATH,karasdir,karafiletemp);
+									});
+									karafiles.push.apply(karafiles,karafilestemp);					
+								});
 
-						//Deleting non .kara files
-						for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
-							if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
-								karafiles.splice(indexToRemove, 1);
-							}
-						}	
-						module.exports.onLog('success', 'Karaoke data folder read');
-						logger.profile('ReadKaraDir');
-						resolve();
-					});
-					Promise.all([pCreateKaraFiles])
-						.then(function(){
-							/**
+								//Deleting non .kara files
+								for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
+									if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
+										karafiles.splice(indexToRemove, 1);
+									}
+								}	
+								module.exports.onLog('success', 'Karaoke data folder read');
+								logger.profile('ReadKaraDir');
+								resolve();
+							});
+							Promise.all([pCreateKaraFiles])
+								.then(function(){
+									/**
 						 * First analyze .kara
 						 * Then add UUID for each karaoke inside if it isn't there already
 						 * Then build karas table in one transaction.
 						 */
-							var pAddToKaras = new Promise((resolve,reject) => {				
-								logger.profile('AddKara');
-								async.eachLimit(karafiles, 5, function(kara, callback){
-									addKara(kara)
-										.then(function(){
-											module.exports.onLog('success', 'Added : '+kara);										
-											callback();
-										})
-										.catch(function(err){
-											callback(err);
-										});
-								},function(err){
-									if (err) {
-										reject(err);
-									} else {
+									var pAddToKaras = new Promise((resolve,reject) => {				
 										logger.profile('AddKara');
-										module.exports.onLog('success', 'Karaoke count : '+karas.length);
-										resolve();
-									}
-								});
-							});
-							Promise.all([pAddToKaras])
-								.then(function(){									
-								/**
+										async.eachLimit(karafiles, 5, function(kara, callback){
+											addKara(kara)
+												.then(function(){
+													module.exports.onLog('success', 'Added : '+kara);										
+													callback();
+												})
+												.catch(function(err){
+													callback(err);
+												});
+										},function(err){
+											if (err) {
+												reject(err);
+											} else {
+												logger.profile('AddKara');
+												module.exports.onLog('success', 'Karaoke count : '+karas.length);
+												resolve();
+											}
+										});
+									});
+									Promise.all([pAddToKaras])
+										.then(function(){									
+											/**
 								 * Push to array sqlInsertKaras for sql statements from karas.
 								 */
-									var pPushSqlInsertKaras = new Promise((resolve) => {
-										karas.forEach(function(kara, index) {
-											index++;
-											var titlenorm = L.deburr(kara['title']);
-											sqlInsertKaras.push({
-												$id_kara : index,
-												$kara_KID : kara['KID'],
-												$kara_title : kara['title'],
-												$titlenorm : titlenorm,
-												$kara_year : kara['year'],
-												$kara_songorder : kara['songorder'],
-												$kara_videofile : kara['videofile'],			
-												$kara_dateadded : kara['dateadded'],
-												$kara_datemodif : kara['datemodif'],
-												$kara_rating : kara['rating'],
-												$kara_viewcount : kara['viewcount'],
-												$kara_gain : kara['gain'],
-												$kara_videolength : kara['videolength'],
-												$kara_checksum : kara.checksum	
-											});
-										});										
-										resolve();
-									});
-									/**
-								 * Create arrays for series
-								 */
-									var pCreateSeries = new Promise((resolve,reject) => {
-									/**
-									 * Extracting series.
-									 */
-										var pAddToSeries = new Promise((resolve,reject) => {
-											async.eachOf(karas, function(kara, index, callback){
-												index++;											
-												addSeries(kara, index)
-													.then(function(serie){
-														//module.exports.onLog('success', 'Added series : '+serie);
-														callback();
-													})
-													.catch(function(err){
-														callback(err);
+											var pPushSqlInsertKaras = new Promise((resolve) => {
+												karas.forEach(function(kara, index) {
+													index++;
+													var titlenorm = L.deburr(kara['title']);
+													sqlInsertKaras.push({
+														$id_kara : index,
+														$kara_KID : kara['KID'],
+														$kara_title : kara['title'],
+														$titlenorm : titlenorm,
+														$kara_year : kara['year'],
+														$kara_songorder : kara['songorder'],
+														$kara_videofile : kara['videofile'],			
+														$kara_dateadded : kara['dateadded'],
+														$kara_datemodif : kara['datemodif'],
+														$kara_rating : kara['rating'],
+														$kara_viewcount : kara['viewcount'],
+														$kara_gain : kara['gain'],
+														$kara_videolength : kara['videolength'],
+														$kara_checksum : kara.checksum	
 													});
-											},function(err){
-												if (err) {
-													reject(err);
-												}
-												module.exports.onLog('success', 'Series count : '+series.length+' ('+karas_series.length+' links)');
+												});										
 												resolve();
 											});
-										});
-										Promise.all([pAddToSeries])
-											.then(function(){
 											/**
+								 * Create arrays for series
+								 */
+											var pCreateSeries = new Promise((resolve,reject) => {
+												/**
+									 * Extracting series.
+									 */
+												var pAddToSeries = new Promise((resolve,reject) => {
+													async.eachOf(karas, function(kara, index, callback){
+														index++;											
+														addSeries(kara, index)
+															.then(function(serie){
+																//module.exports.onLog('success', 'Added series : '+serie);
+																callback();
+															})
+															.catch(function(err){
+																callback(err);
+															});
+													},function(err){
+														if (err) {
+															reject(err);
+														}
+														module.exports.onLog('success', 'Series count : '+series.length+' ('+karas_series.length+' links)');
+														resolve();
+													});
+												});
+												Promise.all([pAddToSeries])
+													.then(function(){
+														/**
 											 * Push to array sqlInsertSeries for sql statements from series.
 											 */
-												var pPushSqlInsertSeries = new Promise((resolve) => {
-													series.forEach(function(serie, index) {
-														index++;
-														var serienorm = L.deburr(serie);
-														sqlInsertSeries.push({
-															$id_serie : index,
-															$serie : serie,
-															$serienorm : serienorm,
+														var pPushSqlInsertSeries = new Promise((resolve) => {
+															series.forEach(function(serie, index) {
+																index++;
+																var serienorm = L.deburr(serie);
+																sqlInsertSeries.push({
+																	$id_serie : index,
+																	$serie : serie,
+																	$serienorm : serienorm,
+																});
+															});
+															resolve();
 														});
-													});
-													resolve();
-												});
-												/**
+														/**
 											 * Push to array sqlInsertKarasSeries for sql statements from karas_series.
 											 */
-												var pPushSqlInsertKarasSeries= new Promise((resolve) => {
-													karas_series.forEach(function(karaserie) {
-														karaserie = karaserie.split(',');
-														var id_serie = karaserie[0];
-														var id_kara = karaserie[1];
-														sqlInsertKarasSeries.push({
-															$id_serie : id_serie,
-															$id_kara : id_kara,
+														var pPushSqlInsertKarasSeries= new Promise((resolve) => {
+															karas_series.forEach(function(karaserie) {
+																karaserie = karaserie.split(',');
+																var id_serie = karaserie[0];
+																var id_kara = karaserie[1];
+																sqlInsertKarasSeries.push({
+																	$id_serie : id_serie,
+																	$id_kara : id_kara,
+																});
+															});
+															resolve();
 														});
-													});
-													resolve();
-												});
 
-												/**
+														/**
 											 * Working on altnerative names of series.
 											 */
+<<<<<<< HEAD
 												var pCreateSeriesAltNames= new Promise((resolve) => {
 													if (fs.existsSync(series_altnamesfile)) {
 														doUpdateSeriesAltNames = true;
@@ -273,111 +356,135 @@ module.exports = {
 																});						
 																module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
 																
+=======
+														var pCreateSeriesAltNames= new Promise((resolve) => {
+															if (fs.existsSync(series_altnamesfile)) {
+																doUpdateSeriesAltNames = true;
+																var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
+																// !!! non native forEach (here "csv" is a csv-string handler)
+																csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie) {
+																	var serie_name = serie[0];
+																	var serie_altnames = serie[1];
+																	if (!L.isEmpty(serie_altnames) || !L.isEmpty(serie_name)) {
+																		var serie_altnamesnorm = L.deburr(serie[1]);
+																		sqlUpdateSeriesAltNames.push({
+																			$serie_altnames : serie_altnames,
+																			$serie_altnamesnorm : serie_altnamesnorm,
+																			$serie_name : serie_name,
+																		});
+																		if (serie_altnames) {
+																			module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
+																		}
+																	}
+																});
+																module.exports.onLog('success', 'Alternative series name file found');
+															} else {
+																doUpdateSeriesAltNames = false;
+																module.exports.onLog('warning', 'No alternative series name file found, ignoring');
+>>>>>>> Les infos de la base sont récupérées avant génération pour comparaison (#176)
 															}
+															resolve();
 														});
-														module.exports.onLog('success', 'Alternative series name file found');
-													} else {
-														doUpdateSeriesAltNames = false;
-														module.exports.onLog('warning', 'No alternative series name file found, ignoring');
-													}
-													resolve();
-												});
 
 
-												Promise.all([pPushSqlInsertSeries, pPushSqlInsertKarasSeries, pCreateSeriesAltNames])
-													.then(function(){
-														resolve();
+														Promise.all([pPushSqlInsertSeries, pPushSqlInsertKarasSeries, pCreateSeriesAltNames])
+															.then(function(){
+																resolve();
+															})
+															.catch(function(err){
+																reject(err);
+															});
 													})
 													.catch(function(err){
 														reject(err);
 													});
-											})
-											.catch(function(err){
-												reject(err);
-											});
-									});								
-									/**
+											});								
+											/**
 									 * Create arrays for series
 									 */
-									var pCreateTags = new Promise((resolve,reject) => {
-									/**
+											var pCreateTags = new Promise((resolve,reject) => {
+												/**
 									 * Extracting tags.
 									 */
-										var pAddToTags = new Promise((resolve,reject) => {
-											async.eachOf(karas, function(kara, index, callback){
-												index++;
-												addTags(kara, index)
-													.then(function(taglist){
-														//module.exports.onLog('success', 'Added tags "'+taglist+'" to '+kara);
-														callback();
-													})
-													.catch(function(err){
+												var pAddToTags = new Promise((resolve,reject) => {
+													async.eachOf(karas, function(kara, index, callback){
+														index++;
+														addTags(kara, index)
+															.then(function(taglist){
+																//module.exports.onLog('success', 'Added tags "'+taglist+'" to '+kara);
+																callback();
+															})
+															.catch(function(err){
 
-														callback(err);
+																callback(err);
+															});
+													},function(err){
+														if (err) {
+															reject(err);
+														}
+														module.exports.onLog('success', 'Tags count : '+tags.length+' ('+karas_tags.length+' links)');
+														resolve();
 													});
-											},function(err){
-												if (err) {
-													reject(err);
-												}
-												module.exports.onLog('success', 'Tags count : '+tags.length+' ('+karas_tags.length+' links)');
-												resolve();
-											});
-										});
+												});
 
-										Promise.all([pAddToTags])
-											.then(function(){
-											/**
+												Promise.all([pAddToTags])
+													.then(function(){
+														/**
 											 * Push to array sqlInsertTags for sql statements from tags.
 											 */
-												var pPushSqlInsertTags = new Promise((resolve) => {
-													tags.forEach(function(tag, index) {
-														index++;
-														tag = tag.split(',');
-														var tagname = tag[0];
-														var tagnamenorm = L.deburr(tagname);
-														var tagtype = tag[1];
-														sqlInsertTags.push({
-															$id_tag : index,
-															$tagtype : tagtype,
-															$tagname : tagname,
-															$tagnamenorm : tagnamenorm,
+														var pPushSqlInsertTags = new Promise((resolve) => {
+															tags.forEach(function(tag, index) {
+																index++;
+																tag = tag.split(',');
+																var tagname = tag[0];
+																var tagnamenorm = L.deburr(tagname);
+																var tagtype = tag[1];
+																sqlInsertTags.push({
+																	$id_tag : index,
+																	$tagtype : tagtype,
+																	$tagname : tagname,
+																	$tagnamenorm : tagnamenorm,
+																});
+															});
+															resolve();
 														});
-													});
-													resolve();
-												});
 
-												/**
+														/**
 											 * Push to array sqlInsertKarasTags for sql statements from karas_tags.
 											 */
-												var pPushSqlInsertKarasTags = new Promise((resolve) => {
-													karas_tags.forEach(function(karatag) {
-														karatag = karatag.split(',');
-														var id_tag = karatag[0];
-														var id_kara = karatag[1];
-														sqlInsertKarasTags.push({
-															$id_tag : id_tag,
-															$id_kara : id_kara,
+														var pPushSqlInsertKarasTags = new Promise((resolve) => {
+															karas_tags.forEach(function(karatag) {
+																karatag = karatag.split(',');
+																var id_tag = karatag[0];
+																var id_kara = karatag[1];
+																sqlInsertKarasTags.push({
+																	$id_tag : id_tag,
+																	$id_kara : id_kara,
+																});
+															});
+															resolve();
 														});
-													});
-													resolve();
-												});
 
-												Promise.all([pPushSqlInsertTags, pPushSqlInsertKarasTags])
-													.then(function(){
-														resolve();
+														Promise.all([pPushSqlInsertTags, pPushSqlInsertKarasTags])
+															.then(function(){
+																resolve();
+															})
+															.catch(function(err){
+																reject(err);
+															});
 													})
 													.catch(function(err){
 														reject(err);
 													});
-											})
-											.catch(function(err){
-												reject(err);
 											});
-									});
 
-									Promise.all([pPushSqlInsertKaras, pCreateSeries, pCreateTags])
-										.then(function(){
-											resolve();
+											Promise.all([pPushSqlInsertKaras, pCreateSeries, pCreateTags])
+												.then(function(){
+													resolve();
+												})
+												.catch(function(err){
+													reject(err);
+												});
 										})
 										.catch(function(err){
 											reject(err);
@@ -386,31 +493,38 @@ module.exports = {
 								.catch(function(err){
 									reject(err);
 								});
-						})
-						.catch(function(err){
-							reject(err);
 						});
-				});
 
-				Promise.all([pCreateKaraArrays])
-					.then(function(){
-						insertIntoDatabaseWowWow()
+						Promise.all([pCreateKaraArrays])
 							.then(function(){
-								run_userdb_integrity_checks()
+								insertIntoDatabaseWowWow()
 									.then(function(){
-										closeDatabaseConnection()
+										run_userdb_integrity_checks()
 											.then(function(){
-											//Generation is finished, cleaning up backup karas dir
-												var karasdirs = karasdirslist.split('|');
-												karasdirs.forEach((karasdir) => {
-													if (fs.existsSync(karasdir+'_backup')) {
-														fs.removeSync(karasdir+'_backup');
-													}	
-												});
-												resolve();
+												closeDatabaseConnection()
+													.then(function(){
+														//Generation is finished, cleaning up backup karas dir
+														var karasdirs = karasdirslist.split('|');
+														karasdirs.forEach((karasdir) => {
+															if (fs.existsSync(karasdir+'_backup')) {
+																fs.removeSync(karasdir+'_backup');
+															}	
+														});
+														resolve();
+													})
+													.catch(function(err){
+														reject(err);
+													});
 											})
 											.catch(function(err){
-												reject(err);
+												module.exports.onLog('error', err);
+												closeDatabaseConnection()
+													.then(function(){
+														reject(err);
+													})
+													.catch(function(err){
+														reject(err);
+													});
 											});
 									})
 									.catch(function(err){
@@ -435,17 +549,10 @@ module.exports = {
 									});
 							});
 					})
-					.catch(function(err){
-						module.exports.onLog('error', err);
-						closeDatabaseConnection()
-							.then(function(){
-								reject(err);
-							})
-							.catch(function(err){
-								reject(err);
-							});
+					.catch((err) => {
+						module.exports.onLog('error', 'Failed getting all karaokes');
+						reject(err);
 					});
-
 			}).catch((err) => {
 				module.exports.onLog('error', 'Failed opening karaoke database');
 				reject(err);
