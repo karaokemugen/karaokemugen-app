@@ -721,6 +721,47 @@ input[type=range]:focus::-ms-fill-upper {
   background: #ffffff;
 }
 
+/* scrollbar stuff */
+.ps>.ps__scrollbar-y-rail {
+	opacity: .3;
+}
+.ps.ps--active-y>.ps__scrollbar-y-rail {
+
+}
+.ps:hover>.ps__scrollbar-y-rail:hover {
+	background-color:rgba(238, 238, 238, .23);
+}
+.ps:hover>.ps__scrollbar-y-rail {
+	opacity: .8;
+}
+.ps>.ps__scrollbar-y-rail {
+	top: 59px !important;
+	z-index:9999;
+	width: 12px;
+}
+body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
+	top: 0px !important;
+}
+.ps__scrollbar-y {
+	right: 1px !important;
+}
+.ps__scrollbar-y,.ps>.ps__scrollbar-y-rail>.ps__scrollbar-y {
+	background-color: #ccc;
+	width: 10px;
+	opacity: 1;
+}
+.ps>.ps__scrollbar-y-rail:hover>.ps__scrollbar-y,
+.ps>.ps__scrollbar-y-rail:active>.ps__scrollbar-y {
+	width: 10px;
+}
+.ps:hover>.ps__scrollbar-y-rail:hover>.ps__scrollbar-y {
+	background-color: #ccc;
+}
+.ps--in-scrolling.ps--y>.ps__scrollbar-y-rail>.ps__scrollbar-y {
+	width: 10px !important;
+}
+
+/********************************/
 
 .secondaryIcon {
     font-size: 69%;
