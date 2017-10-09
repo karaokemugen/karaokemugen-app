@@ -215,8 +215,9 @@ var plData;
 				$this.attr('checked', checked);
 				$('#playlist' + side + ' [name="checkboxKara"]').attr('checked', checked);
 			} else if (name === 'addAllKaras') {
-				$.ajax({ url: url }).done(function (data) {
-					displayMessage('info', 'Info', 'Ajout de ' + data.length + ' karas à la playlist ' + $('#panel' + non(side) + ' .plDashboard').data('name'));
+				$.ajax({ url: url }).done(function (response) {
+					var data = response.content;
+					displayMessage('info', 'Info', 'Ajout de ' + response.infos.count + ' karas à la playlist ' + $('#panel' + non(side) + ' .plDashboard').data('name'));
 					var karaList = data.map(function(a) {
 						return a.kara_id;
 					}).join();
