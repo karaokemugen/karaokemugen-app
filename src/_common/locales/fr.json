@@ -131,5 +131,6 @@
 	"MESSAGE": "Passer un message",
 	"ENGINEREPEATPLAYLIST": "Répéter playlist",
 	"ENGINEAUTOPLAY": "Lecture automatique sur 1er ajout",
-	"ENGINEJINGLESINTERVAL": "Intervalle entre jingles (sec)"
+	"ENGINEJINGLESINTERVAL": "Intervalle entre jingles (karas)",
+	"Vocaloid": "Vocaloid"
 }

@@ -747,7 +747,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 .ps__scrollbar-y,.ps>.ps__scrollbar-y-rail>.ps__scrollbar-y {
 	background-color: #ccc;
-	width: 10px;
+	width: 7px;
 	opacity: 1;
 }
 .ps>.ps__scrollbar-y-rail:hover>.ps__scrollbar-y,
