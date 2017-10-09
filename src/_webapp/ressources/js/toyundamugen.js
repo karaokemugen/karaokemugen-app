@@ -143,7 +143,7 @@ var saveKaraMarker;
 			clearTimeout(timer);
 			timer = setTimeout(function () {
 				fillPlaylist(side).done( function() {
-					refreshFooterInfos(side);
+					refreshContentInfos(side);
 				});
 			}, 100);
 		});
@@ -666,7 +666,7 @@ var saveKaraMarker;
 											
 								container.attr('flagScroll', false);
 							} 
-							refreshFooterInfos(side);
+							refreshContentInfos(side);
 						//});
 					});
 
@@ -947,7 +947,7 @@ var saveKaraMarker;
 		});
 		dashboard.data(option.data());
 		playlistContentUpdating.done( function(){
-			refreshFooterInfos(side);
+			refreshContentInfos(side);
 		});
 		var idPlaylist =  option.val();
 		if (playlistRange[idPlaylist] == undefined) {
@@ -956,7 +956,7 @@ var saveKaraMarker;
 		$(window).resize();
 	};
 
-	refreshFooterInfos = function(side) {
+	refreshContentInfos = function(side) {
 		var dashboard =  $('#panel' + side + ' .plDashboard');
 		var idPlaylist = dashboard.find('.plSelect select > option:selected').val();
 		var range = getPlaylistRange(idPlaylist);
