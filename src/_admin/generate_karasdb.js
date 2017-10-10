@@ -215,7 +215,8 @@ module.exports = {
 									if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
 										karafiles.splice(indexToRemove, 1);
 									}
-								}	
+								}
+								
 								module.exports.onLog('success', 'Karaoke data folder read');
 								logger.profile('ReadKaraDir');
 								resolve();
@@ -335,28 +336,6 @@ module.exports = {
 															resolve();
 														});
 
-														/**
-											 * Working on altnerative names of series.
-											 */
-<<<<<<< HEAD
-												var pCreateSeriesAltNames= new Promise((resolve) => {
-													if (fs.existsSync(series_altnamesfile)) {
-														doUpdateSeriesAltNames = true;
-														var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
-														// !!! non native forEach (here "csv" is a csv-string handler)
-														csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie) {
-															var serie_name = serie[0];
-															var serie_altnames = serie[1];
-															if (!L.isEmpty(serie_altnames) && !L.isEmpty(serie_name)) {
-																var serie_altnamesnorm = L.deburr(serie[1]);
-																sqlUpdateSeriesAltNames.push({
-																	$serie_altnames : serie_altnames,
-																	$serie_altnamesnorm : serie_altnamesnorm,
-																	$serie_name : serie_name,
-																});						
-																module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
-																
-=======
 														var pCreateSeriesAltNames= new Promise((resolve) => {
 															if (fs.existsSync(series_altnamesfile)) {
 																doUpdateSeriesAltNames = true;
@@ -381,7 +360,6 @@ module.exports = {
 															} else {
 																doUpdateSeriesAltNames = false;
 																module.exports.onLog('warning', 'No alternative series name file found, ignoring');
->>>>>>> Les infos de la base sont récupérées avant génération pour comparaison (#176)
 															}
 															resolve();
 														});

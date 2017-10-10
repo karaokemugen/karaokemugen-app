@@ -34,29 +34,36 @@ module.exports = {
 			const userdb_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile);
 			const db_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile);
 			var karasDB_Test = new Promise(function(resolve,reject){
-
-				//if(fs.existsSync(db_file)) fs.unlinkSync(db_file);
-				fs.copySync(db_file+'_backup',db_file);
-				logger.warn('[DBI] Karaokes database not found');
+				var doGenerate = false;
+				if(!fs.existsSync(db_file)) {
+					logger.warn('[DBI] Karaokes database not found');
+					doGenerate = true;
+				}
+				
 				db.open(db_file,{verbose: true})
 					.then(() => {
+						logger.info('[DBI] Running migrations on karaokes database (if needed)');
 						db.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/karasdb')})
 							.then(() => {
 								db.close()
 									.then(() => {
-										var generator = require('../../_admin/generate_karasdb.js');
-										generator.SYSPATH = module.exports.SYSPATH;
-										generator.SETTINGS = module.exports.SETTINGS;
-										generator.onLog = function(type,message) {
-											logger.info('[DBI] [Gen]',message);
-										};
-										generator.run().then(function(){
-											logger.info('[DBI] Karaokes database created');
-											resolve();
-										}).catch(function(error){
+										if (doGenerate) {
+											var generator = require('../../_admin/generate_karasdb.js');
+											generator.SYSPATH = module.exports.SYSPATH;
+											generator.SETTINGS = module.exports.SETTINGS;
+											generator.onLog = function(type,message) {
+												logger.info('[DBI] [Gen]',message);
+											};
+											generator.run().then(function(){
+												logger.info('[DBI] Karaokes database created');
+												resolve();
+											}).catch(function(error){
 											// error.
-											reject(error);
-										});
+												reject(error);
+											});
+										} else {
+											resolve();
+										}
 									})
 									.catch((err) => {
 										logger.error('[DBI] Closing database : '+err);
@@ -79,7 +86,7 @@ module.exports = {
 					module.exports._db_handler = db;
 					module.exports._db_handler.open(path.resolve(userdb_file),{verbose: true})
 						.then(() => {
-							logger.info('[DBI] Updating user database (if needed)');
+							logger.info('[DBI] Running migrations on user database (if needed)');
 							module.exports._db_handler.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/userdata')})
 								
 								.then(() => {
