@@ -35,113 +35,128 @@ module.exports = {
 			const db_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile);			
 
 			var userDB_Test = new Promise(function(resolve,reject) {
-				db.open(userdb_file,{verbose: true})
+				var userDB = db;
+				userDB.open(userdb_file,{verbose: true})
 					.then(() => {
 						logger.info('[DBI] Running migrations on user database (if needed)');
-						db.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/userdata')})
+						userDB.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/userdata')})
 							.then(() => {
-								db.close()
+								userDB.close()
 									.then(() => {
+										logger.info('[DBI] User database up to date');
 										resolve();
 									})
 									.catch((err) => {
 										logger.error('[DBI] Closing user database failed : ' + err);
-										process.exit(1);
+										reject(err);
 									});
 							})
 							.catch((err) => {
 								logger.error('[DBI] Running migrations for user database : '+err); 
-								process.exit(1);
+								reject(err);
 							});
 					})
 					.catch((err) => {
 						logger.error('[DBI] Error opening user database : '+err); 
-						process.exit(1);
-					});
-					
-			})
-			var karasDB_Test = new Promise(function(resolve,reject){
-				var doGenerate = false;
-				if(!fs.existsSync(db_file)) {
-					logger.warn('[DBI] Karaokes database not found');
-					doGenerate = true;
-				}
-				
-				db.open(db_file,{verbose: true})
-					.then(() => {
-						logger.info('[DBI] Running migrations on karaokes database (if needed)');
-						db.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/karasdb')})
+						reject(err);
+					});					
+			});
+			Promise.all([userDB_Test])
+				.then(() => {
+					var karasDB_Test = new Promise(function(resolve,reject){
+						var doGenerate = false;
+						if(!fs.existsSync(db_file)) {
+							logger.warn('[DBI] Karaokes database not found');
+							doGenerate = true;
+						}
+						var karasDB = db;
+						karasDB.open(db_file,{verbose: true})
 							.then(() => {
-								db.close()
+								logger.info('[DBI] Running migrations on karaokes database (if needed)');
+								karasDB.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/karasdb')})
 									.then(() => {
-										if (doGenerate) {
-											var generator = require('../../_admin/generate_karasdb.js');
-											generator.SYSPATH = module.exports.SYSPATH;
-											generator.SETTINGS = module.exports.SETTINGS;
-											generator.onLog = function(type,message) {
-												logger.info('[DBI] [Gen]',message);
-											};
-											generator.run().then(function(){
-												logger.info('[DBI] Karaokes database created');
-												resolve();
-											}).catch(function(error){
-											// error.
-												reject(error);
+										karasDB.close()
+											.then(() => {
+												if (doGenerate) {
+													var generator = require('../../_admin/generate_karasdb.js');
+													generator.SYSPATH = module.exports.SYSPATH;
+													generator.SETTINGS = module.exports.SETTINGS;
+													generator.onLog = function(type,message) {
+														logger.info('[DBI] [Gen]',message);
+													};
+													generator.run().then(function(){
+														logger.info('[DBI] Karaokes database created');
+														resolve();
+													}).catch(function(error){
+														// error.
+														reject(error);
+													});
+												} else {
+													resolve();
+												}
+											})
+											.catch((err) => {
+												logger.error('[DBI] Closing database : '+err);
 											});
-										} else {
-											resolve();
-										}
+												
 									})
 									.catch((err) => {
-										logger.error('[DBI] Closing database : '+err);
-									});
-												
+										logger.error('[DBI] Failed creating karaokes database : '+err);
+										reject(err);
+									});					
 							})
 							.catch((err) => {
-								logger.error('[DBI] Failed creating karaokes database : '+err);
-								db.close();
 								reject(err);
-							});					
-					})
-					.catch((err) => {
-						reject(err);
-					});				
-			});
+							});				
+					});
 			
-			Promise.all([ userDB_Test, karasDB_Test ])
-				.then(function() {
-					module.exports._db_handler = db;
-					module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;')
-						.then(() => {
-							module.exports._ready = true;
-							module.exports.getStats()
-								.then(function(stats) {
-									logger.info('[DBI] Karaoke count   : ' + stats.totalcount);								
-									logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-									logger.info('[DBI] Total series    : ' + stats.totalseries);
-									logger.info('[DBI] Total languages : ' + stats.totallanguages);
-									logger.info('[DBI] Total artists   : ' + stats.totalartists);
-									logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
-								})
-								.catch(function(err) {
-									logger.warn('[DBI] Failed to fetch statistics : ' + err);
-								});
-							logger.info('[DBI] Database interface is READY');
-							// Trace event. DO NOT UNCOMMENT
-							// unless you want to flood your console.
-							/*module.exports._db_handler.on('trace',function(sql){
+					Promise.all([ karasDB_Test ])
+						.then(function() {
+							module.exports._db_handler = db;
+							module.exports._db_handler.open(userdb_file)
+								.then(() => {
+									module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;')
+										.then(() => {
+											module.exports._ready = true;
+											module.exports.getStats()
+												.then(function(stats) {
+													logger.info('[DBI] Karaoke count   : ' + stats.totalcount);								
+													logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
+													logger.info('[DBI] Total series    : ' + stats.totalseries);
+													logger.info('[DBI] Total languages : ' + stats.totallanguages);
+													logger.info('[DBI] Total artists   : ' + stats.totalartists);
+													logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
+												})
+												.catch(function(err) {
+													logger.warn('[DBI] Failed to fetch statistics : ' + err);
+												});
+											logger.info('[DBI] Database interface is READY');
+											// Trace event. DO NOT UNCOMMENT
+											// unless you want to flood your console.
+											/*module.exports._db_handler.on('trace',function(sql){
 												console.log(sql);
 											});*/
-							resolve();						
+											resolve();						
+										})
+										.catch((err) => {
+											logger.error('[DBI] Unable to attach karaoke database : '+err);
+											process.exit(1);
+										});
+							
+								})
+								.catch((err) => {
+									logger.error('[DBI] Unable to open karaoke database : '+err);
+									process.exit(1);
+								})
+																			
 						})
 						.catch((err) => {
-							logger.error('[DBI] Unable to attach karaoke database : '+err);
+							logger.error['[DBI] Initializing karaokes database failed : '+err];
 							process.exit(1);
 						});
-																			
 				})
 				.catch((err) => {
-					logger.error['[DBI] Initializing databases failed : '+err];
+					logger.error('[DBI] Initializing user database failed : '+err);
 					process.exit(1);
 				});
 		});		
