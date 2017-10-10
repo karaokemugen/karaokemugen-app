@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS kara (
     viewcount            INTEGER DEFAULT (0)	
 );
 
-CREATE TABLE ass IF NOT EXISTS (
+CREATE TABLE IF NOT EXISTS ass (
 	pk_id_ass			 INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
 	fk_id_kara           INTEGER NOT NULL REFERENCES kara,
 	ass                  TEXT
