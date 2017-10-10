@@ -215,8 +215,7 @@ module.exports = {
 									if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
 										karafiles.splice(indexToRemove, 1);
 									}
-								}
-								
+								}	
 								module.exports.onLog('success', 'Karaoke data folder read');
 								logger.profile('ReadKaraDir');
 								resolve();
@@ -336,6 +335,9 @@ module.exports = {
 															resolve();
 														});
 
+														/**
+											 * Working on altnerative names of series.
+											 */
 														var pCreateSeriesAltNames= new Promise((resolve) => {
 															if (fs.existsSync(series_altnamesfile)) {
 																doUpdateSeriesAltNames = true;
