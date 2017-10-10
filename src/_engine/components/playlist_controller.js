@@ -1692,12 +1692,14 @@ module.exports = {
 
 										// Find out position of currently playing karaoke
 										// If no flag_playing is found, we'll add songs at the end of playlist.
-										pos = playingPos(playlist);									
+										pos = playingPos(playlist) + 1;
+										logger.debug('[PLC] PlayNext : flag_playing next found at position '+pos);	
 									}
 									if (pos) {
+										logger.debug('[PLC] Shifting position in playlist from pos '+pos+' by '+karas.length+' positions');
 										module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,karas.length)
 											.then(function(){
-												var startpos = pos + 1;
+												var startpos = pos;
 												karaList.forEach(function(kara,index) {
 													karaList[index].pos = startpos+index;
 												});
