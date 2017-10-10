@@ -111,7 +111,6 @@ module.exports = {
 				var pGetASS = new Promise((resolve,reject) => {
 					db.all('SELECT pk_id_ass,fk_id_kara,checksum FROM ass')
 						.then((res) => {
-							console.log('test');
 							existing_ass = res;
 							resolve();
 						})
@@ -166,13 +165,6 @@ module.exports = {
 				});
 				Promise.all([pGetKarasSeries,pGetKarasTags,pGetSeries,pGetTags,pGetASS,pGetKaras])
 					.then(() => {
-						console.log(existing_karas);
-						console.log(existing_ass);
-						console.log(existing_series);
-						console.log(existing_tags);
-						console.log(existing_karas_series);
-						console.log(existing_karas_tags);
-
 						var pCreateKaraArrays = new Promise((resolve,reject) => {
 				
 							// Backing up .kara folder first
