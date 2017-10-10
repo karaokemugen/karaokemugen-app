@@ -3113,6 +3113,24 @@ module.exports = {
 									video: kara.videofile,
 									subtitle: ass,									
 								};													
+								module.exports.isAPublicPlaylist()
+									.then((playlist_id) => {
+										module.exports.getPLCByKID(kara.kid,playlist_id)
+											.then((plc_id) => {
+												if (plc_id) {
+													module.exports.deleteKaraFromPlaylist([plc_id.playlistcontent_id],playlist_id) 
+														.catch((err) => {
+															logger.warn('[PLC] Could not remove kara from public playlist upon play : '+err);
+														});
+												}
+											})
+											.catch((err) => {
+												logger.warn('[PLC] Error fetching PLC ID from public playlist when removing kara upon play : '+err);
+											});
+									})
+									.catch((err) => {
+										logger.warn('[PLC] Error getting public playlist ID when removing kara upon play : '+err);
+									});
 								resolve(kara);
 									
 							})
