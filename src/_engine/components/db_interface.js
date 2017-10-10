@@ -1893,9 +1893,6 @@ module.exports = {
 			}
 
 			var sqlShiftPosInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/update_shift_pos_in_playlist.sql'),'utf-8');
-			module.exports._db_handler.driver.on('trace',function(sql){
-												console.log(sql);
-			});
 			module.exports._db_handler.run(sqlShiftPosInPlaylist,
 				{
 					$shift: shift,
@@ -1903,9 +1900,6 @@ module.exports = {
 					$pos: pos
 				})
 				.then(() => {
-					module.exports._db_handler.driver.on('trace',function(sql){
-												//Nothing.
-					});
 					resolve();
 				})
 				.catch((err) => {
