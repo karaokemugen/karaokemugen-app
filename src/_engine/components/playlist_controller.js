@@ -3078,20 +3078,15 @@ module.exports = {
 						if(update_playing_kara) {
 							// mise à jour du pointeur de lecture
 							module.exports.setPlaying(kara.playlistcontent_id,playlist.id)
-								.then(function(){
-									resolve();
-								})
-								.catch(function(err){
+								.catch((err) => {
 									reject(err);
-								});	
+								});
 						}
 
 						// on enrichie l'objet pour fournir son contexte et les chemins système prêt à l'emploi
 						kara.playlist_id = playlist.id;
-						logger.profile('GetASS');						
 						module.exports.getASS(kara.kara_id)
 							.then(function(ass){
-								logger.profile('GetASS');								
 								var requester;								
 								if (module.exports.SETTINGS.EngineDisplayNickname){
 									if (kara.pseudo_add !== 'Administrateur') {
