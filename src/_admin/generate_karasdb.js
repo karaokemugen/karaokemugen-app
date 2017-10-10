@@ -79,8 +79,8 @@ module.exports = {
 			var doUpdateSeriesAltNames = false;
 			logger.profile('CreateDatabase');
 			Promise.all([
-				sqlite.open(karas_dbfile, { Promise }),
-				sqlite.open(karas_userdbfile, { Promise })
+				sqlite.open(karas_dbfile, { verbose: true, Promise }),
+				sqlite.open(karas_userdbfile, { verbose:true, Promise })
 			]).then(([db,userdb]) => {
 				module.exports.onLog('success', 'Karaoke databases created');
 				module.exports.db = db;
@@ -312,16 +312,14 @@ module.exports = {
 														csv.forEach(series_altnamesfilecontent.toString(), ':', function(serie) {
 															var serie_name = serie[0];
 															var serie_altnames = serie[1];
-															if (!L.isEmpty(serie_altnames) || !L.isEmpty(serie_name)) {
-																var serie_altnamesnorm = L.deburr(serie[1]);
+															if (!L.isEmpty(serie_altnames) && !L.isEmpty(serie_name)) {										var serie_altnamesnorm = L.deburr(serie[1]);
 																sqlUpdateSeriesAltNames.push({
 																	$serie_altnames : serie_altnames,
 																	$serie_altnamesnorm : serie_altnamesnorm,
 																	$serie_name : serie_name,
-																});
-																if (serie_altnames) {
-																	module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
-																}
+																});						
+																module.exports.onLog('success', 'Added alt. names "'+serie_altnames+'" to '+serie);
+																
 															}
 														});
 														module.exports.onLog('success', 'Alternative series name file found');
@@ -685,7 +683,10 @@ module.exports = {
 												reject(err);
 											});								
 									});
-									var pUpdateSeries = new Promise((resolve,reject) => {
+													
+									Promise.all([pInsertASS,pInsertKaras,pInsertKarasSeries,pInsertKarasTags,pInsertSeries,pInsertTags])
+										.then(() => {
+											var pUpdateSeries = new Promise((resolve,reject) => {
 										if (doUpdateSeriesAltNames) {
 											module.exports.db.prepare('UPDATE serie SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;')
 												.then((stmt) => {
@@ -703,6 +704,7 @@ module.exports = {
 														} else {
 															module.exports.onLog('success', 'Series table updated with alternative names');
 															stmt.finalize();
+															
 															resolve();
 														}
 													});
@@ -714,11 +716,15 @@ module.exports = {
 											resolve();
 										}
 									});
-													
-									Promise.all([pUpdateSeries,pInsertASS,pInsertKaras,pInsertKarasSeries,pInsertKarasTags,pInsertSeries,pInsertTags])
-										.then(() => {
-											module.exports.onLog('success', 'Database generation successful!');
+										Promise.all([pUpdateSeries])
+											.then(() => {
+												module.exports.onLog('success', 'Database generation successful!');
 											module.exports.db.run('commit').then(() => resolve());
+											})
+											.catch((err) => {
+												module.exports.onLog('error', 'Update series alternative names failed');
+												reject(err);
+											})
 										})
 										.catch((err) => {
 											module.exports.onLog('error', 'Database generation failed :( '+err);
