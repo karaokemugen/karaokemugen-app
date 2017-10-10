@@ -17,7 +17,7 @@ function loadBackground(mode) {
 		backgroundImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathBackgrounds,module.exports.SETTINGS.PlayerBackground);	if (!fs.existsSync(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn('[Player] Unable to find background file '+backgroundImageFile+', reverting to default one');
-			fs.copySync(path.join(__dirname,'assets/background.jpg'),path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'default.jpg'));
+			if (!fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'default.jpg'))) fs.copySync(path.join(__dirname,'assets/background.jpg'),path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'default.jpg'));
 			backgroundFiles.push(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'default.jpg'));
 		} 				
 	} else {
@@ -33,7 +33,7 @@ function loadBackground(mode) {
 		// If backgroundFiles is empty, it means no file was found in the directories scanned.
 		// Reverting to original, supplied background :
 		if (backgroundFiles.length === 0) {
-			fs.copySync(path.join(__dirname,'assets/background.jpg'),path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'default.jpg'));
+			if (!fs.existsSync(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'default.jpg'))) fs.copySync(path.join(__dirname,'assets/background.jpg'),path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'default.jpg'));
 			backgroundFiles.push(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'default.jpg'));
 		}
 	}
