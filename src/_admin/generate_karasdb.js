@@ -1460,8 +1460,14 @@ module.exports = {
 								karadata.KID = KID;
 								kara['KID'] = karadata.KID;
 							}
-							timestamp.round = true;
-							kara['dateadded'] = timestamp.now();
+							if (karadata.dateadded) {
+								kara.dateadded = karadata.dateadded;
+							} else {
+								isKaraModified = true;
+								timestamp.round = true;							
+								kara.dateadded = timestamp.now();
+								karadata.dateadded = kara.dateadded;
+							}
 							kara['datemodif'] = kara['dateadded'];
 							// Take out .kara from the filename							
 							var karaWOExtension = karafile.substr(0, karafile.lastIndexOf('.'));
