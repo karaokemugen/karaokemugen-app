@@ -39,7 +39,7 @@ SELECT ak.kara_id AS kara_id,
 	      THEN 1
         ELSE 0
       END) AS flag_blacklisted,
-	  (SELECT ifnull(SUM(all_karas.videolength),0)
+	  (SELECT ifnull(SUM(all_karas.videolength) - ak.videolength,0)
     	FROM karasdb.all_karas AS all_karas
     	INNER JOIN playlist_content ON all_karas.kara_id = playlist_content.fk_id_kara
     	WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
