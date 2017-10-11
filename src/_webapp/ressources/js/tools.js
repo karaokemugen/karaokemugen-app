@@ -82,12 +82,17 @@ ajx = function(type, url, data, doneCallback) {
 };
 
 /* format seconds to Hour Minute Second */
-secondsTimeSpanToHMS = function(s) {
+secondsTimeSpanToHMS = function(s, format) {
+	var d = Math.floor(s/(3600 * 24));
+	s -= d * 3600 * 24;
 	var h = Math.floor(s/3600);
-	s -= h*3600;
+	s -= h * 3600;
 	var m = Math.floor(s/60);
-	s -= m*60;
-	return (h > 0 ? h+'h' : '') +(m < 10 ? '0'+m : m)+'m'+(s < 10 ? '0'+s : s ) + 's'; 
+	s -= m * 60;
+
+	var result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m'+(s < 10 ? '0'+s : s ) + 's';
+	if (format === 'hm') result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
+	return result; 
 };
 
 /* cookies */

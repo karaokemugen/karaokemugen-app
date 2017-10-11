@@ -1113,7 +1113,7 @@ var plData;
 		var idPlc = parseInt(liKara.attr('idplaylistcontent'));
 		var idPlaylist = parseInt( el.closest('.panel').find('.plDashboard').data('playlist_id'));
 		var infoKara = liKara.find('.detailsKara');
-		if (infoKara.length == 0) {
+		if (!infoKara.is(':visible')) { // || infoKara.length == 0
 			var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 
 			$.ajax({ url: urlInfoKara }).done(function (data) {
@@ -1144,8 +1144,12 @@ var plData;
     * @return {String} the details, as html
     */
 	buildKaraDetails = function(data, htmlMode) {
+		var playTime = new Date(Date.now() + data['time_before_play']*1000);
+		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
+		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 		var details = {
 			'Ajouté ': (data['date_add'] ? data['date_add'] : '') + (data['pseudo_add'] ? ' par ' + data['pseudo_add'] : '')
+			, 'Lecture': data['time_before_play'] ? 'dans <span class="time">' + beforePlayTime + '</span> (~' + playTimeDate + ')' : ''
 			, 'Auteur': data['author']
 			, 'Vues': data['viewcount']
 			, 'Créateur': data['creator']

@@ -729,9 +729,9 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPLCInfo = function(id_plc,lang,seenFromUser){
+		module.exports._services.apiserver.onPLCInfo = function(plc_id,lang,seenFromUser){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.getKaraFromPlaylist(id_plc,seenFromUser)
+				module.exports._services.playlist_controller.getKaraFromPlaylist(plc_id,seenFromUser)
 					.then(function(kara){
 						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
 							.then(function(karalist){
