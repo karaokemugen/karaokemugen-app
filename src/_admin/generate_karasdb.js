@@ -1151,7 +1151,6 @@ module.exports = {
 											module.exports.userdb.exec(sqlUpdateUserDB)
 												.then(() => {
 													module.exports.onLog('success', 'Database updated due to integrity checks');				
-													module.exports.onLog('success', 'PLEASE VERIFY YOUR BLACKLIST CRITERIAS BEFORE YOUR NEXT KARAOKE SESSION');
 													logger.profile('ICRunUpdates');
 													resolve();									
 												})
