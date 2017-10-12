@@ -5,6 +5,7 @@ const ip = require('ip');
 const exec = require('child_process');
 const L = require('lodash');
 const sizeOf = require('image-size');
+const jingles = require('./jingles.js');
 
 function loadBackground(mode) {	
 	if (!mode) mode = 'replace';
@@ -88,6 +89,12 @@ module.exports = {
 	showsubs:true,
 	status:{},
 	init:function(){
+		// Building jingles list
+		jingles.SETTINGS = module.exports.SETTINGS;
+		jingles.SYSPATH = module.exports.SYSPATH;
+		jingles.buildList();
+
+		// Building QR Code with URL to connect to
 		var pGenerateQRCode = new Promise((resolve,reject) => {
 			var qrCode = require('./qrcode.js');
 			qrCode.SYSPATH = module.exports.SYSPATH;
@@ -470,44 +477,25 @@ module.exports = {
 	skip:function(){},
 	playJingle:function(){
 		module.exports.playing = true;
-		// Preparing list of jingles from all jingle directories in config
-		const jingledirslist = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathJingles);
-		const jingledirs = jingledirslist.split('|');
-		var jinglefiles = [];
-		jingledirs.forEach((jingledir) => {
-			var jinglefilestemp = fs.readdirSync(path.resolve(module.exports.SYSPATH,jingledir));
-			jinglefilestemp.forEach((jinglefiletemp,index) => {
-				jinglefilestemp[index] = path.resolve(module.exports.SYSPATH,jingledir,jinglefiletemp);
-			});
-			jinglefiles.push.apply(jinglefiles,jinglefilestemp);					
-		});
-		//Get rid of all hidden files and files not ending in these extensions
-		for(var indexToRemove = jinglefiles.length - 1; indexToRemove >= 0; indexToRemove--) {
-			if((!jinglefiles[indexToRemove].endsWith('.avi') &&
-				!jinglefiles[indexToRemove].endsWith('.webm') &&
-				!jinglefiles[indexToRemove].endsWith('.mp4') &&
-				!jinglefiles[indexToRemove].endsWith('.mkv') &&
-				!jinglefiles[indexToRemove].endsWith('.mov')) || jinglefiles[indexToRemove].startsWith('.')) {
-				jinglefiles.splice(indexToRemove, 1);
+		if (jingles.jinglefiles.length > 0) {
+			logger.info('[Player] Jingle time !');
+			var jingle = L.sample(jingles.jinglefiles);
+			logger.debug('[Player] Playing jingle '+jingle.file);
+			if (jingle != undefined) {
+				module.exports._player.load(jingle.file,'replace',['replaygain-fallback='+jingle.gain])
+					.then(() => {
+						module.exports._player.play();						
+						module.exports.displayInfo();
+						module.exports.playerstatus = 'play';
+						loadBackground('append');
+						module.exports._playing = true;
+					});
+			} else {
+				module.exports.playerstatus = 'play';
+				loadBackground();
+				module.exports.displayInfo();
+				module.exports._playing = true;
 			}
-		}
-		// Picking up a jingle at random !
-		if (jinglefiles.length > 0) {
-			const jingle = L.sample(jinglefiles);
-
-			module.exports._player.load(jingle,'replace')
-				.then(() => {
-					module.exports._player.play();
-					module.exports.displayInfo();
-					module.exports.playerstatus = 'play';
-					loadBackground('append');
-					module.exports._playing = true;
-				});
-		} else {
-			module.exports.playerstatus = 'play';
-			loadBackground();
-			module.exports.displayInfo();
-			module.exports._playing = true;
 		}
 	},
 };
