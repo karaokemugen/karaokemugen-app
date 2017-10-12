@@ -149,7 +149,7 @@
 	"PL_SET_PUBLIC":"Liste de lecture %s est maintenant la liste de lecture publique",
 	"PL_VIEW_SONGS_ERROR":"Impossible de récupérer la liste des chansons de la liste de lecture %s",
 	"PL_ADD_SONG_ERROR":"Impossible d'ajouter le ou les karaokés à la liste de lecture %s",
-	"PL_SONG_ADDED":"Karaoké(s) {{kara_ids}} ajouté(s) à la liste de lecture {{playlist_id}} par {{requester}}",
+	"PL_SONG_ADDED":"Karaoké(s) %s ajouté(s) à la liste de lecture %s par %s",
 	"PL_MOVE_SONG_ERROR":"Impossible de transférer le contenu %s à la liste de lecture %s",
 	"PL_SONG_MOVED":"Karaoké transféré à la liste de lecture %s",
 	"PL_DELETE_SONG_ERROR":"Impossible de supprimer le contenu %s de la liste de lecture %s",
@@ -197,7 +197,7 @@
 	"GET_UNLUCKY":"Aucune chanson ne peut être ajoutée. Sont-elles déjà toutes en liste de lecture ?",
 	"SONG_VIEW_ERROR":"Impossible d'afficher les informations du karaoké %s",
 	"PLAYLIST_MODE_ADD_SONG_ERROR":"Impossible d'ajouter le karaoké %s à la liste de lecture %s",
-	"PLAYLIST_MODE_SONG_ADDED":"Karaoké {{kara_id}} ajouté à la liste de lecture {{pl_id}} par {{requester}}",
+	"PLAYLIST_MODE_SONG_ADDED":"Karaoké %s ajouté à la liste de lecture %s par %s",
 	"LYRICS_VIEW_ERROR":"Impossible d'afficher les paroles du karaoké",
 	"TAGS_LIST_ERROR":"Impossible d'afficher la liste des tags"
 }
