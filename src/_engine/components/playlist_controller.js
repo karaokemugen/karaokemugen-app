@@ -118,10 +118,8 @@ module.exports = {
 							playlist_id: playlist_id,
 							plc_id: plc_id,
 						});
-						logger.profile('UpdatePlaylistDurationSetPlaying');
-						module.exports.updatePlaylistDuration(playlist_id)						
+						module.exports.updatePlaylistDuration(playlist_id)	
 							.then(() => {
-								logger.profile('UpdatePlaylistDurationSetPlaying');
 								resolve();
 							})
 							.catch((err) => {
