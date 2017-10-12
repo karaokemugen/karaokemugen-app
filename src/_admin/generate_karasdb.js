@@ -1300,11 +1300,9 @@ module.exports = {
 
 				var pGetAllTags = new Promise((resolve,reject) => {
 					var sqlGetAllTags = 'SELECT pk_id_tag AS id_tag, tagtype, name FROM tag;';
-					logger.profile('ICSelectTags');
 					module.exports.db.all(sqlGetAllTags)
 						.then((tags) => {
 							AllTags = tags;
-							logger.profile('ICSelectTags');
 							resolve();
 						})
 						.catch((err) => {
@@ -1313,11 +1311,9 @@ module.exports = {
 				});
 				var pGetAllKaras = new Promise((resolve,reject) => {
 					var sqlGetAllKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
-					logger.profile('ICSelectKaras');
 					module.exports.db.all(sqlGetAllKaras)
 						.then((playlist) => {
 							AllKaras = playlist;
-							logger.profile('ICSelectKaras');
 							resolve();
 						})
 						.catch((err) => {
@@ -1326,12 +1322,10 @@ module.exports = {
 				});
 				var pGetPlaylistKaras = new Promise((resolve,reject) => {
 					var sqlGetPlaylistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM playlist_content;';
-					logger.profile('ICSelectPLCs');
 					module.exports.userdb.all(sqlGetPlaylistKaras)
 						.then((playlist) => {
 							if (playlist) {
 								PlaylistKaras = playlist;
-								logger.profile('ICSelectPLCs');
 								resolve();
 							} else {
 								resolve();
@@ -1343,12 +1337,10 @@ module.exports = {
 				});
 				var pGetWhitelistKaras = new Promise((resolve,reject) => {
 					var sqlGetWhitelistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM whitelist;';
-					logger.profile('ICSelectWLCs');
 					module.exports.userdb.all(sqlGetWhitelistKaras)
 						.then((playlist) => {
 							if (playlist) {
 								WhitelistKaras = playlist;
-								logger.profile('ICSelectWLCs');
 								resolve();
 							} else {
 								resolve();
@@ -1360,12 +1352,10 @@ module.exports = {
 				});
 				var pGetBlacklistKaras = new Promise((resolve,reject) => {
 					var sqlGetBlacklistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM blacklist;';
-					logger.profile('ICSelectBLCs');
 					module.exports.userdb.all(sqlGetBlacklistKaras)
 						.then((playlist) => {
 							if (playlist) {
 								BlacklistKaras = playlist;
-								logger.profile('ICSelectBLCs');
 								resolve();
 							} else {
 								resolve();
@@ -1377,12 +1367,10 @@ module.exports = {
 				});
 				var pGetBLCKaras = new Promise((resolve,reject) => {
 					var sqlGetBLCKaras = 'SELECT value AS id_kara, uniquevalue AS kid FROM blacklist_criteria WHERE type = 1001;';
-					logger.profile('ICSelectBLCKaras');
 					module.exports.userdb.all(sqlGetBLCKaras)
 						.then((kids) => {
 							if (kids) {
 								BLCKaras = kids;
-								logger.profile('ICSelectBLCKaras');
 								resolve();
 							} else {
 								resolve();
@@ -1394,12 +1382,10 @@ module.exports = {
 				});
 				var pGetBLCTags = new Promise((resolve,reject) => {
 					var sqlGetBLCTags = 'SELECT type, value AS id_tag, uniquevalue AS tagname FROM blacklist_criteria WHERE type > 0 AND type < 1000;';
-					logger.profile('ICSelectBLCKaras');
 					module.exports.userdb.all(sqlGetBLCTags)
 						.then((tags) => {
 							if (tags) {
 								BLCTags = tags;
-								logger.profile('ICSelectBLCTags');
 								resolve();
 							} else {
 								resolve();
@@ -1411,12 +1397,10 @@ module.exports = {
 				});
 				var pGetRatingKaras = new Promise((resolve,reject) => {
 					var sqlGetRatingKaras = 'SELECT fk_id_kara AS id_kara, kid FROM rating;';
-					logger.profile('ICSelectRs');
 					module.exports.userdb.all(sqlGetRatingKaras)
 						.then((playlist) => {
 							if (playlist) {
 								RatingKaras = playlist;
-								logger.profile('ICSelectRs');
 								resolve();
 							} else {
 								resolve();
@@ -1428,12 +1412,10 @@ module.exports = {
 				});
 				var pGetViewcountKaras = new Promise((resolve,reject) => {
 					var sqlGetViewcountKaras = 'SELECT fk_id_kara AS id_kara, kid FROM viewcount;';
-					logger.profile('ICSelectVCs');
 					module.exports.userdb.all(sqlGetViewcountKaras)
 						.then((playlist) => {
 							if (playlist) {
 								ViewcountKaras = playlist;
-								logger.profile('ICSelectVCs');
 								resolve();
 							} else {
 								resolve();
@@ -1450,7 +1432,6 @@ module.exports = {
 						var KaraFound = false;
 						var TagFound = false;
 						var UpdateNeeded = false;
-						logger.profile('ICCompareWL');
 						if (WhitelistKaras != []) {
 							WhitelistKaras.forEach(function(WLKara){
 								KaraFound = false;
@@ -1497,8 +1478,6 @@ module.exports = {
 								}
 							});
 						}
-						logger.profile('ICCompareBLCK');
-						logger.profile('ICCompareBLT');
 						if (BLCTags != []) {
 							BLCTags.forEach(function(BLCTag){
 								TagFound = false;
@@ -1521,8 +1500,6 @@ module.exports = {
 								}
 							});
 						}
-						logger.profile('ICCompareBLT');
-						logger.profile('ICCompareBL');
 						if (BlacklistKaras != []) {
 							BlacklistKaras.forEach(function(BLKara){
 								KaraFound = false;
@@ -1545,8 +1522,6 @@ module.exports = {
 								}
 							});
 						}
-						logger.profile('ICCompareBL');
-						logger.profile('ICCompareR');
 						if (RatingKaras != []) {
 							RatingKaras.forEach(function(RKara){
 								KaraFound = false;
@@ -1569,8 +1544,6 @@ module.exports = {
 								}
 							});
 						}
-						logger.profile('ICCompareR');
-						logger.profile('ICCompareVC');
 						if (ViewcountKaras != []) {
 							ViewcountKaras.forEach(function(VKara){
 								KaraFound = false;
@@ -1593,8 +1566,6 @@ module.exports = {
 								}
 							});
 						}
-						logger.profile('ICCompareVC');
-						logger.profile('ICComparePL');
 						if (PlaylistKaras != []) {
 							PlaylistKaras.forEach(function(PLKara){
 								KaraFound = false;
@@ -1620,7 +1591,6 @@ module.exports = {
 								}
 							});
 						}
-						logger.profile('ICComparePL');
 						var sqlUpdateDBUUID = fs.readFileSync(path.join(__dirname,'../_common/db/update_userdb_uuid.sql'),'utf-8');
 						module.exports.userdb.run(sqlUpdateDBUUID,
 							{
