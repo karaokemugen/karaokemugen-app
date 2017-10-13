@@ -16,6 +16,7 @@ const moment = require('moment');
 require('moment-duration-format');
 moment.locale('fr');
 const async = require('async');
+var generator = require('../../_admin/generate_karasdb.js');
 
 module.exports = {
 	SYSPATH:null,
@@ -43,7 +44,6 @@ module.exports = {
 							.then(() => {
 								userDB.close()
 									.then(() => {
-										logger.info('[DBI] User database up to date');
 										resolve();
 									})
 									.catch((err) => {
@@ -78,7 +78,6 @@ module.exports = {
 										karasDB.close()
 											.then(() => {
 												if (doGenerate) {
-													var generator = require('../../_admin/generate_karasdb.js');
 													generator.SYSPATH = module.exports.SYSPATH;
 													generator.SETTINGS = module.exports.SETTINGS;
 													generator.onLog = function(type,message) {
@@ -114,9 +113,14 @@ module.exports = {
 						.then(function() {
 							module.exports._db_handler = db;
 							module.exports._db_handler.open(userdb_file)
-								.then(() => {
+								.then(() => {									
 									module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;')
 										.then(() => {
+											module.exports.compareDatabasesUUIDs()
+												.catch((err) => {
+													logger.error('[DBI] Unable to compare databases : '+err);
+													process.exit(1);
+												});
 											module.exports._ready = true;
 											module.exports.getStats()
 												.then(function(stats) {
@@ -175,14 +179,41 @@ module.exports = {
 				});
 		});		
 	},
-
+	compareDatabasesUUIDs: function() {
+		return new Promise((resolve,reject) => {
+			var sqlGetDBUUIDs = fs.readFileSync(path.join(__dirname,'../../_common/db/select_databases_uuids.sql'),'utf-8');
+			module.exports._db_handler.get(sqlGetDBUUIDs)
+				.then((res) => {						
+					if (res.karasdb_uuid != res.userdb_uuid) {
+						//Databases are different, rewriting userdb's UUID with karasdb's UUID and running integrity checks.
+						generator.SYSPATH = module.exports.SYSPATH;
+						generator.SETTINGS = module.exports.SETTINGS;
+						generator.onLog = function(type,message) {
+							logger.info('[DBI] [Gen]',message);
+						};
+						generator.checkUserdbIntegrity(res.karasdb_uuid)
+							.then(() => {
+								resolve();
+							})
+							.catch((err) => {
+								logger.error('[DBI] Integrity check failed :'+err);
+								reject(err);
+							});							
+					} else {
+						resolve();
+					}						
+				})
+				.catch((err) => {
+					logger.error('[DBI] Unable to compare database UUIDs : '+err);
+					reject(err);
+				});
+		});
+	},
 	isReady: function() {
 		return module.exports._ready;
 	},
 
-	// implémenter ici toutes les méthodes de lecture écritures qui seront utilisé par l'ensemble de l'applicatif
-	// aucun autre composant ne doit manipuler la base SQLITE par un autre moyen
-
+	// Below are all methods used by other components to access and manipulate data in the database.
 	/**
 	* @function {Calculate various stats}
 	* @return {number} {Object with stats}

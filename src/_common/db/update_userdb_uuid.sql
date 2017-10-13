@@ -1,0 +1,1 @@
+UPDATE settings SET value=$uuid WHERE option='uuid';
