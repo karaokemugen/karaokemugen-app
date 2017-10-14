@@ -590,14 +590,15 @@ var plData;
 			type: 'GET',
 			dataType: 'json' })
 			.done(function (response) {
-				var data = response.content;
-				dashboard.attr('data-karaCount', response.infos.count);
 				//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
 				//var end = window.performance.now();
 				//alert(end - start);
-				var htmlContent = '';
+				var htmlContent = '', data;
             
 				if(idPlaylist != -4) {
+					data = response.content;
+					if(response.infos) dashboard.attr('data-karaCount', response.infos.count );
+
 					for (var key in data) {
 						// build the kara line
 						if (data.hasOwnProperty(key)) {
@@ -632,10 +633,10 @@ var plData;
 							}
 						}
 					}
-
+					var count = response.infos ? response.infos.count : 0;
 					// creating filler space for dyanmic scrolling
 					var fillerTopH = Math.min(from * 34, container.height()/1.5);
-					var fillerBottomH = Math.min((response.infos.count - to) * 34, container.height()/1.5);
+					var fillerBottomH = Math.min((count - to) * 34, container.height()/1.5);
 					
 					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px"><div class="loader"><div></div></div></li>';
 					var fillerBottom = '<li class="list-group-item filler" style="height:' + fillerBottomH + 'px"><div class="loader"><div></div></div></li>';
@@ -671,6 +672,7 @@ var plData;
 					});
 
 				} else {
+					data = response;
 					/* Blacklist criterias build */
 					var blacklistCriteriasHtml = $('<div/>');
 					var regenSelect2 = false;
