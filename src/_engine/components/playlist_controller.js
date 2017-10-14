@@ -1550,6 +1550,9 @@ module.exports = {
 					if (!L.isEmpty(kara.NORM_title)) {
 						if (kara.NORM_title.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
+					if (!L.isEmpty(kara.NORM_author)) {
+						if (kara.NORM_author.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+					}
 					if (!L.isEmpty(kara.NORM_serie)) {
 						if (kara.NORM_serie.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
@@ -1564,7 +1567,12 @@ module.exports = {
 					}					
 					if (!L.isEmpty(kara.songtype_i18n_short)) {
 						if (kara.songtype_i18n_short.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+						//Allows searches for "OP1", "OP2", and such to work.
+						var songorder = kara.songorder;
+						if (songorder === 0) songorder = '';
+						if ((kara.songtype_i18n_short.toLowerCase()+songorder).includes(searchWord)) searchOK[searchWordID] = true;
 					}
+					
 					if (!L.isEmpty(kara.misc_i18n)) {
 						if (kara.misc_i18n.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
