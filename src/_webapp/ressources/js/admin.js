@@ -456,6 +456,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		//    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
 		if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
 			settingsUpdating = getSettings(el.attr('name'));
+			if(changeAdminPass) passwordUpdating = $.Deferred();
 
 			$('#settings').promise().then(function () {
 				settingsArray = {};
@@ -481,9 +482,13 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					data: settingsArray
 				}).done(function () {
 					if (changeAdminPass) {
-						mdpAdmin = $('button[name="AdminPassword"]').val();
-						setupAjax(mdpAdmin);
+						setupAjax(settingsArray['AdminPassword']);
+						$('button[name="AdminPassword"]').attr('oldValue', settingsArray['AdminPassword']);
+						
+						passwordUpdating.resolve();
 					}
+				}).fail(function () {
+					if (changeAdminPass) { passwordUpdating.resolve(); }
 				});
 			});
 		}
