@@ -668,7 +668,9 @@ var plData;
 							container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix							
 										
 							container.attr('flagScroll', false);
-						} 
+						} else {
+							container.scrollTop(fillerTopH);
+						}
 						//});
 					});
 
@@ -906,7 +908,7 @@ var plData;
 					select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : playlistToAddId);
 				}
 			
-				$('.select2').select2({ theme: 'bootstrap',
+				$('.plSelect .select2').select2({ theme: 'bootstrap',
 					templateResult: formatPlaylist,
 					templateSelection : formatPlaylist,
 					tags: false,
