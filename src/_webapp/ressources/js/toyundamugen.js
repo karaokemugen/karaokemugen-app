@@ -1317,26 +1317,28 @@ var plData;
 	});
     
 	socket.on('settingsUpdated', function(){
-		settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
+		settingsUpdating.done(function () {
+			settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
 
-		settingsUpdating.done(function (){
-			if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
-																|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
-				playlistsUpdating = refreshPlaylistSelects();
-    
-				playlistsUpdating.done(function () {
-					refreshPlaylistDashboard(1);
-					refreshPlaylistDashboard(2);
-            
-				});
-			}
+			settingsUpdating.done(function (){
+				if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
+																	|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+					playlistsUpdating = refreshPlaylistSelects();
+		
+					playlistsUpdating.done(function () {
+						refreshPlaylistDashboard(1);
+						refreshPlaylistDashboard(2);
+				
+					});
+				}
+			});
 		});
 	});
 
 	socket.on('playlistsUpdated', function(){
     
 		if(!(($('#selectPlaylist2').data('select2') && $('#selectPlaylist2').data('select2').isOpen())
-																|| ($('#selectPlaylist1').data('select2') && $('#selectPlaylist1').data('select2').isOpen()))) { 
+				|| ($('#selectPlaylist1').data('select2') && $('#selectPlaylist1').data('select2').isOpen()))) { 
 			playlistsUpdating = refreshPlaylistSelects();
 		}
 	});

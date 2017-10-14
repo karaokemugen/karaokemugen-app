@@ -385,8 +385,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		$('select[name="PlayerScreen"] > option').each(function(i) {
 			$(this).text(i+1 + ' - ' + $(this).text());
 		});
-        
-		getSettings();
 
 		pseudo = 'Administrateur';
 	});
@@ -457,7 +455,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	setSettings = function (el, changeAdminPass) {
 		//    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
 		if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
-			getSettings(el.attr('name'));
+			settingsUpdating = getSettings(el.attr('name'));
 
 			$('#settings').promise().then(function () {
 				settingsArray = {};
@@ -472,8 +470,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					settingsArray[obj.name] = obj.value;
 				});
 				settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
+				// ignore currently typed value if the pass is not changing
 				settingsArray['AdminPassword'] = changeAdminPass ? $('button[name="AdminPassword"]').val() : $('button[name="AdminPassword"]').attr('oldValue');
-
+		
 				DEBUG && console.log('setSettings : ', settingsArray);
 
 				$.ajax({
