@@ -1552,6 +1552,9 @@ module.exports = {
 					if (!L.isEmpty(kara.NORM_title)) {
 						if (kara.NORM_title.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
+					if (!L.isEmpty(kara.NORM_author)) {
+						if (kara.NORM_author.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+					}
 					if (!L.isEmpty(kara.NORM_serie)) {
 						if (kara.NORM_serie.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
 					}
