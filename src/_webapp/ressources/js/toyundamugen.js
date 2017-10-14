@@ -215,7 +215,8 @@ var plData;
 				$this.attr('checked', checked);
 				$('#playlist' + side + ' [name="checkboxKara"]').attr('checked', checked);
 			} else if (name === 'addAllKaras') {
-				$.ajax({ url: url }).done(function (response) {
+				var filter = $('#searchPlaylist' + side).val();
+				$.ajax({ url: url + '?filter=' + filter }).done(function (response) {
 					var data = response.content;
 					displayMessage('info', 'Info', 'Ajout de ' + response.infos.count + ' karas à la playlist ' + $('#panel' + non(side) + ' .plDashboard').data('name'));
 					var karaList = data.map(function(a) {
