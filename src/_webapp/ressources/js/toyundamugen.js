@@ -26,6 +26,7 @@ var scrollUpdating;
 var playlistsUpdating;
 var playlistContentUpdating;
 var settingsUpdating;
+var passwordUpdating;
 
 /* html */
 var addKaraHtml;      
@@ -1317,20 +1318,22 @@ var plData;
 	});
     
 	socket.on('settingsUpdated', function(){
-		settingsUpdating.done(function () {
-			settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
+		passwordUpdating.done(function () {
+			settingsUpdating.done(function () {
+				settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
 
-			settingsUpdating.done(function (){
-				if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
-																	|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
-					playlistsUpdating = refreshPlaylistSelects();
-		
-					playlistsUpdating.done(function () {
-						refreshPlaylistDashboard(1);
-						refreshPlaylistDashboard(2);
-				
-					});
-				}
+				settingsUpdating.done(function (){
+					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
+																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+						playlistsUpdating = refreshPlaylistSelects();
+			
+						playlistsUpdating.done(function () {
+							refreshPlaylistDashboard(1);
+							refreshPlaylistDashboard(2);
+					
+						});
+					}
+				});
 			});
 		});
 	});
