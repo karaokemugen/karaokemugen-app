@@ -987,9 +987,9 @@ var plData;
 		
 		var plInfos = '';
 		if(idPlaylist) {
-			plInfos = range.from + '-' + max;
+			plInfos = idPlaylist > -4 ? range.from + '-' + max : '';
 			plInfos +=
-				(idPlaylist > -2 ?
+				(idPlaylist > -4 ?
 					' / ' + dashboard.attr('data-karacount') + ' karas'
 					: '') +
 				(idPlaylist > -1 ?
