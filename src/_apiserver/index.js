@@ -771,7 +771,19 @@ module.exports = {
 				.get(function(req,res){
 					var lang = req.query.lang;
 					var filter = req.query.filter;
-					module.exports.onWhitelist(filter,lang)
+					var to;
+					if (!req.query.to) {
+						to = 999999;
+					} else {
+						to = req.query.to;
+					}
+					var from;
+					if (!req.query.from) {
+						from = 0;
+					} else {
+						from = req.query.from;
+					}
+					module.exports.onWhitelist(filter,lang,from,to)
 						.then(function(karas){
 							res.json(karas);
 						})
@@ -1233,7 +1245,19 @@ module.exports = {
 					if (module.exports.SETTINGS.EngineAllowViewBlacklist == 1) {
 						var lang = req.query.lang;
 						var filter = req.query.filter;
-						module.exports.onBlacklist(filter,lang)
+						var to;
+						if (!req.query.to) {
+							to = 999999;
+						} else {
+							to = req.query.to;
+						}
+						var from;
+						if (!req.query.from) {
+							from = 0;
+						} else {
+							from = req.query.from;
+						}
+						module.exports.onBlacklist(filter,lang,from,to)
 							.then(function(karas){
 								res.json(karas);
 							})

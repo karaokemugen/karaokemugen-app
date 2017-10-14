@@ -489,6 +489,9 @@ module.exports = {
 						module.exports.playerstatus = 'play';
 						loadBackground('append');
 						module.exports._playing = true;
+					})
+					.catch((err) => {
+						logger.error('[Player] Unable to load jingle file '+jingle.file+' with gain modifier '+jingle.gain+' : '+JSON.stringify(err));
 					});
 			} else {
 				module.exports.playerstatus = 'play';

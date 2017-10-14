@@ -539,7 +539,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onWhitelist = function(filter,lang){
+		module.exports._services.apiserver.onWhitelist = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getWhitelistContents()
 					.then(function(playlist){
@@ -548,14 +548,22 @@ module.exports = {
 								if (filter) {
 									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 										.then(function(filtered_pl){
-											resolve(filtered_pl);
+											var response = {
+												infos: { count : filtered_pl.length },
+												content: filtered_pl.slice(from,to)
+											};
+											resolve(response);	
 										})
 										.catch(function(err){
 											logger.error('[Engine] PLC filterPlaylist : '+err);
 											resolve(err);
 										});
 								} else {
-									resolve(karalist);
+									var response = {
+										infos: { count : karalist.length },
+										content: karalist.slice(from,to)
+									};
+									resolve(response);									
 								}
 							})
 							.catch(function(err){
@@ -569,7 +577,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onBlacklist = function(filter,lang){
+		module.exports._services.apiserver.onBlacklist = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistContents()
 					.then(function(playlist){
@@ -578,14 +586,22 @@ module.exports = {
 								if (filter) {
 									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 										.then(function(filtered_pl){
-											resolve(filtered_pl);
+											var response = {
+												infos: { count : filtered_pl.length },
+												content: filtered_pl.slice(from,to)
+											};
+											resolve(response);										
 										})
 										.catch(function(err){
 											logger.error('[Engine] PLC filterPlaylist : '+err);
-											resolve(err);
+											reject(err);
 										});
 								} else {
-									resolve(karalist);
+									var response = {
+										infos: { count : karalist.length },
+										content: karalist.slice(from,to)
+									};
+									resolve(response);									
 								}
 							})
 							.catch(function(err){
