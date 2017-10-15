@@ -354,7 +354,6 @@ module.exports = {
 					module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
 						.then(function(){
 							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-							module.exports.emitEvent('playlistsUpdated',req.params.pl_id);
 							res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
 						})
 						.catch(function(err){
@@ -370,7 +369,6 @@ module.exports = {
 					module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
 						.then(function(){
 							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-							module.exports.emitEvent('playlistsUpdated');
 							res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
 						})
 						.catch(function(err){
