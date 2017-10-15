@@ -924,25 +924,41 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onPlaylistSingleSetCurrent = function(id_playlist){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
-					.then(function(){
-						module.exports.currentPlaylistID = id_playlist;
-						resolve(id_playlist);
+				module.exports._services.playlist_controller.isACurrentPlaylist()
+					.then(function(playlist_id){
+						module.exports._services.playlist_controller.setCurrentPlaylist(id_playlist)
+							.then(function(id_playlist){
+								module.exports._services.ws.socket.emit('playlistInfoUpdated', playlist_id);
+								module.exports.currentPlaylistID = id_playlist;
+								resolve(id_playlist);
+							})
+							.catch(function(err){
+								logger.error('[Engine] PLC setCurrentPlaylist : '+err);
+								reject(err);
+							});
 					})
 					.catch(function(err){
-						logger.error('[Engine] PLC setCurrentPlaylist : '+err);
+						logger.error('[Engine] PLC isACurrentPlaylist : '+err);
 						reject(err);
 					});
 			});
 		};
 		module.exports._services.apiserver.onPlaylistSingleSetPublic = function(id_playlist){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.setPublicPlaylist(id_playlist)
-					.then(function(id_playlist){
-						resolve(id_playlist);
+				module.exports._services.playlist_controller.isAPublicPlaylist()
+					.then(function(playlist_id){
+						module.exports._services.playlist_controller.setPublicPlaylist(id_playlist)
+							.then(function(id_playlist){
+								module.exports._services.ws.socket.emit('playlistInfoUpdated', playlist_id);
+								resolve(id_playlist);
+							})
+							.catch(function(err){
+								logger.error('[Engine] PLC setPublicPlaylist : '+err);
+								reject(err);
+							});
 					})
 					.catch(function(err){
-						logger.error('[Engine] PLC setPublicPlaylist : '+err);
+						logger.error('[Engine] PLC isAPublicPlaylist : '+err);
 						reject(err);
 					});
 			});
