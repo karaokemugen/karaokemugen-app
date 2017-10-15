@@ -132,7 +132,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				type: 'POST',
 				data: data
 			}).done(function () {
-				displayMessage('success', 'Success', 'Criteria ' + type + ' - ' + val + ' added to the list');
+				//displayMessage('success', 'Success', 'Criteria ' + type + ' - ' + val + ' added to the list');
 			});
 		});
 
@@ -143,7 +143,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				url: scope + '/blacklist/criterias/' + bcId,
 				type: 'DELETE'
 			}).done(function () {
-				displayMessage('success', 'Success', 'Blacklist criteria ' + bcId + ' deleted');
+				//displayMessage('success', 'Success', 'Blacklist criteria ' + bcId + ' deleted');
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
@@ -218,7 +218,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? pseudo : li.data('pseudo_add');
 					data = { requestedby: requestedby, kara_id: idKara };
 				} else if (idPlaylistTo == -1) {
-					displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
+					//displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
 					DEBUG && console.log('ERR: can\'t add kara to the kara list from database');
 				} else if (idPlaylistTo == -2) {
 					url = scope + '/blacklist/criterias';
@@ -247,9 +247,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						var ajout = clusterAction ?   li.length + ' karas'
 							: '"' + li.find('.contentDiv').text() + '"';
 						if(clusterAction) li.find('span[name="checkboxKara"][checked]').attr('checked', false);
-                       
+                    	/*
 						displayMessage('success', ajout, ' ajouté' +  (clusterAction ? 's' : '')
 							+ ' à la playlist <i>' +$('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').data('name') + '</i>.');
+						*/
 						DEBUG && console.log('Kara ' + idKara + ' ajouté à la playlist (' + idPlaylistTo + ') '
 							+ $('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').text() + '.');
 					}).fail(function () {

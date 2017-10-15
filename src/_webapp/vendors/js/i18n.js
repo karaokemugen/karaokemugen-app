@@ -47,9 +47,8 @@ I18n.prototype = {
 
     __: function(){
         var msg = I18n.localeCache[this.locale][arguments[0]];
-
         if (arguments.length > 1)
-            msg = vsprintf(msg, Array.prototype.slice.call(arguments, 1));
+            msg = vsprintf(msg, arguments[1]);
 
         return msg;
     },

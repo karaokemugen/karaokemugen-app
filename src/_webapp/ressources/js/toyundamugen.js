@@ -102,11 +102,13 @@ var plData;
 				res = JSON.parse(res);
 				var data = res.data;
 				if(res.code) {
-					// TODO recoder la fonction pour interpréter comme i18n server
-					var args = res.args;
-					console.log(res.code, args);
+					// TODO recoder la fonction pour interpréter comme i18n server ?
+					var args = res.args ? Object.keys(res.args).map(function(e) {
+						return res.args[e];
+					}) : [];
+					//var args = res.args;
+					console.log(res.args, res);
 					var errMessage = i18n.__(res.code, args);
-					console.log(errMessage);
 					displayMessage('info', '', errMessage);
 				}
 				
@@ -119,14 +121,14 @@ var plData;
 					var errMessage = 'unknown';
 					if(res.responseJSON.code) {
 						// var args = res.responseJSON.args;
-						var args = Object.keys(res.responseJSON.args).map(function(e) {
-							return res.responseJSON.args[e]
-						  });
+						var args = res.responseJSON.args ? Object.keys(res.responseJSON.args).map(function(e) {
+							return res.responseJSON.args[e];
+						}) : [];
 						errMessage = i18n.__(res.responseJSON.code, args);
 					} else {
 						errMessage = res.responseJSON.message;
 					}
-					displayMessage('warning', res.responseJSON.code + " :", errMessage);
+					displayMessage('warning', res.responseJSON.code + ' :', errMessage);
 				}
 			}
 		});
