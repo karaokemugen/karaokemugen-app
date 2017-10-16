@@ -3096,6 +3096,8 @@ module.exports = {
 								var requester;								
 								if (module.exports.SETTINGS.EngineDisplayNickname){
 									if (kara.pseudo_add !== 'Administrateur') {
+										// Escaping {} because it'll be interpreted as ASS tags below.
+										kara.pseudo_add = kara.pseudo_add.replace(/[\{\}]/g,'');										
 										requester = __('REQUESTED_BY')+' '+kara.pseudo_add;
 									} else {
 										requester = '';
