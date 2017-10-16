@@ -7,6 +7,8 @@ const L = require('lodash');
 const sizeOf = require('image-size');
 const jingles = require('./jingles.js');
 
+var displayingInfo = false;
+
 function loadBackground(mode) {	
 	if (!mode) mode = 'replace';
 	// Default background
@@ -86,6 +88,8 @@ module.exports = {
 	mutestatus:false,
 	subtext:'',
 	volume:null,
+	currentSongInfos:null,
+	videoType:null,
 	showsubs:true,
 	status:{},
 	init:function(){
@@ -144,7 +148,8 @@ module.exports = {
 		if(videoFile == undefined) {
 			logger.warn('[Player] Video NOT FOUND : '+video);
 			if (module.exports.SETTINGS.PathVideosHTTP) {
-				videoFile = module.exports.SETTINGS.PathVideosHTTP+'/'+encodeURIComponent(video);	logger.info('[Player] Trying to play video directly from the configured http source : '+module.exports.SETTINGS.PathVideosHTTP);
+				videoFile = module.exports.SETTINGS.PathVideosHTTP+'/'+encodeURIComponent(video);	
+				logger.info('[Player] Trying to play video directly from the configured http source : '+module.exports.SETTINGS.PathVideosHTTP);
 			} else {
 				logger.error('[Player] No other source available for this video.');
 			}			
@@ -155,21 +160,16 @@ module.exports = {
 			if (gain == undefined || gain == null) gain = 0;			
 			module.exports._player.load(videoFile,'replace',['replaygain-fallback='+gain])
 				.then(() => {					
+					module.exports.videoType = 'song';
 					module.exports._player.play();
 					module.exports.playerstatus = 'play';
 					if (subtitle) {
 						module.exports._player.addSubtitles('memory://'+subtitle);
 					}
-					// Displaying infos about current song on screen.
-					var command = {
-						command: [
-							'expand-properties',
-							'show-text',
-							'${osd-ass-cc/0}{\\an1}'+infos,
-							8000,
-						]
-					};
-					module.exports._player.freeCommand(JSON.stringify(command));
+					
+					// Displaying infos about current song on screen.					
+					module.exports.displaySongInfo(infos);
+					module.exports.currentSongInfos = infos;
 					//logger.profile('StartPlaying');
 					loadBackground('append');
 					module.exports._playing = true;
@@ -259,6 +259,21 @@ module.exports = {
 				module.exports.displayInfo();
 			},duration);
 		}
+	},
+	displaySongInfo: function(infos){
+		displayingInfo = true;
+		var command = {
+			command: [
+				'expand-properties',
+				'show-text',
+				'${osd-ass-cc/0}{\\an1}'+infos,
+				8000,
+			]
+		};
+		module.exports._player.freeCommand(JSON.stringify(command));
+		setTimeout(() => {
+			displayingInfo = false;
+		},8000);
 	},
 	displayInfo: function(){
 		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
@@ -430,6 +445,7 @@ module.exports = {
 							module.exports._playing = false;
 							module.exports.playerstatus = 'stop';
 							module.exports._player.pause();
+							module.exports.videoType = 'background';
 							module.exports.onEnd();							
 						}
 
@@ -453,8 +469,13 @@ module.exports = {
 					});
 					module.exports._player.on('timeposition',function(position){
 						// Returns the position in seconds in the current song
-						module.exports.timeposition = position;
+						module.exports.timeposition = position;						
 						module.exports.onStatusChange();
+						// Display informations if timeposition is 8 seconds before end of song
+						if (position >= (module.exports.duration - 8) && 
+							displayingInfo == false &&
+							module.exports.videoType == 'song')						
+							module.exports.displaySongInfo(module.exports.currentSongInfos);
 					});
 					logger.debug('[Player] mpv initialized successfully');
 					resolve();
@@ -477,6 +498,7 @@ module.exports = {
 	skip:function(){},
 	playJingle:function(){
 		module.exports.playing = true;
+		module.exports.videoType = 'jingle';
 		if (jingles.jinglefiles.length > 0) {
 			logger.info('[Player] Jingle time !');
 			var jingle = L.sample(jingles.jinglefiles);
