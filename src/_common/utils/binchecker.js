@@ -1,73 +1,66 @@
 // This script is here to check for paths and to provide binary paths depending on your operating system
 
-const path = require('path');
-const fs = require('fs');
-const logger = require('./logger.js');
+import {resolve} from 'path';
+import {asyncRequired} from './files';
+import logger from './logger';
 
 // Check if binaries are available
 // Provide their paths for runtime
 
-module.exports = {
-	SETTINGS:null,
-	SYSPATH:null,
-	ffmpegPath:null,
-	mpvPath:null,
-	ffprobePath:null,
-	check:function() {
-		var os;
-		switch(process.platform) {
-		case 'win32':
-			module.exports.ffmpegPath = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinffmpegWindows);
-			module.exports.ffprobePath = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinffprobeWindows);
-			module.exports.mpvPath = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerWindows);
-			os = 'Windows';
-			break;
-		case 'darwin':
-			module.exports.ffmpegPath = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinffmpegOSX);
-			module.exports.ffprobePath = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinffprobeOSX);
-			module.exports.mpvPath = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerOSX);
-			os = 'OSX';
-			break;
-		case 'linux':
-			module.exports.ffmpegPath = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinffmpegLinux);
-			module.exports.ffprobePath = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinffprobeLinux);
-			module.exports.mpvPath = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.BinPlayerLinux);
-			os = 'Linux';
-			break;                
-		}
-        
-		// Check if the paths are correct. If not abort.
+export async function checkBinaries(config) {
 
-		var binOK = true;
-		var binMissing = [];
+	const binariesPath = configuredBinariesForSystem(config);
 
-		if (!fs.existsSync(module.exports.ffmpegPath)) {
-			binOK = false;
-			binMissing.push('ffmpeg');
-		}
-		if (!fs.existsSync(module.exports.ffprobePath)) {
-			binOK = false;
-			binMissing.push('ffprobe');
-		}
-		if (!fs.existsSync(module.exports.mpvPath)) {
-			binOK = false;
-			binMissing.push('mpv');
-		}
-		
-		if (!binOK) {
-			logger.error('[BinCheck] One or more binaries could not be found! ('+binMissing+')');
-			logger.error('[BinCheck] Paths searched : ');
-			logger.error('[BinCheck] ffmpeg : '+module.exports.ffmpegPath);
-			logger.error('[BinCheck] ffprobe : '+module.exports.ffprobePath);
-			logger.error('[BinCheck] mpv : '+module.exports.mpvPath);
-			logger.error('[BinCheck] Exiting...');
-			console.log('\n');
-			console.log('One or more binaries needed by Karaoke Mugen could not be found.');
-			console.log('Check the paths above and make sure these are available.');
-			console.log('Edit your config.ini and set Binffmpeg'+os+', Binffprobe'+os+', BinPlayer'+os+' correctly.');
-			console.log('You can download mpv for your OS from http://mpv.io/');
-			console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
-			process.exit(1);
-		}		
+	const requiredBinariesChecks = [
+		asyncRequired(binariesPath.BinffmpegPath),
+		asyncRequired(binariesPath.BinffprobePath),
+		asyncRequired(binariesPath.BinmpvPath)
+	];
+
+	try {
+		await Promise.all(requiredBinariesChecks);
+	} catch (err) {
+		binMissing(binariesPath, err);
+		process.exit(1);
 	}
-};
+
+	return binariesPath;
+}
+
+function configuredBinariesForSystem(config) {
+	switch (config.os) {
+	case 'win32':
+		return {
+			BinffmpegPath: resolve(config.appPath, config.BinffmpegWindows),
+			BinffprobePath: resolve(config.appPath, config.BinffprobeWindows),
+			BinmpvPath: resolve(config.appPath, config.BinPlayerWindows)
+		};
+	case 'darwin':
+		return {
+			BinffmpegPath: resolve(config.appPath, config.BinffmpegOSX),
+			BinffprobePath: resolve(config.appPath, config.BinffprobeOSX),
+			BinmpvPath: resolve(config.appPath, config.BinPlayerOSX)
+		};
+	default:
+		return {
+			BinffmpegPath: resolve(config.appPath, config.BinffmpegLinux),
+			BinffprobePath: resolve(config.appPath, config.BinffprobeLinux),
+			BinmpvPath: resolve(config.appPath, config.BinPlayerLinux)
+		};
+	}
+}
+
+function binMissing(binariesPath, err) {
+	logger.error('[BinCheck] One or more binaries could not be found! (' + err + ')');
+	logger.error('[BinCheck] Paths searched : ');
+	logger.error('[BinCheck] ffmpeg : ' + binariesPath.BinffmpegPath);
+	logger.error('[BinCheck] ffprobe : ' + binariesPath.BinffprobePath);
+	logger.error('[BinCheck] mpv : ' + binariesPath.BinmpvPath);
+	logger.error('[BinCheck] Exiting...');
+	console.log('\n');
+	console.log('One or more binaries needed by Karaoke Mugen could not be found.');
+	console.log('Check the paths above and make sure these are available.');
+	console.log('Edit your config.ini and set Binffmpeg, Binffprobe, BinPlayer variables correctly for your OS.');
+	console.log('You can download mpv for your OS from http://mpv.io/');
+	console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
+}

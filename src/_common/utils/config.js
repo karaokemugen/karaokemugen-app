@@ -3,17 +3,16 @@
 import {resolve} from 'path';
 import {parse} from 'ini';
 import {sync} from 'os-locale';
-import {setLocale} from 'i18n';
-import {appPath, asyncExists, asyncReadFile, asyncRequired} from './files';
-import {configUpdate, emit} from './pubsub';
+import i18n from 'i18n';
 import logger from './logger';
-
-const defaultConfigFile = resolve(appPath, 'config.ini.default');
-const overrideConfigFile = resolve(appPath, 'config.ini');
-const versionFile = resolve(appPath, 'VERSION');
+import {asyncExists, asyncReadFile, asyncRequired} from './files';
+import {checkBinaries} from './binchecker';
+import {emit} from './pubsub';
 
 /** Objet contenant l'ensemble de la configuration. */
 let config = {};
+
+export const CONFIG_UPDATED = 'CONFIG_UPDATED';
 
 /**
  * On renvoie une copie de la configuration, afin d'assurer que l'objet interne ne puisse être modifié
@@ -24,15 +23,30 @@ export function getConfig() {
 }
 
 /** Initialisation de la configuration. */
-export async function initConfig() {
+export async function initConfig(appPath) {
+
+	config = {...config, appPath: appPath};
+	config = {...config, os: process.platform};
+
+	configureLocale();
+	await loadConfigFiles(appPath);
+	await configureBinaries();
+
+	return getConfig();
+}
+
+async function loadConfigFiles(appPath) {
+	const defaultConfigFile = resolve(appPath, 'config.ini.default');
+	const overrideConfigFile = resolve(appPath, 'config.ini');
+	const versionFile = resolve(__dirname, '../../VERSION');
+
 	await loadConfig(defaultConfigFile);
 	if (await asyncExists(overrideConfigFile)) {
 		await loadConfig(overrideConfigFile);
 	}
-	await loadConfig(versionFile);
-	config.os = process.platform;
-	configureLocale();
-	return getConfig();
+	if (await asyncExists(versionFile)) {
+		await loadConfig(versionFile);
+	}
 }
 
 async function loadConfig(configFile) {
@@ -41,70 +55,32 @@ async function loadConfig(configFile) {
 	const content = await asyncReadFile(configFile, 'utf-8');
 	const parsedContent = parse(content);
 	config = {...config, ...parsedContent};
-	return getConfig();
 }
 
 function configureLocale() {
+	i18n.configure({
+		directory: resolve(__dirname, '../locales'),
+		defaultLocale: 'en',
+		cookie: 'locale',
+		register: global
+	});
 	const detectedLocale = sync().substring(0, 2);
-	setLocale(detectedLocale);
-	config.EngineDefaultLocale = detectedLocale;
+	i18n.setLocale(detectedLocale);
+	config = {...config, EngineDefaultLocale: detectedLocale };
+}
+
+async function configureBinaries() {
+	logger.info('[Launcher] Checking if binaries are available');
+	const binaries = await checkBinaries(config);
+	config = {...config, ...binaries};
 }
 
 /**
  * Mise à jour partielle de la configuration. On émet un message permettant aux différents fichiers consernés
- * de se remettre à jour.
+ * d'être notifiés que la configuration a changé.
  */
 export function setConfig(configPart) {
 	config = {...config, ...configPart};
-	emit(configUpdate, config);
+	emit(CONFIG_UPDATED);
 	return getConfig();
-}
-
-
-/** Fonction centralisant l'aide au parsing de la configuration. */
-
-export function pipPositionX() {
-	switch (config.PlayerPIPPositionX) {
-	case 'Left':
-		return 1;
-	case 'Center':
-		return 50;
-	case 'Right':
-		return 99;
-	default:
-		return 50;
-	}
-}
-
-export function pipPositionY() {
-	switch (config.PlayerPIPPositionY) {
-	case 'Top':
-		return 5;
-	case 'Center':
-		return 50;
-	case 'Bottom':
-		return 95;
-	default:
-		return 50;
-	}
-}
-
-export function mpvBin() {
-	switch (process.platform) {
-	case 'win32':
-		return resolve(appPath, config.BinPlayerWindows);
-	case 'darwin':
-		return resolve(appPath, config.BinPlayerOSX);
-	default:
-		return resolve(appPath, config.BinPlayerLinux);
-	}
-}
-
-export function mpvSocket() {
-	switch (process.platform) {
-	case 'win32':
-		return resolve(appPath, '\\\\.\\pipe\\mpvsocket');
-	default:
-		return resolve(appPath, '/tmp/km-node-mpvsocket');
-	}
 }
