@@ -2,7 +2,7 @@
 
 displayMessage = function(type, title, message, time) {
 	var transition = 500;
-	if (!time) time = 3500;
+	if (!time) time = 3000;
 
 	var messageDiv = $('<div nb="' + 0 + '" class="toastMessage alert alert-' + type + '">');
 	messageDiv.html('<strong>' + title + '</strong> ' + message);
@@ -12,17 +12,27 @@ displayMessage = function(type, title, message, time) {
 	}, 0);
 	
 	setTimeout(function(){
-		messageDiv.addClass('dismiss');
+		if( window.getSelection().focusNode == null || window.getSelection().focusNode.parentNode != messageDiv[0]) {
+			messageDiv.addClass('dismiss');
+		} else {
+			transition += 7000;
+		}
 		setTimeout(function(){
 			messageDiv.remove();
 		}, transition);
+		
 	}, time);
 
 	messageDiv.click( function() {
-		messageDiv.addClass('dismiss');
+		if( !window.getSelection().focusNodev == null  || window.getSelection().focusNode.parentNode != messageDiv[0]) {
+			messageDiv.addClass('dismiss');
+		} else {
+			transition += 7000;
+		}
 		setTimeout(function(){
 			messageDiv.remove();
 		}, transition);
+		
 	});
     
 };

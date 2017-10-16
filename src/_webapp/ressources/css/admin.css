@@ -347,8 +347,8 @@ span:not(.hideCommands) {
 
 
 .toastMessageContainer {
-	top: auto;
-	bottom: 0;
+	__top: auto;
+	__bottom: 0;
 }
 
 @media (max-width: 1520px) {	

@@ -107,23 +107,26 @@ var plData;
 						return res.args[e];
 					}) : [];
 					//var args = res.args;
-					console.log(res.args, res);
 					var errMessage = i18n.__(res.code, args);
-					displayMessage('info', '', errMessage);
+					if(res.code !== 'PL_SONG_ADDED' && res.code !== 'PL_SONG_DELETED') {
+						console.log(errMessage);
+					} else {
+						displayMessage('info', '', errMessage, '2000');
+					}
 				}
 				
 				DEBUG && res.message && console.log(res.message);
 				return JSON.stringify(data);
 			},
 			error: function (res, textStatus, errorThrown) {
-				console.log(res.status + '  - ' + textStatus + '  - ' + errorThrown + ' : ' +  res.responseJSON.message);
+				console.log(res.status + '  - ' + textStatus + '  - ' + errorThrown + (res.responseJSON ? ' : ' +  res.responseJSON.message : ''));
 				if(res.status != 0 && res.status != 200) {
 					var errMessage = 'unknown';
 					if(res.responseJSON.code) {
 						// var args = res.responseJSON.args;
-						var args = res.responseJSON.args ? Object.keys(res.responseJSON.args).map(function(e) {
+						var args = typeof res.responseJSON.args === 'object' ? Object.keys(res.responseJSON.args).map(function(e) {
 							return res.responseJSON.args[e];
-						}) : [];
+						}) : [ res.responseJSON.args];
 						errMessage = i18n.__(res.responseJSON.code, args);
 					} else {
 						errMessage = res.responseJSON.message;
