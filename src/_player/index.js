@@ -52,7 +52,7 @@ function loadBackground(mode) {
 	backgroundImageFile = L.sample(backgroundFiles);
 	logger.debug('[Player] Background : '+backgroundImageFile);
 	var videofilter = '';
-	if (module.exports.SETTINGS.EngineDisplayConnectionInfoQRCode != 0 || 
+	if (module.exports.SETTINGS.EngineDisplayConnectionInfoQRCode != 0 && 
 		module.exports.SETTINGS.EngineDisplayConnectionInfo != 0) {
 				
 		var dimensions = sizeOf(backgroundImageFile);
@@ -280,8 +280,15 @@ module.exports = {
 	},
 	displayInfo: function(duration){
 		if (!duration) duration = 100000000;
-		var url = 'http://'+module.exports.SETTINGS.osHost+':'+module.exports.frontend_port;
-		var text = __('GO_TO')+' '+url+' !';
+		var text = '';
+		if (module.exports.SETTINGS.EngineDisplayConnectionInfo != 0) {
+			var url = 'http://'+module.exports.SETTINGS.osHost+':'+module.exports.frontend_port;
+			text = __('GO_TO')+' '+url+' !';	
+			if (module.exports.SETTINGS.EngineDisplayConnectionInfoMessage != '') {
+				text = module.exports.SETTINGS.EngineDisplayConnectionInfoMessage + ' - ' + text;
+			}
+		}
+
 		var version = 'Karaoke Mugen '+module.exports.SETTINGS.VersionNo+' '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
 		var message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx30}{\\fscy30}{\\i1}'+version+'{\\i0}';
 		var command = {

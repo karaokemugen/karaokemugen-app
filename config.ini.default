@@ -17,7 +17,7 @@ EngineDisplayNickname = 1
 EngineDisplayConnectionInfo = 1
 
 ; Display QR Code or not
-EngineDisplayConnectionInfoQRCode = 0
+EngineDisplayConnectionInfoQRCode = 1
 
 ; Additional message to display
 EngineDisplayConnectionInfoMessage = ""
@@ -25,7 +25,7 @@ EngineDisplayConnectionInfoMessage = ""
 ; IP/Hostname to connect to Karaoke Mugen
 ; Leave blank for autodetection.
 ; Provide a host if autodetection fails.
-EngineDisplayConnectionInfoHost = "lol.local"
+EngineDisplayConnectionInfoHost = ""
 
 ; Is the karaoke public or private ?
 ; Private means songs will be added to current playlist directly
