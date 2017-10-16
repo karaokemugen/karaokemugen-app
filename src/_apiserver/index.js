@@ -574,7 +574,7 @@ module.exports = {
 								module.exports.onPlaylistSingleKaraEdit(req.params.plc_id,req.body.pos,req.body.flag_playing)
 									.then(function(){
 										// pl_id is returned from this promise
-										res.json(OKMessage('PL_CONTENT_MODIFIED',req.params.plc_id));
+										res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED',req.params.plc_id));
 									})
 									.catch(function(err){
 										logger.error(err);
@@ -750,7 +750,7 @@ module.exports = {
 								module.exports.emitEvent('adminMessage', req.body );
 								if (req.body.destination === 'users') {
 									res.statusCode = 200;
-									res.json(OKMessage(req.body,'MESSAGE_SENT'));
+									res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
 								}
 							}
 							if(req.body.destination !== 'users') {
@@ -917,7 +917,7 @@ module.exports = {
 								.then(function(){
 									module.exports.emitEvent('blacklistUpdated');
 									res.statusCode = 201;
-									res.json(OKMessage(req.body,'BLC_ADDED'));
+									res.json(OKMessage(req.body,'BLC_ADDED',req.body));
 								})
 								.catch(function(err){
 									logger.error(err);
@@ -1018,7 +1018,7 @@ module.exports = {
 						if (result.isEmpty()) {
 							module.exports.onPlayerCommand(req.body.command,req.body.options)
 								.then(function(){
-									res.json(OKMessage(req.body,'COMMAND_SENT'));			
+									res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
 								})
 								.catch(function(err){
 									logger.error(err);
