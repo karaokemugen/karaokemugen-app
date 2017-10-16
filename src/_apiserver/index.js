@@ -602,6 +602,16 @@ module.exports = {
 							notEmpty: true,
 							isBoolean: true,
 						},
+						'EngineDisplayConnectionInfo': {
+							in: 'body',
+							notEmpty: true,
+							isBoolean: true,
+						},
+						'EngineDisplayConnectionInfoQRCode': {
+							in: 'body',
+							notEmpty: true,
+							isBoolean: true,
+						},						
 						'EnginePrivateMode': {
 							in: 'body',
 							notEmpty: true,
@@ -686,6 +696,8 @@ module.exports = {
 							req.sanitize('EngineAllowViewBlacklist').toInt();
 							req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
 							req.sanitize('EngineDisplayNickname').toInt();
+							req.sanitize('EngineDisplayConnectionInfoQRCode').toInt();
+							req.sanitize('EngineDisplayConnectionInfo').toInt();
 							req.sanitize('EngineAutoPlay').toInt();
 							req.sanitize('EngineRepeatPlaylist').toInt();
 							req.sanitize('EngineJinglesInterval').toInt();
