@@ -275,17 +275,18 @@ module.exports = {
 			displayingInfo = false;
 		},8000);
 	},
-	displayInfo: function(){
+	displayInfo: function(duration){
+		if (!duration) duration = 100000000;
 		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
-		var imageCaption = __('GO_TO')+' '+url+' !';
-		var imageSign = 'Karaoke Mugen '+module.exports.SETTINGS.VersionNo+' '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
-		var message = '{\\fscx80}{\\fscy80}'+imageCaption+'\\N{\\fscx30}{\\fscy30}{\\i1}'+imageSign+'{\\i0}';
+		var text = __('GO_TO')+' '+url+' !';
+		var version = 'Karaoke Mugen '+module.exports.SETTINGS.VersionNo+' '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
+		var message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx30}{\\fscy30}{\\i1}'+version+'{\\i0}';
 		var command = {
 			command: [
 				'expand-properties',
 				'show-text',
 				'${osd-ass-cc/0}{\\an1}'+message,
-				100000000,
+				duration,
 			]
 		};
 		module.exports._player.freeCommand(JSON.stringify(command));
@@ -476,6 +477,7 @@ module.exports = {
 							displayingInfo == false &&
 							module.exports.videoType == 'song')						
 							module.exports.displaySongInfo(module.exports.currentSongInfos);
+						if (Math.floor(position) == Math.floor(module.exports.duration / 2) && displayingInfo == false && module.exports.videoType == 'song') module.exports.displayInfo(8000);
 					});
 					logger.debug('[Player] mpv initialized successfully');
 					resolve();
