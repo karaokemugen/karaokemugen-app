@@ -109,20 +109,6 @@ module.exports = {
 			// version of the API is decided in the path
 			// Example : /v1/, /v2/, etc.
 			// We output JSON only.
-			// Endpoints :
-			// karas
-			// karas/xxxx
-			// playlists
-			// playlists/xxxx/karas
-			// playlists/xxxx
-			// playlists/public
-			// playlists/current
-			// series
-			// series/xxxx
-			// playlists/xxxx/filter
-			// karas/filter
-			// blacklist
-			// whitelist
 
 			// Validators & sanitizers :
 			// https://github.com/chriso/validator.js
@@ -135,7 +121,7 @@ module.exports = {
 			// 500 : INTERNAL ERROR
 			// 403 : FORBIDDEN
 
-			// In case of error, return the correct code an object 'error'
+			// In case of error, return the correct code and object 'error'
 
 			// Admin routes
 			routerAdmin.route('/shutdown')
@@ -237,9 +223,9 @@ module.exports = {
 							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_ERROR',err,req.params.pl_id));
+							res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 						});
 				})
 				.put(function(req,res){
@@ -274,9 +260,9 @@ module.exports = {
 										res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));	
 									})
 									.catch(function(err){
-										logger.error(err);
+										logger.error(err.message);
 										res.statusCode = 500;
-										res.json(errMessage('PL_UPDATE_ERROR',err,req.params.pl_id));
+										res.json(errMessage('PL_UPDATE_ERROR',err.message,err.data));
 									});
 							} else {
 								// Errors detected
@@ -293,9 +279,9 @@ module.exports = {
 							res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_DELETE_ERROR',err,req.params.pl_id));
+							res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 						});
 				});
 
@@ -310,9 +296,9 @@ module.exports = {
 							res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));							
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_EMPTY_ERROR',err,req.params.pl_id));
+							res.json(errMessage('PL_EMPTY_ERROR',err.message,err.data));
 							res.json(err);
 						});
 				});
@@ -357,9 +343,9 @@ module.exports = {
 							res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_SET_CURRENT_ERROR',err,req.params.pl_id));
+							res.json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
 						});
 				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
@@ -372,9 +358,9 @@ module.exports = {
 							res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_SET_PUBLIC_ERROR',err,req.params.pl_id));
+							res.json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
 						});
 				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
@@ -402,9 +388,9 @@ module.exports = {
 							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_SONGS_ERROR',err,req.params.pl_id));
+							res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
 						});
 				})
 				.post(function(req,res){
@@ -447,9 +433,9 @@ module.exports = {
 										res.json(OKMessage(null,'PL_SONG_ADDED',args));
 									})
 									.catch(function(err){
-										logger.error(err);
+										logger.error(err.message);
 										res.statusCode = 500;
-										res.json(errMessage('PL_ADD_SONG_ERROR',err,playlist_id));										
+										res.json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));										
 									});
 							} else {
 								// Errors detected
@@ -490,9 +476,9 @@ module.exports = {
 										res.json(OKMessage(null,'PL_SONG_MOVED',args));
 									})
 									.catch(function(err){
-										logger.error(err);
+										logger.error(err.message);
 										res.statusCode = 500;
-										res.json(errMessage('PL_MOVE_SONG_ERROR',err,req.params.pl_id));
+										res.json(errMessage('PL_MOVE_SONG_ERROR',err.message,err.data));
 									});
 							} else {
 								// Errors detected
@@ -525,9 +511,9 @@ module.exports = {
 										res.json(OKMessage(null,'PL_SONG_DELETED',pl_id));
 									})
 									.catch(function(err){
-										logger.error(err);
+										logger.error(err.message);
 										res.statusCode = 500;
-										res.json(errMessage('PL_DELETE_SONG_ERROR',err,req.params.pl_id));
+										res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
 									});
 							} else {
 								// Errors detected
@@ -547,7 +533,7 @@ module.exports = {
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_CONTENT_ERROR',err,req.params.plc_id));
+							res.json(errMessage('PL_VIEW_CONTENT_ERROR',err));
 						});
 				})
 				.put(function(req,res){
@@ -574,12 +560,12 @@ module.exports = {
 								module.exports.onPlaylistSingleKaraEdit(req.params.plc_id,req.body.pos,req.body.flag_playing)
 									.then(function(){
 										// pl_id is returned from this promise
-										res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED',req.params.plc_id));
+										res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
 									})
 									.catch(function(err){
 										logger.error(err);
 										res.statusCode = 500;
-										res.json(errMessage('PL_MODIFY_CONTENT_ERROR',err,req.params.plc_id));
+										res.json(errMessage('PL_MODIFY_CONTENT_ERROR',err));
 									});
 							} else {
 								// Errors detected
@@ -812,9 +798,9 @@ module.exports = {
 									res.json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));									
 								})
 								.catch(function(err){
-									logger.error(err);
+									logger.error(err.message);
 									res.statusCode = 500;
-									res.json(errMessage('WL_ADD_SONG_ERROR',err));
+									res.json(errMessage('WL_ADD_SONG_ERROR',err.message,err.data));
 								});
 						} else {
 							// Errors detected
@@ -852,7 +838,7 @@ module.exports = {
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(errMessage('WL_DELETE_SONG_ERROR',err,req.params.wl_id));
+							res.json(errMessage('WL_DELETE_SONG_ERROR',err));
 						});
 				})
 				.put(function(req,res){
@@ -873,7 +859,7 @@ module.exports = {
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(errMessage('WL_UPDATE_SONG_ERROR',err,req.params.wl_id));
+									res.json(errMessage('WL_UPDATE_SONG_ERROR',err));
 								});
 						} else {
 							// Errors detected
@@ -944,7 +930,7 @@ module.exports = {
 						.catch(function(err){
 							logger.error(err);
 							res.statusCode = 500;
-							res.json(errMessage('BLC_DELETE_ERROR',err,req.params.blc_id));	
+							res.json(errMessage('BLC_DELETE_ERROR',err));	
 						});
 				})
 				.put(function(req,res){
@@ -971,7 +957,7 @@ module.exports = {
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(errMessage('BLC_UPDATE_ERROR',err,req.params.blc_id));
+									res.json(errMessage('BLC_UPDATE_ERROR',err));
 								});
 						} else {
 							// Errors detected
@@ -1044,9 +1030,9 @@ module.exports = {
 							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_EXPORT_ERROR',err,req.params.pl_id));
+							res.json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
 						});
 				});
 			routerAdmin.route('/playlists/import')
@@ -1078,7 +1064,7 @@ module.exports = {
 								.catch(function(err){
 									logger.error(err);
 									res.statusCode = 500;
-									res.json(errMessage('PL_IMPORT_ERROR',err,req.params.pl_id));
+									res.json(errMessage('PL_IMPORT_ERROR',err));
 								});
 						} else {
 							// Errors detected
@@ -1098,9 +1084,9 @@ module.exports = {
 							res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));							
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_SHUFFLE_ERROR',err));
+							res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
 						});
 				});
 
@@ -1131,9 +1117,9 @@ module.exports = {
 							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_ERROR',err,req.params.pl_id));
+							res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 						});
 				});
 			routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
@@ -1161,9 +1147,9 @@ module.exports = {
 							res.json(OKMessage(playlist));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_SONGS_ERROR',err,req.params.pl_id));
+							res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
 						});
 				});
 
@@ -1175,9 +1161,9 @@ module.exports = {
 							res.json(OKMessage(kara));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_CONTENT_ERROR',err,req.params.plc_id));
+							res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
 						});
 				});
 			routerPublic.route('/settings')
@@ -1375,9 +1361,9 @@ module.exports = {
 									res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
 								})
 								.catch(function(err){
-									logger.error(err);
+									logger.error(err.message);
 									res.statusCode = 500;
-									res.json(errMessage('PLAYLIST_MODE_ADD_SONG_ERROR',err,data));
+									res.json(errMessage('PLAYLIST_MODE_ADD_SONG_ERROR',err.message,err.data));
 								});
 						} else {
 							// Errors detected
@@ -1395,9 +1381,9 @@ module.exports = {
 							res.json(OKMessage(kara));
 						})
 						.catch(function(err){
-							logger.error(err);
+							logger.error(err.message);
 							res.statusCode = 500;
-							res.json(errMessage('LYRICS_VIEW_ERROR',err));
+							res.json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
 						});
 				});
 			routerPublic.route('/playlists/current')
