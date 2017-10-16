@@ -24,7 +24,7 @@ displayMessage = function(type, title, message, time) {
 	}, time);
 
 	messageDiv.click( function() {
-		if( !window.getSelection().focusNodev == null  || window.getSelection().focusNode.parentNode != messageDiv[0]) {
+		if( window.getSelection().focusNodev == null  || window.getSelection().focusNode.parentNode != messageDiv[0]) {
 			messageDiv.addClass('dismiss');
 		} else {
 			transition += 7000;
