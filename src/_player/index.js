@@ -261,6 +261,7 @@ module.exports = {
 		}
 	},
 	displaySongInfo: function(infos){
+		displayingInfo = true;
 		var command = {
 			command: [
 				'expand-properties',
@@ -270,6 +271,9 @@ module.exports = {
 			]
 		};
 		module.exports._player.freeCommand(JSON.stringify(command));
+		setTimeout(() => {
+			displayingInfo = false;
+		},8000);
 	},
 	displayInfo: function(){
 		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
@@ -470,10 +474,8 @@ module.exports = {
 						// Display informations if timeposition is 8 seconds before end of song
 						if (position >= (module.exports.duration - 8) && 
 							displayingInfo == false &&
-							module.exports.videoType == 'song') {
-							displayingInfo = true;
+							module.exports.videoType == 'song')						
 							module.exports.displaySongInfo(module.exports.currentSongInfos);
-						}
 					});
 					logger.debug('[Player] mpv initialized successfully');
 					resolve();
