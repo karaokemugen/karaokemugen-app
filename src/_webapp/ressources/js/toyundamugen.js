@@ -13,7 +13,7 @@ var DEBUG;
 var SOCKETDEBUG;
 
 var dragAndDrop;        // Boolean : allowing drag&drop
-var karaParPage;        // Int : number of karas disaplyed per "page" (per chunk)
+var pageSize;        // Int : number of karas disaplyed per "page" (per chunk)
 var saveLastDetailsKara;    // Matrice saving the differents opened kara details to display them again when needed
 var playlistToAdd;          // Int : id of playlist users are adding their kara to
 
@@ -294,6 +294,40 @@ var plData;
 			});
 		});
 
+		$('.plBrowse button').on('click', function() {
+			var $this = $(this);
+			var panel = $this.closest('.panel');
+			var dashboard = panel.find('.plDashboard');
+			var idPlaylist = dashboard.data('playlist_id');
+			var num_karas = dashboard.data('karacount');
+			var side = panel.attr('side');
+			var playlist = $('#playlist' + side);
+			
+			if($this.attr('action') === 'goTo') {
+				var from, scrollHeight;
+
+				if($this.attr('value') === 'top') {
+					from = 0;
+				} else if ($this.attr('value') === 'bottom') {
+					from = num_karas - pageSize;
+				} else if ($this.attr('value') === 'playing') {
+					from = 1;
+				}
+				setPlaylistRange(idPlaylist, from, from + pageSize);
+				fillPlaylist(side).done( function() {
+					setTimeout(function() {
+						if($this.attr('value') === 'top') {
+							scrollHeight = 0;
+						} else if ($this.attr('value') === 'bottom') {
+							scrollHeight = 
+							scrollHeight = playlist.height();
+						}
+						if(scrollHeight) playlist.parent().scrollTop(scrollHeight);
+					}, 2);
+				});
+			}
+		});
+
 		// generic close button
 		$('.playlist-main').on('click', '.closeParent', function () {
 			var el = $(this);
@@ -311,7 +345,7 @@ var plData;
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
-			if(container.attr('flagScroll') == true || container.attr('flagScroll') == "true" )  { 
+			if(container.attr('flagScroll') == true || container.attr('flagScroll') == 'true' )  { 
 				//container.attr('flagScroll', false);
 			} else {
 				var playlist = container.find('ul').first();
@@ -320,27 +354,28 @@ var plData;
 				var idPlaylist = dashboard.find('select').val();
 				var from =  getPlaylistRange(idPlaylist).from;
 				var to = getPlaylistRange(idPlaylist).to;
+				var karaCount = dashboard.data('karacount');
 				var nbKaraInPlaylist = parseInt(dashboard.parent().find('.plInfos').data('to')) - parseInt(dashboard.parent().find('.plInfos').data('from'));
-				var shift = 2 * parseInt(karaParPage/10);
+				var shift = 2 * parseInt((12*pageSize/20)/2);
 				var fillerBottom = playlist.find('.filler').last();
 				var fillerTop = playlist.find('.filler').first();
 				
 				if (fillerTop.length > 0 && fillerBottom.length > 0) {
-					var scrollDown = container.offset().top + container.innerHeight() >= fillerBottom.offset().top && nbKaraInPlaylist >= karaParPage * 2;
+					var scrollDown = container.offset().top + container.innerHeight() >= fillerBottom.offset().top && to < karaCount && nbKaraInPlaylist >= pageSize;
 					var scrollUp = fillerTop.offset().top + fillerTop.innerHeight() > container.offset().top + 10 && from > 0;
-				
 					DEBUG && console.log(scrollUpdating, (!scrollUpdating || scrollUpdating.state() == 'resolved') , scrollDown, scrollUp);
+				
 					if (  (!scrollUpdating || scrollUpdating.state() == 'resolved')  && (scrollDown || scrollUp)) {
 
 
 						container.attr('flagScroll', true);
 
 						if(scrollDown) {
-							from += karaParPage + shift;
-							to = from + karaParPage * 2;
+							from += shift;
+							to = from + pageSize;
 						} else if( scrollUp ) {
-							from = Math.max(0, from - karaParPage - shift);
-							to = from + karaParPage * 2;
+							from = Math.max(0, from - shift);
+							to = from + pageSize;
 						}
 						
 						DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
@@ -399,8 +434,8 @@ var plData;
 	dragAndDrop = true;
 	stopUpdate = false;
     
-	karaParPage = isTouchScreen ? 54 : 60;
-	if (!isNaN(query.PAGELENGTH)) karaParPage = parseInt(query.PAGELENGTH);
+	pageSize = isTouchScreen ? 108 : 132;
+	if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
 	
 	saveLastDetailsKara = [[]];
 	playlistRange = {};
@@ -547,10 +582,10 @@ var plData;
 	/**
      * Fill a playlist on screen with karas
      * @param {1, 2} side - which playlist on the screen
-     * @param {'top','bottom'} scrollTo (optional) - filling the playlist after  a scroll, allow to keep the scroll position on the same data
+     * @param {'top','bottom'} scrolling (optional) - filling the playlist after  a scroll, allow to keep the scroll position on the same data
      */
 	// TODO if list is updated from another source (socket ?) keep the size of the playlist
-	fillPlaylist = function (side, scrollTo) {
+	fillPlaylist = function (side, scrolling) {
 		DEBUG && console.log(side);
 		var deferred = $.Deferred();
 		var dashboard = $('#panel' + side + ' .plDashboard');
@@ -647,9 +682,9 @@ var plData;
 								+	fillerBottom;
 					
 
-					if(scrollTo) {
+					if(scrolling) {
 						container.css('overflow-y','hidden');
-						var karaMarker = scrollTo === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
+						var karaMarker = scrolling === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
 						var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
 					}
 		
@@ -658,7 +693,7 @@ var plData;
 						deferred.resolve();
 						refreshContentInfos(side);
 						//window.requestAnimationFrame( function() {
-						if(scrollTo) {
+						if(scrolling) {
 							
 							container.css('overflow-y','auto');
 							var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
@@ -973,7 +1008,7 @@ var plData;
 			});
 			dashboard.data(option.data());
 			if (playlistRange[idPlaylist] == undefined) {
-				setPlaylistRange(idPlaylist, 0, karaParPage * 2);
+				setPlaylistRange(idPlaylist, 0, pageSize);
 			}
 			$(window).resize();
 		});
@@ -1268,7 +1303,7 @@ var plData;
 		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();
         
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
-		return playlistRange[idPl][search] ? playlistRange[idPl][search] : { from : 0, to : karaParPage * 2 };
+		return playlistRange[idPl][search] ? playlistRange[idPl][search] : { from : 0, to : pageSize };
 	};
 
 	setPlaylistRange = function(idPl, from, to) {
