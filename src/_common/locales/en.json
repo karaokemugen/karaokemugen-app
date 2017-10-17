@@ -114,5 +114,9 @@
 	"PLAYERNOHUD": "Hide OSD",
 	"ENGINEREPEATPLAYLIST": "Repeat playlist",
 	"ENGINEAUTOPLAY": "Autoplay on first song additon",
-	"ENGINEJINGLESINTERVAL": "Interval between jingles (karas)"
+	"ENGINEJINGLESINTERVAL": "Interval between jingles (karas)",
+	"ENGINEDISPLAYCONNECTIONINFOQRCODE": "Show QR code",
+	"ENGINEDISPLAYCONNECTIONINFOHOST": "Infos host",
+	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
+	"ENGINEDISPLAYCONNECTIONINFO": "Show network infos"
 }
