@@ -1,11 +1,11 @@
 /**
  * @fileoverview Launcher source file
  */
-import {asyncCheckOrMkdir} from './_common/utils/files';
+import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
 import {initConfig, setConfig} from './_common/utils/config';
 
 import clc from 'cli-color' ;
-import fs from 'fs-extra';
+import {copy} from 'fs-extra';
 import path from 'path';
 import argv from 'minimist';
 
@@ -57,7 +57,8 @@ if(appPath) {
 async function main() {
 	logger.debug('[Launcher] SysPath detected : ' + appPath);
 
-	let config = await initConfig(appPath);
+	// Note : !!argv.test assure la conversion en booléen.
+	let config = await initConfig(appPath, !!argv.test);
 
 	if (argv.version) {
 		console.log('Karaoke Mugen '+ config.VersionNo + ' - ' + config.VersionName);
@@ -75,7 +76,7 @@ async function main() {
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	logger.debug('[Launcher] Copying input.conf into ' + path.resolve(appPath, config.PathTemp));
-	await fs.copy(
+	await copy(
 		path.join(__dirname, '/_player/assets/input.conf'),
 		path.resolve(appPath, config.PathTemp, 'input.conf'),
 		{ overwrite: true }
@@ -84,51 +85,10 @@ async function main() {
 	/**
 	 * Test if network ports are available
 	 */
+	[1337, 1338, 1339, 1340].forEach(port => verifyOpenPort(port));
 
-	const ports = [1337,1338,1339,1340];
-	ports.forEach(function(port){
-		let server = net.createServer();
-		server.once('error', function(err) {
-			if (err.code === 'EADDRINUSE') {
-				logger.error('[Launcher] Port '+port+' is already in use.');
-				logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node")');
-				logger.error('[Launcher] Then restart the app.');
-				process.exit(1);
-			}
-		});
+	await restoreKaraBackupFolders(config);
 
-		server.once('listening', function() {
-			// close the server if listening doesn't fail
-			server.close();
-		});
-		server.listen(port);
-	});
-
-	/**
-	 * Check if backup folder for karaokes exists. If it does, it means previous generation aborted
-	 */
-	const karas_dbfile = path.resolve(appPath, config.PathDB, config.PathDBKarasFile);
-
-	//Restoring kara folder
-	config.PathKaras && config.PathKaras.split('|').forEach((PathKara) => {
-		const karasdir = path.resolve(appPath, PathKara);
-		if (fs.existsSync(karasdir+'_backup')) {
-			logger.info('[Launcher] Mahoro Mode : Backup folder '+karasdir+'_backup exists, replacing karaokes folder with it.');
-			fs.removeSync(karasdir);
-			fs.renameSync(karasdir+'_backup',karasdir);
-			if (fs.existsSync(karas_dbfile)) {
-				logger.info('[Launcher] Mahoro Mode : clearing karas database : generation will occur shortly');
-				fs.unlinkSync(karas_dbfile);
-			}
-		}
-	});
-
-
-	if(argv.test) {
-		config = setConfig({isTest: true});
-	} else {
-		config = setConfig({isTest: false});
-	}
 	/**
 	 * Calling engine.
 	 */
@@ -163,4 +123,43 @@ async function checkPaths(config) {
 
 	await Promise.all(checks);
 	logger.info('[Launcher] All folders checked');
+}
+
+function verifyOpenPort(port) {
+	const server = net.createServer();
+	server.once('error', err => {
+		if (err.code === 'EADDRINUSE') {
+			logger.error('[Launcher] Port '+port+' is already in use.');
+			logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node")');
+			logger.error('[Launcher] Then restart the app.');
+			process.exit(1);
+		}
+	});
+	server.once('listening', () => server.close());
+	server.listen(port);
+}
+
+/**
+ * Check if backup folder for karaokes exists. If it does, it means previous generation aborted.
+ * Backup folder is restored.
+ */
+async function restoreKaraBackupFolders(config) {
+	const restores = [];
+	config.PathKaras.split('|').forEach(pathKara => restores.push(restoreBackupFolder(pathKara, config)));
+	await Promise.all(restores);
+}
+
+async function restoreBackupFolder(pathKara, config) {
+	const karasDbFile = path.resolve(appPath, config.PathDB, config.PathDBKarasFile);
+	const karasDir = path.resolve(appPath, pathKara);
+	const karasDirBackup = karasDir+'_backup';
+	if (await asyncExists(karasDirBackup)) {
+		logger.info('[Launcher] Mahoro Mode : Backup folder ' + karasDirBackup + ' exists, replacing karaokes folder with it.');
+		await asyncRemove(karasDir);
+		await asyncRename(karasDirBackup, karasDir);
+		if (await asyncExists(karasDbFile)) {
+			logger.info('[Launcher] Mahoro Mode : clearing karas database : generation will occur shortly');
+			await asyncUnlink(karasDbFile);
+		}
+	}
 }

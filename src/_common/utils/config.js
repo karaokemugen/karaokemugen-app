@@ -24,9 +24,10 @@ export function getConfig() {
 }
 
 /** Initialisation de la configuration. */
-export async function initConfig(appPath) {
+export async function initConfig(appPath, isTest) {
 
 	config = {...config, appPath: appPath};
+	config = {...config, isTest: isTest};
 	config = {...config, os: process.platform};
 
 	configureLocale();
