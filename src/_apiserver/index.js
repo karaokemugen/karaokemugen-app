@@ -597,6 +597,22 @@ module.exports = {
 							notEmpty: true,
 							isBoolean: true,
 						},
+						'EngineDisplayConnectionInfo': {
+							in: 'body',
+							notEmpty: true,
+							isBoolean: true,
+						},
+						'EngineDisplayConnectionInfoHost': {
+							in: 'body',
+						},
+						'EngineDisplayConnectionInfoMessage': {
+							in: 'body',
+						},
+						'EngineDisplayConnectionInfoQRCode': {
+							in: 'body',
+							notEmpty: true,
+							isBoolean: true,
+						},
 						'EngineDisplayNickname': {
 							in: 'body',
 							notEmpty: true,
@@ -698,6 +714,9 @@ module.exports = {
 							req.sanitize('EnginePrivateMode').toInt();
 							req.sanitize('PlayerPIP').toInt();
 							req.sanitize('PlayerPIPSize').toInt();
+							req.sanitize('PlayerPIP').toInt();
+							req.sanitize('EngineDisplayConnectionInfoQRCode').toInt();
+							req.sanitize('EngineDisplayConnectionInfo').toInt();
 
 							var SETTINGS = req.body;
 							module.exports.onSettingsUpdate(SETTINGS)
