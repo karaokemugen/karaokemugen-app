@@ -788,7 +788,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     position: absolute;
     bottom: 0;
     right: 0;
-	z-index: 40;
+	z-index: 10040;
     font-size: 1.2rem;
     background-color: hsla(107, 17%, 25%, 0.95);
 	padding: 2px;
