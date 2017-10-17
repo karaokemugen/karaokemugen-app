@@ -12,6 +12,21 @@ AdminPassword = "gurdil"
 ; Display nickname or not in the bottom right corner of the screen during first 8 seconds of playback
 EngineDisplayNickname = 1
 
+; Enable/Disable connection info display
+; Implies EngineQRCode = 0
+EngineDisplayConnectionInfo = 1
+
+; Display QR Code or not
+EngineDisplayConnectionInfoQRCode = 1
+
+; Additional message to display
+EngineDisplayConnectionInfoMessage = ""
+
+; IP/Hostname to connect to Karaoke Mugen
+; Leave blank for autodetection.
+; Provide a host if autodetection fails.
+EngineDisplayConnectionInfoHost = ""
+
 ; Is the karaoke public or private ?
 ; Private means songs will be added to current playlist directly
 ; Public means songs will be added to public playlist, leaving it up to the admin to put them in current or not.

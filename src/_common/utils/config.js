@@ -4,6 +4,7 @@ import {resolve} from 'path';
 import {parse} from 'ini';
 import {sync} from 'os-locale';
 import i18n from 'i18n';
+import {address} from 'ip';
 import logger from './logger';
 import {asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker';
@@ -30,6 +31,7 @@ export async function initConfig(appPath) {
 
 	configureLocale();
 	await loadConfigFiles(appPath);
+	configureHost();
 	await configureBinaries();
 
 	return getConfig();
@@ -73,6 +75,14 @@ async function configureBinaries() {
 	logger.info('[Launcher] Checking if binaries are available');
 	const binaries = await checkBinaries(config);
 	config = {...config, ...binaries};
+}
+
+function configureHost() {
+	if (config.EngineDisplayConnectionInfoHost === '') {
+		config = {...config, osHost: address()};
+	} else {
+		config = {...config, osHost: config.EngineDisplayConnectionInfoHost};
+	}
 }
 
 /**

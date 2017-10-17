@@ -17,7 +17,7 @@ const logger = require('../_common/utils/logger.js');
 const extend = require('extend');
 const timestamp = require('unix-timestamp');
 const ini = require('ini');
-
+const ip = require('ip');
 /**
  * @module engine
  * Main engine module.
@@ -877,7 +877,7 @@ module.exports = {
 				for (setting in settings){
 					if (settings.hasOwnProperty(setting)){
 						if (defaultSettings[setting] != settings[setting]) {
-							if (setting == 'os' ||
+							if (setting.startsWith('os') ||
 								setting == 'EngineDefaultLocale') {
 								// Do nothing
 								// We don't want to save these settings to file.
@@ -913,6 +913,13 @@ module.exports = {
 
 				extend(true,module.exports.SETTINGS,settings);
 
+				//Updating IP address
+				if (module.exports.SETTINGS.EngineDisplayConnectionInfoHost == '') {
+					module.exports.SETTINGS.osHost = ip.adress();
+				} else {
+					module.exports.SETTINGS.osHost = module.exports.SETTINGS.EngineDisplayConnectionInfoHost;
+				}
+				//Broadcasting settings
 				module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.player.SETTINGS = module.exports.SETTINGS;

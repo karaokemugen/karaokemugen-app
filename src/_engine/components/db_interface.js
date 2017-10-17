@@ -183,7 +183,10 @@ module.exports = {
 		return new Promise((resolve,reject) => {
 			var sqlGetDBUUIDs = fs.readFileSync(path.join(__dirname,'../../_common/db/select_databases_uuids.sql'),'utf-8');
 			module.exports._db_handler.get(sqlGetDBUUIDs)
-				.then((res) => {						
+				.then((res) => {											
+					if (res == undefined) {
+						res = '';
+					}
 					if (res.karasdb_uuid != res.userdb_uuid) {
 						//Databases are different, rewriting userdb's UUID with karasdb's UUID and running integrity checks.
 						generator.SYSPATH = module.exports.SYSPATH;

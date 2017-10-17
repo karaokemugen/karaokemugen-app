@@ -14,6 +14,7 @@ import i18n from 'i18n';
 import net from 'net';
 import logger from './_common/utils/logger';
 import engine from './_engine/index';
+import resolveSysPath from './_common/utils/resolveSyspath';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
@@ -39,7 +40,7 @@ if (argv.help) {
 	process.exit(0);
 }
 
-const appPath = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
+const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
 
 if(appPath) {
 	main()

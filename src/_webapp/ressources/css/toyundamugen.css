@@ -784,7 +784,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 #header {
 	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.23), 0 1px 12px 0 rgba(0, 0, 0, 0.17), 0 2px 2px -1px rgba(0, 0, 0, 0.26)
 }
-.plInfos {
+.plFooter {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -794,7 +794,21 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	padding: 2px;
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.30), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
 }
-
+.plFooter button {
+	padding: 0;
+	height: 100%;
+	width: 15px;
+	margin: 0px -1px;
+}
+.plFooter button > i {
+	top: 0px;
+}
+.plBrowse .goToPlaying > i {
+	color: hsla(209, 69%, 66%, 1);
+}
+.plInfos, .plBrowse {
+    display: inline-block;
+}
 
 .plDashboard {
 	display: flex;

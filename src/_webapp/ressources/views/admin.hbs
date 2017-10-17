@@ -117,7 +117,14 @@
                     <li class="list-group-item"></li>
                 </ul> 
             </div>
-            <div class="plInfos"></div>
+            <div class="plFooter">
+                <div class="plInfos"></div>
+                <div class="plBrowse">
+                    <button class="btn btn-sm btn-action goToBottom"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
+                    <button class="btn btn-sm btn-action goToPlaying"><i class="glyphicon glyphicon glyphicon-play"></i></button>
+                    <button class="btn btn-sm btn-action goToTop"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
+                </div>
+            </div>
         </div>
         
         <div class="panel col-lg-6 col-xs-6" id="panel2" side="2">
@@ -202,7 +209,14 @@
                     <li class="list-group-item"></li>
                 </ul>
             </div>
-            <div class="plInfos"></div>
+            <div class="plFooter">
+                <div class="plInfos"></div>
+                <div class="plBrowse">
+                    <button class="btn btn-sm btn-action goToBottom"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
+                    <button class="btn btn-sm btn-action goToPlaying"><i class="glyphicon glyphicon glyphicon-play"></i></button>
+                    <button class="btn btn-sm btn-action goToTop"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row" id="manage" hidden>
@@ -266,7 +280,7 @@
                             </select>
                     </div>
                 </div>
-                <div id="pipSettings" style="background-color:transparent;border: solid #585b65; border-width: 2px 0px;" class="well well-sm">
+                <div id="pipSettings" class="well well-sm settingsGroupPanel">
                     <div class="form-group">
                         <label for="PlayerPIPSize" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}} (%)</label>
                         <div class="col-xs-6">
@@ -293,6 +307,26 @@
                                 <option value="Center" default> {{i18n "CENTER"}} </option>
                                 <option value="Top" > {{i18n "TOP"}} </option>
                             </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="connexionInfoSettings" class="well well-sm settingsGroupPanel">
+                    <div class="form-group">
+                        <label class="col-xs-4 control-label" for="EngineDisplayConnectionInfoQRCode">{{i18n "ENGINEDISPLAYCONNECTIONINFOQRCODE"}}</label>
+                        <div class="col-xs-6">
+                            <input name="EngineDisplayConnectionInfoQRCode" type="checkbox">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="EngineDisplayConnectionInfoHost" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOHOST"}}</label>
+                        <div class="col-xs-6">
+                            <input class="form-control" name="EngineDisplayConnectionInfoHost">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="EngineDisplayConnectionInfoMessage" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOMESSAGE"}}</label>
+                        <div class="col-xs-6">
+                            <input class="form-control" name="EngineDisplayConnectionInfoMessage">
                         </div>
                     </div>
                 </div>
