@@ -836,7 +836,22 @@ module.exports = {
 				}
 				module.exports._services.playlist_controller.deleteKaraFromPlaylist(karas,playlist_id)
 					.then(function(){
-						resolve(playlist_id);
+						module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
+							.then(function(playlist){
+								var data = {
+									pl_id: playlist_id,
+									pl_name: playlist.name
+								};
+								resolve(data);
+							})
+							.catch(function(err){
+								logger.error('[Engine] PLC getPlaylistInfo : '+err);
+								err = {
+									message: err,
+									data: playlist_id
+								};
+								reject(err);
+							});
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC deleteKaraFromPlaylist : '+err);
@@ -1385,13 +1400,15 @@ module.exports = {
 												.catch(() => {
 													resolve();
 												});
-
 										})
 										.catch(function(err){
 											logger.error('[Engine] PLC getPlaylistInfo : '+err);
 											err = {
 												message: err,
-												data: playlist_id
+												data: {
+													kara: id_kara,
+													playlist: playlist_id
+												}
 											};
 											reject(err);
 										});						
@@ -1401,17 +1418,29 @@ module.exports = {
 									logger.error('[Engine] PLC addKaraToCurrentPlaylist : '+err);
 									module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
 										.then(function(playlist){
-											err = {
-												message: err,
-												data: playlist.name
-											};
-											reject(err);
+											module.exports._services.playlist_controller.getKara(id_kara)
+												.then((kara) => {
+													var res = {
+														message: err,
+														data: {
+															kara: kara.title,
+															playlist: playlist.name
+														}
+													};
+													reject(res);
+												})
+												.catch(() => {
+													reject();
+												});
 										})
 										.catch(function(err){
 											logger.error('[Engine] PLC getPlaylistInfo : '+err);
 											err = {
 												message: err,
-												data: playlist_id
+												data: {
+													kara: id_kara,
+													playlist: playlist_id,
+												}
 											};
 											reject(err);
 										});						
@@ -1437,40 +1466,53 @@ module.exports = {
 												.then((kara) => {
 													var res = {
 														kara: kara.title,
-														playlist: playlist.name
+														playlist: playlist.name,
+														playlist_id: playlist_id
 													};
 													resolve(res);
 												})
 												.catch(() => {
 													resolve();
 												});
-
 										})
 										.catch(function(err){
 											logger.error('[Engine] PLC getPlaylistInfo : '+err);
 											err = {
 												message: err,
-												data: playlist_id
+												data: {
+													kara: id_kara,
+													playlist: playlist_id
+												}
 											};
 											reject(err);
 										});						
-								
 								})
 								.catch(function(err){
 									logger.error('[Engine] PLC addKaraToPublicPlaylist : '+err);
 									module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
 										.then(function(playlist){
-											err = {
-												message: err,
-												data: playlist.name
-											};
-											reject(err);
+											module.exports._services.playlist_controller.getKara(id_kara)
+												.then((kara) => {
+													var res = {
+														message: err,
+														data: {
+															kara: kara.title,
+															playlist: playlist.name
+														}
+													};
+													reject(res);
+												})
+												.catch(() => {
+													reject();
+												});
 										})
 										.catch(function(err){
 											logger.error('[Engine] PLC getPlaylistInfo : '+err);
 											err = {
 												message: err,
-												data: playlist_id
+												data: {
+													kara: id_kara,																				playlist: playlist_id,
+												}
 											};
 											reject(err);
 										});						
@@ -1498,14 +1540,22 @@ module.exports = {
 					karas = [id_kara];
 				}
 				module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id,pos)
-					.then(function(karaAdded){
+					.then(function(){
 						logger.profile('AddKara');
 						logger.info('[Engine] Finished adding karaokes to playlist '+playlist_id);
-						var result = {
-							playlist_id: playlist_id,
-							karaAdded: karaAdded
-						};
-						resolve(result);
+						module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
+							.then(function(playlist){
+								var res = {
+									playlist: playlist.name
+								};
+								resolve(res);
+							})
+							.catch(() => {
+								var res = {
+									playlist: playlist_id
+								};
+								resolve(res);
+							});
 					})
 					.catch(function(err){
 						logger.profile('AddKara');

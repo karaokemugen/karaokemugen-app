@@ -13,14 +13,16 @@ function numberTest(element) {
 }
 
 function errMessage(code,message,args) {
+	//console.log(code+','+args+','+message);
 	return {
 		code: code,
 		args: args,
 		message: message
-	};
+	};	
 }
 
 function OKMessage(data,code,args) {
+	//console.log(code+','+JSON.stringify(args)+','+JSON.stringify(data));
 	return {
 		code: code,
 		args: args,		
@@ -422,13 +424,11 @@ module.exports = {
 								if (req.body.pos != undefined) req.sanitize('pos').toInt();
 								module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
 									.then(function(result){
-										module.exports.emitEvent('playlistInfoUpdated',result.playlist_id);
-										module.exports.emitEvent('playlistContentsUpdated',result.playlist_id);
+										module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
+										module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
 										res.statusCode = 201;		
 										var args = {
-											kara_ids: req.body.kara_id,
-											playlist: playlist_id,
-											requester: req.body.requestedby
+											playlist: result.playlist
 										};
 										res.json(OKMessage(null,'PL_SONG_ADDED',args));
 									})
@@ -504,11 +504,11 @@ module.exports = {
 						.then(function(result) {
 							if (result.isEmpty()) {
 								module.exports.onPlaylistSingleKaraDelete(req.body.plc_id,req.params.pl_id)
-									.then(function(pl_id){
-										module.exports.emitEvent('playlistInfoUpdated',pl_id);
-										module.exports.emitEvent('playlistContentsUpdated',pl_id);
+									.then(function(data){
+										module.exports.emitEvent('playlistInfoUpdated',data.pl_id);
+										module.exports.emitEvent('playlistContentsUpdated',data.pl_id);
 										res.statusCode = 200;
-										res.json(OKMessage(null,'PL_SONG_DELETED',pl_id));
+										res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
 									})
 									.catch(function(err){
 										logger.error(err.message);
@@ -1353,10 +1353,9 @@ module.exports = {
 								requester: req.body.requestedby
 							};									
 							module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
-								.then(function(pl_id){
-									data.pl_id = pl_id;
-									module.exports.emitEvent('playlistContentsUpdated',pl_id);
-									module.exports.emitEvent('playlistInfoUpdated',pl_id);
+								.then(function(data){									
+									module.exports.emitEvent('playlistContentsUpdated',data.playlist_id);
+									module.exports.emitEvent('playlistInfoUpdated',data.playlist_id);
 									res.statusCode = 201;
 									res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
 								})
