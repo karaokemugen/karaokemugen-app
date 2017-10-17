@@ -165,6 +165,24 @@ module.exports = {
 				});
 				Promise.all([pGetKarasSeries,pGetKarasTags,pGetSeries,pGetTags,pGetASS,pGetKaras])
 					.then(() => {
+						var pEmptyDatabase = new Promise((resolve,reject) => {
+							//Empty karaokes database.
+							// This will be reverted later (perhaps) if we manage to
+							// make a database update system.
+							db.run('DELETE FROM kara_tag;')
+								.then(db.run('DELETE FROM kara_serie;'))
+								.then(db.run('DELETE FROM ass;'))
+								.then(db.run('DELETE FROM tag;'))
+								.then(db.run('DELETE FROM serie;'))
+								.then(db.run('DELETE FROM kara;'))
+								.then(db.run('DELETE FROM settings;'))
+								.then(db.run('DELETE FROM sqlite_sequence;'))
+								.then(db.run('VACUUM;'))
+								.then(resolve())
+								.catch((err) => {
+									reject(err);
+								});
+						});
 						var pCreateKaraArrays = new Promise((resolve,reject) => {
 				
 							// Backing up .kara folder first
@@ -779,7 +797,7 @@ module.exports = {
 			 */
 			function closeDatabaseConnection() {
 				return new Promise((resolve,reject) => {
-					module.exports.db.close()					
+					module.exports.db.close()
 						.then(module.exports.userdb.close())
 						.then(resolve())
 						.catch((err) => {
