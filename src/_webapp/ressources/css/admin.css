@@ -9,6 +9,15 @@
 #manage .bootstrap-switch-container > span {
 	line-height: 2.25;
 }
+
+.settingsGroupPanel {
+	padding: 16px 0px;
+	background-color:transparent;
+	border: solid #585b65;
+	border-width: 2px 0px;
+	padding: 16px 0px;
+}
+
 .hiddenHeader .header {
 	display: none;
 }

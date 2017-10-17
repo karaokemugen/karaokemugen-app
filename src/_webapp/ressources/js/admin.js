@@ -409,12 +409,14 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	// dynamic creation of switchable settings 
 	var htmlSettings = '';
 	$.each(settingsOnOff, function (e, val) {
-		html = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
+		var htmlString = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
 												+ '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
-		if (val === 'PlayerPIP') {
-			$(html).insertBefore('#pipSettings');
+		if (e === 'PlayerPIP') {
+			$(htmlString).insertBefore('#pipSettings');
+		} else if (e === 'EngineDisplayConnectionInfo') {
+			$(htmlString).insertBefore('#connexionInfoSettings');
 		} else {
-			htmlSettings += html;
+			htmlSettings += htmlString;
 		}
 	});
 
@@ -436,6 +438,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						input.val(val);
 						if (input.attr('name') === 'PlayerPIP') {
 							val ? $('#pipSettings').show('500') : $('#pipSettings').hide('500');
+						} else if (input.attr('name') === 'EngineDisplayConnectionInfo') {
+							val ? $('#connexionInfoSettings').show('500') : $('#connexionInfoSettings').hide('500');
 						}
 					}
 				}

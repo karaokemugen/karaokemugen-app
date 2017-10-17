@@ -114,7 +114,7 @@ var plData;
 					.data('num_karas', kmStats.totalcount).attr('data-num_karas', kmStats.totalcount);
 			}
 		});
-
+		passwordUpdating = $.Deferred().resolve();
 		settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
         
 		settingsUpdating.done( function() {
