@@ -1,7 +1,6 @@
 var fs = require('fs-extra');
 var path = require('path');
 const logger = require('../_common/utils/logger.js');
-const ip = require('ip');
 const exec = require('child_process');
 const L = require('lodash');
 const sizeOf = require('image-size');
@@ -52,16 +51,20 @@ function loadBackground(mode) {
 	}
 	backgroundImageFile = L.sample(backgroundFiles);
 	logger.debug('[Player] Background : '+backgroundImageFile);
+	var videofilter = '';
+	if (module.exports.SETTINGS.EngineDisplayConnectionInfoQRCode != 0 && 
+		module.exports.SETTINGS.EngineDisplayConnectionInfo != 0) {
+				
+		var dimensions = sizeOf(backgroundImageFile);
+		var QRCodeWidth,QRCodeHeight;
+		QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
 
-	var dimensions = sizeOf(backgroundImageFile);
-	var QRCodeWidth,QRCodeHeight;
-	QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
-
-	var posX = Math.floor(dimensions.width*0.015);
-	var posY = Math.floor(dimensions.height*0.70);
-	var qrCode = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'qrcode.png');
-	qrCode = qrCode.replace(/\\/g,'/');
-	var videofilter = 'lavfi-complex="movie=\\\''+qrCode+'\\\'[logo]; [logo][vid1]scale2ref='+QRCodeWidth+':'+QRCodeHeight+'[logo1][base];[base][logo1] overlay='+posX+':'+posY+'[vo]"';
+		var posX = Math.floor(dimensions.width*0.015);
+		var posY = Math.floor(dimensions.height*0.70);
+		var qrCode = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'qrcode.png');
+		qrCode = qrCode.replace(/\\/g,'/');
+		videofilter = 'lavfi-complex="movie=\\\''+qrCode+'\\\'[logo]; [logo][vid1]scale2ref='+QRCodeWidth+':'+QRCodeHeight+'[logo1][base];[base][logo1] overlay='+posX+':'+posY+'[vo]"';
+	} 
 	module.exports._player.load(backgroundImageFile,mode,videofilter)
 		.then(() => {
 			if (mode === 'replace') {
@@ -103,7 +106,7 @@ module.exports = {
 			var qrCode = require('./qrcode.js');
 			qrCode.SYSPATH = module.exports.SYSPATH;
 			qrCode.SETTINGS = module.exports.SETTINGS;
-			var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
+			var url = 'http://'+module.exports.SETTINGS.osHost+':'+module.exports.frontend_port;
 			qrCode.build(url)
 				.then(function(){
 					logger.debug('[Player] QRCode generated');
@@ -112,7 +115,7 @@ module.exports = {
 				.catch(function(err){
 					logger.error('[Player] QRCode generation error : '+err);
 					reject(err);
-				});
+				});				
 		});
 
 		if (!module.exports.SETTINGS.isTest) {
@@ -277,8 +280,15 @@ module.exports = {
 	},
 	displayInfo: function(duration){
 		if (!duration) duration = 100000000;
-		var url = 'http://'+ip.address()+':'+module.exports.frontend_port;
-		var text = __('GO_TO')+' '+url+' !';
+		var text = '';
+		if (module.exports.SETTINGS.EngineDisplayConnectionInfo != 0) {
+			var url = 'http://'+module.exports.SETTINGS.osHost+':'+module.exports.frontend_port;
+			text = __('GO_TO')+' '+url+' !';	
+			if (module.exports.SETTINGS.EngineDisplayConnectionInfoMessage != '') {
+				text = module.exports.SETTINGS.EngineDisplayConnectionInfoMessage + ' - ' + text;
+			}
+		}
+
 		var version = 'Karaoke Mugen '+module.exports.SETTINGS.VersionNo+' '+module.exports.SETTINGS.VersionName+' - http://mugen.karaokes.moe';
 		var message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx30}{\\fscy30}{\\i1}'+version+'{\\i0}';
 		var command = {

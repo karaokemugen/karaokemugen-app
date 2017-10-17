@@ -8,7 +8,7 @@ const path = require('path');
 const ini = require('ini');
 const extend = require('extend');
 const argv = require('minimist')(process.argv.slice(2));
-
+const ip = require('ip');
 const i18n = require('i18n');
 const osLocale = require('os-locale');
 
@@ -154,6 +154,17 @@ if(SYSPATH) {
 		});
 		server.listen(port);
 	});
+
+	/**
+	 * Validate and check for config values
+	 * TODO: Add more validations. You never know what the user is capable of.
+	 */
+
+	if (SETTINGS.EngineDisplayConnectionInfoHost == '') {
+		SETTINGS.osHost = ip.address();
+	} else {
+		SETTINGS.osHost = SETTINGS.EngineDisplayConnectionInfoHost;
+	}
 
 	/**
 	 * Test if binaries are available
