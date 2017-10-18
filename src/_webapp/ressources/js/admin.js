@@ -74,15 +74,15 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				url: 'admin/shutdown',
 				type: 'POST',
 			}).done(function () {
-				DEBUG && console.log('Extinction de l\'appli');
+				DEBUG && console.log('Shutdown');
 				stopUpdate = true;
 			});
 		});
 
 		$('#adminMessage').click(function () {
-			displayModal('prompt', 'Message indispensable',
-				'<select class="form-control" name="destination"><option value="screen">Écran</option>'
-																+ '<option value="users">Utilisateurs</option><option value="all">Tous</option></select>'
+			displayModal('prompt', 'Message indispensable', 
+				'<select class="form-control" name="destination"><option value="screen">' + i18n.__('CL_SCREEN') + '</option>'
+																+ '<option value="users">' + i18n.__('CL_USERS') + '</option><option value="all">' + i18n.__('CL_ALL') + '</option></select>'
 																+ '<input type="text"name="duration" placeholder="5000 (ms)"/>', function(data){
 					var msgData =  { message: data.modalInput, destination : data.destination };
 					if (data.duration) {
@@ -251,7 +251,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						displayMessage('success', ajout, ' ajouté' +  (clusterAction ? 's' : '')
 							+ ' à la playlist <i>' +$('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').data('name') + '</i>.');
 						*/
-						DEBUG && console.log('Kara ' + idKara + ' ajouté à la playlist (' + idPlaylistTo + ') '
+						DEBUG && console.log('Kara ' + idKara + ' to playlist (' + idPlaylistTo + ') '
 							+ $('#selectPlaylist' + non(side) + ' > option[value="' + idPlaylistTo + '"]').text() + '.');
 					}).fail(function () {
 						scrollToKara(non(side), idKara);
@@ -617,7 +617,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				data[v] = selectedOption.data(v);
 			});
             
-			displayModal('prompt','Renommez ' + playlistName, '', function(newName){
+			displayModal('prompt', i18n.__('CL_RENAME_PLAYLIST', playlistName), '', function(newName){
 				data['name']  = newName;
 				ajx(type, url, data);
 			}, playlistName);
@@ -625,7 +625,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			type = 'POST';
 			url = 'admin/playlists';
 
-			displayModal('prompt','Créer une nouvelle playlist','',
+			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST', playlistName),'',
 				function(playlistName) {
 					data = { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 };
 					ajx(type, url, data, function (idNewPlaylist) {
@@ -638,7 +638,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		} else if (name == 'delete') {
 			url += '';
 			type = 'DELETE';
-			displayModal('confirm','Supprimer la playlist ' + playlistName + ' pour toujours ?', '', function(confirm){
+			displayModal('confirm', i18n.__('CL_DELETE_PLAYLIST', playlistName), '', function(confirm){
 				if( confirm ) {
 					ajx(type, url, data, function() {
 						playlistsUpdating.done(function() {
@@ -662,7 +662,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		posFromNext = isNaN(posFromNext) ? posFromPrev : posFromNext;
 
 		if (posFromPrev != posFromNext || isNaN(posFromPrev) && isNaN(posFromNext)) {
-			displayMessage('warning', 'Error:', 'Kara positions in this playlist are messed up, refreshing it. <br/>Please try again.');
+			displayMessage('warning', 'Err:',  i18n.__('CL_WRONG_KARA_ORDER'));
 			fillPlaylist(side);
 			return false;
 		} else {
@@ -688,7 +688,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		if (e.keyCode === k[n++]) {
 			if (n === k.length) {
 				displayModal('alert', '<span style="color:red">World destruction panel</span>',
-					'<button class="btn btn-danger"> NON </button>');
+					'<button class="btn btn-danger"> rip </button>');
 				n = 0;
 				return false;
 			}
@@ -697,5 +697,3 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		}
 	});
 }));
-
-

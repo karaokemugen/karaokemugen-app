@@ -1125,7 +1125,7 @@ var plData;
     */
 	buildKaraDetails = function(data, htmlMode) {
 		var details = {
-			'DETAILS_ADDED ': 		i18n.__('DETAILS_ADDED_2', [(data['date_add'] ? data['date_add'] : ''), (data['pseudo_add'] ? data['pseudo_add'] : '')])
+			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
 			, 'TYPE_6': 			data['author']
 			, 'DETAILS_VIEWS':		data['viewcount']
 			, 'TYPE_4':				data['creator']
