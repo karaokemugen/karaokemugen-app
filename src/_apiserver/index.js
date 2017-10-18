@@ -371,11 +371,11 @@ module.exports = {
 					var playlist_id = req.params.pl_id;
 					var filter = req.query.filter;
 					var lang = req.query.lang;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = req.query.size;
 					}
 					var from;
 					if (!req.query.from) {
@@ -384,7 +384,7 @@ module.exports = {
 						from = req.query.from;
 					}
 					var seenFromUser = false;
-					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,to)
+					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,size)
 						.then(function(playlist){
 							if (playlist == []) res.statusCode = 404;
 							res.json(playlist);
@@ -802,11 +802,11 @@ module.exports = {
 				.get(function(req,res){
 					var lang = req.query.lang;
 					var filter = req.query.filter;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = req.query.to;
 					}
 					var from;
 					if (!req.query.from) {
@@ -814,7 +814,7 @@ module.exports = {
 					} else {
 						from = req.query.from;
 					}
-					module.exports.onWhitelist(filter,lang,from,to)
+					module.exports.onWhitelist(filter,lang,from,size)
 						.then(function(karas){
 							res.json(karas);
 						})
@@ -865,11 +865,11 @@ module.exports = {
 				.get(function(req,res){
 					var lang = req.query.lang;
 					var filter = req.query.filter;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = req.query.size;
 					}
 					var from;
 					if (!req.query.from) {
@@ -877,7 +877,7 @@ module.exports = {
 					} else {
 						from = req.query.from;
 					}
-					module.exports.onBlacklist(filter,lang,from,to)
+					module.exports.onBlacklist(filter,lang,from,size)
 						.then(function(karas){
 							res.json(karas);
 						})
@@ -1193,11 +1193,11 @@ module.exports = {
 					var playlist_id = req.params.pl_id;
 					var filter = req.query.filter;
 					var lang = req.query.lang;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = req.query.size;
 					}
 					var from;
 					if (!req.query.from) {
@@ -1206,7 +1206,7 @@ module.exports = {
 						from = req.query.from;
 					}
 					var seenFromUser = true;
-					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,to)
+					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,size)
 						.then(function(playlist){
 							if (playlist == null) res.statusCode = 404;
 							res.json(playlist);
@@ -1267,11 +1267,11 @@ module.exports = {
 					if (module.exports.SETTINGS.EngineAllowViewWhitelist == 1) {
 						var lang = req.query.lang;
 						var filter = req.query.filter;
-						var to;
-						if (!req.query.to) {
-							to = 999999;
+						var size;
+						if (!req.query.size) {
+							size = 999999;
 						} else {
-							to = req.query.to;
+							size = req.query.to;
 						}
 						var from;
 						if (!req.query.from) {
@@ -1279,7 +1279,7 @@ module.exports = {
 						} else {
 							from = req.query.from;
 						}
-						module.exports.onWhitelist(filter,lang,from,to)
+						module.exports.onWhitelist(filter,lang,from,size)
 							.then(function(karas){
 								res.json(karas);
 							})
@@ -1300,11 +1300,11 @@ module.exports = {
 					if (module.exports.SETTINGS.EngineAllowViewBlacklist == 1) {
 						var lang = req.query.lang;
 						var filter = req.query.filter;
-						var to;
-						if (!req.query.to) {
-							to = 999999;
+						var size;
+						if (!req.query.size) {
+							size = 999999;
 						} else {
-							to = req.query.to;
+							size = req.query.size;
 						}
 						var from;
 						if (!req.query.from) {
@@ -1312,7 +1312,7 @@ module.exports = {
 						} else {
 							from = req.query.from;
 						}
-						module.exports.onBlacklist(filter,lang,from,to)
+						module.exports.onBlacklist(filter,lang,from,size)
 							.then(function(karas){
 								res.json(karas);
 							})
@@ -1370,11 +1370,11 @@ module.exports = {
 					// then the playlist returned gets filtered with the text.
 					var filter = req.query.filter;
 					var lang = req.query.lang;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = req.query.size;
 					}
 					var from;
 					if (!req.query.from) {
@@ -1383,7 +1383,7 @@ module.exports = {
 						from = req.query.from;
 					}
 
-					module.exports.onKaras(filter,lang,from,to)
+					module.exports.onKaras(filter,lang,from,size)
 						.then(function(karas){
 							res.json(karas);
 						})
