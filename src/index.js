@@ -1,18 +1,20 @@
 /**
  * @fileoverview Launcher source file
  */
+import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
+import {initConfig} from './_common/utils/config';
 
-const clc = require('cli-color');
-const fs = require('fs-extra');
-const path = require('path');
-const ini = require('ini');
-const extend = require('extend');
-const argv = require('minimist')(process.argv.slice(2));
-const ip = require('ip');
-const i18n = require('i18n');
-const osLocale = require('os-locale');
+import clc from 'cli-color' ;
+import {copy} from 'fs-extra';
+import path from 'path';
+import argv from 'minimist';
 
-const net = require('net');
+import i18n from 'i18n';
+
+import net from 'net';
+import logger from './_common/utils/logger';
+import engine from './_engine/index';
+import resolveSysPath from './_common/utils/resolveSyspath';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
@@ -31,189 +33,133 @@ console.log(clc.greenBright('| Project Karaoke Mugen                            
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
 console.log('\n');
 
-
-
-i18n.configure({
-	directory: path.resolve(__dirname,'_common/locales'),
-	defaultLocale: 'en',
-	cookie: 'locale',
-	register: global
-});
+argv(process.argv.slice(2));
 
 if (argv.help) {
-
 	console.log(__('HELP_MSG'));
 	process.exit(0);
 }
 
-/** Call to resolveSyspath to get the app's path in all OS configurations */
-const logger = require('./_common/utils/logger.js');		
-const SYSPATH = require('./_common/utils/resolveSyspath.js')('config.ini.default',__dirname,['./','../']);
-if(SYSPATH) {	
-	logger.debug('[Launcher] SysPath detected : '+SYSPATH);
-	/**
-	 * Reading config.ini.default, then override it with config.ini if it exists.
-	 */
-	var SETTINGS = ini.parse(fs.readFileSync(path.join(SYSPATH,'config.ini.default'), 'utf-8'));
-	if(fs.existsSync(path.join(SYSPATH,'config.ini'))) {
-		// et surcharge via le contenu du fichier personnalisé si présent
-		var configCustom = ini.parse(fs.readFileSync(path.join(SYSPATH,'config.ini'), 'utf-8'));
-		extend(true,SETTINGS,configCustom);
-		logger.debug('[Launcher] Custom configuration merged.');
-	}
-	var version = ini.parse(fs.readFileSync(path.resolve(__dirname,'VERSION'), 'utf-8'));
-	extend(true,SETTINGS,version);
+const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
 
-	var detectedLocale = osLocale.sync().substring(0,2);
-	i18n.setLocale(detectedLocale);
-	SETTINGS.os = process.platform;
-	SETTINGS.EngineDefaultLocale = detectedLocale;
+if(appPath) {
+	main()
+		.then(() => logger.info('[Launcher] Async launch done'))
+		.catch(err => {
+			logger.error('[Launcher] Error during async launch : ' + err);
+			process.exit(1);
+		});
+} else {
+	logger.error('[Launcher] Unable to detect SysPath !');
+	process.exit(1);
+}
+
+async function main() {
+	logger.debug('[Launcher] SysPath detected : ' + appPath);
+
+	// Note : !!argv.test assure la conversion en booléen.
+	let config = await initConfig(appPath, !!argv.test);
 
 	if (argv.version) {
-		console.log('Karaoke Mugen '+SETTINGS.VersionNo+' - '+SETTINGS.VersionName);
+		console.log('Karaoke Mugen '+ config.VersionNo + ' - ' + config.VersionName);
 		process.exit(0);
 	}
-	
-	logger.info('[Launcher] Locale detected : '+detectedLocale);
-	logger.debug('[Launcher] Detected OS : '+SETTINGS.os);
+
+	logger.info('[Launcher] Locale detected : ' + config.EngineDefaultLocale);
+	logger.debug('[Launcher] Detected OS : ' + config.os);
 
 	logger.info('[Launcher] Loaded configuration file');
-	logger.debug('[Launcher] Loaded configuration : '+JSON.stringify(SETTINGS,null,'\n'));
+	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
-	// Vérification que les chemins sont bien présents, sinon les créer
-	/**
-	 * Checking if application paths exist.
-	 * The app needs :
-	 * app/bin
-	 * app/data
-	 * app/db
-	 * app/temp
-	 */
-	var ret;
-	logger.info('[Launcher] Checking data folders');
-	var PathsToCheck = [];
-	var PathsKaras = SETTINGS.PathKaras.split('|');
-	PathsKaras.forEach(function(PathKaras){
-		PathsToCheck.push(PathKaras);		
-	});
-	var PathsSubs = SETTINGS.PathSubs.split('|');
-	PathsSubs.forEach(function(PathSubs){
-		PathsToCheck.push(PathSubs);		
-	});
-	var PathsVideos = SETTINGS.PathVideos.split('|');
-	PathsVideos.forEach(function(PathVideos){
-		PathsToCheck.push(PathVideos);		
-	});
-	var PathsJingles = SETTINGS.PathJingles.split('|');
-	PathsJingles.forEach(function(PathJingles){
-		PathsToCheck.push(PathJingles);		
-	});
-	var PathsBackgrounds = SETTINGS.PathBackgrounds.split('|');
-	PathsBackgrounds.forEach(function(PathBackgrounds){
-		PathsToCheck.push(PathBackgrounds);		
-	});
-	PathsToCheck.push(SETTINGS.PathDB);
-	PathsToCheck.push(SETTINGS.PathBin);
-	PathsToCheck.push(SETTINGS.PathTemp);
-
-	PathsToCheck.forEach((Path) => {
-		if(!fs.existsSync(path.resolve(SYSPATH,Path))) {
-			logger.warn('[Launcher] Creating folder '+path.resolve(SYSPATH,Path));
-			ret = fs.mkdirsSync(path.resolve(SYSPATH,Path));
-			if (!ret) {
-				logger.error('[Launcher] Failed to create folder');
-				process.exit();
-			}
-		}
-	});
-	
+	// Vérification de l'existence des répertoires, sinon les créer.
+	await checkPaths(config);
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	logger.debug('[Launcher] Copying input.conf into '+path.resolve(SYSPATH,SETTINGS.PathTemp));
-	fs.copySync(path.join(__dirname,'/_player/assets/input.conf'),path.resolve(SYSPATH,SETTINGS.PathTemp,'input.conf'),{ overwrite: true });
+	logger.debug('[Launcher] Copying input.conf into ' + path.resolve(appPath, config.PathTemp));
+	await copy(
+		path.join(__dirname, '/_player/assets/input.conf'),
+		path.resolve(appPath, config.PathTemp, 'input.conf'),
+		{ overwrite: true }
+	);
 
 	/**
 	 * Test if network ports are available
 	 */
+	[1337, 1338, 1339, 1340].forEach(port => verifyOpenPort(port));
 
-	var ports = [1337,1338,1339,1340];
-	ports.forEach(function(port){
-		var server = net.createServer();
-		server.once('error', function(err) {
-			if (err.code === 'EADDRINUSE') {
-				logger.error('[Launcher] Port '+port+' is already in use.');
-				logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node")');
-				logger.error('[Launcher] Then restart the app.');
-				process.exit(1);
-			}
-		});
+	await restoreKaraBackupFolders(config);
 
-		server.once('listening', function() {
-			// close the server if listening doesn't fail
-			server.close();
-		});
-		server.listen(port);
-	});
-
-	/**
-	 * Validate and check for config values
-	 * TODO: Add more validations. You never know what the user is capable of.
-	 */
-
-	if (SETTINGS.EngineDisplayConnectionInfoHost == '') {
-		SETTINGS.osHost = ip.address();
-	} else {
-		SETTINGS.osHost = SETTINGS.EngineDisplayConnectionInfoHost;
-	}
-
-	/**
-	 * Test if binaries are available
-	 */
-	logger.info('[Launcher] Checking if binaries are available');
-	var binaries = require('./_common/utils/binchecker.js');
-	binaries.SYSPATH = SYSPATH;
-	binaries.SETTINGS = SETTINGS;
-	binaries.check();
-	SETTINGS.BinffmpegPath = binaries.ffmpegPath;
-	SETTINGS.BinffprobePath = binaries.ffprobePath;
-	SETTINGS.BinmpvPath = binaries.mpvPath;
-
-	/**
-	 * Check if backup folder for karaokes exists. If it does, it means previous generation aborted
-	 */
-	const karas_dbfile = path.resolve(SYSPATH,SETTINGS.PathDB, SETTINGS.PathDBKarasFile);	
-		
-	//Restoring kara folder
-	PathsKaras.forEach((PathKara) => {
-		var karasdir = path.resolve(SYSPATH,PathKara);
-		if (fs.existsSync(karasdir+'_backup')) {
-			logger.info('[Launcher] Mahoro Mode : Backup folder '+karasdir+'_backup exists, replacing karaokes folder with it.');
-			fs.removeSync(karasdir);
-			fs.renameSync(karasdir+'_backup',karasdir);
-			if (fs.existsSync(karas_dbfile)) {
-				logger.info('[Launcher] Mahoro Mode : clearing karas database : generation will occur shortly');
-				fs.unlinkSync(karas_dbfile);
-			}
-		}
-	});
-	
-
-	if(argv.test) {
-		SETTINGS.isTest = true;
-	} else {
-		SETTINGS.isTest = false;
-	}
 	/**
 	 * Calling engine.
 	 */
-	var engine = require('./_engine/index.js');
-	engine.SYSPATH = SYSPATH;
-	engine.SETTINGS = SETTINGS;
+	engine.SYSPATH = appPath;
+	engine.SETTINGS = config;
 	engine.i18n = i18n;
 	engine.run();
+}
 
+/**
+ * Checking if application paths exist.
+ * The app needs :
+ * app/bin
+ * app/data
+ * app/db
+ * app/temp
+ */
+async function checkPaths(config) {
 
-} else {
-	logger.error('[Launcher] Unable to detect SysPath !');
-	process.exit(1);
+	const appPath = config.appPath;
+
+	logger.info('[Launcher] Checking data folders');
+	let checks = [];
+	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.PathVideos.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.PathJingles.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.PathBackgrounds.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	checks.push(asyncCheckOrMkdir(appPath, config.PathDB));
+	checks.push(asyncCheckOrMkdir(appPath, config.PathBin));
+	checks.push(asyncCheckOrMkdir(appPath, config.PathTemp));
+
+	await Promise.all(checks);
+	logger.info('[Launcher] All folders checked');
+}
+
+function verifyOpenPort(port) {
+	const server = net.createServer();
+	server.once('error', err => {
+		if (err.code === 'EADDRINUSE') {
+			logger.error('[Launcher] Port '+port+' is already in use.');
+			logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node")');
+			logger.error('[Launcher] Then restart the app.');
+			process.exit(1);
+		}
+	});
+	server.once('listening', () => server.close());
+	server.listen(port);
+}
+
+/**
+ * Check if backup folder for karaokes exists. If it does, it means previous generation aborted.
+ * Backup folder is restored.
+ */
+async function restoreKaraBackupFolders(config) {
+	const restores = [];
+	config.PathKaras.split('|').forEach(pathKara => restores.push(restoreBackupFolder(pathKara, config)));
+	await Promise.all(restores);
+}
+
+async function restoreBackupFolder(pathKara, config) {
+	const karasDbFile = path.resolve(appPath, config.PathDB, config.PathDBKarasFile);
+	const karasDir = path.resolve(appPath, pathKara);
+	const karasDirBackup = karasDir+'_backup';
+	if (await asyncExists(karasDirBackup)) {
+		logger.info('[Launcher] Mahoro Mode : Backup folder ' + karasDirBackup + ' exists, replacing karaokes folder with it.');
+		await asyncRemove(karasDir);
+		await asyncRename(karasDirBackup, karasDir);
+		if (await asyncExists(karasDbFile)) {
+			logger.info('[Launcher] Mahoro Mode : clearing karas database : generation will occur shortly');
+			await asyncUnlink(karasDbFile);
+		}
+	}
 }

@@ -2,11 +2,12 @@
   "name": "karaokemugen-app",
   "version": "2.0.0",
   "description": "Karaoke playlist manager / player",
-  "bin": "src/index.js",
+  "bin": "dist/index.js",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "test": "mocha --timeout 5000"
+    "start": "babel-node src/index.js",
+    "test": "mocha --require babel-register --timeout 5000",
+    "build": "babel --copy-files -d dist/ src/"
   },
   "homepage": "https://mugen.karaokes.moe",
   "repository": {
@@ -30,7 +31,8 @@
     "belderak",
     "coyoyann",
     "Florent Berthelot <florentius.b@gmail.com> (@Aeden_)",
-    "lukino"
+    "lukino",
+    "Benoît Courtine <benoit.courtine@gmail.com>"
   ],
   "engines": {
     "node": ">=6.0.0"
@@ -41,20 +43,21 @@
     "scripts": [
       "node_modules/image-size/lib/types/*.js",
       "node_modules/sqlite3/node_modules/node-pre-gyp/lib/*.js",
-      "node_modules/sqlite3/node_modules/node-pre-gyp/lib/util/*.js*"
+      "node_modules/sqlite3/node_modules/node-pre-gyp/lib/util/*.js*",
+      "dist/**/*.js"
     ],
     "assets": [
-      "src/_admin/httpdocs/*",
-      "src/_common/db/*",
-      "src/_common/locales/*",
-      "src/_player/assets/*",
-      "src/_webapp/ressources/views/**",
-      "src/_webapp/ressources/css/*",
-      "src/_webapp/ressources/img/*",
-      "src/_webapp/vendors/css/*",
-      "src/_webapp/vendors/fonts/**",
-      "src/**/*.js",
-      "src/VERSION",
+      "dist/_admin/httpdocs/*",
+      "dist/_common/db/*",
+      "dist/_common/locales/*",
+      "dist/_player/assets/*",
+      "dist/_webapp/ressources/views/**",
+      "dist/_webapp/ressources/css/*",
+      "dist/_webapp/ressources/img/*",
+      "dist/_webapp/vendors/css/*",
+      "dist/_webapp/vendors/fonts/**",
+      "dist/**/*.js",
+      "dist/VERSION",
       "node_modules/**/*"
     ]
   },
@@ -94,6 +97,10 @@
     "winston-daily-rotate-file": "^1.7.2"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-2": "^6.24.1",
     "eslint": "^4.5.0",
     "jsdoc": "^3.5.4",
     "mocha": "^3.5.0",

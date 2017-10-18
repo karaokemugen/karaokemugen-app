@@ -10,7 +10,7 @@ if(require.main === module) {
 	var ffprobePath = process.argv[1];
 	var args = process.argv.slice(3);
 
-	if(args.length === 0) return exit(1, "Usage: node index.js /path/to/audio/file.mp3");
+	if(args.length === 0) exit(1, 'Usage: node index.js /path/to/audio/file.mp3');
 
 	!function probeFile(file) {
 		if(!file) return exit(0, 'Finished probing all files');

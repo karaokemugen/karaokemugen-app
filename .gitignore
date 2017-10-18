@@ -15,3 +15,4 @@ config\.ini
 *.bak
 karaokemugen-app-linux
 karaokemugen-app-macos
+dist/
