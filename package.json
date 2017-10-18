@@ -35,7 +35,7 @@
     "Benoît Courtine <benoit.courtine@gmail.com>"
   ],
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.0.0"
   },
   "license": "MIT",
   "private": true,
