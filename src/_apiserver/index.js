@@ -804,6 +804,7 @@ module.exports = {
 					} else {
 						from = req.query.from;
 					}
+					if (from < 0) from = 0;
 					module.exports.onWhitelist(filter,lang,from,size)
 						.then(function(karas){
 							res.json(karas);
@@ -867,6 +868,7 @@ module.exports = {
 					} else {
 						from = req.query.from;
 					}
+					if (from < 0) from = 0;
 					module.exports.onBlacklist(filter,lang,from,size)
 						.then(function(karas){
 							res.json(karas);
@@ -1372,7 +1374,7 @@ module.exports = {
 					} else {
 						from = req.query.from;
 					}
-
+					if (from < 0) from = 0;
 					module.exports.onKaras(filter,lang,from,size)
 						.then(function(karas){
 							res.json(karas);
