@@ -2,7 +2,7 @@
  * @fileoverview Launcher source file
  */
 import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
-import {initConfig, setConfig} from './_common/utils/config';
+import {initConfig} from './_common/utils/config';
 
 import clc from 'cli-color' ;
 import {copy} from 'fs-extra';
