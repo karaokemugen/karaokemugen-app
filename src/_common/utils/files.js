@@ -1,5 +1,5 @@
-import {exists, mkdir, readFile, rename, unlink} from 'fs';
-import {remove} from 'fs-extra';
+import {exists, readFile, rename, unlink} from 'fs';
+import {remove, mkdirp} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from './logger';
@@ -14,8 +14,8 @@ export function asyncReadFile(...args) {
 	return promisify(readFile)(...args);
 }
 
-export function asyncMkdir(...args) {
-	return promisify(mkdir)(...args);
+export function asyncMkdirp(...args) {
+	return promisify(mkdirp)(...args);
 }
 
 export function asyncRemove(...args) {
@@ -43,6 +43,6 @@ export async function asyncCheckOrMkdir(...dir) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
 		logger.warn('Creating folder ' + resolvedDir);
-		return await asyncMkdir(resolvedDir);
+		return await asyncMkdirp(resolvedDir);
 	}
 }
