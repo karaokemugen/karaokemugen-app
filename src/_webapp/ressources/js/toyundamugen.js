@@ -41,7 +41,7 @@ var showFullTextButton;
 var dragHandleHtml;
 var playKaraHtml;
 
-var tabTradToDelete;
+var listTypeBlc;
 var tagAcrList;
 var plData;
 
@@ -103,9 +103,9 @@ var plData;
 				var data = res.data;
 				if(res.code) {
 					// TODO recoder la fonction pour interpréter comme i18n server ?
-					var args = res.args ? Object.keys(res.args).map(function(e) {
+					var args = typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
 						return res.args[e];
-					}) : [];
+					}) : [res.args];
 					//var args = res.args;
 					var errMessage = i18n.__(res.code, args);
 					if(res.code !== 'PL_SONG_ADDED' && res.code !== 'PL_SONG_DELETED') {
@@ -241,7 +241,6 @@ var plData;
 				$('#playlist' + side + ' [name="checkboxKara"]').attr('checked', checked);
 			} else if (name === 'addAllKaras') {
 				$.ajax({ url: url }).done(function (data) {
-					displayMessage('info', 'Info', 'Ajout de ' + data.length + ' karas à la playlist ' + $('#panel' + non(side) + ' .plDashboard').data('name'));
 					var karaList = data.map(function(a) {
 						return a.kara_id;
 					}).join();
@@ -299,8 +298,7 @@ var plData;
 				var chosenOne = data;
 				$.ajax({ url: 'public/karas/' + chosenOne }).done(function (data) {
 					data = data[0];
-					displayModal('confirm','Félicitations','Vous allez ajouter <i>' + buildKaraTitle(data)
-						+ (pseudo ? '</i> sous le pseudo <b>' + pseudo : '</b>') + '.', function(){
+					displayModal('confirm', i18n.__('CL_CONGRATS'), i18n.__('CL_ABOUT_TO_ADD', buildKaraTitle(data)), function(){
 						$.ajax({
 							url: 'public/karas/' + chosenOne,
 							type: 'POST',
@@ -376,7 +374,7 @@ var plData;
 						to = from + karaParPage * 2;
 					}
 
-					DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
+					DEBUG && console.log('Karas from ' + from + ' to ' + to);
                     
 					setPlaylistRange(idPlaylist, from, to);
                    
@@ -472,20 +470,21 @@ var plData;
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
 
-	tabTradToDelete = { 'TYPE_1001' : 'Kara',
-		'TYPE_1002' : 'Plus long que (sec)',
-		'TYPE_1003' : 'Plus court que (sec)',
-		'TYPE_1000' : 'Titre contenant',
-		'TYPE_0'    : 'Tags',
-		'TYPE_1'    : 'Inutilisé',
-		'TYPE_2'    : 'Chanteur',
-		'TYPE_3'    : 'Type',
-		'TYPE_4'    : 'Créateur',
-		'TYPE_5'    : 'Language',
-		'TYPE_6'    : 'Auteur du kara',
-		'TYPE_7'    : 'Divers',
-		'TYPE_8'    : 'Compositeur'
-	};
+	listTypeBlc = [
+		'TYPE_1001' ,
+		'TYPE_1002',
+		'TYPE_1003',
+		'TYPE_1000',
+		'TYPE_0',
+		'TYPE_1',
+		'TYPE_2',
+		'TYPE_3',
+		'TYPE_4',
+		'TYPE_5',
+		'TYPE_6',
+		'TYPE_7',
+		'TYPE_8'];
+
 	tagAcrList = {  'TAG_SPECIAL': 'SPE',
 		'TAG_GAMECUBE': 'GCN',
 		'TAG_TOKU': 'TKU',
@@ -549,11 +548,13 @@ var plData;
 				var idKara = liKara.attr('idkara');
         
 				$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-					if (mode == 'mobile') {
-						$('#lyricsModalText').html(data.join('<br/>'));
-						$('#lyricsModal').modal('open');
-					} else {
-						displayModal('alert','Lyrics', '<center>' + data.join('<br/>') + '</center');
+					if (typeof tabTradToDelete === 'object') {
+						if (mode == 'mobile') {
+							$('#lyricsModalText').html(data.join('<br/>'));
+							$('#lyricsModal').modal('open');
+						} else {
+							displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
+						}
 					}
 				});
 			}
@@ -701,8 +702,8 @@ var plData;
 							+	'<span id="bcValContainer" style="color:black"></span> '
 							+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
 							+	'</span></div>');
-							$.each(tabTradToDelete, function(k, v){
-								blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: k.replace('TYPE_',''), text: v}));                        
+							$.each(listTypeBlc, function(k, v){
+								blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('TYPE_',''), text: i18n.__(v)}));                        
 							});
 						}
 					}
@@ -710,7 +711,7 @@ var plData;
 					for (var k in data) {
 						if (data.hasOwnProperty(k)) {
 							if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
-								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + tabTradToDelete['TYPE_' + data[k].type] + '</li>');
+								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('TYPE_' + data[k].type) + '</li>');
 							}
 							// build the blacklist criteria line
 							var bcTagsFiltered = jQuery.grep(bcTags, function(obj) {
@@ -722,7 +723,7 @@ var plData;
 							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
 								'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
 							+	'<div class="actionDiv">' + html + '</div>'
-							+	'<div class="typeDiv">' + tabTradToDelete['TYPE_' + data[k].type] + '</div>'
+							+	'<div class="typeDiv">' + i18n.__('TYPE_' + data[k].type) + '</div>'
 							+	'<div class="contentDiv">' + textContent + '</div>'
 							+	'</li>');
 						}
@@ -1124,24 +1125,24 @@ var plData;
     */
 	buildKaraDetails = function(data, htmlMode) {
 		var details = {
-			'Ajouté ': (data['date_add'] ? data['date_add'] : '') + (data['pseudo_add'] ? ' par ' + data['pseudo_add'] : '')
-			, 'Auteur': data['author']
-			, 'Vues': data['viewcount']
-			, 'Créateur': data['creator']
-			, 'Durée': data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
-			, 'Langue': data['language_i18n']
-			, 'Divers': data['misc_i18n']
-			, 'Série': data['serie']
-			, 'Série alt': data['serie_altname']
-			, 'Chanteur': data['singer']
-			, 'Type ': data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
-			, 'Année': data['year']
-			, 'Compositeur': data['songwriter']
+			'DETAILS_ADDED ': 		i18n.__('DETAILS_ADDED_2', [(data['date_add'] ? data['date_add'] : ''), (data['pseudo_add'] ? data['pseudo_add'] : '')])
+			, 'TYPE_6': 			data['author']
+			, 'DETAILS_VIEWS':		data['viewcount']
+			, 'TYPE_4':				data['creator']
+			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
+			, 'DETAILS_LANGUAGE':	data['language_i18n']
+			, 'TYPE_7':				data['misc_i18n']
+			, 'DETAILS_SERIE':		data['serie']
+			, 'DETAILS_SERIE_ALT':	data['serie_altname']
+			, 'TYPE_2':				data['singer']
+			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
+			, 'DETAILS_YEAR':		data['year']
+			, 'TYPE_8':				data['songwriter']
 		};
 		var htmlDetails = Object.keys(details).map(function (k) {
 			if(details[k]) {
 				var detailsLine = details[k].toString().replace(/,/g, ', ');
-				return '<tr><td>' + k + '</td><td>' + detailsLine + '</td><tr/>';
+				return '<tr><td>' + i18n.__(k) + '</td><td>' + detailsLine + '</td><tr/>';
 			} else return '';
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
@@ -1380,7 +1381,7 @@ var plData;
 	});
 
 	socket.on('adminMessage', function(data){
-		if( scope === 'public') displayMessage('info','Message à caractère informatif <br/>', data.message, data.duration);
+		if( scope === 'public') displayMessage('info', i18n.__('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration);
 	});
 
 
