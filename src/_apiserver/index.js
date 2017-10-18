@@ -618,16 +618,6 @@ module.exports = {
 							notEmpty: true,
 							isBoolean: true,
 						},
-						'EngineDisplayConnectionInfo': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'EngineDisplayConnectionInfoQRCode': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},						
 						'EnginePrivateMode': {
 							in: 'body',
 							notEmpty: true,
