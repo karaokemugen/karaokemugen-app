@@ -1433,10 +1433,6 @@ module.exports = {
 						if (result.isEmpty()) {
 							req.sanitize('requestedby').trim();
 							req.sanitize('requestedby').unescape();
-							var data = {
-								kara_id: req.params.kara_id,
-								requester: req.body.requestedby
-							};									
 							module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
 								.then(function(data){
 									module.exports.emitEvent('playlistContentsUpdated',data.playlist_id);
