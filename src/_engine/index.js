@@ -488,7 +488,7 @@ module.exports = {
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
 		module.exports._services.apiserver.emitEvent = module.exports.emitEvent;
-		module.exports._services.apiserver.onKaras = function(filter,lang,from,to){
+		module.exports._services.apiserver.onKaras = function(filter,lang,from,size){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
@@ -502,7 +502,7 @@ module.exports = {
 													count: filtered_pl.length,
 													from: parseInt(from),
 													to: parseInt(from)+parseInt(size)
-												 },
+												},
 												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);
@@ -517,7 +517,7 @@ module.exports = {
 											count: karalist.length,
 											from: parseInt(from),
 											to: parseInt(from)+parseInt(size)
-										 },										
+										},										
 										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);
@@ -547,7 +547,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onWhitelist = function(filter,lang,from,to){
+		module.exports._services.apiserver.onWhitelist = function(filter,lang,from,size){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getWhitelistContents()
 					.then(function(playlist){
@@ -585,7 +585,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onBlacklist = function(filter,lang,from,to){
+		module.exports._services.apiserver.onBlacklist = function(filter,lang,from,size){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistContents()
 					.then(function(playlist){
@@ -1243,7 +1243,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,to){
+		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,size){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)
 					.then(function(playlist){
@@ -1361,7 +1361,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistCurrentContents = function(filter,lang,from,to){
+		module.exports._services.apiserver.onPlaylistCurrentContents = function(filter,lang,from,size){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
 					.then(function(id_playlist){
@@ -1457,7 +1457,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistPublicContents = function(filter,lang,from,to){
+		module.exports._services.apiserver.onPlaylistPublicContents = function(filter,lang,from,size){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isAPublicPlaylist()
 					.then(function(id_playlist){
