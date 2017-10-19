@@ -39,6 +39,7 @@
 - La recherche prend en compte l'auteur du karaoké
 - #184 Le temps de passage d'un karaoké dans la liste de lecture courante est indiqué (genre "dans 25 minutes")
 - Les karas dans la liste publique/de suggestions sont supprimés dés qu'ils sont joués en courante.
+- #135 L'interface est maintenant complètement en français mais aussi en anglais et peut être traduite dans d'autres langues !
 
 ### Corrections
 
@@ -63,6 +64,7 @@
 ### Développement
 
 - Passage à Babel/ES2015+ tout doucement. (Nécessite Node8)
+- **Modification d'API** : Les messages de réponse de l'API ont été complètement revus, consultez la documentation pour plus d'informations.
 
 ### Mettre à jour
 
