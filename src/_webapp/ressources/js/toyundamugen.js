@@ -12,6 +12,7 @@ var showInfoMessage;	// Object : list of info codes to show as a toast
 
 var DEBUG;
 var SOCKETDEBUG;
+var isChrome;
 
 var dragAndDrop;        // Boolean : allowing drag&drop
 var pageSize;        // Int : number of karas disaplyed per "page" (per chunk)
@@ -331,7 +332,7 @@ var plData;
 			var panel = $this.closest('.panel');
 			var dashboard = panel.find('.plDashboard');
 			var idPlaylist = dashboard.data('playlist_id');
-			var num_karas = dashboard.data('karacount');
+			var num_karas = dashboard.attr('karacount');
 			var side = panel.attr('side');
 			var playlist = $('#playlist' + side);
 			
@@ -341,7 +342,7 @@ var plData;
 				if($this.attr('value') === 'top') {
 					from = 0;
 				} else if ($this.attr('value') === 'bottom') {
-					from = num_karas - pageSize;
+					from =  Math.max(0, num_karas - pageSize);
 				} else if ($this.attr('value') === 'playing') {
 					from = -1;
 				}
@@ -387,7 +388,7 @@ var plData;
 				var idPlaylist = dashboard.find('select').val();
 				var from =  getPlaylistRange(idPlaylist).from;
 				var to = getPlaylistRange(idPlaylist).to;
-				var karaCount = dashboard.data('karacount');
+				var karaCount = dashboard.attr('karacount');
 				var nbKaraInPlaylist = parseInt(dashboard.parent().find('.plInfos').data('to')) - parseInt(dashboard.parent().find('.plInfos').data('from'));
 				var shift = 2 * parseInt((12*pageSize/20)/2);
 				var fillerBottom = playlist.find('.filler').last();
@@ -396,6 +397,7 @@ var plData;
 				if (fillerTop.length > 0 && fillerBottom.length > 0) {
 					var scrollDown = container.offset().top + container.innerHeight() >= fillerBottom.offset().top && to < karaCount && nbKaraInPlaylist >= pageSize;
 					var scrollUp = fillerTop.offset().top + fillerTop.innerHeight() > container.offset().top + 10 && from > 0;
+					DEBUG && console.log(container.offset().top,container.innerHeight() , fillerBottom.offset().top ,to < karaCount , nbKaraInPlaylist >= pageSize);
 					DEBUG && console.log(scrollUpdating, (!scrollUpdating || scrollUpdating.state() == 'resolved') , scrollDown, scrollUp);
 				
 					if (  (!scrollUpdating || scrollUpdating.state() == 'resolved')  && (scrollDown || scrollUp)) {
@@ -464,10 +466,11 @@ var plData;
 
 	DEBUG =  query.DEBUG != undefined;
 	SOCKETDEBUG =  query.SOCKETDEBUG != undefined;
+	isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
 	dragAndDrop = true;
 	stopUpdate = false;
     
-	pageSize = isTouchScreen ? 114 : 132;
+	pageSize = isTouchScreen ? 108 : 132;
 	if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
 	
 	saveLastDetailsKara = [[]];
@@ -671,8 +674,9 @@ var plData;
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
 		//var start = window.performance.now();
+		var async = !(isTouchScreen && isChrome);
 		ajaxSearch[url] = $.ajax({  url: urlFiltre,
-			type: 'GET',
+			type: 'GET', async: async,
 			dataType: 'json' })
 			.done(function (response) {
 				//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
@@ -683,7 +687,7 @@ var plData;
 				if(idPlaylist != -4) {
 					data = response.content;
 					if(response.infos) {
-						dashboard.attr('data-karaCount', response.infos.count );
+						dashboard.attr('karacount', response.infos.count );
 						setPlaylistRange(idPlaylist, response.infos.from,  response.infos.to);
 					}
 
@@ -1079,7 +1083,7 @@ var plData;
 			plInfos = idPlaylist > -4 ? range.from + '-' + max : '';
 			plInfos +=
 				(idPlaylist > -4 ?
-					' / ' + dashboard.attr('data-karacount') + ' karas'
+					' / ' + dashboard.attr('karacount') + ' karas'
 					: '') +
 				(idPlaylist > -1 ?
 					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length')) + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'))

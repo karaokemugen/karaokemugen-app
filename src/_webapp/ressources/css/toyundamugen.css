@@ -211,7 +211,7 @@ select.form-control {
 	overflow: auto;
 	padding: 0px;
 	line-height: 3rem;
-	contain: paint;
+	__contain: style;
 }
 .playlistContainer ul > li {
 	__transition: height .7s ease !important;
@@ -474,7 +474,7 @@ button.closeParent.bottom  {
 }
 
 .playlistContainer > ul {
-	margin-bottom: 10px; /* SUPER IMPORTANT TO AVOID A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
+	margin-bottom: 20px; /* SUPER IMPORTANT TO AVOID A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
 	will-change: -moz-transform;
 	position: relative;
 	z-index: 2;
@@ -589,15 +589,16 @@ bdgc {
 .toastMessageContainer {
 	position: absolute;
 	top: 0;
-	left: calc(50% - 200px);
+	left: 50%;
+    transform: translateX(-50%);
     position: fixed;
-    z-index: 7000;
+	z-index: 7000;
+	max-width:600px;
 }
 .toastMessage {
 	cursor: pointer;
 	position: relative;
 	overflow: hidden;
-	width: 400px;
 	padding: 10px;
 	margin: 7px;
     box-shadow: 2px 2px 1px #a5a5a5;
@@ -815,6 +816,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	padding: 2px;
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.30), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
 }
+
 .plFooter button {
 	padding: 0;
 	height: 100%;
