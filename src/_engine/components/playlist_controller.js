@@ -37,16 +37,21 @@ module.exports = {
 	playingPos:function(playlist) {
 		// Function to run in array.some of a playlist to check if a kara is a flag_playing one, and get its position.
 		var PLCIDPlayingPos;
-		var isASongFlagPlaying = playlist.some((element) => {
+		var indexPlaying;
+		var isASongFlagPlaying = playlist.some((element,index) => {
 			if (element.flag_playing == 1) {
 				PLCIDPlayingPos = element.pos;
+				indexPlaying = index;
 				return true;
 			} else {
 				return false;
 			}
 		});
 		if (isASongFlagPlaying) {
-			return PLCIDPlayingPos;
+			return {
+				plc_id_pos: PLCIDPlayingPos,
+				index: indexPlaying
+			};
 		} else {
 			return undefined;
 		}
@@ -1699,7 +1704,7 @@ module.exports = {
 										// Find out position of currently playing karaoke
 										// If no flag_playing is found, we'll add songs at the end of playlist.
 										pos = module.exports.playingPos(playlist) + 1;
-										logger.debug('[PLC] PlayNext : flag_playing next found at position '+pos);	
+										logger.debug('[PLC] PlayNext : flag_playing next found at position '+pos.plc_id_pos);	
 									}
 									if (pos) {
 										logger.debug('[PLC] Shifting position in playlist from pos '+pos+' by '+karas.length+' positions');

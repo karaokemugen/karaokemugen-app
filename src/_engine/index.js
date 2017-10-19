@@ -498,7 +498,11 @@ module.exports = {
 									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 										.then(function(filtered_pl){	
 											var response = {
-												infos: { count : filtered_pl.length },
+												infos: { 
+													count: filtered_pl.length,
+													from: parseInt(from),
+													to: parseInt(from)+parseInt(size)
+												 },
 												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);
@@ -509,7 +513,11 @@ module.exports = {
 										});
 								} else {
 									var response = {
-										infos: { count : karalist.length },
+										infos: { 
+											count: karalist.length,
+											from: parseInt(from),
+											to: parseInt(from)+parseInt(size)
+										 },										
 										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);
@@ -1054,7 +1062,7 @@ module.exports = {
 												if (!pos) {
 													from = 0;
 												} else {
-													from = pos.indexPlaying;
+													from = pos.index;
 												}
 											}
 											var response = {
@@ -1077,7 +1085,7 @@ module.exports = {
 										if (!pos) {
 											from = 0;
 										} else {
-											from = pos.indexPlaying;
+											from = pos.index;
 										}										
 									}
 									var response = {
@@ -1142,7 +1150,7 @@ module.exports = {
 														if (!pos) {
 															from = 0;
 														} else {
-															from = pos.indexPlaying;
+															from = pos.index;
 														}
 													}
 													var response = {
@@ -1165,7 +1173,7 @@ module.exports = {
 												if (!pos) {
 													from = 0;
 												} else {
-													from = pos.indexPlaying;
+													from = pos.index;
 												}
 											}
 											var response = {
@@ -1238,7 +1246,7 @@ module.exports = {
 														if (!pos) {
 															from = 0;
 														} else {
-															from = pos.indexPlaying;
+															from = pos.index;
 														}
 													}
 													var response = {
@@ -1261,7 +1269,7 @@ module.exports = {
 												if (!pos) {
 													from = 0;
 												} else {
-													from = pos.indexPlaying;
+													from = pos.index;
 												}
 											}
 											var response = {

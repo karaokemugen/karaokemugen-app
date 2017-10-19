@@ -382,7 +382,7 @@ module.exports = {
 						from = 0;
 					} else {
 						from = parseInt(req.query.from);
-					}
+					}					
 					var seenFromUser = false;					
 					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,size)
 						.then(function(playlist){
@@ -1374,7 +1374,7 @@ module.exports = {
 					} else {
 						from = parseInt(req.query.from);
 					}
-					if (from < 0) from = 0;
+					if (from < 0) from = 0;					
 					module.exports.onKaras(filter,lang,from,size)
 						.then(function(karas){
 							res.json(karas);
