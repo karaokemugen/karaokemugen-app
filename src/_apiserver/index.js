@@ -126,6 +126,19 @@ module.exports = {
 			// In case of error, return the correct code and object 'error'
 
 			// Admin routes
+/**
+ * @api {post} /admin/shutdown Shutdown the entire application
+ * @apiName PostShutdown
+ * @apiGroup Admin-Main
+ * @apiVersion 1.0.0
+ *
+ * @apiSuccess {String} Shutdown in progress.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * "Shutdown in progress."
+ * 
+ */
 			routerAdmin.route('/shutdown')
 				.post(function(req,res){
 					// Sends command to shutdown the app.
@@ -141,6 +154,38 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/playlists')
+/**
+ * @api {get} /admin/playlists/ Request list of playlists
+ * @apiName GetPlaylists
+ * @apiGroup Admin-Playlists
+ * @apiVersion 1.0.0
+ *
+ * @apiSuccess {Object[]} playlists Playlists information
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "created_at": 1508313440,
+ *           "flag_current": 1,
+ *           "flag_public": 0,
+ *           "flag_visible": 1,
+ *           "length": 0,
+ *           "modified_at": 1508408078,
+ *           "name": "Liste de lecture courante",
+ *           "num_karas": 6,
+ *           "playlist_id": 1,
+ *           "time_left": 0
+ *       }
+ *   ]
+ * }
+ * @apiError PL_LIST_ERROR Unable to fetch a list of playlists
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
 				.get(function(req,res){
 					// Get list of playlists
 					module.exports.onPlaylists()
@@ -153,8 +198,34 @@ module.exports = {
 							res.json(errMessage('PL_LIST_ERROR',err));
 						});
 				})
+/**
+ * @api {post} /admin/playlists/ Create a playlist
+ * @apiName PostPlaylist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Playlists
+ *
+ * @apiParam {String} name Name of playlist to create
+ * @apiParam {Boolean} flag_public Is the playlist to create public? This unsets `flag_public` on the previous playlist which had it.
+ * @apiParam {Boolean} flag_current Is the playlist to create current? This unsets `flag_current` on the previous playlist which had it.
+ * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
+ * 
+ * @apiSuccess {String} args Name of playlist created
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of newly created playlist
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 Created
+ * {
+ *   "args": "lol",
+ *   "code": "PL_CREATED",
+ *   "data": 4
+ * } 
+ * @apiError PL_CREATE_ERROR Unable to create a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.post(function(req,res){
-				// req.body = posted object.
 
 				// Add playlist
 					req.check({
@@ -204,7 +275,8 @@ module.exports = {
 									})
 									.catch(function(err){
 										logger.error(err);
-										res.statusCode = 500;								res.json(errMessage('PL_CREATE_ERROR',err,req.body.name));
+										res.statusCode = 500;
+										res.json(errMessage('PL_CREATE_ERROR',err,req.body.name));
 									});
 							} else {
 								// Errors detected
@@ -214,7 +286,46 @@ module.exports = {
 							}
 						});
 				});
+
 			routerAdmin.route('/playlists/:pl_id([0-9]+)')
+/**
+ * @api {post} /admin/playlists/:pl_id Request playlist information
+ * @apiName GetPlaylist
+ * @apiGroup Admin-Playlists
+ * @apiVersion 1.0.0
+ *
+ * @apiSuccess {Number} data.created_at Playlist creation date in UNIX timestamp
+ * @apiSuccess {Number} data.flag_current Is playlist the current one? Mutually exclusive with `flag_public`
+ * @apiSuccess {Number} data.flag_public Is playlist the public one? Mutually exclusive with `flag_current`
+ * @apiSuccess {Number} data.flag_visible Is playlist visible to normal users?
+ * @apiSuccess {Number} data.length Duration of playlist in seconds
+ * @apiSuccess {Number} data.modified_at Playlist last edit date in UNIX timestamp
+ * @apiSuccess {String} data.name Name of playlist
+ * @apiSuccess {Number} data.num_karas Number of karaoke songs in the playlist
+ * @apiSuccess {Number} data.playlist_id Database's playlist ID
+ * @apiSuccess {Number} data.time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK 
+ * {
+ *   "data": {
+ *       "created_at": 1508313440,
+ *       "flag_current": 1,
+ *       "flag_public": 0,
+ *       "flag_visible": 1,
+ *       "length": 0,
+ *       "modified_at": 1508408078,
+ *       "name": "Liste de lecture courante",
+ *       "num_karas": 6,
+ *       "playlist_id": 1,
+ *       "time_left": 0
+ *   }
+ *}
+ * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.get(function(req,res){
 					//Access :pl_id by req.params.pl_id
 					// This get route gets infos from a playlist
@@ -230,6 +341,31 @@ module.exports = {
 							res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 						});
 				})
+/**
+ * @api {put} /admin/playlists/:pl_id Update a playlist's information
+ * @apiName PutPlaylist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Playlists
+ *
+ * @apiParam {String} name Name of playlist to create
+ * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
+ * 
+ * @apiSuccess {String} args ID of playlist updated
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist updated
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 1,
+ *   "code": "PL_UPDATED",
+ *   "data": 1
+ * } 
+ * @apiError PL_UPDATE_ERROR Unable to update a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.put(function(req,res){
 					// Update playlist info
 
@@ -274,6 +410,28 @@ module.exports = {
 							}
 						});
 				})
+/**
+ * @api {delete} /admin/playlists/:pl_id Delete a playlist
+ * @apiName DeletePlaylist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Playlists
+ *
+ * @apiSuccess {String} args ID of playlist deleted
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist deleted
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 3,
+ *   "code": "PL_DELETED",
+ *   "data": 3
+ * } 
+ * @apiError PL_DELETE_ERROR Unable to delete a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.delete(function(req,res){					
 					module.exports.onPlaylistSingleDelete(req.params.pl_id)
 						.then(function(){
@@ -288,6 +446,28 @@ module.exports = {
 				});
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
+/**
+ * @api {put} /admin/playlists/:pl_id/empty Empty a playlist
+ * @apiName PutEmptyPlaylist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Playlists
+ *
+ * @apiSuccess {String} args ID of playlist emptied
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist emptied
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 1,
+ *   "code": "PL_EMPTIED",
+ *   "data": 1
+ * } 
+ * @apiError PL_EMPTY_ERROR Unable to empty a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.put(function(req,res){
 				// Empty playlist
 
@@ -304,6 +484,24 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/whitelist/empty')
+/**
+ * @api {put} /admin/whitelist/empty Empty whitelist
+ * @apiName PutEmptyWhitelist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Whitelist
+ *
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "WL_EMPTIED"
+ * } 
+ * @apiError WL_EMPTY_ERROR Unable to empty the whitelist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.put(function(req,res){
 				// Empty whitelist
 
@@ -320,10 +518,35 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/blacklist/criterias/empty')
+/**
+ * @api {put} /admin/playlists/:pl_id Update a playlist's information
+ * @apiName PutPlaylist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Playlists
+ *
+ * @apiParam {String} name Name of playlist to create
+ * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
+ * 
+ * @apiSuccess {String} args ID of playlist updated
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist updated
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 1,
+ *   "code": "PL_UPDATED",
+ *   "data": 1
+ * } 
+ * @apiError PL_UPDATE_ERROR Unable to create a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.put(function(req,res){
 				// Empty blacklist criterias
 
-					module.exports.onBlacklistEmpty()
+					module.exports.onBlacklistCriteriasEmpty()
 						.then(function(){
 							module.exports.emitEvent('blacklistUpdated');
 							res.json(OKMessage(null,'BLC_EMPTIED'));							
@@ -1640,6 +1863,6 @@ module.exports = {
 	onPlaylistExport:function(){},
 	onMessage:function(){},
 	onWhitelistEmpty:function(){},
-	onBlacklistEmpty:function(){},
+	onBlacklistCriteriasEmpty:function(){},
 	onKaraRandom:function(){},
 };
