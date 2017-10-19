@@ -207,6 +207,7 @@ select.form-control {
 	overflow: auto;
 	padding: 0px;
 	line-height: 3rem;
+	contain: paint;
 }
 .playlistContainer ul > li {
 	__transition: height .7s ease !important;
@@ -467,7 +468,7 @@ button.closeParent.bottom  {
 }
 
 .playlistContainer > ul {
-	margin-bottom: 7px; /* SUPER IMPORTANT TO AVOID A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
+	margin-bottom: 10px; /* SUPER IMPORTANT TO AVOID A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
 	will-change: -moz-transform;
 	position: relative;
 	z-index: 1;
