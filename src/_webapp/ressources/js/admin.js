@@ -380,7 +380,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			setSettings($(this), true);
 		});
 
-		var setStopUpdate = function (stop) {
+		setStopUpdate = function (stop) {
 			stopUpdate = stop;
 		};
 		$('select[name="PlayerScreen"] > option').each(function(i) {
@@ -397,7 +397,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	scope = 'admin';
 	panel1Default = -1;
 
-	var setupAjax = function (passwordAdmin) {
+	setupAjax = function (passwordAdmin) {
 
 		$.ajaxSetup({
 			cache: false,
@@ -424,7 +424,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	$('#settings').append(htmlSettings);
 
 	// nameExclude = input not being updated (most likely user is on it)
-	var getSettings = function (nameExclude) {
+	getSettings = function (nameExclude) {
 		var promise = $.Deferred();
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
 			settings = data;
@@ -457,7 +457,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		return promise.promise();
 	};
 
-	var setSettings = function (el, changeAdminPass) {
+	setSettings = function (el, changeAdminPass) {
 		//    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
 		if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
 			settingsUpdating = getSettings(el.attr('name'));
@@ -502,7 +502,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 	/* progression bar handlers part */
 
-	var goToPosition = function (e) {
+	goToPosition = function (e) {
 		var karaInfo = $('#karaInfo');
 		var songLength = karaInfo.attr('length');
 		var barInnerwidth = karaInfo.innerWidth();
@@ -665,7 +665,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
        
 	});
 
-	var changeKaraPos = function (e) {
+	changeKaraPos = function (e) {
 		var liKara = e.closest('li');
 		var idKara = liKara.attr('idKara');
 		var side = liKara.closest('ul').attr('side');

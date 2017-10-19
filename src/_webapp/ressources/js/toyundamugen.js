@@ -19,7 +19,6 @@ var pageSize;        // Int : number of karas disaplyed per "page" (per chunk)
 var saveLastDetailsKara;    // Matrice saving the differents opened kara details to display them again when needed
 var playlistToAdd;          // Int : id of playlist users are adding their kara to
 var isTouchScreen;
-var isSmall;
 var socket;
 var settings;
 var kmStats;
@@ -584,8 +583,6 @@ var plData;
 						} else {
 							displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
 						}
-					} else {
-						displayMessage('warning','', i18n.__('NOLYRICS'));
 					}
 				});
 			}
@@ -640,7 +637,7 @@ var plData;
      * @param {'top','bottom'} scrolling (optional) - filling the playlist after  a scroll, allow to keep the scroll position on the same data
      */
 	// TODO if list is updated from another source (socket ?) keep the size of the playlist
-	var fillPlaylist = function (side, scrolling) {
+	fillPlaylist = function (side, scrolling) {
 		DEBUG && console.log(side);
 		var deferred = $.Deferred();
 		var dashboard = $('#panel' + side + ' .plDashboard');
@@ -916,7 +913,7 @@ var plData;
      * @param {1, 2} side - which playlist on the screen
      * @param {Int} idKara - kara to highlight & scroll
      */
-	var scrollToKara = function (side, idKara, lengthFactor) {
+	scrollToKara = function (side, idKara, lengthFactor) {
 		lengthFactor = lengthFactor ? lengthFactor : 1;
 		var parent = $('#playlist' + side).parent();
 		var element = parent.find('li[idkara="' + idKara + '"]');
@@ -949,7 +946,7 @@ var plData;
     * @param {Element} element - element to scroll to
     * @param {Boolean} highlight - to highlight the element [discarded, see scrollToKara]
     */
-	var scrollToElement = function (parent, element, anchorElement) {
+	scrollToElement = function (parent, element, anchorElement) {
 		var willParentSroll =  anchorElement.offset().top > parent.height() + parent.offset().top || anchorElement.offset().top < parent.offset().top;
 		if(willParentSroll) {
 			parent.animate({
@@ -961,7 +958,7 @@ var plData;
 	/** 
     * refresh playlist lists
     */
-	var refreshPlaylistSelects = function () {
+	refreshPlaylistSelects = function () {
 		var deferred = $.Deferred();
 
 		var playlistList = {};
@@ -1024,7 +1021,7 @@ var plData;
     * @param {1,2} side - side of the playlist to trigger the change on
 	* @param {boolean} freshData (optional) - refresh playlist data recorded in the option
     */
-	var refreshPlaylistDashboard = function(side, freshData) {
+	refreshPlaylistDashboard = function(side, freshData) {
 		var dashboard = $('#panel' + side + ' .plDashboard');
 		var select = dashboard.find('.plSelect select');
 		var option = select.find('option:selected');
@@ -1073,7 +1070,7 @@ var plData;
 		});
 	};
 
-	var refreshContentInfos = function(side) {
+	refreshContentInfos = function(side) {
 		var dashboard =  $('#panel' + side + ' .plDashboard');
 		var idPlaylist = dashboard.find('.plSelect select > option:selected').val();
 
@@ -1101,7 +1098,7 @@ var plData;
     * @param {Function} callback - function to call at the end of the refresh
     * @param {anything} param1 - param to give to this function
     */
-	var refreshPlayerInfos = function (data, callback, param1) {
+	refreshPlayerInfos = function (data, callback, param1) {
 		if (oldState != data) {
 			var newWidth = $('#karaInfo').width() * parseInt(10000 * ( data.timePosition + refreshTime/1000) / $('#karaInfo').attr('length')) / 10000 + 'px';
           
@@ -1192,7 +1189,7 @@ var plData;
     * @param {String} search - (optional) search made by the user
     * @return {String} the title
     */
-	var buildKaraTitle = function(data, search) {
+	buildKaraTitle = function(data, search) {
 		var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer,
 			data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
 		var titleClean = Object.keys(titleArray).map(function (k) {
@@ -1207,7 +1204,7 @@ var plData;
 		return titleText;
 	};
  
-	var toggleDetailsKara = function (el) {
+	toggleDetailsKara = function (el) {
 		var liKara = el.closest('li');
 		var idKara = parseInt(liKara.attr('idkara'));
 		var idPlc = parseInt(liKara.attr('idplaylistcontent'));
@@ -1243,7 +1240,7 @@ var plData;
     * @param {String} mode - html mode
     * @return {String} the details, as html
     */
-	var buildKaraDetails = function(data, htmlMode) {
+	buildKaraDetails = function(data, htmlMode) {
 		var playTime = new Date(Date.now() + data['time_before_play']*1000);
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
@@ -1285,7 +1282,7 @@ var plData;
 	*	idKara {Int} : id of the kara having his details opened
 	*	command {Int} : command to execute, "add"/"remove" to add/remove to/from the list, nothing to just know if the details are opened
 	*/
-	var saveDetailsKara = function(idPlaylist, idKara, command) {
+	saveDetailsKara = function(idPlaylist, idKara, command) {
 		if(isNaN(idPlaylist) || isNaN(idKara)) return false;
 		idPlaylist = parseInt(idPlaylist);
 		idKara = parseInt(idKara);
@@ -1300,7 +1297,7 @@ var plData;
 		}
 	};
 
-	var formatPlaylist = function (playlist) {
+	formatPlaylist = function (playlist) {
 		if (!playlist.id) return playlist.text;
 		if (!$(playlist.element).data('flag_current') == '1'
 			&& !$(playlist.element).data('flag_public') == '1'
@@ -1335,7 +1332,7 @@ var plData;
 	/** 
     * Init bootstrapSwitchs
     */
-	var initSwitchs = function () {
+	initSwitchs = function () {
 		$('input[switch="onoff"],[name="EnginePrivateMode"],[name="kara_panel"],[name="lyrics"]').bootstrapSwitch('destroy', true);
 
 		$('input[switch="onoff"]').bootstrapSwitch({
@@ -1352,25 +1349,25 @@ var plData;
 	};
 
 	/* opposite sideber of playlist : 1 or 2 */
-	var non = function (side) {
+	non = function (side) {
 		return 3 - parseInt(side);
 	};
 
 
-	var getPlaylistRange = function(idPl) {
+	getPlaylistRange = function(idPl) {
 		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();
         
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
 		return playlistRange[idPl][search] ? playlistRange[idPl][search] : { from : 0, to : pageSize };
 	};
 
-	var setPlaylistRange = function(idPl, from, to) {
+	setPlaylistRange = function(idPl, from, to) {
 		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
 		playlistRange[idPl][search] = { from : from, to : to };
 	};
 
-	var getPlData = function(idPl) {
+	getPlData = function(idPl) {
 		var idPlNorm = Math.min(0, idPl);
 		var singlePlData = plData[idPlNorm] ? jQuery.extend({}, plData[idPlNorm]) : null;
 
@@ -1379,12 +1376,12 @@ var plData;
 		return singlePlData;
 	};
     
-	var sideOfPlaylist = function(idPlaylist) {
+	sideOfPlaylist = function(idPlaylist) {
 		var side = $('.plSelect select option:selected[value="' + idPlaylist + '"]').parent().attr('side');
 		return side;
 	};
 
-	var addKaraPublic = function(idKara, doneCallback, failCallback) {
+	addKaraPublic = function(idKara, doneCallback, failCallback) {
 		//var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
 		
 		$.ajax({ url: 'public/karas/' + idKara,
