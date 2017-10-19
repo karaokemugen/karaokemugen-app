@@ -12,23 +12,6 @@ process.on('unhandledRejection', (reason, p) => {
 	console.log('Unhandled Rejection at:', p, 'reason:', reason);
 	// application specific logging, throwing an error, or other logic here
 });
-function playingPos(playlist) {
-	// Function to run in array.some of a playlist to check if a kara is a flag_playing one, and get its position.
-	var PLCIDPlayingPos;
-	var isASongFlagPlaying = playlist.some((element) => {
-		if (element.flag_playing == 1) {
-			PLCIDPlayingPos = element.pos;
-			return true;
-		} else {
-			return false;
-		}
-	});
-	if (isASongFlagPlaying) {
-		return PLCIDPlayingPos;
-	} else {
-		return undefined;
-	}
-}
 
 
 module.exports = {
@@ -51,6 +34,23 @@ module.exports = {
 
 		logger.info('[PLC] Playlist controller is READY');
 	},
+	playingPos:function(playlist) {
+		// Function to run in array.some of a playlist to check if a kara is a flag_playing one, and get its position.
+		var PLCIDPlayingPos;
+		var isASongFlagPlaying = playlist.some((element) => {
+			if (element.flag_playing == 1) {
+				PLCIDPlayingPos = element.pos;
+				return true;
+			} else {
+				return false;
+			}
+		});
+		if (isASongFlagPlaying) {
+			return PLCIDPlayingPos;
+		} else {
+			return undefined;
+		}
+	},	
 	isCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
@@ -1698,7 +1698,7 @@ module.exports = {
 
 										// Find out position of currently playing karaoke
 										// If no flag_playing is found, we'll add songs at the end of playlist.
-										pos = playingPos(playlist) + 1;
+										pos = module.exports.playingPos(playlist) + 1;
 										logger.debug('[PLC] PlayNext : flag_playing next found at position '+pos);	
 									}
 									if (pos) {
