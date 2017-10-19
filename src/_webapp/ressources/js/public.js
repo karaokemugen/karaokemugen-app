@@ -106,7 +106,7 @@ panel1Default = -1;
 
 getPublicSettings = function() {
 	var promise = $.Deferred();
-	$.ajax({ url: 'public/settings', }).done(function (data) {
+	$.ajax({ url: 'public/settings' }).done(function (data) {
 		playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
 
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {

@@ -1,4 +1,4 @@
-var panel1Default;      // Int : default id of the playlist of the 1st panel (-1 means kara list)
+﻿var panel1Default;      // Int : default id of the playlist of the 1st panel (-1 means kara list)
 var status;             // String : status of the player
 var mode;               // String : way the kara list is constructed, atm "list" supported
 var scope;              // String : if we're in public or admin interface
@@ -20,6 +20,7 @@ var playlistToAdd;          // Int : id of playlist users are adding their kara 
 var socket;
 var settings;
 var kmStats;
+var i18n;
 
 /* promises */
 var scrollUpdating;
@@ -41,7 +42,7 @@ var showFullTextButton;
 var dragHandleHtml;
 var playKaraHtml;
 
-var tabTradToDelete;
+var listTypeBlc;
 var tagAcrList;
 var plData;
 
@@ -97,10 +98,41 @@ var plData;
 
 		// Setup
 		$.ajaxSetup({
-			error: function (jqXHR, textStatus, errorThrown) {
-				DEBUG && console.log(jqXHR.status + '  - ' + textStatus + '  - ' + errorThrown + ' : ' + jqXHR.responseText);
-				if(jqXHR.status != 0) {
-					displayMessage('warning','Error', jqXHR.responseText);
+			dataFilter: function(res) {
+				
+				res = JSON.parse(res);
+				var data = res.data;
+				if(res.code) {
+					// TODO recoder la fonction pour interpréter comme i18n server ?
+					var args = typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
+						return res.args[e];
+					}) : [res.args];
+					//var args = res.args;
+					var errMessage = i18n.__(res.code, args);
+					if(res.code !== 'PL_SONG_ADDED' && res.code !== 'PL_SONG_DELETED') {
+						console.log(errMessage);
+					} else {
+						displayMessage('info', '', errMessage, '2000');
+					}
+				}
+				
+				DEBUG && res.message && console.log(res.message);
+				return JSON.stringify(data);
+			},
+			error: function (res, textStatus, errorThrown) {
+				console.log(res.status + '  - ' + textStatus + '  - ' + errorThrown + (res.responseJSON ? ' : ' +  res.responseJSON.message : ''));
+				if(res.status != 0 && res.status != 200) {
+					var errMessage = 'unknown';
+					if(res.responseJSON.code) {
+						// var args = res.responseJSON.args;
+						var args = typeof res.responseJSON.args === 'object' ? Object.keys(res.responseJSON.args).map(function(e) {
+							return res.responseJSON.args[e];
+						}) : [ res.responseJSON.args];
+						errMessage = i18n.__(res.responseJSON.code, args);
+					} else {
+						errMessage = res.responseJSON.message;
+					}
+					displayMessage('warning', res.responseJSON.code + ' :', errMessage);
 				}
 			}
 		});
@@ -277,8 +309,7 @@ var plData;
 				var chosenOne = data;
 				$.ajax({ url: 'public/karas/' + chosenOne }).done(function (data) {
 					data = data[0];
-					displayModal('confirm','Félicitations','Vous allez ajouter <i>' + buildKaraTitle(data)
-						+ (pseudo ? '</i> sous le pseudo <b>' + pseudo : '</b>') + '.', function(){
+					displayModal('confirm', i18n.__('CL_CONGRATS'), i18n.__('CL_ABOUT_TO_ADD', buildKaraTitle(data)), function(){
 						$.ajax({
 							url: 'public/karas/' + chosenOne,
 							type: 'POST',
@@ -287,7 +318,7 @@ var plData;
 							playlistContentUpdating.done( function() {
 								scrollToKara(2, chosenOne); 
 							});
-							displayMessage('success', '', 'Kara ajouté à la playlist <i>' + playlistToAdd + '</i>.');
+							//displayMessage('success', '', 'Kara ajouté à la playlist <i>' + playlistToAdd + '</i>.');
 						});
 					},'lucky');
 				});
@@ -457,20 +488,21 @@ var plData;
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
 
-	tabTradToDelete = {
-		'TYPE_1002' : 'Plus long que (sec)',
-		'TYPE_1003' : 'Plus court que (sec)',
-		'TYPE_1000' : 'Titre contenant',
-		'TYPE_0'    : 'Tags',
-		'TYPE_2'    : 'Chanteur',
-		'TYPE_3'    : 'Type',
-		'TYPE_4'    : 'Créateur',
-		'TYPE_5'    : 'Language',
-		'TYPE_6'    : 'Auteur du kara',
-		'TYPE_7'    : 'Divers',
-		'TYPE_8'    : 'Compositeur',
-		'TYPE_1001' : 'Kara'
-	};
+	listTypeBlc = [
+		'TYPE_1001' ,
+		'TYPE_1002',
+		'TYPE_1003',
+		'TYPE_1000',
+		'TYPE_0',
+		'TYPE_1',
+		'TYPE_2',
+		'TYPE_3',
+		'TYPE_4',
+		'TYPE_5',
+		'TYPE_6',
+		'TYPE_7',
+		'TYPE_8'];
+
 	tagAcrList = {  'TAG_SPECIAL': 'SPE',
 		'TAG_GAMECUBE': 'GCN',
 		'TAG_TOKU': 'TKU',
@@ -534,11 +566,13 @@ var plData;
 				var idKara = liKara.attr('idkara');
         
 				$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-					if (mode == 'mobile') {
-						$('#lyricsModalText').html(data.join('<br/>'));
-						$('#lyricsModal').modal('open');
-					} else {
-						displayModal('alert','Lyrics', '<center>' + data.join('<br/>') + '</center');
+					if (typeof tabTradToDelete === 'object') {
+						if (mode == 'mobile') {
+							$('#lyricsModalText').html(data.join('<br/>'));
+							$('#lyricsModal').modal('open');
+						} else {
+							displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
+						}
 					}
 				});
 			}
@@ -574,6 +608,14 @@ var plData;
 		});
 	}  
 
+	//Will make a request to /locales/en.json and then cache the results
+	i18n = new I18n({
+		//these are the default values, you can omit
+		directory: '/locales',
+		locale: 'fr',
+		extension: '.json'
+	});
+	
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
 		options.url = window.location.protocol + '//' + window.location.hostname + ':1339/api/v1/' + options.url;
@@ -724,8 +766,8 @@ var plData;
 							+	'<span id="bcValContainer" style="color:black"></span> '
 							+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
 							+	'</span></div>');
-							$.each(tabTradToDelete, function(k, v){
-								if(k !== 'TYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: k.replace('TYPE_',''), text: v}));                        
+							$.each(listTypeBlc, function(k, v){
+								if(v !== 'TYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('TYPE_',''), text: i18n.__(v)}));                        
 							});
 						}
 					}
@@ -733,7 +775,7 @@ var plData;
 					for (var k in data) {
 						if (data.hasOwnProperty(k)) {
 							if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
-								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + tabTradToDelete['TYPE_' + data[k].type] + '</li>');
+								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('TYPE_' + data[k].type) + '</li>');
 							}
 							// build the blacklist criteria line
 							var bcTagsFiltered = jQuery.grep(bcTags, function(obj) {
@@ -745,7 +787,7 @@ var plData;
 							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
 								'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
 							+	'<div class="actionDiv">' + html + '</div>'
-							+	'<div class="typeDiv">' + tabTradToDelete['TYPE_' + data[k].type] + '</div>'
+							+	'<div class="typeDiv">' + i18n.__('TYPE_' + data[k].type) + '</div>'
 							+	'<div class="contentDiv">' + textContent + '</div>'
 							+	'</li>');
 						}
@@ -1189,25 +1231,24 @@ var plData;
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 		var details = {
-			'Ajouté ': (data['date_add'] ? data['date_add'] : '') + (data['pseudo_add'] ? ' par ' + data['pseudo_add'] : '')
-			, 'Lecture': data['time_before_play'] ? 'dans <span class="time">' + beforePlayTime + '</span> (~' + playTimeDate + ')' : ''
-			, 'Auteur': data['author']
-			, 'Vues': data['viewcount']
-			, 'Créateur': data['creator']
-			, 'Durée': data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
-			, 'Langue': data['language_i18n']
-			, 'Divers': data['misc_i18n']
-			, 'Série': data['serie']
-			, 'Série alt': data['serie_altname']
-			, 'Chanteur': data['singer']
-			, 'Type ': data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
-			, 'Année': data['year']
-			, 'Compositeur': data['songwriter']
+			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
+			, 'TYPE_6': 			data['author']
+			, 'DETAILS_VIEWS':		data['viewcount']
+			, 'TYPE_4':				data['creator']
+			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
+			, 'DETAILS_LANGUAGE':	data['language_i18n']
+			, 'TYPE_7':				data['misc_i18n']
+			, 'DETAILS_SERIE':		data['serie']
+			, 'DETAILS_SERIE_ALT':	data['serie_altname']
+			, 'TYPE_2':				data['singer']
+			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
+			, 'DETAILS_YEAR':		data['year']
+			, 'TYPE_8':				data['songwriter']
 		};
 		var htmlDetails = Object.keys(details).map(function (k) {
 			if(details[k]) {
 				var detailsLine = details[k].toString().replace(/,/g, ', ');
-				return '<tr><td>' + k + '</td><td>' + detailsLine + '</td><tr/>';
+				return '<tr><td>' + i18n.__(k) + '</td><td>' + detailsLine + '</td><tr/>';
 			} else return '';
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
@@ -1327,7 +1368,7 @@ var plData;
 	};
 
 	addKaraPublic = function(idKara, doneCallback, failCallback) {
-		var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
+		//var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
 		
 		$.ajax({ url: 'public/karas/' + idKara,
 			type: 'POST',
@@ -1342,7 +1383,7 @@ var plData;
 			}
 		}).done(function() {
 			if(doneCallback) doneCallback();
-			displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
+			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		}).fail(function() {
 			if(failCallback) failCallback();
 		});
@@ -1455,7 +1496,7 @@ var plData;
 	});
 
 	socket.on('adminMessage', function(data){
-		if( scope === 'public') displayMessage('info','Message à caractère informatif <br/>', data.message, data.duration);
+		if( scope === 'public') displayMessage('info', i18n.__('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration);
 	});
 
 

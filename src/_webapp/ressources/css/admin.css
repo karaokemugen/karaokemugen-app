@@ -357,6 +357,12 @@ span:not(.hideCommands) {
 	order: 3
 }
 
+
+.toastMessageContainer {
+	__top: auto;
+	__bottom: 0;
+}
+
 @media (max-width: 1520px) {	
 	.plDashboard .plSelect {
 	flex-basis : 50%;
