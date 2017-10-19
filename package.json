@@ -98,6 +98,7 @@
     "winston-daily-rotate-file": "^1.7.2"
   },
   "devDependencies": {
+    "apidoc": "^0.17.6",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.0.1",
     "babel-preset-env": "^1.6.0",
@@ -109,5 +110,8 @@
     "pkg": "^4.2.4",
     "supertest": "^3.0.0"
   },
-  "false": {}
+  "false": {},
+  "apidoc": {
+    "url": "http://localhost:1339/api/v1/"
+  }
 }
