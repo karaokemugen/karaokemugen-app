@@ -1,6 +1,6 @@
 const express = require('express');
 const expressValidator = require('express-validator');
-const logger = require('../_common/utils/logger.js');
+const logger = require('winston');
 const bodyParser = require('body-parser');
 const basicAuth = require('express-basic-auth');
 

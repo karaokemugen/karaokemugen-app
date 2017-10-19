@@ -18,7 +18,7 @@ generator.run().then(function(response){
 	// do whatever you want on script end
 });
 */
-const logger = require('../_common/utils/logger.js');
+const logger = require('winston');
 
 var path = require('path');
 var sqlite = require('sqlite');

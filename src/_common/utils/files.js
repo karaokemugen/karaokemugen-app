@@ -2,7 +2,7 @@ import {exists, readFile, rename, unlink} from 'fs';
 import {remove, mkdirp} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
-import logger from './logger';
+import logger from 'winston';
 
 /** Fonction de vérification d'existence d'un fichier renvoyant une Promise.*/
 export function asyncExists(file) {
