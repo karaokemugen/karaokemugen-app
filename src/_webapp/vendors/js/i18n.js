@@ -47,7 +47,13 @@ I18n.prototype = {
 
     __: function(){
         var msg = I18n.localeCache[this.locale][arguments[0]];
-        if (arguments.length > 1) msg = vsprintf(msg, arguments[1]);
+        console.log(arguments, msg);
+        if (arguments.length > 1) {
+            var msgArgs = arguments[1]
+            if(typeof msgArgs === 'string') msgArgs = [msgArgs];
+            msg = msg.replace(/%s/g, '<b>%s</b>');
+            msg = vsprintf(msg, msgArgs);
+        }
         return msg;
     },
 

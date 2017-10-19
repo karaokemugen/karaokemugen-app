@@ -8,6 +8,7 @@ var oldState;           // Object : last player state saved
 var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a flood of search
 var pseudo;             // String : pseudo of the user
 var bcTags;             // Object : list of blacklist criterias tags
+var showInfoMessage;	// Object : list of info codes to show as a toast
 
 var DEBUG;
 var SOCKETDEBUG;
@@ -109,8 +110,8 @@ var plData;
 					}) : [res.args];
 					//var args = res.args;
 					var errMessage = i18n.__(res.code, args);
-					if(res.code !== 'PL_SONG_ADDED' && res.code !== 'PL_SONG_DELETED') {
-						console.log(errMessage);
+					if(showInfoMessage.indexOf(res.code) === -1) {
+						console.log(res.code, errMessage);
 					} else {
 						displayMessage('info', '', errMessage, '2000');
 					}
@@ -489,19 +490,24 @@ var plData;
 	buttonHtmlPublic = '';
 
 	listTypeBlc = [
-		'TYPE_1001' ,
-		'TYPE_1002',
-		'TYPE_1003',
-		'TYPE_1000',
-		'TYPE_0',
-		'TYPE_1',
-		'TYPE_2',
-		'TYPE_3',
-		'TYPE_4',
-		'TYPE_5',
-		'TYPE_6',
-		'TYPE_7',
-		'TYPE_8'];
+		'BLCTYPE_1001' ,
+		'BLCTYPE_1002',
+		'BLCTYPE_1003',
+		'BLCTYPE_1000',
+		'BLCTYPE_0',
+		'BLCTYPE_1',
+		'BLCTYPE_2',
+		'BLCTYPE_3',
+		'BLCTYPE_4',
+		'BLCTYPE_5',
+		'BLCTYPE_6',
+		'BLCTYPE_7',
+		'BLCTYPE_8'];
+
+	showInfoMessage = [
+		'PL_SONG_ADDED',
+		'PL_SONG_DELETED',
+		'PLAYLIST_MODE_SONG_ADDED'];
 
 	tagAcrList = {  'TAG_SPECIAL': 'SPE',
 		'TAG_GAMECUBE': 'GCN',
@@ -767,7 +773,7 @@ var plData;
 							+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
 							+	'</span></div>');
 							$.each(listTypeBlc, function(k, v){
-								if(v !== 'TYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('TYPE_',''), text: i18n.__(v)}));                        
+								if(v !== 'BLCTYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('BLCTYPE_',''), text: i18n.__(v)}));                        
 							});
 						}
 					}
@@ -775,7 +781,7 @@ var plData;
 					for (var k in data) {
 						if (data.hasOwnProperty(k)) {
 							if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
-								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('TYPE_' + data[k].type) + '</li>');
+								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
 							}
 							// build the blacklist criteria line
 							var bcTagsFiltered = jQuery.grep(bcTags, function(obj) {
@@ -787,7 +793,7 @@ var plData;
 							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
 								'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
 							+	'<div class="actionDiv">' + html + '</div>'
-							+	'<div class="typeDiv">' + i18n.__('TYPE_' + data[k].type) + '</div>'
+							+	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
 							+	'<div class="contentDiv">' + textContent + '</div>'
 							+	'</li>');
 						}
@@ -1232,18 +1238,18 @@ var plData;
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 		var details = {
 			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
-			, 'TYPE_6': 			data['author']
+			, 'BLCTYPE_6': 			data['author']
 			, 'DETAILS_VIEWS':		data['viewcount']
-			, 'TYPE_4':				data['creator']
+			, 'BLCTYPE_4':				data['creator']
 			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
-			, 'TYPE_7':				data['misc_i18n']
+			, 'BLCTYPE_7':				data['misc_i18n']
 			, 'DETAILS_SERIE':		data['serie']
 			, 'DETAILS_SERIE_ALT':	data['serie_altname']
-			, 'TYPE_2':				data['singer']
+			, 'BLCTYPE_2':				data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
 			, 'DETAILS_YEAR':		data['year']
-			, 'TYPE_8':				data['songwriter']
+			, 'BLCTYPE_8':				data['songwriter']
 		};
 		var htmlDetails = Object.keys(details).map(function (k) {
 			if(details[k]) {
