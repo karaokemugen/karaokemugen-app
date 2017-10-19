@@ -576,7 +576,7 @@ var plData;
 				var idKara = liKara.attr('idkara');
         
 				$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-					if (typeof tabTradToDelete === 'object') {
+					if (typeof data === 'object') {
 						if (mode == 'mobile') {
 							$('#lyricsModalText').html(data.join('<br/>'));
 							$('#lyricsModal').modal('open');
