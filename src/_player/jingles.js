@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const async = require('async');
 const exec = require('child_process');
-const logger = require('../_common/utils/logger.js');
+const logger = require('winston');
 
 
 module.exports = {

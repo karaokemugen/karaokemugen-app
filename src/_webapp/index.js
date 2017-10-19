@@ -4,7 +4,7 @@ const exphbs = require('express-handlebars');
 const cookieParser = require('cookie-parser');
 const ip = require('ip');
 const si = require('systeminformation');
-const logger = require('../_common/utils/logger.js');
+const logger = require('winston');
 
 const basicAuth = require('express-basic-auth');
 

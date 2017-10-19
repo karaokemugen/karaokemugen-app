@@ -13,7 +13,7 @@ process.on('unhandledRejection', (reason, p) => {
 
 var fs = require('fs');
 const path = require('path');
-const logger = require('../_common/utils/logger.js');
+const logger = require('winston');
 const extend = require('extend');
 const timestamp = require('unix-timestamp');
 const ini = require('ini');

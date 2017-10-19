@@ -2,7 +2,7 @@
 
 import {resolve} from 'path';
 import {asyncRequired} from './files';
-import logger from './logger';
+import logger from 'winston';
 
 // Check if binaries are available
 // Provide their paths for runtime

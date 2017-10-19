@@ -12,7 +12,8 @@ import minimist from 'minimist';
 import i18n from 'i18n';
 
 import net from 'net';
-import logger from './_common/utils/logger';
+import logger from 'winston';
+
 import engine from './_engine/index';
 import resolveSysPath from './_common/utils/resolveSyspath';
 
@@ -50,11 +51,12 @@ if(appPath) {
 }
 
 async function main() {
+
+	/** Note : pas de logging avant l'initialisation de la configuration, qui inclut le logger. */
+
+	let config = await initConfig(appPath, argv);
+
 	logger.debug('[Launcher] SysPath detected : ' + appPath);
-
-	// Note : !!argv.test assure la conversion en booléen.
-	let config = await initConfig(appPath, !!argv.test);
-
 	logger.info('[Launcher] Locale detected : ' + config.EngineDefaultLocale);
 	logger.debug('[Launcher] Detected OS : ' + config.os);
 

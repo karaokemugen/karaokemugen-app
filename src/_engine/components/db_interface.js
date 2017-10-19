@@ -11,7 +11,7 @@ process.on('unhandledRejection', (reason, p) => {
 var db = require('sqlite');
 var path = require('path');
 var fs = require('fs-extra');
-const logger = require('../../_common/utils/logger.js');
+const logger = require('winston');
 const moment = require('moment');
 require('moment-duration-format');
 moment.locale('fr');

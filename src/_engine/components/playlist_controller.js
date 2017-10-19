@@ -1,7 +1,7 @@
 var path = require('path');
 var timestamp = require('unix-timestamp');
 timestamp.round = true;
-const logger = require('../../_common/utils/logger.js');
+const logger = require('winston');
 const assManager = require('./ass.js');
 const L = require('lodash');
 const langs = require('langs');

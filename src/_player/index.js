@@ -1,6 +1,6 @@
 var fs = require('fs-extra');
 var path = require('path');
-const logger = require('../_common/utils/logger.js');
+const logger = require('winston');
 const exec = require('child_process');
 const L = require('lodash');
 const sizeOf = require('image-size');

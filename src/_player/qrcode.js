@@ -1,6 +1,6 @@
 const qrcode = require('qrcode');
 const path = require('path');
-const logger = require('../_common/utils/logger.js');
+const logger = require('winston');
 
 module.exports = {
 	SYSPATH:null,

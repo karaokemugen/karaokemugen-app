@@ -5,10 +5,12 @@ import {parse} from 'ini';
 import {sync} from 'os-locale';
 import i18n from 'i18n';
 import {address} from 'ip';
-import logger from './logger';
+import logger from 'winston';
+require('winston-daily-rotate-file');
 import {asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker';
 import {emit} from './pubsub';
+
 
 /** Objet contenant l'ensemble de la configuration. */
 let config = {};
@@ -24,10 +26,12 @@ export function getConfig() {
 }
 
 /** Initialisation de la configuration. */
-export async function initConfig(appPath, isTest) {
+export async function initConfig(appPath, argv) {
+
+	configureLogger(appPath, !!argv.debug);
 
 	config = {...config, appPath: appPath};
-	config = {...config, isTest: isTest};
+	config = {...config, isTest: !!argv.isTest};
 	config = {...config, os: process.platform};
 
 	configureLocale();
@@ -36,6 +40,29 @@ export async function initConfig(appPath, isTest) {
 	await configureBinaries();
 
 	return getConfig();
+}
+
+function configureLogger(appPath, debug) {
+	const tsFormat = () => (new Date()).toLocaleTimeString();
+	const consoleLogLevel = debug ? 'debug' : 'info';
+
+	logger.configure({
+		transports: [
+			new (logger.transports.Console)({
+				timestamp: tsFormat,
+				level: consoleLogLevel,
+				colorize: true
+			}),
+			new (logger.transports.DailyRotateFile)({
+				timestap: tsFormat,
+				filename: resolve(appPath, 'karaokemugen'),
+				datePattern: '.yyyy-MM-dd.log',
+				zippedArchive: true,
+				level: 'debug',
+				handleExceptions: true
+			})
+		]
+	});
 }
 
 async function loadConfigFiles(appPath) {

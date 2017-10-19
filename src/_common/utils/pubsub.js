@@ -1,7 +1,7 @@
 /** Bus d'événements centralisé, permettant d'utiliser le pattern pub/sub pour la propagation d'événements. */
 
 import {EventEmitter} from 'events';
-import logger from './logger';
+import logger from 'winston';
 
 const eventEmitter = new EventEmitter();
 

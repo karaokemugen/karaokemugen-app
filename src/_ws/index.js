@@ -1,5 +1,5 @@
 var http = require('http');
-const logger = require('../_common/utils/logger.js');
+const logger = require('winston');
 module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
