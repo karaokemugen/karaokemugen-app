@@ -488,7 +488,7 @@ module.exports = {
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
 		module.exports._services.apiserver.emitEvent = module.exports.emitEvent;
-		module.exports._services.apiserver.onKaras = function(filter,lang,from,size){
+		module.exports._services.apiserver.onKaras = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getAllKaras()
 					.then(function(playlist){
@@ -499,7 +499,7 @@ module.exports = {
 										.then(function(filtered_pl){	
 											var response = {
 												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,from+size)
+												content: filtered_pl.slice(from,to)
 											};
 											resolve(response);
 										})
@@ -510,7 +510,7 @@ module.exports = {
 								} else {
 									var response = {
 										infos: { count : karalist.length },
-										content: karalist.slice(from,from+size)
+										content: karalist.slice(from,to)
 									};
 									resolve(response);
 								}
@@ -539,8 +539,8 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onWhitelist = function(filter,lang,from,size){
-			return new Promise(function(resolve,reject){				
+		module.exports._services.apiserver.onWhitelist = function(filter,lang,from,to){
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getWhitelistContents()
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
@@ -550,7 +550,7 @@ module.exports = {
 										.then(function(filtered_pl){
 											var response = {
 												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,from+size)
+												content: filtered_pl.slice(from,to)
 											};
 											resolve(response);	
 										})
@@ -561,7 +561,7 @@ module.exports = {
 								} else {
 									var response = {
 										infos: { count : karalist.length },
-										content: karalist.slice(from,from+size)
+										content: karalist.slice(from,to)
 									};
 									resolve(response);									
 								}
@@ -577,8 +577,8 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onBlacklist = function(filter,lang,from,size){
-			return new Promise(function(resolve,reject){				
+		module.exports._services.apiserver.onBlacklist = function(filter,lang,from,to){
+			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getBlacklistContents()
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
@@ -588,7 +588,7 @@ module.exports = {
 										.then(function(filtered_pl){
 											var response = {
 												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,from+size)
+												content: filtered_pl.slice(from,to)
 											};
 											resolve(response);										
 										})
@@ -599,7 +599,7 @@ module.exports = {
 								} else {
 									var response = {
 										infos: { count : karalist.length },
-										content: karalist.slice(from,from+size)
+										content: karalist.slice(from,to)
 									};
 									resolve(response);									
 								}
@@ -1040,30 +1040,18 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,size){
+		module.exports._services.apiserver.onPlaylistSingleContents = function(id_playlist,filter,lang,seenFromUser,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.getPlaylistContents(id_playlist,seenFromUser)
 					.then(function(playlist){
 						module.exports._services.playlist_controller.translateKaraInfo(playlist,lang)
-							.then(function(karalist){								
+							.then(function(karalist){
 								if (filter) {
 									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 										.then(function(filtered_pl){
-											if (from == -1) {
-												const pos = module.exports._services.playlist_controller.playingPos(filtered_pl);
-												if (!pos) {
-													from = 0;
-												} else {
-													from = pos.indexPlaying;
-												}
-											}
 											var response = {
-												infos: { 
-													count: filtered_pl.length,
-													from: from,
-													to: from+size
-												},
-												content: filtered_pl.slice(from,from+size)
+												infos: { count : filtered_pl.length },
+												content: filtered_pl.slice(from,to)
 											};
 											resolve(response);
 										})
@@ -1072,21 +1060,9 @@ module.exports = {
 											resolve(err);
 										});
 								} else {
-									if (from == -1) {
-										const pos = module.exports._services.playlist_controller.playingPos(karalist);
-										if (!pos) {
-											from = 0;
-										} else {
-											from = pos.indexPlaying;
-										}										
-									}
 									var response = {
-										infos: { 
-											count: karalist.length,
-											from: from,
-											to: from+size
-										},
-										content: karalist.slice(from,from+size)
+										infos: { count : karalist.length },
+										content: karalist.slice(from,to)
 									};
 									resolve(response);
 								}
@@ -1126,7 +1102,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistCurrentContents = function(filter,lang,from,size){
+		module.exports._services.apiserver.onPlaylistCurrentContents = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isACurrentPlaylist()
 					.then(function(id_playlist){
@@ -1137,21 +1113,9 @@ module.exports = {
 										if (filter) {
 											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 												.then(function(filtered_pl){
-													if (from == -1) {
-														const pos = module.exports._services.playlist_controller.playingPos(filtered_pl);
-														if (!pos) {
-															from = 0;
-														} else {
-															from = pos.indexPlaying;
-														}
-													}
 													var response = {
-														infos: { 
-															count: filtered_pl.length,
-															from: from,
-															to: from+size
-														},
-														content: filtered_pl.slice(from,from+size)
+														infos: { count : filtered_pl.length },
+														content: filtered_pl.slice(from,to)
 													};
 													resolve(response);
 												})
@@ -1160,21 +1124,9 @@ module.exports = {
 													resolve(err);
 												});
 										} else {
-											if (from == -1) {
-												const pos = module.exports._services.playlist_controller.playingPos(karalist);
-												if (!pos) {
-													from = 0;
-												} else {
-													from = pos.indexPlaying;
-												}
-											}
 											var response = {
-												infos: { 
-													count: karalist.length,
-													from: from,
-													to: from+size
-												},
-												content: karalist.slice(from,from+size)
+												infos: { count : karalist.length },
+												content: karalist.slice(from,to)
 											};
 											resolve(response);
 										}
@@ -1222,7 +1174,7 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onPlaylistPublicContents = function(filter,lang,from,size){
+		module.exports._services.apiserver.onPlaylistPublicContents = function(filter,lang,from,to){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.isAPublicPlaylist()
 					.then(function(id_playlist){
@@ -1233,21 +1185,9 @@ module.exports = {
 										if (filter) {
 											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 												.then(function(filtered_pl){
-													if (from == -1) {
-														const pos = module.exports._services.playlist_controller.playingPos(filtered_pl);
-														if (!pos) {
-															from = 0;
-														} else {
-															from = pos.indexPlaying;
-														}
-													}
 													var response = {
-														infos: { 
-															count: filtered_pl.length,
-															from: from,
-															to: from+size
-														},
-														content: filtered_pl.slice(from,from+size)
+														infos: { count : filtered_pl.length },
+														content: filtered_pl.slice(from,to)
 													};
 													resolve(response);
 												})
@@ -1256,22 +1196,11 @@ module.exports = {
 													resolve(err);
 												});
 										} else {
-											if (from == -1) {
-												const pos = module.exports._services.playlist_controller.playingPos(karalist);
-												if (!pos) {
-													from = 0;
-												} else {
-													from = pos.indexPlaying;
-												}
-											}
 											var response = {
-												infos: { 
-													count: karalist.length,
-													from: from,
-													to: from+size
-												},
-												content: karalist.slice(from,from+size)
-											};resolve(response);
+												infos: { count : karalist.length },
+												content: karalist.slice(from,to)
+											};
+											resolve(response);
 										}
 									})
 									.catch(function(err){
