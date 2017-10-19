@@ -1,6 +1,6 @@
 /* display a fading message, useful to show success or errors */
 
-displayMessage = function(type, title, message, time) {
+var displayMessage = function(type, title, message, time) {
 	var transition = isTouchScreen ? 300 : 500;
 	if (!time) time = 3500;
 
@@ -38,7 +38,7 @@ displayMessage = function(type, title, message, time) {
 };
 
 /* display a modal (really?) */
-displayModal = function(type, title, message, callback, placeholder) {
+var displayModal = function(type, title, message, callback, placeholder) {
 	var modal = $('#modalBox').attr('type', type);
 	var okButton = modal.find('.modal-footer > button.ok').unbind().show();
 	var otherButton = modal.find('.modal-footer > button.other').prop('disabled', false).unbind().show();
@@ -96,7 +96,7 @@ displayModal = function(type, title, message, callback, placeholder) {
 };
 
 /* simplified ajax call */
-ajx = function(type, url, data, doneCallback) {
+var ajx = function(type, url, data, doneCallback) {
 	$.ajax({
 		url: url,
 		type: type,
@@ -110,7 +110,7 @@ ajx = function(type, url, data, doneCallback) {
 };
 
 /* format seconds to Hour Minute Second */
-secondsTimeSpanToHMS = function(s, format) {
+var secondsTimeSpanToHMS = function(s, format) {
 	var d = Math.floor(s/(3600 * 24));
 	s -= d * 3600 * 24;
 	var h = Math.floor(s/3600);
@@ -125,7 +125,7 @@ secondsTimeSpanToHMS = function(s, format) {
 
 /* cookies */
     
-createCookie = function(name,value,days) {
+var createCookie = function(name,value,days) {
 	var expires;
 	if (days) {
 		var date = new Date();
@@ -135,7 +135,7 @@ createCookie = function(name,value,days) {
 	document.cookie = name+'='+value+expires+'; path=/';
 };
 
-readCookie = function(name) {
+var readCookie = function(name) {
 	var nameEQ = name + '=';
 	var ca = document.cookie.split(';');
 	for(var i=0;i < ca.length;i++) {
@@ -146,13 +146,13 @@ readCookie = function(name) {
 	return null;
 };
 
-eraseCookie = function(name) {
+var eraseCookie = function(name) {
 	createCookie(name,'',-1);
 };
 
 
 /* BOOM */
-endOfTheWorldAsWeKnowIt = function() {
+var endOfTheWorldAsWeKnowIt = function() {
   
 	displayMessage('danger', '', '<center>Oh no</center>');
 	$('html').attr('style', 'background-color: hsla(39, 100%, 34%, 0.86); opacity: .1;z-index: 99999;transition: all 5s linear');
@@ -169,7 +169,7 @@ endOfTheWorldAsWeKnowIt = function() {
 	}, 50);
 };
   
-endOfTheWorldAsWeKnowItloop = function(){
+var endOfTheWorldAsWeKnowItloop = function(){
 	var things = $('body *');
 	var randomColor = Math.floor(Math.random()*16777215).toString(16);
 	var random = Math.floor(Math.random()*things.length);
