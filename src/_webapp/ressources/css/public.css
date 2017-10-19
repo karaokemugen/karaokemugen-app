@@ -264,10 +264,15 @@ body.touch  .list-group-item[valid="true"]:after {
     flex-grow: 1000;
 }
 
+#panel1 .plFooter button[value="playing"] {
+	display: none;
+}
 /* mobile */
 
 @media (max-width: 1025px) {
-    
+    .toastMessage {
+        __transition: none;
+    }
     .panel {
         border: 0px solid #1E2124;
         position: absolute;
@@ -396,6 +401,19 @@ body.touch  .list-group-item[valid="true"]:after {
    #mobileHelp, #mobileActions {
        display: block;
    }
+    .plFooter {
+        font-size: 1.5rem;
+        padding: 2px;
+    }
+    
+    .plInfos { 
+        vertical-align: middle;
+    }
+    .plFooter button {
+        height: 26px;
+        width: 26px;
+        margin: 0px -1px;
+    }
 }
 
 /* special size for iPad pro */

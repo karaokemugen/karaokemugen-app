@@ -1,8 +1,8 @@
 /* display a fading message, useful to show success or errors */
 
 displayMessage = function(type, title, message, time) {
-	var transition = 500;
-	if (!time) time = 3000;
+	var transition = isTouchScreen ? 300 : 500;
+	if (!time) time = 3500;
 
 	var messageDiv = $('<div nb="' + 0 + '" class="toastMessage alert alert-' + type + '">');
 	messageDiv.html('<strong>' + title + '</strong> ' + message);
@@ -24,7 +24,7 @@ displayMessage = function(type, title, message, time) {
 	}, time);
 
 	messageDiv.click( function() {
-		if( window.getSelection().focusNodev == null  || window.getSelection().focusNode.parentNode != messageDiv[0]) {
+		if( window.getSelection().focusNode == null  || window.getSelection().focusNode.parentNode != messageDiv[0]) {
 			messageDiv.addClass('dismiss');
 		} else {
 			transition += 7000;
