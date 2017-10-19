@@ -1648,17 +1648,10 @@ module.exports = {
 						}
 						module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
 							.then(function(playlist){
-								module.exports._services.playlist_controller.getKara(id_kara)
-									.then((kara) => {
-										var res = {
-											kara: kara.title,
-											playlist: playlist.name
-										};
-										resolve(res);
-									})
-									.catch(() => {
-										resolve();
-									});
+								var res = {
+									playlist: playlist.name
+								};
+								resolve(res);
 							})
 							.catch(function(err){
 								logger.error('[Engine] PLC getPlaylistInfo : '+err);
