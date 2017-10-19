@@ -594,20 +594,20 @@ module.exports = {
 					var playlist_id = req.params.pl_id;
 					var filter = req.query.filter;
 					var lang = req.query.lang;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
 					var seenFromUser = false;
-					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,to)
+					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,size)
 						.then(function(playlist){							
 							res.json(OKMessage(playlist));
 						})
@@ -1024,19 +1024,19 @@ module.exports = {
 				.get(function(req,res){
 					var lang = req.query.lang;
 					var filter = req.query.filter;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
-					module.exports.onWhitelist(filter,lang,from,to)
+					module.exports.onWhitelist(filter,lang,from,size)
 						.then(function(karas){
 							res.json(OKMessage(karas));
 						})
@@ -1087,19 +1087,20 @@ module.exports = {
 				.get(function(req,res){
 					var lang = req.query.lang;
 					var filter = req.query.filter;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
-					module.exports.onBlacklist(filter,lang,from,to)
+					if (from < 0) from = 0;										
+					module.exports.onBlacklist(filter,lang,from,size)
 						.then(function(karas){
 							res.json(OKMessage(karas));
 						})
@@ -1412,20 +1413,20 @@ module.exports = {
 					//Access :pl_id by req.params.pl_id					
 					var filter = req.query.filter;
 					var lang = req.query.lang;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
 					var seenFromUser = true;
-					module.exports.onPlaylistSingleContents(req.params.pl_id,filter,lang,seenFromUser,from,to)
+					module.exports.onPlaylistSingleContents(req.params.pl_id,filter,lang,seenFromUser,from,size)
 						.then(function(playlist){
 							if (playlist == null) res.statusCode = 404;
 							res.json(OKMessage(playlist));
@@ -1486,19 +1487,19 @@ module.exports = {
 					if (module.exports.SETTINGS.EngineAllowViewWhitelist == 1) {
 						var lang = req.query.lang;
 						var filter = req.query.filter;
-						var to;
-						if (!req.query.to) {
-							to = 999999;
+						var size;
+						if (!req.query.size) {
+							size = 999999;
 						} else {
-							to = req.query.to;
+							size = parseInt(req.query.size);
 						}
 						var from;
 						if (!req.query.from) {
 							from = 0;
 						} else {
-							from = req.query.from;
+							from = parseInt(req.query.from);
 						}
-						module.exports.onWhitelist(filter,lang,from,to)
+						module.exports.onWhitelist(filter,lang,from,size)
 							.then(function(karas){
 								res.json(OKMessage(karas));
 							})
@@ -1519,19 +1520,19 @@ module.exports = {
 					if (module.exports.SETTINGS.EngineAllowViewBlacklist == 1) {
 						var lang = req.query.lang;
 						var filter = req.query.filter;
-						var to;
-						if (!req.query.to) {
-							to = 999999;
+						var size;
+						if (!req.query.size) {
+							size = 999999;
 						} else {
-							to = req.query.to;
+							size = parseInt(req.query.size);
 						}
 						var from;
 						if (!req.query.from) {
 							from = 0;
 						} else {
-							from = req.query.from;
+							from = parseInt(req.query.from);
 						}
-						module.exports.onBlacklist(filter,lang,from,to)
+						module.exports.onBlacklist(filter,lang,from,size)
 							.then(function(karas){
 								res.json(OKMessage(karas));
 							})
@@ -1589,20 +1590,20 @@ module.exports = {
 					// then the playlist returned gets filtered with the text.
 					var filter = req.query.filter;
 					var lang = req.query.lang;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
+					var size;
+					if (!req.query.size) {
+						size = 999999;
 					} else {
-						to = req.query.to;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
-
-					module.exports.onKaras(filter,lang,from,to)
+					if (from < 0) from = 0;					
+					module.exports.onKaras(filter,lang,from,size)
 						.then(function(karas){
 							res.json(OKMessage(karas));
 						})

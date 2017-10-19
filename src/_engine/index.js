@@ -498,8 +498,12 @@ module.exports = {
 									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 										.then(function(filtered_pl){	
 											var response = {
-												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,to)
+												infos: { 
+													count: filtered_pl.length,
+													from: parseInt(from),
+													to: parseInt(from)+parseInt(size)
+												 },
+												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);
 										})
@@ -509,8 +513,12 @@ module.exports = {
 										});
 								} else {
 									var response = {
-										infos: { count : karalist.length },
-										content: karalist.slice(from,to)
+										infos: { 
+											count: karalist.length,
+											from: parseInt(from),
+											to: parseInt(from)+parseInt(size)
+										 },										
+										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);
 								}
@@ -550,7 +558,7 @@ module.exports = {
 										.then(function(filtered_pl){
 											var response = {
 												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,to)
+												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);	
 										})
@@ -561,7 +569,7 @@ module.exports = {
 								} else {
 									var response = {
 										infos: { count : karalist.length },
-										content: karalist.slice(from,to)
+										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);									
 								}
@@ -588,7 +596,7 @@ module.exports = {
 										.then(function(filtered_pl){
 											var response = {
 												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,to)
+												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);										
 										})
@@ -599,7 +607,7 @@ module.exports = {
 								} else {
 									var response = {
 										infos: { count : karalist.length },
-										content: karalist.slice(from,to)
+										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);									
 								}
@@ -1244,9 +1252,21 @@ module.exports = {
 								if (filter) {
 									module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 										.then(function(filtered_pl){
+											if (from == -1) {
+												const pos = module.exports._services.playlist_controller.playingPos(filtered_pl);
+												if (!pos) {
+													from = 0;
+												} else {
+													from = pos.index;
+												}
+											}
 											var response = {
-												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,to)
+												infos: { 
+													count: filtered_pl.length,
+													from: from,
+													to: parseInt(from)+parseInt(size)
+												},
+												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);
 										})
@@ -1255,9 +1275,21 @@ module.exports = {
 											reject(err);
 										});
 								} else {
+									if (from == -1) {
+										const pos = module.exports._services.playlist_controller.playingPos(karalist);
+										if (!pos) {
+											from = 0;
+										} else {
+											from = pos.index;
+										}										
+									}
 									var response = {
-										infos: { count : karalist.length },
-										content: karalist.slice(from,to)
+										infos: { 
+											count: karalist.length,
+											from: from,
+											to: parseInt(from)+parseInt(size)
+										},
+										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);
 								}
@@ -1340,9 +1372,21 @@ module.exports = {
 										if (filter) {
 											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 												.then(function(filtered_pl){
+													if (from == -1) {
+														const pos = module.exports._services.playlist_controller.playingPos(filtered_pl);
+														if (!pos) {
+															from = 0;
+														} else {
+															from = pos.index;
+														}
+													}
 													var response = {
-														infos: { count : filtered_pl.length },
-														content: filtered_pl.slice(from,to)
+														infos: { 
+															count: filtered_pl.length,
+															from: from,
+															to: parseInt(from)+parseInt(size)
+														},
+														content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 													};
 													resolve(response);
 												})
@@ -1351,9 +1395,21 @@ module.exports = {
 													resolve(err);
 												});
 										} else {
+											if (from == -1) {
+												const pos = module.exports._services.playlist_controller.playingPos(karalist);
+												if (!pos) {
+													from = 0;
+												} else {
+													from = pos.index;
+												}
+											}
 											var response = {
-												infos: { count : karalist.length },
-												content: karalist.slice(from,to)
+												infos: { 
+													count: karalist.length,
+													from: from,
+													to: parseInt(from)+parseInt(size)
+												},
+												content: karalist.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);
 										}
@@ -1412,9 +1468,21 @@ module.exports = {
 										if (filter) {
 											module.exports._services.playlist_controller.filterPlaylist(karalist,filter)
 												.then(function(filtered_pl){
+													if (from == -1) {
+														const pos = module.exports._services.playlist_controller.playingPos(filtered_pl);
+														if (!pos) {
+															from = 0;
+														} else {
+															from = pos.index;
+														}
+													}
 													var response = {
-														infos: { count : filtered_pl.length },
-														content: filtered_pl.slice(from,to)
+														infos: { 
+															count: filtered_pl.length,
+															from: from,
+															to: parseInt(from)+parseInt(size)
+														},
+														content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 													};
 													resolve(response);
 												})
@@ -1423,11 +1491,22 @@ module.exports = {
 													resolve(err);
 												});
 										} else {
+											if (from == -1) {
+												const pos = module.exports._services.playlist_controller.playingPos(karalist);
+												if (!pos) {
+													from = 0;
+												} else {
+													from = pos.index;
+												}
+											}
 											var response = {
-												infos: { count : karalist.length },
-												content: karalist.slice(from,to)
-											};
-											resolve(response);
+												infos: { 
+													count: karalist.length,
+													from: from,
+													to: parseInt(from)+parseInt(size)
+												},
+												content: karalist.slice(from,parseInt(from)+parseInt(size))
+											};resolve(response);
 										}
 									})
 									.catch(function(err){

@@ -343,18 +343,19 @@ var plData;
 				} else if ($this.attr('value') === 'bottom') {
 					from = num_karas - pageSize;
 				} else if ($this.attr('value') === 'playing') {
-					from = 1;
+					from = -1;
 				}
+				playlist.parent().attr('flagScroll', true);
 				setPlaylistRange(idPlaylist, from, from + pageSize);
 				fillPlaylist(side).done( function() {
 					setTimeout(function() {
 						if($this.attr('value') === 'top') {
 							scrollHeight = 0;
 						} else if ($this.attr('value') === 'bottom') {
-							scrollHeight = 
 							scrollHeight = playlist.height();
 						}
 						if(scrollHeight) playlist.parent().scrollTop(scrollHeight);
+						playlist.parent().attr('flagScroll', false);
 					}, 2);
 				});
 			}
@@ -372,8 +373,8 @@ var plData;
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			$(this).val($(this).is(':checked') ? 1 : 0);
 		});
-     
-        
+
+
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
@@ -466,7 +467,7 @@ var plData;
 	dragAndDrop = true;
 	stopUpdate = false;
     
-	pageSize = isTouchScreen ? 108 : 132;
+	pageSize = isTouchScreen ? 114 : 132;
 	if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
 	
 	saveLastDetailsKara = [[]];
@@ -647,7 +648,7 @@ var plData;
 		from = range.from;
 		to = range.to;
 
-		fromTo += '&from=' + from + '&to=' + to;
+		fromTo += '&from=' + from + '&size=' + pageSize;
 
 		// setup variables depending on which playlist is selected : -1 = database kara list, -2 = blacklist, -3 = whitelist, -4 = blacklist criterias
 
@@ -681,7 +682,10 @@ var plData;
             
 				if(idPlaylist != -4) {
 					data = response.content;
-					if(response.infos) dashboard.attr('data-karaCount', response.infos.count );
+					if(response.infos) {
+						dashboard.attr('data-karaCount', response.infos.count );
+						setPlaylistRange(idPlaylist, response.infos.from,  response.infos.to);
+					}
 
 					for (var key in data) {
 						// build the kara line
