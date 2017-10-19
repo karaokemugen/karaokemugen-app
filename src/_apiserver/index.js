@@ -1438,8 +1438,8 @@ module.exports = {
 								requester: req.body.requestedby
 							};									
 							module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
-								.then(function(pl_id){
-									module.exports.emitEvent('playlistContentsUpdated',pl_id);
+								.then(function(data){
+									module.exports.emitEvent('playlistContentsUpdated',data.playlist_id);
 									module.exports.emitEvent('playlistInfoUpdated',data.playlist_id);
 									res.statusCode = 201;
 									res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
