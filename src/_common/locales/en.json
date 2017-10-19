@@ -159,6 +159,7 @@
 	"SELECT_ALL": "Select all",
 	"GET_LUCKY": "Get lucky",
 	"LYRICS": "Lyrics",
+	"NOLYRICS": "No lyrics available for this kara",
 	"CL_HELP": "Help",
 	"CL_WRONG_KARA_ORDER": "Kara positions in this playlist are messed up, refreshing it. <br/>Please try again.",
 	"CL_CONGRATS": "Congratulations",

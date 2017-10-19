@@ -232,6 +232,7 @@
 	"LYRICS_VIEW_ERROR": "Impossible d'afficher les paroles du karaoké %s",
 	"TAGS_LIST_ERROR": "Impossible d'afficher la liste des tags",
 	"LYRICS": "Paroles",
+	"NOLYRICS": "Pas de paroles disponibles pour ce kara",
 	"CL_CONGRATS": "Félicitations",
 	"CL_ABOUT_TO_ADD": "Vous êtes sur le point d'ajouter %s",
 	"CL_INFORMATIVE_MESSAGE": "Message à caractère informatif",
