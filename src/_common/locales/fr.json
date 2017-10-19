@@ -243,5 +243,6 @@
 	"CL_USERS": "Utilisateurs",
 	"CL_ALL": "Tous",
 	"CL_HELP_PUBLIC_CONTENT": "<p> Ajoutez vos karas en les <b>glissant vers la droite</b>.</p> <p><b>Swipe gauche/droite</b> pour passer du mode recherche au mode playlist</p> <p><b>N'hésitez pas</b> à venir sur le Discord!",
-	"CL_HELP": "Aide"
+	"CL_HELP": "Aide",
+	"CL_PLAYLISTS": "Listes"
 }

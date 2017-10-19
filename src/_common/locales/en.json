@@ -170,5 +170,6 @@
 	"CL_SCREEN": "Screen",
 	"CL_USERS": "Users",
 	"CL_ALL": "All",
-	"CL_HELP_PUBLIC_CONTENT": "<p>Add karas by  <b>sliding them</b> to the right.</p> <p><b>Swipe left/right</b> to go from search mode to playlist mode.</p> <p>Still working on it, <b>don't forget to come to our Discord!"
+	"CL_HELP_PUBLIC_CONTENT": "<p>Add karas by  <b>sliding them</b> to the right.</p> <p><b>Swipe left/right</b> to go from search mode to playlist mode.</p> <p>Still working on it, <b>don't forget to come to our Discord!",
+	"CL_PLAYLISTS": "Playlists"
 }
