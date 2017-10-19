@@ -6,6 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "babel-node src/index.js",
+    "debug": "babel-node $NODE_DEBUG_OPTION src/index.js --dbg",
     "test": "mocha --require babel-register --timeout 5000",
     "build": "babel --copy-files -d dist/ src/"
   },

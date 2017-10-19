@@ -11,14 +11,13 @@ const logger = new (winston.Logger)({
 	]
 });
 
-if (argv.debug) {
+if (argv.dbg) {
 	logger.configure({
 		transports: [
 			new (winston.transports.Console)({ timestamp: tsFormat, level: 'debug', colorize: true }),
 			new (winston.transports.DailyRotateFile)({ timestap: tsFormat, filename: path.resolve(SYSPATH,'karaokemugen'), datePattern: '.yyyy-MM-dd.log', zippedArchive: true, level: 'debug', handleExceptions: true })
-		]		
+		]
 	});
-	
 }
 
 module.exports = logger;
