@@ -499,7 +499,7 @@ module.exports = {
 										.then(function(filtered_pl){	
 											var response = {
 												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,from+size)
+												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);
 										})
@@ -510,7 +510,7 @@ module.exports = {
 								} else {
 									var response = {
 										infos: { count : karalist.length },
-										content: karalist.slice(from,from+size)
+										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);
 								}
@@ -550,7 +550,7 @@ module.exports = {
 										.then(function(filtered_pl){
 											var response = {
 												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,from+size)
+												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);	
 										})
@@ -561,7 +561,7 @@ module.exports = {
 								} else {
 									var response = {
 										infos: { count : karalist.length },
-										content: karalist.slice(from,from+size)
+										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);									
 								}
@@ -588,7 +588,7 @@ module.exports = {
 										.then(function(filtered_pl){
 											var response = {
 												infos: { count : filtered_pl.length },
-												content: filtered_pl.slice(from,from+size)
+												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);										
 										})
@@ -599,7 +599,7 @@ module.exports = {
 								} else {
 									var response = {
 										infos: { count : karalist.length },
-										content: karalist.slice(from,from+size)
+										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);									
 								}
@@ -1061,9 +1061,9 @@ module.exports = {
 												infos: { 
 													count: filtered_pl.length,
 													from: from,
-													to: from+size
+													to: parseInt(from)+parseInt(size)
 												},
-												content: filtered_pl.slice(from,from+size)
+												content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);
 										})
@@ -1084,9 +1084,9 @@ module.exports = {
 										infos: { 
 											count: karalist.length,
 											from: from,
-											to: from+size
+											to: parseInt(from)+parseInt(size)
 										},
-										content: karalist.slice(from,from+size)
+										content: karalist.slice(from,parseInt(from)+parseInt(size))
 									};
 									resolve(response);
 								}
@@ -1149,9 +1149,9 @@ module.exports = {
 														infos: { 
 															count: filtered_pl.length,
 															from: from,
-															to: from+size
+															to: parseInt(from)+parseInt(size)
 														},
-														content: filtered_pl.slice(from,from+size)
+														content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 													};
 													resolve(response);
 												})
@@ -1172,9 +1172,9 @@ module.exports = {
 												infos: { 
 													count: karalist.length,
 													from: from,
-													to: from+size
+													to: parseInt(from)+parseInt(size)
 												},
-												content: karalist.slice(from,from+size)
+												content: karalist.slice(from,parseInt(from)+parseInt(size))
 											};
 											resolve(response);
 										}
@@ -1245,9 +1245,9 @@ module.exports = {
 														infos: { 
 															count: filtered_pl.length,
 															from: from,
-															to: from+size
+															to: parseInt(from)+parseInt(size)
 														},
-														content: filtered_pl.slice(from,from+size)
+														content: filtered_pl.slice(from,parseInt(from)+parseInt(size))
 													};
 													resolve(response);
 												})
@@ -1268,9 +1268,9 @@ module.exports = {
 												infos: { 
 													count: karalist.length,
 													from: from,
-													to: from+size
+													to: parseInt(from)+parseInt(size)
 												},
-												content: karalist.slice(from,from+size)
+												content: karalist.slice(from,parseInt(from)+parseInt(size))
 											};resolve(response);
 										}
 									})
