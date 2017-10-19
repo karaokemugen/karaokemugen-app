@@ -161,6 +161,10 @@ div.bootstrap-switch-container {
 	height: 100%;
 	border: none;
 }
+div.bootstrap-switch-container > span.bootstrap-switch-secondary {
+	position: absolute;
+    font-size: 1.23rem !important;
+}
 div.bootstrap-switch-large {
 	border-width: 0px;
 }
