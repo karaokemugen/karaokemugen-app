@@ -375,17 +375,15 @@ module.exports = {
 					if (!req.query.size) {
 						size = 999999;
 					} else {
-						size = req.query.size;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
-					var seenFromUser = false;
-					req.sanitize('size').toInt();
-					req.sanitize('from').toInt();
+					var seenFromUser = false;					
 					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,size)
 						.then(function(playlist){
 							if (playlist == []) res.statusCode = 404;
@@ -798,16 +796,14 @@ module.exports = {
 					if (!req.query.size) {
 						size = 999999;
 					} else {
-						size = req.query.to;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
-					req.sanitize('size').toInt();
-					req.sanitize('from').toInt();					
 					if (from < 0) from = 0;
 					module.exports.onWhitelist(filter,lang,from,size)
 						.then(function(karas){
@@ -864,16 +860,14 @@ module.exports = {
 					if (!req.query.size) {
 						size = 999999;
 					} else {
-						size = req.query.size;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
-					req.sanitize('size').toInt();
-					req.sanitize('from').toInt();
 					if (from < 0) from = 0;										
 					module.exports.onBlacklist(filter,lang,from,size)
 						.then(function(karas){
@@ -1195,17 +1189,15 @@ module.exports = {
 					if (!req.query.size) {
 						size = 999999;
 					} else {
-						size = req.query.size;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
 					var seenFromUser = true;
-					req.sanitize('size').toInt();
-					req.sanitize('from').toInt();
 					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,size)
 						.then(function(playlist){
 							if (playlist == null) res.statusCode = 404;
@@ -1271,16 +1263,14 @@ module.exports = {
 						if (!req.query.size) {
 							size = 999999;
 						} else {
-							size = req.query.to;
+							size = parseInt(req.query.size);
 						}
 						var from;
 						if (!req.query.from) {
 							from = 0;
 						} else {
-							from = req.query.from;
+							from = parseInt(req.query.from);
 						}
-						req.sanitize('size').toInt();
-						req.sanitize('from').toInt();
 						module.exports.onWhitelist(filter,lang,from,size)
 							.then(function(karas){
 								res.json(karas);
@@ -1306,16 +1296,14 @@ module.exports = {
 						if (!req.query.size) {
 							size = 999999;
 						} else {
-							size = req.query.size;
+							size = parseInt(req.query.size);
 						}
 						var from;
 						if (!req.query.from) {
 							from = 0;
 						} else {
-							from = req.query.from;
+							from = parseInt(req.query.from);
 						}
-						req.sanitize('size').toInt();
-						req.sanitize('from').toInt();
 						module.exports.onBlacklist(filter,lang,from,size)
 							.then(function(karas){
 								res.json(karas);
@@ -1378,17 +1366,15 @@ module.exports = {
 					if (!req.query.size) {
 						size = 999999;
 					} else {
-						size = req.query.size;
+						size = parseInt(req.query.size);
 					}
 					var from;
 					if (!req.query.from) {
 						from = 0;
 					} else {
-						from = req.query.from;
+						from = parseInt(req.query.from);
 					}
 					if (from < 0) from = 0;
-					req.sanitize('size').toInt();
-					req.sanitize('from').toInt();
 					module.exports.onKaras(filter,lang,from,size)
 						.then(function(karas){
 							res.json(karas);
