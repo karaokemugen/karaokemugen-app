@@ -6,22 +6,6 @@ Karaoke Mugen est un système de gestion de playlist de karaoke vidéo. Il se pr
 
 Il fonctionne comme un karaoké à la japonaise où chacun peut ajouter des chansons à la suite de la playlist via son smartphone, tablette ou ordinateur. Un autre mode permet au public d'ajouter des vidéos à une liste de suggestions que l'administrateur prendra soin d'ajouter ou non.
 
-## Captures d'écran
-
-Pour le moment, l'accès par l'interface web n'est pas encore 100% fonctionnel, mais ça arrive ! Il reste toujours l'API :
-
-![](docs/sample.jpg)
-
-### Interfaces web en cours de développement
-
-Photos non contractuelles, tout ça.
-
-![](docs/sample_web_user.png)
-
-![](docs/sample_web_admin.png)
-
-Pour des captures d'écran à jour, merci de consulter le [site web](http://mugen.karaokes.moe)
-
 ## Téléchargement
 
 Pour installer, clonez le dépôt, puis utilisez `yarn`.
@@ -46,7 +30,7 @@ Pour lancer l'app :
 npm start
 ```
 
-La génération de la base de données est nécessaire à la première utilisation et se fait automatiquement si le fichier `app/data/karas.sqlite3` n'existe pas. Vous pouvez la déclencher manuellement plus tard en vous connectant sur `http://localhost:1338` (mot de passe par défaut `gurdil`) et en ayant placé des karaokés dans `app/data/` (voir plus bas).
+La génération de la base de données est nécessaire à la première utilisation et se fait automatiquement si le fichier `app/data/karas.sqlite3` n'existe pas. Vous pouvez la déclencher manuellement plus tard en vous connectant sur `http://localhost:1338` (mot de passe par défaut `gurdil` ou la valeur de `AdminPassword` dans le fichier `config.ini` personnel) et en ayant placé des karaokés dans `app/data/` (voir plus bas).
 
 ## Pré-requis système
 
@@ -54,17 +38,31 @@ L'application fonctionne sous OSX/Linux/Windows.
 
 * NodeJS 8
 * npm 5
+* yarn 1
 
-A placer dans le dossier `app/bin` (le créer s'il n'existe pas).
 
-* mpv 0.25 minimum, 0.27 sous OSX
-* ffmpeg / ffprobe
+### Binaires
+
+mpv (lecteur vidéo) et ffmpeg/ffprobe (traitement vidéo) sont nécessaires au fonctionnement de Karaoke Mugen :
+
+* mpv 0.25 minimum, 0.27 sous macOS ([site web de mpv](http://mpv.io))
+* ffmpeg / ffprobe ([site web de ffmpeg](http://www.ffmpeg.org))
+
+#### Windows/macOS
+
+Les executables sont à placer dans le dossier `app/bin` (le créer s'il n'existe pas) :
 
 Vous pouvez également spécifier les chemins menant vers ces binaires dans votre fichier de configuration `config.ini`
 
+#### Linux
+
+Assurez-vous que ffmpeg/ffprobe/mpv sont disponibles dans le chemin `/usr/bin`. Si ce n'est pas le cas, modifiez leurs chemins dans `config.ini`
+
+Les distributions linux embarquent souvent de vieilles versions de ffmpeg/ffprobe/mpv, mettez-les à jour grâce aux instructions sur leurs sites web respectifs.
+
 ## Langages
 
-Karaoke Mugen est écrit en node.js et contient quelques scripts bash à usage unique.
+Karaoke Mugen est écrit en NodeJS et utilise Babel / ES2015+
 
 ## Fonctionnalités
 
