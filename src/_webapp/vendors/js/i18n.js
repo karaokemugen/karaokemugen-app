@@ -47,7 +47,6 @@ I18n.prototype = {
 
     __: function(){
         var msg = I18n.localeCache[this.locale][arguments[0]];
-        console.log(arguments, msg);
         if (arguments.length > 1) {
             var msgArgs = arguments[1]
             if(typeof msgArgs === 'string') msgArgs = [msgArgs];

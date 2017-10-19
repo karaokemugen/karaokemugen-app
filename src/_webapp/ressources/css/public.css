@@ -330,8 +330,8 @@ body.touch  .list-group-item[valid="true"]:after {
     }
 
     .fixed-action-btn.left {
-        bottom: 17px;
-        left: 17px;
+        bottom: 12px;
+        left: 12px;
         right: auto;
         position: fixed;
         padding-top: 15px;

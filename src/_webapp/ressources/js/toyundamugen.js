@@ -1083,7 +1083,7 @@ var plData;
 			plInfos = idPlaylist > -4 ? range.from + '-' + max : '';
 			plInfos +=
 				(idPlaylist > -4 ?
-					' / ' + dashboard.attr('karacount') + ' karas'
+					' / ' + dashboard.attr('karacount') + (!isTouchScreen ? ' karas' : '')
 					: '') +
 				(idPlaylist > -1 ?
 					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length')) + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'))

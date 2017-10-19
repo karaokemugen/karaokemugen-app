@@ -807,6 +807,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.23), 0 1px 12px 0 rgba(0, 0, 0, 0.17), 0 2px 2px -1px rgba(0, 0, 0, 0.26)
 }
 .plFooter {
+	opacity: .93;
     position: absolute;
     bottom: 0;
     right: 0;
