@@ -7,7 +7,7 @@ import {initConfig} from './_common/utils/config';
 import clc from 'cli-color' ;
 import {copy} from 'fs-extra';
 import path from 'path';
-import argv from 'minimist';
+import minimist from 'minimist';
 
 import i18n from 'i18n';
 
@@ -33,12 +33,7 @@ console.log(clc.greenBright('| Project Karaoke Mugen                            
 console.log(clc.greenBright('+------------------------------------------------------------------+'));
 console.log('\n');
 
-argv(process.argv.slice(2));
-
-if (argv.help) {
-	console.log(__('HELP_MSG'));
-	process.exit(0);
-}
+const argv = parseArgs();
 
 const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
 
@@ -60,13 +55,17 @@ async function main() {
 	// Note : !!argv.test assure la conversion en booléen.
 	let config = await initConfig(appPath, !!argv.test);
 
+	logger.info('[Launcher] Locale detected : ' + config.EngineDefaultLocale);
+	logger.debug('[Launcher] Detected OS : ' + config.os);
+
+	if (argv.help) {
+		console.log(i18n.__('HELP_MSG'));
+		process.exit(0);
+	}
 	if (argv.version) {
 		console.log('Karaoke Mugen '+ config.VersionNo + ' - ' + config.VersionName);
 		process.exit(0);
 	}
-
-	logger.info('[Launcher] Locale detected : ' + config.EngineDefaultLocale);
-	logger.debug('[Launcher] Detected OS : ' + config.os);
 
 	logger.info('[Launcher] Loaded configuration file');
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
@@ -96,6 +95,18 @@ async function main() {
 	engine.SETTINGS = config;
 	engine.i18n = i18n;
 	engine.run();
+}
+
+/**
+ * Fonction de contournement du bug https://github.com/babel/babel/issues/5542
+ * A supprimer une fois que celui-ci sera résolu.
+ */
+function parseArgs() {
+	if (process.argv.indexOf('--') >= 0) {
+		return minimist(process.argv.slice(3));
+	} else {
+		return minimist(process.argv.slice(2));
+	}
 }
 
 /**
