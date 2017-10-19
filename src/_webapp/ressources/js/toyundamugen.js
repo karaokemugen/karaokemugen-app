@@ -18,7 +18,7 @@ var dragAndDrop;        // Boolean : allowing drag&drop
 var pageSize;        // Int : number of karas disaplyed per "page" (per chunk)
 var saveLastDetailsKara;    // Matrice saving the differents opened kara details to display them again when needed
 var playlistToAdd;          // Int : id of playlist users are adding their kara to
-
+var isTouchScreen;
 var socket;
 var settings;
 var kmStats;
