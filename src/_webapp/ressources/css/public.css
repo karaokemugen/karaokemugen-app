@@ -284,9 +284,7 @@ body.touch  .list-group-item[valid="true"]:after {
     }
 
     .toastMessage {
-        width: 300px;
         top: 3px;
-        left: calc(50% - 150px);
     }
     .fullLyrics {
         width: 46px;

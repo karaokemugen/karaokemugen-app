@@ -594,6 +594,7 @@ bdgc {
     position: fixed;
 	z-index: 7000;
 	max-width:600px;
+	min-width:250px;
 }
 .toastMessage {
 	cursor: pointer;
