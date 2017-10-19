@@ -1452,11 +1452,13 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onKaraAddToModePlaylist = function(id_kara,requester){
 			return new Promise(function(resolve,reject){
+				logger.profile('AddKara');				
 				var karas = id_kara.split(',');
 				if (module.exports._states.private) {
 					//If Kara mode is private, then add to current playlist
 					module.exports._services.playlist_controller.isACurrentPlaylist()
 						.then(function(playlist_id) {
+							logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+karas);							
 							module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
 								.then(function(){
 									if (module.exports.SETTINGS.EngineAutoPlay == 1 && 
@@ -1469,12 +1471,17 @@ module.exports = {
 												.then((kara) => {
 													var res = {
 														kara: kara.title,
-														playlist: playlist.name
+														playlist: playlist.name,
+														kara_id: id_kara,
+														playlist_id: playlist_id
 													};
+													logger.profile('AddKara');
 													resolve(res);
 												})
 												.catch(() => {
-													resolve();
+													var res = {
+														playlist: playlist.name,
+													};																				resolve(res);
 												});
 										})
 										.catch(function(err){
@@ -1486,6 +1493,7 @@ module.exports = {
 													playlist: playlist_id
 												}
 											};
+											logger.profile('AddKara');			
 											reject(err);
 										});						
 								
@@ -1503,6 +1511,7 @@ module.exports = {
 															playlist: playlist.name
 														}
 													};
+													logger.profile('AddKara');	
 													reject(res);
 												})
 												.catch(() => {
@@ -1518,6 +1527,7 @@ module.exports = {
 													playlist: playlist_id,
 												}
 											};
+											logger.profile('AddKara');
 											reject(err);
 										});						
 								});
@@ -1528,12 +1538,15 @@ module.exports = {
 								message: 'Current playlist not found : '+err,
 								data: undefined
 							};
+							logger.profile('AddKara');				
 							reject(err);					
 						});
 				} else {
 					//If Kara mode is public, then add to public playlist
 					module.exports._services.playlist_controller.isAPublicPlaylist()
 						.then(function(playlist_id) {
+							logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+karas);
+							logger.profile('AddKara');	
 							module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
 								.then(function(){
 									module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
@@ -1543,11 +1556,14 @@ module.exports = {
 													var res = {
 														kara: kara.title,
 														playlist: playlist.name,
+														kara_id: id_kara,
 														playlist_id: playlist_id
 													};
+													logger.profile('AddKara');
 													resolve(res);
 												})
 												.catch(() => {
+													logger.profile('AddKara');	
 													resolve();
 												});
 										})
@@ -1560,6 +1576,7 @@ module.exports = {
 													playlist: playlist_id
 												}
 											};
+											logger.profile('AddKara');
 											reject(err);
 										});						
 								})
@@ -1576,9 +1593,11 @@ module.exports = {
 															playlist: playlist.name
 														}
 													};
+													logger.profile('AddKara');
 													reject(res);
 												})
 												.catch(() => {
+													logger.profile('AddKara');
 													reject();
 												});
 										})
@@ -1587,9 +1606,11 @@ module.exports = {
 											err = {
 												message: err,
 												data: {
-													kara: id_kara,																				playlist: playlist_id,
+													kara: id_kara,
+													playlist: playlist_id,
 												}
 											};
+											logger.profile('AddKara');
 											reject(err);
 										});						
 								});
@@ -1600,6 +1621,7 @@ module.exports = {
 								message: 'Public playlist not found : '+err,
 								data: undefined
 							};
+							logger.profile('AddKara');				
 							reject(err);					
 						});
 				}
