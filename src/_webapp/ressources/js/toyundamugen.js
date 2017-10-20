@@ -9,6 +9,7 @@ var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a
 var pseudo;             // String : pseudo of the user
 var bcTags;             // Object : list of blacklist criterias tags
 var showInfoMessage;	// Object : list of info codes to show as a toast
+var softErrorMessage; 
 
 var DEBUG;
 var SOCKETDEBUG;
@@ -134,7 +135,8 @@ var plData;
 					} else {
 						errMessage = res.responseJSON.message;
 					}
-					displayMessage('warning', res.responseJSON.code + ' :', errMessage);
+					var code = softErrorMessage.indexOf(res.responseJSON.code) === -1 ? res.responseJSON.code + ' :' : '';
+					displayMessage('warning', code, errMessage);
 				}
 			}
 		});
@@ -513,6 +515,9 @@ var plData;
 		'PL_SONG_DELETED',
 		'PLAYLIST_MODE_SONG_ADDED'];
 
+	softErrorMessage = [
+		'PLAYLIST_MODE_ADD_SONG_ERROR'];
+	
 	tagAcrList = {  'TAG_SPECIAL': 'SPE',
 		'TAG_GAMECUBE': 'GCN',
 		'TAG_TOKU': 'TKU',
