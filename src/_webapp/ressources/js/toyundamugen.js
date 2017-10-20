@@ -1,4 +1,4 @@
-﻿var panel1Default;      // Int : default id of the playlist of the 1st panel (-1 means kara list)
+var panel1Default;      // Int : default id of the playlist of the 1st panel (-1 means kara list)
 var status;             // String : status of the player
 var mode;               // String : way the kara list is constructed, atm "list" supported
 var scope;              // String : if we're in public or admin interface
