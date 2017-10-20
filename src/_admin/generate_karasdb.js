@@ -1,3 +1,4 @@
+
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
 	// if you are on production, maybe you can send the exception details to your
@@ -41,6 +42,19 @@ function checksum (str, algorithm, encoding) {
 		.digest(encoding || 'hex');
 }
 
+
+async function emptyDatabase(db) {
+	await db.run('DELETE FROM kara_tag;');
+	await db.run('DELETE FROM kara_serie;');
+	await db.run('DELETE FROM ass;');
+	await db.run('DELETE FROM tag;');
+	await db.run('DELETE FROM serie;');
+	await db.run('DELETE FROM kara;');
+	await db.run('DELETE FROM settings;');
+	await db.run('DELETE FROM sqlite_sequence;');
+	await db.run('VACUUM;');
+}
+
 module.exports = {
 	db:null,
 	userdb:null,
@@ -79,12 +93,6 @@ module.exports = {
 			var karas_series = [];
 			var karas_tags = [];
 			var karafiles = [];
-			var existing_karas = [];
-			var existing_series = [];
-			var existing_tags = [];
-			var existing_karas_series = [];
-			var existing_karas_tags = [];			
-			var existing_ass = [];
 			var doUpdateSeriesAltNames = false;
 			logger.profile('CreateDatabase');
 			Promise.all([
@@ -94,95 +102,9 @@ module.exports = {
 				module.exports.onLog('success', 'Karaoke databases created');
 				module.exports.db = db;
 				module.exports.userdb = userdb;
-				/**
-			 	 * Creating arrays for use in sql statements
-			 	 */
-				var pGetKaras = new Promise((resolve,reject) => {
-					db.all('SELECT * FROM kara')
-						.then((res) => {
-							existing_karas = res;
-							resolve();
-						})
-						.catch((err) => {
-							module.exports.onLog('error', 'Failed to get all karas : '+err);
-							reject(err);
-						});
-				});
-				var pGetASS = new Promise((resolve,reject) => {
-					db.all('SELECT pk_id_ass,fk_id_kara,checksum FROM ass')
-						.then((res) => {
-							existing_ass = res;
-							resolve();
-						})
-						.catch((err) => {
-							module.exports.onLog('error', 'Failed to get all ass : '+err);
-							reject(err);
-						});
-				});
-				var pGetTags = new Promise((resolve,reject) => {
-					db.all('SELECT * FROM tag')
-						.then((res) => {
-							existing_tags = res;
-							resolve();
-						})
-						.catch((err) => {
-							module.exports.onLog('error', 'Failed to get all tags : '+err);
-							reject(err);
-						});
-				});
-				var pGetSeries = new Promise((resolve,reject) => {
-					db.all('SELECT * FROM serie')
-						.then((res) => {
-							existing_series = res;
-							resolve();
-						})
-						.catch((err) => {
-							module.exports.onLog('error', 'Failed to get all series : '+err);
-							reject(err);
-						});
-				});
-				var pGetKarasTags = new Promise((resolve,reject) => {
-					db.all('SELECT * FROM kara_tag')
-						.then((res) => {
-							existing_karas_tags = res;
-							resolve();
-						})
-						.catch((err) => {
-							module.exports.onLog('error', 'Failed to get all karas/tags : '+err);
-							reject(err);
-						});
-				});
-				var pGetKarasSeries = new Promise((resolve,reject) => {
-					db.all('SELECT * FROM kara_serie')
-						.then((res) => {
-							existing_karas_series = res;
-							resolve();
-						})
-						.catch((err) => {
-							module.exports.onLog('error', 'Failed to get all karas/series : '+err);
-							reject(err);
-						});
-				});
-				Promise.all([pGetKarasSeries,pGetKarasTags,pGetSeries,pGetTags,pGetASS,pGetKaras])
+
+				emptyDatabase(db)
 					.then(() => {
-						var pEmptyDatabase = new Promise((resolve,reject) => {
-							//Empty karaokes database.
-							// This will be reverted later (perhaps) if we manage to
-							// make a database update system.
-							db.run('DELETE FROM kara_tag;')
-								.then(db.run('DELETE FROM kara_serie;'))
-								.then(db.run('DELETE FROM ass;'))
-								.then(db.run('DELETE FROM tag;'))
-								.then(db.run('DELETE FROM serie;'))
-								.then(db.run('DELETE FROM kara;'))
-								.then(db.run('DELETE FROM settings;'))
-								.then(db.run('DELETE FROM sqlite_sequence;'))
-								.then(db.run('VACUUM;'))
-								.then(resolve())
-								.catch((err) => {
-									reject(err);
-								});
-						});
 						var pCreateKaraArrays = new Promise((resolve,reject) => {
 				
 							// Backing up .kara folder first
@@ -540,7 +462,7 @@ module.exports = {
 							});
 					})
 					.catch((err) => {
-						module.exports.onLog('error', 'Failed getting all karaokes');
+						module.exports.onLog('error', 'Failed deleting database content');
 						reject(err);
 					});
 			}).catch((err) => {
@@ -1663,6 +1585,6 @@ module.exports = {
 				});
 		});
 	},
-			
-	onLog: function() {}	
+
+	onLog: function() {}
 };
