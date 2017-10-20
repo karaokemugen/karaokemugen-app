@@ -6,5 +6,9 @@
         "node": "current"
       }
     }]
+  ],
+  "ignore": [
+    "node_modules",
+    "src/_webapp"
   ]
 }
