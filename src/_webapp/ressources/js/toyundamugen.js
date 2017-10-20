@@ -583,6 +583,8 @@ var plData;
 						} else {
 							displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
 						}
+					} else { 
+						displayMessage('warning','', i18n.__('NOLYRICS')); 
 					}
 				});
 			}

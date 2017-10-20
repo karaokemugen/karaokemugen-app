@@ -869,7 +869,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 
 #modalBox .modal-body {
-	max-height:  calc(95vh - 100px);
+	max-height:  calc(95vh - 150px);
 	overflow-y: auto;
 }
 
