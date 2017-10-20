@@ -1,4 +1,8 @@
 
+import logger from 'winston';
+import {resolve} from 'path';
+import {asyncCopy, asyncExists, asyncMkdirp, asyncRemove} from '../_common/utils/files';
+
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
 	// if you are on production, maybe you can send the exception details to your
@@ -19,7 +23,6 @@ generator.run().then(function(response){
 	// do whatever you want on script end
 });
 */
-const logger = require('winston');
 
 var path = require('path');
 var sqlite = require('sqlite');
@@ -55,12 +58,46 @@ async function emptyDatabase(db) {
 	await db.run('VACUUM;');
 }
 
+async function backupDir(directory) {
+	const backupDir = directory + '_backup';
+	if (await asyncExists(backupDir)) {
+		logger.debug('[Gen] Removing backup dir ' + backupDir);
+		await asyncRemove(backupDir);
+	}
+	logger.debug('[Gen] Creating backup dir ' + backupDir);
+	await asyncMkdirp(backupDir);
+	await asyncCopy(
+		directory,
+		backupDir,
+		{
+			overwrite: true,
+			preserveTimestamps: true
+		}
+	);
+}
+
+async function backupKaraDirs(config) {
+	const backupPromises = [];
+	for (const pathKara of config.PathKaras.split('|')) {
+		const resolvedPath = resolve(config.appPath, pathKara);
+		backupPromises.push(backupDir(resolvedPath));
+	}
+	await Promise.all(backupPromises);
+}
+
 module.exports = {
 	db:null,
 	userdb:null,
 	SYSPATH: null,
 	SETTINGS: null,
 	run: function() {
+		/*
+		 * Reconstruction temporaire de l'objet config le temps du refactoring. A terme, cet objet sera
+		 * transformé en un paramètre de la méthode run(), SYSPATH et SETTINGS étant supprimés.
+		 */
+		const config = module.exports.SETTINGS;
+		config.appPath = module.exports.SYSPATH;
+		
 		// These are not resolved : they will be later on when extracting / reading ASS
 		const lyricsdirslist = module.exports.SETTINGS.PathSubs;	
 		const tmpdir = module.exports.SETTINGS.PathTemp;
@@ -105,54 +142,36 @@ module.exports = {
 
 				emptyDatabase(db)
 					.then(() => {
-						var pCreateKaraArrays = new Promise((resolve,reject) => {
-				
-							// Backing up .kara folder first
-							var karasdirs = karasdirslist.split('|');
-							karasdirs.forEach((karasdir) => {
-								if (fs.existsSync(karasdir+'_backup')) {
-									logger.debug('[Gen] Removing backup dir '+karasdir+'_backup');
-									logger.profile('RemoveBackup');
-									fs.removeSync(karasdir+'_backup');
-									logger.profile('RemoveBackup');
-								}
-								logger.debug('[Gen] Creating backup dir '+karasdir+'_backup');
-								logger.profile('CreateBackup');
-								fs.mkdirsSync(karasdir+'_backup');
+						var pCreateKaraArrays = new Promise((resolve, reject) => {
 
-								fs.copySync(karasdir,karasdir+'_backup',{
-									overwrite: true,
-									preserveTimestamps: true
-								});
-								logger.profile('CreateBackup');				
-							});
-					
-					
-							/**
-				 * Get data from .kara files
-				 */
-							var pCreateKaraFiles = new Promise((resolve) => {
-								logger.profile('ReadKaraDir');
-								//Adding all kara files from all kara directories
-								karasdirs.forEach((karasdir) => {
-									var karafilestemp = fs.readdirSync(karasdir);
-									karafilestemp.forEach((karafiletemp,index) => {
-										karafilestemp[index] = path.resolve(module.exports.SYSPATH,karasdir,karafiletemp);
+							const karasdirs = karasdirslist.split('|');
+
+							const backupAndCleanKaraDirs = backupKaraDirs(config)
+								.then(() => {
+									logger.profile('ReadKaraDir');
+									//Adding all kara files from all kara directories
+									karasdirs.forEach((karasdir) => {
+										var karafilestemp = fs.readdirSync(karasdir);
+										karafilestemp.forEach((karafiletemp,index) => {
+											karafilestemp[index] = path.resolve(module.exports.SYSPATH,karasdir,karafiletemp);
+										});
+										karafiles.push.apply(karafiles,karafilestemp);
 									});
-									karafiles.push.apply(karafiles,karafilestemp);					
-								});
 
-								//Deleting non .kara files
-								for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
-									if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
-										karafiles.splice(indexToRemove, 1);
+									//Deleting non .kara files
+									for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
+										if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
+											karafiles.splice(indexToRemove, 1);
+										}
 									}
-								}	
-								module.exports.onLog('success', 'Karaoke data folder read');
-								logger.profile('ReadKaraDir');
-								resolve();
-							});
-							Promise.all([pCreateKaraFiles])
+									module.exports.onLog('success', 'Karaoke data folder read');
+									logger.profile('ReadKaraDir');
+									resolve();
+								})
+								.catch(err => logger.error('Error during backup for karafiles: ' + err));
+
+
+							Promise.all([backupAndCleanKaraDirs])
 								.then(function(){
 									/**
 						 * First analyze .kara

@@ -1,5 +1,5 @@
 import {exists, readFile, rename, unlink} from 'fs';
-import {remove, mkdirp} from 'fs-extra';
+import {remove, mkdirp, copy} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
@@ -28,6 +28,10 @@ export function asyncRename(...args) {
 
 export function asyncUnlink(...args) {
 	return promisify(unlink)(...args);
+}
+
+export function asyncCopy(...args) {
+	return promisify(copy)(...args);
 }
 
 
