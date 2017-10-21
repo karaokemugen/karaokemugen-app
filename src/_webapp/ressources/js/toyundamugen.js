@@ -680,7 +680,7 @@ var plData;
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
 		//var start = window.performance.now();
-		var async = !(isTouchScreen && isChrome);
+		var async = !(isTouchScreen && isChrome && scrolling);
 		ajaxSearch[url] = $.ajax({  url: urlFiltre,
 			type: 'GET', async: async,
 			dataType: 'json' })
@@ -766,7 +766,7 @@ var plData;
 										
 							container.attr('flagScroll', false);
 						} else {
-							container.scrollTop(fillerTopH);
+							if(container.scrollTop() < fillerTopH) container.scrollTop(fillerTopH);
 						}
 						//});
 					});
