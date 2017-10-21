@@ -501,7 +501,6 @@ var plData;
 		'BLCTYPE_1003',
 		'BLCTYPE_1000',
 		'BLCTYPE_0',
-		'BLCTYPE_1',
 		'BLCTYPE_2',
 		'BLCTYPE_3',
 		'BLCTYPE_4',
@@ -802,7 +801,7 @@ var plData;
 							var bcTagsFiltered = jQuery.grep(bcTags, function(obj) {
 								return obj.tag_id == data[k].value;
 							});
-							var tagText = bcTagsFiltered.length == 1 ?  bcTagsFiltered[0].name_i18n : data[k].value;
+							var tagText = bcTagsFiltered.length === 1 && data[k].type === 0 ?  bcTagsFiltered[0].name_i18n : data[k].value;
 							var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
 
 							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
