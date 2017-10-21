@@ -955,7 +955,7 @@ module.exports = {
 							module.exports.onSettingsUpdate(SETTINGS)
 								.then(function(publicSettings){
 									module.exports.emitEvent('settingsUpdated',publicSettings);
-									res.json(OKMessage(module.export.SETTINGS,'SETTINGS_UPDATED'));
+									res.json(OKMessage(module.exports.SETTINGS,'SETTINGS_UPDATED'));
 								})
 								.catch(function(err){
 									logger.error(err);
