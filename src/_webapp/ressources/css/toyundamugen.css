@@ -762,7 +762,7 @@ input[type=range]:focus::-ms-fill-upper {
 	opacity: .8;
 }
 .ps>.ps__scrollbar-y-rail {
-	top: 59px !important;
+	top: 0px !important;
 	z-index:9999;
 	width: 12px;
 }

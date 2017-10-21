@@ -1332,7 +1332,11 @@ var plData;
 		$('#playlist1').parent().css('height', 'calc(100% - ' + (scope === 'public' ? 0 : topHeight1) + 'px ');
 		$('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
 
-		if(!isTouchScreen) $('.playlistContainer').perfectScrollbar();
+		if(!isTouchScreen) {
+			$('.playlistContainer').perfectScrollbar();
+			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
+			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
+		}
 	});
 
 	/** 
