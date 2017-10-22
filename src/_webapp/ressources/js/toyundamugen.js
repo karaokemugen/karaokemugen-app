@@ -350,17 +350,7 @@ var plData;
 				}
 				playlist.parent().attr('flagScroll', true);
 				setPlaylistRange(idPlaylist, from, from + pageSize);
-				fillPlaylist(side).done( function() {
-					setTimeout(function() {
-						if($this.attr('value') === 'top') {
-							scrollHeight = 0;
-						} else if ($this.attr('value') === 'bottom') {
-							scrollHeight = playlist.height();
-						}
-						if(scrollHeight) playlist.parent().scrollTop(scrollHeight);
-						playlist.parent().attr('flagScroll', false);
-					}, 2);
-				});
+				fillPlaylist(side, 'goTo', $this.attr('value'));
 			}
 		});
 
@@ -418,7 +408,7 @@ var plData;
 						DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
 						
 						setPlaylistRange(idPlaylist, from, to);
-						scrollUpdating = fillPlaylist(side, scrollUp ? "top" : "bottom");
+						scrollUpdating = fillPlaylist(side, 'reposition', scrollUp ? "top" : "bottom");
 					}
 				}
 			}
@@ -640,10 +630,11 @@ var plData;
 	/**
      * Fill a playlist on screen with karas
      * @param {1, 2} side - which playlist on the screen
-     * @param {'top','bottom'} scrolling (optional) - filling the playlist after  a scroll, allow to keep the scroll position on the same data
+     * @param {'reposition','goTo'} scrollingType (optional) - the way to position the scroll after filling with new results
+     * @param {'top','bottom','playing'} scrolling (optional) - second arg about the new position
      */
 	// TODO if list is updated from another source (socket ?) keep the size of the playlist
-	fillPlaylist = function (side, scrolling) {
+	fillPlaylist = function (side, scrollingType, scrolling) {
 		DEBUG && console.log(side);
 		var deferred = $.Deferred();
 		var dashboard = $('#panel' + side + ' .plDashboard');
@@ -680,7 +671,7 @@ var plData;
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
 		//var start = window.performance.now();
-		var async = !(isTouchScreen && isChrome && scrolling);
+		var async = !(isTouchScreen && isChrome && scrollingType);
 		ajaxSearch[url] = $.ajax({  url: urlFiltre,
 			type: 'GET', async: async,
 			dataType: 'json' })
@@ -733,8 +724,8 @@ var plData;
 					}
 					var count = response.infos ? response.infos.count : 0;
 					// creating filler space for dyanmic scrolling
-					var fillerTopH = Math.min(from * 34, container.height()/1.5);
-					var fillerBottomH = Math.min((count - to) * 34, container.height()/1.5);
+					var fillerTopH = Math.min(response.infos.from * 34, container.height()/1.5);
+					var fillerBottomH = Math.min((count - response.infos.from - pageSize) * 34, container.height()/1.5);
 					
 					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px"><div class="loader"><div></div></div></li>';
 					var fillerBottom = '<li class="list-group-item filler" style="height:' + fillerBottomH + 'px"><div class="loader"><div></div></div></li>';
@@ -744,10 +735,12 @@ var plData;
 								+	fillerBottom;
 					
 
-					if(scrolling) {
+					if(scrollingType) {
 						container.css('overflow-y','hidden');
-						var karaMarker = scrolling === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
-						var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
+						if(scrollingType === 'reposition') {
+							var karaMarker = scrolling === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
+							var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
+						}
 					}
 		
 					window.requestAnimationFrame( function() {
@@ -755,12 +748,25 @@ var plData;
 						deferred.resolve();
 						refreshContentInfos(side);
 						//window.requestAnimationFrame( function() {
-						if(scrolling) {
+						if(scrollingType) {
 							
 							container.css('overflow-y','auto');
-							var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
-							var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
-							var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
+							var y;
+							if(scrollingType === 'reposition') {
+								var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
+								var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
+								y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
+							} else if (scrollingType === 'goTo') {
+								if(scrolling === 'top') {
+									y = 0 + fillerTopH;
+								} else if (scrolling === 'bottom') {
+									y = $('#playlist' + side).height() + 0;
+								} else if (scrolling === 'playing') {
+									var currentlyPlaying = container.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
+									y = currentlyPlaying.offset().top - currentlyPlaying.parent().offset().top;
+								}
+							}
+
 							container.scrollTop(y);
 							container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix							
 										
