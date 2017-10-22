@@ -171,5 +171,8 @@
 	"CL_USERS": "Users",
 	"CL_ALL": "All",
 	"CL_HELP_PUBLIC_CONTENT": "<p>Add karas by  <b>sliding them</b> to the right.</p> <p><b>Swipe left/right</b> to go from search mode to playlist mode.</p> <p>Still working on it, <b>don't forget to come to our Discord!",
-	"CL_PLAYLISTS": "Playlists"
-}
+	"CL_PLAYLISTS": "Playlists",
+	"GOTO_TOP": "Go to the start of the playlist",
+	"GOTO_PLAYING": "Go to the kara currently playing",
+	"GOTO_BOTTOM": "Go to the end of the playlist"
+} 

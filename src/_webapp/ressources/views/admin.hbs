@@ -120,9 +120,9 @@
             <div class="plFooter">
                 <div class="plInfos"></div>
                 <div class="plBrowse">
-                    <button class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
-                    <button class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
-                    <button class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
+                    <button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
+                    <button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
+                    <button title="{{i18n "GOTO_BOTTOM"}}" class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
                 </div>
             </div>
         </div>
@@ -212,9 +212,9 @@
             <div class="plFooter">
                 <div class="plInfos"></div>
                 <div class="plBrowse">
-                    <button class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
-                    <button class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
-                    <button class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
+                    <button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
+                    <button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
+                    <button title="{{i18n "GOTO_BOTTOM"}}" class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
                 </div>
             </div>
         </div>
@@ -223,11 +223,9 @@
         <div class="col-lg-2 col-xs-0"></div>
         <div class="panel col-lg-8 col-xs-12">
             <div class="panel-heading container-fluid">
-                <div class="col-lg-6 col-xs-6">
-                    <div class="pull-right">
-                        <h4> {{i18n "OPTIONS"}} </h4>
-                    </div>
-                </div>
+                <center>
+                    <h4> {{i18n "OPTIONS"}} </h4>
+                </center>
             </div>
             <br/>
             <form class="form-horizontal" id="status">
@@ -275,7 +273,7 @@
                     <div class="col-xs-6">
                         <select type="number" class="form-control" name="PlayerScreen">
 								{{#each displays}}
-									<option value="{{@index}}"> {{model}} ({{resolutionx}}x{{resolutiony}})</option>
+									<option value="{{@index}}"> ({{resolutionx}}x{{resolutiony}}) {{model}}</option>
 								{{/each}}
                             </select>
                     </div>

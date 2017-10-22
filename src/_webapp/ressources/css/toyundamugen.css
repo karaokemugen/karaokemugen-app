@@ -820,6 +820,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 
 .plFooter button {
+	background-color: #1e2124;
 	padding: 0;
 	height: 100%;
 	width: 15px;
