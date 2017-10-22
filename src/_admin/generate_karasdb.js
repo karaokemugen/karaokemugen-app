@@ -1,7 +1,7 @@
 
 import logger from 'winston';
 import {resolve} from 'path';
-import {asyncCopy, asyncExists, asyncMkdirp, asyncRemove} from '../_common/utils/files';
+import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncRemove} from '../_common/utils/files';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
@@ -85,6 +85,26 @@ async function backupKaraDirs(config) {
 	await Promise.all(backupPromises);
 }
 
+async function extractKaraFiles(karaDir) {
+	const karaFiles = [];
+	const dirListing = await asyncReadDir(karaDir);
+	for (const file of dirListing) {
+		if (file.endsWith('.kara') && !file.startsWith('.')) {
+			karaFiles.push(resolve(karaDir, file));
+		}
+	}
+	return karaFiles;
+}
+
+async function extractAllKaraFiles(config) {
+	let karaFiles = [];
+	for (const pathKara of config.PathKaras.split('|')) {
+		const resolvedPath = resolve(config.appPath, pathKara);
+		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
+	}
+	return karaFiles;
+}
+
 module.exports = {
 	db:null,
 	userdb:null,
@@ -129,7 +149,6 @@ module.exports = {
 			var tags = [];
 			var karas_series = [];
 			var karas_tags = [];
-			var karafiles = [];
 			var doUpdateSeriesAltNames = false;
 			logger.profile('CreateDatabase');
 			Promise.all([
@@ -144,40 +163,14 @@ module.exports = {
 					.then(() => {
 						var pCreateKaraArrays = new Promise((resolve, reject) => {
 
-							const karasdirs = karasdirslist.split('|');
-
-							const backupAndCleanKaraDirs = backupKaraDirs(config)
-								.then(() => {
-									logger.profile('ReadKaraDir');
-									//Adding all kara files from all kara directories
-									karasdirs.forEach((karasdir) => {
-										var karafilestemp = fs.readdirSync(karasdir);
-										karafilestemp.forEach((karafiletemp,index) => {
-											karafilestemp[index] = path.resolve(module.exports.SYSPATH,karasdir,karafiletemp);
-										});
-										karafiles.push.apply(karafiles,karafilestemp);
-									});
-
-									//Deleting non .kara files
-									for(var indexToRemove = karafiles.length - 1; indexToRemove >= 0; indexToRemove--) {
-										if(!karafiles[indexToRemove].endsWith('.kara') || karafiles[indexToRemove].startsWith('.')) {
-											karafiles.splice(indexToRemove, 1);
-										}
-									}
-									module.exports.onLog('success', 'Karaoke data folder read');
-									logger.profile('ReadKaraDir');
-									resolve();
-								})
-								.catch(err => logger.error('Error during backup for karafiles: ' + err));
-
-
-							Promise.all([backupAndCleanKaraDirs])
-								.then(function(){
+							backupKaraDirs(config)
+								.then(() => extractAllKaraFiles(config))
+								.then((karafiles) => {
 									/**
-						 * First analyze .kara
-						 * Then add UUID for each karaoke inside if it isn't there already
-						 * Then build karas table in one transaction.
-						 */
+									 * First analyze .kara
+									 * Then add UUID for each karaoke inside if it isn't there already
+									 * Then build karas table in one transaction.
+									 */
 									var pAddToKaras = new Promise((resolve,reject) => {				
 										logger.profile('AddKara');
 										async.eachLimit(karafiles, 5, function(kara, callback){

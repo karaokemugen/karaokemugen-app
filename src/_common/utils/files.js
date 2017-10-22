@@ -1,4 +1,4 @@
-import {exists, readFile, rename, unlink} from 'fs';
+import {exists, readFile, readdir, rename, unlink} from 'fs';
 import {remove, mkdirp, copy} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
@@ -12,6 +12,10 @@ export function asyncExists(file) {
 /** Fonction de lecture d'un fichier renvoyant une Promise.*/
 export function asyncReadFile(...args) {
 	return promisify(readFile)(...args);
+}
+
+export function asyncReadDir(...args) {
+	return promisify(readdir)(...args);
 }
 
 export function asyncMkdirp(...args) {
@@ -33,7 +37,6 @@ export function asyncUnlink(...args) {
 export function asyncCopy(...args) {
 	return promisify(copy)(...args);
 }
-
 
 /** Fonction vérifiant la présence d'un fichier requis, levant une exception s'il n'est pas trouvé. */
 export async function asyncRequired(file) {
