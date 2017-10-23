@@ -1,5 +1,6 @@
 import logger from 'winston';
 import {resolve, extname} from 'path';
+import {deburr, isEmpty} from 'lodash';
 import {
 	asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove, asyncStat, asyncWriteFile,
 	resolveFileInDirs
@@ -153,7 +154,12 @@ async function getKara(karafile) {
 
 	const karaInfos = karaFilenameInfos(karafile);
 	kara.title = karaInfos.title;
+	// Attention à ne pas confondre avec le champ 'series' au pluriel, provenant du fichier kara
+	// et copié de l'objet 'karaData'.
+	kara.serie = karaInfos.serie;
+	kara.type = karaInfos.type;
 	kara.songorder = karaInfos.songorder;
+	kara.lang = karaInfos.lang;
 
 	let videoFile;
 
@@ -202,13 +208,119 @@ async function getKara(karafile) {
 	return kara;
 }
 
-async function getKaras(karafiles) {
+async function getAllKaras(karafiles) {
 	const karaPromises = [];
 	for (const karafile of karafiles) {
 		karaPromises.push(getKara(karafile));
 	}
 	return await Promise.all(karaPromises);
 }
+
+function prepareKaraInsertData(kara, index) {
+	return {
+		$id_kara: index,
+		$kara_KID: kara.KID,
+		$kara_title: kara.title,
+		$titlenorm: deburr(kara.title),
+		$kara_year: kara.year,
+		$kara_songorder: kara.songorder,
+		$kara_videofile: kara.videofile,
+		$kara_dateadded: kara.dateadded,
+		$kara_datemodif: kara.datemodif,
+		$kara_rating: kara.rating,
+		$kara_viewcount: kara.viewcount,
+		$kara_gain: kara.videogain,
+		$kara_videolength: kara.videoduration,
+		$kara_checksum: kara.checksum
+	};
+}
+
+function prepareAllKarasInsertData(karas) {
+	return karas.map((kara, index) => prepareKaraInsertData(kara, index));
+}
+
+function getSeries(kara) {
+	const series = new Set();
+
+	// Série extraite du parsing du nom
+	if (kara.serie && kara.serie.trim()) {
+		series.add(kara.serie.trim());
+	}
+
+	// Séries extraites du fichier kara
+	if (kara.series && kara.series.trim()) {
+		kara.series.split(',').forEach(serie => {
+			if (serie.trim()) {
+				series.add(serie.trim());
+			}
+		});
+	}
+
+	if (isEmpty(series) && kara.type !== 'LIVE' && kara.type !== 'MV') {
+		throw 'Karaoke series cannot be detected!';
+	}
+
+	return series;
+}
+
+/**
+ * Renvoie une Map<String, Array>, associant une série à l'ensemble des index des karaokés concernés.
+ */
+function getAllSeries(karas) {
+	const map = new Map();
+	karas.forEach((kara, index) => {
+		getSeries(kara).forEach(serie => {
+			if (map.has(serie)) {
+				map.get(serie).push(index);
+			} else {
+				map.set(serie, [index]);
+			}
+		});
+	});
+
+	return map;
+}
+
+function prepareSerieInsertData(serie, index) {
+	return {
+		$id_serie: index,
+		$serie: serie,
+		$serienorm: deburr(serie)
+	};
+}
+
+function prepareAllSeriesInsertData(mapSeries) {
+	const data = [];
+	let index = 1;
+	for (const serie of mapSeries.keys()) {
+		data.push(prepareSerieInsertData(serie, index));
+		index++;
+	}
+	return data;
+}
+
+/**
+ * Attention : on itère sur les clés et non sur les 'entries' de la map pour obtenir le même ordre et donc les
+ * mêmes index que la fonction prepareAllSeriesInsertData. Cette manière de procéder historique est particulièrement
+ * fragile et devrait être améliorée.
+ */
+function prepareAllKarasSeriesInsertData(mapSeries) {
+	const data = [];
+	let index = 1;
+	for (const serie of mapSeries.keys()) {
+		mapSeries.get(serie).forEach(karaIndex => {
+			data.push({
+				$id_serie: index,
+				$id_kara: karaIndex
+			});
+		});
+		index++;
+	}
+
+	return data;
+}
+
+
 
 module.exports = {
 	db: null,
@@ -247,9 +359,7 @@ module.exports = {
 			var sqlInsertKarasSeries = [];
 			var sqlUpdateSeriesAltNames = [];
 			var karas = [];
-			var series = [];
 			var tags = [];
-			var karas_series = [];
 			var karas_tags = [];
 			var doUpdateSeriesAltNames = false;
 			logger.profile('CreateDatabase');
@@ -263,143 +373,54 @@ module.exports = {
 
 				emptyDatabase(db)
 					.then(() => {
-						let pCreateKaraArrays = new Promise((resolve, reject) => {
+						const pCreateKaraArrays = new Promise((resolve, reject) => {
 
 							backupKaraDirs(config)
 								.then(() => extractAllKaraFiles())
-								.then((karafiles) => getKaras(karafiles))
+								.then((karafiles) => getAllKaras(karafiles))
 
 								.then((kars) => {
 
 									karas = kars;
-									/**
-									 * Push to array sqlInsertKaras for sql statements from karas.
-									 */
-									var pPushSqlInsertKaras = new Promise((resolve) => {
-										karas.forEach(function (kara, index) {
-											index++;
-											var titlenorm = L.deburr(kara['title']);
-											sqlInsertKaras.push({
-												$id_kara: index,
-												$kara_KID: kara.KID,
-												$kara_title: kara.title,
-												$titlenorm: titlenorm,
-												$kara_year: kara.year,
-												$kara_songorder: kara.songorder,
-												$kara_videofile: kara.videofile,
-												$kara_dateadded: kara.dateadded,
-												$kara_datemodif: kara.datemodif,
-												$kara_rating: kara.rating,
-												$kara_viewcount: kara.viewcount,
-												$kara_gain: kara.videogain,
-												$kara_videolength: kara.videoduration,
-												$kara_checksum: kara.checksum
-											});
-										});
-										resolve();
-									});
+									sqlInsertKaras = prepareAllKarasInsertData(karas);
+									const seriesMap = getAllSeries(karas);
+									sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
+									sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
+
 									/**
 									 * Create arrays for series
 									 */
-									var pCreateSeries = new Promise((resolve, reject) => {
+									var pCreateSeries = new Promise((resolve) => {
+
 										/**
-										 * Extracting series.
+										 * Working on altnerative names of series.
 										 */
-										var pAddToSeries = new Promise((resolve, reject) => {
-											async.eachOf(karas, function (kara, index, callback) {
-												index++;
-												addSeries(kara, index)
-													.then(function (serie) {
-														//module.exports.onLog('success', 'Added series : '+serie);
-														callback();
-													})
-													.catch(function (err) {
-														callback(err);
+										if (fs.existsSync(series_altnamesfile)) {
+											doUpdateSeriesAltNames = true;
+											var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
+											// !!! non native forEach (here "csv" is a csv-string handler)
+											csv.forEach(series_altnamesfilecontent.toString(), ':', function (serie) {
+												var serie_name = serie[0];
+												var serie_altnames = serie[1];
+												if (!L.isEmpty(serie_altnames) || !L.isEmpty(serie_name)) {
+													var serie_altnamesnorm = L.deburr(serie[1]);
+													sqlUpdateSeriesAltNames.push({
+														$serie_altnames: serie_altnames,
+														$serie_altnamesnorm: serie_altnamesnorm,
+														$serie_name: serie_name,
 													});
-											}, function (err) {
-												if (err) {
-													reject(err);
-												}
-												module.exports.onLog('success', 'Series count : ' + series.length + ' (' + karas_series.length + ' links)');
-												resolve();
-											});
-										});
-										Promise.all([pAddToSeries])
-											.then(function () {
-												/**
-												 * Push to array sqlInsertSeries for sql statements from series.
-												 */
-												var pPushSqlInsertSeries = new Promise((resolve) => {
-													series.forEach(function (serie, index) {
-														index++;
-														var serienorm = L.deburr(serie);
-														sqlInsertSeries.push({
-															$id_serie: index,
-															$serie: serie,
-															$serienorm: serienorm,
-														});
-													});
-													resolve();
-												});
-												/**
-												 * Push to array sqlInsertKarasSeries for sql statements from karas_series.
-												 */
-												var pPushSqlInsertKarasSeries = new Promise((resolve) => {
-													karas_series.forEach(function (karaserie) {
-														karaserie = karaserie.split(',');
-														var id_serie = karaserie[0];
-														var id_kara = karaserie[1];
-														sqlInsertKarasSeries.push({
-															$id_serie: id_serie,
-															$id_kara: id_kara,
-														});
-													});
-													resolve();
-												});
-
-												/**
-												 * Working on altnerative names of series.
-												 */
-												var pCreateSeriesAltNames = new Promise((resolve) => {
-													if (fs.existsSync(series_altnamesfile)) {
-														doUpdateSeriesAltNames = true;
-														var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
-														// !!! non native forEach (here "csv" is a csv-string handler)
-														csv.forEach(series_altnamesfilecontent.toString(), ':', function (serie) {
-															var serie_name = serie[0];
-															var serie_altnames = serie[1];
-															if (!L.isEmpty(serie_altnames) || !L.isEmpty(serie_name)) {
-																var serie_altnamesnorm = L.deburr(serie[1]);
-																sqlUpdateSeriesAltNames.push({
-																	$serie_altnames: serie_altnames,
-																	$serie_altnamesnorm: serie_altnamesnorm,
-																	$serie_name: serie_name,
-																});
-																if (serie_altnames) {
-																	module.exports.onLog('success', 'Added alt. names "' + serie_altnames + '" to ' + serie);
-																}
-															}
-														});
-														module.exports.onLog('success', 'Alternative series name file found');
-													} else {
-														doUpdateSeriesAltNames = false;
-														module.exports.onLog('warning', 'No alternative series name file found, ignoring');
+													if (serie_altnames) {
+														module.exports.onLog('success', 'Added alt. names "' + serie_altnames + '" to ' + serie);
 													}
-													resolve();
-												});
-
-
-												Promise.all([pPushSqlInsertSeries, pPushSqlInsertKarasSeries, pCreateSeriesAltNames])
-													.then(function () {
-														resolve();
-													})
-													.catch(function (err) {
-														reject(err);
-													});
-											})
-											.catch(function (err) {
-												reject(err);
+												}
 											});
+											module.exports.onLog('success', 'Alternative series name file found');
+										} else {
+											doUpdateSeriesAltNames = false;
+											module.exports.onLog('warning', 'No alternative series name file found, ignoring');
+										}
+										resolve();
+
 									});
 									/**
 									 * Create arrays for series
@@ -480,16 +501,11 @@ module.exports = {
 											});
 									});
 
-									Promise.all([pPushSqlInsertKaras, pCreateSeries, pCreateTags])
-										.then(function () {
-											resolve();
-										})
+									Promise.all([pCreateSeries, pCreateTags])
+										.then(resolve())
 										.catch(function (err) {
 											reject(err);
 										});
-								})
-								.catch(function (err) {
-									reject(err);
 								});
 						});
 
@@ -810,40 +826,6 @@ module.exports = {
 							module.exports.onLog('error', err);
 							reject(err);
 						});
-				});
-			}
-
-			function addSeries(karadata, id_kara) {
-				return new Promise((resolve, reject) => {
-					var karaWOExtension = karadata.karafile.substr(0, karadata.karafile.lastIndexOf('.'));
-					var karaInfos = karaWOExtension.split(/\s+-\s+/);
-					var karaType = karaInfos[2];
-					var serieslist = [];
-					if (karaType === 'LIVE' || karaType === 'MV') {
-						if (L.isEmpty(karadata.serie)) {
-							// Don't do anything. No series is added.
-						} else {
-							serieslist = karadata.serie.split(',');
-						}
-					} else {
-						if (L.isEmpty(karaInfos[1])) {
-							// Reject because we absolutely need a series if it's neither MV or LIVE.
-							reject('Karaoke series cannot be detected!');
-						} else {
-							serieslist.push(karaInfos[1]);
-						}
-					}
-					serieslist.forEach(function (serie) {
-						serie = serie.trimLeft();
-						if (series.indexOf(serie) == -1) {
-							series.push(serie);
-						}
-						// Let's get our new index.
-						var seriesIDX = series.indexOf(serie);
-						seriesIDX++;
-						karas_series.push(seriesIDX + ',' + id_kara);
-					});
-					resolve(serieslist);
 				});
 			}
 
