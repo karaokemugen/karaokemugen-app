@@ -42,3 +42,9 @@ FROM blacklist_criteria blc
 INNER JOIN karasdb.kara k on k.videolength <= blc.value
 WHERE blc.type = 1003
 AND   k.pk_id_kara NOT IN (select fk_id_kara from whitelist)
+    UNION    
+SELECT k.pk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Title by name : ' ||  blc.value
+FROM blacklist_criteria blc
+INNER JOIN karasdb.kara k ON k.title LIKE ('%' || blc.value || '%')
+WHERE blc.type = 1004
+AND   k.pk_id_kara NOT IN (select fk_id_kara from whitelist)
