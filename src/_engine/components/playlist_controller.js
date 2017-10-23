@@ -206,9 +206,13 @@ module.exports = {
 				var pGetTagName = new Promise ((resolve,reject) => {
 					if (blctype > 0 && blctype < 1000) {
 						module.exports.DB_INTERFACE.getTag(blcvalue)
-							.then(function (res){								
-								uniqueValue = res.name;
-								resolve();
+							.then(function (res){
+								if (res) {
+									uniqueValue = res.name;
+									resolve();
+								} else { 
+									reject('getTag returned empty result');
+								}								
 							})	
 							.catch(function (err) {
 								logger.error('[PLC] getTagName : '+err);
