@@ -1,1 +1,1 @@
-INSERT INTO whitelist(fk_id_kara,kid,created_at,reason) VALUES($kara_id,$kid,$created_at,$reason);
+INSERT INTO whitelist(fk_id_kara,kid,created_at) VALUES($kara_id,$kid,$created_at);

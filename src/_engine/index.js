@@ -951,19 +951,7 @@ module.exports = {
 						reject(err);
 					});
 			});
-		};
-		module.exports._services.apiserver.onWhitelistSingleKaraEdit = function(wl_id,reason){
-			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.editWhitelistKara(wl_id,reason)
-					.then(function(){
-						resolve();
-					})
-					.catch(function(err){
-						logger.error('[Engine] PLC editWhitelistKara : '+err);
-						reject(err);
-					});
-			});
-		};
+		};		
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
@@ -1815,9 +1803,9 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){
+		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
+				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara)
 					.then(function(){
 						module.exports._services.playlist_controller.getKara(id_kara)
 							.then((kara) => {

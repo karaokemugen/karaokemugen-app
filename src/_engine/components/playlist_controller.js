@@ -278,10 +278,9 @@ module.exports = {
 	/**
 	* @function {Add a kara to the whitelist}
 	* @param  {number} kara_id {ID of karaoke to add}
-	* @param  {string} reason {Reason for add in whitelist}
 	* @return {promise} Promise
 	*/
-	addKaraToWhitelist:function(kara_id,reason) {
+	addKaraToWhitelist:function(kara_id) {
 		return new Promise(function(resolve,reject){
 			var isKaraInWhitelist = undefined;
 			var pIsKara = new Promise((resolve,reject) => {
@@ -312,7 +311,7 @@ module.exports = {
 					var date_added = timestamp.now();
 					logger.debug('[PLC] addKaraToWhitelist : isKaraInWhitelist = '+isKaraInWhitelist);
 					if (!isKaraInWhitelist) {
-						module.exports.DB_INTERFACE.addKaraToWhitelist(kara_id,reason,date_added)
+						module.exports.DB_INTERFACE.addKaraToWhitelist(kara_id,date_added)
 							.then(function(){
 								// Regenerate blacklist to take new kara into account.
 								module.exports.generateBlacklist()
@@ -517,44 +516,7 @@ module.exports = {
 					reject(err);
 				});
 		});
-	},
-	/**
-	* @function {Edit a whitelist entry}
-	* @param  {number} wlc_id {Blacklist Criteria ID}
-	* @param  {string} reason {Edit Reason for whitelisting}
-	* @return {promise} Promise
-	*/
-	editWhitelistKara:function(wlc_id,reason) {
-		return new Promise(function(resolve,reject){			
-			var pIsWLC = new Promise((resolve,reject) => {
-				module.exports.isWLC(wlc_id)
-					.then(function() {
-						resolve(true);
-					})
-					.catch(function(err) {
-						err = 'WLCID '+wlc_id+' unknown';
-						logger.error('[PLC] editWhitelistKara : '+err);
-						reject(err);						
-					});
-			});
-			Promise.all([pIsWLC])
-				.then(function(){
-					// Editing whitelist item here
-					module.exports.DB_INTERFACE.editWhitelistKara(wlc_id,reason)
-						.then(function(){
-							resolve();
-						})
-						.catch(function(err){
-							logger.error('[PLC] editWhitelistKara : '+err);
-							reject(err);
-						});
-				})
-				.catch(function(err){
-					logger.error('[PLC] isWLC rejected!');
-					reject(err);
-				});
-		});
-	},
+	},	
 	/**
 	* @function {Is there a public playlist in the database?}
 	* @return {number} {Playlist ID or message}

@@ -1667,28 +1667,6 @@ module.exports = {
 				});
 		});
 	},
-	editWhitelistKara:function(wlc_id,reason) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				logger.error('[DBI] Database interface is not ready yet!');
-				reject('Database not ready');
-			}
-
-			var sqlEditWhitelistKara = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_whitelist_kara.sql'),'utf-8');
-			module.exports._db_handler.run(sqlEditWhitelistKara,
-				{
-					$wlc_id: wlc_id,
-					$reason: reason
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					logger.error('[DBI] Failed to edit WLC '+wlc_id+' : '+err);		
-					reject(err);					
-				});
-		});
-	},
 	/**
 	* @function {Add Kara To Playlist}
 	* @param  {number} kara_id        {ID of karaoke song to add to playlist}
@@ -1778,7 +1756,7 @@ module.exports = {
 	* @param  {number} date_add       {UNIX timestap of the date and time the song was added to the list}
 	* @return {promise} {Promise}
 	*/
-	addKaraToWhitelist:function(kara_id,reason,date_added) {
+	addKaraToWhitelist:function(kara_id,date_added) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
@@ -1796,7 +1774,6 @@ module.exports = {
 						var kid = kara.kid;
 						var sqlAddKaraToWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_whitelist.sql'),'utf-8');
 						module.exports._db_handler.run(sqlAddKaraToWhitelist, {
-							$reason: reason,
 							$kara_id: kara_id,
 							$kid: kid,
 							$created_at: date_added,

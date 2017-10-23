@@ -1508,18 +1508,14 @@ module.exports = {
 						'kara_id': {
 							in: 'body',
 							notEmpty: true,
-							isInt: true,
-						},
-						'reason': {
-							in: 'body',
-							notEmpty: true,
-						}
+							numbersArray: true,
+						},						
 					});
 
 					req.getValidationResult().then(function(result) {
 						if (result.isEmpty()) {
 							req.sanitize('kara_id').toInt();
-							module.exports.onKaraAddToWhitelist(req.body.kara_id,req.body.reason)
+							module.exports.onKaraAddToWhitelist(req.body.kara_id)
 								.then(function(){
 									module.exports.emitEvent('whitelistUpdated');
 									module.exports.emitEvent('blacklistUpdated');
@@ -1582,36 +1578,7 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(errMessage('WL_DELETE_SONG_ERROR',err));
 						});
-				})
-				.put(function(req,res){
-					req.check({
-						'reason': {
-							in: 'body',
-							notEmpty: true,
-						}
-					});
-
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							module.exports.onWhitelistSingleKaraEdit(req.params.wl_id,req.body.reason)
-								.then(function(){
-									module.exports.emitEvent('whitelistUpdated');
-									res.json(OKMessage(null,'WL_SONG_UPDATED',req.params.wl_id));									
-								})
-								.catch(function(err){
-									logger.error(err);
-									res.statusCode = 500;
-									res.json(errMessage('WL_UPDATE_SONG_ERROR',err));
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
 				});
-
 			routerAdmin.route('/blacklist/criterias')
 				.get(function(req,res){
 					//Get list of blacklisted karas
@@ -1712,16 +1679,6 @@ module.exports = {
 
 			routerAdmin.route('/player')
 				.put(function(req,res){
-					// Update status of player (play/pause/stopNow/stopNext)
-					// Commands:
-					// play - starts off kara / resumes from pause
-					// pause - pauses player in mid song
-					// stopNow - stops the karaoke NOW
-					// stopAfter - stops the karaoke after the current song finishes
-					// skip - skips to next song
-					// prev - goes to previous song
-					// toggleFullscreen - as it says
-					// toggleAlwaysOnTop - as it says
 					req.checkBody('command')
 						.notEmpty()
 						.enum(['play',
@@ -1739,7 +1696,6 @@ module.exports = {
 							'setVolume',
 							'showSubs',
 							'hideSubs',
-
 						]
 						);
 					req.getValidationResult().then(function(result) {
@@ -2294,7 +2250,6 @@ module.exports = {
 	onPlaylistSingleKaraDelete:function(){},
 	onPlaylistSingleKaraEdit:function(){},
 	onWhitelistSingleKaraDelete:function(){},
-	onWhitelistSingleKaraEdit:function(){},
 	onPlaylistCurrentInfo:function(){},
 	onPlaylistCurrentContents:function(){},
 	onPlaylistPublicInfo:function(){},
