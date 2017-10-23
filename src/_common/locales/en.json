@@ -15,6 +15,7 @@
 	"BLCTYPE_1002": "Longer than (sec)",
 	"BLCTYPE_1003": "Shorter than (sec)",
 	"BLCTYPE_1000": "Serie contains",
+	"BLCTYPE_1004": "Title contains",
 	"BLCTYPE_0": "Metadatas",
 	"BLCTYPE_2": "Singer",
 	"BLCTYPE_3": "Type",

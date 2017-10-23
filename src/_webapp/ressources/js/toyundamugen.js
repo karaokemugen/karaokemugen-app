@@ -489,6 +489,7 @@ var plData;
 		'BLCTYPE_1001' ,
 		'BLCTYPE_1002',
 		'BLCTYPE_1003',
+		'BLCTYPE_1004',
 		'BLCTYPE_1000',
 		'BLCTYPE_0',
 		'BLCTYPE_2',
