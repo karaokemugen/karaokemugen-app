@@ -2806,15 +2806,30 @@ module.exports = {
 			i18n.setLocale(lang);
 
 			// We need to read the detected locale in ISO639-1
-			
+			var detectedLocale = langs.where('1',lang);
+
 			taglist.forEach(function(tag, index){
-				if (tag.type >= 2 && tag.type <= 999) {
+				if (tag.type >= 2 && tag.type <= 999 && tag.type != 5) {
 					if (tag.name.startsWith('TAG_') || tag.name.startsWith('TYPE_')) {
 						taglist[index].name_i18n = i18n.__(tag.name);
 					} else {
 						taglist[index].name_i18n = tag.name;
 					}							
 				}
+				// Special case for languages
+				if (tag.type == 5) {
+					if (tag.name === 'und') {
+						taglist[index].name_i18n = i18n.__('UNDEFINED_LANGUAGE');
+					} else {
+						// We need to convert ISO639-2B to ISO639-1 to get its language
+						var langdata = langs.where('2B',tag.name);
+						if (langdata === undefined) {
+							taglist[index].name_i18n = i18n.__('UNKNOWN_LANGUAGE');
+						} else {
+							taglist[index].name_i18n = (isoCountriesLanguages.getLanguage(detectedLocale[1],langdata[1]));
+						}
+					}					
+				}	
 			});
 			resolve(taglist);			
 		});
