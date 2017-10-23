@@ -814,17 +814,15 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     right: 0;
 	z-index: 10040;
     font-size: 1.2rem;
-    background-color: hsla(107, 17%, 25%, 0.95);
-	padding: 2px;
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.30), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
 }
 
 .plFooter button {
 	background-color: #1e2124;
 	padding: 0;
-	height: 100%;
-	width: 15px;
-	margin: 0px -1px;
+	height: 22px;
+    width: 22px;
+    margin: -2px -1px 0px -1px;
 }
 .plFooter button > i {
 	top: 0px;
@@ -832,8 +830,14 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .plBrowse .goToPlaying > i {
 	color: hsla(209, 69%, 66%, 1);
 }
+.plInfos {
+	font-size: 15px;
+}
 .plInfos, .plBrowse {
-    display: inline-block;
+	background-color: hsla(107, 17%, 25%, 0.95);
+    float: right;
+    padding: 2px;
+    line-height: 25px;
 }
 
 .plDashboard {

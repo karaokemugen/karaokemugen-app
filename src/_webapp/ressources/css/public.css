@@ -401,7 +401,6 @@ body.touch  .list-group-item[valid="true"]:after {
    }
     .plFooter {
         font-size: 1.5rem;
-        padding: 2px;
     }
     
     .plInfos { 
