@@ -60,7 +60,7 @@ function loadBackground(mode) {
 		QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
 
 		var posX = Math.floor(dimensions.width*0.015);
-		var posY = Math.floor(dimensions.height*0.70);
+		var posY = Math.floor(dimensions.height*0.015);
 		var qrCode = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'qrcode.png');
 		qrCode = qrCode.replace(/\\/g,'/');
 		videofilter = 'lavfi-complex="movie=\\\''+qrCode+'\\\'[logo]; [logo][vid1]scale2ref='+QRCodeWidth+':'+QRCodeHeight+'[logo1][base];[base][logo1] overlay='+posX+':'+posY+'[vo]"';
@@ -376,6 +376,7 @@ module.exports = {
 			// Fullscreen is disabled if pipmode is set.
 			if(module.exports.SETTINGS.PlayerFullscreen == 1 && !module.exports.PlayerPIP) {
 				mpvOptions.push('--fullscreen');
+				module.exports.fullscreen = true;
 			}
 			if(module.exports.SETTINGS.PlayerStayOnTop==1) {
 				module.exports.stayontop = true;
