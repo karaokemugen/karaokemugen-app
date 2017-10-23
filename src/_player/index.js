@@ -94,6 +94,8 @@ module.exports = {
 	currentSongInfos:null,
 	videoType:null,
 	showsubs:true,
+	stayontop:false,
+	fullscreen:false,
 	status:{},
 	init:function(){
 		// Building jingles list
@@ -376,6 +378,7 @@ module.exports = {
 				mpvOptions.push('--fullscreen');
 			}
 			if(module.exports.SETTINGS.PlayerStayOnTop==1) {
+				module.exports.stayontop = true;
 				mpvOptions.push('--ontop');
 			}
 			if(module.exports.SETTINGS.PlayerNoHud==1) {
