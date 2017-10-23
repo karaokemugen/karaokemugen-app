@@ -53,3 +53,18 @@ export async function asyncCheckOrMkdir(...dir) {
 		return await asyncMkdirp(resolvedDir);
 	}
 }
+
+/**
+ * Recherche d'un fichier dans une liste de répertoirs. Si le fichier est trouvé,
+ * on renvoie son chemin complet (avec 'resolve').
+ * Important: on suppose que les chemins des répertoires en paramètre sont eux-même déjà résolus.
+ */
+export async function resolveFileInDirs(filename, dirs) {
+	for (const dir of dirs) {
+		const resolved = resolve(dir, filename);
+		if (await asyncExists(resolved)) {
+			return resolved;
+		}
+	}
+	throw 'File \'' + filename + '\' not found in any listed directory: ' + dirs;
+}
