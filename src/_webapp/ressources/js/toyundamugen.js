@@ -230,7 +230,6 @@ var plData;
 					refreshPlaylistDashboard(side);
 				}
 			}
-          
 		});
 		
 		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="addKara"]', function() {
@@ -640,6 +639,7 @@ var plData;
 		var deferred = $.Deferred();
 		var dashboard = $('#panel' + side + ' .plDashboard');
 		var container = $('#panel' + side + ' .playlistContainer');
+		var playlist = $('#playlist' + side);
 		var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
@@ -749,10 +749,10 @@ var plData;
 						deferred.resolve();
 						refreshContentInfos(side);
 						//window.requestAnimationFrame( function() {
+						var y = container.scrollTop();
 						if(scrollingType) {
 							
 							container.css('overflow-y','auto');
-							var y;
 							if(scrollingType === 'reposition') {
 								var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
 								var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
@@ -761,20 +761,18 @@ var plData;
 								if(scrolling === 'top') {
 									y = 0 + fillerTopH;
 								} else if (scrolling === 'bottom') {
-									y = $('#playlist' + side).height() + 0;
+									y = playlist.height() + 0;
 								} else if (scrolling === 'playing') {
 									var currentlyPlaying = container.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
-									y = currentlyPlaying.offset().top - currentlyPlaying.parent().offset().top;
+									if(currentlyPlaying.length > 0) y = currentlyPlaying.offset().top - currentlyPlaying.parent().offset().top;
 								}
 							}
-
-							container.scrollTop(y);
 							container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix							
-										
-							container.attr('flagScroll', false);
-						} else {
-							if(container.scrollTop() < fillerTopH) container.scrollTop(fillerTopH);
 						}
+						container.scrollTop(
+							Math.min(playlist.height() - fillerBottomH - container.height(),
+								Math.max(fillerTopH, y)));
+						container.attr('flagScroll', false);
 						//});
 					});
 
