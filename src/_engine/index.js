@@ -1805,33 +1805,26 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara)
+				logger.info('[Engine] Adding karaokes to whitelist : '+id_kara);
+				var karas;
+				if (typeof id_kara === 'string') {
+					karas = id_kara.split(',');
+				} else {
+					karas = [id_kara];
+				}
+				console.log(id_kara);
+				console.log(karas);
+				module.exports._services.playlist_controller.addKaraToWhitelist(karas)
 					.then(function(){
-						module.exports._services.playlist_controller.getKara(id_kara)
-							.then((kara) => {
-								resolve(kara.title);
-							})
-							.catch(() => {
-								resolve();
-							});
+						resolve();
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC addKaraToWhitelist : '+err);
-						module.exports._services.playlist_controller.getKara(id_kara)
-							.then((kara) => {
-								err = {
-									message: err,
-									data: kara.title
-								};
-								reject(err);
-							})
-							.catch(() => {
-								err = {
-									message: err,
-									data: id_kara
-								};
-								reject(err);
-							});
+						err = {
+							message: err,
+							data: karas
+						};
+						reject(err);
 					});
 			});
 		};

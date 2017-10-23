@@ -1511,10 +1511,8 @@ module.exports = {
 							numbersArray: true,
 						},						
 					});
-
 					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							req.sanitize('kara_id').toInt();
+						if (result.isEmpty()) {							
 							module.exports.onKaraAddToWhitelist(req.body.kara_id)
 								.then(function(){
 									module.exports.emitEvent('whitelistUpdated');

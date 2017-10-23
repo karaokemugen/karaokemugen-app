@@ -277,46 +277,70 @@ module.exports = {
 	},
 	/**
 	* @function {Add a kara to the whitelist}
-	* @param  {number} kara_id {ID of karaoke to add}
+	* @param  {number} karas {array of kara IDs to add}
 	* @return {promise} Promise
 	*/
-	addKaraToWhitelist:function(kara_id) {
+	addKaraToWhitelist:function(karas) {
 		return new Promise(function(resolve,reject){
-			var isKaraInWhitelist = undefined;
+			var karaList = karas;
 			var pIsKara = new Promise((resolve,reject) => {
-				module.exports.isKara(kara_id)
-					.then(function() {						
-						resolve();
-					})
-					.catch(function(err) {						
-						logger.error('[PLC] isKara : '+err);
+				// Need to do this for each karaoke.
+				async.each(karas,function(kara_id,callback) {				
+					module.exports.isKara(kara_id)
+						.then(function() {
+							callback();
+						})
+						.catch(function(err) {
+							err = 'Karaoke song '+kara_id+' unknown';
+							logger.error('[PLC] isKara : '+err);
+							callback(err);
+						});
+				},function(err){
+					if (err) {
 						reject(err);
-					});
+					} else {
+						resolve();
+					}
+				});				
 			});
 			var pIsKaraInWhitelist = new Promise((resolve,reject) => {
-				module.exports.isKaraInWhitelist(kara_id)
-					.then(function(isKaraInWL) {						
-						//Karaoke song is in whitelist, then we update the boolean and resolve the promise
-						//since we don't want duplicates in playlists.
-						isKaraInWhitelist = isKaraInWL;
-						resolve(isKaraInWL);
-					})
-					.catch(function(err) {
-						logger.error('[PLC] isKaraInWhitelist : '+err);
+				// Need to do this for each karaoke.
+				async.each(karas,function(kara_id,callback) {				
+					module.exports.isKaraInWhitelist(kara_id)
+						.then(function(isKaraInWL) {
+							if (isKaraInWL) {
+								//Search kara_id in karaList and then delete that index from the array. 
+								//Karaoke song won't be added since it already exists in destination playlist.								
+								karaList = L.filter(karaList, element => element !== kara_id);
+							}
+							callback();
+						})
+						.catch(function(err) {
+							logger.error('[PLC] isKaraInWhitelist : '+err);
+							callback(err);
+						});
+				},function(err){
+					if (err) {
 						reject(err);
-					});
+					} else {
+						resolve();
+					}
+				});
 			});
 			Promise.all([pIsKara,pIsKaraInWhitelist])
 				.then(function() {
 					var date_added = timestamp.now();
-					logger.debug('[PLC] addKaraToWhitelist : isKaraInWhitelist = '+isKaraInWhitelist);
-					if (!isKaraInWhitelist) {
-						module.exports.DB_INTERFACE.addKaraToWhitelist(kara_id,date_added)
+					if (karaList.length === 0) {
+						var err = 'No karaoke could be added, all are in whitelist already';
+						logger.error('[PLC] addKaraToWhitelist : '+err);
+						reject(err);
+					} else {
+						module.exports.DB_INTERFACE.addKaraToWhitelist(karaList,date_added)
 							.then(function(){
-								// Regenerate blacklist to take new kara into account.
+								// Regenerate blacklist to take new karas into account.
 								module.exports.generateBlacklist()
 									.then(function(){
-										resolve();
+										resolve(karaList);
 									})
 									.catch(function(err){
 										logger.error('[PLC] addKaraToWhitelist : generateBlacklist : '+err);
@@ -326,13 +350,8 @@ module.exports = {
 							.catch(function(err){
 								logger.error('[PLC] DBI addKaraToWhitelist : '+err);
 								reject(err);
-							});
-					} else {
-						var err = 'Karaoke already present in whitelist';
-						logger.error('[PLC] addKaraToWhitelist : '+err);
-						reject(err);
-					}
-
+							});	
+					}				
 				})
 				.catch(function(err) {
 					logger.error('[PLC] addKaraToWhitelist : '+err);
@@ -1626,8 +1645,6 @@ module.exports = {
 				async.each(karas,function(kara_id,callback) {				
 					module.exports.isKaraInPlaylist(kara_id,playlist_id)
 						.then(function(isKaraInPL) {
-							//Karaoke song is in playlist, then we update the boolean and resolve the promise
-							//since we don't want duplicates in playlists.
 							if (isKaraInPL) {
 								//Search kara_id in karaList and then delete that index from the array. 
 								//Karaoke song won't be added since it already exists in destination playlist.								
