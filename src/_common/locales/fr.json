@@ -201,8 +201,6 @@
 	"WL_SONG_ADDED": "Karaoké ajouté à la liste blanche",
 	"WL_DELETE_SONG_ERROR": "Impossible de supprimer un karaoké de la liste blanche",
 	"WL_SONG_DELETED": "Karaoké supprimé de la liste blanche",
-	"WL_UPDATE_SONG_ERROR": "Impossible de mettre à jour le karaoké de la liste blanche",
-	"WL_SONG_UPDATED": "Karaoké mis à jour dans la liste blanche",
 	"BLC_VIEW_FORBIDDEN": "Affichage des critères de liste noire désactivé",
 	"BLC_EMPTY_ERROR": "Impossible de vider les critères de liste noire",
 	"BLC_EMPTIED": "Liste noire vidée",

@@ -940,10 +940,17 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onWhitelistSingleKaraDelete = function(wl_id){
+		module.exports._services.apiserver.onWhitelistSingleKaraDelete = function(wlc_ids){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.deleteKaraFromWhitelist(wl_id)
+				var karas;
+				if (typeof wlc_ids === 'string') {
+					karas = wlc_ids.split(',');
+				} else {
+					karas = [wlc_ids];
+				}
+				module.exports._services.playlist_controller.deleteKaraFromWhitelist(karas)
 					.then(function(){
+						logger.info('[Engine] Deleted karaoke from whitelist WLC IDs : '+wlc_ids);
 						resolve();
 					})
 					.catch(function(err){
@@ -951,19 +958,7 @@ module.exports = {
 						reject(err);
 					});
 			});
-		};
-		module.exports._services.apiserver.onWhitelistSingleKaraEdit = function(wl_id,reason){
-			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.editWhitelistKara(wl_id,reason)
-					.then(function(){
-						resolve();
-					})
-					.catch(function(err){
-						logger.error('[Engine] PLC editWhitelistKara : '+err);
-						reject(err);
-					});
-			});
-		};
+		};		
 		module.exports._services.apiserver.onPlaylistSingleKaraEdit = function(playlistcontent_id,pos,flag_playing){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.editKaraFromPlaylist(playlistcontent_id,pos,flag_playing)
@@ -1815,35 +1810,26 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara,reason){
+		module.exports._services.apiserver.onKaraAddToWhitelist = function(id_kara){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.addKaraToWhitelist(id_kara,reason)
+				logger.info('[Engine] Adding karaokes to whitelist : '+id_kara);
+				var karas;
+				if (typeof id_kara === 'string') {
+					karas = id_kara.split(',');
+				} else {
+					karas = [id_kara];
+				}
+				module.exports._services.playlist_controller.addKaraToWhitelist(karas)
 					.then(function(){
-						module.exports._services.playlist_controller.getKara(id_kara)
-							.then((kara) => {
-								resolve(kara.title);
-							})
-							.catch(() => {
-								resolve();
-							});
+						resolve();
 					})
 					.catch(function(err){
 						logger.error('[Engine] PLC addKaraToWhitelist : '+err);
-						module.exports._services.playlist_controller.getKara(id_kara)
-							.then((kara) => {
-								err = {
-									message: err,
-									data: kara.title
-								};
-								reject(err);
-							})
-							.catch(() => {
-								err = {
-									message: err,
-									data: id_kara
-								};
-								reject(err);
-							});
+						err = {
+							message: err,
+							data: karas
+						};
+						reject(err);
 					});
 			});
 		};

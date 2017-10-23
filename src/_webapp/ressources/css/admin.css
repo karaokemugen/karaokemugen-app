@@ -93,10 +93,6 @@ span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:befo
 	display: none;
 }
 
-.plDashboard[data-playlist_id="-3"]  .actionDivContainer  button[name="transferKara"],
-.plDashboard[data-playlist_id="-3"]  .actionDivContainer  button[name="deleteKara"] {
-	display: none;
-}
 
 .panel[cantransferkara="false"] .actionDiv > button[name="transferKara"], 
 .plDashboard[data-playlist_id="-1"]  .actionDiv > button[name="transferKara"],

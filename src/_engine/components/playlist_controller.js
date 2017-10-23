@@ -277,47 +277,70 @@ module.exports = {
 	},
 	/**
 	* @function {Add a kara to the whitelist}
-	* @param  {number} kara_id {ID of karaoke to add}
-	* @param  {string} reason {Reason for add in whitelist}
+	* @param  {number} karas {array of kara IDs to add}
 	* @return {promise} Promise
 	*/
-	addKaraToWhitelist:function(kara_id,reason) {
+	addKaraToWhitelist:function(karas) {
 		return new Promise(function(resolve,reject){
-			var isKaraInWhitelist = undefined;
+			var karaList = karas;
 			var pIsKara = new Promise((resolve,reject) => {
-				module.exports.isKara(kara_id)
-					.then(function() {						
-						resolve();
-					})
-					.catch(function(err) {						
-						logger.error('[PLC] isKara : '+err);
+				// Need to do this for each karaoke.
+				async.each(karas,function(kara_id,callback) {				
+					module.exports.isKara(kara_id)
+						.then(function() {
+							callback();
+						})
+						.catch(function(err) {
+							err = 'Karaoke song '+kara_id+' unknown';
+							logger.error('[PLC] isKara : '+err);
+							callback(err);
+						});
+				},function(err){
+					if (err) {
 						reject(err);
-					});
+					} else {
+						resolve();
+					}
+				});				
 			});
 			var pIsKaraInWhitelist = new Promise((resolve,reject) => {
-				module.exports.isKaraInWhitelist(kara_id)
-					.then(function(isKaraInWL) {						
-						//Karaoke song is in whitelist, then we update the boolean and resolve the promise
-						//since we don't want duplicates in playlists.
-						isKaraInWhitelist = isKaraInWL;
-						resolve(isKaraInWL);
-					})
-					.catch(function(err) {
-						logger.error('[PLC] isKaraInWhitelist : '+err);
+				// Need to do this for each karaoke.
+				async.each(karas,function(kara_id,callback) {				
+					module.exports.isKaraInWhitelist(kara_id)
+						.then(function(isKaraInWL) {
+							if (isKaraInWL) {
+								//Search kara_id in karaList and then delete that index from the array. 
+								//Karaoke song won't be added since it already exists in destination playlist.								
+								karaList = L.filter(karaList, element => element !== kara_id);
+							}
+							callback();
+						})
+						.catch(function(err) {
+							logger.error('[PLC] isKaraInWhitelist : '+err);
+							callback(err);
+						});
+				},function(err){
+					if (err) {
 						reject(err);
-					});
+					} else {
+						resolve();
+					}
+				});
 			});
 			Promise.all([pIsKara,pIsKaraInWhitelist])
 				.then(function() {
 					var date_added = timestamp.now();
-					logger.debug('[PLC] addKaraToWhitelist : isKaraInWhitelist = '+isKaraInWhitelist);
-					if (!isKaraInWhitelist) {
-						module.exports.DB_INTERFACE.addKaraToWhitelist(kara_id,reason,date_added)
+					if (karaList.length === 0) {
+						var err = 'No karaoke could be added, all are in whitelist already';
+						logger.error('[PLC] addKaraToWhitelist : '+err);
+						reject(err);
+					} else {
+						module.exports.DB_INTERFACE.addKaraToWhitelist(karaList,date_added)
 							.then(function(){
-								// Regenerate blacklist to take new kara into account.
+								// Regenerate blacklist to take new karas into account.
 								module.exports.generateBlacklist()
 									.then(function(){
-										resolve();
+										resolve(karaList);
 									})
 									.catch(function(err){
 										logger.error('[PLC] addKaraToWhitelist : generateBlacklist : '+err);
@@ -327,13 +350,8 @@ module.exports = {
 							.catch(function(err){
 								logger.error('[PLC] DBI addKaraToWhitelist : '+err);
 								reject(err);
-							});
-					} else {
-						var err = 'Karaoke already present in whitelist';
-						logger.error('[PLC] addKaraToWhitelist : '+err);
-						reject(err);
-					}
-
+							});	
+					}				
 				})
 				.catch(function(err) {
 					logger.error('[PLC] addKaraToWhitelist : '+err);
@@ -517,44 +535,7 @@ module.exports = {
 					reject(err);
 				});
 		});
-	},
-	/**
-	* @function {Edit a whitelist entry}
-	* @param  {number} wlc_id {Blacklist Criteria ID}
-	* @param  {string} reason {Edit Reason for whitelisting}
-	* @return {promise} Promise
-	*/
-	editWhitelistKara:function(wlc_id,reason) {
-		return new Promise(function(resolve,reject){			
-			var pIsWLC = new Promise((resolve,reject) => {
-				module.exports.isWLC(wlc_id)
-					.then(function() {
-						resolve(true);
-					})
-					.catch(function(err) {
-						err = 'WLCID '+wlc_id+' unknown';
-						logger.error('[PLC] editWhitelistKara : '+err);
-						reject(err);						
-					});
-			});
-			Promise.all([pIsWLC])
-				.then(function(){
-					// Editing whitelist item here
-					module.exports.DB_INTERFACE.editWhitelistKara(wlc_id,reason)
-						.then(function(){
-							resolve();
-						})
-						.catch(function(err){
-							logger.error('[PLC] editWhitelistKara : '+err);
-							reject(err);
-						});
-				})
-				.catch(function(err){
-					logger.error('[PLC] isWLC rejected!');
-					reject(err);
-				});
-		});
-	},
+	},	
 	/**
 	* @function {Is there a public playlist in the database?}
 	* @return {number} {Playlist ID or message}
@@ -1664,8 +1645,6 @@ module.exports = {
 				async.each(karas,function(kara_id,callback) {				
 					module.exports.isKaraInPlaylist(kara_id,playlist_id)
 						.then(function(isKaraInPL) {
-							//Karaoke song is in playlist, then we update the boolean and resolve the promise
-							//since we don't want duplicates in playlists.
 							if (isKaraInPL) {
 								//Search kara_id in karaList and then delete that index from the array. 
 								//Karaoke song won't be added since it already exists in destination playlist.								
@@ -2141,11 +2120,7 @@ module.exports = {
 					logger.error('[PLC] DeleteKaraFromPlaylist : '+err);
 					reject(err);
 				});
-
 		});
-
-
-
 	},	
 	/**
 	* @function {Update karaoke from playlist}
@@ -2301,29 +2276,31 @@ module.exports = {
 	* @param  {number} wlc_id     {ID of karaoke to remove}
 	* @return {boolean} {Promise}
 	*/
-	deleteKaraFromWhitelist:function(wlc_id) {
+	deleteKaraFromWhitelist:function(whitelistcontent_ids) {
 		return new Promise(function(resolve,reject){
-			if (L.isEmpty(wlc_id)) {
-				var err = 'WLCID empty';
-				logger.error('[PLC] deleteKaraFromWhitelist : '+err);
-				reject(err);
-			}
+			var karaList = [];
+			whitelistcontent_ids.forEach(function(wlc_id){
+				karaList.push({
+					wlc_id: wlc_id
+				});				
+			});
 			// Removing karaoke here.
-			module.exports.DB_INTERFACE.removeKaraFromWhitelist(wlc_id)
+			module.exports.DB_INTERFACE.removeKaraFromWhitelist(karaList)
 				.then(function(){
 					module.exports.generateBlacklist()
-						.then(function(){
+						.then(() => {
 							resolve();
 						})
-						.catch(function(err){
+						.catch((err) => {
 							logger.error('[PLC] generateBlacklist : '+err);
-							reject(err);							
+							reject(err);
 						});
 				})
 				.catch(function(err){
-					logger.error('[PLC] DBI removeKaraFromWhitelist : '+err);
+					logger.error('[PLC] deleteKaraFromWhitelist : '+err);
 					reject(err);
 				});
+
 		});
 	},
 	/**
