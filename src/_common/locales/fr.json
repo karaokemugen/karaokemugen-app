@@ -14,15 +14,14 @@
 	"BLCTYPE_1001": "Kara",
 	"BLCTYPE_1002": "Plus long que (sec)",
 	"BLCTYPE_1003": "Plus court que (sec)",
-	"BLCTYPE_1000": "Titre contenant",
-	"BLCTYPE_0": "Tags",
-	"BLCTYPE_1": "Inutilisé",
+	"BLCTYPE_1000": "Série contenant",
+	"BLCTYPE_0": "Métadonnées",
 	"BLCTYPE_2": "Chanteur",
 	"BLCTYPE_3": "Type",
 	"BLCTYPE_4": "Créateur",
 	"BLCTYPE_5": "Langue",
 	"BLCTYPE_6": "Auteur du kara",
-	"BLCTYPE_7": "Divers",
+	"BLCTYPE_7": "Tags",
 	"BLCTYPE_8": "Compositeur",
 	"TYPE_AMV": "Anime Music Video",
 	"TYPE_AMV_SHORT": "AMV",
@@ -245,5 +244,8 @@
 	"CL_ALL": "Tous",
 	"CL_HELP_PUBLIC_CONTENT": "<p> Ajoutez vos karas en les <b>glissant vers la droite</b>.</p> <p><b>Swipe gauche/droite</b> pour passer du mode recherche au mode playlist</p> <p><b>N'hésitez pas</b> à venir sur le Discord!",
 	"CL_HELP": "Aide",
-	"CL_PLAYLISTS": "Listes"
+	"CL_PLAYLISTS": "Listes",
+	"GOTO_TOP": "Aller au début de la liste",
+	"GOTO_PLAYING": "Aller au kara en cours de lecture",
+	"GOTO_BOTTOM": "Aller à la fin de la liste"
 }

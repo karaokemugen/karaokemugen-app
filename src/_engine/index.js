@@ -1008,7 +1008,7 @@ module.exports = {
 
 				//Updating IP address
 				if (module.exports.SETTINGS.EngineDisplayConnectionInfoHost == '') {
-					module.exports.SETTINGS.osHost = ip.adress();
+					module.exports.SETTINGS.osHost = ip.address();
 				} else {
 					module.exports.SETTINGS.osHost = module.exports.SETTINGS.EngineDisplayConnectionInfoHost;
 				}
