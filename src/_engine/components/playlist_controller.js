@@ -199,54 +199,78 @@ module.exports = {
 	* @param  {string} blcvalue {Value of blacklist criteria}
 	* @return {promise} Promise
 	*/
-	addBlacklistCriteria:function(blctype,blcvalue) {		
+	addBlacklistCriteria:function(blctype,blcvalues) {		
 		return new Promise(function(resolve,reject){
-			var uniqueValue;
+			var blcList = [];
+			blcvalues.forEach(function(blcvalue){
+				blcList.push({
+					blcvalue: parseInt(blcvalue),
+					blctype: parseInt(blctype)
+				});				
+			});			
 			if (blctype >= 0 && blctype <= 1004) {				
 				var pGetTagName = new Promise ((resolve,reject) => {
 					if (blctype > 0 && blctype < 1000) {
-						module.exports.DB_INTERFACE.getTag(blcvalue)
-							.then(function (res){
-								if (res) {
-									uniqueValue = res.name;
-									resolve();
-								} else { 
-									reject('getTag returned empty result');
-								}								
-							})	
-							.catch(function (err) {
-								logger.error('[PLC] getTagName : '+err);
+						async.eachOf(blcList,function(blc,index,callback) {	
+							module.exports.DB_INTERFACE.getTag(blc.blcvalue)
+								.then(function (res){
+									if (res) {
+										blcList[index].blcuniquevalue = res.name;
+										callback();
+									} else { 
+										callback('getTag returned empty result');
+									}								
+								})	
+								.catch(function (err) {
+									logger.error('[PLC] getTagName : '+err);
+									callback(err);
+								});	
+						},function(err){
+							if (err) {
 								reject(err);
-							});	
+							} else {
+								resolve();
+							}
+						});							
 					} else {
 						resolve();
 					}
 				});	
 				var pGetKID = new Promise ((resolve,reject) => {
 					if (blctype == 1001) {
-						module.exports.DB_INTERFACE.getKara(blcvalue)
-							.then(function(kara){
-								uniqueValue = kara.kid;
-								resolve();
-							})
-							.catch((err) => {
-								logger.error('[PLC] getKara : '+err);
+						async.eachOf(blcList,function(blc,index,callback) {	
+							module.exports.DB_INTERFACE.getKara(blc.blcvalue)
+								.then(function (res){
+									if (res) {
+										blcList[index].blcuniquevalue = res.kid;
+										callback();
+									} else { 
+										callback('getKara returned empty result');
+									}								
+								})	
+								.catch(function (err) {
+									logger.error('[PLC] getKara : '+err);
+									callback(err);
+								});	
+						},function(err){
+							if (err) {
 								reject(err);
-							});
+							} else {
+								resolve();
+							}
+						});							
 					} else {
 						resolve();
 					}
 				});	
 				Promise.all([pGetKID,pGetTagName])
 					.then(() => {
-
-					
-						if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (isNaN(blcvalue))) {
+						if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && blcvalues.some(isNaN)) {
 							var err = 'Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!';
 							logger.error('[PLC] '+err);
 							reject(err);
 						} else {
-							module.exports.DB_INTERFACE.addBlacklistCriteria(blctype,blcvalue,uniqueValue)
+							module.exports.DB_INTERFACE.addBlacklistCriteria(blcList)
 								.then(function(){
 									// Regenerate blacklist to take new kara into account.
 									module.exports.generateBlacklist()

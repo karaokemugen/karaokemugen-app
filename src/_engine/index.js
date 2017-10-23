@@ -718,7 +718,13 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onBlacklistCriteriaAdd = function(blctype,blcvalue){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalue)
+				var blcvalues;
+				if (typeof blcvalue === 'string') {
+					blcvalues = blcvalue.split(',');
+				} else {
+					blcvalues = [blcvalue];
+				}		
+				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalues)
 					.then(function(){
 						resolve();
 					})
