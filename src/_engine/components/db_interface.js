@@ -1858,14 +1858,14 @@ module.exports = {
 												callback();
 											})
 											.catch((err) => {
-												logger.error('Failed to delete karaoke to playlist : '+err);			
+												logger.error('Failed to delete karaoke from playlist : '+err);			
 												callback(err);					
 											});
 									});
 								
 							}, function(err){
 								if (err) {
-									logger.error('Failed to add one karaoke to playlist : '+err);
+									logger.error('Failed to delete one karaoke from playlist : '+err);
 									callback(err);
 								} else {
 									module.exports._db_handler.run('commit')
@@ -1899,23 +1899,70 @@ module.exports = {
 	* @param  {number} whitelistcontent_id        {ID of karaoke song to remove from playlist}
 	* @return {promise} {Promise}
 	*/
-	removeKaraFromWhitelist:function(wlc_id) {
+	removeKaraFromWhitelist:function(wlcs) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
 
 			var sqlRemoveKaraFromWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_whitelist.sql'),'utf-8');
-			module.exports._db_handler.run(sqlRemoveKaraFromWhitelist,
-				{
-					$wlc_id: wlc_id
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					reject('Failed to remove whitelist item '+wlc_id+' : '+err);
+			var karaList = [];
+			wlcs.forEach(function(kara) {
+				karaList.push({
+					$wlc_id: kara.wlc_id
 				});
+			});
+			//We retry the transaction several times because when two transactions overlap there can be an error.
+			//Example two delete or add kara at the very same time.
+			async.retry(
+				{
+					times: 5,
+					interval: 100
+				},
+				function(callback){
+					module.exports._db_handler.run('begin transaction')
+						.then(() => {
+							async.each(karaList,function(data,callback){
+								module.exports._db_handler.prepare(sqlRemoveKaraFromWhitelist)
+									.then((stmt) => {
+										stmt.run(data)
+											.then(() => {
+												callback();
+											})
+											.catch((err) => {
+												logger.error('Failed to delete karaoke from whitelist : '+err);
+												callback(err);					
+											});
+									});
+							}, function(err){
+								if (err) {
+									logger.error('Failed to delete one karaoke from whitelist : '+err);
+									callback(err);
+								} else {
+									module.exports._db_handler.run('commit')
+										.then(() => {
+											// Close all statements just to be sure.
+											callback();
+										})
+										.catch((err) => {
+											callback(err);
+										});
+								}
+							});														
+						})
+						.catch((err) => {
+							logger.error('[DBI] Failed to begin transaction : '+err);
+							logger.error('[DBI] Transaction will be retried');
+							callback(err);
+						});														
+				}, function(err){
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
+				});								
+
 		});
 	},	
 	/**

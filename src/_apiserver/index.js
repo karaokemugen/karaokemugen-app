@@ -126,7 +126,7 @@ module.exports = {
 			// In case of error, return the correct code and object 'error'
 
 			// Admin routes
-/**
+			/**
  * @api {post} admin/shutdown Shutdown the entire application
  * @apiName PostShutdown
  * @apiGroup Admin-Main
@@ -154,7 +154,7 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/playlists')
-/**
+			/**
  * @api {get} admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
  * @apiGroup Admin-Playlists
@@ -198,7 +198,7 @@ module.exports = {
 							res.json(errMessage('PL_LIST_ERROR',err));
 						});
 				})
-/**
+			/**
  * @api {post} admin/playlists/ Create a playlist
  * @apiName PostPlaylist
  * @apiVersion 1.0.0
@@ -288,7 +288,7 @@ module.exports = {
 				});
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)')
-/**
+			/**
  * @api {post} admin/playlists/:pl_id Get playlist information
  * @apiName GetPlaylist
  * @apiGroup Admin-Playlists
@@ -342,7 +342,7 @@ module.exports = {
 							res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 						});
 				})
-/**
+			/**
  * @api {put} admin/playlists/:pl_id Update a playlist's information
  * @apiName PutPlaylist
  * @apiVersion 1.0.0
@@ -412,7 +412,7 @@ module.exports = {
 							}
 						});
 				})
-/**
+			/**
  * @api {delete} admin/playlists/:pl_id Delete a playlist
  * @apiName DeletePlaylist
  * @apiVersion 1.0.0
@@ -449,7 +449,7 @@ module.exports = {
 				});
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
-/**
+			/**
  * @api {put} admin/playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
  * @apiVersion 1.0.0
@@ -488,7 +488,7 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/whitelist/empty')
-/**
+			/**
  * @api {put} admin/whitelist/empty Empty whitelist
  * @apiName PutEmptyWhitelist
  * @apiVersion 1.0.0
@@ -522,7 +522,7 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/blacklist/criterias/empty')
-/**
+			/**
  * @api {put} admin/blacklist/criterias/empty Empty list of blacklist criterias
  * @apiName PutEmptyBlacklist
  * @apiVersion 1.0.0
@@ -557,7 +557,7 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
-/**
+			/**
  * @api {put} admin/playlists/:pl_id/setCurrent Set playlist to current
  * @apiName PutSetCurrentPlaylist
  * @apiVersion 1.0.0
@@ -595,7 +595,7 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
-/**
+			/**
  * @api {put} admin/playlists/:pl_id/setPublic Set playlist to public
  * @apiName PutSetPublicPlaylist
  * @apiVersion 1.0.0
@@ -633,7 +633,7 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
-/**
+			/**
  * @api {get} admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
  * @apiVersion 1.0.0
@@ -733,7 +733,7 @@ module.exports = {
 							res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
 						});
 				})
-/**
+			/**
  * @api {post} admin/playlists/:pl_id/karas Add karaokes to playlist
  * @apiName PatchPlaylistKaras
  * @apiVersion 1.0.0
@@ -820,7 +820,7 @@ module.exports = {
 							}
 						});
 				})
-/**
+			/**
  * @api {patch} admin/playlists/:pl_id/karas Copy karaokes to another playlist
  * @apiName PatchPlaylistKaras
  * @apiVersion 1.0.0
@@ -899,7 +899,7 @@ module.exports = {
 						});
 				})
 
-/**
+			/**
  * @api {delete} admin/playlists/:pl_id/karas Delete karaokes to playlist
  * @apiName DeletePlaylistKaras
  * @apiVersion 1.0.0
@@ -964,7 +964,7 @@ module.exports = {
 				});
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
-/**
+			/**
  * @api {get} admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
  * @apiVersion 1.0.0
@@ -1077,7 +1077,7 @@ module.exports = {
 							res.json(errMessage('PL_VIEW_CONTENT_ERROR',err));
 						});
 				})
-/**
+			/**
  * @api {put} admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
  * @apiVersion 1.0.0
@@ -1146,7 +1146,7 @@ module.exports = {
 				});
 
 			routerAdmin.route('/settings')
-/**
+			/**
  * @api {get} admin/settings Get settings
  * @apiName GetSettings
  * @apiVersion 1.0.0
@@ -1221,7 +1221,7 @@ module.exports = {
 				.get(function(req,res){
 					res.json(OKMessage(module.exports.SETTINGS));
 				})
-/**
+			/**
  * @api {put} admin/settings Update settings
  * @apiName PutSettings
  * @apiVersion 1.0.0
@@ -1532,6 +1532,37 @@ module.exports = {
 							res.json(result.mapped());
 						}
 					});
+				})
+				.delete(function(req,res){
+					//Delete kara from whitelist
+					// Deletion is through whitelist ID.
+					req.checkBody({
+						'wlc_id': {
+							in: 'body',
+							notEmpty: true,
+							numbersArray: true,
+						}
+					});
+					req.getValidationResult().then(function(result) {
+						if (result.isEmpty()) {
+							module.exports.onWhitelistSingleKaraDelete(req.body.wlc_id)
+								.then(function(){
+									module.exports.emitEvent('whitelistUpdated');
+									module.exports.emitEvent('blacklistUpdated');
+									res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));							
+								})
+								.catch(function(err){
+									logger.error(err);
+									res.statusCode = 500;
+									res.json(errMessage('WL_DELETE_SONG_ERROR',err));
+								});
+						} else {
+							// Errors detected
+							// Sending BAD REQUEST HTTP code and error object.
+							res.statusCode = 400;
+							res.json(result.mapped());
+						}
+					});
 				});
 
 			routerAdmin.route('/blacklist')
@@ -1560,23 +1591,7 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(errMessage('BL_VIEW_ERROR',err));
 						});
-				});
-			routerAdmin.route('/whitelist/:wl_id([0-9]+)')
-				.delete(function(req,res){
-					//Delete kara from whitelist
-					// Deletion is through whitelist ID.
-					module.exports.onWhitelistSingleKaraDelete(req.params.wl_id)
-						.then(function(){
-							module.exports.emitEvent('whitelistUpdated');
-							module.exports.emitEvent('blacklistUpdated');
-							res.json(OKMessage(req.params.wl_id,'WL_SONG_DELETED',req.params.wl_id));							
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('WL_DELETE_SONG_ERROR',err));
-						});
-				});
+				});				
 			routerAdmin.route('/blacklist/criterias')
 				.get(function(req,res){
 					//Get list of blacklisted karas

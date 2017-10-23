@@ -940,10 +940,17 @@ module.exports = {
 					});
 			});
 		};
-		module.exports._services.apiserver.onWhitelistSingleKaraDelete = function(wl_id){
+		module.exports._services.apiserver.onWhitelistSingleKaraDelete = function(wlc_ids){
 			return new Promise(function(resolve,reject){
-				module.exports._services.playlist_controller.deleteKaraFromWhitelist(wl_id)
+				var karas;
+				if (typeof wlc_ids === 'string') {
+					karas = wlc_ids.split(',');
+				} else {
+					karas = [wlc_ids];
+				}
+				module.exports._services.playlist_controller.deleteKaraFromWhitelist(karas)
 					.then(function(){
+						logger.info('[Engine] Deleted karaoke from whitelist WLC IDs : '+wlc_ids);
 						resolve();
 					})
 					.catch(function(err){
@@ -1812,8 +1819,6 @@ module.exports = {
 				} else {
 					karas = [id_kara];
 				}
-				console.log(id_kara);
-				console.log(karas);
 				module.exports._services.playlist_controller.addKaraToWhitelist(karas)
 					.then(function(){
 						resolve();

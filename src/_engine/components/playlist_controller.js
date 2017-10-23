@@ -2120,11 +2120,7 @@ module.exports = {
 					logger.error('[PLC] DeleteKaraFromPlaylist : '+err);
 					reject(err);
 				});
-
 		});
-
-
-
 	},	
 	/**
 	* @function {Update karaoke from playlist}
@@ -2280,29 +2276,31 @@ module.exports = {
 	* @param  {number} wlc_id     {ID of karaoke to remove}
 	* @return {boolean} {Promise}
 	*/
-	deleteKaraFromWhitelist:function(wlc_id) {
+	deleteKaraFromWhitelist:function(whitelistcontent_ids) {
 		return new Promise(function(resolve,reject){
-			if (L.isEmpty(wlc_id)) {
-				var err = 'WLCID empty';
-				logger.error('[PLC] deleteKaraFromWhitelist : '+err);
-				reject(err);
-			}
+			var karaList = [];
+			whitelistcontent_ids.forEach(function(wlc_id){
+				karaList.push({
+					wlc_id: wlc_id
+				});				
+			});
 			// Removing karaoke here.
-			module.exports.DB_INTERFACE.removeKaraFromWhitelist(wlc_id)
+			module.exports.DB_INTERFACE.removeKaraFromWhitelist(karaList)
 				.then(function(){
 					module.exports.generateBlacklist()
-						.then(function(){
+						.then(() => {
 							resolve();
 						})
-						.catch(function(err){
+						.catch((err) => {
 							logger.error('[PLC] generateBlacklist : '+err);
-							reject(err);							
+							reject(err);
 						});
 				})
 				.catch(function(err){
-					logger.error('[PLC] DBI removeKaraFromWhitelist : '+err);
+					logger.error('[PLC] deleteKaraFromWhitelist : '+err);
 					reject(err);
 				});
+
 		});
 	},
 	/**
