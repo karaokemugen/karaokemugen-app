@@ -1,4 +1,4 @@
-import {exists, readFile, readdir, rename, unlink} from 'fs';
+import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
 import {remove, mkdirp, copy} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
@@ -36,6 +36,14 @@ export function asyncUnlink(...args) {
 
 export function asyncCopy(...args) {
 	return promisify(copy)(...args);
+}
+
+export function asyncStat(...args) {
+	return promisify(stat)(...args);
+}
+
+export function asyncWriteFile(...args) {
+	return promisify(writeFile)(...args);
 }
 
 /** Fonction vérifiant la présence d'un fichier requis, levant une exception s'il n'est pas trouvé. */
