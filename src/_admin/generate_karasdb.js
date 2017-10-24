@@ -320,6 +320,30 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	return data;
 }
 
+async function prepareAltSeriesInsertData(altSeriesFile) {
+
+	const data = [];
+
+	if (await asyncExists(altSeriesFile)) {
+		const content = await asyncReadFile(altSeriesFile, { encoding: 'utf8' });
+		csv.forEach(content, ':', parsedContent => {
+			const serie = parsedContent[0];
+			const altNames = parsedContent[1];
+			if (serie && altNames) {
+				data.push({
+					$serie_altnames: altNames,
+					$serie_altnamesnorm: deburr(altNames),
+					$serie_name: serie
+				});
+				logger.debug('Added alt. names "' + altNames + '" to ' + serie);
+			}
+		});
+	} else {
+		logger.warn('No alternative series name file found, ignoring');
+	}
+
+	return data;
+}
 
 
 module.exports = {
@@ -386,42 +410,10 @@ module.exports = {
 									const seriesMap = getAllSeries(karas);
 									sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 									sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
+									
+									const pCreateSeries = prepareAltSeriesInsertData(series_altnamesfile)
+										.then(data => sqlUpdateSeriesAltNames = data);
 
-									/**
-									 * Create arrays for series
-									 */
-									var pCreateSeries = new Promise((resolve) => {
-
-										/**
-										 * Working on altnerative names of series.
-										 */
-										if (fs.existsSync(series_altnamesfile)) {
-											doUpdateSeriesAltNames = true;
-											var series_altnamesfilecontent = fs.readFileSync(series_altnamesfile);
-											// !!! non native forEach (here "csv" is a csv-string handler)
-											csv.forEach(series_altnamesfilecontent.toString(), ':', function (serie) {
-												var serie_name = serie[0];
-												var serie_altnames = serie[1];
-												if (!L.isEmpty(serie_altnames) || !L.isEmpty(serie_name)) {
-													var serie_altnamesnorm = L.deburr(serie[1]);
-													sqlUpdateSeriesAltNames.push({
-														$serie_altnames: serie_altnames,
-														$serie_altnamesnorm: serie_altnamesnorm,
-														$serie_name: serie_name,
-													});
-													if (serie_altnames) {
-														module.exports.onLog('success', 'Added alt. names "' + serie_altnames + '" to ' + serie);
-													}
-												}
-											});
-											module.exports.onLog('success', 'Alternative series name file found');
-										} else {
-											doUpdateSeriesAltNames = false;
-											module.exports.onLog('warning', 'No alternative series name file found, ignoring');
-										}
-										resolve();
-
-									});
 									/**
 									 * Create arrays for series
 									 */
