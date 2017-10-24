@@ -345,6 +345,31 @@ module.exports = {
 				});
 		});
 	},
+	/*
+	* @function {getSongCountForUser}
+	* @param {number} {ID of Playlist to count songs in}
+	* @param {string} {name of person to check for requested songs}
+	* @return {boolean} {promise}
+	*/
+	getSongCountForUser:function(playlist_id,requester) {
+		return new Promise((resolve,reject) => {
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+			var sqlGetSongCountForUser = fs.readFileSync(path.join(__dirname,'../../_common/db/select_song_count_for_user_in_playlist.sql'),'utf-8');
+			module.exports._db_handler.get(sqlGetSongCountForUser,
+				{
+					$playlist_id: playlist_id,
+					$requester: requester
+				})
+				.then((data) => {
+					resolve(data.count);
+				})
+				.catch((err) => {
+					reject('Failed to get number of songs for user '+requester+' in playlist '+playlist_id+' : '+err);
+				});						
+		});
+	},
 	/**
 	* @function {Generate new blacklist}
 	* @return {boolean} {Promise}

@@ -226,6 +226,7 @@
 	"GET_UNLUCKY": "Aucune chanson ne peut être ajoutée. Sont-elles déjà toutes en liste de lecture ?",
 	"SONG_VIEW_ERROR": "Impossible d'afficher les informations du karaoké %s",
 	"PLAYLIST_MODE_ADD_SONG_ERROR": "Impossible d'ajouter le karaoké %s à la liste de lecture %s",
+	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "Vous ne pouvez plus ajouter de karaoké pour le moment, attendez que vos chansons passent !",
 	"PLAYLIST_MODE_SONG_ADDED": "%s ajouté à la liste %s",
 	"LYRICS_VIEW_ERROR": "Impossible d'afficher les paroles du karaoké %s",
 	"TAGS_LIST_ERROR": "Impossible d'afficher la liste des tags",

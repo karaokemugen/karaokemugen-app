@@ -2092,9 +2092,8 @@ module.exports = {
 									res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
 								})
 								.catch(function(err){
-									logger.error(err.message);
 									res.statusCode = 500;
-									res.json(errMessage('PLAYLIST_MODE_ADD_SONG_ERROR',err.message,err.data));
+									res.json(errMessage(err.code,err.message,err.data));
 								});
 						} else {
 							// Errors detected
