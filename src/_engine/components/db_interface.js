@@ -427,7 +427,8 @@ module.exports = {
 			blcList.forEach((blcItem) => {
 				blc.push({
 					$blcvalue: blcItem.blcvalue,
-					$blctype: blcItem.blctype
+					$blctype: blcItem.blctype,
+					$blcuniquevalue: blcItem.blcuniquevalue
 				});
 			});
 			async.retry(
