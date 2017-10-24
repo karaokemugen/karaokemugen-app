@@ -137,9 +137,9 @@ module.exports = {
 											logger.info('[DBI] Database interface is READY');
 											// Trace event. DO NOT UNCOMMENT
 											// unless you want to flood your console.
-											module.exports._db_handler.driver.on('trace',function(sql){
+											/*module.exports._db_handler.driver.on('trace',function(sql){
 												console.log(sql);
-											});
+											});*/
 											resolve();						
 										})
 										.catch((err) => {
@@ -401,11 +401,10 @@ module.exports = {
 			var blc = [];
 			blcList.forEach((blcItem) => {
 				blc.push({
-					blcvalue: blcItem.blcvalue,
-					blctype: blcItem.blctype
+					$blcvalue: blcItem.blcvalue,
+					$blctype: blcItem.blctype
 				});
 			});
-			console.log(blc);
 			async.retry(
 				{ 
 					times: 5,
@@ -414,18 +413,14 @@ module.exports = {
 				function(callback){
 					module.exports._db_handler.run('begin transaction')
 						.then(() => {							
-							async.each(blcList,function(data,callback){
-								console.log(data);
+							async.each(blc,function(data,callback){
 								module.exports._db_handler.prepare(sqlAddBlacklistCriterias)
 									.then((stmt) => {
-										console.log(stmt);
 										stmt.run(data)
 											.then(() => {
 												callback();
 											})
-											.catch((err) => {
-												const util = require('util');
-												console.log(util.inspect(err));
+											.catch((err) => {			
 												logger.error('Failed to add blacklist criterias : '+err);												
 												callback(err);												
 											});										
