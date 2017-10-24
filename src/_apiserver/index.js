@@ -1616,6 +1616,7 @@ module.exports = {
 						'blcriteria_value': {
 							in: 'body',
 							notEmpty: true,
+							numbersArray: true, 
 						}
 					});
 

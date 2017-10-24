@@ -137,7 +137,7 @@ module.exports = {
 											logger.info('[DBI] Database interface is READY');
 											// Trace event. DO NOT UNCOMMENT
 											// unless you want to flood your console.
-											/*module.exports._db_handler.on('trace',function(sql){
+											/*module.exports._db_handler.driver.on('trace',function(sql){
 												console.log(sql);
 											});*/
 											resolve();						
@@ -389,27 +389,70 @@ module.exports = {
 	* @function {Add criteria to blacklist}
 	* @param {number} {type of criteria}
 	* @param {string} {value of criteria}
+	* @param {string} {unique value of criteria (KID or tagname)}
 	* @return {boolean} {promise}
 	*/
-	addBlacklistCriteria:function(blcType,blcValue,uniqueValue) {
+	addBlacklistCriteria:function(blcList) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
 			var sqlAddBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/insert_blacklist_criteria.sql'),'utf-8');
-
-			module.exports._db_handler.run(sqlAddBlacklistCriterias,
-				{
-					$blctype: blcType,
-					$blcvalue: blcValue,
-					$uniquevalue: uniqueValue
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					reject('Failed to add blacklist criteria : '+err);
-				});						
+			var blc = [];
+			blcList.forEach((blcItem) => {
+				blc.push({
+					$blcvalue: blcItem.blcvalue,
+					$blctype: blcItem.blctype
+				});
+			});
+			async.retry(
+				{ 
+					times: 5,
+					interval: 100,
+				},
+				function(callback){
+					module.exports._db_handler.run('begin transaction')
+						.then(() => {							
+							async.each(blc,function(data,callback){
+								module.exports._db_handler.prepare(sqlAddBlacklistCriterias)
+									.then((stmt) => {
+										stmt.run(data)
+											.then(() => {
+												callback();
+											})
+											.catch((err) => {			
+												logger.error('Failed to add blacklist criterias : '+err);												
+												callback(err);												
+											});										
+									});
+								
+							}, function(err){
+								if (err) {
+									logger.error('Failed to add one blacklist criteria : '+err);
+									callback(err);
+								} else {
+									module.exports._db_handler.run('commit')
+										.then(() => {
+											callback();	
+										})
+										.catch((err) => {
+											callback(err);
+										});
+								}
+							});
+						})
+						.catch((err) => {
+							logger.error('[DBI] Failed to begin transaction : '+err);
+							logger.error('[DBI] Transaction will be retried');
+							callback(err);
+						});
+				},function(err){
+					if (err){
+						reject(err);						
+					} else {
+						resolve();
+					}
+				});					
 		});
 	},
 	/**
@@ -1745,8 +1788,7 @@ module.exports = {
 					} else {
 						resolve();
 					}
-				});					
-				
+				});									
 		});
 	},
 	/**
