@@ -706,6 +706,31 @@ module.exports = {
 		});
 	},	
 	/**
+	* @function {Get pos of all items in a playlist}
+	* @param  {number} playlist_id {ID of playlist to get a list of songs from}
+	* @return {Object} {Playlist object}
+	*/
+	getPlaylistPos:function(playlist_id){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+			var sqlGetPlaylistPos = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_pos.sql'),'utf-8');
+			
+			
+			module.exports._db_handler.all(sqlGetPlaylistPos,
+				{
+					$playlist_id: playlist_id
+				})
+				.then((playlist) => {
+					resolve(playlist);
+				})
+				.catch((err) => {
+					reject('Failed to get list of playlist pos '+playlist_id+' : '+err);
+				});	
+		});
+	},	
+	/**
 	* @function {Get PLC of kara by date added}
 	* @param  {number} playlist_id {ID of playlist to get a list of songs from}
 	* @param  {number} date_added {Date in unix timestamp}
@@ -1902,64 +1927,17 @@ module.exports = {
 			}
 
 			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
-			var karaList = [];
-			karas.forEach(function(kara) {
-				karaList.push({
-					$playlistcontent_id: kara
+			var karaList = karas.join(',');
+			// We're not using SQLite parameterization due to a limitation 
+			// keeping us from feeding a simple array/list to the statement.			
+			sqlRemoveKaraFromPlaylist = sqlRemoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karaList);
+			module.exports._db_handler.run(sqlRemoveKaraFromPlaylist)
+				.then(() => {
+					resolve();
+				})
+				.catch((err) => {
+					reject(err);
 				});
-			});		
-			//We retry the transaction several times because when two transactions overlap there can be an error.
-			//Example two delete or add kara at the very same time.
-			async.retry(
-				{
-					times: 5,
-					interval: 100
-				},
-				function(callback){
-					module.exports._db_handler.run('begin transaction')
-						.then(() => {
-							async.each(karaList,function(data,callback){
-								module.exports._db_handler.prepare(sqlRemoveKaraFromPlaylist)
-									.then((stmt) => {
-										stmt.run(data)
-											.then(() => {
-												callback();
-											})
-											.catch((err) => {
-												logger.error('Failed to delete karaoke from playlist : '+err);			
-												callback(err);					
-											});
-									});
-								
-							}, function(err){
-								if (err) {
-									logger.error('Failed to delete one karaoke from playlist : '+err);
-									callback(err);
-								} else {
-									module.exports._db_handler.run('commit')
-										.then(() => {
-											// Close all statements just to be sure.
-											callback();
-										})
-										.catch((err) => {
-											callback(err);
-										});
-								}
-							});														
-						})
-						.catch((err) => {
-							logger.error('[DBI] Failed to begin transaction : '+err);
-							logger.error('[DBI] Transaction will be retried');
-							callback(err);
-						});														
-				}, function(err){
-					if (err) {
-						reject(err);
-					} else {
-						resolve();
-					}
-				});								
-
 		});
 	},
 	/**

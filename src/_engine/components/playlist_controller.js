@@ -1366,6 +1366,18 @@ module.exports = {
 				});
 		});
 	},
+	getPlaylistPos:function(playlist_id) {
+		return new Promise(function(resolve,reject) {
+			module.exports.DB_INTERFACE.getPlaylistPos(playlist_id)
+				.then(function(playlist){
+					resolve(playlist);
+				})
+				.catch(function(err){
+					logger.error('[PLC] DBI getPlaylistPos : '+err);
+					reject(err);
+				});
+		});
+	},
 	/**
 	* @function {Get kara info from a playlist}
 	* @param  {number} plc_id {ID of playlist content to get info from}
@@ -2072,32 +2084,8 @@ module.exports = {
 						logger.error('[PLC] isPlaylist : '+err);
 						reject(err);
 					});
-			});
-			var pGetPLContentInfo = new Promise((resolve,reject) => {
-				async.eachOf(karaList,function(plc,index,callback) {				
-					module.exports.DB_INTERFACE.getPLContentInfo(plc.plc_id)
-						.then(function(plcFromDB) {							
-							if (plcFromDB) {
-								karaList[index].kara_id = plcFromDB.kara_id;
-								karaList[index].subFile = plcFromDB.generated_subfile;
-								callback();
-							} else {
-								callback('[PLC] GetPLContentInfo : PLCID '+plc.plc_id+' unknown');								
-							}
-						})
-						.catch(function(err) {						
-							logger.error('[PLC] GetPLContentInfo : '+err);
-							callback(err);
-						});
-				},function(err){
-					if (err) {
-						reject(err);
-					} else {
-						resolve();
-					}
-				});
-			});
-			Promise.all([pGetPLContentInfo,pIsPlaylist])
+			});			
+			Promise.all([pIsPlaylist])
 				.then(function() {
 					// Removing karaoke here.
 					module.exports.DB_INTERFACE.removeKaraFromPlaylist(playlistcontent_id)
@@ -2387,7 +2375,7 @@ module.exports = {
 			});
 			Promise.all([pIsPlaylist])
 				.then(function() {
-					module.exports.getPlaylistContents(playlist_id)
+					module.exports.getPlaylistPos(playlist_id)
 						.then(function(playlist){
 							playlist.sort(function(a,b){
 								return a.pos - b.pos;
