@@ -56,6 +56,24 @@ module.exports = {
 			return undefined;
 		}
 	},	
+	isUserAllowedToAddKara:function(playlist_id,requester) {
+		return new Promise((resolve,reject) => {
+			const limit = module.exports.SETTINGS.EngineSongsPerUser;
+			module.exports.DB_INTERFACE.getSongCountForUser(playlist_id,L.deburr(requester))
+				.then((count) => {
+					if (count >= limit) {
+						logger.info('[PLC] User '+requester+' tried to add more songs than he/she was allowed ('+limit+')');
+						reject('User quota reached');
+					} else {
+						resolve();
+					}
+				})
+				.catch((err) => {
+					logger.error('[PLC] DBI getSongCountForUser : '+err)
+					reject(err);
+				});
+		});
+	},
 	isCurrentPlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)

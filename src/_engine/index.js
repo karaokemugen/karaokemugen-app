@@ -1554,83 +1554,105 @@ module.exports = {
 					//If Kara mode is private, then add to current playlist
 					module.exports._services.playlist_controller.isACurrentPlaylist()
 						.then(function(playlist_id) {
-							logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+karas);							
-							module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
-								.then(function(){
-									if (module.exports.SETTINGS.EngineAutoPlay == 1 && 
+							logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+karas);
+							//Before adding karaoke, check if user has reached its quota or not.
+							module.exports._services.playlist_controller.isUserAllowedToAddKara(playlist_id,requester)
+								.then(() => {
+									module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
+										.then(function(){
+											if (module.exports.SETTINGS.EngineAutoPlay == 1 && 
 										module.exports._states.status == 'stop' ) {
-										module.exports.play();
-									}
-									module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
-										.then(function(playlist){
-											module.exports._services.playlist_controller.getKara(id_kara)
-												.then((kara) => {
-													var res = {
-														kara: kara.title,
-														playlist: playlist.name,
-														kara_id: id_kara,
-														playlist_id: playlist_id
-													};
-													logger.profile('AddKara');
-													resolve(res);
+												module.exports.play();
+											}
+											module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
+												.then(function(playlist){
+													module.exports._services.playlist_controller.getKara(id_kara)
+														.then((kara) => {
+															var res = {
+																kara: kara.title,
+																playlist: playlist.name,
+																kara_id: id_kara,
+																playlist_id: playlist_id
+															};
+															logger.profile('AddKara');
+															resolve(res);
+														})
+														.catch(() => {
+															var res = {
+																playlist: playlist.name,
+															};																				resolve(res);
+														});
 												})
-												.catch(() => {
-													var res = {
-														playlist: playlist.name,
-													};																				resolve(res);
-												});
-										})
-										.catch(function(err){
-											logger.error('[Engine] PLC getPlaylistInfo : '+err);
-											err = {
-												message: err,
-												data: {
-													kara: id_kara,
-													playlist: playlist_id
-												}
-											};
-											logger.profile('AddKara');			
-											reject(err);
-										});						
-								
-								})
-								.catch(function(err){
-									logger.error('[Engine] PLC addKaraToCurrentPlaylist : '+err);
-									module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
-										.then(function(playlist){
-											module.exports._services.playlist_controller.getKara(id_kara)
-												.then((kara) => {
-													var res = {
+												.catch(function(err){
+													logger.error('[Engine] PLC getPlaylistInfo : '+err);
+													err = {
+														code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
 														message: err,
 														data: {
-															kara: kara.title,
-															playlist: playlist.name
+															kara: id_kara,
+															playlist: playlist_id
 														}
 													};
-													logger.profile('AddKara');	
-													reject(res);
-												})
-												.catch(() => {
-													reject();
-												});
+													logger.profile('AddKara');			
+													reject(err);
+												});						
+								
 										})
 										.catch(function(err){
-											logger.error('[Engine] PLC getPlaylistInfo : '+err);
-											err = {
-												message: err,
-												data: {
-													kara: id_kara,
-													playlist: playlist_id,
-												}
-											};
-											logger.profile('AddKara');
-											reject(err);
-										});						
-								});
+											logger.error('[Engine] PLC addKaraToCurrentPlaylist : '+err);
+											module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
+												.then(function(playlist){
+													module.exports._services.playlist_controller.getKara(id_kara)
+														.then((kara) => {
+															var res = {
+																code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
+																message: err,
+																data: {
+																	kara: kara.title,
+																	playlist: playlist.name
+																}
+															};
+															logger.profile('AddKara');	
+															reject(res);
+														})
+														.catch(() => {
+															reject();
+														});
+												})
+												.catch(function(err){
+													logger.error('[Engine] PLC getPlaylistInfo : '+err);
+													err = {
+														code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
+														message: err,
+														data: {
+															kara: id_kara,
+															playlist: playlist_id,
+														}
+													};
+													logger.profile('AddKara');
+													reject(err);
+												});						
+										});
+								})
+								.catch((err) => {
+									logger.error('[Engine] PLC isUserAllowedToAddKara : '+err);
+									err = {
+										code: 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED',
+										message: err,
+										data: {
+											kara: id_kara,
+											playlist: playlist_id,
+											user: requester
+										}
+									};
+									logger.profile('AddKara');
+									reject(err);
+								});							
 						})
 						.catch(function(err) {
 							logger.error('[PLC] isACurrentPlaylist : '+err);
 							err = {
+								code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
 								message: 'Current playlist not found : '+err,
 								data: undefined
 							};
@@ -1642,78 +1664,100 @@ module.exports = {
 					module.exports._services.playlist_controller.isAPublicPlaylist()
 						.then(function(playlist_id) {
 							logger.info('[Engine] Adding karaokes to playlist '+playlist_id+' : '+karas);
-							logger.profile('AddKara');	
-							module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
-								.then(function(){
-									module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
-										.then(function(playlist){
-											module.exports._services.playlist_controller.getKara(id_kara)
-												.then((kara) => {
-													var res = {
-														kara: kara.title,
-														playlist: playlist.name,
-														kara_id: id_kara,
-														playlist_id: playlist_id
-													};
-													logger.profile('AddKara');
-													resolve(res);
+							logger.profile('AddKara');
+							//Before adding karaoke, check if user has reached its quota or not.
+							module.exports._services.playlist_controller.isUserAllowedToAddKara(playlist_id,requester)
+								.then(() => {
+									module.exports._services.playlist_controller.addKaraToPlaylist(karas,requester,playlist_id)
+										.then(function(){
+											module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
+												.then(function(playlist){
+													module.exports._services.playlist_controller.getKara(id_kara)
+														.then((kara) => {
+															var res = {
+																kara: kara.title,
+																playlist: playlist.name,
+																kara_id: id_kara,
+																playlist_id: playlist_id
+															};
+															logger.profile('AddKara');
+															resolve(res);
+														})
+														.catch(() => {
+															logger.profile('AddKara');	
+															resolve();
+														});
 												})
-												.catch(() => {
-													logger.profile('AddKara');	
-													resolve();
-												});
-										})
-										.catch(function(err){
-											logger.error('[Engine] PLC getPlaylistInfo : '+err);
-											err = {
-												message: err,
-												data: {
-													kara: id_kara,
-													playlist: playlist_id
-												}
-											};
-											logger.profile('AddKara');
-											reject(err);
-										});						
-								})
-								.catch(function(err){
-									logger.error('[Engine] PLC addKaraToPublicPlaylist : '+err);
-									module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
-										.then(function(playlist){
-											module.exports._services.playlist_controller.getKara(id_kara)
-												.then((kara) => {
-													var res = {
+												.catch(function(err){
+													logger.error('[Engine] PLC getPlaylistInfo : '+err);
+													err = {
+														code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
 														message: err,
 														data: {
-															kara: kara.title,
-															playlist: playlist.name
+															kara: id_kara,
+															playlist: playlist_id
 														}
 													};
 													logger.profile('AddKara');
-													reject(res);
-												})
-												.catch(() => {
-													logger.profile('AddKara');
-													reject();
-												});
+													reject(err);
+												});						
 										})
 										.catch(function(err){
-											logger.error('[Engine] PLC getPlaylistInfo : '+err);
-											err = {
-												message: err,
-												data: {
-													kara: id_kara,
-													playlist: playlist_id,
-												}
-											};
-											logger.profile('AddKara');
-											reject(err);
-										});						
+											logger.error('[Engine] PLC addKaraToPublicPlaylist : '+err);
+											module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
+												.then(function(playlist){
+													module.exports._services.playlist_controller.getKara(id_kara)
+														.then((kara) => {
+															var res = {
+																code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
+																message: err,
+																data: {
+																	kara: kara.title,
+																	playlist: playlist.name
+																}
+															};
+															logger.profile('AddKara');
+															reject(res);
+														})
+														.catch(() => {
+															logger.profile('AddKara');
+															reject();
+														});
+												})
+												.catch(function(err){
+													logger.error('[Engine] PLC getPlaylistInfo : '+err);
+													err = {
+														code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
+														message: err,
+														data: {
+															kara: id_kara,
+															playlist: playlist_id,
+														}
+													};
+													logger.profile('AddKara');
+													reject(err);
+												});						
+										});
+								})
+								.catch((err) => {
+									logger.error('[Engine] PLC isUserAllowedToAddKara : '+err);
+									err = {
+										code: 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED',
+										message: err,
+										data: {
+											kara: id_kara,
+											playlist: playlist_id,
+											user: requester
+										}
+									};
+									logger.profile('AddKara');
+									reject(err);
 								});
 						})
 						.catch(function(err) {
 							logger.error('[PLC] isAPublicPlaylist : '+err);
 							err = {
+								code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
 								message: 'Public playlist not found : '+err,
 								data: undefined
 							};

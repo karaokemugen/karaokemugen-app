@@ -42,7 +42,7 @@ EngineAllowViewBlacklistCriterias = 1
 
 ; Number of songs a user can add to the playlist at a time.
 ; Songs already played don't count towards this limit.
-EngineSongsPerPerson = 10000
+EngineSongsPerUser = 10000
 
 ; AutoPlay : if a karaoke song is added to the current playlist, start playing immediately if the karaoke is stopped.
 EngineAutoPlay = 0
