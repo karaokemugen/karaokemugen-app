@@ -1753,7 +1753,7 @@ module.exports = {
 				});
 
 			routerAdmin.route('/blacklist')
- /*
+ /**
  * @api {get} admin/blacklist Get blacklist
  * @apiName GetBlacklist
  * @apiVersion 2.0.0
@@ -1849,7 +1849,7 @@ module.exports = {
 						});
 				});				
 			routerAdmin.route('/blacklist/criterias')
-/*
+/**
  * @api {get} admin/blacklist/criterias Get list of blacklist criterias
  * @apiName GetBlacklistCriterias
  * @apiVersion 2.0.0
@@ -1894,7 +1894,7 @@ module.exports = {
 							res.json(errMessage('BLC_VIEW_ERROR',err));
 						});
 				})
-/*
+/**
  * @api {post} admin/blacklist/criterias Add a blacklist criteria
  * @apiName PostBlacklistCriterias
  * @apiVersion 2.0.0
@@ -1969,7 +1969,7 @@ module.exports = {
 				});
 
 			routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
-/*
+/**
  * @api {delete} admin/blacklist/criterias/:blc_id Delete a blacklist criteria
  * @apiName DeleteBlacklistCriterias
  * @apiVersion 2.0.0
@@ -2009,7 +2009,7 @@ module.exports = {
 							res.json(errMessage('BLC_DELETE_ERROR',err));	
 						});
 				})
-/*
+/**
  * @api {put} admin/blacklist/criterias/:blc_id Edit a blacklist criteria
  * @apiName PutBlacklistCriterias
  * @apiVersion 2.0.0
@@ -2078,9 +2078,9 @@ module.exports = {
 				});
 
 			routerAdmin.route('/player')
-			/*
+			/**
  * @api {put} admin/player Send commands to player
- * @apiName PutPlayerCommand
+ * @apiName PutPlayerCommando
  * @apiVersion 2.0.0
  * @apiGroup Player
  * @apiPermission admin
@@ -2146,7 +2146,7 @@ module.exports = {
 
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/export')
-/*
+/**
  * @api {get} admin/playlists/:pl_id/export Export a playlist
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getPlaylistExport
@@ -2212,7 +2212,7 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/playlists/import')
-/*
+/**
  * @api {post} admin/playlists/import Import a playlist
  * @apiName postPlaylistImport
  * @apiVersion 2.0.0
@@ -2281,7 +2281,7 @@ module.exports = {
 
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
-/*
+/**
  * @api {put} admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
@@ -2327,7 +2327,7 @@ module.exports = {
 
 
 			routerPublic.route('/playlists')
-/*
+/**
  * @api {get} public/playlists/ Get list of playlists (public)
  * @apiName GetPlaylistsPublic
  * @apiGroup Playlists
@@ -2428,7 +2428,7 @@ module.exports = {
 						});
 				});
 			routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
-/*
+/**
  * @api {get} public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.0.0
@@ -2653,7 +2653,7 @@ module.exports = {
 				});
 			routerPublic.route('/settings')
 			/**
- * @api {get} public/settings Get settings
+ * @api {get} public/settings Get settings (public)
  * @apiName GetSettingsPublic
  * @apiVersion 2.0.0
  * @apiGroup Main
@@ -2713,7 +2713,7 @@ module.exports = {
 					res.json(OKMessage(settings));
 				});				
 			routerPublic.route('/stats')
- /*
+ /**
  * @api {get} public/stats Get statistics
  * @apiName GetStats
  * @apiVersion 2.0.0
@@ -2753,7 +2753,7 @@ module.exports = {
 				});
 
 			routerPublic.route('/whitelist')
-/*
+/**
  * @api {get} public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
  * @apiVersion 2.0.0
@@ -2856,7 +2856,7 @@ module.exports = {
 				});
 
 			routerPublic.route('/blacklist')
-/*
+/**
  * @api {get} public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
  * @apiVersion 2.0.0
@@ -2959,7 +2959,7 @@ module.exports = {
 				});
 
 			routerPublic.route('/blacklist/criterias')
-/*
+/**
  * @api {get} public/blacklist/criterias Get list of blacklist criterias (public)
  * @apiName GetBlacklistCriteriasPublic
  * @apiVersion 2.0.0
@@ -3012,7 +3012,7 @@ module.exports = {
 				});
 
 			routerPublic.route('/player')
-/*
+/**
  * @api {get} public/player Get player status
  * @apiName GetPlayer
  * @apiVersion 2.0.0
@@ -3425,6 +3425,45 @@ module.exports = {
 						});
 				});
 			routerPublic.route('/playlists/current')
+			/**
+ * @api {get} public/playlists/current Get current playlist information
+ * @apiName GetPlaylistCurrent
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiVersion 2.0.0
+ * @apiDescription This route allows to check basic information about the current playlist, no matter which ID it has (and without you having to know it)
+ * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
+ * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
+ * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
+ * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
+ * @apiSuccess {Number} data/length Duration of playlist in seconds
+ * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
+ * @apiSuccess {String} data/name Name of playlist
+ * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
+ * @apiSuccess {Number} data/playlist_id Database's playlist ID
+ * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK 
+ * {
+ *   "data": {
+ *       "created_at": 1508313440,
+ *       "flag_current": 1,
+ *       "flag_public": 0,
+ *       "flag_visible": 1,
+ *       "length": 0,
+ *       "modified_at": 1508408078,
+ *       "name": "Liste de lecture courante",
+ *       "num_karas": 6,
+ *       "playlist_id": 1,
+ *       "time_left": 0
+ *   }
+ *}
+ * @apiError PL_VIEW_CURRENT_ERROR Unable to fetch info from current playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.get(function(req,res){
 					// Get current Playlist
 
@@ -3440,6 +3479,83 @@ module.exports = {
 				});
 
 			routerPublic.route('/playlists/current/karas')
+			/**
+ * @api {get} public/playlists/current/karas Get list of karaokes in the current playlist
+ * @apiName GetPlaylistKarasCurrent
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * 
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError PL_VIEW_SONGS_CURRENT_ERROR Unable to fetch list of karaokes of current playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
 				.get(function(req,res){
 					// Get current Playlist
 					var lang = req.query.lang;
@@ -3468,6 +3584,46 @@ module.exports = {
 				});
 
 			routerPublic.route('/playlists/public')
+			/**
+ * @api {get} public/playlists/public Get public playlist information
+ * @apiName GetPlaylistPublic
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiVersion 2.0.0
+ * @apiDescription This route allows to check basic information about the public playlist, no matter which ID it has (and without you having to know it)
+ * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
+ * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
+ * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
+ * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
+ * @apiSuccess {Number} data/length Duration of playlist in seconds
+ * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
+ * @apiSuccess {String} data/name Name of playlist
+ * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
+ * @apiSuccess {Number} data/playlist_id Database's playlist ID
+ * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK 
+ * {
+ *   "data": {
+ *       "created_at": 1508313440,
+ *       "flag_current": 1,
+ *       "flag_public": 0,
+ *       "flag_visible": 1,
+ *       "length": 0,
+ *       "modified_at": 1508408078,
+ *       "name": "Liste de lecture courante",
+ *       "num_karas": 6,
+ *       "playlist_id": 1,
+ *       "time_left": 0
+ *   }
+ *}
+ * @apiError PL_VIEW_PUBLIC_ERROR Unable to fetch info from public playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
 				.get(function(req,res){
 					// Get current Playlist
 					module.exports.onPlaylistPublicInfo()
@@ -3482,8 +3638,85 @@ module.exports = {
 				});
 
 			routerPublic.route('/playlists/public/karas')
+			/**
+ * @api {get} public/playlists/public/karas Get list of karaokes in the public playlist
+ * @apiName GetPlaylistKarasPublic
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * 
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError PL_VIEW_SONGS_PUBLIC_ERROR Unable to fetch list of karaokes of public playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
 				.get(function(req,res){
-					// Get current Playlist
+					// Get public Playlist
 					var lang = req.query.lang;
 					var filter = req.query.filter;
 					var to;
@@ -3510,6 +3743,48 @@ module.exports = {
 				});
 
 			routerPublic.route('/tags')
+			/**
+			* @api {get} public/tags Get tag list
+			* @apiName GetTags
+			* @apiVersion 2.0.0
+			* @apiGroup Karaokes
+			* @apiPermission public
+			* 
+			* @apiSuccess {String} data/name Name of tag
+			* @apiSuccess {String} data/name_i18n Translated name of tag
+			* @apiSuccess {Number} data/tag_id Tag ID number
+			* @apiSuccess {Number} data/type Tag type number
+			*
+			* @apiSuccessExample Success-Response:
+			* HTTP/1.1 200 OK
+			* {
+            *     "data": [
+            *        {
+            *          "name": "20th Century",
+            *          "name_i18n": "20th Century",
+            *          "tag_id": 371,
+            *          "type": 2
+			*        },
+			*        {
+            *		   "name": "TYPE_AMV",
+            *          "name_i18n": "Anime Music Video",
+            *          "tag_id": 15,
+            *          "type": 3
+        	*        },
+            *        {
+            *          "name": "ita",
+			*          "name_i18n": "Italien",
+			*          "tag_id": 370,
+			*          "type": 5
+			*        }
+			*		 ...
+			*   ]
+			* }
+        	* @apiError TAGS_LIST_ERROR Unable to get list of tags
+			*
+			* @apiErrorExample Error-Response:
+			* HTTP/1.1 500 Internal Server Error
+			*/
 				.get(function(req,res){
 					module.exports.onTags(req.query.lang)
 						.then(function(tags){
