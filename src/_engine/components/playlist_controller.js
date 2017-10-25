@@ -520,6 +520,10 @@ module.exports = {
 							logger.error('[PLC] DBI deleteBlacklistCriteria : '+err);
 							reject(err);
 						});
+				})
+				.catch((err) => {
+					logger.error('[PLC] deleteBlacklistCriteria : '+err);
+					reject(err);
 				});
 		});
 

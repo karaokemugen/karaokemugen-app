@@ -1856,6 +1856,43 @@ module.exports = {
 							res.json(errMessage('BLC_VIEW_ERROR',err));
 						});
 				})
+/*
+ * @api {post} admin/blacklist/criterias Add a blacklist criteria
+ * @apiName PostBlacklistCriterias
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Blacklist
+ * 
+ * @apiParam {Number} blcriteria_type Blacklist criteria type (refer to docs)
+ * @apiParam {String} blcriteria_value Blacklist criteria value. Depending on type, can be number or string.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "blcriteria_type": "1000",
+ *       "blcriteria_value": "lol"
+ *   },
+ *   "code": "BLC_ADDED",
+ *   "data": {
+ *       "blcriteria_type": "1000",
+ *       "blcriteria_value": "lol"
+ *   }
+ * }
+ * @apiError BLC_ADD_ERROR Blacklist criteria could not be added
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_ADD_ERROR",
+ *   "message": {
+ *       "code": "SQLITE_ERROR",
+ *       "errno": 1
+ *   }
+ * }
+ */		
 				.post(function(req,res){
 					//Add blacklist criteria
 					req.check({
@@ -1893,6 +1930,37 @@ module.exports = {
 				});
 
 			routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
+/*
+ * @api {delete} admin/blacklist/criterias/blc_id Delete a blacklist criteria
+ * @apiName DeleteBlacklistCriterias
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Blacklist
+ * 
+ * @apiParam {Number} blc_id Blacklist criteria's ID to delete
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "5",
+ *   "code": "BLC_DELETED",
+ *   "data": "5"
+ * }
+ * @apiError BLC_DELETE_ERROR Unable to delete BLC
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_ADD_ERROR",
+ *   "message": {
+ *       "code": "SQLITE_ERROR",
+ *       "errno": 1
+ *   }
+ * }
+ */		
+
 				.delete(function(req,res){
 
 					module.exports.onBlacklistCriteriaDelete(req.params.blc_id)
