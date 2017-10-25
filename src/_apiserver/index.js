@@ -126,11 +126,21 @@ module.exports = {
 			// In case of error, return the correct code and object 'error'
 
 			// Admin routes
-			/**
+/**
+ * @apiDefine admin Admin access only
+ * Requires authorization (HTTP basic-auth) to use this API
+ */
+/**
+ * @apiDefine public Public access
+ * This API does not require any authorization method and can be accessed from anyone.
+ */
+/**
  * @api {post} admin/shutdown Shutdown the entire application
+ * @apiDescription
+ * Shutdowns application completely. Kind of a self-destruct button.
  * @apiName PostShutdown
  * @apiGroup Main
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  *
  * @apiPermission admin
  * @apiSuccess {String} Shutdown in progress.
@@ -159,7 +169,7 @@ module.exports = {
  * @api {get} admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
  * @apiGroup Playlists
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiPermission admin
  *
  * @apiSuccess {Object[]} playlists Playlists information
@@ -203,7 +213,7 @@ module.exports = {
 			/**
  * @api {post} admin/playlists/ Create a playlist
  * @apiName PostPlaylist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  *
@@ -292,11 +302,11 @@ module.exports = {
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)')
 			/**
- * @api {post} admin/playlists/:pl_id Get playlist information
+ * @api {get} admin/playlists/:pl_id Get playlist information
  * @apiName GetPlaylist
  * @apiGroup Playlists
  * @apiPermission admin
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
@@ -349,7 +359,7 @@ module.exports = {
 			/**
  * @api {put} admin/playlists/:pl_id Update a playlist's information
  * @apiName PutPlaylist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  *
@@ -420,7 +430,7 @@ module.exports = {
 			/**
  * @api {delete} admin/playlists/:pl_id Delete a playlist
  * @apiName DeletePlaylist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  *
@@ -458,7 +468,7 @@ module.exports = {
 			/**
  * @api {put} admin/playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  *
@@ -498,7 +508,7 @@ module.exports = {
 			/**
  * @api {put} admin/whitelist/empty Empty whitelist
  * @apiName PutEmptyWhitelist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
  *
@@ -533,7 +543,7 @@ module.exports = {
 			/**
  * @api {put} admin/blacklist/criterias/empty Empty list of blacklist criterias
  * @apiName PutEmptyBlacklist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
  *
@@ -569,7 +579,7 @@ module.exports = {
 			/**
  * @api {put} admin/playlists/:pl_id/setCurrent Set playlist to current
  * @apiName PutSetCurrentPlaylist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  *
@@ -608,7 +618,7 @@ module.exports = {
 			/**
  * @api {put} admin/playlists/:pl_id/setPublic Set playlist to public
  * @apiName PutSetPublicPlaylist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -647,7 +657,7 @@ module.exports = {
 			/**
  * @api {get} admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -659,6 +669,8 @@ module.exports = {
  * 
  * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -707,7 +719,9 @@ module.exports = {
  *           ...
  *       ],
  *       "infos": {
- *           "count": 3
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
  *       }
  *   }
  * }
@@ -748,7 +762,7 @@ module.exports = {
 			/**
  * @api {post} admin/playlists/:pl_id/karas Add karaokes to playlist
  * @apiName PatchPlaylistKaras
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -836,7 +850,7 @@ module.exports = {
 			/**
  * @api {patch} admin/playlists/:pl_id/karas Copy karaokes to another playlist
  * @apiName PatchPlaylistKaras
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -914,9 +928,9 @@ module.exports = {
 				})
 
 			/**
- * @api {delete} admin/playlists/:pl_id/karas Delete karaokes to playlist
+ * @api {delete} admin/playlists/:pl_id/karas Delete karaokes from playlist
  * @apiName DeletePlaylistKaras
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -982,7 +996,7 @@ module.exports = {
 			/**
  * @api {get} admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -1096,7 +1110,7 @@ module.exports = {
 			/**
  * @api {put} admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -1166,7 +1180,7 @@ module.exports = {
 			/**
  * @api {get} admin/settings Get settings
  * @apiName GetSettings
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Main
  * @apiPermission admin
  * 
@@ -1242,39 +1256,38 @@ module.exports = {
 			/**
  * @api {put} admin/settings Update settings
  * @apiName PutSettings
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiPermission admin
  * @apiGroup Main
- *
+ * @apiDescription **Note :** All settings must be sent at once in a single request.
  * @apiParam {String} AdminPassword Administrator's password.
- * @apiParam {Number} EngineAllowNicknameChange=true,false Allow/disallow users to change their nickname once set.
- * @apiParam {Number} EngineAllowViewBlacklist=true,false Allow/disallow users to view blacklist contents from the guest interface
- * @apiParam {Number} EngineAllowViewWhitelist=true,false Allow/disallow users to view whitelist contents from the guest interface
- * @apiParam {Number} EngineAllowViewBlacklistCriterias=true,false Allow/disallow users to view blacklist criterias list from the guest interface
- * @apiParam {Number} EngineAllowAutoPlay=true,false Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
- * @apiParam {Number} EngineDisplayConnectionInfo=true,false Show/hide connection info during jingles or pauses (the "Go to http://" message) 
- * @apiParam {Number} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
- * @apiParam {Number} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
- * @apiParam {Number} EngineDisplayConnectionInfoQRCode=true,false Enable/disable QR Code during pauses inbetween two songs.
- * @apiParam {Number} EngineDisplayNickname=true,false Enable/disable displaying the username who requested a song.
+ * @apiParam {Boolean} EngineAllowNicknameChange Allow/disallow users to change their nickname once set.
+ * @apiParam {Boolean} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
+ * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
+ * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message) 
+ * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
+ * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
+ * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
+ * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
- * @apiParam {Number} EnginePrivateMode=true,false `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
- * @apiParam {Number} EngineRepeatPlaylist=true,false Enable/disable auto repeat playlist when at end.
+ * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
  * @apiParam {Number} EngineSongsPerPerson Number of songs allowed per person.
- * @apiParam {Number} PlayerFullscreen=true,false Enable/disable full screen mode
- * @apiParam {Number} PlayerNoBar=true,false `true` = Hide progress bar / `false` = Show progress bar
- * @apiParam {Number} PlayerNoHud=true,false `true` = Hide HUD / `false` = Show HUD
- * @apiParam {Number} PlayerPIP=true,false Enable/disable Picture-in-picture mode
- * @apiParam {String} PlayerPIPPositionX="Left","Center","Right" Horizontal position of PIP screen 
- * @apiParam {String} PlayerPIPPositionY="Top","Center","Bottom" Vertical position of PIP screen
+ * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
+ * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
+ * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
+ * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
+ * @apiParam {String="Left","Center","Right"} PlayerPIPPositionX Horizontal position of PIP screen 
+ * @apiParam {String="Top","Center","Bottom"} PlayerPIPPositionY Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
- * @apiParam {Number} PlayerStayOnTop=true,false Enable/disable stay on top of all windows.  
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
- 
  */
 				.put(function(req,res){
 					//Update settings
@@ -1451,13 +1464,13 @@ module.exports = {
 			/**
  * @api {post} admin/player/message Send a message to screen or users' devices
  * @apiName PostPlayerMessage
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Player
  * @apiPermission admin
  * 
  * @apiParam {String} message Message to display
  * @apiParam {Number} [duration=10000] Duration of message in miliseconds
- * @apiParam {String} [destination="screen"] `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
+ * @apiParam {String="users","screen"} [destination="screen"] `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} data Data sent to the API
  *
@@ -1531,7 +1544,7 @@ module.exports = {
 			/**
  * @api {get} admin/whitelist Get whitelist
  * @apiName GetWhitelist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * 
@@ -1625,7 +1638,7 @@ module.exports = {
 			/**
  * @api {post} admin/whitelist Add song to whitelist
  * @apiName PostWhitelist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * 
@@ -1688,7 +1701,7 @@ module.exports = {
 			/**
  * @api {delete} admin/whitelist Delete whitelist item
  * @apiName DeleteWhitelist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * 
@@ -1743,7 +1756,7 @@ module.exports = {
  /*
  * @api {get} admin/blacklist Get blacklist
  * @apiName GetBlacklist
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
  * 
@@ -1839,7 +1852,7 @@ module.exports = {
 /*
  * @api {get} admin/blacklist/criterias Get list of blacklist criterias
  * @apiName GetBlacklistCriterias
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
  * 
@@ -1884,7 +1897,7 @@ module.exports = {
 /*
  * @api {post} admin/blacklist/criterias Add a blacklist criteria
  * @apiName PostBlacklistCriterias
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
  * 
@@ -1959,7 +1972,7 @@ module.exports = {
 /*
  * @api {delete} admin/blacklist/criterias/:blc_id Delete a blacklist criteria
  * @apiName DeleteBlacklistCriterias
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
  * 
@@ -1999,7 +2012,7 @@ module.exports = {
 /*
  * @api {put} admin/blacklist/criterias/:blc_id Edit a blacklist criteria
  * @apiName PutBlacklistCriterias
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
  * 
@@ -2067,12 +2080,12 @@ module.exports = {
 			routerAdmin.route('/player')
 			/*
  * @api {put} admin/player Send commands to player
- * @apiName PutPlayer
- * @apiVersion 1.0.0
+ * @apiName PutPlayerCommand
+ * @apiVersion 2.0.0
  * @apiGroup Player
  * @apiPermission admin
  * 
- * @apiParam {String} command="play","pause","stopNow","stopAfter","skip","prev","toggleFullscreen","toggleAlwaysOnTop","seek","goTo","mute","unmute","setVolume","showSubs","hideSubs" Command to send to player
+ * @apiParam {String="play","pause","stopNow","stopAfter","skip","prev","toggleFullscreen","toggleAlwaysOnTop","seek","goTo","mute","unmute","setVolume","showSubs","hideSubs"} command Command to send to player
  * @apiParam {String} [option] Parameter for the command being sent
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} args arguments for the message
@@ -2135,11 +2148,12 @@ module.exports = {
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/export')
 /*
  * @api {get} admin/playlists/:pl_id/export Export a playlist
+ * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getPlaylistExport
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ * @apiParam {Number} pl_id Playlist ID to export
  * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
  *
  * @apiSuccessExample Success-Response:
@@ -2201,7 +2215,7 @@ module.exports = {
 /*
  * @api {post} admin/playlists/import Import a playlist
  * @apiName postPlaylistImport
- * @apiVersion 1.0.0
+ * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -2224,7 +2238,7 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  * {
  *   "code": "PL_IMPORT_ERROR",
- *   "message": {}
+ *   "message": "No header section"
  * }
  */		
 				.post(function(req,res){
@@ -2267,6 +2281,35 @@ module.exports = {
 
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
+/*
+ * @api {put} admin/playlists/:pl_id/shuffle Shuffle a playlist
+ * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
+ * @apiName putPlaylistShuffle
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiParam {Number} pl_id Playlist ID to shuffle
+ * @apiSuccess {String} args ID of playlist shuffled
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist shuffled
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "5",
+ *   "code": "PL_SHUFFLED",
+ *   "data": "5"
+ * }
+ * @apiError PL_SHUFFLE_ERROR Unable to shuffle playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "10",
+ *   "code": "PL_SHUFFLE_ERROR",
+ *   "message": "Playlist 10 unknown"
+ * }
+ */		
+
 				.put(function(req,res){
 					module.exports.onPlaylistShuffle(req.params.pl_id)
 						.then(function(){
@@ -2284,6 +2327,38 @@ module.exports = {
 
 
 			routerPublic.route('/playlists')
+/*
+ * @api {get} public/playlists/ Get list of playlists (public)
+ * @apiName GetPlaylistsPublic
+ * @apiGroup Playlists
+ * @apiVersion 2.0.0
+ * @apiPermission public
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
+ * @apiSuccess {Object[]} playlists Playlists information
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "created_at": 1508313440,
+ *           "flag_current": 1,
+ *           "flag_public": 0,
+ *           "flag_visible": 1,
+ *           "length": 0,
+ *           "modified_at": 1508408078,
+ *           "name": "Liste de lecture courante",
+ *           "num_karas": 6,
+ *           "playlist_id": 1,
+ *           "time_left": 0
+ *       }
+ *   ]
+ * }
+ * @apiError PL_LIST_ERROR Unable to fetch a list of playlists
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.get(function(req,res){
 					// Get list of playlists, only return the visible ones
 					var seenFromUser = true;
@@ -2297,6 +2372,46 @@ module.exports = {
 						});
 				});
 			routerPublic.route('/playlists/:pl_id([0-9]+)')
+/**
+ * @api {get} public/playlists/:pl_id Get playlist information (public)
+ * @apiName GetPlaylistPublic
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiVersion 2.0.0
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
+ * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
+ * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
+ * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
+ * @apiSuccess {Number} data/length Duration of playlist in seconds
+ * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
+ * @apiSuccess {String} data/name Name of playlist
+ * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
+ * @apiSuccess {Number} data/playlist_id Database's playlist ID
+ * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK 
+ * {
+ *   "data": {
+ *       "created_at": 1508313440,
+ *       "flag_current": 1,
+ *       "flag_public": 0,
+ *       "flag_visible": 1,
+ *       "length": 0,
+ *       "modified_at": 1508408078,
+ *       "name": "Liste de lecture courante",
+ *       "num_karas": 6,
+ *       "playlist_id": 1,
+ *       "time_left": 0
+ *   }
+ *}
+ * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.get(function(req,res){
 					// Get playlist, only if visible
 					//Access :pl_id by req.params.pl_id
@@ -2313,6 +2428,82 @@ module.exports = {
 						});
 				});
 			routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
+/*
+ * @api {get} public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
+ * @apiName GetPlaylistKarasPublic
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError PL_VIEW_SONGS_ERROR Unable to fetch list of karaokes in a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.get(function(req,res){
 					// Get playlist contents, only if visible
 					//Access :pl_id by req.params.pl_id					
@@ -2344,6 +2535,110 @@ module.exports = {
 				});
 
 			routerPublic.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+			/**
+ * @api {get} public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
+ * @apiName GetPlaylistPLCPublic
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
+ * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
+ * @apiParam {Number} plc_id Playlist content ID. 
+ * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
+ * @apiSuccess {String} data/NORM_creator Normalized creator's name
+ * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
+ * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
+ * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
+ * @apiSuccess {String} data/NORM_singer Normalized name of singer.
+ * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
+ * @apiSuccess {String} data/NORM_title Normalized song title
+ * @apiSuccess {String} data/author Karaoke author's name
+ * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {String} data/creator Show's creator name
+ * @apiSuccess {Number} data/duration Song duration in seconds
+ * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
+ * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
+ * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
+ * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
+ * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
+ * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
+ * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
+ * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
+ * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
+ * @apiSuccess {String} data/misc_i18n Translated tag list
+ * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
+ * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
+ * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
+ * @apiSuccess {String} data/pseudo_add User who added/requested the song
+ * @apiSuccess {String} data/serie Name of series/show the song belongs to
+ * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
+ * @apiSuccess {String} data/singer Singer's name, if known.
+ * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
+ * @apiSuccess {String} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
+ * @apiSuccess {String} data/songtype_i18n Translated song's type (`Opening`, `Ending`, `Insert Song`...)
+ * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
+ * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
+ * @apiSuccess {String} data/title Song's title
+ * @apiSuccess {String} data/videofile Video's filename
+ * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
+ * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_author": null,
+ *           "NORM_creator": null,
+ *           "NORM_pseudo_add": "Axel",
+ *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
+ *           "NORM_serie_altname": "C-Cube/CxCxC",
+ *           "NORM_singer": null,
+ *           "NORM_songwriter": null,
+ *           "NORM_title": "Hana",
+ *           "author": null,
+ *           "created_at": 1508427958,
+ *           "creator": null,
+ *           "duration": 0,
+ *           "flag_blacklisted": 0,
+ *           "flag_playing": 0,
+ *           "flag_whitelisted": 0,
+ *           "gain": 0,
+ *           "kara_id": 1007,
+ *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
+ *           "language": "jpn",
+ *           "language_i18n": "Japonais",
+ *           "misc": null,
+ *           "misc_i18n": null,
+ *           "playlist_id": 2,
+ *           "playlistcontent_id": 4961,
+ *           "pos": 12,
+ *           "pseudo_add": "Axel",
+ *           "serie": "C3 ~ Cube X Cursed X Curious",
+ *           "serie_altname": "C-Cube/CxCxC",
+ *           "singer": null,
+ *           "songorder": 1,
+ *           "songtype": "TYPE_ED",
+ *           "songtype_i18n": "Ending",
+ *           "songtype_i18n_short": "ED",
+ *           "songwriter": null,
+ *           "time_before_play": 0,
+ *           "title": "Hana",
+ *           "videofile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
+ *           "viewcount": 0,
+ *           "year": ""
+ *       }
+ *   ]
+ * }
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_VIEW_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ */
+
 				.get(function(req,res){
 					var seenFromUser = true;
 					module.exports.onPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
@@ -2357,6 +2652,50 @@ module.exports = {
 						});
 				});
 			routerPublic.route('/settings')
+			/**
+ * @api {get} public/settings Get settings
+ * @apiName GetSettingsPublic
+ * @apiVersion 2.0.0
+ * @apiGroup Main
+ * @apiPermission public
+ * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries or admin password information.
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "EngineAllowNicknameChange": "1",
+ *       "EngineAllowViewBlacklist": "1",
+ *       "EngineAllowViewBlacklistCriterias": "1",
+ *       "EngineAllowViewWhitelist": "1",
+ *       "EngineAutoPlay": "0",
+ *       "EngineDefaultLocale": "fr",
+ *       "EngineDisplayConnectionInfo": "1",
+ *       "EngineDisplayConnectionInfoHost": "",
+ *       "EngineDisplayConnectionInfoMessage": "",
+ *       "EngineDisplayConnectionInfoQRCode": "1",
+ *       "EngineDisplayNickname": "1",
+ *       "EngineJinglesInterval": "1",
+ *       "EnginePrivateMode": "1",
+ *       "EngineRepeatPlaylist": "0",
+ *       "EngineSongsPerPerson": "10000",
+ *       "PlayerBackground": "",
+ *       "PlayerFullscreen": "0",
+ *       "PlayerNoBar": "1",
+ *       "PlayerNoHud": "1",
+ *       "PlayerPIP": "1",
+ *       "PlayerPIPPositionX": "Left",
+ *       "PlayerPIPPositionY": "Bottom",
+ *       "PlayerPIPSize": "30",
+ *       "PlayerScreen": "0",
+ *       "PlayerStayOnTop": "1",
+ *       "VersionName": "Finé Fiévreuse",
+ *       "VersionNo": "v2.0 Release Candidate 1",
+ *       "mpvVideoOutput": "direct3d",
+ *   }
+ * }
+ */
 				.get(function(req,res){
 					//We don't want to return all settings.
 					var settings = {};
@@ -2372,8 +2711,35 @@ module.exports = {
 						}
 					}
 					res.json(OKMessage(settings));
-				});
+				});				
 			routerPublic.route('/stats')
+ /*
+ * @api {get} public/stats Get statistics
+ * @apiName GetStats
+ * @apiVersion 2.0.0
+ * @apiGroup Main
+ * @apiPermission public
+ * @apiDescription Returns various stats on the current Karaoke Mugen instance
+ * @apiSuccess {Number} totalartists Total number of artists in database
+ * @apiSuccess {Number} totalcount Total number of karaokes in database
+ * @apiSuccess {Number} totalduration Sum of all karaoke durations in seconds.
+ * @apiSuccess {Number} totallanguages Total number of different languages in database
+ * @apiSuccess {Number} totalplaylists Total number of playlists in database
+ * @apiSuccess {Number} totalseries Total number of series in database
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *    "data": {
+ *        "totalartists": 542,
+ *        "totalcount": 4924,
+ *        "totalduration": 0,
+ *        "totallanguages": 16,
+ *        "totalplaylists": 5,
+ *        "totalseries": 2525
+ *    }
+ * } 
+ */
 				.get(function(req,res){
 					module.exports.onStats()
 						.then(function(stats){
@@ -2387,6 +2753,76 @@ module.exports = {
 				});
 
 			routerPublic.route('/whitelist')
+/*
+ * @api {get} public/whitelist Get whitelist (public)
+ * @apiName GetWhitelistPublic
+ * @apiVersion 2.0.0
+ * @apiGroup Whitelist
+ * @apiPermission public
+ * @apiDescription If `EngineAllowViewWhitelist` is set to `0` in configuration, then returns an error message (see below)
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiSuccess {Object[]} data/content List of karaoke objects
+ * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
+ * @apiSuccess {Number} data/infos/from Items listed are from this position
+ * @apiSuccess {Number} data/infos/to Items listed end at this position
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": "Eurovision",
+ *               "NORM_serie": null,
+ *               "NORM_serie_altname": null,
+ *               "NORM_singer": "Dschinghis Khan",
+ *               "NORM_songwriter": "Ralph Siegel",
+ *               "NORM_title": "Moskau",
+ *               "author": null,
+ *               "created_at": 1508921852,
+ *               "creator": "Eurovision",
+ *               "duration": 0,
+ *               "kara_id": 1,
+ *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
+ *               "language": "ger",
+ *               "language_i18n": "Allemand",
+ *               "misc": "TAG_CONCERT,TAG_REAL",
+ *               "misc_i18n": "Concert,Non-anime",
+ *               "serie": null,
+ *               "serie_altname": null,
+ *               "singer": "Dschinghis Khan",
+ *               "songorder": 0,
+ *               "songtype": "TYPE_MUSIC",
+ *               "songtype_i18n": "Music Video",
+ *               "songtype_i18n_short": "MV",
+ *               "songwriter": "Ralph Siegel",
+ *               "title": "Moskau",
+ *               "videofile": "ALL - Dschinghis Khan - MV - Moskau.avi",
+ *               "viewcount": 0,
+ *               "whitelist_id": 1,
+ *               "year": "1980"
+ *           }
+ *       ],
+ *       "infos": {
+ *           "count": 1,
+ *           "from": 0,
+ *           "to": 999999
+ *       }
+ *   }
+ * }
+ * @apiError WL_VIEW_ERROR Whitelist could not be viewed
+ * @apiError WL_VIEW_FORBIDDEN Whitelist view is not allowed for users
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "WL_VIEW_FORBIDDEN"
+ * }
+ */
 				.get(function(req,res){
 					//Returns whitelist IF the settings allow public to see it
 					if (module.exports.SETTINGS.EngineAllowViewWhitelist == 1) {
@@ -2420,6 +2856,76 @@ module.exports = {
 				});
 
 			routerPublic.route('/blacklist')
+/*
+ * @api {get} public/blacklist Get blacklist (public)
+ * @apiName GetBlacklistPublic
+ * @apiVersion 2.0.0
+ * @apiGroup Blacklist
+ * @apiPermission public
+ * @apiDescription If `EngineAllowViewBlacklist` is set to `0` in configuration, then returns an error message (see below)
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiSuccess {Object[]} data/content List of karaoke objects
+ * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
+ * @apiSuccess {Number} data/infos/from Items listed are from this position
+ * @apiSuccess {Number} data/infos/size How many items listed.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": "Eurovision",
+ *               "NORM_serie": null,
+ *               "NORM_serie_altname": null,
+ *               "NORM_singer": "Dschinghis Khan",
+ *               "NORM_songwriter": "Ralph Siegel",
+ *               "NORM_title": "Moskau",
+ *               "author": null,
+ *               "created_at": 1508921852,
+ *               "creator": "Eurovision",
+ *               "duration": 0,
+ *               "kara_id": 1,
+ *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
+ *               "language": "ger",
+ *               "language_i18n": "Allemand",
+ *               "misc": "TAG_CONCERT,TAG_REAL",
+ *               "misc_i18n": "Concert,Non-anime",
+ *               "serie": null,
+ *               "serie_altname": null,
+ *               "singer": "Dschinghis Khan",
+ *               "songorder": 0,
+ *               "songtype": "TYPE_MUSIC",
+ *               "songtype_i18n": "Music Video",
+ *               "songtype_i18n_short": "MV",
+ *               "songwriter": "Ralph Siegel",
+ *               "title": "Moskau",
+ *               "videofile": "ALL - Dschinghis Khan - MV - Moskau.avi",
+ *               "viewcount": 0,
+ *               "whitelist_id": 1,
+ *               "year": "1980"
+ *           }
+ *       ],
+ *       "infos": {
+ *           "count": 1,
+ *           "from": 0,
+ *           "to": 999999
+ *       }
+ *   }
+ * }
+ * @apiError BL_VIEW_ERROR Blacklist could not be viewed
+ * @apiError BL_VIEW_FORBIDDEN Blacklist view is not allowed for users
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BL_VIEW_FORBIDDEN"
+ * }
+ */
 				.get(function(req,res){
 					//Get list of blacklisted karas IF the settings allow public to see it
 					if (module.exports.SETTINGS.EngineAllowViewBlacklist == 1) {
@@ -2453,6 +2959,40 @@ module.exports = {
 				});
 
 			routerPublic.route('/blacklist/criterias')
+/*
+ * @api {get} public/blacklist/criterias Get list of blacklist criterias (public)
+ * @apiName GetBlacklistCriteriasPublic
+ * @apiVersion 2.0.0
+ * @apiGroup Blacklist
+ * @apiPermission public
+ * 
+ * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
+ * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
+ * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
+ * @apiSuccess {String} data/value_i18n Translated value to display on screen.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "blcriteria_id": 2,
+ *           "type": 6,
+ *           "value": "241",
+ *           "value_i18n": "Jean-Jacques Debout"
+ *       }
+ *   ]
+ * }
+
+ * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
+ * @apiError BLC_VIEW_FORBIDDEN Blacklist criterias are not viewable by users.
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_VIEW_FORBIDDEN"
+ * }
+ */		
 				.get(function(req,res){
 					//Get list of blacklist criterias IF the settings allow public to see it
 					if (module.exports.SETTINGS.EngineAllowViewBlacklistCriterias == 1) {
@@ -2472,6 +3012,52 @@ module.exports = {
 				});
 
 			routerPublic.route('/player')
+/*
+ * @api {get} public/player Get player status
+ * @apiName GetPlayer
+ * @apiVersion 2.0.0
+ * @apiGroup Player
+ * @apiPermission public
+ * @apiDescription Player info is updated very frequently. You can poll it to get precise information from player and engine altogether.
+ * @apiSuccess {Number} data/currentlyPlaying Karaoke ID of song being played
+ * @apiSuccess {Number} data/duration Current's song duration in seconds
+ * @apiSuccess {Boolean} data/fullscreen Player's fullscreen status
+ * @apiSuccess {Boolean} data/muteStatus Player's volume mute status
+ * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
+ * @apiSuccess {String="pause","stop","play"} data/playerStatus Player's status (not to mistake with engine's status, see below). Player status is `pause` if displaying a background.
+ * @apiSuccess {Boolean} data/private Engine's public/private status
+ * @apiSuccess {Boolean} data/showSubs Player's showing subtitles or not
+ * @apiSuccess {String="pause","play","stop"} data/status Engine's status
+ * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
+ * @apiSuccess {String} data/subText Text/lyrics being displayed on screen
+ * @apiSuccess {Number} data/timePosition Player's current position in the song.
+ * @apiSuccess {Number} data/volume Volume (from `0` to `100`)
+ * Example Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "currentlyPlaying": 1020,
+ *       "duration": 0,
+ *       "fullscreen": false,
+ *       "muteStatus": false,
+ *       "onTop": true,
+ *       "playerStatus": "pause",
+ *       "private": true,
+ *       "showSubs": true,
+ *       "status": "stop",
+ *       "subText": null,
+ *       "timePosition": 0,
+ *       "volume": 100
+ *   }
+ * }
+ * @apiError PLAYER_STATUS_ERROR Error fetching player status (is the player running?)
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PLAYER_STATUS_ERROR"
+ * }
+ */		
 				.get(function(req,res){
 					// Get player status
 					// What's playing, time in seconds, duration of song
@@ -2490,6 +3076,75 @@ module.exports = {
 
 				});
 			routerPublic.route('/karas')
+			/**
+ * @api {get} /public/karas Get complete list of karaokes
+ * @apiName GetKaras
+ * @apiVersion 2.0.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * 
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError SONG_LIST_ERROR Unable to fetch list of karaokes
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
 				.get(function(req,res){
 					// if the query has a &filter=xxx
 					// then the playlist returned gets filtered with the text.
@@ -2520,6 +3175,25 @@ module.exports = {
 				});
 
 			routerPublic.route('/karas/random')
+/**
+ * @api {get} /public/karas/random Get a random karaoke ID
+ * @apiName GetKarasRandom
+ * @apiVersion 2.0.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * @apiDescription This selects a random karaoke from the database. What you will do with it depends entirely on you.
+ * @apiSuccess {Number} data Random Karaoke ID
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": 4550
+ * }
+ * @apiError GET_UNLUCKY Unable to find a random karaoke
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
 				.get(function(req,res){
 					module.exports.onKaraRandom(req.query.filter)
 						.then(function(kara_id){
@@ -2529,7 +3203,6 @@ module.exports = {
 							} else {
 								res.json(OKMessage(kara_id));
 							}
-
 						})
 						.catch(function(err){
 							logger.error(err);
@@ -2538,6 +3211,92 @@ module.exports = {
 						});
 				});
 			routerPublic.route('/karas/:kara_id([0-9]+)')
+			/**
+ * @api {get} public/karas/:kara_id Get song info from database
+ * @apiName GetKaraInfo
+ * @apiVersion 2.0.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * 
+ * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
+ * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
+ * @apiSuccess {String} data/NORM_creator Normalized creator's name
+ * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
+ * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
+ * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
+ * @apiSuccess {String} data/NORM_singer Normalized name of singer.
+ * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
+ * @apiSuccess {String} data/NORM_title Normalized song title
+ * @apiSuccess {String} data/author Karaoke author's name
+ * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {String} data/creator Show's creator name
+ * @apiSuccess {Number} data/duration Song duration in seconds
+ * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
+ * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
+ * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
+ * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
+ * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
+ * @apiSuccess {String} data/misc_i18n Translated tag list
+ * @apiSuccess {String} data/serie Name of series/show the song belongs to
+ * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
+ * @apiSuccess {String} data/singer Singer's name, if known.
+ * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
+ * @apiSuccess {String} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
+ * @apiSuccess {String} data/songtype_i18n Translated song's type (`Opening`, `Ending`, `Insert Song`...)
+ * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
+ * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
+ * @apiSuccess {String} data/title Song's title
+ * @apiSuccess {String} data/videofile Video's filename
+ * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
+ * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_author": null,
+ *           "NORM_creator": null,
+ *           "NORM_pseudo_add": "Axel",
+ *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
+ *           "NORM_serie_altname": "C-Cube/CxCxC",
+ *           "NORM_singer": null,
+ *           "NORM_songwriter": null,
+ *           "NORM_title": "Hana",
+ *           "author": null,
+ *           "created_at": 1508427958,
+ *           "creator": null,
+ *           "duration": 0,
+ *           "gain": 0,
+ *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
+ *           "language": "jpn",
+ *           "language_i18n": "Japonais",
+ *           "misc": null,
+ *           "misc_i18n": null,
+ *           "serie": "C3 ~ Cube X Cursed X Curious",
+ *           "serie_altname": "C-Cube/CxCxC",
+ *           "singer": null,
+ *           "songorder": 1,
+ *           "songtype": "TYPE_ED",
+ *           "songtype_i18n": "Ending",
+ *           "songtype_i18n_short": "ED",
+ *           "songwriter": null,
+ *           "time_before_play": 0,
+ *           "title": "Hana",
+ *           "videofile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
+ *           "viewcount": 0,
+ *           "year": ""
+ *       }
+ *   ]
+ * }
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_VIEW_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ */
 				.get(function(req,res){
 					module.exports.onKaraSingle(req.params.kara_id,req.query.lang)
 						.then(function(kara){							
@@ -2549,6 +3308,55 @@ module.exports = {
 							res.json(errMessage('SONG_VIEW_ERROR',err));
 						});
 				})
+			/**
+ * @api {post} public/karas/:kara_id Add karaoke to current/public playlist
+ * @apiName PostKaras
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
+ * @apiParam {Number} kara_id Karaoke ID to add to current/public playlist
+ * @apiParam {String} requestedby Name of user who added the song.
+ * @apiSuccess {String} args/kara Karaoke title added
+ * @apiSuccess {Number} args/kara_id Karaoke ID added.
+ * @apiSuccess {String} args/playlist Name of playlist the song was added to
+ * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data See `args` above.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   },
+ *   "code": "PLAYLIST_MODE_SONG_ADDED",
+ *   "data": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   }
+ * }
+
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
+ * @apiError PLAYLIST_MODE_ADD_SONG_ERROR Karaoke already present in playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": {
+ *       "kara": "1033",
+ *       "playlist": 1,
+ *       "user": "Axel"
+ *   },
+ *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
+ *   "message": "User quota reached"
+ * }
+ */
 				.post(function(req,res){
 					// Add Kara to the playlist currently used depending on mode
 					req.check({
@@ -2583,6 +3391,28 @@ module.exports = {
 				});
 
 			routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')
+			/**
+ * @api {post} public/karas/:kara_id/lyrics Get song lyrics
+ * @apiName GetKarasLyrics
+ * @apiVersion 2.0.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * @apiParam {Number} kara_id Karaoke ID to get lyrics from
+ * @apiSuccess {String[]} data Array of strings making the song's lyrics
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": "Lyrics for this song are not available"
+ * }
+
+ * @apiError LYRICS_VIEW_ERROR Unable to fetch lyrics data
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
+ * }
+ */			
 				.get(function(req,res){
 					module.exports.onKaraSingleLyrics(req.params.kara_id)
 						.then(function(kara){							
