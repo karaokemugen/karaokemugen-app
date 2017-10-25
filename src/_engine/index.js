@@ -1572,7 +1572,7 @@ module.exports = {
 															var res = {
 																kara: kara.title,
 																playlist: playlist.name,
-																kara_id: id_kara,
+																kara_id: parseInt(id_kara),
 																playlist_id: playlist_id
 															};
 															logger.profile('AddKara');
@@ -1590,7 +1590,7 @@ module.exports = {
 														code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
 														message: err,
 														data: {
-															kara: id_kara,
+															kara: parseInt(id_kara),
 															playlist: playlist_id
 														}
 													};
@@ -1626,7 +1626,7 @@ module.exports = {
 														code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
 														message: err,
 														data: {
-															kara: id_kara,
+															kara: parseInt(id_kara),
 															playlist: playlist_id,
 														}
 													};
@@ -1678,7 +1678,7 @@ module.exports = {
 															var res = {
 																kara: kara.title,
 																playlist: playlist.name,
-																kara_id: id_kara,
+																kara_id: parseInt(id_kara),
 																playlist_id: playlist_id
 															};
 															logger.profile('AddKara');
@@ -1695,7 +1695,7 @@ module.exports = {
 														code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
 														message: err,
 														data: {
-															kara: id_kara,
+															kara: parseInt(id_kara),
 															playlist: playlist_id
 														}
 													};
@@ -1731,7 +1731,7 @@ module.exports = {
 														code: 'PLAYLIST_MODE_ADD_SONG_ERROR',
 														message: err,
 														data: {
-															kara: id_kara,
+															kara: parseInt(id_kara),
 															playlist: playlist_id,
 														}
 													};
