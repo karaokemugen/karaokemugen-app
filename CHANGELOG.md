@@ -1,6 +1,6 @@
 # Versions
 
-## v2.0 RC 1 "Finé Fiévreuse" - 18/10/2017
+## v2.0 Release Candidate 1 "Finé Fiévreuse" - 25/10/2017
 
 ### Améliorations
 
@@ -14,16 +14,16 @@
   - Déposez des fonds d'écran dans le dossier `app/backgrounds` et Karaoke Mugen en prendra aléatoirement un pour l'afficher entre deux chansons.
 - #182 Dans l'affichage des playlists, le temps restant de celle-ci s'affiche désormais en bas à droite.
 - #172 Les fichiers de log sont maintenant nommés avec la date du jour.
-- #175 Les chemins spécifiés dans le fichier `config.ini` peuvent maintenant être multiples.
+- #175 Les chemins spécifiés dans le fichier `config.ini` peuvent maintenant être multiples. 
   - Karaoke Mugen ira chercher dans chaque dossier (karas, paroles, vidéos, fonds d'écran
 , jingles...) tous les fichiers s'y trouvant. Par exemple si vous avez trois dossiers de vidéos listés, Karaoke Mugen vérifiera la présence de vidéo dans chaque dossier avant d'abandonner.
   - Pour indiquer plusieurs dossiers, il faut séparer leurs chemins par des pipes `|`. `Alt Droit + 6` sur un clavier AZERTY. Exemple : `app/data/videos|D:/mesvideostest`
   - Les chemins seront traités dans l'ordre. Si une même vidéo (par exemple) existe dans deux dossiers, c'est celle du premier dossier listé qui sera prise en priorité
-- #174 Ajout d'un paramètre `EngineAutoPlay` (Lecture Automatique) qui lance la lecture automatiquement dés qu'un karaoké est ajouté, si celui est sur stop.
+- #174 Ajout d'un paramètre `EngineAutoPlay` (Lecture Automatique) qui lance la lecture automatiquement dés qu'un karaoké est ajouté, si celui est sur stop. 
   - Pour toujours plus de KARAOKE INFINI.
 - #174 Ajout d'un paramètre `EngineRepeatPlaylist` (Répéter la playlist courante)
-  - Cela permet de relancer celle-ci automatiquement lorsqu'on arrive au dernier morceau.
-- #137 Nouvelle fonction Lire Ensuite.
+  - Cela permet de relancer celle-ci automatiquement lorsqu'on arrive au dernier morceau. 
+- #137 Nouvelle fonction Lire Ensuite. 
   - Un clic droit sur le bouton d'ajout d'un kara permet de l'insérer pile après la chanson en cours !
 - #179 Boutons de navigation "retour en haut/en bas/kara en cours" ajoutés
 - #196 Personnalisation des infos affichées en bas de l'écran durant les pauses/jingles
@@ -33,15 +33,19 @@
   - `EngineDisplayConnectionInfoMessage` : Ajoute un message avant celui avec l'URL. Par exemple pour indiquer un réseau Wifi auquel se connecter au préalable.
   - Les informations de connexion sont réaffichées à 50% de la chanson en cours pendant 8 secondes
 - #195 Les informations de la chanson sont maintenant affichées aussi à la fin de la chanson en cours
-- Il est désormais possible d'indiquer à Karaoke Mugen un chemin web (HTTP) pour récupérer les vidéos s'il ne les trouve pas dans vos dossiers.
+- Il est désormais possible d'indiquer à Karaoke Mugen un chemin web (HTTP) pour récupérer les vidéos s'il ne les trouve pas dans vos dossiers. 
   - Si vous êtes sur un réseau local ou que vos vidéos sont hébergées sur Internet, vous pouvez spécifier `PathVideosHTTP=http://monsiteweb.com/videos` pour que Karaoke Mugen streame les vidéos. Cela ne les télécharge pas définitivement sur votre disque dur !
 - #189 Des openings ou endings spécifiques peuvent être recherchés désormais.
 - La recherche prend en compte l'auteur du karaoké
 - #184 Le temps de passage d'un karaoké dans la liste de lecture courante est indiqué (genre "dans 25 minutes")
 - Les karas dans la liste publique/de suggestions sont supprimés dés qu'ils sont joués en courante.
-- #135 L'interface est maintenant complètement en français mais aussi en anglais et peut être traduite dans d'autres langues !
+- #135 L'interface est traduite en anglais et français et se base sur la langue de votre navigateur. On a posé les bases pour une traduction en d'autres langues
+- #197 Bouton aller au début/en fin de playlist et aller au kara en cours de lecture
+- #204 Nouveau critère de blacklist (nom de la série) 
+- #92 Une limite de chansons par utilisateur a été mise en place. 
+  - Une fois définie, la limite empêche les gens d'ajouter un karaoké s'ils ont déjà ajouté trop de chansons. Une fois les chansons de l'utilisateur passées, il peut en ajouter de nouvelles.
 
-### Corrections
+### Corrections 
 
 - #75 Utilisation d'un nouveau module d'accès à la base de données SQLite permettant de gérer les migrations et les promesses.
 - #191 Les pseudos contenant { } sont maintenant correctement affichés à l'écran
@@ -60,11 +64,23 @@
 - #193 Les changements de mot de passe devraient mieux se passer désormais.
 - #186 Les tests d'intégrité de la base utilisateur sont réalisés à chaque lancement si la base karas et utilisateur n'ont pas été générées en même temps.
 - #183 La recherche des noms de série alternatives marche de nouveau correctement
+- Un message est affiché quand les paroles ne sont pas affichables dans l'interface
+- #205 #206 "Tags" devient "Métadonnées" dans l'interface
+- #194 Soucis de scrolling en cas de karas avec plusieurs lignes corrigé
+- #207 Les langues sont traduites dans la liste des critères d'une blacklist
+- #208 Le critère "tag par nom" n'est plus sensible à la casse
+- #210 La blacklist se rafraichit désormais correctement
+- #213 Les paramètres "AlwaysOnTop" et "Fullscreen" sont désormais bien affichés sur l'interface par rapport à la réalité du terrain.
+- #212 Le QRCode est maintenant en haut de l'écran pour éviter que des lignes trop longues en bas ne s'affichent dessus
+- #211 La suppression multiple d'éléments de la whitelist fonctionne de nouveau
+- #209 On peut de nouveau ajouter plusieurs karaokés d'un coup à la blacklist
+- #190 La suppresion de plusieurs karaokés devrait être plus rapide
 
 ### Développement
 
 - Passage à Babel/ES2015+ tout doucement. (Nécessite Node8)
 - **Modification d'API** : Les messages de réponse de l'API ont été complètement revus, consultez la documentation pour plus d'informations.
+- #135 Les retours de l'API ont été normalisés. Une doc plus précise et complète va bientôt être disponible
 
 ### Mettre à jour
 
