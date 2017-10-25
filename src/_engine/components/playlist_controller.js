@@ -222,7 +222,7 @@ module.exports = {
 			var blcList = [];
 			blcvalues.forEach(function(blcvalue){
 				blcList.push({
-					blcvalue: parseInt(blcvalue),
+					blcvalue: blcvalue,
 					blctype: parseInt(blctype)
 				});				
 			});			

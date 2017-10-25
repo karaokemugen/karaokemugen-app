@@ -724,6 +724,7 @@ module.exports = {
 				} else {
 					blcvalues = [blcvalue];
 				}		
+				console.log(blcvalues);
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalues)
 					.then(function(){
 						resolve();
