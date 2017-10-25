@@ -6,6 +6,7 @@ cache:
 
 before_script:
   - npm install
+  - npm install -g apidoc
   - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
   - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
   - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
@@ -14,6 +15,7 @@ before_script:
 stages:
   - test
   - deploy
+  - deploy_apidoc
 
 test:
   stage: test
@@ -29,3 +31,13 @@ deploy:
   only:
     - master
 
+deploy_apidoc:
+  stage: deploy_apidoc
+  script:
+    - apt-get update -qq && apt-get install -y -qq lftp
+    - npm install -g apidoc
+    - apidoc -i src -o apidoc
+    - cd apidoc
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd apidoc; mirror -Rnev --parallel=10"
+  only:
+    - master
