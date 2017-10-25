@@ -129,9 +129,10 @@ module.exports = {
 			/**
  * @api {post} admin/shutdown Shutdown the entire application
  * @apiName PostShutdown
- * @apiGroup Admin-Main
+ * @apiGroup Main
  * @apiVersion 1.0.0
  *
+ * @apiPermission admin
  * @apiSuccess {String} Shutdown in progress.
  *
  * @apiSuccessExample Success-Response:
@@ -157,8 +158,9 @@ module.exports = {
 			/**
  * @api {get} admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
  * @apiVersion 1.0.0
+ * @apiPermission admin
  *
  * @apiSuccess {Object[]} playlists Playlists information
  *
@@ -202,7 +204,8 @@ module.exports = {
  * @api {post} admin/playlists/ Create a playlist
  * @apiName PostPlaylist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  *
  * @apiParam {String} name Name of playlist to create
  * @apiParam {Boolean} flag_public Is the playlist to create public? This unsets `flag_public` on the previous playlist which had it.
@@ -291,7 +294,8 @@ module.exports = {
 			/**
  * @api {post} admin/playlists/:pl_id Get playlist information
  * @apiName GetPlaylist
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  * @apiVersion 1.0.0
  *
  * @apiParam {Number} pl_id Target playlist ID.
@@ -346,7 +350,8 @@ module.exports = {
  * @api {put} admin/playlists/:pl_id Update a playlist's information
  * @apiName PutPlaylist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} name Name of playlist to create
@@ -416,7 +421,8 @@ module.exports = {
  * @api {delete} admin/playlists/:pl_id Delete a playlist
  * @apiName DeletePlaylist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {String} args ID of playlist deleted
@@ -453,7 +459,8 @@ module.exports = {
  * @api {put} admin/playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {String} args ID of playlist emptied
@@ -492,7 +499,8 @@ module.exports = {
  * @api {put} admin/whitelist/empty Empty whitelist
  * @apiName PutEmptyWhitelist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Whitelist
+ * @apiGroup Whitelist
+ * @apiPermission admin
  *
  * @apiSuccess {String} code Message to display
  *
@@ -526,7 +534,8 @@ module.exports = {
  * @api {put} admin/blacklist/criterias/empty Empty list of blacklist criterias
  * @apiName PutEmptyBlacklist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Blacklist
+ * @apiGroup Blacklist
+ * @apiPermission admin
  *
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data `null`
@@ -561,7 +570,8 @@ module.exports = {
  * @api {put} admin/playlists/:pl_id/setCurrent Set playlist to current
  * @apiName PutSetCurrentPlaylist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  *
  * @apiParam {Number} pl_id Target playlist ID. 
  * @apiSuccess {String} args ID of playlist updated
@@ -599,7 +609,8 @@ module.exports = {
  * @api {put} admin/playlists/:pl_id/setPublic Set playlist to public
  * @apiName PutSetPublicPlaylist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  * 
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {String} args ID of playlist updated
@@ -637,13 +648,14 @@ module.exports = {
  * @api {get} admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  * 
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} filter Filter list by this string. (optional)
- * @apiParam {String} lang ISO639-2B code of client's language (to return translated text into the user's language)
- * @apiParam {Number} from Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} size Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  * 
  * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
@@ -737,11 +749,12 @@ module.exports = {
  * @api {post} admin/playlists/:pl_id/karas Add karaokes to playlist
  * @apiName PatchPlaylistKaras
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  * 
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} kara_id List of `kara_id` separated by commas (`,`). Example : `1021,2209,44,872`
- * @apiParam {Number} pos Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
+ * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
  * @apiParam {String} requestedby Name of user who added the song.
  * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
  * @apiSuccess {String} args/playlist_id ID of destinaton playlist
@@ -824,11 +837,12 @@ module.exports = {
  * @api {patch} admin/playlists/:pl_id/karas Copy karaokes to another playlist
  * @apiName PatchPlaylistKaras
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  * 
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} plc_id List of `playlistcontent_id` separated by commas (`,`). Example : `1021,2209,44,872`
- * @apiParam {Number} pos Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist
+ * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist
  * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
  * @apiSuccess {String} args/playlist_id ID of destinaton playlist
  * @apiSuccess {String} code Message to display
@@ -903,7 +917,8 @@ module.exports = {
  * @api {delete} admin/playlists/:pl_id/karas Delete karaokes to playlist
  * @apiName DeletePlaylistKaras
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  * 
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} plc_id List of `plc_id` separated by commas (`,`). Example : `1021,2209,44,872`
@@ -968,7 +983,8 @@ module.exports = {
  * @api {get} admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  * 
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
  * @apiParam {Number} plc_id Playlist content ID. 
@@ -1081,12 +1097,13 @@ module.exports = {
  * @api {put} admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
  * @apiVersion 1.0.0
- * @apiGroup Admin-Playlists
+ * @apiGroup Playlists
+ * @apiPermission admin
  * 
  * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
  * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
- * @apiParam {Number} pos Position in target playlist where to move the song to.
- * @apiParam {Number} flag_playing If set to 1, the select song will become the currently playing song.
+ * @apiParam {Number} [pos] Position in target playlist where to move the song to.
+ * @apiParam {Number} [flag_playing] If set to 1, the select song will become the currently playing song.
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} data PLCID modified
  *
@@ -1150,7 +1167,8 @@ module.exports = {
  * @api {get} admin/settings Get settings
  * @apiName GetSettings
  * @apiVersion 1.0.0
- * @apiGroup Admin-Main
+ * @apiGroup Main
+ * @apiPermission admin
  * 
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
@@ -1225,32 +1243,33 @@ module.exports = {
  * @api {put} admin/settings Update settings
  * @apiName PutSettings
  * @apiVersion 1.0.0
- * @apiGroup Admin-Main
+ * @apiPermission admin
+ * @apiGroup Main
  *
  * @apiParam {String} AdminPassword Administrator's password.
- * @apiParam {Number} EngineAllowNicknameChange Allow/disallow users to change their nickname once set.
- * @apiParam {Number} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
- * @apiParam {Number} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
- * @apiParam {Number} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
- * @apiParam {Number} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
- * @apiParam {Number} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message) 
+ * @apiParam {Number} EngineAllowNicknameChange=true,false Allow/disallow users to change their nickname once set.
+ * @apiParam {Number} EngineAllowViewBlacklist=true,false Allow/disallow users to view blacklist contents from the guest interface
+ * @apiParam {Number} EngineAllowViewWhitelist=true,false Allow/disallow users to view whitelist contents from the guest interface
+ * @apiParam {Number} EngineAllowViewBlacklistCriterias=true,false Allow/disallow users to view blacklist criterias list from the guest interface
+ * @apiParam {Number} EngineAllowAutoPlay=true,false Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
+ * @apiParam {Number} EngineDisplayConnectionInfo=true,false Show/hide connection info during jingles or pauses (the "Go to http://" message) 
  * @apiParam {Number} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
  * @apiParam {Number} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
- * @apiParam {Number} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
- * @apiParam {Number} EngineDisplayNickname Enable/disable displaying the username who requested a song.
+ * @apiParam {Number} EngineDisplayConnectionInfoQRCode=true,false Enable/disable QR Code during pauses inbetween two songs.
+ * @apiParam {Number} EngineDisplayNickname=true,false Enable/disable displaying the username who requested a song.
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
- * @apiParam {Number} EnginePrivateMode 0 = Public Karaoke mode, 1 = Private Karaoke Mode. See documentation.
- * @apiParam {Number} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
+ * @apiParam {Number} EnginePrivateMode=true,false `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Number} EngineRepeatPlaylist=true,false Enable/disable auto repeat playlist when at end.
  * @apiParam {Number} EngineSongsPerPerson Number of songs allowed per person.
- * @apiParam {Number} PlayerFullscreen Enable/disable full screen mode
- * @apiParam {Number} PlayerNoBar 1 = Hide progress bar / 0 = Show progress bar
- * @apiParam {Number} PlayerNoHud 1 = Hide HUD / 0 = Show HUD
- * @apiParam {Number} PlayerPIP Enable/disable Picture-in-picture mode
- * @apiParam {String} PlayerPIPPositionX Horizontal position of PIP screen (`Left`/`Center`/`Right`) 
- * @apiParam {String} PlayerPIPPositionY Vertical position of PIP screen (`Top`/`Center`/`Bottom`)
+ * @apiParam {Number} PlayerFullscreen=true,false Enable/disable full screen mode
+ * @apiParam {Number} PlayerNoBar=true,false `true` = Hide progress bar / `false` = Show progress bar
+ * @apiParam {Number} PlayerNoHud=true,false `true` = Hide HUD / `false` = Show HUD
+ * @apiParam {Number} PlayerPIP=true,false Enable/disable Picture-in-picture mode
+ * @apiParam {String} PlayerPIPPositionX="Left","Center","Right" Horizontal position of PIP screen 
+ * @apiParam {String} PlayerPIPPositionY="Top","Center","Bottom" Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
- * @apiParam {Number} PlayerStayOnTop Enable/disable stay on top of all windows.  
+ * @apiParam {Number} PlayerStayOnTop=true,false Enable/disable stay on top of all windows.  
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -1433,11 +1452,12 @@ module.exports = {
  * @api {post} admin/player/message Send a message to screen or users' devices
  * @apiName PostPlayerMessage
  * @apiVersion 1.0.0
- * @apiGroup Admin-Player
+ * @apiGroup Player
+ * @apiPermission admin
  * 
  * @apiParam {String} message Message to display
- * @apiParam {Number} duration (optional) Duration of message in miliseconds
- * @apiParam {String} destination (optional) `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
+ * @apiParam {Number} [duration=10000] Duration of message in miliseconds
+ * @apiParam {String} [destination="screen"] `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} data Data sent to the API
  *
@@ -1512,12 +1532,13 @@ module.exports = {
  * @api {get} admin/whitelist Get whitelist
  * @apiName GetWhitelist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Whitelist
+ * @apiGroup Whitelist
+ * @apiPermission admin
  * 
- * @apiParam {String} filter Filter list by this string. (optional)
- * @apiParam {String} lang ISO639-2B code of client's language (to return translated text into the user's language)
- * @apiParam {Number} from Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} size Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
  * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
  * @apiSuccess {Number} data/infos/from Items listed are from this position
@@ -1605,7 +1626,8 @@ module.exports = {
  * @api {post} admin/whitelist Add song to whitelist
  * @apiName PostWhitelist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Whitelist
+ * @apiGroup Whitelist
+ * @apiPermission admin
  * 
  * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
  * @apiSuccess {Number} args Arguments associated with message
@@ -1613,7 +1635,7 @@ module.exports = {
  * @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
+ * HTTP/1.1 201 Created
  * {
  *   "args": "2",
  *   "code": "WL_SONG_ADDED",
@@ -1667,7 +1689,8 @@ module.exports = {
  * @api {delete} admin/whitelist Delete whitelist item
  * @apiName DeleteWhitelist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Whitelist
+ * @apiGroup Whitelist
+ * @apiPermission admin
  * 
  * @apiParam {Number[]} wlc_id Whitelist content IDs to delete from whitelist, separated by commas
  * @apiSuccess {Number} args Arguments associated with message
@@ -1721,12 +1744,13 @@ module.exports = {
  * @api {get} admin/blacklist Get blacklist
  * @apiName GetBlacklist
  * @apiVersion 1.0.0
- * @apiGroup Admin-Blacklist
+ * @apiGroup Blacklist
+ * @apiPermission admin
  * 
- * @apiParam {String} filter Filter list by this string. (optional)
- * @apiParam {String} lang ISO639-2B code of client's language (to return translated text into the user's language)
- * @apiParam {Number} from Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} size Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
  * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
  * @apiSuccess {Number} data/infos/from Items listed are from this position
@@ -1816,7 +1840,8 @@ module.exports = {
  * @api {get} admin/blacklist/criterias Get list of blacklist criterias
  * @apiName GetBlacklistCriterias
  * @apiVersion 1.0.0
- * @apiGroup Admin-Blacklist
+ * @apiGroup Blacklist
+ * @apiPermission admin
  * 
  * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
  * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
@@ -1860,7 +1885,8 @@ module.exports = {
  * @api {post} admin/blacklist/criterias Add a blacklist criteria
  * @apiName PostBlacklistCriterias
  * @apiVersion 1.0.0
- * @apiGroup Admin-Blacklist
+ * @apiGroup Blacklist
+ * @apiPermission admin
  * 
  * @apiParam {Number} blcriteria_type Blacklist criteria type (refer to docs)
  * @apiParam {String} blcriteria_value Blacklist criteria value. Depending on type, can be number or string.
@@ -1869,7 +1895,7 @@ module.exports = {
  * @apiSuccess {String} data Data returned from API
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
+ * HTTP/1.1 201 Created
  * {
  *   "args": {
  *       "blcriteria_type": "1000",
@@ -1931,10 +1957,11 @@ module.exports = {
 
 			routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
 /*
- * @api {delete} admin/blacklist/criterias/blc_id Delete a blacklist criteria
+ * @api {delete} admin/blacklist/criterias/:blc_id Delete a blacklist criteria
  * @apiName DeleteBlacklistCriterias
  * @apiVersion 1.0.0
- * @apiGroup Admin-Blacklist
+ * @apiGroup Blacklist
+ * @apiPermission admin
  * 
  * @apiParam {Number} blc_id Blacklist criteria's ID to delete
  * @apiSuccess {String} code Message to display
@@ -1948,21 +1975,16 @@ module.exports = {
  *   "code": "BLC_DELETED",
  *   "data": "5"
  * }
- * @apiError BLC_DELETE_ERROR Unable to delete BLC
+ * @apiError BLC_DELETE_ERROR Unable to delete Blacklist criteria
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
- *   "code": "BLC_ADD_ERROR",
- *   "message": {
- *       "code": "SQLITE_ERROR",
- *       "errno": 1
- *   }
+ *   "code": "BLC_DELETE_ERROR",
+ *   "message": "BLCID 5 unknown"
  * }
  */		
-
 				.delete(function(req,res){
-
 					module.exports.onBlacklistCriteriaDelete(req.params.blc_id)
 						.then(function(){
 							module.exports.emitEvent('blacklistUpdated');
@@ -1974,6 +1996,39 @@ module.exports = {
 							res.json(errMessage('BLC_DELETE_ERROR',err));	
 						});
 				})
+/*
+ * @api {put} admin/blacklist/criterias/:blc_id Edit a blacklist criteria
+ * @apiName PutBlacklistCriterias
+ * @apiVersion 1.0.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ * 
+ * @apiParam {Number} blc_id Blacklist criteria's ID to delete
+ * @apiParam {Number} blcriteria_type New blacklist criteria's type
+ * @apiParam {String} blcriteria_value New blacklist criteria's value
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "6",
+ *   "code": "BLC_UPDATED",
+ *   "data": {
+ *       "blcriteria_type": "8",
+ *       "blcriteria_value": "750"
+ *   }
+ * }
+ * @apiError BLC_UPDATE_ERROR Unable to update Blacklist criteria
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_UPDATE_ERROR",
+ *   "message": "BLCID 12309 unknown"
+ * }
+ */		
 				.put(function(req,res){
 					//Update BLC
 					req.check({
@@ -2010,6 +2065,32 @@ module.exports = {
 				});
 
 			routerAdmin.route('/player')
+			/*
+ * @api {put} admin/player Send commands to player
+ * @apiName PutPlayer
+ * @apiVersion 1.0.0
+ * @apiGroup Player
+ * @apiPermission admin
+ * 
+ * @apiParam {String} command="play","pause","stopNow","stopAfter","skip","prev","toggleFullscreen","toggleAlwaysOnTop","seek","goTo","mute","unmute","setVolume","showSubs","hideSubs" Command to send to player
+ * @apiParam {String} [option] Parameter for the command being sent
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "command": "stopNow"
+ *   },
+ *   "code": "COMMAND_SENT",
+ *   "data": {
+ *       "command": "stopNow"
+ *   }
+ * }
+ */
+
 				.put(function(req,res){
 					req.checkBody('command')
 						.notEmpty()
@@ -2052,6 +2133,57 @@ module.exports = {
 
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/export')
+/*
+ * @api {get} admin/playlists/:pl_id/export Export a playlist
+ * @apiName getPlaylistExport
+ * @apiVersion 1.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * 
+ * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "Header": {
+ *           "description": "Karaoke Mugen Playlist File",
+ *           "version": 2
+ *       },
+ *       "PlaylistContents": [
+ *           {
+ *               "flag_playing": 1,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b"
+ *           },
+ *           {
+ *               "kid": "6da96a7d-7159-4ea7-a5ee-1d78a6eb44dd"
+ *           },
+ *           {
+ *               "kid": "5af7ba4c-2325-451d-a24f-e7fd7c2d3ba8"
+ *           },
+ *           {
+ *               "kid": "e0206f48-0f51-44e3-bf9a-b651916d0c05"
+ *           }
+ *       ],
+ *       "PlaylistInformation": {
+ *           "created_at": 1508936812,
+ *           "flag_visible": 0,
+ *           "modified_at": 1508936821,
+ *           "name": "Test",
+ *           "time_left": 0
+ *       }
+ *   }
+ * } 
+ * @apiError PL_EXPORT_ERROR Unable to export playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "5",
+ *   "code": "PL_EXPORT_ERROR",
+ *   "message": "Playlist 5 unknown"
+ * }
+ */		
 				.get(function(req,res){
 					// Returns the playlist and its contents in an exportable format (to save on disk)
 					module.exports.onPlaylistExport(req.params.pl_id)
@@ -2066,6 +2198,35 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/playlists/import')
+/*
+ * @api {post} admin/playlists/import Import a playlist
+ * @apiName postPlaylistImport
+ * @apiVersion 1.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * 
+ * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 4,
+ *   "code": "PL_IMPORTED",
+ *   "data": {
+ *       "message": "Playlist imported",
+ *       "playlist_id": 4,
+ *       "unknownKaras": []
+ *   }
+ * } 
+ * @apiError PL_IMPORT_ERROR Unable to import playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_IMPORT_ERROR",
+ *   "message": {}
+ * }
+ */		
 				.post(function(req,res){
 					// Imports a playlist and its contents in an importable format (posted as JSON data)
 					req.check({
@@ -2092,7 +2253,6 @@ module.exports = {
 
 								})
 								.catch(function(err){
-									logger.error(err);
 									res.statusCode = 500;
 									res.json(errMessage('PL_IMPORT_ERROR',err));
 								});

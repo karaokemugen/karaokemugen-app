@@ -2522,27 +2522,37 @@ module.exports = {
 			// Playlist can end up empty if no karaokes are found in database			
 			var err;
 			var playingKara;
-			if (playlist.Header.description !== 'Karaoke Mugen Playlist File') err = 'Not a .kmplaylist file';
-			// This test will change if we make several versions of the .kmplaylist format
-			if (playlist.Header.version > 2) err = 'Cannot import this version ('+playlist.Header.version+')';
-
-			if (playlist.PlaylistContents === undefined) err = 'No PlaylistContents section';
-			playlist.PlaylistContents.forEach(function(kara){				
-				if (!validator.isUUID(kara.kid)) err = 'KID is not a valid UUID!';				
-				if (!isNaN(kara.flag_playing)) {
-					if (kara.flag_playing === 1) {
-						playingKara = kara.kid;						
-					} else {
-						err = 'flag_playing must be 1 or not present!';
+			if (playlist.Header === undefined) {
+				err = 'No Header section';
+			} else if (playlist.Header.description !== 'Karaoke Mugen Playlist File') {
+				err = 'Not a .kmplaylist file';
+			} else if (playlist.Header.version > 2) {
+				err = 'Cannot import this version ('+playlist.Header.version+')'; 
+			} else if (playlist.PlaylistContents === undefined) { 
+				err = 'No PlaylistContents section';
+			} else if (playlist.PlaylistInformation === undefined) {
+				err = 'No PlaylistInformation section';
+			} else if (isNaN(playlist.PlaylistInformation.created_at)) { 
+				err = 'Creation time is not valid';
+			} else if (isNaN(playlist.PlaylistInformation.modified_at)) { 
+				err = 'Modification time is not valid';
+			} else if (playlist.PlaylistInformation.flag_visible !== 0 && 
+				playlist.PlaylistInformation.flag_visible !== 1) {
+				err = 'Visible flag must be boolean';
+			} else if (L.isEmpty(playlist.PlaylistInformation.name)) {
+				err = 'Playlist name must not be empty';
+			} else if (playlist.PlaylistContents !== undefined) {
+				playlist.PlaylistContents.forEach(function(kara){				
+					if (!validator.isUUID(kara.kid)) err = 'KID is not a valid UUID!';				
+					if (!isNaN(kara.flag_playing)) {
+						if (kara.flag_playing === 1) {
+							playingKara = kara.kid;						
+						} else {
+							err = 'flag_playing must be 1 or not present!';
+						}
 					}
-				}
-			});
-			
-			if (isNaN(playlist.PlaylistInformation.created_at)) err = 'Creation time is not valid';
-			if (isNaN(playlist.PlaylistInformation.modified_at)) err = 'Modification time is not valid';
-			if (playlist.PlaylistInformation.flag_visible !== 0 && 
-				playlist.PlaylistInformation.flag_visible !== 1) err = 'Visible flag must be boolean';
-			if (L.isEmpty(playlist.PlaylistInformation.name)) err = 'Playlist name must not be empty';
+				});
+			}
 
 			// Validations done. First creating playlist.
 			if (err) {

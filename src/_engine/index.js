@@ -688,7 +688,7 @@ module.exports = {
 		module.exports._services.apiserver.onPlaylistImport = function(playlist){
 			return new Promise(function(resolve,reject){
 				module.exports._services.playlist_controller.importPlaylist(playlist)
-					.then(function(response){												
+					.then(function(response){		
 						resolve(response);
 					})
 					.catch(function(err){
