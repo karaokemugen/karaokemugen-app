@@ -69,7 +69,7 @@ module.exports = {
 					}
 				})
 				.catch((err) => {
-					logger.error('[PLC] DBI getSongCountForUser : '+err)
+					logger.error('[PLC] DBI getSongCountForUser : '+err);
 					reject(err);
 				});
 		});

@@ -643,7 +643,7 @@ module.exports = {
  * @apiParam {String} filter Filter list by this string. (optional)
  * @apiParam {String} lang ISO639-2B code of client's language (to return translated text into the user's language)
  * @apiParam {Number} from Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} to Return only the results to this position. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiParam {Number} size Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  * 
  * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
@@ -1429,6 +1429,36 @@ module.exports = {
 				});
 
 			routerAdmin.route('/player/message')
+			/**
+ * @api {post} admin/player/message Send a message to screen or users' devices
+ * @apiName PostPlayerMessage
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Player
+ * 
+ * @apiParam {String} message Message to display
+ * @apiParam {Number} duration (optional) Duration of message in miliseconds
+ * @apiParam {String} destination (optional) `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data Data sent to the API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "MESSAGE_SENT",
+ *   "data": {
+ *       "destination": "screen",
+ *       "duration": 10000,
+ *       "message": "yolo"
+ *   }
+ * }
+ * @apiError MESSAGE_SEND_ERROR Message couldn't be sent
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "MESSAGE_SEND_ERROR"
+ * }
+ */
 				.post(function(req,res){
 					req.check({
 						'duration': {
@@ -1478,6 +1508,74 @@ module.exports = {
 				});
 
 			routerAdmin.route('/whitelist')
+			/**
+ * @api {get} admin/whitelist Get whitelist
+ * @apiName GetWhitelist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Whitelist
+ * 
+ * @apiParam {String} filter Filter list by this string. (optional)
+ * @apiParam {String} lang ISO639-2B code of client's language (to return translated text into the user's language)
+ * @apiParam {Number} from Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} size Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiSuccess {Object[]} data/content List of karaoke objects
+ * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
+ * @apiSuccess {Number} data/infos/from Items listed are from this position
+ * @apiSuccess {Number} data/infos/size How many items listed.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": "Eurovision",
+ *               "NORM_serie": null,
+ *               "NORM_serie_altname": null,
+ *               "NORM_singer": "Dschinghis Khan",
+ *               "NORM_songwriter": "Ralph Siegel",
+ *               "NORM_title": "Moskau",
+ *               "author": null,
+ *               "created_at": 1508921852,
+ *               "creator": "Eurovision",
+ *               "duration": 0,
+ *               "kara_id": 1,
+ *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
+ *               "language": "ger",
+ *               "language_i18n": "Allemand",
+ *               "misc": "TAG_CONCERT,TAG_REAL",
+ *               "misc_i18n": "Concert,Non-anime",
+ *               "serie": null,
+ *               "serie_altname": null,
+ *               "singer": "Dschinghis Khan",
+ *               "songorder": 0,
+ *               "songtype": "TYPE_MUSIC",
+ *               "songtype_i18n": "Music Video",
+ *               "songtype_i18n_short": "MV",
+ *               "songwriter": "Ralph Siegel",
+ *               "title": "Moskau",
+ *               "videofile": "ALL - Dschinghis Khan - MV - Moskau.avi",
+ *               "viewcount": 0,
+ *               "whitelist_id": 1,
+ *               "year": "1980"
+ *           }
+ *       ],
+ *       "infos": {
+ *           "count": 1,
+ *           "from": 0,
+ *           "to": 999999
+ *       }
+ *   }
+ * }
+ * @apiError WL_VIEW_ERROR Whitelist could not be viewed
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "WL_VIEW_ERROR"
+ * }
+ */
 				.get(function(req,res){
 					var lang = req.query.lang;
 					var filter = req.query.filter;
@@ -1503,6 +1601,38 @@ module.exports = {
 							res.json(errMessage('WL_VIEW_ERROR',err));
 						});
 				})
+			/**
+ * @api {post} admin/whitelist Add song to whitelist
+ * @apiName PostWhitelist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Whitelist
+ * 
+ * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
+ * @apiSuccess {Number} args Arguments associated with message
+ * @apiSuccess {Number} code Message to display
+ * @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "2",
+ *   "code": "WL_SONG_ADDED",
+ *   "data": {
+ *       "kara_id": "2"
+ *   }
+ * }
+ * @apiError WL_ADD_SONG_ERROR Karaoke couldn't be added to whitelist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": [
+ *       "2"
+ *   ],
+ *   "code": "WL_ADD_SONG_ERROR",
+ *   "message": "No karaoke could be added, all are in whitelist already"
+ * }
+ */
 				.post(function(req,res){
 					req.check({
 						'kara_id': {
@@ -1533,6 +1663,27 @@ module.exports = {
 						}
 					});
 				})
+			/**
+ * @api {delete} admin/whitelist Delete whitelist item
+ * @apiName DeleteWhitelist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Whitelist
+ * 
+ * @apiParam {Number[]} wlc_id Whitelist content IDs to delete from whitelist, separated by commas
+ * @apiSuccess {Number} args Arguments associated with message
+ * @apiSuccess {Number} code Message to display
+ * @apiSuccess {Number[]} data List of Whitelist content IDs separated by commas
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "1",
+ *   "code": "WL_SONG_DELETED",
+ *   "data": "1"
+ * }
+ * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
+ *
+ */
 				.delete(function(req,res){
 					//Delete kara from whitelist
 					// Deletion is through whitelist ID.
@@ -1566,6 +1717,74 @@ module.exports = {
 				});
 
 			routerAdmin.route('/blacklist')
+ /*
+ * @api {get} admin/blacklist Get blacklist
+ * @apiName GetBlacklist
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Blacklist
+ * 
+ * @apiParam {String} filter Filter list by this string. (optional)
+ * @apiParam {String} lang ISO639-2B code of client's language (to return translated text into the user's language)
+ * @apiParam {Number} from Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} size Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiSuccess {Object[]} data/content List of karaoke objects
+ * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
+ * @apiSuccess {Number} data/infos/from Items listed are from this position
+ * @apiSuccess {Number} data/infos/size How many items listed.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": "Jean-Jacques Debout",
+ *               "NORM_creator": null,
+ *               "NORM_serie": "Capitaine Flam",
+ *               "NORM_serie_altname": "Kyaputen Fyucha",
+ *               "NORM_singer": "Richard Simon",
+ *               "NORM_songwriter": "Roger Dumas",
+ *               "NORM_title": "",
+ *               "author": "Jean-Jacques Debout",
+ *               "created_at": 1508924354,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "kara_id": 217,
+ *               "kid": "1b8bca21-4d26-41bd-90b7-2afba74381ee",
+ *               "language": "fre",
+ *               "language_i18n": "Français",
+ *               "misc": null,
+ *               "misc_i18n": null,
+ *               "reason_add": "Blacklisted Tag : Jean-Jacques Debout (type 6)",
+ *               "serie": "Capitaine Flam",
+ *               "serie_altname": "Kyaputen Fyucha",
+ *               "singer": "Richard Simon",
+ *               "songorder": 0,
+ *               "songtype": "TYPE_OP",
+ *               "songtype_i18n": "Opening",
+ *               "songtype_i18n_short": "OP",
+ *               "songwriter": "Roger Dumas",
+ *               "title": "",
+ *               "videofile": "FR - Capitaine Flam - OP.avi",
+ *               "viewcount": 0,
+ *               "year": "1981"
+ *           }
+ *       ],
+ *       "infos": {
+ *           "count": 1,
+ *           "from": 0,
+ *           "to": 999999
+ *       }
+ *   }
+ * }
+ * @apiError BL_VIEW_ERROR Blacklist could not be viewed
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BL_VIEW_ERROR"
+ * }
+ */
 				.get(function(req,res){
 					var lang = req.query.lang;
 					var filter = req.query.filter;
@@ -1593,6 +1812,38 @@ module.exports = {
 						});
 				});				
 			routerAdmin.route('/blacklist/criterias')
+/*
+ * @api {get} admin/blacklist/criterias Get list of blacklist criterias
+ * @apiName GetBlacklistCriterias
+ * @apiVersion 1.0.0
+ * @apiGroup Admin-Blacklist
+ * 
+ * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
+ * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
+ * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
+ * @apiSuccess {String} data/value_i18n Translated value to display on screen.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "blcriteria_id": 2,
+ *           "type": 6,
+ *           "value": "241",
+ *           "value_i18n": "Jean-Jacques Debout"
+ *       }
+ *   ]
+ * }
+
+ * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_VIEW_ERROR"
+ * }
+ */		
 				.get(function(req,res){
 					//Get list of blacklisted karas
 					module.exports.onBlacklistCriterias()
@@ -1615,8 +1866,7 @@ module.exports = {
 						},
 						'blcriteria_value': {
 							in: 'body',
-							notEmpty: true,
-							numbersArray: true, 
+							notEmpty: true,							
 						}
 					});
 
