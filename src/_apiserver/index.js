@@ -1279,8 +1279,8 @@ module.exports = {
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
  * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
  * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
- * @apiParam {String="Left","Center","Right"} PlayerPIPPositionX Horizontal position of PIP screen 
- * @apiParam {String="Top","Center","Bottom"} PlayerPIPPositionY Vertical position of PIP screen
+ * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen 
+ * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
@@ -2085,7 +2085,7 @@ module.exports = {
  * @apiGroup Player
  * @apiPermission admin
  * 
- * @apiParam {String="play","pause","stopNow","stopAfter","skip","prev","toggleFullscreen","toggleAlwaysOnTop","seek","goTo","mute","unmute","setVolume","showSubs","hideSubs"} command Command to send to player
+ * @apiParam {String=play,pause,stopNow,stopAfter,skip,prev,toggleFullscreen,toggleAlwaysOnTop,seek,goTo,mute,unmute,setVolume,showSubs,hideSubs} command Command to send to player
  * @apiParam {String} [option] Parameter for the command being sent
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} args arguments for the message
@@ -3024,10 +3024,10 @@ module.exports = {
  * @apiSuccess {Boolean} data/fullscreen Player's fullscreen status
  * @apiSuccess {Boolean} data/muteStatus Player's volume mute status
  * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
- * @apiSuccess {String="pause","stop","play"} data/playerStatus Player's status (not to mistake with engine's status, see below). Player status is `pause` if displaying a background.
+ * @apiSuccess {String=pause,stop,play} data/playerStatus Player's status (not to mistake with engine's status, see below). Player status is `pause` if displaying a background.
  * @apiSuccess {Boolean} data/private Engine's public/private status
  * @apiSuccess {Boolean} data/showSubs Player's showing subtitles or not
- * @apiSuccess {String="pause","play","stop"} data/status Engine's status
+ * @apiSuccess {String=pause,play,stop} data/status Engine's status
  * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
  * @apiSuccess {String} data/subText Text/lyrics being displayed on screen
  * @apiSuccess {Number} data/timePosition Player's current position in the song.
