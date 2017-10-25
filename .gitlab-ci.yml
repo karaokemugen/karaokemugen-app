@@ -38,6 +38,8 @@ deploy_apidoc:
     - npm install -g apidoc
     - apidoc -i src -o apidoc
     - cd apidoc
+    - echo $HOST
+    - echo $USERNAME
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd apidoc; mirror -Rnev --parallel=10"
   only:
     - master
