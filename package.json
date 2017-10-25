@@ -16,7 +16,10 @@
     "url": "https://lab.shelter.moe/karaokemugen/karaokemugen-app.git"
   },
   "keywords": [
-    "karaoke"
+	"karaoke",
+	"playlist",
+	"mpv",
+	"ffmpeg"
   ],
   "bugs": {
     "url": "https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues",
