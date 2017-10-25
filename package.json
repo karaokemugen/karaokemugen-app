@@ -24,16 +24,15 @@
   },
   "author": "Guillaume Lebigot <axel@teri-chan.net> (http://www.meido-rando.net)",
   "contributors": [
-    "ldbglobe",
-    "spokeek",
-    "nemotaku",
+    "Mathieu Delestre <ldbglobe@gmail.com>",
+    "spokeek <spokeek@gmail.com>",
     "jaerdoster",
     "Ziassan <m.mary.corentin@gmail.com> (@Ziassan)",
-    "belderak",
-    "coyoyann",
+    "coyoyann <yoann.drevet0@laposte.net>",
     "Florent Berthelot <florentius.b@gmail.com> (@Aeden_)",
-    "lukino",
-    "Benoît Courtine <benoit.courtine@gmail.com>"
+    "lukino <LukinoProg@gmail.com>",
+    "Benoît Courtine <benoit.courtine@gmail.com>",
+    "Lua <deformer.lua@gmail.com>"
   ],
   "engines": {
     "node": ">=8.0.0"
@@ -104,9 +103,7 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-2": "^6.24.1",
     "eslint": "^4.5.0",
-    "jsdoc": "^3.5.4",
     "mocha": "^3.5.0",
-    "nodemon": "^1.11.0",
     "pkg": "^4.2.4",
     "supertest": "^3.0.0"
   },
