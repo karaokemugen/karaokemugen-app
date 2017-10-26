@@ -35,8 +35,6 @@ var sqlite = require('sqlite');
 var fs = require('fs-extra');
 var ini = require('ini');
 var timestamp = require('unix-timestamp');
-var L = require('lodash');
-var async = require('async');
 const uuidV4 = require('uuid/v4');
 var csv = require('csv-string');
 const langsModule = require('langs');
@@ -499,6 +497,48 @@ function prepareTagsKaraInsertData(tagsByKara) {
 	return data;
 }
 
+const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at,
+	modified_at, rating, viewcount, gain, videolength,checksum)
+	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded,
+	$kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength, $kara_checksum);`;
+
+async function insertAss(db, karas) {
+	const stmt = await db.prepare('INSERT INTO ass (fk_id_kara, ass, checksum) VALUES ($id_kara, $ass, $checksum);');
+	const insertPromises = [];
+	karas.forEach((kara, index) => {
+		const karaIndex = index + 1;
+		if (kara.ass) {
+			insertPromises.push(stmt.run({
+				$id_kara: karaIndex,
+				$ass: kara.ass,
+				$checksum: kara.ass_checksum
+			}));
+		}
+	});
+	await Promise.all(insertPromises);
+	await stmt.finalize();
+}
+
+const insertSeries = 'INSERT INTO serie(pk_id_serie, name, NORM_name) VALUES($id_serie, $serie, $serienorm );';
+
+const insertTags = `INSERT INTO tag(pk_id_tag, tagtype, name, NORM_name)
+	VALUES($id_tag, $tagtype, $tagname, $tagnamenorm);`;
+
+const insertKaraTags = 'INSERT INTO kara_tag(fk_id_tag, fk_id_kara) VALUES($id_tag, $id_kara);';
+
+const insertKaraSeries = 'INSERT INTO kara_serie(fk_id_serie, fk_id_kara) VALUES($id_serie, $id_kara);';
+
+const updateSeriesAltNames = `UPDATE serie SET altname = $serie_altnames ,NORM_altname = $serie_altnamesnorm
+	WHERE name= $serie_name ;`;
+
+async function runSqlStatementOnData(stmtPromise, data) {
+	const stmt = await stmtPromise;
+
+	const sqlPromises = data.map(sqlData => stmt.run(sqlData));
+	await Promise.all(sqlPromises);
+	await stmt.finalize();
+}
+
 module.exports = {
 	db: null,
 	userdb: null,
@@ -536,7 +576,6 @@ module.exports = {
 			var sqlInsertKarasSeries = [];
 			var sqlUpdateSeriesAltNames = [];
 			var karas = [];
-			var doUpdateSeriesAltNames = false;
 			logger.profile('CreateDatabase');
 			Promise.all([
 				sqlite.open(karas_dbfile, {verbose: true, Promise}),
@@ -561,7 +600,7 @@ module.exports = {
 									const seriesMap = getAllSeries(karas);
 									sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 									sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
-									
+
 									const pCreateSeries = prepareAltSeriesInsertData(series_altnamesfile)
 										.then(data => sqlUpdateSeriesAltNames = data);
 
@@ -577,7 +616,7 @@ module.exports = {
 								});
 						});
 
-						Promise.all([pCreateKaraArrays])
+						pCreateKaraArrays
 							.then(function () {
 								insertIntoDatabaseWowWow()
 									.then(function () {
@@ -658,214 +697,28 @@ module.exports = {
 									* Building SQL queries for insertion
 									*/
 
-									var pInsertKaras = new Promise((resolve, reject) => {
-										module.exports.db.prepare('INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at, modified_at, rating, viewcount, gain, videolength,checksum) VALUES(  $id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded, $kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength, $kara_checksum);')
-											.then((stmt) => {
-												async.each(sqlInsertKaras, function (data, callback) {
-													stmt.run(data)
-														.then(() => {
-															callback();
-														})
-														.catch((err) => {
-															callback(err);
-														});
-												}, function (err) {
-													if (err) {
-														reject(err);
-													} else {
-														module.exports.onLog('success', 'Karaokes table filled');
-														stmt.finalize();
-														resolve();
-													}
-												});
-											})
-											.catch((err) => {
-												reject(err);
-											});
-									});
-
-
-									var pInsertASS = new Promise((resolve, reject) => {
-										logger.profile('ASSFill');
-										module.exports.db.prepare('INSERT INTO ass (fk_id_kara,ass,checksum) VALUES ($id_kara, $ass, $checksum);')
-											.then((stmt) => {
-												async.eachOf(karas, function (kara, index, callback) {
-													index++;
-													// If we have an empty ass data set, we're not adding it to the statement.
-													if (kara.ass !== '') {
-														var data = {
-															$id_kara: index,
-															$ass: kara.ass,
-															$checksum: kara.ass_checksum
-														};
-														stmt.run(data)
-															.then(() => {
-																callback();
-															})
-															.catch((err) => {
-																callback(err);
-															});
-													} else {
-														callback();
-													}
-												}, function (err) {
-													if (err) {
-														reject(err);
-													} else {
-														logger.profile('ASSFill');
-														module.exports.onLog('success', 'ASS table filled');
-														stmt.finalize();
-														resolve();
-													}
-												});
-											})
-											.catch((err) => {
-												reject(err);
-											});
-									});
-
-									var pInsertSeries = new Promise((resolve, reject) => {
-										module.exports.db.prepare('INSERT INTO serie(pk_id_serie,name,NORM_name) VALUES( $id_serie, $serie, $serienorm );')
-											.then((stmt) => {
-												async.each(sqlInsertSeries, function (data, callback) {
-													stmt.run(data)
-														.then(() => {
-															callback();
-														})
-														.catch((err) => {
-															callback(err);
-														});
-												}, function (err) {
-													if (err) {
-														reject(err);
-													} else {
-														module.exports.onLog('success', 'Series table filled');
-														stmt.finalize();
-														resolve();
-													}
-												});
-											})
-											.catch((err) => {
-												reject(err);
-											});
-									});
-									var pInsertTags = new Promise((resolve, reject) => {
-										module.exports.db.prepare('INSERT INTO tag(pk_id_tag,tagtype,name,NORM_name) VALUES( $id_tag, $tagtype, $tagname, $tagnamenorm );')
-											.then((stmt) => {
-												async.each(sqlInsertTags, function (data, callback) {
-													stmt.run(data)
-														.then(() => {
-															callback();
-														})
-														.catch((err) => {
-															callback(err);
-														});
-												}, function (err) {
-													if (err) {
-														reject(err);
-													} else {
-														module.exports.onLog('success', 'Tags table filled');
-														stmt.finalize();
-														resolve();
-													}
-												});
-											})
-											.catch((err) => {
-												reject(err);
-											});
-									});
-									var pInsertKarasTags = new Promise((resolve, reject) => {
-										module.exports.db.prepare('INSERT INTO kara_tag(fk_id_tag,fk_id_kara) VALUES( $id_tag, $id_kara );')
-											.then((stmt) => {
-												async.each(sqlInsertKarasTags, function (data, callback) {
-													stmt.run(data)
-														.then(() => {
-															callback();
-														})
-														.catch((err) => {
-															callback(err);
-														});
-												}, function (err) {
-													if (err) {
-														reject(err);
-													} else {
-														module.exports.onLog('success', 'Karaokes/tags table filled');
-														stmt.finalize();
-														resolve();
-													}
-												});
-											})
-											.catch((err) => {
-												reject(err);
-											});
-									});
-									var pInsertKarasSeries = new Promise((resolve, reject) => {
-										module.exports.db.prepare('INSERT INTO kara_serie(fk_id_serie,fk_id_kara) VALUES( $id_serie, $id_kara);')
-											.then((stmt) => {
-												async.each(sqlInsertKarasSeries, function (data, callback) {
-													stmt.run(data)
-														.then(() => {
-															callback();
-														})
-														.catch((err) => {
-															callback(err);
-														});
-												}, function (err) {
-													if (err) {
-														reject(err);
-													} else {
-														module.exports.onLog('success', 'Karaokes/series table filled');
-														stmt.finalize();
-														resolve();
-													}
-												});
-											})
-											.catch((err) => {
-												reject(err);
-											});
-									});
+									const pInsertKaras = runSqlStatementOnData(
+										db.prepare(insertKaras), sqlInsertKaras);
+									const pInsertASS = insertAss(db, karas);
+									const pInsertSeries = runSqlStatementOnData(
+										db.prepare(insertSeries), sqlInsertSeries);
+									const pInsertTags = runSqlStatementOnData(db.prepare(insertTags), sqlInsertTags);
+									const pInsertKarasTags = runSqlStatementOnData(
+										db.prepare(insertKaraTags), sqlInsertKarasTags);
+									const pInsertKarasSeries = runSqlStatementOnData(
+										db.prepare(insertKaraSeries), sqlInsertKarasSeries);
 
 									Promise.all([pInsertASS, pInsertKaras, pInsertKarasSeries, pInsertKarasTags, pInsertSeries, pInsertTags])
 										.then(() => {
-											var pUpdateSeries = new Promise((resolve, reject) => {
-												if (doUpdateSeriesAltNames) {
-													module.exports.db.prepare('UPDATE serie SET altname = $serie_altnames , NORM_altname = $serie_altnamesnorm WHERE name= $serie_name ;')
-														.then((stmt) => {
-															async.eachSeries(sqlUpdateSeriesAltNames, function (data, callback) {
-																stmt.run(data)
-																	.then(() => {
-																		callback();
-																	})
-																	.catch((err) => {
-																		callback(err);
-																	});
-															}, function (err) {
-																if (err) {
-																	reject(err);
-																} else {
-																	module.exports.onLog('success', 'Series table updated with alternative names');
-																	stmt.finalize();
-
-																	resolve();
-																}
-															});
-														})
-														.catch((err) => {
-															reject(err);
-														});
-												} else {
-													resolve();
-												}
+											runSqlStatementOnData(
+												db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames
+											).then(() => {
+												module.exports.onLog('success', 'Database generation successful!');
+												module.exports.db.run('commit').then(() => resolve());
+											}).catch((err) => {
+												module.exports.onLog('error', 'Update series alternative names failed');
+												reject(err);
 											});
-											Promise.all([pUpdateSeries])
-												.then(() => {
-													module.exports.onLog('success', 'Database generation successful!');
-													module.exports.db.run('commit').then(() => resolve());
-												})
-												.catch((err) => {
-													module.exports.onLog('error', 'Update series alternative names failed');
-													reject(err);
-												});
 										})
 										.catch((err) => {
 											module.exports.onLog('error', 'Database generation failed :( ' + err);
