@@ -22,17 +22,6 @@ process.on('unhandledRejection', (reason, p) => {
 	// application specific logging, throwing an error, or other logic here
 });
 
-
-/*
-Usage
-
-var generator = require('generate_karasdb.js');
-generator.SYSPATH = './'; // set the base path of toyunda app here
-generator.run().then(function(response){
-	// do whatever you want on script end
-});
-*/
-
 var path = require('path');
 var sqlite = require('sqlite');
 var fs = require('fs-extra');
@@ -43,13 +32,50 @@ var csv = require('csv-string');
 const langsModule = require('langs');
 const crypto = require('crypto');
 
+/** Requêtes SQL utilisées. */
+
+const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at,
+	modified_at, rating, viewcount, gain, videolength,checksum)
+	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded,
+	$kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength, $kara_checksum);`;
+
+const insertSeries = 'INSERT INTO serie(pk_id_serie, name, NORM_name) VALUES($id_serie, $serie, $serienorm );';
+
+const insertTags = `INSERT INTO tag(pk_id_tag, tagtype, name, NORM_name)
+	VALUES($id_tag, $tagtype, $tagname, $tagnamenorm);`;
+
+const insertKaraTags = 'INSERT INTO kara_tag(fk_id_tag, fk_id_kara) VALUES($id_tag, $id_kara);';
+
+const insertKaraSeries = 'INSERT INTO kara_serie(fk_id_serie, fk_id_kara) VALUES($id_serie, $id_kara);';
+
+const updateSeriesAltNames = `UPDATE serie SET altname = $serie_altnames ,NORM_altname = $serie_altnamesnorm
+	WHERE name= $serie_name ;`;
+
+const selectTags = 'SELECT pk_id_tag AS id_tag, tagtype, name FROM tag;';
+
+const selectKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
+
+const selectPlaylistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM playlist_content;';
+
+const selectWhitelistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM whitelist;';
+
+const selectBlacklistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM blacklist;';
+
+const selectBLCKaras = 'SELECT value AS id_kara, uniquevalue AS kid FROM blacklist_criteria WHERE type = 1001;';
+
+const selectBLCTags = `SELECT type, value AS id_tag, uniquevalue AS tagname FROM blacklist_criteria
+    WHERE type > 0 AND type < 1000;`;
+
+const selectRatingKaras = 'SELECT fk_id_kara AS id_kara, kid FROM rating;';
+
+const selectViewcountKaras = 'SELECT fk_id_kara AS id_kara, kid FROM viewcount;';
+
 function checksum(str, algorithm, encoding) {
 	return crypto
 		.createHash(algorithm || 'md5')
 		.update(str, 'utf8')
 		.digest(encoding || 'hex');
 }
-
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
@@ -511,11 +537,6 @@ function prepareTagsKaraInsertData(tagsByKara) {
 	return data;
 }
 
-const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at,
-	modified_at, rating, viewcount, gain, videolength,checksum)
-	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded,
-	$kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength, $kara_checksum);`;
-
 async function insertAss(db, karas) {
 	const stmt = await db.prepare('INSERT INTO ass (fk_id_kara, ass, checksum) VALUES ($id_kara, $ass, $checksum);');
 	const insertPromises = [];
@@ -532,18 +553,6 @@ async function insertAss(db, karas) {
 	await Promise.all(insertPromises);
 	await stmt.finalize();
 }
-
-const insertSeries = 'INSERT INTO serie(pk_id_serie, name, NORM_name) VALUES($id_serie, $serie, $serienorm );';
-
-const insertTags = `INSERT INTO tag(pk_id_tag, tagtype, name, NORM_name)
-	VALUES($id_tag, $tagtype, $tagname, $tagnamenorm);`;
-
-const insertKaraTags = 'INSERT INTO kara_tag(fk_id_tag, fk_id_kara) VALUES($id_tag, $id_kara);';
-
-const insertKaraSeries = 'INSERT INTO kara_serie(fk_id_serie, fk_id_kara) VALUES($id_serie, $id_kara);';
-
-const updateSeriesAltNames = `UPDATE serie SET altname = $serie_altnames ,NORM_altname = $serie_altnamesnorm
-	WHERE name= $serie_name ;`;
 
 async function runSqlStatementOnData(stmtPromise, data) {
 	const stmt = await stmtPromise;
@@ -632,358 +641,237 @@ export async function checkUserdbIntegrity(uuid, config) {
 	const karas_dbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 	const karas_userdbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	logger.info('Running user database integrity checks');
-	var AllKaras = [];
-	var AllTags = [];
-	var PlaylistKaras = [];
-	var WhitelistKaras = [];
-	var RatingKaras = [];
-	var ViewcountKaras = [];
-	var BlacklistKaras = [];
-	var BLCKaras = [];
-	var BLCTags = [];
 
-	var sqlUpdateUserDB = 'BEGIN TRANSACTION;';
-	Promise.all([
+	let sqlUpdateUserDB = 'BEGIN TRANSACTION;';
+
+	const [db, userdb] = await Promise.all([
 		sqlite.open(karas_dbfile, {Promise}),
 		sqlite.open(karas_userdbfile, {Promise})
-	]).then(([db, userdb]) => {
+	]);
 
-		var pGetAllTags = new Promise((resolve, reject) => {
-			var sqlGetAllTags = 'SELECT pk_id_tag AS id_tag, tagtype, name FROM tag;';
-			db.all(sqlGetAllTags)
-				.then((tags) => {
-					AllTags = tags;
-					resolve();
-				})
-				.catch((err) => {
-					reject('Error getting all tags : ' + err);
-				});
-		});
-		var pGetAllKaras = new Promise((resolve, reject) => {
-			var sqlGetAllKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
-			db.all(sqlGetAllKaras)
-				.then((playlist) => {
-					AllKaras = playlist;
-					resolve();
-				})
-				.catch((err) => {
-					reject('Error getting all karaokes : ' + err);
-				});
-		});
-		var pGetPlaylistKaras = new Promise((resolve, reject) => {
-			var sqlGetPlaylistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM playlist_content;';
-			userdb.all(sqlGetPlaylistKaras)
-				.then((playlist) => {
-					if (playlist) {
-						PlaylistKaras = playlist;
-						resolve();
-					} else {
-						resolve();
-					}
-				})
-				.catch((err) => {
-					reject('Error getting all karaokes from playlists : ' + err);
-				});
-		});
-		var pGetWhitelistKaras = new Promise((resolve, reject) => {
-			var sqlGetWhitelistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM whitelist;';
-			userdb.all(sqlGetWhitelistKaras)
-				.then((playlist) => {
-					if (playlist) {
-						WhitelistKaras = playlist;
-						resolve();
-					} else {
-						resolve();
-					}
-				})
-				.catch((err) => {
-					reject('Error getting all karaokes from whitelist : ' + err);
-				});
-		});
-		var pGetBlacklistKaras = new Promise((resolve, reject) => {
-			var sqlGetBlacklistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM blacklist;';
-			userdb.all(sqlGetBlacklistKaras)
-				.then((playlist) => {
-					if (playlist) {
-						BlacklistKaras = playlist;
-						resolve();
-					} else {
-						resolve();
-					}
-				})
-				.catch((err) => {
-					reject('Error getting all karaokes from blacklist : ' + err);
-				});
-		});
-		var pGetBLCKaras = new Promise((resolve, reject) => {
-			var sqlGetBLCKaras = 'SELECT value AS id_kara, uniquevalue AS kid FROM blacklist_criteria WHERE type = 1001;';
-			userdb.all(sqlGetBLCKaras)
-				.then((kids) => {
-					if (kids) {
-						BLCKaras = kids;
-						resolve();
-					} else {
-						resolve();
-					}
-				})
-				.catch((err) => {
-					reject('Error getting all karaokes from blacklist : ' + err);
-				});
-		});
-		var pGetBLCTags = new Promise((resolve, reject) => {
-			var sqlGetBLCTags = 'SELECT type, value AS id_tag, uniquevalue AS tagname FROM blacklist_criteria WHERE type > 0 AND type < 1000;';
-			userdb.all(sqlGetBLCTags)
-				.then((tags) => {
-					if (tags) {
-						BLCTags = tags;
-						resolve();
-					} else {
-						resolve();
-					}
-				})
-				.catch((err) => {
-					reject('Error getting all karaokes from blacklist : ' + err);
-				});
-		});
-		var pGetRatingKaras = new Promise((resolve, reject) => {
-			var sqlGetRatingKaras = 'SELECT fk_id_kara AS id_kara, kid FROM rating;';
-			userdb.all(sqlGetRatingKaras)
-				.then((playlist) => {
-					if (playlist) {
-						RatingKaras = playlist;
-						resolve();
-					} else {
-						resolve();
-					}
-				})
-				.catch((err) => {
-					reject('Error getting all karaokes from ratings : ' + err);
-				});
-		});
-		var pGetViewcountKaras = new Promise((resolve, reject) => {
-			var sqlGetViewcountKaras = 'SELECT fk_id_kara AS id_kara, kid FROM viewcount;';
-			userdb.all(sqlGetViewcountKaras)
-				.then((playlist) => {
-					if (playlist) {
-						ViewcountKaras = playlist;
-						resolve();
-					} else {
-						resolve();
-					}
-				})
-				.catch((err) => {
-					reject('Error getting all karaokes from viewcounts : ' + err);
-				});
-		});
+	const [
+		allTags,
+		allKaras,
+		playlistKaras,
+		whitelistKaras,
+		blacklistKaras,
+		blcKaras,
+		blcTags,
+		ratingKaras,
+		viewcountKaras
+	] = await Promise.all([
+		db.all(selectTags),
+		db.all(selectKaras),
+		userdb.all(selectPlaylistKaras),
+		userdb.all(selectWhitelistKaras),
+		userdb.all(selectBlacklistKaras),
+		userdb.all(selectBLCKaras),
+		userdb.all(selectBLCTags),
+		userdb.all(selectRatingKaras),
+		userdb.all(selectViewcountKaras)
+	]);
 
-		Promise.all([pGetViewcountKaras, pGetRatingKaras, pGetWhitelistKaras, pGetBlacklistKaras, pGetPlaylistKaras, pGetAllKaras, pGetAllTags, pGetBLCKaras, pGetBLCTags])
-			.then(function () {
-				// We've got all of our lists, let's compare !
-				var KaraFound = false;
-				var TagFound = false;
-				var UpdateNeeded = false;
-				if (WhitelistKaras != []) {
-					WhitelistKaras.forEach(function (WLKara) {
-						KaraFound = false;
-						AllKaras.forEach(function (Kara) {
-							if (Kara.kid == WLKara.kid) {
-								// Found a matching KID, checking if id_karas are the same
-								if (Kara.id_kara != WLKara.id_kara) {
-									sqlUpdateUserDB += 'UPDATE whitelist SET fk_id_kara = ' + Kara.id_kara
-										+ ' WHERE kid = \'' + WLKara.kid + '\';';
-									UpdateNeeded = true;
-								}
-								KaraFound = true;
-							}
-						});
-						//If No Karaoke with this KID was found in the AllKaras table, delete the KID
-						if (!KaraFound) {
-							sqlUpdateUserDB += 'DELETE FROM whitelist WHERE kid = \'' + WLKara.kid + '\';';
-							logger.warn('Deleted Karaoke ID ' + WLKara.kid + ' from whitelist');
-							UpdateNeeded = true;
-						}
-					});
+	// We've got all of our lists, let's compare !
+	var KaraFound = false;
+	var TagFound = false;
+	var UpdateNeeded = false;
+	if (whitelistKaras != []) {
+		whitelistKaras.forEach(function (WLKara) {
+			KaraFound = false;
+			allKaras.forEach(function (Kara) {
+				if (Kara.kid == WLKara.kid) {
+					// Found a matching KID, checking if id_karas are the same
+					if (Kara.id_kara != WLKara.id_kara) {
+						sqlUpdateUserDB += 'UPDATE whitelist SET fk_id_kara = ' + Kara.id_kara
+							+ ' WHERE kid = \'' + WLKara.kid + '\';';
+						UpdateNeeded = true;
+					}
+					KaraFound = true;
 				}
-				logger.profile('ICCompareWL');
-				logger.profile('ICCompareBLCK');
-				if (BLCKaras != []) {
-					BLCKaras.forEach(function (BLCKara) {
-						KaraFound = false;
-						AllKaras.forEach(function (Kara) {
-							if (Kara.kid == BLCKara.kid) {
-								// Found a matching KID, checking if id_karas are the same
-								if (Kara.id_kara != BLCKara.id_kara) {
-									sqlUpdateUserDB += 'UPDATE blacklist_criteria SET value = ' + Kara.id_kara
-										+ ' WHERE uniquevalue = \'' + BLCKara.kid + '\';';
-									UpdateNeeded = true;
-								}
-								KaraFound = true;
-							}
-						});
-						//If No Karaoke with this KID was found in the AllKaras table, delete the KID
-						if (!KaraFound) {
-							sqlUpdateUserDB += 'DELETE FROM blacklist_criteria WHERE uniquevalue = \'' + BLCKara.kid + '\';';
-							logger.warn('Deleted Karaoke ID ' + BLCKara.kid + ' from blacklist criteria (type 1001)');
-							UpdateNeeded = true;
-						}
-					});
-				}
-				if (BLCTags != []) {
-					BLCTags.forEach(function (BLCTag) {
-						TagFound = false;
-						AllTags.forEach(function (Tag) {
-							if (Tag.name == BLCTag.tagname && Tag.tagtype == BLCTag.type) {
-								// Found a matching Tagname, checking if id_tags are the same
-								if (Tag.id_tag != BLCTag.id_tag) {
-									sqlUpdateUserDB += 'UPDATE blacklist_criteria SET value = ' + Tag.id_tag
-										+ ' WHERE uniquevalue = \'' + BLCTag.tagname + '\' AND type = ' + BLCTag.type + ';';
-									UpdateNeeded = true;
-								}
-								TagFound = true;
-							}
-						});
-						//If No Tag with this name and type was found in the AllTags table, delete the Tag
-						if (!TagFound) {
-							sqlUpdateUserDB += 'DELETE FROM blacklist_criteria WHERE uniquevalue = \'' + BLCTag.tagname + '\' AND type = ' + BLCTag.type + ';';
-							logger.warn('Deleted Tag ' + BLCTag.tagname + ' from blacklist criteria (type ' + BLCTag.type + ')');
-							UpdateNeeded = true;
-						}
-					});
-				}
-				if (BlacklistKaras != []) {
-					BlacklistKaras.forEach(function (BLKara) {
-						KaraFound = false;
-						AllKaras.forEach(function (Kara) {
-							if (Kara.kid == BLKara.kid) {
-								// Found a matching KID, checking if id_karas are the same
-								if (Kara.id_kara != BLKara.id_kara) {
-									sqlUpdateUserDB += 'UPDATE blacklist SET fk_id_kara = ' + Kara.id_kara
-										+ ' WHERE kid = \'' + BLKara.kid + '\';';
-									UpdateNeeded = true;
-								}
-								KaraFound = true;
-							}
-						});
-						// If No Karaoke with this KID was found in the AllKaras table, delete the KID
-						if (!KaraFound) {
-							sqlUpdateUserDB += 'DELETE FROM blacklist WHERE kid = \'' + BLKara.kid + '\';';
-							logger.warn('Deleted Karaoke ID ' + BLKara.kid + ' from blacklist');
-							UpdateNeeded = true;
-						}
-					});
-				}
-				if (RatingKaras != []) {
-					RatingKaras.forEach(function (RKara) {
-						KaraFound = false;
-						AllKaras.forEach(function (Kara) {
-							if (Kara.kid == RKara.kid) {
-								// Found a matching KID, checking if id_karas are the same
-								if (Kara.id_kara != RKara.id_kara) {
-									sqlUpdateUserDB += 'UPDATE rating SET fk_id_kara = ' + Kara.id_kara
-										+ ' WHERE kid = \'' + RKara.kid + '\';';
-									UpdateNeeded = true;
-								}
-								KaraFound = true;
-							}
-						});
-						// If No Karaoke with this KID was found in the AllKaras table, delete the KID
-						if (!KaraFound) {
-							sqlUpdateUserDB += 'DELETE FROM rating WHERE kid = \'' + RKara.kid + '\';';
-							logger.warn('Deleted Karaoke ID ' + RKara.kid + ' from ratings');
-							UpdateNeeded = true;
-						}
-					});
-				}
-				if (ViewcountKaras != []) {
-					ViewcountKaras.forEach(function (VKara) {
-						KaraFound = false;
-						AllKaras.forEach(function (Kara) {
-							if (Kara.kid == VKara.kid) {
-								// Found a matching KID, checking if id_karas are the same
-								if (Kara.id_kara != VKara.id_kara) {
-									sqlUpdateUserDB += 'UPDATE viewcount SET fk_id_kara = ' + Kara.id_kara
-										+ ' WHERE kid = \'' + VKara.kid + '\';';
-									UpdateNeeded = true;
-								}
-								KaraFound = true;
-							}
-						});
-						// If No Karaoke with this KID was found in the AllKaras table, delete the KID
-						if (!KaraFound) {
-							sqlUpdateUserDB += 'DELETE FROM viewcount WHERE kid = \'' + VKara.kid + '\';';
-							logger.warn('Deleted Karaoke ID ' + VKara.kid + ' from viewcounts');
-							UpdateNeeded = true;
-						}
-					});
-				}
-				if (PlaylistKaras != []) {
-					PlaylistKaras.forEach(function (PLKara) {
-						KaraFound = false;
-
-						AllKaras.forEach(function (Kara) {
-							if (Kara.kid == PLKara.kid) {
-
-								// Found a matching KID, checking if id_karas are the same
-								if (Kara.id_kara != PLKara.id_kara) {
-									sqlUpdateUserDB += 'UPDATE playlist_content SET fk_id_kara = ' + Kara.id_kara
-										+ ' WHERE kid = \'' + PLKara.kid + '\';';
-									UpdateNeeded = true;
-								}
-								KaraFound = true;
-							}
-						});
-						//If No Karaoke with this KID was found in the AllKaras table, delete the KID
-						if (!KaraFound) {
-
-							sqlUpdateUserDB += 'DELETE FROM playlist_content WHERE kid = \'' + PLKara.kid + '\';';
-							logger.warn('Deleted Karaoke ID ' + PLKara.kid + ' from playlists');
-							UpdateNeeded = true;
-						}
-					});
-				}
-				var sqlUpdateDBUUID = fs.readFileSync(path.join(__dirname, '../_common/db/update_userdb_uuid.sql'), 'utf-8');
-				userdb.run(sqlUpdateDBUUID,
-					{
-						$uuid: uuid
-					})
-					.catch((err) => {
-						logger.error('[DBI] Unable to update user database UUID :' + err);
-						throw err;
-					});
-				db.run(sqlUpdateDBUUID,
-					{
-						$uuid: uuid
-					})
-					.catch((err) => {
-						logger.error('[DBI] Unable to update database UUID :' + err);
-						throw err;
-					});
-				if (UpdateNeeded) {
-					// Disabling constraints check for this procedure
-					// Since we'll be renumbering some karas which might have switched places, two entries might have, for a split second, the same number.
-					sqlUpdateUserDB += 'COMMIT;';
-					logger.debug('[Gen] Userdata Update SQL : ' + sqlUpdateUserDB);
-					logger.profile('ICRunUpdates');
-					userdb.run('PRAGMA foreign_keys = OFF;')
-						.then(() => {
-							userdb.exec(sqlUpdateUserDB)
-								.then(() => {
-									logger.info('Database updated due to integrity checks');
-									logger.profile('ICRunUpdates');
-								})
-								.catch((err) => {
-									logger.error('Error updating database : ' + err);
-									throw err;
-								});
-						});
-				} else {
-					logger.info('No update needed to user database');
-					logger.info('Integrity checks complete!');
-				}
-			})
-			.catch(function (err) {
-				logger.error('Error during integrity checks : ' + err);
-				throw err;
 			});
-	});
+			//If No Karaoke with this KID was found in the AllKaras table, delete the KID
+			if (!KaraFound) {
+				sqlUpdateUserDB += 'DELETE FROM whitelist WHERE kid = \'' + WLKara.kid + '\';';
+				logger.warn('Deleted Karaoke ID ' + WLKara.kid + ' from whitelist');
+				UpdateNeeded = true;
+			}
+		});
+	}
+	logger.profile('ICCompareWL');
+	logger.profile('ICCompareBLCK');
+	if (blcKaras != []) {
+		blcKaras.forEach(function (BLCKara) {
+			KaraFound = false;
+			allKaras.forEach(function (Kara) {
+				if (Kara.kid == BLCKara.kid) {
+					// Found a matching KID, checking if id_karas are the same
+					if (Kara.id_kara != BLCKara.id_kara) {
+						sqlUpdateUserDB += 'UPDATE blacklist_criteria SET value = ' + Kara.id_kara
+							+ ' WHERE uniquevalue = \'' + BLCKara.kid + '\';';
+						UpdateNeeded = true;
+					}
+					KaraFound = true;
+				}
+			});
+			//If No Karaoke with this KID was found in the AllKaras table, delete the KID
+			if (!KaraFound) {
+				sqlUpdateUserDB += 'DELETE FROM blacklist_criteria WHERE uniquevalue = \'' + BLCKara.kid + '\';';
+				logger.warn('Deleted Karaoke ID ' + BLCKara.kid + ' from blacklist criteria (type 1001)');
+				UpdateNeeded = true;
+			}
+		});
+	}
+	if (blcTags != []) {
+		blcTags.forEach(function (BLCTag) {
+			TagFound = false;
+			allTags.forEach(function (Tag) {
+				if (Tag.name == BLCTag.tagname && Tag.tagtype == BLCTag.type) {
+					// Found a matching Tagname, checking if id_tags are the same
+					if (Tag.id_tag != BLCTag.id_tag) {
+						sqlUpdateUserDB += 'UPDATE blacklist_criteria SET value = ' + Tag.id_tag
+							+ ' WHERE uniquevalue = \'' + BLCTag.tagname + '\' AND type = ' + BLCTag.type + ';';
+						UpdateNeeded = true;
+					}
+					TagFound = true;
+				}
+			});
+			//If No Tag with this name and type was found in the AllTags table, delete the Tag
+			if (!TagFound) {
+				sqlUpdateUserDB += 'DELETE FROM blacklist_criteria WHERE uniquevalue = \'' + BLCTag.tagname + '\' AND type = ' + BLCTag.type + ';';
+				logger.warn('Deleted Tag ' + BLCTag.tagname + ' from blacklist criteria (type ' + BLCTag.type + ')');
+				UpdateNeeded = true;
+			}
+		});
+	}
+	if (blacklistKaras != []) {
+		blacklistKaras.forEach(function (BLKara) {
+			KaraFound = false;
+			allKaras.forEach(function (Kara) {
+				if (Kara.kid == BLKara.kid) {
+					// Found a matching KID, checking if id_karas are the same
+					if (Kara.id_kara != BLKara.id_kara) {
+						sqlUpdateUserDB += 'UPDATE blacklist SET fk_id_kara = ' + Kara.id_kara
+							+ ' WHERE kid = \'' + BLKara.kid + '\';';
+						UpdateNeeded = true;
+					}
+					KaraFound = true;
+				}
+			});
+			// If No Karaoke with this KID was found in the AllKaras table, delete the KID
+			if (!KaraFound) {
+				sqlUpdateUserDB += 'DELETE FROM blacklist WHERE kid = \'' + BLKara.kid + '\';';
+				logger.warn('Deleted Karaoke ID ' + BLKara.kid + ' from blacklist');
+				UpdateNeeded = true;
+			}
+		});
+	}
+	if (ratingKaras != []) {
+		ratingKaras.forEach(function (RKara) {
+			KaraFound = false;
+			allKaras.forEach(function (Kara) {
+				if (Kara.kid == RKara.kid) {
+					// Found a matching KID, checking if id_karas are the same
+					if (Kara.id_kara != RKara.id_kara) {
+						sqlUpdateUserDB += 'UPDATE rating SET fk_id_kara = ' + Kara.id_kara
+							+ ' WHERE kid = \'' + RKara.kid + '\';';
+						UpdateNeeded = true;
+					}
+					KaraFound = true;
+				}
+			});
+			// If No Karaoke with this KID was found in the AllKaras table, delete the KID
+			if (!KaraFound) {
+				sqlUpdateUserDB += 'DELETE FROM rating WHERE kid = \'' + RKara.kid + '\';';
+				logger.warn('Deleted Karaoke ID ' + RKara.kid + ' from ratings');
+				UpdateNeeded = true;
+			}
+		});
+	}
+	if (viewcountKaras != []) {
+		viewcountKaras.forEach(function (VKara) {
+			KaraFound = false;
+			allKaras.forEach(function (Kara) {
+				if (Kara.kid == VKara.kid) {
+					// Found a matching KID, checking if id_karas are the same
+					if (Kara.id_kara != VKara.id_kara) {
+						sqlUpdateUserDB += 'UPDATE viewcount SET fk_id_kara = ' + Kara.id_kara
+							+ ' WHERE kid = \'' + VKara.kid + '\';';
+						UpdateNeeded = true;
+					}
+					KaraFound = true;
+				}
+			});
+			// If No Karaoke with this KID was found in the AllKaras table, delete the KID
+			if (!KaraFound) {
+				sqlUpdateUserDB += 'DELETE FROM viewcount WHERE kid = \'' + VKara.kid + '\';';
+				logger.warn('Deleted Karaoke ID ' + VKara.kid + ' from viewcounts');
+				UpdateNeeded = true;
+			}
+		});
+	}
+	if (playlistKaras != []) {
+		playlistKaras.forEach(function (PLKara) {
+			KaraFound = false;
+
+			allKaras.forEach(function (Kara) {
+				if (Kara.kid == PLKara.kid) {
+
+					// Found a matching KID, checking if id_karas are the same
+					if (Kara.id_kara != PLKara.id_kara) {
+						sqlUpdateUserDB += 'UPDATE playlist_content SET fk_id_kara = ' + Kara.id_kara
+							+ ' WHERE kid = \'' + PLKara.kid + '\';';
+						UpdateNeeded = true;
+					}
+					KaraFound = true;
+				}
+			});
+			//If No Karaoke with this KID was found in the AllKaras table, delete the KID
+			if (!KaraFound) {
+
+				sqlUpdateUserDB += 'DELETE FROM playlist_content WHERE kid = \'' + PLKara.kid + '\';';
+				logger.warn('Deleted Karaoke ID ' + PLKara.kid + ' from playlists');
+				UpdateNeeded = true;
+			}
+		});
+	}
+	var sqlUpdateDBUUID = fs.readFileSync(path.join(__dirname, '../_common/db/update_userdb_uuid.sql'), 'utf-8');
+	userdb.run(sqlUpdateDBUUID,
+		{
+			$uuid: uuid
+		})
+		.catch((err) => {
+			logger.error('[DBI] Unable to update user database UUID :' + err);
+			throw err;
+		});
+	db.run(sqlUpdateDBUUID,
+		{
+			$uuid: uuid
+		})
+		.catch((err) => {
+			logger.error('[DBI] Unable to update database UUID :' + err);
+			throw err;
+		});
+	if (UpdateNeeded) {
+		// Disabling constraints check for this procedure
+		// Since we'll be renumbering some karas which might have switched places, two entries might have, for a split second, the same number.
+		sqlUpdateUserDB += 'COMMIT;';
+		logger.debug('[Gen] Userdata Update SQL : ' + sqlUpdateUserDB);
+		logger.profile('ICRunUpdates');
+		userdb.run('PRAGMA foreign_keys = OFF;')
+			.then(() => {
+				userdb.exec(sqlUpdateUserDB)
+					.then(() => {
+						logger.info('Database updated due to integrity checks');
+						logger.profile('ICRunUpdates');
+					})
+					.catch((err) => {
+						logger.error('Error updating database : ' + err);
+						throw err;
+					});
+			});
+	} else {
+		logger.info('No update needed to user database');
+		logger.info('Integrity checks complete!');
+	}
+
 }
