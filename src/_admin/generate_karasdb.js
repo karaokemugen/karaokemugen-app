@@ -631,7 +631,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	if (!uuid) uuid = uuidV4();
 	const karas_dbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 	const karas_userdbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
-	onLog('info', 'Running user database integrity checks');
+	logger.info('Running user database integrity checks');
 	var AllKaras = [];
 	var AllTags = [];
 	var PlaylistKaras = [];
@@ -799,7 +799,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 						//If No Karaoke with this KID was found in the AllKaras table, delete the KID
 						if (!KaraFound) {
 							sqlUpdateUserDB += 'DELETE FROM whitelist WHERE kid = \'' + WLKara.kid + '\';';
-							onLog('warn', 'Deleted Karaoke ID ' + WLKara.kid + ' from whitelist');
+							logger.warn('Deleted Karaoke ID ' + WLKara.kid + ' from whitelist');
 							UpdateNeeded = true;
 						}
 					});
@@ -823,7 +823,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 						//If No Karaoke with this KID was found in the AllKaras table, delete the KID
 						if (!KaraFound) {
 							sqlUpdateUserDB += 'DELETE FROM blacklist_criteria WHERE uniquevalue = \'' + BLCKara.kid + '\';';
-							onLog('warn', 'Deleted Karaoke ID ' + BLCKara.kid + ' from blacklist criteria (type 1001)');
+							logger.warn('Deleted Karaoke ID ' + BLCKara.kid + ' from blacklist criteria (type 1001)');
 							UpdateNeeded = true;
 						}
 					});
@@ -845,7 +845,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 						//If No Tag with this name and type was found in the AllTags table, delete the Tag
 						if (!TagFound) {
 							sqlUpdateUserDB += 'DELETE FROM blacklist_criteria WHERE uniquevalue = \'' + BLCTag.tagname + '\' AND type = ' + BLCTag.type + ';';
-							onLog('warn', 'Deleted Tag ' + BLCTag.tagname + ' from blacklist criteria (type ' + BLCTag.type + ')');
+							logger.warn('Deleted Tag ' + BLCTag.tagname + ' from blacklist criteria (type ' + BLCTag.type + ')');
 							UpdateNeeded = true;
 						}
 					});
@@ -867,7 +867,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 						// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 						if (!KaraFound) {
 							sqlUpdateUserDB += 'DELETE FROM blacklist WHERE kid = \'' + BLKara.kid + '\';';
-							onLog('warn', 'Deleted Karaoke ID ' + BLKara.kid + ' from blacklist');
+							logger.warn('Deleted Karaoke ID ' + BLKara.kid + ' from blacklist');
 							UpdateNeeded = true;
 						}
 					});
@@ -889,7 +889,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 						// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 						if (!KaraFound) {
 							sqlUpdateUserDB += 'DELETE FROM rating WHERE kid = \'' + RKara.kid + '\';';
-							onLog('warn', 'Deleted Karaoke ID ' + RKara.kid + ' from ratings');
+							logger.warn('Deleted Karaoke ID ' + RKara.kid + ' from ratings');
 							UpdateNeeded = true;
 						}
 					});
@@ -911,7 +911,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 						// If No Karaoke with this KID was found in the AllKaras table, delete the KID
 						if (!KaraFound) {
 							sqlUpdateUserDB += 'DELETE FROM viewcount WHERE kid = \'' + VKara.kid + '\';';
-							onLog('warn', 'Deleted Karaoke ID ' + VKara.kid + ' from viewcounts');
+							logger.warn('Deleted Karaoke ID ' + VKara.kid + ' from viewcounts');
 							UpdateNeeded = true;
 						}
 					});
@@ -936,7 +936,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 						if (!KaraFound) {
 
 							sqlUpdateUserDB += 'DELETE FROM playlist_content WHERE kid = \'' + PLKara.kid + '\';';
-							onLog('warn', 'Deleted Karaoke ID ' + PLKara.kid + ' from playlists');
+							logger.warn('Deleted Karaoke ID ' + PLKara.kid + ' from playlists');
 							UpdateNeeded = true;
 						}
 					});
@@ -968,24 +968,22 @@ export async function checkUserdbIntegrity(uuid, config) {
 						.then(() => {
 							userdb.exec(sqlUpdateUserDB)
 								.then(() => {
-									onLog('success', 'Database updated due to integrity checks');
+									logger.info('Database updated due to integrity checks');
 									logger.profile('ICRunUpdates');
 								})
 								.catch((err) => {
-									onLog('error', 'Error updating database : ' + err);
+									logger.error('Error updating database : ' + err);
 									throw err;
 								});
 						});
 				} else {
-					onLog('success', 'No update needed to user database');
-					onLog('success', 'Integrity checks complete!');
+					logger.info('No update needed to user database');
+					logger.info('Integrity checks complete!');
 				}
 			})
 			.catch(function (err) {
-				onLog('error', 'Error during integrity checks : ' + err);
+				logger.error('Error during integrity checks : ' + err);
 				throw err;
 			});
 	});
 }
-
-export function	onLog() {}
