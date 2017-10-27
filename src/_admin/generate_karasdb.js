@@ -701,7 +701,6 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	let customSQL = '';
 
-
 	blcTags.forEach(function (blcTag) {
 		let tagFound = false;
 		allTags.forEach(function (tag) {
@@ -723,8 +722,11 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	if (customSQL) {
 		logger.debug('[Gen] Tags UPDATE SQL : ' + customSQL);
-		await userdb.run(customSQL);
+		updatePromises.push(userdb.run(customSQL));
 	}
+
+	// On attend la fin de tous les UPDATE/DELETE avant de passer à la suite.
+	await Promise.all(updatePromises);
 
 	const sqlUpdateDBUUID = await asyncReadFile(resolve(__dirname, '../_common/db/update_userdb_uuid.sql'), 'utf-8');
 
