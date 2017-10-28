@@ -22,13 +22,12 @@ process.on('unhandledRejection', (reason, p) => {
 	// application specific logging, throwing an error, or other logic here
 });
 
-var path = require('path');
-var sqlite = require('sqlite');
-var fs = require('fs-extra');
-var ini = require('ini');
-var timestamp = require('unix-timestamp');
+const path = require('path');
+const sqlite = require('sqlite');
+const ini = require('ini');
+const timestamp = require('unix-timestamp');
 const uuidV4 = require('uuid/v4');
-var csv = require('csv-string');
+const csv = require('csv-string');
 const langsModule = require('langs');
 const crypto = require('crypto');
 
@@ -150,7 +149,7 @@ async function findSubFile(videoFile, kara) {
 	const videoExt = extname(videoFile);
 	if (kara.subfile === 'dummy.ass') {
 		if (videoExt === '.mkv' || videoExt === '.mp4') {
-			const extractFile = resolve(resolvedPathTemp(), 'kara_extract.' + kara.KID + '.ass');
+			const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kara.KID}.ass`);
 			try {
 				return await extractSubtitles(videoFile, extractFile);
 			} catch (err) {
@@ -657,8 +656,6 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectBLCTags)
 	]);
 
-
-
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
 
@@ -666,37 +663,28 @@ export async function checkUserdbIntegrity(uuid, config) {
 	const karaKIDs = allKaras.map(k => '\'' + k.kid + '\'').join(',');
 
 	// On supprime tous les enregistrements ne correspondant pas à un de ces KIDs.
-	try {
-		await Promise.all([
-			userdb.run('DELETE FROM whitelist WHERE kid NOT IN (' + karaKIDs + ');'),
-			userdb.run('DELETE FROM blacklist_criteria WHERE uniquevalue NOT IN (' + karaKIDs + ');'),
-			userdb.run('DELETE FROM blacklist WHERE kid NOT IN (' + karaKIDs + ');'),
-			userdb.run('DELETE FROM rating WHERE kid NOT IN (' + karaKIDs + ');'),
-			userdb.run('DELETE FROM viewcount WHERE kid NOT IN (' + karaKIDs + ');'),
-			userdb.run('DELETE FROM playlist_content WHERE kid NOT IN (' + karaKIDs + ');'),
-		]);
-	} catch (err) {
-		logger.error(err);
-	}
+	await Promise.all([
+		userdb.run(`DELETE FROM whitelist WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`DELETE FROM blacklist_criteria WHERE uniquevalue NOT IN (${karaKIDs});`),
+		userdb.run(`DELETE FROM blacklist WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`DELETE FROM rating WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`DELETE FROM viewcount WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`DELETE FROM playlist_content WHERE kid NOT IN (${karaKIDs});`)
+	]);
+
 
 	// UPDATE global de chaque table pour remettre les identifiants corrects par rapport aux KIDs.
-	// TODO : Tests de performances à réaliser pour valider le comportement.
+	// TODO : Tests de performances à réaliser pour valider la vitesse avec une base ayant beaucoup de contenus.
 
 	const updatePromises = [];
 
 	allKaras.forEach(k => {
-		updatePromises.push(userdb.run('UPDATE whitelist SET fk_id_kara = ' + k.id_kara +
-			' WHERE kid = \'' + k.kid + '\';'));
-		updatePromises.push(userdb.run('UPDATE blacklist_criteria SET value = ' + k.id_kara +
-			' WHERE uniquevalue = \'' + k.kid + '\';'));
-		updatePromises.push(userdb.run('UPDATE blacklist SET fk_id_kara = ' + k.id_kara +
-			' WHERE kid = \'' + k.kid + '\';'));
-		updatePromises.push(userdb.run('UPDATE rating SET fk_id_kara = ' + k.id_kara +
-			' WHERE kid = \'' + k.kid + '\';'));
-		updatePromises.push(userdb.run('UPDATE viewcount SET fk_id_kara = ' + k.id_kara +
-			' WHERE kid = \'' + k.kid + '\';'));
-		updatePromises.push(userdb.run('UPDATE playlist_content SET fk_id_kara = ' + k.id_kara +
-			' WHERE kid = \'' + k.kid + '\';'));
+		updatePromises.push(userdb.run(`UPDATE whitelist SET fk_id_kara = ${k.id_kara} WHERE kid = '${k.kid}';`));
+		updatePromises.push(userdb.run(`UPDATE blacklist_criteria SET value = ${k.id_kara} WHERE uniquevalue = '${k.kid}';`));
+		updatePromises.push(userdb.run(`UPDATE blacklist SET fk_id_kara = ${k.id_kara} WHERE kid = '${k.kid}';`));
+		updatePromises.push(userdb.run(`UPDATE rating SET fk_id_kara = ${k.id_kara} WHERE kid = '${k.kid}';`));
+		updatePromises.push(userdb.run(`UPDATE viewcount SET fk_id_kara = ${k.id_kara}  WHERE kid = '${k.kid}';`));
+		updatePromises.push(userdb.run(`UPDATE playlist_content SET fk_id_kara = ${k.id_kara} WHERE kid = '${k.kid}';`));
 	});
 
 	let customSQL = '';
@@ -707,16 +695,16 @@ export async function checkUserdbIntegrity(uuid, config) {
 			if (tag.name === blcTag.tagname && tag.tagtype === blcTag.type) {
 				// Found a matching Tagname, checking if id_tags are the same
 				if (tag.id_tag !== blcTag.id_tag) {
-					customSQL += 'UPDATE blacklist_criteria SET value = ' + tag.id_tag
-						+ ' WHERE uniquevalue = \'' + blcTag.tagname + '\' AND type = ' + blcTag.type + ';';
+					customSQL += `UPDATE blacklist_criteria SET value = ${tag.id_tag}
+						WHERE uniquevalue = '${blcTag.tagname}' AND type = ${blcTag.type};`;
 				}
 				tagFound = true;
 			}
 		});
 		//If No Tag with this name and type was found in the AllTags table, delete the Tag
 		if (!tagFound) {
-			customSQL += 'DELETE FROM blacklist_criteria WHERE uniquevalue = \'' + blcTag.tagname + '\' AND type = ' + blcTag.type + ';';
-			logger.warn('Deleted Tag ' + blcTag.tagname + ' from blacklist criteria (type ' + blcTag.type + ')');
+			customSQL += `DELETE FROM blacklist_criteria WHERE uniquevalue = '${blcTag.tagname}' AND type = ${blcTag.type};`;
+			logger.warn(`Deleted Tag ${blcTag.tagname} from blacklist criteria (type ${blcTag.type})`);
 		}
 	});
 
