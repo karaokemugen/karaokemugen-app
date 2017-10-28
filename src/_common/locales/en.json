@@ -4,6 +4,8 @@
 	"DETAILS_ADDED": "Added ",
 	"DETAILS_ADDED_2": "the %s",
 	"DETAILS_ADDED_3": "by %s",
+	"DETAILS_PLAYING_IN" : "Playing",
+	"DETAILS_PLAYING_IN_2" : " in %s (~%s)",
 	"DETAILS_VIEWS": "Views",
 	"DETAILS_DURATION": "Duration",
 	"DETAILS_LANGUAGE": "Language",

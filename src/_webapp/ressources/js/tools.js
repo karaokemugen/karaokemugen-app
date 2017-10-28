@@ -111,8 +111,11 @@ ajx = function(type, url, data, doneCallback) {
 
 /* format seconds to Hour Minute Second */
 secondsTimeSpanToHMS = function(s, format) {
-	var d = Math.floor(s/(3600 * 24));
-	s -= d * 3600 * 24;
+	if (format === 'hm') {
+		var d = Math.floor(s/(3600 * 24));
+		s -= d * 3600 * 24;
+	}
+
 	var h = Math.floor(s/3600);
 	s -= h * 3600;
 	var m = Math.floor(s/60);
