@@ -1217,7 +1217,7 @@ module.exports = {
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
  *       "EngineRepeatPlaylist": "0",
- *       "EngineSongsPerPerson": "10000",
+ *       "EngineSongsPerUser": "10000",
  *       "PathAltname": "../times/series_altnames.csv",
  *       "PathBackgrounds": "app/backgrounds",
  *       "PathBin": "app/bin",
@@ -1274,7 +1274,7 @@ module.exports = {
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
  * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
  * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
- * @apiParam {Number} EngineSongsPerPerson Number of songs allowed per person.
+ * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
  * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
@@ -1342,7 +1342,7 @@ module.exports = {
 							notEmpty: true,
 							isBoolean: true,
 						},
-						'EngineSongsPerPerson': {
+						'EngineSongsPerUser': {
 							in: 'body',
 							notEmpty: true,
 							isInt: true,
@@ -1435,7 +1435,7 @@ module.exports = {
 							req.sanitize('PlayerNoHud').toInt();
 							req.sanitize('PlayerStayOnTop').toInt();
 							req.sanitize('PlayerScreen').toInt();
-							req.sanitize('EngineSongsPerPerson').toInt();
+							req.sanitize('EngineSongsPerUser').toInt();
 							req.sanitize('EnginePrivateMode').toInt();
 							req.sanitize('PlayerPIP').toInt();
 							req.sanitize('PlayerPIPSize').toInt();
@@ -2679,7 +2679,7 @@ module.exports = {
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
  *       "EngineRepeatPlaylist": "0",
- *       "EngineSongsPerPerson": "10000",
+ *       "EngineSongsPerUser": "10000",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
  *       "PlayerNoBar": "1",
