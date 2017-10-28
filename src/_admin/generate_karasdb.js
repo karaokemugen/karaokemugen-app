@@ -649,11 +649,23 @@ export async function checkUserdbIntegrity(uuid, config) {
 	const [
 		allTags,
 		allKaras,
-		blcTags
+		blcTags,
+		whitelistKaras,
+		blacklistCriteriaKaras,
+		blacklistKaras,
+		ratingKaras,
+		viewcountKaras,
+		playlistKaras
 	] = await Promise.all([
 		db.all(selectTags),
 		db.all(selectKaras),
-		userdb.all(selectBLCTags)
+		userdb.all(selectBLCTags),
+		userdb.all(selectWhitelistKaras),
+		userdb.all(selectBLCKaras),
+		userdb.all(selectBlacklistKaras),
+		userdb.all(selectRatingKaras),
+		userdb.all(selectViewcountKaras),
+		userdb.all(selectPlaylistKaras)
 	]);
 
 	await userdb.run('BEGIN TRANSACTION');
@@ -672,22 +684,41 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`DELETE FROM playlist_content WHERE kid NOT IN (${karaKIDs});`)
 	]);
 
+	const karaIdByKid = new Map();
+	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 
-	// UPDATE global de chaque table pour remettre les identifiants corrects par rapport aux KIDs.
-	// TODO : Tests de performances à réaliser pour valider la vitesse avec une base ayant beaucoup de contenus.
+	let sql = '';
 
-	const updatePromises = [];
-
-	allKaras.forEach(k => {
-		updatePromises.push(userdb.run(`UPDATE whitelist SET fk_id_kara = ${k.id_kara} WHERE kid = '${k.kid}';`));
-		updatePromises.push(userdb.run(`UPDATE blacklist_criteria SET value = ${k.id_kara} WHERE uniquevalue = '${k.kid}';`));
-		updatePromises.push(userdb.run(`UPDATE blacklist SET fk_id_kara = ${k.id_kara} WHERE kid = '${k.kid}';`));
-		updatePromises.push(userdb.run(`UPDATE rating SET fk_id_kara = ${k.id_kara} WHERE kid = '${k.kid}';`));
-		updatePromises.push(userdb.run(`UPDATE viewcount SET fk_id_kara = ${k.id_kara}  WHERE kid = '${k.kid}';`));
-		updatePromises.push(userdb.run(`UPDATE playlist_content SET fk_id_kara = ${k.id_kara} WHERE kid = '${k.kid}';`));
+	whitelistKaras.forEach(wlk => {
+		if (karaIdByKid.get(wlk.kid) !== wlk.fk_id_kara) {
+			sql += `UPDATE whitelist SET fk_id_kara = ${karaIdByKid.get(wlk.kid)} WHERE kid = '${wlk.kid}';`;
+		}
 	});
-
-	let customSQL = '';
+	blacklistCriteriaKaras.forEach(blck => {
+		if (karaIdByKid.get(blck.uniquevalue) !== blck.value) {
+			sql += `UPDATE blacklist_criteria SET value = ${karaIdByKid.get(blck.uniquevalue)} WHERE kid = '${blck.uniquevalue}';`;
+		}
+	});
+	blacklistKaras.forEach(blk => {
+		if (karaIdByKid.get(blk.kid) !== blk.fk_id_kara) {
+			sql += `UPDATE blacklist SET fk_id_kara = ${karaIdByKid.get(blk.kid)} WHERE kid = '${blk.kid}';`;
+		}
+	});
+	ratingKaras.forEach(rk => {
+		if (karaIdByKid.get(rk.kid) !== rk.fk_id_kara) {
+			sql += `UPDATE rating SET fk_id_kara = ${karaIdByKid.get(rk.kid)} WHERE kid = '${rk.kid}';`;
+		}
+	});
+	viewcountKaras.forEach(vck => {
+		if (karaIdByKid.get(vck.kid) !== vck.fk_id_kara) {
+			sql += `UPDATE viewcount SET fk_id_kara = ${karaIdByKid.get(vck.kid)} WHERE kid = '${vck.kid}';`;
+		}
+	});
+	playlistKaras.forEach(plck => {
+		if (karaIdByKid.get(plck.kid) !== plck.fk_id_kara) {
+			sql += `UPDATE playlist_content SET fk_id_kara = ${karaIdByKid.get(plck.kid)} WHERE kid = '${plck.kid}';`;
+		}
+	});
 
 	blcTags.forEach(function (blcTag) {
 		let tagFound = false;
@@ -695,7 +726,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 			if (tag.name === blcTag.tagname && tag.tagtype === blcTag.type) {
 				// Found a matching Tagname, checking if id_tags are the same
 				if (tag.id_tag !== blcTag.id_tag) {
-					customSQL += `UPDATE blacklist_criteria SET value = ${tag.id_tag}
+					sql += `UPDATE blacklist_criteria SET value = ${tag.id_tag}
 						WHERE uniquevalue = '${blcTag.tagname}' AND type = ${blcTag.type};`;
 				}
 				tagFound = true;
@@ -703,18 +734,15 @@ export async function checkUserdbIntegrity(uuid, config) {
 		});
 		//If No Tag with this name and type was found in the AllTags table, delete the Tag
 		if (!tagFound) {
-			customSQL += `DELETE FROM blacklist_criteria WHERE uniquevalue = '${blcTag.tagname}' AND type = ${blcTag.type};`;
+			sql += `DELETE FROM blacklist_criteria WHERE uniquevalue = '${blcTag.tagname}' AND type = ${blcTag.type};`;
 			logger.warn(`Deleted Tag ${blcTag.tagname} from blacklist criteria (type ${blcTag.type})`);
 		}
 	});
 
-	if (customSQL) {
-		logger.debug('[Gen] Tags UPDATE SQL : ' + customSQL);
-		updatePromises.push(userdb.run(customSQL));
+	if (sql) {
+		logger.debug('[Gen] Tags UPDATE SQL : ' + sql);
+		await userdb.run(sql);
 	}
-
-	// On attend la fin de tous les UPDATE/DELETE avant de passer à la suite.
-	await Promise.all(updatePromises);
 
 	const sqlUpdateDBUUID = await asyncReadFile(resolve(__dirname, '../_common/db/update_userdb_uuid.sql'), 'utf-8');
 
