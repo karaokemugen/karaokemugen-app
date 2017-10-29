@@ -36,7 +36,7 @@ deploy:
 deploy_apidoc:
   stage: deploy_apidoc
   script:
-    - apidoc -i src -o apidoc
+    - apidoc -i src -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd apidoc; mirror -Rnev --parallel=10"
   only:
