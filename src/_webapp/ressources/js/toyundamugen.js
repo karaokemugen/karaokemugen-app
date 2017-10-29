@@ -1067,9 +1067,7 @@ var plData;
 				return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
 			}).join(' ');
 			dashboard.removeAttr(attrListStr);
-			playlistContentUpdating.done(function() {
-				refreshContentInfos(side);
-			});
+			
 			$.each(optionAttrList, function() {
 				dashboard.attr(this.name, this.value);
 			});
@@ -1077,6 +1075,9 @@ var plData;
 			if (playlistRange[idPlaylist] == undefined) {
 				setPlaylistRange(idPlaylist, 0, pageSize);
 			}
+			playlistContentUpdating.done(function() {
+				refreshContentInfos(side);
+			});
 			$(window).resize();
 		});
 	};
