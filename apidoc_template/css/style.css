@@ -53,6 +53,7 @@ section {
 }
 
 section > div {
+ border-top: 1px solid #aaa;
  padding: 25px;
  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
  background-color: hsla(202, 5%, 21%, 1);
@@ -297,7 +298,6 @@ pre code.sample-request-response-json {
 
 .sidenav > li.nav-header > a {
   padding: 5px 15px;
-  border: 1px solid #e5e5e5;
   width: 190px;
   font-family: "Source Sans Pro", sans-serif;
   font-weight: 700;
@@ -831,13 +831,13 @@ th {
   font-family: "Roboto", monospace, sans-serif;
   font-weight: 700;
   padding: 4px 8px;
-  border: #e0e0e0 1px solid;
+  border: hsla(0, 0%, 88%, 0.5) 1px solid;
 }
 
 td {
   vertical-align: top;
   padding: 2px 8px;
-  border: #e0e0e0 1px solid;
+  border: hsla(0, 0%, 88%, 0.5) 1px solid;
 }
 
 #generator .content {
