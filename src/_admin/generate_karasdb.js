@@ -25,7 +25,7 @@ import {
 	selectTags, selectViewcountKaras,
 	selectWhitelistKaras,
 	updateSeriesAltNames
-} from '../_common/db/queries';
+} from '../_common/db/generation';
 
 function checksum(str, algorithm, encoding) {
 	return createHash(algorithm || 'md5')
