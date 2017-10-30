@@ -563,65 +563,68 @@ async function runSqlStatementOnData(stmtPromise, data) {
 
 
 export async function run(config) {
+	try {
+		const conf = config || getConfig();
 
-	const conf = config || getConfig();
+		/*
+		 * Reconstruction temporaire de l'objet config le temps du refactoring. A terme, cet objet sera
+		 * transformé en un paramètre de la méthode run(), SYSPATH et SETTINGS étant supprimés.
+		 */
 
-	/*
-	 * Reconstruction temporaire de l'objet config le temps du refactoring. A terme, cet objet sera
-	 * transformé en un paramètre de la méthode run(), SYSPATH et SETTINGS étant supprimés.
-	 */
+		// These are not resolved : they will be later on when extracting / reading ASS
+		const karas_dbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
+		const series_altnamesfile = path.resolve(conf.appPath, conf.PathAltname);
 
-	// These are not resolved : they will be later on when extracting / reading ASS
-	const karas_dbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
-	const series_altnamesfile = path.resolve(conf.appPath, conf.PathAltname);
+		logger.info('Starting database generation');
+		logger.info('GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 
-	logger.info('Starting database generation');
-	logger.info('GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
+		const db = await sqlite.open(karas_dbfile, {verbose: true, Promise});
+		logger.info('Karaoke databases created');
 
-	const db = await sqlite.open(karas_dbfile, {verbose: true, Promise});
-	logger.info('Karaoke databases created');
+		await emptyDatabase(db);
+		await backupKaraDirs(conf);
 
-	await emptyDatabase(db);
-	await backupKaraDirs(conf);
+		const karaFiles = await extractAllKaraFiles();
+		const karas = await getAllKaras(karaFiles);
 
-	const karaFiles = await extractAllKaraFiles();
-	const karas = await getAllKaras(karaFiles);
+		// Préparation des données à insérer.
 
-	// Préparation des données à insérer.
+		const sqlInsertKaras = prepareAllKarasInsertData(karas);
+		const seriesMap = getAllSeries(karas);
+		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
+		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
 
-	const sqlInsertKaras = prepareAllKarasInsertData(karas);
-	const seriesMap = getAllSeries(karas);
-	const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
-	const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
+		const tags = getAllKaraTags(karas);
+		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
+		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
 
-	const tags = getAllKaraTags(karas);
-	const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
-	const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
+		const sqlUpdateSeriesAltNames = await prepareAltSeriesInsertData(series_altnamesfile);
 
-	const sqlUpdateSeriesAltNames = await prepareAltSeriesInsertData(series_altnamesfile);
+		// Insertion des données en une transaction.
 
-	// Insertion des données en une transaction.
+		await db.run('begin transaction');
 
-	await db.run('begin transaction');
+		const insertPromises = [
+			runSqlStatementOnData(db.prepare(insertKaras), sqlInsertKaras),
+			insertAss(db, karas),
+			runSqlStatementOnData(db.prepare(insertSeries), sqlInsertSeries),
+			runSqlStatementOnData(db.prepare(insertTags), sqlInsertTags),
+			runSqlStatementOnData(db.prepare(insertKaraTags), sqlInsertKarasTags),
+			runSqlStatementOnData(db.prepare(insertKaraSeries), sqlInsertKarasSeries)
+		];
 
-	const insertPromises = [
-		runSqlStatementOnData(db.prepare(insertKaras), sqlInsertKaras),
-		insertAss(db, karas),
-		runSqlStatementOnData(db.prepare(insertSeries), sqlInsertSeries),
-		runSqlStatementOnData(db.prepare(insertTags), sqlInsertTags),
-		runSqlStatementOnData(db.prepare(insertKaraTags), sqlInsertKarasTags),
-		runSqlStatementOnData(db.prepare(insertKaraSeries), sqlInsertKarasSeries)
-	];
+		await Promise.all(insertPromises);
+		await runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames);
 
-	await Promise.all(insertPromises);
-	await runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames);
+		await db.run('commit');
+		await db.close();
 
-	await db.run('commit');
-	await db.close();
+		await checkUserdbIntegrity(null, conf);
 
-	await checkUserdbIntegrity(null, conf);
-
-	await deleteBackupDirs(conf);
+		await deleteBackupDirs(conf);
+	} catch (err) {
+		logger.error(err);
+	}
 }
 
 
