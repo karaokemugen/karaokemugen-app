@@ -1,6 +1,14 @@
 import logger from 'winston';
 import {resolve, extname} from 'path';
 import {deburr, isEmpty, trim} from 'lodash';
+import {open} from 'sqlite';
+import {stringify} from 'ini';
+import {forEach as csvForEach} from 'csv-string';
+import {has as hasLang} from 'langs';
+import {createHash} from 'crypto';
+import timestamp from 'unix-timestamp';
+import uuidV4 from 'uuid/v4';
+
 import {
 	asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove, asyncStat, asyncWriteFile,
 	resolveFileInDirs
@@ -22,14 +30,6 @@ process.on('unhandledRejection', (reason, p) => {
 	// application specific logging, throwing an error, or other logic here
 });
 
-const path = require('path');
-const sqlite = require('sqlite');
-const ini = require('ini');
-const timestamp = require('unix-timestamp');
-const uuidV4 = require('uuid/v4');
-const csv = require('csv-string');
-const langsModule = require('langs');
-const crypto = require('crypto');
 
 /** Requêtes SQL utilisées. */
 
@@ -70,8 +70,7 @@ const selectRatingKaras = 'SELECT fk_id_kara AS id_kara, kid FROM rating;';
 const selectViewcountKaras = 'SELECT fk_id_kara AS id_kara, kid FROM viewcount;';
 
 function checksum(str, algorithm, encoding) {
-	return crypto
-		.createHash(algorithm || 'md5')
+	return createHash(algorithm || 'md5')
 		.update(str, 'utf8')
 		.digest(encoding || 'hex');
 }
@@ -238,10 +237,10 @@ async function getKara(karafile) {
 
 	kara.rating = 0;
 	kara.viewcount = 0;
-	kara.checksum = checksum(ini.stringify(karaData));
+	kara.checksum = checksum(stringify(karaData));
 
 	if (isKaraModified) {
-		await asyncWriteFile(karafile, ini.stringify(karaData));
+		await asyncWriteFile(karafile, stringify(karaData));
 	}
 
 	return kara;
@@ -369,7 +368,7 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 
 	if (await asyncExists(altSeriesFile)) {
 		const content = await asyncReadFile(altSeriesFile, { encoding: 'utf8' });
-		csv.forEach(content, ':', parsedContent => {
+		csvForEach(content, ':', parsedContent => {
 			const serie = parsedContent[0];
 			const altNames = parsedContent[1];
 			if (serie && altNames) {
@@ -440,7 +439,7 @@ function getKaraTags(kara, allTags) {
 
 	if (kara.lang) {
 		kara.lang.split(',').forEach(lang => {
-			if (lang === 'und' || langsModule.has('2B', lang)) {
+			if (lang === 'und' || hasLang('2B', lang)) {
 				result.add(getTagId(lang.trim() + ',5', allTags));
 			}
 		});
@@ -567,15 +566,15 @@ async function runSqlStatementOnData(stmtPromise, data) {
 export async function run(config) {
 	try {
 		const conf = config || getConfig();
-		
+
 		// These are not resolved : they will be later on when extracting / reading ASS
-		const karas_dbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
-		const series_altnamesfile = path.resolve(conf.appPath, conf.PathAltname);
+		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
+		const series_altnamesfile = resolve(conf.appPath, conf.PathAltname);
 
 		logger.info('Starting database generation');
 		logger.info('GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 
-		const db = await sqlite.open(karas_dbfile, {verbose: true, Promise});
+		const db = await open(karas_dbfile, {verbose: true, Promise});
 		logger.info('Karaoke databases created');
 
 		await emptyDatabase(db);
@@ -637,13 +636,13 @@ export async function checkUserdbIntegrity(uuid, config) {
 	const conf = config || getConfig();
 
 	if (!uuid) uuid = uuidV4();
-	const karas_dbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
-	const karas_userdbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
+	const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
+	const karas_userdbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	logger.info('Running user database integrity checks');
 
 	const [db, userdb] = await Promise.all([
-		sqlite.open(karas_dbfile, {Promise}),
-		sqlite.open(karas_userdbfile, {Promise})
+		open(karas_dbfile, {Promise}),
+		open(karas_userdbfile, {Promise})
 	]);
 
 	const [
