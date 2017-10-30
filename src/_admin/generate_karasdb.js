@@ -48,10 +48,10 @@ async function emptyDatabase(db) {
 async function backupDir(directory) {
 	const backupDir = directory + '_backup';
 	if (await asyncExists(backupDir)) {
-		logger.debug('[Gen] Removing backup dir ' + backupDir);
+		logger.debug('[Gen] [Gen] Removing backup dir ' + backupDir);
 		await asyncRemove(backupDir);
 	}
-	logger.debug('[Gen] Creating backup dir ' + backupDir);
+	logger.debug('[Gen] [Gen] Creating backup dir ' + backupDir);
 	await asyncMkdirp(backupDir);
 	await asyncCopy(
 		directory,
@@ -111,14 +111,14 @@ async function findSubFile(videoFile, kara) {
 				return await extractSubtitles(videoFile, extractFile);
 			} catch (err) {
 				// Non bloquant.
-				logger.debug('Could not extract subtitles from video file ' + videoFile);
+				logger.debug('[Gen] Could not extract subtitles from video file ' + videoFile);
 			}
 		}
 	} else {
 		try {
 			return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
 		} catch (err) {
-			logger.warn(`Could not find subfile '${kara.subfile}'.`);
+			logger.warn(`[Gen] Could not find subfile '${kara.subfile}'.`);
 		}
 	}
 	// Cas non bloquant de fichier non trouvé.
@@ -165,7 +165,7 @@ async function getKara(karafile) {
 	try {
 		videoFile = await resolveFileInDirs(karaData.videofile, resolvedPathVideos());
 	} catch (err) {
-		logger.warn('Video file not found : ' + karaData.videofile);
+		logger.warn('[Gen] Video file not found : ' + karaData.videofile);
 		kara.gain = 0;
 		kara.size = 0;
 		kara.videolength = 0;
@@ -338,11 +338,11 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 					$serie_altnamesnorm: deburr(altNames),
 					$serie_name: serie
 				});
-				logger.debug('Added alt. names "' + altNames + '" to ' + serie);
+				logger.debug('[Gen] Added alt. names "' + altNames + '" to ' + serie);
 			}
 		});
 	} else {
-		logger.warn('No alternative series name file found, ignoring');
+		logger.warn('[Gen] No alternative series name file found, ignoring');
 	}
 
 	return data;
@@ -533,11 +533,11 @@ export async function run(config) {
 		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 		const series_altnamesfile = resolve(conf.appPath, conf.PathAltname);
 
-		logger.info('Starting database generation');
-		logger.info('GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
+		logger.info('[Gen] Starting database generation');
+		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 
 		const db = await open(karas_dbfile, {verbose: true, Promise});
-		logger.info('Karaoke databases created');
+		logger.info('[Gen] Karaoke databases created');
 
 		await emptyDatabase(db);
 		await backupKaraDirs(conf);
@@ -600,7 +600,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	if (!uuid) uuid = uuidV4();
 	const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 	const karas_userdbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
-	logger.info('Running user database integrity checks');
+	logger.info('[Gen] Running user database integrity checks');
 
 	const [db, userdb] = await Promise.all([
 		open(karas_dbfile, {Promise}),
@@ -696,12 +696,12 @@ export async function checkUserdbIntegrity(uuid, config) {
 		//If No Tag with this name and type was found in the AllTags table, delete the Tag
 		if (!tagFound) {
 			sql += `DELETE FROM blacklist_criteria WHERE uniquevalue = '${blcTag.tagname}' AND type = ${blcTag.type};`;
-			logger.warn(`Deleted Tag ${blcTag.tagname} from blacklist criteria (type ${blcTag.type})`);
+			logger.warn(`[Gen] Deleted Tag ${blcTag.tagname} from blacklist criteria (type ${blcTag.type})`);
 		}
 	});
 
 	if (sql) {
-		logger.debug('[Gen] Tags UPDATE SQL : ' + sql);
+		logger.debug('[Gen] [Gen] Tags UPDATE SQL : ' + sql);
 		await userdb.run(sql);
 	}
 
@@ -715,5 +715,5 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
 
-	logger.info('Integrity checks complete!');
+	logger.info('[Gen] Integrity checks complete!');
 }
