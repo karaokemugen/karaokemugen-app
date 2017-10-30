@@ -12,12 +12,11 @@ export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
 	const infos = karaFileName.split(/\s+-\s+/); // LANGUE - SERIE - NUMERO - TITRE
 
-	if (infos.length !== 4) {
+	if (infos.length < 3) {
 		throw 'Kara filename \'' + karaFileName + '\' does not respect naming convention';
 	}
-
 	// On ajoute en 5ème position le numéro extrait du champ type.
-	const orderInfos = infos[2].match(/([a-zA-Z]{2,10})(\d*)/);
+	const orderInfos = infos[2].match(/^([a-zA-Z0-9 ]{2,30}?)(\d*)$/);
 	infos.push(orderInfos[2] ? +orderInfos[2] : 0);
 
 	// On renvoie un objet avec les champs explicitement nommés.

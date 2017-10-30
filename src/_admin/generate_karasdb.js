@@ -484,7 +484,7 @@ function getTypes(kara, allTags) {
 	});
 
 	if (result.size === 0) {
-		throw 'Karaoke type cannot be detected: ' + kara.type;
+		throw 'Karaoke type cannot be detected: ' + kara.type + ' in kara : ' + JSON.stringify(kara);
 	}
 
 	return result;
