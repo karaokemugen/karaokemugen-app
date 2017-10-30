@@ -437,7 +437,8 @@ function getTypes(kara, allTags) {
 	]);
 
 	types.forEach((value, key) => {
-		if (kara.type.includes(key)) {
+		// Ajout d'espaces car certaines clés sont incluses dans d'autres : MV et AMV par exemple.
+		if (` ${kara.type} `.includes(` ${key} `)) {
 			result.add(getTagId(value, allTags));
 		}
 	});
