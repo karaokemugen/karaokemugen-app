@@ -19,55 +19,13 @@ import {
 	resolvedPathVideos
 } from '../_common/utils/config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from '../_common/utils/ffmpeg';
-
-process.on('uncaughtException', function (exception) {
-	console.log(exception); // to see your exception details in the console
-	// if you are on production, maybe you can send the exception details to your
-	// email as well ?
-});
-process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-	// application specific logging, throwing an error, or other logic here
-});
-
-
-/** Requêtes SQL utilisées. */
-
-const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at,
-	modified_at, rating, viewcount, gain, videolength,checksum)
-	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded,
-	$kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength, $kara_checksum);`;
-
-const insertSeries = 'INSERT INTO serie(pk_id_serie, name, NORM_name) VALUES($id_serie, $serie, $serienorm );';
-
-const insertTags = `INSERT INTO tag(pk_id_tag, tagtype, name, NORM_name)
-	VALUES($id_tag, $tagtype, $tagname, $tagnamenorm);`;
-
-const insertKaraTags = 'INSERT INTO kara_tag(fk_id_tag, fk_id_kara) VALUES($id_tag, $id_kara);';
-
-const insertKaraSeries = 'INSERT INTO kara_serie(fk_id_serie, fk_id_kara) VALUES($id_serie, $id_kara);';
-
-const updateSeriesAltNames = `UPDATE serie SET altname = $serie_altnames ,NORM_altname = $serie_altnamesnorm
-	WHERE name= $serie_name ;`;
-
-const selectTags = 'SELECT pk_id_tag AS id_tag, tagtype, name FROM tag;';
-
-const selectKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
-
-const selectPlaylistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM playlist_content;';
-
-const selectWhitelistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM whitelist;';
-
-const selectBlacklistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM blacklist;';
-
-const selectBLCKaras = 'SELECT value AS id_kara, uniquevalue AS kid FROM blacklist_criteria WHERE type = 1001;';
-
-const selectBLCTags = `SELECT type, value AS id_tag, uniquevalue AS tagname FROM blacklist_criteria
-    WHERE type > 0 AND type < 1000;`;
-
-const selectRatingKaras = 'SELECT fk_id_kara AS id_kara, kid FROM rating;';
-
-const selectViewcountKaras = 'SELECT fk_id_kara AS id_kara, kid FROM viewcount;';
+import {
+	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
+	selectBLCTags, selectKaras, selectPlaylistKaras, selectRatingKaras,
+	selectTags, selectViewcountKaras,
+	selectWhitelistKaras,
+	updateSeriesAltNames
+} from '../_common/db/queries';
 
 function checksum(str, algorithm, encoding) {
 	return createHash(algorithm || 'md5')
