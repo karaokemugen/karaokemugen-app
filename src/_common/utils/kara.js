@@ -25,7 +25,7 @@ export function karaFilenameInfos(karaFile) {
 		serie: infos[1],
 		type: orderInfos[1],
 		songorder: orderInfos[2] ? +orderInfos[2] : 0,
-		title: infos[3]
+		title: infos[3] || ''
 	};
 }
 

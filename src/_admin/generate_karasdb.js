@@ -282,11 +282,6 @@ function prepareAllKarasInsertData(karas) {
 function getSeries(kara) {
 	const series = new Set();
 
-	// Série extraite du parsing du nom
-	if (kara.serie && kara.serie.trim()) {
-		series.add(kara.serie.trim());
-	}
-
 	// Séries extraites du fichier kara
 	if (kara.series && kara.series.trim()) {
 		kara.series.split(',').forEach(serie => {
@@ -296,8 +291,15 @@ function getSeries(kara) {
 		});
 	}
 
-	if (isEmpty(series) && kara.type !== 'LIVE' && kara.type !== 'MV') {
-		throw 'Karaoke series cannot be detected!';
+	if (kara.type !== 'LIVE' && kara.type !== 'MV') {
+		// Série extraite du parsing du nom, ajoutée uniquement pour les karas non LIVE/MV.
+		if (kara.serie && kara.serie.trim()) {
+			series.add(kara.serie.trim());
+		}
+		// Au moins une série est obligatoire pour les karas non LIVE/MV.
+		if (isEmpty(series)) {
+			throw 'Karaoke series cannot be detected!';
+		}
 	}
 
 	return series;
@@ -565,12 +567,7 @@ async function runSqlStatementOnData(stmtPromise, data) {
 export async function run(config) {
 	try {
 		const conf = config || getConfig();
-
-		/*
-		 * Reconstruction temporaire de l'objet config le temps du refactoring. A terme, cet objet sera
-		 * transformé en un paramètre de la méthode run(), SYSPATH et SETTINGS étant supprimés.
-		 */
-
+		
 		// These are not resolved : they will be later on when extracting / reading ASS
 		const karas_dbfile = path.resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 		const series_altnamesfile = path.resolve(conf.appPath, conf.PathAltname);
