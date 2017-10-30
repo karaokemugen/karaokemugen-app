@@ -133,12 +133,12 @@ async function getKara(karafile) {
 		isKaraModified = true;
 		karaData.KID = uuidV4();
 	}
+	timestamp.round = true;
 	if (!karaData.dateadded) {
 		isKaraModified = true;
-		timestamp.round = true;
 		karaData.dateadded = timestamp.now();
 	}
-	karaData.datemodif = karaData.dateadded;
+	karaData.datemodif = timestamp.now();
 
 	// On duplique karaData car on veut ajouter à l'objet kara des informations qui ne seront pas
 	// écrites dans le fichier kara.
