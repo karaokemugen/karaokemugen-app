@@ -115,8 +115,11 @@ async function findSubFile(videoFile, kara) {
 			}
 		}
 	} else {
-		// Bloquant si le fichier n'est pas trouvé. On laisse remonter l'erreur levée par 'resolveFileInDirs'.
-		return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
+		try {
+			return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
+		} catch (err) {
+			logger.warn(`Could not find subfile '${kara.subfile}'.`);
+		}
 	}
 	// Cas non bloquant de fichier non trouvé.
 	return '';
