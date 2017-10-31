@@ -39,37 +39,32 @@ export function karaFilenameInfos(karaFile) {
 export async function getKara(karafile) {
 
 	const karaData = await parseKara(karafile);
-	let isKaraModified = false;
+	karaData.isKaraModified = false;
 
 	verifyRequiredInfos(karaData);
 
 	if (!karaData.KID) {
-		isKaraModified = true;
+		karaData.isKaraModified = true;
 		karaData.KID = uuidV4();
 	}
 	timestamp.round = true;
 	if (!karaData.dateadded) {
-		isKaraModified = true;
+		karaData.isKaraModified = true;
 		karaData.dateadded = timestamp.now();
 	}
 	karaData.datemodif = timestamp.now();
 
-	// On duplique karaData car on veut ajouter à l'objet kara des informations qui ne seront pas
-	// écrites dans le fichier kara.
-	const kara = {...karaData};
-
-	kara.karafile = karafile;
+	karaData.karafile = karafile;
 
 	const karaInfos = karaFilenameInfos(karafile);
-	kara.title = karaInfos.title;
-	// Attention à ne pas confondre avec le champ 'series' au pluriel, provenant du fichier kara
-	// et copié de l'objet 'karaData'.
-	kara.serie = karaInfos.serie;
-	kara.type = karaInfos.type;
-	kara.songorder = karaInfos.songorder;
-	kara.langFromFileName = karaInfos.lang;
+	karaData.title = karaInfos.title;
+	// Attention à ne pas confondre avec le champ 'series' au pluriel, provenant du fichier kara.
+	karaData.serie = karaInfos.serie;
+	karaData.type = karaInfos.type;
+	karaData.songorder = karaInfos.songorder;
+	karaData.langFromFileName = karaInfos.lang;
 
-	kara.lang = trim(kara.lang, '"'); // Nettoyage du champ lang du fichier kara.
+	karaData.lang = trim(karaData.lang, '"'); // Nettoyage du champ lang du fichier kara.
 
 	let videoFile;
 
@@ -77,45 +72,70 @@ export async function getKara(karafile) {
 		videoFile = await resolveFileInDirs(karaData.videofile, resolvedPathVideos());
 	} catch (err) {
 		logger.warn('[Kara] Video file not found : ' + karaData.videofile);
-		kara.gain = 0;
-		kara.size = 0;
-		kara.videolength = 0;
-		kara.ass = '';
+		karaData.videogain = 0;
+		karaData.videosize = 0;
+		karaData.videoduration = 0;
+		karaData.ass = '';
 	}
 
 	if (videoFile) {
-		const subFile = await findSubFile(videoFile, kara);
+		const subFile = await findSubFile(videoFile, karaData);
 		if (subFile) {
-			kara.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
-			kara.ass_checksum = checksum(kara.ass);
+			karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
+			karaData.ass_checksum = checksum(karaData.ass);
 			// TODO Supprimer le fichier temporaire éventuel.
 		} else {
-			kara.ass = '';
+			karaData.ass = '';
 		}
 		const videoStats = await asyncStat(videoFile);
 		if (videoStats.size !== +karaData.videosize) {
-			isKaraModified = true;
+			karaData.isKaraModified = true;
 			karaData.videosize = videoStats.size;
 
 			const [videogain, videoduration] = await Promise.all([getVideoGain(videoFile), getVideoDuration(videoFile)]);
 
 			karaData.videogain = videogain;
-			kara.videogain = videogain;
 			karaData.videoduration = videoduration;
-			kara.videoduration = videoduration;
 		}
-
 	}
 
-	kara.rating = 0;
-	kara.viewcount = 0;
-	kara.checksum = checksum(stringify(karaData));
+	karaData.rating = 0;
+	karaData.viewcount = 0;
+	karaData.checksum = checksum(stringify(karaData));
 
-	if (isKaraModified) {
-		await asyncWriteFile(karafile, stringify(karaData));
+	return karaData;
+}
+
+
+export async function writeKara(karafile, karaData) {
+
+	if (karaData.isKaraModified === false) {
+		return;
 	}
 
-	return kara;
+	verifyRequiredInfos(karaData);
+	timestamp.round = true;
+
+	const infosToWrite = {
+		videofile: karaData.videofile,
+		subfile: karaData.subfile,
+		year: karaData.year || '',
+		singer: karaData.singer || '',
+		tags: karaData.tags || '',
+		songwriter: karaData.songwriter || '',
+		creator: karaData.creator || '',
+		author: karaData.author || '',
+		series: karaData.series || '',
+		lang: karaData.lang || '',
+		KID: karaData.KID || uuidV4(),
+		dateadded: karaData.dateadded || timestamp.now(),
+		datemodif: karaData.datemodif || timestamp.now(),
+		videosize: karaData.videosize || 0,
+		videogain: karaData.videogain || 0,
+		videoduration: karaData.videoduration || 0
+	};
+
+	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
 
 export async function parseKara(karaFile) {
