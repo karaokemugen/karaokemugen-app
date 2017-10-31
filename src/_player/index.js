@@ -468,6 +468,7 @@ module.exports = {
 						module.exports.duration = status.duration;
 						module.exports.subtext = status['sub-text'];
 						module.exports.volume = status['volume'];
+						module.exports.fullscreen = status.fullscreen;
 						module.exports.onStatusChange();
 					});
 					module.exports._player.on('paused',function(){
