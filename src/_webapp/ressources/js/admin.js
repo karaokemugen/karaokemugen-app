@@ -58,7 +58,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			var val = $(this).attr('name');
+			var val = $(this).attr('nameCommand');
+			if(!val) val =  $(this).attr('name');
+
 			$.ajax({
 				url: 'admin/player',
 				type: 'PUT',
@@ -427,9 +429,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
 			settings = data;
 			$.each(data, function (i, val) {
-				input = $('[name="' + i + '"]');
+				var input = $('[name="' + i + '"]');
 				// DEBUG && console.log(i, val);
-				if (input.length == 1 && i != nameExclude) {
+				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
 					if (input.attr('type') !== 'checkbox') {
 						input.val(val);
 					} else {
