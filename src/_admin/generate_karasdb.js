@@ -1,24 +1,13 @@
 import logger from 'winston';
-import {resolve, extname} from 'path';
-import {deburr, isEmpty, trim} from 'lodash';
+import uuidV4 from 'uuid/v4';
+import {resolve} from 'path';
+import {deburr, isEmpty} from 'lodash';
 import {open} from 'sqlite';
-import {stringify} from 'ini';
 import {forEach as csvForEach} from 'csv-string';
 import {has as hasLang} from 'langs';
-import {createHash} from 'crypto';
-import timestamp from 'unix-timestamp';
-import uuidV4 from 'uuid/v4';
-
-import {
-	asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove, asyncStat, asyncWriteFile,
-	resolveFileInDirs
-} from '../_common/utils/files';
-import {karaFilenameInfos, parseKara, verifyRequiredInfos} from '../_common/utils/kara';
-import {
-	getConfig, resolvedPathKaras, resolvedPathSubs, resolvedPathTemp,
-	resolvedPathVideos
-} from '../_common/utils/config';
-import {extractSubtitles, getVideoDuration, getVideoGain} from '../_common/utils/ffmpeg';
+import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove} from '../_common/utils/files';
+import {getConfig, resolvedPathKaras} from '../_common/utils/config';
+import {getKara} from '../_common/utils/kara';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras, selectRatingKaras,
@@ -26,12 +15,6 @@ import {
 	selectWhitelistKaras,
 	updateSeriesAltNames
 } from '../_common/db/generation';
-
-function checksum(str, algorithm, encoding) {
-	return createHash(algorithm || 'md5')
-		.update(str, 'utf8')
-		.digest(encoding || 'hex');
-}
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
@@ -100,111 +83,6 @@ async function extractAllKaraFiles() {
 		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
 	}
 	return karaFiles;
-}
-
-async function findSubFile(videoFile, kara) {
-	const videoExt = extname(videoFile);
-	if (kara.subfile === 'dummy.ass') {
-		if (videoExt === '.mkv' || videoExt === '.mp4') {
-			const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kara.KID}.ass`);
-			try {
-				return await extractSubtitles(videoFile, extractFile);
-			} catch (err) {
-				// Non bloquant.
-				logger.debug('[Gen] Could not extract subtitles from video file ' + videoFile);
-			}
-		}
-	} else {
-		try {
-			return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
-		} catch (err) {
-			logger.warn(`[Gen] Could not find subfile '${kara.subfile}'.`);
-		}
-	}
-	// Cas non bloquant de fichier non trouvé.
-	return '';
-}
-
-async function getKara(karafile) {
-
-	const karaData = await parseKara(karafile);
-	let isKaraModified = false;
-
-	verifyRequiredInfos(karaData);
-
-	if (!karaData.KID) {
-		isKaraModified = true;
-		karaData.KID = uuidV4();
-	}
-	timestamp.round = true;
-	if (!karaData.dateadded) {
-		isKaraModified = true;
-		karaData.dateadded = timestamp.now();
-	}
-	karaData.datemodif = timestamp.now();
-
-	// On duplique karaData car on veut ajouter à l'objet kara des informations qui ne seront pas
-	// écrites dans le fichier kara.
-	const kara = {...karaData};
-
-	kara.karafile = karafile;
-
-	const karaInfos = karaFilenameInfos(karafile);
-	kara.title = karaInfos.title;
-	// Attention à ne pas confondre avec le champ 'series' au pluriel, provenant du fichier kara
-	// et copié de l'objet 'karaData'.
-	kara.serie = karaInfos.serie;
-	kara.type = karaInfos.type;
-	kara.songorder = karaInfos.songorder;
-	kara.langFromFileName = karaInfos.lang;
-
-	kara.lang = trim(kara.lang, '"'); // Nettoyage du champ lang du fichier kara.
-
-	let videoFile;
-
-	try {
-		videoFile = await resolveFileInDirs(karaData.videofile, resolvedPathVideos());
-	} catch (err) {
-		logger.warn('[Gen] Video file not found : ' + karaData.videofile);
-		kara.gain = 0;
-		kara.size = 0;
-		kara.videolength = 0;
-		kara.ass = '';
-	}
-
-	if (videoFile) {
-		const subFile = await findSubFile(videoFile, kara);
-		if (subFile) {
-			kara.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
-			kara.ass_checksum = checksum(kara.ass);
-			// TODO Supprimer le fichier temporaire éventuel.
-		} else {
-			kara.ass = '';
-		}
-		const videoStats = await asyncStat(videoFile);
-		if (videoStats.size !== +karaData.videosize) {
-			isKaraModified = true;
-			karaData.videosize = videoStats.size;
-
-			const [videogain, videoduration] = await Promise.all([getVideoGain(videoFile), getVideoDuration(videoFile)]);
-
-			karaData.videogain = videogain;
-			kara.videogain = videogain;
-			karaData.videoduration = videoduration;
-			kara.videoduration = videoduration;
-		}
-
-	}
-
-	kara.rating = 0;
-	kara.viewcount = 0;
-	kara.checksum = checksum(stringify(karaData));
-
-	if (isKaraModified) {
-		await asyncWriteFile(karafile, stringify(karaData));
-	}
-
-	return kara;
 }
 
 async function getAllKaras(karafiles) {
