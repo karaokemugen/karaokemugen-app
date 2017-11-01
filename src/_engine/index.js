@@ -1061,7 +1061,7 @@ module.exports = {
 						}
 					}
 				}
-				console.log(settingsToSave);
+				logger.debug('[Engine] Settings being saved : '+settingsToSave);
 				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err) {
 					if (err) {
 						logger.error('[Engine] Unable to save settings : '+err);
