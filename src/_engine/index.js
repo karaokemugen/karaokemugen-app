@@ -1013,8 +1013,11 @@ module.exports = {
 				// Other settings for now have to be toggled through API calls
 				// Let's detect which settings have changed. If any Player setting has been 
 				// changed, we set the playerNeedsRestart to true
+				// Fullscreen and always on top don't need a restart.
 				for (setting in settings) {
-					if (setting.startsWith('Player')) {
+					if (setting.startsWith('Player') &&
+						setting != 'PlayerFullscreen' &&
+						setting != 'PlayerAlwaysOnTop') {
 						if (module.exports.SETTINGS[setting] != settings[setting]) {
 							module.exports.playerNeedsRestart = true;
 							logger.info('[Engine] Setting mpv to restart after next song');
@@ -1058,14 +1061,15 @@ module.exports = {
 						}
 					}
 				}
-
+				console.log(settingsToSave);
 				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err) {
 					if (err) {
 						logger.error('[Engine] Unable to save settings : '+err);
 						reject(err);
+					} else { 
+						logger.info('[Engine] Settings updated and saved to disk');
+						resolve(publicSettings);
 					}
-					logger.info('[Engine] Settings updated and saved to disk');
-					resolve(publicSettings);
 				});
 			});
 		};
