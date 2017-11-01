@@ -1002,6 +1002,7 @@ module.exports = {
 				//We need to add to settingsToSave system settings that might be in config.ini
 				if (fs.existsSync(path.resolve(module.exports.SYSPATH,'config.ini'))) {
 					var customSettings = ini.parse(fs.readFileSync(path.resolve(module.exports.SYSPATH,'config.ini'), 'utf-8'));
+					logger.debug('[Engine] Custom settings read : '+JSON.stringify(customSettings));
 					for (setting in customSettings){
 						if (setting.startsWith('Path') ||
 							setting.startsWith('Bin') ||
@@ -1017,7 +1018,7 @@ module.exports = {
 				for (setting in settings) {
 					if (setting.startsWith('Player') &&
 						setting != 'PlayerFullscreen' &&
-						setting != 'PlayerAlwaysOnTop') {
+						setting != 'PlayerStayOnTop') {
 						if (module.exports.SETTINGS[setting] != settings[setting]) {
 							module.exports.playerNeedsRestart = true;
 							logger.info('[Engine] Setting mpv to restart after next song');
@@ -1061,7 +1062,7 @@ module.exports = {
 						}
 					}
 				}
-				logger.debug('[Engine] Settings being saved : '+settingsToSave);
+				logger.debug('[Engine] Settings being saved : '+JSON.stringify(settingsToSave));
 				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err) {
 					if (err) {
 						logger.error('[Engine] Unable to save settings : '+err);
