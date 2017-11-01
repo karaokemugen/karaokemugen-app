@@ -90,12 +90,12 @@ module.exports = {
 	duration:0,
 	mutestatus:false,
 	subtext:'',
-	volume:null,
+	volume:100,
 	currentSongInfos:null,
 	videoType:null,
 	showsubs:true,
 	stayontop:false,
-	fullscreen:false,
+	fullscreen:false,	
 	status:{},
 	init:function(){
 		// Building jingles list
@@ -239,6 +239,7 @@ module.exports = {
 	},
 	setVolume: function(volume) {
 		module.exports._player.volume(volume);
+		module.exports.volume = volume;
 	},
 	hideSubs: function() {
 		module.exports._player.hideSubtitles();
@@ -334,7 +335,7 @@ module.exports = {
 				'--no-border',
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
-				'--volume=100',
+				'--volume='+module.exports.volume,
 				'--input-conf='+path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'input.conf'),
 			];
 			if (module.exports.SETTINGS.PlayerPIP) {
