@@ -228,22 +228,20 @@
                 </center>
             </div>
             <br/>
-            <form class="form-horizontal" id="status">
-                <div class="form-group">
-                    <label for="toggleAlwaysOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
-                    <div class="col-xs-6">
-                        <input action="command" switch="onoff" type="checkbox" name="toggleAlwaysOnTop">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="toggleFullscreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
-                    <div class="col-xs-6">
-                        <input action="command" switch="onoff" type="checkbox" name="toggleFullscreen">
-                    </div>
-                </div>
-            </form>
+           
             <form class="form-horizontal" id="settings">
-                <hr>
+                <div class="form-group">
+                    <label for="PlayerStayOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
+                    <div class="col-xs-6">
+                        <input action="command" switch="onoff" type="checkbox" name="PlayerStayOnTop" nameCommand="toggleAlwaysOnTop">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="PlayerFullscreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
+                    <div class="col-xs-6">
+                        <input action="command" switch="onoff" type="checkbox" name="PlayerFullscreen" nameCommand="toggleFullscreen">
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="AdminPassword" class="col-xs-4 control-label">{{i18n "ADMIN_PASSWORD_CHANGE"}}</label>
                     <div class="col-xs-3">

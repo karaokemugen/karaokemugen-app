@@ -1957,12 +1957,12 @@ module.exports = {
 			});
 		};
 		module.exports._services.apiserver.onPlayerStatus = function(){
-			return new Promise(function(resolve){
+			return new Promise(function(resolve){				
 				resolve({
 					private: module.exports._states.private,
 					status: module.exports._states.status,
 					onTop: module.exports._states.ontop,
-					fullscreen: module.exports._states.fullscreen,
+					fullscreen: module.exports._services.player.fullscreen,					
 					timePosition: module.exports._services.player.timeposition,
 					duration: module.exports._services.player.duration,
 					muteStatus: module.exports._services.player.mutestatus,
@@ -2076,11 +2076,15 @@ module.exports = {
 		module.exports._services.player.skip = module.exports.next;
 		module.exports._services.player._states = module.exports._states;
 		module.exports._services.player.onStatusChange = function(){
+			if (module.exports._states.fullscreen != module.exports._services.player.fullscreen) {
+				module.exports._states.fullscreen = module.exports._services.player.fullscreen;
+				module.exports._broadcastStates();
+			}
 			var status = {
 				private: module.exports._states.private,
 				status: module.exports._states.status,
 				onTop: module.exports._states.ontop,
-				fullscreen: module.exports._states.fullscreen,
+				fullscreen: module.exports._services.player.fullscreen,
 				timePosition: module.exports._services.player.timeposition,
 				duration: module.exports._services.player.duration,
 				muteStatus: module.exports._services.player.mutestatus,

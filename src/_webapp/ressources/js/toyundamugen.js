@@ -48,6 +48,7 @@ var playKaraHtml;
 var listTypeBlc;
 var tagAcrList;
 var plData;
+var settingsNotUpdated;
 
 (function (yourcode) {
 	yourcode(window.jQuery, window, document);
@@ -154,6 +155,7 @@ var plData;
 		settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
         
 		settingsUpdating.done( function() {
+			settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 			playlistsUpdating = refreshPlaylistSelects();
 			playlistsUpdating.done(function () {
 				playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
@@ -535,7 +537,8 @@ var plData;
 		'TAG_REMIX': 'RMX',
 		'TAG_VOICELESS': 'NOV',
 		'TAG_ROMANCE': 'ROM' };
-    
+		
+	settingsNotUpdated= [];
 
 	/* touchscreen event handling part */
 
@@ -1175,10 +1178,12 @@ var plData;
 				}
 			}
 			if (data.onTop != oldState.onTop) {
-				$('input[name="toggleAlwaysOnTop"]').bootstrapSwitch('state', data.ontop, true);
+				$('input[name="PlayerStayOnTop"]').bootstrapSwitch('state', data.onTop, true);
+				if(scope === 'admin') setSettings($('input[name="PlayerStayOnTop"]'));
 			}
 			if (data.fullscreen != oldState.fullscreen) {
-				$('input[name="toggleFullscreen"]').bootstrapSwitch('state', data.fullscreen, true);
+				$('input[name="PlayerFullscreen"]').bootstrapSwitch('state', data.fullscreen, true);
+				if(scope === 'admin') setSettings($('input[name="PlayerFullscreen"]'));
 			}
 			if (data.volume != oldState.volume) {
 				var val = data.volume, base = 100;
