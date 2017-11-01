@@ -1002,6 +1002,7 @@ module.exports = {
 				//We need to add to settingsToSave system settings that might be in config.ini
 				if (fs.existsSync(path.resolve(module.exports.SYSPATH,'config.ini'))) {
 					var customSettings = ini.parse(fs.readFileSync(path.resolve(module.exports.SYSPATH,'config.ini'), 'utf-8'));
+					logger.debug('[Engine] Custom settings read : '+JSON.stringify(customSettings));
 					for (setting in customSettings){
 						if (setting.startsWith('Path') ||
 							setting.startsWith('Bin') ||
@@ -1013,8 +1014,11 @@ module.exports = {
 				// Other settings for now have to be toggled through API calls
 				// Let's detect which settings have changed. If any Player setting has been 
 				// changed, we set the playerNeedsRestart to true
+				// Fullscreen and always on top don't need a restart.
 				for (setting in settings) {
-					if (setting.startsWith('Player')) {
+					if (setting.startsWith('Player') &&
+						setting != 'PlayerFullscreen' &&
+						setting != 'PlayerStayOnTop') {
 						if (module.exports.SETTINGS[setting] != settings[setting]) {
 							module.exports.playerNeedsRestart = true;
 							logger.info('[Engine] Setting mpv to restart after next song');
@@ -1058,14 +1062,15 @@ module.exports = {
 						}
 					}
 				}
-
+				logger.debug('[Engine] Settings being saved : '+JSON.stringify(settingsToSave));
 				fs.writeFile(path.join(module.exports.SYSPATH,'config.ini'),ini.stringify(settingsToSave), function(err) {
 					if (err) {
 						logger.error('[Engine] Unable to save settings : '+err);
 						reject(err);
+					} else { 
+						logger.info('[Engine] Settings updated and saved to disk');
+						resolve(publicSettings);
 					}
-					logger.info('[Engine] Settings updated and saved to disk');
-					resolve(publicSettings);
 				});
 			});
 		};
