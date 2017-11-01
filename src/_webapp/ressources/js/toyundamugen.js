@@ -1179,9 +1179,11 @@ var settingsNotUpdated;
 			}
 			if (data.onTop != oldState.onTop) {
 				$('input[name="PlayerStayOnTop"]').bootstrapSwitch('state', data.onTop, true);
+				if(scope === 'admin') setSettings($('input[name="PlayerStayOnTop"]'));
 			}
 			if (data.fullscreen != oldState.fullscreen) {
 				$('input[name="PlayerFullscreen"]').bootstrapSwitch('state', data.fullscreen, true);
+				if(scope === 'admin') setSettings($('input[name="PlayerFullscreen"]'));
 			}
 			if (data.volume != oldState.volume) {
 				var val = data.volume, base = 100;
