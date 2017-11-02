@@ -131,32 +131,22 @@ export function setConfig(configPart) {
 
 export function resolvedPathKaras(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
-
-	const resolvedPaths = [];
-	for (const path of conf.PathKaras.split('|')) {
-		resolvedPaths.push(resolve(conf.appPath, path));
-	}
-	return resolvedPaths;
+	return conf.PathKaras.split('|').map(path => resolve(conf.appPath, path));
 }
 
 export function resolvedPathSubs(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
-
-	const resolvedPaths = [];
-	for (const path of conf.PathSubs.split('|')) {
-		resolvedPaths.push(resolve(conf.appPath, path));
-	}
-	return resolvedPaths;
+	return conf.PathSubs.split('|').map(path => resolve(conf.appPath, path));
 }
 
 export function resolvedPathVideos(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathVideos.split('|').map(path => resolve(conf.appPath, path));
+}
 
-	const resolvedPaths = [];
-	for (const path of conf.PathVideos.split('|')) {
-		resolvedPaths.push(resolve(conf.appPath, path));
-	}
-	return resolvedPaths;
+export function resolvedPathImport(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return resolve(conf.appPath, conf.PathImport);
 }
 
 export function resolvedPathTemp(overrideConfig) {
