@@ -80,23 +80,8 @@ export async function getKara(karafile) {
 
 	if (videoFile) {
 		const subFile = await findSubFile(videoFile, karaData);
-		if (subFile) {
-			karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
-			karaData.ass_checksum = checksum(karaData.ass);
-			// TODO Supprimer le fichier temporaire éventuel.
-		} else {
-			karaData.ass = '';
-		}
-		const videoStats = await asyncStat(videoFile);
-		if (videoStats.size !== +karaData.videosize) {
-			karaData.isKaraModified = true;
-			karaData.videosize = videoStats.size;
-
-			const [videogain, videoduration] = await Promise.all([getVideoGain(videoFile), getVideoDuration(videoFile)]);
-
-			karaData.videogain = videogain;
-			karaData.videoduration = videoduration;
-		}
+		await extractAssInfos(subFile, karaData);
+		await extractVideoTechInfos(videoFile, karaData);
 	}
 
 	karaData.rating = 0;
@@ -106,6 +91,28 @@ export async function getKara(karafile) {
 	return karaData;
 }
 
+export async function extractAssInfos(subFile, karaData) {
+	if (subFile) {
+		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
+		karaData.ass_checksum = checksum(karaData.ass);
+		// TODO Supprimer le fichier temporaire éventuel.
+	} else {
+		karaData.ass = '';
+	}
+}
+
+export async function extractVideoTechInfos(videoFile, karaData) {
+	const videoStats = await asyncStat(videoFile);
+	if (videoStats.size !== +karaData.videosize) {
+		karaData.isKaraModified = true;
+		karaData.videosize = videoStats.size;
+
+		const [videogain, videoduration] = await Promise.all([getVideoGain(videoFile), getVideoDuration(videoFile)]);
+
+		karaData.videogain = videogain;
+		karaData.videoduration = videoduration;
+	}
+}
 
 export async function writeKara(karafile, karaData) {
 
@@ -152,13 +159,17 @@ export function verifyRequiredInfos(karaData) {
 	}
 }
 
+export async function extractVideoSubtitles(videoFile, kid) {
+	const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kid}.ass`);
+	return await extractSubtitles(videoFile, extractFile);
+}
+
 async function findSubFile(videoFile, kara) {
 	const videoExt = extname(videoFile);
 	if (kara.subfile === 'dummy.ass') {
 		if (videoExt === '.mkv' || videoExt === '.mp4') {
-			const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kara.KID}.ass`);
 			try {
-				return await extractSubtitles(videoFile, extractFile);
+				return await extractVideoSubtitles(videoFile, kara.KID);
 			} catch (err) {
 				// Non bloquant.
 				logger.debug('[Kara] Could not extract subtitles from video file ' + videoFile);

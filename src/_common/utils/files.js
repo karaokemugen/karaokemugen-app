@@ -1,5 +1,5 @@
 import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
-import {remove, mkdirp, copy} from 'fs-extra';
+import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
@@ -46,6 +46,10 @@ export function asyncWriteFile(...args) {
 	return promisify(writeFile)(...args);
 }
 
+export function asyncMove(...args) {
+	return promisify(move)(...args);
+}
+
 /** Fonction vérifiant la présence d'un fichier requis, levant une exception s'il n'est pas trouvé. */
 export async function asyncRequired(file) {
 	const exists = await asyncExists(file);
@@ -75,4 +79,20 @@ export async function resolveFileInDirs(filename, dirs) {
 		}
 	}
 	throw 'File \'' + filename + '\' not found in any listed directory: ' + dirs;
+}
+
+export function filterVideos(files) {
+	return files.filter(file => !file.startsWith('.') && isVideoFile(file));
+}
+
+export function isVideoFile(filename) {
+	return filename.endsWith('.mp4') ||
+		filename.endsWith('.webm') ||
+		filename.endsWith('.avi') ||
+		filename.endsWith('.mkv');
+}
+
+/** Remplacement de l'extension dans un nom de fichier. */
+export function replaceExt(filename, newExt) {
+	return filename.replace(/\.[^.]+$/, newExt);
 }

@@ -16,6 +16,7 @@ import logger from 'winston';
 
 import engine from './_engine/index';
 import resolveSysPath from './_common/utils/resolveSyspath';
+import {karaGenerationBatch} from './_admin/generate_karasfiles';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
@@ -75,6 +76,12 @@ async function main() {
 	// Vérification de l'existence des répertoires, sinon les créer.
 	await checkPaths(config);
 
+	if (argv.karagen) {
+		console.log('Kara generation');
+		await karaGenerationBatch();
+		process.exit(0);
+	}
+
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	logger.debug('[Launcher] Copying input.conf into ' + path.resolve(appPath, config.PathTemp));
 	await copy(
@@ -133,6 +140,7 @@ async function checkPaths(config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.PathDB));
 	checks.push(asyncCheckOrMkdir(appPath, config.PathBin));
 	checks.push(asyncCheckOrMkdir(appPath, config.PathTemp));
+	checks.push(asyncCheckOrMkdir(appPath, config.PathImport));
 
 	await Promise.all(checks);
 	logger.info('[Launcher] All folders checked');
