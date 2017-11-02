@@ -11,6 +11,8 @@ process.on('unhandledRejection', (reason, p) => {
 	// application specific logging, throwing an error, or other logic here
 });
 
+import {createPreviews} from '../_webapp/previews.js';
+
 var fs = require('fs');
 const path = require('path');
 const logger = require('winston');
@@ -76,6 +78,9 @@ module.exports = {
 		// settings some player config in engine _states
 		module.exports._states.fullscreen = module.exports.SETTINGS.PlayerFullscreen>0;
 		module.exports._states.ontop = module.exports.SETTINGS.PlayerStayOnTop>0;
+
+		//Managing previews		
+		createPreviews();
 
 		this._start_db_interface().then(function(){
 			module.exports._start_player();
