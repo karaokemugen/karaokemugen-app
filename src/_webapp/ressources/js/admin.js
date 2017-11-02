@@ -58,7 +58,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			var val = $(this).attr('name');
+			var val = $(this).attr('nameCommand');
+			if(!val) val =  $(this).attr('name');
+
 			$.ajax({
 				url: 'admin/player',
 				type: 'PUT',
@@ -182,6 +184,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			var idPlaylistTo = parseInt($('#selectPlaylist' + non(side)).val());
 			var idKara, idKaraPlaylist;
 			var clusterAction = false;
+			var nameElementId = idPlaylistFrom !== -3 ? 'idplaylistcontent' : 'idwhitelist';
 
 			if($(this).parent().hasClass('plCommands')) {
 				clusterAction = true;
@@ -190,7 +193,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					return $(v).attr('idkara');
 				});
 				var idKaraPlaylistList = checkedList.map(function (k, v) {
-					return $(v).attr('idplaylistcontent');
+					return $(v).attr(nameElementId);
 				});
                 
 				li = checkedList;
@@ -202,7 +205,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				}
 			} else {
 				idKara = li.attr('idkara');
-				idKaraPlaylist = li.attr('idplaylistcontent');
+				idKaraPlaylist = li.attr(nameElementId);
 			}
 
 			var action = $(this).attr('name');
@@ -226,11 +229,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					data = { blcriteria_type: 1001, blcriteria_value: idKara };
 				} else if (idPlaylistTo == -3) {
 					url = scope + '/whitelist';
-					displayModal('prompt','Raison d\'ajout à la whitelist', '', function(reason){
-						data = { kara_id: idKara, reason: reason };
-						ajx(type, url, data);
-					});
-					return false;
+					data = { kara_id: idKara};
 				}
 
 				if(e.type === 'contextmenu') {
@@ -279,7 +278,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					} else if (idPlaylistFrom == -2) {
 						DEBUG && console.log('ERR: can\'t delete kara directly from the blacklist');
 					} else if (idPlaylistFrom == -3) {
-						url = scope + '/whitelist/' + li.attr('idwhitelist');
+						url = scope + '/whitelist';
+						data['wlc_id'] = idKaraPlaylist;
 					}
 					if (url !== '') {
 						$.ajax({
@@ -429,9 +429,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
 			settings = data;
 			$.each(data, function (i, val) {
-				input = $('[name="' + i + '"]');
+				var input = $('[name="' + i + '"]');
 				// DEBUG && console.log(i, val);
-				if (input.length == 1 && i != nameExclude) {
+				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
 					if (input.attr('type') !== 'checkbox') {
 						input.val(val);
 					} else {

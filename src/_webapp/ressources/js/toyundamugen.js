@@ -9,6 +9,7 @@ var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a
 var pseudo;             // String : pseudo of the user
 var bcTags;             // Object : list of blacklist criterias tags
 var showInfoMessage;	// Object : list of info codes to show as a toast
+var softErrorMessage; 
 
 var DEBUG;
 var SOCKETDEBUG;
@@ -47,6 +48,7 @@ var playKaraHtml;
 var listTypeBlc;
 var tagAcrList;
 var plData;
+var settingsNotUpdated;
 
 (function (yourcode) {
 	yourcode(window.jQuery, window, document);
@@ -134,7 +136,8 @@ var plData;
 					} else {
 						errMessage = res.responseJSON.message;
 					}
-					displayMessage('warning', res.responseJSON.code + ' :', errMessage);
+					var code = softErrorMessage.indexOf(res.responseJSON.code) === -1 ? res.responseJSON.code + ' :' : '';
+					displayMessage('warning', code, errMessage);
 				}
 			}
 		});
@@ -152,6 +155,7 @@ var plData;
 		settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
         
 		settingsUpdating.done( function() {
+			settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 			playlistsUpdating = refreshPlaylistSelects();
 			playlistsUpdating.done(function () {
 				playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
@@ -228,7 +232,6 @@ var plData;
 					refreshPlaylistDashboard(side);
 				}
 			}
-          
 		});
 		
 		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="addKara"]', function() {
@@ -348,17 +351,7 @@ var plData;
 				}
 				playlist.parent().attr('flagScroll', true);
 				setPlaylistRange(idPlaylist, from, from + pageSize);
-				fillPlaylist(side).done( function() {
-					setTimeout(function() {
-						if($this.attr('value') === 'top') {
-							scrollHeight = 0;
-						} else if ($this.attr('value') === 'bottom') {
-							scrollHeight = playlist.height();
-						}
-						if(scrollHeight) playlist.parent().scrollTop(scrollHeight);
-						playlist.parent().attr('flagScroll', false);
-					}, 2);
-				});
+				fillPlaylist(side, 'goTo', $this.attr('value'));
 			}
 		});
 
@@ -416,7 +409,7 @@ var plData;
 						DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
 						
 						setPlaylistRange(idPlaylist, from, to);
-						scrollUpdating = fillPlaylist(side, scrollUp ? "top" : "bottom");
+						scrollUpdating = fillPlaylist(side, 'reposition', scrollUp ? "top" : "bottom");
 					}
 				}
 			}
@@ -497,9 +490,9 @@ var plData;
 		'BLCTYPE_1001' ,
 		'BLCTYPE_1002',
 		'BLCTYPE_1003',
+		'BLCTYPE_1004',
 		'BLCTYPE_1000',
 		'BLCTYPE_0',
-		'BLCTYPE_1',
 		'BLCTYPE_2',
 		'BLCTYPE_3',
 		'BLCTYPE_4',
@@ -513,6 +506,9 @@ var plData;
 		'PL_SONG_DELETED',
 		'PLAYLIST_MODE_SONG_ADDED'];
 
+	softErrorMessage = [
+		'PLAYLIST_MODE_ADD_SONG_ERROR'];
+	
 	tagAcrList = {  'TAG_SPECIAL': 'SPE',
 		'TAG_GAMECUBE': 'GCN',
 		'TAG_TOKU': 'TKU',
@@ -541,7 +537,8 @@ var plData;
 		'TAG_REMIX': 'RMX',
 		'TAG_VOICELESS': 'NOV',
 		'TAG_ROMANCE': 'ROM' };
-    
+		
+	settingsNotUpdated= [];
 
 	/* touchscreen event handling part */
 
@@ -636,14 +633,16 @@ var plData;
 	/**
      * Fill a playlist on screen with karas
      * @param {1, 2} side - which playlist on the screen
-     * @param {'top','bottom'} scrolling (optional) - filling the playlist after  a scroll, allow to keep the scroll position on the same data
+     * @param {'reposition','goTo'} scrollingType (optional) - the way to position the scroll after filling with new results
+     * @param {'top','bottom','playing'} scrolling (optional) - second arg about the new position
      */
 	// TODO if list is updated from another source (socket ?) keep the size of the playlist
-	fillPlaylist = function (side, scrolling) {
+	fillPlaylist = function (side, scrollingType, scrolling) {
 		DEBUG && console.log(side);
 		var deferred = $.Deferred();
 		var dashboard = $('#panel' + side + ' .plDashboard');
 		var container = $('#panel' + side + ' .playlistContainer');
+		var playlist = $('#playlist' + side);
 		var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
@@ -676,7 +675,7 @@ var plData;
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
 		//var start = window.performance.now();
-		var async = !(isTouchScreen && isChrome);
+		var async = !(isTouchScreen && isChrome && scrollingType);
 		ajaxSearch[url] = $.ajax({  url: urlFiltre,
 			type: 'GET', async: async,
 			dataType: 'json' })
@@ -729,8 +728,8 @@ var plData;
 					}
 					var count = response.infos ? response.infos.count : 0;
 					// creating filler space for dyanmic scrolling
-					var fillerTopH = Math.min(from * 34, container.height()/1.5);
-					var fillerBottomH = Math.min((count - to) * 34, container.height()/1.5);
+					var fillerTopH = Math.min(response.infos.from * 34, container.height()/1.5);
+					var fillerBottomH = Math.min((count - response.infos.from - pageSize) * 34, container.height()/1.5);
 					
 					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px"><div class="loader"><div></div></div></li>';
 					var fillerBottom = '<li class="list-group-item filler" style="height:' + fillerBottomH + 'px"><div class="loader"><div></div></div></li>';
@@ -740,10 +739,12 @@ var plData;
 								+	fillerBottom;
 					
 
-					if(scrolling) {
+					if(scrollingType) {
 						container.css('overflow-y','hidden');
-						var karaMarker = scrolling === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
-						var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
+						if(scrollingType === 'reposition') {
+							var karaMarker = scrolling === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
+							var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
+						}
 					}
 		
 					window.requestAnimationFrame( function() {
@@ -751,19 +752,30 @@ var plData;
 						deferred.resolve();
 						refreshContentInfos(side);
 						//window.requestAnimationFrame( function() {
-						if(scrolling) {
+						var y = container.scrollTop();
+						if(scrollingType) {
 							
 							container.css('overflow-y','auto');
-							var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
-							var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
-							var y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
-							container.scrollTop(y);
+							if(scrollingType === 'reposition') {
+								var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
+								var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
+								y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
+							} else if (scrollingType === 'goTo') {
+								if(scrolling === 'top') {
+									y = 0 + fillerTopH;
+								} else if (scrolling === 'bottom') {
+									y = playlist.height() + 0;
+								} else if (scrolling === 'playing') {
+									var currentlyPlaying = container.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
+									if(currentlyPlaying.length > 0) y = currentlyPlaying.offset().top - currentlyPlaying.parent().offset().top;
+								}
+							}
 							container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix							
-										
-							container.attr('flagScroll', false);
-						} else {
-							container.scrollTop(fillerTopH);
 						}
+						container.scrollTop(
+							Math.min(playlist.height() - fillerBottomH - container.height(),
+								Math.max(fillerTopH, y)));
+						container.attr('flagScroll', false);
 						//});
 					});
 
@@ -797,7 +809,7 @@ var plData;
 							var bcTagsFiltered = jQuery.grep(bcTags, function(obj) {
 								return obj.tag_id == data[k].value;
 							});
-							var tagText = bcTagsFiltered.length == 1 ?  bcTagsFiltered[0].name_i18n : data[k].value;
+							var tagText = bcTagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  bcTagsFiltered[0].name_i18n : data[k].value;
 							var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
 
 							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
@@ -1058,9 +1070,7 @@ var plData;
 				return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
 			}).join(' ');
 			dashboard.removeAttr(attrListStr);
-			playlistContentUpdating.done(function() {
-				refreshContentInfos(side);
-			});
+			
 			$.each(optionAttrList, function() {
 				dashboard.attr(this.name, this.value);
 			});
@@ -1068,6 +1078,9 @@ var plData;
 			if (playlistRange[idPlaylist] == undefined) {
 				setPlaylistRange(idPlaylist, 0, pageSize);
 			}
+			playlistContentUpdating.done(function() {
+				refreshContentInfos(side);
+			});
 			$(window).resize();
 		});
 	};
@@ -1165,10 +1178,12 @@ var plData;
 				}
 			}
 			if (data.onTop != oldState.onTop) {
-				$('input[name="toggleAlwaysOnTop"]').bootstrapSwitch('state', data.ontop, true);
+				$('input[name="PlayerStayOnTop"]').bootstrapSwitch('state', data.onTop, true);
+				if(scope === 'admin') setSettings($('input[name="PlayerStayOnTop"]'));
 			}
 			if (data.fullscreen != oldState.fullscreen) {
-				$('input[name="toggleFullscreen"]').bootstrapSwitch('state', data.fullscreen, true);
+				$('input[name="PlayerFullscreen"]').bootstrapSwitch('state', data.fullscreen, true);
+				if(scope === 'admin') setSettings($('input[name="PlayerFullscreen"]'));
 			}
 			if (data.volume != oldState.volume) {
 				var val = data.volume, base = 100;
@@ -1248,6 +1263,7 @@ var plData;
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 		var details = {
 			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
+			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'BLCTYPE_6': 			data['author']
 			, 'DETAILS_VIEWS':		data['viewcount']
 			, 'BLCTYPE_4':				data['creator']
@@ -1328,7 +1344,11 @@ var plData;
 		$('#playlist1').parent().css('height', 'calc(100% - ' + (scope === 'public' ? 0 : topHeight1) + 'px ');
 		$('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
 
-		if(!isTouchScreen) $('.playlistContainer').perfectScrollbar();
+		if(!isTouchScreen) {
+			$('.playlistContainer').perfectScrollbar();
+			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
+			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
+		}
 	});
 
 	/** 

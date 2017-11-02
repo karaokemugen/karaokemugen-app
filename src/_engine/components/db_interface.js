@@ -137,7 +137,7 @@ module.exports = {
 											logger.info('[DBI] Database interface is READY');
 											// Trace event. DO NOT UNCOMMENT
 											// unless you want to flood your console.
-											/*module.exports._db_handler.on('trace',function(sql){
+											/*module.exports._db_handler.driver.on('trace',function(sql){
 												console.log(sql);
 											});*/
 											resolve();						
@@ -345,6 +345,31 @@ module.exports = {
 				});
 		});
 	},
+	/*
+	* @function {getSongCountForUser}
+	* @param {number} {ID of Playlist to count songs in}
+	* @param {string} {name of person to check for requested songs}
+	* @return {boolean} {promise}
+	*/
+	getSongCountForUser:function(playlist_id,requester) {
+		return new Promise((resolve,reject) => {
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+			var sqlGetSongCountForUser = fs.readFileSync(path.join(__dirname,'../../_common/db/select_song_count_for_user_in_playlist.sql'),'utf-8');
+			module.exports._db_handler.get(sqlGetSongCountForUser,
+				{
+					$playlist_id: playlist_id,
+					$requester: requester
+				})
+				.then((data) => {
+					resolve(data.count);
+				})
+				.catch((err) => {
+					reject('Failed to get number of songs for user '+requester+' in playlist '+playlist_id+' : '+err);
+				});						
+		});
+	},
 	/**
 	* @function {Generate new blacklist}
 	* @return {boolean} {Promise}
@@ -389,27 +414,71 @@ module.exports = {
 	* @function {Add criteria to blacklist}
 	* @param {number} {type of criteria}
 	* @param {string} {value of criteria}
+	* @param {string} {unique value of criteria (KID or tagname)}
 	* @return {boolean} {promise}
 	*/
-	addBlacklistCriteria:function(blcType,blcValue,uniqueValue) {
+	addBlacklistCriteria:function(blcList) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
 			var sqlAddBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/insert_blacklist_criteria.sql'),'utf-8');
-
-			module.exports._db_handler.run(sqlAddBlacklistCriterias,
-				{
-					$blctype: blcType,
-					$blcvalue: blcValue,
-					$uniquevalue: uniqueValue
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					reject('Failed to add blacklist criteria : '+err);
-				});						
+			var blc = [];
+			blcList.forEach((blcItem) => {
+				blc.push({
+					$blcvalue: blcItem.blcvalue,
+					$blctype: blcItem.blctype,
+					$blcuniquevalue: blcItem.blcuniquevalue
+				});
+			});
+			async.retry(
+				{ 
+					times: 5,
+					interval: 100,
+				},
+				function(callback){
+					module.exports._db_handler.run('begin transaction')
+						.then(() => {							
+							async.each(blc,function(data,callback){
+								module.exports._db_handler.prepare(sqlAddBlacklistCriterias)
+									.then((stmt) => {
+										stmt.run(data)
+											.then(() => {
+												callback();
+											})
+											.catch((err) => {			
+												logger.error('Failed to add blacklist criterias : '+err);												
+												callback(err);												
+											});										
+									});
+								
+							}, function(err){
+								if (err) {
+									logger.error('Failed to add one blacklist criteria : '+err);
+									callback(err);
+								} else {
+									module.exports._db_handler.run('commit')
+										.then(() => {
+											callback();	
+										})
+										.catch((err) => {
+											callback(err);
+										});
+								}
+							});
+						})
+						.catch((err) => {
+							logger.error('[DBI] Failed to begin transaction : '+err);
+							logger.error('[DBI] Transaction will be retried');
+							callback(err);
+						});
+				},function(err){
+					if (err){
+						reject(err);						
+					} else {
+						resolve();
+					}
+				});					
 		});
 	},
 	/**
@@ -634,6 +703,31 @@ module.exports = {
 					reject('Failed to get contents of playlist '+playlist_id+' : '+err);
 				});
 			
+		});
+	},	
+	/**
+	* @function {Get pos of all items in a playlist}
+	* @param  {number} playlist_id {ID of playlist to get a list of songs from}
+	* @return {Object} {Playlist object}
+	*/
+	getPlaylistPos:function(playlist_id){
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+			var sqlGetPlaylistPos = fs.readFileSync(path.join(__dirname,'../../_common/db/select_playlist_pos.sql'),'utf-8');
+			
+			
+			module.exports._db_handler.all(sqlGetPlaylistPos,
+				{
+					$playlist_id: playlist_id
+				})
+				.then((playlist) => {
+					resolve(playlist);
+				})
+				.catch((err) => {
+					reject('Failed to get list of playlist pos '+playlist_id+' : '+err);
+				});	
 		});
 	},	
 	/**
@@ -1667,28 +1761,6 @@ module.exports = {
 				});
 		});
 	},
-	editWhitelistKara:function(wlc_id,reason) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				logger.error('[DBI] Database interface is not ready yet!');
-				reject('Database not ready');
-			}
-
-			var sqlEditWhitelistKara = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_whitelist_kara.sql'),'utf-8');
-			module.exports._db_handler.run(sqlEditWhitelistKara,
-				{
-					$wlc_id: wlc_id,
-					$reason: reason
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					logger.error('[DBI] Failed to edit WLC '+wlc_id+' : '+err);		
-					reject(err);					
-				});
-		});
-	},
 	/**
 	* @function {Add Kara To Playlist}
 	* @param  {number} kara_id        {ID of karaoke song to add to playlist}
@@ -1767,54 +1839,80 @@ module.exports = {
 					} else {
 						resolve();
 					}
-				});					
-				
+				});									
 		});
 	},
 	/**
 	* @function {Add Kara To whitelist}
-	* @param  {number} kara_id        {ID of karaoke song to add to playlist}
-	* @param  {string} reason      {Reason for adding the karaoke}
+	* @param  {number} karas        {array of ID of karaoke song to add to playlist}
 	* @param  {number} date_add       {UNIX timestap of the date and time the song was added to the list}
 	* @return {promise} {Promise}
 	*/
-	addKaraToWhitelist:function(kara_id,reason,date_added) {
+	addKaraToWhitelist:function(karas,date_added) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				reject('Database interface is not ready yet');
 			}
-
 			//We need to get the KID of the karaoke we're adding.
 
-			var sqlGetKID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kid.sql'),'utf-8');
-			module.exports._db_handler.get(sqlGetKID,
-				{
-					$kara_id: kara_id
-				})
-				.then((kara) => {
-					if (kara) {
-						var kid = kara.kid;
-						var sqlAddKaraToWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_whitelist.sql'),'utf-8');
-						module.exports._db_handler.run(sqlAddKaraToWhitelist, {
-							$reason: reason,
-							$kara_id: kara_id,
-							$kid: kid,
-							$created_at: date_added,
-						})
-							.then((res) => {
-							//We return the whitelist_content ID of the kara we just added.
-								resolve(res.lastID);
-							})
-							.catch((err) => {
-								reject('Failed to add karaoke '+kara_id+' to whitelist : '+err);
-							});									
-					} else {
-						reject('No KID found for karaoke song '+kara_id);
-					}
-				})
-				.catch((err) => {
-					reject('Failed to get KID from karaoke song '+kara_id+' : '+err);
+			var sqlAddKaraToWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_whitelist.sql'),'utf-8');
+			var karaList = [];
+			karas.forEach(function(kara) {				
+				karaList.push({
+					$kara_id: kara,
+					$created_at: date_added,
 				});
+			});	
+			//We retry the transaction several times because when two transactions overlap there can be an error.
+			async.retry(
+				{ 
+					times: 5,
+					interval: 100,
+				},
+				function(callback){
+					module.exports._db_handler.run('begin transaction')
+						.then(() => {
+							async.each(karaList,function(data,callback){
+								module.exports._db_handler.prepare(sqlAddKaraToWhitelist)
+									.then((stmt) => {
+										stmt.run(data)
+											.then(() => {
+												callback();
+											})
+											.catch((err) => {
+												logger.error('Failed to add karaoke to whitelist : '+err);				
+												callback(err);
+											});										
+									});
+								
+							}, function(err){
+								if (err) {
+									logger.error('Failed to add one karaoke to playlist : '+err);
+									callback(err);
+								} else {
+									module.exports._db_handler.run('commit')
+										.then(() => {
+											callback();	
+										})
+										.catch((err) => {
+											callback(err);
+										});
+								}
+							});
+						})
+						.catch((err) => {
+							logger.error('[DBI] Failed to begin transaction : '+err);
+							logger.error('[DBI] Transaction will be retried');
+							callback(err);
+						});
+				},function(err){
+					if (err){
+						reject(err);
+					} else {
+						resolve();
+					}
+				});					
+			
 		});
 	},
 	/**
@@ -1829,12 +1927,37 @@ module.exports = {
 			}
 
 			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
-			var karaList = [];
-			karas.forEach(function(kara) {
-				karaList.push({
-					$playlistcontent_id: kara
+			var karaList = karas.join(',');
+			// We're not using SQLite parameterization due to a limitation 
+			// keeping us from feeding a simple array/list to the statement.			
+			sqlRemoveKaraFromPlaylist = sqlRemoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karaList);
+			module.exports._db_handler.run(sqlRemoveKaraFromPlaylist)
+				.then(() => {
+					resolve();
+				})
+				.catch((err) => {
+					reject(err);
 				});
-			});		
+		});
+	},
+	/**
+	* @function {Remove kara from whitelist}
+	* @param  {number} whitelistcontent_id        {ID of karaoke song to remove from playlist}
+	* @return {promise} {Promise}
+	*/
+	removeKaraFromWhitelist:function(wlcs) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				reject('Database interface is not ready yet');
+			}
+
+			var sqlRemoveKaraFromWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_whitelist.sql'),'utf-8');
+			var karaList = [];
+			wlcs.forEach(function(kara) {
+				karaList.push({
+					$wlc_id: kara.wlc_id
+				});
+			});
 			//We retry the transaction several times because when two transactions overlap there can be an error.
 			//Example two delete or add kara at the very same time.
 			async.retry(
@@ -1846,21 +1969,20 @@ module.exports = {
 					module.exports._db_handler.run('begin transaction')
 						.then(() => {
 							async.each(karaList,function(data,callback){
-								module.exports._db_handler.prepare(sqlRemoveKaraFromPlaylist)
+								module.exports._db_handler.prepare(sqlRemoveKaraFromWhitelist)
 									.then((stmt) => {
 										stmt.run(data)
 											.then(() => {
 												callback();
 											})
 											.catch((err) => {
-												logger.error('Failed to delete karaoke to playlist : '+err);			
+												logger.error('Failed to delete karaoke from whitelist : '+err);
 												callback(err);					
 											});
 									});
-								
 							}, function(err){
 								if (err) {
-									logger.error('Failed to add one karaoke to playlist : '+err);
+									logger.error('Failed to delete one karaoke from whitelist : '+err);
 									callback(err);
 								} else {
 									module.exports._db_handler.run('commit')
@@ -1887,30 +2009,6 @@ module.exports = {
 					}
 				});								
 
-		});
-	},
-	/**
-	* @function {Remove kara from whitelist}
-	* @param  {number} whitelistcontent_id        {ID of karaoke song to remove from playlist}
-	* @return {promise} {Promise}
-	*/
-	removeKaraFromWhitelist:function(wlc_id) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-
-			var sqlRemoveKaraFromWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_whitelist.sql'),'utf-8');
-			module.exports._db_handler.run(sqlRemoveKaraFromWhitelist,
-				{
-					$wlc_id: wlc_id
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					reject('Failed to remove whitelist item '+wlc_id+' : '+err);
-				});
 		});
 	},	
 	/**

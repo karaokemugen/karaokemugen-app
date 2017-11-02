@@ -451,14 +451,14 @@ button.closeParent.bottom  {
     position: absolute;
     top: 0;
     left: 0;
-    background: url(/ressources/img/nanami.jpg) no-repeat;
+    background: url(/ressources/img/nanami_g_1280w.jpg) no-repeat;
 	background-size: 100%;
 	background-position: 0 20%;
     width: 100%;
 	height: 100%;
-    opacity : 0.22;
+    opacity : 0.2;
 	z-index: 0;
-	filter: grayscale(74%);
+	filter: grayscale(70%);
 }
 .playlistContainer[flipped="true"]:after {
 	-moz-transform: scaleX(-1);
@@ -474,7 +474,7 @@ button.closeParent.bottom  {
 }
 
 .playlistContainer > ul {
-	margin-bottom: 20px; /* SUPER IMPORTANT TO AVOID A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
+	margin-bottom: 20px; /* SUPER IMPORTANT TO AVOID (edit: not really) A WEIRD ASS CHROME BUG DESCRIBED HERE https://github.com/TryGhost/Ghost/issues/7934 */
 	will-change: -moz-transform;
 	position: relative;
 	z-index: 2;
@@ -762,7 +762,7 @@ input[type=range]:focus::-ms-fill-upper {
 	opacity: .8;
 }
 .ps>.ps__scrollbar-y-rail {
-	top: 59px !important;
+	top: 0px !important;
 	z-index:9999;
 	width: 12px;
 }
@@ -814,16 +814,15 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     right: 0;
 	z-index: 10040;
     font-size: 1.2rem;
-    background-color: hsla(107, 17%, 25%, 0.95);
-	padding: 2px;
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.30), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
 }
 
 .plFooter button {
+	background-color: #1e2124;
 	padding: 0;
-	height: 100%;
-	width: 15px;
-	margin: 0px -1px;
+	height: 22px;
+    width: 22px;
+    margin: -2px -1px 0px -1px;
 }
 .plFooter button > i {
 	top: 0px;
@@ -831,8 +830,14 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .plBrowse .goToPlaying > i {
 	color: hsla(209, 69%, 66%, 1);
 }
+.plInfos {
+	font-size: 15px;
+}
 .plInfos, .plBrowse {
-    display: inline-block;
+	background-color: hsla(107, 17%, 25%, 0.95);
+    float: right;
+    padding: 2px;
+    line-height: 25px;
 }
 
 .plDashboard {
@@ -1063,3 +1068,11 @@ input[type="text"]:focus {
 
 
 
+
+@media (max-width: 1025px) {
+	.playlistContainer[flipped]:after {
+		background: url(/ressources/img/nanami_g_980w.jpg) no-repeat;
+		background-size: 100%;
+		background-position: 0 20%;
+	}
+}

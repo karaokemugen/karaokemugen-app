@@ -60,7 +60,7 @@ function loadBackground(mode) {
 		QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
 
 		var posX = Math.floor(dimensions.width*0.015);
-		var posY = Math.floor(dimensions.height*0.70);
+		var posY = Math.floor(dimensions.height*0.015);
 		var qrCode = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'qrcode.png');
 		qrCode = qrCode.replace(/\\/g,'/');
 		videofilter = 'lavfi-complex="movie=\\\''+qrCode+'\\\'[logo]; [logo][vid1]scale2ref='+QRCodeWidth+':'+QRCodeHeight+'[logo1][base];[base][logo1] overlay='+posX+':'+posY+'[vo]"';
@@ -90,10 +90,12 @@ module.exports = {
 	duration:0,
 	mutestatus:false,
 	subtext:'',
-	volume:null,
+	volume:100,
 	currentSongInfos:null,
 	videoType:null,
 	showsubs:true,
+	stayontop:false,
+	fullscreen:false,	
 	status:{},
 	init:function(){
 		// Building jingles list
@@ -237,6 +239,7 @@ module.exports = {
 	},
 	setVolume: function(volume) {
 		module.exports._player.volume(volume);
+		module.exports.volume = volume;
 	},
 	hideSubs: function() {
 		module.exports._player.hideSubtitles();
@@ -332,7 +335,7 @@ module.exports = {
 				'--no-border',
 				'--osd-level=0',
 				'--sub-codepage=UTF-8-BROKEN',
-				'--volume=100',
+				'--volume='+module.exports.volume,
 				'--input-conf='+path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'input.conf'),
 			];
 			if (module.exports.SETTINGS.PlayerPIP) {
@@ -374,8 +377,10 @@ module.exports = {
 			// Fullscreen is disabled if pipmode is set.
 			if(module.exports.SETTINGS.PlayerFullscreen == 1 && !module.exports.PlayerPIP) {
 				mpvOptions.push('--fullscreen');
+				module.exports.fullscreen = true;
 			}
 			if(module.exports.SETTINGS.PlayerStayOnTop==1) {
+				module.exports.stayontop = true;
 				mpvOptions.push('--ontop');
 			}
 			if(module.exports.SETTINGS.PlayerNoHud==1) {
@@ -464,6 +469,7 @@ module.exports = {
 						module.exports.duration = status.duration;
 						module.exports.subtext = status['sub-text'];
 						module.exports.volume = status['volume'];
+						module.exports.fullscreen = status.fullscreen;
 						module.exports.onStatusChange();
 					});
 					module.exports._player.on('paused',function(){

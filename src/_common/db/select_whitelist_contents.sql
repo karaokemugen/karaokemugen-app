@@ -23,7 +23,6 @@ SELECT wl.pk_id_whitelist AS whitelist_id,
       ak.misc AS misc,    
       ak.videolength AS duration,  
       wl.created_at AS created_at,
-      wl.reason AS reason_add,     
       ak.videofile AS videofile
  FROM karasdb.all_karas AS ak 
 INNER JOIN whitelist AS wl ON wl.fk_id_kara = ak.kara_id
