@@ -9,6 +9,7 @@
   ],
   "ignore": [
     "node_modules",
-    "src/_webapp"
+    "src/_webapp/ressources",
+	"src/_webapp/vendors"
   ]
 }

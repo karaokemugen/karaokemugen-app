@@ -14,6 +14,16 @@ export async function extractSubtitles(videofile, extractfile, config) {
 	await asyncRequired(extractfile);
 }
 
+export async function createPreview(videofile, previewfile, config) {
+
+	const conf = config || getConfig();
+
+	spawnSync(conf.BinffmpegPath, ['-y', '-ss', '0', '-i', videofile, '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-1:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-t', '15', previewfile], {encoding: 'utf8'});
+
+	// Verify if the video exists. If it doesn't it means ffmpeg didn't encode anything.
+	await asyncRequired(previewfile);
+}
+
 export function getVideoGain(videofile, config) {
 
 	const conf = config || getConfig();
