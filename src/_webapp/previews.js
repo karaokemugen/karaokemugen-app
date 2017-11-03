@@ -9,19 +9,14 @@ import {
 } from '../_common/utils/config';
 import {createPreview} from '../_common/utils/ffmpeg';
 
-async function extractVideoFiles(videoDir) {
-	const videoFiles = [];
+async function extractVideoFiles(videoDir) {	
 	const dirListing = await asyncReadDir(videoDir);
-	for (const file of dirListing) {
-		if (!file.startsWith('.') && (
-			file.endsWith('.mp4') || 
+	return dirListing.filter(file => !file.startsWith('.') && (
+		file.endsWith('.mp4') || 
 			file.endsWith('.webm') ||
 			file.endsWith('.avi') ||
-			file.endsWith('.mkv'))) {
-			videoFiles.push(resolve(videoDir, file));
-		}
-	}
-	return videoFiles;
+			file.endsWith('.mkv'))
+	).map(file => resolve(videoDir, file));
 }
 
 async function extractPreviewFiles(previewDir) {
@@ -35,40 +30,35 @@ async function extractPreviewFiles(previewDir) {
 	return previewFiles;
 }
 
+
 async function compareVideosPreviews(videofiles,previewfiles) {
 	const previewFilesToCreate = [];
 	for (const videofile of videofiles) {
+		let addPreview = true;
 		const videoStats = await asyncStat(videofile);		
-		if (previewfiles.length == 0) {
-			//Previewfiles is empty, let's create our preview
-			previewFilesToCreate.push({
-				videofile: videofile,
-				previewfile: `${videofile}.${videoStats.size}`
-			});
-		} else {
+		const previewfileWOExt = basename(videofile, extname(videofile));
+		const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.size}.mp4`;	
+		if (previewfiles.length != 0) {
 			for (const previewfile of previewfiles) {
-				const ext = extname(previewfile);
-				const previewsize = ext.replace(/\./,'');
-				if (previewfile.startsWith(videofile)) {	
-					if (previewsize != videoStats.size)  {
+				const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);				
+				const size = previewparts[2];
+				if (basename(previewparts[1]) === (basename(videofile).replace(/\.[^.]+$/, ''))) {
+					if (size != videoStats.size)  {
 					//If it's different, remove previewfile and create a new one
-						await asyncRemove(previewfile);
-						previewFilesToCreate.push({
-							videofile: videofile,
-							previewfile: `${videofile}.${videoStats.size}`
-						});
+						await asyncRemove(previewfile);						
+					} else {
+						addPreview = false;
 					}
-				} else {
-				//No video found
-					previewFilesToCreate.push({
-						videofile: videofile,
-						previewfile: `${videofile}.${videoStats.size}`
-					});
-				}
+				} 
 			}
 		}
-	}
-	console.log('Previews to create : '+previewFilesToCreate);
+		if (addPreview) {
+			previewFilesToCreate.push({
+				videofile: videofile,
+				previewfile: previewfilename
+			});
+		}		
+	}	
 	return previewFilesToCreate;
 }
 export async function createPreviews(config) {
@@ -78,10 +68,13 @@ export async function createPreviews(config) {
 		//TODO : Lire les dossiers vidéo depuis le dossier de configuration
 		const videoFiles = await extractVideoFiles(resolve(conf.appPath,conf.PathVideos));
 		const previewFiles = await extractPreviewFiles(resolvedPathPreviews());
-
 		const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
-		
-		console.log(videoFilesToPreview);
+		//cleanUpPreviewsFolder(videoFiles,previewfiles);
+		for (const videoPreview of videoFilesToPreview) {
+			await createPreview(videoPreview);
+			logger.info(`[Previews] Generated ${videoPreview.videofile}`);
+		}
+		logger.info('[Previews] Finished generating all previews.');
 	} catch (err) {
 		logger.error(err);
 	}
