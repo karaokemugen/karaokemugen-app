@@ -17,6 +17,7 @@ import logger from 'winston';
 import engine from './_engine/index';
 import resolveSysPath from './_common/utils/resolveSyspath';
 import {karaGenerationBatch} from './_admin/generate_karasfiles';
+import {startExpressReactServer} from './_webapp/react';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
@@ -93,13 +94,14 @@ async function main() {
 	/**
 	 * Test if network ports are available
 	 */
-	[1337, 1338, 1339, 1340].forEach(port => verifyOpenPort(port));
+	[1337, 1338, 1339, 1340, 1341].forEach(port => verifyOpenPort(port));
 
 	await restoreKaraBackupFolders(config);
 
-	/**
-	 * Calling engine.
-	 */
+	/** Start React static frontend */
+	startExpressReactServer(1341);
+
+	/** Calling engine. */
 	engine.SYSPATH = appPath;
 	engine.SETTINGS = config;
 	engine.i18n = i18n;
