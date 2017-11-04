@@ -136,7 +136,8 @@ var settingsNotUpdated;
 					} else {
 						errMessage = res.responseJSON.message;
 					}
-					var code = softErrorMessage.indexOf(res.responseJSON.code) === -1 ? res.responseJSON.code + ' :' : '';
+					//var code = softErrorMessage.indexOf(res.responseJSON.code) === -1 ? res.responseJSON.code + ' :' : '';
+					var code = '';
 					displayMessage('warning', code, errMessage);
 				}
 			}
