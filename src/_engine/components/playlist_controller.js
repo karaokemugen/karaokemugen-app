@@ -948,7 +948,14 @@ module.exports = {
 						.then(function(){
 							module.exports.updatePlaylistLastEditTime(playlist_id)
 								.then(function(){
-									resolve();
+									module.exports.updatePlaylistDuration(playlist_id)
+										.then(() => {
+											resolve();	
+										})
+										.catch((err) => {
+											logger.error('[PLC] updatePlaylistDuration : '+err);
+											reject(err);		
+										});
 								})
 								.catch(function(err){
 									logger.error('[PLC] updatePlaylistLastEditTime : '+err);
