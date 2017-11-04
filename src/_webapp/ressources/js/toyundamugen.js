@@ -1102,7 +1102,7 @@ var settingsNotUpdated;
 					' / ' + dashboard.attr('karacount') + (!isTouchScreen ? ' karas' : '')
 					: '') +
 				(idPlaylist > -1 ?
-					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length')) + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'))
+					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length'), 'hm') + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'), 'hm')
 					: '');
 					
 			dashboard.parent().find('.plInfos').text(plInfos).data('from', range.from).data('to', max);
