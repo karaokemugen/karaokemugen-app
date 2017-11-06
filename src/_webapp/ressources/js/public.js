@@ -136,14 +136,14 @@ getPublicSettings = function() {
 
 var swipeLeft = false;
 var swipeRight = false;
-var sensibility = isTouchScreen ? .28 : .18;
+var sensibility = isTouchScreen ? .26 : .18;
 
 var elem = $('.playlist-main');
 var swipeManager = new Hammer.Manager(elem[0],{
 	prevent_default: true
 });
 
-var swipe = new Hammer.Swipe({'threshold' : 10,  direction : Hammer.DIRECTION_HORIZONTAL });
+var swipe = new Hammer.Swipe({'threshold' : 12,  direction : Hammer.DIRECTION_HORIZONTAL });
 
 swipeManager.add(swipe);
 
@@ -190,7 +190,7 @@ swipeManager.on('swipe', function (e) {
 				var x = e.gesture.deltaX;
 				var velocityX = e.gesture.velocityX;
 				DEBUG && console.log(e,direction,x );
-				if(direction != 4) {
+				if(direction != 4 &&  direction != 2) {
 					return false;
 				}
 				
@@ -206,6 +206,10 @@ swipeManager.on('swipe', function (e) {
 				if (direction === 4 && (x > $this.innerWidth()  * sensibility || velocityX < -0.75)) {
 					swipeLeft = true;
 					$this.attr('valid', true) ;
+				}
+				if(direction === 2 && (x < -1 * $this.innerWidth()  * sensibility )) {
+					swipeLeft = false;
+					$this.attr('valid', false) ;
 				}
 				// Swipe Right
 				if (direction === 2 && (x < -1 * $this.innerWidth()  * sensibility  || velocityX > 0.75)) {
