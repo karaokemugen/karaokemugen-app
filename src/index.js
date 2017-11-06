@@ -17,6 +17,8 @@ import logger from 'winston';
 import engine from './_engine/index';
 import resolveSysPath from './_common/utils/resolveSyspath';
 
+import setTitle from 'console-title';
+
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
 	// if you are on production, maybe you can send the exception details to your
@@ -37,6 +39,8 @@ console.log('\n');
 const argv = parseArgs();
 
 const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
+
+setTitle('Karaoke Mugen');
 
 if(appPath) {
 	main()
