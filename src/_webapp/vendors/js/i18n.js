@@ -49,8 +49,8 @@ I18n.prototype = {
         var msg = I18n.localeCache[this.locale][arguments[0]];
         if (arguments.length > 1) {
             var msgArgs = arguments[1]
-            if(typeof msgArgs === 'string') msgArgs = [msgArgs];
-            msg = msg.replace(/%s/g, '<b>%s</b>');
+			if(typeof msgArgs === 'string') msgArgs = [msgArgs];
+			if(!(arguments.length == 2 && arguments[2] == 'console')) msg = msg.replace(/%s/g, '<b>%s</b>');            
             msg = vsprintf(msg, msgArgs);
         }
         return msg;

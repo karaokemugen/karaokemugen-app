@@ -114,7 +114,7 @@ var settingsNotUpdated;
 					//var args = res.args;
 					var errMessage = i18n.__(res.code, args);
 					if(showInfoMessage.indexOf(res.code) === -1) {
-						console.log(res.code, errMessage);
+						console.log(res.code, errMessage, 'console');
 					} else {
 						displayMessage('info', '', errMessage, '2000');
 					}
