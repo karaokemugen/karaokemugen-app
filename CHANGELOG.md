@@ -1,5 +1,26 @@
 # Versions
 
+## v2.0 "Finé Fantastique" - 06/11/2017
+
+### Améliorations
+
+- Possibilité d'annuler un kara en cours d'ajout depuis la version mobile
+- Favicon !
+- Le titre de la fenêtre affiche désormais "Karaoke Mugen"
+- Le temps total et restant d'une playlist est désormais indiqué en HH:MM plutôt qu'en HH:MM:SS
+
+### Corrections
+
+- Messages d'erreur plus clairs
+- Vider une playlist met à jour le temps restant de celle-ci
+- #187 Les paramètres plein écran et toujours au dessus sont maintenant plus clairs.
+- Le volume ne change plus subitement après un redémarrage
+- Le temps restant d'un kara est mieux calculé
+
+### Développement
+
+- Ajout d'une doc complète de l'API : http://mugen.karaokes.moe/apidoc
+
 ## v2.0 Release Candidate 1 "Finé Fiévreuse" - 25/10/2017
 
 ### Améliorations
