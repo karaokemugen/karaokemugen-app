@@ -19,7 +19,8 @@
     "karaoke",
     "playlist",
     "mpv",
-    "ffmpeg"
+    "ffmpeg",
+	"webapp"
   ],
   "bugs": {
     "url": "https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues",
@@ -41,7 +42,7 @@
     "node": ">=8.0.0"
   },
   "license": "MIT",
-  "private": true,
+  "private": false,
   "pkg": {
     "scripts": [
       "node_modules/image-size/lib/types/*.js",
