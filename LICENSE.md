@@ -1,6 +1,6 @@
-# License de Karaoke Mugen
+# License Karaoke Mugen
 
-La license du code de Karaoke Mugen est la license MIT.
+Karaoke Mugen uses the MIT license.
 
 ```
 (The MIT License)
@@ -28,14 +28,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
 
-# Autres modules
-
-Sauf mention contraire, les modules dont dépend Karaoke Mugen sont installés par npm.
+# Other modules
 
 ## node-ffprobe
 
-node-ffprobe a été modifié pour être synchrone et mieux gérer les fichiers avec espaces.
+node-ffprobe has been modified to be synchronous and manage files with spaces better.
 
-Le code d'origine est ici : https://github.com/ListenerApproved/node-ffprobe
+Original code is here : https://github.com/ListenerApproved/node-ffprobe
 
 

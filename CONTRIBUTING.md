@@ -1,9 +1,9 @@
-# Comment participer au code
+# How to contribute
 
-Toutes les bonnes volontés sont bienvenues.
+Every good will is welcome.
 
-Pour savoir comment contribuer, lisez le Wiki ! 
-https://lab.shelter.moe/karaokemugen/karaokemugen-app/wikis/home
+To see how you can help, check :
 
-Tout y est expliqué, ou presque, et si vous avez des questions, il y a un lien vers le Discord où nous échangeons quotidiennement !
-
+- [Documentation](http://mugen.karaokes.moe/docs) (in french)
+- [Create an issue or try to resolve one!](https://lab.shelter.moe/karaokemugen/karaokemugen-app/issues)
+- [Come to our Discord!](https://discord.gg/a8dMYek)
