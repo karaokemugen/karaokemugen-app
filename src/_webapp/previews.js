@@ -30,6 +30,30 @@ async function extractPreviewFiles(previewDir) {
 	return previewFiles;
 }
 
+async function cleanUpPreviewsFolder(videofiles,previewfiles) {
+	// Read all preview files
+	// For each check if videofile exists
+	// If not then delete preview file
+	for (const previewfile of previewfiles) {
+		let deletePreview = true;
+		const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);		const size = previewparts[2];				
+		const previewfileWOExt = basename(previewparts[1]);
+		for (const videofile of videofiles) {
+			const videofileWOExt = basename(videofile, extname(videofile));
+			if (previewfileWOExt == videofileWOExt) {
+				deletePreview = false;
+				const videoStats = await asyncStat(videofile);	
+				if (videoStats.size != size) {
+					deletePreview = true;
+				}
+			}
+		}
+		if (deletePreview) { 
+			asyncRemove(previewfile);
+			logger.debug(`[Previews] Cleaned up ${previewfile}`);
+		}
+	}
+}
 
 async function compareVideosPreviews(videofiles,previewfiles) {
 	const previewFilesToCreate = [];
@@ -40,12 +64,12 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 		const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.size}.mp4`;		
 		if (previewfiles.length != 0) {
 			for (const previewfile of previewfiles) {
-				const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);				
+				const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);
 				const size = previewparts[2];
 				if (basename(previewparts[1]) === (basename(videofile).replace(/\.[^.]+$/, ''))) {
 					if (size != videoStats.size)  {
 					//If it's different, remove previewfile and create a new one
-						await asyncRemove(previewfile);						
+						asyncRemove(previewfile);						
 					} else {
 						addPreview = false;
 					}
@@ -79,12 +103,14 @@ export async function createPreviews(config) {
 		//TODO : Lire les dossiers vidéo depuis le dossier de configuration
 		const videoFiles = await extractVideoFiles(resolve(conf.appPath,conf.PathVideos));
 		const previewFiles = await extractPreviewFiles(resolvedPathPreviews());
+		await cleanUpPreviewsFolder(videoFiles,previewFiles);		
 		const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
-		//cleanUpPreviewsFolder(videoFiles,previewfiles);
+		
 		for (const videoPreview of videoFilesToPreview) {
 			await createPreview(videoPreview);
 			logger.info(`[Previews] Generated ${videoPreview.videofile}`);
 		}
+		
 		logger.info('[Previews] Finished generating all previews.');
 	} catch (err) {
 		logger.error(err);
