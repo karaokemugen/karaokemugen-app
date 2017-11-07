@@ -2,10 +2,10 @@ import logger from 'winston';
 import {resolve, extname, basename} from 'path';
 
 import {
-	asyncExists, asyncReadDir, asyncRemove, asyncStat, resolveFileInDirs
+	asyncExists, asyncReadDir, asyncRemove, asyncStat
 } from '../_common/utils/files';
 import {
-	getConfig, resolvedPathVideos, resolvedPathPreviews
+	getConfig, resolvedPathPreviews, resolvedPathVideos
 } from '../_common/utils/config';
 import {createPreview} from '../_common/utils/ffmpeg';
 
@@ -37,7 +37,7 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 		let addPreview = true;
 		const videoStats = await asyncStat(videofile);		
 		const previewfileWOExt = basename(videofile, extname(videofile));
-		const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.size}.mp4`;	
+		const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.size}.mp4`;		
 		if (previewfiles.length != 0) {
 			for (const previewfile of previewfiles) {
 				const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);				
@@ -60,6 +60,17 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 		}		
 	}	
 	return previewFilesToCreate;
+}
+export async function isPreviewAvailable(videofile) {
+	const videofilename = resolvedPathVideos()+`/${videofile}`;
+	const videoStats = await asyncStat(videofilename);		
+	const previewfileWOExt = basename(videofilename, extname(videofilename));
+	const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.size}.mp4`;	
+	if (await asyncExists(previewfilename)) {
+		return basename(previewfilename);
+	} else {
+		return undefined;
+	}
 }
 export async function createPreviews(config) {
 	try {
