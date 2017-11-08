@@ -42,6 +42,7 @@ var checkboxKaraHtml;
 var closeButton;
 var closeButtonBottom;
 var showFullTextButton;
+var showVideoButton;
 var dragHandleHtml;
 var playKaraHtml;
 
@@ -235,6 +236,13 @@ var settingsNotUpdated;
 			}
 		});
 		
+		$('.overlay').on('click touchstart', function() {
+			var video = $('#video');
+			$('.overlay').hide();
+			video[0].pause();
+			video.removeAttr('src');
+		});
+		
 		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="addKara"]', function() {
 			var idKara = $(this).closest('li').attr('idkara');
 			addKaraPublic(idKara);
@@ -305,7 +313,21 @@ var settingsNotUpdated;
 					scrollToElement(playlist.parent(), detailsKara,  liKara.find('.lyricsKara'));
 				});
 			});
+			$('.playlist-main').on('click', '.showVideo', function() {
+				showVideo($(this));
+			})
 		}
+
+		showVideo = function(el) {
+			var previewFile = el.closest('.detailsKara').data('previewfile');
+			if(previewFile) {
+				setTimeout(function() {
+					$('#video').attr('src', '/previews/' + previewFile);
+					$('#video')[0].play();
+					$('.overlay').show();
+				}, 1);
+			}
+		};
 
 		// pick a random kara & add it after (not) asking user's confirmation
 		$('.getLucky').on('click', function () {
@@ -482,7 +504,8 @@ var settingsNotUpdated;
 	closeButton = '<button class="closeParent btn btn-action"></button>';
 	closeButtonBottom = '<button class="closeParent bottom btn btn-action"></button>';
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
-	showFullTextButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	showFullTextButton = '<button class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	showVideoButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
@@ -565,33 +588,37 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			$this = $(e.target).closest('.fullLyrics');
+			var $this = $(e.target).closest('.fullLyrics, .showVideo');
             
 			if($this.length > 0) {
 				e.preventDefault();
             
 				var liKara = $this.closest('li');
 				var idKara = liKara.attr('idkara');
-        
-				$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-					if (typeof data === 'object') {
-						if (mode == 'mobile') {
-							$('#lyricsModalText').html(data.join('<br/>'));
-							$('#lyricsModal').modal('open');
-						} else {
-							displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
+				if($this.hasClass('fullLyrics')) {
+					$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
+						if (typeof data === 'object') {
+							if (mode == 'mobile') {
+								$('#lyricsModalText').html(data.join('<br/>'));
+								$('#lyricsModal').modal('open');
+							} else {
+								displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
+							}
+						} else { 
+							displayMessage('warning','', i18n.__('NOLYRICS')); 
 						}
-					} else { 
-						displayMessage('warning','', i18n.__('NOLYRICS')); 
-					}
-				});
-			}
+					});
+				} else if($this.hasClass('showVideo')) {
+					showVideo($this);
+				}
+				
+			} 
 		});
     
 		manager2.on('tap click', function (e) {
 			e.gesture = e;
 			var target = $(e.gesture.target);
-			if(target.closest('.fullLyrics').length > 0
+			if(target.closest('.fullLyrics, .showVideo').length > 0
 								|| target.closest('.actionDiv').length > 0
 								|| target.closest('.infoDiv').length > 0
 								|| target.closest('[name="checkboxKara"]').length > 0
@@ -1235,6 +1262,7 @@ var settingsNotUpdated;
 				var detailsHtml = buildKaraDetails(data[0], mode);
 				detailsHtml = $(detailsHtml).hide();
 				liKara.find('.contentDiv').after(detailsHtml);
+				$(detailsHtml).data(data[0]);
 
 				detailsHtml.fadeIn(animTime);
 				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
@@ -1288,9 +1316,10 @@ var settingsNotUpdated;
 
 		infoKaraTemp = 'no mode specified';
 		if (htmlMode == 'list') {
-			infoKaraTemp = '<div class="detailsKara alert alert-info">' + (isTouchScreen ? '' : closeButton) + showFullTextButton + htmlTable + '</div>';
+			infoKaraTemp = '<div class="detailsKara alert alert-info">' + (isTouchScreen ? '' : closeButton)
+				+ showVideoButton + showFullTextButton + htmlTable + '</div>';
 		} else if (htmlMode == 'mobile') {
-			infoKaraTemp = '<div class="detailsKara z-depth-1">' + showFullTextButton + htmlTable + '</div>';
+			infoKaraTemp = '<div class="detailsKara z-depth-1">' + showVideoButton + showFullTextButton + htmlTable + '</div>';
 		}
 		return infoKaraTemp;
 	};
