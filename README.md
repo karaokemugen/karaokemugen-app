@@ -12,7 +12,13 @@ Karaoke Mugen works offline and does not require an Internet connection.
 
 ## Download
 
-To install, clone this repository and use `yarn`.
+To install, use 
+
+```sh
+npm install karaokemugen-app
+```
+
+or clone the git repository and use `yarn`.
 
 If you don't have `yarn` : 
 
@@ -25,6 +31,8 @@ Then launch `yarn` to install dependencies.
 ```sh
 yarn install
 ```
+
+## Post-download
 
 Create a folder called `app/data` and put the contents of the `samples` folder inside to try it out.
 
@@ -120,7 +128,13 @@ Karaoke fonctionne offline et ne nécessite pas d'accès Internet.
 
 ## Téléchargement
 
-Pour installer, clonez le dépôt, puis utilisez `yarn`.
+Pour installer, faites
+
+```sh
+npm install karaokemugen-app
+```
+
+Ou clonez le dépôt git puis utilisez `yarn`.
 
 Si vous n'avez pas `yarn` :
 
@@ -141,6 +155,8 @@ Pour lancer l'app :
 ```sh
 npm start
 ```
+
+## Installation
 
 La génération de la base de données est nécessaire à la première utilisation et se fait automatiquement si le fichier `app/data/karas.sqlite3` n'existe pas. Vous pouvez la déclencher manuellement plus tard en vous connectant sur `http://localhost:1338` (mot de passe par défaut `gurdil` ou la valeur de `AdminPassword` dans le fichier `config.ini` personnel) et en ayant placé des karaokés dans `app/data/` (voir plus bas).
 
