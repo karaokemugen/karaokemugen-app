@@ -504,8 +504,8 @@ var settingsNotUpdated;
 	closeButton = '<button class="closeParent btn btn-action"></button>';
 	closeButtonBottom = '<button class="closeParent bottom btn btn-action"></button>';
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
-	showFullTextButton = '<button class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
-	showVideoButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	showFullTextButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	showVideoButton = '<button class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
@@ -1258,7 +1258,7 @@ var settingsNotUpdated;
 		if (!infoKara.is(':visible')) { // || infoKara.length == 0
 			var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 
-			$.ajax({ url: urlInfoKara }).done(function (data) {
+			$.ajax({ url: urlInfoKara }).done(function (data) {console.log('ahhh', data[0]);
 				var detailsHtml = buildKaraDetails(data[0], mode);
 				detailsHtml = $(detailsHtml).hide();
 				liKara.find('.contentDiv').after(detailsHtml);
@@ -1313,13 +1313,15 @@ var settingsNotUpdated;
 			} else return '';
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
-
 		infoKaraTemp = 'no mode specified';
 		if (htmlMode == 'list') {
 			infoKaraTemp = '<div class="detailsKara alert alert-info">' + (isTouchScreen ? '' : closeButton)
-				+ showVideoButton + showFullTextButton + htmlTable + '</div>';
+				+ (data['previewfile'] ? showVideoButton : '')
+				+ showFullTextButton + htmlTable + '</div>';
 		} else if (htmlMode == 'mobile') {
-			infoKaraTemp = '<div class="detailsKara z-depth-1">' + showVideoButton + showFullTextButton + htmlTable + '</div>';
+			infoKaraTemp = '<div class="detailsKara z-depth-1">'
+			+ (data['previewfile'] ? showVideoButton : '')
+			+ showFullTextButton + htmlTable + '</div>';
 		}
 		return infoKaraTemp;
 	};
