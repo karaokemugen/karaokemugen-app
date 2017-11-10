@@ -826,7 +826,10 @@ module.exports = {
 					.then(function(kara){
 						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
 							.then(function(karalist){
-								resolve(karalist);
+								isPreviewAvailable(karalist[0].videofile).then((previewfile) => {
+									karalist[0].previewfile = previewfile;
+									resolve(karalist);
+								});
 							})
 							.catch(function(err){
 								logger.error('[Engine] PLC translateKaraInfo : '+err);
