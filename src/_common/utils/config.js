@@ -122,3 +122,44 @@ export function setConfig(configPart) {
 	emit(CONFIG_UPDATED);
 	return getConfig();
 }
+
+/**
+ * Fonctions de manipulations récurentes de la configuration. On peut passer un objet de configuration
+ * facultatif. Dans ce cas, la méthode travaille sur la configuration passée en paramètre plutôt que
+ * sur la configuration courante.
+ */
+
+export function resolvedPathKaras(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+
+	const resolvedPaths = [];
+	for (const path of conf.PathKaras.split('|')) {
+		resolvedPaths.push(resolve(conf.appPath, path));
+	}
+	return resolvedPaths;
+}
+
+export function resolvedPathSubs(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+
+	const resolvedPaths = [];
+	for (const path of conf.PathSubs.split('|')) {
+		resolvedPaths.push(resolve(conf.appPath, path));
+	}
+	return resolvedPaths;
+}
+
+export function resolvedPathVideos(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+
+	const resolvedPaths = [];
+	for (const path of conf.PathVideos.split('|')) {
+		resolvedPaths.push(resolve(conf.appPath, path));
+	}
+	return resolvedPaths;
+}
+
+export function resolvedPathTemp(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return resolve(conf.appPath, conf.PathTemp);
+}
