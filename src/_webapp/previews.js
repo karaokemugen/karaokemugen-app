@@ -87,7 +87,13 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 }
 export async function isPreviewAvailable(videofile) {
 	const videofilename = resolvedPathVideos()+`/${videofile}`;
-	const videoStats = await asyncStat(videofilename);		
+	const videoStats; 
+	if (await asyncExists(videofilename)) {
+		 videoStats = await asyncStat(videofilename);		
+	} else {
+		logger.debug(`[Previews] Main videofile does not exist : ${videofilename}`)
+		return undefined;
+	}	
 	const previewfileWOExt = basename(videofilename, extname(videofilename));
 	const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.size}.mp4`;	
 	if (await asyncExists(previewfilename)) {
