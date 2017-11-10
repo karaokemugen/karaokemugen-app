@@ -9,14 +9,21 @@ import {
 } from '../_common/utils/config';
 import {createPreview} from '../_common/utils/ffmpeg';
 
-async function extractVideoFiles(videoDir) {	
-	const dirListing = await asyncReadDir(videoDir);
+async function extractVideoFiles(videoDir) {
+	let dirListing = [];
+	for (const dir of videoDir.split('|')) {		
+		const files = await asyncReadDir(dir);
+		files.forEach((file, index) => {
+			files[index] = resolve(dir,file);
+		});
+		dirListing = dirListing.concat(files);
+	}
 	return dirListing.filter(file => !file.startsWith('.') && (
 		file.endsWith('.mp4') || 
 			file.endsWith('.webm') ||
 			file.endsWith('.avi') ||
 			file.endsWith('.mkv'))
-	).map(file => resolve(videoDir, file));
+	);
 }
 
 async function extractPreviewFiles(previewDir) {
@@ -33,7 +40,6 @@ async function extractPreviewFiles(previewDir) {
 export async function cleanUpPreviewsFolder(config) {
 	const conf = config || getConfig();		
 	logger.info('[Previews] Cleaning up preview generation');
-	//TODO : Lire les dossiers vidéo depuis le dossier de configuration
 	const videofiles = await extractVideoFiles(resolve(conf.appPath,conf.PathVideos));
 	const previewfiles = await extractPreviewFiles(resolvedPathPreviews());		
 	// Read all preview files
@@ -111,11 +117,9 @@ export async function createPreviews(config) {
 	try {
 		const conf = config || getConfig();		
 		logger.info('[Previews] Starting preview generation');
-		//TODO : Lire les dossiers vidéo depuis le dossier de configuration
 		const videoFiles = await extractVideoFiles(resolve(conf.appPath,conf.PathVideos));
 		const previewFiles = await extractPreviewFiles(resolvedPathPreviews());		
 		const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
-		
 		for (const videoPreview of videoFilesToPreview) {
 			await createPreview(videoPreview);
 			logger.info(`[Previews] Generated ${videoPreview.videofile}`);
