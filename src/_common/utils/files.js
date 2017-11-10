@@ -4,12 +4,12 @@ import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
 
-/** Fonction de vérification d'existence d'un fichier renvoyant une Promise.*/
+/** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
 	return promisify(exists)(file);
 }
 
-/** Fonction de lecture d'un fichier renvoyant une Promise.*/
+/** Function used to read a file with a Promise */
 export function asyncReadFile(...args) {
 	return promisify(readFile)(...args);
 }
@@ -46,7 +46,7 @@ export function asyncWriteFile(...args) {
 	return promisify(writeFile)(...args);
 }
 
-/** Fonction vérifiant la présence d'un fichier requis, levant une exception s'il n'est pas trouvé. */
+/** Function used to verify if a required file exists. It throws an exception if not. */
 export async function asyncRequired(file) {
 	const exists = await asyncExists(file);
 	if (!exists) {
@@ -63,9 +63,8 @@ export async function asyncCheckOrMkdir(...dir) {
 }
 
 /**
- * Recherche d'un fichier dans une liste de répertoirs. Si le fichier est trouvé,
- * on renvoie son chemin complet (avec 'resolve').
- * Important: on suppose que les chemins des répertoires en paramètre sont eux-même déjà résolus.
+ * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
+ * Beware: we believe the paths sent as arguments are already resolved.
  */
 export async function resolveFileInDirs(filename, dirs) {
 	for (const dir of dirs) {

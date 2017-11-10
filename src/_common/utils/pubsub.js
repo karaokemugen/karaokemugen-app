@@ -1,4 +1,4 @@
-/** Bus d'événements centralisé, permettant d'utiliser le pattern pub/sub pour la propagation d'événements. */
+/** Event bus, using pub/sub methods. */
 
 import {EventEmitter} from 'events';
 import logger from 'winston';
@@ -6,11 +6,11 @@ import logger from 'winston';
 const eventEmitter = new EventEmitter();
 
 export function emit(typeEvent, ...data) {
-	logger.debug('Emission de l\'événement ' + typeEvent);
+	logger.debug('Emitting event ' + typeEvent);
 	return eventEmitter.emit(typeEvent, data);
 }
 
 export function on(typeEvent, listenerFunc) {
-	logger.debug('Souscription à l\'événement ' + typeEvent);
+	logger.debug('Subscribing to event ' + typeEvent);
 	return eventEmitter.on(typeEvent, listenerFunc);
 }

@@ -1,4 +1,4 @@
-/** Gestion centralisée de la configuration de Karaoke Mugen. */
+/** Centralized configuration management for Karaoke Mugen. */
 
 import {resolve} from 'path';
 import {parse} from 'ini';
@@ -12,20 +12,20 @@ import {checkBinaries} from './binchecker';
 import {emit} from './pubsub';
 
 
-/** Objet contenant l'ensemble de la configuration. */
+/** Object containing all config */
 let config = {};
 
 export const CONFIG_UPDATED = 'CONFIG_UPDATED';
 
 /**
- * On renvoie une copie de la configuration, afin d'assurer que l'objet interne ne puisse être modifié
- * sans passer par une des fonctions de ce module.
+ * We return a copy of the configuration data so the original one can't be modified
+ * without passing by this module's fonctions.
  */
 export function getConfig() {
 	return {...config};
 }
 
-/** Initialisation de la configuration. */
+/** Initializing configuration */
 export async function initConfig(appPath, argv) {
 
 	configureLogger(appPath, !!argv.debug);
@@ -80,7 +80,7 @@ async function loadConfigFiles(appPath) {
 }
 
 async function loadConfig(configFile) {
-	logger.debug('Chargement du fichier de configuration ' + configFile);
+	logger.debug('[Config] Reading configuration file ' + configFile);
 	await asyncRequired(configFile);
 	const content = await asyncReadFile(configFile, 'utf-8');
 	const parsedContent = parse(content);
@@ -114,8 +114,8 @@ function configureHost() {
 }
 
 /**
- * Mise à jour partielle de la configuration. On émet un message permettant aux différents fichiers consernés
- * d'être notifiés que la configuration a changé.
+ * Partially updating config : we send a signal to the other files using the configuration. so
+ * they know it has changed.
  */
 export function setConfig(configPart) {
 	config = {...config, ...configPart};
@@ -124,9 +124,9 @@ export function setConfig(configPart) {
 }
 
 /**
- * Fonctions de manipulations récurentes de la configuration. On peut passer un objet de configuration
- * facultatif. Dans ce cas, la méthode travaille sur la configuration passée en paramètre plutôt que
- * sur la configuration courante.
+ * Functions used to manipulate configuration. We can pass a optional config object.
+ * In this case, the method works with the configuration passed as argument rather than the current 
+ * configuration.
  */
 
 export function resolvedPathKaras(overrideConfig) {

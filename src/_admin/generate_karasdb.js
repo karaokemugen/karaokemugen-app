@@ -136,11 +136,10 @@ function getSeries(kara) {
 	}
 
 	if (kara.type !== 'LIVE' && kara.type !== 'MV') {
-		// Série extraite du parsing du nom, ajoutée uniquement pour les karas non LIVE/MV.
 		if (kara.serie && kara.serie.trim()) {
 			series.add(kara.serie.trim());
 		}
-		// Au moins une série est obligatoire pour les karas non LIVE/MV.
+		// Karas not LIVE nor MV must have a series.		
 		if (isEmpty(series)) {
 			throw 'Karaoke series cannot be detected! ('+JSON.stringify(kara);
 		}
@@ -150,7 +149,7 @@ function getSeries(kara) {
 }
 
 /**
- * Renvoie une Map<String, Array>, associant une série à l'ensemble des index des karaokés concernés.
+ * Returns a Map<String, Array>, linking a series to the karaoke indexes involved.
  */
 function getAllSeries(karas) {
 	const map = new Map();
@@ -187,9 +186,7 @@ function prepareAllSeriesInsertData(mapSeries) {
 }
 
 /**
- * Attention : on itère sur les clés et non sur les 'entries' de la map pour obtenir le même ordre et donc les
- * mêmes index que la fonction prepareAllSeriesInsertData. Cette manière de procéder historique est particulièrement
- * fragile et devrait être améliorée.
+ * Warning : we iterate on keys and not on map entries to get the right order and thus the same indexes as the function prepareAllSeriesInsertData. This is the historical way of doing it and should be improved sometimes.tre améliorée.
  */
 function prepareAllKarasSeriesInsertData(mapSeries) {
 	const data = [];
@@ -295,7 +292,7 @@ function getTypes(kara, allTags) {
 	]);
 
 	types.forEach((value, key) => {
-		// Ajout d'espaces car certaines clés sont incluses dans d'autres : MV et AMV par exemple.
+		// Adding spaces so MV and AMV can't be confused.
 		if (` ${kara.type} `.includes(` ${key} `)) {
 			result.add(getTagId(value, allTags));
 		}
@@ -400,7 +397,7 @@ export async function run(config) {
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
 
-		// Préparation des données à insérer.
+		// Preparing data to insert
 
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas);
@@ -413,7 +410,7 @@ export async function run(config) {
 
 		const sqlUpdateSeriesAltNames = await prepareAltSeriesInsertData(series_altnamesfile);
 
-		// Insertion des données en une transaction.
+		// Inserting data in a transaction
 
 		await db.run('begin transaction');
 
@@ -487,10 +484,10 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
 
-	// Liste des KID existants.
+	// Listing existing KIDs
 	const karaKIDs = allKaras.map(k => '\'' + k.kid + '\'').join(',');
 
-	// On supprime tous les enregistrements ne correspondant pas à un de ces KIDs.
+	// Deleting records which aren't in our KID list
 	await Promise.all([
 		userdb.run(`DELETE FROM whitelist WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM blacklist_criteria WHERE uniquevalue NOT IN (${karaKIDs});`),

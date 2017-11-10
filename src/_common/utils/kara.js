@@ -1,7 +1,6 @@
 /**
- * Outils de manipulation des fichiers kara : lecture, extraction d'infos, etc.
- * Les outils de ce fichier ne s'occupent pas de résoudre les chemins. On suppose donc que les paramètres
- * sont déjà résolus.
+ * Tools used to manipulate .kara files : reading, extracting info, etc.
+ * These functions do not resolve paths. Arguments should be resolved already.
  */
 
 import timestamp from 'unix-timestamp';
@@ -54,7 +53,7 @@ export async function getKara(karafile) {
 		if (subFile) {
 			karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
 			karaData.ass_checksum = checksum(karaData.ass);
-			// TODO Supprimer le fichier temporaire éventuel.
+			// TODO Delete any temporary file
 		} else {
 			karaData.ass = '';
 		}
@@ -134,7 +133,7 @@ async function findSubFile(videoFile, kara) {
 			try {
 				return await extractSubtitles(videoFile, extractFile);
 			} catch (err) {
-				// Non bloquant.
+				// Not blocking.
 				logger.debug('[Kara] Could not extract subtitles from video file ' + videoFile);
 			}
 		}
@@ -145,7 +144,7 @@ async function findSubFile(videoFile, kara) {
 			logger.warn(`[Kara] Could not find subfile '${kara.subfile}'.`);
 		}
 	}
-	// Cas non bloquant de fichier non trouvé.
+	// Non-blocking case if file isn't found
 	return '';
 }
 
