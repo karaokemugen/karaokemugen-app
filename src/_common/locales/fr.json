@@ -159,7 +159,7 @@
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Infos host",
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
 	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les infos du réseau",
-    "ERROR": "Erreur",
+	"ERROR": "Erreur",
 	"PL_LIST_ERROR": "Impossible d'afficher les liste de lectures",
 	"PL_CREATE_ERROR": "Impossible de créer la liste de lecture %s",
 	"PL_CREATED": "Liste de lecture %s crée",
@@ -245,5 +245,7 @@
 	"CL_ALL": "Tous",
 	"CL_HELP_PUBLIC_CONTENT": "<p> Ajoutez vos karas en les <b>glissant vers la droite</b>.</p> <p><b>Swipe gauche/droite</b> pour passer du mode recherche au mode playlist</p> <p><b>N'hésitez pas</b> à venir sur le Discord!",
 	"CL_HELP": "Aide",
-	"CL_PLAYLISTS": "Listes"
+	"CL_PLAYLISTS": "Listes",
+	"TAG_ONA": "Original Network Animation",
+	"TAG_ONA_SHORT": "ONA"
 }

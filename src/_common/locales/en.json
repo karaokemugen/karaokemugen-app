@@ -70,6 +70,8 @@
 	"TAG_PC": "PC",
 	"TAG_SEGACD": "Sega CD",
 	"TAG_REMIX": "Remix",
+	"TAG_ONA": "Original Network Animation",
+	"TAG_ONA_SHORT": "ONA",
 	"REQUESTED_BY": "Requested by",
 	"HELP_MSG": "Usage : \n\nkaraokemugen [--help] [--version] [--debug]\n\n\tOptions : \n\n\t\t--help     Displays this message\n\t\t--version  Displays version info\n\t\t--debug    Displays additional debug messages\n\n",
 	"DAY": "day(s)",

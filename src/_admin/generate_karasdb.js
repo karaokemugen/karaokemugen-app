@@ -106,7 +106,7 @@ function prepareKaraInsertData(kara, index) {
 		$kara_title: kara.title,
 		$titlenorm: deburr(kara.title),
 		$kara_year: kara.year,
-		$kara_songorder: kara.songorder,
+		$kara_songorder: kara.order,
 		$kara_videofile: kara.videofile,
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,
@@ -142,7 +142,7 @@ function getSeries(kara) {
 		}
 		// Au moins une série est obligatoire pour les karas non LIVE/MV.
 		if (isEmpty(series)) {
-			throw 'Karaoke series cannot be detected!';
+			throw 'Karaoke series cannot be detected! ('+JSON.stringify(kara);
 		}
 	}
 
@@ -253,15 +253,6 @@ function getKaraTags(kara, allTags) {
 
 	const result = new Set();
 
-	if (kara.serie.includes(' OAV') || kara.serie.includes(' OVA') || kara.type.includes('OAV')) {
-		result.add(getTagId('TAG_OVA,7', allTags));
-	}
-
-	if (kara.type === 'LIVE' || kara.type === 'MV') {
-		//If LIVE or MV, we add the series as artist.
-		kara.serie.split(',').forEach(singer => result.add(getTagId(singer.trim() + ',2', allTags)));
-	}
-
 	if (kara.singer) {
 		kara.singer.split(',').forEach(singer => result.add(getTagId(singer.trim() + ',2', allTags)));
 	}
@@ -291,27 +282,7 @@ function getKaraTags(kara, allTags) {
 	}
 
 	getTypes(kara, allTags).forEach(type => result.add(type));
-	getSpecialTags(kara, allTags).forEach(special => result.add(special));
-
-	return result;
-}
-
-function getSpecialTags(kara, allTags) {
-
-	const result = new Set();
-
-	const specialTags = new Map([
-		['GAME', 'TAG_VIDEOGAME,7'], ['GC', 'TAG_GAMECUBE,7'], ['MOVIE', 'TAG_MOVIE,7'], ['OAV', 'TAG_OVA,7'],
-		['PS3', 'TAG_PS3,7'], ['PS2', 'TAG_PS2,7'], ['PSV', 'TAG_PSV,7'], ['PSX', 'TAG_PSX,7'], ['R18', 'TAG_R18,7'],
-		['REMIX', 'TAG_REMIX,7'], ['SPECIAL', 'TAG_SPECIAL,7'], ['VOCA', 'TAG_VOCALOID,7'], ['XBOX360', 'TAG_XBOX360,7']
-	]);
-
-	specialTags.forEach((value, key) => {
-		if (kara.type.includes(key)) {
-			result.add(getTagId(value, allTags));
-		}
-	});
-
+	
 	return result;
 }
 
