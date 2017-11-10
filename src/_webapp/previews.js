@@ -87,9 +87,9 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 }
 export async function isPreviewAvailable(videofile) {
 	const videofilename = resolvedPathVideos()+`/${videofile}`;
-	const videoStats; 
+	let videoStats;
 	if (await asyncExists(videofilename)) {
-		 videoStats = await asyncStat(videofilename);		
+		videoStats = await asyncStat(videofilename);		
 	} else {
 		logger.debug(`[Previews] Main videofile does not exist : ${videofilename}`)
 		return undefined;
