@@ -30,7 +30,12 @@ async function extractPreviewFiles(previewDir) {
 	return previewFiles;
 }
 
-async function cleanUpPreviewsFolder(videofiles,previewfiles) {
+export async function cleanUpPreviewsFolder(config) {
+	const conf = config || getConfig();		
+	logger.info('[Previews] Cleaning up preview generation');
+	//TODO : Lire les dossiers vidéo depuis le dossier de configuration
+	const videofiles = await extractVideoFiles(resolve(conf.appPath,conf.PathVideos));
+	const previewfiles = await extractPreviewFiles(resolvedPathPreviews());		
 	// Read all preview files
 	// For each check if videofile exists
 	// If not then delete preview file
@@ -108,8 +113,7 @@ export async function createPreviews(config) {
 		logger.info('[Previews] Starting preview generation');
 		//TODO : Lire les dossiers vidéo depuis le dossier de configuration
 		const videoFiles = await extractVideoFiles(resolve(conf.appPath,conf.PathVideos));
-		const previewFiles = await extractPreviewFiles(resolvedPathPreviews());
-		await cleanUpPreviewsFolder(videoFiles,previewFiles);		
+		const previewFiles = await extractPreviewFiles(resolvedPathPreviews());		
 		const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
 		
 		for (const videoPreview of videoFilesToPreview) {
