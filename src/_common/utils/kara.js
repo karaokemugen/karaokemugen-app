@@ -7,34 +7,13 @@
 import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import logger from 'winston';
-import {parse, extname, resolve} from 'path';
+import {extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {createHash} from 'crypto';
 import {trim} from 'lodash';
 import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from './files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from './config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from './ffmpeg';
-
-export function karaFilenameInfos(karaFile) {
-	const karaFileName = parse(karaFile).name;
-	const infos = karaFileName.split(/\s+-\s+/); // LANGUE - SERIE - NUMERO - TITRE
-
-	if (infos.length < 3) {
-		throw 'Kara filename \'' + karaFileName + '\' does not respect naming convention';
-	}
-	// On ajoute en 5ème position le numéro extrait du champ type.
-	const orderInfos = infos[2].match(/^([a-zA-Z0-9 ]{2,30}?)(\d*)$/);
-	infos.push(orderInfos[2] ? +orderInfos[2] : 0);
-
-	// On renvoie un objet avec les champs explicitement nommés.
-	return {
-		lang: infos[0],
-		serie: infos[1],
-		type: orderInfos[1],
-		songorder: orderInfos[2] ? +orderInfos[2] : 0,
-		title: infos[3] || ''
-	};
-}
 
 export async function getKara(karafile) {
 
@@ -55,14 +34,6 @@ export async function getKara(karafile) {
 	karaData.datemodif = timestamp.now();
 
 	karaData.karafile = karafile;
-
-	const karaInfos = karaFilenameInfos(karafile);
-	karaData.title = karaInfos.title;
-	// Attention à ne pas confondre avec le champ 'series' au pluriel, provenant du fichier kara.
-	karaData.serie = karaInfos.serie;
-	karaData.type = karaInfos.type;
-	karaData.songorder = karaInfos.songorder;
-	karaData.langFromFileName = karaInfos.lang;
 
 	karaData.lang = trim(karaData.lang, '"'); // Nettoyage du champ lang du fichier kara.
 
@@ -126,6 +97,9 @@ export async function writeKara(karafile, karaData) {
 		creator: karaData.creator || '',
 		author: karaData.author || '',
 		series: karaData.series || '',
+		title: karaData.title || '',
+		type: karaData.type || '',
+		songorder: karaData.order || 0,
 		lang: karaData.lang || '',
 		KID: karaData.KID || uuidV4(),
 		dateadded: karaData.dateadded || timestamp.now(),
@@ -148,7 +122,7 @@ export function verifyRequiredInfos(karaData) {
 		throw 'Karaoke video file empty!';
 	}
 	if (!karaData.subfile || karaData.subfile.trim() === '') {
-		throw 'Karaoke sub file file empty!';
+		throw 'Karaoke sub file empty!';
 	}
 }
 
