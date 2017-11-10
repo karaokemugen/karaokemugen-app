@@ -18,7 +18,7 @@ export async function createPreview(videopreview, config) {
 
 	const conf = config || getConfig();
 	return new Promise((resolve) => {
-		const proc = spawn(conf.BinffmpegPath, ['-y', '-ss', '0', '-i', videopreview.videofile, '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
+		const proc = spawn(conf.BinffmpegPath, ['-y', '-ss', '0', '-i', videopreview.videofile, '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-threads', '1', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
 		let output = '';
 		
 		proc.stderr.on('data',(data) => {
