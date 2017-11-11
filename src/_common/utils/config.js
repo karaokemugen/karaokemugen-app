@@ -163,3 +163,8 @@ export function resolvedPathTemp(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
 	return resolve(conf.appPath, conf.PathTemp);
 }
+
+export function resolvedPathPreviews(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return resolve(conf.appPath, conf.PathPreviews);
+}
