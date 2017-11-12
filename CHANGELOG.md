@@ -1,5 +1,15 @@
 # Versions
 
+## v2.0.2 - 12/11/2017
+
+- #221 Fix en cas d'absence de jingle (cela arrêtait la lecture)
+
+## v2.0.1 - 11/11/2017
+
+- Traduction de certains commentaires de code
+- #201 Nouveau système de génération de base de données, plus souple, moins de code.
+- Readme anglais/français
+
 ## v2.0 "Finé Fantastique" - 06/11/2017
 
 ### Améliorations
