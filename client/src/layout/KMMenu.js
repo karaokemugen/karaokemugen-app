@@ -1,19 +1,25 @@
 import React, {Component} from 'react';
+import {NavLink} from 'react-router-dom';
 import {Button, Container, Menu} from 'semantic-ui-react';
 
+const linkProps = {
+	as: NavLink,
+	link: true,
+	activeClassName: 'active'
+};
 
 export default class KMMenu extends Component {
 
 	render() {
 		return (
 			<div>
-				<Menu fixed='top' size='large' inverted>
+				<Menu size='large' inverted>
 					<Container>
-						<Menu.Item as='a'>Accueil</Menu.Item>
-						<Menu.Item as='a'>Configuration</Menu.Item>
-						<Menu.Item as='a'>Player</Menu.Item>
-						<Menu.Item as='a'>Karas</Menu.Item>
-						<Menu.Item as='a'>Base de données</Menu.Item>
+						<Menu.Item to='/home' {...linkProps}>Accueil</Menu.Item>
+						<Menu.Item to='/config' {...linkProps}>Configuration</Menu.Item>
+						<Menu.Item to='/player' {...linkProps}>Player</Menu.Item>
+						<Menu.Item to='/karas' {...linkProps}>Karas</Menu.Item>
+						<Menu.Item to='/db' {...linkProps}>Base de données</Menu.Item>
 						<Menu.Menu position='right'>
 							<Menu.Item className='item'>
 								<Button as='a'>Se connecter</Button>
