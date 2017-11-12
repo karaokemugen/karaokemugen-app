@@ -49,7 +49,7 @@ module.exports = {
 		playlist:null,
 		timeposition:0,
 		currentlyPlayingKara:undefined,
-		counterToJingle:0,
+		counterToJingle:1,
 	},
 	_services:{
 		admin: null,
