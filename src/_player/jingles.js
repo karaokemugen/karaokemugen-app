@@ -50,7 +50,8 @@ module.exports = {
 
 					proc.on('close', (code) => {
 						if (code !== 0) {
-						    logger.error('Video '+videofile+' gain calculation error : '+code);
+							logger.error('Video '+videofile+' gain calculation error : '+code);
+							logger.debug('ffmpeg output : '+output)
 							resolve(0);
 						} else {
 							var outputArray = output.split(' ');
