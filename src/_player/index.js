@@ -102,6 +102,7 @@ module.exports = {
 		jingles.SETTINGS = module.exports.SETTINGS;
 		jingles.SYSPATH = module.exports.SYSPATH;
 		jingles.buildList();
+		//Copying jingle data to currentjinglefiles which will be used by the player		
 
 		// Building QR Code with URL to connect to
 		var pGenerateQRCode = new Promise((resolve,reject) => {
@@ -517,9 +518,18 @@ module.exports = {
 	playJingle:function(){
 		module.exports.playing = true;
 		module.exports.videoType = 'jingle';
-		if (jingles.jinglefiles.length > 0) {
+		if (jingles.currentjinglefiles.length > 0) {
 			logger.info('[Player] Jingle time !');
-			var jingle = L.sample(jingles.jinglefiles);
+			var jingle = L.sample(jingles.currentjinglefiles);
+			//Let's remove the jingle we just selected so it won't be picked again next time.
+			L.remove(jingles.currentjinglefiles, (j) => {	
+				return j.file === jingle.file;
+			});
+			//If our current jingle files list is empty after the previous removal
+			//Fill it again with the original list.
+			if (jingles.currentjinglefiles.length == 0) {
+				jingles.currentjinglefiles = Array.prototype.concat(jingles.jinglefiles);	
+			}
 			logger.debug('[Player] Playing jingle '+jingle.file);
 			if (jingle != undefined) {
 				module.exports._player.load(jingle.file,'replace',['replaygain-fallback='+jingle.gain])

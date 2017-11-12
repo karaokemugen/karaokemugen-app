@@ -9,6 +9,7 @@ module.exports = {
 	SETTINGS:null,
 	SYSPATH:null,
 	jinglefiles:[],
+	currentjinglefiles:[],
 	buildList:function(){
 		// Preparing list of jingles from all jingle directories in config
 		const jingledirslist = path.resolve(module.exports.SYSPATH, module.exports.SETTINGS.PathJingles);
@@ -87,7 +88,8 @@ module.exports = {
 			if (err) {
 				logger.error('[Jingles] Failed computing jingle audio gain data : '+err);
 			} else {
-				logger.info('[Jingles] Finished computing jingle audio gain data');	
+				module.exports.currentjinglefiles = Array.prototype.concat(module.exports.jinglefiles);	
+				logger.info('[Jingles] Finished computing jingle audio gain data');				
 			}
 		});
 
