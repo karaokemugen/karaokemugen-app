@@ -533,12 +533,17 @@ module.exports = {
 					.catch((err) => {
 						logger.error('[Player] Unable to load jingle file '+jingle.file+' with gain modifier '+jingle.gain+' : '+JSON.stringify(err));
 					});
-			} else {
+			} else {				
 				module.exports.playerstatus = 'play';
 				loadBackground();
 				module.exports.displayInfo();
 				module.exports._playing = true;
 			}
+		} else {
+			module.exports.playerstatus = 'play';
+			loadBackground();
+			module.exports.displayInfo();
+			module.exports._playing = true;
 		}
 	},
 };
