@@ -98,7 +98,7 @@ export async function writeKara(karafile, karaData) {
 		series: karaData.series || '',
 		title: karaData.title || '',
 		type: karaData.type || '',
-		order: karaData.order || 0,
+		order: karaData.order || '',
 		version: 1,
 		lang: karaData.lang || '',
 		KID: karaData.KID || uuidV4(),
