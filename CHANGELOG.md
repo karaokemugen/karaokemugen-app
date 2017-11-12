@@ -1,5 +1,10 @@
 # Versions
 
+## v2.0.3 - 12/11/2017
+
+- Fix de la réécriture de karas durant la génération
+- Fix de l'erreur `OnLog is not a function` du calcul de gain des jingles
+
 ## v2.0.2 - 12/11/2017
 
 - #221 Fix en cas d'absence de jingle (cela arrêtait la lecture)
