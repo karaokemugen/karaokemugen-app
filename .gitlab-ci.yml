@@ -6,7 +6,6 @@ cache:
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
-  - npm install -g pkg
 
 stages:
   - test
@@ -30,6 +29,8 @@ test:
 
 build:
   stage: build
+  variables:
+    CI_DEBUG_TRACE: "true"
   artifacts:
     name: "$CI_COMMIT_REF_NAME"
     expire_in: 1 day
@@ -47,6 +48,8 @@ build:
 
 pkg_win:
   stage: pkg
+  variables:
+    CI_DEBUG_TRACE: "true"
   dependencies:
     - build
   artifacts:
@@ -65,6 +68,8 @@ pkg_win:
 
 pkg_osx:
   stage: pkg
+  variables:
+    CI_DEBUG_TRACE: "true"
   dependencies:
     - build
   artifacts:
@@ -82,9 +87,10 @@ pkg_osx:
     - tags
 
 deploy_win:
-  stage: deploy  
+  stage: deploy
+  variables:
+    CI_DEBUG_TRACE: "true"
   script:
-    - apt-get update -qq && apt-get install -y -qq lftp zip
     - mkdir build_win
     - cd build_win
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd files; get dist_win.tar.gz"
@@ -92,7 +98,7 @@ deploy_win:
     - rm dist_win.tar.gz
     - cp -f ../bin/karaokemugen-app-win.exe KaraokeMugen.exe
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd files; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
   only:
     - master
     - next
@@ -101,19 +107,20 @@ deploy_win:
 
 deploy_mac:
   stage: deploy
+  variables:
+    CI_DEBUG_TRACE: "true"
   dependencies:
     - pkg_win
   script:
-    - apt-get update -qq && apt-get install -y -qq lftp zip
     - mkdir build_mac
     - cd build_mac
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd files; get dist_macos.tar.gz"
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_macos.tar.gz"
     - tar xvzf dist_macos.tar.gz
     - rm dist_macos.tar.gz
     - ls karaokemugen-app*
     - cp -f ../karaokemugen-app-macos KaraokeMugen
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd files; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
   only:
     - master
     - next
