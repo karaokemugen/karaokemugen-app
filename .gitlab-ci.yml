@@ -3,6 +3,7 @@ image: node:8-stretch
 cache:
   paths:
   - node_modules/
+  - bin/
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
