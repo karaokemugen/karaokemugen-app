@@ -26,12 +26,10 @@ test:
     - npm start -- --debug --test &disown
     - bash test/run.sh
   only:
-    - test
+    - test_disabled
 
 build:
   stage: build
-  variables:
-    CI_DEBUG_TRACE: "true"
   artifacts:
     expire_in: 1 day
     paths:
@@ -41,15 +39,12 @@ build:
     - yarn install
     - npm run-script build    
   only:
-    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
     - master
     - next
     - tags
 
 pkg_win:
   stage: pkg
-  variables:
-    CI_DEBUG_TRACE: "true"
   dependencies:
     - build
   artifacts:
@@ -61,17 +56,13 @@ pkg_win:
     - npm install -g pkg    
     - mkdir -p bin
     - pkg . --targets node8-win-x64 --out-path bin 
-    - ls bin/*
   only:
-    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
     - master
     - next
     - tags
 
 pkg_osx:
   stage: pkg
-  variables:
-    CI_DEBUG_TRACE: "true"
   dependencies:
     - build
   artifacts:
@@ -82,21 +73,16 @@ pkg_osx:
     - npm install -g pkg
     - mkdir -p bin
     - pkg . --targets node8-macos-x64 --out-path bin 
-    - ls bin/*
   only:
-    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
     - master
     - next
     - tags
 
 deploy_win:
   stage: deploy
-  variables:
-    CI_DEBUG_TRACE: "true"
   dependencies:
     - pkg_win
   script:
-    - ls bin/*
     - mkdir build_win
     - cd build_win
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_win.tar.gz"
@@ -109,16 +95,12 @@ deploy_win:
     - master
     - next
     - tags
-    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
-
+  
 deploy_osx:
   stage: deploy
-  variables:
-    CI_DEBUG_TRACE: "true"
   dependencies:
     - pkg_osx
   script:
-    - ls bin/*
     - mkdir build_mac
     - cd build_mac
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_macos.tar.gz"
@@ -131,8 +113,7 @@ deploy_osx:
     - master
     - next
     - tags
-    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
-
+  
 apidoc:
   stage: deploy
   script:
