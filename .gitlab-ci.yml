@@ -11,7 +11,7 @@ before_script:
 stages:
   - test
   - build
-  - pkg
+  - package
   - deploy
 
 test:
@@ -44,7 +44,7 @@ build:
     - tags
 
 pkg_win:
-  stage: pkg
+  stage: package
   dependencies:
     - build
   artifacts:
@@ -62,7 +62,7 @@ pkg_win:
     - tags
 
 pkg_osx:
-  stage: pkg
+  stage: package
   dependencies:
     - build
   artifacts:
