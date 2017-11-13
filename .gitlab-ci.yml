@@ -32,7 +32,6 @@ build:
   variables:
     CI_DEBUG_TRACE: "true"
   artifacts:
-    name: "$CI_COMMIT_REF_NAME"
     expire_in: 1 day
     paths:
       - dist/
@@ -61,6 +60,7 @@ pkg_win:
     - npm install -g pkg
     - mkdir bin
     - pkg . --targets node8-win-x64 --out-path bin 
+    - ls bin/*
   only:
     - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
     - master
@@ -74,7 +74,6 @@ pkg_osx:
   dependencies:
     - build
   artifacts:
-    name: "$CI_COMMIT_REF_NAME-osx"
     expire_in: 1 day
     paths:
       - bin/
@@ -82,6 +81,7 @@ pkg_osx:
     - npm install -g pkg
     - mkdir bin
     - pkg . --targets node8-macos-x64 --out-path bin 
+    - ls bin/*
   only:
     - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
     - master
@@ -92,10 +92,12 @@ deploy_win:
   stage: deploy
   variables:
     CI_DEBUG_TRACE: "true"
+  dependencies:
+    - pkg_win
   script:
     - mkdir build_win
     - cd build_win
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd files; get dist_win.tar.gz"
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_win.tar.gz"
     - tar xvzf dist_win.tar.gz
     - rm dist_win.tar.gz
     - cp -f ../bin/karaokemugen-app-win.exe KaraokeMugen.exe
@@ -107,12 +109,12 @@ deploy_win:
     - tags
     - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
 
-deploy_mac:
+deploy_osx:
   stage: deploy
   variables:
     CI_DEBUG_TRACE: "true"
   dependencies:
-    - pkg_win
+    - pkg_osx
   script:
     - mkdir build_mac
     - cd build_mac
