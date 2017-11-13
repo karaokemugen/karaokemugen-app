@@ -58,8 +58,8 @@ pkg_win:
     paths:
       - bin/
   script:
-    - npm install -g pkg
-    - mkdir bin
+    - npm install -g pkg    
+    - mkdir -p bin
     - pkg . --targets node8-win-x64 --out-path bin 
     - ls bin/*
   only:
@@ -80,7 +80,7 @@ pkg_osx:
       - bin/
   script:
     - npm install -g pkg
-    - mkdir bin
+    - mkdir -p bin
     - pkg . --targets node8-macos-x64 --out-path bin 
     - ls bin/*
   only:
