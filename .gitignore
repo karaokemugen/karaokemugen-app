@@ -17,3 +17,4 @@ karaokemugen-app-linux
 karaokemugen-app-macos
 dist/
 apidoc/
+bin/
