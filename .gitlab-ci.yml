@@ -38,7 +38,7 @@ build:
       - dist/
   script:
     - npm install -g yarn
-    - yarn install  
+    - yarn install
     - npm run-script build    
   only:
     - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
@@ -58,6 +58,7 @@ pkg_win:
     paths:
       - bin/
   script:
+    - npm install -g pkg
     - mkdir bin
     - pkg . --targets node8-win-x64 --out-path bin 
   only:
@@ -78,6 +79,7 @@ pkg_osx:
     paths:
       - bin/
   script:
+    - npm install -g pkg
     - mkdir bin
     - pkg . --targets node8-macos-x64 --out-path bin 
   only:
