@@ -89,6 +89,7 @@ deploy_win:
     - tar xvzf dist_win.tar.gz
     - rm dist_win.tar.gz
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
+    - cp -f ../config.ini.default .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
   only:
@@ -107,6 +108,7 @@ deploy_osx:
     - tar xvzf dist_macos.tar.gz
     - rm dist_macos.tar.gz
     - cp -f ../bin/karaokemugen-app KaraokeMugen
+    - cp -f ../config.ini.default .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
   only:
