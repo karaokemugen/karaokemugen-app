@@ -96,6 +96,7 @@ deploy_win:
   dependencies:
     - pkg_win
   script:
+    - ls bin/*
     - mkdir build_win
     - cd build_win
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_win.tar.gz"
@@ -117,13 +118,14 @@ deploy_osx:
   dependencies:
     - pkg_osx
   script:
+    - ls bin/*
     - mkdir build_mac
     - cd build_mac
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_macos.tar.gz"
     - tar xvzf dist_macos.tar.gz
     - rm dist_macos.tar.gz
     - ls karaokemugen-app*
-    - cp -f ../karaokemugen-app-macos KaraokeMugen
+    - cp -f ../bin/karaokemugen-app-macos KaraokeMugen
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
   only:
