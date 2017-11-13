@@ -5,37 +5,126 @@ cache:
   - node_modules/
 
 before_script:
-  - npm install -g yarn
-  - yarn install
-  - npm install -g apidoc
-  - apt-get update -qq && apt-get install -y -qq lftp
-  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
-  - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
-  - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
-  - export LANG=en_US
+  - apt-get update -qq && apt-get install -y -qq lftp zip
+  - npm install -g pkg
 
 stages:
   - test
+  - build
+  - pkg
   - deploy
-  - deploy_apidoc
 
 test:
   stage: test
   script:
-    - node src/index.js --debug --test &disown
+    - npm install -g yarn
+    - yarn install  
+    - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
+    - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
+    - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
+    - export LANG=en_US
+    - npm start -- --debug --test &disown
     - bash test/run.sh
   only:
-    - test_removed
+    - test
 
-deploy:
-  stage: deploy
-  script: "echo lol2"
+build:
+  stage: build
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    paths:
+      - dist/
+  script:
+    - npm install -g yarn
+    - yarn install  
+    - npm run-script build    
+  only:
+    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
+    - master
+    - next
+    - tags
+
+pkg_win:
+  stage: pkg
+  dependencies:
+    - build
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME-win"
+    expire_in: 1 day
+    paths:
+      - bin/
+  script:
+    - mkdir bin
+    - pkg . --targets node8-win-x64 --out-path bin 
+  only:
+    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
+    - master
+    - next
+    - tags
+
+pkg_osx:
+  stage: pkg
+  dependencies:
+    - build
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME-osx"
+    expire_in: 1 day
+    paths:
+      - bin/
+  script:
+    - mkdir bin
+    - pkg . --targets node8-macos-x64 --out-path bin 
+  only:
+    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
+    - master
+    - next
+    - tags
+
+deploy_win:
+  stage: deploy  
+  script:
+    - apt-get update -qq && apt-get install -y -qq lftp zip
+    - mkdir build_win
+    - cd build_win
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd files; get dist_win.tar.gz"
+    - tar xvzf dist_win.tar.gz
+    - rm dist_win.tar.gz
+    - cp -f ../bin/karaokemugen-app-win.exe KaraokeMugen.exe
+    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd files; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
   only:
     - master
+    - next
+    - tags
+    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
 
-deploy_apidoc:
-  stage: deploy_apidoc
+deploy_mac:
+  stage: deploy
+  dependencies:
+    - pkg_win
   script:
+    - apt-get update -qq && apt-get install -y -qq lftp zip
+    - mkdir build_mac
+    - cd build_mac
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd files; get dist_macos.tar.gz"
+    - tar xvzf dist_macos.tar.gz
+    - rm dist_macos.tar.gz
+    - ls karaokemugen-app*
+    - cp -f ../karaokemugen-app-macos KaraokeMugen
+    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd files; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
+  only:
+    - master
+    - next
+    - tags
+    - 222-builder-un-zip-maitre-a-chaque-commit-via-ci
+
+apidoc:
+  stage: deploy
+  script:
+    - apt-get update -qq && apt-get install -y -qq lftp zip
+    - npm install apidoc
     - apidoc -i src -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd apidoc; mirror -Rnev --parallel=10"
