@@ -11,6 +11,7 @@ import {asyncExists, asyncMove, asyncReadDir, filterVideos, replaceExt} from '..
 import {
 	extractAssInfos, extractVideoSubtitles, extractVideoTechInfos, karaFilenameInfos, writeKara
 } from '../_common/utils/kara';
+import {getType} from '../_common/domain/constants';
 
 /**
  * Génération de fichiers karaokés en mode batch. Le répertoire d'import est scanné à la recherche de fichiers
@@ -32,6 +33,10 @@ async function importVideoFile(videoFile) {
 	let karaData = {
 		videofile: videoFile,
 		subfile: 'dummy.ass',
+		title: '',
+		type: '',
+		order: 0,
+		version: 1,
 		year: '',
 		singer: '',
 		tags: '',
@@ -62,10 +67,16 @@ async function importVideoFile(videoFile) {
 function karaDataInfosFromFilename(videoFile) {
 	try {
 		const filenameInfos = karaFilenameInfos(videoFile);
+		const common = {
+			title: filenameInfos.title,
+			type: getType(filenameInfos.type),
+			order: filenameInfos.order
+		};
+
 		if (filenameInfos.type === 'LIVE' || filenameInfos.type === 'MV') {
-			return { singer: filenameInfos.serie };
+			return { ...common, singer: filenameInfos.serie };
 		} else {
-			return { series: filenameInfos.serie };
+			return { ...common, series: filenameInfos.serie };
 		}
 	} catch (err) {
 		// Fichier ne respectant pas la convention de nommage.

@@ -31,10 +31,10 @@ async function emptyDatabase(db) {
 async function backupDir(directory) {
 	const backupDir = directory + '_backup';
 	if (await asyncExists(backupDir)) {
-		logger.debug('[Gen] [Gen] Removing backup dir ' + backupDir);
+		logger.debug('[Gen] Removing backup dir ' + backupDir);
 		await asyncRemove(backupDir);
 	}
-	logger.debug('[Gen] [Gen] Creating backup dir ' + backupDir);
+	logger.debug('[Gen] Creating backup dir ' + backupDir);
 	await asyncMkdirp(backupDir);
 	await asyncCopy(
 		directory,
@@ -106,7 +106,7 @@ function prepareKaraInsertData(kara, index) {
 		$kara_title: kara.title,
 		$titlenorm: deburr(kara.title),
 		$kara_year: kara.year,
-		$kara_songorder: kara.songorder,
+		$kara_songorder: kara.order,
 		$kara_videofile: kara.videofile,
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,
@@ -585,7 +585,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	});
 
 	if (sql) {
-		logger.debug('[Gen] [Gen] Tags UPDATE SQL : ' + sql);
+		logger.debug('[Gen] Tags UPDATE SQL : ' + sql);
 		await userdb.run(sql);
 	}
 

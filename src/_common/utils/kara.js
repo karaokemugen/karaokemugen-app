@@ -14,6 +14,7 @@ import {trim} from 'lodash';
 import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from './files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from './config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from './ffmpeg';
+import {getType} from '../domain/constants';
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
@@ -31,7 +32,7 @@ export function karaFilenameInfos(karaFile) {
 		lang: infos[0],
 		serie: infos[1],
 		type: orderInfos[1],
-		songorder: orderInfos[2] ? +orderInfos[2] : 0,
+		order: orderInfos[2] ? +orderInfos[2] : 0,
 		title: infos[3] || ''
 	};
 }
@@ -56,13 +57,14 @@ export async function getKara(karafile) {
 
 	karaData.karafile = karafile;
 
-	const karaInfos = karaFilenameInfos(karafile);
-	karaData.title = karaInfos.title;
-	// Attention à ne pas confondre avec le champ 'series' au pluriel, provenant du fichier kara.
-	karaData.serie = karaInfos.serie;
-	karaData.type = karaInfos.type;
-	karaData.songorder = karaInfos.songorder;
-	karaData.langFromFileName = karaInfos.lang;
+	const karaInfosFromFileName = karaFilenameInfos(karafile);
+	// Les informations du fichier kara sont prioritaires sur celles extraites du nom.
+	karaData.title = karaData.title || karaInfosFromFileName.title;
+	karaData.type = karaData.type || getType(karaInfosFromFileName.type);
+	karaData.order = karaData.order || karaInfosFromFileName.order;
+	// Attention à ne pas confondre serie (nom de fichier) et series (fichier kara).
+	karaData.serie = karaInfosFromFileName.serie;
+	karaData.langFromFileName = karaInfosFromFileName.lang;
 
 	karaData.lang = trim(karaData.lang, '"'); // Nettoyage du champ lang du fichier kara.
 
@@ -126,6 +128,10 @@ export async function writeKara(karafile, karaData) {
 	const infosToWrite = {
 		videofile: karaData.videofile,
 		subfile: karaData.subfile,
+		title: karaData.title,
+		type: karaData.type,
+		order: karaData.order,
+		version: karaData.version || 1,
 		year: karaData.year || '',
 		singer: karaData.singer || '',
 		tags: karaData.tags || '',
