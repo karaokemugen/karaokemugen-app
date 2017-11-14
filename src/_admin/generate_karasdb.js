@@ -15,6 +15,7 @@ import {
 	selectWhitelistKaras,
 	updateSeriesAltNames
 } from '../_common/db/generation';
+import {karaTypesMap, specialTagsMap} from '../_common/domain/constants';
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
@@ -300,13 +301,7 @@ function getSpecialTags(kara, allTags) {
 
 	const result = new Set();
 
-	const specialTags = new Map([
-		['GAME', 'TAG_VIDEOGAME,7'], ['GC', 'TAG_GAMECUBE,7'], ['MOVIE', 'TAG_MOVIE,7'], ['OAV', 'TAG_OVA,7'],
-		['PS3', 'TAG_PS3,7'], ['PS2', 'TAG_PS2,7'], ['PSV', 'TAG_PSV,7'], ['PSX', 'TAG_PSX,7'], ['R18', 'TAG_R18,7'],
-		['REMIX', 'TAG_REMIX,7'], ['SPECIAL', 'TAG_SPECIAL,7'], ['VOCA', 'TAG_VOCALOID,7'], ['XBOX360', 'TAG_XBOX360,7']
-	]);
-
-	specialTags.forEach((value, key) => {
+	specialTagsMap.forEach((value, key) => {
 		if (kara.type.includes(key)) {
 			result.add(getTagId(value, allTags));
 		}
@@ -318,12 +313,7 @@ function getSpecialTags(kara, allTags) {
 function getTypes(kara, allTags) {
 	const result = new Set();
 
-	const types = new Map([
-		['PV', 'TYPE_PV,3'], ['AMV', 'TYPE_AMV,3'], ['CM', 'TYPE_CM,3'], ['ED', 'TYPE_ED,3'], ['OP', 'TYPE_OP,3'],
-		['MV', 'TYPE_MUSIC,3'], ['OT', 'TYPE_OTHER,3'], ['IN', 'TYPE_INSERTSONG,3'], ['LIVE', 'TYPE_LIVE,3']
-	]);
-
-	types.forEach((value, key) => {
+	karaTypesMap.forEach((value, key) => {
 		// Ajout d'espaces car certaines clés sont incluses dans d'autres : MV et AMV par exemple.
 		if (` ${kara.type} `.includes(` ${key} `)) {
 			result.add(getTagId(value, allTags));
