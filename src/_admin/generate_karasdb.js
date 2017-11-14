@@ -7,7 +7,7 @@ import {forEach as csvForEach} from 'csv-string';
 import {has as hasLang} from 'langs';
 import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove} from '../_common/utils/files';
 import {getConfig, resolvedPathKaras} from '../_common/utils/config';
-import {getKara, writeKara} from '../_common/utils/kara';
+import {getDataFromKaraFile, writeKara} from '../_common/utils/kara';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras, selectRatingKaras,
@@ -95,7 +95,7 @@ async function getAllKaras(karafiles) {
 }
 
 async function readAndCompleteKarafile(karafile) {
-	const karaData = await getKara(karafile);
+	const karaData = await getDataFromKaraFile(karafile);
 	await writeKara(karafile, karaData);
 	return karaData;
 }

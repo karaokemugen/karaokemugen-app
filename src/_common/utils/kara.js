@@ -15,6 +15,7 @@ import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from './fil
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from './config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from './ffmpeg';
 import {getType} from '../domain/constants';
+import {getKara} from '../domain/kara';
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
@@ -37,7 +38,7 @@ export function karaFilenameInfos(karaFile) {
 	};
 }
 
-export async function getKara(karafile) {
+export async function getDataFromKaraFile(karafile) {
 
 	const karaData = await parseKara(karafile);
 	karaData.isKaraModified = false;
@@ -123,30 +124,8 @@ export async function writeKara(karafile, karaData) {
 	}
 
 	verifyRequiredInfos(karaData);
-	timestamp.round = true;
 
-	const infosToWrite = {
-		videofile: karaData.videofile,
-		subfile: karaData.subfile,
-		title: karaData.title,
-		type: karaData.type,
-		order: karaData.order,
-		version: karaData.version || 1,
-		year: karaData.year || '',
-		singer: karaData.singer || '',
-		tags: karaData.tags || '',
-		songwriter: karaData.songwriter || '',
-		creator: karaData.creator || '',
-		author: karaData.author || '',
-		series: karaData.series || '',
-		lang: karaData.lang || '',
-		KID: karaData.KID || uuidV4(),
-		dateadded: karaData.dateadded || timestamp.now(),
-		datemodif: karaData.datemodif || timestamp.now(),
-		videosize: karaData.videosize || 0,
-		videogain: karaData.videogain || 0,
-		videoduration: karaData.videoduration || 0
-	};
+	const infosToWrite = getKara(karaData);
 
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }

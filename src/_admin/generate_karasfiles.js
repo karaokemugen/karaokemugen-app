@@ -3,8 +3,6 @@
  */
 
 import logger from 'winston';
-import uuidV4 from 'uuid/v4';
-import timestamp from 'unix-timestamp';
 import {resolve} from 'path';
 import {resolvedPathImport, resolvedPathKaras, resolvedPathSubs, resolvedPathVideos} from '../_common/utils/config';
 import {asyncExists, asyncMove, asyncReadDir, filterVideos, replaceExt} from '../_common/utils/files';
@@ -12,6 +10,7 @@ import {
 	extractAssInfos, extractVideoSubtitles, extractVideoTechInfos, karaFilenameInfos, writeKara
 } from '../_common/utils/kara';
 import {getType} from '../_common/domain/constants';
+import {getKara} from '../_common/domain/kara';
 
 /**
  * Génération de fichiers karaokés en mode batch. Le répertoire d'import est scanné à la recherche de fichiers
@@ -29,29 +28,7 @@ async function importVideoFile(videoFile) {
 
 	logger.info('[KaraGen] Génération du fichier kara pour la vidéo ' + videoFile);
 
-	timestamp.round = true;
-	let karaData = {
-		videofile: videoFile,
-		subfile: 'dummy.ass',
-		title: '',
-		type: '',
-		order: 0,
-		version: 1,
-		year: '',
-		singer: '',
-		tags: '',
-		songwriter: '',
-		creator: '',
-		author: '',
-		series: '',
-		lang: '',
-		KID: uuidV4(),
-		dateadded: timestamp.now(),
-		datemodif: timestamp.now(),
-		videosize: 0,
-		videoduration: 0,
-		videogain: 0
-	};
+	let karaData = getKara({ videofile: videoFile, subfile: 'dummy.ass' });
 
 	karaData = {...karaData, ...karaDataInfosFromFilename(videoFile)};
 
