@@ -1,7 +1,9 @@
 
+
 const logger = require('winston');
 const express = require('express');
 const path = require('path');
+const config = require('../_common/utils/config');
 
 module.exports = {
 	startExpressReactServer: startExpressReactServer
@@ -21,6 +23,8 @@ function startExpressReactServer(listenPort) {
 	// Serve static files from the React app
 	app.use(express.static(path.resolve(__dirname, '../../client/build')));
 
+	// API router
+	app.use('/api', apiRouter());
 
 	// The "catchall" handler: for any request that doesn't
 	// match one above, send back React's index.html file.
@@ -32,4 +36,14 @@ function startExpressReactServer(listenPort) {
 	app.listen(port);
 
 	logger.info(`[ExpressReact] React frontend app listening on ${port}`);
+}
+
+function apiRouter() {
+	const apiRouter = express.Router();
+
+	apiRouter.get('/config', (req, res) => {
+		res.json(config.getConfig());
+	});
+
+	return apiRouter;
 }

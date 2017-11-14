@@ -12,7 +12,6 @@ import Player from './pages/Player';
 import Karas from './pages/Karas';
 import Database from './pages/Database';
 
-
 class App extends Component {
 	render() {
 		return (
