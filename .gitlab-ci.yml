@@ -109,8 +109,8 @@ deploy_osx:
     - rm dist_macos.tar.gz
     - cp -f ../bin/karaokemugen-app KaraokeMugen
     - cp -f ../config.ini.default .
-    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
+    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"
   only:
     - master
     - next
