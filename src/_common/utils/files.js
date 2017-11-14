@@ -3,6 +3,7 @@ import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
+import {videoFileRegexp} from '../domain/kara';
 
 /** Fonction de vérification d'existence d'un fichier renvoyant une Promise.*/
 export function asyncExists(file) {
@@ -86,10 +87,7 @@ export function filterVideos(files) {
 }
 
 export function isVideoFile(filename) {
-	return filename.endsWith('.mp4') ||
-		filename.endsWith('.webm') ||
-		filename.endsWith('.avi') ||
-		filename.endsWith('.mkv');
+	return new RegExp(videoFileRegexp).test(filename);
 }
 
 /** Remplacement de l'extension dans un nom de fichier. */

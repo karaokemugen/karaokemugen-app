@@ -15,7 +15,7 @@ import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from './fil
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from './config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from './ffmpeg';
 import {getType} from '../domain/constants';
-import {getKara} from '../domain/kara';
+import {getKara, serieRequired} from '../domain/kara';
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
@@ -43,8 +43,6 @@ export async function getDataFromKaraFile(karafile) {
 	const karaData = await parseKara(karafile);
 	karaData.isKaraModified = false;
 
-	verifyRequiredInfos(karaData);
-
 	if (!karaData.KID) {
 		karaData.isKaraModified = true;
 		karaData.KID = uuidV4();
@@ -63,11 +61,16 @@ export async function getDataFromKaraFile(karafile) {
 	karaData.title = karaData.title || karaInfosFromFileName.title;
 	karaData.type = karaData.type || getType(karaInfosFromFileName.type);
 	karaData.order = karaData.order || karaInfosFromFileName.order;
-	// Attention à ne pas confondre serie (nom de fichier) et series (fichier kara).
-	karaData.serie = karaInfosFromFileName.serie;
-	karaData.langFromFileName = karaInfosFromFileName.lang;
 
+	// Si le karaoké n'est pas musical et que l'info est manquante, la série extraite du nom est prise en compte.
+	karaData.serie = karaInfosFromFileName.serie;
+	if (serieRequired(karaData.type) && !karaData.series) {
+		karaData.series = karaData.serie;
+	}
+
+	karaData.langFromFileName = karaInfosFromFileName.lang;
 	karaData.lang = trim(karaData.lang, '"'); // Nettoyage du champ lang du fichier kara.
+
 
 	let videoFile;
 
@@ -123,25 +126,13 @@ export async function writeKara(karafile, karaData) {
 		return;
 	}
 
-	verifyRequiredInfos(karaData);
-
 	const infosToWrite = getKara(karaData);
-
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
 
 export async function parseKara(karaFile) {
 	const data = await asyncReadFile(karaFile, 'utf-8');
 	return parseini(data);
-}
-
-export function verifyRequiredInfos(karaData) {
-	if (!karaData.videofile || karaData.videofile.trim() === '') {
-		throw 'Karaoke video file empty!';
-	}
-	if (!karaData.subfile || karaData.subfile.trim() === '') {
-		throw 'Karaoke sub file file empty!';
-	}
 }
 
 export async function extractVideoSubtitles(videoFile, kid) {

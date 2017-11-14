@@ -16,6 +16,7 @@ import {
 	updateSeriesAltNames
 } from '../_common/db/generation';
 import {karaTypesMap, specialTagsMap} from '../_common/domain/constants';
+import {serieRequired, verifyKaraData} from '../_common/domain/kara';
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
@@ -96,6 +97,11 @@ async function getAllKaras(karafiles) {
 
 async function readAndCompleteKarafile(karafile) {
 	const karaData = await getDataFromKaraFile(karafile);
+	try {
+		verifyKaraData(karaData);
+	} catch (err) {
+		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete: ${err}`);
+	}
 	await writeKara(karafile, karaData);
 	return karaData;
 }
@@ -136,15 +142,9 @@ function getSeries(kara) {
 		});
 	}
 
-	if (kara.type !== 'LIVE' && kara.type !== 'MV') {
-		// Série extraite du parsing du nom, ajoutée uniquement pour les karas non LIVE/MV.
-		if (kara.serie && kara.serie.trim()) {
-			series.add(kara.serie.trim());
-		}
-		// Au moins une série est obligatoire pour les karas non LIVE/MV.
-		if (isEmpty(series)) {
-			throw 'Karaoke series cannot be detected!';
-		}
+	// Au moins une série est obligatoire pour les karas non LIVE/MV.
+	if (serieRequired(kara.type) && isEmpty(series)) {
+		throw 'Karaoke series cannot be detected!';
 	}
 
 	return series;
@@ -258,8 +258,8 @@ function getKaraTags(kara, allTags) {
 		result.add(getTagId('TAG_OVA,7', allTags));
 	}
 
-	if (kara.type === 'LIVE' || kara.type === 'MV') {
-		//If LIVE or MV, we add the series as artist.
+	if (!serieRequired(kara.type)) {
+		//If LIVE or MV, we add the serie from filename as artist.
 		kara.serie.split(',').forEach(singer => result.add(getTagId(singer.trim() + ',2', allTags)));
 	}
 
