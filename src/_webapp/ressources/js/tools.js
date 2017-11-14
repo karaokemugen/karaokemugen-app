@@ -197,3 +197,14 @@ endOfTheWorldAsWeKnowItloop = function(){
       
 	});
 };
+
+isVisible = function( element, container ){
+	
+	var elementTop = element.offset().top,
+		elementHeight = element.height(),
+		containerTop = container.offset().top,
+		containerHeight = container.height();
+
+	return ((((elementTop - containerTop) + elementHeight) > 0)
+		&& ((elementTop - containerTop) < containerHeight));
+};
