@@ -75,6 +75,7 @@ module.exports = {
 			app.use(module.exports.i18n.init);
 			app.use(express.static(__dirname + '/'));
 			app.use('/locales',express.static(__dirname + '/../_common/locales/'));
+			app.use('/previews',express.static(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathPreviews)));
 			app.use('/admin', routerAdmin);		
 			app.get('/', function (req, res) {
 				res.render('public', {'layout': 'publicHeader',

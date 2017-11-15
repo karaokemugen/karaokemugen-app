@@ -996,7 +996,7 @@ module.exports = {
 			/**
  * @api {get} admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -1027,6 +1027,7 @@ module.exports = {
  * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
  * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
  * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
+ * @apiSuccess {String} data/previewfile Filename of the preview file associated with the karaoke. Can be undefined if the preview hasn't been generated yet by the server.
  * @apiSuccess {String} data/pseudo_add User who added/requested the song
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
@@ -1070,6 +1071,7 @@ module.exports = {
  *           "playlist_id": 2,
  *           "playlistcontent_id": 4961,
  *           "pos": 12,
+ *           "previewfile": "JAP - C3 ~ Cube X Cursed X Curious.1201230.mp4"
  *           "pseudo_add": "Axel",
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *           "serie_altname": "C-Cube/CxCxC",

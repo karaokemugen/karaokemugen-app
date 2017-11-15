@@ -109,6 +109,7 @@ PathAltname = "app/data/series_altnames.csv"
 PathBackgrounds = "app/backgrounds"
 PathJingles = "app/jingles"
 PathTemp = "app/temp"
+PathPreviews = "app/previews"
 
 ; Videos can be streamed from the following URL if not found on the local paths.
 ; BEWARE : some videos with a high bitrate won't play well on an average connection.

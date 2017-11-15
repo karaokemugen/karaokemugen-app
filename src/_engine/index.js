@@ -11,6 +11,8 @@ process.on('unhandledRejection', (reason, p) => {
 	// application specific logging, throwing an error, or other logic here
 });
 
+import {createPreviews, isPreviewAvailable} from '../_webapp/previews.js';
+
 var fs = require('fs');
 const path = require('path');
 const logger = require('winston');
@@ -49,7 +51,7 @@ module.exports = {
 		playlist:null,
 		timeposition:0,
 		currentlyPlayingKara:undefined,
-		counterToJingle:0,
+		counterToJingle:1,
 	},
 	_services:{
 		admin: null,
@@ -76,6 +78,9 @@ module.exports = {
 		// settings some player config in engine _states
 		module.exports._states.fullscreen = module.exports.SETTINGS.PlayerFullscreen>0;
 		module.exports._states.ontop = module.exports.SETTINGS.PlayerStayOnTop>0;
+
+		//Managing previews		
+		createPreviews();
 
 		this._start_db_interface().then(function(){
 			module.exports._start_player();
@@ -799,7 +804,10 @@ module.exports = {
 					.then(function(kara){
 						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
 							.then(function(karalist){
-								resolve(karalist);
+								isPreviewAvailable(karalist[0].videofile).then((previewfile) => {
+									karalist[0].previewfile = previewfile;
+									resolve(karalist);
+								});
 							})
 							.catch(function(err){
 								logger.error('[Engine] PLC translateKaraInfo : '+err);
@@ -818,7 +826,10 @@ module.exports = {
 					.then(function(kara){
 						module.exports._services.playlist_controller.translateKaraInfo(kara,lang)
 							.then(function(karalist){
-								resolve(karalist);
+								isPreviewAvailable(karalist[0].videofile).then((previewfile) => {
+									karalist[0].previewfile = previewfile;
+									resolve(karalist);
+								});
 							})
 							.catch(function(err){
 								logger.error('[Engine] PLC translateKaraInfo : '+err);
