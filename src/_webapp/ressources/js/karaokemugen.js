@@ -1512,19 +1512,29 @@ var settingsNotUpdated;
 	socket.on('playingUpdated', function(data){
 		var side = sideOfPlaylist(data.playlist_id);
 		DEBUG && console.log(side, data.playlist_id);
+		
 		if(side) {
 			var playlist = $('#playlist' + side);
-			var liKara = playlist.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]').get(0);
+			var container = playlist.parent();
+			var previousCurrentlyPlaying = playlist.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
+			var newCurrentlyPlaying = playlist.find('li[idplaylistcontent="' + data.plc_id + '"]');
 			
-			if(liKara) {
-				liKara.removeAttribute('currentlyPlaying');
+			if(previousCurrentlyPlaying.length > 0 && newCurrentlyPlaying.length > 0 && isVisible(previousCurrentlyPlaying, container)) {
+				var posKaraMarker = previousCurrentlyPlaying.offset().top;
+				var newPosKaraMarker = newCurrentlyPlaying.offset().top;
+				container.finish().animate({scrollTop: container.scrollTop() + newPosKaraMarker - posKaraMarker}, 1000, 'swing');
+			}
+			if(previousCurrentlyPlaying.length > 0) {
+				previousCurrentlyPlaying.get(0).removeAttribute('currentlyPlaying');
 				// trick for IE/Edge not redrawing layout
-				var ul = $(liKara).closest('ul');
+				var ul = previousCurrentlyPlaying.closest('ul');
 				ul.css('height',  ul.height());
 				ul.css('height', 'auto');
 			}
-			$('#playlist' + side + ' > li[idplaylistcontent="' + data.plc_id + '"]').attr('currentlyplaying', '');
-			
+			if(newCurrentlyPlaying.length > 0) {
+				newCurrentlyPlaying.attr('currentlyplaying', '');
+			}
+
 			refreshPlaylistDashboard(side, true);
 		}
 	});

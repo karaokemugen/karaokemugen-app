@@ -147,7 +147,7 @@ module.exports = {
 				});
 			});
 			module.exports._server.listen(module.exports.LISTEN);
-			logger.info('[Admin] Dashboard is READY and listens on port '+module.exports.LISTEN);
+			logger.info('[Dashboard] Dashboard is READY and listens on port '+module.exports.LISTEN);
 		} else {
 			logger.error('[Admin] Dashboard is already started!');
 		}
@@ -159,7 +159,7 @@ module.exports = {
 		//var open = require('open');
 		//var os = require('os');
 
-		logger.info('[Admin] Go to http://'+ip.address()+':'+module.exports.LISTEN);
+		logger.info('[Dashboard] Go to http://'+ip.address()+':'+module.exports.LISTEN+' for maintenance operations');
 		//cp.exec('firefox --new-tab http://'+ip.address()+':'+module.exports.LISTEN);		
 		//open('http://'+ip.address()+':'+module.exports.LISTEN);
 		
@@ -182,7 +182,7 @@ module.exports = {
 		module.exports.setLocalStates('generate_karabd',true);
 		// on coupe l'accès à la base de données
 		module.exports.DB_INTERFACE.close().then(function(){
-			logger.info('[Admin] Admin starting generate db script...');
+			logger.info('[Dashboard] Admin starting generate db script...');
 			// on vide les logs
 			socket.emit('generate_karabd', {event:'cleanLog'});
 
