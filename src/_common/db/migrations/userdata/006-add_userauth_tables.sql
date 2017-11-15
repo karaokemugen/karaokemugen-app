@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS user (
 	email	TEXT,
 	fingerprint	TEXT,
 	guest_expires	INTEGER NOT NULL,
-	flag_online	INTEGER NOT NULL DEFAULT 0
+	flag_online	INTEGER NOT NULL DEFAULT 0,
+	flag_admin INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS avatar (
