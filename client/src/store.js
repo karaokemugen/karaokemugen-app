@@ -1,8 +1,9 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import { routerReducer, routerMiddleware } from 'react-router-redux'
-import createHistory from 'history/createHashHistory'
+import { routerReducer, routerMiddleware } from 'react-router-redux';
+import createHistory from 'history/createHashHistory';
 
 import navigation from './reducers/navigation';
+import auth from './reducers/auth';
 
 const initialState = {};
 
@@ -13,7 +14,7 @@ const middleware = [
 ];
 
 export const store = createStore(
-	combineReducers({ navigation, router: routerReducer }),
+	combineReducers({ navigation, auth, router: routerReducer }),
 	initialState,
 	compose(...middleware)
 );
