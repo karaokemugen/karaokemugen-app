@@ -70,6 +70,7 @@
     "async": "^2.5.0",
     "body-parser": "^1.17.2",
     "cli-color": "^1.2.0",
+    "connect-ensure-login": "^0.1.1",
     "console-title": "^1.0.1",
     "cookie-parser": "^1.4.3",
     "csv-string": "^2.3.2",
