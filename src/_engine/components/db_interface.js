@@ -525,7 +525,7 @@ module.exports = {
 					resolve(user);
 				})
 				.catch((err) => {
-					reject('Failed to get user '+username+'\'s data : '+err);
+					reject('Failed to get user ID '+id+'\'s data : '+err);
 				});			
 		});
 	},
