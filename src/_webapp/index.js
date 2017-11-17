@@ -8,6 +8,10 @@ const logger = require('winston');
 
 const basicAuth = require('express-basic-auth');
 
+import passport from 'passport';
+import {Strategy} from 'passport-local';
+import {hashPassword, findUserByID, checkUserCredentials} from '../_common/utils/auth.js';
+
 function AdminPasswordAuth(username, password){
 	return password === module.exports.SETTINGS.AdminPassword;
 }
@@ -27,24 +31,41 @@ module.exports = {
 	_engine_states:{},
 	_local_states:{},
 	i18n:null,
-	init : function(){
-		if(module.exports.SYSPATH === null) {
-			logger.error('Webapp :: SysPath is null !');
-			process.exit(1);
-		}
-		if(module.exports.SETTINGS === null) {
-			logger.error('Webapp :: Settings are null !');
-			process.exit(1);
-		}
-		if(module.exports.LISTEN === null) {
-			logger.error('Webapp :: Listen port is not set !');
-			process.exit(1);
-		}
-		if(module.exports.DB_INTERFACE === null) {
-			logger.error('Webapp :: DB Interface not set !');
-			process.exit(1);
-		}
+	init:function(){
 		
+		// Init passport strategy
+		passport.use(new Strategy(
+			(username, password, cb) => {
+				checkUserCredentials(username, password)
+					.then((user) => {
+						if (!user) return cb(null, false); 
+						const hash = hashPassword(password, user.password);
+						if (hash != password) return cb(null, false); 
+						return cb(null, user);				
+					})
+					.catch((err) => {
+						return (err, false);
+					});				
+			}));
+		// Serializing user ID into session data
+		passport.serializeUser((user, cb) => {
+			return cb(null, user.id);
+		});
+		passport.deserializeUser((id, cb) => {
+			findUserByID(id)
+				.then((user) => {
+					if (!user) {
+						return cb(null,false);
+					} else {
+						return cb(null,user);
+					}
+				})
+				.catch((err) => {
+					return cb(err);
+				});				
+		});
+	
+
 		// Création d'un server http pour diffuser l'appli web du launcher
 		if(app==null) {
 			var app = express();
@@ -71,6 +92,8 @@ module.exports = {
 			});
 			app.set('view engine', 'hbs');
 			app.set('views', path.join(__dirname, 'ressources/views/'));
+			app.use(passport.initialize());
+			app.use(passport.session());
 			app.use(cookieParser());
 			app.use(module.exports.i18n.init);
 			app.use(express.static(__dirname + '/'));
@@ -83,7 +106,24 @@ module.exports = {
 					'query'			:	JSON.stringify(req.query)
 				});
 			});
-		
+			app.get('/login',
+				(req, res) => {
+					res.render('login');
+				});
+  
+			app.post('/login', passport.authenticate('local', { successRedirect: '/good-login', failureRedirect: '/bad-login' }));
+  
+			app.get('/logout',
+				(req, res) => {
+					req.logout();
+					res.redirect('/');
+				});
+
+			app.get('/profile',
+				require('connect-ensure-login').ensureLoggedIn(),
+				(req, res) => {
+					res.render('profile', { user: req.user });
+				});
 			routerAdmin.get('/', function (req, res) {
 				si.graphics().then( function(data) {
 					logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
@@ -120,21 +160,9 @@ module.exports = {
 
 			app.listen(module.exports.LISTEN);
 
-			logger.info('[Webapp] Webapp is READY and listens on port '+module.exports.LISTEN);
-            
-			// trigger test event (call engine deffered method and log response)
-			//console.log(module.exports.onTest());
+			logger.info('[Webapp] Webapp is READY and listens on port '+module.exports.LISTEN);   			
 		} else {
 			logger.error('[Webapp] Webapp already started');
 		}
-	},
-
-	// ---------------------------------------------------------------------------
-	// Evenements à référencer par le composant  parent
-	// ---------------------------------------------------------------------------
-
-	onTest:function(){
-		// événement de test
-		logger.log('warning','onTest not set');
 	},
 };
