@@ -100,7 +100,8 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-jwt": "^3.0.1",
-    "jwt-simple": "^0.5.1"
+    "jwt-simple": "^0.5.1",
+    "body-parser": "^1.18.2"
   },
   "devDependencies": {
     "apidoc": "^0.17.6",

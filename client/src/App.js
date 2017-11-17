@@ -11,6 +11,7 @@ import Config from './pages/Config';
 import Player from './pages/Player';
 import Karas from './pages/Karas';
 import Database from './pages/Database';
+import Login from './pages/Login';
 
 class App extends Component {
 	render() {
@@ -20,6 +21,7 @@ class App extends Component {
 					<div>
 						<KMMenu/>
 						<Switch>
+							<Route path='/login' component={Login}/>
 							<Route path='/home' component={Home}/>
 							<Route path='/config' component={Config}/>
 							<Route path='/player' component={Player}/>

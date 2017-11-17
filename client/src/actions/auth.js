@@ -1,16 +1,18 @@
+import axios from 'axios';
+import {stringify} from 'qs';
+
 export const AUTH_USER = 'auth_user';
 export const UNAUTH_USER = 'unauth_user';
 export const AUTH_ERROR = 'auth_error';
 
-export function login({ username, password }) {
+export function login(username, password) {
 	return function(dispatch) {
-		fetch('/api/signin', {
-			method: 'post',
-			headers: {
-				'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-			},
-			body: `username=${username}&password=${password}`
-		})
+		axios.post('/api/login',
+			stringify({username: username, password: password}),
+			{
+				headers: { 'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8' }
+			}
+		)
 			.then(response => {
 				localStorage.setItem('kmToken', response.data.token);
 				dispatch({

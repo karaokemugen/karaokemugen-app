@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, {Component} from 'react';
 import {Button, Container, Grid, Header, Message, Segment, Table} from 'semantic-ui-react';
 
@@ -17,9 +18,12 @@ export default class Config extends Component {
 	}
 
 	refresh() {
-		fetch('/api/config')
-			.then(res => res.json())
-			.then(json => this.setState({config: json, error: ''}))
+		axios.get(
+			'/api/config',
+			{
+				headers: { 'authorization': localStorage.getItem('kmToken') }
+			})
+			.then(res => this.setState({config: res.data, error: ''}))
 			.catch(err => this.setState({error: 'Impossible de récupérer la configuration. ' + err}));
 	}
 

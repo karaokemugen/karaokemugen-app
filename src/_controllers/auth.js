@@ -6,8 +6,8 @@ module.exports = function authController(router) {
 
 	const requireLogin = passport.authenticate('local', { session: false });
 
-	router.get('/login', requireLogin, (req, res) => {
-		res.send({ token: createJwtToken(req.username, 'admin') });
+	router.post('/login', requireLogin, (req, res) => {
+		res.send({ token: createJwtToken(req.body.username, 'admin') });
 	});
 };
 

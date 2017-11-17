@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {NavLink} from 'react-router-dom';
+import {Link, NavLink} from 'react-router-dom';
 import {Button, Container, Menu} from 'semantic-ui-react';
 
 const linkProps = {
@@ -22,7 +22,7 @@ export default class KMMenu extends Component {
 						<Menu.Item to='/db' {...linkProps}>Base de données</Menu.Item>
 						<Menu.Menu position='right'>
 							<Menu.Item className='item'>
-								<Button as='a'>Se connecter</Button>
+								<Button as={ Link } to='/login'>Se connecter</Button>
 							</Menu.Item>
 							<Menu.Item>
 								<Button as='a' primary>S'enregistrer</Button>

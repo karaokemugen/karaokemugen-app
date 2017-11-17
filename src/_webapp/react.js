@@ -1,8 +1,14 @@
 const logger = require('winston');
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
 
-const initPassport = require('./passport');
+const passport = require('passport');
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+const LocalStrategy = require('passport-local');
+
+const config = require('../_common/utils/config');
 const adminController = require('../_controllers/admin');
 const authController = require('../_controllers/auth');
 
@@ -21,7 +27,11 @@ function startExpressReactServer(listenPort) {
 
 	const app = express();
 
-	initPassport();
+	app.use(bodyParser.json()); // support json encoded bodies
+	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+	app.use(passport.initialize());
+	configurePassport();
 
 	// Serve static files from the React app
 	app.use(express.static(path.resolve(__dirname, '../../client/build')));
@@ -50,4 +60,40 @@ function apiRouter() {
 	adminController(apiRouter);
 
 	return apiRouter;
+}
+
+function configurePassport(conf) {
+
+	const resolvedConf = conf || config.getConfig();
+
+	const localLogin = localPassportStrategy(resolvedConf);
+	const jwtLogin = jwtPassportStrategy(resolvedConf);
+
+	passport.use(jwtLogin);
+	passport.use(localLogin);
+}
+
+function localPassportStrategy(config) {
+	const localOptions = {usernameField: 'username', passwordField: 'password'};
+	const adminPassword = config.AdminPassword;
+
+	return new LocalStrategy(localOptions, function (username, password, done) {
+		if (password === adminPassword) {
+			return done(null, username);
+		} else {
+			return done(null, false);
+		}
+	});
+}
+
+function jwtPassportStrategy(config) {
+
+	const jwtOptions = {
+		jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+		secretOrKey: config.JwtSecret
+	};
+
+	return new JwtStrategy(jwtOptions, function (payload, done) {
+		return done(null, payload.username);
+	});
 }
