@@ -9,8 +9,8 @@ const logger = require('winston');
 const basicAuth = require('express-basic-auth');
 
 import passport from 'passport';
-import {Strategy} from 'passport-local';
-import {hashPassword, findUserByID, checkUserCredentials} from '../_common/utils/auth.js';
+var Strategy = require('passport-local').Strategy;
+import {hashPassword, findUserByID, findUserByName} from '../_common/utils/auth.js';
 
 function AdminPasswordAuth(username, password){
 	return password === module.exports.SETTINGS.AdminPassword;
@@ -36,15 +36,18 @@ module.exports = {
 		// Init passport strategy
 		passport.use(new Strategy(
 			(username, password, cb) => {
-				checkUserCredentials(username, password)
+				console.log(username);
+				console.log(password);
+				findUserByName(username)
 					.then((user) => {
+						console.log('lel');
 						if (!user) return cb(null, false); 
-						const hash = hashPassword(password, user.password);
-						if (hash != password) return cb(null, false); 
+						if (hashPassword(password) != user.password) return cb(null, false); 
 						return cb(null, user);				
 					})
 					.catch((err) => {
-						return (err, false);
+						logger.error('[Webapp] Unable to get auth info : '+err);
+						return (null, false);
 					});				
 			}));
 		// Serializing user ID into session data
@@ -92,11 +95,12 @@ module.exports = {
 			});
 			app.set('view engine', 'hbs');
 			app.set('views', path.join(__dirname, 'ressources/views/'));
-			app.use(passport.initialize());
-			app.use(passport.session());
+			app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 			app.use(cookieParser());
 			app.use(module.exports.i18n.init);
 			app.use(express.static(__dirname + '/'));
+			app.use(passport.initialize());
+			app.use(passport.session());			
 			app.use('/locales',express.static(__dirname + '/../_common/locales/'));
 			app.use('/previews',express.static(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathPreviews)));
 			app.use('/admin', routerAdmin);		
@@ -110,9 +114,19 @@ module.exports = {
 				(req, res) => {
 					res.render('login');
 				});
-  
-			app.post('/login', passport.authenticate('local', { successRedirect: '/good-login', failureRedirect: '/bad-login' }));
-  
+  			
+			app.post('/login', (req,res) => {
+				console.log('Login');
+				return passport.authenticate('local', (err,user,info) => {
+					console.log(err);
+					console.log(user);
+					console.log(info);					
+					res.send('lol');
+				})(req,res);
+			});			
+			//app.post('/login', (req,res) => {			  
+
+			//});
 			app.get('/logout',
 				(req, res) => {
 					req.logout();

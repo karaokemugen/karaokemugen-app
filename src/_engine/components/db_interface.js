@@ -482,6 +482,54 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Get user by name}
+	* @param {string} {Username}
+	* @return {boolean} {promise}
+	*/
+	getUserByName:function(username) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			var sqlGetUserByName = fs.readFileSync(path.join(__dirname,'../../_common/db/select_user_by_name.sql'),'utf-8');
+			module.exports._db_handler.all(sqlGetUserByName,
+				{
+					$username: username
+				})
+				.then((user) => {
+					resolve(user);
+				})
+				.catch((err) => {
+					reject('Failed to get user '+username+'\'s data : '+err);
+				});			
+		});
+	},
+	/**
+	* @function {Get user by ID}
+	* @param {number} {id}
+	* @return {boolean} {promise}
+	*/
+	getUserByID:function(id) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			var sqlGetUserByID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_user_by_id.sql'),'utf-8');
+			module.exports._db_handler.all(sqlGetUserByID,
+				{
+					$id: id
+				})
+				.then((user) => {
+					resolve(user);
+				})
+				.catch((err) => {
+					reject('Failed to get user '+username+'\'s data : '+err);
+				});			
+		});
+	},
+	/**
 	* @function {Delete criteria from blacklist}
 	* @param {number} {blacklist criteria ID}
 	* @return {boolean} {promise}
