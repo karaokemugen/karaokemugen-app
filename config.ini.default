@@ -9,6 +9,9 @@
 ; Admin password. Change this in config.ini
 AdminPassword = "gurdil"
 
+; JWT secret key
+JwtSecret = "Change me"
+
 ; Display nickname or not in the bottom right corner of the screen during first 8 seconds of playback
 EngineDisplayNickname = 1
 

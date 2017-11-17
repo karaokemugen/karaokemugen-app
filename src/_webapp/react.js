@@ -1,9 +1,10 @@
-
-
 const logger = require('winston');
 const express = require('express');
 const path = require('path');
-const config = require('../_common/utils/config');
+
+const initPassport = require('./passport');
+const adminController = require('../_controllers/admin');
+const authController = require('../_controllers/auth');
 
 module.exports = {
 	startExpressReactServer: startExpressReactServer
@@ -19,6 +20,8 @@ module.exports = {
 function startExpressReactServer(listenPort) {
 
 	const app = express();
+
+	initPassport();
 
 	// Serve static files from the React app
 	app.use(express.static(path.resolve(__dirname, '../../client/build')));
@@ -41,9 +44,10 @@ function startExpressReactServer(listenPort) {
 function apiRouter() {
 	const apiRouter = express.Router();
 
-	apiRouter.get('/config', (req, res) => {
-		res.json(config.getConfig());
-	});
+	// Ajout des routes d'identification.
+	authController(apiRouter);
+	// Ajout des routes d'administration, nécessitant une identification.
+	adminController(apiRouter);
 
 	return apiRouter;
 }
