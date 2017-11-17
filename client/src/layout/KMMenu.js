@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {Link, NavLink} from 'react-router-dom';
 import {Button, Container, Menu} from 'semantic-ui-react';
+import {connect} from 'react-redux';
+
+import {logout} from '../actions/auth';
 
 const linkProps = {
 	as: NavLink,
@@ -8,9 +11,19 @@ const linkProps = {
 	activeClassName: 'active'
 };
 
-export default class KMMenu extends Component {
+class KMMenu extends Component {
+
+	connectButton(dispatch) {
+		if (this.props.authenticated) {
+			return (<Button color='orange' onClick={() => logout()(dispatch)}>Déconnexion</Button>);
+		} else {
+			return (<Button primary as={ Link } to='/login'>Se connecter</Button>);
+		}
+	}
 
 	render() {
+		const {dispatch} = this.props;
+
 		return (
 			<div>
 				<Menu size='large' inverted>
@@ -22,10 +35,7 @@ export default class KMMenu extends Component {
 						<Menu.Item to='/db' {...linkProps}>Base de données</Menu.Item>
 						<Menu.Menu position='right'>
 							<Menu.Item className='item'>
-								<Button as={ Link } to='/login'>Se connecter</Button>
-							</Menu.Item>
-							<Menu.Item>
-								<Button as='a' primary>S'enregistrer</Button>
+								{this.connectButton(dispatch)}
 							</Menu.Item>
 						</Menu.Menu>
 					</Container>
@@ -34,3 +44,9 @@ export default class KMMenu extends Component {
 		);
 	}
 }
+
+const mapStateToProps = (state) => ({
+	authenticated: state.auth.authenticated
+});
+
+export default connect(mapStateToProps)(KMMenu);
