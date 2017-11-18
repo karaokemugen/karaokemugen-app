@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, {Component} from 'react';
 import {Button, Container, Grid, Header, Message, Segment, Table} from 'semantic-ui-react';
+import {connect} from 'react-redux';
 
+import {errorMessage} from '../actions/navigation';
 
-export default class Config extends Component {
+class Config extends Component {
 
 	constructor(props) {
 		super(props);
@@ -20,7 +22,7 @@ export default class Config extends Component {
 	refresh() {
 		axios.get('/api/config')
 			.then(res => this.setState({config: res.data, error: ''}))
-			.catch(err => this.setState({config: {}, error: 'Impossible de récupérer la configuration. ' + err}));
+			.catch(err => this.props.errorMsg('Impossible de récupérer la configuration. ' + err));
 	}
 
 	render() {
@@ -38,9 +40,6 @@ export default class Config extends Component {
 				style={{ margin: '1em 0em 1em', padding: '1em 0em 1em' }}
 			>
 				<Container textAlign='center'>
-					<Message error hidden={!this.state.error}>
-						{this.state.error}
-					</Message>
 					<Grid columns={2} stackable style={{ padding: '1em'}}>
 						<Grid.Column textAlign='left'>
 							<Header
@@ -72,3 +71,13 @@ export default class Config extends Component {
 		);
 	}
 }
+
+const mapStateToProps = (state) => ({
+
+});
+
+const mapDispatchToProps = (dispatch) => ({
+	errorMsg: (message) => dispatch(errorMessage(message))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Config);

@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {Link, NavLink} from 'react-router-dom';
-import {Button, Container, Menu, Icon, Dropdown} from 'semantic-ui-react';
+import {Button, Container, Menu, Icon, Dropdown, Message} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 
 import {logout as logoutAction, checkAuth} from '../actions/auth';
+import {dismissInfo, dismissWarn, dismissError} from '../actions/navigation';
 
 const linkProps = {
 	as: NavLink,
@@ -53,6 +54,9 @@ class KMMenu extends Component {
 						{this.connectMenu()}
 					</Container>
 				</Menu>
+				{this.props.infomsg && (<Message info onDismiss={this.props.dismissInfo}>{this.props.infomsg}</Message>)}
+				{this.props.warnmsg && (<Message warning onDismiss={this.props.dismissWarn}>{this.props.warnmsg}</Message>)}
+				{this.props.errormsg && (<Message error onDismiss={this.props.dismissError}>{this.props.errormsg}</Message>)}
 			</div>
 		);
 	}
@@ -60,12 +64,18 @@ class KMMenu extends Component {
 
 const mapStateToProps = (state) => ({
 	authenticated: state.auth.authenticated,
-	username: state.auth.username
+	username: state.auth.username,
+	infomsg: state.navigation.infomsg,
+	warnmsg: state.navigation.warnmsg,
+	errormsg: state.navigation.errormsg,
 });
 
 const mapDispatchToProps = (dispatch) => ({
 	logout: () => dispatch(logoutAction()),
-	alreadyConnected: () => checkAuth()(dispatch)
+	alreadyConnected: () => checkAuth()(dispatch),
+	dismissInfo: () => dispatch(dismissInfo()),
+	dismissWarn: () => dispatch(dismissWarn()),
+	dismissError: () => dispatch(dismissError()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(KMMenu);
