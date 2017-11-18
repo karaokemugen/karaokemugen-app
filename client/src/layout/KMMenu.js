@@ -3,7 +3,7 @@ import {Link, NavLink} from 'react-router-dom';
 import {Button, Container, Menu, Icon, Dropdown} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 
-import {logout as logoutAction} from '../actions/auth';
+import {logout as logoutAction, checkAuth} from '../actions/auth';
 
 const linkProps = {
 	as: NavLink,
@@ -12,6 +12,10 @@ const linkProps = {
 };
 
 class KMMenu extends Component {
+
+	componentDidMount() {
+		this.props.alreadyConnected();
+	}
 
 	connectMenu() {
 		if (this.props.authenticated) {
@@ -60,7 +64,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-	logout: () => dispatch(logoutAction())
+	logout: () => dispatch(logoutAction()),
+	alreadyConnected: () => checkAuth()(dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(KMMenu);

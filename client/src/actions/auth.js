@@ -24,6 +24,23 @@ export function login(username, password) {
 	};
 }
 
+export function checkAuth() {
+	return function(dispatch) {
+		axios.get('/api/checkauth',
+			{
+				headers: { 'authorization': localStorage.getItem('kmToken') }
+			}
+		)
+			.then(response => {
+				dispatch({
+					type: AUTH_USER,
+					username: response.data.username
+				});
+			})
+			.catch(err => dispatch({ type: UNAUTH_USER }));
+	};
+}
+
 export function authError(error) {
 	return {
 		type: AUTH_ERROR,
