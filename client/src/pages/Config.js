@@ -18,13 +18,9 @@ export default class Config extends Component {
 	}
 
 	refresh() {
-		axios.get(
-			'/api/config',
-			{
-				headers: { 'authorization': localStorage.getItem('kmToken') }
-			})
+		axios.get('/api/config')
 			.then(res => this.setState({config: res.data, error: ''}))
-			.catch(err => this.setState({error: 'Impossible de récupérer la configuration. ' + err}));
+			.catch(err => this.setState({config: {}, error: 'Impossible de récupérer la configuration. ' + err}));
 	}
 
 	render() {

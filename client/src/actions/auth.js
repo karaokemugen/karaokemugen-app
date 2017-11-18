@@ -15,6 +15,7 @@ export function login(username, password) {
 		)
 			.then(response => {
 				localStorage.setItem('kmToken', response.data.token);
+				axios.defaults.headers.common['authorization'] = response.data.token;
 				dispatch({
 					type: AUTH_USER,
 					username: username
@@ -26,11 +27,7 @@ export function login(username, password) {
 
 export function checkAuth() {
 	return function(dispatch) {
-		axios.get('/api/checkauth',
-			{
-				headers: { 'authorization': localStorage.getItem('kmToken') }
-			}
-		)
+		axios.get('/api/checkauth')
 			.then(response => {
 				dispatch({
 					type: AUTH_USER,
@@ -50,5 +47,6 @@ export function authError(error) {
 
 export function logout() {
 	localStorage.removeItem('kmToken');
+	delete axios.defaults.headers.common['authorization'];
 	return { type: UNAUTH_USER };
 }

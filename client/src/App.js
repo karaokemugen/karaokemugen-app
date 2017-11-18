@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 
+import axios from 'axios';
 import {Provider} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
 import {Route, Switch} from 'react-router-dom';
@@ -14,6 +15,14 @@ import Database from './pages/Database';
 import Login from './pages/Login';
 
 class App extends Component {
+
+	componentWillMount() {
+		const token = localStorage.getItem('kmToken');
+		if (token) {
+			axios.defaults.headers.common['authorization'] = token;
+		}
+	}
+
 	render() {
 		return (
 			<Provider store={store}>
