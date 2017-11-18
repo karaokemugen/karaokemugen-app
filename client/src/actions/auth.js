@@ -32,8 +32,6 @@ export function authError(error) {
 }
 
 export function logout() {
-	return function (dispatch) {
-		localStorage.removeItem('kmToken');
-		dispatch({ type: UNAUTH_USER });
-	};
+	localStorage.removeItem('kmToken');
+	return { type: UNAUTH_USER };
 }

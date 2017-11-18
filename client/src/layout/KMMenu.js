@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {Link, NavLink} from 'react-router-dom';
-import {Button, Container, Menu} from 'semantic-ui-react';
+import {Button, Container, Menu, Icon, Dropdown} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 
-import {logout} from '../actions/auth';
+import {logout as logoutAction} from '../actions/auth';
 
 const linkProps = {
 	as: NavLink,
@@ -13,17 +13,30 @@ const linkProps = {
 
 class KMMenu extends Component {
 
-	connectButton(dispatch) {
+	connectMenu() {
 		if (this.props.authenticated) {
-			return (<Button color='orange' onClick={() => logout()(dispatch)}>Déconnexion</Button>);
+			return (
+				<Menu.Menu position='right'>
+					<Menu.Item className='item'>
+						<Dropdown trigger={(<span><Icon name='user' />{this.props.username}</span>)}/>
+					</Menu.Item>
+					<Menu.Item className='item'>
+						<Button color='orange' onClick={this.props.logout}>Déconnexion</Button>
+					</Menu.Item>
+				</Menu.Menu>
+			);
 		} else {
-			return (<Button primary as={ Link } to='/login'>Se connecter</Button>);
+			return (
+				<Menu.Menu position='right'>
+					<Menu.Item className='item'>
+						<Button primary as={ Link } to='/login'>Se connecter</Button>
+					</Menu.Item>
+				</Menu.Menu>
+			);
 		}
 	}
 
 	render() {
-		const {dispatch} = this.props;
-
 		return (
 			<div>
 				<Menu size='large' inverted>
@@ -33,11 +46,7 @@ class KMMenu extends Component {
 						<Menu.Item to='/player' {...linkProps}>Player</Menu.Item>
 						<Menu.Item to='/karas' {...linkProps}>Karas</Menu.Item>
 						<Menu.Item to='/db' {...linkProps}>Base de données</Menu.Item>
-						<Menu.Menu position='right'>
-							<Menu.Item className='item'>
-								{this.connectButton(dispatch)}
-							</Menu.Item>
-						</Menu.Menu>
+						{this.connectMenu()}
 					</Container>
 				</Menu>
 			</div>
@@ -46,7 +55,12 @@ class KMMenu extends Component {
 }
 
 const mapStateToProps = (state) => ({
-	authenticated: state.auth.authenticated
+	authenticated: state.auth.authenticated,
+	username: state.auth.username
 });
 
-export default connect(mapStateToProps)(KMMenu);
+const mapDispatchToProps = (dispatch) => ({
+	logout: () => dispatch(logoutAction())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(KMMenu);
