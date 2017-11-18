@@ -14,12 +14,6 @@ class Login extends Component {
 		};
 	}
 
-	login(e) {
-		const { dispatch } = this.props;
-		e.preventDefault();
-		loginAction(this.state.username, this.state.password)(dispatch);
-	}
-
 	render() {
 		return (
 			<div className='login-form'>
@@ -58,7 +52,7 @@ class Login extends Component {
 								<Button
 									color='teal'
 									fluid size='large'
-									onClick={this.login.bind(this)}
+									onClick={e => this.props.login(e, this.state.username, this.state.password)}
 								>Login</Button>
 							</Segment>
 						</Form>
@@ -76,4 +70,11 @@ const mapStateToProps = (state) => ({
 	authenticated: state.auth.authenticated
 });
 
-export default connect(mapStateToProps)(Login);
+const mapDispatchToProps = (dispatch) => ({
+	login: (e, username, password) => {
+		e.preventDefault();
+		loginAction(username, password)(dispatch);
+	}
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
