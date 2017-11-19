@@ -4,6 +4,7 @@ export const ERROR_MSG = 'error_msg';
 export const DISMISS_INFO = 'dismiss_info';
 export const DISMISS_WARN = 'dismiss_warn';
 export const DISMISS_ERROR = 'dismiss_error';
+export const DISMISS_ALL = 'dismiss_all';
 
 export function infoMessage(message) {
 	return { type: INFO_MSG, message: message };
@@ -27,4 +28,8 @@ export function dismissWarn() {
 
 export function dismissError() {
 	return { type: DISMISS_ERROR };
+}
+
+export function dismissAll() {
+	return { type: DISMISS_ALL };
 }

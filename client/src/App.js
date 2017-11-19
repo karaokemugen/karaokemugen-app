@@ -8,13 +8,16 @@ import {history, store} from './store';
 
 import KMMenu from './layout/KMMenu';
 import Login from './layout/Login';
-import AuthRequired from './layout/AuthRequired';
+
+import AuthRequired from './components/AuthRequired';
+import DismissMessages from './components/DismissMessages';
 
 import Home from './pages/Home';
 import Config from './pages/Config';
 import Player from './pages/Player';
 import Karas from './pages/Karas';
 import Database from './pages/Database';
+
 
 class App extends Component {
 
@@ -34,7 +37,7 @@ class App extends Component {
 						<Switch>
 							<Redirect exact from='/' to='/home'/>
 							<Route path='/home' component={Home}/>
-							<Route path='/login' component={Login}/>
+							<Route path='/login' component={DismissMessages(Login)}/>
 							<Route path='/config' component={AuthRequired(Config)}/>
 							<Route path='/player' component={Player}/>
 							<Route path='/karas' component={Karas}/>

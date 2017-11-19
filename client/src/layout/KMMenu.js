@@ -1,16 +1,10 @@
 import React, {Component} from 'react';
-import {Link, NavLink} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import {Button, Container, Menu, Icon, Dropdown, Message} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 
 import {logout as logoutAction, checkAuth} from '../actions/auth';
 import {dismissInfo, dismissWarn, dismissError} from '../actions/navigation';
-
-const linkProps = {
-	as: NavLink,
-	link: true,
-	activeClassName: 'active'
-};
 
 class KMMenu extends Component {
 
@@ -34,7 +28,7 @@ class KMMenu extends Component {
 			return (
 				<Menu.Menu position='right'>
 					<Menu.Item className='item'>
-						<Button primary as={ Link } to='/login'>Se connecter</Button>
+						<Button primary as={NavLink} to='/login'>Se connecter</Button>
 					</Menu.Item>
 				</Menu.Menu>
 			);
@@ -46,11 +40,11 @@ class KMMenu extends Component {
 			<div>
 				<Menu size='large' inverted>
 					<Container>
-						<Menu.Item to='/home' {...linkProps}>Accueil</Menu.Item>
-						<Menu.Item to='/config' {...linkProps}>Configuration</Menu.Item>
-						<Menu.Item to='/player' {...linkProps}>Player</Menu.Item>
-						<Menu.Item to='/karas' {...linkProps}>Karas</Menu.Item>
-						<Menu.Item to='/db' {...linkProps}>Base de données</Menu.Item>
+						<Menu.Item to='/home' as={NavLink}>Accueil</Menu.Item>
+						<Menu.Item to='/config' as={NavLink}>Configuration</Menu.Item>
+						<Menu.Item to='/player' as={NavLink}>Player</Menu.Item>
+						<Menu.Item to='/karas' as={NavLink}>Karas</Menu.Item>
+						<Menu.Item to='/db' as={NavLink}>Base de données</Menu.Item>
 						{this.connectMenu()}
 					</Container>
 				</Menu>

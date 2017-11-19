@@ -1,4 +1,7 @@
-import { INFO_MSG, WARN_MSG, ERROR_MSG, DISMISS_INFO, DISMISS_WARN, DISMISS_ERROR} from '../actions/navigation';
+import {
+	INFO_MSG, WARN_MSG, ERROR_MSG, DISMISS_INFO, DISMISS_WARN, DISMISS_ERROR,
+	DISMISS_ALL
+} from '../actions/navigation';
 
 
 export default function(state = {}, action) {
@@ -15,6 +18,8 @@ export default function(state = {}, action) {
 			return { ...state, warnmsg: '' };
 		case DISMISS_ERROR:
 			return { ...state, errormsg: '' };
+		case DISMISS_ALL:
+			return { ...state, infomsg: '', warnmsg: '', errormsg: ''};
 	}
 	return state;
 }

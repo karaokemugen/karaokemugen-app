@@ -1,10 +1,30 @@
 import React, {Component} from 'react';
 
+import {Container, Grid, Header, Segment} from 'semantic-ui-react';
+import {connect} from 'react-redux';
 
-export default class Player extends Component {
+class Player extends Component {
 	render() {
 		return (
-			<h1>Player</h1>
+			<Segment
+				inverted
+				vertical
+				style={{ margin: '1em 0em 1em', padding: '1em 0em 1em' }}
+			>
+				<Container textAlign='center'>
+					<Grid columns={2} stackable style={{ padding: '1em', height: '100%'}}>
+						<Grid.Column textAlign='left'>
+							<Header
+								as='h3'
+								content='Player'
+								inverted
+							/>
+						</Grid.Column>
+					</Grid>
+				</Container>
+			</Segment>
 		);
 	}
 }
+
+export default connect()(Player);
