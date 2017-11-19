@@ -310,7 +310,7 @@ module.exports = {
 		});
 		Promise.all([pNeedsRestart])
 			.then(() => {				
-				if (module.exports._states.counterToJingle == module.exports.SETTINGS.EngineJinglesInterval) { 
+				if (module.exports._states.counterToJingle >= module.exports.SETTINGS.EngineJinglesInterval) { 
 					module.exports._services.player.playJingle();
 					module.exports._states.counterToJingle = 0;
 				} else {										
