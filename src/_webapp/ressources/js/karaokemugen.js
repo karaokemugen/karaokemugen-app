@@ -736,7 +736,7 @@ var settingsNotUpdated;
 							var badges = '';
 							if(kara.misc) {
 								kara.misc.split(',').forEach(function(tag) {
-									badges += '<bdg>'  + tagAcrList[tag] + '</bdg>';
+									badges += '<bdg>'  + (tagAcrList[tag] ? tagAcrList[tag] : '?') + '</bdg>';
 								});
 							}
 							if (mode === 'list') {
