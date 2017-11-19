@@ -67,7 +67,7 @@ const mapStateToProps = (state) => ({
 	username: state.auth.username,
 	infomsg: state.navigation.infomsg,
 	warnmsg: state.navigation.warnmsg,
-	errormsg: state.navigation.errormsg,
+	errormsg: state.navigation.errormsg
 });
 
 const mapDispatchToProps = (dispatch) => ({

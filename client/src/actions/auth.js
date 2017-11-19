@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {stringify} from 'qs';
+import {goBack} from 'react-router-redux';
 
 export const AUTH_USER = 'auth_user';
 export const UNAUTH_USER = 'unauth_user';
@@ -20,6 +21,7 @@ export function login(username, password) {
 					type: AUTH_USER,
 					username: username
 				});
+				dispatch(goBack()); // Retour à la page précédente.
 			})
 			.catch(err => dispatch(authError('Bad login info: ' + err)));
 	};

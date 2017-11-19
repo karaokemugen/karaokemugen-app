@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, {Component} from 'react';
-import {Button, Container, Grid, Header, Message, Segment, Table} from 'semantic-ui-react';
+import {Button, Container, Grid, Header, Segment, Table} from 'semantic-ui-react';
 import {connect} from 'react-redux';
 
 import {errorMessage} from '../actions/navigation';
@@ -72,12 +72,8 @@ class Config extends Component {
 	}
 }
 
-const mapStateToProps = (state) => ({
-
-});
-
 const mapDispatchToProps = (dispatch) => ({
 	errorMsg: (message) => dispatch(errorMessage(message))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Config);
+export default connect(null, mapDispatchToProps)(Config);

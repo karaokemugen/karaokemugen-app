@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {Provider} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
-import {Route, Switch} from 'react-router-dom';
+import {Redirect, Route, Switch} from 'react-router-dom';
 import {history, store} from './store';
 
 import KMMenu from './layout/KMMenu';
@@ -13,6 +13,7 @@ import Player from './pages/Player';
 import Karas from './pages/Karas';
 import Database from './pages/Database';
 import Login from './pages/Login';
+import AuthRequired from './layout/AuthRequired';
 
 class App extends Component {
 
@@ -30,9 +31,10 @@ class App extends Component {
 					<div>
 						<KMMenu/>
 						<Switch>
-							<Route path='/login' component={Login}/>
+							<Redirect exact from='/' to='/home'/>
 							<Route path='/home' component={Home}/>
-							<Route path='/config' component={Config}/>
+							<Route path='/login' component={Login}/>
+							<Route path='/config' component={AuthRequired(Config)}/>
 							<Route path='/player' component={Player}/>
 							<Route path='/karas' component={Karas}/>
 							<Route path='/db' component={Database}/>
