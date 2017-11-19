@@ -7,13 +7,14 @@ import {Redirect, Route, Switch} from 'react-router-dom';
 import {history, store} from './store';
 
 import KMMenu from './layout/KMMenu';
+import Login from './layout/Login';
+import AuthRequired from './layout/AuthRequired';
+
 import Home from './pages/Home';
 import Config from './pages/Config';
 import Player from './pages/Player';
 import Karas from './pages/Karas';
 import Database from './pages/Database';
-import Login from './pages/Login';
-import AuthRequired from './layout/AuthRequired';
 
 class App extends Component {
 
