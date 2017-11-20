@@ -14,7 +14,6 @@ import DismissMessages from './components/DismissMessages';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Config from './pages/Config';
-import Player from './pages/Player';
 import Karas from './pages/Karas';
 import Database from './pages/Database';
 
@@ -39,9 +38,8 @@ class App extends Component {
 							<Route path='/home' component={Home}/>
 							<Route path='/login' component={DismissMessages(Login)}/>
 							<Route path='/config' component={AuthRequired(Config)}/>
-							<Route path='/player' component={Player}/>
 							<Route path='/karas' component={Karas}/>
-							<Route path='/db' component={Database}/>
+							<Route path='/db' component={AuthRequired(Database)}/>
 						</Switch>
 					</div>
 				</ConnectedRouter>
