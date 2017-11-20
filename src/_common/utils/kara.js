@@ -13,8 +13,7 @@ import {trim} from 'lodash';
 import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from './files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from './config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from './ffmpeg';
-import {getType} from '../domain/constants';
-import {getKara, serieRequired} from '../domain/kara';
+import {getKara} from '../domain/kara';
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
@@ -55,19 +54,6 @@ export async function getDataFromKaraFile(karafile) {
 
 	karaData.karafile = karafile;
 
-	const karaInfosFromFileName = karaFilenameInfos(karafile);
-	// Les informations du fichier kara sont prioritaires sur celles extraites du nom.
-	karaData.title = karaData.title || karaInfosFromFileName.title;
-	karaData.type = karaData.type || getType(karaInfosFromFileName.type);
-	karaData.order = karaData.order || karaInfosFromFileName.order;
-
-	// Si le karaoké n'est pas musical et que l'info est manquante, la série extraite du nom est prise en compte.
-	karaData.serie = karaInfosFromFileName.serie;
-	if (serieRequired(karaData.type) && !karaData.series) {
-		karaData.series = karaData.serie;
-	}
-
-	karaData.langFromFileName = karaInfosFromFileName.lang;
 	karaData.lang = trim(karaData.lang, '"'); // Nettoyage du champ lang du fichier kara.
 
 	let videoFile;
