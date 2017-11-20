@@ -1,3 +1,5 @@
+import {uuidRegexp} from '../../_common/domain/kara';
+
 var path = require('path');
 var timestamp = require('unix-timestamp');
 timestamp.round = true;
@@ -7,7 +9,6 @@ const L = require('lodash');
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
 const async = require('async');
-const validator = require('validator');
 process.on('unhandledRejection', (reason, p) => {
 	console.log('Unhandled Rejection at:', p, 'reason:', reason);
 	// application specific logging, throwing an error, or other logic here
@@ -2549,8 +2550,8 @@ module.exports = {
 			} else if (L.isEmpty(playlist.PlaylistInformation.name)) {
 				err = 'Playlist name must not be empty';
 			} else if (playlist.PlaylistContents !== undefined) {
-				playlist.PlaylistContents.forEach(function(kara){				
-					if (!validator.isUUID(kara.kid)) err = 'KID is not a valid UUID!';				
+				playlist.PlaylistContents.forEach(function(kara){
+					if (!(new RegExp(uuidRegexp).test(kara.kid))) err = 'KID is not a valid UUID!';
 					if (!isNaN(kara.flag_playing)) {
 						if (kara.flag_playing === 1) {
 							playingKara = kara.kid;						

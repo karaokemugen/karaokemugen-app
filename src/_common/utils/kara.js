@@ -6,20 +6,41 @@
 import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import logger from 'winston';
-import {extname, resolve} from 'path';
+import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {createHash} from 'crypto';
 import {trim} from 'lodash';
 import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from './files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from './config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from './ffmpeg';
+import {getType} from '../domain/constants';
+import {getKara, serieRequired} from '../domain/kara';
 
-export async function getKara(karafile) {
+export function karaFilenameInfos(karaFile) {
+	const karaFileName = parse(karaFile).name;
+	const infos = karaFileName.split(/\s+-\s+/); // LANGUE - SERIE - NUMERO - TITRE
+
+	if (infos.length < 3) {
+		throw 'Kara filename \'' + karaFileName + '\' does not respect naming convention';
+	}
+	// On ajoute en 5ème position le numéro extrait du champ type.
+	const orderInfos = infos[2].match(/^([a-zA-Z0-9 ]{2,30}?)(\d*)$/);
+	infos.push(orderInfos[2] ? +orderInfos[2] : 0);
+
+	// On renvoie un objet avec les champs explicitement nommés.
+	return {
+		lang: infos[0],
+		serie: infos[1],
+		type: orderInfos[1],
+		order: orderInfos[2] ? +orderInfos[2] : 0,
+		title: infos[3] || ''
+	};
+}
+
+export async function getDataFromKaraFile(karafile) {
 
 	const karaData = await parseKara(karafile);
 	karaData.isKaraModified = false;
-
-	verifyRequiredInfos(karaData);
 
 	if (!karaData.KID) {
 		karaData.isKaraModified = true;
@@ -34,6 +55,19 @@ export async function getKara(karafile) {
 
 	karaData.karafile = karafile;
 
+	const karaInfosFromFileName = karaFilenameInfos(karafile);
+	// Les informations du fichier kara sont prioritaires sur celles extraites du nom.
+	karaData.title = karaData.title || karaInfosFromFileName.title;
+	karaData.type = karaData.type || getType(karaInfosFromFileName.type);
+	karaData.order = karaData.order || karaInfosFromFileName.order;
+
+	// Si le karaoké n'est pas musical et que l'info est manquante, la série extraite du nom est prise en compte.
+	karaData.serie = karaInfosFromFileName.serie;
+	if (serieRequired(karaData.type) && !karaData.series) {
+		karaData.series = karaData.serie;
+	}
+
+	karaData.langFromFileName = karaInfosFromFileName.lang;
 	karaData.lang = trim(karaData.lang, '"'); // Nettoyage du champ lang du fichier kara.
 
 	let videoFile;
@@ -50,23 +84,8 @@ export async function getKara(karafile) {
 
 	if (videoFile) {
 		const subFile = await findSubFile(videoFile, karaData);
-		if (subFile) {
-			karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
-			karaData.ass_checksum = checksum(karaData.ass);
-			// TODO Delete any temporary file
-		} else {
-			karaData.ass = '';
-		}
-		const videoStats = await asyncStat(videoFile);
-		if (videoStats.size !== +karaData.videosize) {
-			karaData.isKaraModified = true;
-			karaData.videosize = videoStats.size;
-
-			const [videogain, videoduration] = await Promise.all([getVideoGain(videoFile), getVideoDuration(videoFile)]);
-
-			karaData.videogain = videogain;
-			karaData.videoduration = videoduration;
-		}
+		await extractAssInfos(subFile, karaData);
+		await extractVideoTechInfos(videoFile, karaData);
 	}
 
 	karaData.rating = 0;
@@ -76,6 +95,28 @@ export async function getKara(karafile) {
 	return karaData;
 }
 
+export async function extractAssInfos(subFile, karaData) {
+	if (subFile) {
+		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
+		karaData.ass_checksum = checksum(karaData.ass);
+		// TODO Delete any temporary file.
+	} else {
+		karaData.ass = '';
+	}
+}
+
+export async function extractVideoTechInfos(videoFile, karaData) {
+	const videoStats = await asyncStat(videoFile);
+	if (videoStats.size !== +karaData.videosize) {
+		karaData.isKaraModified = true;
+		karaData.videosize = videoStats.size;
+
+		const [videogain, videoduration] = await Promise.all([getVideoGain(videoFile), getVideoDuration(videoFile)]);
+
+		karaData.videogain = videogain;
+		karaData.videoduration = videoduration;
+	}
+}
 
 export async function writeKara(karafile, karaData) {
 
@@ -83,32 +124,7 @@ export async function writeKara(karafile, karaData) {
 		return;
 	}
 
-	verifyRequiredInfos(karaData);
-	timestamp.round = true;
-
-	const infosToWrite = {
-		videofile: karaData.videofile,
-		subfile: karaData.subfile,
-		year: karaData.year || '',
-		singer: karaData.singer || '',
-		tags: karaData.tags || '',
-		songwriter: karaData.songwriter || '',
-		creator: karaData.creator || '',
-		author: karaData.author || '',
-		series: karaData.series || '',
-		title: karaData.title || '',
-		type: karaData.type || '',
-		order: karaData.order || '',
-		version: 1,
-		lang: karaData.lang || '',
-		KID: karaData.KID || uuidV4(),
-		dateadded: karaData.dateadded || timestamp.now(),
-		datemodif: karaData.datemodif || timestamp.now(),
-		videosize: karaData.videosize || 0,
-		videogain: karaData.videogain || 0,
-		videoduration: karaData.videoduration || 0
-	};
-
+	const infosToWrite = getKara(karaData);
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
 
@@ -117,22 +133,17 @@ export async function parseKara(karaFile) {
 	return parseini(data);
 }
 
-export function verifyRequiredInfos(karaData) {
-	if (!karaData.videofile || karaData.videofile.trim() === '') {
-		throw 'Karaoke video file empty!';
-	}
-	if (!karaData.subfile || karaData.subfile.trim() === '') {
-		throw 'Karaoke sub file empty!';
-	}
+export async function extractVideoSubtitles(videoFile, kid) {
+	const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kid}.ass`);
+	return await extractSubtitles(videoFile, extractFile);
 }
 
 async function findSubFile(videoFile, kara) {
 	const videoExt = extname(videoFile);
 	if (kara.subfile === 'dummy.ass') {
 		if (videoExt === '.mkv' || videoExt === '.mp4') {
-			const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kara.KID}.ass`);
 			try {
-				return await extractSubtitles(videoFile, extractFile);
+				return await extractVideoSubtitles(videoFile, kara.KID);
 			} catch (err) {
 				// Not blocking.
 				logger.debug('[Kara] Could not extract subtitles from video file ' + videoFile);

@@ -16,6 +16,8 @@ import logger from 'winston';
 
 import engine from './_engine/index';
 import resolveSysPath from './_common/utils/resolveSyspath';
+import {karaGenerationBatch} from './_admin/generate_karasfiles';
+import {startExpressReactServer} from './_webapp/react';
 
 import setTitle from 'console-title';
 
@@ -79,6 +81,12 @@ async function main() {
 	// Vérification de l'existence des répertoires, sinon les créer.
 	await checkPaths(config);
 
+	if (argv.karagen) {
+		console.log('Kara generation');
+		await karaGenerationBatch();
+		process.exit(0);
+	}
+
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	logger.debug('[Launcher] Copying input.conf into ' + path.resolve(appPath, config.PathTemp));
 	await copy(
@@ -94,9 +102,10 @@ async function main() {
 
 	await restoreKaraBackupFolders(config);
 
-	/**
-	 * Calling engine.
-	 */
+	/** Start React static frontend */
+	startExpressReactServer(1338);
+
+	/** Calling engine. */
 	engine.SYSPATH = appPath;
 	engine.SETTINGS = config;
 	engine.i18n = i18n;
@@ -138,6 +147,7 @@ async function checkPaths(config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.PathBin));
 	checks.push(asyncCheckOrMkdir(appPath, config.PathTemp));
 	checks.push(asyncCheckOrMkdir(appPath, config.PathPreviews));
+	checks.push(asyncCheckOrMkdir(appPath, config.PathImport));
 
 	await Promise.all(checks);
 	logger.info('[Launcher] All folders checked');
