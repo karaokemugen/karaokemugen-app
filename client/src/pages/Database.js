@@ -9,7 +9,7 @@ class Database extends Component {
 
 	dbregen() {
 		this.props.loading(true);
-		axios.post('/api/dbregen')
+		axios.post('/api/db/regenerate')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);
@@ -28,7 +28,7 @@ class Database extends Component {
 				style={{ margin: '1em 0em 1em', padding: '1em 0em 1em' }}
 			>
 				<Container textAlign='center'>
-					<Grid columns={1} stackable style={{ padding: '1em', height: '100%'}}>
+					<Grid columns={1} stackable style={{ padding: '1em' }}>
 						<Grid.Column textAlign='left'>
 							<Header
 								as='h3'
@@ -37,9 +37,7 @@ class Database extends Component {
 							/>
 						</Grid.Column>
 					</Grid>
-				</Container>
-				<Container>
-					<Grid columns={1} stackable style={{ padding: '1em', height: '100%'}}>
+					<Grid columns={1} stackable style={{ padding: '1em' }}>
 						<Grid.Column textAlign='center'>
 							<Button primary onClick={this.dbregen.bind(this)} active={!this.props.loadingActive}>Régénérer la base de données</Button>
 						</Grid.Column>

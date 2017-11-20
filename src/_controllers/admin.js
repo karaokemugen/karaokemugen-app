@@ -10,9 +10,15 @@ module.exports = function adminController(router) {
 		res.json(getConfig());
 	});
 
-	router.post('/dbregen', requireAuth, (req, res) => {
+	router.post('/db/regenerate', requireAuth, (req, res) => {
 		run()
 			.then(() => res.status(200).send('DB successfully regenerated'))
 			.catch(err => res.status(500).send('Error while regenerating DB: ' + err));
+	});
+
+	router.post('/kara/generate-all', requireAuth, (req, res) => {
+		run()
+			.then(() => res.status(200).send('Karas successfully generated'))
+			.catch(err => res.status(500).send('Error while regenerating karas: ' + err));
 	});
 };

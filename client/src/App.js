@@ -38,7 +38,7 @@ class App extends Component {
 							<Route path='/home' component={Home}/>
 							<Route path='/login' component={DismissMessages(Login)}/>
 							<Route path='/config' component={AuthRequired(Config)}/>
-							<Route path='/karas' component={Karas}/>
+							<Route path='/karas' component={AuthRequired(Karas)}/>
 							<Route path='/db' component={AuthRequired(Database)}/>
 						</Switch>
 					</div>
