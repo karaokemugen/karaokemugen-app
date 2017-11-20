@@ -94,12 +94,12 @@ async function main() {
 	/**
 	 * Test if network ports are available
 	 */
-	[1337, 1338, 1339, 1340, 1341].forEach(port => verifyOpenPort(port));
+	[1337, 1338, 1339, 1340].forEach(port => verifyOpenPort(port));
 
 	await restoreKaraBackupFolders(config);
 
 	/** Start React static frontend */
-	startExpressReactServer(1341);
+	startExpressReactServer(1338);
 
 	/** Calling engine. */
 	engine.SYSPATH = appPath;
