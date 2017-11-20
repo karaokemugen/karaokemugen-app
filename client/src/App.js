@@ -6,12 +6,12 @@ import {ConnectedRouter} from 'react-router-redux';
 import {Redirect, Route, Switch} from 'react-router-dom';
 import {history, store} from './store';
 
-import KMMenu from './layout/KMMenu';
-import Login from './layout/Login';
+import KMHeader from './layout/KMHeader';
 
 import AuthRequired from './components/AuthRequired';
 import DismissMessages from './components/DismissMessages';
 
+import Login from './pages/Login';
 import Home from './pages/Home';
 import Config from './pages/Config';
 import Player from './pages/Player';
@@ -33,7 +33,7 @@ class App extends Component {
 			<Provider store={store}>
 				<ConnectedRouter history={history}>
 					<div>
-						<KMMenu/>
+						<KMHeader/>
 						<Switch>
 							<Redirect exact from='/' to='/home'/>
 							<Route path='/home' component={Home}/>
