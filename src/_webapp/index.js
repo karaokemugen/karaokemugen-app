@@ -8,8 +8,6 @@ const logger = require('winston');
 
 const basicAuth = require('express-basic-auth');
 
-import passport from 'passport';
-var Strategy = require('passport-local').Strategy;
 import {hashPassword, findUserByID, findUserByName} from '../_common/utils/auth.js';
 
 function AdminPasswordAuth(username, password){
@@ -33,41 +31,7 @@ module.exports = {
 	i18n:null,
 	init:function(){
 		
-		// Init passport strategy
-		passport.use(new Strategy(
-			(username, password, cb) => {
-				console.log(username);
-				console.log(password);
-				findUserByName(username)
-					.then((user) => {
-						console.log('lel');
-						if (!user) return cb(null, false); 
-						if (hashPassword(password) != user.password) return cb(null, false); 
-						return cb(null, user);				
-					})
-					.catch((err) => {
-						logger.error('[Webapp] Unable to get auth info : '+err);
-						return (null, false);
-					});				
-			}));
-		// Serializing user ID into session data
-		passport.serializeUser((user, cb) => {
-			return cb(null, user.id);
-		});
-		passport.deserializeUser((id, cb) => {
-			findUserByID(id)
-				.then((user) => {
-					if (!user) {
-						return cb(null,false);
-					} else {
-						return cb(null,user);
-					}
-				})
-				.catch((err) => {
-					return cb(err);
-				});				
-		});
-	
+		
 
 		// Création d'un server http pour diffuser l'appli web du launcher
 		if(app==null) {
@@ -95,12 +59,9 @@ module.exports = {
 			});
 			app.set('view engine', 'hbs');
 			app.set('views', path.join(__dirname, 'ressources/views/'));
-			app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 			app.use(cookieParser());
 			app.use(module.exports.i18n.init);
 			app.use(express.static(__dirname + '/'));
-			app.use(passport.initialize());
-			app.use(passport.session());			
 			app.use('/locales',express.static(__dirname + '/../_common/locales/'));
 			app.use('/previews',express.static(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathPreviews)));
 			app.use('/admin', routerAdmin);		
@@ -110,34 +71,6 @@ module.exports = {
 					'query'			:	JSON.stringify(req.query)
 				});
 			});
-			app.get('/login',
-				(req, res) => {
-					res.render('login');
-				});
-  			
-			app.post('/login', (req,res) => {
-				console.log('Login');
-				return passport.authenticate('local', (err,user,info) => {
-					console.log(err);
-					console.log(user);
-					console.log(info);					
-					res.send('lol');
-				})(req,res);
-			});			
-			//app.post('/login', (req,res) => {			  
-
-			//});
-			app.get('/logout',
-				(req, res) => {
-					req.logout();
-					res.redirect('/');
-				});
-
-			app.get('/profile',
-				require('connect-ensure-login').ensureLoggedIn(),
-				(req, res) => {
-					res.render('profile', { user: req.user });
-				});
 			routerAdmin.get('/', function (req, res) {
 				si.graphics().then( function(data) {
 					logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
