@@ -1,0 +1,1 @@
+INSERT INTO user(guest_id,login,password,nickname,NORM_nickname,avatar_id,flag_online,flag_admin,last_login) VALUES ($guest_id,$login,$password,$nickname,$NORM_nickname,$avatar_id,$flag_online,$flag_admin,$last_login);

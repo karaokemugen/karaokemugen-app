@@ -530,6 +530,62 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Create new user in DB}
+	* @param {object} {userdata object}
+	* @return {boolean} {promise}
+	*/
+	createNewUser:function(user) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			var sqlCreateUser = fs.readFileSync(path.join(__dirname,'../../_common/db/add_user.sql'),'utf-8');
+			module.exports._db_handler.run(sqlCreateUser,
+				{
+					$guest_id: user.guest_id,
+					$login: user.login,
+					$password: user.password,
+					$nickname: user.nickname,
+					$NORM_nickname: user.NORM_nickname,
+					$avatar_id: user.avatar_id,
+					$last_login: user.last_login,
+					$flag_online: user.flag_online,
+					$flag_admin: user.flag_admin
+				})
+				.then((user) => {
+					resolve(user.lastID);
+				})
+				.catch((err) => {
+					reject(`Failed to create user ${user.login} : ${err}`);
+				});			
+		});
+	},
+	/**
+	* @function {Delete user}
+	* @param {number} {ID}
+	* @return {boolean} {promise}
+	*/
+	deleteUser:function(id) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			var sqlDeleteUser = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_user.sql'),'utf-8');
+			module.exports._db_handler.run(sqlDeleteUser,
+				{
+					$id: id					
+				})
+				.then(() => {
+					resolve();
+				})
+				.catch((err) => {
+					reject(`Failed to delete user ID ${id} : ${err}`);
+				});			
+		});
+	},
+	/**
 	* @function {Delete criteria from blacklist}
 	* @param {number} {blacklist criteria ID}
 	* @return {boolean} {promise}

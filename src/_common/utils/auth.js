@@ -22,7 +22,11 @@ export function hashPassword(password) {
 	return hash.digest('hex');
 }
 
-export async function createUser(user) {
+export async function removeUser(id) {
+	return await deleteUser(id);	
+}
+
+export async function addUser(user) {
 	// Validate user data
 	// Userdata contains :
 	// { 
