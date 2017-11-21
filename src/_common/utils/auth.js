@@ -1,6 +1,7 @@
 import {getUserByName, getUserByID, getGuestInfo, createNewUser} from '../../_engine/components/db_interface.js';
 import {createHash} from 'crypto';
 import {deburr} from 'lodash';
+import {now} from 'unix-timestamp';
 
 export async function findUserByName(username) {
 	//Check if user exists in db
@@ -31,7 +32,7 @@ export async function createUser(user) {
 	//   nickname: login by default
 	//   NORM_nickname: normalized/deburred nickname
 	//   avatar_id: if guest_id > 0 then fetch guest's avatar ID
-	//   guest_expires: date/time when the guest account should be deleted. Set it to now + 1 hour by default. A reconnection resets the counter to then + 1 hour. Guests can be wiped by an admin command	
+	//   last_login: date/time when the guest account should be deleted. Set it to now + 1 hour by default. A reconnection resets the counter to then + 1 hour. Guests can be wiped by an admin command	
 	//   flag_online: 0 for now
 	//   flag_admin: 0 
 	// }
@@ -39,12 +40,11 @@ export async function createUser(user) {
 		const guestInfo = await getGuestInfo(user.guest_id);
 		user.avatar_id = guestInfo.avatar_id;
 		user.nickname = guestInfo.name;
-		user.guest_expires = 1
 	} else {
 		user.avatar_id = 0;
 		user.nickname = user.login;
-		user.guest_expires = 0;
 	}
+	user.last_login = now();
 	user.NORM_nickname = deburr(user.nickname);
 	if (user.guest_id > 0 && user.password === null) return 'Password is empty';
 	if (user.guest_id > 0 && user.login === null) return 'Login is empty';
@@ -56,3 +56,18 @@ export async function createUser(user) {
 		return 'Error creating user in database';
 	}
 }
+
+export async function editUser(user) {
+	// Modify userdata 
+}
+
+export async function deleteUser(user_id) {
+	// Delete user
+}
+
+export function init() {
+	// Initializing user auth module
+	// Expired guest accounts will be cleared on launch and every minute via repeating action
+}
+
+

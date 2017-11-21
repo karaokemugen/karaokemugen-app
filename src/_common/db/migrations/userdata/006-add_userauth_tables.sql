@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS user (
 	url	TEXT,
 	email	TEXT,
 	fingerprint	TEXT,
-	guest_expires	INTEGER NOT NULL,
+	last_login	INTEGER NOT NULL,
 	flag_online	INTEGER NOT NULL DEFAULT 0,
 	flag_admin INTEGER NOT NULL DEFAULT 0
 );
