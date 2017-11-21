@@ -1,8 +1,9 @@
 import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
-import {remove, mkdirp, copy} from 'fs-extra';
+import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
+import {videoFileRegexp} from '../domain/kara';
 
 /** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
@@ -46,6 +47,10 @@ export function asyncWriteFile(...args) {
 	return promisify(writeFile)(...args);
 }
 
+export function asyncMove(...args) {
+	return promisify(move)(...args);
+}
+
 /** Function used to verify if a required file exists. It throws an exception if not. */
 export async function asyncRequired(file) {
 	const exists = await asyncExists(file);
@@ -57,7 +62,7 @@ export async function asyncRequired(file) {
 export async function asyncCheckOrMkdir(...dir) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
-		logger.warn('Creating folder ' + resolvedDir);
+		logger.warn('[Launcher] Creating folder ' + resolvedDir);
 		return await asyncMkdirp(resolvedDir);
 	}
 }
@@ -74,4 +79,17 @@ export async function resolveFileInDirs(filename, dirs) {
 		}
 	}
 	throw 'File \'' + filename + '\' not found in any listed directory: ' + dirs;
+}
+
+export function filterVideos(files) {
+	return files.filter(file => !file.startsWith('.') && isVideoFile(file));
+}
+
+export function isVideoFile(filename) {
+	return new RegExp(videoFileRegexp).test(filename);
+}
+
+/** Remplacement de l'extension dans un nom de fichier. */
+export function replaceExt(filename, newExt) {
+	return filename.replace(/\.[^.]+$/, newExt);
 }

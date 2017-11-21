@@ -44,7 +44,6 @@ module.exports = {
 		private:true, // [bool(true|false)] // Karaoke en mode privé ou publique
 		fullscreen:true,
 		ontop:true,
-		admin_port:1338,
 		frontend_port:1337,
 		apiserver_port:1339,
 		ws_port:1340,
@@ -54,7 +53,6 @@ module.exports = {
 		counterToJingle:1,
 	},
 	_services:{
-		admin: null,
 		playlist_controller: null,
 		player:null,
 		apiserver:null,
@@ -85,7 +83,6 @@ module.exports = {
 		this._start_db_interface().then(function(){
 			module.exports._start_player();
 			module.exports._start_playlist_controller();
-			module.exports._start_admin();
 			module.exports._start_frontend();
 			module.exports._start_apiserver();
 			module.exports._start_wsserver();
@@ -315,7 +312,7 @@ module.exports = {
 		});
 		Promise.all([pNeedsRestart])
 			.then(() => {				
-				if (module.exports._states.counterToJingle == module.exports.SETTINGS.EngineJinglesInterval) { 
+				if (module.exports._states.counterToJingle >= module.exports.SETTINGS.EngineJinglesInterval) { 
 					module.exports._services.player.playJingle();
 					module.exports._states.counterToJingle = 0;
 				} else {										
@@ -392,7 +389,6 @@ module.exports = {
 
 	_broadcastStates:function() {
 		// diffuse l'état courant à tout les services concerné (normalement les webapp)
-		module.exports._services.admin.setEngineStates(module.exports._states);
 		module.exports._services.player._states = module.exports._states;
 	},
 
@@ -413,42 +409,7 @@ module.exports = {
 	},
 	/**
 	* @function
-	* Starts the admin dashboard webservice on the selected port
-	* Broadcasts syspath and settings, as well as db interface to that module.
-	*/
-	_start_admin:function(){
-		module.exports._services.admin = require(path.join(__dirname,'../_admin/index.js'));
-		module.exports._services.admin.LISTEN = module.exports._states.admin_port;
-		module.exports._services.admin.SYSPATH = module.exports.SYSPATH;
-		module.exports._services.admin.SETTINGS = module.exports.SETTINGS;
-		module.exports._services.admin.DB_INTERFACE = module.exports.DB_INTERFACE;
-		// --------------------------------------------------------
-		// diffusion des méthodes interne vers les events admin
-		// --------------------------------------------------------
-		module.exports._services.admin.onTerminate = module.exports.exit;
-		// Evenement de changement bascule privé/publique
-		module.exports._services.admin.onTogglePrivate = module.exports.togglePrivate;
-		// Evenement de changement bascule fullscreen/windowed
-		module.exports._services.admin.onToggleFullscreen = module.exports.toggleFullscreen;
-		module.exports._services.admin.onToggleOnTop = module.exports.toggleOnTop;
-		// Supervision des évènement de changement de status (play/stop)
-		module.exports._services.admin.onPlay = module.exports.play;
-		module.exports._services.admin.onStop = module.exports.stop;
-		module.exports._services.admin.onNext = module.exports.next;
-		module.exports._services.admin.onPrev = module.exports.prev;
-		module.exports._services.admin.onPause = module.exports.pause;
-		module.exports._services.admin.onStopNow = function(){
-			module.exports.stop(true);
-		};
-		// --------------------------------------------------------
-		// on démarre ensuite le service
-		module.exports._services.admin.init();
-		// et on lance la commande pour ouvrir la page web
-		module.exports._services.admin.open();
-	},
-	/**
-	* @function
-	* Starts the admin dashboard webservice on the selected port
+	* Starts the frontend server on the selected port
 	* Broadcasts syspath and settings, as well as db interface to that module.
 	*/
 	_start_frontend:function(){
@@ -1049,7 +1010,6 @@ module.exports = {
 				module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.player.SETTINGS = module.exports.SETTINGS;
-				module.exports._services.admin.SETTINGS = module.exports.SETTINGS;
 				module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;
 
 				// Part where we toggle settings

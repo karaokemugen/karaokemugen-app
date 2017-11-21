@@ -8,6 +8,9 @@
 		"mocha":true
     },
     "extends": "eslint:recommended",
+    "plugins": [
+        "react"
+    ],
     "rules": {
         "brace-style": [
             "error",
@@ -34,6 +37,9 @@
     "parser": "babel-eslint",
     "parserOptions": {
         "ecmaVersion": 2017,
+        "ecmaFeatures": {
+            "jsx": true
+        },
         "sourceType": "module"
     }
 }

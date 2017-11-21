@@ -4,7 +4,9 @@
 .vscode
 node_modules
 app/
-npm-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 *.exe
 karaokemugen*.log
 out/
@@ -18,3 +20,8 @@ karaokemugen-app-macos
 dist/
 apidoc/
 bin/
+
+# Client
+client/node_modules
+client/coverage
+client/build

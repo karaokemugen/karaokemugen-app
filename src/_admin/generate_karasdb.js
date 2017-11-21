@@ -7,7 +7,7 @@ import {forEach as csvForEach} from 'csv-string';
 import {has as hasLang} from 'langs';
 import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove} from '../_common/utils/files';
 import {getConfig, resolvedPathKaras} from '../_common/utils/config';
-import {getKara, writeKara} from '../_common/utils/kara';
+import {getDataFromKaraFile, writeKara} from '../_common/utils/kara';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras, selectRatingKaras,
@@ -15,6 +15,8 @@ import {
 	selectWhitelistKaras,
 	updateSeriesAltNames
 } from '../_common/db/generation';
+import {karaTypesMap, specialTagsMap} from '../_common/domain/constants';
+import {serieRequired, verifyKaraData} from '../_common/domain/kara';
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
@@ -31,10 +33,10 @@ async function emptyDatabase(db) {
 async function backupDir(directory) {
 	const backupDir = directory + '_backup';
 	if (await asyncExists(backupDir)) {
-		logger.debug('[Gen] [Gen] Removing backup dir ' + backupDir);
+		logger.debug('[Gen] Removing backup dir ' + backupDir);
 		await asyncRemove(backupDir);
 	}
-	logger.debug('[Gen] [Gen] Creating backup dir ' + backupDir);
+	logger.debug('[Gen] Creating backup dir ' + backupDir);
 	await asyncMkdirp(backupDir);
 	await asyncCopy(
 		directory,
@@ -94,7 +96,12 @@ async function getAllKaras(karafiles) {
 }
 
 async function readAndCompleteKarafile(karafile) {
-	const karaData = await getKara(karafile);
+	const karaData = await getDataFromKaraFile(karafile);
+	try {
+		verifyKaraData(karaData);
+	} catch (err) {
+		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete: ${err}`);
+	}
 	await writeKara(karafile, karaData);
 	return karaData;
 }
@@ -135,14 +142,9 @@ function getSeries(kara) {
 		});
 	}
 
-	if (kara.type !== 'LIVE' && kara.type !== 'MV') {
-		if (kara.serie && kara.serie.trim()) {
-			series.add(kara.serie.trim());
-		}
-		// Karas not LIVE nor MV must have a series.		
-		if (isEmpty(series)) {
-			throw 'Karaoke series cannot be detected! ('+JSON.stringify(kara);
-		}
+	// Au moins une série est obligatoire pour les karas non LIVE/MV.
+	if (serieRequired(kara.type) && isEmpty(series)) {
+		throw `Karaoke series cannot be detected! (${JSON.stringify(kara)})`;
 	}
 
 	return series;
@@ -279,20 +281,15 @@ function getKaraTags(kara, allTags) {
 	}
 
 	getTypes(kara, allTags).forEach(type => result.add(type));
-	
+
 	return result;
 }
 
 function getTypes(kara, allTags) {
 	const result = new Set();
 
-	const types = new Map([
-		['PV', 'TYPE_PV,3'], ['AMV', 'TYPE_AMV,3'], ['CM', 'TYPE_CM,3'], ['ED', 'TYPE_ED,3'], ['OP', 'TYPE_OP,3'],
-		['MV', 'TYPE_MUSIC,3'], ['OT', 'TYPE_OTHER,3'], ['IN', 'TYPE_INSERTSONG,3'], ['LIVE', 'TYPE_LIVE,3']
-	]);
-
-	types.forEach((value, key) => {
-		// Adding spaces so MV and AMV can't be confused.
+	karaTypesMap.forEach((value, key) => {
+		// Ajout d'espaces car certaines clés sont incluses dans d'autres : MV et AMV par exemple.
 		if (` ${kara.type} `.includes(` ${key} `)) {
 			result.add(getTagId(value, allTags));
 		}
@@ -553,7 +550,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	});
 
 	if (sql) {
-		logger.debug('[Gen] [Gen] Tags UPDATE SQL : ' + sql);
+		logger.debug('[Gen] Tags UPDATE SQL : ' + sql);
 		await userdb.run(sql);
 	}
 

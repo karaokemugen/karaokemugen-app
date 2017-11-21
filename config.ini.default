@@ -9,6 +9,9 @@
 ; Admin password. Change this in config.ini
 AdminPassword = "gurdil"
 
+; JWT secret key
+JwtSecret = "Change me"
+
 ; Display nickname or not in the bottom right corner of the screen during first 8 seconds of playback
 EngineDisplayNickname = 1
 
@@ -110,6 +113,7 @@ PathBackgrounds = "app/backgrounds"
 PathJingles = "app/jingles"
 PathTemp = "app/temp"
 PathPreviews = "app/previews"
+PathImport = "app/import"
 
 ; Videos can be streamed from the following URL if not found on the local paths.
 ; BEWARE : some videos with a high bitrate won't play well on an average connection.
