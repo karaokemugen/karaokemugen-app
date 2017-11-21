@@ -249,6 +249,5 @@
 	"CL_PLAYLISTS": "Listes",
 	"GOTO_TOP": "Aller au début de la liste",
 	"GOTO_PLAYING": "Aller au kara en cours de lecture",
-	"GOTO_BOTTOM": "Aller à la fin de la liste",
-	"TAG_IRL": "TAG_IRL"
+	"GOTO_BOTTOM": "Aller à la fin de la liste"
 }
