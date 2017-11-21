@@ -48,7 +48,7 @@ function startExpressReactServer(listenPort) {
 	const port = listenPort || 5000;
 	app.listen(port);
 
-	logger.info(`[ExpressReact] React frontend app listening on ${port}`);
+	logger.info(`[Dashboard] React frontend app listening on ${port}`);
 }
 
 function apiRouter() {

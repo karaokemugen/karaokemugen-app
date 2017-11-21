@@ -4,8 +4,8 @@
 	"DETAILS_ADDED": "Ajouté ",
 	"DETAILS_ADDED_2": "le %s",
 	"DETAILS_ADDED_3": "par %s",
-	"DETAILS_PLAYING_IN" : "Lecture",
-	"DETAILS_PLAYING_IN_2" : " dans %s (~%s)",
+	"DETAILS_PLAYING_IN": "Lecture",
+	"DETAILS_PLAYING_IN_2": " dans %s (~%s)",
 	"DETAILS_VIEWS": "Vues",
 	"DETAILS_DURATION": "Durée",
 	"DETAILS_LANGUAGE": "Langue",
@@ -249,5 +249,6 @@
 	"CL_PLAYLISTS": "Listes",
 	"GOTO_TOP": "Aller au début de la liste",
 	"GOTO_PLAYING": "Aller au kara en cours de lecture",
-	"GOTO_BOTTOM": "Aller à la fin de la liste"
+	"GOTO_BOTTOM": "Aller à la fin de la liste",
+	"TAG_IRL": "TAG_IRL"
 }
