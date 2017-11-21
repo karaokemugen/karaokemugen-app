@@ -8,9 +8,8 @@
     "start": "babel-node src/index.js --",
     "debug": "babel-node $NODE_DEBUG_OPTION src/index.js -- --debug",
     "test": "mocha --require babel-register --timeout 5000",
-    "build": "babel --source-maps --copy-files -d dist/ src/ && cd react_client && yarn build && mv build ../dist/_dashboard",
-	"install": "cd react_client && yarn install && yarn build && mv build ../_src/_dashboard",
-	"buildReact": "cd react_client && yarn build"
+    "build": "babel --source-maps --copy-files -d dist/ src/ && cd react_client && yarn build && mv -f build ../dist/_dashboard",
+	"buildReact": "cd react_client && yarn build && mv -f build ../src/_dashboard"
   },
   "homepage": "https://mugen.karaokes.moe",
   "repository": {
