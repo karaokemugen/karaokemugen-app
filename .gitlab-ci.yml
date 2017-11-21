@@ -4,6 +4,7 @@ cache:
   paths:
   - node_modules/
   - bin/
+  - react_client/node_modules/
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
