@@ -23,7 +23,7 @@ apidoc/
 bin/
 
 # Client react
-client/node_modules
-client/coverage
-client/build
+react_client/node_modules
+react_client/coverage
+react_client/build
 src/_dashboard
