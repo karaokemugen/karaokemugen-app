@@ -3,6 +3,49 @@ import {createHash} from 'crypto';
 import {deburr} from 'lodash';
 import {now} from 'unix-timestamp';
 
+export async function editUser(id,userdata) {
+
+}
+
+export async function addGuest(guest) {
+	// Guest object :
+	// { 
+    //   name: Name of guest account, like "Mahoro",
+	//   avatar_id: id of avatar to use
+	// }
+}
+
+export async function deleteGuest(id) {
+
+}
+
+export async function editGuest(id,guest) {
+
+}
+
+export async function addAvatar(avatar) {
+    // Avatar object :
+	// {
+	//   type: 1 - guest, 2 - regular user
+    //   imagefile: name of file in app/avatars
+	// }
+}
+
+export async function deleteAvatar(id) {
+    // Check which guest used that avatar, modify the fk_id_avatar in the user table
+	// to point to the default avatar instead.
+	// Users can't delete their avatars. they have to replace them
+}
+
+export async function replaceAvatar(id,imagefile) {
+
+}
+
+export async function (id) {
+    // Check which user/guest used that avatar, modify the fk_id_avatar in the user table
+	// to point to the default avatar instead.
+}
+
 export async function findUserByName(username) {
 	//Check if user exists in db
 	const userdata = await getUserByName(username);
