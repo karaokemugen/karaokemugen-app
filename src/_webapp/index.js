@@ -8,7 +8,7 @@ const logger = require('winston');
 
 const basicAuth = require('express-basic-auth');
 
-import {hashPassword, findUserByID, findUserByName} from '../_common/utils/auth.js';
+import {hashPassword, findUserByID, findUserByName} from '../_common/utils/user.js';
 
 function AdminPasswordAuth(username, password){
 	return password === module.exports.SETTINGS.AdminPassword;
@@ -64,6 +64,7 @@ module.exports = {
 			app.use(express.static(__dirname + '/'));
 			app.use('/locales',express.static(__dirname + '/../_common/locales/'));
 			app.use('/previews',express.static(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathPreviews)));
+			app.use('/avatars',express.static(path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathAvatars)));
 			app.use('/admin', routerAdmin);		
 			app.get('/', function (req, res) {
 				res.render('public', {'layout': 'publicHeader',

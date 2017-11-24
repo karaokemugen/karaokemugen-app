@@ -586,6 +586,26 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {List all guests accounts}
+	* @return {boolean} {promise}
+	*/
+	listGuests:function(id) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			var sqlListGuests = fs.readFileSync(path.join(__dirname,'../../_common/db/select_guests.sql'),'utf-8');
+			module.exports._db_handler.all(sqlListGuests)
+				.then((guests) => {
+					resolve(guests);
+				})
+				.catch((err) => {
+					reject(`Failed to fetch guests list : ${err}`);
+				});			
+		});
+	},
+	/**
 	* @function {Delete criteria from blacklist}
 	* @param {number} {blacklist criteria ID}
 	* @return {boolean} {promise}

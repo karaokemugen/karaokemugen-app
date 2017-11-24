@@ -1,4 +1,4 @@
-import {getUserByName, getUserByID, getGuestInfo, createNewUser} from '../../_engine/components/db_interface.js';
+const db = require('../../_engine/components/db_interface.js');
 import {createHash} from 'crypto';
 import {deburr} from 'lodash';
 import {now} from 'unix-timestamp';
@@ -23,6 +23,10 @@ export async function editGuest(id,guest) {
 
 }
 
+export async function listGuests() {
+	return await db.listGuests();
+}
+
 export async function addAvatar(avatar) {
     // Avatar object :
 	// {
@@ -41,20 +45,15 @@ export async function replaceAvatar(id,imagefile) {
 
 }
 
-export async function (id) {
-    // Check which user/guest used that avatar, modify the fk_id_avatar in the user table
-	// to point to the default avatar instead.
-}
-
 export async function findUserByName(username) {
 	//Check if user exists in db
-	const userdata = await getUserByName(username);
+	const userdata = await db.getUserByName(username);
 	if (userdata) return userdata;
 	return null;	
 }
 
 export async function findUserByID(id) {
-	const userdata = await getUserByID(id);
+	const userdata = await db.getUserByID(id);
 	if (userdata) return userdata;
 	return null;
 }
@@ -66,7 +65,7 @@ export function hashPassword(password) {
 }
 
 export async function removeUser(id) {
-	return await deleteUser(id);	
+	return await db.deleteUser(id);	
 }
 
 export async function addUser(user) {
@@ -97,15 +96,11 @@ export async function addUser(user) {
 	if (user.guest_id > 0 && user.login === null) return 'Login is empty';
 	user.flag_online = 0;
 	
-	if (await createNewUser(user)) {
+	if (await db.createNewUser(user)) {
 		return true;
 	} else {
 		return 'Error creating user in database';
 	}
-}
-
-export async function editUser(user) {
-	// Modify userdata 
 }
 
 export async function deleteUser(user_id) {

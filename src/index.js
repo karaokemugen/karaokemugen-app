@@ -148,6 +148,7 @@ async function checkPaths(config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.PathTemp));
 	checks.push(asyncCheckOrMkdir(appPath, config.PathPreviews));
 	checks.push(asyncCheckOrMkdir(appPath, config.PathImport));
+	checks.push(asyncCheckOrMkdir(appPath, config.PathAvatars));
 
 	await Promise.all(checks);
 	logger.info('[Launcher] All folders checked');

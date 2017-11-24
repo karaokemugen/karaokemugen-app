@@ -3,6 +3,7 @@ const expressValidator = require('express-validator');
 const logger = require('winston');
 const bodyParser = require('body-parser');
 const basicAuth = require('express-basic-auth');
+const user = require('../_common/utils/user.js');
 
 function numberTest(element) {
 	if (isNaN(element)) {
@@ -3798,7 +3799,47 @@ module.exports = {
 							res.json(errMessage('TAGS_LIST_ERROR',err));
 						});
 				});
-
+			routerPublic.route('/guests')
+			/**
+ * @api {get} public/guests List guest accounts
+ * @apiName GetGuests
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission public
+ * 
+ * @apiSuccess {Number} data/guest_id ID of guest account
+ * @apiSuccess {String} data/name Name of guest account
+ * @apiSuccess {String} data/avatar_file Avatar's filename for this account.
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "guest_id": 1,
+ *           "name": "Naruto",
+ *           "avatar_file": "naruto.jpg"
+ *       }
+ *   ]
+ * }
+ * @apiError GUEST_LIST_ERROR Unable to list guest accounts
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "GUEST_LIST_ERROR",
+ * }
+ */
+				.get(function(req,res){
+					user.listGuests()
+						.then(function(guests){
+							res.json(OKMessage(guests));
+						})
+						.catch(function(err){
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('GUEST_LIST_ERROR',err));
+						});
+				});
 			// Add headers
 			app.use(function (req, res, next) {
 
