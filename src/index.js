@@ -72,7 +72,10 @@ async function main() {
 		console.log('Karaoke Mugen '+ config.VersionNo + ' - ' + config.VersionName);
 		process.exit(0);
 	}
-
+	if (argv.generate) {
+		logger.info('[Launcher] Database generation manually triggered');
+		config.optGenerateDB = true;
+	}
 	logger.info('[Launcher] Loaded configuration file');
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 

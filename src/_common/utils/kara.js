@@ -14,12 +14,14 @@ import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from './fil
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from './config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from './ffmpeg';
 
+let error = false;
+
 export async function getKara(karafile) {
 
 	const karaData = await parseKara(karafile);
 	karaData.isKaraModified = false;
 
-	verifyRequiredInfos(karaData);
+	verifyRequiredInfos(karaData,karafile);
 
 	if (!karaData.KID) {
 		karaData.isKaraModified = true;
@@ -42,6 +44,7 @@ export async function getKara(karafile) {
 		videoFile = await resolveFileInDirs(karaData.videofile, resolvedPathVideos());
 	} catch (err) {
 		logger.warn('[Kara] Video file not found : ' + karaData.videofile);
+		error = true;
 		karaData.videogain = 0;
 		karaData.videosize = 0;
 		karaData.videoduration = 0;
@@ -64,14 +67,18 @@ export async function getKara(karafile) {
 
 			const [videogain, videoduration] = await Promise.all([getVideoGain(videoFile), getVideoDuration(videoFile)]);
 
-			karaData.videogain = videogain;
-			karaData.videoduration = videoduration;
+			if (videoduration.error || videogain.error) error = true;
+
+			karaData.videogain = videogain.data;
+			karaData.videoduration = videoduration.data;
 		}
 	}
 
 	karaData.rating = 0;
 	karaData.viewcount = 0;
 	karaData.checksum = checksum(stringify(karaData));
+
+	if (error) karaData.error = true;
 
 	return karaData;
 }
@@ -83,7 +90,7 @@ export async function writeKara(karafile, karaData) {
 		return;
 	}
 
-	verifyRequiredInfos(karaData);
+	verifyRequiredInfos(karaData,karafile);
 	timestamp.round = true;
 
 	const infosToWrite = {
@@ -117,12 +124,14 @@ export async function parseKara(karaFile) {
 	return parseini(data);
 }
 
-export function verifyRequiredInfos(karaData) {
+export function verifyRequiredInfos(karaData,karafile) {
 	if (!karaData.videofile || karaData.videofile.trim() === '') {
-		throw 'Karaoke video file empty!';
+		error = true;
+		logger.warn('[Kara] Karaoke video file empty for kara : '+karafile);
 	}
 	if (!karaData.subfile || karaData.subfile.trim() === '') {
-		throw 'Karaoke sub file empty!';
+		error = true;
+		logger.warn('[Kara] Karaoke sub file empty for kara : '+karafile);
 	}
 }
 
@@ -135,7 +144,8 @@ async function findSubFile(videoFile, kara) {
 				return await extractSubtitles(videoFile, extractFile);
 			} catch (err) {
 				// Not blocking.
-				logger.debug('[Kara] Could not extract subtitles from video file ' + videoFile);
+				logger.warn('[Kara] Could not extract subtitles from video file ' + videoFile);
+				error = true;	
 			}
 		}
 	} else {
@@ -143,6 +153,7 @@ async function findSubFile(videoFile, kara) {
 			return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
 		} catch (err) {
 			logger.warn(`[Kara] Could not find subfile '${kara.subfile}'.`);
+			error = true;
 		}
 	}
 	// Non-blocking case if file isn't found

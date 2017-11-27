@@ -65,6 +65,13 @@ module.exports = {
 				.then(() => {
 					var karasDB_Test = new Promise(function(resolve,reject){
 						var doGenerate = false;
+						if(module.exports.SETTINGS.optGenerateDB) {
+							// Manual generation triggered.
+							// Delete any existing karas.sqlite3 file
+							if(fs.existsSync(db_file)) {
+								fs.removeSync(db_file);
+							}
+						}
 						if(!fs.existsSync(db_file)) {
 							logger.warn('[DBI] Karaokes database not found');
 							doGenerate = true;
@@ -83,9 +90,19 @@ module.exports = {
 													generator.onLog = function(type,message) {
 														logger.info('[DBI] [Gen]',message);
 													};
-													generator.run().then(function(){
+													generator.run().then(function(err){
 														logger.info('[DBI] Karaokes database created');
-														resolve();
+														if (module.exports.SETTINGS.optGenerateDB) {
+															if (err) {
+																logger.info('[DBI] Database generation completed with errors!');
+																process.exit(1);
+															} else {
+																logger.info('[DBI] Database generation completed successfully!');
+																process.exit(0);
+															}
+														} else {
+															resolve();
+														}														
 													}).catch(function(error){
 														// error.
 														reject(error);

@@ -16,6 +16,8 @@ import {
 	updateSeriesAltNames
 } from '../_common/db/generation';
 
+let error = false;
+
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
 	await db.run('DELETE FROM kara_serie;');
@@ -31,10 +33,10 @@ async function emptyDatabase(db) {
 async function backupDir(directory) {
 	const backupDir = directory + '_backup';
 	if (await asyncExists(backupDir)) {
-		logger.debug('[Gen] [Gen] Removing backup dir ' + backupDir);
+		logger.debug('[Gen] Removing backup dir ' + backupDir);
 		await asyncRemove(backupDir);
 	}
-	logger.debug('[Gen] [Gen] Creating backup dir ' + backupDir);
+	logger.debug('[Gen] Creating backup dir ' + backupDir);
 	await asyncMkdirp(backupDir);
 	await asyncCopy(
 		directory,
@@ -95,7 +97,11 @@ async function getAllKaras(karafiles) {
 
 async function readAndCompleteKarafile(karafile) {
 	const karaData = await getKara(karafile);
-	await writeKara(karafile, karaData);
+	if (karaData.error) {
+		error = true;
+	} else {
+		await writeKara(karafile, karaData);
+	}	
 	return karaData;
 }
 
@@ -141,7 +147,8 @@ function getSeries(kara) {
 		}
 		// Karas not LIVE nor MV must have a series.		
 		if (isEmpty(series)) {
-			throw 'Karaoke series cannot be detected! ('+JSON.stringify(kara);
+			error = true;
+			logger.warn('[Gen] Karaoke series cannot be detected! ('+JSON.stringify(kara));
 		}
 	}
 
@@ -219,7 +226,7 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 					$serie_altnamesnorm: deburr(altNames),
 					$serie_name: serie
 				});
-				logger.debug('[Gen] Added alt. names "' + altNames + '" to ' + serie);
+				logger.debug('[Gen] Added alt. name "' + altNames + '" to ' + serie);
 			}
 		});
 	} else {
@@ -299,7 +306,8 @@ function getTypes(kara, allTags) {
 	});
 
 	if (result.size === 0) {
-		throw 'Karaoke type cannot be detected: ' + kara.type + ' in kara : ' + JSON.stringify(kara);
+		logger.warn('[Gen] Karaoke type cannot be detected : ' + kara.type + ' in kara : ' + JSON.stringify(kara));
+		error = true;		
 	}
 
 	return result;
@@ -388,9 +396,7 @@ export async function run(config) {
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 
-		const db = await open(karas_dbfile, {verbose: true, Promise});
-		logger.info('[Gen] Karaoke databases created');
-
+		const db = await open(karas_dbfile, {verbose: true, Promise});		
 		await emptyDatabase(db);
 		await backupKaraDirs(conf);
 
@@ -432,8 +438,10 @@ export async function run(config) {
 		await checkUserdbIntegrity(null, conf);
 
 		await deleteBackupDirs(conf);
+		return error;
 	} catch (err) {
 		logger.error(err);
+		return error;
 	}
 }
 
@@ -484,7 +492,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
 
-	// Listing existing KIDs
+	// Listing existing KIDs	
 	const karaKIDs = allKaras.map(k => '\'' + k.kid + '\'').join(',');
 
 	// Deleting records which aren't in our KID list
@@ -496,10 +504,8 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`DELETE FROM viewcount WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM playlist_content WHERE kid NOT IN (${karaKIDs});`)
 	]);
-
 	const karaIdByKid = new Map();
 	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
-
 	let sql = '';
 
 	whitelistKaras.forEach(wlk => {
@@ -532,7 +538,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 			sql += `UPDATE playlist_content SET fk_id_kara = ${karaIdByKid.get(plck.kid)} WHERE kid = '${plck.kid}';`;
 		}
 	});
-
+	
 	blcTags.forEach(function (blcTag) {
 		let tagFound = false;
 		allTags.forEach(function (tag) {
@@ -553,7 +559,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	});
 
 	if (sql) {
-		logger.debug('[Gen] [Gen] Tags UPDATE SQL : ' + sql);
+		logger.debug('[Gen] UPDATE SQL : ' + sql);
 		await userdb.run(sql);
 	}
 
@@ -567,5 +573,5 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
 
-	logger.info('[Gen] Integrity checks complete!');
+	logger.info('[Gen] Integrity checks complete! Please wait a little bit more...');	
 }

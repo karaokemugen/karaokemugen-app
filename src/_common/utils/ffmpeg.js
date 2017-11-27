@@ -26,23 +26,30 @@ export function getVideoGain(videofile, config) {
 		proc.stderr.on('data',(data) => {
 			output += data.toString();
 		});
-
+		const res = {};
 		proc.on('close', (code) => {
 			if (code !== 0) {
-				logger.error('Video ' + videofile + ' gain calculation error : ' + code);
-				resolve(0);
+				logger.warn('Video ' + videofile + ' gain calculation error : ' + code);
+				res.videogain = 0;
+				res.error = true;
+				resolve(res);
 			} else {
 				const outputArray = output.split(' ');
 				const index = outputArray.indexOf('track_gain');
 				if (index > -1) {
 					let audioGain = parseFloat(outputArray[index + 2]);
 					if (typeof audioGain === 'number') {
-						resolve(audioGain.toString());
+						res.data = audioGain.toString();
+						resolve(res);
 					} else {
-						resolve(0);
+						res.data = 0;
+						res.error = true;
+						resolve(res);
 					}
 				} else {
-					resolve(0);
+					res.data = 0;
+					res.error = true;						
+					resolve(res);
 				}
 			}
 		});
@@ -52,14 +59,17 @@ export function getVideoGain(videofile, config) {
 export function getVideoDuration(videofile, config) {
 
 	const conf = config || getConfig();
-
+	const res = {};
 	return new Promise((resolve) => {
 		probe(conf.BinffprobePath, videofile, function(err, videodata) {
 			if (err) {
-				logger.error('Video ' + videofile + ' probe error : ' + err);
-				resolve(0);
+				logger.warn('Video ' + videofile + ' probe error : ' + err);
+				res.error = true;
+				res.data = 0;
+				resolve(res);
 			} else {
-				resolve(Math.floor(videodata.format.duration));
+				res.data = Math.floor(videodata.format.duration);
+				resolve(res);				
 			}
 		});
 	});
