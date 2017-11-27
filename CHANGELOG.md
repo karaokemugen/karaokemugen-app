@@ -1,5 +1,10 @@
 # Versions
 
+## v2.0.4 - 20/11/2017
+
+- Fix des jingles qui ne se jouent plus si on change l'intervalle entre deux jingles et que cet intervalle devient plus petit que le compteur actuel
+- Déploiement continu des nouvelles versions via gitlab
+
 ## v2.0.3 - 12/11/2017
 
 - Fix de la réécriture de karas durant la génération

@@ -14,6 +14,7 @@ import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from './fil
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from './config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from './ffmpeg';
 import {getKara} from '../domain/kara';
+let error = false;
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
@@ -62,6 +63,7 @@ export async function getDataFromKaraFile(karafile) {
 		videoFile = await resolveFileInDirs(karaData.videofile, resolvedPathVideos());
 	} catch (err) {
 		logger.warn('[Kara] Video file not found : ' + karaData.videofile);
+		error = true;
 		karaData.videogain = 0;
 		karaData.videosize = 0;
 		karaData.videoduration = 0;
@@ -72,11 +74,14 @@ export async function getDataFromKaraFile(karafile) {
 		const subFile = await findSubFile(videoFile, karaData);
 		await extractAssInfos(subFile, karaData);
 		await extractVideoTechInfos(videoFile, karaData);
+		if (karaData.error) error = true;
 	}
 
 	karaData.rating = 0;
 	karaData.viewcount = 0;
 	karaData.checksum = checksum(stringify(karaData));
+
+	if (error) karaData.error = true;
 
 	return karaData;
 }
@@ -99,8 +104,10 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 
 		const [videogain, videoduration] = await Promise.all([getVideoGain(videoFile), getVideoDuration(videoFile)]);
 
-		karaData.videogain = videogain;
-		karaData.videoduration = videoduration;
+		if (videogain.error || videoduration.error) error = true;
+
+		karaData.videogain = videogain.data;
+		karaData.videoduration = videoduration.data;
 	}
 }
 
@@ -132,7 +139,8 @@ async function findSubFile(videoFile, kara) {
 				return await extractVideoSubtitles(videoFile, kara.KID);
 			} catch (err) {
 				// Not blocking.
-				logger.debug('[Kara] Could not extract subtitles from video file ' + videoFile);
+				logger.warn('[Kara] Could not extract subtitles from video file ' + videoFile);
+				error = true;	
 			}
 		}
 	} else {
@@ -140,6 +148,7 @@ async function findSubFile(videoFile, kara) {
 			return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
 		} catch (err) {
 			logger.warn(`[Kara] Could not find subfile '${kara.subfile}'.`);
+			error = true;
 		}
 	}
 	// Non-blocking case if file isn't found

@@ -228,7 +228,7 @@ swipeManager.on('swipe', function (e) {
 				}
 	
 				if (e.gesture.pointerType === 'touch' || e.gesture.pointerType === 'mouse') {
-					if (swipeLeft || swipeRight) {
+					if (swipeLeft) {
 						var fullWidth;
 						if (swipeLeft) {
 							fullWidth = $this.innerWidth();
