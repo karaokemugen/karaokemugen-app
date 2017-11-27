@@ -102,7 +102,7 @@ async function readAndCompleteKarafile(karafile) {
 	try {
 		verifyKaraData(karaData);
 	} catch (err) {
-		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete: ${err}`);
+		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete : ${err}`);
 		error = true;
 		return karaData;
 	}
