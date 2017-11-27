@@ -466,7 +466,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		open(karas_dbfile, {Promise}),
 		open(karas_userdbfile, {Promise})
 	]);
-
+	
 	const [
 		allTags,
 		allKaras,
@@ -509,32 +509,32 @@ export async function checkUserdbIntegrity(uuid, config) {
 	let sql = '';
 
 	whitelistKaras.forEach(wlk => {
-		if (karaIdByKid.get(wlk.kid) !== wlk.id_kara) {
+		if (karaIdByKid.has(wlk.kid) && karaIdByKid.get(wlk.kid) !== wlk.id_kara) {
 			sql += `UPDATE whitelist SET fk_id_kara = ${karaIdByKid.get(wlk.kid)} WHERE kid = '${wlk.kid}';`;
 		}
 	});
 	blacklistCriteriaKaras.forEach(blck => {
-		if (karaIdByKid.get(blck.kid) !== blck.id_kara) {
+		if (karaIdByKid.has(blck.kid) && karaIdByKid.get(blck.kid) !== blck.id_kara) {
 			sql += `UPDATE blacklist_criteria SET value = ${karaIdByKid.get(blck.kid)} WHERE uniquevalue = '${blck.kid}';`;
 		}
 	});
 	blacklistKaras.forEach(blk => {
-		if (karaIdByKid.get(blk.kid) !== blk.id_kara) {
+		if (karaIdByKid.has(blk.kid) && karaIdByKid.get(blk.kid) !== blk.id_kara) {
 			sql += `UPDATE blacklist SET fk_id_kara = ${karaIdByKid.get(blk.kid)} WHERE kid = '${blk.kid}';`;
 		}
 	});
 	ratingKaras.forEach(rk => {
-		if (karaIdByKid.get(rk.kid) !== rk.id_kara) {
+		if (karaIdByKid.has(rck.kid) && karaIdByKid.get(rk.kid) !== rk.id_kara) {
 			sql += `UPDATE rating SET fk_id_kara = ${karaIdByKid.get(rk.kid)} WHERE kid = '${rk.kid}';`;
 		}
 	});
 	viewcountKaras.forEach(vck => {
-		if (karaIdByKid.get(vck.kid) !== vck.id_kara) {
+		if (karaIdByKid.has(vck.kid) && karaIdByKid.get(vck.kid) !== vck.id_kara) {
 			sql += `UPDATE viewcount SET fk_id_kara = ${karaIdByKid.get(vck.kid)} WHERE kid = '${vck.kid}';`;
 		}
 	});
 	playlistKaras.forEach(plck => {
-		if (karaIdByKid.get(plck.kid) !== plck.id_kara) {
+		if (karaIdByKid.has(plck.kid) && karaIdByKid.get(plck.kid) !== plck.id_kara) {
 			sql += `UPDATE playlist_content SET fk_id_kara = ${karaIdByKid.get(plck.kid)} WHERE kid = '${plck.kid}';`;
 		}
 	});
