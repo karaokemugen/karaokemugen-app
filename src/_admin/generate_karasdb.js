@@ -524,7 +524,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		}
 	});
 	ratingKaras.forEach(rk => {
-		if (karaIdByKid.has(rck.kid) && karaIdByKid.get(rk.kid) !== rk.id_kara) {
+		if (karaIdByKid.has(rk.kid) && karaIdByKid.get(rk.kid) !== rk.id_kara) {
 			sql += `UPDATE rating SET fk_id_kara = ${karaIdByKid.get(rk.kid)} WHERE kid = '${rk.kid}';`;
 		}
 	});
