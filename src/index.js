@@ -2,7 +2,7 @@
  * @fileoverview Launcher source file
  */
 import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
-import {initConfig,configureBinaries} from './_common/utils/config';
+import {getConfig,setConfig,initConfig,configureBinaries} from './_common/utils/config';
 import clc from 'cli-color' ;
 import {copy} from 'fs-extra';
 import path from 'path';
@@ -73,7 +73,7 @@ async function main() {
 	}
 	if (argv.generate) {
 		logger.info('[Launcher] Database generation manually triggered');
-		config.optGenerateDB = true;
+		setConfig({optGenerateDB: true});
 	}
 	logger.info('[Launcher] Loaded configuration file');
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
@@ -102,6 +102,7 @@ async function main() {
 	/**
 	 * Calling engine.
 	 */
+	config = getConfig();
 	engine.SYSPATH = appPath;
 	engine.SETTINGS = config;
 	engine.i18n = i18n;
