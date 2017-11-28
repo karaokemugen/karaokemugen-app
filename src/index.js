@@ -2,8 +2,7 @@
  * @fileoverview Launcher source file
  */
 import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
-import {initConfig} from './_common/utils/config';
-
+import {initConfig,configureBinaries} from './_common/utils/config';
 import clc from 'cli-color' ;
 import {copy} from 'fs-extra';
 import path from 'path';
@@ -80,6 +79,9 @@ async function main() {
 	}
 	logger.info('[Launcher] Loaded configuration file');
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
+
+	// Checking binaries
+	await configureBinaries(config);
 
 	// Vérification de l'existence des répertoires, sinon les créer.
 	await checkPaths(config);
