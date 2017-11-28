@@ -138,7 +138,7 @@ export function verifyRequiredInfos(karaData,karafile) {
 async function findSubFile(videoFile, kara) {
 	const videoExt = extname(videoFile);
 	if (kara.subfile === 'dummy.ass') {
-		if (videoExt === '.mkv' || videoExt === '.mp4') {
+		if (videoExt === '.mkv') {
 			const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kara.KID}.ass`);
 			try {
 				return await extractSubtitles(videoFile, extractFile);
