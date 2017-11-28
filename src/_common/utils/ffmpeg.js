@@ -17,7 +17,6 @@ export async function extractSubtitles(videofile, extractfile, config) {
 export function getVideoGain(videofile, config) {
 
 	const conf = config || getConfig();
-	logger.debug('[ffmpeg] Gain config : '+JSON.stringify(conf));
 	return new Promise((resolve) => {
 		const proc = spawn(conf.BinffmpegPath, ['-i', videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 
