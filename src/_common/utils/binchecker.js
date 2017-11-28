@@ -11,11 +11,14 @@ export async function checkBinaries(config) {
 
 	const binariesPath = configuredBinariesForSystem(config);
 
-	const requiredBinariesChecks = [
+	let requiredBinariesChecks = [
 		asyncRequired(binariesPath.BinffmpegPath),
-		asyncRequired(binariesPath.BinffprobePath),
-		asyncRequired(binariesPath.BinmpvPath)
+		asyncRequired(binariesPath.BinffprobePath)
 	];
+
+	// We won't check for mpv in case we're generating the database only
+	// This will make our CI tests faster
+	if (!config.optGenerateDB) requiredBinariesChecks.push(asyncRequired(binariesPath.BinmpvPath));
 
 	try {
 		await Promise.all(requiredBinariesChecks);
