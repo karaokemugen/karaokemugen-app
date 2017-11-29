@@ -530,11 +530,35 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Check if user exists}
+	* @param  {string} login {Login to check for existence}
+	* @return {type} {Returns true or false}
+	*/
+	checkUserExists:function(login) {
+		return new Promise(function(resolve,reject){
+			var sqlCheckUserExists = fs.readFileSync(path.join(__dirname,'../../_common/db/test_user_name.sql'),'utf-8');
+			module.exports._db_handler.get(sqlCheckUserExists,
+				{
+					$login: login
+				})
+				.then((user) => {
+					if (user) {
+						resolve(true);						
+					} else {
+						resolve(false);
+					}
+				})
+				.catch((err) => {
+					reject('Failed to test if user '+login+' exists : '+err);
+				});								
+		});
+	},
+	/**
 	* @function {Create new user in DB}
 	* @param {object} {userdata object}
 	* @return {boolean} {promise}
 	*/
-	createNewUser:function(user) {
+	createUser:function(user) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				logger.error('[DBI] DB_INTERFACE is not ready to work');

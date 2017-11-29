@@ -127,15 +127,15 @@ module.exports = {
 			// In case of error, return the correct code and object 'error'
 
 			// Admin routes
-/**
+			/**
  * @apiDefine admin Admin access only
  * Requires authorization (HTTP basic-auth) to use this API
  */
-/**
+			/**
  * @apiDefine public Public access
  * This API does not require any authorization method and can be accessed from anyone.
  */
-/**
+			/**
  * @api {post} admin/shutdown Shutdown the entire application
  * @apiDescription
  * Shutdowns application completely. Kind of a self-destruct button.
@@ -1756,7 +1756,7 @@ module.exports = {
 				});
 
 			routerAdmin.route('/blacklist')
- /**
+			/**
  * @api {get} admin/blacklist Get blacklist
  * @apiName GetBlacklist
  * @apiVersion 2.0.0
@@ -1852,7 +1852,7 @@ module.exports = {
 						});
 				});				
 			routerAdmin.route('/blacklist/criterias')
-/**
+			/**
  * @api {get} admin/blacklist/criterias Get list of blacklist criterias
  * @apiName GetBlacklistCriterias
  * @apiVersion 2.0.0
@@ -1897,7 +1897,7 @@ module.exports = {
 							res.json(errMessage('BLC_VIEW_ERROR',err));
 						});
 				})
-/**
+			/**
  * @api {post} admin/blacklist/criterias Add a blacklist criteria
  * @apiName PostBlacklistCriterias
  * @apiVersion 2.0.0
@@ -1972,7 +1972,7 @@ module.exports = {
 				});
 
 			routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
-/**
+			/**
  * @api {delete} admin/blacklist/criterias/:blc_id Delete a blacklist criteria
  * @apiName DeleteBlacklistCriterias
  * @apiVersion 2.0.0
@@ -2012,7 +2012,7 @@ module.exports = {
 							res.json(errMessage('BLC_DELETE_ERROR',err));	
 						});
 				})
-/**
+			/**
  * @api {put} admin/blacklist/criterias/:blc_id Edit a blacklist criteria
  * @apiName PutBlacklistCriterias
  * @apiVersion 2.0.0
@@ -2149,7 +2149,7 @@ module.exports = {
 
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/export')
-/**
+			/**
  * @api {get} admin/playlists/:pl_id/export Export a playlist
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getPlaylistExport
@@ -2215,7 +2215,7 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/playlists/import')
-/**
+			/**
  * @api {post} admin/playlists/import Import a playlist
  * @apiName postPlaylistImport
  * @apiVersion 2.0.0
@@ -2284,7 +2284,7 @@ module.exports = {
 
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
-/**
+			/**
  * @api {put} admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
@@ -2330,7 +2330,7 @@ module.exports = {
 
 
 			routerPublic.route('/playlists')
-/**
+			/**
  * @api {get} public/playlists/ Get list of playlists (public)
  * @apiName GetPlaylistsPublic
  * @apiGroup Playlists
@@ -2375,7 +2375,7 @@ module.exports = {
 						});
 				});
 			routerPublic.route('/playlists/:pl_id([0-9]+)')
-/**
+			/**
  * @api {get} public/playlists/:pl_id Get playlist information (public)
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
@@ -2431,7 +2431,7 @@ module.exports = {
 						});
 				});
 			routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
-/**
+			/**
  * @api {get} public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.0.0
@@ -2716,7 +2716,7 @@ module.exports = {
 					res.json(OKMessage(settings));
 				});				
 			routerPublic.route('/stats')
- /**
+			/**
  * @api {get} public/stats Get statistics
  * @apiName GetStats
  * @apiVersion 2.0.0
@@ -2756,7 +2756,7 @@ module.exports = {
 				});
 
 			routerPublic.route('/whitelist')
-/**
+			/**
  * @api {get} public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
  * @apiVersion 2.0.0
@@ -2859,7 +2859,7 @@ module.exports = {
 				});
 
 			routerPublic.route('/blacklist')
-/**
+			/**
  * @api {get} public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
  * @apiVersion 2.0.0
@@ -2962,7 +2962,7 @@ module.exports = {
 				});
 
 			routerPublic.route('/blacklist/criterias')
-/**
+			/**
  * @api {get} public/blacklist/criterias Get list of blacklist criterias (public)
  * @apiName GetBlacklistCriteriasPublic
  * @apiVersion 2.0.0
@@ -3015,7 +3015,7 @@ module.exports = {
 				});
 
 			routerPublic.route('/player')
-/**
+			/**
  * @api {get} public/player Get player status
  * @apiName GetPlayer
  * @apiVersion 2.0.0
@@ -3178,7 +3178,7 @@ module.exports = {
 				});
 
 			routerPublic.route('/karas/random')
-/**
+			/**
  * @api {get} /public/karas/random Get a random karaoke ID
  * @apiName GetKarasRandom
  * @apiVersion 2.0.0
@@ -3839,6 +3839,85 @@ module.exports = {
 							res.statusCode = 500;
 							res.json(errMessage('GUEST_LIST_ERROR',err));
 						});
+				});
+			routerPublic.route('/users')
+			/**
+ * @api {post} public/users Create new user
+ * @apiName PostUser
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission public
+ *
+ * @apiParam {Number} guest_id ID of guest account to attach this new user to. 0 if this is not a guest account.
+ * @apiParam {String} login Login name for the user
+ * @apiParam {String} password Password for the user
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Boolean} data Returns `true` if success
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "USER_CREATED",
+ *   "data": true
+ * }
+ * @apiError USER_CREATION_ERROR Unable to create user
+ * @apiError USER_ALREADY_EXISTS This username already exists
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "Axel",
+ *   "code": "USER_ALREADY_EXISTS",
+ *   "message": null
+ * }
+ */
+				.post((req,res) => {
+					//Validate form data
+					req.check({
+						'login': {
+							in: 'body',
+							notEmpty: true,
+						},
+						'password': {
+							in: 'body',
+							notEmpty: true,
+						},						
+						'guest_id': {
+							in: 'body',
+							notEmpty: true,
+							isInt: {
+								errorMessage: 'Invalid guest ID (must be integer)'
+							}
+						}
+					});
+
+					req.getValidationResult()
+						.then(function(result){
+							if (result.isEmpty()) {
+								// No errors detected
+								req.sanitize('login').trim();
+								req.sanitize('login').unescape();
+								req.sanitize('password').trim();
+								req.sanitize('password').unescape();
+								req.sanitize('guest_id').toInt();
+								
+								user.addUser(req.body)
+									.then((result) => {
+										res.json(OKMessage(result,'USER_CREATED'));
+									})
+									.catch((err) => {
+										logger.error(err);
+										res.statusCode = 500;
+										res.json(errMessage(err.code,err.msg));
+									});
+							} else {
+								// Errors detected
+								// Sending BAD REQUEST HTTP code and error object.
+								res.statusCode = 400;								
+								res.json(result.mapped());
+							}
+						});
+
 				});
 			// Add headers
 			app.use(function (req, res, next) {

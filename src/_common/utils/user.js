@@ -3,8 +3,22 @@ import {createHash} from 'crypto';
 import {deburr} from 'lodash';
 import {now} from 'unix-timestamp';
 
-export async function editUser(id,userdata) {
-
+export async function editUser(id,user) {
+	// User contains :
+	// { 
+	//   login: string (can be empty if guest_id > 0)
+	//   password: string (can be empty if guest_id > 0. Must be hashed)
+	//   nickname: login by default
+	//   NORM_nickname: normalized/deburred nickname
+	//   bio: Bio text.
+	//   url: URL text
+	//   email: email
+	// }	
+	if (await db.editUser(user)) {
+		return true;
+	} else {
+		return 'Error editing user in database';
+	}
 }
 
 export async function addGuest(guest) {
@@ -90,16 +104,24 @@ export async function addUser(user) {
 		user.avatar_id = 0;
 		user.nickname = user.login;
 	}
+	user.password = hashPassword(user.password);
 	user.last_login = now();
 	user.NORM_nickname = deburr(user.nickname);
 	if (user.guest_id > 0 && user.password === null) return 'Password is empty';
 	if (user.guest_id > 0 && user.login === null) return 'Login is empty';
 	user.flag_online = 0;
-	
-	if (await db.createNewUser(user)) {
+	user.flag_admin = 0;	
+	// Check if login already exists.
+	let err = {};
+	if (await db.checkUserExists(user.login)) {
+		err.code = 'USER_ALREADY_EXISTS';
+		return err;
+	}
+	if (await db.createUser(user)) {
 		return true;
 	} else {
-		return 'Error creating user in database';
+		err.code = 'USER_CREATION_ERROR';		
+		return err;
 	}
 }
 
