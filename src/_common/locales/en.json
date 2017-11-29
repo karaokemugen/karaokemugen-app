@@ -250,5 +250,9 @@
 	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "You can't add any more songs for now. Wait until one of your songs is played!",
 	"PLAYLIST_MODE_SONG_ADDED": "%s added to playlist %s",
 	"LYRICS_VIEW_ERROR": "Unable to display lyrics for %s",
-	"TAGS_LIST_ERROR": "Unable to display tag list"
+	"TAGS_LIST_ERROR": "Unable to display tag list",
+	"GUEST_LIST_ERROR": "Unable to list guest accounts",
+	"USER_CREATED": "User created",
+	"USER_CREATION_ERROR": "Unable to create user",
+	"USER_ALREADY_EXISTS": "User %s already exists !"
 } 

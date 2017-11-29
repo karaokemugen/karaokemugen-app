@@ -249,5 +249,9 @@
 	"CL_PLAYLISTS": "Listes",
 	"GOTO_TOP": "Aller au début de la liste",
 	"GOTO_PLAYING": "Aller au kara en cours de lecture",
-	"GOTO_BOTTOM": "Aller à la fin de la liste"
+	"GOTO_BOTTOM": "Aller à la fin de la liste",
+	"GUEST_LIST_ERROR": "Impossible de lister les comptes invités",
+	"USER_CREATED": "Utilisateur crée",
+	"USER_CREATION_ERROR": "Impossible de créer l'utilisateur",
+	"USER_ALREADY_EXISTS": "L'utilisateur %s existe déjà !"
 }
