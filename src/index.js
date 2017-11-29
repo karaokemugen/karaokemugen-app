@@ -2,8 +2,7 @@
  * @fileoverview Launcher source file
  */
 import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
-import {initConfig,configureBinaries} from './_common/utils/config';
-import clc from 'cli-color' ;
+import {getConfig,setConfig,initConfig,configureBinaries} from './_common/utils/config';
 import {copy} from 'fs-extra';
 import path from 'path';
 import minimist from 'minimist';
@@ -32,10 +31,6 @@ process.on('uncaughtException', function (exception) {
  * So we wrote it in hexa (1B)
  */
 process.stdout.write('\x1Bc');
-console.log(clc.greenBright('+------------------------------------------------------------------+'));
-console.log(clc.greenBright('| Project Karaoke Mugen                                            |'));
-console.log(clc.greenBright('+------------------------------------------------------------------+'));
-console.log('\n');
 
 const argv = parseArgs();
 
@@ -60,6 +55,10 @@ async function main() {
 	/** Note : pas de logging avant l'initialisation de la configuration, qui inclut le logger. */
 
 	let config = await initConfig(appPath, argv);
+	console.log('--------------------------------------------------------------------');
+	console.log('Karaoke Mugen '+config.VersionNo+' '+config.VersionName);
+	console.log('--------------------------------------------------------------------');
+	console.log('\n');
 
 	logger.debug('[Launcher] SysPath detected : ' + appPath);
 	logger.info('[Launcher] Locale detected : ' + config.EngineDefaultLocale);
@@ -70,12 +69,12 @@ async function main() {
 		process.exit(0);
 	}
 	if (argv.version) {
-		console.log('Karaoke Mugen '+ config.VersionNo + ' - ' + config.VersionName);
+		console.log('Karaoke Mugen '+ config.VersionNo + ' - (' + config.VersionName+')');
 		process.exit(0);
 	}
 	if (argv.generate) {
-		logger.info('[Launcher] Database generation manually triggered');
-		config.optGenerateDB = true;
+		logger.info('[Launcher] Database generation requested');
+		setConfig({optGenerateDB: true});
 	}
 	logger.info('[Launcher] Loaded configuration file');
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
@@ -87,7 +86,7 @@ async function main() {
 	await checkPaths(config);
 
 	if (argv.karagen) {
-		console.log('Kara generation');
+		logger.info('[Launcher] .kara generation requested');
 		await karaGenerationBatch();
 		process.exit(0);
 	}
@@ -110,7 +109,10 @@ async function main() {
 	/** Start React static frontend */
 	startExpressReactServer(1338);
 
-	/** Calling engine. */
+	/**
+	 * Calling engine.
+	 */
+	config = getConfig();
 	engine.SYSPATH = appPath;
 	engine.SETTINGS = config;
 	engine.i18n = i18n;
@@ -141,7 +143,6 @@ async function checkPaths(config) {
 
 	const appPath = config.appPath;
 
-	logger.info('[Launcher] Checking data folders');
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
@@ -155,7 +156,7 @@ async function checkPaths(config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.PathImport));
 
 	await Promise.all(checks);
-	logger.info('[Launcher] All folders checked');
+	logger.info('[Launcher] Directory checks complete');
 }
 
 function verifyOpenPort(port) {

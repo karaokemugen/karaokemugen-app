@@ -134,7 +134,7 @@ export async function extractVideoSubtitles(videoFile, kid) {
 async function findSubFile(videoFile, kara) {
 	const videoExt = extname(videoFile);
 	if (kara.subfile === 'dummy.ass') {
-		if (videoExt === '.mkv' || videoExt === '.mp4') {
+		if (videoExt === '.mkv') {
 			try {
 				return await extractVideoSubtitles(videoFile, kara.KID);
 			} catch (err) {

@@ -100,7 +100,8 @@ function configureLocale() {
 export async function configureBinaries(config) {
 	logger.info('[Launcher] Checking if binaries are available');
 	const binaries = await checkBinaries(config);
-	config = {...config, ...binaries};
+	setConfig(binaries);
+	
 }
 
 function configureHost() {

@@ -40,7 +40,6 @@ export async function createPreview(videopreview, config) {
 export function getVideoGain(videofile, config) {
 
 	const conf = config || getConfig();
-
 	return new Promise((resolve) => {
 		const proc = spawn(conf.BinffmpegPath, ['-i', videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 
