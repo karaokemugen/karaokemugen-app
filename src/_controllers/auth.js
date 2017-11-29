@@ -8,7 +8,13 @@ module.exports = function authController(router) {
 	const requireAuth = passport.authenticate('jwt', { session: false });
 
 	router.post('/login', requireLogin, (req, res) => {
-		res.send({ token: createJwtToken(req.body.username, 'admin') });
+		const config = getConfig();
+
+		res.send({
+			token: createJwtToken(req.body.username, config),
+			username: req.body.username,
+			role: getRole(req.body.username, config)
+		});
 	});
 
 	router.get('/checkauth', requireAuth, (req, res) => {
@@ -16,11 +22,11 @@ module.exports = function authController(router) {
 	});
 };
 
-function createJwtToken(username, role, config) {
+function createJwtToken(username, config) {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
 	return encode(
-		{ username: username, iat: timestamp, role: role },
+		{ username: username, iat: timestamp, role: getRole(username, conf) },
 		conf.JwtSecret
 	);
 }
@@ -30,3 +36,7 @@ function decodeJwtToken(token, config) {
 	return decode(token, conf.JwtSecret);
 }
 
+function getRole(username, config) {
+	const conf = config || getConfig();
+	return (username === conf.AdminUsername ? 'admin' : 'user');
+}

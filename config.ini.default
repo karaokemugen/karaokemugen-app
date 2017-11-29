@@ -6,7 +6,8 @@
 
 
 
-; Admin password. Change this in config.ini
+; Admin username/password. Change this in config.ini
+AdminUsername = "admin"
 AdminPassword = "gurdil"
 
 ; JWT secret key

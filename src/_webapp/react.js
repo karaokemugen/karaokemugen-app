@@ -75,13 +75,19 @@ function configurePassport(conf) {
 
 function localPassportStrategy(config) {
 	const localOptions = {usernameField: 'username', passwordField: 'password'};
+	const adminUsername = config.AdminUsername;
 	const adminPassword = config.AdminPassword;
 
 	return new LocalStrategy(localOptions, function (username, password, done) {
-		if (password === adminPassword) {
-			return done(null, username);
+		if (username === adminUsername) {
+			if (password === adminPassword) {
+				return done(null, username);
+			} else {
+				return done(null, false);
+			}
 		} else {
-			return done(null, false);
+			// TODO Remplacer par une identification des comptes utilisateurs en base.
+			return done(null, username);
 		}
 	});
 }
