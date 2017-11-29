@@ -68,7 +68,7 @@ const karaConstraints = {
 		presence: {allowEmpty: false},
 		format: subFileRegexp
 	},
-	title: {presence: {allowEmpty: false}},
+	title: {presence: {allowEmpty: true}},
 	type: {presence: true, inclusion: karaTypesArray},
 	series: function(value, attributes) {
 		if (!serieRequired(attributes['type'])) {
@@ -76,8 +76,9 @@ const karaConstraints = {
 		}
 	},
 	lang: {langValidator: true},
-	order: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	year: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	//FIXME : Order and year must be numeric, but this is not compatible with allowEmpty: true
+	order: {presence: {allowEmpty: true}},
+	year: {presence: {allowEmpty: true}},
 	KID: {presence: true, format: uuidRegexp},
 	dateadded: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	datemodif: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},

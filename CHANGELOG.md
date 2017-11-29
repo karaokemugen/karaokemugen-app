@@ -1,4 +1,21 @@
-# Versions
+﻿# Versions
+
+## v2.0.5 - 27/11/2017
+
+### Améliorations
+
+- Ajout d'une option `--generate` à la ligne de commande pour forcer une génération de la base et quitter.
+
+### Correctifs
+
+- Faire glisser à gauche sur l'interface mobile ne rajoute plus le kara ! Seulement à droite.
+- Fix des samples
+- Fix en cas de kara absent d'une génération sur l'autre de la base.
+
+## v2.0.4 - 20/11/2017
+
+- Fix des jingles qui ne se jouent plus si on change l'intervalle entre deux jingles et que cet intervalle devient plus petit que le compteur actuel
+- Déploiement continu des nouvelles versions via gitlab
 
 ## v2.0.3 - 12/11/2017
 

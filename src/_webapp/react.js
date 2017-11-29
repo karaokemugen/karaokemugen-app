@@ -34,7 +34,7 @@ function startExpressReactServer(listenPort) {
 	configurePassport();
 
 	// Serve static files from the React app
-	app.use(express.static(path.resolve(__dirname, '../../client/build')));
+	app.use(express.static(path.resolve(__dirname, '../_dashboard')));
 
 	// API router
 	app.use('/api', apiRouter());
@@ -42,7 +42,7 @@ function startExpressReactServer(listenPort) {
 	// The "catchall" handler: for any request that doesn't
 	// match one above, send back React's index.html file.
 	app.get('*', (req, res) => {
-		res.sendFile(path.resolve(__dirname, '../../client/build/index.html'));
+		res.sendFile(path.resolve(__dirname, '../_dashboard/index.html'));
 	});
 
 	const port = listenPort || 5000;
@@ -75,13 +75,19 @@ function configurePassport(conf) {
 
 function localPassportStrategy(config) {
 	const localOptions = {usernameField: 'username', passwordField: 'password'};
+	const adminUsername = config.AdminUsername;
 	const adminPassword = config.AdminPassword;
 
 	return new LocalStrategy(localOptions, function (username, password, done) {
-		if (password === adminPassword) {
-			return done(null, username);
+		if (username === adminUsername) {
+			if (password === adminPassword) {
+				return done(null, username);
+			} else {
+				return done(null, false);
+			}
 		} else {
-			return done(null, false);
+			// TODO Remplacer par une identification des comptes utilisateurs en base.
+			return done(null, username);
 		}
 	});
 }

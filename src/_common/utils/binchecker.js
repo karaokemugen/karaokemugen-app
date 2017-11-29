@@ -11,7 +11,7 @@ export async function checkBinaries(config) {
 
 	const binariesPath = configuredBinariesForSystem(config);
 
-	const requiredBinariesChecks = [
+	let requiredBinariesChecks = [
 		asyncRequired(binariesPath.BinffmpegPath),
 		asyncRequired(binariesPath.BinffprobePath),
 		asyncRequired(binariesPath.BinmpvPath)

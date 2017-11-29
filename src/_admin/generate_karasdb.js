@@ -15,8 +15,10 @@ import {
 	selectWhitelistKaras,
 	updateSeriesAltNames
 } from '../_common/db/generation';
-import {karaTypesMap, specialTagsMap} from '../_common/domain/constants';
+import {karaTypesMap} from '../_common/domain/constants';
 import {serieRequired, verifyKaraData} from '../_common/domain/kara';
+
+let error = false;
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
@@ -100,7 +102,9 @@ async function readAndCompleteKarafile(karafile) {
 	try {
 		verifyKaraData(karaData);
 	} catch (err) {
-		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete: ${err}`);
+		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete : ${err}`);
+		error = true;
+		return karaData;
 	}
 	await writeKara(karafile, karaData);
 	return karaData;
@@ -144,7 +148,8 @@ function getSeries(kara) {
 
 	// Au moins une série est obligatoire pour les karas non LIVE/MV.
 	if (serieRequired(kara.type) && isEmpty(series)) {
-		throw `Karaoke series cannot be detected! (${JSON.stringify(kara)})`;
+		logger.error(`Karaoke series cannot be detected! (${JSON.stringify(kara)})`);
+		error = true;
 	}
 
 	return series;
@@ -221,7 +226,7 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 					$serie_altnamesnorm: deburr(altNames),
 					$serie_name: serie
 				});
-				logger.debug('[Gen] Added alt. names "' + altNames + '" to ' + serie);
+				logger.debug('[Gen] Added alt. name "' + altNames + '" to ' + serie);
 			}
 		});
 	} else {
@@ -296,7 +301,8 @@ function getTypes(kara, allTags) {
 	});
 
 	if (result.size === 0) {
-		throw 'Karaoke type cannot be detected: ' + kara.type + ' in kara : ' + JSON.stringify(kara);
+		logger.warn('[Gen] Karaoke type cannot be detected : ' + kara.type + ' in kara : ' + JSON.stringify(kara));
+		error = true;		
 	}
 
 	return result;
@@ -385,9 +391,7 @@ export async function run(config) {
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 
-		const db = await open(karas_dbfile, {verbose: true, Promise});
-		logger.info('[Gen] Karaoke databases created');
-
+		const db = await open(karas_dbfile, {verbose: true, Promise});		
 		await emptyDatabase(db);
 		await backupKaraDirs(conf);
 
@@ -429,8 +433,10 @@ export async function run(config) {
 		await checkUserdbIntegrity(null, conf);
 
 		await deleteBackupDirs(conf);
+		return error;
 	} catch (err) {
 		logger.error(err);
+		return error;
 	}
 }
 
@@ -455,7 +461,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		open(karas_dbfile, {Promise}),
 		open(karas_userdbfile, {Promise})
 	]);
-
+	
 	const [
 		allTags,
 		allKaras,
@@ -481,7 +487,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
 
-	// Listing existing KIDs
+	// Listing existing KIDs	
 	const karaKIDs = allKaras.map(k => '\'' + k.kid + '\'').join(',');
 
 	// Deleting records which aren't in our KID list
@@ -493,43 +499,41 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`DELETE FROM viewcount WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM playlist_content WHERE kid NOT IN (${karaKIDs});`)
 	]);
-
 	const karaIdByKid = new Map();
 	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
-
 	let sql = '';
 
 	whitelistKaras.forEach(wlk => {
-		if (karaIdByKid.get(wlk.kid) !== wlk.id_kara) {
+		if (karaIdByKid.has(wlk.kid) && karaIdByKid.get(wlk.kid) !== wlk.id_kara) {
 			sql += `UPDATE whitelist SET fk_id_kara = ${karaIdByKid.get(wlk.kid)} WHERE kid = '${wlk.kid}';`;
 		}
 	});
 	blacklistCriteriaKaras.forEach(blck => {
-		if (karaIdByKid.get(blck.kid) !== blck.id_kara) {
+		if (karaIdByKid.has(blck.kid) && karaIdByKid.get(blck.kid) !== blck.id_kara) {
 			sql += `UPDATE blacklist_criteria SET value = ${karaIdByKid.get(blck.kid)} WHERE uniquevalue = '${blck.kid}';`;
 		}
 	});
 	blacklistKaras.forEach(blk => {
-		if (karaIdByKid.get(blk.kid) !== blk.id_kara) {
+		if (karaIdByKid.has(blk.kid) && karaIdByKid.get(blk.kid) !== blk.id_kara) {
 			sql += `UPDATE blacklist SET fk_id_kara = ${karaIdByKid.get(blk.kid)} WHERE kid = '${blk.kid}';`;
 		}
 	});
 	ratingKaras.forEach(rk => {
-		if (karaIdByKid.get(rk.kid) !== rk.id_kara) {
+		if (karaIdByKid.has(rk.kid) && karaIdByKid.get(rk.kid) !== rk.id_kara) {
 			sql += `UPDATE rating SET fk_id_kara = ${karaIdByKid.get(rk.kid)} WHERE kid = '${rk.kid}';`;
 		}
 	});
 	viewcountKaras.forEach(vck => {
-		if (karaIdByKid.get(vck.kid) !== vck.id_kara) {
+		if (karaIdByKid.has(vck.kid) && karaIdByKid.get(vck.kid) !== vck.id_kara) {
 			sql += `UPDATE viewcount SET fk_id_kara = ${karaIdByKid.get(vck.kid)} WHERE kid = '${vck.kid}';`;
 		}
 	});
 	playlistKaras.forEach(plck => {
-		if (karaIdByKid.get(plck.kid) !== plck.id_kara) {
+		if (karaIdByKid.has(plck.kid) && karaIdByKid.get(plck.kid) !== plck.id_kara) {
 			sql += `UPDATE playlist_content SET fk_id_kara = ${karaIdByKid.get(plck.kid)} WHERE kid = '${plck.kid}';`;
 		}
 	});
-
+	
 	blcTags.forEach(function (blcTag) {
 		let tagFound = false;
 		allTags.forEach(function (tag) {
@@ -550,7 +554,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	});
 
 	if (sql) {
-		logger.debug('[Gen] Tags UPDATE SQL : ' + sql);
+		logger.debug('[Gen] UPDATE SQL : ' + sql);
 		await userdb.run(sql);
 	}
 
@@ -564,5 +568,5 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
 
-	logger.info('[Gen] Integrity checks complete!');
+	logger.info('[Gen] Integrity checks complete! Please wait a little bit more...');	
 }

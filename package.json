@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "2.0.3",
+  "version": "2.0.5",
   "description": "Karaoke playlist manager / player",
   "bin": "dist/index.js",
   "main": "src/index.js",
@@ -8,7 +8,10 @@
     "start": "babel-node src/index.js --",
     "debug": "babel-node $NODE_DEBUG_OPTION src/index.js -- --debug",
     "test": "mocha --require babel-register --timeout 5000",
-    "build": "babel --source-maps --copy-files -d dist/ src/"
+    "build": "babel --source-maps --copy-files -d dist/ src/ && cd react_client && yarn build && mv -f build ../dist/_dashboard",
+    "install": "cd react_client && yarn install",
+    "buildReact": "cd react_client && yarn build && mv -f build ../src/_dashboard",
+    "startReact": "cd react_client && yarn start"
   },
   "homepage": "https://mugen.karaokes.moe",
   "repository": {
@@ -62,7 +65,7 @@
       "dist/_webapp/vendors/fonts/**",
       "dist/**/*.js",
       "dist/VERSION",
-      "client/build/**",
+      "dist/_dashboard/**",
       "node_modules/**/*"
     ]
   },
@@ -70,7 +73,6 @@
     "ass-parser": "^0.1.2",
     "async": "^2.5.0",
     "body-parser": "^1.18.2",
-    "cli-color": "^1.2.0",
     "connect-ensure-login": "^0.1.1",
     "console-title": "^1.0.1",
     "cookie-parser": "^1.4.3",
@@ -96,8 +98,8 @@
     "node-mpv": "github:00SteinsGate00/Node-MPV#Node-MPV-2",
     "os-locale": "^2.1.0",
     "passport": "^0.4.0",
-    "passport-local": "^1.0.0",
     "passport-jwt": "^3.0.1",
+    "passport-local": "^1.0.0",
     "qrcode": "^0.8.2",
     "socket.io": "^2.0.4",
     "sqlite": "^2.8.0",
@@ -124,6 +126,6 @@
   },
   "false": {},
   "apidoc": {
-    "url": "http://localhost:1339/api/v1/"
+    "url": "http://localhost:1339/api/v1"
   }
 }

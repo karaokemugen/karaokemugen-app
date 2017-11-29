@@ -19,7 +19,8 @@ export function login(username, password) {
 				axios.defaults.headers.common['authorization'] = response.data.token;
 				dispatch({
 					type: AUTH_USER,
-					username: username
+					username: response.data.username,
+					role: response.data.role
 				});
 				dispatch(goBack()); // Retour à la page précédente.
 			})
@@ -33,7 +34,8 @@ export function checkAuth() {
 			.then(response => {
 				dispatch({
 					type: AUTH_USER,
-					username: response.data.username
+					username: response.data.username,
+					role: response.data.role
 				});
 			})
 			.catch(err => dispatch({ type: UNAUTH_USER }));

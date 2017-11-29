@@ -8,9 +8,8 @@ import {address} from 'ip';
 import logger from 'winston';
 require('winston-daily-rotate-file');
 import {asyncExists, asyncReadFile, asyncRequired} from './files';
-import {checkBinaries} from './binchecker';
 import {emit} from './pubsub';
-
+import {checkBinaries} from './binchecker.js';
 
 /** Object containing all config */
 let config = {};
@@ -37,7 +36,6 @@ export async function initConfig(appPath, argv) {
 	configureLocale();
 	await loadConfigFiles(appPath);
 	configureHost();
-	await configureBinaries();
 
 	return getConfig();
 }
@@ -99,10 +97,11 @@ function configureLocale() {
 	config = {...config, EngineDefaultLocale: detectedLocale };
 }
 
-async function configureBinaries() {
+export async function configureBinaries(config) {
 	logger.info('[Launcher] Checking if binaries are available');
 	const binaries = await checkBinaries(config);
-	config = {...config, ...binaries};
+	setConfig(binaries);
+	
 }
 
 function configureHost() {
