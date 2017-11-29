@@ -2,6 +2,7 @@ const db = require('../../_engine/components/db_interface.js');
 import {createHash} from 'crypto';
 import {deburr} from 'lodash';
 import {now} from 'unix-timestamp';
+import logger from 'winston';
 
 export async function editUser(id,user) {
 	// User contains :
@@ -115,13 +116,15 @@ export async function addUser(user) {
 	let err = {};
 	if (await db.checkUserExists(user.login)) {
 		err.code = 'USER_ALREADY_EXISTS';
-		return err;
+		logger.warn('[User] User '+user.login+' already exists, cannot create it');
+		throw err;
 	}
 	if (await db.createUser(user)) {
 		return true;
 	} else {
 		err.code = 'USER_CREATION_ERROR';		
-		return err;
+		logger.warn('[User] Unable to create user '+user.login);
+		throw err;
 	}
 }
 

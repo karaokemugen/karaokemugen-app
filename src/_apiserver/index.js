@@ -3902,12 +3902,10 @@ module.exports = {
 								req.sanitize('guest_id').toInt();
 								
 								user.addUser(req.body)
-									.then((result) => {
-										res.json(OKMessage(result,'USER_CREATED'));
+									.then(() => {
+										res.json(OKMessage(true,'USER_CREATED'));
 									})
-									.catch((err) => {
-										logger.error(err);
-										res.statusCode = 500;
+									.catch((err) => {										res.statusCode = 500;
 										res.json(errMessage(err.code,err.msg));
 									});
 							} else {
