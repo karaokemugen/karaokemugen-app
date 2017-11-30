@@ -8,9 +8,9 @@ import {resolvedPathImport, resolvedPathKaras, resolvedPathSubs, resolvedPathVid
 import {asyncExists, asyncMove, asyncReadDir, filterVideos, replaceExt} from '../_common/utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractVideoTechInfos, karaFilenameInfos, writeKara
-} from '../_common/utils/kara';
-import {getType} from '../_common/domain/constants';
-import {getKara} from '../_common/domain/kara';
+} from '../_dao/kara';
+import {getType} from '../_services/constants';
+import {getKara} from '../_services/kara';
 
 /**
  * Génération de fichiers karaokés en mode batch. Le répertoire d'import est scanné à la recherche de fichiers

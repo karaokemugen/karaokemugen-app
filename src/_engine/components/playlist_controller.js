@@ -1,4 +1,4 @@
-import {uuidRegexp} from '../../_common/domain/kara';
+import {uuidRegexp} from '../../_services/kara';
 
 var path = require('path');
 var timestamp = require('unix-timestamp');

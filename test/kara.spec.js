@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {karaDataValidationErrors} from '../src/_common/domain/kara';
+import {karaDataValidationErrors} from '../src/_services/kara';
 
 const validKara = {
 	videofile: 'video.mp4',

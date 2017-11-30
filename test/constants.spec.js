@@ -2,7 +2,7 @@ import {
 	getSpecialTags,
 	getType, karaTypes, karaTypesArray, karaTypesMap, specialTags, specialTagsArray,
 	specialTagsMap
-} from '../src/_common/domain/constants';
+} from '../src/_services/constants';
 import {expect} from 'chai';
 
 describe('Kara Types', () => {

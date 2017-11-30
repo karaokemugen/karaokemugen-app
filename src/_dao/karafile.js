@@ -10,10 +10,10 @@ import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {createHash} from 'crypto';
 import {trim} from 'lodash';
-import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from './files';
-import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from './config';
-import {extractSubtitles, getVideoDuration, getVideoGain} from './ffmpeg';
-import {getKara} from '../domain/kara';
+import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
+import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
+import {extractSubtitles, getVideoDuration, getVideoGain} from '../_common/utils/ffmpeg';
+import {getKara} from '../_services/kara';
 let error = false;
 
 export function karaFilenameInfos(karaFile) {
