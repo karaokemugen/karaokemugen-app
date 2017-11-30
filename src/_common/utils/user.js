@@ -79,10 +79,6 @@ export function hashPassword(password) {
 	return hash.digest('hex');
 }
 
-export async function removeUser(id) {
-	return await db.deleteUser(id);	
-}
-
 export async function addUser(user) {
 	// Validate user data
 	// Userdata contains :
@@ -97,6 +93,7 @@ export async function addUser(user) {
 	//   flag_online: 0 for now
 	//   flag_admin: 0 
 	// }
+	let ret = {};
 	if (user.guest_id > 0) {
 		const guestInfo = await getGuestInfo(user.guest_id);
 		user.avatar_id = guestInfo.avatar_id;
@@ -108,28 +105,57 @@ export async function addUser(user) {
 	user.password = hashPassword(user.password);
 	user.last_login = now();
 	user.NORM_nickname = deburr(user.nickname);
-	if (user.guest_id > 0 && user.password === null) return 'Password is empty';
-	if (user.guest_id > 0 && user.login === null) return 'Login is empty';
+	if (user.guest_id > 0 && user.password === null) {
+		ret.code = 'USER_EMPTY_PASSWORD';
+		throw ret;
+	}
+	if (user.guest_id > 0 && user.login === null) {
+		ret.code = 'USER_EMPTY_LOGIN';
+		throw ret;
+	}
 	user.flag_online = 0;
 	user.flag_admin = 0;	
+	
 	// Check if login already exists.
-	let err = {};
-	if (await db.checkUserExists(user.login)) {
-		err.code = 'USER_ALREADY_EXISTS';
-		logger.warn('[User] User '+user.login+' already exists, cannot create it');
-		throw err;
+	if (await db.checkUserNameExists(user.login)) {
+		ret.code = 'USER_ALREADY_EXISTS';
+		logger.error('[User] User '+user.login+' already exists, cannot create it');
+		throw ret;
 	}
-	if (await db.createUser(user)) {
+	try {
+		await db.createUser(user);
+		logger.info(`[User] Created user ${user.login}`);
+		logger.debug(`[User] User data : ${JSON.stringify(user)}`);
 		return true;
-	} else {
-		err.code = 'USER_CREATION_ERROR';		
-		logger.warn('[User] Unable to create user '+user.login);
-		throw err;
+	} catch(err) {
+		ret.code = 'USER_CREATION_ERROR';
+		ret.data = err;
+		logger.error(`[User] Unable to create user ${user.login} : ${err}`);
+		throw ret;
 	}
 }
 
-export async function deleteUser(user_id) {
-	// Delete user
+export async function deleteUser(id) {
+	if (!await db.checkUserIDExists(id)) {
+		const ret = {
+			code: 'USER_NOT_EXISTS',
+			args: id
+		};
+		logger.error(`[User] User ${id} does not exist`);
+		throw ret;
+	}
+	try {
+		await db.deleteUser(id);
+		logger.info(`[User] Deleted user ${id}`);
+		return true;
+	} catch (err) {
+		const ret = {
+			code: 'USER_DELETE_ERROR',
+			data: err
+		};
+		logger.error(`[User] Unable to delete user ${id} : ${err}`);
+		throw ret;
+	}
 }
 
 export function init() {

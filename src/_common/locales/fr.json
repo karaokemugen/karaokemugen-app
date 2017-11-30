@@ -252,6 +252,11 @@
 	"GOTO_BOTTOM": "Aller à la fin de la liste",
 	"GUEST_LIST_ERROR": "Impossible de lister les comptes invités",
 	"USER_CREATED": "Utilisateur crée",
-	"USER_CREATION_ERROR": "Impossible de créer l'utilisateur",
-	"USER_ALREADY_EXISTS": "L'utilisateur %s existe déjà !"
+	"USER_CREATE_ERROR": "Impossible de créer l'utilisateur",
+	"USER_ALREADY_EXISTS": "L'utilisateur %s existe déjà !",
+	"USER_DELETED": "Utilisateur supprimé",
+	"USER_DELETE_ERROR": "Impossible de supprimer l'utilisateur",
+	"USER_EMPTY_PASSWORD": "Le mot de passe est vide !",
+	"USER_EMPTY_LOGIN": "Le nom d'utilisateur est vide !",
+	"USER_NOT_EXISTS": "L'utilisateur n'existe pas !"
 }

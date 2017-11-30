@@ -17,6 +17,7 @@ require('moment-duration-format');
 moment.locale('fr');
 const async = require('async');
 var generator = require('../../_admin/generate_karasdb.js');
+const sqlUser = require('../../_common/db/user.js');
 
 module.exports = {
 	SYSPATH:null,
@@ -509,8 +510,7 @@ module.exports = {
 				logger.error('[DBI] DB_INTERFACE is not ready to work');
 				reject('Database interface is not ready yet');
 			}
-			var sqlGetUserByName = fs.readFileSync(path.join(__dirname,'../../_common/db/select_user_by_name.sql'),'utf-8');
-			module.exports._db_handler.all(sqlGetUserByName,
+			module.exports._db_handler.all(sqlUser.selectUserByName,
 				{
 					$username: username
 				})
@@ -533,8 +533,7 @@ module.exports = {
 				logger.error('[DBI] DB_INTERFACE is not ready to work');
 				reject('Database interface is not ready yet');
 			}
-			var sqlGetUserByID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_user_by_id.sql'),'utf-8');
-			module.exports._db_handler.all(sqlGetUserByID,
+			module.exports._db_handler.all(sqlUser.selectUserByID,
 				{
 					$id: id
 				})
@@ -551,10 +550,9 @@ module.exports = {
 	* @param  {string} login {Login to check for existence}
 	* @return {type} {Returns true or false}
 	*/
-	checkUserExists:function(login) {
+	checkUserNameExists:function(login) {
 		return new Promise(function(resolve,reject){
-			var sqlCheckUserExists = fs.readFileSync(path.join(__dirname,'../../_common/db/test_user_name.sql'),'utf-8');
-			module.exports._db_handler.get(sqlCheckUserExists,
+			module.exports._db_handler.get(sqlUser.testUserName,
 				{
 					$login: login
 				})
@@ -571,6 +569,29 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Check if user exists by ID}
+	* @param  {string} login {Login to check for existence}
+	* @return {type} {Returns true or false}
+	*/
+	checkUserIDExists:function(id) {
+		return new Promise(function(resolve,reject){
+			module.exports._db_handler.get(sqlUser.testUserID,
+				{
+					$id: id
+				})
+				.then((user) => {
+					if (user) {
+						resolve(true);						
+					} else {
+						resolve(false);
+					}
+				})
+				.catch((err) => {
+					reject('Failed to test if user '+id+' exists : '+err);
+				});								
+		});
+	},
+	/**
 	* @function {Create new user in DB}
 	* @param {object} {userdata object}
 	* @return {boolean} {promise}
@@ -581,8 +602,7 @@ module.exports = {
 				logger.error('[DBI] DB_INTERFACE is not ready to work');
 				reject('Database interface is not ready yet');
 			}
-			var sqlCreateUser = fs.readFileSync(path.join(__dirname,'../../_common/db/add_user.sql'),'utf-8');
-			module.exports._db_handler.run(sqlCreateUser,
+			module.exports._db_handler.run(sqlUser.createUser,
 				{
 					$guest_id: user.guest_id,
 					$login: user.login,
@@ -613,8 +633,7 @@ module.exports = {
 				logger.error('[DBI] DB_INTERFACE is not ready to work');
 				reject('Database interface is not ready yet');
 			}
-			var sqlDeleteUser = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_user.sql'),'utf-8');
-			module.exports._db_handler.run(sqlDeleteUser,
+			module.exports._db_handler.run(sqlUser.deleteUser,
 				{
 					$id: id					
 				})

@@ -253,6 +253,11 @@
 	"TAGS_LIST_ERROR": "Unable to display tag list",
 	"GUEST_LIST_ERROR": "Unable to list guest accounts",
 	"USER_CREATED": "User created",
-	"USER_CREATION_ERROR": "Unable to create user",
-	"USER_ALREADY_EXISTS": "User %s already exists !"
+	"USER_CREATE_ERROR": "Unable to create user",
+	"USER_ALREADY_EXISTS": "User %s already exists!",
+	"USER_DELETED": "User deleted",
+	"USER_DELETE_ERROR": "Unable to delete user",
+	"USER_EMPTY_PASSWORD": "Password is empty!",
+	"USER_EMPTY_LOGIN": "Login is empty!",
+	"USER_NOT_EXISTS": "User %s does not exist!"
 } 

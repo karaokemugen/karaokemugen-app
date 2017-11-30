@@ -464,6 +464,42 @@ module.exports = {
 							res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 						});
 				});
+			routerAdmin.route('/users/:user_id([0-9]+)')
+			/**
+ * @api {delete} admin/users/:user_id Delete an user
+ * @apiName DeleteUser
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission admin
+ *
+ * @apiParam {Number} user_id User ID to delete
+ * @apiSuccess {String} args ID of user deleted
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of user deleted
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 3,
+ *   "code": "USER_DELETED",
+ *   "data": 3
+ * } 
+ * @apiError USER_DELETE_ERROR Unable to delete a user
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+				.delete(function(req,res){					
+					user.deleteUser(req.params.user_id)
+						.then(function(){
+							module.exports.emitEvent('usersUpdated');
+							res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.user_id));
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							res.json(errMessage('USER_DELETE_ERROR',err.message,err.data));
+						});
+				});
 
 			routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
 			/**
@@ -3860,8 +3896,8 @@ module.exports = {
  *   "code": "USER_CREATED",
  *   "data": true
  * }
- * @apiError USER_CREATION_ERROR Unable to create user
- * @apiError USER_ALREADY_EXISTS This username already exists
+ * @apiError USER_CREATE_ERROR Unable to create user
+ * @apiError USER_ALREADY_EXISTS This username already exists 
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -3906,7 +3942,7 @@ module.exports = {
 										res.json(OKMessage(true,'USER_CREATED'));
 									})
 									.catch((err) => {										res.statusCode = 500;
-										res.json(errMessage(err.code,err.msg));
+										res.json(errMessage(err.code,err.message));
 									});
 							} else {
 								// Errors detected
