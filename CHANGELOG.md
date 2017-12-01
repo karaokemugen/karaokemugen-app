@@ -1,6 +1,6 @@
-﻿# Versions
+# Versions
 
-## v2.0.5 - 27/11/2017
+## v2.0.5 - 01/12/2017
 
 ### Améliorations
 
