@@ -8,7 +8,7 @@ import {resolvedPathImport, resolvedPathKaras, resolvedPathSubs, resolvedPathVid
 import {asyncExists, asyncMove, asyncReadDir, filterVideos, replaceExt} from '../_common/utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractVideoTechInfos, karaFilenameInfos, writeKara
-} from '../_dao/kara';
+} from '../_dao/karafile';
 import {getType} from '../_services/constants';
 import {getKara} from '../_services/kara';
 

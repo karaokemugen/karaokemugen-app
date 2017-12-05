@@ -7,7 +7,7 @@ import {forEach as csvForEach} from 'csv-string';
 import {has as hasLang} from 'langs';
 import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove} from '../_common/utils/files';
 import {getConfig, resolvedPathKaras} from '../_common/utils/config';
-import {getDataFromKaraFile, writeKara} from '../_dao/kara';
+import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras, selectRatingKaras,
