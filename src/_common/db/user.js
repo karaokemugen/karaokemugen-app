@@ -48,6 +48,19 @@ export const selectGuests = `SELECT g.pk_id_guest AS guest_id,
 							FROM guest AS g, avatar AS a
 							WHERE g.fk_id_avatar = a.pk_id_avatar;`;
 
+export const selectUsers = `SELECT u.pk_id_user AS user_id,
+     							g.name AS guest_name,
+	 							a.imagefile AS avatar_file,
+								u.login AS login,
+								u.nickname AS nickname,
+								u.NORM_nickname AS NORM_nickname,
+								u.last_login AS last_login,
+								u.flag_online AS flag_online,
+								u.flag_admin AS flag_admin
+							FROM guest AS g, avatar AS a, user AS u
+							WHERE u.fk_id_avatar = a.pk_id_avatar
+							  AND u.fk_id_guest = g.pk_id_guest;`;
+
 export const deleteUser = 'DELETE FROM user WHERE pk_id_user = $id;';
 
 export const createUser = `INSERT INTO user(

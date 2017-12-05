@@ -649,16 +649,34 @@ module.exports = {
 	* @function {List all guests accounts}
 	* @return {boolean} {promise}
 	*/
-	listGuests:function(id) {
+	listGuests:function() {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
 				logger.error('[DBI] DB_INTERFACE is not ready to work');
 				reject('Database interface is not ready yet');
 			}
-			var sqlListGuests = fs.readFileSync(path.join(__dirname,'../../_common/db/select_guests.sql'),'utf-8');
-			module.exports._db_handler.all(sqlListGuests)
+			module.exports._db_handler.all(sqlUser.selectGuests)
 				.then((guests) => {
 					resolve(guests);
+				})
+				.catch((err) => {
+					reject(`Failed to fetch guests list : ${err}`);
+				});			
+		});
+	},
+	/**
+	* @function {List all user accounts}
+	* @return {boolean} {promise}
+	*/
+	listUsers:function() {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			module.exports._db_handler.all(sqlUser.selectUsers)
+				.then((users) => {
+					resolve(users);
 				})
 				.catch((err) => {
 					reject(`Failed to fetch guests list : ${err}`);

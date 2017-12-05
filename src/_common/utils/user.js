@@ -42,6 +42,10 @@ export async function listGuests() {
 	return await db.listGuests();
 }
 
+export async function listUsers() {
+	return await db.listUsers();
+}
+
 export async function addAvatar(avatar) {
     // Avatar object :
 	// {
@@ -57,7 +61,7 @@ export async function deleteAvatar(id) {
 }
 
 export async function replaceAvatar(id,imagefile) {
-
+	// Replace avatar by the new uploaded one
 }
 
 export async function findUserByName(username) {
@@ -105,6 +109,8 @@ export async function addUser(user) {
 	user.password = hashPassword(user.password);
 	user.last_login = now();
 	user.NORM_nickname = deburr(user.nickname);
+	// FIXME : Revoir ça parce que ça a pas beaucoup de sens
+	// These are only triggered if creating a temporary user via a guest login
 	if (user.guest_id > 0 && user.password === null) {
 		ret.code = 'USER_EMPTY_PASSWORD';
 		throw ret;
@@ -141,7 +147,7 @@ export async function deleteUser(id) {
 			code: 'USER_NOT_EXISTS',
 			args: id
 		};
-		logger.error(`[User] User ${id} does not exist`);
+		logger.error(`[User] User ${id} does not exist, unable to delete it`);
 		throw ret;
 	}
 	try {

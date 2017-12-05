@@ -3878,6 +3878,32 @@ module.exports = {
 				});
 			routerPublic.route('/users')
 			/**
+ * @api {get} public/users List users
+ * @apiName GetUsers
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission public
+ *
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {} data Returns `true` if success
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "USER_CREATED",
+ *   "data": true
+ * }
+ * @apiError USER_LIST_ERROR Unable to list users
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_LIST_ERROR",
+ *   "message": null
+ * }
+ */
+
+			/**
  * @api {post} public/users Create new user
  * @apiName PostUser
  * @apiVersion 2.1.0
@@ -3907,6 +3933,17 @@ module.exports = {
  *   "message": null
  * }
  */
+ 				.get(function(req,res){
+					user.listUsers()
+						.then(function(users){
+							res.json(OKMessage(users));
+						})
+						.catch(function(err){
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('USER_LIST_ERROR',err));
+						});
+				})
 				.post((req,res) => {
 					//Validate form data
 					req.check({
@@ -3941,7 +3978,8 @@ module.exports = {
 									.then(() => {
 										res.json(OKMessage(true,'USER_CREATED'));
 									})
-									.catch((err) => {										res.statusCode = 500;
+									.catch((err) => {
+										res.statusCode = 500;
 										res.json(errMessage(err.code,err.message));
 									});
 							} else {
