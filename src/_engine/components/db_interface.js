@@ -646,6 +646,61 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Edit user}
+	* @param {number} {ID}
+	* @return {boolean} {promise}
+	*/
+	editUser:function(user) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			module.exports._db_handler.run(sqlUser.editUser,
+				{
+					$id: user.id,
+					$nickname: user.nickname,
+					$NORM_nickname: user.NORM_nickname,
+					$login: user.login,
+					$bio: user.bio,
+					$url: user.url,
+					$email: user.email
+				})
+				.then(() => {
+					resolve();
+				})
+				.catch((err) => {
+					reject(`Failed to edit user ID ${user.id} : ${err}`);
+				});			
+		});
+	},
+	/**
+	* @function {Update User Password}
+	* @param {number} {ID}
+	* @param {string} {password}
+	* @return {boolean} {promise}
+	*/
+	updateUserPassword:function(id,password) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			module.exports._db_handler.run(sqlUser.editUserPassword,
+				{
+					$id: id,
+					$password: password,
+				})
+				.then(() => {
+					resolve();
+				})
+				.catch((err) => {
+					console.log(err);
+					reject(`Failed to edit user ID ${id} password : ${err}`);
+				});			
+		});
+	},
+	/**
 	* @function {List all guests accounts}
 	* @return {boolean} {promise}
 	*/

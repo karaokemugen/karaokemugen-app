@@ -4,6 +4,7 @@ const logger = require('winston');
 const bodyParser = require('body-parser');
 const basicAuth = require('express-basic-auth');
 const user = require('../_common/utils/user.js');
+const busboy = require('connect-busboy'); //middleware for form/file upload
 
 function numberTest(element) {
 	if (isNaN(element)) {
@@ -59,8 +60,12 @@ module.exports = {
 			}
 
 			var app = express();
+			// Middleware for playlist import
 			app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-			app.use(bodyParser.json());			
+			app.use(bodyParser.json());		
+			// Middleware for file uploads
+			app.use(busboy());
+
 			// Calling express validator with a custom validator, used for the player commands
 			// to check if they're from the allowed list.
 			// We use another custom validator to test for array of numbers
@@ -465,6 +470,99 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/users/:user_id([0-9]+)')
+			/**
+ * @api {put} admin/users/:user_id Edit a user
+ * @apiName EditUser
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission admin
+ *
+ * @apiParam {Number} user_id User ID to edit
+ * @apiParam {String} login New login for user
+ * @apiParam {String} nickname New nickname for user
+ * @apiParam {String} [password] New password. Can be empty (password won't be changed then)
+ * @apiParam {String} [bio] User's bio info. Can be empty.
+ * @apiParam {String} [email] User's mail. Can be empty.
+ * @apiParam {String} [url] User's URL. Can be empty.
+ * @apiSuccess {String} args ID of user deleted
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of user deleted
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "lol",
+ *   "code": "USER_UPDATED",
+ *   "data": {
+ *       "NORM_nickname": "lol",
+ *       "bio": "lol2",
+ *       "email": "lol3@lol.fr",
+ *       "id": "3",
+ *       "login": "test2",
+ *       "nickname": "lol",
+ *       "url": "http://lol4"
+ *   }
+ * }
+ * @apiError USER_UPDATE_ERROR Unable to edit user
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+				.put(function(req,res){
+					req.check({
+						'login': {
+							in: 'body',
+							notEmpty: true,
+						},
+						'nickname': {
+							in: 'body',
+							notEmpty: true,
+						},
+						'email': {
+							in: 'body',
+							optional: true,
+							isEmail: true
+						},
+						'url': {
+							in: 'body',
+							optional: true,
+							isURL: true
+						}					
+					});
+
+					req.getValidationResult()
+						.then(function(result){
+							if (result.isEmpty()) {
+								// No errors detected
+								req.sanitize('bio').trim();
+								req.sanitize('email').trim();
+								req.sanitize('url').trim();
+								req.sanitize('nickname').trim();
+								req.sanitize('login').trim();
+								req.sanitize('bio').unescape();
+								req.sanitize('email').unescape();
+								req.sanitize('url').unescape();
+								req.sanitize('nickname').unescape();
+								req.sanitize('login').unescape();
+								//Now we add playlist
+								user.editUser(req.params.user_id,req.body)
+									.then(function(user){
+										module.exports.emitEvent('userUpdated',req.params.user_id);
+										res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
+									})
+									.catch(function(err){
+										res.statusCode = 500;
+										res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+									});
+							} else {
+								// Errors detected
+								// Sending BAD REQUEST HTTP code and error object.
+								res.statusCode = 400;
+								res.json(result.mapped());
+							}
+						});
+
+				})
 			/**
  * @api {delete} admin/users/:user_id Delete an user
  * @apiName DeleteUser
@@ -2292,8 +2390,7 @@ module.exports = {
 					req.getValidationResult().then(function(result) {
 						if (result.isEmpty()) {
 							module.exports.onPlaylistImport(JSON.parse(req.body.playlist))
-								.then(function(result){
-									
+								.then(function(result){									
 									var response = {
 										message: 'Playlist imported',
 										playlist_id: result.playlist_id
@@ -3884,14 +3981,43 @@ module.exports = {
  * @apiGroup Users
  * @apiPermission public
  *
- * @apiSuccess {String} code Message to display
- * @apiSuccess {} data Returns `true` if success
+ * @apiSuccess {String} data/login User's login
+ * @apiSuccess {String} data/nickname User's nickname
+ * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
+ * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
+ * @apiSuccess {Number} data/flag_admin Is the user Admin ?
+ * @apiSuccess {Number} data/flag_online Is the user an online account ?
+ * @apiSuccess {String} [data/guest_name] Name of default guest name. Can be empty.
+ * @apiSuccess {Number} data/last_login Last login time in UNIX timestamp.
+ * @apiSuccess {Number} data/user_id User's ID in the database
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "code": "USER_CREATED",
- *   "data": true
+ *   "data": [
+ *       {
+ *           "NORM_nickname": "Administrator",
+ *           "avatar_file": "",
+ *           "flag_admin": 1,
+ *           "flag_online": 0,
+ *           "guest_name": "",
+ *           "last_login": 0,
+ *           "login": "admin",
+ *           "nickname": "Administrator",
+ *           "user_id": 1
+ *       },
+ *       {
+ *           "NORM_nickname": "test",
+ *           "avatar_file": "user/3.jpg",
+ *           "flag_admin": 0,
+ *           "flag_online": 0,
+ *           "guest_name": "",
+ *           "last_login": 1511953198,
+ *           "login": "test",
+ *           "nickname": "test",
+ *           "user_id": 3
+ *       }
+ *   ]
  * }
  * @apiError USER_LIST_ERROR Unable to list users
  *

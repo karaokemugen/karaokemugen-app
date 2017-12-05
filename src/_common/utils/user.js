@@ -4,21 +4,46 @@ import {deburr} from 'lodash';
 import {now} from 'unix-timestamp';
 import logger from 'winston';
 
+export async function isGuest(id) {
+	// Test if user ID provided is a guest or not.
+}
+
+export async function updateLastLogin(id) {
+	// Update last login time for a user
+	await db.updateLastLogin(id,now());
+}
+
 export async function editUser(id,user) {
 	// User contains :
-	// { 
+	// { 	
 	//   login: string (can be empty if guest_id > 0)
 	//   password: string (can be empty if guest_id > 0. Must be hashed)
 	//   nickname: login by default
-	//   NORM_nickname: normalized/deburred nickname
 	//   bio: Bio text.
 	//   url: URL text
 	//   email: email
+	//   avatar_file: if provided, call replaceAvatar
 	// }	
-	if (await db.editUser(user)) {
-		return true;
-	} else {
-		return 'Error editing user in database';
+	try {
+		user.id = id;
+		if (!user.bio) user.bio = null;
+		if (!user.url) user.url = null;
+		if (!user.email) user.email = null;
+		user.NORM_nickname = deburr(user.nickname);
+		await db.editUser(user);
+		if (user.password) {
+			user.password = hashPassword(user.password);
+			await db.updateUserPassword(id,user.password);
+		}
+		logger.info(`[User] ${user.login} (${user.nickname}) profile updated`);
+		return user;
+	} catch (err) {
+		logger.error(`[User] Failed to update ${user.login}'s profile : ${err}`);
+		const ret = {
+			message: err,
+			data: user.nickname
+		}
+		throw ret;
 	}
 }
 
@@ -60,8 +85,13 @@ export async function deleteAvatar(id) {
 	// Users can't delete their avatars. they have to replace them
 }
 
-export async function replaceAvatar(id,imagefile) {
-	// Replace avatar by the new uploaded one
+async function replaceAvatar(imagefile) {
+	try {
+		// TODO: Write image data to disk
+	} catch (err) {
+		logger.error(`[User] Unable to replace avatar ${imagefile} : ${err}`);
+		throw err;
+	}
 }
 
 export async function findUserByName(username) {

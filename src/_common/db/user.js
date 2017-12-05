@@ -2,11 +2,13 @@
 
 export const testUserName = `SELECT pk_id_user
 								FROM user
-								WHERE login = $login;`;
+								WHERE login = $login;
+							`;
 
 export const testUserID = `SELECT pk_id_user
 								FROM user
-								WHERE pk_id_user = $id;`;
+								WHERE pk_id_user = $id;
+						  `;
 
 export const selectUserByID = `SELECT pk_id_user AS id,
     							fk_id_guest AS guest_id,
@@ -23,7 +25,8 @@ export const selectUserByID = `SELECT pk_id_user AS id,
 								flag_online,
 								flag_admin
  							FROM user
-							WHERE id = $id;`;
+							WHERE id = $id;
+							`;
 
 export const selectUserByName = `SELECT pk_id_user AS id,
     								fk_id_guest AS guest_id,
@@ -40,13 +43,15 @@ export const selectUserByName = `SELECT pk_id_user AS id,
 									flag_online,
 									flag_admin
  								FROM user
-								WHERE login = $username;`;
+								WHERE login = $username;
+							`;
 
 export const selectGuests = `SELECT g.pk_id_guest AS guest_id,
      							g.name AS name,
 	 							a.imagefile AS avatar_file
 							FROM guest AS g, avatar AS a
-							WHERE g.fk_id_avatar = a.pk_id_avatar;`;
+							WHERE g.fk_id_avatar = a.pk_id_avatar;
+							`;
 
 export const selectUsers = `SELECT u.pk_id_user AS user_id,
      							g.name AS guest_name,
@@ -59,9 +64,11 @@ export const selectUsers = `SELECT u.pk_id_user AS user_id,
 								u.flag_admin AS flag_admin
 							FROM guest AS g, avatar AS a, user AS u
 							WHERE u.fk_id_avatar = a.pk_id_avatar
-							  AND u.fk_id_guest = g.pk_id_guest;`;
+							  AND u.fk_id_guest = g.pk_id_guest;
+							`;
 
-export const deleteUser = 'DELETE FROM user WHERE pk_id_user = $id;';
+export const deleteUser = `DELETE FROM user WHERE pk_id_user = $id;
+						  `;
 
 export const createUser = `INSERT INTO user(
 							fk_id_guest,
@@ -82,4 +89,22 @@ export const createUser = `INSERT INTO user(
 							$avatar_id,
 							$flag_online,
 							$flag_admin,
-							$last_login);`;
+							$last_login);
+						   `;
+
+export const editUser = `UPDATE user SET 
+							login = $login,
+							nickname = $nickname,
+							NORM_nickname = $NORM_nickname,
+							bio = $bio,
+							email = $email,
+							url = $url
+						WHERE 
+							pk_id_user = $id
+						   `;
+
+export const editUserPassword = `UPDATE user SET 
+							password = $password							
+						WHERE 
+							pk_id_user = $id
+						   `;
