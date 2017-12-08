@@ -10,83 +10,80 @@ export const testUserID = `SELECT pk_id_user
 								WHERE pk_id_user = $id;
 						  `;
 
-export const selectUserByID = `SELECT pk_id_user AS id,
-    							fk_id_guest AS guest_id,
-								login,
-								password,
-								nickname,
-								NORM_nickname,
-								fk_id_avatar AS avatar_id,
-								bio,
-								url,
-								email,
-								fingerprint,
-								guest_expires,
-								flag_online,
-								flag_admin
- 							FROM user
-							WHERE id = $id;
+export const selectUserByID = `SELECT u.pk_id_user AS id,
+    							u.type AS type,
+								u.login AS login,
+								u.password AS password,
+								u.nickname AS nickname,
+								u.NORM_nickname AS norm_nickname,			
+								u.avatar_file AS avatar_file,
+								u.bio AS bio,
+								u.url AS url,
+								u.email AS email,
+								u.fingerprint AS fingerprint,
+								u.last_login AS last_login,
+								u.flag_online AS flag_online,
+								u.flag_admin AS flag_admin
+ 							FROM user AS u
+							WHERE u.pk_id_user = $id
 							`;
 
-export const selectUserByName = `SELECT pk_id_user AS id,
-    								fk_id_guest AS guest_id,
-									login,
-									password,
-									nickname,
-									NORM_nickname,
-									fk_id_avatar AS avatar_id,
-									bio,
-									url,
-									email,
-									fingerprint,
-									guest_expires,
-									flag_online,
-									flag_admin
- 								FROM user
-								WHERE login = $username;
+export const selectUserByName = `SELECT u.pk_id_user AS id,
+    							u.type AS type,
+								u.login AS login,
+								u.password AS password,
+								u.nickname AS nickname,
+								u.NORM_nickname AS norm_nickname,			
+								u.avatar_file AS avatar_file,
+								u.bio AS bio,
+								u.url AS url,
+								u.email AS email,
+								u.fingerprint AS fingerprint,
+								u.last_login AS last_login,
+								u.flag_online AS flag_online,
+								u.flag_admin AS flag_admin
+ 							FROM user AS u
+							WHERE u.login = $username							  
 							`;
 
-export const selectGuests = `SELECT g.pk_id_guest AS guest_id,
-     							g.name AS name,
+export const selectGuests = `SELECT u.pk_id_user AS user_id,
+								u.nickname AS nickname,
 	 							a.imagefile AS avatar_file
-							FROM guest AS g, avatar AS a
-							WHERE g.fk_id_avatar = a.pk_id_avatar;
+							FROM user AS u, avatar AS a
+							WHERE u.fk_id_avatar = a.pk_id_avatar;
 							`;
 
 export const selectUsers = `SELECT u.pk_id_user AS user_id,
-     							g.name AS guest_name,
-	 							a.imagefile AS avatar_file,
+								u.type AS type,
+	 							u.avatar_file AS avatar_file,
 								u.login AS login,
 								u.nickname AS nickname,
 								u.NORM_nickname AS NORM_nickname,
 								u.last_login AS last_login,
 								u.flag_online AS flag_online,
-								u.flag_admin AS flag_admin
-							FROM guest AS g, avatar AS a, user AS u
-							WHERE u.fk_id_avatar = a.pk_id_avatar
-							  AND u.fk_id_guest = g.pk_id_guest;
-							`;
+								u.flag_admin AS flag_admin,
+								u.type AS type
+							FROM user AS u
+								`;
 
 export const deleteUser = `DELETE FROM user WHERE pk_id_user = $id;
 						  `;
 
 export const createUser = `INSERT INTO user(
-							fk_id_guest,
+							type,
 							login,
 							password,
 							nickname,
 							NORM_nickname,
-							fk_id_avatar,
 							flag_online,
 							flag_admin,
 							last_login) 
 						VALUES (
-							$guest_id,
+							$type,
 							$login,
 							$password,
 							$nickname,
 							$NORM_nickname,
-							$avatar_id,
 							$flag_online,
 							$flag_admin,
 							$last_login);
@@ -96,6 +93,7 @@ export const editUser = `UPDATE user SET
 							login = $login,
 							nickname = $nickname,
 							NORM_nickname = $NORM_nickname,
+							avatar_file = $avatar_file,
 							bio = $bio,
 							email = $email,
 							url = $url

@@ -4,7 +4,9 @@ const logger = require('winston');
 const bodyParser = require('body-parser');
 const basicAuth = require('express-basic-auth');
 const user = require('../_common/utils/user.js');
-const busboy = require('connect-busboy'); //middleware for form/file upload
+const path = require('path');
+const multer = require('multer');
+
 
 function numberTest(element) {
 	if (isNaN(element)) {
@@ -60,12 +62,11 @@ module.exports = {
 			}
 
 			var app = express();
-			// Middleware for playlist import
+			// Middleware for playlist and files import
+			var upload = multer({ dest: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp)});
+
 			app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 			app.use(bodyParser.json());		
-			// Middleware for file uploads
-			app.use(busboy());
-
 			// Calling express validator with a custom validator, used for the player commands
 			// to check if they're from the allowed list.
 			// We use another custom validator to test for array of numbers
@@ -245,7 +246,7 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 				.post(function(req,res){
-
+					
 				// Add playlist
 					req.check({
 						'name': {
@@ -508,7 +509,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(function(req,res){
+				.put(upload.single('avatarfile'), function(req,res){
 					req.check({
 						'login': {
 							in: 'body',
@@ -531,7 +532,7 @@ module.exports = {
 					});
 
 					req.getValidationResult()
-						.then(function(result){
+						.then(function(result){							
 							if (result.isEmpty()) {
 								// No errors detected
 								req.sanitize('bio').trim();
@@ -544,8 +545,10 @@ module.exports = {
 								req.sanitize('url').unescape();
 								req.sanitize('nickname').unescape();
 								req.sanitize('login').unescape();
-								//Now we add playlist
-								user.editUser(req.params.user_id,req.body)
+								//Now we add user
+								let avatar;
+								if (req.file) avatar = req.file;
+								user.editUser(req.params.user_id,req.body,avatar)
 									.then(function(user){
 										module.exports.emitEvent('userUpdated',req.params.user_id);
 										res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
@@ -554,6 +557,7 @@ module.exports = {
 										res.statusCode = 500;
 										res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
 									});
+								
 							} else {
 								// Errors detected
 								// Sending BAD REQUEST HTTP code and error object.
@@ -3987,7 +3991,7 @@ module.exports = {
  * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
  * @apiSuccess {Number} data/flag_admin Is the user Admin ?
  * @apiSuccess {Number} data/flag_online Is the user an online account ?
- * @apiSuccess {String} [data/guest_name] Name of default guest name. Can be empty.
+ * @apiSuccess {Number} data/type Type of account (1 = user, 2 = guest)
  * @apiSuccess {Number} data/last_login Last login time in UNIX timestamp.
  * @apiSuccess {Number} data/user_id User's ID in the database
  *
@@ -4000,7 +4004,7 @@ module.exports = {
  *           "avatar_file": "",
  *           "flag_admin": 1,
  *           "flag_online": 0,
- *           "guest_name": "",
+ *           "type": 1,
  *           "last_login": 0,
  *           "login": "admin",
  *           "nickname": "Administrator",
@@ -4011,7 +4015,7 @@ module.exports = {
  *           "avatar_file": "user/3.jpg",
  *           "flag_admin": 0,
  *           "flag_online": 0,
- *           "guest_name": "",
+ *           "type": 1,
  *           "last_login": 1511953198,
  *           "login": "test",
  *           "nickname": "test",
@@ -4028,7 +4032,18 @@ module.exports = {
  *   "message": null
  * }
  */
-
+				.get(function(req,res){
+					user.listUsers()
+						.then(function(users){
+							res.json(OKMessage(users));
+						})
+						.catch(function(err){
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('USER_LIST_ERROR',err));
+						});
+				})
+				
 			/**
  * @api {post} public/users Create new user
  * @apiName PostUser
@@ -4036,7 +4051,6 @@ module.exports = {
  * @apiGroup Users
  * @apiPermission public
  *
- * @apiParam {Number} guest_id ID of guest account to attach this new user to. 0 if this is not a guest account.
  * @apiParam {String} login Login name for the user
  * @apiParam {String} password Password for the user
  * @apiSuccess {String} code Message to display
@@ -4059,17 +4073,7 @@ module.exports = {
  *   "message": null
  * }
  */
- 				.get(function(req,res){
-					user.listUsers()
-						.then(function(users){
-							res.json(OKMessage(users));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('USER_LIST_ERROR',err));
-						});
-				})
+
 				.post((req,res) => {
 					//Validate form data
 					req.check({
@@ -4080,14 +4084,7 @@ module.exports = {
 						'password': {
 							in: 'body',
 							notEmpty: true,
-						},						
-						'guest_id': {
-							in: 'body',
-							notEmpty: true,
-							isInt: {
-								errorMessage: 'Invalid guest ID (must be integer)'
-							}
-						}
+						},												
 					});
 
 					req.getValidationResult()
@@ -4098,7 +4095,6 @@ module.exports = {
 								req.sanitize('login').unescape();
 								req.sanitize('password').trim();
 								req.sanitize('password').unescape();
-								req.sanitize('guest_id').toInt();
 								
 								user.addUser(req.body)
 									.then(() => {

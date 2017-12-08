@@ -515,7 +515,7 @@ module.exports = {
 					$username: username
 				})
 				.then((user) => {
-					resolve(user);
+					resolve(user[0]);
 				})
 				.catch((err) => {
 					reject('Failed to get user '+username+'\'s data : '+err);
@@ -538,7 +538,7 @@ module.exports = {
 					$id: id
 				})
 				.then((user) => {
-					resolve(user);
+					resolve(user[0]);
 				})
 				.catch((err) => {
 					reject('Failed to get user ID '+id+'\'s data : '+err);
@@ -604,12 +604,11 @@ module.exports = {
 			}
 			module.exports._db_handler.run(sqlUser.createUser,
 				{
-					$guest_id: user.guest_id,
+					$type: user.type,
 					$login: user.login,
 					$password: user.password,
 					$nickname: user.nickname,
 					$NORM_nickname: user.NORM_nickname,
-					$avatar_id: user.avatar_id,
 					$last_login: user.last_login,
 					$flag_online: user.flag_online,
 					$flag_admin: user.flag_admin
@@ -661,6 +660,7 @@ module.exports = {
 					$id: user.id,
 					$nickname: user.nickname,
 					$NORM_nickname: user.NORM_nickname,
+					$avatar_file: user.avatar_file,
 					$login: user.login,
 					$bio: user.bio,
 					$url: user.url,
@@ -730,6 +730,25 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			module.exports._db_handler.all(sqlUser.selectUsers)
+				.then((users) => {
+					resolve(users);
+				})
+				.catch((err) => {
+					reject(`Failed to fetch guests list : ${err}`);
+				});			
+		});
+	},
+	/**
+	* @function {List all user accounts}
+	* @return {boolean} {promise}
+	*/
+	replaceAvatar:function(id,avatarFile) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			module.exports._db_handler.all(sqlUser.updateAvatar)
 				.then((users) => {
 					resolve(users);
 				})

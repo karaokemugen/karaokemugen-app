@@ -1,40 +1,44 @@
 const db = require('../../_engine/components/db_interface.js');
+import {detectFileType, asyncMove, asyncExists, asyncUnlink} from './files.js';
+import {getConfig} from './config';
 import {createHash} from 'crypto';
 import {deburr} from 'lodash';
 import {now} from 'unix-timestamp';
+import {resolve} from 'path';
 import logger from 'winston';
+import uuidV4 from 'uuid/v4';
 
-export async function isGuest(id) {
-	// Test if user ID provided is a guest or not.
+async function cleanGuestUsers() {
+	// Cleanup guest accounts from database	
 }
 
 export async function updateLastLogin(id) {
 	// Update last login time for a user
-	await db.updateLastLogin(id,now());
+	return await db.updateLastLogin(id,now());
 }
 
-export async function editUser(id,user) {
-	// User contains :
-	// { 	
-	//   login: string (can be empty if guest_id > 0)
-	//   password: string (can be empty if guest_id > 0. Must be hashed)
-	//   nickname: login by default
-	//   bio: Bio text.
-	//   url: URL text
-	//   email: email
-	//   avatar_file: if provided, call replaceAvatar
-	// }	
+export async function editUser(id,user,avatar) {
 	try {
+		const currentUser = await findUserByID(id);
 		user.id = id;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
 		user.NORM_nickname = deburr(user.nickname);
-		await db.editUser(user);
 		if (user.password) {
 			user.password = hashPassword(user.password);
 			await db.updateUserPassword(id,user.password);
 		}
+		if (avatar) {
+			// If a new avatar was sent, it is contained in the avatar object
+			// Let's move it to the avatar user directory and update avatar info in 
+			// database
+			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);
+			console.log(user.avatar_file);
+		} else {
+			user.avatar_file = currentUser.avatar_file;
+		}
+		await db.editUser(user);
 		logger.info(`[User] ${user.login} (${user.nickname}) profile updated`);
 		return user;
 	} catch (err) {
@@ -42,25 +46,9 @@ export async function editUser(id,user) {
 		const ret = {
 			message: err,
 			data: user.nickname
-		}
+		};
 		throw ret;
 	}
-}
-
-export async function addGuest(guest) {
-	// Guest object :
-	// { 
-    //   name: Name of guest account, like "Mahoro",
-	//   avatar_id: id of avatar to use
-	// }
-}
-
-export async function deleteGuest(id) {
-
-}
-
-export async function editGuest(id,guest) {
-
 }
 
 export async function listGuests() {
@@ -71,25 +59,26 @@ export async function listUsers() {
 	return await db.listUsers();
 }
 
-export async function addAvatar(avatar) {
-    // Avatar object :
-	// {
-	//   type: 1 - guest, 2 - regular user
-    //   imagefile: name of file in app/avatars
-	// }
-}
-
-export async function deleteAvatar(id) {
-    // Check which guest used that avatar, modify the fk_id_avatar in the user table
-	// to point to the default avatar instead.
-	// Users can't delete their avatars. they have to replace them
-}
-
-async function replaceAvatar(imagefile) {
+async function replaceAvatar(oldImageFile,avatar) {
 	try {
-		// TODO: Write image data to disk
+		const conf = getConfig();
+		const fileType = await detectFileType(avatar.path);
+		if (fileType != 'jpg' &&
+				fileType != 'gif' &&
+				fileType != 'png') {			
+			throw 'Wrong avatar file type';			
+		}
+		// Construct the name of the new avatar file with its ID and filetype.
+		const newAvatarFile = uuidV4()+ '.' + fileType;
+		const newAvatarPath = resolve(conf.PathAvatars,newAvatarFile);
+		const oldAvatarPath = resolve(conf.PathAvatars,oldImageFile);
+		if (await asyncExists(oldAvatarPath) &&
+			oldImageFile != 'blank.jpg') await asyncUnlink(oldAvatarPath);	
+		await asyncMove(avatar.path,newAvatarPath);
+		console.log(newAvatarFile);
+		return newAvatarFile;
 	} catch (err) {
-		logger.error(`[User] Unable to replace avatar ${imagefile} : ${err}`);
+		logger.error(`[User] Unable to replace avatar ${oldImageFile} with ${avatar.path} : ${err}`);
 		throw err;
 	}
 }
@@ -98,13 +87,13 @@ export async function findUserByName(username) {
 	//Check if user exists in db
 	const userdata = await db.getUserByName(username);
 	if (userdata) return userdata;
-	return null;	
+	return false;	
 }
 
 export async function findUserByID(id) {
 	const userdata = await db.getUserByID(id);
 	if (userdata) return userdata;
-	return null;
+	return false;
 }
 
 export function hashPassword(password) {
@@ -114,39 +103,14 @@ export function hashPassword(password) {
 }
 
 export async function addUser(user) {
-	// Validate user data
-	// Userdata contains :
-	// { 
-	//   guest_id: number
-	//   login: string (can be empty if guest_id > 0)
-	//   password: string (can be empty if guest_id > 0. Must be hashed)
-	//   nickname: login by default
-	//   NORM_nickname: normalized/deburred nickname
-	//   avatar_id: if guest_id > 0 then fetch guest's avatar ID
-	//   last_login: date/time when the guest account should be deleted. Set it to now + 1 hour by default. A reconnection resets the counter to then + 1 hour. Guests can be wiped by an admin command	
-	//   flag_online: 0 for now
-	//   flag_admin: 0 
-	// }
 	let ret = {};
-	if (user.guest_id > 0) {
-		const guestInfo = await getGuestInfo(user.guest_id);
-		user.avatar_id = guestInfo.avatar_id;
-		user.nickname = guestInfo.name;
-	} else {
-		user.avatar_id = 0;
-		user.nickname = user.login;
-	}
+	user.nickname = user.login;
 	user.password = hashPassword(user.password);
 	user.last_login = now();
 	user.NORM_nickname = deburr(user.nickname);
-	// FIXME : Revoir ça parce que ça a pas beaucoup de sens
-	// These are only triggered if creating a temporary user via a guest login
-	if (user.guest_id > 0 && user.password === null) {
+	if (!user.type) user.type = 1;
+	if (user.type === 1 && user.password === null) {
 		ret.code = 'USER_EMPTY_PASSWORD';
-		throw ret;
-	}
-	if (user.guest_id > 0 && user.login === null) {
-		ret.code = 'USER_EMPTY_LOGIN';
 		throw ret;
 	}
 	user.flag_online = 0;
