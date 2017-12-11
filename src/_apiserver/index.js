@@ -472,102 +472,6 @@ module.exports = {
 				});
 			routerAdmin.route('/users/:user_id([0-9]+)')
 			/**
- * @api {put} admin/users/:user_id Edit a user
- * @apiName EditUser
- * @apiVersion 2.1.0
- * @apiGroup Users
- * @apiPermission admin
- *
- * @apiParam {Number} user_id User ID to edit
- * @apiParam {String} login New login for user
- * @apiParam {String} nickname New nickname for user
- * @apiParam {String} [password] New password. Can be empty (password won't be changed then)
- * @apiParam {String} [bio] User's bio info. Can be empty.
- * @apiParam {String} [email] User's mail. Can be empty.
- * @apiParam {String} [url] User's URL. Can be empty.
- * @apiSuccess {String} args ID of user deleted
- * @apiSuccess {String} code Message to display
- * @apiSuccess {Number} data ID of user deleted
- *
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "args": "lol",
- *   "code": "USER_UPDATED",
- *   "data": {
- *       "NORM_nickname": "lol",
- *       "bio": "lol2",
- *       "email": "lol3@lol.fr",
- *       "id": "3",
- *       "login": "test2",
- *       "nickname": "lol",
- *       "url": "http://lol4"
- *   }
- * }
- * @apiError USER_UPDATE_ERROR Unable to edit user
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- */
-				.put(upload.single('avatarfile'), function(req,res){
-					req.check({
-						'login': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'nickname': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'email': {
-							in: 'body',
-							optional: true,
-							isEmail: true
-						},
-						'url': {
-							in: 'body',
-							optional: true,
-							isURL: true
-						}					
-					});
-
-					req.getValidationResult()
-						.then(function(result){							
-							if (result.isEmpty()) {
-								// No errors detected
-								req.sanitize('bio').trim();
-								req.sanitize('email').trim();
-								req.sanitize('url').trim();
-								req.sanitize('nickname').trim();
-								req.sanitize('login').trim();
-								req.sanitize('bio').unescape();
-								req.sanitize('email').unescape();
-								req.sanitize('url').unescape();
-								req.sanitize('nickname').unescape();
-								req.sanitize('login').unescape();
-								//Now we add user
-								let avatar;
-								if (req.file) avatar = req.file;
-								user.editUser(req.params.user_id,req.body,avatar)
-									.then(function(user){
-										module.exports.emitEvent('userUpdated',req.params.user_id);
-										res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
-									})
-									.catch(function(err){
-										res.statusCode = 500;
-										res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
-									});
-								
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
-								res.json(result.mapped());
-							}
-						});
-
-				})
-			/**
  * @api {delete} admin/users/:user_id Delete an user
  * @apiName DeleteUser
  * @apiVersion 2.1.0
@@ -3980,7 +3884,7 @@ module.exports = {
 							res.json(errMessage('GUEST_LIST_ERROR',err));
 						});
 				});
-			routerPublic.route('/users/:user_id[0-9]/lastlogin')
+			routerPublic.route('/users/:user_id([0-9]+)/lastlogin')
 			/**
  * @api {put} public/users/:user_id/lastlogin List users
  * @apiName PutUsersLastLogin
@@ -4014,6 +3918,104 @@ module.exports = {
 							errMessage('USER_CHECK_ERROR',err.message);
 						});
 				});
+			routerPublic.route('/users/:user_id([0-9]+)')
+			/**
+ * @api {put} admin/users/:user_id Edit a user
+ * @apiName EditUser
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission adminOrOwn
+ *
+ * @apiParam {Number} user_id User ID to edit
+ * @apiParam {String} login New login for user
+ * @apiParam {String} nickname New nickname for user
+ * @apiParam {String} [password] New password. Can be empty (password won't be changed then)
+ * @apiParam {String} [bio] User's bio info. Can be empty.
+ * @apiParam {String} [email] User's mail. Can be empty.
+ * @apiParam {String} [url] User's URL. Can be empty.
+ * @apiSuccess {String} args ID of user deleted
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of user deleted
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "lol",
+ *   "code": "USER_UPDATED",
+ *   "data": {
+ *       "NORM_nickname": "lol",
+ *       "bio": "lol2",
+ *       "email": "lol3@lol.fr",
+ *       "id": "3",
+ *       "login": "test2",
+ *       "nickname": "lol",
+ *       "url": "http://lol4"
+ *   }
+ * }
+ * @apiError USER_UPDATE_ERROR Unable to edit user
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+				.put(upload.single('avatarfile'), function(req,res){
+					req.check({
+						'login': {
+							in: 'body',
+							notEmpty: true,
+						},
+						'nickname': {
+							in: 'body',
+							notEmpty: true,
+						},
+						'email': {
+							in: 'body',
+							optional: true,
+							isEmail: true
+						},
+						'url': {
+							in: 'body',
+							optional: true,
+							isURL: true
+						}					
+					});
+
+					req.getValidationResult()
+						.then(function(result){							
+							if (result.isEmpty()) {
+								// No errors detected
+								req.sanitize('bio').trim();
+								req.sanitize('email').trim();
+								req.sanitize('url').trim();
+								req.sanitize('nickname').trim();
+								req.sanitize('login').trim();
+								req.sanitize('bio').unescape();
+								req.sanitize('email').unescape();
+								req.sanitize('url').unescape();
+								req.sanitize('nickname').unescape();
+								req.sanitize('login').unescape();
+								//Now we add user
+								let avatar;
+								if (req.file) avatar = req.file;
+								user.editUser(req.params.user_id,req.body,avatar)
+									.then(function(user){
+										module.exports.emitEvent('userUpdated',req.params.user_id);
+										res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
+									})
+									.catch(function(err){
+										res.statusCode = 500;
+										res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+									});
+								
+							} else {
+								// Errors detected
+								// Sending BAD REQUEST HTTP code and error object.
+								res.statusCode = 400;
+								res.json(result.mapped());
+							}
+						});
+
+				});
+
 			routerPublic.route('/users')
 			/**
  * @api {get} public/users List users
