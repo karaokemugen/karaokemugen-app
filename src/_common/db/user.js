@@ -48,9 +48,11 @@ export const selectUserByName = `SELECT u.pk_id_user AS id,
 
 export const selectGuests = `SELECT u.pk_id_user AS user_id,
 								u.nickname AS nickname,
-	 							a.imagefile AS avatar_file
-							FROM user AS u, avatar AS a
-							WHERE u.fk_id_avatar = a.pk_id_avatar;
+								u.NORM_nickname AS NORM_nickname,
+								u.login AS login
+	 							u.avatar_file AS avatar_file
+							FROM user AS u
+							WHERE u.type = 2;
 							`;
 
 export const selectUsers = `SELECT u.pk_id_user AS user_id,

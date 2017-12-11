@@ -3944,16 +3944,18 @@ module.exports = {
  * @apiGroup Users
  * @apiPermission public
  * 
- * @apiSuccess {Number} data/guest_id ID of guest account
- * @apiSuccess {String} data/name Name of guest account
+ * @apiSuccess {Number} data/user_id ID of the guest user
+ * @apiSuccess {String} data/nickname Name of guest account
+ * @apiSuccess {String} data/NORM_nickname Name of guest account deburr'ed
+ * @apiSuccess {String} data/login Login to use for account
  * @apiSuccess {String} data/avatar_file Avatar's filename for this account.
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
  *   "data": [
  *       {
- *           "guest_id": 1,
- *           "name": "Naruto",
+ *           "user_id": 1,
+ *           "nickname": "Naruto",
  *           "avatar_file": "naruto.jpg"
  *       }
  *   ]
