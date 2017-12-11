@@ -16,6 +16,7 @@ import Home from './pages/Home';
 import Config from './pages/Config';
 import Karas from './pages/Karas';
 import Database from './pages/Database';
+import Users from './pages/Users';
 
 
 class App extends Component {
@@ -40,6 +41,7 @@ class App extends Component {
 							<Route path='/config' component={AuthRequired(Config)}/>
 							<Route path='/karas' component={AuthRequired(Karas)}/>
 							<Route path='/db' component={AuthRequired(Database)}/>
+							<Route path='/users' component={AuthRequired(Users)}/>
 						</Switch>
 					</div>
 				</ConnectedRouter>

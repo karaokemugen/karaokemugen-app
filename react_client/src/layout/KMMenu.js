@@ -39,6 +39,7 @@ class KMMenu extends Component {
 						<Menu.Item to='/config' as={NavLink}>Configuration</Menu.Item>
 						<Menu.Item to='/karas' as={NavLink}>Karas</Menu.Item>
 						<Menu.Item to='/db' as={NavLink}>Base de données</Menu.Item>
+						<Menu.Item to='/users' as={NavLink}>Utilisateurs</Menu.Item>
 						{this.connectMenu()}
 					</Container>
 				</Menu>

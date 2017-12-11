@@ -2,6 +2,7 @@ import passport from 'passport';
 import {getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
 import {decode} from 'jwt-simple';
+import {addUser, listUsers} from '../_dao/user';
 
 module.exports = function adminController(router) {
 
@@ -29,5 +30,12 @@ module.exports = function adminController(router) {
 		run()
 			.then(() => res.status(200).send('Karas successfully generated'))
 			.catch(err => res.status(500).send('Error while regenerating karas: ' + err));
+	});
+
+	router.get('/users', requireAuth, requireAdmin, (req, res) => {
+		listUsers()
+			.then(users => res.json(users))
+			.catch(err => res.status(500).send('Error while fetching users: ' + err));
+
 	});
 };

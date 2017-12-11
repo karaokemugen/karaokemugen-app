@@ -18,6 +18,7 @@ import {karaGenerationBatch} from './_admin/generate_karasfiles';
 import {startExpressReactServer} from './_webapp/react';
 
 import setTitle from 'console-title';
+import {openDatabases} from './_dao/database';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception); // to see your exception details in the console
@@ -105,6 +106,7 @@ async function main() {
 	[1337, 1338, 1339, 1340].forEach(port => verifyOpenPort(port));
 
 	await restoreKaraBackupFolders(config);
+	await openDatabases(config);
 
 	/** Start React static frontend */
 	startExpressReactServer(1338);
