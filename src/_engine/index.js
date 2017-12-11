@@ -12,8 +12,8 @@ process.on('unhandledRejection', (reason, p) => {
 });
 
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews.js';
-
-var fs = require('fs');
+import {initUserSystem} from '../_common/utils/user.js';
+const fs = require('fs');
 const path = require('path');
 const logger = require('winston');
 const extend = require('extend');
@@ -87,6 +87,7 @@ module.exports = {
 			module.exports._start_apiserver();
 			module.exports._start_wsserver();
 			module.exports._broadcastStates();
+			initUserSystem();
 		}).catch(function(response){
 			logger.error(response);
 		});

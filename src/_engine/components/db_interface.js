@@ -675,6 +675,29 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {clean guests which expired}
+	* @param {number} {Timestamp the account should expire}
+	* @return {boolean} {promise}
+	*/
+	cleanGuestUsers:function(expireTime) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			module.exports._db_handler.run(sqlUser.deleteExpiredGuests,
+				{
+					$expire_time: expireTime
+				})
+				.then(() => {
+					resolve();
+				})
+				.catch((err) => {
+					reject(`Failed to clean up guests : ${err}`);
+				});			
+		});
+	},
+	/**
 	* @function {Update user last login}
 	* @param {number} {ID}
 	* @param {number} {Timestamp}

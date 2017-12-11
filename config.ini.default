@@ -127,3 +127,7 @@ PathVideosHTTP = ""
 ; If you have blue window issues in Windows, set mpvVideoOutput to "direct3d", otherwise don't touch this
 ; mpv should detect automatically which video output driver to use
 mpvVideoOutput = ""
+
+; Auth configuration
+; Time (in minutes) before a guest account is set to expire after its last login/action 
+AuthGuestExpireTime = 60

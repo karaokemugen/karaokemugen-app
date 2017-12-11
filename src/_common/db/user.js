@@ -49,8 +49,9 @@ export const selectUserByName = `SELECT u.pk_id_user AS id,
 export const selectGuests = `SELECT u.pk_id_user AS user_id,
 								u.nickname AS nickname,
 								u.NORM_nickname AS NORM_nickname,
-								u.login AS login
-	 							u.avatar_file AS avatar_file
+								u.login AS login,
+	 							u.avatar_file AS avatar_file,
+								(fingerprint IS NULL) AS available
 							FROM user AS u
 							WHERE u.type = 2;
 							`;
@@ -90,6 +91,14 @@ export const createUser = `INSERT INTO user(
 							$flag_admin,
 							$last_login);
 						   `;
+
+export const deleteExpiredGuests = `UPDATE user SET 
+									last_login = 0,
+									fingerprint = null
+									WHERE type = 2
+									  AND fingerprint IS NOT NULL
+									  AND last_login <= $expire_time;
+								`;
 
 export const updateLastLogin = `UPDATE user SET
 									last_login = $now

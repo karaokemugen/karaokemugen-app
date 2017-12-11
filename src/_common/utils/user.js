@@ -7,9 +7,15 @@ import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
+import {forever} from 'async';
+import {promisify} from 'util';
+const sleep = promisify(setTimeout);
 
 async function cleanGuestUsers() {
-	// Cleanup guest accounts from database	
+	// Cleanup guest accounts from database
+	await db.cleanGuestUsers(now() - (getConfig().AuthGuestExpireTime * 60));
+	//Sleep for one minute.
+	await sleep(60000);
 }
 
 export async function updateLastLogin(id) {
@@ -158,9 +164,18 @@ export async function deleteUser(id) {
 	}
 }
 
-export function init() {
+export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
+	forever((next) => {
+		cleanGuestUsers()
+			.then(() => {
+				next();
+			})
+			.catch((err) => {
+				logger.error(`[User] Clean up of guest accounts failed : ${err}`);
+			});
+	});
 }
 
 

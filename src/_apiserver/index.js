@@ -3949,6 +3949,7 @@ module.exports = {
  * @apiSuccess {String} data/NORM_nickname Name of guest account deburr'ed
  * @apiSuccess {String} data/login Login to use for account
  * @apiSuccess {String} data/avatar_file Avatar's filename for this account.
+ * @apiSuccess {String} data/available 0 = account is locked by someone. 1 = account is available for use
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
