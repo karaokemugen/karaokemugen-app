@@ -675,6 +675,31 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {Update user last login}
+	* @param {number} {ID}
+	* @param {number} {Timestamp}
+	* @return {boolean} {promise}
+	*/
+	updateUserLastLogin:function(id,now) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			module.exports._db_handler.run(sqlUser.updateUserLastLogin,
+				{
+					$id: id,
+					$now: now					
+				})
+				.then(() => {
+					resolve();
+				})
+				.catch((err) => {
+					reject(`Failed to update user ${id}'s last login : ${err}`);
+				});			
+		});
+	},
+	/**
 	* @function {Update User Password}
 	* @param {number} {ID}
 	* @param {string} {password}

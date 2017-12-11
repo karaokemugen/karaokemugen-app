@@ -3979,6 +3979,40 @@ module.exports = {
 							res.json(errMessage('GUEST_LIST_ERROR',err));
 						});
 				});
+			routerPublic.route('/users/:user_id[0-9]/lastlogin')
+			/**
+ * @api {put} public/users/:user_id/lastlogin List users
+ * @apiName PutUsersLastLogin
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission public
+ *
+ * @apiParam {Number} user_id ID of user to check in
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": 'USER_CHECKED_IN',
+ *   "args": 3
+ * }
+ * @apiError USER_CHECK_ERROR Unable to update ceck-in
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_CHECK_ERROR",
+ *   "message": null
+ * }
+ */
+				.put(function(req,res){
+					user.updateLastLogin(req.params.user_id)
+						.then(function(){
+							OKMessage(null,'USER_CHECKED_IN',req.params.user_id);
+						})
+						.catch(function(err){
+							res.statusCode = 500;
+							errMessage('USER_CHECK_ERROR',err.message);
+						});
+				});
 			routerPublic.route('/users')
 			/**
  * @api {get} public/users List users

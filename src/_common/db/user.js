@@ -91,6 +91,11 @@ export const createUser = `INSERT INTO user(
 							$last_login);
 						   `;
 
+export const updateLastLogin = `UPDATE user SET
+									last_login = $now
+								WHERE pk_id_user = $id;
+								`;
+
 export const editUser = `UPDATE user SET 
 							login = $login,
 							nickname = $nickname,

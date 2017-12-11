@@ -14,7 +14,7 @@ async function cleanGuestUsers() {
 
 export async function updateLastLogin(id) {
 	// Update last login time for a user
-	return await db.updateLastLogin(id,now());
+	return await db.updateUserLastLogin(id,now());
 }
 
 export async function editUser(id,user,avatar) {
