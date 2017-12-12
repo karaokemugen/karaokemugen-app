@@ -95,15 +95,14 @@ export function cleanGuestUsers(expireTime) {
 	);
 }
 
-export function isAdmin(id) {
-	const req = getUserDb().get(
+export async function isAdmin(id) {
+	const req = await getUserDb().get(
 		sql.isAdmin,
 		{
 			$id: id
 		}
 	);
-	if (req.flag_admin == 1) return true;
-	return false;
+	return req.flag_admin == 1;
 }
 
 export function updateUserLastLogin(id,now) {

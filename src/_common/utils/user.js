@@ -163,8 +163,8 @@ export async function deleteUser(id) {
 	}
 }
 
-export async function isAdmin(username) {
-	return await db.isAdmin(username);
+export function isAdmin(username) {
+	return db.isAdmin(username);
 }
 
 export async function initUserSystem() {

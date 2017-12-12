@@ -14,7 +14,7 @@ module.exports = function authController(router) {
 		res.send({
 			token: createJwtToken(req.body.username, config),
 			username: req.body.username,
-			role: getRole(req.body.username)
+			role: getRole(req.body.username);
 		});
 	});
 
@@ -37,7 +37,9 @@ function decodeJwtToken(token, config) {
 	return decode(token, conf.JwtSecret);
 }
 
-async function getRole(username) {
-	if (await isAdmin(username)) return 'admin';
-	return 'user';	
+function getRole(username) {
+	return isAdmin(username).then((res) => {
+		if (res) return 'admin';
+		return 'user';
+	}); 
 }
