@@ -102,7 +102,6 @@ export async function isAdmin(username) {
 			$username: username
 		}
 	);
-	console.log(req.flag_admin);
 	return req.flag_admin === 1;
 }
 
