@@ -1,16 +1,17 @@
-const logger = require('winston');
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
+import logger from 'winston';
+import express from 'express';
+import {resolve} from 'path';
+import bodyParser from 'body-parser';
 
-const passport = require('passport');
-const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
-const LocalStrategy = require('passport-local');
+import passport from 'passport';
+import {Strategy} from 'passport-jwt';
+import {ExtractJwt} from 'passport-jwt';
+import LocalStrategy from 'passport-local';
 
-const config = require('../_common/utils/config');
-const adminController = require('../_controllers/admin');
-const authController = require('../_controllers/auth');
+import config from '../_common/utils/config';
+import adminController from '../_controllers/admin';
+import authController from '../_controllers/auth';
+import {hashPassword,findUserByName} from '../_common/utils/user';
 
 module.exports = {
 	startExpressReactServer: startExpressReactServer
@@ -34,7 +35,7 @@ function startExpressReactServer(listenPort) {
 	configurePassport();
 
 	// Serve static files from the React app
-	app.use(express.static(path.resolve(__dirname, '../_dashboard')));
+	app.use(express.static(resolve(__dirname, '../_dashboard')));
 
 	// API router
 	app.use('/api', apiRouter());
@@ -42,13 +43,13 @@ function startExpressReactServer(listenPort) {
 	// The "catchall" handler: for any request that doesn't
 	// match one above, send back React's index.html file.
 	app.get('*', (req, res) => {
-		res.sendFile(path.resolve(__dirname, '../_dashboard/index.html'));
+		res.sendFile(resolve(__dirname, '../_dashboard/index.html'));
 	});
 
 	const port = listenPort || 5000;
 	app.listen(port);
 
-	logger.info(`[Dashboard] React frontend app listening on ${port}`);
+	logger.info(`[Dashboard] Dashboard listening on ${port}`);
 }
 
 function apiRouter() {
@@ -73,22 +74,17 @@ function configurePassport(conf) {
 	passport.use(localLogin);
 }
 
-function localPassportStrategy(config) {
+function localPassportStrategy() {
 	const localOptions = {usernameField: 'username', passwordField: 'password'};
-	const adminUsername = config.AdminUsername;
-	const adminPassword = config.AdminPassword;
 
 	return new LocalStrategy(localOptions, function (username, password, done) {
-		if (username === adminUsername) {
-			if (password === adminPassword) {
+		password = hashPassword(password);
+		findUserByName(username)
+			.then((userdata) => {
+				if (!userdata) return done(null, false);				
+				if (password != userdata.password) return done(null, false);
 				return done(null, username);
-			} else {
-				return done(null, false);
-			}
-		} else {
-			// TODO Remplacer par une identification des comptes utilisateurs en base.
-			return done(null, username);
-		}
+			});
 	});
 }
 
@@ -99,7 +95,7 @@ function jwtPassportStrategy(config) {
 		secretOrKey: config.JwtSecret
 	};
 
-	return new JwtStrategy(jwtOptions, function (payload, done) {
+	return new Strategy(jwtOptions, function (payload, done) {
 		return done(null, payload.username);
 	});
 }
