@@ -8,7 +8,7 @@ import {Strategy} from 'passport-jwt';
 import {ExtractJwt} from 'passport-jwt';
 import LocalStrategy from 'passport-local';
 
-import config from '../_common/utils/config';
+import {getConfig} from '../_common/utils/config';
 import adminController from '../_controllers/admin';
 import authController from '../_controllers/auth';
 import {hashPassword,findUserByName} from '../_common/utils/user';
@@ -65,7 +65,7 @@ function apiRouter() {
 
 function configurePassport(conf) {
 
-	const resolvedConf = conf || config.getConfig();
+	const resolvedConf = conf || getConfig();
 
 	const localLogin = localPassportStrategy(resolvedConf);
 	const jwtLogin = jwtPassportStrategy(resolvedConf);
