@@ -1,0 +1,46 @@
+
+import passport from 'passport';
+import {Strategy} from 'passport-jwt';
+import {ExtractJwt} from 'passport-jwt';
+import LocalStrategy from 'passport-local';
+
+import {hashPassword,findUserByName} from '../_common/utils/user';
+import {getConfig} from '../_common/utils/config';
+
+export function configurePassport(conf) {
+
+	const resolvedConf = conf || getConfig();
+
+	const localLogin = localPassportStrategy(resolvedConf);
+	const jwtLogin = jwtPassportStrategy(resolvedConf);
+
+	passport.use(jwtLogin);
+	passport.use(localLogin);
+}
+
+function localPassportStrategy() {
+	const localOptions = {usernameField: 'username', passwordField: 'password'};
+
+	return new LocalStrategy(localOptions, function (username, password, done) {
+		password = hashPassword(password);
+		findUserByName(username)
+			.then((userdata) => {
+				if (!userdata) return done(null, false);         
+				if (password != userdata.password) return done(null, false); 
+				return done(null, username); 
+			}) 
+			.catch(() => done(null, false)); 
+	}); 
+} 
+
+function jwtPassportStrategy(config) {
+
+	const jwtOptions = {
+		jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+		secretOrKey: config.JwtSecret
+	};
+
+	return new Strategy(jwtOptions, function (payload, done) {
+		return done(null, payload.username);
+	});
+}

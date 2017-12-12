@@ -4,19 +4,14 @@ import {resolve} from 'path';
 import bodyParser from 'body-parser';
 
 import passport from 'passport';
-import {Strategy} from 'passport-jwt';
-import {ExtractJwt} from 'passport-jwt';
-import LocalStrategy from 'passport-local';
-
-import {getConfig} from '../_common/utils/config';
 import adminController from '../_controllers/admin';
 import authController from '../_controllers/auth';
-import {hashPassword,findUserByName} from '../_common/utils/user';
 
 module.exports = {
 	startExpressReactServer: startExpressReactServer
 };
 
+import {configurePassport} from './passport_manager.js';
 
 /**
  * Démarrage de l'application Express servant le frontend React, développé dans un sous-projet JS
@@ -61,42 +56,4 @@ function apiRouter() {
 	adminController(apiRouter);
 
 	return apiRouter;
-}
-
-function configurePassport(conf) {
-
-	const resolvedConf = conf || getConfig();
-
-	const localLogin = localPassportStrategy(resolvedConf);
-	const jwtLogin = jwtPassportStrategy(resolvedConf);
-
-	passport.use(jwtLogin);
-	passport.use(localLogin);
-}
-
-function localPassportStrategy() {
-	const localOptions = {usernameField: 'username', passwordField: 'password'};
-
-	return new LocalStrategy(localOptions, function (username, password, done) {
-		password = hashPassword(password);
-		findUserByName(username)
-			.then((userdata) => {
-				if (!userdata) return done(null, false);				
-				if (password != userdata.password) return done(null, false);
-				return done(null, username);
-			})
-			.catch(() => done(null, false));
-	});
-}
-
-function jwtPassportStrategy(config) {
-
-	const jwtOptions = {
-		jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-		secretOrKey: config.JwtSecret
-	};
-
-	return new Strategy(jwtOptions, function (payload, done) {
-		return done(null, payload.username);
-	});
 }
