@@ -1,5 +1,5 @@
-const db = require('../../_engine/components/db_interface.js');
-import {detectFileType, asyncMove, asyncExists, asyncUnlink} from './files.js';
+const db = require('../../_dao/user');
+import {detectFileType, asyncMove, asyncExists, asyncUnlink} from './files';
 import {getConfig} from './config';
 import {createHash} from 'crypto';
 import {deburr} from 'lodash';
@@ -81,7 +81,6 @@ async function replaceAvatar(oldImageFile,avatar) {
 		if (await asyncExists(oldAvatarPath) &&
 			oldImageFile != 'blank.jpg') await asyncUnlink(oldAvatarPath);	
 		await asyncMove(avatar.path,newAvatarPath);
-		console.log(newAvatarFile);
 		return newAvatarFile;
 	} catch (err) {
 		logger.error(`[User] Unable to replace avatar ${oldImageFile} with ${avatar.path} : ${err}`);
