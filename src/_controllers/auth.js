@@ -11,11 +11,14 @@ module.exports = function authController(router) {
 	router.post('/login', requireLogin, (req, res) => {
 		const config = getConfig();
 
-		res.send({
-			token: createJwtToken(req.body.username, config),
-			username: req.body.username,
-			role: getRole(req.body.username);
-		});
+		getRole(req.body.username)
+			.then(role =>
+				res.send({
+					token: createJwtToken(req.body.username, config),
+					username: req.body.username,
+					role: role
+				})
+			).catch(err => res.status(500).send('Error while login: ' + err));
 	});
 
 	router.get('/checkauth', requireAuth, (req, res) => {
@@ -37,9 +40,6 @@ function decodeJwtToken(token, config) {
 	return decode(token, conf.JwtSecret);
 }
 
-function getRole(username) {
-	return isAdmin(username).then((res) => {
-		if (res) return 'admin';
-		return 'user';
-	}); 
+async function getRole(username) {
+	return await isAdmin(username) ? 'admin' : 'user';
 }

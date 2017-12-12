@@ -84,7 +84,8 @@ function localPassportStrategy() {
 				if (!userdata) return done(null, false);				
 				if (password != userdata.password) return done(null, false);
 				return done(null, username);
-			});
+			})
+			.catch(() => done(null, false));
 	});
 }
 
