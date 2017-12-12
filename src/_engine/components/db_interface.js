@@ -698,6 +698,33 @@ module.exports = {
 		});
 	},
 	/**
+	* @function {is the username provided admin ?}
+	* @param {string} {Username}
+	* @return {boolean} {promise}
+	*/
+	isAdmin:function(username) {
+		return new Promise(function(resolve,reject){
+			if(!module.exports.isReady()) {
+				logger.error('[DBI] DB_INTERFACE is not ready to work');
+				reject('Database interface is not ready yet');
+			}
+			module.exports._db_handler.get(sqlUser.isAdmin,
+				{
+					$username: username
+				})
+				.then((row) => {
+					if (row.flag_admin === 1) {
+						resolve(true);
+					} else {
+						resolve(false);
+					}
+				})
+				.catch((err) => {
+					reject(`Failed to check if user ${username} is admin : ${err}`);
+				});			
+		});
+	},
+	/**
 	* @function {Update user last login}
 	* @param {number} {ID}
 	* @param {number} {Timestamp}

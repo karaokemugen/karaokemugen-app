@@ -1,6 +1,7 @@
 import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
+import {isAdmin} from '../_common/utils/user';
 
 module.exports = function authController(router) {
 
@@ -13,7 +14,7 @@ module.exports = function authController(router) {
 		res.send({
 			token: createJwtToken(req.body.username, config),
 			username: req.body.username,
-			role: getRole(req.body.username, config)
+			role: getRole(req.body.username)
 		});
 	});
 
@@ -36,7 +37,7 @@ function decodeJwtToken(token, config) {
 	return decode(token, conf.JwtSecret);
 }
 
-function getRole(username, config) {
-	const conf = config || getConfig();
-	return (username === conf.AdminUsername ? 'admin' : 'user');
+async function getRole(username) {
+	if (await isAdmin(username)) return 'admin';
+	return 'user';	
 }

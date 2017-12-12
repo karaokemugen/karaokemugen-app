@@ -56,6 +56,11 @@ export const selectGuests = `SELECT u.pk_id_user AS user_id,
 							WHERE u.type = 2;
 							`;
 
+export const isAdmin = `SELECT flag_admin 
+						FROM user
+						WHERE login = $username
+						`;
+
 export const selectUsers = `SELECT u.pk_id_user AS user_id,
 								u.type AS type,
 	 							u.avatar_file AS avatar_file,
