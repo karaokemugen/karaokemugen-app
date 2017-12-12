@@ -4230,7 +4230,19 @@ module.exports = {
 					next();
 				}
 			});
+						
+			function apiRouter() {
+				const apiRouter = express.Router();
 
+				// Ajout des routes d'identification.
+				authController(apiRouter);
+				// Ajout des routes d'administration, nécessitant une identification.
+				adminController(apiRouter);
+
+				return apiRouter;
+			}
+
+			app.use('/api/v1/auth', apiRouter());
 			app.use('/api/v1/public', routerPublic);
 			app.use('/api/v1/admin', routerAdmin);
 			resolve();
