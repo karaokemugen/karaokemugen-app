@@ -2,61 +2,14 @@ const express = require('express');
 const expressValidator = require('express-validator');
 const logger = require('winston');
 const bodyParser = require('body-parser');
-//const basicAuth = require('express-basic-auth');
 const passport = require('passport');
-const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
-const LocalStrategy = require('passport-local');
-
-const config = require('../_common/utils/config');
-const adminController = require('../_controllers/admin');
 const authController = require('../_controllers/auth');
 
 const user = require('../_common/utils/user.js');
 const path = require('path');
 const multer = require('multer');
 
-function configurePassport(conf) {
-
-	const resolvedConf = conf || config.getConfig();
-
-	const localLogin = localPassportStrategy(resolvedConf);
-	const jwtLogin = jwtPassportStrategy(resolvedConf);
-
-	passport.use(jwtLogin);
-	passport.use(localLogin);
-}
-
-function localPassportStrategy(config) {
-	const localOptions = {usernameField: 'username', passwordField: 'password'};
-	const adminUsername = config.AdminUsername;
-	const adminPassword = config.AdminPassword;
-
-	return new LocalStrategy(localOptions, function (username, password, done) {
-		if (username === adminUsername) {
-			if (password === adminPassword) {
-				return done(null, username);
-			} else {
-				return done(null, false);
-			}
-		} else {
-			// TODO Remplacer par une identification des comptes utilisateurs en base.
-			return done(null, username);
-		}
-	});
-}
-
-function jwtPassportStrategy(config) {
-
-	const jwtOptions = {
-		jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-		secretOrKey: config.JwtSecret
-	};
-
-	return new JwtStrategy(jwtOptions, function (payload, done) {
-		return done(null, payload.username);
-	});
-}
+import {configurePassport} from '../_webapp/passport_manager.js';
 
 
 function numberTest(element) {
@@ -147,7 +100,6 @@ module.exports = {
 				logger.info('[API] API server is READY and listens on port '+module.exports.LISTEN);
 			});
 
-			//routerAdmin.use(basicAuth({ authorizer: AdminPasswordSetting }));
 			routerAdmin.use(passport.initialize());
 			configurePassport();
 
@@ -4233,12 +4185,8 @@ module.exports = {
 						
 			function apiRouter() {
 				const apiRouter = express.Router();
-
 				// Ajout des routes d'identification.
 				authController(apiRouter);
-				// Ajout des routes d'administration, nécessitant une identification.
-				adminController(apiRouter);
-
 				return apiRouter;
 			}
 

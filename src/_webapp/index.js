@@ -8,9 +8,6 @@ const logger = require('winston');
 
 const basicAuth = require('express-basic-auth');
 
-import {hashPassword, findUserByID, findUserByName} from '../_common/utils/user.js';
-import {configurePassport} from './passport_manager.js';
-
 function AdminPasswordAuth(username, password){
 	return password === module.exports.SETTINGS.AdminPassword;
 }
