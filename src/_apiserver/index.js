@@ -4190,6 +4190,34 @@ module.exports = {
 				return apiRouter;
 			}
 
+			/**
+ * @api {post} /auth/login Login / Sign in
+ * @apiName AuthLogin
+ * @apiVersion 2.1.0
+ * @apiGroup Auth
+ * @apiPermission public
+ * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
+ * @apiHeader {String} charset Must be `UTF-8`
+ * @apiParam {String} login Login name for the user
+ * @apiParam {String} password Password for the user
+ * @apiSuccess {String} token Identification token for this session
+ * @apiSuccess {String} username Username logged in
+ * @apiSuccess {String} role Role of this user (`user` or `admin`)
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE1MTMxNjAxMTEzMjMsInJvbGUiOiJ1c2VyIn0.UWgsc5XEfFtk34IpUAQid_IEWCj2ffNjQ--FJ9eAYd0",
+ *   "username": "Axel",
+ *   "role": "admin"
+ * }
+ * @apiError 401 Unauthorized
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 401 Unauthorized
+ */
+
+
 			app.use('/api/v1/auth', apiRouter());
 			app.use('/api/v1/public', routerPublic);
 			app.use('/api/v1/admin', routerAdmin);
