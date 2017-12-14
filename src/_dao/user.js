@@ -107,7 +107,7 @@ export async function isAdmin(username) {
 
 export function updateUserLastLogin(id,now) {
 	return getUserDb().run(
-		sql.updateUserLastLogin,
+		sql.updateLastLogin,
 		{
 			$id: id,
 			$now: now

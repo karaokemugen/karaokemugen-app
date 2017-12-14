@@ -18,9 +18,14 @@ async function cleanGuestUsers() {
 	await sleep(60000);
 }
 
-export async function updateLastLogin(id) {
+export async function updateLastLoginID(id) {
 	// Update last login time for a user
 	return await db.updateUserLastLogin(id,now());
+}
+
+export async function updateLastLoginName(login) {
+	const currentUser = await findUserByName(login);
+	return await db.updateUserLastLogin(currentUser.id,now());
 }
 
 export async function editUser(id,user,avatar) {
@@ -128,7 +133,7 @@ export async function addUser(user) {
 		throw ret;
 	}
 	try {
-		await db.createUser(user);
+		await db.addUser(user);
 		logger.info(`[User] Created user ${user.login}`);
 		logger.debug(`[User] User data : ${JSON.stringify(user)}`);
 		return true;
