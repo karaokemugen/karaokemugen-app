@@ -25,8 +25,13 @@ function localPassportStrategy() {
 		password = hashPassword(password);
 		findUserByName(username)
 			.then((userdata) => {
-				if (!userdata) return done(null, false);         
+				//User not found
+				if (!userdata) return done(null, false);
+				//User is a guest, no password check needed
+				if (userdata.type == 2) return done(null, username);
+				//User is not a guest, and password mismatches
 				if (password != userdata.password) return done(null, false); 
+				//Everything's daijobou
 				return done(null, username); 
 			}) 
 			.catch(() => done(null, false)); 
