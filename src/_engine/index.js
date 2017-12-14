@@ -11,8 +11,9 @@ process.on('unhandledRejection', (reason, p) => {
 	// application specific logging, throwing an error, or other logic here
 });
 
-import {createPreviews, isPreviewAvailable} from '../_webapp/previews.js';
-import {initUserSystem} from '../_common/utils/user.js';
+import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
+import {initUserSystem} from '../_common/utils/user';
+import {initDBSystem, getStats} from '../_dao/database';
 const fs = require('fs');
 const path = require('path');
 const logger = require('winston');
@@ -406,7 +407,7 @@ module.exports = {
 		module.exports.DB_INTERFACE = require(path.join(__dirname,'components/db_interface.js'));
 		module.exports.DB_INTERFACE.SYSPATH = module.exports.SYSPATH;
 		module.exports.DB_INTERFACE.SETTINGS = module.exports.SETTINGS;
-		return module.exports.DB_INTERFACE.init();
+		return initDBSystem();
 	},
 	/**
 	* @function
@@ -1953,7 +1954,7 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onStats = function(){
 			return new Promise(function(resolve,reject){
-				module.exports.DB_INTERFACE.getStats()
+				getStats()
 					.then(function(stats){
 						resolve(stats);
 					})

@@ -1,1 +1,0 @@
-SELECT COUNT(*) AS langcount FROM karasdb.tag WHERE tagtype = 5;

@@ -1,1 +1,0 @@
-SELECT COUNT(*) AS artistcount FROM karasdb.tag WHERE tagtype=2;

@@ -9,7 +9,7 @@ module.exports = function authController(router) {
 	const requireAuth = passport.authenticate('jwt', { session: false });
 
 	router.post('/login', requireLogin, (req, res) => {
-			/**
+/**
  * @api {post} /auth/login Login / Sign in
  * @apiName AuthLogin
  * @apiVersion 2.1.0

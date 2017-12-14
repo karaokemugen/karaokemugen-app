@@ -105,10 +105,7 @@ module.exports = {
 
 			routerAdmin.use(function(req,res,next) {
 				next();
-			});
-			function AdminPasswordSetting(username, password){
-				return password === module.exports.SETTINGS.AdminPassword;
-			}
+			});			
 
 			routerPublic.use(function(req, res, next) {
 				// do logging

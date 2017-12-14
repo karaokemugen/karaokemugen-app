@@ -1,1 +1,0 @@
-SELECT COUNT(*) AS karacount FROM karasdb.kara;

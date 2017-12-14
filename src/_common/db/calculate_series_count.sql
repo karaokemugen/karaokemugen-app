@@ -1,1 +1,0 @@
-SELECT COUNT(*) AS seriescount FROM karasdb.serie;

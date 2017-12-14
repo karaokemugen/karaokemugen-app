@@ -1,344 +1,21 @@
-process.on('uncaughtException', function (exception) {
-	console.log(exception); // to see your exception details in the console
-	// if you are on production, maybe you can send the exception details to your
-	// email as well ?
-});
-process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-	// application specific logging, throwing an error, or other logic here
-});
-
-var db = require('sqlite');
 var path = require('path');
 var fs = require('fs-extra');
 const logger = require('winston');
-const moment = require('moment');
-require('moment-duration-format');
-moment.locale('fr');
 const async = require('async');
-var generator = require('../../_admin/generate_karasdb.js');
+import {getUserDb} from '../../_dao/database';
+
 
 module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
-	_ready: false,
-	_db_handler: null,	
+	_ready: true,
+	_db_handler: getUserDb(),	
 
-	init: function(){
-		return new Promise(function(resolve){
-			// démarre une instance de SQLITE
-
-			if(module.exports.SYSPATH === null) {
-				logger.error('[DBI] _engine/components/db_interface.js : SYSPATH is null');
-				process.exit();
-			}
-			const userdb_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBUserFile);
-			const db_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile);			
-
-			var userDB_Test = new Promise(function(resolve,reject) {
-				var userDB = db;
-				userDB.open(userdb_file,{verbose: true})
-					.then(() => {
-						logger.info('[DBI] Running migrations on user database (if needed)');
-						userDB.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/userdata')})
-							.then(() => {
-								userDB.close()
-									.then(() => {
-										resolve();
-									})
-									.catch((err) => {
-										logger.error('[DBI] Closing user database failed : ' + err);
-										reject(err);
-									});
-							})
-							.catch((err) => {
-								logger.error('[DBI] Running migrations for user database : '+err); 
-								reject(err);
-							});
-					})
-					.catch((err) => {
-						logger.error('[DBI] Error opening user database : '+err); 
-						reject(err);
-					});					
-			});
-			Promise.all([userDB_Test])
-				.then(() => {
-					var karasDB_Test = new Promise(function(resolve,reject){
-						var doGenerate = false;
-						if(module.exports.SETTINGS.optGenerateDB) {
-							// Manual generation triggered.
-							// Delete any existing karas.sqlite3 file
-							if(fs.existsSync(db_file)) {
-								fs.removeSync(db_file);
-							}
-						}
-						if(!fs.existsSync(db_file)) {
-							logger.warn('[DBI] Karaokes database not found');
-							doGenerate = true;
-						}
-						var karasDB = db;
-						karasDB.open(db_file,{verbose: true})
-							.then(() => {
-								logger.info('[DBI] Running migrations on karaokes database (if needed)');
-								karasDB.migrate({ migrationsPath: path.join(__dirname,'../../_common/db/migrations/karasdb')})
-									.then(() => {
-										karasDB.close()
-											.then(() => {
-												if (doGenerate) {
-													generator.SYSPATH = module.exports.SYSPATH;
-													generator.SETTINGS = module.exports.SETTINGS;
-													generator.onLog = function(type,message) {
-														logger.info('[DBI] [Gen]',message);
-													};
-													generator.run().then(function(err){
-														logger.info('[DBI] Karaokes database created');
-														if (module.exports.SETTINGS.optGenerateDB) {
-															if (err) {
-																logger.info('[DBI] Database generation completed with errors!');
-																process.exit(1);
-															} else {
-																logger.info('[DBI] Database generation completed successfully!');
-																process.exit(0);
-															}
-														} else {
-															resolve();
-														}														
-													}).catch(function(error){
-														// error.
-														reject(error);
-													});
-												} else {
-													resolve();
-												}
-											})
-											.catch((err) => {
-												logger.error('[DBI] Closing database : '+err);
-											});
-												
-									})
-									.catch((err) => {
-										logger.error('[DBI] Failed creating karaokes database : '+err);
-										reject(err);
-									});					
-							})
-							.catch((err) => {
-								reject(err);
-							});				
-					});
-			
-					Promise.all([ karasDB_Test ])
-						.then(function() {
-							module.exports._db_handler = db;
-							module.exports._db_handler.open(userdb_file)
-								.then(() => {									
-									module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;')
-										.then(() => {
-											module.exports.compareDatabasesUUIDs()
-												.catch((err) => {
-													logger.error('[DBI] Unable to compare databases : '+err);
-													process.exit(1);
-												});
-											module.exports._ready = true;
-											module.exports.getStats()
-												.then(function(stats) {
-													logger.info('[DBI] Karaoke count   : ' + stats.totalcount);								
-													logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-													logger.info('[DBI] Total series    : ' + stats.totalseries);
-													logger.info('[DBI] Total languages : ' + stats.totallanguages);
-													logger.info('[DBI] Total artists   : ' + stats.totalartists);
-													logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
-												})
-												.catch(function(err) {
-													logger.warn('[DBI] Failed to fetch statistics : ' + err);
-												});
-											logger.info('[DBI] Database interface is READY');
-											// Trace event. DO NOT UNCOMMENT
-											// unless you want to flood your console.
-											/*module.exports._db_handler.driver.on('trace',function(sql){
-												console.log(sql);
-											});*/
-											resolve();						
-										})
-										.catch((err) => {
-											logger.error('[DBI] Unable to attach karaoke database : '+err);
-											process.exit(1);
-										});
-							
-								})
-								.catch((err) => {
-									logger.error('[DBI] Unable to open karaoke database : '+err);
-									process.exit(1);
-								});
-																			
-						})
-						.catch((err) => {
-							logger.error['[DBI] Initializing karaokes database failed : '+err];
-							process.exit(1);
-						});
-				})
-				.catch((err) => {
-					logger.error('[DBI] Initializing user database failed : '+err);
-					process.exit(1);
-				});
-		});		
-	},
-	// fermeture des instances SQLITE (unlock les fichiers)
-	close:function() {
-		module.exports._ready = false;
-		return new Promise(function(resolve,reject){
-			module.exports._db_handler.close()
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					logger.error('[DBI] Unable to close databases : '+err);					
-					reject(err);
-				});
-		});		
-	},
-	compareDatabasesUUIDs: function() {
-		return new Promise((resolve,reject) => {
-			var sqlGetDBUUIDs = fs.readFileSync(path.join(__dirname,'../../_common/db/select_databases_uuids.sql'),'utf-8');
-			module.exports._db_handler.get(sqlGetDBUUIDs)
-				.then((res) => {											
-					if (res == undefined) {
-						res = '';
-					}
-					if (res.karasdb_uuid != res.userdb_uuid) {
-						//Databases are different, rewriting userdb's UUID with karasdb's UUID and running integrity checks.
-						generator.SYSPATH = module.exports.SYSPATH;
-						generator.SETTINGS = module.exports.SETTINGS;
-						generator.onLog = function(type,message) {
-							logger.info('[DBI] [Gen]',message);
-						};
-						generator.checkUserdbIntegrity(res.karasdb_uuid)
-							.then(() => {
-								resolve();
-							})
-							.catch((err) => {
-								logger.error('[DBI] Integrity check failed :'+err);
-								reject(err);
-							});							
-					} else {
-						resolve();
-					}						
-				})
-				.catch((err) => {
-					logger.error('[DBI] Unable to compare database UUIDs : '+err);
-					reject(err);
-				});
-		});
-	},
 	isReady: function() {
 		return module.exports._ready;
 	},
 
 	// Below are all methods used by other components to access and manipulate data in the database.
-	/**
-	* @function {Calculate various stats}
-	* @return {number} {Object with stats}
-	*/
-	getStats:function() {
-		return new Promise(function(resolve,reject){
-			var stats = {};
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-
-			var pGetSeriesCount = new Promise((resolve) => {
-				var sqlCalculateSeriesCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_series_count.sql'),'utf-8');
-				module.exports._db_handler.get(sqlCalculateSeriesCount)
-					.then((res) => {
-						stats.totalseries = res.seriescount;
-						resolve();
-					})
-					.catch((err) => {
-						logger.warn('[DBI] Failed to fetch series count : '+err);
-						stats.totalseries = 0;
-						resolve();
-					});
-			});
-
-			var pGetPlaylistCount = new Promise((resolve) => {
-				var sqlCalculatePlaylistCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_count.sql'),'utf-8');
-				module.exports._db_handler.get(sqlCalculatePlaylistCount)
-					.then((res) => {
-						stats.totalplaylists = res.plcount;
-						resolve();
-					})
-					.catch((err) => {
-						logger.warn('[DBI] Failed to fetch playlists count : '+err);
-						stats.totalplaylists = 0;
-						resolve();
-					});					
-			});
-			var pGetArtistCount = new Promise((resolve) => {
-				var sqlCalculateArtistCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_artist_count.sql'),'utf-8');
-				module.exports._db_handler.get(sqlCalculateArtistCount)
-					.then((res) => {
-						stats.totalartists = res.artistcount;
-						resolve();
-					})
-					.catch((err) => {
-						logger.warn('[DBI] Failed to fetch artists count : '+err);
-						stats.totalartists = 0;
-						resolve();
-					});					
-			});
-			var pGetKaraCount = new Promise((resolve) => {
-				var sqlCalculateKaraCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_kara_count.sql'),'utf-8');
-				module.exports._db_handler.get(sqlCalculateKaraCount)
-					.then((res) => {
-						stats.totalcount = res.karacount;
-						resolve();
-					})
-					.catch((err) => {
-						logger.error('[DBI] Failed to fetch karaoke count : '+err);
-						stats.totalcount = 0;
-						resolve();
-					});
-			});
-			var pGetLanguageCount = new Promise((resolve) => {
-				var sqlCalculateLanguageCount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_lang_count.sql'),'utf-8');
-				module.exports._db_handler.get(sqlCalculateLanguageCount)
-					.then((res) => {
-						stats.totallanguages = res.langcount;
-						resolve();
-					})
-					.catch((err) => {
-						logger.error('[DBI] Failed to fetch language count : '+err);
-						stats.totallanguages = 0;
-						resolve();
-					});
-			});
-			var pGetDuration = new Promise((resolve) => {
-				var sqlCalculateTotalDuration = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_total_duration.sql'),'utf-8');
-				module.exports._db_handler.get(sqlCalculateTotalDuration)
-					.then((res) => {
-						stats.totalduration = res.totalduration;							
-						resolve();
-					})
-					.catch((err) => {
-						logger.error('[DBI] Failed to fetch duration data : '+err);
-						stats.totalduration = 'Unknown';
-						resolve();					
-					});
-
-			});
-			Promise.all([
-				pGetKaraCount,
-				pGetDuration,
-				pGetSeriesCount,
-				pGetLanguageCount,
-				pGetArtistCount,
-				pGetPlaylistCount
-			]).then(function(){
-				resolve(stats);
-			}).catch(function(){
-				reject('Stats general error');
-			});
-		});
-	},
 	/**
 	* @function {Calculate number of a karaoke songs in a whole playlist}
 	* @param  {number} playlist_id {ID of playlist to recalculate number of songs}
@@ -398,7 +75,7 @@ module.exports = {
 			}
 			var sqlGenerateBlacklist = fs.readFileSync(path.join(__dirname,'../../_common/db/generate_blacklist.sql'),'utf-8');
 
-			module.exports._db_handler.exec(sqlGenerateBlacklist)
+			module.exports._db_handler.run(sqlGenerateBlacklist)
 				.then(() => {
 					resolve();
 				})
@@ -1536,7 +1213,7 @@ module.exports = {
 			}
 
 			var sqlUpdatePlaylistsUnsetPublic = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_public.sql'),'utf-8');
-			module.exports._db_handler.exec(sqlUpdatePlaylistsUnsetPublic)
+			module.exports._db_handler.run(sqlUpdatePlaylistsUnsetPublic)
 				.then(() => {
 					resolve();
 				})
@@ -1572,7 +1249,7 @@ module.exports = {
 			}
 
 			var sqlUpdatePlaylistsUnsetCurrent = fs.readFileSync(path.join(__dirname,'../../_common/db/update_playlist_unset_current.sql'),'utf-8');
-			module.exports._db_handler.exec(sqlUpdatePlaylistsUnsetCurrent)
+			module.exports._db_handler.run(sqlUpdatePlaylistsUnsetCurrent)
 				.then(() => {
 					resolve();
 				})
