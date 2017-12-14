@@ -405,8 +405,6 @@ module.exports = {
 	*/
 	_start_db_interface: function() {
 		module.exports.DB_INTERFACE = require(path.join(__dirname,'components/db_interface.js'));
-		module.exports.DB_INTERFACE.SYSPATH = module.exports.SYSPATH;
-		module.exports.DB_INTERFACE.SETTINGS = module.exports.SETTINGS;
 		return initDBSystem();
 	},
 	/**

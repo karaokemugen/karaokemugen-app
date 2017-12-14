@@ -6,8 +6,6 @@ import {getUserDb} from '../../_dao/database';
 
 
 module.exports = {
-	SYSPATH:null,
-	SETTINGS:null,
 	_ready: true,
 	
 	isReady: function() {

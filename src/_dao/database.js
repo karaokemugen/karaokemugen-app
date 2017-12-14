@@ -2,8 +2,8 @@ import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
 import {getConfig} from '../_common/utils/config';
 import {join, resolve} from 'path';
-import {asyncExists, asyncUnlink} from '../_common/utils/files';
-import DBgenerator from '../_admin/generate_karasdb.js';
+import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
+const DBgenerator = require('../_admin/generate_karasdb.js');
 const sqlDB = require('../_common/db/database');
 
 // Setting up moment tools
@@ -72,33 +72,30 @@ async function closeUserDatabase() {
 /* Opened DB are exposed to be used by DAO objects. */
 
 export function getKaraDb() {
-	if (karaDb) return karaDb;
-	openKaraDatabase().then(() => { 
-		return karaDb; 
-	});
+	return karaDb;	
 }
 
 export function getUserDb() {
-	if (userDb) return userDb;
-	openUserDatabase().then(() => { 
-		return userDb; 
-	});
+	return userDb; 	
 }
 
 export async function initDBSystem() {
+	var doGenerate = false;
 	const conf = getConfig();	
 	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
-	await migrateUserDb();
-	await closeUserDatabase();
-	var doGenerate = false;
 	if (conf.optGenerateDB) {
 		// Manual generation triggered.
 		// Delete any existing karas.sqlite3 file
 		if(await asyncExists(karaDbFile)) await asyncUnlink(karaDbFile);
 	}
-	if (!await asyncExists(karaDbFile)) doGenerate = true;
-	await migrateKaraDb();
+	const karaDbFileStats = await asyncStat(karaDbFile);
+	if (karaDbFileStats.size === 0) doGenerate = true;
+	await migrateUserDb();
+	await closeUserDatabase();
 	await closeKaraDatabase();
+	await openKaraDatabase();
+	await migrateKaraDb();
+	await closeKaraDatabase();	
 	if (doGenerate) await generateDatabase();
 	await openUserDatabase();
 	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
@@ -218,7 +215,7 @@ async function generateDatabase() {
 
 async function migrateUserDb() {
 	try {
-		await userDb.migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata')});
+		await getUserDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata')});
 		return true;	
 	} catch (err) {
 		logger.error(`[DBI] Failed to migrate user database : ${err}`);
@@ -228,7 +225,7 @@ async function migrateUserDb() {
 
 async function migrateKaraDb() {
 	try {
-		await karaDb.migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
+		await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
 		return true;	
 	} catch (err) {
 		logger.error(`[DBI] Failed to migrate karaokes database : ${err}`);
