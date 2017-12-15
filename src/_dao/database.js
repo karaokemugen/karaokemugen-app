@@ -192,7 +192,7 @@ async function getTotalDuration() {
 }
 
 async function getKaraCount() {
-	const res = await getUserDb().get(sql.calculateKaraCount)
+	const res = await getUserDb().get(sql.calculateKaraCount);
 	return res.karacount;								
 }
 

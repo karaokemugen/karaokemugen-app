@@ -35,32 +35,7 @@ module.exports = {
 					reject('Failed to calculate playlist karaoke count : '+err);
 				});
 		});
-	},
-	/*
-	* @function {getSongCountForUser}
-	* @param {number} {ID of Playlist to count songs in}
-	* @param {string} {name of person to check for requested songs}
-	* @return {boolean} {promise}
-	*/
-	getSongCountForUser:function(playlist_id,requester) {
-		return new Promise((resolve,reject) => {
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlGetSongCountForUser = fs.readFileSync(path.join(__dirname,'../../_common/db/select_song_count_for_user_in_playlist.sql'),'utf-8');
-			getUserDb().get(sqlGetSongCountForUser,
-				{
-					$playlist_id: playlist_id,
-					$requester: requester
-				})
-				.then((data) => {
-					resolve(data.count);
-				})
-				.catch((err) => {
-					reject('Failed to get number of songs for user '+requester+' in playlist '+playlist_id+' : '+err);
-				});						
-		});
-	},	
+	},		
 	updatePlaylistNumOfKaras:function(playlist_id,num_karas) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
@@ -302,25 +277,6 @@ module.exports = {
 		});
 	},
 	/**
-	* @function {Get all karaokes}
-	* @return {array} {array of karaoke objects}
-	*/
-	getAllKaras:function(){
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlGetAllKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/select_all_karas.sql'),'utf-8');
-			getUserDb().all(sqlGetAllKaras)
-				.then((playlist) => {
-					resolve(playlist);
-				})
-				.catch((err) => {
-					reject('Failed to fetch all karaokes : '+err);
-				});												
-		});
-	},
-	/**
 	* @function {Get karaoke info from a playlistcontent_id}
 	* @return {object} {Karaoke object}
 	*/
@@ -346,30 +302,6 @@ module.exports = {
 		});
 	},
 	/**
-	* @function {Get one karaoke}
-	* @param  {number} kara_id {Karaoke ID}
-	* @return {Object} {karaoke object}
-	*/
-	getKara:function(kara_id){
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-
-			var sqlGetKara = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kara.sql'),'utf-8');
-			getUserDb().get(sqlGetKara,
-				{
-					$kara_id: kara_id
-				})
-				.then((kara) => {
-					resolve(kara);
-				})
-				.catch((err) => {
-					reject('Failed to get karaoke song '+kara_id+' information : '+err);
-				});										
-		});
-	},
-	/**
 	* @function {Get one karaoke's ASS data}
 	* @param  {number} kara_id {Karaoke ID}
 	* @return {Object} {ASS Object}
@@ -390,30 +322,6 @@ module.exports = {
 				})
 				.catch((err) => {
 					reject('Failed to get karaoke song '+kara_id+' ASS : '+err);
-				});														
-		});
-	},
-	/**
-	* @function {Get one karaoke by KID}
-	* @param  {string} kid {KID}
-	* @return {Object} {karaoke object}
-	*/
-	getKaraByKID:function(kid){
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-
-			var sqlGetKaraByKID = fs.readFileSync(path.join(__dirname,'../../_common/db/select_kara_by_kid.sql'),'utf-8');
-			getUserDb().get(sqlGetKaraByKID,
-				{
-					$kid: kid
-				})
-				.then((kara) => {
-					resolve(kara);
-				})
-				.catch((err) => {
-					reject('Failed to get karaoke song '+kid+' information : '+err);
 				});														
 		});
 	},
@@ -590,30 +498,6 @@ module.exports = {
 		});
 	},
 	/**
-	* @function {is it a kara?}
-	* @param  {number} kara_id {Karaoke ID to check for existence}
-	* @return {type} {Returns true or false}
-	*/
-	isKara:function(kara_id) {
-		return new Promise(function(resolve,reject){
-			var sqlIsKara = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara.sql'),'utf-8');
-			getUserDb().get(sqlIsKara,
-				{
-					$kara_id: kara_id
-				})
-				.then((kara) => {
-					if (kara) {
-						resolve(true);						
-					} else {
-						resolve(false);
-					}
-				})
-				.catch((err) => {
-					reject('Failed to test if karaoke '+kara_id+' exists : '+err);
-				});								
-		});
-	},	
-	/**
 	* @function {Raises position of a song in playlist}
 	* @param  {number} playlist_id        {ID of playlist to modify}
 	* @param  {number} pos        {Position to modify}
@@ -641,80 +525,6 @@ module.exports = {
 				});						
 		});
 	},	
-	/**
-	* @function {Is the kara in the playlist?}
-	* @param  {number} kara_id {ID of karaoke to search for}
-	* @param  {number} playlist_id {ID of playlist to search in}
-	* @return {boolean} {Promise}
-	*/
-	isKaraInPlaylist:function(kara_id,playlist_id) {
-		return new Promise(function(resolve,reject){
-			var sqlIsKaraInPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara_in_playlist.sql'),'utf-8');
-			getUserDb().get(sqlIsKaraInPlaylist,
-				{
-					$kara_id: kara_id,
-					$playlist_id: playlist_id
-				})
-				.then((kara) => {
-					if (kara) {
-						resolve(true);						
-					} else {
-						resolve(false);
-					}
-				})
-				.catch((err) => {
-					reject('Failed to find if karaoke song '+kara_id+' is in playlist '+playlist_id+' or not : '+err);
-				});						
-		});
-	},
-	/**
-	* @function {Is the kara in the blacklist?}
-	* @param  {number} kara_id {ID of karaoke to search for}
-	* @return {boolean} {Promise}
-	*/
-	isKaraInBlacklist:function(kara_id) {
-		return new Promise(function(resolve,reject){
-			var sqlIsKaraInBlacklist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara_in_blacklist.sql'),'utf-8');
-			getUserDb().get(sqlIsKaraInBlacklist,
-				{
-					$kara_id: kara_id,
-				})
-				.then((kara) => {
-					if (kara) {
-						resolve(true);						
-					} else {
-						resolve(false);
-					}
-				})
-				.catch((err) => {
-					reject('Failed to search for karaoke '+kara_id+' in blacklist : '+err);
-				});						
-		});
-	},
-	/**
-	* @function {Is the kara in the whitelist?}
-	* @param  {number} kara_id {ID of karaoke to search for}
-	* @return {boolean} {Promise}
-	*/
-	isKaraInWhitelist:function(kara_id) {
-		return new Promise(function(resolve,reject){
-			var sqlIsKaraInWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/test_kara_in_whitelist.sql'),'utf-8');
-			getUserDb().get(sqlIsKaraInWhitelist,
-				{
-					$kara_id: kara_id
-				})
-				.then((kara) => {
-					if (kara) {
-						resolve(true);						
-					} else {
-						resolve(false);
-					}
-				})
-				.catch((err) => {
-					reject('Failed to search for karaoke '+kara_id+' in whitelist : '+err);
-				});						
-		});
-	},
 	/**
 	* @function {is it a playlist?}
 	* @param  {number} playlist_id {Playlist ID to check for existence}
@@ -1005,55 +815,6 @@ module.exports = {
 		});
 	},
 	/**
-	* @function {Adds one viewcount entry to table}
-	* @param  {number} kara_id  {Database ID of Kara to add a VC to}
-	* @param  {string} kid      {KID provided}
-	* @param  {number} datetime {date and time in unix timestamp}
-	* @return {promise} {promise}
-	*/
-	addViewcount:function(kara_id,kid,datetime) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				logger.error('[DBI] Database interface is not ready yet!');
-				reject();
-			}
-			var sqlAddViewcount = fs.readFileSync(path.join(__dirname,'../../_common/db/add_viewcount.sql'),'utf-8');
-			getUserDb().run(sqlAddViewcount,
-				{
-					$kara_id: kara_id,
-					$kid: kid,
-					$modified_at: datetime
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					logger.error('[DBI] Failed to add viewcount for karaoke '+kara_id+' : '+err);
-					reject(err);					
-				});				
-		});
-	},
-	updateTotalViewcounts:function(kid) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				logger.error('[DBI] Database interface is not ready yet!');
-				reject();
-			}
-			var sqlCalculateViewcount = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_viewcount.sql'),'utf-8');
-			getUserDb().run(sqlCalculateViewcount,
-				{
-					$kid: kid
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					logger.error('[DBI] Failed to calculate viewcount for karaoke ID '+kid+' : '+err);
-					reject(err);					
-				});								
-		});
-	},
-	/**
 	* @function {Edit Playlist query function}
 	* @param  {number} playlist_id   {Playlist ID}
 	* @param  {string} name          {Name of playlist}
@@ -1124,256 +885,6 @@ module.exports = {
 				});
 		});
 	},
-	/**
-	* @function {Add Kara To Playlist}
-	* @param  {number} kara_id        {ID of karaoke song to add to playlist}
-	* @param  {string} requester      {Name of person requesting the song}
-	* @param  {string} NORM_requester {Normalized name (without accents)}
-	* @param  {number} playlist_id    {ID of playlist to add the song to}
-	* @param  {number} pos            {Position in the playlist}
-	* @param  {number} date_add       {UNIX timestap of the date and time the song was added to the list}
-	* @return {promise} {Promise}
-	*/
-	addKaraToPlaylist:function(karas) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			
-			//We receive an array of kara requests, we need to add them to a statement.
-			//Even for one kara.				
-			var sqlAddKaraToPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_playlist.sql'),'utf-8');
-			var karaList = [];
-			karas.forEach(function(kara) {				
-				karaList.push({
-					$playlist_id: kara.playlist_id,
-					$pseudo_add: kara.requester,
-					$NORM_pseudo_add: kara.NORM_requester,
-					$kara_id: kara.kara_id,
-					$created_at: kara.date_add,
-					$pos: kara.pos,					
-				});
-			});	
-			//We retry the transaction several times because when two transactions overlap there can be an error.
-			async.retry(
-				{ 
-					times: 5,
-					interval: 100,
-				},
-				function(callback){
-					getUserDb().run('begin transaction')
-						.then(() => {
-							async.each(karaList,function(data,callback){
-								getUserDb().prepare(sqlAddKaraToPlaylist)
-									.then((stmt) => {
-										stmt.run(data)
-											.then(() => {
-												callback();
-											})
-											.catch((err) => {
-												logger.error('Failed to add karaoke to playlist : '+err);				
-												callback(err);
-											});										
-									});
-								
-							}, function(err){
-								if (err) {
-									logger.error('Failed to add one karaoke to playlist : '+err);
-									callback(err);
-								} else {
-									getUserDb().run('commit')
-										.then(() => {
-											callback();	
-										})
-										.catch((err) => {
-											callback(err);
-										});
-								}
-							});
-						})
-						.catch((err) => {
-							logger.error('[DBI] Failed to begin transaction : '+err);
-							logger.error('[DBI] Transaction will be retried');
-							callback(err);
-						});
-				},function(err){
-					if (err){
-						reject(err);
-					} else {
-						resolve();
-					}
-				});									
-		});
-	},
-	/**
-	* @function {Add Kara To whitelist}
-	* @param  {number} karas        {array of ID of karaoke song to add to playlist}
-	* @param  {number} date_add       {UNIX timestap of the date and time the song was added to the list}
-	* @return {promise} {Promise}
-	*/
-	addKaraToWhitelist:function(karas,date_added) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			//We need to get the KID of the karaoke we're adding.
-
-			var sqlAddKaraToWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/add_kara_to_whitelist.sql'),'utf-8');
-			var karaList = [];
-			karas.forEach(function(kara) {				
-				karaList.push({
-					$kara_id: kara,
-					$created_at: date_added,
-				});
-			});	
-			//We retry the transaction several times because when two transactions overlap there can be an error.
-			async.retry(
-				{ 
-					times: 5,
-					interval: 100,
-				},
-				function(callback){
-					getUserDb().run('begin transaction')
-						.then(() => {
-							async.each(karaList,function(data,callback){
-								getUserDb().prepare(sqlAddKaraToWhitelist)
-									.then((stmt) => {
-										stmt.run(data)
-											.then(() => {
-												callback();
-											})
-											.catch((err) => {
-												logger.error('Failed to add karaoke to whitelist : '+err);				
-												callback(err);
-											});										
-									});
-								
-							}, function(err){
-								if (err) {
-									logger.error('Failed to add one karaoke to playlist : '+err);
-									callback(err);
-								} else {
-									getUserDb().run('commit')
-										.then(() => {
-											callback();	
-										})
-										.catch((err) => {
-											callback(err);
-										});
-								}
-							});
-						})
-						.catch((err) => {
-							logger.error('[DBI] Failed to begin transaction : '+err);
-							logger.error('[DBI] Transaction will be retried');
-							callback(err);
-						});
-				},function(err){
-					if (err){
-						reject(err);
-					} else {
-						resolve();
-					}
-				});					
-			
-		});
-	},
-	/**
-	* @function {Remove kara from playlist}
-	* @param  {number} playlistcontent_id        {ID of karaoke song to remove from playlist}
-	* @return {promise} {Promise}
-	*/
-	removeKaraFromPlaylist:function(karas) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-
-			var sqlRemoveKaraFromPlaylist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_playlist.sql'),'utf-8');
-			var karaList = karas.join(',');
-			// We're not using SQLite parameterization due to a limitation 
-			// keeping us from feeding a simple array/list to the statement.			
-			sqlRemoveKaraFromPlaylist = sqlRemoveKaraFromPlaylist.replace(/\$playlistcontent_id/,karaList);
-			getUserDb().run(sqlRemoveKaraFromPlaylist)
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					reject(err);
-				});
-		});
-	},
-	/**
-	* @function {Remove kara from whitelist}
-	* @param  {number} whitelistcontent_id        {ID of karaoke song to remove from playlist}
-	* @return {promise} {Promise}
-	*/
-	removeKaraFromWhitelist:function(wlcs) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-
-			var sqlRemoveKaraFromWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_kara_from_whitelist.sql'),'utf-8');
-			var karaList = [];
-			wlcs.forEach(function(kara) {
-				karaList.push({
-					$wlc_id: kara.wlc_id
-				});
-			});
-			//We retry the transaction several times because when two transactions overlap there can be an error.
-			//Example two delete or add kara at the very same time.
-			async.retry(
-				{
-					times: 5,
-					interval: 100
-				},
-				function(callback){
-					getUserDb().run('begin transaction')
-						.then(() => {
-							async.each(karaList,function(data,callback){
-								getUserDb().prepare(sqlRemoveKaraFromWhitelist)
-									.then((stmt) => {
-										stmt.run(data)
-											.then(() => {
-												callback();
-											})
-											.catch((err) => {
-												logger.error('Failed to delete karaoke from whitelist : '+err);
-												callback(err);					
-											});
-									});
-							}, function(err){
-								if (err) {
-									logger.error('Failed to delete one karaoke from whitelist : '+err);
-									callback(err);
-								} else {
-									getUserDb().run('commit')
-										.then(() => {
-											// Close all statements just to be sure.
-											callback();
-										})
-										.catch((err) => {
-											callback(err);
-										});
-								}
-							});														
-						})
-						.catch((err) => {
-							logger.error('[DBI] Failed to begin transaction : '+err);
-							logger.error('[DBI] Transaction will be retried');
-							callback(err);
-						});														
-				}, function(err){
-					if (err) {
-						reject(err);
-					} else {
-						resolve();
-					}
-				});								
-
-		});
-	},	
 	/**
 	* @function {Shifts positions in playlist}
 	* @param  {number} playlist_id        {ID of playlist to modify}

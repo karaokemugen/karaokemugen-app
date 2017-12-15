@@ -2,6 +2,7 @@ import {uuidRegexp} from '../../_services/kara';
 const blcDB = require('../../_dao/blacklist');
 const tagDB = require('../../_dao/tag');
 const wlDB = require('../../_dao/whitelist');
+const karaDB = require('../../_dao/kara');
 
 var path = require('path');
 var timestamp = require('unix-timestamp');
@@ -60,7 +61,7 @@ module.exports = {
 	isUserAllowedToAddKara:function(playlist_id,requester) {
 		return new Promise((resolve,reject) => {
 			const limit = module.exports.SETTINGS.EngineSongsPerUser;
-			module.exports.DB_INTERFACE.getSongCountForUser(playlist_id,L.deburr(requester))
+			karaDB.getSongCountForUser(playlist_id,L.deburr(requester))
 				.then((count) => {
 					if (count >= limit) {
 						logger.info('[PLC] User '+requester+' tried to add more songs than he/she was allowed ('+limit+')');
@@ -258,7 +259,7 @@ module.exports = {
 				var pGetKID = new Promise ((resolve,reject) => {
 					if (blctype == 1001) {
 						async.eachOf(blcList,function(blc,index,callback) {	
-							module.exports.DB_INTERFACE.getKara(blc.blcvalue)
+							karaDB.getKara(blc.blcvalue)
 								.then(function (res){
 									if (res) {
 										blcList[index].blcuniquevalue = res.kid;
@@ -378,7 +379,7 @@ module.exports = {
 						logger.error('[PLC] addKaraToWhitelist : '+err);
 						reject(err);
 					} else {
-						module.exports.DB_INTERFACE.addKaraToWhitelist(karaList,date_added)
+						karaDB.addKaraToWhitelist(karaList,date_added)
 							.then(function(){
 								// Regenerate blacklist to take new karas into account.
 								module.exports.generateBlacklist()
@@ -460,7 +461,7 @@ module.exports = {
 			});
 			Promise.all([pIsKara])
 				.then(function(){									
-					module.exports.DB_INTERFACE.getASS(kara_id)
+					karaDB.getASS(kara_id)
 						.then(function(ass) {							
 							// ass can be empty if we're viewing a hardsub
 							// or a kara without ass
@@ -506,7 +507,7 @@ module.exports = {
 			});
 			Promise.all([pIsBLC])
 				.then(function(){
-					module.exports.DB_INTERFACE.deleteBlacklistCriteria(blc_id)
+					blcDB.deleteBlacklistCriteria(blc_id)
 						.then(function(){
 							module.exports.generateBlacklist()
 								.then(function(){
@@ -653,7 +654,7 @@ module.exports = {
 	isKara:function(kara_id) {
 		//Une requête toute bête pour voir si une Playlist existe
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isKara(kara_id)
+			karaDB.isKara(kara_id)
 				.then(function(res){
 					if (res == true) {
 						resolve(true);
@@ -674,7 +675,7 @@ module.exports = {
 	*/
 	isKaraInBlacklist:function(kara_id) {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isKaraInBlacklist(kara_id)
+			karaDB.isKaraInBlacklist(kara_id)
 				.then(function(isKaraInBL) {
 					resolve(isKaraInBL);
 				})
@@ -691,7 +692,7 @@ module.exports = {
 	*/
 	isBLCriteria:function(blc_id) {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isBLCriteria(blc_id)
+			blcDB.isBLCriteria(blc_id)
 				.then(function(){
 					resolve();
 				})
@@ -726,7 +727,7 @@ module.exports = {
 	*/
 	isKaraInPlaylist:function(kara_id,playlist_id) {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isKaraInPlaylist(kara_id,playlist_id)
+			karaDB.isKaraInPlaylist(kara_id,playlist_id)
 				.then(function(isKaraInPL) {
 					resolve(isKaraInPL);
 				})
@@ -743,7 +744,7 @@ module.exports = {
 	*/
 	isKaraInWhitelist:function(kara_id) {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isKaraInWhitelist(kara_id)
+			karaDB.isKaraInWhitelist(kara_id)
 				.then(function(isKaraInWL) {
 					resolve(isKaraInWL);
 				})
@@ -1443,7 +1444,7 @@ module.exports = {
 	getBlacklistContents:function() {
 		return new Promise(function(resolve,reject) {
 			// Get karaoke list
-			module.exports.DB_INTERFACE.getBlacklistContents()
+			blcDB.getBlacklistContents()
 				.then(function(playlist){
 					resolve(playlist);
 				})
@@ -1477,7 +1478,7 @@ module.exports = {
 	getAllKaras:function() {
 		return new Promise(function(resolve,reject) {
 			// Get karaoke list
-			module.exports.DB_INTERFACE.getAllKaras()
+			karaDB.getAllKaras()
 				.then(function(playlist){
 					resolve(playlist);
 				})
@@ -1543,7 +1544,7 @@ module.exports = {
 	getKara:function(kara_id) {
 		return new Promise(function(resolve,reject) {
 			// Get karaoke list
-			module.exports.DB_INTERFACE.getKara(kara_id)
+			karaDB.getKara(kara_id)
 				.then(function(kara){
 					logger.debug('[PLC] GetKara : '+JSON.stringify(kara)+' from '+kara_id);
 					resolve(kara);
@@ -1562,7 +1563,7 @@ module.exports = {
 	getKaraByKID:function(kid) {
 		return new Promise(function(resolve,reject) {
 			// Get karaoke list
-			module.exports.DB_INTERFACE.getKaraByKID(kid)
+			karaDB.getKaraByKID(kid)
 				.then(function(kara){
 					resolve(kara);
 				})
@@ -2014,7 +2015,7 @@ module.exports = {
 					Promise.all([pManagePos])
 						.then(function() {	
 							logger.debug('[PLC] copyKaraToPlaylist : Copying PLCs in database wow wow');
-							module.exports.DB_INTERFACE.addKaraToPlaylist(plcList)
+							karaDB.addKaraToPlaylist(plcList)
 								.then(function(){
 									logger.debug('[PLC] copyKaraToPlaylist : updating playlist info');
 									var pUpdateLastEditTime = new Promise((resolve,reject) => {
@@ -2105,7 +2106,7 @@ module.exports = {
 			Promise.all([pIsPlaylist])
 				.then(function() {
 					// Removing karaoke here.
-					module.exports.DB_INTERFACE.removeKaraFromPlaylist(playlistcontent_id)
+					karaDB.removeKaraFromPlaylist(playlistcontent_id)
 						.then(function(){
 							var pUpdatedDuration = new Promise((resolve,reject) => {
 								module.exports.updatePlaylistDuration(playlist_id)
@@ -2332,7 +2333,7 @@ module.exports = {
 				});				
 			});
 			// Removing karaoke here.
-			module.exports.DB_INTERFACE.removeKaraFromWhitelist(karaList)
+			karaDB.removeKaraFromWhitelist(karaList)
 				.then(function(){
 					module.exports.generateBlacklist()
 						.then(() => {
@@ -2782,7 +2783,7 @@ module.exports = {
 				var pTagKaraID = new Promise((resolve,reject) => {
 					if (blc.type === 1001) {
 						// We have a kara ID, let's get the kara itself and append it to the value
-						module.exports.DB_INTERFACE.getKara(blc.value)
+						karaDB.getKara(blc.value)
 							.then(function(kara){
 								module.exports.translateKaraInfo(kara,lang)
 									.then(function (karaTranslated){
@@ -3220,7 +3221,7 @@ module.exports = {
 	build_dummy_current_playlist:function(playlist_id){
 		logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...');
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.getStats()
+			karaDB.getStats()
 				.then((stats) => {
 					var karaCount = stats.totalcount;
 					// Limiting to 5 sample karas to add if there's more. 
