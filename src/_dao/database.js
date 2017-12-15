@@ -136,7 +136,8 @@ export async function initDBSystem() {
 	await compareDatabasesUUIDs();
 	logger.info('[DBI] Database Interface is READY');
 	getStats().then((stats) => {
-		logger.info('[DBI] Karaoke count   : ' + stats.totalcount);					logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
+		logger.info('[DBI] Karaoke count   : ' + stats.totalcount);
+		logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
 		logger.info('[DBI] Total series    : ' + stats.totalseries);
 		logger.info('[DBI] Total languages : ' + stats.totallanguages);
 		logger.info('[DBI] Total artists   : ' + stats.totalartists);
@@ -146,24 +147,12 @@ export async function initDBSystem() {
 }
 
 async function compareDatabasesUUIDs() {
-	getUserDb().get(sql.compareUUIDs).then((res) => {
-		if (res == undefined) res = '';
-		if (res.karasdb_uuid != res.userdb_uuid) {
+	const res = await getUserDb().get(sql.compareUUIDs);
+	if (res && res.karasdb_uuid !== res.userdb_uuid) {
 		//Databases are different, rewriting userdb's UUID with karasdb's UUID and running integrity checks.
-			DBgenerator.checkUserdbIntegrity(res.karasdb_uuid).then(() => {
-				return true;
-			})
-				.catch((err) => {
-					logger.error(`[DBI] Integrity check failed : ${err}`);
-					throw err;
-				});
-		}						
-		return true;
-	})
-		.catch((err) => {
-			logger.error('[DBI] Unable to compare database UUIDs : '+err);
-			throw err;
-		});
+		await DBgenerator.checkUserdbIntegrity(res.karasdb_uuid);
+	}
+	return true;
 }
 
 async function getSeriesCount() {
@@ -211,41 +200,24 @@ export async function getStats() {
 async function generateDatabase() {
 	const conf = getConfig();
 
-	try {
-		const failedKaras = await DBgenerator.run();
-		logger.info('[DBI] Karaokes database created');
-		if (conf.optGenerateDB) {
-			if (failedKaras) {
-				logger.info('[DBI] Database generation completed with errors!');
-				process.exit(1);
-			} else {
-				logger.info('[DBI] Database generation completed successfully!');
-				process.exit(0);
-			}
+	const failedKaras = await DBgenerator.run(conf);
+	logger.info('[DBI] Karaokes database created');
+	if (conf.optGenerateDB) {
+		if (failedKaras) {
+			logger.info('[DBI] Database generation completed with errors!');
+			process.exit(1);
+		} else {
+			logger.info('[DBI] Database generation completed successfully!');
+			process.exit(0);
 		}
-		return true;
-	} catch (err) {
-		logger.error(`[DBI] Database generation failed : ${err}`);
-		throw err;
 	}
+	return true;
 }
 
 async function migrateUserDb() {
-	try {
-		await getUserDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata')});
-		return true;	
-	} catch (err) {
-		logger.error(`[DBI] Failed to migrate user database : ${err}`);
-		throw err;
-	}
+	return await getUserDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata')});
 }
 
 async function migrateKaraDb() {
-	try {
-		await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
-		return true;	
-	} catch (err) {
-		logger.error(`[DBI] Failed to migrate karaokes database : ${err}`);
-		throw err;
-	}
+	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
 }
