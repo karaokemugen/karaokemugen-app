@@ -1,4 +1,5 @@
 import {uuidRegexp} from '../../_services/kara';
+const blcDB = require('../../_dao/blacklist');
 
 var path = require('path');
 var timestamp = require('unix-timestamp');
@@ -9,10 +10,7 @@ const L = require('lodash');
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
 const async = require('async');
-process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at:', p, 'reason:', reason);
-	// application specific logging, throwing an error, or other logic here
-});
+
 
 
 module.exports = {
@@ -202,7 +200,7 @@ module.exports = {
 	*/
 	generateBlacklist:function() {		
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.generateBlacklist()
+			blcDB.generateBlacklist()
 				.then(function(){
 					resolve();
 				})
@@ -289,7 +287,7 @@ module.exports = {
 							logger.error('[PLC] '+err);
 							reject(err);
 						} else {
-							module.exports.DB_INTERFACE.addBlacklistCriteria(blcList)
+							blcDB.addBlacklistCriteria(blcList)
 								.then(function(){
 									// Regenerate blacklist to take new kara into account.
 									module.exports.generateBlacklist()
@@ -555,7 +553,12 @@ module.exports = {
 						if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && (isNaN(blcvalue))) {
 							reject('Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!');
 						} else {
-							module.exports.DB_INTERFACE.editBlacklistCriteria(blc_id,blctype,blcvalue)
+							const blc = {
+								id: blc_id,
+								type: blctype,
+								value: blcvalue
+							};
+							blcDB.editBlacklistCriteria(blc)
 								.then(function(){
 									module.exports.generateBlacklist()
 										.then(function(){
@@ -1004,7 +1007,7 @@ module.exports = {
 	*/
 	emptyBlacklistCriterias:function() {		
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.emptyBlacklistCriterias()
+			blcDB.emptyBlacklistCriterias()
 				.then(function(){
 					module.exports.generateBlacklist()
 						.then(function(){
@@ -1455,8 +1458,8 @@ module.exports = {
 	getBlacklistCriterias:function() {
 		return new Promise(function(resolve,reject) {
 			// Get list of criterias
-			module.exports.DB_INTERFACE.getBlacklistCriterias()
-				.then(function(blc){
+			blcDB.getBlacklistCriterias()
+				.then(function(blc){					
 					resolve(blc);
 				})
 				.catch(function(err){

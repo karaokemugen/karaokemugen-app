@@ -3,8 +3,9 @@ import {open} from 'sqlite';
 import {getConfig} from '../_common/utils/config';
 import {join, resolve} from 'path';
 import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
+import {retry, each} from 'async';
 const DBgenerator = require('../_admin/generate_karasdb.js');
-const sqlDB = require('../_common/db/database');
+const sql = require('../_common/db/database');
 
 // Setting up moment tools
 import moment from 'moment';
@@ -14,6 +15,39 @@ moment.locale('fr');
 // Setting up databases
 let karaDb;
 let userDb;
+
+export function transaction(items, sql) {
+	retry({times: 5, interval: 100}, (callback) => {
+		getUserDb().run('begin transaction')
+			.then(() => {							
+				each(items, (data,callback) => {
+					getUserDb().prepare(sql).then((stmt) => {
+						stmt.run(data).then(() => {
+							callback(); 
+						}).catch((err) => {
+							callback(err); 
+						});										
+					});								
+				}, (err) => {
+					if (err) callback(err);
+					getUserDb().run('commit').then(() => {
+						callback(); 
+					}).catch((err) => {
+						callback(err);
+					});
+				});
+			})
+			.catch((err) => {
+				logger.error('[DBI] Failed to begin transaction : '+err);
+				logger.error('[DBI] Transaction will be retried');
+				callback(err);
+			});
+	},(err) => {
+		// Retry failed completely after 5 tries
+		if (err) throw err;						
+		return true;
+	});		
+}
 
 export function openDatabases(config) {
 	const conf = config || getConfig();
@@ -101,11 +135,18 @@ export async function initDBSystem() {
 	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
 	await compareDatabasesUUIDs();
 	logger.info('[DBI] Database Interface is READY');
-	return await getStats();	
+	getStats().then((stats) => {
+		logger.info('[DBI] Karaoke count   : ' + stats.totalcount);					logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
+		logger.info('[DBI] Total series    : ' + stats.totalseries);
+		logger.info('[DBI] Total languages : ' + stats.totallanguages);
+		logger.info('[DBI] Total artists   : ' + stats.totalartists);
+		logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
+	});
+	return true;	
 }
 
 async function compareDatabasesUUIDs() {
-	getUserDb().get(sqlDB.compareUUIDs).then((res) => {
+	getUserDb().get(sql.compareUUIDs).then((res) => {
 		if (res == undefined) res = '';
 		if (res.karasdb_uuid != res.userdb_uuid) {
 		//Databases are different, rewriting userdb's UUID with karasdb's UUID and running integrity checks.
@@ -125,66 +166,45 @@ async function compareDatabasesUUIDs() {
 		});
 }
 
+async function getSeriesCount() {
+	const res = await getUserDb().get(sql.calculateSeriesCount);
+	return res.seriescount;
+}
+
+async function getPlaylistCount() {
+	const res = await getUserDb().get(sql.calculatePlaylistCount);
+	return res.plcount;				
+}
+
+async function getArtistCount() {
+	const res = await getUserDb().get(sql.calculateArtistCount);
+	return res.artistcount;
+}
+
+async function getLanguageCount() {
+	const res = await getUserDb().get(sql.calculateLangCount);
+	return res.langcount;	
+}
+
+async function getTotalDuration() {
+	const res = await getUserDb().get(sql.calculateDuration);
+	return res.totalduration;								
+}
+
+async function getKaraCount() {
+	const res = await getUserDb().get(sql.calculateKaraCount)
+	return res.karacount;								
+}
+
 export async function getStats() {
 	let stats = {};
-	var pGetSeriesCount = new Promise((resolve) => {
-		getUserDb().get(sqlDB.calculateSeriesCount)
-			.then((res) => {
-				stats.totalseries = res.seriescount;
-				resolve();
-			});
-	});
-	var pGetPlaylistCount = new Promise((resolve) => {
-		getUserDb().get(sqlDB.calculatePlaylistCount)
-			.then((res) => {
-				stats.totalplaylists = res.plcount;
-				resolve();
-			});
-	});
-	var pGetArtistCount = new Promise((resolve) => {
-		getUserDb().get(sqlDB.calculateArtistCount)
-			.then((res) => {
-				stats.totalartists = res.artistcount;
-				resolve();
-			});
-	});
-	var pGetKaraCount = new Promise((resolve) => {
-		getUserDb().get(sqlDB.calculateKaraCount)
-			.then((res) => {
-				stats.totalcount = res.karacount;
-				resolve();
-			});
-	});
-	var pGetLanguageCount = new Promise((resolve) => {
-		getUserDb().get(sqlDB.calculateLangCount)
-			.then((res) => {
-				stats.totallanguages = res.langcount;
-				resolve();
-			});
-	});
-	var pGetDuration = new Promise((resolve) => {
-		getUserDb().get(sqlDB.calculateDuration)
-			.then((res) => {
-				stats.totalduration = res.totalduration;							
-				resolve();
-			});
-	});
-	Promise.all([
-		pGetKaraCount,
-		pGetDuration,
-		pGetSeriesCount,
-		pGetLanguageCount,
-		pGetArtistCount,
-		pGetPlaylistCount
-	]).then(() => {
-		logger.info('[DBI] Karaoke count   : ' + stats.totalcount);					logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-		logger.info('[DBI] Total series    : ' + stats.totalseries);
-		logger.info('[DBI] Total languages : ' + stats.totallanguages);
-		logger.info('[DBI] Total artists   : ' + stats.totalartists);
-		logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
-	}).catch(() => {
-		throw 'Stats general error';
-	});
+	stats.totalseries = await getSeriesCount();
+	stats.totalcount = await getKaraCount();
+	stats.totalplaylists = await getPlaylistCount();
+	stats.totalartists = await getArtistCount();
+	stats.totallanguages = await getLanguageCount();
+	stats.totalduration = await getTotalDuration();
+	return stats;
 }
 
 async function generateDatabase() {

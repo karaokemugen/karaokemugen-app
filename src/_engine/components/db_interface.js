@@ -60,171 +60,7 @@ module.exports = {
 					reject('Failed to get number of songs for user '+requester+' in playlist '+playlist_id+' : '+err);
 				});						
 		});
-	},
-	/**
-	* @function {Generate new blacklist}
-	* @return {boolean} {Promise}
-	*/
-	generateBlacklist:function() {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlGenerateBlacklist = fs.readFileSync(path.join(__dirname,'../../_common/db/generate_blacklist.sql'),'utf-8');
-
-			getUserDb().run(sqlGenerateBlacklist)
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					reject('Failed to generate blacklist : '+err);
-				});
-		});
-	},
-	/**
-	* @function {Get list of criterias for blacklist}
-	* @return {object} {List of criterias}
-	*/
-	getBlacklistCriterias:function() {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlGetBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_criterias.sql'),'utf-8');
-
-			getUserDb().all(sqlGetBlacklistCriterias)
-				.then((blcriterias) => {
-					resolve(blcriterias);
-				})
-				.catch((err) => {
-					reject('Failed to fetch blacklist criterias :'+err);
-				});		
-		});
-	},
-	/**
-	* @function {Add criteria to blacklist}
-	* @param {number} {type of criteria}
-	* @param {string} {value of criteria}
-	* @param {string} {unique value of criteria (KID or tagname)}
-	* @return {boolean} {promise}
-	*/
-	addBlacklistCriteria:function(blcList) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlAddBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/insert_blacklist_criteria.sql'),'utf-8');
-			var blc = [];
-			blcList.forEach((blcItem) => {
-				blc.push({
-					$blcvalue: blcItem.blcvalue,
-					$blctype: blcItem.blctype,
-					$blcuniquevalue: blcItem.blcuniquevalue
-				});
-			});
-			async.retry(
-				{ 
-					times: 5,
-					interval: 100,
-				},
-				function(callback){
-					getUserDb().run('begin transaction')
-						.then(() => {							
-							async.each(blc,function(data,callback){
-								getUserDb().prepare(sqlAddBlacklistCriterias)
-									.then((stmt) => {
-										stmt.run(data)
-											.then(() => {
-												callback();
-											})
-											.catch((err) => {			
-												logger.error('Failed to add blacklist criterias : '+err);												
-												callback(err);												
-											});										
-									});
-								
-							}, function(err){
-								if (err) {
-									logger.error('Failed to add one blacklist criteria : '+err);
-									callback(err);
-								} else {
-									getUserDb().run('commit')
-										.then(() => {
-											callback();	
-										})
-										.catch((err) => {
-											callback(err);
-										});
-								}
-							});
-						})
-						.catch((err) => {
-							logger.error('[DBI] Failed to begin transaction : '+err);
-							logger.error('[DBI] Transaction will be retried');
-							callback(err);
-						});
-				},function(err){
-					if (err){
-						reject(err);						
-					} else {
-						resolve();
-					}
-				});					
-		});
 	},	
-	/**
-	* @function {Delete criteria from blacklist}
-	* @param {number} {blacklist criteria ID}
-	* @return {boolean} {promise}
-	*/
-	deleteBlacklistCriteria:function(blc_id) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				logger.error('[DBI] DB_INTERFACE is not ready to work');
-				reject('Database interface is not ready yet');
-			}
-			var sqlDeleteBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/delete_blacklist_criteria.sql'),'utf-8');
-
-			getUserDb().run(sqlDeleteBlacklistCriterias,
-				{
-					$blc_id: blc_id
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					reject('Failed to delete blacklist criteria : '+err);
-				});						
-		});
-	},
-	/**
-	* @function {Edit criteria from blacklist}
-	* @param {number} {blacklist criteria ID}
-	* @param {number} {blacklist criteria type}
-	* @param {string} {blacklist criteria value}
-	* @return {boolean} {promise}
-	*/
-	editBlacklistCriteria:function(blc_id,blctype,blcvalue) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlEditBlacklistCriteria = fs.readFileSync(path.join(__dirname,'../../_common/db/edit_blacklist_criteria.sql'),'utf-8');
-
-			getUserDb().run(sqlEditBlacklistCriteria,
-				{
-					$blc_id: blc_id,
-					$blctype: blctype,
-					$blcvalue: blcvalue
-				})
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					reject('Failed to edit blacklist criteria '+err);
-				});						
-		});
-	},
 	updatePlaylistNumOfKaras:function(playlist_id,num_karas) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
@@ -482,25 +318,6 @@ module.exports = {
 				.catch((err) => {
 					reject('Failed to get whitelist contents :'+err);
 				});				
-		});
-	},
-	/**
-	* @function {Get contents of blacklist}
-	* @return {Object} {Playlist object}
-	*/
-	getBlacklistContents:function(){
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlGetBlacklistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_blacklist_contents.sql'),'utf-8');
-			getUserDb().all(sqlGetBlacklistContents)
-				.then((playlist) => {
-					resolve(playlist);
-				})
-				.catch((err) => {
-					reject('Failed to get blacklist contents :'+err);
-				});								
 		});
 	},
 	/**
@@ -858,31 +675,7 @@ module.exports = {
 					reject('Failed to test if karaoke '+kara_id+' exists : '+err);
 				});								
 		});
-	},
-	/**
-	* @function {is blacklist criteria?}
-	* @param  {number} blc_id {BL criteria ID to check}
-	* @return {type} {Returns true or false}
-	*/
-	isBLCriteria:function(blc_id) {
-		return new Promise(function(resolve,reject){
-			var sqlIsBLC = fs.readFileSync(path.join(__dirname,'../../_common/db/test_blacklist_criteria.sql'),'utf-8');
-			getUserDb().get(sqlIsBLC,
-				{
-					$blc_id: blc_id
-				})
-				.then((blc) => {
-					if (blc) {
-						resolve(true);						
-					} else {
-						reject();
-					}
-				})
-				.catch((err) => {
-					reject('Failed to test if blacklist criteria '+blc_id+' exists : '+err);
-				});					
-		});
-	},
+	},	
 	/**
 	* @function {is whitelist?}
 	* @param  {number} wlc_id {WLC ID to check}
@@ -1290,23 +1083,6 @@ module.exports = {
 				})
 				.catch((err) => {
 					logger.error('[DBI] Failed to empty whitelist : '+err);
-					reject(err);					
-				});			
-		});
-	},
-	/**
-	* @function {Empties blacklist Criterias}
-	* @return {Promise} {yakusoku da yo}
-	*/
-	emptyBlacklistCriterias:function() {
-		return new Promise(function(resolve,reject){
-			var sqlEmptyBlacklistCriterias = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_blacklist_criterias.sql'),'utf-8');
-			getUserDb().run(sqlEmptyBlacklistCriterias)
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					logger.error('[DBI] Failed to empty blacklist criterias : '+err);
 					reject(err);					
 				});			
 		});
