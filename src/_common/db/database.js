@@ -22,9 +22,8 @@ export const calculateLangCount = `SELECT COUNT(*) AS langcount
 								  WHERE tagtype = 5;
 								  `;
 
-export const calculatePlaylistCount = `SELECT COUNT(*) AS langcount 
-								  FROM karasdb.tag 
-								  WHERE tagtype = 5;
+export const calculatePlaylistCount = `SELECT COUNT(*) AS plcount
+								  FROM playlist
 								  `;
 
 export const calculateSeriesCount = `SELECT COUNT(*) AS seriescount 
