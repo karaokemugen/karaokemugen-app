@@ -1,5 +1,6 @@
 import {uuidRegexp} from '../../_services/kara';
 const blcDB = require('../../_dao/blacklist');
+const tagDB = require('../../_dao/tag');
 
 var path = require('path');
 var timestamp = require('unix-timestamp');
@@ -229,7 +230,7 @@ module.exports = {
 				var pGetTagName = new Promise ((resolve,reject) => {
 					if (blctype > 0 && blctype < 1000) {
 						async.eachOf(blcList,function(blc,index,callback) {	
-							module.exports.DB_INTERFACE.getTag(blc.blcvalue)
+							tagDB.getTag(blc.blcvalue)
 								.then(function (res){
 									if (res) {
 										blcList[index].blcuniquevalue = res.name;
@@ -2755,7 +2756,7 @@ module.exports = {
 					if (blc.type >= 2 && blc.type <= 999) {
 						// We need to get the tag name and then translate it if needed
 						
-						module.exports.DB_INTERFACE.getTag(blc.value)
+						tagDB.getTag(blc.value)
 							.then(function (res){								
 								if (typeof res.name === 'string') {
 									if (res.name.startsWith('TAG_')) {

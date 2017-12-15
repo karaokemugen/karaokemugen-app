@@ -1,19 +1,8 @@
-/**
- * @fileoverview Main engine source file
- */
-process.on('uncaughtException', function (exception) {
-	console.log(exception); // to see your exception details in the console
-	// if you are on production, maybe you can send the exception details to your
-	// email as well ?
-});
-process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-	// application specific logging, throwing an error, or other logic here
-});
-
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {initUserSystem} from '../_common/utils/user';
 import {initDBSystem, getStats} from '../_dao/database';
+import {getAllTags} from '../_dao/tag';
+
 const fs = require('fs');
 const path = require('path');
 const logger = require('winston');
@@ -607,7 +596,7 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onTags = function(lang){
 			return new Promise(function(resolve,reject){
-				module.exports.DB_INTERFACE.getAllTags()
+				getAllTags()
 					.then(function(tags){
 						module.exports._services.playlist_controller.translateTags(tags,lang)
 							.then(function(tags_output){
