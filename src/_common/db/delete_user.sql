@@ -1,1 +1,0 @@
-DELETE FROM user WHERE pk_id_user = $id;
