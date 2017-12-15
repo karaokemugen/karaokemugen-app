@@ -2,15 +2,27 @@ const express = require('express');
 const expressValidator = require('express-validator');
 const logger = require('winston');
 const bodyParser = require('body-parser');
-const passport = require('passport');
 const authController = require('../_controllers/auth');
-
+const basicAuth = require('express-basic-auth');
 const user = require('../_common/utils/user.js');
 const path = require('path');
 const multer = require('multer');
 
-import {configurePassport} from '../_webapp/passport_manager.js';
+// NEW AUTH SYSTEM. Disabled for now
+// import passport from 'passport';
+// import {configurePassport} from '../_webapp/passport_manager.js';
 
+// OLD AUTH SYSTEM. Reenabled for some tests
+function AdminPasswordAuth(username, password){
+	return password === module.exports.SETTINGS.AdminPassword;
+}
+
+function getUnauthorizedResponse(req) {
+	return req.auth ?
+		('Credentials ' + req.auth.user + ':' + req.auth.password + ' rejected') :
+		'No credentials provided';
+}
+// OLD AUTH SYSTEM END
 
 function numberTest(element) {
 	if (isNaN(element)) {
@@ -100,9 +112,18 @@ module.exports = {
 				logger.info('[API] API server is READY and listens on port '+module.exports.LISTEN);
 			});
 
-			routerAdmin.use(passport.initialize());
-			configurePassport();
+			// NEW AUTH SYSTEM
+			//routerAdmin.use(passport.initialize());
+			//configurePassport();
 
+			// OLD AUTH SYSTEM
+			routerAdmin.use(basicAuth({ 
+				authorizer: AdminPasswordAuth,
+				challenge: true,
+				realm: 'Karaoke Mugen Admin',
+				unauthorizedResponse: getUnauthorizedResponse
+			}));		
+			// OLD AUTH SYSTEM END
 			routerAdmin.use(function(req,res,next) {
 				next();
 			});			
