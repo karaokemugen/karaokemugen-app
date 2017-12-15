@@ -1,6 +1,7 @@
 import {uuidRegexp} from '../../_services/kara';
 const blcDB = require('../../_dao/blacklist');
 const tagDB = require('../../_dao/tag');
+const wlDB = require('../../_dao/whitelist');
 
 var path = require('path');
 var timestamp = require('unix-timestamp');
@@ -707,7 +708,7 @@ module.exports = {
 	*/
 	isWLC:function(wlc_id) {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isWLC(wlc_id)
+			wlDB.isWLC(wlc_id)
 				.then(function(){
 					resolve();
 				})
@@ -985,7 +986,7 @@ module.exports = {
 	*/
 	emptyWhitelist:function() {		
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.emptyWhitelist()
+			wlDB.emptyWhitelist()
 				.then(function(){
 					module.exports.generateBlacklist()
 						.then(function(){
@@ -1425,7 +1426,7 @@ module.exports = {
 	getWhitelistContents:function() {
 		return new Promise(function(resolve,reject) {
 			// Get karaoke list
-			module.exports.DB_INTERFACE.getWhitelistContents()
+			wlDB.getWhitelistContents()
 				.then(function(playlist){
 					resolve(playlist);
 				})

@@ -302,25 +302,6 @@ module.exports = {
 		});
 	},
 	/**
-	* @function {Get contents of whitelist}
-	* @return {Object} {Playlist object}
-	*/
-	getWhitelistContents:function(){
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlGetWhitelistContents = fs.readFileSync(path.join(__dirname,'../../_common/db/select_whitelist_contents.sql'),'utf-8');
-			getUserDb().all(sqlGetWhitelistContents)
-				.then((playlist) => {
-					resolve(playlist);
-				})
-				.catch((err) => {
-					reject('Failed to get whitelist contents :'+err);
-				});				
-		});
-	},
-	/**
 	* @function {Get all karaokes}
 	* @return {array} {array of karaoke objects}
 	*/
@@ -632,30 +613,6 @@ module.exports = {
 				});								
 		});
 	},	
-	/**
-	* @function {is whitelist?}
-	* @param  {number} wlc_id {WLC ID to check}
-	* @return {promise} {Promise}
-	*/
-	isWLC:function(wlc_id) {
-		return new Promise(function(resolve,reject){
-			var sqlIsWLC = fs.readFileSync(path.join(__dirname,'../../_common/db/test_whitelist.sql'),'utf-8');
-			getUserDb().get(sqlIsWLC,
-				{
-					$wlc_id: wlc_id
-				})
-				.then((wlc) => {
-					if (wlc) {
-						resolve(true);						
-					} else {
-						reject();
-					}
-				})
-				.catch((err) => {
-					reject('Failed to test if whitelist content '+wlc_id+' exists : '+err);
-				});	
-		});
-	},
 	/**
 	* @function {Raises position of a song in playlist}
 	* @param  {number} playlist_id        {ID of playlist to modify}
@@ -1024,23 +981,6 @@ module.exports = {
 					logger.error('[DBI] Failed to empty playlist '+playlist_id+' : '+err);
 					reject(err);					
 				});				
-		});
-	},
-	/**
-	* @function {Empties whitelist}
-	* @return {Promise} {yakusoku da yo}
-	*/
-	emptyWhitelist:function() {
-		return new Promise(function(resolve,reject){
-			var sqlEmptyWhitelist = fs.readFileSync(path.join(__dirname,'../../_common/db/empty_whitelist.sql'),'utf-8');
-			getUserDb().run(sqlEmptyWhitelist)
-				.then(() => {
-					resolve();
-				})
-				.catch((err) => {
-					logger.error('[DBI] Failed to empty whitelist : '+err);
-					reject(err);					
-				});			
 		});
 	},
 	/**

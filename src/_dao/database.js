@@ -172,7 +172,7 @@ async function getSeriesCount() {
 }
 
 async function getPlaylistCount() {
-	const res = await getUserDb().get(sql.calculatePlaylistCount);
+	const res = await getUserDb().get(sql.calculatePlaylistCount);	
 	return res.plcount;				
 }
 
