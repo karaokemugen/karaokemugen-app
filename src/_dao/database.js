@@ -197,23 +197,20 @@ async function getKaraCount() {
 }
 
 export async function getStats() {
-	let stats = {};
-	stats.totalseries = await getSeriesCount();
-	stats.totalcount = await getKaraCount();
-	stats.totalplaylists = await getPlaylistCount();
-	stats.totalartists = await getArtistCount();
-	stats.totallanguages = await getLanguageCount();
-	stats.totalduration = await getTotalDuration();
-	return stats;
+
+	const [totalseries, totalcount, totalplaylists, totalartists, totallanguages, totalduration] =
+		await Promise.all([
+			getSeriesCount(), getKaraCount(), getPlaylistCount(), getArtistCount(), getLanguageCount(), getTotalDuration()
+		]);
+
+	return {
+		totalseries, totalcount, totalplaylists, totalartists, totallanguages, totalduration
+	};
 }
 
 async function generateDatabase() {
 	const conf = getConfig();
-	DBgenerator.SYSPATH = conf.appPath;
-	DBgenerator.SETTINGS = conf;
-	DBgenerator.onLog = (type,message) => {
-		logger.info('[DBI] [Gen]',message);
-	};
+
 	try {
 		const failedKaras = await DBgenerator.run();
 		logger.info('[DBI] Karaokes database created');
