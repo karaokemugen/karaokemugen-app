@@ -1,20 +1,10 @@
-import passport from 'passport';
 import {getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
-import {decode} from 'jwt-simple';
+import {requireAuth, requireAdmin} from './passport_manager.js';
 import {addUser, listUsers} from '../_dao/user';
 
-module.exports = function adminController(router) {
 
-	const requireAuth = passport.authenticate('jwt', { session: false });
-	const requireAdmin = (req, res, next) => {
-		const token = decode(req.get('authorization'), getConfig().JwtSecret);
-		if (token.role === 'admin') {
-			next();
-		} else {
-			res.status(403).send('Only admin can use this function');
-		}
-	};
+module.exports = function adminController(router) {
 
 	router.get('/config', requireAuth, requireAdmin, (req, res) => {
 		res.json(getConfig());
