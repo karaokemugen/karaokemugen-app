@@ -6,18 +6,6 @@ const ip = require('ip');
 const si = require('systeminformation');
 const logger = require('winston');
 
-const basicAuth = require('express-basic-auth');
-
-function AdminPasswordAuth(username, password){
-	return password === module.exports.SETTINGS.AdminPassword;
-}
-
-function getUnauthorizedResponse(req) {
-	return req.auth ?
-		('Credentials ' + req.auth.user + ':' + req.auth.password + ' rejected') :
-		'No credentials provided';
-}
-
 module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
@@ -46,15 +34,7 @@ module.exports = {
 				}
 			}));
 			var routerAdmin = express.Router();
-			routerAdmin.use(basicAuth({ 
-				authorizer: AdminPasswordAuth,
-				challenge: true,
-				realm: 'Karaoke Mugen Admin',
-				unauthorizedResponse: getUnauthorizedResponse
-			}));			
-			routerAdmin.use(function(req,res,next) {
-				next();
-			});
+		
 			app.set('view engine', 'hbs');
 			app.set('views', path.join(__dirname, 'ressources/views/'));
 			app.use(cookieParser());
@@ -70,7 +50,9 @@ module.exports = {
 					'query'			:	JSON.stringify(req.query)
 				});
 			});
-			routerAdmin.get('/', function (req, res) {
+		
+		
+			routerAdmin.get('/', (req, res) => {
 				si.graphics().then( function(data) {
 					logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
 					[0,1,2,3,4].forEach(function(key) {
