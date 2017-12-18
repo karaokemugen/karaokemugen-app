@@ -1,8 +1,10 @@
 import {uuidRegexp} from '../../_services/kara';
+import {getStats} from '../../_dao/database';
 const blcDB = require('../../_dao/blacklist');
 const tagDB = require('../../_dao/tag');
 const wlDB = require('../../_dao/whitelist');
 const karaDB = require('../../_dao/kara');
+const plDB = require('../../_dao/playlist');
 
 var path = require('path');
 var timestamp = require('unix-timestamp');
@@ -187,7 +189,7 @@ module.exports = {
 	*/
 	getPLCIDByDate:function(playlist_id,date_added) {		
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.getPLCIDByDate(playlist_id,date_added)
+			plDB.getPLCByDate(playlist_id,date_added)
 				.then(function(plcid){
 					resolve(plcid);
 				})
@@ -1254,9 +1256,9 @@ module.exports = {
 			Promise.all([pIsPlaylist])
 				.then(function() {
 					// Get playlist number of karaokes
-					module.exports.DB_INTERFACE.calculatePlaylistNumOfKaras(playlist_id)
-						.then(function(num_karas){
-							module.exports.DB_INTERFACE.updatePlaylistNumOfKaras(playlist_id,num_karas)
+					plDB.countKarasInPlaylist(playlist_id)
+						.then(function(res){
+							module.exports.DB_INTERFACE.updatePlaylistNumOfKaras(playlist_id,res.karaCount)
 								.then(function(num_karas){
 									resolve(num_karas);
 								})
@@ -1266,7 +1268,7 @@ module.exports = {
 								});
 						})
 						.catch(function(err){
-							logger.error('[PLC] DBI calculatePlaylistNumOfKaras : '+err);
+							logger.error('[PLC] DBI countKarasInPlaylist : '+err);
 							reject(err);
 						});
 				});
@@ -1801,7 +1803,7 @@ module.exports = {
 						Promise.all([pManagePos])
 							.then(function() {	
 								logger.debug('[PLC] addKaraToPlaylist : Adding to database');
-								module.exports.DB_INTERFACE.addKaraToPlaylist(karaList)
+								karaDB.addKaraToPlaylist(karaList)
 									.then(function(){										
 										logger.debug('[PLC] addKaraToPlaylist : updating playlist info');
 										var pUpdateLastEditTime = new Promise((resolve,reject) => {
@@ -3221,7 +3223,7 @@ module.exports = {
 	build_dummy_current_playlist:function(playlist_id){
 		logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...');
 		return new Promise(function(resolve,reject){
-			karaDB.getStats()
+			getStats()
 				.then((stats) => {
 					var karaCount = stats.totalcount;
 					// Limiting to 5 sample karas to add if there's more. 

@@ -12,30 +12,7 @@ module.exports = {
 		return module.exports._ready;
 	},
 
-	// Below are all methods used by other components to access and manipulate data in the database.
-	/**
-	* @function {Calculate number of a karaoke songs in a whole playlist}
-	* @param  {number} playlist_id {ID of playlist to recalculate number of songs}
-	* @return {number} {Number of karaoke songs found}
-	*/
-	calculatePlaylistNumOfKaras:function(playlist_id) {
-		return new Promise(function(resolve,reject){
-			if(!module.exports.isReady()) {
-				reject('Database interface is not ready yet');
-			}
-			var sqlCalculatePlaylistNumOfKaras = fs.readFileSync(path.join(__dirname,'../../_common/db/calculate_playlist_numofkaras.sql'),'utf-8');
-			getUserDb().get(sqlCalculatePlaylistNumOfKaras,
-				{
-					$playlist_id: playlist_id
-				})
-				.then((num_karas) => {
-					resolve(num_karas.NumberOfKaras);
-				})
-				.catch((err) => {
-					reject('Failed to calculate playlist karaoke count : '+err);
-				});
-		});
-	},		
+	// Below are all methods used by other components to access and manipulate data in the database.		
 	updatePlaylistNumOfKaras:function(playlist_id,num_karas) {
 		return new Promise(function(resolve,reject){
 			if(!module.exports.isReady()) {
@@ -244,12 +221,13 @@ module.exports = {
 				reject('Database interface is not ready yet');
 			}
 			var sqlGetPLCIDByDate = fs.readFileSync(path.join(__dirname,'../../_common/db/select_plcid_by_date.sql'),'utf-8');
-			getUserDb().all(sqlGetPLCIDByDate,
+			getUserDb().get(sqlGetPLCIDByDate,
 				{
 					$playlist_id: playlist_id,
 					$date_added: date_added
 				})
 				.then((plcid) => {
+					console.log('PLCID = '+plcid);
 					resolve(plcid[0].playlistcontent_id);
 				})
 				.catch((err) => {

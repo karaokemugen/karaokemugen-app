@@ -1,1 +1,0 @@
-SELECT COUNT(playlist_content.fk_id_kara) AS NumberOfKaras FROM playlist_content WHERE fk_id_playlist = $playlist_id;
