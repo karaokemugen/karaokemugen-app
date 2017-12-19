@@ -145,25 +145,28 @@ module.exports = {
 	setPlaying:function(plc_id,playlist_id){
 		return new Promise(function(resolve,reject) {
 			if (plc_id) {
-				plDB.setPlaying(plc_id)
-					.then(function(){
-						module.exports.emitEvent('playingUpdated',{
-							playlist_id: playlist_id,
-							plc_id: plc_id,
-						});
-						module.exports.updatePlaylistDuration(playlist_id)	
-							.then(() => {
-								resolve();
-							})
-							.catch((err) => {
-								logger.error('[PLC] updatePlaylistDuration : '+err);
-								reject(err);
+				plDB.unsetPlaying(playlist_id).then(() => {
+					plDB.setPlaying(plc_id)
+						.then(function(){
+							module.exports.emitEvent('playingUpdated',{
+								playlist_id: playlist_id,
+								plc_id: plc_id,
 							});
-					})
-					.catch(function(err){
-						logger.error('[PLC] DBI setPlaying : '+err);
-						reject(err);
-					});
+							module.exports.updatePlaylistDuration(playlist_id)	
+								.then(() => {
+									resolve();
+								})
+								.catch((err) => {
+									logger.error('[PLC] updatePlaylistDuration : '+err);
+									reject(err);
+								});
+						})
+						.catch(function(err){
+							logger.error('[PLC] DBI setPlaying : '+err);
+							reject(err);
+						});
+				})
+				
 			} else {
 				plDB.unsetPlaying(playlist_id)
 					.then(function(){
