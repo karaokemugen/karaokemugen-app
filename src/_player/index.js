@@ -4,7 +4,9 @@ const logger = require('winston');
 const exec = require('child_process');
 const L = require('lodash');
 const sizeOf = require('image-size');
-const jingles = require('./jingles.js');
+import {buildJinglesList} from './jingles';
+let currentJinglesList = [];
+let jinglesList = [];
 
 var displayingInfo = false;
 
@@ -99,16 +101,14 @@ module.exports = {
 	status:{},
 	init:function(){
 		// Building jingles list
-		jingles.SETTINGS = module.exports.SETTINGS;
-		jingles.SYSPATH = module.exports.SYSPATH;
-		jingles.buildList();
-		//Copying jingle data to currentjinglefiles which will be used by the player		
-
+		//Copying jingle data to currentjinglefiles which will be used by the player	
+		buildJinglesList().then((list) => {
+			console.log('LISTE: '+list);
+			currentJinglesList = jinglesList = list;
+		});		
 		// Building QR Code with URL to connect to
 		var pGenerateQRCode = new Promise((resolve,reject) => {
 			var qrCode = require('./qrcode.js');
-			qrCode.SYSPATH = module.exports.SYSPATH;
-			qrCode.SETTINGS = module.exports.SETTINGS;
 			var url = 'http://'+module.exports.SETTINGS.osHost+':'+module.exports.frontend_port;
 			qrCode.build(url)
 				.then(function(){
@@ -518,17 +518,18 @@ module.exports = {
 	playJingle:function(){
 		module.exports.playing = true;
 		module.exports.videoType = 'jingle';
-		if (jingles.currentjinglefiles.length > 0) {
+		console.log(currentJinglesList);
+		if (currentJinglesList.length > 0) {
 			logger.info('[Player] Jingle time !');
-			var jingle = L.sample(jingles.currentjinglefiles);
+			var jingle = L.sample(currentJinglesList);
 			//Let's remove the jingle we just selected so it won't be picked again next time.
-			L.remove(jingles.currentjinglefiles, (j) => {	
+			L.remove(currentJinglesList, (j) => {	
 				return j.file === jingle.file;
 			});
 			//If our current jingle files list is empty after the previous removal
 			//Fill it again with the original list.
-			if (jingles.currentjinglefiles.length == 0) {
-				jingles.currentjinglefiles = Array.prototype.concat(jingles.jinglefiles);	
+			if (currentJinglesList.length == 0) {
+				currentJinglesList = Array.prototype.concat(jinglesList);	
 			}
 			logger.debug('[Player] Playing jingle '+jingle.file);
 			if (jingle != undefined) {
@@ -550,6 +551,7 @@ module.exports = {
 				module.exports._playing = true;
 			}
 		} else {
+			logger.debug('[Jingle] No jingle to play.');
 			module.exports.playerstatus = 'play';
 			loadBackground();
 			module.exports.displayInfo();

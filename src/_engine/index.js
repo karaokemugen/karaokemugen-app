@@ -301,7 +301,8 @@ module.exports = {
 			}
 		});
 		Promise.all([pNeedsRestart])
-			.then(() => {				
+			.then(() => {
+				logger.debug('[Jingles] Songs before next jingle : '+ (module.exports.SETTINGS.EngineJinglesInterval - module.exports._states.counterToJingle));
 				if (module.exports._states.counterToJingle >= module.exports.SETTINGS.EngineJinglesInterval) { 
 					module.exports._services.player.playJingle();
 					module.exports._states.counterToJingle = 0;

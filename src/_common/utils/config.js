@@ -133,6 +133,11 @@ export function resolvedPathKaras(overrideConfig) {
 	return conf.PathKaras.split('|').map(path => resolve(conf.appPath, path));
 }
 
+export function resolvedPathJingles(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathJingles.split('|').map(path => resolve(conf.appPath, path));
+}
+
 export function resolvedPathSubs(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
 	return conf.PathSubs.split('|').map(path => resolve(conf.appPath, path));
