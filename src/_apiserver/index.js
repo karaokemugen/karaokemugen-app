@@ -54,7 +54,6 @@ module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
 	LISTEN:null,
-	DB_INTERFACE:null,
 	_server:null,
 	_engine_states:{},
 	_local_states:{},
@@ -72,11 +71,7 @@ module.exports = {
 				logger.error('LISTEN is null!');
 				process.exit();
 			}
-			if(module.exports.DB_INTERFACE === null) {
-				logger.error('DB_INTERFACE is null!');
-				process.exit();
-			}
-
+	
 			var app = express();
 			// Middleware for playlist and files import
 			var upload = multer({ dest: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp)});

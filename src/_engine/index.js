@@ -2,7 +2,7 @@ import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {initUserSystem} from '../_common/utils/user';
 import {initDBSystem, getStats} from '../_dao/database';
 import {getAllTags} from '../_dao/tag';
-
+import {addViewcount,updateTotalViewcounts} from '../_dao/kara';
 const fs = require('fs');
 const path = require('path');
 const logger = require('winston');
@@ -17,7 +17,6 @@ const ip = require('ip');
 module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
-	DB_INTERFACE:null,
 	i18n:null,
 	endOfPlaylist:false,
 	currentPlaylistID:null,
@@ -343,7 +342,7 @@ module.exports = {
 					module.exports._states.currentlyPlayingKara = kara.kara_id;
 					module.exports._broadcastStates();
 					//Add a view to the viewcount
-					module.exports.addViewcount(kara.kara_id,kara.kid);
+					module.exports.addViewcountKara(kara.kara_id,kara.kid);
 				})
 				.catch(function(){
 					logger.info('Cannot find a song to play');
@@ -357,13 +356,13 @@ module.exports = {
 	* @param {number} kara_id {ID of kara to add a viewcount to}
 	* @return {promise} {Promise}
 	*/
-	addViewcount:function(kara_id,kid){
+	addViewcountKara:function(kara_id,kid){
 		// Add one viewcount to the table
 		var datetime = timestamp.now();
-		module.exports.DB_INTERFACE.addViewcount(kara_id,kid,datetime)
+		addViewcount(kara_id,kid,datetime)
 			.then(function(){
 			// Recalculate viewcount and edit it in karasdb
-				module.exports.DB_INTERFACE.updateTotalViewcounts(kid)
+				updateTotalViewcounts(kid)
 					.then(function(){
 					})
 					.catch(function(err){
@@ -393,7 +392,6 @@ module.exports = {
 	* Requires the db_interface.js script
 	*/
 	_start_db_interface: function() {
-		module.exports.DB_INTERFACE = require(path.join(__dirname,'components/db_interface.js'));
 		return initDBSystem();
 	},
 	/**
@@ -406,7 +404,6 @@ module.exports = {
 		module.exports._services.frontend.LISTEN = module.exports._states.frontend_port;
 		module.exports._services.frontend.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.frontend.SETTINGS = module.exports.SETTINGS;
-		module.exports._services.frontend.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.frontend.i18n = module.exports.i18n;
 		// --------------------------------------------------------
 		// diffusion des méthodes interne vers les events frontend
@@ -438,7 +435,6 @@ module.exports = {
 		module.exports._services.apiserver.LISTEN = module.exports._states.apiserver_port;
 		module.exports._services.apiserver.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.apiserver.SETTINGS = module.exports.SETTINGS;
-		module.exports._services.apiserver.DB_INTERFACE = module.exports.DB_INTERFACE;
 		// --------------------------------------------------------
 		// diffusion des méthodes interne vers les events frontend
 		// --------------------------------------------------------
@@ -1984,7 +1980,6 @@ module.exports = {
 		module.exports._services.playlist_controller = require(path.join(__dirname,'components/playlist_controller.js'));
 		module.exports._services.playlist_controller.SYSPATH = module.exports.SYSPATH;
 		module.exports._services.playlist_controller.SETTINGS = module.exports.SETTINGS;
-		module.exports._services.playlist_controller.DB_INTERFACE = module.exports.DB_INTERFACE;
 		module.exports._services.playlist_controller.onPlaylistUpdated = module.exports.playlistUpdated;
 		module.exports._services.playlist_controller.onPlayingUpdated =
 		module.exports.playingUpdated;

@@ -8,6 +8,11 @@ export const compareUUIDs = `SELECT db.value AS karasdb_uuid,
 							  AND udb.option = 'uuid'
 							`;
 
+export const updateUUID = `UPDATE settings 
+							SET value = $uuid 
+							WHERE option = 'uuid';
+							`;
+
 export const calculateArtistCount = `SELECT COUNT(*) AS artistcount 
 									FROM karasdb.tag 
 									WHERE tagtype=2;

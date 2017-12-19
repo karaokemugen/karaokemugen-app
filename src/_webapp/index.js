@@ -10,7 +10,6 @@ module.exports = {
 	SYSPATH:null,
 	SETTINGS:null,
 	LISTEN:null,
-	DB_INTERFACE:null,
 	_server:null,
 	_engine_states:{},
 	_local_states:{},

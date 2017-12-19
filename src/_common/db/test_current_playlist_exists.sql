@@ -1,1 +1,0 @@
-SELECT pk_id_playlist FROM playlist WHERE flag_current = 1;

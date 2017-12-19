@@ -558,11 +558,11 @@ export async function checkUserdbIntegrity(uuid, config) {
 		await userdb.run(sql);
 	}
 
-	const sqlUpdateDBUUID = await asyncReadFile(resolve(__dirname, '../_common/db/update_userdb_uuid.sql'), 'utf-8');
+	const sqlDB = require('../_common/db/database.js');
 
 	await Promise.all([
-		userdb.run(sqlUpdateDBUUID, { $uuid: uuid }),
-		db.run(sqlUpdateDBUUID, { $uuid: uuid })
+		userdb.run(sqlDB.updateUUID, { $uuid: uuid }),
+		db.run(sqlDB.updateUUID, { $uuid: uuid })
 	]);
 
 	await userdb.run('PRAGMA foreign_keys = ON;');

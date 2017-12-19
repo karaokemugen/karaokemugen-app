@@ -1,1 +1,0 @@
-UPDATE playlist SET flag_visible = 0 WHERE pk_id_playlist = $playlist_id;

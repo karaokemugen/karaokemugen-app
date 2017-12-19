@@ -1,1 +1,0 @@
-SELECT flag_current FROM playlist WHERE pk_id_playlist = $playlist_id;

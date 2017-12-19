@@ -20,7 +20,6 @@ const async = require('async');
 
 module.exports = {
 	SYSPATH:null,
-	DB_INTERFACE:null,
 	SETTINGS:null,
 	/**
 	* @function {Initialization}
@@ -31,11 +30,6 @@ module.exports = {
 			logger.error('_engine/components/playlist_controller.js : SYSPATH is null');
 			process.exit();
 		}
-		if(module.exports.DB_INTERFACE === null) {
-			logger.error('_engine/components/playlist_controller.js : DB_INTERFACE is null');
-			process.exit();
-		}
-
 		logger.info('[PLC] Playlist controller is READY');
 	},
 	playingPos:function(playlist) {
@@ -82,9 +76,13 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
 				.then(function(){
-					module.exports.DB_INTERFACE.isCurrentPlaylist(playlist_id)
+					plDB.findCurrentPlaylist()
 						.then(function(res){
-							resolve(res);
+							if (res.playlist_id == playlist_id) {
+								resolve(true);
+							} else {
+								resolve(false);
+							}
 						})
 						.catch(function(err){
 							logger.error('[PLC] DBI isCurrentPlaylist : '+err);
@@ -101,9 +99,13 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
 				.then(function(){
-					module.exports.DB_INTERFACE.isPublicPlaylist(playlist_id)
+					plDB.findPublicPlaylist()
 						.then(function(res){
-							resolve(res);
+							if (res.playlist_id == playlist_id) {
+								resolve(true);
+							} else {
+								resolve(false);
+							}
 						})
 						.catch(function(err){
 							logger.error('[PLC] DBI isPublicPlaylist : '+err);
@@ -121,9 +123,13 @@ module.exports = {
 	*/
 	isACurrentPlaylist:function() {		
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isACurrentPlaylist()
-				.then(function(playlist_id){
-					resolve(playlist_id);
+			plDB.findCurrentPlaylist()
+				.then(function(res){
+					if (res) {
+						resolve(res.playlist_id);
+					} else {
+						reject('No current playlist found');
+					}
 				})
 				.catch(function(err){					
 					reject(err);
@@ -139,7 +145,7 @@ module.exports = {
 	setPlaying:function(plc_id,playlist_id){
 		return new Promise(function(resolve,reject) {
 			if (plc_id) {
-				module.exports.DB_INTERFACE.setPlaying(plc_id,playlist_id)
+				plDB.setPlaying(plc_id)
 					.then(function(){
 						module.exports.emitEvent('playingUpdated',{
 							playlist_id: playlist_id,
@@ -159,7 +165,7 @@ module.exports = {
 						reject(err);
 					});
 			} else {
-				module.exports.DB_INTERFACE.unsetPlaying(playlist_id)
+				plDB.unsetPlaying(playlist_id)
 					.then(function(){
 						module.exports.emitEvent('playingUpdated',{
 							playlist_id: playlist_id,
@@ -597,9 +603,13 @@ module.exports = {
 	*/
 	isAPublicPlaylist:function() {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isAPublicPlaylist()
-				.then(function (playlist_id) {
-					resolve(playlist_id);
+			plDB.findPublicPlaylist()
+				.then(function(res){
+					if (res) {
+						resolve(res.playlist_id);
+					} else {
+						reject('No current playlist found');
+					}
 				})
 				.catch(function (err) {					
 					reject(err);
@@ -613,9 +623,9 @@ module.exports = {
 	*/
 	isPlaylist:function(playlist_id,seenFromUser) {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.isPlaylist(playlist_id,seenFromUser)
+			plDB.findPlaylist(playlist_id,seenFromUser)
 				.then(function(res){
-					if (res == true) {
+					if (res) {
 						resolve(true);
 					} else {
 						reject(false);
@@ -634,9 +644,9 @@ module.exports = {
 	*/
 	isPlaylistFlagPlaying:function(playlist_id) {
 		return new Promise(function(resolve,reject){			
-			module.exports.DB_INTERFACE.isPlaylistFlagPlaying(playlist_id)
+			plDB.findPlaylistFlagPlaying(playlist_id)
 				.then(function(res){
-					if (res == true) {
+					if (res) {
 						resolve(true);
 					} else {
 						resolve(false);
@@ -767,7 +777,7 @@ module.exports = {
 					} else {
 						module.exports.unsetCurrentAllPlaylists()
 							.then(function(){
-								module.exports.DB_INTERFACE.setCurrentPlaylist(playlist_id)
+								plDB.setCurrentPlaylist(playlist_id)
 									.then(function(){
 										module.exports.updatePlaylistLastEditTime(playlist_id)
 											.then(function(){
@@ -802,7 +812,7 @@ module.exports = {
 	*/
 	setVisiblePlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.setVisiblePlaylist(playlist_id)
+			plDB.setVisiblePlaylist(playlist_id)
 				.then(function(){
 					logger.info('[PLC] Setting playlist '+playlist_id+' visible flag to ON');
 					module.exports.updatePlaylistLastEditTime(playlist_id)
@@ -822,7 +832,7 @@ module.exports = {
 	},
 	unsetVisiblePlaylist:function(playlist_id) {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.unsetVisiblePlaylist(playlist_id)
+			plDB.unsetVisiblePlaylist(playlist_id)
 				.then(function(){
 					module.exports.updatePlaylistLastEditTime(playlist_id)
 						.then(function(){
@@ -850,7 +860,7 @@ module.exports = {
 					} else {
 						module.exports.unsetPublicAllPlaylists()
 							.then(function(){
-								module.exports.DB_INTERFACE.setPublicPlaylist(playlist_id)
+								plDB.setPublicPlaylist(playlist_id)
 									.then(function(){
 										module.exports.updatePlaylistLastEditTime(playlist_id)
 											.then(function(){
@@ -923,7 +933,7 @@ module.exports = {
 					});
 					Promise.all([pIsPublic,pIsCurrent])
 						.then(function() {							
-							module.exports.DB_INTERFACE.deletePlaylist(playlist_id)
+							plDB.deletePlaylist(playlist_id)
 								.then(function() {
 									resolve();
 								})
@@ -953,7 +963,7 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
 				.then(function() {
-					module.exports.DB_INTERFACE.emptyPlaylist(playlist_id)
+					plDB.emptyPlaylist(playlist_id)
 						.then(function(){
 							module.exports.updatePlaylistLastEditTime(playlist_id)
 								.then(function(){
@@ -1055,7 +1065,14 @@ module.exports = {
 			});
 			Promise.all([pIsPlaylist])
 				.then(function() {
-					module.exports.DB_INTERFACE.editPlaylist(playlist_id,name,NORM_name,lastedit_time,flag_visible)
+					const playlist = {
+						id: playlist_id,
+						name: name,
+						NORM_name: NORM_name,
+						modified_at: lastedit_time,
+						flag_visible: flag_visible
+					};
+					plDB.editPlaylist(playlist)
 						.then(function(){
 							resolve();
 						})
@@ -1128,9 +1145,18 @@ module.exports = {
 
 				Promise.all([pUnsetFlagCurrent,pUnsetFlagPublic])
 					.then(function() {
-						module.exports.DB_INTERFACE.createPlaylist(name,NORM_name,creation_time,lastedit_time,flag_visible,flag_current,flag_public)
-							.then(function(new_id_playlist){
-								resolve(new_id_playlist);
+						const playlist = {
+							name: name,
+							NORM_name: NORM_name,
+							created_at: creation_time,
+							modified_at: lastedit_time,
+							flag_visible: flag_visible,
+							flag_current: flag_current,
+							flag_public: flag_public
+						};
+						plDB.createPlaylist(playlist)
+							.then(function(res){
+								resolve(res.lastID);
 							})
 							.catch(function(err){
 								logger.error('[PLC] DBI createPlaylist : '+err);
@@ -1164,9 +1190,13 @@ module.exports = {
 		return new Promise(function(resolve,reject){
 			module.exports.isPlaylist(playlist_id)
 				.then(function() {
-					module.exports.DB_INTERFACE.getPlaylistInfo(playlist_id,seenFromUser)
+					plDB.getPlaylistInfo(playlist_id,seenFromUser)
 						.then(function(playlist){
-							resolve(playlist);
+							if (playlist) {
+								resolve(playlist);
+							} else {
+								reject('No playlist found');
+							}
 						})
 						.catch(function(err){
 							logger.error('[PLC] DBI getPlaylistInfo : '+err);
@@ -1198,7 +1228,7 @@ module.exports = {
 	*/
 	getPlaylists:function(seenFromUser) {
 		return new Promise(function(resolve){
-			module.exports.DB_INTERFACE.getPlaylists(seenFromUser)
+			plDB.getPlaylists(seenFromUser)
 				.then(function(playlists) {
 					resolve(playlists);
 				})
@@ -1211,7 +1241,7 @@ module.exports = {
 	unsetPublicAllPlaylists:function() {
 		return new Promise(function(resolve,reject){
 			// Désactive le flag Public sur toutes les playlists
-			module.exports.DB_INTERFACE.unsetPublicAllPlaylists()
+			plDB.unsetPublicPlaylist()
 				.then(function(){
 					resolve();
 				})
@@ -1225,7 +1255,7 @@ module.exports = {
 	unsetCurrentAllPlaylists:function() {
 		return new Promise(function(resolve,reject){
 			// Désactive le flag Current sur toutes les playlists
-			module.exports.DB_INTERFACE.unsetCurrentAllPlaylists()
+			plDB.unsetCurrentPlaylist()
 				.then(function(){
 					resolve();
 				})
@@ -1258,7 +1288,7 @@ module.exports = {
 					// Get playlist number of karaokes
 					plDB.countKarasInPlaylist(playlist_id)
 						.then(function(res){
-							module.exports.DB_INTERFACE.updatePlaylistNumOfKaras(playlist_id,res.karaCount)
+							plDB.updatePlaylistKaraCount(playlist_id,res.karaCount)
 								.then(function(num_karas){
 									resolve(num_karas);
 								})
@@ -1296,7 +1326,7 @@ module.exports = {
 				.then(function() {
 					var lastedit_date = timestamp.now();
 					// Update PL's last edit time
-					module.exports.DB_INTERFACE.updatePlaylistLastEditTime(playlist_id,lastedit_date)
+					plDB.updatePlaylistLastEditTime(playlist_id,lastedit_date)
 						.then(function(){
 							resolve();
 						})
@@ -1332,7 +1362,7 @@ module.exports = {
 			Promise.all([pIsPlaylist])
 				.then(function() {
 					// Get playlist duration					
-					module.exports.DB_INTERFACE.updatePlaylistDuration(playlist_id)
+					plDB.updatePlaylistDuration(playlist_id)
 						.then(function(){									
 							resolve();
 						})
@@ -1370,7 +1400,7 @@ module.exports = {
 			Promise.all([pIsPlaylist])
 				.then(function() {
 					// Get karaoke list
-					module.exports.DB_INTERFACE.getPlaylistContents(playlist_id,forPlayer)
+					plDB.getPlaylistContents(playlist_id,forPlayer)
 						.then(function(playlist){
 							resolve(playlist);
 						})
@@ -1388,7 +1418,7 @@ module.exports = {
 	},
 	getPlaylistPos:function(playlist_id) {
 		return new Promise(function(resolve,reject) {
-			module.exports.DB_INTERFACE.getPlaylistPos(playlist_id)
+			plDB.getPlaylistPos(playlist_id)
 				.then(function(playlist){
 					resolve(playlist);
 				})
@@ -1405,7 +1435,7 @@ module.exports = {
 	*/
 	getKaraFromPlaylist:function(plc_id,seenFromUser) {
 		return new Promise(function(resolve,reject) {
-			module.exports.DB_INTERFACE.getPLContentInfo(plc_id,seenFromUser)
+			plDB.getPLCInfo(plc_id,seenFromUser)
 				.then(function(kara) {
 					if (kara) {
 						kara = [kara];
@@ -1583,7 +1613,7 @@ module.exports = {
 	getPLCByKID:function(kid,playlist_id) {
 		return new Promise(function(resolve,reject) {
 			// Get karaoke list
-			module.exports.DB_INTERFACE.getPLCByKID(kid,playlist_id)
+			plDB.getPLCByKID(kid,playlist_id)
 				.then(function(kara){
 					resolve(kara);
 				})
@@ -1765,7 +1795,7 @@ module.exports = {
 									}
 									if (pos) {
 										logger.debug('[PLC] Shifting position in playlist from pos '+pos+' by '+karas.length+' positions');
-										module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,karas.length)
+										plDB.shiftPosInPlaylist(playlist_id,pos,karas.length)
 											.then(function(){
 												var startpos = pos;
 												karaList.forEach(function(kara,index) {
@@ -1779,9 +1809,9 @@ module.exports = {
 											});
 									} else {								
 										var startpos;								
-										module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
-											.then(function(maxpos){
-												startpos = maxpos + 1.0;
+										plDB.getMaxPosInPlaylist(playlist_id)
+											.then(function(res){
+												startpos = res.maxpos + 1.0;
 												karaList.forEach(function(kara,index){
 													karaList[index].pos = startpos+index;
 												});
@@ -1936,7 +1966,7 @@ module.exports = {
 			var pCheckPLCandKaraInPlaylist = new Promise((resolve,reject) => {
 				// Need to do this for each karaoke.
 				async.eachOf(plcList,function(playlistContent,index,callback) {				
-					module.exports.DB_INTERFACE.getPLContentInfo(playlistContent.plc_id)
+					plDB.getPLCInfo(playlistContent.plc_id)
 						.then(function(playlistContentData) {
 							if (playlistContentData) {
 								//We got a hit!
@@ -1988,7 +2018,7 @@ module.exports = {
 						// If pos is not provided, we need to get the maximum position in the PL
 						// And use that +1 to set our playlist position.					
 						if (pos) {
-							module.exports.DB_INTERFACE.shiftPosInPlaylist(playlist_id,pos,plcs.length)
+							plDB.shiftPosInPlaylist(playlist_id,pos,plcs.length)
 								.then(function(){
 									resolve();
 								})
@@ -1998,9 +2028,9 @@ module.exports = {
 								});								
 						} else {
 							var startpos;								
-							module.exports.DB_INTERFACE.getMaxPosInPlaylist(playlist_id)
-								.then(function(maxpos){
-									startpos = maxpos + 1.0;
+							plDB.getMaxPosInPlaylist(playlist_id)
+								.then(function(res){
+									startpos = res.maxpos + 1.0;
 									var index = 0;
 									plcList.forEach(function(){
 										plcList[index].pos = startpos+index;
@@ -2202,7 +2232,7 @@ module.exports = {
 				}
 			});
 			var pGetPLContentInfo = new Promise((resolve,reject) => {
-				module.exports.DB_INTERFACE.getPLContentInfo(playlistcontent_id)
+				plDB.getPLCInfo(playlistcontent_id)
 					.then(function(kara) {
 						if (kara) {
 							playlist_id = kara.playlist_id;
@@ -2257,7 +2287,7 @@ module.exports = {
 						if (pos) {
 							module.exports.raisePosInPlaylist(pos,playlist_id)
 								.then(function(){									
-									module.exports.DB_INTERFACE.setPos(playlistcontent_id,pos)
+									plDB.setPos(playlistcontent_id,pos)
 										.then(function(){									
 											resolve();
 										})
@@ -2364,7 +2394,7 @@ module.exports = {
 	*/
 	raisePosInPlaylist:function(pos,playlist_id) {
 		return new Promise(function(resolve,reject){
-			module.exports.DB_INTERFACE.raisePosInPlaylist(pos,playlist_id)
+			plDB.raisePosInPlaylist(pos,playlist_id)
 				.then(function() {
 					resolve();
 				})
@@ -2407,8 +2437,7 @@ module.exports = {
 								playlist[arraypos].pos = newpos;
 								arraypos++;
 							});
-
-							module.exports.DB_INTERFACE.reorderPlaylist(playlist_id,playlist)
+							plDB.reorderPlaylist(playlist)
 								.then(function() {
 									resolve(playlist);
 								})
@@ -2960,7 +2989,7 @@ module.exports = {
 									});
 							});
 							var pReorderPlaylist = new Promise((resolve,reject) => {
-								module.exports.DB_INTERFACE.reorderPlaylist(playlist_id,playlist)
+								plDB.reorderPlaylist(playlist)
 									.then(function() {
 										resolve();
 									})

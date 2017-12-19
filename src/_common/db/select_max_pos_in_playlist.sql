@@ -1,1 +1,0 @@
-SELECT MAX(pos) AS maxpos FROM playlist_content WHERE fk_id_playlist = $playlist_id;
