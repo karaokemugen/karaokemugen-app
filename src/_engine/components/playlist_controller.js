@@ -1,5 +1,6 @@
 import {uuidRegexp} from '../../_services/kara';
 import {getStats} from '../../_dao/database';
+import {ASSToLyrics} from '../../_controller/ass.js';
 const blcDB = require('../../_dao/blacklist');
 const tagDB = require('../../_dao/tag');
 const wlDB = require('../../_dao/whitelist');
@@ -10,7 +11,6 @@ var path = require('path');
 var timestamp = require('unix-timestamp');
 timestamp.round = true;
 const logger = require('winston');
-const assManager = require('./ass.js');
 const L = require('lodash');
 const langs = require('langs');
 const isoCountriesLanguages = require('iso-countries-languages');
@@ -433,7 +433,7 @@ module.exports = {
 					module.exports.getASS(kara_id)
 						.then(function(ass) {							
 							if (ass) { 
-								var lyrics = assManager.ASSToLyrics(ass);
+								var lyrics = ASSToLyrics(ass);
 								resolve(lyrics);					
 							} else {								
 								resolve('Lyrics not available for this song');
