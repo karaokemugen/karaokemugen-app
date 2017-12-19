@@ -1,6 +1,6 @@
 import {uuidRegexp} from '../../_services/kara';
 import {getStats} from '../../_dao/database';
-import {ASSToLyrics} from '../../_controller/ass.js';
+import {ASSToLyrics} from '../../_common/utils/ass.js';
 const blcDB = require('../../_dao/blacklist');
 const tagDB = require('../../_dao/tag');
 const wlDB = require('../../_dao/whitelist');
