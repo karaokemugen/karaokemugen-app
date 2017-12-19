@@ -103,7 +103,6 @@ module.exports = {
 		// Building jingles list
 		//Copying jingle data to currentjinglefiles which will be used by the player	
 		buildJinglesList().then((list) => {
-			console.log('LISTE: '+list);
 			currentJinglesList = jinglesList = list;
 		});		
 		// Building QR Code with URL to connect to
@@ -518,7 +517,6 @@ module.exports = {
 	playJingle:function(){
 		module.exports.playing = true;
 		module.exports.videoType = 'jingle';
-		console.log(currentJinglesList);
 		if (currentJinglesList.length > 0) {
 			logger.info('[Player] Jingle time !');
 			var jingle = L.sample(currentJinglesList);
