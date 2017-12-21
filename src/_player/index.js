@@ -31,9 +31,9 @@ let state = {
 	timeposition:0,
 	duration:0,
 	mutestatus:false,
-	subtext:'',
+	subtext:null,
 	currentSongInfos:null,
-	videoType:null,
+	videoType:'background',
 	showsubs:true,
 	stayontop:false,
 	fullscreen:false	
@@ -133,11 +133,15 @@ export async function initPlayerSystem(initialState) {
 	await buildQRCode(`http://${conf.osHost}:${initialState.frontend_port}`);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
+	emitPlayerState();
 	logger.info('[Player] Player interface is READY');					
 }
 
-function emitEngineState() {
-	emit('engineStatusChange', engineState);
+function emitEngineState(variable,value) {
+	emit('engineStatusChange', {
+		variable: variable,
+		value: value
+	});
 }
 
 function getmpvVersion(path) {
@@ -240,8 +244,7 @@ async function startmpv() {
 	player.observeProperty('volume',14);
 	player.on('statuschange',(status) => {
 		// si on affiche une image il faut considérer que c'est la pause d'après chanson
-		engineState.status = status;
-		emitEngineState();
+		emitEngineState('status',status);
 		if (state._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			state.playing = false;
@@ -287,15 +290,16 @@ async function startmpv() {
 }
 
 export async function play(videodata) {
+	console.log('Entered play');
 	const conf = getConfig();
 	logger.debug('[Player] Play event triggered');
 	state.playing = true;
 	//Search for video file in the different PathVideos
-	var PathsVideos = conf.PathVideos.split('|');
-	let videoFile = undefined;
-	try { 
-		videoFile = await resolveFileInDirs(PathsVideos,videodata.video);
-	} catch(err) {
+	const PathsVideos = conf.PathVideos.split('|');
+	let videoFile = await resolveFileInDirs(videodata.video,PathsVideos);		
+	console.log('videoFile after resolve = '+videoFile);
+	console.log('PathVideos after resolve = '+PathsVideos);
+	if (!videoFile) {
 		logger.warn(`[Player] Video NOT FOUND : ${videodata.video}`);
 		if (conf.PathVideosHTTP) {
 			videoFile = `${conf.PathVideosHTTP}/${encodeURIComponent(videodata.video)}`;
@@ -323,7 +327,7 @@ export async function play(videodata) {
 			logger.error(`[Player] Error loading video ${videodata.video} : ${JSON.stringify(err)}`);
 		}
 	} else {			
-		if (state.engine.status != 'stop') {
+		if (engineState.status != 'stop') {
 			logger.warn('[Player] Skipping playback due to missing video');
 			emitPlayerSkip();
 		} 
