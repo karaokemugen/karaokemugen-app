@@ -38,7 +38,6 @@ on('publicStatusChange', () => {
 		showSubs: state.player.showsubs,
 		volume: state.player.volume,
 	};	
-	console.log('Public status changed, sending to WS');
 	module.exports._services.ws.socket.emit('playerStatus',publicState);
 });
 
@@ -274,8 +273,8 @@ module.exports = {
 	* @function {toggleFullscreen}
 	*/
 	toggleFullscreenPlayer:function() {
-		setFullscreen(module.exports._states.fullscreen);
 		module.exports._states.fullscreen = !module.exports._states.fullscreen;
+		setFullscreen(module.exports._states.fullscreen);
 		emitEngineStatus();
 	},
 	/**

@@ -16,10 +16,6 @@ const sleep = promisify(setTimeout);
 let currentJinglesList = [];
 let jinglesList = [];
 let displayingInfo = false;
-process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-	// application specific logging, throwing an error, or other logic here
-});
 
 let frontendPort;
 let player;
@@ -41,8 +37,7 @@ state.player = {
 };
 
 on('engineStatusChange', (newstate) => {
-	state.engine = newstate[0];
-	console.log('Player: enginestate = '+JSON.stringify(state.engine));
+	state.engine = newstate[0];	
 });
 
 function emitPlayerState() {
@@ -281,15 +276,12 @@ async function startmpv() {
 }
 
 export async function play(videodata) {
-	console.log('Entered play');
 	const conf = getConfig();
 	logger.debug('[Player] Play event triggered');
 	state.player.playing = true;
 	//Search for video file in the different PathVideos
 	const PathsVideos = conf.PathVideos.split('|');
 	let videoFile = await resolveFileInDirs(videodata.video,PathsVideos);		
-	console.log('videoFile after resolve = '+videoFile);
-	console.log('PathVideos after resolve = '+PathsVideos);
 	if (!videoFile) {
 		logger.warn(`[Player] Video NOT FOUND : ${videodata.video}`);
 		if (conf.PathVideosHTTP) {
@@ -328,7 +320,7 @@ export async function play(videodata) {
 }
 
 export function setFullscreen(fsState) {
-	state.fullscreen = fsState;
+	state.player.fullscreen = fsState;
 	if(fsState) {
 		player.fullscreen();
 	} else {
@@ -338,9 +330,9 @@ export function setFullscreen(fsState) {
 }
 
 export function toggleOnTop() {
-	state.stayontop = !state.stayontop;
+	state.player.stayontop = !state.player.stayontop;
 	player.command('keypress',['T']);
-	return state.stayontop;
+	return state.player.stayontop;
 }
 
 export function stop() {
