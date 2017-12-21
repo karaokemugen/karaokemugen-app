@@ -29,7 +29,7 @@ async function extractJingleFiles(jingleDir) {
 async function getAllVideoGains(jingleFiles) {	
 	let jinglesList = [];
 	for (const jinglefile of jingleFiles) {
-		const audiogain = await getVideoGain(jinglefile)
+		const audiogain = await getVideoGain(jinglefile);
 		jinglesList.push(
 			{ 
 				file: jinglefile,

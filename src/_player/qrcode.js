@@ -3,7 +3,7 @@ import {getConfig} from '../_common/utils/config.js';
 import {resolve} from 'path';
 const logger = require('winston');
 
-export async function build(url) {
+export async function buildQRCode(url) {
 	const conf = getConfig();
 	logger.debug('[Background] Entered background builder');	
 	let qrcodeImageFile = resolve(conf.appPath,conf.PathTemp,'qrcode.png');

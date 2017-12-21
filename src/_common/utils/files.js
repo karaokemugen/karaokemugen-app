@@ -5,6 +5,8 @@ import {resolve} from 'path';
 import logger from 'winston';
 import {videoFileRegexp} from '../../_services/kara';
 
+const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
+
 /** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
 	return promisify(exists)(file);
@@ -15,7 +17,7 @@ export async function detectFileType(file) {
 	const fd = await asyncOpen(file,'r');
 	let buffer = new Buffer(8);
 	const asyncRead = promisify(read);
-	await asyncRead(fd, buffer, 0, 8, 0)
+	await asyncRead(fd, buffer, 0, 8, 0);
 	const shortStart = buffer.toString('hex',0,4);
 	const longStart = buffer.toString('hex',0,8);
 	logger.debug(`[FileType] File ${file} signature : ${longStart}`);
@@ -118,6 +120,14 @@ export function filterVideos(files) {
 
 export function isVideoFile(filename) {
 	return new RegExp(videoFileRegexp).test(filename);
+}
+
+export function filterImages(files) {
+	return files.filter(file => !file.startsWith('.') && isImageFile(file));
+}
+
+export function isImageFile(filename) {
+	return new RegExp(imageFileRegexp).test(filename);
 }
 
 /** Remplacement de l'extension dans un nom de fichier. */

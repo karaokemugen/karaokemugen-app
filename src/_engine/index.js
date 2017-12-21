@@ -3,6 +3,9 @@ import {initUserSystem} from '../_common/utils/user';
 import {initDBSystem, getStats} from '../_dao/database';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount,updateTotalViewcounts} from '../_dao/kara';
+import {emit,on} from '../_common/utils/pubsub';
+import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/';
+
 const fs = require('fs');
 const path = require('path');
 const logger = require('winston');
@@ -10,6 +13,53 @@ const extend = require('extend');
 const timestamp = require('unix-timestamp');
 const ini = require('ini');
 const ip = require('ip');
+
+let playerState = {};
+
+on('engineStatusChange', (states) => {
+	console.log('engineStatusChange New state : '+JSON.stringify(states));
+	module.exports._states = states;
+	console.log(JSON.stringify(module.exports._states));
+});
+
+on('playerEnd', () => {
+	module.exports.playerEnding();
+});
+
+on('playerSkip', () => {
+	module.exports.next();
+});
+
+on('playerStatusChange', (states) => {
+	//FIXME: Simplify this
+	if (module.exports._states.fullscreen != states.fullscreen){
+		module.exports._states.fullscreen = states.fullscreen;		
+	}
+	playerState = states;
+	const status = {
+		private: module.exports._states.private,
+		status: module.exports._states.status,
+		onTop: module.exports._states.ontop,
+		fullscreen: states.fullscreen,
+		timePosition: states.timeposition,
+		duration: states.duration,
+		muteStatus: states.mutestatus,
+		playerStatus: states.playerstatus,
+		currentlyPlaying: module.exports._states.currentlyPlayingKara,
+		subText: states.subtext,
+		showSubs: states.showsubs,
+		volume: states.volume,
+	};
+	if (JSON.stringify(status) !== JSON.stringify(module.exports.archivedStatus)) {
+		module.exports._services.ws.socket.emit('playerStatus',status);
+		module.exports.archivedStatus = status;
+	}	
+});
+
+function emitEngineStatus() {
+	emit('engineStatusChange',module.exports._states);
+}
+
 /**
  * @module engine
  * Main engine module.
@@ -69,13 +119,13 @@ module.exports = {
 		//Managing previews		
 		createPreviews();
 
-		this._start_db_interface().then(function(){
-			module.exports._start_player();
+		initDBSystem().then(function(){
+			initPlayerSystem(module.exports._states);
 			module.exports._start_playlist_controller();
 			module.exports._start_frontend();
 			module.exports._start_apiserver();
 			module.exports._start_wsserver();
-			module.exports._broadcastStates();
+			emitEngineStatus();
 			initUserSystem();
 		}).catch(function(response){
 			logger.error(response);
@@ -106,89 +156,81 @@ module.exports = {
 	 * Starts playing karaoke songs.
 	 * @function {play}
 	 */
-	play:function(){
+	playPlayer:function(){
+		console.log('Status : '+module.exports._states.status);
 		if(module.exports._states.status !== 'play') {
 			// passe en mode lecture (le gestionnaire de playlist vas travailler à nouveau)
-			if (module.exports._states.status === 'pause') {
-				module.exports._states.status = 'play';
-				module.exports._services.player.resume();
-				module.exports._broadcastStates();
-			}
-			if (module.exports._states.status === 'stop') {
-				module.exports._states.status = 'play';
-				module.exports.tryToReadKaraInPlaylist();
-				module.exports._broadcastStates();
-			}
+			if (module.exports._states.status === 'pause') resume();
+			if (module.exports._states.status === 'stop') module.exports.tryToReadKaraInPlaylist();							
+			module.exports._states.status = 'play';				
+			emitEngineStatus();
 		} else if(module.exports._states.status === 'play') {
 			// resume current play if needed
-			module.exports._services.player.resume();
+			resume();
 		}
 
 	},
-	sendMessageToPlayer:function(message,duration){
-		module.exports._services.player.message(message,duration);
+	sendMessageToPlayer:function(string,duration){
+		message(string,duration);
 	},
 	/**
 	* @function {stop}
 	* @param  {boolean} now {If set, stops karaoke immediately. If not, karaoke will stop at end of current song}
 	*/
-	stop:function(now){
+	stopPlayer:function(now){
 		if(now) {
 			logger.info('[Engine] Karaoke stopping NOW.');
-			module.exports._services.player.stop();
+			stop();
 		} else {
 			logger.info('[Engine] Karaoke stopping at the end of current song');
 		}
 
 		if(module.exports._states.status !== 'stop') {
 			module.exports._states.status = 'stop';
-			module.exports._broadcastStates();
+			emitEngineStatus();
 		}
 	},
 	/**
 	 * @function {pause}
 	 * Pauses current song in the player and broadcasts new status.
 	 */
-	pause:function(){
-		module.exports._services.player.pause();
+	pausePlayer:function(){
+		pause();
 		module.exports._states.status = 'pause';
-		module.exports._broadcastStates();
+		emitEngineStatus();
 	},
-	mute:function(){
-		module.exports._services.player.mute();
+	mutePlayer:function(){
+		mute();
 	},
-	unmute:function(){
-		module.exports._services.player.unmute();
+	unmutePlayer:function(){
+		unmute();
 	},
-	seek:function(delta){
-		module.exports._services.player.seek(delta);
+	seekPlayer:function(delta){
+		seek(delta);
 	},
-	goTo:function(seconds){
-		module.exports._services.player.goTo(seconds);
+	goToPlayer:function(seconds){
+		goTo(seconds);
 	},
-	reset:function(){
-		module.exports._services.player.reset();
+	setVolumePlayer:function(volume){
+		setVolume(volume);
 	},
-	setVolume:function(volume){
-		module.exports._services.player.setVolume(volume);
-	},
-	showSubs:function(){
-		module.exports._services.player.showSubs();
+	showSubsPlayer:function(){
+		showSubs();
 	},
 	hideSubs:function(){
-		module.exports._services.player.hideSubs();
+		hideSubs();
 	},
 	/**
 	 * @function {pause}
 	 * Pauses current song in the player and broadcasts new status.
 	 */
 	prev:function(){
-		module.exports.stop(true);
+		module.exports.stopPlayer(true);
 		module.exports._services.playlist_controller.prev()
 			.then(function(){
-				module.exports.play();
+				module.exports.playPlayer();
 			}).catch(function(){
-				module.exports.play();
+				module.exports.playPlayer();
 				logger.warn('[Engine] Previous song is not available');
 			});
 	},
@@ -197,10 +239,10 @@ module.exports = {
 	 * If next song is available, play it.
 	 */
 	next:function(){
-		module.exports.stop(true);
+		module.exports.stopPlayer(true);
 		module.exports._services.playlist_controller.next()
 			.then(function(){
-				module.exports.play();
+				module.exports.playPlayer();
 			}).catch(function(){
 				logger.warn('[Engine] Next song is not available');
 			});
@@ -212,38 +254,38 @@ module.exports = {
 	*/
 	setPrivateOn:function() {
 		module.exports._states.private = true;
-		module.exports._broadcastStates();
+		emitEngineStatus();
 	},
 	/**
 	* @function {setPrivateOff}
 	*/
 	setPrivateOff:function() {
 		module.exports._states.private = false;
-		module.exports._broadcastStates();
+		emitEngineStatus();
 	},
 	/**
 	* @function {togglePrivate}
 	*/
 	togglePrivate:function() {
 		module.exports._states.private = !module.exports._states.private;
-		module.exports._broadcastStates();
+		emitEngineStatus();
 	},
 
 	/**
 	* @function {toggleFullscreen}
 	*/
-	toggleFullscreen:function() {
+	toggleFullscreenPlayer:function() {
 		module.exports._states.fullscreen = !module.exports._states.fullscreen;
-		module.exports._services.player.setFullscreen(module.exports._states.fullscreen);
-		module.exports._broadcastStates();
+		setFullscreen(module.exports._states.fullscreen);
+		emitEngineStatus();
 	},
 	/**
 	* @function {toggleStayOnTop}
 	*/
-	toggleOnTop:function() {
+	toggleOnTopPlayer:function() {
 		// player services return new ontop states after change
-		module.exports._states.ontop = module.exports._services.player.toggleOnTop();
-		module.exports._broadcastStates();
+		module.exports._states.ontop = toggleOnTop();
+		emitEngineStatus();
 	},
 
 	// Methode lié à la lecture de kara
@@ -252,7 +294,7 @@ module.exports = {
 	*
 	*/
 	playlistUpdated:function(){
-		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
+		if(module.exports._states.status === 'play' && !playerState.playing) {
 			module.exports._services.playlist_controller.next()
 				.then(function(){
 					module.exports.tryToReadKaraInPlaylist();
@@ -267,9 +309,9 @@ module.exports = {
 	*/
 	playingUpdated:function(){
 		return new Promise(function(resolve){
-			if(module.exports._states.status === 'play' && module.exports._services.player.playing) {
-				module.exports.stop(true);
-				module.exports.play();
+			if(module.exports._states.status === 'play' && playerState.playing) {
+				module.exports.stopPlayer(true);
+				module.exports.playPlayer();
 				resolve();
 			} else {
 				resolve();
@@ -287,7 +329,7 @@ module.exports = {
 			if (module.exports.playerNeedsRestart) {
 				logger.info('[Engine] Player restarts, please wait');
 				module.exports.playerNeedsRestart = false;				
-				module.exports._services.player.restartmpv()
+				restartmpv()
 					.then(() => {
 						logger.debug('[Engine] Player restart complete');
 						resolve();
@@ -304,19 +346,19 @@ module.exports = {
 			.then(() => {
 				logger.debug('[Jingles] Songs before next jingle : '+ (module.exports.SETTINGS.EngineJinglesInterval - module.exports._states.counterToJingle));
 				if (module.exports._states.counterToJingle >= module.exports.SETTINGS.EngineJinglesInterval) { 
-					module.exports._services.player.playJingle();
+					playJingle();
 					module.exports._states.counterToJingle = 0;
 				} else {										
 					module.exports._services.playlist_controller.next()
 						.then(function(){
-							module.exports._services.player.displayInfo();				
+							displayInfo();				
 							module.exports.tryToReadKaraInPlaylist();
 							module.exports._states.counterToJingle++;
 						})
 						.catch(function(){
-							module.exports._services.player.displayInfo();				
+							displayInfo();				
 							logger.warn('[Engine] Next song is not available');
-							module.exports.stop();
+							module.exports.stopPlayer();
 						});
 				}
 			})
@@ -331,24 +373,25 @@ module.exports = {
 	*/
 	tryToReadKaraInPlaylist:function(){
 		//logger.profile('StartPlaying');
-		if(module.exports._states.status === 'play' && !module.exports._services.player.playing) {
+		if(module.exports._states.status === 'play' && !playerState.playing) {
 			module.exports._services.playlist_controller.current()
 				.then(function(kara){
-					module.exports._services.player.play(
-						kara.path.video,
-						kara.path.subtitle,
-						kara.gain,
-						kara.infos
-					);
-					module.exports._states.currentlyPlayingKara = kara.kara_id;
-					module.exports._broadcastStates();
-					//Add a view to the viewcount
-					module.exports.addViewcountKara(kara.kara_id,kara.kid);
+					play({
+						video: kara.path.video,
+						subtitle: kara.path.subtitle,
+						gain: kara.gain,
+						infos: kara.infos
+					}).then(() => {
+						module.exports._states.currentlyPlayingKara = kara.kara_id;
+						emitEngineStatus();
+						//Add a view to the viewcount
+						module.exports.addViewcountKara(kara.kara_id,kara.kid);
+					});					
 				})
 				.catch(function(){
 					logger.info('Cannot find a song to play');
-					module.exports.stop(true);
-					module.exports._broadcastStates();
+					module.exports.stopPlayer(true);
+					emitEngineStatus();
 				});
 		}
 	},
@@ -374,27 +417,10 @@ module.exports = {
 				logger.error('[Engine] Failed to add viewcount for karaoke '+kara_id+' : '+err);
 			});
 	},
-	// ------------------------------------------------------------------
-	// méthodes privées
-	// ------------------------------------------------------------------
-
-	_broadcastStates:function() {
-		// diffuse l'état courant à tout les services concerné (normalement les webapp)
-		module.exports._services.player._states = module.exports._states;
-	},
-
+	
 	// ------------------------------------------------------------------
 	// methodes de démarrage des services
 	// ------------------------------------------------------------------
-
-	/**
-	* @function _start_db_interface
-	* Starts database interface.
-	* Requires the db_interface.js script
-	*/
-	_start_db_interface: function() {
-		return initDBSystem();
-	},
 	/**
 	* @function
 	* Starts the frontend server on the selected port
@@ -1525,7 +1551,7 @@ module.exports = {
 										.then(function(){
 											if (module.exports.SETTINGS.EngineAutoPlay == 1 && 
 										module.exports._states.status == 'stop' ) {
-												module.exports.play();
+												module.exports.playPlayer();
 											}
 											module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
 												.then(function(playlist){
@@ -1747,7 +1773,7 @@ module.exports = {
 						if (module.exports.SETTINGS.EngineAutoPlay == 1 && 
 							playlist_id == module.exports.currentPlaylistID &&
 							module.exports._states.status == 'stop' ) {
-							module.exports.play();
+							module.exports.playPlayer();
 						}
 						module.exports._services.playlist_controller.getPlaylistInfo(playlist_id)
 							.then(function(playlist){
@@ -1865,16 +1891,17 @@ module.exports = {
 				// toggleAlwaysOnTop - as it says
 				switch (command) {
 				case 'play':
-					module.exports.play();
+					console.log('Command received play');
+					module.exports.playPlayer();
 					break;
 				case 'stopNow':
-					module.exports.stop(true);
+					module.exports.stopPlayer(true);
 					break;
 				case 'pause':
-					module.exports.pause();
+					module.exports.pausePlayer();
 					break;
 				case 'stopAfter':
-					module.exports.stop();
+					module.exports.stopPlayer();
 					break;
 				case 'skip':
 					module.exports.next();
@@ -1883,37 +1910,37 @@ module.exports = {
 					module.exports.prev();
 					break;
 				case 'toggleFullscreen':
-					module.exports.toggleFullscreen();
+					module.exports.toggleFullscreenPlayer();
 					break;
 				case 'toggleAlwaysOnTop':
-					module.exports.toggleOnTop();
+					module.exports.toggleOnTopPlayer();
 					break;
 				case 'mute':
-					module.exports.mute();
+					module.exports.mutePlayer();
 					break;
 				case 'unmute':
-					module.exports.unmute();
+					module.exports.unmutePlayer();
 					break;
 				case 'showSubs':
-					module.exports.showSubs();
+					module.exports.showSubsPlayer();
 					break;
 				case 'hideSubs':
-					module.exports.hideSubs();
+					module.exports.hideSubsPlayer();
 					break;
 				case 'seek':
 					if (!options && typeof options !== 'undefined') options = 0;
 					if (isNaN(options)) reject('Command seek must have a numeric option value');
-					module.exports.seek(options);
+					module.exports.seekPlayer(options);
 					break;
 				case 'goTo':
 					if (!options && typeof options !== 'undefined') options = 0;
 					if (isNaN(options)) reject('Command goTo must have a numeric option value');
-					module.exports.goTo(options);
+					module.exports.goToPlayer(options);
 					break;
 				case 'setVolume':
 					if (!options && typeof options !== 'undefined') reject('Command setVolume must have a value');
 					if (isNaN(options)) reject('Command setVolume must have a numeric option value');
-					module.exports.setVolume(options);
+					module.exports.setVolumePlayer(options);
 				}
 				resolve();
 			});
@@ -2021,45 +2048,5 @@ module.exports = {
 						logger.error('[Engine] Failed to create public playlist :'+err);
 					});
 			});
-	},
-	/**
-	* @function
-	* Starts player interface
-	* This is used to drive mpv or whatever video player is used.
-	*/
-	_start_player:function() {
-		module.exports._services.player = require(path.join(__dirname,'../_player/index.js'));
-		module.exports._services.player.BINPATH = path.resolve(module.exports.SYSPATH,'app/bin');
-		module.exports._services.player.SETTINGS = module.exports.SETTINGS;
-		module.exports._services.player.SYSPATH = module.exports.SYSPATH;
-		module.exports._services.player.frontend_port = module.exports._states.frontend_port;		
-		module.exports._services.player.onEnd = module.exports.playerEnding;
-		module.exports._services.player.skip = module.exports.next;
-		module.exports._services.player._states = module.exports._states;
-		module.exports._services.player.onStatusChange = function(){
-			if (module.exports._states.fullscreen != module.exports._services.player.fullscreen) {
-				module.exports._states.fullscreen = module.exports._services.player.fullscreen;
-				module.exports._broadcastStates();
-			}
-			var status = {
-				private: module.exports._states.private,
-				status: module.exports._states.status,
-				onTop: module.exports._states.ontop,
-				fullscreen: module.exports._services.player.fullscreen,
-				timePosition: module.exports._services.player.timeposition,
-				duration: module.exports._services.player.duration,
-				muteStatus: module.exports._services.player.mutestatus,
-				playerStatus: module.exports._services.player.playerstatus,
-				currentlyPlaying: module.exports._states.currentlyPlayingKara,
-				subText: module.exports._services.player.subtext,
-				showSubs: module.exports._services.player.showsubs,
-				volume: module.exports._services.player.volume,
-			};
-			if (JSON.stringify(status) !== JSON.stringify(module.exports.archivedStatus)) {
-				module.exports._services.ws.socket.emit('playerStatus',status);
-				module.exports.archivedStatus = status;
-			}
-		};
-		module.exports._services.player.init();
-	}
+	},	
 };

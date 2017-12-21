@@ -138,6 +138,11 @@ export function resolvedPathJingles(overrideConfig) {
 	return conf.PathJingles.split('|').map(path => resolve(conf.appPath, path));
 }
 
+export function resolvedPathBackgrounds(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathBackgrounds.split('|').map(path => resolve(conf.appPath, path));
+}
+
 export function resolvedPathSubs(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
 	return conf.PathSubs.split('|').map(path => resolve(conf.appPath, path));
