@@ -14,11 +14,32 @@ const timestamp = require('unix-timestamp');
 const ini = require('ini');
 const ip = require('ip');
 
-let playerState = {};
+let publicState = {};
+let state = {};
 
-on('engineStatusChange', (variable, value) => {
-	module.exports._states[variable] = value;
-	console.log(JSON.stringify(module.exports._states));
+on('engineStatusChange', (newstate) => {
+	module.exports._states = state.engine = newstate[0];	
+	emitPublicStatus();
+});
+
+on('publicStatusChange', () => {
+	publicState = {
+		playing: state.player.playing,
+		private: state.engine.private,
+		status: state.engine.status,
+		onTop: state.engine.ontop,
+		fullscreen: state.player.fullscreen,
+		timePosition: state.player.timeposition,
+		duration: state.player.duration,
+		muteStatus: state.player.mutestatus,
+		playerStatus: state.player.playerstatus,
+		currentlyPlaying: state.engine.currentlyPlayingKara,
+		subText: state.player.subtext,
+		showSubs: state.player.showsubs,
+		volume: state.player.volume,
+	};	
+	console.log('Public status changed, sending to WS');
+	module.exports._services.ws.socket.emit('playerStatus',publicState);
 });
 
 on('playerEnd', () => {
@@ -34,36 +55,15 @@ on('playerStatusChange', (states) => {
 	if (module.exports._states.fullscreen != states.fullscreen){
 		module.exports._states.fullscreen = states.fullscreen;		
 	}
-	playerState = states;
-	const status = {
-		private: module.exports._states.private,
-		status: module.exports._states.status,
-		onTop: module.exports._states.ontop,
-		fullscreen: states.fullscreen,
-		timePosition: states.timeposition,
-		duration: states.duration,
-		muteStatus: states.mutestatus,
-		playerStatus: states.playerstatus,
-		currentlyPlaying: module.exports._states.currentlyPlayingKara,
-		subText: states.subtext,
-		showSubs: states.showsubs,
-		volume: states.volume,
-	};
-	console.log(JSON.stringify(status));
-	console.log('===');
-	console.log(JSON.stringify(module.exports.archivedStatus));
-	if (JSON.stringify(status) !== JSON.stringify(module.exports.archivedStatus[0])) {
-		console.log('Player status changed, sending to WS');
-		module.exports._services.ws.socket.emit('playerStatus',states);
-		module.exports.archivedStatus[0] = states;
-	}	
+	state.player = states[0];	
+	emitPublicStatus();
 });
 
-function emitEngineStatus(variable,value) {
-	emit('engineStatusChange',{
-		variable: variable,
-		value: value
-	});
+function emitPublicStatus() {
+	emit('publicStatusChange');
+}
+function emitEngineStatus() {
+	emit('engineStatusChange', module.exports._states);
 }
 
 /**
@@ -125,6 +125,9 @@ module.exports = {
 		//Managing previews		
 		createPreviews();
 
+		//Defining state
+		state.engine = module.exports._states;
+
 		initDBSystem().then(function(){
 			initPlayerSystem(module.exports._states);
 			module.exports._start_playlist_controller();
@@ -162,12 +165,12 @@ module.exports = {
 	 * @function {play}
 	 */
 	playPlayer:function(){
-		console.log('Status : '+module.exports._states.status);
 		if(module.exports._states.status !== 'play') {
 			// passe en mode lecture (le gestionnaire de playlist vas travailler à nouveau)			
 			if (module.exports._states.status === 'pause') resume();
 			if (module.exports._states.status === 'stop') module.exports.tryToReadKaraInPlaylist();							
-			emitEngineStatus('status','play');
+			module.exports._states.status = 'play';
+			emitEngineStatus();
 		} else if(module.exports._states.status === 'play') {
 			// resume current play if needed
 			resume();
@@ -190,7 +193,8 @@ module.exports = {
 		}
 
 		if(module.exports._states.status !== 'stop') {
-			emitEngineStatus('status','stop');
+			module.exports._states.status = 'stop';
+			emitEngineStatus();
 		}
 	},
 	/**
@@ -199,6 +203,7 @@ module.exports = {
 	 */
 	pausePlayer:function(){
 		pause();
+		module.exports._states.status = 'pause';
 		emitEngineStatus('status','pause');
 	},
 	mutePlayer:function(){
@@ -219,7 +224,7 @@ module.exports = {
 	showSubsPlayer:function(){
 		showSubs();
 	},
-	hideSubs:function(){
+	hideSubsPlayer:function(){
 		hideSubs();
 	},
 	/**
@@ -255,34 +260,31 @@ module.exports = {
 	* @private
 	*/
 	setPrivateOn:function() {
-		emitEngineStatus('private',true);
+		module.exports._states.private = true;
+		emitEngineStatus();
 	},
 	/**
 	* @function {setPrivateOff}
 	*/
 	setPrivateOff:function() {
-		emitEngineStatus('private',false);
-	},
-	/**
-	* @function {togglePrivate}
-	*/
-	togglePrivate:function() {		
-		emitEngineStatus('private', !module.exports._states.private);
-	},
-
+		module.exports._states.private = false;
+		emitEngineStatus();
+	},	
 	/**
 	* @function {toggleFullscreen}
 	*/
 	toggleFullscreenPlayer:function() {
 		setFullscreen(module.exports._states.fullscreen);
-		emitEngineStatus('fullscreen', !module.exports._states.fullscreen);
+		module.exports._states.fullscreen = !module.exports._states.fullscreen;
+		emitEngineStatus();
 	},
 	/**
 	* @function {toggleStayOnTop}
 	*/
 	toggleOnTopPlayer:function() {
 		// player services return new ontop states after change		
-		emitEngineStatus('ontop',toggleOnTop());
+		module.exports._states.ontop = toggleOnTop();
+		emitEngineStatus();
 	},
 
 	// Methode lié à la lecture de kara
@@ -291,7 +293,7 @@ module.exports = {
 	*
 	*/
 	playlistUpdated:function(){
-		if(module.exports._states.status === 'play' && !playerState.playing) {
+		if(module.exports._states.status === 'play' && !state.player.playing) {
 			module.exports._services.playlist_controller.next()
 				.then(function(){
 					module.exports.tryToReadKaraInPlaylist();
@@ -306,7 +308,7 @@ module.exports = {
 	*/
 	playingUpdated:function(){
 		return new Promise(function(resolve){
-			if(module.exports._states.status === 'play' && playerState.playing) {
+			if(module.exports._states.status === 'play' && state.player.playing) {
 				module.exports.stopPlayer(true);
 				module.exports.playPlayer();
 				resolve();
@@ -369,8 +371,7 @@ module.exports = {
 	* Try to read next karaoke in playlist.
 	*/
 	tryToReadKaraInPlaylist:function(){
-		console.log('trytoread state : '+module.exports._states.status);
-		if(!playerState.playing) {
+		if(!state.player.playing) {
 			module.exports._services.playlist_controller.current()
 				.then(function(kara){
 					play({
@@ -378,15 +379,17 @@ module.exports = {
 						subtitle: kara.path.subtitle,
 						gain: kara.gain,
 						infos: kara.infos
-					}).then(() => {						
-						emitEngineStatus('currentlyPlayingKara', kara.kara_id);
+					}).then(() => {
+						module.exports._states.currentlyPlayingKara = kara.kara_id;
+						emitEngineStatus();
 						//Add a view to the viewcount
 						module.exports.addViewcountKara(kara.kara_id,kara.kid);
 					});					
 				})
 				.catch(function(){
 					logger.info('Cannot find a song to play');
-					emitEngineStatus('status','stop');
+					module.exports._states.status = 'stop';
+					emitEngineStatus();
 					module.exports.stopPlayer(true);					
 				});
 		}
@@ -698,7 +701,6 @@ module.exports = {
 				} else {
 					blcvalues = [blcvalue];
 				}		
-				console.log(blcvalues);
 				module.exports._services.playlist_controller.addBlacklistCriteria(blctype,blcvalues)
 					.then(function(){
 						resolve();
@@ -1886,7 +1888,6 @@ module.exports = {
 				// toggleAlwaysOnTop - as it says
 				switch (command) {
 				case 'play':
-					console.log('Command received play');
 					module.exports.playPlayer();
 					break;
 				case 'stopNow':
@@ -1942,20 +1943,7 @@ module.exports = {
 		};
 		module.exports._services.apiserver.onPlayerStatus = function(){
 			return new Promise(function(resolve){				
-				resolve({
-					private: module.exports._states.private,
-					status: module.exports._states.status,
-					onTop: module.exports._states.ontop,
-					fullscreen: playerState.fullscreen,					
-					timePosition: playerState.timeposition,
-					duration: playerState.duration,
-					muteStatus: playerState.mutestatus,
-					playerStatus: playerState.playerstatus,
-					currentlyPlaying: module.exports._states.currentlyPlayingKara,
-					subText: playerState.subtext,
-					volume: playerState.volume,
-					showSubs: playerState.showsubs,
-				});
+				resolve(publicState);
 			});
 		};
 		module.exports._services.apiserver.onStats = function(){
