@@ -657,7 +657,7 @@ module.exports = {
 			/**
  * @api {get} admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
@@ -693,11 +693,13 @@ module.exports = {
  *               "flag_blacklisted": 0,
  *               "flag_playing": 1,
  *               "flag_whitelisted": 0,
+ * 				 "flag_dejavu": 0,
  *               "gain": 0,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
  *               "language": "chi",
  *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -1017,11 +1019,13 @@ module.exports = {
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
+ * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
+ * @apiSuccess {Number} data/lastplayed_at When the song has been played last, in unix timestamp
  * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/misc_i18n Translated tag list
  * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
@@ -1060,11 +1064,13 @@ module.exports = {
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
  *           "flag_whitelisted": 0,
+ * 			 "flag_dejavu": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
+ * 			 "lastplayed_at": null,
  *           "misc": null,
  *           "misc_i18n": null,
  *           "playlist_id": 2,
@@ -2431,7 +2437,7 @@ module.exports = {
 /**
  * @api {get} public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
@@ -2467,11 +2473,13 @@ module.exports = {
  *               "flag_blacklisted": 0,
  *               "flag_playing": 1,
  *               "flag_whitelisted": 0,
+ * 				 "flag_dejavu": 0,
  *               "gain": 0,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
  *               "language": "chi",
  *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -2538,7 +2546,7 @@ module.exports = {
 			/**
  * @api {get} public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
@@ -2559,11 +2567,13 @@ module.exports = {
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
+ * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default, `EngineMaxDejaVuTime` is at 60 minutes)
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
+ * @apiSuccess {Number} data/lastplayed_at Time when the song was last played at in UNIX timestamp. `null` if never played before.
  * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/misc_i18n Translated tag list
  * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
@@ -2602,11 +2612,13 @@ module.exports = {
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
  *           "flag_whitelisted": 0,
+ * 			 "flag_dejavu": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
+ * 			 "lastplayed_at": null,
  *           "misc": null,
  *           "misc_i18n": null,
  *           "playlist_id": 2,
@@ -3079,7 +3091,7 @@ module.exports = {
 			/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Karaokes
  * @apiPermission public
  * 
@@ -3111,11 +3123,13 @@ module.exports = {
  *               "created_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
+ * 				 "flag_dejavu": 0,
  *               "gain": 0,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
  *               "language": "chi",
  *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "serie": "Dynasty Warriors 3",
@@ -3214,7 +3228,7 @@ module.exports = {
 			/**
  * @api {get} public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Karaokes
  * @apiPermission public
  * 
@@ -3231,10 +3245,12 @@ module.exports = {
  * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
+ * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default `EngineMaxDejaVuTime` is at 60 minutes)
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
+ * @apiSuccess {Number} data/lastplayed_at Last time the song has been played in UNIX timestamp. `null` if never played before
  * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/misc_i18n Translated tag list
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
@@ -3266,10 +3282,12 @@ module.exports = {
  *           "created_at": 1508427958,
  *           "creator": null,
  *           "duration": 0,
+ * 			 "flag_dejavu": 0,
  *           "gain": 0,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
+ * 			 "lastplayed_at": null,
  *           "misc": null,
  *           "misc_i18n": null,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
@@ -3482,7 +3500,7 @@ module.exports = {
 			/**
  * @api {get} public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission public
  * 
@@ -3518,11 +3536,13 @@ module.exports = {
  *               "flag_blacklisted": 0,
  *               "flag_playing": 1,
  *               "flag_whitelisted": 0,
+ * 				 "flag_dejavu": 0,
  *               "gain": 0,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
  *               "language": "chi",
  *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -3641,7 +3661,7 @@ module.exports = {
 			/**
  * @api {get} public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission public
  * 
@@ -3677,11 +3697,13 @@ module.exports = {
  *               "flag_blacklisted": 0,
  *               "flag_playing": 1,
  *               "flag_whitelisted": 0,
+ * 				 "flag_dejavu": 0,
  *               "gain": 0,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
  *               "language": "chi",
  *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
