@@ -2,13 +2,8 @@ import {getUserDb} from './database';
 const sql = require('../_common/db/whitelist');
 
 export async function isWhitelistContent(id) {
-	const res = await getUserDb().get(sql.isWhitelistContent,
-		{
-			$id: id,
-		});
-	// FIXME : While playlist_controller isn't converted to ES2015+, logic is here
-	if (res) return true;
-	return false;
+	const res = await getUserDb().get(sql.isWhitelistContent, { $id: id });
+	return !!res;
 }
 
 export async function getWhitelistContents() {
