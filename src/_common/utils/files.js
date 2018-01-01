@@ -3,9 +3,7 @@ import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
-import {videoFileRegexp} from '../../_services/kara';
-
-const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
+import {videoFileRegexp, imageFileRegexp} from '../../_services/constants';
 
 /** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
