@@ -22,15 +22,15 @@ function localPassportStrategy() {
 	const localOptions = {usernameField: 'username', passwordField: 'password'};
 
 	return new LocalStrategy(localOptions, function (username, password, done) {
-		password = hashPassword(password);
+		const hash = hashPassword(password);
 		findUserByName(username)
 			.then((userdata) => {
 				//User not found
 				if (!userdata) return done(null, false);
 				//User is a guest, no password check needed
-				if (userdata.type == 2) return done(null, username);
+				if (userdata.type === 2) return done(null, username);
 				//User is not a guest, and password mismatches
-				if (password != userdata.password) return done(null, false); 
+				if (hash !== userdata.password) return done(null, false);
 				//Everything's daijoubu
 				return done(null, username); 
 			}) 
