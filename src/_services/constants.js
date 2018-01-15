@@ -1,6 +1,12 @@
-/**
+/*
  * Référentiel de KM (tags, langs, types, etc.).
  */
+
+/** Expressions régulières de validation. */
+export const uuidRegexp = '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
+export const videoFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg)$';
+export const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
+export const subFileRegexp = '^.+\\.ass$';
 
 export const karaTypes = Object.freeze({
 	OP: 'OP',

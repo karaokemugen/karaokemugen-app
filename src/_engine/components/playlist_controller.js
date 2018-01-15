@@ -1,4 +1,4 @@
-import {uuidRegexp} from '../../_services/kara';
+import {uuidRegexp} from '../../_services/constants';
 import {getStats} from '../../_dao/database';
 import {ASSToLyrics} from '../../_common/utils/ass.js';
 const blcDB = require('../../_dao/blacklist');

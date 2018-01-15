@@ -2,13 +2,7 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import validate from 'validate.js';
 import {has as hasLang} from 'langs';
-import {karaTypes, karaTypesArray} from './constants';
-
-/** Expressions régulières de validation. */
-export const uuidRegexp = '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
-export const videoFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg)$';
-export const subFileRegexp = '^.+\\.ass$';
-
+import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, videoFileRegexp} from './constants';
 
 /**
  * Génère les informations à écrire dans un fichier kara, à partir d'un objet passé en paramètre, en filtrant les

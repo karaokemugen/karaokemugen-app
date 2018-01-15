@@ -40,7 +40,7 @@ module.exports = function authController(router) {
 		getRole(req.body.username)
 			.then(role =>
 				res.send({
-					token: createJwtToken(req.body.username, config),
+					token: createJwtToken(req.body.username, role, config),
 					username: req.body.username,
 					role: role
 				})
@@ -53,11 +53,11 @@ module.exports = function authController(router) {
 	});
 };
 
-function createJwtToken(username, config) {
+function createJwtToken(username, role, config) {
 	const conf = config || getConfig();
 	const timestamp = new Date().getTime();
 	return encode(
-		{ username: username, iat: timestamp, role: getRole(username, conf) },
+		{ username, iat: timestamp, role },
 		conf.JwtSecret
 	);
 }
