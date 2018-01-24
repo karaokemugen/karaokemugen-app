@@ -44,7 +44,17 @@ module.exports = function authController(router) {
 					username: req.body.username,
 					role: role
 				})
-			).catch(err => res.status(500).send('Error while login: ' + err));
+			).catch( err => {
+				logger.error("getRole : " + err);
+				err = {
+					code: 'LOG_ERROR',
+					message: err,
+					data: {
+						
+					}
+				};
+				res.status(500).send(err);
+			});
 		updateLastLoginName(req.body.username);
 	});
 
