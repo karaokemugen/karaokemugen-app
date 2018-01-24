@@ -9,9 +9,9 @@ const path = require('path');
 const multer = require('multer');
 
 // NEW AUTH SYSTEM. Disabled for now
-// import passport from 'passport';
-// import {configurePassport} from '../_webapp/passport_manager.js';
-
+import passport from 'passport';
+import {configurePassport} from '../_webapp/passport_manager.js';
+/*
 // OLD AUTH SYSTEM. Reenabled for some tests
 function AdminPasswordAuth(username, password){
 	return password === module.exports.SETTINGS.AdminPassword;
@@ -23,7 +23,7 @@ function getUnauthorizedResponse(req) {
 		'No credentials provided';
 }
 // OLD AUTH SYSTEM END
-
+*/
 function numberTest(element) {
 	if (isNaN(element)) {
 		return false;
@@ -108,9 +108,9 @@ module.exports = {
 			});
 
 			// NEW AUTH SYSTEM
-			//routerAdmin.use(passport.initialize());
-			//configurePassport();
-
+			routerAdmin.use(passport.initialize());
+			configurePassport();
+/*
 			// OLD AUTH SYSTEM
 			routerAdmin.use(basicAuth({ 
 				authorizer: AdminPasswordAuth,
@@ -122,7 +122,7 @@ module.exports = {
 			routerAdmin.use(function(req,res,next) {
 				next();
 			});			
-
+*/
 			routerPublic.use(function(req, res, next) {
 				// do logging
 				//logger.info('API_LOG',req)
