@@ -2,15 +2,15 @@ const express = require('express');
 const expressValidator = require('express-validator');
 const logger = require('winston');
 const bodyParser = require('body-parser');
-const authController = require('../_controllers/auth');
-const basicAuth = require('express-basic-auth');
 const user = require('../_common/utils/user.js');
 const path = require('path');
 const multer = require('multer');
 
-// NEW AUTH SYSTEM. Disabled for now
+// NEW AUTH SYSTEM.
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager.js';
+import authController from '../_controllers/auth';
+import {requireAuth, requireAdmin} from '../_controllers/passport_manager.js';
 /*
 // OLD AUTH SYSTEM. Reenabled for some tests
 function AdminPasswordAuth(username, password){
@@ -102,7 +102,7 @@ module.exports = {
 			}));
 			var routerPublic = express.Router();
 			var routerAdmin = express.Router();
-
+			
 			app.listen(module.exports.LISTEN, function () {
 				logger.info('[API] API server is READY and listens on port '+module.exports.LISTEN);
 			});
@@ -110,7 +110,11 @@ module.exports = {
 			// NEW AUTH SYSTEM
 			routerAdmin.use(passport.initialize());
 			configurePassport();
-/*
+			authController(routerAdmin);
+			
+			
+
+			/*
 			// OLD AUTH SYSTEM
 			routerAdmin.use(basicAuth({ 
 				authorizer: AdminPasswordAuth,
@@ -127,7 +131,7 @@ module.exports = {
 				// do logging
 				//logger.info('API_LOG',req)
 				next(); // make sure we go to the next routes and don't stop here
-			});
+			});			
 
 			routerPublic.get('/', function (req, res) {
 				res.send('Hello World!');
@@ -177,7 +181,7 @@ module.exports = {
  * 
  */
 			routerAdmin.route('/shutdown')
-				.post(function(req,res){
+				.post(requireAuth, requireAdmin, function(req,res){
 					// Sends command to shutdown the app.
 
 					module.exports.onShutdown()

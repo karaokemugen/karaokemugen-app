@@ -2,6 +2,7 @@ import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
 import {isAdmin, updateLastLoginName} from '../_common/utils/user';
+const logger = require('winston');
 
 module.exports = function authController(router) {
 
@@ -45,7 +46,7 @@ module.exports = function authController(router) {
 					role: role
 				})
 			).catch( err => {
-				logger.error("getRole : " + err);
+				logger.error('getRole : ' + err);
 				err = {
 					code: 'LOG_ERROR',
 					message: err,
