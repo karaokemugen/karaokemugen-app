@@ -228,7 +228,7 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(function(req,res){
+				.get(requireAuth, requireAdmin, function(req,res){
 					// Get list of playlists
 					module.exports.onPlaylists()
 						.then(function(playlists){
@@ -268,7 +268,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.post(function(req,res){
+				.post(requireAuth, requireAdmin, function(req,res){
 					
 				// Add playlist
 					req.check({
@@ -371,7 +371,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(function(req,res){
+				.get(requireAuth, requireAdmin, function(req,res){
 					//Access :pl_id by req.params.pl_id
 					// This get route gets infos from a playlist
 					var playlist_id = req.params.pl_id;
@@ -413,7 +413,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 					// Update playlist info
 
 					req.check({
@@ -481,7 +481,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.delete(function(req,res){					
+				.delete(requireAuth, requireAdmin, function(req,res){					
 					module.exports.onPlaylistSingleDelete(req.params.pl_id)
 						.then(function(){
 							module.exports.emitEvent('playlistsUpdated');
@@ -518,7 +518,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.delete(function(req,res){					
+				.delete(requireAuth, requireAdmin, function(req,res){					
 					user.deleteUser(req.params.user_id)
 						.then(function(){
 							module.exports.emitEvent('usersUpdated');
@@ -555,7 +555,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 				// Empty playlist
 
 					module.exports.onPlaylistSingleEmpty(req.params.pl_id)
@@ -590,7 +590,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 				// Empty whitelist
 
 					module.exports.onWhitelistEmpty()
@@ -627,7 +627,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 				// Empty blacklist criterias
 
 					module.exports.onBlacklistCriteriasEmpty()
@@ -666,7 +666,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 					// set playlist to current
 
 					module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
@@ -705,7 +705,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 					// Empty playlist
 
 					module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
@@ -796,7 +796,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(function(req,res){
+				.get(requireAuth, requireAdmin, function(req,res){
 					//Access :pl_id by req.params.pl_id
 					// This get route gets infos from a playlist
 					var playlist_id = req.params.pl_id;
@@ -863,7 +863,7 @@ module.exports = {
  *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
  * }
  */
-				.post(function(req,res){
+				.post(requireAuth, requireAdmin, function(req,res){
 					//add a kara to a playlist
 					var playlist_id = req.params.pl_id;
 					req.checkBody({
@@ -950,7 +950,7 @@ module.exports = {
  *   "message": "Karaoke song 176 is already in playlist 2"
  * }
  */
-				.patch(function(req,res){
+				.patch(requireAuth, requireAdmin, function(req,res){
 					//add karas from a playlist to another
 					req.checkBody({
 						'plc_id': {
@@ -1022,7 +1022,7 @@ module.exports = {
  *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
  * }
  */
-				.delete(function(req,res){
+				.delete(requireAuth, requireAdmin, function(req,res){
 					// Delete kara from playlist
 					// Deletion is through playlist content's ID.
 					// There is actually no need for a playlist number to be used at this moment.
@@ -1164,7 +1164,7 @@ module.exports = {
  *   "message": "PLCID unknown!"
  * }
  */
-				.get(function(req,res){
+				.get(requireAuth, requireAdmin, function(req,res){
 					module.exports.onPLCInfo(req.params.plc_id,req.query.lang)
 						.then(function(kara){
 							res.json(OKMessage(kara));
@@ -1204,7 +1204,7 @@ module.exports = {
  *   "message": "PLCID unknown!"
  * }
  */
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 					//Update playlist's karaoke song
 					//Params: position
 					req.checkBody({
@@ -1318,7 +1318,7 @@ module.exports = {
  *   }
  * }
  */
-				.get(function(req,res){
+				.get(requireAuth, requireAdmin, function(req,res){
 					res.json(OKMessage(module.exports.SETTINGS));
 				})
 			/**
@@ -1357,7 +1357,7 @@ module.exports = {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 					//Update settings
 					req.checkBody({
 						'AdminPassword': {
@@ -1560,7 +1560,7 @@ module.exports = {
  *   "code": "MESSAGE_SEND_ERROR"
  * }
  */
-				.post(function(req,res){
+				.post(requireAuth, requireAdmin, function(req,res){
 					req.check({
 						'duration': {
 							in: 'body',
@@ -1678,7 +1678,7 @@ module.exports = {
  *   "code": "WL_VIEW_ERROR"
  * }
  */
-				.get(function(req,res){
+				.get(requireAuth, requireAdmin, function(req,res){
 					var lang = req.query.lang;
 					var filter = req.query.filter;
 					var size;
@@ -1736,7 +1736,7 @@ module.exports = {
  *   "message": "No karaoke could be added, all are in whitelist already"
  * }
  */
-				.post(function(req,res){
+				.post(requireAuth, requireAdmin, function(req,res){
 					req.check({
 						'kara_id': {
 							in: 'body',
@@ -1788,7 +1788,7 @@ module.exports = {
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
-				.delete(function(req,res){
+				.delete(requireAuth, requireAdmin, function(req,res){
 					//Delete kara from whitelist
 					// Deletion is through whitelist ID.
 					req.checkBody({
@@ -1890,7 +1890,7 @@ module.exports = {
  *   "code": "BL_VIEW_ERROR"
  * }
  */
-				.get(function(req,res){
+				.get(requireAuth, requireAdmin, function(req,res){
 					var lang = req.query.lang;
 					var filter = req.query.filter;
 					var size;
@@ -1950,7 +1950,7 @@ module.exports = {
  *   "code": "BLC_VIEW_ERROR"
  * }
  */		
-				.get(function(req,res){
+				.get(requireAuth, requireAdmin, function(req,res){
 					//Get list of blacklisted karas
 					module.exports.onBlacklistCriterias()
 						.then(function(blc){
@@ -2000,7 +2000,7 @@ module.exports = {
  *   }
  * }
  */		
-				.post(function(req,res){
+				.post(requireAuth, requireAdmin, function(req,res){
 					//Add blacklist criteria
 					req.check({
 						'blcriteria_type': {
@@ -2065,7 +2065,7 @@ module.exports = {
  *   "message": "BLCID 5 unknown"
  * }
  */		
-				.delete(function(req,res){
+				.delete(requireAuth, requireAdmin, function(req,res){
 					module.exports.onBlacklistCriteriaDelete(req.params.blc_id)
 						.then(function(){
 							module.exports.emitEvent('blacklistUpdated');
@@ -2110,7 +2110,7 @@ module.exports = {
  *   "message": "BLCID 12309 unknown"
  * }
  */		
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 					//Update BLC
 					req.check({
 						'blcriteria_type': {
@@ -2172,7 +2172,7 @@ module.exports = {
  * }
  */
 
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 					req.checkBody('command')
 						.notEmpty()
 						.enum(['play',
@@ -2266,7 +2266,7 @@ module.exports = {
  *   "message": "Playlist 5 unknown"
  * }
  */		
-				.get(function(req,res){
+				.get(requireAuth, requireAdmin, function(req,res){
 					// Returns the playlist and its contents in an exportable format (to save on disk)
 					module.exports.onPlaylistExport(req.params.pl_id)
 						.then(function(playlist){
@@ -2309,7 +2309,7 @@ module.exports = {
  *   "message": "No header section"
  * }
  */		
-				.post(function(req,res){
+				.post(requireAuth, requireAdmin, function(req,res){
 					// Imports a playlist and its contents in an importable format (posted as JSON data)
 					req.check({
 						'playlist': {
@@ -2377,7 +2377,7 @@ module.exports = {
  * }
  */		
 
-				.put(function(req,res){
+				.put(requireAuth, requireAdmin, function(req,res){
 					module.exports.onPlaylistShuffle(req.params.pl_id)
 						.then(function(){
 							module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
