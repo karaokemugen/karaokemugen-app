@@ -261,5 +261,6 @@
 	"USER_NOT_EXISTS": "L'utilisateur n'existe pas !",
 	"USER_LIST_ERROR": "Impossible d'afficher la liste des utilisateurs",
 	"USER_UPDATED": "Mise à jour du profil de %s effectuée",
-	"USER_UPDATE_ERROR": "Impossible de mettre à jour le profil de %s"
+	"USER_UPDATE_ERROR": "Impossible de mettre à jour le profil de %s",
+	"USER_VIEW_ERROR": "Impossible d'afficher le profil de l'utilisateur"
 }

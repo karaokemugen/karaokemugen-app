@@ -44,8 +44,7 @@ export async function editUser(id,user,avatar) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in 
 			// database
-			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);
-			console.log(user.avatar_file);
+			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);	
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}
@@ -93,16 +92,32 @@ async function replaceAvatar(oldImageFile,avatar) {
 	}
 }
 
-export async function findUserByName(username) {
+export async function findUserByName(username, opt) {
 	//Check if user exists in db
 	const userdata = await db.getUserByName(username);
-	if (userdata) return userdata;
+	if (userdata) {
+		if (!userdata.bio) userdata.bio = null;
+		if (!userdata.url) userdata.url = null;
+		if (!userdata.email) userdata.email = null;
+		if (opt.public) {
+			userdata.email = null;
+			userdata.password = null;
+			userdata.fingerprint = null;
+			userdata.email = null;
+		}
+		return userdata;
+	}
 	return false;	
 }
 
 export async function findUserByID(id) {
 	const userdata = await db.getUserByID(id);
-	if (userdata) return userdata;
+	if (userdata) {
+		if (!userdata.bio) userdata.bio = null;
+		if (!userdata.url) userdata.url = null;
+		if (!userdata.email) userdata.email = null;
+		return userdata;
+	}
 	return false;
 }
 

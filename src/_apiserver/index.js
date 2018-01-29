@@ -10,7 +10,7 @@ const multer = require('multer');
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager.js';
 import authController from '../_controllers/auth';
-import {requireAuth, requireAdmin} from '../_controllers/passport_manager.js';
+import {requireAuth, requireAdminOrOwn, requireAdmin} from '../_controllers/passport_manager.js';
 /*
 // OLD AUTH SYSTEM. Reenabled for some tests
 function AdminPasswordAuth(username, password){
@@ -494,6 +494,68 @@ module.exports = {
 						});
 				});
 			routerAdmin.route('/users/:user_id([0-9]+)')
+			/**
+ * @api {get} admin/users/:user_id View user details (admin)
+ * @apiName GetUserAdmin
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission AdminOrOwn
+ *
+ * @apiSuccess {String} data/login User's login
+ * @apiSuccess {String} data/nickname User's nickname
+ * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
+ * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
+ * @apiSuccess {Number} data/flag_admin Is the user Admin ?
+ * @apiSuccess {Number} data/flag_online Is the user an online account ?
+ * @apiSuccess {Number} data/type Type of account (1 = user, 2 = guest)
+ * @apiSuccess {Number} data/last_login Last login time in UNIX timestamp.
+ * @apiSuccess {Number} data/user_id User's ID in the database
+ * @apiSuccess {String} data/url User's URL in its profile
+ * @apiSuccess {String} data/fingerprint User's fingerprint
+ * @apiSuccess {String} data/bio User's bio
+ * @apiSuccess {String} data/email User's email
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_nickname": "Administrator",
+ *           "avatar_file": "",
+ *           "flag_admin": 1,
+ *           "flag_online": 0,
+ *           "type": 1,
+ *           "last_login": 0,
+ *           "login": "admin",
+ *           "nickname": "Administrator",
+ *           "user_id": 1,
+ * 			 "url": null,
+ * 			 "email": null,
+ * 			 "bio": null,
+ * 			 "fingerprint": null
+ *       },
+ *   ]
+ * }
+ * @apiError USER_VIEW_ERROR Unable to view user details
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_VIEW_ERROR",
+ *   "message": null
+ * }
+ */
+				.get(requireAuth, requireAdminOrOwn, (req,res) => {
+					user.findUserByID(req.params.user_id, {public:false})
+						.then((userdata) => {
+							res.json(OKMessage(userdata));
+						})
+						.catch(function(err){
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('USER_VIEW_ERROR',err));
+						});						
+				})
 			/**
  * @api {delete} admin/users/:user_id Delete an user
  * @apiName DeleteUser
@@ -3943,6 +4005,64 @@ module.exports = {
 				});
 			routerPublic.route('/users/:user_id([0-9]+)')
 			/**
+ * @api {get} public/users/:user_id View user details (public)
+ * @apiName GetUser
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission public
+ *
+ * @apiSuccess {String} data/login User's login
+ * @apiSuccess {String} data/nickname User's nickname
+ * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
+ * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
+ * @apiSuccess {Number} data/flag_admin Is the user Admin ?
+ * @apiSuccess {Number} data/flag_online Is the user an online account ?
+ * @apiSuccess {Number} data/type Type of account (1 = user, 2 = guest)
+ * @apiSuccess {Number} data/last_login Last login time in UNIX timestamp.
+ * @apiSuccess {Number} data/user_id User's ID in the database
+ * @apiSuccess {String} data/url User's URL in its profile
+ * @apiSuccess {String} data/bio User's bio
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_nickname": "Administrator",
+ *           "avatar_file": "",
+ *           "flag_admin": 1,
+ *           "flag_online": 0,
+ *           "type": 1,
+ *           "last_login": 0,
+ *           "login": "admin",
+ *           "nickname": "Administrator",
+ *           "user_id": 1,
+ * 			 "url": null,
+ * 			 "bio": null,
+ *       },
+ *   ]
+ * }
+ * @apiError USER_VIEW_ERROR Unable to view user details
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_VIEW_ERROR",
+ *   "message": null
+ * }
+ */
+				.get((req,res) => {
+					user.findUserByID(req.params.user_id, {public:true})
+						.then((userdata) => {
+							res.json(OKMessage(userdata));
+						})
+						.catch(function(err){
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('USER_VIEW_ERROR',err));
+						});						
+				})
+			/**
  * @api {put} admin/users/:user_id Edit a user
  * @apiName EditUser
  * @apiVersion 2.1.0
@@ -3980,7 +4100,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(upload.single('avatarfile'), function(req,res){
+				.put(upload.single('avatarfile'), requireAuth, requireAdminOrOwn, function(req,res){
 					req.check({
 						'login': {
 							in: 'body',

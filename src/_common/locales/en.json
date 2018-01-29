@@ -262,5 +262,6 @@
 	"USER_NOT_EXISTS": "User %s does not exist!",
 	"USER_LIST_ERROR": "Unable to list users",
 	"USER_UPDATED": "%s's profile updated",
-	"USER_UPDATE_ERROR": "Failed to update %s's profile"
+	"USER_UPDATE_ERROR": "Failed to update %s's profile",
+	"USER_VIEW_ERROR": "Unable to view user's profile"
 } 
