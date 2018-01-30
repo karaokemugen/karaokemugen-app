@@ -131,7 +131,8 @@ export function hashPassword(password) {
 export async function checkPassword(username,password) {
 	const hashedPassword = hashPassword(password);
 	const user = await findUserByName(username, {public:false});
-	if (user.password === hashedPassword) return true;
+	// Access is granted only if passwords match OR user type is 2 (guest)
+	if (user.password === hashedPassword || user.type === 2) return true;
 	return false;
 }
 

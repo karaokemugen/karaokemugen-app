@@ -19,7 +19,7 @@ module.exports = function authController(router) {
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
  * @apiHeader {String} charset Must be `UTF-8`
  * @apiParam {String} username Login name for the user
- * @apiParam {String} password Password for the user
+ * @apiParam {String} password Password for the user. Can be empty if user is a guest.
  * @apiSuccess {String} token Identification token for this session
  * @apiSuccess {String} username Username logged in
  * @apiSuccess {String} role Role of this user (`user` or `admin`)
@@ -37,7 +37,7 @@ module.exports = function authController(router) {
  * HTTP/1.1 401 Unauthorized
  */
 		const config = getConfig();
-
+		if (!req.body.password) req.body.password = '';
 		checkUserName(req.body.username)
 			.then((exists) => {
 				if (exists) {
@@ -65,14 +65,13 @@ module.exports = function authController(router) {
 							} else {
 								const err = {
 									code: 'LOG_ERROR',
-									message: 'Incorrect credentials PWD',
+									message: 'Incorrect credentials',
 									data: {
 									}
 								};
 								res.status(401).send(err);
 							}
 						});
-					
 				} else {
 					const err = {
 						code: 'LOG_ERROR',
