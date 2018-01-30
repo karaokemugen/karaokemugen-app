@@ -94,6 +94,7 @@ async function replaceAvatar(oldImageFile,avatar) {
 
 export async function findUserByName(username, opt) {
 	//Check if user exists in db
+	if (!opt) opt = {};
 	const userdata = await db.getUserByName(username);
 	if (userdata) {
 		if (!userdata.bio) userdata.bio = null;
@@ -158,6 +159,10 @@ export async function addUser(user) {
 		logger.error(`[User] Unable to create user ${user.login} : ${err}`);
 		throw ret;
 	}
+}
+
+export function checkUserNameExists(username) {
+	return db.checkUserNameExists(username);	
 }
 
 export async function deleteUser(username) {

@@ -582,7 +582,7 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 				.delete(requireAuth, requireAdmin, function(req,res){					
-					user.deleteUser(req.params.username)
+					user.deleteUser(req.params.user_id)
 						.then(function(){
 							module.exports.emitEvent('usersUpdated');
 							res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.user_id));

@@ -14,10 +14,9 @@ export const requireAdmin = (req, res, next) => {
 };
 export const requireAdminOrOwn = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
-	const targetUserID = req.params.user_id;
 	findUserByName(token.username)
 		.then((userdata) => {
-			if (token.role === 'admin' || targetUserID === userdata.id ) {
+			if (token.role === 'admin' || req.params.username === userdata.login ) {
 				next();
 			} else {
 				res.status(403).send('Only admin or authorized user can use this function');

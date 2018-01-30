@@ -1,16 +1,16 @@
 import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {isAdmin, updateLastLoginName} from '../_common/utils/user';
+import {isAdmin, updateLastLoginName, checkUserNameExists} from '../_common/utils/user';
 const logger = require('winston');
 
 module.exports = function authController(router) {
 
-	const requireLogin = passport.authenticate('local', { session: false });
+	//const requireLogin = passport.authenticate('local', { session: false });
 	const requireAuth = passport.authenticate('jwt', { session: false });
 
-	router.post('/login', requireLogin, (req, res) => {
-/**
+	router.post('/login', (req, res) => {
+		/**
  * @api {post} /auth/login Login / Sign in
  * @apiName AuthLogin
  * @apiVersion 2.1.0
@@ -18,7 +18,7 @@ module.exports = function authController(router) {
  * @apiPermission public
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
  * @apiHeader {String} charset Must be `UTF-8`
- * @apiParam {String} login Login name for the user
+ * @apiParam {String} username Login name for the user
  * @apiParam {String} password Password for the user
  * @apiSuccess {String} token Identification token for this session
  * @apiSuccess {String} username Username logged in
@@ -32,31 +32,45 @@ module.exports = function authController(router) {
  *   "role": "admin"
  * }
  * @apiError 401 Unauthorized
- *
+ *  
  * @apiErrorExample Error-Response:
  * HTTP/1.1 401 Unauthorized
  */
 		const config = getConfig();
 
-		getRole(req.body.username)
-			.then(role =>
-				res.send({
-					token: createJwtToken(req.body.username, role, config),
-					username: req.body.username,
-					role: role
-				})
-			).catch( err => {
-				logger.error('getRole : ' + err);
-				err = {
-					code: 'LOG_ERROR',
-					message: err,
-					data: {
+		checkUserName(req.body.username)
+			.then((exists) => {
+				if (exists) {
+					getRole(req.body.username)
+						.then(role =>
+							res.send({
+								token: createJwtToken(req.body.username, role, config),
+								username: req.body.username,
+								role: role
+							})
+						).catch( err => {
+							logger.error('getRole : ' + err);
+							err = {
+								code: 'LOG_ERROR',
+								message: err,
+								data: {
 						
-					}
-				};
-				res.status(500).send(err);
-			});
-		updateLastLoginName(req.body.username);
+								}
+							};
+							res.status(500).send(err);
+						});
+					updateLastLoginName(req.body.username);
+				} else {
+					const err = {
+						code: 'LOG_ERROR',
+						message: 'Incorrect credentials',
+						data: {
+						
+						}
+					};	
+					res.status(401).send(err);
+				}
+			});			
 	});
 
 	router.get('/checkauth', requireAuth, (req, res) => {
@@ -76,6 +90,10 @@ function createJwtToken(username, role, config) {
 function decodeJwtToken(token, config) {
 	const conf = config || getConfig();
 	return decode(token, conf.JwtSecret);
+}
+
+async function checkUserName(username) {
+	return await checkUserNameExists(username);
 }
 
 async function getRole(username) {
