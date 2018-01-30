@@ -493,14 +493,15 @@ module.exports = {
 							res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 						});
 				});
-			routerAdmin.route('/users/:user_id([0-9]+)')
+			routerAdmin.route('/users/:username')
 			/**
- * @api {get} admin/users/:user_id View user details (admin)
+ * @api {get} admin/users/:username View user details (admin)
  * @apiName GetUserAdmin
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission AdminOrOwn
  *
+ * @apiparam {String} username Username to get data from
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
  * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
@@ -546,7 +547,7 @@ module.exports = {
  * }
  */
 				.get(requireAuth, requireAdminOrOwn, (req,res) => {
-					user.findUserByID(req.params.user_id, {public:false})
+					user.findUserByName(req.params.username, {public:false})
 						.then((userdata) => {
 							res.json(OKMessage(userdata));
 						})
@@ -557,13 +558,13 @@ module.exports = {
 						});						
 				})
 			/**
- * @api {delete} admin/users/:user_id Delete an user
+ * @api {delete} admin/users/:username Delete an user
  * @apiName DeleteUser
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission admin
  *
- * @apiParam {Number} user_id User ID to delete
+ * @apiParam {Number} username Username to delete
  * @apiSuccess {String} args ID of user deleted
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of user deleted
@@ -581,7 +582,7 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 				.delete(requireAuth, requireAdmin, function(req,res){					
-					user.deleteUser(req.params.user_id)
+					user.deleteUser(req.params.username)
 						.then(function(){
 							module.exports.emitEvent('usersUpdated');
 							res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.user_id));
@@ -3969,15 +3970,15 @@ module.exports = {
 							res.json(errMessage('GUEST_LIST_ERROR',err));
 						});
 				});
-			routerPublic.route('/users/:user_id([0-9]+)/lastlogin')
+			routerPublic.route('/users/:username/lastlogin')
 			/**
- * @api {put} public/users/:user_id/lastlogin List users
+ * @api {put} public/users/:user_id/lastlogin Force last login time update
  * @apiName PutUsersLastLogin
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission public
  *
- * @apiParam {Number} user_id ID of user to check in
+ * @apiParam {String} username Name of user to check in
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
@@ -3994,23 +3995,24 @@ module.exports = {
  * }
  */
 				.put(function(req,res){
-					user.updateLastLogin(req.params.user_id)
+					user.updateLastLoginName(req.params.username)
 						.then(function(){
-							OKMessage(null,'USER_CHECKED_IN',req.params.user_id);
+							OKMessage(null,'USER_CHECKED_IN',req.params.username);
 						})
 						.catch(function(err){
 							res.statusCode = 500;
 							errMessage('USER_CHECK_ERROR',err.message);
 						});
 				});
-			routerPublic.route('/users/:user_id([0-9]+)')
+			routerPublic.route('/users/:username')
 			/**
- * @api {get} public/users/:user_id View user details (public)
+ * @api {get} public/users/:username View user details (public)
  * @apiName GetUser
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission public
  *
+ * @apiParam {String} username Username to check details for.
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
  * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
@@ -4052,7 +4054,7 @@ module.exports = {
  * }
  */
 				.get((req,res) => {
-					user.findUserByID(req.params.user_id, {public:true})
+					user.findUserByName(req.params.username, {public:true})
 						.then((userdata) => {
 							res.json(OKMessage(userdata));
 						})
@@ -4063,13 +4065,13 @@ module.exports = {
 						});						
 				})
 			/**
- * @api {put} admin/users/:user_id Edit a user
+ * @api {put} admin/users/:username Edit a user
  * @apiName EditUser
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission adminOrOwn
  *
- * @apiParam {Number} user_id User ID to edit
+ * @apiParam {String} username Username to edit
  * @apiParam {String} login New login for user
  * @apiParam {String} nickname New nickname for user
  * @apiParam {String} [password] New password. Can be empty (password won't be changed then)

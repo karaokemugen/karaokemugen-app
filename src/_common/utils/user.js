@@ -160,25 +160,26 @@ export async function addUser(user) {
 	}
 }
 
-export async function deleteUser(id) {
-	if (!await db.checkUserIDExists(id)) {
+export async function deleteUser(username) {
+	if (!await db.checkUserNameExists(username)) {
 		const ret = {
 			code: 'USER_NOT_EXISTS',
-			args: id
+			args: username
 		};
-		logger.error(`[User] User ${id} does not exist, unable to delete it`);
+		logger.error(`[User] User ${username} does not exist, unable to delete it`);
 		throw ret;
 	}
 	try {
-		await db.deleteUser(id);
-		logger.info(`[User] Deleted user ${id}`);
+		const user = await findUserByName(username);
+		await db.deleteUser(user.id);
+		logger.info(`[User] Deleted user ${username} (id ${user.id})`);
 		return true;
 	} catch (err) {
 		const ret = {
 			code: 'USER_DELETE_ERROR',
 			data: err
 		};
-		logger.error(`[User] Unable to delete user ${id} : ${err}`);
+		logger.error(`[User] Unable to delete user ${username} : ${err}`);
 		throw ret;
 	}
 }
