@@ -1,12 +1,12 @@
 import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {isAdmin, updateLastLoginName, checkUserNameExists} from '../_common/utils/user';
+import {checkPassword, isAdmin, updateLastLoginName, checkUserNameExists} from '../_common/utils/user';
 const logger = require('winston');
 
 module.exports = function authController(router) {
 
-	//const requireLogin = passport.authenticate('local', { session: false });
+	const requireLogin = passport.authenticate('local', { session: false });
 	const requireAuth = passport.authenticate('jwt', { session: false });
 
 	router.post('/login', (req, res) => {
@@ -41,25 +41,38 @@ module.exports = function authController(router) {
 		checkUserName(req.body.username)
 			.then((exists) => {
 				if (exists) {
-					getRole(req.body.username)
-						.then(role =>
-							res.send({
-								token: createJwtToken(req.body.username, role, config),
-								username: req.body.username,
-								role: role
-							})
-						).catch( err => {
-							logger.error('getRole : ' + err);
-							err = {
-								code: 'LOG_ERROR',
-								message: err,
-								data: {
-						
-								}
-							};
-							res.status(500).send(err);
+					checkPassword(req.body.username,req.body.password)
+						.then((valid) => {
+							if (valid) {
+								getRole(req.body.username)							
+									.then(role =>
+										res.send({
+											token: createJwtToken(req.body.username, role, config),
+											username: req.body.username,
+											role: role
+										})
+									).catch( err => {
+										logger.error('getRole : ' + err);
+										err = {
+											code: 'LOG_ERROR',
+											message: err,
+											data: {
+											}
+										};
+										res.status(500).send(err);
+									});
+								updateLastLoginName(req.body.username);
+							} else {
+								const err = {
+									code: 'LOG_ERROR',
+									message: 'Incorrect credentials PWD',
+									data: {
+									}
+								};
+								res.status(401).send(err);
+							}
 						});
-					updateLastLoginName(req.body.username);
+					
 				} else {
 					const err = {
 						code: 'LOG_ERROR',
