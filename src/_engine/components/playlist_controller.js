@@ -1700,6 +1700,8 @@ module.exports = {
 	* If no position is provided, it will be maximum position in playlist + 1
 	*/
 	addKaraToPlaylist:function(karas,requester,playlist_id,pos) {
+	var userMaxPosition, numUsersInPlaylist, playlistMaxPos;
+
 		// Karas is an array of kara_ids.
 		return new Promise(function(resolve,reject){
 			var NORM_requester = L.deburr(requester);
@@ -1726,6 +1728,41 @@ module.exports = {
 						logger.error('[PLC] isPlaylist : '+err);
 						reject(err);
 					});
+			});
+			var pMeasurePos = new Promise((resolve,reject) => {
+                plDB.getMaxPosInPlaylistForPseudo(playlist_id, requester)
+						  .then(function(maxpos){
+                                userMaxPosition = maxpos;
+						        resolve(true);
+                           })
+					.catch(function(err) {
+						err = 'Playlist '+playlist_id+' unknown';
+						logger.error('[PLC] getMaxPosInPlaylistForPseudo : '+err);
+						reject(err);
+					});
+
+                plDB.countPlaylistUsers(playlist_id)
+						  .then(function(numUsers){
+                                numUsersInPlaylist = numUsers;
+						        resolve(true);
+                           })
+					.catch(function(err) {
+						err = 'Playlist '+playlist_id+' unknown';
+						logger.error('[PLC] countPlaylistUsers : '+err);
+						reject(err);
+					});
+
+
+				plDB.getMaxPosInPlaylist(playlist_id)
+					.then(function(maxpos){
+                                playlistMaxPos = maxpos;
+						        resolve(true);
+					})
+					.catch(function(err){
+						logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
+						reject(err);
+					});
+
 			});
 			var pIsKara = new Promise((resolve,reject) => {
 				// Need to do this for each karaoke.
@@ -1772,14 +1809,14 @@ module.exports = {
 				});
 				
 			});
-			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist])
+			Promise.all([pIsKara,pIsPlaylist,pIsKaraInPlaylist,pMeasurePos])
 				.then(function(){
 					
 					if (karaList.length === 0) {
 						var err = 'No karaoke could be added, all are in destination playlist already (PLID : '+playlist_id+')';
 						logger.error('[PLC] addKaraToPlaylist : '+err);
 						reject(err);
-					} else {	
+					} else { 
 						var pManagePos = new Promise((resolve,reject) => {
 							// If pos is provided, we need to update all karas above that and add 
 							// karas.length to the position
@@ -1789,12 +1826,28 @@ module.exports = {
 							module.exports.getPlaylistContents(playlist_id)
 								.then((playlist) => {
 									// Browse Playlist to find out flag_playing. 
+									var playingObject = module.exports.playingPos(playlist);
+                                    var playingPos = playingObject ? playingObject.plc_id_pos : 0;
+
+                                    if (module.exports.SETTINGS.EngineSmartInsert == 1) {
+                                        // No songs yet from that user, they go first.
+                                        if(userMaxPosition == null){
+                                            pos = -1;
+                                        // No songs enqueued in the future, they go first.
+                                        } else if(userMaxPosition < playingPos){
+                                            pos = -1;
+                                        // Everyone is in the queue, we will leave an empty spot for each user and place ourselves next.
+                                        } else {
+                                            pos = Math.min(playlistMaxPos +1, userMaxPosition + numUsersInPlaylist);
+                                        }
+                                    }
+                                    
 									if (pos == -1) {
 
 										// Find out position of currently playing karaoke
 										// If no flag_playing is found, we'll add songs at the end of playlist.
-										pos = module.exports.playingPos(playlist) + 1;
-										logger.debug('[PLC] PlayNext : flag_playing next found at position '+pos.plc_id_pos);	
+										pos = playingPos + 1;
+										logger.debug('[PLC] PlayNext : flag_playing next found at position '+pos);	
 									}
 									if (pos) {
 										logger.debug('[PLC] Shifting position in playlist from pos '+pos+' by '+karas.length+' positions');
@@ -1811,21 +1864,11 @@ module.exports = {
 												reject(err);
 											});
 									} else {								
-										var startpos;								
-										plDB.getMaxPosInPlaylist(playlist_id)
-											.then(function(res){
-												startpos = res.maxpos + 1.0;
-												karaList.forEach(function(kara,index){
-													karaList[index].pos = startpos+index;
-												});
-												resolve();
-											})
-											.catch(function(err){
-												logger.error('[PLC] DBI getMaxPosInPlaylist : '+err);
-												reject(err);
-											});
-									}			
-										
+										var startpos = playlistMaxPos + 1.0;
+										karaList.forEach(function(kara,index){
+											karaList[index].pos = startpos+index;
+										});
+									}
 
 								})
 								.catch((err) => {

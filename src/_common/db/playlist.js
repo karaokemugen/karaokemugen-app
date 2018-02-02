@@ -322,3 +322,12 @@ export const unsetPlaying = `UPDATE playlist_content
 export const setPlaying = `UPDATE playlist_content 
 						SET flag_playing = 1 
 						WHERE pk_id_plcontent = $playlistcontent_id;`;
+
+export const countPlaylistUsers = `SELECT COUNT(DISTINCT pseudo_add) AS NumberOfUsers
+                            FROM playlist_content
+                            WHERE fk_id_playlist = $playlist_id;`;
+
+export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
+                                        FROM playlist_content
+                                        WHERE fk_id_playlist = $playlist_id
+                                            AND pseudo_add = $pseudo_add;`;

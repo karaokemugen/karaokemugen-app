@@ -178,3 +178,14 @@ export async function unsetPlaying(playlist_id) {
 export async function setPlaying(plc_id) {
 	return await getUserDb().run(sql.setPlaying, { $playlistcontent_id: plc_id });
 }
+export async function countPlaylistUsers(playlist_id){
+    return await getUserDb().run(sql.countPlaylistUsers, { $playlist_id: playlist_id });
+}
+
+export async function getMaxPosInPlaylistForPseudo(playlist_id,pseudo){
+    return await getUserDb().run(sql.getMaxPosInPlaylistForPseudo,
+        {
+            $playlist_id: playlist_id,
+            $pseudo_add: pseudo
+        });
+}
