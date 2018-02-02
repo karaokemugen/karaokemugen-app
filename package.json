@@ -39,7 +39,8 @@
     "Florent Berthelot <florentius.b@gmail.com> (@Aeden_)",
     "lukino <LukinoProg@gmail.com>",
     "Benoît Courtine <benoit.courtine@gmail.com>",
-    "Lua <deformer.lua@gmail.com>"
+    "Lua <deformer.lua@gmail.com>",
+	"mirukyu <A13x7950@gmail.com>"
   ],
   "engines": {
     "node": ">=8.0.0"
