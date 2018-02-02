@@ -155,6 +155,7 @@
 	"PLAYLIST_ADD": "Créer une liste de lecture",
 	"MESSAGE": "Passer un message",
 	"ENGINEREPEATPLAYLIST": "Répéter playlist",
+	"ENGINEENABLESMARTINSERT": "Activer l'insertion intelligente pour éviter les monopoles",
 	"ENGINEAUTOPLAY": "Lecture automatique sur 1er ajout",
 	"ENGINEJINGLESINTERVAL": "Intervalle entre jingles (karas)",
 	"ENGINEDISPLAYCONNECTIONINFOQRCODE": "Afficher QR code",
