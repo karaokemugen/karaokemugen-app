@@ -6,7 +6,6 @@ const logger = require('winston');
 
 module.exports = function authController(router) {
 
-	const requireLogin = passport.authenticate('local', { session: false });
 	const requireAuth = passport.authenticate('jwt', { session: false });
 
 	router.post('/login', (req, res) => {
