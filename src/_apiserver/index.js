@@ -1325,6 +1325,7 @@ module.exports = {
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
  *       "EngineRepeatPlaylist": "0",
+ *       "EngineSmartInsert": "1",
  *       "EngineSongsPerUser": "10000",
  *       "PathAltname": "../times/series_altnames.csv",
  *       "PathBackgrounds": "app/backgrounds",
@@ -1382,6 +1383,7 @@ module.exports = {
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
  * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
  * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
+ * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
@@ -1465,6 +1467,11 @@ module.exports = {
 							notEmpty: true,
 							isInt: true,
 						},
+						'EngineSmartInsert': {
+							in: 'body',
+							notEmpty: true,
+							isInt: true,
+						},
 						'EngineAutoPlay': {
 							in: 'body',
 							notEmpty: true,
@@ -1537,6 +1544,7 @@ module.exports = {
 							req.sanitize('EngineDisplayConnectionInfoHost').unescape();
 							req.sanitize('EngineAutoPlay').toInt();
 							req.sanitize('EngineRepeatPlaylist').toInt();
+							req.sanitize('EngineSmartInsert').toInt();
 							req.sanitize('EngineJinglesInterval').toInt();
 							req.sanitize('PlayerFullscreen').toInt();
 							req.sanitize('PlayerNoBar').toInt();
@@ -2786,6 +2794,7 @@ module.exports = {
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
  *       "EngineRepeatPlaylist": "0",
+ *       "EngineSmartInsert": "1",
  *       "EngineSongsPerUser": "10000",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
