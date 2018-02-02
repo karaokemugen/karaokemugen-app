@@ -142,6 +142,7 @@
 	"PLAYERNOBAR": "Hide progress bar",
 	"PLAYERNOHUD": "Hide OSD",
 	"ENGINEREPEATPLAYLIST": "Repeat playlist",
+	"ENGINEENABLESMARTINSERT": "Activates the smart insert of songs to avoid monopolies",
 	"ENGINEAUTOPLAY": "Autoplay on next song added",
 	"ENGINEJINGLESINTERVAL": "Number of songs between jingles",
 	"ENGINEDISPLAYCONNECTIONINFOQRCODE": "Show QR code",
