@@ -54,6 +54,9 @@ EngineAutoPlay = 0
 ; RepeatPlaylist : when at the end of playlist, go back to position 1 and keep playing.
 EngineRepeatPlaylist = 0
 
+; SmartInsert : gives priority to people who have not enqueued a lot of songs.
+EngineSmartInsert = 1
+
 ; Number of songs between two jingles/eyecatches. 0 to disable.
 ; 20 songs = about 30 minutes of openings/endings.
 EngineJinglesInterval = 20
