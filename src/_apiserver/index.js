@@ -11,19 +11,7 @@ import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager.js';
 import authController from '../_controllers/auth';
 import {requireAuth, requireAdminOrOwn, requireAdmin} from '../_controllers/passport_manager.js';
-/*
-// OLD AUTH SYSTEM. Reenabled for some tests
-function AdminPasswordAuth(username, password){
-	return password === module.exports.SETTINGS.AdminPassword;
-}
 
-function getUnauthorizedResponse(req) {
-	return req.auth ?
-		('Credentials ' + req.auth.user + ':' + req.auth.password + ' rejected') :
-		'No credentials provided';
-}
-// OLD AUTH SYSTEM END
-*/
 function numberTest(element) {
 	if (isNaN(element)) {
 		return false;
@@ -111,22 +99,7 @@ module.exports = {
 			routerAdmin.use(passport.initialize());
 			configurePassport();
 			authController(routerAdmin);
-			
-			
 
-			/*
-			// OLD AUTH SYSTEM
-			routerAdmin.use(basicAuth({ 
-				authorizer: AdminPasswordAuth,
-				challenge: true,
-				realm: 'Karaoke Mugen Admin',
-				unauthorizedResponse: getUnauthorizedResponse
-			}));		
-			// OLD AUTH SYSTEM END
-			routerAdmin.use(function(req,res,next) {
-				next();
-			});			
-*/
 			routerPublic.use(function(req, res, next) {
 				// do logging
 				//logger.info('API_LOG',req)
@@ -158,7 +131,11 @@ module.exports = {
 			// Admin routes
 			/**
  * @apiDefine admin Admin access only
- * Requires authorization (HTTP basic-auth) to use this API
+ * Requires authorization token from admin user to use this API
+ */
+			/**
+ * @apiDefine adminorown Admin access or own user only
+ * Requires authorization token from either admin user or the user the data belongs to to use this API
  */
 			/**
  * @apiDefine public Public access
