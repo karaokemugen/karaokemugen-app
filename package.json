@@ -40,7 +40,7 @@
     "lukino <LukinoProg@gmail.com>",
     "Benoît Courtine <benoit.courtine@gmail.com>",
     "Lua <deformer.lua@gmail.com>",
-	"mirukyu <A13x7950@gmail.com>"
+    "mirukyu <A13x7950@gmail.com>"
   ],
   "engines": {
     "node": ">=8.0.0"
@@ -121,7 +121,6 @@
     "chai": "^4.1.2",
     "eslint": "^4.11.0",
     "eslint-plugin-react": "^7.4.0",
-    "jsdoc": "^3.5.4",
     "mocha": "^3.5.0",
     "pkg": "^4.2.6",
     "supertest": "^3.0.0"
