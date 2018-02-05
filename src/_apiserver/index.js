@@ -5,12 +5,13 @@ const bodyParser = require('body-parser');
 const user = require('../_common/utils/user.js');
 const path = require('path');
 const multer = require('multer');
-
 // NEW AUTH SYSTEM.
+import {getConfig} from '../_common/utils/config';
+import {decode} from 'jwt-simple';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager.js';
 import authController from '../_controllers/auth';
-import {requireAuth, requireAdminOrOwn, requireAdmin} from '../_controllers/passport_manager.js';
+import {requireAuth, requireAdmin} from '../_controllers/passport_manager.js';
 
 function numberTest(element) {
 	if (isNaN(element)) {
@@ -97,8 +98,8 @@ module.exports = {
 
 			// NEW AUTH SYSTEM
 			routerAdmin.use(passport.initialize());
+			routerPublic.use(passport.initialize());
 			configurePassport();
-			authController(routerAdmin);
 
 			routerPublic.use(function(req, res, next) {
 				// do logging
@@ -136,6 +137,10 @@ module.exports = {
 			/**
  * @apiDefine adminorown Admin access or own user only
  * Requires authorization token from either admin user or the user the data belongs to to use this API
+ */
+			/**
+ * @apiDefine own Own user only
+ * Requires authorization token from the user the data belongs to to use this API
  */
 			/**
  * @apiDefine public Public access
@@ -523,7 +528,7 @@ module.exports = {
  *   "message": null
  * }
  */
-				.get(requireAuth, requireAdminOrOwn, (req,res) => {
+				.get(requireAuth, requireAdmin, (req,res) => {
 					user.findUserByName(req.params.username, {public:false})
 						.then((userdata) => {
 							res.json(OKMessage(userdata));
@@ -2474,7 +2479,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					// Get list of playlists, only return the visible ones
 					var seenFromUser = true;
 					module.exports.onPlaylists(seenFromUser)
@@ -2527,7 +2532,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					// Get playlist, only if visible
 					//Access :pl_id by req.params.pl_id
 					// This get route gets infos from a playlist
@@ -2619,7 +2624,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					// Get playlist contents, only if visible
 					//Access :pl_id by req.params.pl_id					
 					var filter = req.query.filter;
@@ -2754,7 +2759,7 @@ module.exports = {
  * }
  */
 
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					var seenFromUser = true;
 					module.exports.onPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
 						.then(function(kara){
@@ -2812,7 +2817,7 @@ module.exports = {
  *   }
  * }
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					//We don't want to return all settings.
 					var settings = {};
 					for (var key in module.exports.SETTINGS) {
@@ -2856,7 +2861,7 @@ module.exports = {
  *    }
  * } 
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					module.exports.onStats()
 						.then(function(stats){
 							res.json(OKMessage(stats));
@@ -2939,7 +2944,7 @@ module.exports = {
  *   "code": "WL_VIEW_FORBIDDEN"
  * }
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					//Returns whitelist IF the settings allow public to see it
 					if (module.exports.SETTINGS.EngineAllowViewWhitelist == 1) {
 						var lang = req.query.lang;
@@ -3042,7 +3047,7 @@ module.exports = {
  *   "code": "BL_VIEW_FORBIDDEN"
  * }
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					//Get list of blacklisted karas IF the settings allow public to see it
 					if (module.exports.SETTINGS.EngineAllowViewBlacklist == 1) {
 						var lang = req.query.lang;
@@ -3109,7 +3114,7 @@ module.exports = {
  *   "code": "BLC_VIEW_FORBIDDEN"
  * }
  */		
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					//Get list of blacklist criterias IF the settings allow public to see it
 					if (module.exports.SETTINGS.EngineAllowViewBlacklistCriterias == 1) {
 						module.exports.onBlacklistCriterias()
@@ -3174,7 +3179,7 @@ module.exports = {
  *   "code": "PLAYER_STATUS_ERROR"
  * }
  */		
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					// Get player status
 					// What's playing, time in seconds, duration of song
 
@@ -3261,7 +3266,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					// if the query has a &filter=xxx
 					// then the playlist returned gets filtered with the text.
 					var filter = req.query.filter;
@@ -3310,7 +3315,7 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					module.exports.onKaraRandom(req.query.filter)
 						.then(function(kara_id){
 							if (!kara_id) {
@@ -3413,7 +3418,7 @@ module.exports = {
  *   "message": "PLCID unknown!"
  * }
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					module.exports.onKaraSingle(req.params.kara_id,req.query.lang)
 						.then(function(kara){							
 							res.json(OKMessage(kara));
@@ -3473,7 +3478,7 @@ module.exports = {
  *   "message": "User quota reached"
  * }
  */
-				.post(function(req,res){
+				.post(requireAuth, function(req,res){
 					// Add Kara to the playlist currently used depending on mode
 					req.check({
 						'requestedby': {
@@ -3529,7 +3534,7 @@ module.exports = {
  *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
  * }
  */			
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					module.exports.onKaraSingleLyrics(req.params.kara_id)
 						.then(function(kara){							
 							res.json(OKMessage(kara));
@@ -3580,7 +3585,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					// Get current Playlist
 
 					module.exports.onPlaylistCurrentInfo()
@@ -3672,7 +3677,7 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					// Get current Playlist
 					var lang = req.query.lang;
 					var filter = req.query.filter;
@@ -3740,7 +3745,7 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					// Get current Playlist
 					module.exports.onPlaylistPublicInfo()
 						.then(function(playlist){
@@ -3831,7 +3836,7 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					// Get public Playlist
 					var lang = req.query.lang;
 					var filter = req.query.filter;
@@ -3901,7 +3906,7 @@ module.exports = {
 			* @apiErrorExample Error-Response:
 			* HTTP/1.1 500 Internal Server Error
 			*/
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					module.exports.onTags(req.query.lang)
 						.then(function(tags){
 							res.json(OKMessage(tags));
@@ -3980,7 +3985,7 @@ module.exports = {
  *   "message": null
  * }
  */
-				.put(function(req,res){
+				.put(requireAuth, function(req,res){
 					user.updateLastLoginName(req.params.username)
 						.then(function(){
 							OKMessage(null,'USER_CHECKED_IN',req.params.username);
@@ -4039,7 +4044,7 @@ module.exports = {
  *   "message": null
  * }
  */
-				.get((req,res) => {
+				.get(requireAuth, (req,res) => {
 					user.findUserByName(req.params.username, {public:true})
 						.then((userdata) => {
 							res.json(OKMessage(userdata));
@@ -4055,7 +4060,7 @@ module.exports = {
  * @apiName EditUser
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission adminOrOwn
+ * @apiPermission admin
  *
  * @apiParam {String} username Username to edit
  * @apiParam {String} login New login for user
@@ -4088,7 +4093,7 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(upload.single('avatarfile'), requireAuth, requireAdminOrOwn, function(req,res){
+				.put(upload.single('avatarfile'), requireAuth, requireAdmin, function(req,res){
 					req.check({
 						'login': {
 							in: 'body',
@@ -4146,6 +4151,169 @@ module.exports = {
 						});
 
 				});
+			routerPublic.route('/myaccount')
+			/**
+ * @api {get} public/myaccount View own user details
+ * @apiName GetMyAccount
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission Own
+ *
+ * @apiSuccess {String} data/login User's login
+ * @apiSuccess {String} data/nickname User's nickname
+ * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
+ * @apiSuccess {String} [data/avatar_file] Directory and name of avatar image file. Can be empty if no avatar has been selected.
+ * @apiSuccess {Number} data/flag_admin Is the user Admin ?
+ * @apiSuccess {Number} data/flag_online Is the user an online account ?
+ * @apiSuccess {Number} data/type Type of account (1 = user, 2 = guest)
+ * @apiSuccess {Number} data/last_login Last login time in UNIX timestamp.
+ * @apiSuccess {Number} data/user_id User's ID in the database
+ * @apiSuccess {String} data/url User's URL in its profile
+ * @apiSuccess {String} data/fingerprint User's fingerprint
+ * @apiSuccess {String} data/bio User's bio
+ * @apiSuccess {String} data/email User's email
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_nickname": "Administrator",
+ *           "avatar_file": "",
+ *           "flag_admin": 1,
+ *           "flag_online": 0,
+ *           "type": 1,
+ *           "last_login": 0,
+ *           "login": "admin",
+ *           "nickname": "Administrator",
+ *           "user_id": 1,
+ * 			 "url": null,
+ * 			 "email": null,
+ * 			 "bio": null,
+ * 			 "fingerprint": null
+ *       },
+ *   ]
+ * }
+ * @apiError USER_VIEW_ERROR Unable to view user details
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_VIEW_ERROR",
+ *   "message": null
+ * }
+ */
+				.get(requireAuth, (req,res) => {
+					const token = decode(req.get('authorization'), getConfig().JwtSecret);
+					user.findUserByName(token.username, {public:false})
+						.then((userdata) => {
+							res.json(OKMessage(userdata));
+						})
+						.catch(function(err){
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('USER_VIEW_ERROR',err));
+						});						
+				})
+			/**
+ * @api {put} public/myaccount Get/Edit your own account
+ * @apiName EditOwnUser
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission own
+ *
+ * @apiParam {String} login New login for user
+ * @apiParam {String} nickname New nickname for user
+ * @apiParam {String} [password] New password. Can be empty (password won't be changed then)
+ * @apiParam {String} [bio] User's bio info. Can be empty.
+ * @apiParam {String} [email] User's mail. Can be empty.
+ * @apiParam {String} [url] User's URL. Can be empty.
+ * @apiSuccess {String} args ID of user deleted
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of user deleted
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "lol",
+ *   "code": "USER_UPDATED",
+ *   "data": {
+ *       "NORM_nickname": "lol",
+ *       "bio": "lol2",
+ *       "email": "lol3@lol.fr",
+ *       "id": "3",
+ *       "login": "test2",
+ *       "nickname": "lol",
+ *       "url": "http://lol4"
+ *   }
+ * }
+ * @apiError USER_UPDATE_ERROR Unable to edit user
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+				.put(upload.single('avatarfile'), requireAuth, function(req,res){
+					req.check({
+						'login': {
+							in: 'body',
+							notEmpty: true,
+						},
+						'nickname': {
+							in: 'body',
+							notEmpty: true,
+						},
+						'email': {
+							in: 'body',
+							optional: true,
+							isEmail: true
+						},
+						'url': {
+							in: 'body',
+							optional: true,
+							isURL: true
+						}					
+					});
+
+					req.getValidationResult()
+						.then(function(result){							
+							if (result.isEmpty()) {
+								// No errors detected
+								req.sanitize('bio').trim();
+								req.sanitize('email').trim();
+								req.sanitize('url').trim();
+								req.sanitize('nickname').trim();
+								req.sanitize('login').trim();
+								req.sanitize('bio').unescape();
+								req.sanitize('email').unescape();
+								req.sanitize('url').unescape();
+								req.sanitize('nickname').unescape();
+								req.sanitize('login').unescape();
+								//Now we add user
+								let avatar;
+								if (req.file) avatar = req.file;
+								//Get username
+								const token = decode(req.get('authorization'), getConfig().JwtSecret);
+								user.editUser(token.username,req.body,avatar)
+									.then(function(user){
+										module.exports.emitEvent('userUpdated',req.params.user_id);
+										res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
+									})
+									.catch(function(err){
+										res.statusCode = 500;
+										res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+									});
+								
+							} else {
+								// Errors detected
+								// Sending BAD REQUEST HTTP code and error object.
+								res.statusCode = 400;
+								res.json(result.mapped());
+							}
+						});
+
+				});
+
+
 
 			routerPublic.route('/users')
 			/**
@@ -4202,7 +4370,7 @@ module.exports = {
  *   "message": null
  * }
  */
-				.get(function(req,res){
+				.get(requireAuth, function(req,res){
 					user.listUsers()
 						.then(function(users){
 							res.json(OKMessage(users));
