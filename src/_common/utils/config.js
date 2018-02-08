@@ -1,20 +1,18 @@
 /** Centralized configuration management for Karaoke Mugen. */
 
 import {resolve} from 'path';
-import {parse} from 'ini';
+import {parse, stringify} from 'ini';
 import {sync} from 'os-locale';
 import i18n from 'i18n';
 import {address} from 'ip';
 import logger from 'winston';
 require('winston-daily-rotate-file');
-import {asyncExists, asyncReadFile, asyncRequired} from './files';
-import {emit} from './pubsub';
+import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
 
 /** Object containing all config */
 let config = {};
-
-export const CONFIG_UPDATED = 'CONFIG_UPDATED';
+let defaultConfig = {};
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
@@ -69,6 +67,7 @@ async function loadConfigFiles(appPath) {
 	const versionFile = resolve(__dirname, '../../VERSION');
 
 	await loadConfig(defaultConfigFile);
+	defaultConfig = config;
 	if (await asyncExists(overrideConfigFile)) {
 		await loadConfig(overrideConfigFile);
 	}
@@ -77,8 +76,9 @@ async function loadConfigFiles(appPath) {
 	}
 }
 
+
 async function loadConfig(configFile) {
-	logger.debug('[Config] Reading configuration file ' + configFile);
+	logger.debug(`[Config] Reading configuration file ${configFile}`);
 	await asyncRequired(configFile);
 	const content = await asyncReadFile(configFile, 'utf-8');
 	const parsedContent = parse(content);
@@ -101,10 +101,9 @@ export async function configureBinaries(config) {
 	logger.info('[Launcher] Checking if binaries are available');
 	const binaries = await checkBinaries(config);
 	setConfig(binaries);
-	
 }
 
-function configureHost() {
+export function configureHost() {
 	if (config.EngineDisplayConnectionInfoHost === '') {
 		config = {...config, osHost: address()};
 	} else {
@@ -118,8 +117,19 @@ function configureHost() {
  */
 export function setConfig(configPart) {
 	config = {...config, ...configPart};
-	emit(CONFIG_UPDATED);
+	updateConfig(config);
 	return getConfig();
+}
+
+export function updateConfig(newConfig) {
+	const forbiddenConfigPrefix = ['BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','app','os','EngineDefaultLocale'];
+	const filteredConfig = {};
+	Object.entries(newConfig).forEach(([k, v]) => {		
+		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))            
+			&& (newConfig[k] !== defaultConfig[k])
+            && (filteredConfig[k] = v);		
+	});
+	asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');	
 }
 
 /**

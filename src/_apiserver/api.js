@@ -1,12 +1,13 @@
 const express = require('express');
 const expressValidator = require('express-validator');
 const logger = require('winston');
-const bodyParser = require('body-parser');
-const user = require('../_common/utils/user.js');
-const path = require('path');
+import {setConfig, getConfig} from '../_common/utils/config';
+import {urlencoded, json} from 'body-parser';
+const user = require('../_services/user.js');
+import {resolve} from 'path';
 const multer = require('multer');
-// NEW AUTH SYSTEM.
-import {getConfig} from '../_common/utils/config';
+const engine = require('../_services/engine');
+import {emitWS} from '../_ws/websocket';
 import {decode} from 'jwt-simple';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager.js';
@@ -14,15 +15,11 @@ import authController from '../_controllers/auth';
 import {requireAuth, requireAdmin} from '../_controllers/passport_manager.js';
 
 function numberTest(element) {
-	if (isNaN(element)) {
-		return false;
-	} else {
-		return true;
-	}
+	if (isNaN(element)) return false;
+	return true;
 }
 
 function errMessage(code,message,args) {
-	//console.log(code+','+args+','+message);
 	return {
 		code: code,
 		args: args,
@@ -31,7 +28,6 @@ function errMessage(code,message,args) {
 }
 
 function OKMessage(data,code,args) {
-	//console.log(code+','+JSON.stringify(args)+','+JSON.stringify(data));
 	return {
 		code: code,
 		args: args,		
@@ -39,114 +35,87 @@ function OKMessage(data,code,args) {
 	};
 }
 
-module.exports = {
-	SYSPATH:null,
-	SETTINGS:null,
-	LISTEN:null,
-	_server:null,
-	_engine_states:{},
-	_local_states:{},
-	init:function() {
-		return new Promise(function(resolve){
-			if(module.exports.SYSPATH === null) {
-				logger.error('SysPath is null!');
-				process.exit();
-			}
-			if(module.exports.SETTINGS === null) {
-				logger.error('SETTINGS is null!');
-				process.exit();
-			}
-			if(module.exports.LISTEN === null) {
-				logger.error('LISTEN is null!');
-				process.exit();
-			}
-	
-			var app = express();
-			// Middleware for playlist and files import
-			var upload = multer({ dest: path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp)});
-
-			app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-			app.use(bodyParser.json());		
-			// Calling express validator with a custom validator, used for the player commands
-			// to check if they're from the allowed list.
-			// We use another custom validator to test for array of numbers
-			// used mainly with adding/removing lists of karaokes
-			app.use(expressValidator({
-				customValidators: {
-					enum: (input, options) => options.includes(input),
-					numbersArray: function(input) {
-						if (input) {
-							if (typeof input === 'string' && input.includes(',')) {
-								var array = input.split(',');
-								return array.some(numberTest);
-							} else {
-								return numberTest(input);
-							}
-						} else {
-							return false;
-						}
-
-					}
+export async function initAPIServer(listenPort) {
+	const conf = getConfig();
+	let app = express();
+	// Middleware for playlist and files import
+	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
+	app.use(urlencoded({ extended: true, limit: '50mb' }));
+	app.use(json());		
+	// Calling express validator with a custom validator, used for the player commands
+	// to check if they're from the allowed list.
+	// We use another custom validator to test for array of numbers
+	// used mainly with adding/removing lists of karaokes
+	app.use(expressValidator({
+		customValidators: {
+			enum: (input, options) => options.includes(input),
+			numbersArray: (input) => {
+				if (input) {
+					// Test if we get a single number or a list of comma separated numbers
+					if (typeof input === 'string' && input.includes(',')) {
+						let array = input.split(',');
+						return array.some(numberTest);
+					} 
+					return numberTest(input);
 				}
-			}));
-			var routerPublic = express.Router();
-			var routerAdmin = express.Router();
-			
-			app.listen(module.exports.LISTEN, function () {
-				logger.info('[API] API server is READY and listens on port '+module.exports.LISTEN);
-			});
+				return false;
+			}
+		}
+	}));
+	let routerPublic = express.Router();
+	let routerAdmin = express.Router();
+	
+	app.listen(listenPort, () => {
+		logger.info(`[API] API server is READY and listens on port ${listenPort}`);
+	});
 
-			// NEW AUTH SYSTEM
-			routerAdmin.use(passport.initialize());
-			routerPublic.use(passport.initialize());
-			configurePassport();
+	// Auth system
+	routerAdmin.use(passport.initialize());
+	configurePassport();
+	
+	routerPublic.use((req, res, next) => {
+		// do logging
+		//logger.info('API_LOG',req)
+		// Logging is disabled. Enable it if you need to trace some info
+		next(); // make sure we go to the next routes and don't stop here
+	});			
 
-			routerPublic.use(function(req, res, next) {
-				// do logging
-				//logger.info('API_LOG',req)
-				next(); // make sure we go to the next routes and don't stop here
-			});			
+	routerPublic.get('/', (req, res) => {
+		res.send('Karaoke Mugen API Server ready.');
+	});
 
-			routerPublic.get('/', function (req, res) {
-				res.send('Hello World!');
-			});
+	// Rules :
+	// version of the API is decided in the path
+	// Example : /v1/, /v2/, etc.
+	// We output JSON only.
 
-			// Rules :
-			// version of the API is decided in the path
-			// Example : /v1/, /v2/, etc.
-			// We output JSON only.
+	// Validators & sanitizers :
+	// https://github.com/chriso/validator.js
 
-			// Validators & sanitizers :
-			// https://github.com/chriso/validator.js
+	// Reminder of HTTP codes:
+	// 200 : OK
+	// 201 : CREATED
+	// 404 : NOT FOUND
+	// 400 : BAD REQUEST
+	// 500 : INTERNAL ERROR
+	// 403 : FORBIDDEN
 
-			// Reminder of HTTP codes:
-			// 200 : OK
-			// 201 : CREATED
-			// 404 : NOT FOUND
-			// 400 : BAD REQUEST
-			// 500 : INTERNAL ERROR
-			// 403 : FORBIDDEN
+	// In case of error, return the correct code and object 'error'
 
-			// In case of error, return the correct code and object 'error'
-
-			// Admin routes
-			/**
+	// Admin routes
+	/**
  * @apiDefine admin Admin access only
  * Requires authorization token from admin user to use this API
  */
-			/**
+	/**
  * @apiDefine adminorown Admin access or own user only
  * Requires authorization token from either admin user or the user the data belongs to to use this API
  */
-			/**
- * @apiDefine own Own user only
- * Requires authorization token from the user the data belongs to to use this API
- */
-			/**
+	/**
  * @apiDefine public Public access
  * This API does not require any authorization method and can be accessed from anyone.
  */
-			/**
+	/**
  * @api {post} admin/shutdown Shutdown the entire application
  * @apiDescription
  * Shutdowns application completely. Kind of a self-destruct button.
@@ -162,22 +131,22 @@ module.exports = {
  * "Shutdown in progress."
  * 
  */
-			routerAdmin.route('/shutdown')
-				.post(requireAuth, requireAdmin, function(req,res){
-					// Sends command to shutdown the app.
+	routerAdmin.route('/shutdown')
+		.post(requireAuth, requireAdmin, (req, res) => {
+			// Sends command to shutdown the app.
 
-					module.exports.onShutdown()
-						.then(function(){
-							res.json('Shutdown in progress');
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(err);
-						});
+			engine.shutdown()
+				.then(() => { 
+					res.json('Shutdown in progress'); 
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(err);
 				});
-			routerAdmin.route('/playlists')
-			/**
+		});
+	routerAdmin.route('/playlists')
+	/**
  * @api {get} admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
  * @apiGroup Playlists
@@ -210,19 +179,19 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(requireAuth, requireAdmin, function(req,res){
-					// Get list of playlists
-					module.exports.onPlaylists()
-						.then(function(playlists){
-							res.json(OKMessage(playlists));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;							
-							res.json(errMessage('PL_LIST_ERROR',err));
-						});
+		.get(requireAuth, requireAdmin, (req, res) => {
+			// Get list of playlists
+			engine.getAllPLs()
+				.then((playlists) => {
+					res.json(OKMessage(playlists));
 				})
-			/**
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;							
+					res.json(errMessage('PL_LIST_ERROR',err));
+				});
+		})
+	/**
  * @api {post} admin/playlists/ Create a playlist
  * @apiName PostPlaylist
  * @apiVersion 2.0.0
@@ -250,70 +219,70 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.post(requireAuth, requireAdmin, function(req,res){
-					
-				// Add playlist
-					req.check({
-						'name': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'flag_visible': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: {
-								errorMessage: 'Invalid visible flag (must be boolean)'
-							}
-						},
-						'flag_public': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: {
-								errorMessage: 'Invalid public flag (must be boolean)'
-							}
-						},
-						'flag_current': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: {
-								errorMessage: 'Invalid current flag (must be boolean)'
-							}
-						},
-					});
+		.post(requireAuth, requireAdmin, (req, res) => {
+			
+		// Add playlist
+			req.check({
+				'name': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'flag_visible': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: {
+						errorMessage: 'Invalid visible flag (must be boolean)'
+					}
+				},
+				'flag_public': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: {
+						errorMessage: 'Invalid public flag (must be boolean)'
+					}
+				},
+				'flag_current': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: {
+						errorMessage: 'Invalid current flag (must be boolean)'
+					}
+				},
+			});
 
-					req.getValidationResult()
-						.then(function(result){
-							if (result.isEmpty()) {
-								// No errors detected
-								req.sanitize('name').trim();
-								req.sanitize('name').unescape();
-								req.sanitize('flag_visible').toBoolean();
-								req.sanitize('flag_public').toBoolean();
-								req.sanitize('flag_current').toBoolean();
+			req.getValidationResult()
+				.then((result) => {
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('name').trim();
+						req.sanitize('name').unescape();
+						req.sanitize('flag_visible').toBoolean();
+						req.sanitize('flag_public').toBoolean();
+						req.sanitize('flag_current').toBoolean();
 
-								//Now we add playlist
-								module.exports.onPlaylistCreate(req.body)
-									.then(function(new_playlist){
-										module.exports.emitEvent('playlistsUpdated');
-										res.statusCode = 201;
-										res.json(OKMessage(new_playlist,'PL_CREATED',req.body.name));
-									})
-									.catch(function(err){
-										logger.error(err);
-										res.statusCode = 500;
-										res.json(errMessage('PL_CREATE_ERROR',err,req.body.name));
-									});
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;								
-								res.json(result.mapped());
-							}
-						});
+						//Now we add playlist
+						engine.createPL(req.body)
+							.then((new_playlist) => {
+								emitWS('playlistsUpdated');
+								res.statusCode = 201;
+								res.json(OKMessage(new_playlist,'PL_CREATED',req.body.name));
+							})
+							.catch((err) => {
+								logger.error(err);
+								res.statusCode = 500;
+								res.json(errMessage('PL_CREATE_ERROR',err,req.body.name));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;								
+						res.json(result.mapped());
+					}
 				});
+		});
 
-			routerAdmin.route('/playlists/:pl_id([0-9]+)')
-			/**
+	routerAdmin.route('/playlists/:pl_id([0-9]+)')
+	/**
  * @api {get} admin/playlists/:pl_id Get playlist information
  * @apiName GetPlaylist
  * @apiGroup Playlists
@@ -353,22 +322,22 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(requireAuth, requireAdmin, function(req,res){
-					//Access :pl_id by req.params.pl_id
-					// This get route gets infos from a playlist
-					var playlist_id = req.params.pl_id;
+		.get(requireAuth, requireAdmin, (req, res) => {
+			//Access :pl_id by req.params.pl_id
+			// This get route gets infos from a playlist
+			const playlist_id = req.params.pl_id;
 
-					module.exports.onPlaylistSingleInfo(playlist_id)
-						.then(function(playlist){
-							res.json(OKMessage(playlist));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
-						});
+			engine.getPLInfo(playlist_id)
+				.then((playlist) => {
+					res.json(OKMessage(playlist));
 				})
-			/**
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
+				});
+		})
+	/**
  * @api {put} admin/playlists/:pl_id Update a playlist's information
  * @apiName PutPlaylist
  * @apiVersion 2.0.0
@@ -395,51 +364,51 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(requireAuth, requireAdmin, function(req,res){
-					// Update playlist info
+		.put(requireAuth, requireAdmin, (req, res) => {
+			// Update playlist info
 
-					req.check({
-						'name': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'flag_visible': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: {
-								errorMessage: 'Invalid visible flag (must be boolean)'
-							}
-						},
-					});
+			req.check({
+				'name': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'flag_visible': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: {
+						errorMessage: 'Invalid visible flag (must be boolean)'
+					}
+				},
+			});
 
-					req.getValidationResult()
-						.then(function(result){
-							if (result.isEmpty()) {
-								// No errors detected
-								req.sanitize('name').trim();
-								req.sanitize('name').unescape();
-								req.sanitize('flag_visible').toBoolean();
+			req.getValidationResult()
+				.then((result) => {
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('name').trim();
+						req.sanitize('name').unescape();
+						req.sanitize('flag_visible').toBoolean();
 
-								//Now we add playlist
-								module.exports.onPlaylistSingleEdit(req.params.pl_id,req.body)
-									.then(function(){
-										module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-										res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));	
-									})
-									.catch(function(err){
-										logger.error(err.message);
-										res.statusCode = 500;
-										res.json(errMessage('PL_UPDATE_ERROR',err.message,err.data));
-									});
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
-								res.json(result.mapped());
-							}
-						});
-				})
-			/**
+						//Now we add playlist
+						engine.editPLInfo(req.params.pl_id,req.body)
+							.then(() => {
+								emitWS('playlistInfoUpdated',req.params.pl_id);
+								res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));	
+							})
+							.catch((err) => {
+								logger.error(err.message);
+								res.statusCode = 500;
+								res.json(errMessage('PL_UPDATE_ERROR',err.message,err.data));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
+				});
+		})
+	/**
  * @api {delete} admin/playlists/:pl_id Delete a playlist
  * @apiName DeletePlaylist
  * @apiVersion 2.0.0
@@ -463,25 +432,25 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.delete(requireAuth, requireAdmin, function(req,res){					
-					module.exports.onPlaylistSingleDelete(req.params.pl_id)
-						.then(function(){
-							module.exports.emitEvent('playlistsUpdated');
-							res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
-						});
+		.delete(requireAuth, requireAdmin, (req, res) => {					
+			engine.deletePlaylist(req.params.pl_id)
+				.then(() => {
+					emitWS('playlistsUpdated');
+					res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 				});
-			routerAdmin.route('/users/:username')
-			/**
+		});
+	routerAdmin.route('/users/:username')
+	/**
  * @api {get} admin/users/:username View user details (admin)
  * @apiName GetUserAdmin
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission AdminOrOwn
+ * @apiPermission Admin
  *
  * @apiparam {String} username Username to get data from
  * @apiSuccess {String} data/login User's login
@@ -528,18 +497,18 @@ module.exports = {
  *   "message": null
  * }
  */
-				.get(requireAuth, requireAdmin, (req,res) => {
-					user.findUserByName(req.params.username, {public:false})
-						.then((userdata) => {
-							res.json(OKMessage(userdata));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('USER_VIEW_ERROR',err));
-						});						
+		.get(requireAuth, requireAdmin, (req,res) => {
+			user.findUserByName(req.params.username, {public:false})
+				.then((userdata) => {
+					res.json(OKMessage(userdata));
 				})
-			/**
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('USER_VIEW_ERROR',err));
+				});						
+		})
+	/**
  * @api {delete} admin/users/:username Delete an user
  * @apiName DeleteUser
  * @apiVersion 2.1.0
@@ -563,20 +532,20 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.delete(requireAuth, requireAdmin, function(req,res){					
-					user.deleteUser(req.params.user_id)
-						.then(function(){
-							module.exports.emitEvent('usersUpdated');
-							res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.user_id));
-						})
-						.catch(function(err){
-							res.statusCode = 500;
-							res.json(errMessage('USER_DELETE_ERROR',err.message,err.data));
-						});
+		.delete(requireAuth, requireAdmin, (req, res) => {					
+			user.deleteUser(req.params.user_id)
+				.then(() => {
+					emitWS('usersUpdated');
+					res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.user_id));
+				})
+				.catch((err) => {
+					res.statusCode = 500;
+					res.json(errMessage('USER_DELETE_ERROR',err.message,err.data));
 				});
+		});
 
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
-			/**
+	routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
+	/**
  * @api {put} admin/playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
  * @apiVersion 2.0.0
@@ -600,23 +569,22 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(requireAuth, requireAdmin, function(req,res){
-				// Empty playlist
-
-					module.exports.onPlaylistSingleEmpty(req.params.pl_id)
-						.then(function(){
-							module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
-							res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));							
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_EMPTY_ERROR',err.message,err.data));
-							res.json(err);
-						});
+		.put(requireAuth, requireAdmin, (req, res) => {
+		// Empty playlist
+			engine.emptyPL(req.params.pl_id)
+				.then(() => {
+					emitWS('playlistContentsUpdated',req.params.pl_id);
+					res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));							
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_EMPTY_ERROR',err.message,err.data));
+					res.json(err);
 				});
-			routerAdmin.route('/whitelist/empty')
-			/**
+		});
+	routerAdmin.route('/whitelist/empty')
+	/**
  * @api {put} admin/whitelist/empty Empty whitelist
  * @apiName PutEmptyWhitelist
  * @apiVersion 2.0.0
@@ -635,23 +603,23 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(requireAuth, requireAdmin, function(req,res){
-				// Empty whitelist
+		.put(requireAuth, requireAdmin, (req, res) => {
+		// Empty whitelist
 
-					module.exports.onWhitelistEmpty()
-						.then(function(){
-							module.exports.emitEvent('blacklistUpdated');
-							module.exports.emitEvent('whitelistUpdated');
-							res.json(OKMessage(null,'WL_EMPTIED'));							
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('WL_EMPTY_ERROR',err));						
-						});
+			engine.emptyWL()
+				.then(() => {
+					emitWS('blacklistUpdated');
+					emitWS('whitelistUpdated');
+					res.json(OKMessage(null,'WL_EMPTIED'));							
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('WL_EMPTY_ERROR',err));						
 				});
-			routerAdmin.route('/blacklist/criterias/empty')
-			/**
+		});
+	routerAdmin.route('/blacklist/criterias/empty')
+	/**
  * @api {put} admin/blacklist/criterias/empty Empty list of blacklist criterias
  * @apiName PutEmptyBlacklist
  * @apiVersion 2.0.0
@@ -672,22 +640,22 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(requireAuth, requireAdmin, function(req,res){
-				// Empty blacklist criterias
+		.put(requireAuth, requireAdmin, (req, res) => {
+		// Empty blacklist criterias
 
-					module.exports.onBlacklistCriteriasEmpty()
-						.then(function(){
-							module.exports.emitEvent('blacklistUpdated');
-							res.json(OKMessage(null,'BLC_EMPTIED'));							
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;							
-							res.json(errMessage('BLC_EMPTY_ERROR',err));
-						});
+			engine.emptyBLC()
+				.then(() => {
+					emitWS('blacklistUpdated');
+					res.json(OKMessage(null,'BLC_EMPTIED'));							
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;							
+					res.json(errMessage('BLC_EMPTY_ERROR',err));
 				});
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
-			/**
+		});
+	routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
+	/**
  * @api {put} admin/playlists/:pl_id/setCurrent Set playlist to current
  * @apiName PutSetCurrentPlaylist
  * @apiVersion 2.0.0
@@ -711,22 +679,22 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(requireAuth, requireAdmin, function(req,res){
-					// set playlist to current
+		.put(requireAuth, requireAdmin, (req, res) => {
+			// set playlist to current
 
-					module.exports.onPlaylistSingleSetCurrent(req.params.pl_id)
-						.then(function(){
-							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-							res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
-						});
+			engine.setCurrentPL(req.params.pl_id)
+				.then(() => {
+					emitWS('playlistInfoUpdated',req.params.pl_id);
+					res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
 				});
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
-			/**
+		});
+	routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
+	/**
  * @api {put} admin/playlists/:pl_id/setPublic Set playlist to public
  * @apiName PutSetPublicPlaylist
  * @apiVersion 2.0.0
@@ -750,22 +718,22 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(requireAuth, requireAdmin, function(req,res){
-					// Empty playlist
+		.put(requireAuth, requireAdmin, (req, res) => {
+			// Empty playlist
 
-					module.exports.onPlaylistSingleSetPublic(req.params.pl_id)
-						.then(function(){
-							module.exports.emitEvent('playlistInfoUpdated',req.params.pl_id);
-							res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
-						});
+			engine.setPublicPL(req.params.pl_id)
+				.then(() => {
+					emitWS('playlistInfoUpdated',req.params.pl_id);
+					res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
 				});
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
-			/**
+		});
+	routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
+	/**
  * @api {get} admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
  * @apiVersion 2.0.0
@@ -841,36 +809,36 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(requireAuth, requireAdmin, function(req,res){
-					//Access :pl_id by req.params.pl_id
-					// This get route gets infos from a playlist
-					var playlist_id = req.params.pl_id;
-					var filter = req.query.filter;
-					var lang = req.query.lang;
-					var size;
-					if (!req.query.size) {
-						size = 999999;
-					} else {
-						size = parseInt(req.query.size);
-					}
-					var from;
-					if (!req.query.from) {
-						from = 0;
-					} else {
-						from = parseInt(req.query.from);
-					}
-					var seenFromUser = false;
-					module.exports.onPlaylistSingleContents(playlist_id,filter,lang,seenFromUser,from,size)
-						.then(function(playlist){							
-							res.json(OKMessage(playlist));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
-						});
+		.get(requireAuth, requireAdmin, (req, res) => {
+			//Access :pl_id by req.params.pl_id
+			// This get route gets infos from a playlist
+			const playlist_id = req.params.pl_id;
+			const filter = req.query.filter;
+			const lang = req.query.lang;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from);
+			}
+			const seenFromUser = false;
+			engine.getPLContents(playlist_id,filter,lang,seenFromUser,from,size)
+				.then((playlist) => {
+					res.json(OKMessage(playlist));
 				})
-			/**
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
+				});
+		})
+	/**
  * @api {post} admin/playlists/:pl_id/karas Add karaokes to playlist
  * @apiName PatchPlaylistKaras
  * @apiVersion 2.0.0
@@ -908,57 +876,57 @@ module.exports = {
  *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
  * }
  */
-				.post(requireAuth, requireAdmin, function(req,res){
-					//add a kara to a playlist
-					var playlist_id = req.params.pl_id;
-					req.checkBody({
-						'requestedby': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'kara_id': {
-							in: 'body',
-							notEmpty: true,
-							numbersArray: true,
-						},
-						'pos': {
-							in: 'body',
-							optional: true,
-							isInt: true,
-						}
-					});
+		.post(requireAuth, requireAdmin, (req, res) => {
+			//add a kara to a playlist
+			const playlist_id = req.params.pl_id;
+			req.checkBody({
+				'requestedby': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'kara_id': {
+					in: 'body',
+					notEmpty: true,
+					numbersArray: true,
+				},
+				'pos': {
+					in: 'body',
+					optional: true,
+					isInt: true,
+				}
+			});
 
-					req.getValidationResult()
-						.then(function(result) {
-							if (result.isEmpty()) {
-								req.sanitize('requestedby').trim();
-								req.sanitize('requestedby').unescape();
-								req.sanitize('playlist_id').toInt();
-								if (req.body.pos != undefined) req.sanitize('pos').toInt();
-								module.exports.onKaraAddToPlaylist(req.body.kara_id,req.body.requestedby,playlist_id,req.body.pos)
-									.then(function(result){
-										module.exports.emitEvent('playlistInfoUpdated',playlist_id);
-										module.exports.emitEvent('playlistContentsUpdated',playlist_id);
-										res.statusCode = 201;		
-										var args = {
-											playlist: result.playlist
-										};
-										res.json(OKMessage(null,'PL_SONG_ADDED',args));
-									})
-									.catch(function(err){
-										logger.error(err.message);
-										res.statusCode = 500;
-										res.json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));										
-									});
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
-								res.json(result.mapped());
-							}
-						});
-				})
-			/**
+			req.getValidationResult()
+				.then((result) =>  {
+					if (result.isEmpty()) {
+						req.sanitize('requestedby').trim();
+						req.sanitize('requestedby').unescape();
+						req.sanitize('playlist_id').toInt();
+						if (req.body.pos != undefined) req.sanitize('pos').toInt();
+						engine.addKaraToPL(playlist_id, req.body.kara_id,req.body.requestedby, req.body.pos)
+							.then((result) => {
+								emitWS('playlistInfoUpdated',playlist_id);
+								emitWS('playlistContentsUpdated',playlist_id);
+								res.statusCode = 201;		
+								const args = {
+									playlist: result.playlist
+								};
+								res.json(OKMessage(null,'PL_SONG_ADDED',args));
+							})
+							.catch((err) => {
+								logger.error(err.message);
+								res.statusCode = 500;
+								res.json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));										
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
+				});
+		})
+	/**
  * @api {patch} admin/playlists/:pl_id/karas Copy karaokes to another playlist
  * @apiName PatchPlaylistKaras
  * @apiVersion 2.0.0
@@ -995,50 +963,50 @@ module.exports = {
  *   "message": "Karaoke song 176 is already in playlist 2"
  * }
  */
-				.patch(requireAuth, requireAdmin, function(req,res){
-					//add karas from a playlist to another
-					req.checkBody({
-						'plc_id': {
-							in: 'body',
-							notEmpty: true,
-							numbersArray: true,
-						},
-						'pos': {
-							in: 'body',
-							optional: true,
-							isInt: true,
-						}
-					});
+		.patch(requireAuth, requireAdmin, (req, res) => {
+			//add karas from a playlist to another
+			req.checkBody({
+				'plc_id': {
+					in: 'body',
+					notEmpty: true,
+					numbersArray: true,
+				},
+				'pos': {
+					in: 'body',
+					optional: true,
+					isInt: true,
+				}
+			});
 
-					req.getValidationResult()
-						.then(function(result) {
-							if (result.isEmpty()) {
-								if (req.body.pos != undefined) req.sanitize('pos').toInt();
-								module.exports.onKaraCopyToPlaylist(req.body.plc_id,req.params.pl_id,req.body.pos)
-									.then(function(pl_id){
-										module.exports.emitEvent('playlistContentsUpdated',pl_id);
-										res.statusCode = 201;
-										var args = {
-											plc_ids: req.body.plc_id.split(','),
-											playlist_id: parseInt(req.params.pl_id)
-										};
-										res.json(OKMessage(null,'PL_SONG_MOVED',args));
-									})
-									.catch(function(err){
-										logger.error(err.message);
-										res.statusCode = 500;
-										res.json(errMessage('PL_MOVE_SONG_ERROR',err.message,err.data));
-									});
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
-								res.json(result.mapped());
-							}
-						});
-				})
+			req.getValidationResult()
+				.then((result) =>  {
+					if (result.isEmpty()) {
+						if (req.body.pos != undefined) req.sanitize('pos').toInt();
+						engine.copyKaraToPL(req.body.plc_id,req.params.pl_id,req.body.pos)
+							.then((pl_id) => {
+								emitWS('playlistContentsUpdated',pl_id);
+								res.statusCode = 201;
+								const args = {
+									plc_ids: req.body.plc_id.split(','),
+									playlist_id: parseInt(req.params.pl_id)
+								};
+								res.json(OKMessage(null,'PL_SONG_MOVED',args));
+							})
+							.catch((err) => {
+								logger.error(err.message);
+								res.statusCode = 500;
+								res.json(errMessage('PL_MOVE_SONG_ERROR',err.message,err.data));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
+				});
+		})
 
-			/**
+	/**
  * @api {delete} admin/playlists/:pl_id/karas Delete karaokes from playlist
  * @apiName DeletePlaylistKaras
  * @apiVersion 2.0.0
@@ -1067,44 +1035,44 @@ module.exports = {
  *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
  * }
  */
-				.delete(requireAuth, requireAdmin, function(req,res){
-					// Delete kara from playlist
-					// Deletion is through playlist content's ID.
-					// There is actually no need for a playlist number to be used at this moment.
-					req.checkBody({
-						'plc_id': {
-							in: 'body',
-							notEmpty: true,
-							numbersArray: true,
-						}
-					});
+		.delete(requireAuth, requireAdmin, (req, res) => {
+			// Delete kara from playlist
+			// Deletion is through playlist content's ID.
+			// There is actually no need for a playlist number to be used at this moment.
+			req.checkBody({
+				'plc_id': {
+					in: 'body',
+					notEmpty: true,
+					numbersArray: true,
+				}
+			});
 
-					req.getValidationResult()
-						.then(function(result) {
-							if (result.isEmpty()) {
-								module.exports.onPlaylistSingleKaraDelete(req.body.plc_id,req.params.pl_id)
-									.then(function(data){
-										module.exports.emitEvent('playlistContentsUpdated',data.pl_id);
-										module.exports.emitEvent('playlistInfoUpdated',data.pl_id);
-										res.statusCode = 200;
-										res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
-									})
-									.catch(function(err){
-										logger.error(err.message);
-										res.statusCode = 500;
-										res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
-									});
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
-								res.json(result.mapped());
-							}
-						});
+			req.getValidationResult()
+				.then((result) =>  {
+					if (result.isEmpty()) {
+						engine.deletePLC(req.body.plc_id,req.params.pl_id)
+							.then((data) => {
+								emitWS('playlistContentsUpdated',data.pl_id);
+								emitWS('playlistInfoUpdated',data.pl_id);
+								res.statusCode = 200;
+								res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
+							})
+							.catch((err) => {
+								logger.error(err.message);
+								res.statusCode = 500;
+								res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
 				});
+		});
 
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
-			/**
+	routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+	/**
  * @api {get} admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
  * @apiVersion 2.1.0
@@ -1209,18 +1177,18 @@ module.exports = {
  *   "message": "PLCID unknown!"
  * }
  */
-				.get(requireAuth, requireAdmin, function(req,res){
-					module.exports.onPLCInfo(req.params.plc_id,req.query.lang)
-						.then(function(kara){
-							res.json(OKMessage(kara));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_CONTENT_ERROR',err));
-						});
+		.get(requireAuth, requireAdmin, (req, res) => {
+			engine.getPLCInfo(req.params.plc_id,req.query.lang)
+				.then((kara) => {
+					res.json(OKMessage(kara));
 				})
-			/**
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_CONTENT_ERROR',err));
+				});
+		})
+	/**
  * @api {put} admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
  * @apiVersion 2.0.0
@@ -1249,51 +1217,51 @@ module.exports = {
  *   "message": "PLCID unknown!"
  * }
  */
-				.put(requireAuth, requireAdmin, function(req,res){
-					//Update playlist's karaoke song
-					//Params: position
-					req.checkBody({
-						'pos': {
-							in: 'body',
-							optional: true,
-							isInt: true,
-						},
-						'flag_playing': {
-							in: 'body',
-							optional: true,
-							isInt: true,
-						}
-					});
+		.put(requireAuth, requireAdmin, (req, res) => {
+			//Update playlist's karaoke song
+			//Params: position
+			req.checkBody({
+				'pos': {
+					in: 'body',
+					optional: true,
+					isInt: true,
+				},
+				'flag_playing': {
+					in: 'body',
+					optional: true,
+					isInt: true,
+				}
+			});
 
-					req.getValidationResult()
-						.then(function(result) {
-							if (result.isEmpty()) {
-								if (req.body.pos != undefined) req.sanitize('pos').toInt();
-								if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
-								module.exports.onPlaylistSingleKaraEdit(req.params.plc_id,req.body.pos,req.body.flag_playing)
-									.then(function(){
-										// pl_id is returned from this promise
-										res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
-									})
-									.catch(function(err){
-										logger.error(err);
-										res.statusCode = 500;
-										res.json(errMessage('PL_MODIFY_CONTENT_ERROR',err));
-									});
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
-								res.json(result.mapped());
-							}
-						});
+			req.getValidationResult()
+				.then((result) =>  {
+					if (result.isEmpty()) {
+						if (req.body.pos != undefined) req.sanitize('pos').toInt();
+						if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
+						engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing)
+							.then(() => {
+								// pl_id is returned from this promise
+								res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
+							})
+							.catch((err) => {
+								logger.error(err);
+								res.statusCode = 500;
+								res.json(errMessage('PL_MODIFY_CONTENT_ERROR',err));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
 				});
+		});
 
-			routerAdmin.route('/settings')
-			/**
+	routerAdmin.route('/settings')
+	/**
  * @api {get} admin/settings Get settings
  * @apiName GetSettings
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Main
  * @apiPermission admin
  * 
@@ -1336,7 +1304,7 @@ module.exports = {
  *       "PathBackgrounds": "app/backgrounds",
  *       "PathBin": "app/bin",
  *       "PathDB": "app/db",
- *       "PathDBKarasFile": "karas.sqlite3",
+ *       "PathDBKarasFile": "engine.sqlite3",
  *       "PathDBUserFile": "userdata.sqlite3",
  *       "PathJingles": "app/jingles",
  *       "PathKaras": "../times/karas",
@@ -1364,13 +1332,13 @@ module.exports = {
  *   }
  * }
  */
-				.get(requireAuth, requireAdmin, function(req,res){
-					res.json(OKMessage(module.exports.SETTINGS));
-				})
-			/**
+		.get(requireAuth, requireAdmin, (req, res) => {
+			res.json(OKMessage(getConfig()));
+		})
+	/**
  * @api {put} admin/settings Update settings
  * @apiName PutSettings
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiPermission admin
  * @apiGroup Main
  * @apiDescription **Note :** All settings must be sent at once in a single request.
@@ -1404,185 +1372,182 @@ module.exports = {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-				.put(requireAuth, requireAdmin, function(req,res){
-					//Update settings
-					req.checkBody({
-						'AdminPassword': {
-							in: 'body',
-							notEmpty: true
-						},
-						'EngineAllowNicknameChange': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'EngineAllowViewBlacklist': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'EngineAllowViewWhitelist': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'EngineAllowViewBlacklistCriterias': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'EngineDisplayConnectionInfo': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'EngineDisplayConnectionInfoHost': {
-							in: 'body',
-						},
-						'EngineDisplayConnectionInfoMessage': {
-							in: 'body',
-						},
-						'EngineDisplayConnectionInfoQRCode': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'EngineDisplayNickname': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'EnginePrivateMode': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'EngineSongsPerUser': {
-							in: 'body',
-							notEmpty: true,
-							isInt: true,
-						},
-						'EngineJinglesInterval': {
-							in: 'body',
-							notEmpty: true,
-							isInt: true,
-						},
-						'EngineRepeatPlaylist': {
-							in: 'body',
-							notEmpty: true,
-							isInt: true,
-						},
-						'EngineSmartInsert': {
-							in: 'body',
-							notEmpty: true,
-							isInt: true,
-						},
-						'EngineAutoPlay': {
-							in: 'body',
-							notEmpty: true,
-							isInt: true,
-						},
-						'PlayerFullscreen': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'PlayerNoBar': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'PlayerNoHud': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'PlayerScreen': {
-							in: 'body',
-							notEmpty: true,
-							isInt: true,
-						},
-						'PlayerStayOnTop': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'PlayerPIP': {
-							in: 'body',
-							notEmpty: true,
-							isBoolean: true,
-						},
-						'PlayerPIPSize': {
-							in: 'body',
-							notEmpty: true,
-							isInt: true,
-						}
-					});
-
-					req.checkBody('PlayerPIPPositionX')
-						.notEmpty()
-						.enum(['Left',
-							'Center',
-							'Right'
-						]
-						);
-					req.checkBody('PlayerPIPPositionY')
-						.notEmpty()
-						.enum(['Top',
-							'Center',
-							'Bottom'
-						]
-						);
-
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							req.sanitize('EngineAllowNicknameChange').toInt();
-							req.sanitize('EngineAllowViewWhitelist').toInt();
-							req.sanitize('EngineAllowViewBlacklist').toInt();
-							req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
-							req.sanitize('EngineDisplayNickname').toInt();
-							req.sanitize('EngineDisplayConnectionInfoQRCode').toInt();
-							req.sanitize('EngineDisplayConnectionInfo').toInt();
-							req.sanitize('EngineDisplayConnectionInfoMessage').trim();
-							req.sanitize('EngineDisplayConnectionInfoMessage').unescape();
-							req.sanitize('EngineDisplayConnectionInfoHost').trim();
-							req.sanitize('EngineDisplayConnectionInfoHost').unescape();
-							req.sanitize('EngineAutoPlay').toInt();
-							req.sanitize('EngineRepeatPlaylist').toInt();
-							req.sanitize('EngineSmartInsert').toInt();
-							req.sanitize('EngineJinglesInterval').toInt();
-							req.sanitize('PlayerFullscreen').toInt();
-							req.sanitize('PlayerNoBar').toInt();
-							req.sanitize('PlayerNoHud').toInt();
-							req.sanitize('PlayerStayOnTop').toInt();
-							req.sanitize('PlayerScreen').toInt();
-							req.sanitize('EngineSongsPerUser').toInt();
-							req.sanitize('EnginePrivateMode').toInt();
-							req.sanitize('PlayerPIP').toInt();
-							req.sanitize('PlayerPIPSize').toInt();
-							req.sanitize('PlayerPIP').toInt();							
-							var SETTINGS = req.body;
-							module.exports.onSettingsUpdate(SETTINGS)
-								.then(function(publicSettings){
-									module.exports.emitEvent('settingsUpdated',publicSettings);
-									res.json(OKMessage(module.exports.SETTINGS,'SETTINGS_UPDATED'));
-								})
-								.catch(function(err){
-									logger.error(err);
-									res.statusCode = 500;
-									res.json(errMessage('SETTINGS_UPDATE_ERROR',err));
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
-				});
-
-			routerAdmin.route('/player/message')
-			/**
+		.put(requireAuth, requireAdmin, function(req,res){
+			//Update settings
+			req.checkBody({
+				'AdminPassword': {
+					in: 'body',
+					notEmpty: true
+				},
+				'EngineAllowNicknameChange': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'EngineAllowViewBlacklist': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'EngineAllowViewWhitelist': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'EngineAllowViewBlacklistCriterias': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'EngineDisplayConnectionInfo': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'EngineDisplayConnectionInfoHost': {
+					in: 'body',
+				},
+				'EngineDisplayConnectionInfoMessage': {
+					in: 'body',
+				},
+				'EngineDisplayConnectionInfoQRCode': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'EngineDisplayNickname': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'EnginePrivateMode': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'EngineSongsPerUser': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'EngineJinglesInterval': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'EngineRepeatPlaylist': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'EngineSmartInsert': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'EngineAutoPlay': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'PlayerFullscreen': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'PlayerNoBar': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'PlayerNoHud': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'PlayerScreen': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'PlayerStayOnTop': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'PlayerPIP': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true,
+				},
+				'PlayerPIPSize': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				}
+			});
+			req.checkBody('PlayerPIPPositionX')
+				.notEmpty()
+				.enum(['Left',
+					'Center',
+					'Right'
+				]
+				);
+			req.checkBody('PlayerPIPPositionY')
+				.notEmpty()
+				.enum(['Top',
+					'Center',
+					'Bottom'
+				]
+				);
+			req.getValidationResult().then(function(result) {
+				if (result.isEmpty()) {
+					req.sanitize('EngineAllowNicknameChange').toInt();
+					req.sanitize('EngineAllowViewWhitelist').toInt();
+					req.sanitize('EngineAllowViewBlacklist').toInt();
+					req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
+					req.sanitize('EngineDisplayNickname').toInt();
+					req.sanitize('EngineDisplayConnectionInfoQRCode').toInt();
+					req.sanitize('EngineDisplayConnectionInfo').toInt();
+					req.sanitize('EngineDisplayConnectionInfoMessage').trim();
+					req.sanitize('EngineDisplayConnectionInfoMessage').unescape();
+					req.sanitize('EngineDisplayConnectionInfoHost').trim();
+					req.sanitize('EngineDisplayConnectionInfoHost').unescape();
+					req.sanitize('EngineAutoPlay').toInt();
+					req.sanitize('EngineRepeatPlaylist').toInt();
+					req.sanitize('EngineSmartInsert').toInt();
+					req.sanitize('EngineJinglesInterval').toInt();
+					req.sanitize('PlayerFullscreen').toInt();
+					req.sanitize('PlayerNoBar').toInt();
+					req.sanitize('PlayerNoHud').toInt();
+					req.sanitize('PlayerStayOnTop').toInt();
+					req.sanitize('PlayerScreen').toInt();
+					req.sanitize('EngineSongsPerUser').toInt();
+					req.sanitize('EnginePrivateMode').toInt();
+					req.sanitize('PlayerPIP').toInt();
+					req.sanitize('PlayerPIPSize').toInt();
+					req.sanitize('PlayerPIP').toInt();							
+					setConfig(req.body)
+						.then((publicSettings) => {
+							emitWS('settingsUpdated',publicSettings);
+							res.json(OKMessage(req.body,'SETTINGS_UPDATED'));
+						})
+						.catch((err) => {
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('SETTINGS_UPDATE_ERROR',err));
+						});
+				} else {
+					// Errors detected
+					// Sending BAD REQUEST HTTP code and error object.
+					res.statusCode = 400;
+					res.json(result.mapped());
+				}
+			});
+		});
+			
+	routerAdmin.route('/player/message')
+	/**
  * @api {post} admin/player/message Send a message to screen or users' devices
  * @apiName PostPlayerMessage
  * @apiVersion 2.0.0
@@ -1613,56 +1578,56 @@ module.exports = {
  *   "code": "MESSAGE_SEND_ERROR"
  * }
  */
-				.post(requireAuth, requireAdmin, function(req,res){
-					req.check({
-						'duration': {
-							in: 'body',
-							isInt: true,
-							optional: true
-						},
-						'message': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'destination': {
-							in: 'body',
-							optional: true
-						}
-					});
+		.post(requireAuth, requireAdmin, (req, res) => {
+			req.check({
+				'duration': {
+					in: 'body',
+					isInt: true,
+					optional: true
+				},
+				'message': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'destination': {
+					in: 'body',
+					optional: true
+				}
+			});
 
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							req.sanitize('duration').toInt();
-							if(req.body.destination !== 'screen') {
-								module.exports.emitEvent('adminMessage', req.body );
-								if (req.body.destination === 'users') {
-									res.statusCode = 200;
-									res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
-								}
-							}
-							if(req.body.destination !== 'users') {
-								module.exports.onMessage(req.body.message,req.body.duration)
-									.then(function(){
-										res.statusCode = 200;
-										res.json(OKMessage(req.body,'MESSAGE_SENT'));
-									})
-									.catch(function(err){
-										logger.error(err);
-										res.statusCode = 500;
-										res.json(errMessage('MESSAGE_SEND_ERROR',err));
-									});
-							}
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
+			req.getValidationResult().then((result) =>  {
+				if (result.isEmpty()) {
+					req.sanitize('duration').toInt();
+					if(req.body.destination !== 'screen') {
+						emitWS('adminMessage', req.body );
+						if (req.body.destination === 'users') {
+							res.statusCode = 200;
+							res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
 						}
-					});
-				});
+					}
+					if(req.body.destination !== 'users') {
+						engine.sendMessage(req.body.message,req.body.duration)
+							.then(() => {
+								res.statusCode = 200;
+								res.json(OKMessage(req.body,'MESSAGE_SENT'));
+							})
+							.catch((err) => {
+								logger.error(err);
+								res.statusCode = 500;
+								res.json(errMessage('MESSAGE_SEND_ERROR',err));
+							});
+					}
+				} else {
+					// Errors detected
+					// Sending BAD REQUEST HTTP code and error object.
+					res.statusCode = 400;
+					res.json(result.mapped());
+				}
+			});
+		});
 
-			routerAdmin.route('/whitelist')
-			/**
+	routerAdmin.route('/whitelist')
+	/**
  * @api {get} admin/whitelist Get whitelist
  * @apiName GetWhitelist
  * @apiVersion 2.0.0
@@ -1731,32 +1696,32 @@ module.exports = {
  *   "code": "WL_VIEW_ERROR"
  * }
  */
-				.get(requireAuth, requireAdmin, function(req,res){
-					var lang = req.query.lang;
-					var filter = req.query.filter;
-					var size;
-					if (!req.query.size) {
-						size = 999999;
-					} else {
-						size = parseInt(req.query.size);
-					}
-					var from;
-					if (!req.query.from) {
-						from = 0;
-					} else {
-						from = parseInt(req.query.from);
-					}
-					module.exports.onWhitelist(filter,lang,from,size)
-						.then(function(karas){
-							res.json(OKMessage(karas));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('WL_VIEW_ERROR',err));
-						});
+		.get(requireAuth, requireAdmin, (req, res) => {
+			const lang = req.query.lang;
+			const filter = req.query.filter;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from);
+			}
+			engine.getWL(filter,lang,from,size)
+				.then((karas) => {
+					res.json(OKMessage(karas));
 				})
-			/**
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('WL_VIEW_ERROR',err));
+				});
+		})
+	/**
  * @api {post} admin/whitelist Add song to whitelist
  * @apiName PostWhitelist
  * @apiVersion 2.0.0
@@ -1789,37 +1754,37 @@ module.exports = {
  *   "message": "No karaoke could be added, all are in whitelist already"
  * }
  */
-				.post(requireAuth, requireAdmin, function(req,res){
-					req.check({
-						'kara_id': {
-							in: 'body',
-							notEmpty: true,
-							numbersArray: true,
-						},						
-					});
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {							
-							module.exports.onKaraAddToWhitelist(req.body.kara_id)
-								.then(function(){
-									module.exports.emitEvent('whitelistUpdated');
-									module.exports.emitEvent('blacklistUpdated');
-									res.statusCode = 201;
-									res.json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));									
-								})
-								.catch(function(err){
-									logger.error(err.message);
-									res.statusCode = 500;
-									res.json(errMessage('WL_ADD_SONG_ERROR',err.message,err.data));
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
-				})
-			/**
+		.post(requireAuth, requireAdmin, (req, res) => {
+			req.check({
+				'kara_id': {
+					in: 'body',
+					notEmpty: true,
+					numbersArray: true,
+				},						
+			});
+			req.getValidationResult().then((result) =>  {
+				if (result.isEmpty()) {							
+					engine.addKaraToWL(req.body.kara_id)
+						.then(() => {
+							emitWS('whitelistUpdated');
+							emitWS('blacklistUpdated');
+							res.statusCode = 201;
+							res.json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));									
+						})
+						.catch((err) => {
+							logger.error(err.message);
+							res.statusCode = 500;
+							res.json(errMessage('WL_ADD_SONG_ERROR',err.message,err.data));
+						});
+				} else {
+					// Errors detected
+					// Sending BAD REQUEST HTTP code and error object.
+					res.statusCode = 400;
+					res.json(result.mapped());
+				}
+			});
+		})
+	/**
  * @api {delete} admin/whitelist Delete whitelist item
  * @apiName DeleteWhitelist
  * @apiVersion 2.0.0
@@ -1841,40 +1806,40 @@ module.exports = {
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
-				.delete(requireAuth, requireAdmin, function(req,res){
-					//Delete kara from whitelist
-					// Deletion is through whitelist ID.
-					req.checkBody({
-						'wlc_id': {
-							in: 'body',
-							notEmpty: true,
-							numbersArray: true,
-						}
-					});
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							module.exports.onWhitelistSingleKaraDelete(req.body.wlc_id)
-								.then(function(){
-									module.exports.emitEvent('whitelistUpdated');
-									module.exports.emitEvent('blacklistUpdated');
-									res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));							
-								})
-								.catch(function(err){
-									logger.error(err);
-									res.statusCode = 500;
-									res.json(errMessage('WL_DELETE_SONG_ERROR',err));
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
-				});
+		.delete(requireAuth, requireAdmin, (req, res) => {
+			//Delete kara from whitelist
+			// Deletion is through whitelist ID.
+			req.checkBody({
+				'wlc_id': {
+					in: 'body',
+					notEmpty: true,
+					numbersArray: true,
+				}
+			});
+			req.getValidationResult().then((result) =>  {
+				if (result.isEmpty()) {
+					engine.deleteWLC(req.body.wlc_id)
+						.then(() => {
+							emitWS('whitelistUpdated');
+							emitWS('blacklistUpdated');
+							res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));							
+						})
+						.catch((err) => {
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('WL_DELETE_SONG_ERROR',err));
+						});
+				} else {
+					// Errors detected
+					// Sending BAD REQUEST HTTP code and error object.
+					res.statusCode = 400;
+					res.json(result.mapped());
+				}
+			});
+		});
 
-			routerAdmin.route('/blacklist')
-			/**
+	routerAdmin.route('/blacklist')
+	/**
  * @api {get} admin/blacklist Get blacklist
  * @apiName GetBlacklist
  * @apiVersion 2.0.0
@@ -1943,34 +1908,34 @@ module.exports = {
  *   "code": "BL_VIEW_ERROR"
  * }
  */
-				.get(requireAuth, requireAdmin, function(req,res){
-					var lang = req.query.lang;
-					var filter = req.query.filter;
-					var size;
-					if (!req.query.size) {
-						size = 999999;
-					} else {
-						size = parseInt(req.query.size);
-					}
-					var from;
-					if (!req.query.from) {
-						from = 0;
-					} else {
-						from = parseInt(req.query.from);
-					}
-					if (from < 0) from = 0;										
-					module.exports.onBlacklist(filter,lang,from,size)
-						.then(function(karas){
-							res.json(OKMessage(karas));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('BL_VIEW_ERROR',err));
-						});
-				});				
-			routerAdmin.route('/blacklist/criterias')
-			/**
+		.get(requireAuth, requireAdmin, (req, res) => {
+			const lang = req.query.lang;
+			const filter = req.query.filter;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from);
+			}
+			if (from < 0) from = 0;										
+			engine.getBL(filter,lang,from,size)
+				.then((karas) => {
+					res.json(OKMessage(karas));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('BL_VIEW_ERROR',err));
+				});
+		});				
+	routerAdmin.route('/blacklist/criterias')
+	/**
  * @api {get} admin/blacklist/criterias Get list of blacklist criterias
  * @apiName GetBlacklistCriterias
  * @apiVersion 2.0.0
@@ -1995,27 +1960,27 @@ module.exports = {
  *   ]
  * }
 
- * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "BLC_VIEW_ERROR"
- * }
- */		
-				.get(requireAuth, requireAdmin, function(req,res){
-					//Get list of blacklisted karas
-					module.exports.onBlacklistCriterias()
-						.then(function(blc){
-							res.json(OKMessage(blc));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('BLC_VIEW_ERROR',err));
-						});
+* @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
+*
+* @apiErrorExample Error-Response:
+* HTTP/1.1 500 Internal Server Error
+* {
+*   "code": "BLC_VIEW_ERROR"
+* }
+*/		
+		.get(requireAuth, requireAdmin, (req, res) => {
+			//Get list of blacklist criterias
+			engine.getBLC()
+				.then((blc) => {
+					res.json(OKMessage(blc));
 				})
-			/**
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('BLC_VIEW_ERROR',err));
+				});
+		})
+	/**
  * @api {post} admin/blacklist/criterias Add a blacklist criteria
  * @apiName PostBlacklistCriterias
  * @apiVersion 2.0.0
@@ -2053,44 +2018,44 @@ module.exports = {
  *   }
  * }
  */		
-				.post(requireAuth, requireAdmin, function(req,res){
-					//Add blacklist criteria
-					req.check({
-						'blcriteria_type': {
-							in: 'body',
-							notEmpty: true,
-							isInt: true,
-						},
-						'blcriteria_value': {
-							in: 'body',
-							notEmpty: true,							
-						}
-					});
+		.post(requireAuth, requireAdmin, (req, res) => {
+			//Add blacklist criteria
+			req.check({
+				'blcriteria_type': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'blcriteria_value': {
+					in: 'body',
+					notEmpty: true,							
+				}
+			});
 
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							module.exports.onBlacklistCriteriaAdd(req.body.blcriteria_type,req.body.blcriteria_value)
-								.then(function(){
-									module.exports.emitEvent('blacklistUpdated');
-									res.statusCode = 201;
-									res.json(OKMessage(req.body,'BLC_ADDED',req.body));
-								})
-								.catch(function(err){
-									logger.error(err);
-									res.statusCode = 500;
-									res.json(errMessage('BLC_ADD_ERROR',err));
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
-				});
+			req.getValidationResult().then((result) =>  {
+				if (result.isEmpty()) {
+					engine.addBLC(req.body.blcriteria_type,req.body.blcriteria_value)
+						.then(() => {
+							emitWS('blacklistUpdated');
+							res.statusCode = 201;
+							res.json(OKMessage(req.body,'BLC_ADDED',req.body));
+						})
+						.catch((err) => {
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('BLC_ADD_ERROR',err));
+						});
+				} else {
+					// Errors detected
+					// Sending BAD REQUEST HTTP code and error object.
+					res.statusCode = 400;
+					res.json(result.mapped());
+				}
+			});
+		});
 
-			routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
-			/**
+	routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
+	/**
  * @api {delete} admin/blacklist/criterias/:blc_id Delete a blacklist criteria
  * @apiName DeleteBlacklistCriterias
  * @apiVersion 2.0.0
@@ -2118,19 +2083,19 @@ module.exports = {
  *   "message": "BLCID 5 unknown"
  * }
  */		
-				.delete(requireAuth, requireAdmin, function(req,res){
-					module.exports.onBlacklistCriteriaDelete(req.params.blc_id)
-						.then(function(){
-							module.exports.emitEvent('blacklistUpdated');
-							res.json(OKMessage(req.params.blc_id,'BLC_DELETED',req.params.blc_id));							
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('BLC_DELETE_ERROR',err));	
-						});
+		.delete(requireAuth, requireAdmin, (req, res) => {
+			engine.deleteBLC(req.params.blc_id)
+				.then(() => {
+					emitWS('blacklistUpdated');
+					res.json(OKMessage(req.params.blc_id,'BLC_DELETED',req.params.blc_id));							
 				})
-			/**
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('BLC_DELETE_ERROR',err));	
+				});
+		})
+	/**
  * @api {put} admin/blacklist/criterias/:blc_id Edit a blacklist criteria
  * @apiName PutBlacklistCriterias
  * @apiVersion 2.0.0
@@ -2163,43 +2128,43 @@ module.exports = {
  *   "message": "BLCID 12309 unknown"
  * }
  */		
-				.put(requireAuth, requireAdmin, function(req,res){
-					//Update BLC
-					req.check({
-						'blcriteria_type': {
-							in: 'body',
-							notEmpty: true,
-							isInt: true,
-						},
-						'blcriteria_value': {
-							in: 'body',
-							notEmpty: true,
-						}
-					});
+		.put(requireAuth, requireAdmin, (req, res) => {
+			//Update BLC
+			req.check({
+				'blcriteria_type': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'blcriteria_value': {
+					in: 'body',
+					notEmpty: true,
+				}
+			});
 
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							module.exports.onBlacklistCriteriaEdit(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value)
-								.then(function(){
-									module.exports.emitEvent('blacklistUpdated');
-									res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
-								})
-								.catch(function(err){
-									logger.error(err);
-									res.statusCode = 500;
-									res.json(errMessage('BLC_UPDATE_ERROR',err));
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
-				});
+			req.getValidationResult().then((result) =>  {
+				if (result.isEmpty()) {
+					engine.editBLC(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value)
+						.then(() => {
+							emitWS('blacklistUpdated');
+							res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
+						})
+						.catch((err) => {
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('BLC_UPDATE_ERROR',err));
+						});
+				} else {
+					// Errors detected
+					// Sending BAD REQUEST HTTP code and error object.
+					res.statusCode = 400;
+					res.json(result.mapped());
+				}
+			});
+		});
 
-			routerAdmin.route('/player')
-			/**
+	routerAdmin.route('/player')
+	/**
  * @api {put} admin/player Send commands to player
  * @apiName PutPlayerCommando
  * @apiVersion 2.0.0
@@ -2225,49 +2190,49 @@ module.exports = {
  * }
  */
 
-				.put(requireAuth, requireAdmin, function(req,res){
-					req.checkBody('command')
-						.notEmpty()
-						.enum(['play',
-							'pause',
-							'stopNow',
-							'stopAfter',
-							'skip',
-							'prev',
-							'toggleFullscreen',
-							'toggleAlwaysOnTop',
-							'seek',
-							'goTo',
-							'mute',
-							'unmute',
-							'setVolume',
-							'showSubs',
-							'hideSubs',
-						]
-						);
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							module.exports.onPlayerCommand(req.body.command,req.body.options)
-								.then(function(){
-									res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
-								})
-								.catch(function(err){
-									logger.error(err);
-									res.statusCode = 500;
-									res.json(errMessage('COMMAND_SEND_ERROR',err));
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
-				});
+		.put(requireAuth, requireAdmin, (req, res) => {
+			req.checkBody('command')
+				.notEmpty()
+				.enum(['play',
+					'pause',
+					'stopNow',
+					'stopAfter',
+					'skip',
+					'prev',
+					'toggleFullscreen',
+					'toggleAlwaysOnTop',
+					'seek',
+					'goTo',
+					'mute',
+					'unmute',
+					'setVolume',
+					'showSubs',
+					'hideSubs',
+				]
+				);
+			req.getValidationResult().then((result) =>  {
+				if (result.isEmpty()) {
+					engine.sendCommand(req.body.command,req.body.options)
+						.then(() => {
+							res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
+						})
+						.catch((err) => {
+							logger.error(err);
+							res.statusCode = 500;
+							res.json(errMessage('COMMAND_SEND_ERROR',err));
+						});
+				} else {
+					// Errors detected
+					// Sending BAD REQUEST HTTP code and error object.
+					res.statusCode = 400;
+					res.json(result.mapped());
+				}
+			});
+		});
 
 
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/export')
-			/**
+	routerAdmin.route('/playlists/:pl_id([0-9]+)/export')
+	/**
  * @api {get} admin/playlists/:pl_id/export Export a playlist
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getPlaylistExport
@@ -2319,21 +2284,21 @@ module.exports = {
  *   "message": "Playlist 5 unknown"
  * }
  */		
-				.get(requireAuth, requireAdmin, function(req,res){
-					// Returns the playlist and its contents in an exportable format (to save on disk)
-					module.exports.onPlaylistExport(req.params.pl_id)
-						.then(function(playlist){
-							// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
-							res.json(OKMessage(playlist));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
-						});
+		.get(requireAuth, requireAdmin, (req, res) => {
+			// Returns the playlist and its contents in an exportable format (to save on disk)
+			engine.exportPL(req.params.pl_id)
+				.then(function(playlist){
+					// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
+					res.json(OKMessage(playlist));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
 				});
-			routerAdmin.route('/playlists/import')
-			/**
+		});
+	routerAdmin.route('/playlists/import')
+	/**
  * @api {post} admin/playlists/import Import a playlist
  * @apiName postPlaylistImport
  * @apiVersion 2.0.0
@@ -2362,46 +2327,46 @@ module.exports = {
  *   "message": "No header section"
  * }
  */		
-				.post(requireAuth, requireAdmin, function(req,res){
-					// Imports a playlist and its contents in an importable format (posted as JSON data)
-					req.check({
-						'playlist': {
-							in: 'body',
-							notEmpty: true,
-							isJSON: true,
-						}
-					});
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							module.exports.onPlaylistImport(JSON.parse(req.body.playlist))
-								.then(function(result){									
-									var response = {
-										message: 'Playlist imported',
-										playlist_id: result.playlist_id
-									};
-									if (result.karasUnknown) {
-										response.unknownKaras = result.karasUnknown;
-									}
-									module.exports.emitEvent('playlistsUpdated');
-									res.json(OKMessage(response,'PL_IMPORTED',result.playlist_id));
+		.post(requireAuth, requireAdmin, (req, res) => {
+			// Imports a playlist and its contents in an importable format (posted as JSON data)
+			req.check({
+				'playlist': {
+					in: 'body',
+					notEmpty: true,
+					isJSON: true,
+				}
+			});
+			req.getValidationResult().then((result) =>  {
+				if (result.isEmpty()) {
+					engine.importPL(JSON.parse(req.body.playlist))
+						.then((result) => {									
+							const response = {
+								message: 'Playlist imported',
+								playlist_id: result.playlist_id
+							};
+							if (result.karasUnknown) {
+								response.unknownKaras = result.karasUnknown;
+							}
+							emitWS('playlistsUpdated');
+							res.json(OKMessage(response,'PL_IMPORTED',result.playlist_id));
 
-								})
-								.catch(function(err){
-									res.statusCode = 500;
-									res.json(errMessage('PL_IMPORT_ERROR',err));
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
-				});
+						})
+						.catch((err) => {
+							res.statusCode = 500;
+							res.json(errMessage('PL_IMPORT_ERROR',err));
+						});
+				} else {
+					// Errors detected
+					// Sending BAD REQUEST HTTP code and error object.
+					res.statusCode = 400;
+					res.json(result.mapped());
+				}
+			});
+		});
 
 
-			routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
-			/**
+	routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
+	/**
  * @api {put} admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
@@ -2430,24 +2395,24 @@ module.exports = {
  * }
  */		
 
-				.put(requireAuth, requireAdmin, function(req,res){
-					module.exports.onPlaylistShuffle(req.params.pl_id)
-						.then(function(){
-							module.exports.emitEvent('playlistContentsUpdated',req.params.pl_id);
-							res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));							
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
-						});
+		.put(requireAuth, requireAdmin, (req, res) => {
+			engine.shufflePL(req.params.pl_id)
+				.then(() => {
+					emitWS('playlistContentsUpdated',req.params.pl_id);
+					res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));							
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
 				});
+		});
 
-			// Public routes
+	// Public routes
 
 
-			routerPublic.route('/playlists')
-			/**
+	routerPublic.route('/playlists')
+	/**
  * @api {get} public/playlists/ Get list of playlists (public)
  * @apiName GetPlaylistsPublic
  * @apiGroup Playlists
@@ -2479,20 +2444,20 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(requireAuth, function(req,res){
-					// Get list of playlists, only return the visible ones
-					var seenFromUser = true;
-					module.exports.onPlaylists(seenFromUser)
-						.then(function(playlists){
-							res.json(OKMessage(playlists));
-						})
-						.catch(function(err){
-							res.statusCode = 500;
-							res.json(errMessage('PL_LIST_ERROR',err));	
-						});
+		.get(requireAuth, (req, res) => {
+			// Get list of playlists, only return the visible ones
+			const seenFromUser = true;
+			engine.getAllPLs(seenFromUser)
+				.then((playlists) => {
+					res.json(OKMessage(playlists));
+				})
+				.catch((err) => {
+					res.statusCode = 500;
+					res.json(errMessage('PL_LIST_ERROR',err));	
 				});
-			routerPublic.route('/playlists/:pl_id([0-9]+)')
-			/**
+		});
+	routerPublic.route('/playlists/:pl_id([0-9]+)')
+	/**
  * @api {get} public/playlists/:pl_id Get playlist information (public)
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
@@ -2532,23 +2497,23 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(requireAuth, function(req,res){
-					// Get playlist, only if visible
-					//Access :pl_id by req.params.pl_id
-					// This get route gets infos from a playlist
-					var seenFromUser = true;
-					module.exports.onPlaylistSingleInfo(req.params.pl_id,seenFromUser)
-						.then(function(playlist){							
-							res.json(OKMessage(playlist));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
-						});
+		.get(requireAuth, (req, res) => {
+			// Get playlist, only if visible
+			//Access :pl_id by req.params.pl_id
+			// This get route gets infos from a playlist
+			const seenFromUser = true;
+			engine.getPLInfo(req.params.pl_id,seenFromUser)
+				.then((playlist) => {							
+					res.json(OKMessage(playlist));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 				});
-			routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
-			/**
+		});
+	routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
+	/**
  * @api {get} public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.0.0
@@ -2624,38 +2589,38 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(requireAuth, function(req,res){
-					// Get playlist contents, only if visible
-					//Access :pl_id by req.params.pl_id					
-					var filter = req.query.filter;
-					var lang = req.query.lang;
-					var size;
-					if (!req.query.size) {
-						size = 999999;
-					} else {
-						size = parseInt(req.query.size);
-					}
-					var from;
-					if (!req.query.from) {
-						from = 0;
-					} else {
-						from = parseInt(req.query.from);
-					}
-					var seenFromUser = true;
-					module.exports.onPlaylistSingleContents(req.params.pl_id,filter,lang,seenFromUser,from,size)
-						.then(function(playlist){
-							if (playlist == null) res.statusCode = 404;
-							res.json(OKMessage(playlist));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
-						});
+		.get(requireAuth, (req, res) => {
+			// Get playlist contents, only if visible
+			//Access :pl_id by req.params.pl_id					
+			const filter = req.query.filter;
+			const lang = req.query.lang;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from);
+			}
+			const seenFromUser = true;
+			engine.getPLContents(req.params.pl_id,filter,lang,seenFromUser,from,size)
+				.then((playlist) => {
+					if (playlist == null) res.statusCode = 404;
+					res.json(OKMessage(playlist));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
 				});
+		});
 
-			routerPublic.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
-			/**
+	routerPublic.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+	/**
  * @api {get} public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
  * @apiVersion 2.0.0
@@ -2759,23 +2724,23 @@ module.exports = {
  * }
  */
 
-				.get(requireAuth, function(req,res){
-					var seenFromUser = true;
-					module.exports.onPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
-						.then(function(kara){
-							res.json(OKMessage(kara));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
-						});
+		.get(requireAuth, (req, res) => {
+			const seenFromUser = true;
+			engine.getPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
+				.then((kara) => {
+					res.json(OKMessage(kara));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
 				});
-			routerPublic.route('/settings')
-			/**
+		});
+	routerPublic.route('/settings')
+	/**
  * @api {get} public/settings Get settings (public)
  * @apiName GetSettingsPublic
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Main
  * @apiPermission public
  * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries or admin password information.
@@ -2817,24 +2782,25 @@ module.exports = {
  *   }
  * }
  */
-				.get(requireAuth, function(req,res){
-					//We don't want to return all settings.
-					var settings = {};
-					for (var key in module.exports.SETTINGS) {
-						if (module.exports.SETTINGS.hasOwnProperty(key)) {
+		.get(requireAuth, (req, res) => {
+			//We don't want to return all settings.
+			let settings = {};
+			const conf = getConfig();
+			for (var key in conf) {
+				if (conf.hasOwnProperty(key)) {
 
-							if (!key.startsWith('Path') &&
-								!key.startsWith('Admin') &&
-								!key.startsWith('Bin')
-							) {
-								settings[key] = module.exports.SETTINGS[key];
-							}
-						}
+					if (!key.startsWith('Path') &&
+						!key.startsWith('Admin') &&
+						!key.startsWith('Bin')
+					) {
+						settings[key] = conf[key];
 					}
-					res.json(OKMessage(settings));
-				});				
-			routerPublic.route('/stats')
-			/**
+				}
+			}
+			res.json(OKMessage(settings));
+		});				
+	routerPublic.route('/stats')
+	/**
  * @api {get} public/stats Get statistics
  * @apiName GetStats
  * @apiVersion 2.0.0
@@ -2861,20 +2827,20 @@ module.exports = {
  *    }
  * } 
  */
-				.get(requireAuth, function(req,res){
-					module.exports.onStats()
-						.then(function(stats){
-							res.json(OKMessage(stats));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('STATS_ERROR',err));
-						});
+		.get(requireAuth, (req, res) => {
+			engine.getKMStats()
+				.then((stats) => {
+					res.json(OKMessage(stats));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('STATS_ERROR',err));
 				});
+		});
 
-			routerPublic.route('/whitelist')
-			/**
+	routerPublic.route('/whitelist')
+	/**
  * @api {get} public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
  * @apiVersion 2.0.0
@@ -2944,40 +2910,41 @@ module.exports = {
  *   "code": "WL_VIEW_FORBIDDEN"
  * }
  */
-				.get(requireAuth, function(req,res){
-					//Returns whitelist IF the settings allow public to see it
-					if (module.exports.SETTINGS.EngineAllowViewWhitelist == 1) {
-						var lang = req.query.lang;
-						var filter = req.query.filter;
-						var size;
-						if (!req.query.size) {
-							size = 999999;
-						} else {
-							size = parseInt(req.query.size);
-						}
-						var from;
-						if (!req.query.from) {
-							from = 0;
-						} else {
-							from = parseInt(req.query.from);
-						}
-						module.exports.onWhitelist(filter,lang,from,size)
-							.then(function(karas){
-								res.json(OKMessage(karas));
-							})
-							.catch(function(err){
-								logger.error(err);
-								res.statusCode = 500;
-								res.json(errMessage('WL_VIEW_ERROR',err));
-							});
-					} else {
-						res.StatusCode = 403;
-						res.json(errMessage('WL_VIEW_FORBIDDEN'));
-					}
-				});
+		.get(requireAuth, (req, res) => {
+			const conf = getConfig();
+			//Returns whitelist IF the settings allow public to see it
+			if (conf.EngineAllowViewWhitelist == 1) {
+				const lang = req.query.lang;
+				const filter = req.query.filter;
+				let size;
+				if (!req.query.size) {
+					size = 999999;
+				} else {
+					size = parseInt(req.query.size);
+				}
+				let from;
+				if (!req.query.from) {
+					from = 0;
+				} else {
+					from = parseInt(req.query.from);
+				}
+				engine.getWL(filter,lang,from,size)
+					.then((karas) => {
+						res.json(OKMessage(karas));
+					})
+					.catch((err) => {
+						logger.error(err);
+						res.statusCode = 500;
+						res.json(errMessage('WL_VIEW_ERROR',err));
+					});
+			} else {
+				res.StatusCode = 403;
+				res.json(errMessage('WL_VIEW_FORBIDDEN'));
+			}
+		});
 
-			routerPublic.route('/blacklist')
-			/**
+	routerPublic.route('/blacklist')
+	/**
  * @api {get} public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
  * @apiVersion 2.0.0
@@ -3047,40 +3014,41 @@ module.exports = {
  *   "code": "BL_VIEW_FORBIDDEN"
  * }
  */
-				.get(requireAuth, function(req,res){
-					//Get list of blacklisted karas IF the settings allow public to see it
-					if (module.exports.SETTINGS.EngineAllowViewBlacklist == 1) {
-						var lang = req.query.lang;
-						var filter = req.query.filter;
-						var size;
-						if (!req.query.size) {
-							size = 999999;
-						} else {
-							size = parseInt(req.query.size);
-						}
-						var from;
-						if (!req.query.from) {
-							from = 0;
-						} else {
-							from = parseInt(req.query.from);
-						}
-						module.exports.onBlacklist(filter,lang,from,size)
-							.then(function(karas){
-								res.json(OKMessage(karas));
-							})
-							.catch(function(err){
-								logger.error(err);
-								res.statusCode = 500;
-								res.json(errMessage('BL_VIEW_ERROR',err));
-							});
-					} else {
-						res.StatusCode = 403;
-						res.json(errMessage('BL_VIEW_FORBIDDEN'));
-					}
-				});
+		.get(requireAuth, (req, res) => {
+			const conf = getConfig();
+			//Get list of blacklisted karas IF the settings allow public to see it
+			if (conf.EngineAllowViewBlacklist == 1) {
+				const lang = req.query.lang;
+				const filter = req.query.filter;
+				let size;
+				if (!req.query.size) {
+					size = 999999;
+				} else {
+					size = parseInt(req.query.size);
+				}
+				let from;
+				if (!req.query.from) {
+					from = 0;
+				} else {
+					from = parseInt(req.query.from);
+				}
+				engine.getBL(filter,lang,from,size)
+					.then((karas) => {
+						res.json(OKMessage(karas));
+					})
+					.catch((err) => {
+						logger.error(err);
+						res.statusCode = 500;
+						res.json(errMessage('BL_VIEW_ERROR',err));
+					});
+			} else {
+				res.StatusCode = 403;
+				res.json(errMessage('BL_VIEW_FORBIDDEN'));
+			}
+		});
 
-			routerPublic.route('/blacklist/criterias')
-			/**
+	routerPublic.route('/blacklist/criterias')
+	/**
  * @api {get} public/blacklist/criterias Get list of blacklist criterias (public)
  * @apiName GetBlacklistCriteriasPublic
  * @apiVersion 2.0.0
@@ -3105,35 +3073,36 @@ module.exports = {
  *   ]
  * }
 
- * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
- * @apiError BLC_VIEW_FORBIDDEN Blacklist criterias are not viewable by users.
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "BLC_VIEW_FORBIDDEN"
- * }
- */		
-				.get(requireAuth, function(req,res){
-					//Get list of blacklist criterias IF the settings allow public to see it
-					if (module.exports.SETTINGS.EngineAllowViewBlacklistCriterias == 1) {
-						module.exports.onBlacklistCriterias()
-							.then(function(blc){
-								res.json(OKMessage(blc));
-							})
-							.catch(function(err){
-								logger.error(err);
-								res.statusCode = 500;
-								res.json(errMessage('BLC_VIEW_ERROR',err));
-							});
-					} else {
-						res.StatusCode = 403;
-						res.json(errMessage('BLC_VIEW_FORBIDDEN'));
-					}
-				});
+* @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
+* @apiError BLC_VIEW_FORBIDDEN Blacklist criterias are not viewable by users.
+*
+* @apiErrorExample Error-Response:
+* HTTP/1.1 500 Internal Server Error
+* {
+*   "code": "BLC_VIEW_FORBIDDEN"
+* }
+*/		
+		.get(requireAuth, (req, res) => {
+			const conf = getConfig();
+			//Get list of blacklist criterias IF the settings allow public to see it
+			if (conf.EngineAllowViewBlacklistCriterias == 1) {
+				engine.getBLC()
+					.then(function(blc){
+						res.json(OKMessage(blc));
+					})
+					.catch((err) => {
+						logger.error(err);
+						res.statusCode = 500;
+						res.json(errMessage('BLC_VIEW_ERROR',err));
+					});
+			} else {
+				res.StatusCode = 403;
+				res.json(errMessage('BLC_VIEW_FORBIDDEN'));
+			}
+		});
 
-			routerPublic.route('/player')
-			/**
+	routerPublic.route('/player')
+	/**
  * @api {get} public/player Get player status
  * @apiName GetPlayer
  * @apiVersion 2.0.0
@@ -3179,25 +3148,25 @@ module.exports = {
  *   "code": "PLAYER_STATUS_ERROR"
  * }
  */		
-				.get(requireAuth, function(req,res){
-					// Get player status
-					// What's playing, time in seconds, duration of song
+		.get(requireAuth, (req, res) => {
+			// Get player status
+			// What's playing, time in seconds, duration of song
 
-					//return status of the player
+			//return status of the player
 
-					module.exports.onPlayerStatus()
-						.then(function(status){
-							res.json(OKMessage(status));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('PLAYER_STATUS_ERROR',err));
-						});
-
+			engine.getPlayerStatus()
+				.then((status) => {
+					res.json(OKMessage(status));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('PLAYER_STATUS_ERROR',err));
 				});
-			routerPublic.route('/karas')
-			/**
+
+		});
+	routerPublic.route('/karas')
+	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
  * @apiVersion 2.0.0
@@ -3266,37 +3235,37 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(requireAuth, function(req,res){
-					// if the query has a &filter=xxx
-					// then the playlist returned gets filtered with the text.
-					var filter = req.query.filter;
-					var lang = req.query.lang;
-					var size;
-					if (!req.query.size) {
-						size = 999999;
-					} else {
-						size = parseInt(req.query.size);
-					}
-					var from;
-					if (!req.query.from) {
-						from = 0;
-					} else {
-						from = parseInt(req.query.from);
-					}
-					if (from < 0) from = 0;					
-					module.exports.onKaras(filter,lang,from,size)
-						.then(function(karas){
-							res.json(OKMessage(karas));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('SONG_LIST_ERROR',err));
-						});
+		.get(requireAuth, (req, res) => {
+			// if the query has a &filter=xxx
+			// then the playlist returned gets filtered with the text.
+			const filter = req.query.filter;
+			const lang = req.query.lang;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from);
+			}
+			if (from < 0) from = 0;					
+			engine.getKaras(filter,lang,from,size)
+				.then((karas) => {
+					res.json(OKMessage(karas));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('SONG_LIST_ERROR',err));
 				});
+		});
 
-			routerPublic.route('/karas/random')
-			/**
+	routerPublic.route('/karas/random')
+	/**
  * @api {get} /public/karas/random Get a random karaoke ID
  * @apiName GetKarasRandom
  * @apiVersion 2.0.0
@@ -3315,24 +3284,24 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(requireAuth, function(req,res){
-					module.exports.onKaraRandom(req.query.filter)
-						.then(function(kara_id){
-							if (!kara_id) {
-								res.statusCode = 500;
-								res.json(errMessage('GET_UNLUCKY'));
-							} else {
-								res.json(OKMessage(kara_id));
-							}
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('GET_LUCKY_ERROR',err));
-						});
+		.get(requireAuth, (req, res) => {
+			engine.getRandomKara(req.query.filter)
+				.then((kara_id) => {
+					if (!kara_id) {
+						res.statusCode = 500;
+						res.json(errMessage('GET_UNLUCKY'));
+					} else {
+						res.json(OKMessage(kara_id));
+					}
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('GET_LUCKY_ERROR',err));
 				});
-			routerPublic.route('/karas/:kara_id([0-9]+)')
-			/**
+		});
+	routerPublic.route('/karas/:kara_id([0-9]+)')
+	/**
  * @api {get} public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 2.0.0
@@ -3418,18 +3387,18 @@ module.exports = {
  *   "message": "PLCID unknown!"
  * }
  */
-				.get(requireAuth, function(req,res){
-					module.exports.onKaraSingle(req.params.kara_id,req.query.lang)
-						.then(function(kara){							
-							res.json(OKMessage(kara));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('SONG_VIEW_ERROR',err));
-						});
+		.get(requireAuth, (req, res) => {
+			engine.getKaraInfo(req.params.kara_id,req.query.lang)
+				.then((kara) => {	
+					res.json(OKMessage(kara));
 				})
-			/**
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('SONG_VIEW_ERROR',err));
+				});
+		})
+	/**
  * @api {post} public/karas/:kara_id Add karaoke to current/public playlist
  * @apiName PostKaras
  * @apiVersion 2.0.0
@@ -3463,56 +3432,56 @@ module.exports = {
  *   }
  * }
 
- * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
- * @apiError PLAYLIST_MODE_ADD_SONG_ERROR Karaoke already present in playlist
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "args": {
- *       "kara": "1033",
- *       "playlist": 1,
- *       "user": "Axel"
- *   },
- *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
- *   "message": "User quota reached"
- * }
- */
-				.post(requireAuth, function(req,res){
-					// Add Kara to the playlist currently used depending on mode
-					req.check({
-						'requestedby': {
-							in: 'body',
-							notEmpty: true,
-						}
-					});
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR Karaoke already present in playlist
+*
+* @apiErrorExample Error-Response:
+* HTTP/1.1 500 Internal Server Error
+* {
+*   "args": {
+*       "kara": "1033",
+*       "playlist": 1,
+*       "user": "Axel"
+*   },
+*   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
+*   "message": "User quota reached"
+* }
+*/
+		.post(requireAuth, (req, res) => {
+			// Add Kara to the playlist currently used depending on mode
+			req.check({
+				'requestedby': {
+					in: 'body',
+					notEmpty: true,
+				}
+			});
 
-					req.getValidationResult().then(function(result) {
-						if (result.isEmpty()) {
-							req.sanitize('requestedby').trim();
-							req.sanitize('requestedby').unescape();
-							module.exports.onKaraAddToModePlaylist(req.params.kara_id,req.body.requestedby)
-								.then(function(data){
-									module.exports.emitEvent('playlistContentsUpdated',data.playlist_id);
-									module.exports.emitEvent('playlistInfoUpdated',data.playlist_id);
-									res.statusCode = 201;
-									res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
-								})
-								.catch(function(err){
-									res.statusCode = 500;
-									res.json(errMessage(err.code,err.message,err.data));
-								});
-						} else {
-							// Errors detected
-							// Sending BAD REQUEST HTTP code and error object.
-							res.statusCode = 400;
-							res.json(result.mapped());
-						}
-					});
-				});
+			req.getValidationResult().then((result) =>  {
+				if (result.isEmpty()) {
+					req.sanitize('requestedby').trim();
+					req.sanitize('requestedby').unescape();
+					engine.addKaraToPL(null, req.params.kara_id, req.body.requestedby, null)
+						.then((data) => {
+							emitWS('playlistContentsUpdated',data.playlist_id);
+							emitWS('playlistInfoUpdated',data.playlist_id);
+							res.statusCode = 201;
+							res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
+						})
+						.catch((err) => {
+							res.statusCode = 500;
+							res.json(errMessage(err.code,err.message,err.data));
+						});
+				} else {
+					// Errors detected
+					// Sending BAD REQUEST HTTP code and error object.
+					res.statusCode = 400;
+					res.json(result.mapped());
+				}
+			});
+		});
 
-			routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')
-			/**
+	routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')
+	/**
  * @api {post} public/karas/:kara_id/lyrics Get song lyrics
  * @apiName GetKarasLyrics
  * @apiVersion 2.0.0
@@ -3526,27 +3495,27 @@ module.exports = {
  *   "data": "Lyrics for this song are not available"
  * }
 
- * @apiError LYRICS_VIEW_ERROR Unable to fetch lyrics data
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
- * }
- */			
-				.get(requireAuth, function(req,res){
-					module.exports.onKaraSingleLyrics(req.params.kara_id)
-						.then(function(kara){							
-							res.json(OKMessage(kara));
-						})
-						.catch(function(err){
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
-						});
+* @apiError LYRICS_VIEW_ERROR Unable to fetch lyrics data
+*
+* @apiErrorExample Error-Response:
+* HTTP/1.1 500 Internal Server Error
+* {
+*   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
+* }
+*/			
+		.get(requireAuth, (req, res) => {
+			engine.getLyrics(req.params.kara_id)
+				.then((kara) => {							
+					res.json(OKMessage(kara));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
 				});
-			routerPublic.route('/playlists/current')
-			/**
+		});
+	routerPublic.route('/playlists/current')
+	/**
  * @api {get} public/playlists/current Get current playlist information
  * @apiName GetPlaylistCurrent
  * @apiGroup Playlists
@@ -3585,22 +3554,22 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.get(requireAuth, function(req,res){
-					// Get current Playlist
+		.get(requireAuth, (req, res) => {
+			// Get current Playlist
 
-					module.exports.onPlaylistCurrentInfo()
-						.then(function(playlist){
-							res.json(OKMessage(playlist));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_CURRENT_ERROR',err));
-						});
+			engine.getCurrentPLInfo()
+				.then((playlist) => {
+					res.json(OKMessage(playlist));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_CURRENT_ERROR',err));
 				});
+		});
 
-			routerPublic.route('/playlists/current/karas')
-			/**
+	routerPublic.route('/playlists/current/karas')
+	/**
  * @api {get} public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
  * @apiVersion 2.0.0
@@ -3677,35 +3646,35 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(requireAuth, function(req,res){
-					// Get current Playlist
-					var lang = req.query.lang;
-					var filter = req.query.filter;
-					var from;
-					if (!req.query.from) {
-						from = 0;
-					} else {
-						from = req.query.from;
-					}
-					var to;
-					if (!req.query.to) {
-						to = 999999;
-					} else {
-						to = req.query.to;
-					}
-					module.exports.onPlaylistCurrentContents(filter, lang, from, to)
-						.then(function(playlist){
-							res.json(OKMessage(playlist));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
-						});
+		.get(requireAuth, (req, res) => {
+			// Get current Playlist
+			const lang = req.query.lang;
+			const filter = req.query.filter;
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = req.query.from;
+			}
+			let to;
+			if (!req.query.to) {
+				to = 999999;
+			} else {
+				to = req.query.to;
+			}
+			engine.getCurrentPLContents(filter, lang, from, to)
+				.then((playlist) => {
+					res.json(OKMessage(playlist));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 				});
+		});
 
-			routerPublic.route('/playlists/public')
-			/**
+	routerPublic.route('/playlists/public')
+	/**
  * @api {get} public/playlists/public Get public playlist information
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
@@ -3745,21 +3714,21 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(requireAuth, function(req,res){
-					// Get current Playlist
-					module.exports.onPlaylistPublicInfo()
-						.then(function(playlist){
-							res.json(OKMessage(playlist));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_PUBLIC_ERROR',err));
-						});
+		.get(requireAuth, (req, res) => {
+			// Get current Playlist
+			engine.getPublicPLInfo()
+				.then((playlist) => {
+					res.json(OKMessage(playlist));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_PUBLIC_ERROR',err));
 				});
+		});
 
-			routerPublic.route('/playlists/public/karas')
-			/**
+	routerPublic.route('/playlists/public/karas')
+	/**
  * @api {get} public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.0.0
@@ -3836,89 +3805,89 @@ module.exports = {
  * HTTP/1.1 500 Internal Server Error
  */
 
-				.get(requireAuth, function(req,res){
-					// Get public Playlist
-					var lang = req.query.lang;
-					var filter = req.query.filter;
-					var to;
-					if (!req.query.to) {
-						to = 999999;
-					} else {
-						to = req.query.to;
-					}
-					var from;
-					if (!req.query.from) {
-						from = 0;
-					} else {
-						from = req.query.from;
-					}
-					module.exports.onPlaylistPublicContents(filter, lang, from, to)
-						.then(function(playlist){
-							res.json(OKMessage(playlist));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
-						});
+		.get(requireAuth, (req, res) => {
+			// Get public Playlist
+			const lang = req.query.lang;
+			const filter = req.query.filter;
+			let to;
+			if (!req.query.to) {
+				to = 999999;
+			} else {
+				to = req.query.to;
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = req.query.from;
+			}
+			engine.getPublicPLContents(filter, lang, from, to)
+				.then((playlist) => {
+					res.json(OKMessage(playlist));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 				});
+		});
 
-			routerPublic.route('/tags')
-			/**
-			* @api {get} public/tags Get tag list
-			* @apiName GetTags
-			* @apiVersion 2.0.0
-			* @apiGroup Karaokes
-			* @apiPermission public
-			* 
-			* @apiSuccess {String} data/name Name of tag
-			* @apiSuccess {String} data/name_i18n Translated name of tag
-			* @apiSuccess {Number} data/tag_id Tag ID number
-			* @apiSuccess {Number} data/type Tag type number
-			*
-			* @apiSuccessExample Success-Response:
-			* HTTP/1.1 200 OK
-			* {
-            *     "data": [
-            *        {
-            *          "name": "20th Century",
-            *          "name_i18n": "20th Century",
-            *          "tag_id": 371,
-            *          "type": 2
-			*        },
-			*        {
-            *		   "name": "TYPE_AMV",
-            *          "name_i18n": "Anime Music Video",
-            *          "tag_id": 15,
-            *          "type": 3
-        	*        },
-            *        {
-            *          "name": "ita",
-			*          "name_i18n": "Italien",
-			*          "tag_id": 370,
-			*          "type": 5
-			*        }
-			*		 ...
-			*   ]
-			* }
-        	* @apiError TAGS_LIST_ERROR Unable to get list of tags
-			*
-			* @apiErrorExample Error-Response:
-			* HTTP/1.1 500 Internal Server Error
-			*/
-				.get(requireAuth, function(req,res){
-					module.exports.onTags(req.query.lang)
-						.then(function(tags){
-							res.json(OKMessage(tags));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('TAGS_LIST_ERROR',err));
-						});
+	routerPublic.route('/tags')
+	/**
+	* @api {get} public/tags Get tag list
+	* @apiName GetTags
+	* @apiVersion 2.0.0
+	* @apiGroup Karaokes
+	* @apiPermission public
+	* 
+	* @apiSuccess {String} data/name Name of tag
+	* @apiSuccess {String} data/name_i18n Translated name of tag
+	* @apiSuccess {Number} data/tag_id Tag ID number
+	* @apiSuccess {Number} data/type Tag type number
+	*
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* {
+	*     "data": [
+	*        {
+	*          "name": "20th Century",
+	*          "name_i18n": "20th Century",
+	*          "tag_id": 371,
+	*          "type": 2
+	*        },
+	*        {
+	*		   "name": "TYPE_AMV",
+	*          "name_i18n": "Anime Music Video",
+	*          "tag_id": 15,
+	*          "type": 3
+	*        },
+	*        {
+	*          "name": "ita",
+	*          "name_i18n": "Italien",
+	*          "tag_id": 370,
+	*          "type": 5
+	*        }
+	*		 ...
+	*   ]
+	* }
+	* @apiError TAGS_LIST_ERROR Unable to get list of tags
+	*
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	*/
+		.get(requireAuth, (req, res) => {
+			engine.getTags(req.query.lang)
+				.then((tags) => {
+					res.json(OKMessage(tags));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('TAGS_LIST_ERROR',err));
 				});
-			routerPublic.route('/guests')
-			/**
+		});
+	routerPublic.route('/guests')
+	/**
  * @api {get} public/guests List guest accounts
  * @apiName GetGuests
  * @apiVersion 2.1.0
@@ -3950,19 +3919,19 @@ module.exports = {
  *   "code": "GUEST_LIST_ERROR",
  * }
  */
-				.get(function(req,res){
-					user.listGuests()
-						.then(function(guests){
-							res.json(OKMessage(guests));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('GUEST_LIST_ERROR',err));
-						});
+		.get((req, res) => {
+			user.listGuests()
+				.then((guests) => {
+					res.json(OKMessage(guests));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('GUEST_LIST_ERROR',err));
 				});
-			routerPublic.route('/users/:username/lastlogin')
-			/**
+		});
+	routerPublic.route('/users/:username/lastlogin')
+	/**
  * @api {put} public/users/:user_id/lastlogin Force last login time update
  * @apiName PutUsersLastLogin
  * @apiVersion 2.1.0
@@ -3985,18 +3954,18 @@ module.exports = {
  *   "message": null
  * }
  */
-				.put(requireAuth, function(req,res){
-					user.updateLastLoginName(req.params.username)
-						.then(function(){
-							OKMessage(null,'USER_CHECKED_IN',req.params.username);
-						})
-						.catch(function(err){
-							res.statusCode = 500;
-							errMessage('USER_CHECK_ERROR',err.message);
-						});
+		.put(requireAuth, (req, res) => {
+			user.updateLastLoginName(req.params.username)
+				.then(() => {
+					OKMessage(null,'USER_CHECKED_IN',req.params.username);
+				})
+				.catch((err) => {
+					res.statusCode = 500;
+					errMessage('USER_CHECK_ERROR',err.message);
 				});
-			routerPublic.route('/users/:username')
-			/**
+		});
+	routerPublic.route('/users/:username')
+	/**
  * @api {get} public/users/:username View user details (public)
  * @apiName GetUser
  * @apiVersion 2.1.0
@@ -4044,18 +4013,18 @@ module.exports = {
  *   "message": null
  * }
  */
-				.get(requireAuth, (req,res) => {
-					user.findUserByName(req.params.username, {public:true})
-						.then((userdata) => {
-							res.json(OKMessage(userdata));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('USER_VIEW_ERROR',err));
-						});						
+		.get(requireAuth, (req,res) => {
+			user.findUserByName(req.params.username, {public:true})
+				.then((userdata) => {
+					res.json(OKMessage(userdata));
 				})
-			/**
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('USER_VIEW_ERROR',err));
+				});						
+		})
+	/**
  * @api {put} admin/users/:username Edit a user
  * @apiName EditUser
  * @apiVersion 2.1.0
@@ -4093,66 +4062,67 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(upload.single('avatarfile'), requireAuth, requireAdmin, function(req,res){
-					req.check({
-						'login': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'nickname': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'email': {
-							in: 'body',
-							optional: true,
-							isEmail: true
-						},
-						'url': {
-							in: 'body',
-							optional: true,
-							isURL: true
-						}					
-					});
+		.put(upload.single('avatarfile'), requireAuth, requireAdmin, (req, res) => {
+			req.check({
+				'login': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'nickname': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'email': {
+					in: 'body',
+					optional: true,
+					isEmail: true
+				},
+				'url': {
+					in: 'body',
+					optional: true,
+					isURL: true
+				}					
+			});
 
-					req.getValidationResult()
-						.then(function(result){							
-							if (result.isEmpty()) {
-								// No errors detected
-								req.sanitize('bio').trim();
-								req.sanitize('email').trim();
-								req.sanitize('url').trim();
-								req.sanitize('nickname').trim();
-								req.sanitize('login').trim();
-								req.sanitize('bio').unescape();
-								req.sanitize('email').unescape();
-								req.sanitize('url').unescape();
-								req.sanitize('nickname').unescape();
-								req.sanitize('login').unescape();
-								//Now we add user
-								let avatar;
-								if (req.file) avatar = req.file;
-								user.editUser(req.params.user_id,req.body,avatar)
-									.then(function(user){
-										module.exports.emitEvent('userUpdated',req.params.user_id);
-										res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
-									})
-									.catch(function(err){
-										res.statusCode = 500;
-										res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
-									});
-								
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
-								res.json(result.mapped());
-							}
-						});
-
+			req.getValidationResult()
+				.then((result) => {							
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('bio').trim();
+						req.sanitize('email').trim();
+						req.sanitize('url').trim();
+						req.sanitize('nickname').trim();
+						req.sanitize('login').trim();
+						req.sanitize('bio').unescape();
+						req.sanitize('email').unescape();
+						req.sanitize('url').unescape();
+						req.sanitize('nickname').unescape();
+						req.sanitize('login').unescape();
+						//Now we add user
+						let avatar;
+						if (req.file) avatar = req.file;
+						user.editUser(req.params.user_id,req.body,avatar)
+							.then(function(user){
+								emitWS('userUpdated',req.params.user_id);
+								res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
+							})
+							.catch((err) => {
+								res.statusCode = 500;
+								res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+							});
+						
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
 				});
-			routerPublic.route('/myaccount')
-			/**
+
+		});
+
+	routerPublic.route('/myaccount')
+	/**
  * @api {get} public/myaccount View own user details
  * @apiName GetMyAccount
  * @apiVersion 2.1.0
@@ -4203,21 +4173,21 @@ module.exports = {
  *   "message": null
  * }
  */
-				.get(requireAuth, (req,res) => {
-					const token = decode(req.get('authorization'), getConfig().JwtSecret);
-					user.findUserByName(token.username, {public:false})
-						.then((userdata) => {
-							res.json(OKMessage(userdata));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('USER_VIEW_ERROR',err));
-						});						
+		.get(requireAuth, (req,res) => {
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			user.findUserByName(token.username, {public:false})
+				.then((userdata) => {
+					res.json(OKMessage(userdata));
 				})
-			/**
+				.catch(function(err){
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('USER_VIEW_ERROR',err));
+				});						
+		})
+	/**
  * @api {put} public/myaccount Get/Edit your own account
- * @apiName EditOwnUser
+ * @apiName EditMyAccount
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission own
@@ -4252,71 +4222,70 @@ module.exports = {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-				.put(upload.single('avatarfile'), requireAuth, function(req,res){
-					req.check({
-						'login': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'nickname': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'email': {
-							in: 'body',
-							optional: true,
-							isEmail: true
-						},
-						'url': {
-							in: 'body',
-							optional: true,
-							isURL: true
-						}					
-					});
+		.put(upload.single('avatarfile'), requireAuth, (req,res) => {
+			req.check({
+				'login': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'nickname': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'email': {
+					in: 'body',
+					optional: true,
+					isEmail: true
+				},
+				'url': {
+					in: 'body',
+					optional: true,
+					isURL: true
+				}					
+			});
 
-					req.getValidationResult()
-						.then(function(result){							
-							if (result.isEmpty()) {
-								// No errors detected
-								req.sanitize('bio').trim();
-								req.sanitize('email').trim();
-								req.sanitize('url').trim();
-								req.sanitize('nickname').trim();
-								req.sanitize('login').trim();
-								req.sanitize('bio').unescape();
-								req.sanitize('email').unescape();
-								req.sanitize('url').unescape();
-								req.sanitize('nickname').unescape();
-								req.sanitize('login').unescape();
-								//Now we add user
-								let avatar;
-								if (req.file) avatar = req.file;
-								//Get username
-								const token = decode(req.get('authorization'), getConfig().JwtSecret);
-								user.editUser(token.username,req.body,avatar)
-									.then(function(user){
-										module.exports.emitEvent('userUpdated',req.params.user_id);
-										res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
-									})
-									.catch(function(err){
-										res.statusCode = 500;
-										res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
-									});
+			req.getValidationResult()
+				.then((result) => {							
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('bio').trim();
+						req.sanitize('email').trim();
+						req.sanitize('url').trim();
+						req.sanitize('nickname').trim();
+						req.sanitize('login').trim();
+						req.sanitize('bio').unescape();
+						req.sanitize('email').unescape();
+						req.sanitize('url').unescape();
+						req.sanitize('nickname').unescape();
+						req.sanitize('login').unescape();
+						//Now we add user
+						let avatar;
+						if (req.file) avatar = req.file;
+						//Get username
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);
+						user.editUser(token.username,req.body,avatar)
+							.then(function(user){
+								module.exports.emitEvent('userUpdated',req.params.user_id);
+								res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
+							})
+							.catch(function(err){
+								res.statusCode = 500;
+								res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+							});
 								
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;
-								res.json(result.mapped());
-							}
-						});
-
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
 				});
 
+		});
 
 
-			routerPublic.route('/users')
-			/**
+	routerPublic.route('/users')
+	/**
  * @api {get} public/users List users
  * @apiName GetUsers
  * @apiVersion 2.1.0
@@ -4370,19 +4339,19 @@ module.exports = {
  *   "message": null
  * }
  */
-				.get(requireAuth, function(req,res){
-					user.listUsers()
-						.then(function(users){
-							res.json(OKMessage(users));
-						})
-						.catch(function(err){
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('USER_LIST_ERROR',err));
-						});
+		.get(requireAuth, (req, res) => {
+			user.listUsers()
+				.then(function(users){
+					res.json(OKMessage(users));
 				})
-				
-			/**
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('USER_LIST_ERROR',err));
+				});
+		})
+		
+	/**
  * @api {post} public/users Create new user
  * @apiName PostUser
  * @apiVersion 2.1.0
@@ -4412,127 +4381,78 @@ module.exports = {
  * }
  */
 
-				.post((req,res) => {
-					//Validate form data
-					req.check({
-						'login': {
-							in: 'body',
-							notEmpty: true,
-						},
-						'password': {
-							in: 'body',
-							notEmpty: true,
-						},												
-					});
-
-					req.getValidationResult()
-						.then(function(result){
-							if (result.isEmpty()) {
-								// No errors detected
-								req.sanitize('login').trim();
-								req.sanitize('login').unescape();
-								req.sanitize('password').trim();
-								req.sanitize('password').unescape();
-								
-								user.addUser(req.body)
-									.then(() => {
-										res.json(OKMessage(true,'USER_CREATED'));
-									})
-									.catch((err) => {
-										res.statusCode = 500;
-										res.json(errMessage(err.code,err.message));
-									});
-							} else {
-								// Errors detected
-								// Sending BAD REQUEST HTTP code and error object.
-								res.statusCode = 400;								
-								res.json(result.mapped());
-							}
-						});
-
-				});
-			// Add headers
-			app.use(function (req, res, next) {
-
-				// Website you wish to allow to connect
-				res.setHeader('Access-Control-Allow-Origin', '*');
-
-				// Request methods you wish to allow
-				res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-				// Request headers you wish to allow
-				res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authorization, Accept, Key');
-
-				// Set to true if you need the website to include cookies in the requests sent
-				// to the API (e.g. in case you use sessions)
-				// res.setHeader('Access-Control-Allow-Credentials', true);
-
-				if (req.method === 'OPTIONS') {
-					res.statusCode = 200;
-					res.json();
-				} else {
-					// Pass to next layer of middleware
-					next();
-				}
+		.post((req,res) => {
+			//Validate form data
+			req.check({
+				'login': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'password': {
+					in: 'body',
+					notEmpty: true,
+				},												
 			});
+
+			req.getValidationResult()
+				.then((result) => {
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('login').trim();
+						req.sanitize('login').unescape();
+						req.sanitize('password').trim();
+						req.sanitize('password').unescape();
 						
-			function apiRouter() {
-				const apiRouter = express.Router();
-				// Ajout des routes d'identification.
-				authController(apiRouter);
-				return apiRouter;
-			}
-			app.use('/api/v1/auth', apiRouter());
-			app.use('/api/v1/public', routerPublic);
-			app.use('/api/v1/admin', routerAdmin);
-			resolve();
+						user.addUser(req.body)
+							.then(() => {
+								res.json(OKMessage(true,'USER_CREATED'));
+							})
+							.catch((err) => {
+								res.statusCode = 500;
+								res.json(errMessage(err.code,err.message));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;								
+						res.json(result.mapped());
+					}
+				});
+
 		});
-	},
-	onTest:function(){
-		// événement de test
-		logger.log('warning','onTest not set');
-	},
-	onKaras:function(){},
-	onKaraSingle:function(){},
-	onPLCInfo:function(){},
-	onPlaylists:function(){},
-	onPlaylistCreate:function(){},
-	onPlaylistSingleInfo:function(){},
-	onPlaylistSingleDelete:function(){},
-	onPlaylistSingleEdit:function(){},
-	onPlaylistSingleEmpty:function(){},
-	onPlaylistSingleSetPublic:function(){},
-	onPlaylistSingleSetCurrent:function(){},
-	onPlaylistSingleContents:function(){},
-	onPlaylistSingleKaraDelete:function(){},
-	onPlaylistSingleKaraEdit:function(){},
-	onWhitelistSingleKaraDelete:function(){},
-	onPlaylistCurrentInfo:function(){},
-	onPlaylistCurrentContents:function(){},
-	onPlaylistPublicInfo:function(){},
-	onPlaylistPublicContents:function(){},
-	onPlaylistShuffle:function(){},
-	onKaraAddToModePlaylist:function(){},
-	onKaraAddToPlaylist:function(){},
-	onKaraAddToWhitelist:function(){},
-	onSettingsUpdate:function(){},
-	onWhitelist:function(){},
-	onBlacklist:function(){},
-	onBlacklistCriterias:function(){},
-	onBlacklistCriteriaAdd:function(){},
-	onBlacklistCriteriaDelete:function(){},
-	onBlacklistCriteriaEdit:function(){},
-	onPlayerCommand:function(){},
-	onPlayerStatus:function(){},
-	onStats:function(){},
-	onKaraSingleLyrics:function(){},
-	onShutdown:function(){},
-	onKaraCopyToPlaylist:function(){},
-	emitEvent:function(){},
-	onTags:function(){},
-	onPlaylistExport:function(){},
-	onMessage:function(){},
-	onWhitelistEmpty:function(){},
-	onBlacklistCriteriasEmpty:function(){},
-	onKaraRandom:function(){},
-};
+	// Add headers
+	app.use(function (req, res, next) {
+
+		// Website you wish to allow to connect
+		res.setHeader('Access-Control-Allow-Origin', '*');
+
+		// Request methods you wish to allow
+		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+		// Request headers you wish to allow
+		res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authorization, Accept, Key');
+
+		// Set to true if you need the website to include cookies in the requests sent
+		// to the API (e.g. in case you use sessions)
+		// res.setHeader('Access-Control-Allow-Credentials', true);
+
+		if (req.method === 'OPTIONS') {
+			res.statusCode = 200;
+			res.json();
+		} else {
+			// Pass to next layer of middleware
+			next();
+		}
+	});
+				
+	function routerAuth() {
+		const apiRouter = express.Router();
+		// Ajout des routes d'identification.
+		authController(apiRouter);
+		return apiRouter;
+	}
+	app.use('/api/v1/auth', routerAuth);
+	app.use('/api/v1/public', routerPublic);
+	app.use('/api/v1/admin', routerAdmin);			
+}
+

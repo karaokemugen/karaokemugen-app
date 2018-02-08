@@ -22,18 +22,18 @@ let player;
 let state = {};
 state.player = {
 	volume: 100,
-	playing:false,
-	playerstatus:'stop',
-	_playing:false, // internal delay flag
-	timeposition:0,
-	duration:0,
-	mutestatus:false,
-	subtext:null,
-	currentSongInfos:null,
-	videoType:'background',
-	showsubs:true,
-	stayontop:false,
-	fullscreen:false	
+	playing: false,
+	playerstatus: 'stop',
+	_playing: false, // internal delay flag
+	timeposition: 0,
+	duration: 0,
+	mutestatus: false,
+	subtext: null,
+	currentSongInfos: null,
+	videoType: 'background',
+	showsubs: true,
+	stayontop: false,
+	fullscreen: false	
 };
 
 on('engineStatusChange', (newstate) => {
@@ -124,6 +124,7 @@ export async function initPlayerSystem(initialState) {
 	const conf = getConfig();
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
+	frontendPort = initialState.frontendPort;
 	currentJinglesList = jinglesList = await buildJinglesList();
 	await buildQRCode(`http://${conf.osHost}:${initialState.frontend_port}`);
 	logger.debug('[Player] QRCode generated');
@@ -439,7 +440,7 @@ export function displayInfo(duration) {
 		if (!isEmpty(conf.EngineDisplayConnectionInfoMessage)) text = conf.EngineDisplayConnectionInfoMessage + ' - ' + text;
 	}
 
-	const version = 'Karaoke Mugen '+conf.VersionNo+' '+conf.VersionName+' - http://mugen.karaokes.moe';
+	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://mugen.karaokes.moe`;
 	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx30}{\\fscy30}{\\i1}'+version+'{\\i0}';
 	const command = {
 		command: [

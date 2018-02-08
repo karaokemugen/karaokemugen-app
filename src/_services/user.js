@@ -1,6 +1,6 @@
-const db = require('../../_dao/user');
-import {detectFileType, asyncMove, asyncExists, asyncUnlink} from './files';
-import {getConfig} from './config';
+const db = require('../_dao/user');
+import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
+import {getConfig} from '../_common/utils/config';
 import {createHash} from 'crypto';
 import {deburr} from 'lodash';
 import {now} from 'unix-timestamp';

@@ -101,3 +101,159 @@
  *   "message": "PLCID unknown!"
  * }
  */
+
+/**
+ * @api {get} admin/settings Get settings
+ * @apiName GetSettings
+ * @apiVersion 2.0.0
+ * @apiGroup Main
+ * @apiPermission admin
+ * 
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "AdminPassword": "xxxx",
+ *       "BinPlayerLinux": "/usr/bin/mpv",
+ *       "BinPlayerOSX": "app/bin/mpv.app/Contents/MacOS/mpv",
+ *       "BinPlayerWindows": "app/bin/mpv.exe",
+ *       "BinffmpegLinux": "/usr/bin/ffmpeg",
+ *       "BinffmpegOSX": "app/bin/ffmpeg",
+ *       "BinffmpegPath": "D:\\perso\\toyundamugen-app\\app\\bin\\ffmpeg.exe",
+ *       "BinffmpegWindows": "app/bin/ffmpeg.exe",
+ *       "BinffprobeLinux": "/usr/bin/ffprobe",
+ *       "BinffprobeOSX": "app/bin/ffprobe",
+ *       "BinffprobePath": "D:\\perso\\toyundamugen-app\\app\\bin\\ffprobe.exe
+ *       "BinffprobeWindows": "app/bin/ffprobe.exe",
+ *       "BinmpvPath": "D:\\perso\\toyundamugen-app\\app\\bin\\mpv.exe",
+ *       "EngineAllowNicknameChange": "1",
+ *       "EngineAllowViewBlacklist": "1",
+ *       "EngineAllowViewBlacklistCriterias": "1",
+ *       "EngineAllowViewWhitelist": "1",
+ *       "EngineAutoPlay": "0",
+ *       "EngineDefaultLocale": "fr",
+ *       "EngineDisplayConnectionInfo": "1",
+ *       "EngineDisplayConnectionInfoHost": "",
+ *       "EngineDisplayConnectionInfoMessage": "",
+ *       "EngineDisplayConnectionInfoQRCode": "1",
+ *       "EngineDisplayNickname": "1",
+ *       "EngineJinglesInterval": "1",
+ *       "EnginePrivateMode": "1",
+ *       "EngineRepeatPlaylist": "0",
+ *       "EngineSongsPerUser": "10000",
+ *       "PathAltname": "../times/series_altnames.csv",
+ *       "PathBackgrounds": "app/backgrounds",
+ *       "PathBin": "app/bin",
+ *       "PathDB": "app/db",
+ *       "PathDBKarasFile": "karas.sqlite3",
+ *       "PathDBUserFile": "userdata.sqlite3",
+ *       "PathJingles": "app/jingles",
+ *       "PathKaras": "../times/karas",
+ *       "PathSubs": "../times/lyrics",
+ *       "PathTemp": "app/temp",
+ *       "PathVideos": "app/data/videos",
+ *       "PathVideosHTTP": "",
+ *       "PlayerBackground": "",
+ *       "PlayerFullscreen": "0",
+ *       "PlayerNoBar": "1",
+ *       "PlayerNoHud": "1",
+ *       "PlayerPIP": "1",
+ *       "PlayerPIPPositionX": "Left",
+ *       "PlayerPIPPositionY": "Bottom",
+ *       "PlayerPIPSize": "30",
+ *       "PlayerScreen": "0",
+ *       "PlayerStayOnTop": "1",
+ *       "VersionName": "Finé Fiévreuse",
+ *       "VersionNo": "v2.0 Release Candidate 1",
+ *       "appPath": "F:\\karaokemugen-app\\",
+ *       "isTest": false,
+ *       "mpvVideoOutput": "direct3d",
+ *       "os": "win32",
+ *       "osHost": "10.202.40.43"
+ *   }
+ * }
+ */
+
+/**
+ * @api {put} admin/settings Update settings
+ * @apiName PutSettings
+ * @apiVersion 2.0.0
+ * @apiPermission admin
+ * @apiGroup Main
+ * @apiDescription **Note :** All settings must be sent at once in a single request.
+ * @apiParam {String} AdminPassword Administrator's password.
+ * @apiParam {Boolean} EngineAllowNicknameChange Allow/disallow users to change their nickname once set.
+ * @apiParam {Boolean} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
+ * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
+ * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message) 
+ * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
+ * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
+ * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
+ * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
+ * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
+ * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
+ * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
+ * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
+ * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
+ * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
+ * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
+ * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen 
+ * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
+ * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
+ * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ */
+
+/**
+ * @api {get} public/settings Get settings (public)
+ * @apiName GetSettingsPublic
+ * @apiVersion 2.0.0
+ * @apiGroup Main
+ * @apiPermission public
+ * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries or admin password information.
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "EngineAllowNicknameChange": "1",
+ *       "EngineAllowViewBlacklist": "1",
+ *       "EngineAllowViewBlacklistCriterias": "1",
+ *       "EngineAllowViewWhitelist": "1",
+ *       "EngineAutoPlay": "0",
+ *       "EngineDefaultLocale": "fr",
+ *       "EngineDisplayConnectionInfo": "1",
+ *       "EngineDisplayConnectionInfoHost": "",
+ *       "EngineDisplayConnectionInfoMessage": "",
+ *       "EngineDisplayConnectionInfoQRCode": "1",
+ *       "EngineDisplayNickname": "1",
+ *       "EngineJinglesInterval": "1",
+ *       "EnginePrivateMode": "1",
+ *       "EngineRepeatPlaylist": "0",
+ *       "EngineSongsPerUser": "10000",
+ *       "PlayerBackground": "",
+ *       "PlayerFullscreen": "0",
+ *       "PlayerNoBar": "1",
+ *       "PlayerNoHud": "1",
+ *       "PlayerPIP": "1",
+ *       "PlayerPIPPositionX": "Left",
+ *       "PlayerPIPPositionY": "Bottom",
+ *       "PlayerPIPSize": "30",
+ *       "PlayerScreen": "0",
+ *       "PlayerStayOnTop": "1",
+ *       "VersionName": "Finé Fiévreuse",
+ *       "VersionNo": "v2.0 Release Candidate 1",
+ *       "mpvVideoOutput": "direct3d",
+ *   }
+ * }
+ */

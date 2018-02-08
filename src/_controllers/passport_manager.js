@@ -1,7 +1,7 @@
 import passport from 'passport';
 import {decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {findUserByName} from '../_common/utils/user';
+import {findUserByName} from '../_services/user';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
 export const requireAdmin = (req, res, next) => {

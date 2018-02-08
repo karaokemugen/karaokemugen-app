@@ -2,11 +2,6 @@
 
 export const emptyWhitelist = 'DELETE FROM whitelist;';
 
-export const isWhitelistContent = `SELECT pk_id_whitelist 
-								FROM whitelist 
-								WHERE pk_id_whitelist = $id
-								`;
-
 export const getWhitelistContents = `SELECT wl.pk_id_whitelist AS whitelist_id, 
       									ak.kara_id AS kara_id,
       									ak.kid AS kid,

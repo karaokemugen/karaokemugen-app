@@ -2,7 +2,7 @@
  * @fileoverview Launcher source file
  */
 import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
-import {getConfig,setConfig,initConfig,configureBinaries} from './_common/utils/config';
+import {setConfig,initConfig,configureBinaries} from './_common/utils/config';
 import {copy} from 'fs-extra';
 import path from 'path';
 import minimist from 'minimist';
@@ -12,7 +12,7 @@ import i18n from 'i18n';
 import net from 'net';
 import logger from 'winston';
 
-import engine from './_engine/index';
+import {initEngine} from './_services/engine';
 import resolveSysPath from './_common/utils/resolveSyspath';
 import {karaGenerationBatch} from './_admin/generate_karasfiles';
 import {startExpressReactServer} from './_webapp/react';
@@ -26,19 +26,21 @@ process.on('uncaughtException', function (exception) {
 	// email as well ?
 });
 
+process.on('unhandledRejection', (reason, p) => {
+	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+	// application specific logging, throwing an error, or other logic here
+});
+
+
 /**
  * Clear console - and welcome message
  * Node does not like the octal clear screen sequence.
  * So we wrote it in hexa (1B)
  */
 process.stdout.write('\x1Bc');
-
 const argv = parseArgs();
-
 const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
-
 setTitle('Karaoke Mugen');
-
 if(appPath) {
 	main()
 		.then(() => logger.info('[Launcher] Async launch done'))
@@ -113,12 +115,8 @@ async function main() {
 
 	/**
 	 * Calling engine.
-	 */
-	config = getConfig();
-	engine.SYSPATH = appPath;
-	engine.SETTINGS = config;
-	engine.i18n = i18n;
-	engine.run();
+	 */		
+	initEngine();
 }
 
 /**

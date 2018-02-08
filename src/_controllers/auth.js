@@ -1,7 +1,7 @@
 import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {checkPassword, isAdmin, updateLastLoginName, checkUserNameExists} from '../_common/utils/user';
+import {checkPassword, isAdmin, updateLastLoginName, checkUserNameExists} from '../_services/user';
 const logger = require('winston');
 
 module.exports = function authController(router) {
