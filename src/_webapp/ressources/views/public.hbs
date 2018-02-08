@@ -17,8 +17,9 @@
             <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
             </span><i class="glyphicon glyphicon-menu-hamburger"></i></button>
             <ul class="dropdown-menu">
-                <li><a href="#" class="showSettings"><i class="glyphicon glyphicon-info-sign"></i> Aide</a></li>
+                <li><a href="#" class="changePseudo"><i class="glyphicon glyphicon-user"></i> Login</a></li>
                 <li><a href="/admin" id="logAdmin" target="_blank"><i class="glyphicon glyphicon-wrench"></i> Admin</a></li>
+                <li><a href="#" class="showSettings"><i class="glyphicon glyphicon-info-sign"></i> Aide</a></li>
                 <li><a href="#" onclick="endOfTheWorldAsWeKnowIt();"><i class="glyphicon glyphicon-gift"></i> {{i18n "4TH_IMPACT"}}</a></li>
             </ul>
         </div>
@@ -112,7 +113,7 @@
         <li><a class="z-depth-3 btn-floating btn-large" onclick="endOfTheWorldAsWeKnowIt();" style="background-color:hsla(0, 71%, 14%, .4)"><i class="glyphicon glyphicon-gift"></i></a></li>
         <li><a class="z-depth-3 btn-floating btn-large getLucky"  style="background-color:#111">   <img style="height: 80%;margin-top: 10%" src="/ressources/img/clover.png"></a></li>
         <li><a class="z-depth-3 btn-floating btn-large showSettings" style="background-color:#613114"><i class="glyphicon glyphicon-question-sign"></i></a></li>
-        <li class="pseudoChange"><a class="z-depth-3 btn-floating btn-large" id="changePseudo" style="background-color:#431b50"><i class="glyphicon glyphicon-user"></i></a></li>
+        <li class="pseudoChange"><a class="z-depth-3 btn-floating btn-large changePseudo" id="changePseudo" style="background-color:#431b50"><i class="glyphicon glyphicon-user"></i></a></li>
         <li><a class="z-depth-3 btn-floating btn-large" id="switchInfoBar" style="background-color:#125633">
             <i class="glyphicon glyphicon-info-sign infos"></i><i class="glyphicon glyphicon-subtitles lyrics"></i></a></li>
     </ul>
@@ -138,6 +139,106 @@
                 <button type="button" class="btn btn-action btn-default ok" data-dismiss="modal">
                     <i class="glyphicon glyphicon-ok"></i>
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">Login</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false">New account</a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
+                    <div class="modal-message">
+                        <button class="btn btn-default guest">
+                            CONTINUE AS GUEST
+                        </button>
+                    </div>
+                    <div>
+                    OR
+                    </div>
+                    <div class="modal-message">
+                            <input type="text" class="form-control" id="login" name="modalLogin" placeholder="Nickname" required autofocus/>
+                            <input type="password" class="form-control" id="password" name="modalPassword" placeholder="Password" required>
+                    </div>
+                    <div></div>
+                    <div>
+                        <button type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                            <i class="glyphicon glyphicon-ok"></i>
+                        </button>
+                    </div>
+                </div>
+                <div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
+                    <div class="">
+                            <input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="Nickname" required autofocus/>
+                            <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="Password" required>
+                            <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="Password confirmation" required>
+                    </div>
+                    <div>
+                        <button id="signup" type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                            Sign up
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal modalPage fade" id="profilModal" role="dialog" type="prompt" tabindex="21">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">Profil</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false">Favorites</a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div id="nav-profil" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
+                    <div class="profileContent">
+                        
+                            <div class="col-md-3 col-lg-3 col-xs-12 col-sm-12">
+                                <img class="img-circle" name="avatar_file"
+                                     src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
+                                     alt="User Pic">
+                                     <p name="login"></p>
+                            </div>
+                            <div class="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
+                                 <div class="profileLine">
+                                    <i class="glyphicon glyphicon-user"></i>
+                                    <input class="form-control" name="nickname" type="text"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-envelope"></i>
+                                    <input class="form-control" name="email" type="text"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-link"></i>
+                                    <input class="form-control" name="url" type="text"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-leaf"></i>
+                                    <input class="form-control" name="bio" type="text"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-lock"></i>
+                                    <input class="form-control" name="password" type="text"/>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                         <button class="logout btn btn-sm btn-default pull-right" type="button"
+                                data-toggle="tooltip"><i class="glyphicon glyphicon-off"></i>
+                        </button>
+                    </div>
+                   
+                </div>
+                
             </div>
         </div>
     </div>
