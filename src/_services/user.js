@@ -28,17 +28,18 @@ export async function updateLastLoginName(login) {
 	return await db.updateUserLastLogin(currentUser.id,now());
 }
 
-export async function editUser(id,user,avatar) {
+export async function editUser(username,user,avatar) {
 	try {
-		const currentUser = await findUserByID(id);
-		user.id = id;
+		const currentUser = await findUserByName(username);
+		user.id = currentUser.id;
+		user.login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
 		user.NORM_nickname = deburr(user.nickname);
 		if (user.password) {
 			user.password = hashPassword(user.password);
-			await db.updateUserPassword(id,user.password);
+			await db.updateUserPassword(username,user.password);
 		}
 		if (avatar) {
 			// If a new avatar was sent, it is contained in the avatar object
@@ -49,10 +50,10 @@ export async function editUser(id,user,avatar) {
 			user.avatar_file = currentUser.avatar_file;
 		}
 		await db.editUser(user);
-		logger.info(`[User] ${user.login} (${user.nickname}) profile updated`);
+		logger.info(`[User] ${username} (${user.nickname}) profile updated`);	
 		return user;
 	} catch (err) {
-		logger.error(`[User] Failed to update ${user.login}'s profile : ${err}`);
+		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
 		const ret = {
 			message: err,
 			data: user.nickname
