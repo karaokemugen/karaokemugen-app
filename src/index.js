@@ -17,7 +17,6 @@ import resolveSysPath from './_common/utils/resolveSyspath';
 import {karaGenerationBatch} from './_admin/generate_karasfiles';
 import {startExpressReactServer} from './_webapp/react';
 
-import setTitle from 'console-title';
 import {openDatabases} from './_dao/database';
 
 process.on('uncaughtException', function (exception) {
@@ -40,7 +39,6 @@ process.on('unhandledRejection', (reason, p) => {
 process.stdout.write('\x1Bc');
 const argv = parseArgs();
 const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
-setTitle('Karaoke Mugen');
 if(appPath) {
 	main()
 		.then(() => logger.info('[Launcher] Async launch done'))
