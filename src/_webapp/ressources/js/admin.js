@@ -219,7 +219,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 				if (idPlaylistTo > 0) {
 					url = scope + '/playlists/' + idPlaylistTo + '/karas';
-					var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? pseudo : li.data('pseudo_add');
+					var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? logInfos.username : li.data('pseudo_add');
 					data = { requestedby: requestedby, kara_id: idKara };
 				} else if (idPlaylistTo == -1) {
 					//displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
@@ -387,7 +387,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			$(this).text(i+1 + ' - ' + $(this).text());
 		});
 
-		pseudo = 'Administrateur';
 	});
 
 	/*** INITIALISATION ***/
@@ -396,16 +395,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	mouseDown = false;
 	scope = 'admin';
 	panel1Default = -1;
-
-	setupAjax = function (passwordAdmin) {
-
-		$.ajaxSetup({
-			cache: false,
-			headers: { 'Authorization': 'Basic ' + btoa('truc:' + passwordAdmin) }
-		});
-	};
-
-	setupAjax(mdpAdmin);
 
 	// dynamic creation of switchable settings 
 	var htmlSettings = '';
