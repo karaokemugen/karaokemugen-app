@@ -4192,7 +4192,6 @@ export async function initAPIServer(listenPort) {
  * @apiGroup Users
  * @apiPermission own
  *
- * @apiParam {String} login New login for user
  * @apiParam {String} nickname New nickname for user
  * @apiParam {String} [password] New password. Can be empty (password won't be changed then)
  * @apiParam {String} [bio] User's bio info. Can be empty.
@@ -4224,10 +4223,6 @@ export async function initAPIServer(listenPort) {
  */
 		.put(upload.single('avatarfile'), requireAuth, (req,res) => {
 			req.check({
-				'login': {
-					in: 'body',
-					notEmpty: true,
-				},
 				'nickname': {
 					in: 'body',
 					notEmpty: true,
@@ -4241,7 +4236,16 @@ export async function initAPIServer(listenPort) {
 					in: 'body',
 					optional: true,
 					isURL: true
-				}					
+				},
+				'bio': {
+					in: 'body',
+					optional: true
+				},
+				'password': {
+					in: 'body',
+					optional: true
+				}
+										
 			});
 
 			req.getValidationResult()
@@ -4252,12 +4256,10 @@ export async function initAPIServer(listenPort) {
 						req.sanitize('email').trim();
 						req.sanitize('url').trim();
 						req.sanitize('nickname').trim();
-						req.sanitize('login').trim();
 						req.sanitize('bio').unescape();
 						req.sanitize('email').unescape();
 						req.sanitize('url').unescape();
 						req.sanitize('nickname').unescape();
-						req.sanitize('login').unescape();
 						//Now we add user
 						let avatar;
 						if (req.file) avatar = req.file;
@@ -4265,7 +4267,7 @@ export async function initAPIServer(listenPort) {
 						const token = decode(req.get('authorization'), getConfig().JwtSecret);
 						user.editUser(token.username,req.body,avatar)
 							.then(function(user){
-								module.exports.emitEvent('userUpdated',req.params.user_id);
+								emitWS('userUpdated',req.params.user_id);
 								res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
 							})
 							.catch(function(err){
