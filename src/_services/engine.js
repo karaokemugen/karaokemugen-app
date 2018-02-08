@@ -368,7 +368,7 @@ export async function getBL(filter,lang,from,size) {
 }
 
 export async function getTags(lang) {
-	const tags = await getAllTags;
+	const tags = await getAllTags();
 	return await plc.translateTags(tags, lang);
 }
 

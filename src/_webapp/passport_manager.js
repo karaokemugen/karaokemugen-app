@@ -31,6 +31,7 @@ function localPassportStrategy() {
 				if (userdata.type === 2) return done(null, username);
 				//User is not a guest, and password mismatches
 				if (hash !== userdata.password) return done(null, false);
+				delete userdata.password;
 				//Everything's daijoubu
 				return done(null, username); 
 			}) 
