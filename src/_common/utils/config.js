@@ -115,13 +115,13 @@ export function configureHost() {
  * Partially updating config : we send a signal to the other files using the configuration. so
  * they know it has changed.
  */
-export function setConfig(configPart) {
+export async function setConfig(configPart) {
 	config = {...config, ...configPart};
-	updateConfig(config);
+	await updateConfig(config);
 	return getConfig();
 }
 
-export function updateConfig(newConfig) {
+export async function updateConfig(newConfig) {
 	const forbiddenConfigPrefix = ['BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','app','os','EngineDefaultLocale'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {		
@@ -129,7 +129,7 @@ export function updateConfig(newConfig) {
 			&& (newConfig[k] !== defaultConfig[k])
             && (filteredConfig[k] = v);		
 	});
-	asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');	
+	await asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');	
 }
 
 /**
