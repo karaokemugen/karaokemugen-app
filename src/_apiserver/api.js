@@ -4034,8 +4034,8 @@ export async function initAPIServer(listenPort) {
  * @apiParam {String} username Username to edit
  * @apiParam {String} login New login for user
  * @apiParam {String} nickname New nickname for user
- * @apiParam {String} [password] New password. Can be empty (password won't be changed then)
- * @apiParam {String} [bio] User's bio info. Can be empty.
+ * @apiParam {String} password New password. Can be empty (password won't be changed then)
+ * @apiParam {String} bio User's bio info. Can be empty.
  * @apiParam {String} [email] User's mail. Can be empty.
  * @apiParam {String} [url] User's URL. Can be empty.
  * @apiSuccess {String} args ID of user deleted
@@ -4074,14 +4074,21 @@ export async function initAPIServer(listenPort) {
 				},
 				'email': {
 					in: 'body',
-					optional: true,
-					isEmail: true
+					optional: true					
 				},
 				'url': {
 					in: 'body',
-					optional: true,
-					isURL: true
-				}					
+					optional: true					
+				},
+				'bio': {
+					in: 'body',
+					optional: true
+				},
+				'password': {
+					in: 'body',
+					optional: true
+				}
+
 			});
 
 			req.getValidationResult()
@@ -4101,9 +4108,9 @@ export async function initAPIServer(listenPort) {
 						//Now we add user
 						let avatar;
 						if (req.file) avatar = req.file;
-						user.editUser(req.params.user_id,req.body,avatar)
+						user.editUser(req.params.username,req.body,avatar)
 							.then(function(user){
-								emitWS('userUpdated',req.params.user_id);
+								emitWS('userUpdated',user.id);
 								res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
 							})
 							.catch((err) => {
@@ -4223,19 +4230,18 @@ export async function initAPIServer(listenPort) {
  */
 		.put(upload.single('avatarfile'), requireAuth, (req,res) => {
 			req.check({
+				//FIXME : keep email/url optional and make sure it works with the isURL and isEmail validators
 				'nickname': {
 					in: 'body',
 					notEmpty: true,
 				},
 				'email': {
 					in: 'body',
-					optional: true,
-					isEmail: true
+					optional: true					
 				},
 				'url': {
 					in: 'body',
-					optional: true,
-					isURL: true
+					optional: true					
 				},
 				'bio': {
 					in: 'body',
@@ -4245,9 +4251,7 @@ export async function initAPIServer(listenPort) {
 					in: 'body',
 					optional: true
 				}
-										
 			});
-
 			req.getValidationResult()
 				.then((result) => {							
 					if (result.isEmpty()) {
