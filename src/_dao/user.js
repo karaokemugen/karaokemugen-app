@@ -72,7 +72,7 @@ export function updateUserLastLogin(id,now) {
 }
 
 export function updateUserPassword(id,password) {
-	return getUserDb().run(sql.updateUserPassword, {
+	return getUserDb().run(sql.editUserPassword, {
 		$id: id,
 		$password: password
 	});
