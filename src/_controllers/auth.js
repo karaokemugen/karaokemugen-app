@@ -81,7 +81,6 @@ module.exports = function authController(router) {
 					res.status(401).send(err);
 				}
 			}).catch((err) => {
-				console.log(err);
 				err = {
 					code: 'LOG_ERROR',
 					message: 'Incorrect credentials',
