@@ -223,7 +223,7 @@ export async function getKaraLyrics(kara_id) {
 }
 
 async function getASS(kara_id) {
-	const ASS = karaDB.getASS(kara_id);
+	const ASS = await karaDB.getASS(kara_id);
 	if (ASS) return ASS.ass;
 	return false;
 }

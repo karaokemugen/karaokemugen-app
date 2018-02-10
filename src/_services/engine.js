@@ -133,7 +133,8 @@ async function playPlayer() {
 	if(state.engine.status !== 'play') {
 		// Switch to playing mode and ask which karaoke to play next		
 		if (state.engine.status === 'pause') resume();
-		if (state.engine.status === 'stop') await tryToReadKaraInPlaylist();					state.engine.status = 'play';
+		if (state.engine.status === 'stop') await tryToReadKaraInPlaylist();			
+		state.engine.status = 'play';
 		emitEngineStatus();
 	} 
 	if (state.engine.status === 'play') {
@@ -786,6 +787,7 @@ export function sendMessage(message, duration) {
 }
 
 export async function sendCommand(command, options) {
+	console.log(command);
 	switch (command) {
 	case 'play':
 		playPlayer();
