@@ -4453,11 +4453,11 @@ export async function initAPIServer(listenPort) {
 				
 	function routerAuth() {
 		const apiRouter = express.Router();
-		// Ajout des routes d'identification.
+		// Adding auth routes here.
 		authController(apiRouter);
 		return apiRouter;
 	}
-	app.use('/api/v1/auth', routerAuth);
+	app.use('/api/v1/auth', routerAuth());
 	app.use('/api/v1/public', routerPublic);
 	app.use('/api/v1/admin', routerAdmin);			
 }

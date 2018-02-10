@@ -23,6 +23,8 @@ function localPassportStrategy() {
 
 	return new LocalStrategy(localOptions, function (username, password, done) {
 		const hash = hashPassword(password);
+		console.log(username); 
+		console.log(password);
 		findUserByName(username)
 			.then((userdata) => {
 				//User not found
@@ -33,7 +35,7 @@ function localPassportStrategy() {
 				if (hash !== userdata.password) return done(null, false);
 				delete userdata.password;
 				//Everything's daijoubu
-				return done(null, username); 
+				done(null, username); 
 			}) 
 			.catch(() => done(null, false)); 
 	}); 

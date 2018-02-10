@@ -37,12 +37,15 @@ module.exports = function authController(router) {
  */
 		const config = getConfig();
 		if (!req.body.password) req.body.password = '';
+		console.log(req.body);
 		checkUserName(req.body.username)
 			.then((exists) => {
 				if (exists) {
+					console.log('exists : '+exists);
 					checkPassword(req.body.username,req.body.password)
 						.then((valid) => {
 							if (valid) {
+								console.log('valid : '+valid);
 								getRole(req.body.username)							
 									.then(role =>
 										res.send({
@@ -58,6 +61,7 @@ module.exports = function authController(router) {
 											data: {
 											}
 										};
+										console.log(err);
 										res.status(500).send(err);
 									});
 								updateLastLoginName(req.body.username);
@@ -68,7 +72,8 @@ module.exports = function authController(router) {
 									data: {
 									}
 								};
-								res.status(401).send(err);
+								console.log(err);
+								res.status(401).send(err);								
 							}
 						});
 				} else {
@@ -78,10 +83,20 @@ module.exports = function authController(router) {
 						data: {
 						
 						}
-					};	
+					};
+					console.log(err);
 					res.status(401).send(err);
 				}
-			});			
+			}).catch((err) => {
+				console.log(err);
+				err = {
+					code: 'LOG_ERROR',
+					message: 'Incorrect credentials',
+					data: {					
+					}
+				};	
+				res.status(401).send(err);
+			});
 	});
 
 	router.get('/checkauth', requireAuth, (req, res) => {
