@@ -1,7 +1,7 @@
 import {getUserDb, transaction} from './database';
 const sql = require('../_common/db/kara');
 
-export async function getSongCountPerUser(playlist_id,username) {
+export async function getSongCountForUser(playlist_id,username) {
 	return await getUserDb().get(sql.getSongCountPerUser, {
 		$playlist_id: playlist_id,
 		$username: username
@@ -25,8 +25,7 @@ export async function getKaraByKID(kid) {
 }
 
 export async function isKara(id) {
-	const res = await getUserDb().get(sql.isKara, { $kara_id: id });
-	return !!res;
+	return await getUserDb().get(sql.isKara, { $kara_id: id });	
 }
 
 export async function isKaraInPlaylist(kara_id,playlist_id) {

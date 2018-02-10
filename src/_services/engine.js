@@ -631,7 +631,7 @@ export async function getPLContents(playlist_id,filter,lang,seenFromUser,from,si
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		if (from == -1) {
-			const pos = plc.playingPos(karalist);
+			const pos = plc.getPlayingPos(karalist);
 			if (!pos) {
 				from = 0;
 			} else {
@@ -676,7 +676,6 @@ export async function getPublicPLContents(filter,lang,from,size) {
 }
 
 export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
-	logger.info(`[Engine] Adding karaokes to playlist ${playlist_id} : ${kara_id}`);
 	const conf = getConfig();
 	let addByAdmin = true;
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
@@ -694,11 +693,14 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			playlist_id = await plc.isAPublicPlaylist();
 		}
 	}
+	logger.info(`[Engine] Adding karaokes to playlist ${playlist_id} : ${kara_id}`);	
 	try {
 		if (!addByAdmin) {
 			// Check user quota first
-			errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
-			if (!await plc.isUserAllowedToAddKara(playlist_id,requester)) throw 'User quota reached';
+			if (!await plc.isUserAllowedToAddKara(playlist_id,requester)) {
+				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';			
+				throw 'User quota reached';
+			}
 		}
 		await plc.addKaraToPlaylist(karas, requester, playlist_id, pos);
 		if (conf.EngineAutoPlay == 1 && 
@@ -721,6 +723,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			};
 		}		
 	} catch(err) {
+		logger.error(`[Engine] Unable to add karaokes : ${err}`);
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		if (addByAdmin) {
 			throw {

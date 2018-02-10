@@ -14,7 +14,7 @@ const logger = require('winston');
 import {deburr, filter, isEmpty, sample, shuffle} from 'lodash';
 const langs = require('langs');
 import {getLanguage} from 'iso-countries-languages';
-import {each, eachOf, eachSeries, timesSeries} from 'async';
+import {eachOf, eachSeries, timesSeries} from 'async';
 import {emitWS} from '../_ws/websocket';
 import {emit} from '../_common/utils/pubsub';
 
@@ -22,7 +22,7 @@ function emitPlayingUpdated() {
 	emit('playingUpdated');
 }
 
-export function playingPos(playlist) {
+export function getPlayingPos(playlist) {
 	// Function to run in array.some of a playlist to check if a kara is a flag_playing one, and get its position.
 	let PLCIDPlayingPos;
 	let indexPlaying;
@@ -47,8 +47,8 @@ export async function isUserAllowedToAddKara(playlist_id,requester) {
 	const conf = getConfig();
 	const limit = conf.EngineSongsPerUser;
 	try { 
-		const count = await karaDB.getSongCountForUser(playlist_id,deburr(requester));
-		if (count >= limit) {
+		const count = await karaDB.getSongCountForUser(playlist_id,deburr(requester));	
+		if (count.count >= limit) {
 			logger.info('[PLC] User '+requester+' tried to add more songs than he/she was allowed ('+limit+')');
 			return false;
 		} else {
@@ -176,43 +176,39 @@ export async function addBlacklistCriteria(blctype, blcvalues) {
 	}
 }
 
-function isAllKaras(karas) {
-	each(karas,(kara_id,callback) => {				
-		isKara(kara_id).then(() => {
-			callback();
-		}).catch((err) => {
-			err = 'Karaoke song '+kara_id+' unknown';
-			logger.error('[PLC] isKara : '+err);
-			callback(err);
+async function isAllKaras(karas) {	
+	let err;
+	karas.forEach(kara_id => {
+		isKara(kara_id).then((res) => {
+			if (!res) err = true;
 		});
-	},(err) => {
-		if (err) throw err;
-		return true;								
 	});
+	if (err) {
+		return false;
+	} else {
+		return true;
+	}
 }
 
-function isAllKarasInWhitelist(karas,karaList) {
-	each(karas,(kara_id,callback) => {				
+async function isAllKarasInWhitelist(karas,karaList) {
+	karas.forEach((kara_id) => {
 		isKaraInWhitelist(kara_id).then((isKaraInWL) => {
 			if (isKaraInWL) {
 				//Search kara_id in karaList and then delete that index from the array. 
 				//Karaoke song won't be added since it already exists in destination playlist.								
 				karaList = filter(karaList, element => element !== kara_id);
 			}
-			callback();
 		}).catch((err) => {
-			callback(err);
+			throw err;
 		});
-	},(err) => {
-		if (err) throw err;
-		return karaList;
 	});
+	return karaList;	
 }
 
 export async function addKaraToWhitelist(karas) {
 	let karaList = karas;
-	if (!isAllKaras(karas)) throw 'One of the karaokes does not exist.';
-	karaList = isAllKarasInWhitelist(karas,karaList);
+	if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist.';
+	karaList = await isAllKarasInWhitelist(karas,karaList);
 	if (karaList.length === 0) throw 'No karaoke could be added, all are in whitelist already';
 	await karaDB.addKaraToWhitelist(karaList,now());
 	await generateBlacklist();
@@ -258,7 +254,7 @@ async function isPlaylistFlagPlaying(playlist_id) {
 	return await plDB.findPlaylistFlagPlaying(playlist_id);	
 }
 
-async function isKara(kara_id) {
+async function isKara(kara_id) {	
 	return await karaDB.isKara(kara_id);	
 }
 
@@ -498,28 +494,25 @@ export function filterPlaylist(playlist,searchText) {
 	return playlist.filter(textSearch);
 }
 
-function isAllKarasInPlaylist(karas, playlist_id) {
+async function isAllKarasInPlaylist(karas, playlist_id) {
 	let karaList = karas;
-	each(karas,(kara_id,callback) => {				
-		isKaraInPlaylist(kara_id,playlist_id).then((isKaraInPL) => {
+	karas.forEach((kara) => {
+		isKaraInPlaylist(kara.kara_id,playlist_id).then((isKaraInPL) => {
 			if (isKaraInPL) {
 				//Search kara_id in karaList and then delete that index from the rray. 
 				//Karaoke song won't be added since it already exists in destination playlist.								
-				karaList = filter(karaList, element => element.kara_id !== kara_id);
+				karaList = filter(karaList, element => element.kara_id !== kara.kara_id);
 			}
-			callback();
 		}).catch((err) => {
-			callback(err);
+			throw err;
 		});
-	},(err) => {
-		if (err) throw err;
-		return karaList;
 	});
+	return karaList;	
 }
 
 export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;	
-	let karaList = [];
+	let karaList = [];	
 	const NORM_requester = deburr(requester);
 	const date_add = now();			
 	karas.forEach((kara_id) => {
@@ -534,8 +527,8 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	const userMaxPosition = await plDB.getMaxPosInPlaylistForPseudo(playlist_id, requester);
 	const numUsersInPlaylist = await plDB.countPlaylistUsers(playlist_id);
 	const playlistMaxPos = await plDB.getMaxPosInPlaylist(playlist_id);	
-	if (!isAllKaras(karas)) throw 'One of the karaokes does not exist';
-	karaList = isAllKarasInPlaylist(karas,playlist_id);
+	if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist';
+	karaList = await isAllKarasInPlaylist(karaList,playlist_id);
 	if (karaList.length === 0) throw `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`;
 	// If pos is provided, we need to update all karas above that and add 
 	// karas.length to the position
@@ -544,7 +537,7 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	// If pos is -1, we must add it after the currently flag_playing karaoke.
 	const conf = getConfig();
 	const pl = await getPlaylistContents(playlist_id);
-	const playingObject = playingPos(pl);
+	const playingObject = getPlayingPos(pl);
 	const playingPos = playingObject ? playingObject.plc_id_pos : 0;
 	// Position management here :
 	if (conf.EngineSmartInsert == 1) {
