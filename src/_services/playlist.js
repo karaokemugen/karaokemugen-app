@@ -414,7 +414,8 @@ export async function getAllKaras() {
 
 export async function getRandomKara(playlist_id,filter) {
 	// Get karaoke list	
-	const karas = filterPlaylist(await getAllKaras(),filter);
+	let karas = await getAllKaras();
+	if (filter) karas = filterPlaylist(karas,filter);
 	// Strip list to just kara IDs
 	karas.forEach((elem,index) => {
 		karas[index] = elem.kara_id;
@@ -446,7 +447,7 @@ async function getPLCByKID(kid,playlist_id) {
 	return await plDB.getPLCByKID(kid,playlist_id);
 }
 
-export async function filterPlaylist(playlist,searchText) {
+export function filterPlaylist(playlist,searchText) {
 	function textSearch(kara) {
 		searchText = deburr(searchText);
 		searchText = searchText.toLowerCase();

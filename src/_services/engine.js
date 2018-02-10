@@ -111,7 +111,7 @@ export async function initEngine() {
 	initUserSystem();	
 	//Initialize engine
 	// Test if current/public playlists exist
-	const currentPL_id = plc.isACurrentPlaylist();
+	const currentPL_id = await plc.isACurrentPlaylist();
 	if (currentPL_id) {
 		internalState.currentPlaylistID = currentPL_id;
 	} else {
@@ -312,8 +312,8 @@ async function addViewcountKara(kara_id, kid) {
 export async function getKaras(filter,lang,from,size) {
 	try {
 		const pl = await plc.getAllKaras();
-		let karalist = await plc.translateKaraInfo(pl,lang);
-		if (filter) karalist = await plc.filterPlaylist(karalist,filter);
+		let karalist = plc.translateKaraInfo(pl,lang);
+		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		return {
 			infos: { 
 				count: karalist.length,
@@ -327,15 +327,15 @@ export async function getKaras(filter,lang,from,size) {
 	}	
 }
 
-export async function getRandomKara(filter) {
+export async function getRandomKara(filter) {	
 	return await plc.getRandomKara(internalState.currentPlaylistID,filter);	
 }
 
 export async function getWL(filter,lang,from,size) {
 	try {
 		const pl = await plc.getWhitelistContents();
-		let karalist = await plc.translateKaraInfo(pl,lang);
-		if (filter) karalist = await plc.filterPlaylist(karalist,filter);
+		let karalist = plc.translateKaraInfo(pl,lang);
+		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		return {
 			infos: { 
 				count: karalist.length,
@@ -352,8 +352,8 @@ export async function getWL(filter,lang,from,size) {
 export async function getBL(filter,lang,from,size) {
 	try {
 		const pl = await plc.getBlacklistContents();
-		let karalist = await plc.translateKaraInfo(pl,lang);
-		if (filter) karalist = await plc.filterPlaylist(karalist,filter);
+		let karalist = plc.translateKaraInfo(pl,lang);
+		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		return {
 			infos: { 
 				count: karalist.length,
@@ -430,7 +430,7 @@ export async function shufflePL(playlist_id) {
 
 export async function getKaraInfo(kara_id, lang) {
 	const kara = await plc.getKara(kara_id);
-	let output = await plc.translateKaraInfo(kara, lang);
+	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;
 	return output;
@@ -438,7 +438,7 @@ export async function getKaraInfo(kara_id, lang) {
 
 export async function getPLCInfo(plc_id, lang, seenFromUser) {
 	const kara = await plc.getKaraFromPlaylist(plc_id, seenFromUser);
-	let output = await plc.translateKaraInfo(kara, lang);
+	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;
 	return output;
@@ -628,8 +628,8 @@ export async function emptyWL() {
 export async function getPLContents(playlist_id,filter,lang,seenFromUser,from,size) {
 	try {
 		const pl = await plc.getPlaylistContents(playlist_id,seenFromUser);
-		let karalist = await plc.translateKaraInfo(pl,lang);
-		if (filter) karalist = await plc.filterPlaylist(karalist,filter);
+		let karalist = plc.translateKaraInfo(pl,lang);
+		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		if (from == -1) {
 			const pos = plc.playingPos(karalist);
 			if (!pos) {
