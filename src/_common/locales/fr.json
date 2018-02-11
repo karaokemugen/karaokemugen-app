@@ -162,6 +162,8 @@
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
 	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les infos du réseau",
 	"ERROR": "Erreur",
+	"UNKNOWN_ERROR": "Une erreur fortuite s'est produite : ",
+	"UNAUTHORIZED": "Accès défendu. Votre role n'est pas suffisant pour cette action.",
 	"PL_LIST_ERROR": "Impossible d'afficher les liste de lectures",
 	"PL_CREATE_ERROR": "Impossible de créer la liste de lecture %s",
 	"PL_CREATED": "Liste de lecture %s crée",

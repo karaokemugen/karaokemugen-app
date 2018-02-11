@@ -181,6 +181,8 @@
 	"GOTO_PLAYING": "Go to the kara currently playing",
 	"GOTO_BOTTOM": "Go to the end of the playlist",
 	"ERROR": "Error",
+	"UNKNOWN_ERROR": "Something wrong happened. Here's the message : ",
+	"UNAUTHORIZED": "Access forbidden. Your role doesn't permit this action",
 	"PL_LIST_ERROR": "Unable to display playlists",
 	"PL_CREATE_ERROR": "Unable to create playlist %s",
 	"PL_CREATED": "Playlist %s created",
