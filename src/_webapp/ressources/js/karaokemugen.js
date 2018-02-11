@@ -158,27 +158,7 @@ var settingsNotUpdated;
 
 		$('.changePseudo').click( function() {
 			if (logInfos.username) {
-				$('#profilModal').modal('show');
-				$.ajax({
-					url: 'public/myaccount/', 	
-					type: 'GET'})
-					.done(function (response) {
-						//var user = response.find(a => a.login==logInfos.username);
-						
-						$.each(response, function(i, k) {
-							var $element = $('.profileContent [name="' + i + '"]');
-							$element.attr('oldval', k);
-
-							if(i === 'avatar_file' && k) {
-								$element.attr('src', k);
-							} else if( i === 'login') {
-								$element.text(k);
-							} else if (i !== 'password') {
-								$element.val(k);
-							}
-						});
-						
-					});
+				showProfil();
 			} else {
 				$('#loginModal').modal('show');
 			}
@@ -191,7 +171,7 @@ var settingsNotUpdated;
 			logInfos.token = mugenToken;
 			setupAjax();
 		} else {
-			$('#changePseudo').click();
+			$('#loginModal').modal('show');
 		}  
 
 		// Some html & stats init
@@ -225,6 +205,10 @@ var settingsNotUpdated;
 				$(this).each(function(){
 					$(this).attr('title', $(this).find('input').attr('title'));
 				});
+			});
+			
+			$.ajax({ url: 'public/tags', }).done(function (data) {
+				bcTags = data;
 			});
 		};
 		initApp();
@@ -588,7 +572,30 @@ var settingsNotUpdated;
 			*/
 		});
 		/* login stuff END */
-		/* profile stuff */
+		/* profil stuff */
+		showProfil = function() {
+			$('#profilModal').modal('show');
+			$.ajax({
+				url: 'public/myaccount/', 	
+				type: 'GET'})
+				.done(function (response) {
+					//var user = response.find(a => a.login==logInfos.username);
+					
+					$.each(response, function(i, k) {
+						var $element = $('.profileContent [name="' + i + '"]');
+						$element.attr('oldval', k);
+	
+						if(i === 'avatar_file' && k) {
+							$element.attr('src', k);
+						} else if( i === 'login') {
+							$element.text(k);
+						} else if (i !== 'password') {
+							$element.val(k);
+						}
+					});
+					
+				});
+		};
 
 		$('.profileData .profileLine input').on('keypress', (e) => {
 			if(e.which == 13) {
@@ -636,23 +643,9 @@ var settingsNotUpdated;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 		/* profile stuff END */
 
-		$.ajax({ url: 'public/tags', }).done(function (data) {
-			bcTags = data;
-		});
+	
 		/* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
 		if(isTouchScreen) {
 			$('select').on('select2:open', function() {

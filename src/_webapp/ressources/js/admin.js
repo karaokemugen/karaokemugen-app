@@ -148,26 +148,30 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
-			var bcType = $(this).val();
-			var bcTagsFiltered = jQuery.grep(bcTags, function (obj) {
-				return obj.type == bcType;
-			});
-
-			var $bcValInput;
-			if (bcTagsFiltered.length > 0) {
-				$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
-				$.each(bcTagsFiltered, function (i, o) {
-					var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
-					$bcValInput.append($option);
+			if(bcTags) {
+				var bcType = $(this).val();
+				var bcTagsFiltered = jQuery.grep(bcTags, function (obj) {
+					return obj.type == bcType;
 				});
+	
+				var $bcValInput;
+				if (bcTagsFiltered.length > 0) {
+					$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
+					$.each(bcTagsFiltered, function (i, o) {
+						var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
+						$bcValInput.append($option);
+					});
+				} else {
+					$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
+				}
+				$('#bcValContainer').empty().append($bcValInput);
+	
+				if (bcTagsFiltered.length > 0) {
+					$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
+	
+				}
 			} else {
-				$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
-			}
-			$('#bcValContainer').empty().append($bcValInput);
-
-			if (bcTagsFiltered.length > 0) {
-				$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
-
+				console.log("Err: bcTags empty");
 			}
 		});
 
@@ -365,8 +369,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 		/* password case handlers */
 
-		$('#confirmPassword, #password').on('input', function () {
-			if ($('#confirmPassword').val() === $('#password').val() && $('#password').val() !== '') {
+		$('#confirmPassword, #passwordSettings').on('input', function () {
+			if ($('#confirmPassword').val() === $('#passwordSettings').val() && $('#passwordSettings').val() !== '') {
 				$('#sendPassword').attr('oldvalue', $('#sendPassword').val());
 				$('#sendPassword').val($('#confirmPassword').val());
 				$('#sendPassword').removeClass('btn-danger').addClass('btn-success');
