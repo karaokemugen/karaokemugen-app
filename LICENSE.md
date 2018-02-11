@@ -34,6 +34,4 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 node-ffprobe has been modified to be synchronous and manage files with spaces better.
 
-Original code is here : https://github.com/ListenerApproved/node-ffprobe
-
-
+[Original code is here](https://github.com/ListenerApproved/node-ffprobe)
