@@ -1066,7 +1066,6 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     text-align:right; 
     font-family: 'Glyphicons Halflings'; 
 }
-
 body .playlist-main li.list-group-item.filler {
     width: 100% !important;
 	overflow: hidden;
@@ -1093,7 +1092,7 @@ body .playlist-main li.list-group-item.filler {
 
 /* dark theme */
 
-input[type="text"], input[type="password"] {
+input[type="text"], input[type="password"]:not([exclude="true"]) {
     height: inherit;
     width: calc(100% - 0rem);
     border: 0;

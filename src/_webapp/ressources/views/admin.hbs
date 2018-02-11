@@ -245,7 +245,7 @@
                 <div class="form-group">
                     <label for="AdminPassword" class="col-xs-4 control-label">{{i18n "ADMIN_PASSWORD_CHANGE"}}</label>
                     <div class="col-xs-3">
-                        <input id="password" type="password" exclude="true" class="form-control" placeholder="{{i18n "PASSWORD"}}">
+                        <input id="passwordSettings" type="password" exclude="true" class="form-control" placeholder="{{i18n "PASSWORD"}}">
                     </div>
                     <div class="col-xs-3">
                         <input id="confirmPassword" type="password" exclude="true" class="form-control" placeholder="{{i18n "CONFIRM_PASSWORD"}}">
@@ -358,6 +358,33 @@
         </div>
     </div>
 </div>
+
+<div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">Login admin</a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
+                 
+                    <div class="modal-message">
+                            <input type="text" class="form-control" id="login" name="modalLogin" placeholder="Nickname" required autofocus/>
+                            <input type="password" class="form-control" id="password" name="modalPassword" placeholder="Password" required>
+                    </div>
+                    <div></div>
+                    <div>
+                        <button type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                            <i class="glyphicon glyphicon-ok"></i>
+                        </button>
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+
 <a id="downloadAnchorElem"></a>
 </div>
 <div class="overlay">
