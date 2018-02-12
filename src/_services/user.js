@@ -11,9 +11,9 @@ import {forever} from 'async';
 import {promisify} from 'util';
 const sleep = promisify(setTimeout);
 
-async function cleanGuestUsers() {
-	// Cleanup guest accounts from database
-	await db.cleanGuestUsers(now() - (getConfig().AuthGuestExpireTime * 60));
+async function updateExpiredUsers() {
+	// Unflag onlien accounts from database if they expired
+	await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
 	//Sleep for one minute.
 	await sleep(60000);
 }
@@ -206,12 +206,12 @@ export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
 	forever((next) => {
-		cleanGuestUsers()
+		updateExpiredUsers()
 			.then(() => {
 				next();
 			})
 			.catch((err) => {
-				logger.error(`[User] Clean up of guest accounts failed : ${err}`);
+				logger.error(`[User] Expiring user accounts failed : ${err}`);
 			});
 	});
 }

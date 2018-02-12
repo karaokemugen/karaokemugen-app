@@ -97,16 +97,16 @@ export const createUser = `INSERT INTO user(
 							$last_login);
 						   `;
 
-export const deleteExpiredGuests = `UPDATE user SET 
+export const updateExpiredUsers = `UPDATE user SET 
 									last_login = 0,
-									fingerprint = null
-									WHERE type = 2
-									  AND fingerprint IS NOT NULL
-									  AND last_login <= $expire_time;
+									fingerprint = null,
+									flag_online = 0									
+									WHERE last_login <= $expire_time;
 								`;
 
 export const updateLastLogin = `UPDATE user SET
-									last_login = $now
+									last_login = $now,
+									flag_online = 1
 								WHERE pk_id_user = $id;
 								`;
 

@@ -55,8 +55,8 @@ export function editUser(user) {
 	});
 }
 
-export function cleanGuestUsers(expireTime) {
-	return getUserDb().run(sql.deleteExpiredGuests, { $expire_time: expireTime });
+export function updateExpiredUsers(expireTime) {
+	return getUserDb().run(sql.updateExpiredUsers, { $expire_time: expireTime });
 }
 
 export async function isAdmin(username) {

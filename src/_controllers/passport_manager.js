@@ -1,9 +1,16 @@
 import passport from 'passport';
 import {decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {findUserByName} from '../_services/user';
+import {findUserByName, updateLastLoginName} from '../_services/user';
 
 export const requireAuth = passport.authenticate('jwt', { session: false });
+
+export const updateUserLoginTime = (req, res, next) => {
+	const token = decode(req.get('authorization'), getConfig().JwtSecret);
+	updateLastLoginName(token.username);	
+	next();
+};
+
 export const requireAdmin = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
 	if (token.role === 'admin') {
@@ -12,6 +19,7 @@ export const requireAdmin = (req, res, next) => {
 		res.status(403).send('Only admin can use this function');
 	}
 };
+
 export const requireAdminOrOwn = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
 	findUserByName(token.username)
