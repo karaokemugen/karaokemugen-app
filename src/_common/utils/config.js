@@ -111,10 +111,6 @@ export function configureHost() {
 	}
 }
 
-/**
- * Partially updating config : we send a signal to the other files using the configuration. so
- * they know it has changed.
- */
 export async function setConfig(configPart) {
 	config = {...config, ...configPart};
 	await updateConfig(config);

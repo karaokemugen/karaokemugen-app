@@ -77,3 +77,4 @@ export function updateUserPassword(id,password) {
 		$password: password
 	});
 }
+	
