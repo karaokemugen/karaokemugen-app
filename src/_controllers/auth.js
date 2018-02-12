@@ -95,26 +95,29 @@ module.exports = function authController(router) {
  *   "message": null
  * }
  */
-		findFingerprint(req.body.fingerprint).then((guest) => {
-			console.log(guest);
-			if (guest) {
-				checkLogin(guest, req.body.fingerprint).then((token) => {
-					updateUserFingerprint(guest, req.body.fingerprint);
-					res.send(token);
-				}).catch(() => {
-					res.status(401).send(loginErr);
-				});
-			} else {
-				res.status(500).send({
-					code: 'NO_MORE_GUESTS_AVAILABLE',
-					message: null,
-					data: {
-					}
-				});
-			}
-		}).catch(() => {
+		if (!req.body.fingerprint || req.body.fingerprint == '') {
 			res.status(401).send(loginErr);
-		});	
+		} else {
+			findFingerprint(req.body.fingerprint).then((guest) => {			
+				if (guest) {
+					checkLogin(guest, req.body.fingerprint).then((token) => {
+						updateUserFingerprint(guest, req.body.fingerprint);
+						res.send(token);
+					}).catch(() => {
+						res.status(401).send(loginErr);
+					});
+				} else {
+					res.status(500).send({
+						code: 'NO_MORE_GUESTS_AVAILABLE',
+						message: null,
+						data: {
+						}
+					});
+				}
+			}).catch(() => {
+				res.status(401).send(loginErr);
+			});	
+		}		
 	});
 
 	router.get('/checkauth', requireAuth, (req, res) => {
