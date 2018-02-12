@@ -5,6 +5,12 @@ export const testUserName = `SELECT pk_id_user
 								WHERE login = $login;
 							`;
 
+export const testNickname = `SELECT pk_id_user
+								FROM user
+								WHERE nickname = $nickname
+								  OR NORM_nickname = $NORM_nickname;
+							`;
+
 export const testUserID = `SELECT pk_id_user
 								FROM user
 								WHERE pk_id_user = $id;
@@ -45,6 +51,13 @@ export const selectUserByName = `SELECT u.pk_id_user AS id,
  							FROM user AS u
 							WHERE u.login = $username							  
 							`;
+
+export const selectRandomGuestName = `SELECT pk_id_user AS id, login 
+										FROM user
+										WHERE type = 2
+											AND flag_online = 0
+										ORDER BY RANDOM() LIMIT 1;
+									`;
 
 export const selectGuests = `SELECT u.pk_id_user AS user_id,
 								u.nickname AS nickname,
@@ -109,6 +122,21 @@ export const updateLastLogin = `UPDATE user SET
 									flag_online = 1
 								WHERE pk_id_user = $id;
 								`;
+
+export const updateUserFingerprint = `UPDATE user SET
+										fingerprint = $fingerprint
+									WHERE login = $username;
+								`;
+
+export const findFingerprint = `SELECT login 
+								FROM user 
+								WHERE fingerprint = $fingerprint;
+							`;
+
+export const resetGuestsPassword = `UPDATE user SET 
+									password = null
+								WHERE flag_online = 0
+								  AND type = 2`;
 
 export const editUser = `UPDATE user SET 
 							login = $login,

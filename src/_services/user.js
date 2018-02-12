@@ -14,6 +14,7 @@ const sleep = promisify(setTimeout);
 async function updateExpiredUsers() {
 	// Unflag onlien accounts from database if they expired
 	await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
+	await db.resetGuestsPassword();
 	//Sleep for one minute.
 	await sleep(60000);
 }
@@ -28,15 +29,30 @@ export async function updateLastLoginName(login) {
 	return await db.updateUserLastLogin(currentUser.id,now());
 }
 
+export async function validateUserName(login) {
+	// Returns true if login name is free to use.
+	if (!await findUserByName(login, {public :false})) return true;
+	return false;
+}
+
+export async function validateUserNickname(nickname) {
+	// Returns true if nickname is free to use.
+	if (!await db.getUserByNickname(nickname)) return true;
+	return false;
+}
+
 export async function editUser(username,user,avatar) {
 	try {
 		const currentUser = await findUserByName(username);
+		if (currentUser.type == 2) throw 'Guests are not allowed to edit their profiles';
 		user.id = currentUser.id;
 		user.login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
 		user.NORM_nickname = deburr(user.nickname);
+		// Check if login already exists.
+		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
 		if (user.password) {
 			user.password = hashPassword(user.password);
 			await db.updateUserPassword(username,user.password);
@@ -132,9 +148,26 @@ export function hashPassword(password) {
 export async function checkPassword(username,password) {
 	const hashedPassword = hashPassword(password);
 	const user = await findUserByName(username, {public:false});
-	// Access is granted only if passwords match OR user type is 2 (guest)
-	if (user.password === hashedPassword || user.type === 2) return true;
+	// Access is granted only if passwords match OR user type is 2 (guest) and its password in database is empty.
+	if (user.password === hashedPassword || (user.type === 2 && !user.password)) {
+		// If password was empty for a guest, we set it to the password given on login.
+		if (user.type === 2 && !user.password) await db.updateUserPassword(username,hashedPassword);
+		return true;
+	}
 	return false;
+}
+
+export async function findFingerprint(fingerprint) {
+	let guest = await db.findFingerprint(fingerprint);	
+	if (guest) return guest.login;
+	guest = await db.getRandomGuest();
+	if (!guest) return false;
+	await db.updateUserPassword(guest.id, hashPassword(fingerprint));
+	return guest.login;
+}
+
+export async function updateUserFingerprint(username, fingerprint) {
+	return await db.updateUserFingerprint(username, fingerprint);
 }
 
 export async function addUser(user) {
@@ -148,15 +181,17 @@ export async function addUser(user) {
 		ret.code = 'USER_EMPTY_PASSWORD';
 		throw ret;
 	}
-	user.flag_online = 0;
+	user.flag_online = 1;
 	user.flag_admin = 0;	
 	
 	// Check if login already exists.
-	if (await db.checkUserNameExists(user.login)) {
+	if (await db.checkUserNameExists(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
 		ret.code = 'USER_ALREADY_EXISTS';
-		logger.error('[User] User '+user.login+' already exists, cannot create it');
+		ret.data = { username: user.login };
+		ret.message = null;
+		logger.error('[User] User/nickname '+user.login+' already exists, cannot create it');
 		throw ret;
-	}
+	}	
 	try {
 		await db.addUser(user);
 		logger.info(`[User] Created user ${user.login}`);

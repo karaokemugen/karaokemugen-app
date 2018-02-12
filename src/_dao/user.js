@@ -1,36 +1,43 @@
 import {getUserDb} from './database';
 const sql = require('../_common/db/user');
 
-export function getUserByName(username) {
-	return getUserDb().get(sql.selectUserByName, { $username: username });
+export async function getUserByName(username) {
+	return await getUserDb().get(sql.selectUserByName, { $username: username });
 }
 
-export function checkUserNameExists(username) {
-	return getUserDb().get(sql.testUserName, { $login: username });
+export async function checkUserNameExists(username) {
+	return await getUserDb().get(sql.testUserName, { $login: username });
 }
 
-export function checkUserIDExists(id) {
-	return getUserDb().get(sql.testUserID, { $id: id });
+export async function checkNicknameExists(nickname,NORM_nickname) {
+	return await getUserDb().get(sql.testNickname, { 
+		$nickname: nickname,
+		$NORM_nickname: NORM_nickname 
+	});
 }
 
-export function deleteUser(id) {
-	return getUserDb().run(sql.deleteUser, { $id: id });
+export async function checkUserIDExists(id) {
+	return await getUserDb().get(sql.testUserID, { $id: id });
 }
 
-export function getUserByID(id) {
-	return getUserDb().get(sql.selectUserByID, { $id: id });
+export async function deleteUser(id) {
+	return await getUserDb().run(sql.deleteUser, { $id: id });
 }
 
-export function listUsers() {
-	return getUserDb().all(sql.selectUsers);
+export async function getUserByID(id) {
+	return await getUserDb().get(sql.selectUserByID, { $id: id });
 }
 
-export function listGuests() {
-	return getUserDb().all(sql.selectGuests);
+export async function listUsers() {
+	return await getUserDb().all(sql.selectUsers);
 }
 
-export function addUser(user) {
-	return getUserDb().run(sql.createUser, {
+export async function listGuests() {
+	return await getUserDb().all(sql.selectGuests);
+}
+
+export async function addUser(user) {
+	return await getUserDb().run(sql.createUser, {
 		$type: user.type,
 		$login: user.login,
 		$password: user.password,
@@ -42,8 +49,8 @@ export function addUser(user) {
 	});
 }
 
-export function editUser(user) {
-	return getUserDb().run(sql.editUser, {
+export async function editUser(user) {
+	return await getUserDb().run(sql.editUser, {
 		$id: user.id,
 		$nickname: user.nickname,
 		$NORM_nickname: user.NORM_nickname,
@@ -55,8 +62,27 @@ export function editUser(user) {
 	});
 }
 
-export function updateExpiredUsers(expireTime) {
-	return getUserDb().run(sql.updateExpiredUsers, { $expire_time: expireTime });
+export async function updateExpiredUsers(expireTime) {
+	return await getUserDb().run(sql.updateExpiredUsers, { $expire_time: expireTime });
+}
+
+export async function updateUserFingerprint(username, fingerprint) {
+	return await getUserDb().run(sql.updateUserFingerprint, { 
+		$username: username,
+		$fingerprint: fingerprint
+	});
+}
+
+export async function getRandomGuest() {
+	return await getUserDb().get(sql.selectRandomGuestName);
+}
+
+export async function findFingerprint(fingerprint) {
+	return await getUserDb().get(sql.findFingerprint, {$fingerprint: fingerprint });
+}
+
+export async function resetGuestsPassword() {
+	return await getUserDb().run(sql.resetGuestsPassword);
 }
 
 export async function isAdmin(username) {
@@ -64,15 +90,15 @@ export async function isAdmin(username) {
 	return req.flag_admin === 1;
 }
 
-export function updateUserLastLogin(id,now) {
-	return getUserDb().run(sql.updateLastLogin, {
+export async function updateUserLastLogin(id,now) {
+	return await getUserDb().run(sql.updateLastLogin, {
 		$id: id,
 		$now: now
 	});
 }
 
-export function updateUserPassword(id,password) {
-	return getUserDb().run(sql.editUserPassword, {
+export async function updateUserPassword(id,password) {
+	return await getUserDb().run(sql.editUserPassword, {
 		$id: id,
 		$password: password
 	});

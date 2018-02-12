@@ -132,5 +132,5 @@ PathVideosHTTP = ""
 mpvVideoOutput = ""
 
 ; Auth configuration
-; Time (in minutes) before a guest account is set to expire after its last login/action 
-AuthGuestExpireTime = 60
+; Time (in minutes) before a user account is set to expire after its last login/action 
+AuthExpireTime = 15

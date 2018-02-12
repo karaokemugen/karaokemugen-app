@@ -1,7 +1,28 @@
 import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {checkPassword, isAdmin, updateLastLoginName, checkUserNameExists} from '../_services/user';
+import {updateUserFingerprint, findFingerprint, checkPassword, isAdmin, updateLastLoginName, checkUserNameExists} from '../_services/user';
+
+const loginErr = {
+	code: 'LOG_ERROR',
+	message: 'Incorrect credentials',
+	data: {
+	}
+};
+
+async function checkLogin(username, password) {
+	const config = getConfig();
+	if (!await checkUserName(username)) throw false;
+	if (!await checkPassword(username, password)) throw false;
+	const role = await getRole(username);
+	updateLastLoginName(username);
+	return {
+		token: createJwtToken(username, role, config),
+		username: username,
+		role: role
+	};
+}
+
 
 module.exports = function authController(router) {
 
@@ -34,60 +55,66 @@ module.exports = function authController(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 401 Unauthorized
  */
-		const config = getConfig();
-		if (!req.body.password) req.body.password = '';
-		checkUserName(req.body.username)
-			.then((exists) => {
-				if (exists) {
-					checkPassword(req.body.username,req.body.password)
-						.then((valid) => {
-							if (valid) {
-								getRole(req.body.username)							
-									.then(role =>
-										res.send({
-											token: createJwtToken(req.body.username, role, config),
-											username: req.body.username,
-											role: role
-										})
-									).catch( err => {
-										err = {
-											code: 'LOG_ERROR',
-											message: err,
-											data: {
-											}
-										};
-										res.status(500).send(err);
-									});
-								updateLastLoginName(req.body.username);
-							} else {
-								const err = {
-									code: 'LOG_ERROR',
-									message: 'Incorrect credentials',
-									data: {
-									}
-								};
-								res.status(401).send(err);								
-							}
-						});
-				} else {
-					const err = {
-						code: 'LOG_ERROR',
-						message: 'Incorrect credentials',
-						data: {
-						
-						}
-					};
-					res.status(401).send(err);
-				}
-			}).catch((err) => {
-				err = {
-					code: 'LOG_ERROR',
-					message: 'Incorrect credentials',
-					data: {					
+		if (!req.body.password) req.body.password = '';		
+		checkLogin(req.body.username, req.body.password).then((token) => {
+			res.send(token);
+		}).catch(() => {
+			res.status(401).send(loginErr);
+		});
+	});
+
+	router.post('/login/guest', (req, res) => {
+		/**
+ * @api {post} /auth/login/guest Login / Sign in (as guest)
+ * @apiName AuthLoginGuest
+ * @apiVersion 2.1.0
+ * @apiGroup Auth
+ * @apiPermission public
+ * @apiDescription
+ * Logins as guest. Uses the fingerprint provided to tell if the user already has a reserved guest account or not. If not, logs in as a random guest account.
+ * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
+ * @apiHeader {String} charset Must be `UTF-8`
+ * @apiParam {String} fingerprint Fingerprint hash. Uses client-side fingerprinting.
+ * @apiSuccess {String} token Identification token for this session
+ * @apiSuccess {String} username Username logged in
+ * @apiSuccess {String} role Role of this user (`user` or `admin`)
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE1MTMxNjAxMTEzMjMsInJvbGUiOiJ1c2VyIn0.UWgsc5XEfFtk34IpUAQid_IEWCj2ffNjQ--FJ9eAYd0",
+ *   "username": "Axel",
+ *   "role": "user"
+ * }
+ * @apiError 500 Internal Server Error
+ *  
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "NO_MORE_GUESTS_AVAILABLE",
+ *   "message": null
+ * }
+ */
+		findFingerprint(req.body.fingerprint).then((guest) => {
+			console.log(guest);
+			if (guest) {
+				checkLogin(guest, req.body.fingerprint).then((token) => {
+					updateUserFingerprint(guest, req.body.fingerprint);
+					res.send(token);
+				}).catch(() => {
+					res.status(401).send(loginErr);
+				});
+			} else {
+				res.status(500).send({
+					code: 'NO_MORE_GUESTS_AVAILABLE',
+					message: null,
+					data: {
 					}
-				};	
-				res.status(401).send(err);
-			});
+				});
+			}
+		}).catch(() => {
+			res.status(401).send(loginErr);
+		});	
 	});
 
 	router.get('/checkauth', requireAuth, (req, res) => {
