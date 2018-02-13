@@ -483,7 +483,7 @@ export async function deleteKara(plc_ids,playlist_id) {
 	}
 	let pl;
 	try {
-		await plc.deletePLC(karas, playlist_id);
+		await plc.deleteKaraFromPlaylist(karas, playlist_id);
 		pl = await plc.getPlaylistInfo(playlist_id);
 		return {
 			pl_id: playlist_id,
@@ -787,7 +787,6 @@ export function sendMessage(message, duration) {
 }
 
 export async function sendCommand(command, options) {
-	console.log(command);
 	switch (command) {
 	case 'play':
 		playPlayer();
