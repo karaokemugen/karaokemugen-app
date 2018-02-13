@@ -114,7 +114,7 @@ async function getPLCIDByDate (playlist_id,date_added) {
 }
 			
 async function generateBlacklist() {
-	await blcDB.generateBlacklist();
+	return await blcDB.generateBlacklist();
 }				
 
 async function BLCgetTagName(blcList) {
@@ -859,10 +859,10 @@ export function translateKaraInfo(karalist, lang) {
 }
 
 
-export function translateBlacklistCriterias(blclist, lang) {
-	const conf = getConfig();
+export function translateBlacklistCriterias(blcs, lang) {
+	const blclist = blcs;
 	// If lang is not provided, assume we're using node's system locale
-	if (!lang) lang = conf.EngineDefaultLocale;
+	if (!lang) lang = getConfig().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
 	if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
 	// Instanciate a translation object for our needs with the correct language.
@@ -872,7 +872,7 @@ export function translateBlacklistCriterias(blclist, lang) {
 	});
 	i18n.setLocale(lang);
 	// We need to read the detected locale in ISO639-1
-	eachOf(blclist, function(blc, index, callback){
+	blclist.forEach((blc, index) => {
 		if (blc.type === 1) {
 			// We just need to translate the tag name if there is a translation
 			if (typeof blc.value != 'string') throw `BLC value is not a string : ${blc.value}`;
@@ -908,11 +908,8 @@ export function translateBlacklistCriterias(blclist, lang) {
 			});
 		}
 		// No need to do anything, values have been modified if necessary			
-		callback();		
-	},(err) => {
-		if (err) throw err;
-		return blclist;		
-	});			
+	});
+	return blclist;				
 }
 
 export function translateTags(taglist,lang) {

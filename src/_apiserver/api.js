@@ -1950,7 +1950,7 @@ export async function initAPIServer(listenPort) {
 		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
 			//Get list of blacklist criterias
 			engine.getBLC()
-				.then((blc) => {
+				.then((blc) => {					
 					res.json(OKMessage(blc));
 				})
 				.catch((err) => {
