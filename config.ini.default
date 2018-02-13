@@ -4,12 +4,6 @@
 ; Do not modify this file, it will be overwritten on updates.
 ; If you want to modify a setting, add it with its new value to config.ini, which will overwrite settings listed here.
 
-
-
-; Admin username/password. Change this in config.ini
-AdminUsername = "admin"
-AdminPassword = "gurdil"
-
 ; JWT secret key
 ; This is used to encrypt authentification tokens. Please change this to a random 
 ; string to avoid token manipulation.

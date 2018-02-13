@@ -104,6 +104,7 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
       									pc.created_at AS created_at,
       									pc.pseudo_add AS pseudo_add,
       									pc.NORM_pseudo_add AS NORM_pseudo_add,
+										u.login AS username,
       									pc.pos AS pos,
       									pc.pk_id_plcontent AS playlistcontent_id,
       									pc.flag_playing AS flag_playing,      
@@ -120,6 +121,7 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
       									END) AS flag_blacklisted
 									FROM karasdb.all_karas AS ak 
 									INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
+									LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
 									LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 									LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
 									WHERE pc.fk_id_playlist = $playlist_id
@@ -136,7 +138,7 @@ export const getPlaylistContentsForPlayer = `SELECT ak.kara_id AS kara_id,
       												pc.pseudo_add AS pseudo_add,
       												ak.videofile AS videofile,
 	  												pc.pos AS pos,
-	  												pc.flag_playing AS flag_playing,		  												pc.pk_id_plcontent AS 			playlistcontent_id,
+	  												pc.flag_playing AS flag_playing,		  											pc.pk_id_plcontent AS 			playlistcontent_id,
 	  												ak.kid AS kid
 											FROM karasdb.all_karas AS ak 
 											INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
@@ -176,6 +178,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
       							pc.created_at AS created_at,
       							pc.pseudo_add AS pseudo_add,
       							pc.NORM_pseudo_add AS NORM_pseudo_add,
+								u.login AS username,
       							pc.pos AS pos,
       							pc.pk_id_plcontent AS playlistcontent_id,
 	    						pc.fk_id_playlist as playlist_id,      
@@ -195,10 +198,11 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 	  							(SELECT ifnull(SUM(all_karas.videolength) - ak.videolength,0)
     							FROM karasdb.all_karas AS all_karas
     							INNER JOIN playlist_content ON all_karas.kara_id = playlist_content.fk_id_kara
-    							WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
+								WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
     							AND playlist_content.pos BETWEEN (SELECT ifnull(pos,0) FROM playlist_content WHERE flag_playing = 1) AND pc.pos) AS time_before_play
 						FROM karasdb.all_karas AS ak
 						INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
+						LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
 						LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 						LEFT OUTER JOIN playlist AS p ON pc.fk_id_playlist = p.pk_id_playlist
 						LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
@@ -323,11 +327,11 @@ export const setPlaying = `UPDATE playlist_content
 						SET flag_playing = 1 
 						WHERE pk_id_plcontent = $playlistcontent_id;`;
 
-export const countPlaylistUsers = `SELECT COUNT(DISTINCT pseudo_add) AS NumberOfUsers
+export const countPlaylistUsers = `SELECT COUNT(DISTINCT fk_id_user) AS NumberOfUsers
                             FROM playlist_content
                             WHERE fk_id_playlist = $playlist_id;`;
 
 export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
                                         FROM playlist_content
                                         WHERE fk_id_playlist = $playlist_id
-                                            AND pseudo_add = $pseudo_add;`;
+                                            AND fk_id_user = $user_id;`;

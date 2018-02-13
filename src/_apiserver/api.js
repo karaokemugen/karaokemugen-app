@@ -841,14 +841,13 @@ export async function initAPIServer(listenPort) {
 	/**
  * @api {post} admin/playlists/:pl_id/karas Add karaokes to playlist
  * @apiName PatchPlaylistKaras
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
  * 
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} kara_id List of `kara_id` separated by commas (`,`). Example : `1021,2209,44,872`
  * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
- * @apiParam {String} requestedby Name of user who added the song.
  * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
  * @apiSuccess {String} args/playlist_id ID of destinaton playlist
  * @apiSuccess {String} code Message to display
@@ -880,10 +879,6 @@ export async function initAPIServer(listenPort) {
 			//add a kara to a playlist
 			const playlist_id = req.params.pl_id;
 			req.checkBody({
-				'requestedby': {
-					in: 'body',
-					notEmpty: true,
-				},
 				'kara_id': {
 					in: 'body',
 					notEmpty: true,
@@ -899,11 +894,10 @@ export async function initAPIServer(listenPort) {
 			req.getValidationResult()
 				.then((result) =>  {
 					if (result.isEmpty()) {
-						req.sanitize('requestedby').trim();
-						req.sanitize('requestedby').unescape();
 						req.sanitize('playlist_id').toInt();
 						if (req.body.pos != undefined) req.sanitize('pos').toInt();
-						engine.addKaraToPL(playlist_id, req.body.kara_id,req.body.requestedby, req.body.pos)
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);
+						engine.addKaraToPL(playlist_id, req.body.kara_id, token.username, req.body.pos)
 							.then((result) => {
 								emitWS('playlistInfoUpdated',playlist_id);
 								emitWS('playlistContentsUpdated',playlist_id);
@@ -1284,7 +1278,6 @@ export async function initAPIServer(listenPort) {
  *       "BinffprobePath": "D:\\perso\\toyundamugen-app\\app\\bin\\ffprobe.exe
  *       "BinffprobeWindows": "app/bin/ffprobe.exe",
  *       "BinmpvPath": "D:\\perso\\toyundamugen-app\\app\\bin\\mpv.exe",
- *       "EngineAllowNicknameChange": "1",
  *       "EngineAllowViewBlacklist": "1",
  *       "EngineAllowViewBlacklistCriterias": "1",
  *       "EngineAllowViewWhitelist": "1",
@@ -1342,8 +1335,6 @@ export async function initAPIServer(listenPort) {
  * @apiPermission admin
  * @apiGroup Main
  * @apiDescription **Note :** All settings must be sent at once in a single request.
- * @apiParam {String} AdminPassword Administrator's password.
- * @apiParam {Boolean} EngineAllowNicknameChange Allow/disallow users to change their nickname once set.
  * @apiParam {Boolean} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
  * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
  * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
@@ -1375,15 +1366,6 @@ export async function initAPIServer(listenPort) {
 		.put(requireAuth, updateUserLoginTime, requireAdmin, function(req,res){
 			//Update settings
 			req.checkBody({
-				'AdminPassword': {
-					in: 'body',
-					notEmpty: true
-				},
-				'EngineAllowNicknameChange': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
 				'EngineAllowViewBlacklist': {
 					in: 'body',
 					notEmpty: true,
@@ -1502,7 +1484,6 @@ export async function initAPIServer(listenPort) {
 				);
 			req.getValidationResult().then(function(result) {
 				if (result.isEmpty()) {
-					req.sanitize('EngineAllowNicknameChange').toInt();
 					req.sanitize('EngineAllowViewWhitelist').toInt();
 					req.sanitize('EngineAllowViewBlacklist').toInt();
 					req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
@@ -3401,12 +3382,11 @@ export async function initAPIServer(listenPort) {
 	/**
  * @api {post} public/karas/:kara_id Add karaoke to current/public playlist
  * @apiName PostKaras
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
  * @apiParam {Number} kara_id Karaoke ID to add to current/public playlist
- * @apiParam {String} requestedby Name of user who added the song.
  * @apiSuccess {String} args/kara Karaoke title added
  * @apiSuccess {Number} args/kara_id Karaoke ID added.
  * @apiSuccess {String} args/playlist Name of playlist the song was added to
@@ -3449,18 +3429,10 @@ export async function initAPIServer(listenPort) {
 */
 		.post(requireAuth, updateUserLoginTime, (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
-			req.check({
-				'requestedby': {
-					in: 'body',
-					notEmpty: true,
-				}
-			});
-
 			req.getValidationResult().then((result) =>  {
 				if (result.isEmpty()) {
-					req.sanitize('requestedby').trim();
-					req.sanitize('requestedby').unescape();
-					engine.addKaraToPL(null, req.params.kara_id, req.body.requestedby, null)
+					const token = decode(req.get('authorization'), getConfig().JwtSecret);
+					engine.addKaraToPL(null, req.params.kara_id, token.username, null)
 						.then((data) => {
 							emitWS('playlistContentsUpdated',data.playlist_id);
 							emitWS('playlistInfoUpdated',data.playlist_id);

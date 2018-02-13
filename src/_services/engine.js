@@ -693,7 +693,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 		} else {
 			playlist_id = await plc.isAPublicPlaylist();
 		}
-	}
+	}	
 	logger.info(`[Engine] Adding karaokes to playlist ${playlist_id} : ${kara_id}`);	
 	try {
 		if (!addByAdmin) {

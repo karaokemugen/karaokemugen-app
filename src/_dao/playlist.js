@@ -182,10 +182,10 @@ export async function countPlaylistUsers(playlist_id){
 	return await getUserDb().run(sql.countPlaylistUsers, { $playlist_id: playlist_id });
 }
 
-export async function getMaxPosInPlaylistForPseudo(playlist_id,pseudo){
+export async function getMaxPosInPlaylistForPseudo(playlist_id,user_id){
 	return await getUserDb().run(sql.getMaxPosInPlaylistForPseudo,
 		{
 			$playlist_id: playlist_id,
-			$pseudo_add: pseudo
+			$user_id: user_id
 		});
 }

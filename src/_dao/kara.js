@@ -36,16 +36,6 @@ export async function isKaraInPlaylist(kara_id,playlist_id) {
 	return !!res;
 }
 
-export async function isKaraInWhitelist(kara_id) {
-	const res = await getUserDb().get(sql.isKaraInWhitelist, { $kara_id: kara_id });
-	return !!res;
-}
-
-export async function isKaraInBlacklist(kara_id) {
-	const res = await getUserDb().get(sql.isKaraInBlacklist, { $kara_id: kara_id });
-	return !!res;
-}
-
 export async function addViewcount(kara_id,kid,datetime) {
 	return await getUserDb().run(sql.addViewcount, {
 		$kara_id: kara_id,
@@ -61,8 +51,7 @@ export async function updateTotalViewcounts(kid) {
 export async function addKaraToPlaylist(karaList) {
 	const karas = karaList.map((kara) => ({
 		$playlist_id: kara.playlist_id,
-		$pseudo_add: kara.requester,
-		$NORM_pseudo_add: kara.NORM_requester,
+		$user_id: kara.user_id,
 		$kara_id: kara.kara_id,
 		$created_at: kara.date_add,
 		$pos: kara.pos

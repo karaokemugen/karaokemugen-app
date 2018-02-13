@@ -257,3 +257,92 @@
  *   }
  * }
  */
+
+/**
+ * @api {post} public/karas/:kara_id Add karaoke to current/public playlist
+ * @apiName PostKaras
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
+ * @apiParam {Number} kara_id Karaoke ID to add to current/public playlist
+ * @apiParam {String} requestedby Name of user who added the song.
+ * @apiSuccess {String} args/kara Karaoke title added
+ * @apiSuccess {Number} args/kara_id Karaoke ID added.
+ * @apiSuccess {String} args/playlist Name of playlist the song was added to
+ * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data See `args` above.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   },
+ *   "code": "PLAYLIST_MODE_SONG_ADDED",
+ *   "data": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   }
+ * }
+
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR Karaoke already present in playlist
+*
+* @apiErrorExample Error-Response:
+* HTTP/1.1 500 Internal Server Error
+* {
+*   "args": {
+*       "kara": "1033",
+*       "playlist": 1,
+*       "user": "Axel"
+*   },
+*   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
+*   "message": "User quota reached"
+* }
+*/
+
+/**
+ * @api {post} admin/playlists/:pl_id/karas Add karaokes to playlist
+ * @apiName PatchPlaylistKaras
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * 
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {Number[]} kara_id List of `kara_id` separated by commas (`,`). Example : `1021,2209,44,872`
+ * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
+ * @apiParam {String} requestedby Name of user who added the song.
+ * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
+ * @apiSuccess {String} args/playlist_id ID of destinaton playlist
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "playlist": 2,
+ *       "plc_ids": [
+ * 			"4946",
+ * 			"639"
+ * 		 ]
+ *   },
+ *   "code": "PL_SONG_MOVED",
+ *   "data": null
+ * }
+ * @apiError PL_ADD_SONG_ERROR Unable to add songs to the playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "Liste de lecture publique",
+ *   "code": "PL_ADD_SONG_ERROR",
+ *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
+ * }
+ */
