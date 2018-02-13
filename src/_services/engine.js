@@ -38,7 +38,7 @@ let internalState = {
 let initialState = {
 	status: 'stop', // [stop,play,pause] // general engine status
 	private: true, // [bool(true|false)] // karaoke mode
-	fullscreen: true,
+	fullscreen: false,
 	ontop: true,
 	playlist: null,
 	timeposition: 0,
@@ -688,7 +688,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 	}
 	if (!playlist_id) {		
 		addByAdmin = false;
-		if (internalState.private) {			
+		if (state.engine.private) {			
 			playlist_id = await plc.isACurrentPlaylist();
 		} else {
 			playlist_id = await plc.isAPublicPlaylist();
