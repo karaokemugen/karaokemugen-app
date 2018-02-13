@@ -6,7 +6,7 @@ export async function emptyBlacklistCriterias() {
 }
 
 export async function generateBlacklist() {
-	return await getUserDb().run(sql.generateBlacklist);
+	return await getUserDb().exec(sql.generateBlacklist);		
 }
 
 export async function getBlacklistCriterias() {

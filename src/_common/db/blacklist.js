@@ -2,8 +2,10 @@
 
 export const emptyBlacklistCriterias = 'DELETE FROM blacklist_criteria;';
 
+export const emptyBlacklist = 'DELETE FROM blacklist';
+
 export const generateBlacklist = `DELETE FROM blacklist;
-								  INSERT INTO blacklist (fk_id_kara, kid, created_at, reason)
+								INSERT INTO blacklist (fk_id_kara, kid, created_at, reason)
 								  SELECT kt.fk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Tag : ' || t.name || ' (type ' || t.tagtype || ')'
 									FROM blacklist_criteria AS blc
 									INNER JOIN karasdb.tag t ON blc.type = t.tagtype AND CAST(blc.value AS INTEGER) = t.pk_id_tag
