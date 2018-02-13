@@ -32,9 +32,6 @@ EngineDisplayConnectionInfoHost = ""
 ; Public means songs will be added to public playlist, leaving it up to the admin to put them in current or not.
 EnginePrivateMode = 1
 
-; Allow people to change their nickname or not.
-EngineAllowNicknameChange = 1
-
 ; Allow users to view whitelist, blacklist and blacklist criterias or not
 EngineAllowViewWhitelist = 1
 EngineAllowViewBlacklist = 1
