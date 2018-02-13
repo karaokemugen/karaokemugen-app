@@ -11,6 +11,8 @@ AdminUsername = "admin"
 AdminPassword = "gurdil"
 
 ; JWT secret key
+; This is used to encrypt authentification tokens. Please change this to a random 
+; string to avoid token manipulation.
 JwtSecret = "Change me"
 
 ; Display nickname or not in the bottom right corner of the screen during first 8 seconds of playback
@@ -55,7 +57,7 @@ EngineAutoPlay = 0
 EngineRepeatPlaylist = 0
 
 ; SmartInsert : gives priority to people who have not enqueued a lot of songs.
-EngineSmartInsert = 1
+EngineSmartInsert = 0
 
 ; Number of songs between two jingles/eyecatches. 0 to disable.
 ; 20 songs = about 30 minutes of openings/endings.
