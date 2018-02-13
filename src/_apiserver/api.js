@@ -1506,7 +1506,6 @@ export async function initAPIServer(listenPort) {
 					req.sanitize('EnginePrivateMode').toInt();
 					req.sanitize('PlayerPIP').toInt();
 					req.sanitize('PlayerPIPSize').toInt();
-					req.sanitize('PlayerPIP').toInt();							
 					setConfig(req.body)
 						.then((publicSettings) => {
 							emitWS('settingsUpdated',publicSettings);
