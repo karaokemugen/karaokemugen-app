@@ -672,7 +672,7 @@ async function raisePosInPlaylist(pos,playlist_id) {
 
 async function reorderPlaylist(playlist_id) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
-	let pl = getPlaylistPos(playlist_id);
+	let pl = await getPlaylistPos(playlist_id);
 	pl.sort((a,b) => {
 		return a.pos - b.pos;
 	});
@@ -683,7 +683,7 @@ async function reorderPlaylist(playlist_id) {
 		pl[arraypos].pos = newpos;
 		arraypos++;
 	});
-	await plDB.reorderPlaylist(pl);
+	await plDB.reorderPlaylist(playlist_id,pl);
 	return pl;	
 }
 

@@ -390,7 +390,7 @@ export async function initAPIServer(listenPort) {
 						req.sanitize('flag_visible').toBoolean();
 
 						//Now we add playlist
-						engine.editPLInfo(req.params.pl_id,req.body)
+						engine.editPL(req.params.pl_id,req.body)
 							.then(() => {
 								emitWS('playlistInfoUpdated',req.params.pl_id);
 								res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));	
@@ -1044,7 +1044,7 @@ export async function initAPIServer(listenPort) {
 			req.getValidationResult()
 				.then((result) =>  {
 					if (result.isEmpty()) {
-						engine.deletePLC(req.body.plc_id,req.params.pl_id)
+						engine.deleteKara(req.body.plc_id,req.params.pl_id)
 							.then((data) => {
 								emitWS('playlistContentsUpdated',data.pl_id);
 								emitWS('playlistInfoUpdated',data.pl_id);
@@ -1487,7 +1487,6 @@ export async function initAPIServer(listenPort) {
 					req.sanitize('EngineAllowViewWhitelist').toInt();
 					req.sanitize('EngineAllowViewBlacklist').toInt();
 					req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
-					req.sanitize('EngineDisplayNickname').toInt();
 					req.sanitize('EngineDisplayConnectionInfoQRCode').toInt();
 					req.sanitize('EngineDisplayConnectionInfo').toInt();
 					req.sanitize('EngineDisplayConnectionInfoMessage').trim();
