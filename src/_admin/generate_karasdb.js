@@ -384,7 +384,6 @@ export async function run(config) {
 	try {
 		const conf = config || getConfig();
 
-		// These are not resolved : they will be later on when extracting / reading ASS
 		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 		const series_altnamesfile = resolve(conf.appPath, conf.PathAltname);
 
@@ -397,7 +396,6 @@ export async function run(config) {
 
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
-
 		// Preparing data to insert
 
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);

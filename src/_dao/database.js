@@ -116,24 +116,29 @@ export function getUserDb() {
 }
 
 export async function initDBSystem() {
-	var doGenerate = false;
+	let doGenerate = false;
 	const conf = getConfig();	
 	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 	if (conf.optGenerateDB) {
 		// Manual generation triggered.
 		// Delete any existing karas.sqlite3 file
-		if(await asyncExists(karaDbFile)) await asyncUnlink(karaDbFile);
+		if(await asyncExists(karaDbFile)) {
+			await closeKaraDatabase();
+			await asyncUnlink(karaDbFile);
+			doGenerate = true;
+		}
+	} else {
+		const karaDbFileStats = await asyncStat(karaDbFile);
+		if (karaDbFileStats.size === 0) doGenerate = true;	
 	}
-	const karaDbFileStats = await asyncStat(karaDbFile);
-	if (karaDbFileStats.size === 0) doGenerate = true;
-	await migrateUserDb();
-	await closeUserDatabase();
-	await closeKaraDatabase();
+	await closeKaraDatabase();	
 	await openKaraDatabase();
 	await migrateKaraDb();
-	await closeKaraDatabase();	
-	if (doGenerate) await generateDatabase();
+	await closeUserDatabase();	
 	await openUserDatabase();
+	await migrateUserDb();	
+	if (doGenerate) await generateDatabase();
+	await closeKaraDatabase();	
 	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
 	await compareDatabasesUUIDs();
 	logger.info('[DBI] Database Interface is READY');
