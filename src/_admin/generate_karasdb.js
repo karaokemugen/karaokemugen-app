@@ -25,7 +25,6 @@ async function emptyDatabase(db) {
 	await db.run('DELETE FROM tag;');
 	await db.run('DELETE FROM serie;');
 	await db.run('DELETE FROM kara;');
-	await db.run('DELETE FROM settings;');
 	await db.run('DELETE FROM sqlite_sequence;');
 	await db.run('VACUUM;');
 }
