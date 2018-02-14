@@ -559,7 +559,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	if (sql) {
 		logger.debug('[Gen] UPDATE SQL : ' + sql);
-		await userdb.run(sql);
+		await userdb.exec(sql);
 	}
 
 	const sqlUpdateDBUUID = await asyncReadFile(resolve(__dirname, '../_common/db/update_userdb_uuid.sql'), 'utf-8');
