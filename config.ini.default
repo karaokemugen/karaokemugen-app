@@ -4,10 +4,10 @@
 ; Do not modify this file, it will be overwritten on updates.
 ; If you want to modify a setting, add it with its new value to config.ini, which will overwrite settings listed here.
 
-
-
-; Admin password. Change this in config.ini
-AdminPassword = "gurdil"
+; JWT secret key
+; This is used to encrypt authentification tokens. Please change this to a random 
+; string to avoid token manipulation.
+JwtSecret = "Change me"
 
 ; Display nickname or not in the bottom right corner of the screen during first 8 seconds of playback
 EngineDisplayNickname = 1
@@ -32,9 +32,6 @@ EngineDisplayConnectionInfoHost = ""
 ; Public means songs will be added to public playlist, leaving it up to the admin to put them in current or not.
 EnginePrivateMode = 1
 
-; Allow people to change their nickname or not.
-EngineAllowNicknameChange = 1
-
 ; Allow users to view whitelist, blacklist and blacklist criterias or not
 EngineAllowViewWhitelist = 1
 EngineAllowViewBlacklist = 1
@@ -54,6 +51,9 @@ EngineRepeatPlaylist = 0
 ; I've just been in this place before, higher on the street,
 ; and I know it's my time to come home!
 EngineMaxDejaVuTime = 60
+
+; SmartInsert : gives priority to people who have not enqueued a lot of songs.
+EngineSmartInsert = 0
 
 ; Number of songs between two jingles/eyecatches. 0 to disable.
 ; 20 songs = about 30 minutes of openings/endings.
@@ -114,6 +114,9 @@ PathAltname = "app/data/series_altnames.csv"
 PathBackgrounds = "app/backgrounds"
 PathJingles = "app/jingles"
 PathTemp = "app/temp"
+PathPreviews = "app/previews"
+PathImport = "app/import"
+PathAvatars = "app/avatars"
 
 ; Videos can be streamed from the following URL if not found on the local paths.
 ; BEWARE : some videos with a high bitrate won't play well on an average connection.
@@ -125,3 +128,7 @@ PathVideosHTTP = ""
 ; If you have blue window issues in Windows, set mpvVideoOutput to "direct3d", otherwise don't touch this
 ; mpv should detect automatically which video output driver to use
 mpvVideoOutput = ""
+
+; Auth configuration
+; Time (in minutes) before a user account is set to expire after its last login/action 
+AuthExpireTime = 15

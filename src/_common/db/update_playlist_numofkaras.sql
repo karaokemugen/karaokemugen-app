@@ -1,1 +1,0 @@
-UPDATE playlist SET num_karas = $num_karas WHERE pk_id_playlist = $playlist_id;

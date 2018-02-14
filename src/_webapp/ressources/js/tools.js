@@ -38,6 +38,7 @@ displayMessage = function(type, title, message, time) {
 };
 
 /* display a modal (really?) */
+/* types : confirm, prompt, alert, ... */
 displayModal = function(type, title, message, callback, placeholder) {
 	var modal = $('#modalBox').attr('type', type);
 	var okButton = modal.find('.modal-footer > button.ok').unbind().show();
@@ -132,7 +133,8 @@ createCookie = function(name,value,days) {
 	var expires;
 	if (days) {
 		var date = new Date();
-		date.setTime(date.getTime()+(days*24*60*60*1000));
+		if (days === -1) days = 365 * 15;
+		date.setTime(date.getTime() + (days*24*60*60*1000));
 		expires = '; expires='+date.toGMTString();
 	} else expires = '';
 	document.cookie = name+'='+value+expires+'; path=/';
@@ -153,7 +155,11 @@ eraseCookie = function(name) {
 	createCookie(name,'',-1);
 };
 
-
+parseJwt = function(token) {
+	var base64Url = token.split('.')[1];
+	var base64 = base64Url.replace('-', '+').replace('_', '/');
+	return JSON.parse(window.atob(base64));
+};
 /* BOOM */
 endOfTheWorldAsWeKnowIt = function() {
   
@@ -196,4 +202,15 @@ endOfTheWorldAsWeKnowItloop = function(){
 		appendTo: 'body',
       
 	});
+};
+
+isVisible = function( element, container ){
+	
+	var elementTop = element.offset().top,
+		elementHeight = element.height(),
+		containerTop = container.offset().top,
+		containerHeight = container.height();
+
+	return ((((elementTop - containerTop) + elementHeight) > 0)
+		&& ((elementTop - containerTop) < containerHeight));
 };

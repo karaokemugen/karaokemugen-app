@@ -7,7 +7,7 @@ import {forEach as csvForEach} from 'csv-string';
 import {has as hasLang} from 'langs';
 import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove} from '../_common/utils/files';
 import {getConfig, resolvedPathKaras} from '../_common/utils/config';
-import {getKara, writeKara} from '../_common/utils/kara';
+import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras, selectRatingKaras,
@@ -15,6 +15,8 @@ import {
 	selectWhitelistKaras,
 	updateSeriesAltNames
 } from '../_common/db/generation';
+import {karaTypesMap} from '../_services/constants';
+import {serieRequired, verifyKaraData} from '../_services/kara';
 
 let error = false;
 
@@ -96,12 +98,15 @@ async function getAllKaras(karafiles) {
 }
 
 async function readAndCompleteKarafile(karafile) {
-	const karaData = await getKara(karafile);
-	if (karaData.error) {
+	const karaData = await getDataFromKaraFile(karafile);
+	try {
+		verifyKaraData(karaData);
+	} catch (err) {
+		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete : ${err}`);
 		error = true;
-	} else {
-		await writeKara(karafile, karaData);
-	}	
+		return karaData;
+	}
+	await writeKara(karafile, karaData);
 	return karaData;
 }
 
@@ -141,15 +146,10 @@ function getSeries(kara) {
 		});
 	}
 
-	if (kara.type !== 'LIVE' && kara.type !== 'MV') {
-		if (kara.serie && kara.serie.trim()) {
-			series.add(kara.serie.trim());
-		}
-		// Karas not LIVE nor MV must have a series.		
-		if (isEmpty(series)) {
-			error = true;
-			logger.warn('[Gen] Karaoke series cannot be detected! ('+JSON.stringify(kara));
-		}
+	// Au moins une série est obligatoire pour les karas non LIVE/MV.
+	if (serieRequired(kara.type) && isEmpty(series)) {
+		logger.error(`Karaoke series cannot be detected! (${JSON.stringify(kara)})`);
+		error = true;
 	}
 
 	return series;
@@ -286,20 +286,15 @@ function getKaraTags(kara, allTags) {
 	}
 
 	getTypes(kara, allTags).forEach(type => result.add(type));
-	
+
 	return result;
 }
 
 function getTypes(kara, allTags) {
 	const result = new Set();
 
-	const types = new Map([
-		['PV', 'TYPE_PV,3'], ['AMV', 'TYPE_AMV,3'], ['CM', 'TYPE_CM,3'], ['ED', 'TYPE_ED,3'], ['OP', 'TYPE_OP,3'],
-		['MV', 'TYPE_MUSIC,3'], ['OT', 'TYPE_OTHER,3'], ['IN', 'TYPE_INSERTSONG,3'], ['LIVE', 'TYPE_LIVE,3']
-	]);
-
-	types.forEach((value, key) => {
-		// Adding spaces so MV and AMV can't be confused.
+	karaTypesMap.forEach((value, key) => {
+		// Ajout d'espaces car certaines clés sont incluses dans d'autres : MV et AMV par exemple.
 		if (` ${kara.type} `.includes(` ${key} `)) {
 			result.add(getTagId(value, allTags));
 		}
@@ -563,11 +558,11 @@ export async function checkUserdbIntegrity(uuid, config) {
 		await userdb.run(sql);
 	}
 
-	const sqlUpdateDBUUID = await asyncReadFile(resolve(__dirname, '../_common/db/update_userdb_uuid.sql'), 'utf-8');
+	const sqlDB = require('../_common/db/database.js');
 
 	await Promise.all([
-		userdb.run(sqlUpdateDBUUID, { $uuid: uuid }),
-		db.run(sqlUpdateDBUUID, { $uuid: uuid })
+		userdb.run(sqlDB.updateUUID, { $uuid: uuid }),
+		db.run(sqlDB.updateUUID, { $uuid: uuid })
 	]);
 
 	await userdb.run('PRAGMA foreign_keys = ON;');

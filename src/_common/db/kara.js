@@ -5,13 +5,16 @@ export const addKaraToPlaylist = `INSERT INTO playlist_content(
 									fk_id_kara,
 									kid,
 									created_at,
-									pseudo_add,
-									NORM_pseudo_add,
+									fk_id_user,									
 									pos,
-									flag_playing) 
-								SELECT $playlist_id,$kara_id,kid,$created_at,$pseudo_add,$NORM_pseudo_add,$pos,0
-								FROM karasdb.kara
-								WHERE PK_id_kara = $kara_id;
+									flag_playing,
+									pseudo_add,
+									NORM_pseudo_add) 
+								SELECT $playlist_id,$kara_id,k.kid,$created_at,$user_id,$pos,0,u.nickname,u.NORM_nickname
+								FROM karasdb.kara AS k,
+								     user AS u							
+								WHERE pk_id_kara = $kara_id
+									AND u.pk_id_user = $user_id;
 								`;
 
 export const addKaraToWhitelist = `INSERT INTO whitelist(fk_id_kara,kid,created_at)
@@ -143,16 +146,6 @@ export const isKaraInPlaylist = `SELECT fk_id_kara
 							  AND fk_id_kara = $kara_id;
 								`;
 
-export const isKaraInBlacklist = `SELECT fk_id_kara 
-							FROM blacklist 
-							WHERE fk_id_kara = $kara_id;
-								`;
-
-export const isKaraInWhitelist = `SELECT fk_id_kara 
-							FROM whitelist 
-							WHERE fk_id_kara = $kara_id;
-								`;
-
 export const updateTotalViewcounts = `UPDATE karasdb.kara SET viewcount = 
 									(SELECT COUNT(kid) FROM viewcount WHERE kid=$kid)
 									WHERE kid=$kid;
@@ -167,9 +160,10 @@ export const removeKaraFromWhitelist = `DELETE FROM whitelist
 									`;
 
 export const getSongCountPerUser = `SELECT COUNT(1) AS count
-									FROM playlist_content
-									WHERE pseudo_add = $username
-									  AND fk_id_playlist = $playlist_id
-									  AND pos > IFNULL((select pos from playlist_content WHERE flag_playing  = 1),0)
+									FROM playlist_content AS pc, user AS u
+									WHERE u.login = $username
+									  AND u.pk_id_user = pc.fk_id_user
+									  AND pc.fk_id_playlist = $playlist_id
+									  AND pc.pos > IFNULL((select pos from playlist_content WHERE flag_playing  = 1),0)
 									`;
 

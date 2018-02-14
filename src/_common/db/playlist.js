@@ -104,6 +104,7 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
       									pc.created_at AS created_at,
       									pc.pseudo_add AS pseudo_add,
       									pc.NORM_pseudo_add AS NORM_pseudo_add,
+										u.login AS username,
       									pc.pos AS pos,
       									pc.pk_id_plcontent AS playlistcontent_id,
       									pc.flag_playing AS flag_playing,      
@@ -181,6 +182,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
       							pc.created_at AS created_at,
       							pc.pseudo_add AS pseudo_add,
       							pc.NORM_pseudo_add AS NORM_pseudo_add,
+								u.login AS username,
       							pc.pos AS pos,
       							pc.pk_id_plcontent AS playlistcontent_id,
 	    						pc.fk_id_playlist as playlist_id,      
@@ -336,4 +338,16 @@ export const unsetPlaying = `UPDATE playlist_content
 
 export const setPlaying = `UPDATE playlist_content 
 						SET flag_playing = 1 
-						WHERE pk_id_plcontent = $playlistcontent_id;`;
+						WHERE pk_id_plcontent = $playlistcontent_id;
+						`;
+
+export const countPlaylistUsers = `SELECT COUNT(DISTINCT fk_id_user) AS NumberOfUsers
+                            FROM playlist_content
+                            WHERE fk_id_playlist = $playlist_id;
+							`;
+
+export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
+                                        FROM playlist_content
+                                        WHERE fk_id_playlist = $playlist_id
+                                            AND fk_id_user = $user_id;
+										`;

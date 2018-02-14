@@ -1,1 +1,0 @@
-SELECT fk_id_kara FROM playlist_content WHERE fk_id_playlist = $playlist_id AND fk_id_kara = $kara_id;

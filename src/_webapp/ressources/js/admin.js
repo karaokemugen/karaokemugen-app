@@ -148,26 +148,30 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
-			var bcType = $(this).val();
-			var bcTagsFiltered = jQuery.grep(bcTags, function (obj) {
-				return obj.type == bcType;
-			});
-
-			var $bcValInput;
-			if (bcTagsFiltered.length > 0) {
-				$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
-				$.each(bcTagsFiltered, function (i, o) {
-					var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
-					$bcValInput.append($option);
+			if(bcTags) {
+				var bcType = $(this).val();
+				var bcTagsFiltered = jQuery.grep(bcTags, function (obj) {
+					return obj.type == bcType;
 				});
+	
+				var $bcValInput;
+				if (bcTagsFiltered.length > 0) {
+					$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
+					$.each(bcTagsFiltered, function (i, o) {
+						var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
+						$bcValInput.append($option);
+					});
+				} else {
+					$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
+				}
+				$('#bcValContainer').empty().append($bcValInput);
+	
+				if (bcTagsFiltered.length > 0) {
+					$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
+	
+				}
 			} else {
-				$bcValInput = $('<input type="text" id="bcVal" class="input-sm"/>');
-			}
-			$('#bcValContainer').empty().append($bcValInput);
-
-			if (bcTagsFiltered.length > 0) {
-				$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
-
+				console.log("Err: bcTags empty");
 			}
 		});
 
@@ -219,7 +223,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 				if (idPlaylistTo > 0) {
 					url = scope + '/playlists/' + idPlaylistTo + '/karas';
-					var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? pseudo : li.data('pseudo_add');
+					var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? logInfos.username : li.data('pseudo_add');
 					data = { requestedby: requestedby, kara_id: idKara };
 				} else if (idPlaylistTo == -1) {
 					//displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
@@ -365,8 +369,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 		/* password case handlers */
 
-		$('#confirmPassword, #password').on('input', function () {
-			if ($('#confirmPassword').val() === $('#password').val() && $('#password').val() !== '') {
+		$('#confirmPassword, #passwordSettings').on('input', function () {
+			if ($('#confirmPassword').val() === $('#passwordSettings').val() && $('#passwordSettings').val() !== '') {
 				$('#sendPassword').attr('oldvalue', $('#sendPassword').val());
 				$('#sendPassword').val($('#confirmPassword').val());
 				$('#sendPassword').removeClass('btn-danger').addClass('btn-success');
@@ -387,7 +391,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			$(this).text(i+1 + ' - ' + $(this).text());
 		});
 
-		pseudo = 'Administrateur';
 	});
 
 	/*** INITIALISATION ***/
@@ -396,16 +399,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	mouseDown = false;
 	scope = 'admin';
 	panel1Default = -1;
-
-	setupAjax = function (passwordAdmin) {
-
-		$.ajaxSetup({
-			cache: false,
-			headers: { 'Authorization': 'Basic ' + btoa('truc:' + passwordAdmin) }
-		});
-	};
-
-	setupAjax(mdpAdmin);
 
 	// dynamic creation of switchable settings 
 	var htmlSettings = '';

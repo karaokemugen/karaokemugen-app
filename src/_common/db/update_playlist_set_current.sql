@@ -1,1 +1,0 @@
-UPDATE playlist SET flag_current = 1 WHERE pk_id_playlist = $playlist_id;

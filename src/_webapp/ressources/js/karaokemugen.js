@@ -6,10 +6,10 @@ var refreshTime;        // Int (ms) : time unit between every call
 var stopUpdate;         // Boolean : allow to stop any automatic ajax update
 var oldState;           // Object : last player state saved
 var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a flood of search
-var pseudo;             // String : pseudo of the user
 var bcTags;             // Object : list of blacklist criterias tags
 var showInfoMessage;	// Object : list of info codes to show as a toast
 var softErrorMessage; 
+var logInfos			// Object : contains all login infos : role, token, username
 
 var DEBUG;
 var SOCKETDEBUG;
@@ -42,6 +42,7 @@ var checkboxKaraHtml;
 var closeButton;
 var closeButtonBottom;
 var showFullTextButton;
+var showVideoButton;
 var dragHandleHtml;
 var playKaraHtml;
 
@@ -106,26 +107,31 @@ var settingsNotUpdated;
 				
 				res = JSON.parse(res);
 				var data = res.data;
-				if(res.code) {
-					// TODO recoder la fonction pour interpréter comme i18n server ?
-					var args = typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
-						return res.args[e];
-					}) : [res.args];
-					//var args = res.args;
-					var errMessage = i18n.__(res.code, args);
-					if(showInfoMessage.indexOf(res.code) === -1) {
-						console.log(res.code, errMessage, 'console');
-					} else {
-						displayMessage('info', '', errMessage, '2000');
+				if(data) { // if server response qualifies as the standard error structure
+					if(res.code) {
+						// TODO recoder la fonction pour interpréter comme i18n server ?
+						var args = typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
+							return res.args[e];
+						}) : [res.args];
+						//var args = res.args;
+						var errMessage = i18n.__(res.code, args);
+						if(showInfoMessage.indexOf(res.code) === -1) {
+							console.log(res.code, errMessage, 'console');
+						} else {
+							displayMessage('info', '', errMessage, '2000');
+						}
 					}
+					
+					DEBUG && res.message && console.log(res.message);
+					return JSON.stringify(data);
+				} else {
+					return JSON.stringify(res);
 				}
-				
-				DEBUG && res.message && console.log(res.message);
-				return JSON.stringify(data);
+			
 			},
 			error: function (res, textStatus, errorThrown) {
 				console.log(res.status + '  - ' + textStatus + '  - ' + errorThrown + (res.responseJSON ? ' : ' +  res.responseJSON.message : ''));
-				if(res.status != 0 && res.status != 200) {
+				if(res.status != 0 && res.status != 200 && res.responseJSON) {
 					var errMessage = 'unknown';
 					if(res.responseJSON.code) {
 						// var args = res.responseJSON.args;
@@ -142,38 +148,72 @@ var settingsNotUpdated;
 				}
 			}
 		});
+		
+		setupAjax = function () {
+			$.ajaxSetup({
+				cache: false,
+				headers: { 'Authorization': logInfos.token }
+			});
+		};
 
-		// Some html init
-
-		$.ajax({ url: 'public/stats' }).done(function (data) {
-			kmStats = data;
-			if(scope === "public") {
-				$('#selectPlaylist1 > option[value=-1]')
-					.data('num_karas', kmStats.totalcount).attr('data-num_karas', kmStats.totalcount);
+		$('.changePseudo').click( function() {
+			if (logInfos.username) {
+				showProfil();
+			} else {
+				$('#loginModal').modal('show');
 			}
 		});
-		passwordUpdating = $.Deferred().resolve();
-		settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
-        
-		settingsUpdating.done( function() {
-			settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
-			playlistsUpdating = refreshPlaylistSelects();
-			playlistsUpdating.done(function () {
-				playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
-				refreshPlaylistDashboard(1);
-				refreshPlaylistDashboard(2);
-                
-				$(window).trigger('resize');
-			});
-		});
 
-		initSwitchs();
-		$('.bootstrap-switch').promise().then(function(){
-			$(this).each(function(){
-				$(this).attr('title', $(this).find('input').attr('title'));
+		var mugenToken = readCookie('mugenToken');
+
+		if(mugenToken) {
+			logInfos = parseJwt(mugenToken);
+			logInfos.token = mugenToken;
+			setupAjax();
+		} else {
+			$('#loginModal').modal('show');
+		}  
+
+		// Some html & stats init
+		initApp = function() {
+			$.ajax({ url: 'public/stats' }).done(function (data) {
+				kmStats = data;
+				if(scope === 'public') {
+					$('#selectPlaylist1 > option[value=-1]')
+						.data('num_karas', kmStats.totalcount).attr('data-num_karas', kmStats.totalcount);
+				}
 			});
-		});
-        
+
+			passwordUpdating = $.Deferred().resolve();
+			settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
+			
+			settingsUpdating.done( function() {
+				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
+				playlistsUpdating = refreshPlaylistSelects();
+				playlistsUpdating.done(function () {
+					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
+					refreshPlaylistDashboard(1);
+					refreshPlaylistDashboard(2);
+					
+					$(window).trigger('resize');
+				});
+			});
+
+			initSwitchs();
+
+			$('.bootstrap-switch').promise().then(function(){
+				$(this).each(function(){
+					$(this).attr('title', $(this).find('input').attr('title'));
+				});
+			});
+			
+			$.ajax({ url: 'public/tags', }).done(function (data) {
+				bcTags = data;
+			});
+		};
+		initApp();
+
+
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
 		$('#searchPlaylist1, #searchPlaylist2').on('input', function () {
 			var side = $(this).attr('side');
@@ -190,8 +230,6 @@ var settingsNotUpdated;
 				$(this).blur();
 			}
 		});
-
-        
 		// When user selects a playlist
 		$('#selectPlaylist1, #selectPlaylist2').change(function (e) {
 			var $this = $(this);
@@ -235,6 +273,13 @@ var settingsNotUpdated;
 			}
 		});
 		
+		$('.overlay').on('click touchstart', function() {
+			var video = $('#video');
+			$('.overlay').hide();
+			video[0].pause();
+			video.removeAttr('src');
+		});
+		
 		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="addKara"]', function() {
 			var idKara = $(this).closest('li').attr('idkara');
 			addKaraPublic(idKara);
@@ -266,7 +311,7 @@ var settingsNotUpdated;
 					$.ajax({
 						url: urlPost,
 						type: 'POST',
-						data: { kara_id : karaList, requestedby : pseudo }
+						data: { kara_id : karaList, requestedby : logInfos.username }
 					}).done(function () {
 						DEBUG && console.log(karaList + ' added to playlist ' + idPlaylistTo);
 
@@ -305,7 +350,21 @@ var settingsNotUpdated;
 					scrollToElement(playlist.parent(), detailsKara,  liKara.find('.lyricsKara'));
 				});
 			});
+			$('.playlist-main').on('click', '.showVideo', function() {
+				showVideo($(this));
+			})
 		}
+
+		showVideo = function(el) {
+			var previewFile = el.closest('.detailsKara').data('previewfile');
+			if(previewFile) {
+				setTimeout(function() {
+					$('#video').attr('src', '/previews/' + previewFile);
+					$('#video')[0].play();
+					$('.overlay').show();
+				}, 1);
+			}
+		};
 
 		// pick a random kara & add it after (not) asking user's confirmation
 		$('.getLucky').on('click', function () {
@@ -319,7 +378,7 @@ var settingsNotUpdated;
 						$.ajax({
 							url: 'public/karas/' + chosenOne,
 							type: 'POST',
-							data: { requestedby : pseudo }
+							data: { requestedby : logInfos.username }
 						}).done(function () {
 							playlistContentUpdating.done( function() {
 								scrollToKara(2, chosenOne); 
@@ -434,9 +493,159 @@ var settingsNotUpdated;
 			$('body > div[class!="popup"]').css('opacity','1');
 		});
 
-		$.ajax({ url: 'public/tags', }).done(function (data) {
-			bcTags = data;
+		/* login stuff */
+		login = function(username, password) {
+			$.ajax({
+				url: 'auth/login',
+				type: 'POST',
+				data: { username: username, password: password} })
+				.done(function (response) {
+					displayMessage('info','', i18n.__('LOG_SUCCESS'));
+					
+					$('#loginModal').modal('hide');
+					$('#password, #login').removeClass('redBorders');
+					createCookie('mugenToken', response.token, -1);
+					logInfos = response;
+					setupAjax();
+					initApp();
+
+				}).fail(function(response) {
+					//displayMessage('info','', i18n.__('LOG_ERROR'));
+					$('#password').val('').focus();
+					$('#password, #login').addClass('redBorders');
+				});
+		};
+		$('#nav-login .login').click( () => {
+			var username = $('#login').val();
+			var password = $('#password').val();
+			login(username, password);
+			
 		});
+		$('#nav-login .guest').click( function() {
+			$.ajax({	url: 'public/guests', 	
+				type: 'GET'})
+				.done(function (response) {
+					var listAvalaibleGuests = response.filter(a => a.available=='1');
+					var randGuest = listAvalaibleGuests[Math.floor(Math.random() * listAvalaibleGuests.length)];
+					login(randGuest.username, '');
+				});
+			var username = $('#login').val();
+			var password = $('#password').val();
+			login(username, password);
+			
+		});
+		$('#nav-signup .login').click( () => {
+			var username = $('#signupLogin').val();
+			var password = $('#signupPassword').val();
+			var passwordConfirmation = $('#signupPasswordConfirmation').val();
+			console.log(password !== passwordConfirmation, password, passwordConfirmation);
+			if(password !== passwordConfirmation) {
+				$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
+				$('#signupPassword').focus();
+			} else {
+				$.ajax({
+					url: 'public/users',
+					type: 'POST',
+					data: { login: username, password: password} })
+					.done(function (response) {
+						if(response == true) {
+							displayMessage('info', 'Info',  i18n.__('CL_NEW_USER', username));
+						}
+						
+						$('#loginModal').modal('hide');
+						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
+						login(username, password);
+
+					}).fail(function(response) {
+						//displayMessage('info','', i18n.__('LOG_ERROR'));
+						$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
+						$('#signupPassword').focus();
+					});
+			}
+		});
+		$('.logout').click( () => {
+			eraseCookie("mugenToken");
+			window.location.reload();
+			/*
+			logInfos = { token : '' };
+			setupAjax();
+			*/
+		});
+		/* login stuff END */
+		/* profil stuff */
+		showProfil = function() {
+			$('#profilModal').modal('show');
+			$.ajax({
+				url: 'public/myaccount/', 	
+				type: 'GET'})
+				.done(function (response) {
+					//var user = response.find(a => a.login==logInfos.username);
+					
+					$.each(response, function(i, k) {
+						var $element = $('.profileContent [name="' + i + '"]');
+						$element.attr('oldval', k);
+	
+						if(i === 'avatar_file' && k) {
+							$element.attr('src', k);
+						} else if( i === 'login') {
+							$element.text(k);
+						} else if (i !== 'password') {
+							$element.val(k);
+						}
+					});
+					
+				});
+		};
+
+		$('.profileData .profileLine input').on('keypress', (e) => {
+			if(e.which == 13) {
+				$(e.target).blur();
+			}
+		});
+
+		$('.profileData .profileLine input').on('blur', (e) => {
+			var $input = $(e.target);
+			if ($input.attr('oldval') !== $input.val()) {
+				console.log($input.attr('oldval'), $input.val());
+				// TODO gestion confirmation password
+				var profileData = $('.profileData .profileLine > input').serialize();
+				$.ajax({
+					url: 'public/myaccount', 	
+					type: 'PUT',
+					data: profileData
+				})
+					.done(function (response) {
+						$('.profileContent .profileLine > input').removeClass('redBorders');
+						$input.attr('oldval', $input.val());
+					})
+					.fail( (response) => {
+						var listFieldErr = Object.keys(response.responseJSON);
+						listFieldErr.forEach((v, k) => {
+							var $element = $('.profileContent [name="' + v + '"]');
+								
+							if(v === 'avatar_file') {
+								// TODO
+							} else if( v === 'login') {
+								// TODO
+							} else if (v !== 'password') {
+								$element.addClass('redBorders');
+							}
+							if( k === 0 ) {
+								$element.focus();
+							}
+						});
+						
+					});
+			}
+				
+		});
+
+
+
+
+		/* profile stuff END */
+
+	
 		/* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
 		if(isTouchScreen) {
 			$('select').on('select2:open', function() {
@@ -456,7 +665,7 @@ var settingsNotUpdated;
 	animTime = isSmall ? 200 : 300;
 	refreshTime = 1000;
 	mode = 'list';
-	pseudo = 'Anonymous';
+	logInfos = { username : null, role : null };
 
 	DEBUG =  query.DEBUG != undefined;
 	SOCKETDEBUG =  query.SOCKETDEBUG != undefined;
@@ -483,6 +692,7 @@ var settingsNotUpdated;
 	closeButtonBottom = '<button class="closeParent bottom btn btn-action"></button>';
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
 	showFullTextButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	showVideoButton = '<button class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
@@ -503,6 +713,7 @@ var settingsNotUpdated;
 		'BLCTYPE_8'];
 
 	showInfoMessage = [
+		'USER_CREATED',
 		'PL_SONG_ADDED',
 		'PL_SONG_DELETED',
 		'PLAYLIST_MODE_SONG_ADDED'];
@@ -565,33 +776,37 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			$this = $(e.target).closest('.fullLyrics');
+			var $this = $(e.target).closest('.fullLyrics, .showVideo');
             
 			if($this.length > 0) {
 				e.preventDefault();
             
 				var liKara = $this.closest('li');
 				var idKara = liKara.attr('idkara');
-        
-				$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
-					if (typeof data === 'object') {
-						if (mode == 'mobile') {
-							$('#lyricsModalText').html(data.join('<br/>'));
-							$('#lyricsModal').modal('open');
-						} else {
-							displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
+				if($this.hasClass('fullLyrics')) {
+					$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
+						if (typeof data === 'object') {
+							if (mode == 'mobile') {
+								$('#lyricsModalText').html(data.join('<br/>'));
+								$('#lyricsModal').modal('open');
+							} else {
+								displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
+							}
+						} else { 
+							displayMessage('warning','', i18n.__('NOLYRICS')); 
 						}
-					} else { 
-						displayMessage('warning','', i18n.__('NOLYRICS')); 
-					}
-				});
-			}
+					});
+				} else if($this.hasClass('showVideo')) {
+					showVideo($this);
+				}
+				
+			} 
 		});
     
 		manager2.on('tap click', function (e) {
 			e.gesture = e;
 			var target = $(e.gesture.target);
-			if(target.closest('.fullLyrics').length > 0
+			if(target.closest('.fullLyrics, .showVideo').length > 0
 								|| target.closest('.actionDiv').length > 0
 								|| target.closest('.infoDiv').length > 0
 								|| target.closest('[name="checkboxKara"]').length > 0
@@ -704,12 +919,12 @@ var settingsNotUpdated;
 							+	(idPlaylist > 0 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
 							+	kara.pos + '" data-pseudo_add="' + kara.pseudo_add + '"' : '')
 							+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
-							+	(kara.pseudo_add == pseudo ? 'user' : '' );
+							+	(kara.pseudo_add == logInfos.username ? 'user' : '' );
 
 							var badges = '';
 							if(kara.misc) {
 								kara.misc.split(',').forEach(function(tag) {
-									badges += '<bdg>'  + tagAcrList[tag] + '</bdg>';
+									badges += '<bdg>'  + (tagAcrList[tag] ? tagAcrList[tag] : '?') + '</bdg>';
 								});
 							}
 							if (mode === 'list') {
@@ -1231,10 +1446,11 @@ var settingsNotUpdated;
 		if (!infoKara.is(':visible')) { // || infoKara.length == 0
 			var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 
-			$.ajax({ url: urlInfoKara }).done(function (data) {
+			$.ajax({ url: urlInfoKara }).done(function (data) {console.log('ahhh', data[0]);
 				var detailsHtml = buildKaraDetails(data[0], mode);
 				detailsHtml = $(detailsHtml).hide();
 				liKara.find('.contentDiv').after(detailsHtml);
+				$(detailsHtml).data(data[0]);
 
 				detailsHtml.fadeIn(animTime);
 				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
@@ -1285,12 +1501,15 @@ var settingsNotUpdated;
 			} else return '';
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
-
 		infoKaraTemp = 'no mode specified';
 		if (htmlMode == 'list') {
-			infoKaraTemp = '<div class="detailsKara alert alert-info">' + (isTouchScreen ? '' : closeButton) + showFullTextButton + htmlTable + '</div>';
+			infoKaraTemp = '<div class="detailsKara alert alert-info">' + (isTouchScreen ? '' : closeButton)
+				+ (data['previewfile'] ? showVideoButton : '')
+				+ showFullTextButton + htmlTable + '</div>';
 		} else if (htmlMode == 'mobile') {
-			infoKaraTemp = '<div class="detailsKara z-depth-1">' + showFullTextButton + htmlTable + '</div>';
+			infoKaraTemp = '<div class="detailsKara z-depth-1">'
+			+ (data['previewfile'] ? showVideoButton : '')
+			+ showFullTextButton + htmlTable + '</div>';
 		}
 		return infoKaraTemp;
 	};
@@ -1346,6 +1565,7 @@ var settingsNotUpdated;
 		$('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
 
 		if(!isTouchScreen) {
+			$('#nav-profil').perfectScrollbar();
 			$('.playlistContainer').perfectScrollbar();
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
@@ -1409,7 +1629,7 @@ var settingsNotUpdated;
 		
 		$.ajax({ url: 'public/karas/' + idKara,
 			type: 'POST',
-			data: { requestedby : pseudo },
+			data: { requestedby : logInfos.username },
 			complete: function() {
 				var side = 2;
 				if(sideOfPlaylist(playlistToAddId) == side) {
@@ -1481,19 +1701,29 @@ var settingsNotUpdated;
 	socket.on('playingUpdated', function(data){
 		var side = sideOfPlaylist(data.playlist_id);
 		DEBUG && console.log(side, data.playlist_id);
+		
 		if(side) {
 			var playlist = $('#playlist' + side);
-			var liKara = playlist.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]').get(0);
+			var container = playlist.parent();
+			var previousCurrentlyPlaying = playlist.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
+			var newCurrentlyPlaying = playlist.find('li[idplaylistcontent="' + data.plc_id + '"]');
 			
-			if(liKara) {
-				liKara.removeAttribute('currentlyPlaying');
+			if(previousCurrentlyPlaying.length > 0 && newCurrentlyPlaying.length > 0 && isVisible(previousCurrentlyPlaying, container)) {
+				var posKaraMarker = previousCurrentlyPlaying.offset().top;
+				var newPosKaraMarker = newCurrentlyPlaying.offset().top;
+				container.finish().animate({scrollTop: container.scrollTop() + newPosKaraMarker - posKaraMarker}, 1000, 'swing');
+			}
+			if(previousCurrentlyPlaying.length > 0) {
+				previousCurrentlyPlaying.get(0).removeAttribute('currentlyPlaying');
 				// trick for IE/Edge not redrawing layout
-				var ul = $(liKara).closest('ul');
+				var ul = previousCurrentlyPlaying.closest('ul');
 				ul.css('height',  ul.height());
 				ul.css('height', 'auto');
 			}
-			$('#playlist' + side + ' > li[idplaylistcontent="' + data.plc_id + '"]').attr('currentlyplaying', '');
-			
+			if(newCurrentlyPlaying.length > 0) {
+				newCurrentlyPlaying.attr('currentlyplaying', '');
+			}
+
 			refreshPlaylistDashboard(side, true);
 		}
 	});

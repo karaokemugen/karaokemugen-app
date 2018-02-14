@@ -1,25 +1,22 @@
-const qrcode = require('qrcode');
-const path = require('path');
+import {toFile} from 'qrcode';
+import {getConfig} from '../_common/utils/config.js';
+import {resolve} from 'path';
 const logger = require('winston');
 
-module.exports = {
-	SYSPATH:null,
-	SETTINGS:null,
-	build:function(url){
-		logger.debug('[Background] Entered background builder');
-		return new Promise(function(resolve,reject){			
-			var qrcodeImageFile = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathTemp,'qrcode.png');
-			logger.debug('[Background] URL detected : '+url);
-			qrcode.toFile(qrcodeImageFile, url, {}, function (err) {
-				if (err) {
-					logger.error('[Background] Error generating QR Code : '+err);
-					reject(err);
-				} else {
-					resolve();
-				}
-			});
-		});
-	}
-};
+export async function buildQRCode(url) {
+	const conf = getConfig();
+	logger.debug('[Background] Entered background builder');	
+	let qrcodeImageFile = resolve(conf.appPath,conf.PathTemp,'qrcode.png');
+	logger.debug('[Background] URL detected : '+url);
+	toFile(qrcodeImageFile, url, {}, (err) => {
+		if (err) {
+			logger.error('[Background] Error generating QR Code : '+err);
+			throw err;
+		} else {
+			return true;
+		}
+	});
+}
+
 
 

@@ -1,18 +1,8 @@
 $(document).ready(function () {
-
+		
 	$('#choixPseudo').focus(function(){
 		//this.setSelectionRange(0, this.value.length);
 		this.value = '';
-	});
-  
-	$('#changePseudo').click( function() {
-		displayModal('prompt','Pseudo','', function(newPseudo){
-			pseudo = newPseudo;
-			document.cookie = 'mugenPseudo=' + pseudo + ';expires=' +  date.toUTCString();
-			document.cookie = 'mugenPseudoList=' + JSON.stringify($('#pseudo > option').map(function(i,e){
-				return e.value;
-			})) + ';expires=' +  date.toUTCString();
-		}, pseudo);
 	});
 
 	$('#choixPseudo').blur(function(){
@@ -22,28 +12,16 @@ $(document).ready(function () {
 			if($('#pseudo > option[value="' + pseudo +'"]').length == 0) {
 				$('#pseudo').append($('<option>', {value: pseudo}));
 			}
-		} 
-		document.cookie = 'mugenPseudo=' + pseudo + ';expires=' +  date.toUTCString();
+		}
+		createCookie('mugenPseudo', pseudo, -1);
+		/*
 		document.cookie = 'mugenPseudoList=' + JSON.stringify($('#pseudo > option').map(function(i,e){
 			return e.value;
-		})) + ';expires=' +  date.toUTCString();
+		})) + ';expires=' +  datePlus10.toUTCString();
+		*/
 	});
 
-	var mugenPseudo = document.cookie.match('(^|;) ?' + 'mugenPseudo' + '=([^;]*)(;|$)');
-
-	if(mugenPseudo && mugenPseudo[2]) {
-		pseudo = mugenPseudo[2];
-	} else {
-		$('#changePseudo').click();
-	}  
-	var mugenPseudoList = document.cookie.match('(^|;) ?' + 'mugenPseudoList' + '=([^;]*)(;|$)');
-	if(mugenPseudoList) { 
-		mugenPseudoListObject = JSON.parse(mugenPseudoList[2]);
-		$.each(mugenPseudoListObject, function(k, v){
-			$('#pseudo').append($('<option>', {value: v}));
-		});
-	}
-	$('#choixPseudo').val(pseudo).trigger('blur');
+	//$('#choixPseudo').val(pseudo).trigger('blur');
 
 	$('.showSettings').click(function(){
 		displayModal('alert', $('#settingsPublicTitle').text(), $('#settingsPublicContent').html());
@@ -95,8 +73,8 @@ $(document).ready(function () {
 	});  
 });
 
-var date = new Date();
-date.setFullYear(date.getFullYear() + 10);
+var datePlus10 = new Date();
+datePlus10.setFullYear(datePlus10.getFullYear() + 10);
 
 scope = 'public';
 var currentPanning;

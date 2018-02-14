@@ -1,1 +1,0 @@
-SELECT pk_id_plcontent FROM playlist_content WHERE fk_id_playlist = $playlist_id AND flag_playing = 1
