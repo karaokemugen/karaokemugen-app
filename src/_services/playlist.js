@@ -317,7 +317,7 @@ export async function createPlaylist(name,flag_visible,flag_current,flag_public)
 	if (flag_current == 1 && flag_public == 1) throw 'A playlist cannot be current and public at the same time!';
 	if (flag_public == 1) await unsetPublicAllPlaylists();
 	if (flag_current == 1) await unsetCurrentAllPlaylists();
-	await plDB.createPlaylist({
+	const pl = await plDB.createPlaylist({
 		name: name,
 		NORM_name: deburr(name),
 		created_at: now(),
@@ -326,6 +326,8 @@ export async function createPlaylist(name,flag_visible,flag_current,flag_public)
 		flag_current: flag_current,
 		flag_public: flag_public
 	});
+	console.log(pl.lastID);
+	return pl.lastID;
 }
 
 export async function getPlaylistInfo(playlist_id,seenFromUser) {
@@ -1101,42 +1103,37 @@ export async function playCurrentSong() {
 	return kara;
 }
 
-export function buildDummyPlaylist(playlist_id) {
+export async function buildDummyPlaylist(playlist_id) {
 	logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...');
-	getStats().then((stats) => {
-	
-		let karaCount = stats.totalcount;
-		// Limiting to 5 sample karas to add if there's more. 
-		if (karaCount > 5) karaCount = 5;
-		if (karaCount > 0) {
-			logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);timesSeries(karaCount,(n,next) => {				
-				getRandomKara(playlist_id)
-					.then((kara_id) => {
-						addKaraToPlaylist(
-							[kara_id],
-							'admin',
-							playlist_id
-						).then(() => {
-							logger.info(`[PLC] Dummy Plug : Added karaoke ${kara_id} to sample playlist`);
-							next();
-						})		
-							.catch((err) => {
-								logger.error('[PLC] Dummy Plug : '+err);
-								next(err);
-							});
-					})
-					.catch((err) => {
-						logger.error(`[PLC] Dummy Plug : failure to get random karaokes to add : ${err}`);
-						next(err);
-					});
-			},(err) => {
-				if (err) throw err;
-				logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
-				return true;
+	const stats = await getStats();
+	let karaCount = stats.totalcount;
+	// Limiting to 5 sample karas to add if there's more. 
+	if (karaCount > 5) karaCount = 5;
+	if (karaCount > 0) {
+		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
+		timesSeries(karaCount,(n,next) => {				
+			getRandomKara(playlist_id).then((kara_id) => {
+				addKaraToPlaylist(
+					[kara_id],
+					'admin',
+					playlist_id
+				).then(() => {
+					next();
+				}).catch((err) => {
+					logger.error('[PLC] Dummy Plug : '+err);
+					next(err);
+				});
+			}).catch((err) => {
+				logger.error(`[PLC] Dummy Plug : failure to get random karaokes to add : ${err}`);
+				next(err);
 			});
-		} else {
-			logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
+		},(err) => {
+			if (err) throw err;
+			logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
 			return true;
-		}			
-	});
+		});
+	} else {
+		logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
+		return true;
+	}				
 }
