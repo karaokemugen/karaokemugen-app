@@ -118,7 +118,7 @@ export async function setConfig(configPart) {
 }
 
 export async function updateConfig(newConfig) {
-	const forbiddenConfigPrefix = ['BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','app','os','EngineDefaultLocale'];
+	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','app','os','EngineDefaultLocale'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {		
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))            
