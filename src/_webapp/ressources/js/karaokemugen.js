@@ -133,17 +133,20 @@ var settingsNotUpdated;
 				console.log(res.status + '  - ' + textStatus + '  - ' + errorThrown + (res.responseJSON ? ' : ' +  res.responseJSON.message : ''));
 				if(res.status != 0 && res.status != 200 && res.responseJSON) {
 					var errMessage = 'unknown';
-					if(res.responseJSON.code) {
+					var code = '';
+					if(res.status == 500 && res.responseJSON.code) {
 						// var args = res.responseJSON.args;
 						var args = typeof res.responseJSON.args === 'object' ? Object.keys(res.responseJSON.args).map(function(e) {
 							return res.responseJSON.args[e];
 						}) : [ res.responseJSON.args];
 						errMessage = i18n.__(res.responseJSON.code, args);
+					} else if(res.status == 401) {
+						errMessage = i18n.__('UNAUTHORIZED');
 					} else {
-						errMessage = res.responseJSON.message;
+						code = i18n.__('UNKNOWN_ERROR');
+						errMessage = res.responseText;
 					}
 					//var code = softErrorMessage.indexOf(res.responseJSON.code) === -1 ? res.responseJSON.code + ' :' : '';
-					var code = '';
 					displayMessage('warning', code, errMessage);
 				}
 			}
@@ -712,6 +715,7 @@ var settingsNotUpdated;
 		'BLCTYPE_7',
 		'BLCTYPE_8'];
 
+	/* list of error code allowing a iinfo popup message on screen */
 	showInfoMessage = [
 		'USER_CREATED',
 		'PL_SONG_ADDED',

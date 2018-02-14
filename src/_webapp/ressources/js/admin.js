@@ -450,6 +450,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		return promise.promise();
 	};
 
+	/* el is the html element containing the value being updated */
 	setSettings = function (el, changeAdminPass) {
 		//    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
 		if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
@@ -487,6 +488,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					}
 				}).fail(function () {
 					if (changeAdminPass) { passwordUpdating.resolve(); }
+					el.val(el.attr('oldValue')).focus();
 				});
 			});
 		}
