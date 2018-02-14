@@ -424,7 +424,14 @@ button.closeParent.bottom  {
 .list-group-item > .contentDiv {
 	padding: 3px 7px;
 	overflow: auto;
+	display: flex;
+	flex-wrap: wrap;
 }
+.list-group-item > .contentDiv > *{
+	flex-grow: 1;
+	flex-shrink: 0;
+}
+
 .list-group-item > .typeDiv {
 	border-right : solid 1px hsla(0, 0%, 35%, 1);
 	float: left;
