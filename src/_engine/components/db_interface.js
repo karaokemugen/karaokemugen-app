@@ -131,39 +131,42 @@ module.exports = {
 							module.exports._db_handler = db;
 							module.exports._db_handler.open(userdb_file)
 								.then(() => {									
-									module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;')
-										.then(() => {
-											module.exports.compareDatabasesUUIDs()
-												.catch((err) => {
-													logger.error('[DBI] Unable to compare databases : '+err);
+									module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;').then(() => {
+										module.exports.compareDatabasesUUIDs()
+											.then(() => {
+												module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;').then(() => {
+													module.exports._ready = true;
+													module.exports.getStats()
+														.then(function(stats) {
+															logger.info('[DBI] Karaoke count   : ' + stats.totalcount);								
+															logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
+															logger.info('[DBI] Total series    : ' + stats.totalseries);
+															logger.info('[DBI] Total languages : ' + stats.totallanguages);
+															logger.info('[DBI] Total artists   : ' + stats.totalartists);
+															logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
+														})
+														.catch(function(err) {
+															logger.warn('[DBI] Failed to fetch statistics : ' + err);
+														});
+													logger.info('[DBI] Database interface is READY');
+													// Trace event. DO NOT UNCOMMENT
+													// unless you want to flood your console.
+													/*module.exports._db_handler.driver.on('trace',function(sql){
+													console.log(sql);
+												});*/
+													resolve();						
+												}).catch((err) => {
+													logger.error('[DBI] Unable to attach karaoke database : '+err);
 													process.exit(1);
 												});
-											module.exports._ready = true;
-											module.exports.getStats()
-												.then(function(stats) {
-													logger.info('[DBI] Karaoke count   : ' + stats.totalcount);								
-													logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-													logger.info('[DBI] Total series    : ' + stats.totalseries);
-													logger.info('[DBI] Total languages : ' + stats.totallanguages);
-													logger.info('[DBI] Total artists   : ' + stats.totalartists);
-													logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
-												})
-												.catch(function(err) {
-													logger.warn('[DBI] Failed to fetch statistics : ' + err);
-												});
-											logger.info('[DBI] Database interface is READY');
-											// Trace event. DO NOT UNCOMMENT
-											// unless you want to flood your console.
-											/*module.exports._db_handler.driver.on('trace',function(sql){
-												console.log(sql);
-											});*/
-											resolve();						
-										})
-										.catch((err) => {
-											logger.error('[DBI] Unable to attach karaoke database : '+err);
-											process.exit(1);
-										});
-							
+														
+											})
+											.catch((err) => {
+												logger.error('[DBI] Unable to compare databases : '+err);
+												process.exit(1);
+											});
+									});			
+																
 								})
 								.catch((err) => {
 									logger.error('[DBI] Unable to open karaoke database : '+err);
