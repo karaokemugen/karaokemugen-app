@@ -1,6 +1,6 @@
 # Versions
 
-## v2.0.6 - 15/02/2017
+## v2.0.6 - 15/02/2018
 
 Dernière version (fort probablement) avant le passage à la 2.1.
 
