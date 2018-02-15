@@ -3,14 +3,15 @@ const expressValidator = require('express-validator');
 const logger = require('winston');
 import {setConfig, getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
-const user = require('../_services/user.js');
+const user = require('../_services/user');
 import {resolve} from 'path';
 const multer = require('multer');
 const engine = require('../_services/engine');
+const favorites = require('../_services/favorites');
 import {emitWS} from '../_ws/websocket';
 import {decode} from 'jwt-simple';
 import passport from 'passport';
-import {configurePassport} from '../_webapp/passport_manager.js';
+import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
 import {requireAuth, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
 
@@ -4264,6 +4265,241 @@ export async function initAPIServer(listenPort) {
 
 		});
 
+	routerPublic.route('/favorites')
+	/**
+ * @api {get} public/favorites View own favorites
+ * @apiName GetFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission own
+ *
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ * 				 "username": "admin",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError FAVORITES_VIEW_ERROR Unable to fetch list of karaokes in favorites
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+		.get(requireAuth, updateUserLoginTime, (req,res) => {
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			const filter = req.query.filter;
+			const lang = req.query.lang;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from);
+			}
+			favorites.getFavorites(token.username, filter, lang, from, size)
+				.then((karas) => {
+					res.json(OKMessage(karas));
+				})
+				.catch(function(err){
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('FAVORITES_VIEW_ERROR',err));
+				});						
+		})
+	/**
+ * @api {post} public/favorites Add karaoke to your favorites
+ * @apiName PostFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission own
+ *
+ * @apiParam {Number} kara_id kara ID to add
+ * @apiSuccess {Number} args/kara_id ID of kara added
+ * @apiSuccess {Number} args/kara Name of kara added
+ * @apiSuccess {Number} args/playlist_id ID of destinaton playlist
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ * 		 "kara": "Les Nuls - MV - Vous me subirez",
+ *       "playlist_id": 1,
+ *       "kara_id": 4946
+ *   },
+ *   "code": "FAVORITES_ADDED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_ADD_SONG_ERROR Unable to add songs to the playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_ADD_SONG_ERROR",
+ *   "message": "Karaoke unknown"
+ * }
+ */
+		.post(requireAuth, updateUserLoginTime, (req,res) => {
+			req.checkBody({
+				'kara_id': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+			});
+			req.getValidationResult()
+				.then((result) => {							
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('kara_id').toInt();
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);
+						favorites.addToFavorites(token.username,req.body.kara_id)
+							.then((result) => {
+								emitWS('favoritesUpdated');
+								emitWS('playlistInfoUpdated',result.playlist_id);
+								emitWS('playlistContentsUpdated',result.playlist_id);
+								res.json(OKMessage(null,'FAVORITES_ADDED',result));	
+							})
+							.catch(function(err){
+								res.statusCode = 500;
+								res.json(errMessage('FAVORITES_ADD_SONG_ERROR',err.message,err.data));
+							});
+								
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
+				});
+
+		});
+
+	routerPublic.route('/favorites/:kara_id([0-9]+)')
+	/**
+ * @api {delete} public/favorites/:kara_id Delete karaoke from your favorites
+ * @apiName DeleteFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission public
+ * 
+ * @apiParam {Number} kara_id Kara ID to delete from favorites
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_DELETED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_DELETE_ERROR Unable to delete the favorited song
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_DELETE_ERROR",
+ *   "message": "Kara ID unknown"
+ * }
+ */
+		.delete(requireAuth, updateUserLoginTime, (req, res) => {
+			// Delete kara from favorites
+			// Deletion is through kara ID.
+			req.checkBody({
+				'kara_id': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				}
+			});
+
+			req.getValidationResult()
+				.then((result) =>  {
+					if (result.isEmpty()) {
+						favorites.deleteFavorite(req.body.kara_id)
+							.then((data) => {
+								emitWS('playlistContentsUpdated',data.playlist_id);
+								emitWS('playlistInfoUpdated',data.playlist_id);
+								res.statusCode = 200;
+								res.json(OKMessage(null,'FAVORITE_DELETED',data));
+							})
+							.catch((err) => {
+								logger.error(err.message);
+								res.statusCode = 500;
+								res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
+				});
+		});
 
 	routerPublic.route('/users')
 	/**
