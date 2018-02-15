@@ -108,8 +108,8 @@ export async function initAPIServer(listenPort) {
  * Requires authorization token from admin user to use this API
  */
 	/**
- * @apiDefine adminorown Admin access or own user only
- * Requires authorization token from either admin user or the user the data belongs to to use this API
+ * @apiDefine own Own user only
+ * Requires authorization token from the user the data belongs to to use this API
  */
 	/**
  * @apiDefine public Public access
@@ -4109,7 +4109,7 @@ export async function initAPIServer(listenPort) {
  * @apiName GetMyAccount
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission Own
+ * @apiPermission own
  *
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
