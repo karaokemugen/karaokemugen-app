@@ -24,7 +24,9 @@ export async function createPlaylist(pl) {
 		$modified_at: pl.modified_at,
 		$flag_visible: pl.flag_visible,
 		$flag_current: pl.flag_current,
-		$flag_public: pl.flag_public
+		$flag_public: pl.flag_public,
+		$flag_favorites: pl.flag_favorites,
+		$username: pl.username
 	});
 }
 
@@ -96,6 +98,10 @@ export async function getPlaylistContents(id,forPlayer) {
 
 export async function getPlaylistPos(id) {
 	return await getUserDb().all(sql.getPlaylistPos, { $playlist_id: id });
+}
+
+export async function getPlaylistKaraNames(id) {
+	return await getUserDb().all(sql.getPlaylistKaraNames, { $playlist_id: id });
 }
 
 export async function getPLCInfo(id,forUser) {

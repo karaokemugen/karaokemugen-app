@@ -1,6 +1,7 @@
 const db = require('../_dao/user');
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
+import {createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
 import {deburr} from 'lodash';
 import {now} from 'unix-timestamp';
@@ -194,6 +195,7 @@ export async function addUser(user) {
 	}	
 	try {
 		await db.addUser(user);
+		await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
 		logger.info(`[User] Created user ${user.login}`);
 		logger.debug(`[User] User data : ${JSON.stringify(user)}`);
 		return true;

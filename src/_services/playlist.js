@@ -313,10 +313,11 @@ export async function editPlaylist(playlist_id,name,flag_visible) {
 	});
 }				
 
-export async function createPlaylist(name,flag_visible,flag_current,flag_public) {
+export async function createPlaylist(name,flag_visible,flag_current,flag_public,flag_favorites,username) {
 	if (flag_current == 1 && flag_public == 1) throw 'A playlist cannot be current and public at the same time!';
+	if (flag_favorites == 1 && (flag_public == 1 || flag_public == 1)) throw 'A playlist cannot be favorite and current/public at the same time!';	
 	if (flag_public == 1) await unsetPublicAllPlaylists();
-	if (flag_current == 1) await unsetCurrentAllPlaylists();
+	if (flag_current == 1) await unsetCurrentAllPlaylists();	
 	const pl = await plDB.createPlaylist({
 		name: name,
 		NORM_name: deburr(name),
@@ -324,7 +325,9 @@ export async function createPlaylist(name,flag_visible,flag_current,flag_public)
 		modified_at: now(),
 		flag_visible: flag_visible,
 		flag_current: flag_current,
-		flag_public: flag_public
+		flag_public: flag_public,
+		flag_favorites: flag_favorites,
+		username: username
 	});
 	console.log(pl.lastID);
 	return pl.lastID;
@@ -367,6 +370,10 @@ export async function getPlaylistContents(playlist_id,seenFromUser,forPlayer) {
 
 async function getPlaylistPos(playlist_id) {
 	return await plDB.getPlaylistPos(playlist_id);
+}
+
+async function getPlaylistKaraNames(playlist_id) {
+	return await plDB.getPlaylistKaraNames(playlist_id);
 }
 
 export async function getKaraFromPlaylist(plc_id,seenFromUser) {
@@ -628,14 +635,16 @@ export async function copyKaraToPlaylist(plcs,playlist_id,pos) {
 	await updatePlaylistKaraCount(playlist_id);
 }
 
-export async function deleteKaraFromPlaylist(plcs,playlist_id) {
+export async function deleteKaraFromPlaylist(plcs,playlist_id,opt) {
+	if (!opt) opt = {};
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	// Removing karaoke here.
-	await karaDB.removeKaraFromPlaylist(plcs);
+	await karaDB.removeKaraFromPlaylist(plcs, playlist_id);
 	await updatePlaylistDuration(playlist_id);
 	await updatePlaylistKaraCount(playlist_id);
 	await updatePlaylistLastEditTime(playlist_id);
-	await reorderPlaylist(playlist_id);
+	if (!opt.sortBy) opt.sortBy = 'pos';	
+	await reorderPlaylist(playlist_id, opt);
 	return playlist_id;
 }
 
@@ -672,12 +681,21 @@ async function raisePosInPlaylist(pos,playlist_id) {
 	await plDB.raisePosInPlaylist(pos,playlist_id);	
 }
 
-async function reorderPlaylist(playlist_id) {
-	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
-	let pl = await getPlaylistPos(playlist_id);
-	pl.sort((a,b) => {
-		return a.pos - b.pos;
-	});
+function sortByPos(a, b) {
+	return a.pos - b.pos;
+}
+
+export async function reorderPlaylist(playlist_id, opt) {
+	let pl;	
+	if (!opt) opt = {};
+	switch (opt.sortBy) {
+	case 'name':
+		pl = await getPlaylistKaraNames(playlist_id);
+		break;
+	case 'pos':
+		pl = await getPlaylistPos(playlist_id);
+		pl.sort(sortByPos);		
+	}
 	let newpos = 0;
 	let arraypos = 0;
 	pl.forEach(() => {

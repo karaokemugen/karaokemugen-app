@@ -35,6 +35,8 @@ export const createPlaylist = `INSERT INTO playlist(
 								flag_visible,
 								flag_current,
 								flag_public,
+								flag_favorites,
+								fk_id_user,
 								time_left)
  							VALUES(
 								$name,
@@ -46,6 +48,8 @@ export const createPlaylist = `INSERT INTO playlist(
 								$flag_visible,
 								$flag_current,
 								$flag_public,
+								$flag_favorites,
+								(SELECT pk_id_user FROM user WHERE login = $username),
 								0);
 								`;
 
@@ -152,6 +156,19 @@ export const getPlaylistPos = `SELECT pc.pos AS pos,
 							WHERE pc.fk_id_playlist = $playlist_id
 							ORDER BY pc.pos,pc.created_at DESC;
 							`;
+
+export const getPlaylistKaraNames = `SELECT pc.pos AS pos,
+      								pc.pk_id_plcontent AS playlistcontent_id,
+									(ak.language || (CASE WHEN ak.serie IS NULL
+	     									THEN ak.singer
+        									ELSE ak.serie
+      									END) || ak.songtype || ak.songorder || ak.title) AS karaname
+							FROM karasdb.all_karas AS ak 
+							INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
+							WHERE pc.fk_id_playlist = $playlist_id
+							ORDER BY karaname;
+							`;
+
 
 export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
       							ak.kid AS kid,

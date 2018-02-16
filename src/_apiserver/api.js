@@ -260,9 +260,10 @@ export async function initAPIServer(listenPort) {
 						req.sanitize('flag_visible').toBoolean();
 						req.sanitize('flag_public').toBoolean();
 						req.sanitize('flag_current').toBoolean();
-
+						
 						//Now we add playlist
-						engine.createPL(req.body)
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);						
+						engine.createPL(req.body, token.username)
 							.then((new_playlist) => {
 								emitWS('playlistsUpdated');
 								res.statusCode = 201;
@@ -4438,15 +4439,15 @@ export async function initAPIServer(listenPort) {
 
 		});
 
-	routerPublic.route('/favorites/:kara_id([0-9]+)')
+	routerPublic.route('/favorites/:plc_id([0-9]+)')
 	/**
- * @api {delete} public/favorites/:kara_id Delete karaoke from your favorites
+ * @api {delete} public/favorites/:plc_id Delete karaoke from your favorites
  * @apiName DeleteFavorites
  * @apiVersion 2.1.0
  * @apiGroup Favorites
  * @apiPermission public
  * 
- * @apiParam {Number} kara_id Kara ID to delete from favorites
+ * @apiParam {Number} plc_id Playlist Content ID to delete
  * @apiSuccess {String} code Message to display
  *
  * @apiSuccessExample Success-Response:
@@ -4463,42 +4464,27 @@ export async function initAPIServer(listenPort) {
  * {
  *   "args": null,
  *   "code": "FAVORITES_DELETE_ERROR",
- *   "message": "Kara ID unknown"
+ *   "message": "PLC ID unknown"
  * }
  */
 		.delete(requireAuth, updateUserLoginTime, (req, res) => {
 			// Delete kara from favorites
 			// Deletion is through kara ID.
-			req.checkBody({
-				'kara_id': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				}
-			});
-
-			req.getValidationResult()
-				.then((result) =>  {
-					if (result.isEmpty()) {
-						favorites.deleteFavorite(req.body.kara_id)
-							.then((data) => {
-								emitWS('playlistContentsUpdated',data.playlist_id);
-								emitWS('playlistInfoUpdated',data.playlist_id);
-								res.statusCode = 200;
-								res.json(OKMessage(null,'FAVORITE_DELETED',data));
-							})
-							.catch((err) => {
-								logger.error(err.message);
-								res.statusCode = 500;
-								res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;
-						res.json(result.mapped());
-					}
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			favorites.deleteFavorite(token.username,req.params.plc_id)
+				.then((data) => {
+					emitWS('favoritesUpdated');
+					emitWS('playlistContentsUpdated',data.playlist_id);
+					emitWS('playlistInfoUpdated',data.playlist_id);
+					res.statusCode = 200;
+					res.json(OKMessage(null,'FAVORITE_DELETED',data));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
 				});
+			
 		});
 
 	routerPublic.route('/users')

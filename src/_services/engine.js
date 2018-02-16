@@ -449,12 +449,14 @@ export async function getAllPLs(seenFromUser) {
 	return await plc.getPlaylists(seenFromUser);
 }
 
-export async function createPL(playlist) {
+export async function createPL(playlist,username) {
 	return await plc.createPlaylist(
 		playlist.name,
 		playlist.flag_visible,
 		playlist.flag_current,
-		playlist.flag_public);
+		playlist.flag_public,
+		0,
+		username);
 }
 
 export async function getPLInfo(playlist_id, seenFromUser) {

@@ -137,7 +137,8 @@ export const updateTotalViewcounts = `UPDATE karasdb.kara SET viewcount =
 									`;
 
 export const removeKaraFromPlaylist = `DELETE FROM playlist_content 
-									WHERE pk_id_plcontent IN ($playlistcontent_id);
+									WHERE pk_id_plcontent IN ($playlistcontent_id)
+									  AND fk_id_playlist = $playlist_id;
 									`;
 
 export const removeKaraFromWhitelist = `DELETE FROM whitelist 
