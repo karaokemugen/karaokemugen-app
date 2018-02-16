@@ -256,13 +256,16 @@ async function isKaraInPlaylist(kara_id,playlist_id) {
 export async function setCurrentPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (pl.flag_public === 1) throw 'A current playlist cannot be set to public. Set another playlist to current first.';
+	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to public.';
 	await unsetCurrentAllPlaylists();
 	await plDB.setCurrentPlaylist(playlist_id);
 	await updatePlaylistLastEditTime(playlist_id);	
 }
 
 export async function setVisiblePlaylist(playlist_id) {
-	await plDB.setVisiblePlaylist(playlist_id);
+	const pl = await getPlaylistInfo(playlist_id);
+	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to visible.';
+	await plDB.setVisiblePlaylist(playlist_id);	
 	await updatePlaylistLastEditTime(playlist_id);
 }
 
@@ -274,6 +277,7 @@ export async function unsetVisiblePlaylist(playlist_id) {
 export async function setPublicPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (pl.flag_current == 1) throw 'A public playlist cannot be set to current. Set another playlist to public first.';
+	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to current.';
 	await unsetPublicAllPlaylists();
 	await plDB.setPublicPlaylist(playlist_id);
 	await updatePlaylistLastEditTime(playlist_id);
