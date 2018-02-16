@@ -184,6 +184,7 @@
 	"GOTO_BOTTOM": "Go to the end of the playlist",
 	"ERROR": "Error",
 	"LOG_ERROR": "Invalid credentials",
+	"LOG_SUCCESS": "Connected as %s",	
 	"NO_MORE_GUESTS_AVAILABLE": "No more guest accounts available, please create your own account!",
 	"PL_LIST_ERROR": "Unable to display playlists",
 	"PL_CREATE_ERROR": "Unable to create playlist %s",

@@ -495,17 +495,24 @@ var settingsNotUpdated;
 
 		/* login stuff */
 		login = function(username, password) {
+
+			var url = 'auth/login';
+			var data = { username: username, password: password};
+			if(!username) {
+				url = 'auth/login/guest';
+				data = { fingerprint : password };
+			}
 			$.ajax({
-				url: 'auth/login',
+				url: url,
 				type: 'POST',
-				data: { username: username, password: password} })
+				data: data })
 				.done(function (response) {
-					displayMessage('info','', i18n.__('LOG_SUCCESS'));
 					
 					$('#loginModal').modal('hide');
 					$('#password, #login').removeClass('redBorders');
 					createCookie('mugenToken', response.token, -1);
 					logInfos = response;
+					displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
 					setupAjax();
 					initApp();
 
@@ -522,18 +529,12 @@ var settingsNotUpdated;
 			
 		});
 		$('#nav-login .guest').click( function() {
-			$.ajax({	url: 'public/guests', 	
-				type: 'GET'})
-				.done(function (response) {
-					var listAvalaibleGuests = response.filter(a => a.available=='1');
-					var randGuest = listAvalaibleGuests[Math.floor(Math.random() * listAvalaibleGuests.length)];
-					login(randGuest.username, '');
-				});
-			var username = $('#login').val();
-			var password = $('#password').val();
-			login(username, password);
-			
+			new Fingerprint2( { excludeUserAgent: true }).get(function(result, components) {
+				login('', result);
+				// console.log(components);
+			});
 		});
+
 		$('#nav-signup .login').click( () => {
 			var username = $('#signupLogin').val();
 			var password = $('#signupPassword').val();
@@ -574,27 +575,29 @@ var settingsNotUpdated;
 		/* login stuff END */
 		/* profil stuff */
 		showProfil = function() {
-			$('#profilModal').modal('show');
-			$.ajax({
-				url: 'public/myaccount/', 	
-				type: 'GET'})
-				.done(function (response) {
-					//var user = response.find(a => a.login==logInfos.username);
-					
-					$.each(response, function(i, k) {
-						var $element = $('.profileContent [name="' + i + '"]');
-						$element.attr('oldval', k);
-	
-						if(i === 'avatar_file' && k) {
-							$element.attr('src', k);
-						} else if( i === 'login') {
-							$element.text(k);
-						} else if (i !== 'password') {
-							$element.val(k);
-						}
+			if(logInfos.role != 'guest') {
+				$('#profilModal').modal('show');
+				$.ajax({
+					url: 'public/myaccount/', 	
+					type: 'GET'})
+					.done(function (response) {
+						//var user = response.find(a => a.login==logInfos.username);
+						
+						$.each(response, function(i, k) {
+							var $element = $('.profileContent [name="' + i + '"]');
+							$element.attr('oldval', k);
+		
+							if(i === 'avatar_file' && k) {
+								$element.attr('src', k);
+							} else if( i === 'login') {
+								$element.text(k);
+							} else if (i !== 'password') {
+								$element.val(k);
+							}
+						});
+						
 					});
-					
-				});
+			}
 		};
 
 		$('.profileData .profileLine input').on('keypress', (e) => {
@@ -637,15 +640,9 @@ var settingsNotUpdated;
 						
 					});
 			}
-				
 		});
 
-
-
-
 		/* profile stuff END */
-
-	
 		/* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
 		if(isTouchScreen) {
 			$('select').on('select2:open', function() {
@@ -840,7 +837,7 @@ var settingsNotUpdated;
 		locale: 'fr',
 		extension: '.json'
 	});
-	
+
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
 		options.url = window.location.protocol + '//' + window.location.hostname + ':1339/api/v1/' + options.url;

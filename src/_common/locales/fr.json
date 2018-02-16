@@ -164,6 +164,7 @@
 	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les infos du réseau",
 	"ERROR": "Erreur",
 	"LOG_ERROR": "Identifiants invalides",	
+	"LOG_SUCCESS": "Connecté en tant que %s",	
 	"NO_MORE_GUESTS_AVAILABLE": "Il n'y a plus de comptes invité disponibles. Créez votre propre compte!",
 	"PL_LIST_ERROR": "Impossible d'afficher les liste de lectures",
 	"PL_CREATE_ERROR": "Impossible de créer la liste de lecture %s",
