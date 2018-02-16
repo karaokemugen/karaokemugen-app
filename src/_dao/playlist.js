@@ -104,9 +104,12 @@ export async function getPlaylistKaraNames(id) {
 	return await getUserDb().all(sql.getPlaylistKaraNames, { $playlist_id: id });
 }
 
-export async function getPLCInfo(id,forUser) {
+export async function getPLCInfo(id,forUser, username) {
 	const query = sql.getPLCInfo + (forUser ? ' AND p.flag_visible = 1' : '');
-	return await getUserDb().get(query, { $playlistcontent_id: id });
+	return await getUserDb().get(query, { 
+		$playlistcontent_id: id,
+		$username: username
+	});
 }
 
 export async function getPLCByKID(kid,playlist_id) {

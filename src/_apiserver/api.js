@@ -1093,6 +1093,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
@@ -1138,6 +1139,7 @@ export async function initAPIServer(listenPort) {
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
  *           "flag_whitelisted": 0,
+ * 			 "flag_favorites": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
@@ -1177,7 +1179,8 @@ export async function initAPIServer(listenPort) {
  * }
  */
 		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
-			engine.getPLCInfo(req.params.plc_id,req.query.lang)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLCInfo(req.params.plc_id,req.query.lang, token)
 				.then((kara) => {
 					res.json(OKMessage(kara));
 				})
@@ -2627,6 +2630,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
@@ -2672,6 +2676,7 @@ export async function initAPIServer(listenPort) {
  *           "duration": 0,
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
+ * 			 "flag_favorites": 0,
  *           "flag_whitelisted": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
@@ -2712,8 +2717,8 @@ export async function initAPIServer(listenPort) {
  */
 
 		.get(requireAuth, updateUserLoginTime, (req, res) => {
-			const seenFromUser = true;
-			engine.getPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLCInfo(req.params.plc_id,req.query.lang,token)
 				.then((kara) => {
 					res.json(OKMessage(kara));
 				})
@@ -3294,7 +3299,7 @@ export async function initAPIServer(listenPort) {
  * @apiGroup Karaokes
  * @apiPermission public
  * 
- * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
+ * @apiParam {Number} kara_id Karaoke ID you want to fetch information from 
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
@@ -3306,6 +3311,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
@@ -3340,6 +3346,7 @@ export async function initAPIServer(listenPort) {
  *           "created_at": 1508427958,
  *           "creator": null,
  *           "duration": 0,
+ * 		     "flag_favorites": 0,
  *           "gain": 0,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
  *           "language": "jpn",
@@ -3372,7 +3379,8 @@ export async function initAPIServer(listenPort) {
  * }
  */
 		.get(requireAuth, updateUserLoginTime, (req, res) => {
-			engine.getKaraInfo(req.params.kara_id,req.query.lang)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getKaraInfo(req.params.kara_id,req.query.lang,token.username)
 				.then((kara) => {	
 					res.json(OKMessage(kara));
 				})

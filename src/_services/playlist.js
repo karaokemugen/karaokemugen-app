@@ -384,8 +384,10 @@ async function getPlaylistKaraNames(playlist_id) {
 	return await plDB.getPlaylistKaraNames(playlist_id);
 }
 
-export async function getKaraFromPlaylist(plc_id,seenFromUser) {
-	const kara = await plDB.getPLCInfo(plc_id,seenFromUser);
+export async function getKaraFromPlaylist(plc_id,token) {
+	let seenFromUser = false;
+	if (token.role == 'user') seenFromUser = true;
+	const kara = await plDB.getPLCInfo(plc_id, seenFromUser, token.username);
 	if (kara) return [kara];
 	throw 'PLCID unknown!';
 }
@@ -427,8 +429,8 @@ export async function getRandomKara(playlist_id,filter) {
 	return sample(allKarasNotInCurrentPlaylist);									
 }
 
-export async function getKara(kara_id) {
-	const kara = await karaDB.getKara(kara_id);
+export async function getKara(kara_id, username) {
+	const kara = await karaDB.getKara(kara_id, username);
 	logger.debug('[PLC] Kara get : '+JSON.stringify(kara));
 	return kara;
 }

@@ -12,8 +12,12 @@ export async function getAllKaras() {
 	return await getUserDb().all(sql.getAllKaras);
 }
 
-export async function getKara(id) {
-	return await getUserDb().get(sql.getKara, { $kara_id: id });
+export async function getKara(id, username) {
+	if (!username) username = '';
+	return await getUserDb().get(sql.getKara, { 
+		$kara_id: id,
+		$username: username
+	});
 }
 
 export async function getASS(id) {

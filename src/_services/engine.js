@@ -429,16 +429,16 @@ export async function shufflePL(playlist_id) {
 	}	
 }
 
-export async function getKaraInfo(kara_id, lang) {
-	const kara = await plc.getKara(kara_id);
+export async function getKaraInfo(kara_id, lang, username) {
+	const kara = await plc.getKara(kara_id, username);
 	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;
 	return output;
 }
 
-export async function getPLCInfo(plc_id, lang, seenFromUser) {
-	const kara = await plc.getKaraFromPlaylist(plc_id, seenFromUser);
+export async function getPLCInfo(plc_id, lang, userToken) {
+	const kara = await plc.getKaraFromPlaylist(plc_id, userToken);
 	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;
