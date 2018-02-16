@@ -77,6 +77,7 @@ export async function isPublicPlaylist(playlist_id) {
 	return false;
 }
 
+
 export async function isACurrentPlaylist() {
 	const res = await plDB.findCurrentPlaylist();
 	if (res) {
@@ -278,10 +279,13 @@ export async function setPublicPlaylist(playlist_id) {
 	await updatePlaylistLastEditTime(playlist_id);
 }
 
-export async function deletePlaylist(playlist_id) {
+export async function deletePlaylist(playlist_id, opt) {
+	if (!opt) opt = {};
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
-	if (await isPublicPlaylist(playlist_id)) throw `Playlist ${playlist_id} is public. Unable to delete it`;
-	if (await isCurrentPlaylist(playlist_id)) throw `Playlist ${playlist_id} is public. Unable to delete it`;
+	const pl = await getPlaylistInfo(playlist_id);
+	if (!opt.force && pl.flag_favorites == 1) throw `Playlist ${playlist_id} is a favorites list. Unable to delete it.`;	
+	if (pl.flag_public == 1) throw `Playlist ${playlist_id} is public. Unable to delete it`;
+	if (pl.flag_current == 1) throw `Playlist ${playlist_id} is public. Unable to delete it`;
 	await plDB.deletePlaylist(playlist_id);
 }
 

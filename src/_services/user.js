@@ -225,7 +225,7 @@ export async function deleteUser(username) {
 	try {
 		const user = await findUserByName(username);
 		const plInfo = await getFavoritesPlaylist(username);
-		await deletePlaylist(plInfo.playlist_id);
+		await deletePlaylist(plInfo.playlist_id, {force: true});
 		await db.deleteUser(user.id);		
 		logger.info(`[User] Deleted user ${username} (id ${user.id})`);
 		return true;
