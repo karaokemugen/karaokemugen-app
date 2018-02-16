@@ -1,4 +1,6 @@
 const db = require('../_dao/user');
+import {deletePlaylist} from '../_services/playlist';
+import {getFavoritesPlaylist} from '../_dao/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
 import {createPlaylist} from '../_services/playlist';
@@ -222,7 +224,9 @@ export async function deleteUser(username) {
 	}
 	try {
 		const user = await findUserByName(username);
-		await db.deleteUser(user.id);
+		const plInfo = await getFavoritesPlaylist(username);
+		await deletePlaylist(plInfo.playlist_id);
+		await db.deleteUser(user.id);		
 		logger.info(`[User] Deleted user ${username} (id ${user.id})`);
 		return true;
 	} catch (err) {
