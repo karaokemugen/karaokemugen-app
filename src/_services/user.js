@@ -233,10 +233,6 @@ export async function deleteUser(username) {
 	}
 }
 
-export function isAdmin(username) {
-	return db.isAdmin(username);
-}
-
 export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action

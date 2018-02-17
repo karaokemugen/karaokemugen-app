@@ -85,11 +85,6 @@ export async function resetGuestsPassword() {
 	return await getUserDb().run(sql.resetGuestsPassword);
 }
 
-export async function isAdmin(username) {
-	const req = await getUserDb().get(sql.isAdmin, { $username: username });
-	return req.flag_admin === 1;
-}
-
 export async function updateUserLastLogin(id,now) {
 	return await getUserDb().run(sql.updateLastLogin, {
 		$id: id,
