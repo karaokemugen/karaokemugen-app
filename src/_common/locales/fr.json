@@ -163,8 +163,8 @@
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
 	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les infos du réseau",
 	"ERROR": "Erreur",
-	"LOG_ERROR": "Identifiants invalides",	
-	"LOG_SUCCESS": "Connecté en tant que %s",	
+	"LOG_ERROR": "Identifiants invalides",
+	"LOG_SUCCESS": "Connecté en tant que %s",
 	"NO_MORE_GUESTS_AVAILABLE": "Il n'y a plus de comptes invité disponibles. Créez votre propre compte!",
 	"PL_LIST_ERROR": "Impossible d'afficher les liste de lectures",
 	"PL_CREATE_ERROR": "Impossible de créer la liste de lecture %s",
@@ -267,5 +267,6 @@
 	"USER_LIST_ERROR": "Impossible d'afficher la liste des utilisateurs",
 	"USER_UPDATED": "Mise à jour du profil de %s effectuée",
 	"USER_UPDATE_ERROR": "Impossible de mettre à jour le profil de %s",
-	"USER_VIEW_ERROR": "Impossible d'afficher le profil de l'utilisateur"
+	"USER_VIEW_ERROR": "Impossible d'afficher le profil de l'utilisateur",
+	"AVATAR_IMPORT": "Importer un avatar"
 }

@@ -564,6 +564,7 @@ var settingsNotUpdated;
 					});
 			}
 		});
+
 		$('.logout').click( () => {
 			eraseCookie("mugenToken");
 			window.location.reload();
@@ -588,7 +589,7 @@ var settingsNotUpdated;
 							$element.attr('oldval', k);
 		
 							if(i === 'avatar_file' && k) {
-								$element.attr('src', k);
+								$element.attr('src', '/avatars/' + k);
 							} else if( i === 'login') {
 								$element.text(k);
 							} else if (i !== 'password') {
@@ -642,7 +643,47 @@ var settingsNotUpdated;
 			}
 		});
 
-		/* profile stuff END */
+		$('#avatar').change(function() {
+			var dataFile = new FormData();
+			$.each(this.files, function(i, file) {
+				dataFile.append('avatarfile', file);
+			});
+			
+			dataFile.append('nickname', logInfos.username);
+
+			$.ajax({
+				url: 'public/myaccount', 	
+				type: 'PUT',
+				contentType: false,
+				processData: false,
+				data: dataFile
+			})
+				.done(function (response) {
+					$('.profileContent .profileLine > input').removeClass('redBorders');
+					$('[name="avatar_file"]').attr('src', response.avatar_file);
+				})
+				.fail( (response) => {
+					var listFieldErr = Object.keys(response.responseJSON);
+					listFieldErr.forEach((v, k) => {
+						var $element = $('.profileContent [name="' + v + '"]');
+							
+						if(v === 'avatar_file') {
+							// TODO
+						} else if( v === 'login') {
+							// TODO
+						} else if (v !== 'password') {
+							$element.addClass('redBorders');
+						}
+						if( k === 0 ) {
+							$element.focus();
+						}
+					});
+					
+				});
+			
+		});
+	
+		/* profil stuff END */
 		/* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
 		if(isTouchScreen) {
 			$('select').on('select2:open', function() {

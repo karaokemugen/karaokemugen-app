@@ -200,10 +200,14 @@
                     <div class="profileContent">
                         
                             <div class="col-md-3 col-lg-3 col-xs-12 col-sm-12">
-                                <img class="img-circle" name="avatar_file"
+                                
+                                <label for="avatar" title='{{i18n "AVATAR_IMPORT"}}' class="btn btn-default plGenericButton avatar" name="import">
+                                    <img class="img-circle" name="avatar_file"
                                      src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
                                      alt="User Pic">
-                                     <p name="login"></p>
+                                    <input id="avatar" class="import-file" type="file" accept="image/*" style="display: none;"/>
+                                </label>
+                                <p name="login"></p>
                             </div>
                             <div class="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
                                  <div class="profileLine">
