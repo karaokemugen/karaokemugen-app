@@ -50,9 +50,9 @@ export async function editUser(username,user,avatar) {
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
-		user.NORM_nickname = deburr(user.nickname);
 		// Check if login already exists.
-		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
+		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && currentUser.nickname != user.nickname) throw 'Nickname already exists';
+		user.NORM_nickname = deburr(user.nickname);		
 		if (user.password) {
 			user.password = hashPassword(user.password);
 			await db.updateUserPassword(username,user.password);
