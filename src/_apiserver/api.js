@@ -3915,40 +3915,6 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('GUEST_LIST_ERROR',err));
 				});
 		});
-	routerPublic.route('/users/:username/lastlogin')
-	/**
- * @api {put} public/users/:user_id/lastlogin Force last login time update
- * @apiName PutUsersLastLogin
- * @apiVersion 2.1.0
- * @apiGroup Users
- * @apiPermission public
- *
- * @apiParam {String} username Name of user to check in
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "code": 'USER_CHECKED_IN',
- *   "args": 3
- * }
- * @apiError USER_CHECK_ERROR Unable to update ceck-in
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "USER_CHECK_ERROR",
- *   "message": null
- * }
- */
-		.put(requireAuth, updateUserLoginTime, (req, res) => {
-			user.updateLastLoginName(req.params.username)
-				.then(() => {
-					OKMessage(null,'USER_CHECKED_IN',req.params.username);
-				})
-				.catch((err) => {
-					res.statusCode = 500;
-					errMessage('USER_CHECK_ERROR',err.message);
-				});
-		});
 	routerPublic.route('/users/:username')
 	/**
  * @api {get} public/users/:username View user details (public)

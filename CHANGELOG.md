@@ -1,5 +1,15 @@
 # Versions
 
+## v2.0.6 - 15/02/2018
+
+Dernière version (fort probablement) avant le passage à la 2.1.
+
+### Correctifs
+
+- En cas de changement de base de données de karaokés, l'application ne plante plus comme une otarie bourrée à la bière au lancement. (Relancer une seconde fois fonctionnait)
+- Les tests d'intégrité en cas de changement de base de données / régénération sont désormais tous executés. Cela pouvait causer des playlists mélangées.
+- Les options sont désormais correctement enregistrées même lorsqu'elles sont vides.
+
 ## v2.0.5 - 01/12/2017
 
 ### Améliorations

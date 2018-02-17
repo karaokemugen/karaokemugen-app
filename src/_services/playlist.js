@@ -337,7 +337,6 @@ export async function createPlaylist(name,flag_visible,flag_current,flag_public,
 		flag_favorites: flag_favorites,
 		username: username
 	});
-	console.log(pl.lastID);
 	return pl.lastID;
 }
 
