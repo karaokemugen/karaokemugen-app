@@ -160,11 +160,7 @@ var settingsNotUpdated;
 		};
 
 		$('.changePseudo').click( function() {
-			if (logInfos.username) {
-				showProfil();
-			} else {
-				$('#loginModal').modal('show');
-			}
+			showProfil();
 		});
 
 		var mugenToken = readCookie('mugenToken');
@@ -505,6 +501,15 @@ var settingsNotUpdated;
 		});
 
 		/* login stuff */
+
+		$('#profilModal').on('show.bs.modal', function (e) {
+			if(logInfos && logInfos.role === 'guest') {
+				$(this).find('.profileData').hide();
+			} else {
+				$(this).find('.profileData').show();
+			}
+		});
+
 		login = function(username, password) {
 
 			var url = 'auth/login';
@@ -585,37 +590,31 @@ var settingsNotUpdated;
 		$('.logout').click( () => {
 			eraseCookie('mugenToken');
 			window.location.reload();
-			/*
-			logInfos = { token : '' };
-			setupAjax();
-			*/
 		});
 		/* login stuff END */
 		/* profil stuff */
 		showProfil = function() {
-			if(logInfos.role != 'guest') {
-				$('#profilModal').modal('show');
-				$.ajax({
-					url: 'public/myaccount/', 	
-					type: 'GET'})
-					.done(function (response) {
-						//var user = response.find(a => a.login==logInfos.username);
-						
-						$.each(response, function(i, k) {
-							var $element = $('.profileContent [name="' + i + '"]');
-							$element.attr('oldval', k);
-		
-							if(i === 'avatar_file' && k) {
-								$element.attr('src', pathAvatar + k);
-							} else if( i === 'login') {
-								$element.text(k);
-							} else if (i !== 'password') {
-								$element.val(k);
-							}
-						});
-						
+			$('#profilModal').modal('show');
+			$.ajax({
+				url: 'public/myaccount/', 	
+				type: 'GET'})
+				.done(function (response) {
+					//var user = response.find(a => a.login==logInfos.username);
+					
+					$.each(response, function(i, k) {
+						var $element = $('.profileContent [name="' + i + '"]');
+						$element.attr('oldval', k);
+	
+						if(i === 'avatar_file' && k) {
+							$element.attr('src', pathAvatar + k);
+						} else if( i === 'login') {
+							$element.text(k);
+						} else if (i !== 'password') {
+							$element.val(k);
+						}
 					});
-			}
+					
+				});
 		};
 
 		$('.profileData .profileLine input').on('keypress', (e) => {
