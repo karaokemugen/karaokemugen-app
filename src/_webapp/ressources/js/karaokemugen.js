@@ -9,7 +9,8 @@ var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a
 var bcTags;             // Object : list of blacklist criterias tags
 var showInfoMessage;	// Object : list of info codes to show as a toast
 var softErrorMessage; 
-var logInfos			// Object : contains all login infos : role, token, username
+var logInfos;			// Object : contains all login infos : role, token, username
+var pseudo;
 var pathAvatar;
 var pathVideo;
 
@@ -201,6 +202,14 @@ var settingsNotUpdated;
 				});
 			});
 
+			if(logInfos.role != 'guest') {
+				$('.pseudoChange').show(); 
+				$('#searchParent').css('width',''); 
+			} else { 
+				$('.pseudoChange').hide(); 
+				$('#searchParent').css('width','100%'); 
+			} 
+			
 			initSwitchs();
 
 			$('.bootstrap-switch').promise().then(function(){
@@ -618,7 +627,6 @@ var settingsNotUpdated;
 		$('.profileData .profileLine input').on('blur', (e) => {
 			var $input = $(e.target);
 			if ($input.attr('oldval') !== $input.val()) {
-				console.log($input.attr('oldval'), $input.val());
 				// TODO gestion confirmation password
 				var profileData = $('.profileData .profileLine > input').serialize();
 				$.ajax({
@@ -629,6 +637,7 @@ var settingsNotUpdated;
 					.done(function (response) {
 						$('.profileContent .profileLine > input').removeClass('redBorders');
 						$input.attr('oldval', $input.val());
+						pseudo = response.nickname;
 					})
 					.fail( (response) => {
 						var listFieldErr = Object.keys(response.responseJSON);

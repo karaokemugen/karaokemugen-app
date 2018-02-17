@@ -30,9 +30,6 @@
 	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
 }
 
-.pseudoChange {
-    display: none;
-}
 .header > div {
     height: 60px;
     padding: 0px;
