@@ -1,7 +1,7 @@
 import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {updateUserFingerprint, findFingerprint, checkPassword, isAdmin, updateLastLoginName, checkUserNameExists} from '../_services/user';
+import {findUserByName, updateUserFingerprint, findFingerprint, checkPassword, updateLastLoginName, checkUserNameExists} from '../_services/user';
 
 const loginErr = {
 	code: 'LOG_ERROR',
@@ -144,5 +144,8 @@ async function checkUserName(username) {
 }
 
 async function getRole(username) {
-	return await isAdmin(username) ? 'admin' : 'user';
+	const user = await findUserByName(username);
+	if (user.type == 2) return 'guest';
+	if (user.flag_admin == 1) return 'admin';
+	return 'user';
 }
