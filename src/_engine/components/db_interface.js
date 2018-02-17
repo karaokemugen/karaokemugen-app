@@ -129,12 +129,12 @@ module.exports = {
 					Promise.all([ karasDB_Test ])
 						.then(function() {
 							module.exports._db_handler = db;
+							
 							module.exports._db_handler.open(userdb_file)
 								.then(() => {									
 									module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;').then(() => {
 										module.exports.compareDatabasesUUIDs()
 											.then(() => {
-												module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;').then(() => {
 													module.exports._ready = true;
 													module.exports.getStats()
 														.then(function(stats) {
@@ -155,10 +155,6 @@ module.exports = {
 													console.log(sql);
 												});*/
 													resolve();						
-												}).catch((err) => {
-													logger.error('[DBI] Unable to attach karaoke database : '+err);
-													process.exit(1);
-												});
 														
 											})
 											.catch((err) => {
@@ -216,7 +212,13 @@ module.exports = {
 						};
 						generator.checkUserdbIntegrity(res.karasdb_uuid)
 							.then(() => {
-								resolve();
+								const db_file = path.resolve(module.exports.SYSPATH,module.exports.SETTINGS.PathDB,module.exports.SETTINGS.PathDBKarasFile);	
+								module.exports._db_handler.run('ATTACH DATABASE "' + db_file + '" as karasdb;').then(() => {
+									resolve();
+								}).catch((err) => {
+									logger.error('[DBI] Integrity check failed :'+err);
+									reject(err);	
+								})
 							})
 							.catch((err) => {
 								logger.error('[DBI] Integrity check failed :'+err);
