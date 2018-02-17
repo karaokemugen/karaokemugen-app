@@ -568,13 +568,13 @@ var settingsNotUpdated;
 		});
 
 		$('#password, #signupPasswordConfirmation').on('keypress', (e) => {
-			if(e.which == 13) { console.log($(e.target));
+			if(e.which == 13) {
 				$(e.target).parent().parent().find('.login').click();
 			}
 		});
 
 		$('.logout').click( () => {
-			eraseCookie("mugenToken");
+			eraseCookie('mugenToken');
 			window.location.reload();
 			/*
 			logInfos = { token : '' };
@@ -966,9 +966,9 @@ var settingsNotUpdated;
 							var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
 							+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
 							+	(idPlaylist > 0 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
-							+	kara.pos + '" data-pseudo_add="' + kara.pseudo_add + '"' : '')
+							+	kara.pos + '" data-username="' + kara.username + '"' : '')
 							+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
-							+	(kara.pseudo_add == logInfos.username ? 'user' : '' );
+							+	(kara.username == logInfos.username ? 'user' : '' );
 
 							var badges = '';
 							if(kara.misc) {
@@ -1528,7 +1528,7 @@ var settingsNotUpdated;
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 		var details = {
-			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
+			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['username'] ? i18n.__('DETAILS_ADDED_3', data['username']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'BLCTYPE_6': 			data['author']
 			, 'DETAILS_VIEWS':		data['viewcount']
