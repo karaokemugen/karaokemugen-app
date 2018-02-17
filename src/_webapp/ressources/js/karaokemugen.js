@@ -10,6 +10,8 @@ var bcTags;             // Object : list of blacklist criterias tags
 var showInfoMessage;	// Object : list of info codes to show as a toast
 var softErrorMessage; 
 var logInfos			// Object : contains all login infos : role, token, username
+var pathAvatar;
+var pathVideo;
 
 var DEBUG;
 var SOCKETDEBUG;
@@ -359,7 +361,7 @@ var settingsNotUpdated;
 			var previewFile = el.closest('.detailsKara').data('previewfile');
 			if(previewFile) {
 				setTimeout(function() {
-					$('#video').attr('src', '/previews/' + previewFile);
+					$('#video').attr('src', pathVideo + previewFile);
 					$('#video')[0].play();
 					$('.overlay').show();
 				}, 1);
@@ -589,7 +591,7 @@ var settingsNotUpdated;
 							$element.attr('oldval', k);
 		
 							if(i === 'avatar_file' && k) {
-								$element.attr('src', '/avatars/' + k);
+								$element.attr('src', pathAvatar + k);
 							} else if( i === 'login') {
 								$element.text(k);
 							} else if (i !== 'password') {
@@ -660,7 +662,7 @@ var settingsNotUpdated;
 			})
 				.done(function (response) {
 					$('.profileContent .profileLine > input').removeClass('redBorders');
-					$('[name="avatar_file"]').attr('src', response.avatar_file);
+					$('[name="avatar_file"]').attr('src', pathAvatar + response.avatar_file);
 				})
 				.fail( (response) => {
 					var listFieldErr = Object.keys(response.responseJSON);
@@ -704,6 +706,9 @@ var settingsNotUpdated;
 	refreshTime = 1000;
 	mode = 'list';
 	logInfos = { username : null, role : null };
+	pathAvatar = '/avatars/';
+	pathVideo = '/previews/';
+	
 
 	DEBUG =  query.DEBUG != undefined;
 	SOCKETDEBUG =  query.SOCKETDEBUG != undefined;
