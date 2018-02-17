@@ -567,6 +567,12 @@ var settingsNotUpdated;
 			}
 		});
 
+		$('#password, #signupPasswordConfirmation').on('keypress', (e) => {
+			if(e.which == 13) { console.log($(e.target));
+				$(e.target).parent().parent().find('.login').click();
+			}
+		});
+
 		$('.logout').click( () => {
 			eraseCookie("mugenToken");
 			window.location.reload();
