@@ -957,7 +957,7 @@ export async function shufflePlaylist(playlist_id) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
 	// the part after the song currently being played.
-	let playlist = getPlaylistContents(playlist_id);
+	let playlist = await getPlaylistContents(playlist_id);
 	if (!await isCurrentPlaylist(playlist_id)) {
 		playlist = shuffle(playlist);
 	} else {
@@ -993,7 +993,7 @@ export async function shufflePlaylist(playlist_id) {
 		arraypos++;
 	});
 	await updatePlaylistLastEditTime(playlist_id);
-	await plDB.reorderPlaylist(playlist);
+	await plDB.reorderPlaylist(playlist_id,playlist);
 }
 	
 export async function prev() {
