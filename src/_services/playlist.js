@@ -93,14 +93,9 @@ export async function isAPublicPlaylist() {
 	return false;	
 }
 
-async function setPlaying(plc_id,playlist_id) {
-	
-	if (plc_id) {
-		await plDB.setPlaying(plc_id);		
-	} else {
-		await plDB.unsetPlaying(playlist_id);
-		plc_id = null;
-	}
+async function setPlaying(plc_id,playlist_id) {	
+	await plDB.unsetPlaying(playlist_id);
+	if (plc_id) await plDB.setPlaying(plc_id);		
 	emitWS('playingUpdated',{
 		playlist_id: playlist_id,
 		plc_id: plc_id,
