@@ -100,6 +100,7 @@ function emitEngineStatus() {
 export async function initEngine() {
 	const conf = getConfig();
 	state.engine = initialState;
+	state.player = {};
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
 	createPreviews();
@@ -279,7 +280,7 @@ async function playerEnding() {
 async function tryToReadKaraInPlaylist() {
 	if(!state.player.playing) {
 		try {
-			const kara = await plc.playCurrentSong();
+			const kara = await plc.playCurrentSong();			
 			await play({
 				video: kara.path.video,
 				subtitle: kara.path.subtitle,
@@ -787,6 +788,7 @@ export function sendMessage(message, duration) {
 }
 
 export async function sendCommand(command, options) {
+	if (!state.player.ready) throw '[Player] Player is not ready yet!';
 	switch (command) {
 	case 'play':
 		playPlayer();
