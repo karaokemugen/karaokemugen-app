@@ -268,9 +268,9 @@ async function startmpv() {
 		// Display informations if timeposition is 8 seconds before end of song
 		if (position >= (state.player.duration - 8) && 
 						displayingInfo == false &&
-						state.videoType == 'song')						
+						state.player.videoType == 'song')						
 			displaySongInfo(state.player.currentSongInfos);
-		if (Math.floor(position) == Math.floor(state.player.duration / 2) && displayingInfo == false && state.videoType == 'song') displayInfo(8000);
+		if (Math.floor(position) == Math.floor(state.player.duration / 2) && displayingInfo == false && state.player.videoType == 'song') displayInfo(8000);
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	return true;
