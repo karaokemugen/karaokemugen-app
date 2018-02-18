@@ -615,6 +615,25 @@ var settingsNotUpdated;
 					});
 					
 				});
+			$.ajax({
+				url: 'public/users/', 	
+				type: 'GET'})
+				.done(function (response) {
+					var users = [response.filter(a => a.flag_online==1), response.filter(a => a.flag_online==0)];
+					var $userlist = $('.userlist');
+					var userlistStr = '';
+					users.forEach( (userList) => {
+						$.each(userList, function(i, k) {
+							userlistStr +=
+								'<li class="list-group-item' + (k.flag_online==1 ? ' online' : '')
+							+	'"><div class="userLine">'
+							+	'<span class="nickname">' + k.nickname + '</span>'
+							+	'<img class="avatar" src="' + pathAvatar + k.avatar_file + '"/>'
+							+	'</div></li>';
+						});
+					});
+					$userlist.empty().append($(userlistStr));
+				});	
 		};
 
 		$('.profileData .profileLine input').on('keypress', (e) => {

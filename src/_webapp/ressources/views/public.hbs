@@ -192,11 +192,11 @@
     <div class="modal-dialog modal-md">
         <div class="modal-content">
             <ul class="nav nav-tabs nav-justified modal-header">
-                <li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">Profil</a></li>
-                <li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {{i18n "USERLIST"}}</a></li>
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab" aria-controls="nav-profil" aria-selected="true">Profil</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {{i18n "USERLIST"}}</a></li>
             </ul>
             <div class="tab-content" id="nav-tabContent">
-                <div id="nav-profil" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
+                <div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab" class="modal-body tab-pane fade in active">
                     <div class="profileContent">
                         
                             <div class="col-md-3 col-lg-3 col-xs-12 col-sm-12">
@@ -230,8 +230,12 @@
                                     <i class="glyphicon glyphicon-lock"></i>
                                     <input class="form-control" name="password" type="text"/>
                                 </div>
-                                
                             </div>
+                            
+                        </div>
+                    </div>
+                    <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" class="modal-body tab-pane fade in">
+                        <div class="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
                             
                         </div>
                     </div>
@@ -248,7 +252,7 @@
     </div>
 </div>
  <div class="popup" id="settingsPublic" hidden>
-    <span id="settingsPublicTitle">  {{i18n "CL_HELP"}} </span>>
+    <span id="settingsPublicTitle">  {{i18n "CL_HELP"}} </span>
     <span id="settingsPublicContent">
         <div id="mobileHelp" class="col-lg-12 col-xs-12" style="line-height:1.8em;">
             {{{ i18n "CL_HELP_PUBLIC_CONTENT" }}}
