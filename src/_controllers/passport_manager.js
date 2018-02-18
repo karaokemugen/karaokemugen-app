@@ -11,6 +11,17 @@ export const updateUserLoginTime = (req, res, next) => {
 	next();
 };
 
+export const requireValidUser = (req, res, next) => {
+	const token = decode(req.get('authorization'), getConfig().JwtSecret);
+	findUserByName(token.username)
+		.then(() => {
+			next();
+		})
+		.catch(() => {
+			res.status(403).send('User logged in unknown');
+		});
+}
+
 export const requireAdmin = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
 	if (token.role === 'admin') {
