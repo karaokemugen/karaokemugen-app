@@ -386,9 +386,9 @@ export async function exportPL(playlist_id) {
 	}
 }
 		
-export async function importPL(playlist) {
+export async function importPL(playlist,username) {
 	try {
-		return await plc.importPlaylist(playlist);
+		return await plc.importPlaylist(playlist,username);
 	} catch(err) {
 		throw err;
 	}

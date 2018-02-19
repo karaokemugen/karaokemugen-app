@@ -15,7 +15,7 @@ import logger from 'winston';
 import {deburr, isEmpty, sample, shuffle} from 'lodash';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {eachOf, eachSeries, timesSeries} from 'async';
+import {eachOf, timesSeries} from 'async';
 import {emitWS} from '../_ws/websocket';
 import {emit} from '../_common/utils/pubsub';
 
@@ -429,10 +429,6 @@ export async function getKara(kara_id, username) {
 	return kara;
 }
 
-async function getKaraByKID(kid) {
-	return await karaDB.getKaraByKID(kid);
-}
-
 async function getPLCByKID(kid,playlist_id) {
 	return await plDB.getPLCByKID(kid,playlist_id);
 }
@@ -720,7 +716,9 @@ export async function exportPlaylist(playlist_id) {
 	plInfo.num_karas = undefined;
 	plInfo.flag_current = undefined;
 	plInfo.flag_public = undefined;
+	plInfo.flag_favorites = undefined;
 	plInfo.length = undefined;
+	plInfo.fk_id_user = undefined;
 	let plcFiltered = [];
 	plContents.forEach((plc) => {
 		let plcObject = {};
@@ -737,32 +735,7 @@ export async function exportPlaylist(playlist_id) {
 	return pl;							
 }
 
-function checkImportedKIDs(playlist) {
-	let karasToImport = [];
-	let karasUnknown = [];	
-	eachSeries(playlist,(kara,callback) => {
-		getKaraByKID(kara.kid).then((karaFromDB) => {
-			if (karaFromDB) {
-				karasToImport.push(karaFromDB.kara_id);
-				callback();
-			} else {
-				logger.warn(`[PLC] importPlaylist : KID ${kara.kid} unknown`);
-				karasUnknown.push(kara.kid);
-				callback();
-			}
-		}).catch((err) => {
-			callback(err);
-		});
-	}, (err) => {
-		if (err) throw err;
-		return { 
-			karasToImport: karasToImport, 
-			karasUnknown: karasUnknown 
-		};
-	});
-}
-
-export async function importPlaylist(playlist) {
+export async function importPlaylist(playlist,username) {
 	// Check if format is valid :
 	// Header must contain :
 	// description = Karaoke Mugen Playlist File
@@ -806,15 +779,35 @@ export async function importPlaylist(playlist) {
 	}
 
 	// Validations done. First creating playlist.
-	const playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0);
-	const ret = checkImportedKIDs(playlist.PlaylistContents);
-	await addKaraToPlaylist(ret.karasToImport,'Administrateur',playlist_id);
-	const plcPlaying = await getPLCByKID(playingKara,playlist_id);
-	await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
-	return {
-		playlist_id: playlist_id,
-		karasUnknown: ret.karasUnknown
-	};
+	try {
+		const playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0,0,username);
+		const karas = await getAllKaras();
+		let karasToImport = [];
+		let karasUnknown = [];	
+		playlist.PlaylistContents.forEach((plc) => {
+			const isKaraInDB = karas.some((kara) => {
+				if (kara.kid === plc.kid) {
+					karasToImport.push(kara.kara_id);
+					return true;
+				}
+				return false;
+			});
+			if (!isKaraInDB) karasUnknown.push(plc.kid);
+		});
+		await addKaraToPlaylist(karasToImport,username,playlist_id);
+		if (playingKara) {
+			const plcPlaying = await getPLCByKID(playingKara,playlist_id);
+			await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
+		}
+		return {
+			playlist_id: playlist_id,
+			karasUnknown: karasUnknown
+		};
+	} catch (err) {
+		console.log(err);
+		throw err;
+	}
+	
 }			
 
 export function translateKaraInfo(karalist, lang) {

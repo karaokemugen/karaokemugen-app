@@ -24,10 +24,6 @@ export async function getASS(id) {
 	return await getUserDb().get(sql.getASS, { $kara_id: id });
 }
 
-export async function getKaraByKID(kid) {
-	return await getUserDb().get(sql.getKaraByKID, { $kid: kid });
-}
-
 export async function isKara(id) {
 	return await getUserDb().get(sql.isKara, { $kara_id: id });	
 }

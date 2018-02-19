@@ -2325,7 +2325,8 @@ export async function initAPIServer(listenPort) {
 			});
 			req.getValidationResult().then((result) =>  {
 				if (result.isEmpty()) {
-					engine.importPL(JSON.parse(req.body.playlist))
+					const token = decode(req.get('authorization'), getConfig().JwtSecret);
+					engine.importPL(JSON.parse(req.body.playlist),token.username)
 						.then((result) => {									
 							const response = {
 								message: 'Playlist imported',
