@@ -4144,7 +4144,7 @@ export async function initAPIServer(listenPort) {
 				});						
 		})
 	/**
- * @api {put} public/myaccount Get/Edit your own account
+ * @api {put} public/myaccount Edit your own account
  * @apiName EditMyAccount
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -4155,6 +4155,7 @@ export async function initAPIServer(listenPort) {
  * @apiParam {String} [bio] User's bio info. Can be empty.
  * @apiParam {String} [email] User's mail. Can be empty.
  * @apiParam {String} [url] User's URL. Can be empty.
+ * @apiParam {ImageFile} [avatarfile] New avatar
  * @apiSuccess {String} args ID of user deleted
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of user deleted

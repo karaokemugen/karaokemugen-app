@@ -33,7 +33,8 @@ state.player = {
 	videoType: 'background',
 	showsubs: true,
 	stayontop: false,
-	fullscreen: false	
+	fullscreen: false,
+	ready: false
 };
 
 on('engineStatusChange', (newstate) => {
@@ -268,17 +269,18 @@ async function startmpv() {
 		// Display informations if timeposition is 8 seconds before end of song
 		if (position >= (state.player.duration - 8) && 
 						displayingInfo == false &&
-						state.videoType == 'song')						
+						state.player.videoType == 'song')						
 			displaySongInfo(state.player.currentSongInfos);
-		if (Math.floor(position) == Math.floor(state.player.duration / 2) && displayingInfo == false && state.videoType == 'song') displayInfo(8000);
+		if (Math.floor(position) == Math.floor(state.player.duration / 2) && displayingInfo == false && state.player.videoType == 'song') displayInfo(8000);
 	});
 	logger.debug('[Player] mpv initialized successfully');
+	state.player.ready = true;	
 	return true;
 }
 
 export async function play(videodata) {
 	const conf = getConfig();
-	logger.debug('[Player] Play event triggered');
+	logger.debug('[Player] Play event triggered');	
 	state.player.playing = true;
 	//Search for video file in the different PathVideos
 	const PathsVideos = conf.PathVideos.split('|');
@@ -456,8 +458,10 @@ export function displayInfo(duration) {
 export async function restartmpv() {
 	await quitmpv();
 	logger.debug('[Player] Stopped mpv (restarting)');
+	emitPlayerState();
 	await startmpv();
 	logger.debug('[Player] restarted mpv');
+	emitPlayerState();
 	return true;
 }
 
@@ -466,6 +470,7 @@ async function quitmpv() {
 	player.quit();
 	// Destroy mpv instance.
 	player = null;
+	state.player.ready = false;	
 	return true;
 }
 

@@ -184,6 +184,7 @@
 	"GOTO_BOTTOM": "Go to the end of the playlist",
 	"ERROR": "Error",
 	"LOG_ERROR": "Invalid credentials",
+	"LOG_SUCCESS": "Connected as %s",	
 	"NO_MORE_GUESTS_AVAILABLE": "No more guest accounts available, please create your own account!",
 	"UNKNOWN_ERROR": "Something wrong happened. Here's the message : ",
 	"UNAUTHORIZED": "Access forbidden. Your role doesn't permit this action",
@@ -275,5 +276,6 @@
 	"FAVORITES_ADD_SONG_ERROR": "Unable to add %s to your favorites",
 	"FAVORITES_DELETED": "Favorite karaoke deleted",
 	"FAVORITES_DELETE_ERROR": "Unable to delete favorited karaoke",
+	"AVATAR_IMPORT": "Import new avatar",
 	"_": "DO NOT MODIFY"
 } 

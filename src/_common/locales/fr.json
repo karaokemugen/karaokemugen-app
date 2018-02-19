@@ -163,7 +163,8 @@
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
 	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les infos du réseau",
 	"ERROR": "Erreur",
-	"LOG_ERROR": "Identifiants invalides",	
+	"LOG_ERROR": "Identifiants invalides",
+	"LOG_SUCCESS": "Connecté en tant que %s",
 	"NO_MORE_GUESTS_AVAILABLE": "Il n'y a plus de comptes invité disponibles. Créez votre propre compte!",
 	"UNKNOWN_ERROR": "Une erreur fortuite s'est produite : ",
 	"UNAUTHORIZED": "Accès défendu. Votre role n'est pas suffisant pour cette action.",
@@ -274,5 +275,7 @@
 	"FAVORITES_ADD_SONG_ERROR": "Impossible d'ajouter %s à vos favoris",
 	"FAVORITES_DELETED": "Favori supprimé",
 	"FAVORITES_DELETE_ERROR": "Impossible de supprimer le favori",
+	"AVATAR_IMPORT": "Importer un avatar",
 	"_": "DO NOT MODIFY"
+
 }
