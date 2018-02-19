@@ -976,8 +976,9 @@ var settingsNotUpdated;
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
 								+   (isTouchScreen ? '' : infoKaraHtml) + playKara + '</div>')
-								+   '<div class="contentDiv"">' + buildKaraTitle(kara, filter)
-								+	badges
+								+   '<div class="contentDiv">'
+								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
+								+	'<div>' + badges + '</div>'
 								+   '</div>'
 								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')
 								+   '</li>'; 
