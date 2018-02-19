@@ -374,7 +374,7 @@ export async function getTags(lang) {
 	return await plc.translateTags(tags, lang);
 }
 
-export async function exportPlaylist(playlist_id) {
+export async function exportPL(playlist_id) {
 	try {
 		return await plc.exportPlaylist(playlist_id);
 	} catch(err) {
@@ -386,7 +386,7 @@ export async function exportPlaylist(playlist_id) {
 	}
 }
 		
-export async function importPlaylist(playlist) {
+export async function importPL(playlist) {
 	try {
 		return await plc.importPlaylist(playlist);
 	} catch(err) {
