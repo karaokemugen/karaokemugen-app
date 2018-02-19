@@ -1063,9 +1063,28 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	height: 45px;
 	padding: 3px;
 }
+.userlist > li {
+	cursor: pointer;
+}
+.userlist > li:hover {
+	background-color: #333333;
+}
 .userLine > img, .userLine > div {
 	vertical-align: middle;
 	height: 100%;
+}
+.userlist > li.open > .userDetails {
+	display: block;
+}
+.userDetails {
+	display: none;
+	background-color: #212121;
+	text-align: start;
+	padding: 10px;
+    margin-top: 5px;
+}
+.userDetails > div > i {
+	padding: 10px;
 }
 .nickname {
     font-size: 22px;
