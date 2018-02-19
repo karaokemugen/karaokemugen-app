@@ -209,8 +209,8 @@ export async function addUser(user) {
 	}
 }
 
-export function checkUserNameExists(username) {
-	return db.checkUserNameExists(username);	
+export async function checkUserNameExists(username) {
+	return await db.checkUserNameExists(username);	
 }
 
 export async function deleteUser(username) {

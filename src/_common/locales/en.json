@@ -277,5 +277,7 @@
 	"FAVORITES_DELETED": "Favorite karaoke deleted",
 	"FAVORITES_DELETE_ERROR": "Unable to delete favorited karaoke",
 	"AVATAR_IMPORT": "Import new avatar",
+	"AUTOMIX_CREATED": "AutoMix list created successfully",
+	"AUTOMIX_ERROR": "Error creating AutoMix list",
 	"_": "DO NOT MODIFY"
 } 

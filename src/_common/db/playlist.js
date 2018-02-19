@@ -350,13 +350,21 @@ export const unsetPlaying = `UPDATE playlist_content
 
 export const setPlaying = `UPDATE playlist_content 
 						SET flag_playing = 1 
-						WHERE pk_id_plcontent = $playlistcontent_id;`;
+						WHERE pk_id_plcontent = $playlistcontent_id;
+						`;
 
 export const countPlaylistUsers = `SELECT COUNT(DISTINCT fk_id_user) AS NumberOfUsers
                             FROM playlist_content
-                            WHERE fk_id_playlist = $playlist_id;`;
+                            WHERE fk_id_playlist = $playlist_id;
+							`;
 
 export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
                                         FROM playlist_content
                                         WHERE fk_id_playlist = $playlist_id
-                                            AND fk_id_user = $user_id;`;
+                                            AND fk_id_user = $user_id;
+										`;
+
+export const trimPlaylist = `DELETE FROM playlist_content
+							 WHERE fk_id_playlist = $playlist_id
+							 	AND pos > $pos;
+							`;

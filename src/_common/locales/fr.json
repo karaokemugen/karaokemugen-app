@@ -276,6 +276,8 @@
 	"FAVORITES_DELETED": "Favori supprimé",
 	"FAVORITES_DELETE_ERROR": "Impossible de supprimer le favori",
 	"AVATAR_IMPORT": "Importer un avatar",
+	"AUTOMIX_CREATED": "Liste AutoMix crée avec succès",
+	"AUTOMIX_ERROR": "Erreur lors de la création de la liste AutoMix",
 	"_": "DO NOT MODIFY"
 
 }

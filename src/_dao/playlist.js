@@ -91,6 +91,13 @@ export async function updatePlaylistDuration(id) {
 	return await getUserDb().run(sql.updatePlaylistDuration, { $playlist_id: id });
 }
 
+export async function trimPlaylist(id,pos) {
+	return await getUserDb().run(sql.trimPlaylist, { 
+		$playlist_id: id,
+		$pos: pos
+	});
+}
+
 export async function getPlaylistContents(id,forPlayer) {
 	const query = forPlayer ? sql.getPlaylistContentsForPlayer : sql.getPlaylistContents;
 	return await getUserDb().all(query, { $playlist_id: id });

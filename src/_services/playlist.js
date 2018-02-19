@@ -248,6 +248,23 @@ async function isKaraInPlaylist(kara_id,playlist_id) {
 	return await karaDB.isKaraInPlaylist(kara_id,playlist_id);
 }
 
+export async function trimPlaylist(playlist_id,duration) {
+	const durationSecs = duration * 60;
+	let durationPL = 0;
+	let lastPos = 1;
+	const pl = await getPlaylistContents(playlist_id);
+	const needsTrimming = pl.some((kara) => {
+		lastPos = kara.pos;
+		durationPL = durationPL + kara.duration;
+		if (durationPL > durationSecs) return true;
+		return false;
+	});
+	if (needsTrimming) await plDB.trimPlaylist(playlist_id,lastPos);
+	await updatePlaylistLastEditTime(playlist_id);
+	await updatePlaylistDuration(playlist_id);
+	await updatePlaylistKaraCount(playlist_id);
+}
+
 export async function setCurrentPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (pl.flag_public === 1) throw 'A current playlist cannot be set to public. Set another playlist to current first.';
@@ -567,72 +584,62 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	return karaAdded;
 }
 
-function checkPLCandKaraInPlaylist(plcList,playlist_id) {
-	eachOf(plcList, (playlistContent,index,callback) => {				
-		plDB.getPLCInfo(playlistContent.plc_id).then((playlistContentData) => {
-			if (playlistContentData) {
-				//We got a hit!
-				// Let's check if the kara we're trying to add is 
-				// already in the playlist we plan to copy it to.
-				isKaraInPlaylist(playlistContentData.kara_id,playlist_id).then((isKaraInPL) => {
-					//Karaoke song is already in playlist, abort mission
-					//since we don't want duplicates in playlists.
-					if (isKaraInPL) {
-						callback(`Karaoke song ${playlistContentData.kara_id} is already in playlist ${playlist_id}`);
-					} else {
-						// All OK. We need some info though.
-						plcList[index].kara_id = playlistContentData.kara_id;
-						plcList[index].requester = playlistContentData.nickname;
-						plcList[index].NORM_requester = playlistContentData.NORM_pseudo_add;
-						callback();
-					}									
-				}).catch((err) => {
-					throw err;
-				});							
-			} else {
-				callback(`PLC ${playlistContent.plc_id} does not exist`);
-			}							
-		}).catch((err) => {						
-			callback(err);
-		});				
-	}, (err) => {
-		if (err) throw err;
-		return plcList;
-	});
+async function checkPLCandKaraInPlaylist(plcList,playlist_id) {
+	let index = 0;
+	let newPLCList = [];	
+	let plc;
+	for (plc of plcList) {
+		const plcData = await plDB.getPLCInfo(plc);
+		if (!plcData) throw `PLC ${plc.plc_id} does not exist`;
+		//We got a hit!
+		// Let's check if the kara we're trying to add is 
+		// already in the playlist we plan to copy it to.
+		const isKaraInPL = await isKaraInPlaylist(plcData.kara_id,playlist_id);
+		//Karaoke song is already in playlist, abort mission
+		//since we don't want duplicates in playlists.
+		const user = await findUserByName(plcData.username);
+		if (!isKaraInPL) newPLCList.push({
+			kara_id: plcData.kara_id,
+			requester: plcData.pseudo_add,
+			NORM_requester: plcData.NORM_pseudo_add,
+			user_id: user.id,
+			date_add: now(),
+			playlist_id: playlist_id,
+			plc_id: plc
+		});
+		index++;			
+	}		
+	return newPLCList;	
 }
 
 export async function copyKaraToPlaylist(plcs,playlist_id,pos) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;	
 	// plcs is an array of plc_ids.		
-	const date_add = now();
 	let plcList = [];
-	plcs.forEach(function(plc_id){
-		plcList.push({
-			plc_id: plc_id,
-			playlist_id: playlist_id,
-			date_add: date_add,				
-		});				
-	});
-	plcList = checkPLCandKaraInPlaylist(plcList);
-	// If pos is provided, we need to update all karas above that and add 
-	// karas.length to the position
-	// If pos is not provided, we need to get the maximum position in the PL
-	// And use that +1 to set our playlist position.				
-	if (pos) {
-		await plDB.shiftPosInPlaylist(playlist_id,pos,plcs.length);
-	} else {
-		const res = await plDB.getMaxPosInPlaylist(playlist_id);
-		let startpos = res.maxpos + 1.0;
-		let index = 0;
-		plcList.forEach(() => {
-			plcList[index].pos = startpos + index;
-			index++;
-		});
-	}								
-	await karaDB.addKaraToPlaylist(plcList);
-	await updatePlaylistLastEditTime(playlist_id);
-	await updatePlaylistDuration(playlist_id);
-	await updatePlaylistKaraCount(playlist_id);
+	try {
+		plcList = await checkPLCandKaraInPlaylist(plcs,playlist_id);	
+		// If pos is provided, we need to update all karas above that and add 
+		// karas.length to the position
+		// If pos is not provided, we need to get the maximum position in the PL
+		// And use that +1 to set our playlist position.				
+		if (pos) {
+			await plDB.shiftPosInPlaylist(playlist_id,pos,plcs.length);
+		} else {
+			const res = await plDB.getMaxPosInPlaylist(playlist_id);
+			let startpos = res.maxpos + 1.0;
+			let index = 0;
+			plcList.forEach(() => {
+				plcList[index].pos = startpos + index;
+				index++;
+			});
+		}
+		await karaDB.addKaraToPlaylist(plcList);
+		await updatePlaylistLastEditTime(playlist_id);
+		await updatePlaylistDuration(playlist_id);
+		await updatePlaylistKaraCount(playlist_id);
+	} catch (err) {
+		throw err;
+	}
 }
 
 export async function deleteKaraFromPlaylist(plcs,playlist_id,opt) {

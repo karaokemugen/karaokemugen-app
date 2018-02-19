@@ -1,12 +1,12 @@
-const express = require('express');
-const expressValidator = require('express-validator');
-const logger = require('winston');
+import express from 'express';
+import expressValidator from 'express-validator';
+import logger from 'winston';
 import {setConfig, getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
-const user = require('../_services/user');
+const user = require ('../_services/user');
 import {resolve} from 'path';
-const multer = require('multer');
-const engine = require('../_services/engine');
+import multer from 'multer';
+const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
 import {emitWS} from '../_ws/websocket';
 import {decode} from 'jwt-simple';
@@ -50,6 +50,14 @@ export async function initAPIServer(listenPort) {
 	app.use(expressValidator({
 		customValidators: {
 			enum: (input, options) => options.includes(input),
+			stringsArray: (input) => {
+				if (input) {
+					if (typeof input === 'string' && input.includes(',')) {
+						return input.split(',');
+					}
+				}
+				return false;
+			},
 			numbersArray: (input) => {
 				if (input) {
 					// Test if we get a single number or a list of comma separated numbers
@@ -144,6 +152,78 @@ export async function initAPIServer(listenPort) {
 					logger.error(err);
 					res.statusCode = 500;
 					res.json(err);
+				});
+		});
+	routerAdmin.route('/automix')
+	/**
+ * @api {get} admin/mix Generate a automix playlist
+ * @apiName PostMix
+ * @apiGroup Favorites
+ * @apiVersion 2.1.0
+ * @apiPermission admin
+ *
+ * @apiParam {String} users Comma-separated list of usernames to pick favorites from
+ * @apiParam {Number} duration Duration wished for the generatedplaylist in minutes
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data/playlist_id ID of playlist created
+ * @apiSuccess {String} data/playlist_name Name of playlist created
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *   "code": "AUTOMIX_CREATED",
+ *   "data": {
+ *           "playlist_id": 12,
+ *           "playlist_name": 'Soirée Kara 07/10/2018'
+ *   }
+ * }
+ * @apiError AUTOMIX_ERROR Unable to create the automix playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "AUTOMIX_ERROR",
+ *   "message": "User axel does not exist."
+ * }
+ */
+
+		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+			req.check({
+				'users': {
+					in: 'body',
+					notEmpty: true,
+					stringsArray: true
+				},
+				'duration': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
+				}
+			});
+
+			req.getValidationResult()
+				.then((result) => {
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('duration').toInt();
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);						
+						favorites.createAutoMix(req.body, token.username)
+							.then((new_playlist) => {
+								emitWS('playlistsUpdated');
+								res.statusCode = 201;
+								res.json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
+							})
+							.catch((err) => {
+								logger.error(err);
+								res.statusCode = 500;
+								res.json(errMessage('AUTOMIX_ERROR',err));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;								
+						res.json(result.mapped());
+					}
 				});
 		});
 	routerAdmin.route('/playlists')

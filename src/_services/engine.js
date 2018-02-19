@@ -6,7 +6,7 @@ import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
 import {initFrontend} from '../_webapp/frontend';
 import {getAllTags} from '../_dao/tag';
-import {addViewcount,updateTotalViewcounts} from '../_dao/kara';
+import {addViewcount, updateTotalViewcounts} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {emitWS} from '../_ws/websocket';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
@@ -15,6 +15,7 @@ const plc = require('./playlist');
 const logger = require('winston');
 import {promisify} from 'util';
 const sleep = promisify(setTimeout);
+
 
 const ports = {
 	frontend: 1337,
@@ -437,6 +438,7 @@ export async function getKaraInfo(kara_id, lang, username) {
 	if (previewfile) output[0].previewfile = previewfile;
 	return output;
 }
+
 
 export async function getPLCInfo(plc_id, lang, userToken) {
 	const kara = await plc.getKaraFromPlaylist(plc_id, userToken);
