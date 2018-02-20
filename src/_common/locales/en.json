@@ -141,6 +141,7 @@
 	"WEBAPPMODE_CLOSED": "Closed",
 	"WEBAPPMODE_MINIMAL": "Song information and playlists only",
 	"WEBAPPMODE_FULL": "Opened (default)",
+	"WEBAPPMODE_CLOSED_API_MESSAGE": "Sorrymasen, API is disabled right now.",
 	"PLAYERFULLSCREEN": "Fullscreen",
 	"PLAYERSTAYONTOP": "Always on top",
 	"PLAYERNOBAR": "Hide progress bar",

@@ -140,6 +140,7 @@
 	"WEBAPPMODE_CLOSED": "Fermé",
 	"WEBAPPMODE_MINIMAL": "Chanson en cours et playlists uniquement",
 	"WEBAPPMODE_FULL": "Ouvert (défaut)",
+	"WEBAPPMODE_CLOSED_API_MESSAGE": "Sorrymasen, l'API est désactivée pour le moment.",
 	"PLAYERFULLSCREEN": "Plein écran",
 	"PLAYERSTAYONTOP": "Toujours au dessus",
 	"PLAYERNOBAR": "Masquer la barre de progression",

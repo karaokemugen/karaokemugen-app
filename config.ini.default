@@ -127,3 +127,9 @@ mpvVideoOutput = ""
 ; Auth configuration
 ; Time (in minutes) before a user account is set to expire after its last login/action 
 AuthExpireTime = 15
+
+; Webapp mode
+; 0 = Public mode is closed, no action available
+; 1 = Only display current song and info, and current playlist if available (hide kara selection and search from the complete listing)
+; 2 = Default behavior, public interface is fully available
+WebappMode = 2
