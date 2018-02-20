@@ -214,3 +214,10 @@ isVisible = function( element, container ){
 	return ((((elementTop - containerTop) + elementHeight) > 0)
 		&& ((elementTop - containerTop) < containerHeight));
 };
+
+dataToDataAttribute = function(data) {
+	var result = Object.keys(data).map(function (k) {
+		return 'data-' + k + '="' +  data[k] + '"';
+	}).join(' ');
+	return result;
+};

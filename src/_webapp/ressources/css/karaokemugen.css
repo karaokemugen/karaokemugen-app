@@ -1050,6 +1050,52 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	border: hsla(0, 87%, 50%, .5) solid 1px;
     border-width: 0px 0px 0px 5px;
 }
+.userlist .userLine {
+    display: flex;
+    justify-content: space-between;
+}
+.userlist .list-group-item {
+    border: 1px solid #565656;
+    background-color: #2b2b2b;
+	border-width: 1px 0px;
+	border-left-width: 3px;
+	border-left-color: #893230;
+	line-height: 40px;
+}
+.userlist .list-group-item.online {
+   border-left-width: 3px;
+   border-left-color: hsla(101, 48%, 36%, 1);
+}
+.userLine {
+	height: 45px;
+	padding: 3px;
+}
+.userlist > li {
+	cursor: pointer;
+}
+.userlist > li:hover {
+	background-color: #333333;
+}
+.userLine > img, .userLine > div {
+	vertical-align: middle;
+	height: 100%;
+}
+.userlist > li.open > .userDetails {
+	display: block;
+}
+.userDetails {
+	display: none;
+	background-color: #212121;
+	text-align: start;
+	padding: 10px;
+    margin-top: 5px;
+}
+.userDetails > div > i {
+	padding: 10px;
+}
+.nickname {
+    font-size: 22px;
+}
 /* placeholders */
 
 .panel-heading ::-webkit-input-placeholder {
