@@ -6,7 +6,7 @@ import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
 import {initFrontend} from '../_webapp/frontend';
 import {getAllTags} from '../_dao/tag';
-import {addViewcount,updateTotalViewcounts} from '../_dao/kara';
+import {addViewcount, updateTotalViewcounts} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {emitWS} from '../_ws/websocket';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
@@ -15,6 +15,7 @@ const plc = require('./playlist');
 const logger = require('winston');
 import {promisify} from 'util';
 const sleep = promisify(setTimeout);
+
 
 const ports = {
 	frontend: 1337,
@@ -386,9 +387,9 @@ export async function exportPL(playlist_id) {
 	}
 }
 		
-export async function importPL(playlist) {
+export async function importPL(playlist,username) {
 	try {
-		return await plc.importPlaylist(playlist);
+		return await plc.importPlaylist(playlist,username);
 	} catch(err) {
 		throw err;
 	}
@@ -430,16 +431,17 @@ export async function shufflePL(playlist_id) {
 	}	
 }
 
-export async function getKaraInfo(kara_id, lang) {
-	const kara = await plc.getKara(kara_id);
+export async function getKaraInfo(kara_id, lang, username) {
+	const kara = await plc.getKara(kara_id, username);
 	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;
 	return output;
 }
 
-export async function getPLCInfo(plc_id, lang, seenFromUser) {
-	const kara = await plc.getKaraFromPlaylist(plc_id, seenFromUser);
+
+export async function getPLCInfo(plc_id, lang, userToken) {
+	const kara = await plc.getKaraFromPlaylist(plc_id, userToken);
 	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;
@@ -450,12 +452,14 @@ export async function getAllPLs(seenFromUser) {
 	return await plc.getPlaylists(seenFromUser);
 }
 
-export async function createPL(playlist) {
+export async function createPL(playlist,username) {
 	return await plc.createPlaylist(
 		playlist.name,
 		playlist.flag_visible,
 		playlist.flag_current,
-		playlist.flag_public);
+		playlist.flag_public,
+		0,
+		username);
 }
 
 export async function getPLInfo(playlist_id, seenFromUser) {

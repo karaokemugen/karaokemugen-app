@@ -60,32 +60,6 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
 							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
 							`;
 
-export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
-								ak.kid AS kid,
-      							ak.title AS title,
-      							ak.NORM_title AS NORM_title,
-      							ak.songorder AS songorder,
-      							ak.serie AS serie,
-      							ak.NORM_serie AS NORM_serie,
-      							ak.serie_altname AS serie_altname,
-      							ak.NORM_serie_altname AS NORM_serie_altname,
-      							ak.singer AS singer,
-      							ak.NORM_singer AS NORM_singer,
-      							ak.songtype AS songtype,      
-      							ak.creator AS creator,
-      							ak.NORM_creator AS NORM_creator,
-      							ak.language AS language,
-      							ak.author AS author,
-      							ak.NORM_author AS NORM_author,
-      							ak.misc AS misc,
-	  							ak.viewcount AS viewcount,      
-      							ak.videofile AS videofile,
-	  							ak.videolength AS duration,
-		  						ak.gain AS gain
- 							FROM all_karas AS ak
-							WHERE ak.kid = $kid;
-							`;
-
 export const getKara = `SELECT ak.kara_id AS kara_id,
     						ak.kid AS kid,
       						ak.title AS title,
@@ -110,7 +84,15 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
 	  						ak.viewcount AS viewcount,      
       						ak.videofile AS videofile,
 	  						ak.videolength AS duration,
-	  						ak.gain AS gain	  
+	  						ak.gain AS gain,
+							EXISTS(
+    							SELECT 1 FROM playlist_content pc
+    							JOIN playlist p ON pc.fk_id_playlist = p.pk_id_playlist
+    							JOIN user u ON   u.pk_id_user = p.fk_id_user
+    							WHERE pc.fk_id_kara = ak.kara_id 
+									AND p.flag_favorites = 1 
+									AND u.login = $username
+							) AS flag_favorites 
  						FROM karasdb.all_karas AS ak
 						WHERE ak.kara_id = $kara_id  						  
   						`;
@@ -137,7 +119,8 @@ export const updateTotalViewcounts = `UPDATE karasdb.kara SET viewcount =
 									`;
 
 export const removeKaraFromPlaylist = `DELETE FROM playlist_content 
-									WHERE pk_id_plcontent IN ($playlistcontent_id);
+									WHERE pk_id_plcontent IN ($playlistcontent_id)
+									  AND fk_id_playlist = $playlist_id;
 									`;
 
 export const removeKaraFromWhitelist = `DELETE FROM whitelist 

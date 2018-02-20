@@ -15,7 +15,7 @@ import logger from 'winston';
 import {deburr, isEmpty, sample, shuffle} from 'lodash';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {eachOf, eachSeries, timesSeries} from 'async';
+import {eachOf, timesSeries} from 'async';
 import {emitWS} from '../_ws/websocket';
 import {emit} from '../_common/utils/pubsub';
 
@@ -76,6 +76,7 @@ export async function isPublicPlaylist(playlist_id) {
 	}
 	return false;
 }
+
 
 export async function isACurrentPlaylist() {
 	const res = await plDB.findCurrentPlaylist();
@@ -247,16 +248,36 @@ async function isKaraInPlaylist(kara_id,playlist_id) {
 	return await karaDB.isKaraInPlaylist(kara_id,playlist_id);
 }
 
+export async function trimPlaylist(playlist_id,duration) {
+	const durationSecs = duration * 60;
+	let durationPL = 0;
+	let lastPos = 1;
+	const pl = await getPlaylistContents(playlist_id);
+	const needsTrimming = pl.some((kara) => {
+		lastPos = kara.pos;
+		durationPL = durationPL + kara.duration;
+		if (durationPL > durationSecs) return true;
+		return false;
+	});
+	if (needsTrimming) await plDB.trimPlaylist(playlist_id,lastPos);
+	await updatePlaylistLastEditTime(playlist_id);
+	await updatePlaylistDuration(playlist_id);
+	await updatePlaylistKaraCount(playlist_id);
+}
+
 export async function setCurrentPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (pl.flag_public === 1) throw 'A current playlist cannot be set to public. Set another playlist to current first.';
+	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to public.';
 	await unsetCurrentAllPlaylists();
 	await plDB.setCurrentPlaylist(playlist_id);
 	await updatePlaylistLastEditTime(playlist_id);	
 }
 
 export async function setVisiblePlaylist(playlist_id) {
-	await plDB.setVisiblePlaylist(playlist_id);
+	const pl = await getPlaylistInfo(playlist_id);
+	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to visible.';
+	await plDB.setVisiblePlaylist(playlist_id);	
 	await updatePlaylistLastEditTime(playlist_id);
 }
 
@@ -268,15 +289,19 @@ export async function unsetVisiblePlaylist(playlist_id) {
 export async function setPublicPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (pl.flag_current == 1) throw 'A public playlist cannot be set to current. Set another playlist to public first.';
+	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to current.';
 	await unsetPublicAllPlaylists();
 	await plDB.setPublicPlaylist(playlist_id);
 	await updatePlaylistLastEditTime(playlist_id);
 }
 
-export async function deletePlaylist(playlist_id) {
+export async function deletePlaylist(playlist_id, opt) {
+	if (!opt) opt = {};
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
-	if (await isPublicPlaylist(playlist_id)) throw `Playlist ${playlist_id} is public. Unable to delete it`;
-	if (await isCurrentPlaylist(playlist_id)) throw `Playlist ${playlist_id} is public. Unable to delete it`;
+	const pl = await getPlaylistInfo(playlist_id);
+	if (!opt.force && pl.flag_favorites == 1) throw `Playlist ${playlist_id} is a favorites list. Unable to delete it.`;	
+	if (pl.flag_public == 1) throw `Playlist ${playlist_id} is public. Unable to delete it`;
+	if (pl.flag_current == 1) throw `Playlist ${playlist_id} is public. Unable to delete it`;
 	await plDB.deletePlaylist(playlist_id);
 }
 
@@ -308,10 +333,11 @@ export async function editPlaylist(playlist_id,name,flag_visible) {
 	});
 }				
 
-export async function createPlaylist(name,flag_visible,flag_current,flag_public) {
+export async function createPlaylist(name,flag_visible,flag_current,flag_public,flag_favorites,username) {
 	if (flag_current == 1 && flag_public == 1) throw 'A playlist cannot be current and public at the same time!';
+	if (flag_favorites == 1 && (flag_public == 1 || flag_public == 1)) throw 'A playlist cannot be favorite and current/public at the same time!';	
 	if (flag_public == 1) await unsetPublicAllPlaylists();
-	if (flag_current == 1) await unsetCurrentAllPlaylists();
+	if (flag_current == 1) await unsetCurrentAllPlaylists();	
 	const pl = await plDB.createPlaylist({
 		name: name,
 		NORM_name: deburr(name),
@@ -319,7 +345,9 @@ export async function createPlaylist(name,flag_visible,flag_current,flag_public)
 		modified_at: now(),
 		flag_visible: flag_visible,
 		flag_current: flag_current,
-		flag_public: flag_public
+		flag_public: flag_public,
+		flag_favorites: flag_favorites,
+		username: username
 	});
 	return pl.lastID;
 }
@@ -363,8 +391,14 @@ async function getPlaylistPos(playlist_id) {
 	return await plDB.getPlaylistPos(playlist_id);
 }
 
-export async function getKaraFromPlaylist(plc_id,seenFromUser) {
-	const kara = await plDB.getPLCInfo(plc_id,seenFromUser);
+async function getPlaylistKaraNames(playlist_id) {
+	return await plDB.getPlaylistKaraNames(playlist_id);
+}
+
+export async function getKaraFromPlaylist(plc_id,token) {
+	let seenFromUser = false;
+	if (token.role == 'user') seenFromUser = true;
+	const kara = await plDB.getPLCInfo(plc_id, seenFromUser, token.username);
 	if (kara) return [kara];
 	throw 'PLCID unknown!';
 }
@@ -406,14 +440,10 @@ export async function getRandomKara(playlist_id,filter) {
 	return sample(allKarasNotInCurrentPlaylist);									
 }
 
-export async function getKara(kara_id) {
-	const kara = await karaDB.getKara(kara_id);
+export async function getKara(kara_id, username) {
+	const kara = await karaDB.getKara(kara_id, username);
 	logger.debug('[PLC] Kara get : '+JSON.stringify(kara));
 	return kara;
-}
-
-async function getKaraByKID(kid) {
-	return await karaDB.getKaraByKID(kid);
 }
 
 async function getPLCByKID(kid,playlist_id) {
@@ -554,82 +584,74 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	return karaAdded;
 }
 
-function checkPLCandKaraInPlaylist(plcList,playlist_id) {
-	eachOf(plcList, (playlistContent,index,callback) => {				
-		plDB.getPLCInfo(playlistContent.plc_id).then((playlistContentData) => {
-			if (playlistContentData) {
-				//We got a hit!
-				// Let's check if the kara we're trying to add is 
-				// already in the playlist we plan to copy it to.
-				isKaraInPlaylist(playlistContentData.kara_id,playlist_id).then((isKaraInPL) => {
-					//Karaoke song is already in playlist, abort mission
-					//since we don't want duplicates in playlists.
-					if (isKaraInPL) {
-						callback(`Karaoke song ${playlistContentData.kara_id} is already in playlist ${playlist_id}`);
-					} else {
-						// All OK. We need some info though.
-						plcList[index].kara_id = playlistContentData.kara_id;
-						plcList[index].requester = playlistContentData.nickname;
-						plcList[index].NORM_requester = playlistContentData.NORM_pseudo_add;
-						callback();
-					}									
-				}).catch((err) => {
-					throw err;
-				});							
-			} else {
-				callback(`PLC ${playlistContent.plc_id} does not exist`);
-			}							
-		}).catch((err) => {						
-			callback(err);
-		});				
-	}, (err) => {
-		if (err) throw err;
-		return plcList;
-	});
+async function checkPLCandKaraInPlaylist(plcList,playlist_id) {
+	let index = 0;
+	let newPLCList = [];	
+	let plc;
+	for (plc of plcList) {
+		const plcData = await plDB.getPLCInfo(plc);
+		if (!plcData) throw `PLC ${plc.plc_id} does not exist`;
+		//We got a hit!
+		// Let's check if the kara we're trying to add is 
+		// already in the playlist we plan to copy it to.
+		const isKaraInPL = await isKaraInPlaylist(plcData.kara_id,playlist_id);
+		//Karaoke song is already in playlist, abort mission
+		//since we don't want duplicates in playlists.
+		const user = await findUserByName(plcData.username);
+		if (!isKaraInPL) newPLCList.push({
+			kara_id: plcData.kara_id,
+			requester: plcData.pseudo_add,
+			NORM_requester: plcData.NORM_pseudo_add,
+			user_id: user.id,
+			date_add: now(),
+			playlist_id: playlist_id,
+			plc_id: plc
+		});
+		index++;			
+	}		
+	return newPLCList;	
 }
 
 export async function copyKaraToPlaylist(plcs,playlist_id,pos) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;	
 	// plcs is an array of plc_ids.		
-	const date_add = now();
 	let plcList = [];
-	plcs.forEach(function(plc_id){
-		plcList.push({
-			plc_id: plc_id,
-			playlist_id: playlist_id,
-			date_add: date_add,				
-		});				
-	});
-	plcList = checkPLCandKaraInPlaylist(plcList);
-	// If pos is provided, we need to update all karas above that and add 
-	// karas.length to the position
-	// If pos is not provided, we need to get the maximum position in the PL
-	// And use that +1 to set our playlist position.				
-	if (pos) {
-		await plDB.shiftPosInPlaylist(playlist_id,pos,plcs.length);
-	} else {
-		const res = await plDB.getMaxPosInPlaylist(playlist_id);
-		let startpos = res.maxpos + 1.0;
-		let index = 0;
-		plcList.forEach(() => {
-			plcList[index].pos = startpos + index;
-			index++;
-		});
-	}								
-	await karaDB.addKaraToPlaylist(plcList);
-	await updatePlaylistLastEditTime(playlist_id);
-	await updatePlaylistDuration(playlist_id);
-	await updatePlaylistKaraCount(playlist_id);
+	try {
+		plcList = await checkPLCandKaraInPlaylist(plcs,playlist_id);	
+		// If pos is provided, we need to update all karas above that and add 
+		// karas.length to the position
+		// If pos is not provided, we need to get the maximum position in the PL
+		// And use that +1 to set our playlist position.				
+		if (pos) {
+			await plDB.shiftPosInPlaylist(playlist_id,pos,plcs.length);
+		} else {
+			const res = await plDB.getMaxPosInPlaylist(playlist_id);
+			let startpos = res.maxpos + 1.0;
+			let index = 0;
+			plcList.forEach(() => {
+				plcList[index].pos = startpos + index;
+				index++;
+			});
+		}
+		await karaDB.addKaraToPlaylist(plcList);
+		await updatePlaylistLastEditTime(playlist_id);
+		await updatePlaylistDuration(playlist_id);
+		await updatePlaylistKaraCount(playlist_id);
+	} catch (err) {
+		throw err;
+	}
 }
 
-export async function deleteKaraFromPlaylist(plcs,playlist_id) {
+export async function deleteKaraFromPlaylist(plcs,playlist_id,opt) {
+	if (!opt) opt = {};
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	// Removing karaoke here.
-	await karaDB.removeKaraFromPlaylist(plcs);
+	await karaDB.removeKaraFromPlaylist(plcs, playlist_id);
 	await updatePlaylistDuration(playlist_id);
 	await updatePlaylistKaraCount(playlist_id);
 	await updatePlaylistLastEditTime(playlist_id);
-	await reorderPlaylist(playlist_id);
+	if (!opt.sortBy) opt.sortBy = 'pos';	
+	await reorderPlaylist(playlist_id, opt);
 	return playlist_id;
 }
 
@@ -666,12 +688,21 @@ async function raisePosInPlaylist(pos,playlist_id) {
 	await plDB.raisePosInPlaylist(pos,playlist_id);	
 }
 
-async function reorderPlaylist(playlist_id) {
-	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
-	let pl = await getPlaylistPos(playlist_id);
-	pl.sort((a,b) => {
-		return a.pos - b.pos;
-	});
+function sortByPos(a, b) {
+	return a.pos - b.pos;
+}
+
+export async function reorderPlaylist(playlist_id, opt) {
+	let pl;	
+	if (!opt) opt = {};
+	switch (opt.sortBy) {
+	case 'name':
+		pl = await getPlaylistKaraNames(playlist_id);
+		break;
+	case 'pos':
+		pl = await getPlaylistPos(playlist_id);
+		pl.sort(sortByPos);		
+	}
 	let newpos = 0;
 	let arraypos = 0;
 	pl.forEach(() => {
@@ -692,7 +723,9 @@ export async function exportPlaylist(playlist_id) {
 	plInfo.num_karas = undefined;
 	plInfo.flag_current = undefined;
 	plInfo.flag_public = undefined;
+	plInfo.flag_favorites = undefined;
 	plInfo.length = undefined;
+	plInfo.fk_id_user = undefined;
 	let plcFiltered = [];
 	plContents.forEach((plc) => {
 		let plcObject = {};
@@ -709,32 +742,7 @@ export async function exportPlaylist(playlist_id) {
 	return pl;							
 }
 
-function checkImportedKIDs(playlist) {
-	let karasToImport = [];
-	let karasUnknown = [];	
-	eachSeries(playlist,(kara,callback) => {
-		getKaraByKID(kara.kid).then((karaFromDB) => {
-			if (karaFromDB) {
-				karasToImport.push(karaFromDB.kara_id);
-				callback();
-			} else {
-				logger.warn(`[PLC] importPlaylist : KID ${kara.kid} unknown`);
-				karasUnknown.push(kara.kid);
-				callback();
-			}
-		}).catch((err) => {
-			callback(err);
-		});
-	}, (err) => {
-		if (err) throw err;
-		return { 
-			karasToImport: karasToImport, 
-			karasUnknown: karasUnknown 
-		};
-	});
-}
-
-export async function importPlaylist(playlist) {
+export async function importPlaylist(playlist,username) {
 	// Check if format is valid :
 	// Header must contain :
 	// description = Karaoke Mugen Playlist File
@@ -778,15 +786,35 @@ export async function importPlaylist(playlist) {
 	}
 
 	// Validations done. First creating playlist.
-	const playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0);
-	const ret = checkImportedKIDs(playlist.PlaylistContents);
-	await addKaraToPlaylist(ret.karasToImport,'Administrateur',playlist_id);
-	const plcPlaying = await getPLCByKID(playingKara,playlist_id);
-	await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
-	return {
-		playlist_id: playlist_id,
-		karasUnknown: ret.karasUnknown
-	};
+	try {
+		const playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0,0,username);
+		const karas = await getAllKaras();
+		let karasToImport = [];
+		let karasUnknown = [];	
+		playlist.PlaylistContents.forEach((plc) => {
+			const isKaraInDB = karas.some((kara) => {
+				if (kara.kid === plc.kid) {
+					karasToImport.push(kara.kara_id);
+					return true;
+				}
+				return false;
+			});
+			if (!isKaraInDB) karasUnknown.push(plc.kid);
+		});
+		await addKaraToPlaylist(karasToImport,username,playlist_id);
+		if (playingKara) {
+			const plcPlaying = await getPLCByKID(playingKara,playlist_id);
+			await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
+		}
+		return {
+			playlist_id: playlist_id,
+			karasUnknown: karasUnknown
+		};
+	} catch (err) {
+		console.log(err);
+		throw err;
+	}
+	
 }			
 
 export function translateKaraInfo(karalist, lang) {
