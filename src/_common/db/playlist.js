@@ -35,6 +35,8 @@ export const createPlaylist = `INSERT INTO playlist(
 								flag_visible,
 								flag_current,
 								flag_public,
+								flag_favorites,
+								fk_id_user,
 								time_left)
  							VALUES(
 								$name,
@@ -46,6 +48,8 @@ export const createPlaylist = `INSERT INTO playlist(
 								$flag_visible,
 								$flag_current,
 								$flag_public,
+								$flag_favorites,
+								(SELECT pk_id_user FROM user WHERE login = $username),
 								0);
 								`;
 
@@ -153,6 +157,19 @@ export const getPlaylistPos = `SELECT pc.pos AS pos,
 							ORDER BY pc.pos,pc.created_at DESC;
 							`;
 
+export const getPlaylistKaraNames = `SELECT pc.pos AS pos,
+      								pc.pk_id_plcontent AS playlistcontent_id,
+									(ak.language || (CASE WHEN ak.serie IS NULL
+	     									THEN ak.singer
+        									ELSE ak.serie
+      									END) || ak.songtype || ak.songorder || ak.title) AS karaname
+							FROM karasdb.all_karas AS ak 
+							INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
+							WHERE pc.fk_id_playlist = $playlist_id
+							ORDER BY karaname;
+							`;
+
+
 export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
       							ak.kid AS kid,
       							ak.title AS title,
@@ -187,6 +204,14 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 	  							ak.videolength AS duration,
 	  							ak.gain AS gain,
 	  							ak.viewcount AS viewcount,
+								EXISTS(
+    								SELECT 1 FROM playlist_content pc
+    								JOIN playlist p ON pc.fk_id_playlist = p.pk_id_playlist
+    								JOIN user u ON   u.pk_id_user = p.fk_id_user
+    									WHERE pc.fk_id_kara = ak.kara_id 
+										AND p.flag_favorites = 1 
+										AND u.login = $username
+  								) AS flag_favorites,
       							(CASE WHEN wl.fk_id_kara = ak.kara_id
 	     							THEN 1
         							ELSE 0
@@ -196,10 +221,10 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
         							ELSE 0
       							END) AS flag_blacklisted,
 	  							(SELECT ifnull(SUM(all_karas.videolength) - ak.videolength,0)
-    							FROM karasdb.all_karas AS all_karas
-    							INNER JOIN playlist_content ON all_karas.kara_id = playlist_content.fk_id_kara
-								WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
-    							AND playlist_content.pos BETWEEN (SELECT ifnull(pos,0) FROM playlist_content WHERE flag_playing = 1) AND pc.pos) AS time_before_play
+    								FROM karasdb.all_karas AS all_karas
+    								INNER JOIN playlist_content ON all_karas.kara_id = playlist_content.fk_id_kara
+									WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
+    								AND playlist_content.pos BETWEEN (SELECT ifnull(pos,0) FROM playlist_content WHERE flag_playing = 1) AND pc.pos) AS time_before_play
 						FROM karasdb.all_karas AS ak
 						INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 						LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
@@ -325,13 +350,21 @@ export const unsetPlaying = `UPDATE playlist_content
 
 export const setPlaying = `UPDATE playlist_content 
 						SET flag_playing = 1 
-						WHERE pk_id_plcontent = $playlistcontent_id;`;
+						WHERE pk_id_plcontent = $playlistcontent_id;
+						`;
 
 export const countPlaylistUsers = `SELECT COUNT(DISTINCT fk_id_user) AS NumberOfUsers
                             FROM playlist_content
-                            WHERE fk_id_playlist = $playlist_id;`;
+                            WHERE fk_id_playlist = $playlist_id;
+							`;
 
 export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
                                         FROM playlist_content
                                         WHERE fk_id_playlist = $playlist_id
-                                            AND fk_id_user = $user_id;`;
+                                            AND fk_id_user = $user_id;
+										`;
+
+export const trimPlaylist = `DELETE FROM playlist_content
+							 WHERE fk_id_playlist = $playlist_id
+							 	AND pos > $pos;
+							`;

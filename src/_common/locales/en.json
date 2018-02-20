@@ -271,8 +271,16 @@
 	"USER_UPDATED": "%s's profile updated",
 	"USER_UPDATE_ERROR": "Failed to update %s's profile",
 	"USER_VIEW_ERROR": "Unable to view user's profile",
-	"AVATAR_IMPORT": "Import new avatar",
 	"ACCOUNT": "My account",
 	"HELP": "Help",
-	"USERLIST": "Users"
+	"USERLIST": "Users",
+	"FAVORITES_VIEW_ERROR": "Unable to view your favorites",
+	"FAVORITES_ADDED": "%s added to your favorites",
+	"FAVORITES_ADD_SONG_ERROR": "Unable to add %s to your favorites",
+	"FAVORITES_DELETED": "Favorite karaoke deleted",
+	"FAVORITES_DELETE_ERROR": "Unable to delete favorited karaoke",
+	"AVATAR_IMPORT": "Import new avatar",
+	"AUTOMIX_CREATED": "AutoMix list created successfully",
+	"AUTOMIX_ERROR": "Error creating AutoMix list",
+	"_": "DO NOT MODIFY"
 } 

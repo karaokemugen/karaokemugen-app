@@ -1,16 +1,17 @@
-const express = require('express');
-const expressValidator = require('express-validator');
-const logger = require('winston');
+import express from 'express';
+import expressValidator from 'express-validator';
+import logger from 'winston';
 import {setConfig, getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
-const user = require('../_services/user.js');
+const user = require ('../_services/user');
 import {resolve} from 'path';
-const multer = require('multer');
-const engine = require('../_services/engine');
+import multer from 'multer';
+const engine = require ('../_services/engine');
+const favorites = require('../_services/favorites');
 import {emitWS} from '../_ws/websocket';
 import {decode} from 'jwt-simple';
 import passport from 'passport';
-import {configurePassport} from '../_webapp/passport_manager.js';
+import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
 
@@ -49,6 +50,14 @@ export async function initAPIServer(listenPort) {
 	app.use(expressValidator({
 		customValidators: {
 			enum: (input, options) => options.includes(input),
+			stringsArray: (input) => {
+				if (input) {
+					if (typeof input === 'string' && input.includes(',')) {
+						return input.split(',');
+					}
+				}
+				return false;
+			},
 			numbersArray: (input) => {
 				if (input) {
 					// Test if we get a single number or a list of comma separated numbers
@@ -108,8 +117,8 @@ export async function initAPIServer(listenPort) {
  * Requires authorization token from admin user to use this API
  */
 	/**
- * @apiDefine adminorown Admin access or own user only
- * Requires authorization token from either admin user or the user the data belongs to to use this API
+ * @apiDefine own Own user only
+ * Requires authorization token from the user the data belongs to to use this API
  */
 	/**
  * @apiDefine public Public access
@@ -143,6 +152,78 @@ export async function initAPIServer(listenPort) {
 					logger.error(err);
 					res.statusCode = 500;
 					res.json(err);
+				});
+		});
+	routerAdmin.route('/automix')
+	/**
+ * @api {get} admin/mix Generate a automix playlist
+ * @apiName PostMix
+ * @apiGroup Favorites
+ * @apiVersion 2.1.0
+ * @apiPermission admin
+ *
+ * @apiParam {String} users Comma-separated list of usernames to pick favorites from
+ * @apiParam {Number} duration Duration wished for the generatedplaylist in minutes
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data/playlist_id ID of playlist created
+ * @apiSuccess {String} data/playlist_name Name of playlist created
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *   "code": "AUTOMIX_CREATED",
+ *   "data": {
+ *           "playlist_id": 12,
+ *           "playlist_name": 'Soirée Kara 07/10/2018'
+ *   }
+ * }
+ * @apiError AUTOMIX_ERROR Unable to create the automix playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "AUTOMIX_ERROR",
+ *   "message": "User axel does not exist."
+ * }
+ */
+
+		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+			req.check({
+				'users': {
+					in: 'body',
+					notEmpty: true,
+					stringsArray: true
+				},
+				'duration': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
+				}
+			});
+
+			req.getValidationResult()
+				.then((result) => {
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('duration').toInt();
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);						
+						favorites.createAutoMix(req.body, token.username)
+							.then((new_playlist) => {
+								emitWS('playlistsUpdated');
+								res.statusCode = 201;
+								res.json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
+							})
+							.catch((err) => {
+								logger.error(err);
+								res.statusCode = 500;
+								res.json(errMessage('AUTOMIX_ERROR',err));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;								
+						res.json(result.mapped());
+					}
 				});
 		});
 	routerAdmin.route('/playlists')
@@ -259,9 +340,10 @@ export async function initAPIServer(listenPort) {
 						req.sanitize('flag_visible').toBoolean();
 						req.sanitize('flag_public').toBoolean();
 						req.sanitize('flag_current').toBoolean();
-
+						
 						//Now we add playlist
-						engine.createPL(req.body)
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);						
+						engine.createPL(req.body, token.username)
 							.then((new_playlist) => {
 								emitWS('playlistsUpdated');
 								res.statusCode = 201;
@@ -1091,6 +1173,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
@@ -1136,6 +1219,7 @@ export async function initAPIServer(listenPort) {
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
  *           "flag_whitelisted": 0,
+ * 			 "flag_favorites": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
@@ -2320,7 +2404,8 @@ export async function initAPIServer(listenPort) {
 			});
 			req.getValidationResult().then((result) =>  {
 				if (result.isEmpty()) {
-					engine.importPL(JSON.parse(req.body.playlist))
+					const token = decode(req.get('authorization'), getConfig().JwtSecret);
+					engine.importPL(JSON.parse(req.body.playlist),token.username)
 						.then((result) => {									
 							const response = {
 								message: 'Playlist imported',
@@ -2625,6 +2710,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
@@ -2670,6 +2756,7 @@ export async function initAPIServer(listenPort) {
  *           "duration": 0,
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
+ * 			 "flag_favorites": 0,
  *           "flag_whitelisted": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
@@ -3292,7 +3379,7 @@ export async function initAPIServer(listenPort) {
  * @apiGroup Karaokes
  * @apiPermission public
  * 
- * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
+ * @apiParam {Number} kara_id Karaoke ID you want to fetch information from 
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
@@ -3304,6 +3391,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
@@ -3338,6 +3426,7 @@ export async function initAPIServer(listenPort) {
  *           "created_at": 1508427958,
  *           "creator": null,
  *           "duration": 0,
+ * 		     "flag_favorites": 0,
  *           "gain": 0,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
  *           "language": "jpn",
@@ -4075,7 +4164,7 @@ export async function initAPIServer(listenPort) {
  * @apiName GetMyAccount
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission Own
+ * @apiPermission own
  *
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
@@ -4231,6 +4320,226 @@ export async function initAPIServer(listenPort) {
 
 		});
 
+	routerPublic.route('/favorites')
+	/**
+ * @api {get} public/favorites View own favorites
+ * @apiName GetFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission own
+ *
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ * 				 "username": "admin",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError FAVORITES_VIEW_ERROR Unable to fetch list of karaokes in favorites
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+		.get(requireAuth, updateUserLoginTime, (req,res) => {
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			const filter = req.query.filter;
+			const lang = req.query.lang;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from);
+			}
+			favorites.getFavorites(token.username, filter, lang, from, size)
+				.then((karas) => {
+					res.json(OKMessage(karas));
+				})
+				.catch(function(err){
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('FAVORITES_VIEW_ERROR',err));
+				});						
+		})
+	/**
+ * @api {post} public/favorites Add karaoke to your favorites
+ * @apiName PostFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission own
+ *
+ * @apiParam {Number} kara_id kara ID to add
+ * @apiSuccess {Number} args/kara_id ID of kara added
+ * @apiSuccess {Number} args/kara Name of kara added
+ * @apiSuccess {Number} args/playlist_id ID of destinaton playlist
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ * 		 "kara": "Les Nuls - MV - Vous me subirez",
+ *       "playlist_id": 1,
+ *       "kara_id": 4946
+ *   },
+ *   "code": "FAVORITES_ADDED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_ADD_SONG_ERROR Unable to add songs to the playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_ADD_SONG_ERROR",
+ *   "message": "Karaoke unknown"
+ * }
+ */
+		.post(requireAuth, updateUserLoginTime, (req,res) => {
+			req.checkBody({
+				'kara_id': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+			});
+			req.getValidationResult()
+				.then((result) => {							
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('kara_id').toInt();
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);
+						favorites.addToFavorites(token.username,req.body.kara_id)
+							.then((result) => {
+								emitWS('favoritesUpdated');
+								emitWS('playlistInfoUpdated',result.playlist_id);
+								emitWS('playlistContentsUpdated',result.playlist_id);
+								res.json(OKMessage(null,'FAVORITES_ADDED',result));	
+							})
+							.catch(function(err){
+								res.statusCode = 500;
+								res.json(errMessage('FAVORITES_ADD_SONG_ERROR',err.message,err.data));
+							});
+								
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
+				});
+
+		});
+
+	routerPublic.route('/favorites/:plc_id([0-9]+)')
+	/**
+ * @api {delete} public/favorites/:plc_id Delete karaoke from your favorites
+ * @apiName DeleteFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission public
+ * 
+ * @apiParam {Number} plc_id Playlist Content ID to delete
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_DELETED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_DELETE_ERROR Unable to delete the favorited song
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_DELETE_ERROR",
+ *   "message": "PLC ID unknown"
+ * }
+ */
+		.delete(requireAuth, updateUserLoginTime, (req, res) => {
+			// Delete kara from favorites
+			// Deletion is through kara ID.
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			favorites.deleteFavorite(token.username,req.params.plc_id)
+				.then((data) => {
+					emitWS('favoritesUpdated');
+					emitWS('playlistContentsUpdated',data.playlist_id);
+					emitWS('playlistInfoUpdated',data.playlist_id);
+					res.statusCode = 200;
+					res.json(OKMessage(null,'FAVORITE_DELETED',data));
+				})
+				.catch((err) => {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
+				});
+			
+		});
 
 	routerPublic.route('/users')
 	/**

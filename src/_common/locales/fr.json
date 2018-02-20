@@ -270,8 +270,16 @@
 	"USER_UPDATED": "Mise à jour du profil de %s effectuée",
 	"USER_UPDATE_ERROR": "Impossible de mettre à jour le profil de %s",
 	"USER_VIEW_ERROR": "Impossible d'afficher le profil de l'utilisateur",
-	"AVATAR_IMPORT": "Importer un avatar",
 	"ACCOUNT": "Mon compte",
 	"HELP": "Aide",
-	"USERLIST": "Participants"
+	"USERLIST": "Participants",
+	"FAVORITES_VIEW_ERROR": "Impossible d'afficher vos favoris",
+	"FAVORITES_ADDED": "%s ajouté à vos favoris",
+	"FAVORITES_ADD_SONG_ERROR": "Impossible d'ajouter %s à vos favoris",
+	"FAVORITES_DELETED": "Favori supprimé",
+	"FAVORITES_DELETE_ERROR": "Impossible de supprimer le favori",
+	"AVATAR_IMPORT": "Importer un avatar",
+	"AUTOMIX_CREATED": "Liste AutoMix crée avec succès",
+	"AUTOMIX_ERROR": "Erreur lors de la création de la liste AutoMix",
+	"_": "DO NOT MODIFY"
 }
