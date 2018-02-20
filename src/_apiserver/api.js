@@ -1324,7 +1324,8 @@ export async function initAPIServer(listenPort) {
  *       "isTest": false,
  *       "mpvVideoOutput": "direct3d",
  *       "os": "win32",
- *       "osHost": "10.202.40.43"
+ *       "osHost": "10.202.40.43",
+ * 		 "WebappMode": "2"
  *   }
  * }
  */
@@ -1361,6 +1362,7 @@ export async function initAPIServer(listenPort) {
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
+ * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -1421,6 +1423,11 @@ export async function initAPIServer(listenPort) {
 					isInt: true,
 				},
 				'EngineRepeatPlaylist': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'WebappMode': {
 					in: 'body',
 					notEmpty: true,
 					isInt: true,
@@ -1509,6 +1516,7 @@ export async function initAPIServer(listenPort) {
 					req.sanitize('EnginePrivateMode').toInt();
 					req.sanitize('PlayerPIP').toInt();
 					req.sanitize('PlayerPIPSize').toInt();
+					req.sanitize('WebappMode').toInt();
 					setConfig(req.body)
 						.then((publicSettings) => {
 							emitWS('settingsUpdated',publicSettings);
@@ -2764,6 +2772,7 @@ export async function initAPIServer(listenPort) {
  *       "VersionName": "Finé Fiévreuse",
  *       "VersionNo": "v2.0 Release Candidate 1",
  *       "mpvVideoOutput": "direct3d",
+ * 		 "WebappMode": "2"
  *   }
  * }
  */
