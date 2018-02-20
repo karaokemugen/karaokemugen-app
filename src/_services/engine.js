@@ -9,6 +9,7 @@ import {getAllTags} from '../_dao/tag';
 import {addViewcount,updateTotalViewcounts} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {emitWS} from '../_ws/websocket';
+import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
 const plc = require('./playlist');
@@ -103,6 +104,17 @@ export async function initEngine() {
 	state.player = {};
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
+	if (conf.optValidateKaras) {
+		try {
+			logger.info('[Engine] Starting validation process, please wait...');
+			await validateKaras();
+			logger.info('[Engine] Validation completed successfully. Yayifications!');
+			process.exit(0);
+		} catch(err) {
+			logger.error(`[Engine] Validation failed : ${err}`);
+			process.exit(1);
+		}		
+	}
 	createPreviews();
 	await initDBSystem();
 	initPlayerSystem(state.engine);
