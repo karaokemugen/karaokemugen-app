@@ -1,9 +1,9 @@
 /** Requêtes SQL utilisées. */
 
 export const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at,
-	modified_at, rating, viewcount, gain, videolength,checksum)
+	modified_at, viewcount, gain, videolength,checksum)
 	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded,
-	$kara_datemodif, $kara_rating, $kara_viewcount, $kara_gain, $kara_videolength, $kara_checksum);`;
+	$kara_datemodif, $kara_viewcount, $kara_gain, $kara_videolength, $kara_checksum);`;
 
 export const insertSeries = 'INSERT INTO serie(pk_id_serie, name, NORM_name) VALUES($id_serie, $serie, $serienorm );';
 
@@ -31,7 +31,5 @@ export const selectBLCKaras = 'SELECT value AS id_kara, uniquevalue AS kid FROM 
 
 export const selectBLCTags = `SELECT type, value AS id_tag, uniquevalue AS tagname FROM blacklist_criteria
     WHERE type > 0 AND type < 1000;`;
-
-export const selectRatingKaras = 'SELECT fk_id_kara AS id_kara, kid FROM rating;';
 
 export const selectViewcountKaras = 'SELECT fk_id_kara AS id_kara, kid FROM viewcount;';

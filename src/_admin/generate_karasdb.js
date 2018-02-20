@@ -10,7 +10,7 @@ import {getConfig, resolvedPathKaras} from '../_common/utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
-	selectBLCTags, selectKaras, selectPlaylistKaras, selectRatingKaras,
+	selectBLCTags, selectKaras, selectPlaylistKaras,
 	selectTags, selectViewcountKaras,
 	selectWhitelistKaras,
 	updateSeriesAltNames
@@ -120,7 +120,6 @@ function prepareKaraInsertData(kara, index) {
 		$kara_videofile: kara.videofile,
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,
-		$kara_rating: kara.rating,
 		$kara_viewcount: kara.viewcount,
 		$kara_gain: kara.videogain,
 		$kara_videolength: kara.videoduration,
@@ -441,7 +440,7 @@ export async function run(config) {
 /**
  * @function run_userdb_integrity_checks
  * Get all karas from all_karas view
- * Get all karas in playlist_content, blacklist, rating, viewcount, whitelist
+ * Get all karas in playlist_content, blacklist, viewcount, whitelist
  * Parse karas in playlist_content, search for the KIDs in all_karas
  * If id_kara is different, write a UPDATE query.
  */
@@ -466,7 +465,6 @@ export async function checkUserdbIntegrity(uuid, config) {
 		whitelistKaras,
 		blacklistCriteriaKaras,
 		blacklistKaras,
-		ratingKaras,
 		viewcountKaras,
 		playlistKaras
 	] = await Promise.all([
@@ -476,7 +474,6 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectWhitelistKaras),
 		userdb.all(selectBLCKaras),
 		userdb.all(selectBlacklistKaras),
-		userdb.all(selectRatingKaras),
 		userdb.all(selectViewcountKaras),
 		userdb.all(selectPlaylistKaras)
 	]);
@@ -492,7 +489,6 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`DELETE FROM whitelist WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM blacklist_criteria WHERE uniquevalue NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM blacklist WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM rating WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM viewcount WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM playlist_content WHERE kid NOT IN (${karaKIDs});`)
 	]);
@@ -513,11 +509,6 @@ export async function checkUserdbIntegrity(uuid, config) {
 	blacklistKaras.forEach(blk => {
 		if (karaIdByKid.has(blk.kid) && karaIdByKid.get(blk.kid) !== blk.id_kara) {
 			sql += `UPDATE blacklist SET fk_id_kara = ${karaIdByKid.get(blk.kid)} WHERE kid = '${blk.kid}';`;
-		}
-	});
-	ratingKaras.forEach(rk => {
-		if (karaIdByKid.has(rk.kid) && karaIdByKid.get(rk.kid) !== rk.id_kara) {
-			sql += `UPDATE rating SET fk_id_kara = ${karaIdByKid.get(rk.kid)} WHERE kid = '${rk.kid}';`;
 		}
 	});
 	viewcountKaras.forEach(vck => {
