@@ -270,5 +270,8 @@
 	"USER_UPDATED": "Mise à jour du profil de %s effectuée",
 	"USER_UPDATE_ERROR": "Impossible de mettre à jour le profil de %s",
 	"USER_VIEW_ERROR": "Impossible d'afficher le profil de l'utilisateur",
-	"AVATAR_IMPORT": "Importer un avatar"
+	"AVATAR_IMPORT": "Importer un avatar",
+	"ACCOUNT": "Mon compte",
+	"HELP": "Aide",
+	"USERLIST": "Participants"
 }
