@@ -31,19 +31,4 @@ export const requireAdmin = (req, res, next) => {
 	}
 };
 
-export const requireAdminOrOwn = (req, res, next) => {
-	const token = decode(req.get('authorization'), getConfig().JwtSecret);
-	findUserByName(token.username)
-		.then((userdata) => {
-			if (token.role === 'admin' || req.params.username === userdata.login ) {
-				next();
-			} else {
-				res.status(403).send('Only admin or authorized user can use this function');
-			}
-		})
-		.catch(() => {
-			res.status(403).send('User logged in unknown');
-		});
-	
-};
 
