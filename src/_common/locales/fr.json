@@ -271,5 +271,12 @@
 	"AVATAR_IMPORT": "Importer un avatar",
 	"ACCOUNT": "Mon compte",
 	"HELP": "Aide",
-	"USERLIST": "Participants"
+	"USERLIST": "Participants",
+	"LOGIN": "Identification",
+	"NEW_ACCOUNT": "Nouveau compte",
+	"GUEST_CONTINUE": "CONTINUER COMME INVITÉ",
+	"OR": "OU",
+	"SIGN_UP": "Continuer",
+	"PROFILE": "Profil",
+	"PASSWORDCONF": "Mot de passe (confirmation)"
 }
