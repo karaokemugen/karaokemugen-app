@@ -12,11 +12,17 @@ import {promisify} from 'util';
 const sleep = promisify(setTimeout);
 
 async function updateExpiredUsers() {
-	// Unflag onlien accounts from database if they expired
-	await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
-	await db.resetGuestsPassword();
-	//Sleep for one minute.
-	await sleep(60000);
+	// Unflag online accounts from database if they expired
+	try {
+		await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
+		await db.resetGuestsPassword();
+		//Sleep for one minute.
+		await sleep(60000);
+	} catch(err) {
+		await sleep(60000);
+		throw err;
+	}
+	
 }
 
 export async function updateLastLoginID(id) {
@@ -243,6 +249,7 @@ export async function initUserSystem() {
 			})
 			.catch((err) => {
 				logger.error(`[User] Expiring user accounts failed : ${err}`);
+				next();
 			});
 	});
 }
