@@ -107,7 +107,14 @@ async function main() {
 		resolve(appPath, config.PathTemp, 'input.conf'),
 		{ overwrite: true }
 	);
-
+	// Copy avatar blank.png if it doesn't exist to the avatar path
+	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
+	if (!await asyncExists(resolve(appPath, config.PathAvatars, 'blank.png'))) {
+		await copy(
+			join(__dirname, '/_webapp/ressources/img/blank.png'),
+			resolve(appPath, config.PathAvatars, 'blank.png')
+		);
+	}
 	/**
 	 * Test if network ports are available
 	 */
