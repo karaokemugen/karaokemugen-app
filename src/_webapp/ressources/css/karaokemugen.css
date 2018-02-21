@@ -800,8 +800,8 @@ input[type=range]:focus::-ms-fill-upper {
 .ps:hover>.ps__scrollbar-y-rail {
 	opacity: .8;
 }
-.ps>.ps__scrollbar-y-rail {
-	top: 0px !important;
+.panel .ps>.ps__scrollbar-y-rail {
+	top: -18px !important;
 	z-index:9999;
 	width: 12px;
 }
@@ -961,7 +961,6 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 
 .modal .modal-body {
-	max-height:  calc(95vh - 150px);
 	overflow-y: auto;
 }
 
@@ -978,6 +977,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     justify-content: flex-end;
 	padding: 0;
 	border: 0;
+    margin-top: 3px;
 }
 .modal .modal-footer > button {
 	order: 0;
@@ -1049,6 +1049,58 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 #loginModal .redBorders, #profilModal .redBorders {
 	border: hsla(0, 87%, 50%, .5) solid 1px;
     border-width: 0px 0px 0px 5px;
+}
+.userlist .userLine {
+    display: flex;
+    justify-content: space-between;
+}
+.userlist .list-group-item {
+    border: 1px solid #565656;
+    background-color: #2b2b2b;
+	border-width: 1px 0px;
+	border-left-width: 3px;
+	border-left-color: #893230;
+	line-height: 40px;
+}
+.userlist .list-group-item.online {
+   border-left-width: 3px;
+   border-left-color: hsla(101, 48%, 36%, 1);
+}
+.userLine {
+	height: 45px;
+	padding: 3px;
+}
+.userlist > li {
+	cursor: pointer;
+}
+.userlist > li:hover {
+	background-color: #333333;
+}
+.userLine > img, .userLine > div {
+	vertical-align: middle;
+	height: 100%;
+}
+.userlist > li.open > .userDetails {
+	display: block;
+}
+.userDetails {
+	display: none;
+	background-color: #212121;
+	text-align: start;
+	padding: 10px;
+    margin-top: 5px;
+}
+.userDetails > div > i {
+	padding: 10px;
+}
+.nickname {
+    font-size: 22px;
+}
+.avatar {
+	border-color: hsla(0, 0%, 47%, .4);
+	border: 0;
+	padding: 1px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 1px 8px 0 rgba(0, 0, 0, 0.16), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
 }
 /* placeholders */
 

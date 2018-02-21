@@ -77,7 +77,6 @@ export async function getDataFromKaraFile(karafile) {
 		if (karaData.error) error = true;
 	}
 
-	karaData.rating = 0;
 	karaData.viewcount = 0;
 	karaData.checksum = checksum(stringify(karaData));
 

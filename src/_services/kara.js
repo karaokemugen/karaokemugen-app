@@ -3,7 +3,9 @@ import uuidV4 from 'uuid/v4';
 import validate from 'validate.js';
 import {has as hasLang} from 'langs';
 import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, videoFileRegexp} from './constants';
-
+import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
+import {getConfig} from '../_common/utils/config';
+import logger from 'winston';
 /**
  * Génère les informations à écrire dans un fichier kara, à partir d'un objet passé en paramètre, en filtrant les
  * champs non concernés, et en ajoutant les valeurs par défaut au besoin.
@@ -81,6 +83,31 @@ const karaConstraints = {
 	videoduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	version: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}}
 };
+
+export async function validateKaras() {
+	try {
+		const conf = getConfig();
+		await backupKaraDirs(conf);
+		const karaFiles = await extractAllKaraFiles();
+		const karas = await getAllKaras(karaFiles);
+		verifyKIDsUnique(karas);
+		await deleteBackupDirs(conf);		
+	} catch(err) {
+		throw err;
+	}
+}
+
+function verifyKIDsUnique(karas) {
+	const KIDs = [];
+	karas.forEach((kara) => {
+		if (!KIDs.includes(kara.KID)) {
+			KIDs.push(kara.KID);
+		} else {
+			logger.error(`[Kara] KID ${kara.KID} is not unique : duplicate found in karaoke ${kara.lang} - ${kara.series} - ${kara.type}${kara.order} - ${kara.title}`);
+			throw `Duplicate KID found : ${kara.KID}`;
+		}		
+	});	
+}
 
 export function karaDataValidationErrors(karaData) {
 	initValidators();
