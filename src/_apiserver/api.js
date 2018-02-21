@@ -3,7 +3,7 @@ const expressValidator = require('express-validator');
 const logger = require('winston');
 import {setConfig, getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
-const user = require('../_services/user.js');
+const user = require('../_services/user');
 import {resolve} from 'path';
 const multer = require('multer');
 const engine = require('../_services/engine');
@@ -12,7 +12,7 @@ import {decode} from 'jwt-simple';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager.js';
 import authController from '../_controllers/auth';
-import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
+import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
 
 function numberTest(element) {
 	if (isNaN(element)) return false;
@@ -132,7 +132,7 @@ export async function initAPIServer(listenPort) {
  * 
  */
 	routerAdmin.route('/shutdown')
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, requireAdmin, (req, res) => {
 			// Sends command to shutdown the app.
 
 			engine.shutdown()
