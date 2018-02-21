@@ -1090,7 +1090,10 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     font-size: 22px;
 }
 .avatar {
+	border-color: hsla(0, 0%, 47%, .4);
+	border: 0;
 	padding: 1px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 1px 8px 0 rgba(0, 0, 0, 0.16), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
 }
 /* placeholders */
 
