@@ -69,11 +69,6 @@ export const selectGuests = `SELECT u.pk_id_user AS user_id,
 							WHERE u.type = 2;
 							`;
 
-export const isAdmin = `SELECT flag_admin 
-						FROM user
-						WHERE login = $username
-						`;
-
 export const selectUsers = `SELECT u.pk_id_user AS user_id,
 								u.type AS type,
 	 							u.avatar_file AS avatar_file,
@@ -85,6 +80,7 @@ export const selectUsers = `SELECT u.pk_id_user AS user_id,
 								u.flag_admin AS flag_admin,
 								u.type AS type
 							FROM user AS u
+							ORDER BY u.flag_online DESC, u.nickname
 								`;
 
 export const deleteUser = `DELETE FROM user WHERE pk_id_user = $id;

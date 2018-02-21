@@ -6,22 +6,24 @@ $(document).ready(function () {
 	});
 
 	$('#choixPseudo').blur(function(){
-		if(settings['EngineAllowNicknameChange'] == '1') {
-			if($(this).val()) pseudo = $(this).val();
-			$('#choixPseudo').val(pseudo);
-			if($('#pseudo > option[value="' + pseudo +'"]').length == 0) {
-				$('#pseudo').append($('<option>', {value: pseudo}));
-			}
+		if($(this).val()) {
+			$.ajax({
+				url: 'public/myaccount', 	
+				type: 'PUT',
+				data: { nickname : $(this).val() }
+			})
+				.done(function (response) {
+					if($('#pseudo > option[value="' + pseudo +'"]').length == 0) {
+						$('#pseudo').append($('<option>', {value: pseudo}));
+					}
+					pseudo = response.nickname;
+					$('#choixPseudo').val(pseudo);
+				})
+				.fail( (response) => {
+					
+				});
 		}
-		createCookie('mugenPseudo', pseudo, -1);
-		/*
-		document.cookie = 'mugenPseudoList=' + JSON.stringify($('#pseudo > option').map(function(i,e){
-			return e.value;
-		})) + ';expires=' +  datePlus10.toUTCString();
-		*/
 	});
-
-	//$('#choixPseudo').val(pseudo).trigger('blur');
 
 	$('.showSettings').click(function(){
 		displayModal('alert', $('#settingsPublicTitle').text(), $('#settingsPublicContent').html());
@@ -95,15 +97,7 @@ getPublicSettings = function() {
 
 		// Init with player infos, set the playlist's id where users can add their karas
 		settings = data;
-
-		if(settings['EngineAllowNicknameChange'] == '1') {
-			$('.pseudoChange').show();
-			$('#searchParent').css('width','');
-		} else {
-			$('.pseudoChange').hide();
-			$('#searchParent').css('width','100%');
-		}
-
+			
 		$('#version').text(settings['VersionName'] + ' ' + settings['VersionNo']);
 		$('#mode').text(settings['private'] == '1' ? 'Privé' : 'Public');
 	}); 

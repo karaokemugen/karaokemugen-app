@@ -73,9 +73,17 @@ async function main() {
 		console.log('Karaoke Mugen '+ config.VersionNo + ' - (' + config.VersionName+')');
 		process.exit(0);
 	}
-	if (argv.generate) {
+	if (argv.generate && !argv.validate) {
 		logger.info('[Launcher] Database generation requested');
 		setConfig({optGenerateDB: true});
+	}
+	if (argv.validate && !argv.generate) {
+		logger.info('[Launcher] .kara folder validation requested');
+		setConfig({optValidateKaras: true});
+	}
+	if (argv.validate && argv.generate) {
+		logger.error('[Launcher] --validate and --generate are mutually exclusive!');
+		process.exit(1);
 	}
 	logger.info('[Launcher] Loaded configuration files');
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
@@ -99,7 +107,14 @@ async function main() {
 		resolve(appPath, config.PathTemp, 'input.conf'),
 		{ overwrite: true }
 	);
-
+	// Copy avatar blank.png if it doesn't exist to the avatar path
+	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
+	if (!await asyncExists(resolve(appPath, config.PathAvatars, 'blank.png'))) {
+		await copy(
+			join(__dirname, '/_webapp/ressources/img/blank.png'),
+			resolve(appPath, config.PathAvatars, 'blank.png')
+		);
+	}
 	/**
 	 * Test if network ports are available
 	 */

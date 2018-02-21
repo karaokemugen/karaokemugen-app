@@ -12,7 +12,7 @@ import {decode} from 'jwt-simple';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager.js';
 import authController from '../_controllers/auth';
-import {requireAuth, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
+import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
 
 function numberTest(element) {
 	if (isNaN(element)) return false;
@@ -132,7 +132,7 @@ export async function initAPIServer(listenPort) {
  * 
  */
 	routerAdmin.route('/shutdown')
-		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Sends command to shutdown the app.
 
 			engine.shutdown()
@@ -179,7 +179,7 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 500 Internal Server Error
  */
 
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Get list of playlists
 			engine.getAllPLs()
 				.then((playlists) => {
@@ -219,7 +219,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			
 		// Add playlist
 			req.check({
@@ -322,7 +322,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			const playlist_id = req.params.pl_id;
@@ -364,7 +364,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Update playlist info
 
 			req.check({
@@ -432,7 +432,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {					
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {					
 			engine.deletePlaylist(req.params.pl_id)
 				.then(() => {
 					emitWS('playlistsUpdated');
@@ -497,7 +497,7 @@ export async function initAPIServer(listenPort) {
  *   "message": null
  * }
  */
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req,res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req,res) => {
 			user.findUserByName(req.params.username, {public:false})
 				.then((userdata) => {
 					res.json(OKMessage(userdata));
@@ -532,7 +532,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {					
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {					
 			user.deleteUser(req.params.user_id)
 				.then(() => {
 					emitWS('usersUpdated');
@@ -569,7 +569,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 		// Empty playlist
 			engine.emptyPL(req.params.pl_id)
 				.then(() => {
@@ -603,7 +603,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 		// Empty whitelist
 
 			engine.emptyWL()
@@ -640,7 +640,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 		// Empty blacklist criterias
 
 			engine.emptyBLC()
@@ -679,7 +679,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// set playlist to current
 
 			engine.setCurrentPL(req.params.pl_id)
@@ -718,7 +718,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Empty playlist
 
 			engine.setPublicPL(req.params.pl_id)
@@ -812,7 +812,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			const playlist_id = req.params.pl_id;
@@ -878,7 +878,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
  * }
  */
-		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			//add a kara to a playlist
 			const playlist_id = req.params.pl_id;
 			req.checkBody({
@@ -960,7 +960,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "Karaoke song 176 is already in playlist 2"
  * }
  */
-		.patch(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.patch(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			//add karas from a playlist to another
 			req.checkBody({
 				'plc_id': {
@@ -1032,7 +1032,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
  * }
  */
-		.delete(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Delete kara from playlist
 			// Deletion is through playlist content's ID.
 			// There is actually no need for a playlist number to be used at this moment.
@@ -1180,7 +1180,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			engine.getPLCInfo(req.params.plc_id,req.query.lang)
 				.then((kara) => {
 					res.json(OKMessage(kara));
@@ -1220,7 +1220,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			//Update playlist's karaoke song
 			//Params: position
 			req.checkBody({
@@ -1334,7 +1334,7 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  */
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			res.json(OKMessage(getConfig()));
 		})
 	/**
@@ -1372,7 +1372,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-		.put(requireAuth, updateUserLoginTime, requireAdmin, function(req,res){
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, function(req,res){
 			//Update settings
 			req.checkBody({
 				'EngineAllowViewBlacklist': {
@@ -1566,7 +1566,7 @@ export async function initAPIServer(listenPort) {
  *   "code": "MESSAGE_SEND_ERROR"
  * }
  */
-		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			req.check({
 				'duration': {
 					in: 'body',
@@ -1684,7 +1684,7 @@ export async function initAPIServer(listenPort) {
  *   "code": "WL_VIEW_ERROR"
  * }
  */
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			const lang = req.query.lang;
 			const filter = req.query.filter;
 			let size;
@@ -1742,7 +1742,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "No karaoke could be added, all are in whitelist already"
  * }
  */
-		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			req.check({
 				'kara_id': {
 					in: 'body',
@@ -1794,7 +1794,7 @@ export async function initAPIServer(listenPort) {
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
-		.delete(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			//Delete kara from whitelist
 			// Deletion is through whitelist ID.
 			req.checkBody({
@@ -1896,7 +1896,7 @@ export async function initAPIServer(listenPort) {
  *   "code": "BL_VIEW_ERROR"
  * }
  */
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			const lang = req.query.lang;
 			const filter = req.query.filter;
 			let size;
@@ -1956,7 +1956,7 @@ export async function initAPIServer(listenPort) {
 *   "code": "BLC_VIEW_ERROR"
 * }
 */		
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			//Get list of blacklist criterias
 			engine.getBLC()
 				.then((blc) => {					
@@ -2006,7 +2006,7 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  */		
-		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			//Add blacklist criteria
 			req.check({
 				'blcriteria_type': {
@@ -2071,7 +2071,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "BLCID 5 unknown"
  * }
  */		
-		.delete(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			engine.deleteBLC(req.params.blc_id)
 				.then(() => {
 					emitWS('blacklistUpdated');
@@ -2116,7 +2116,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "BLCID 12309 unknown"
  * }
  */		
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			//Update BLC
 			req.check({
 				'blcriteria_type': {
@@ -2178,7 +2178,7 @@ export async function initAPIServer(listenPort) {
  * }
  */
 
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			req.checkBody('command')
 				.notEmpty()
 				.enum(['play',
@@ -2272,7 +2272,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "Playlist 5 unknown"
  * }
  */		
-		.get(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			engine.exportPL(req.params.pl_id)
 				.then(function(playlist){
@@ -2315,7 +2315,7 @@ export async function initAPIServer(listenPort) {
  *   "message": "No header section"
  * }
  */		
-		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			req.check({
 				'playlist': {
@@ -2383,7 +2383,7 @@ export async function initAPIServer(listenPort) {
  * }
  */		
 
-		.put(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			engine.shufflePL(req.params.pl_id)
 				.then(() => {
 					emitWS('playlistContentsUpdated',req.params.pl_id);
@@ -2432,7 +2432,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get list of playlists, only return the visible ones
 			const seenFromUser = true;
 			engine.getAllPLs(seenFromUser)
@@ -2485,7 +2485,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
@@ -2580,7 +2580,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get playlist contents, only if visible
 			//Access :pl_id by req.params.pl_id					
 			const filter = req.query.filter;
@@ -2721,7 +2721,7 @@ export async function initAPIServer(listenPort) {
  * }
  */
 
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			const seenFromUser = true;
 			engine.getPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
 				.then((kara) => {
@@ -2779,7 +2779,7 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			//We don't want to return all settings.
 			let settings = {};
 			const conf = getConfig();
@@ -2824,7 +2824,7 @@ export async function initAPIServer(listenPort) {
  *    }
  * } 
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getKMStats()
 				.then((stats) => {
 					res.json(OKMessage(stats));
@@ -2907,7 +2907,7 @@ export async function initAPIServer(listenPort) {
  *   "code": "WL_VIEW_FORBIDDEN"
  * }
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			const conf = getConfig();
 			//Returns whitelist IF the settings allow public to see it
 			if (conf.EngineAllowViewWhitelist == 1) {
@@ -3011,7 +3011,7 @@ export async function initAPIServer(listenPort) {
  *   "code": "BL_VIEW_FORBIDDEN"
  * }
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			const conf = getConfig();
 			//Get list of blacklisted karas IF the settings allow public to see it
 			if (conf.EngineAllowViewBlacklist == 1) {
@@ -3079,7 +3079,7 @@ export async function initAPIServer(listenPort) {
 *   "code": "BLC_VIEW_FORBIDDEN"
 * }
 */		
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			const conf = getConfig();
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (conf.EngineAllowViewBlacklistCriterias == 1) {
@@ -3145,7 +3145,7 @@ export async function initAPIServer(listenPort) {
  *   "code": "PLAYER_STATUS_ERROR"
  * }
  */		
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get player status
 			// What's playing, time in seconds, duration of song
 
@@ -3233,7 +3233,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			const filter = req.query.filter;
@@ -3282,7 +3282,7 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 500 Internal Server Error
  */
 
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getRandomKara(req.query.filter)
 				.then((kara_id) => {
 					if (!kara_id) {
@@ -3387,7 +3387,7 @@ export async function initAPIServer(listenPort) {
  *   "message": null
  * }
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getKaraInfo(req.params.kara_id,req.query.lang)
 				.then((kara) => {	
 					res.json(OKMessage(kara));
@@ -3446,7 +3446,7 @@ export async function initAPIServer(listenPort) {
 *   "message": "User quota reached"
 * }
 */
-		.post(requireAuth, updateUserLoginTime, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			req.getValidationResult().then((result) =>  {
 				if (result.isEmpty()) {
@@ -3494,7 +3494,7 @@ export async function initAPIServer(listenPort) {
 *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
 * }
 */			
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getLyrics(req.params.kara_id)
 				.then((kara) => {							
 					res.json(OKMessage(kara));
@@ -3545,7 +3545,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
 
 			engine.getCurrentPLInfo()
@@ -3640,7 +3640,7 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 500 Internal Server Error
  */
 
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
 			const lang = req.query.lang;
 			const filter = req.query.filter;
@@ -3708,7 +3708,7 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 500 Internal Server Error
  */
 
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
 			engine.getPublicPLInfo()
 				.then((playlist) => {
@@ -3802,7 +3802,7 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 500 Internal Server Error
  */
 
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get public Playlist
 			const lang = req.query.lang;
 			const filter = req.query.filter;
@@ -3872,7 +3872,7 @@ export async function initAPIServer(listenPort) {
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
 	*/
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getTags(req.query.lang)
 				.then((tags) => {
 					res.json(OKMessage(tags));
@@ -3927,40 +3927,6 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('GUEST_LIST_ERROR',err));
 				});
 		});
-	routerPublic.route('/users/:username/lastlogin')
-	/**
- * @api {put} public/users/:user_id/lastlogin Force last login time update
- * @apiName PutUsersLastLogin
- * @apiVersion 2.1.0
- * @apiGroup Users
- * @apiPermission public
- *
- * @apiParam {String} username Name of user to check in
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "code": 'USER_CHECKED_IN',
- *   "args": 3
- * }
- * @apiError USER_CHECK_ERROR Unable to update ceck-in
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "USER_CHECK_ERROR",
- *   "message": null
- * }
- */
-		.put(requireAuth, updateUserLoginTime, (req, res) => {
-			user.updateLastLoginName(req.params.username)
-				.then(() => {
-					OKMessage(null,'USER_CHECKED_IN',req.params.username);
-				})
-				.catch((err) => {
-					res.statusCode = 500;
-					errMessage('USER_CHECK_ERROR',err.message);
-				});
-		});
 	routerPublic.route('/users/:username')
 	/**
  * @api {get} public/users/:username View user details (public)
@@ -4010,7 +3976,7 @@ export async function initAPIServer(listenPort) {
  *   "message": null
  * }
  */
-		.get(requireAuth, updateUserLoginTime, (req,res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			user.findUserByName(req.params.username, {public:true})
 				.then((userdata) => {
 					res.json(OKMessage(userdata));
@@ -4059,7 +4025,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(upload.single('avatarfile'), requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(upload.single('avatarfile'), requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			req.check({
 				'login': {
 					in: 'body',
@@ -4177,7 +4143,7 @@ export async function initAPIServer(listenPort) {
  *   "message": null
  * }
  */
-		.get(requireAuth, updateUserLoginTime, (req,res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			user.findUserByName(token.username, {public:false})
 				.then((userdata) => {
@@ -4190,7 +4156,7 @@ export async function initAPIServer(listenPort) {
 				});						
 		})
 	/**
- * @api {put} public/myaccount Get/Edit your own account
+ * @api {put} public/myaccount Edit your own account
  * @apiName EditMyAccount
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -4201,6 +4167,7 @@ export async function initAPIServer(listenPort) {
  * @apiParam {String} [bio] User's bio info. Can be empty.
  * @apiParam {String} [email] User's mail. Can be empty.
  * @apiParam {String} [url] User's URL. Can be empty.
+ * @apiParam {ImageFile} [avatarfile] New avatar
  * @apiSuccess {String} args ID of user deleted
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of user deleted
@@ -4225,7 +4192,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(upload.single('avatarfile'), requireAuth, updateUserLoginTime, (req,res) => {
+		.put(upload.single('avatarfile'), requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			req.check({
 				//FIXME : keep email/url optional and make sure it works with the isURL and isEmail validators
 				'nickname': {
@@ -4342,7 +4309,7 @@ export async function initAPIServer(listenPort) {
  *   "message": null
  * }
  */
-		.get(requireAuth, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			user.listUsers()
 				.then(function(users){
 					res.json(OKMessage(users));

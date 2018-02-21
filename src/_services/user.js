@@ -12,11 +12,17 @@ import {promisify} from 'util';
 const sleep = promisify(setTimeout);
 
 async function updateExpiredUsers() {
-	// Unflag onlien accounts from database if they expired
-	await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
-	await db.resetGuestsPassword();
-	//Sleep for one minute.
-	await sleep(60000);
+	// Unflag online accounts from database if they expired
+	try {
+		await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
+		await db.resetGuestsPassword();
+		//Sleep for one minute.
+		await sleep(60000);
+	} catch(err) {
+		await sleep(60000);
+		throw err;
+	}
+	
 }
 
 export async function updateLastLoginID(id) {
@@ -50,9 +56,9 @@ export async function editUser(username,user,avatar) {
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
-		user.NORM_nickname = deburr(user.nickname);
 		// Check if login already exists.
-		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
+		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && currentUser.nickname != user.nickname) throw 'Nickname already exists';
+		user.NORM_nickname = deburr(user.nickname);		
 		if (user.password) {
 			user.password = hashPassword(user.password);
 			await db.updateUserPassword(username,user.password);
@@ -205,8 +211,8 @@ export async function addUser(user) {
 	}
 }
 
-export function checkUserNameExists(username) {
-	return db.checkUserNameExists(username);	
+export async function checkUserNameExists(username) {
+	return await db.checkUserNameExists(username);	
 }
 
 export async function deleteUser(username) {
@@ -233,10 +239,6 @@ export async function deleteUser(username) {
 	}
 }
 
-export function isAdmin(username) {
-	return db.isAdmin(username);
-}
-
 export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
@@ -247,6 +249,7 @@ export async function initUserSystem() {
 			})
 			.catch((err) => {
 				logger.error(`[User] Expiring user accounts failed : ${err}`);
+				next();
 			});
 	});
 }

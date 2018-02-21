@@ -9,6 +9,7 @@ import {getAllTags} from '../_dao/tag';
 import {addViewcount,updateTotalViewcounts} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {emitWS} from '../_ws/websocket';
+import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
 const plc = require('./playlist');
@@ -100,8 +101,20 @@ function emitEngineStatus() {
 export async function initEngine() {
 	const conf = getConfig();
 	state.engine = initialState;
+	state.player = {};
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
+	if (conf.optValidateKaras) {
+		try {
+			logger.info('[Engine] Starting validation process, please wait...');
+			await validateKaras();
+			logger.info('[Engine] Validation completed successfully. Yayifications!');
+			process.exit(0);
+		} catch(err) {
+			logger.error(`[Engine] Validation failed : ${err}`);
+			process.exit(1);
+		}		
+	}
 	createPreviews();
 	await initDBSystem();
 	initPlayerSystem(state.engine);
@@ -279,7 +292,7 @@ async function playerEnding() {
 async function tryToReadKaraInPlaylist() {
 	if(!state.player.playing) {
 		try {
-			const kara = await plc.playCurrentSong();
+			const kara = await plc.playCurrentSong();			
 			await play({
 				video: kara.path.video,
 				subtitle: kara.path.subtitle,
@@ -373,7 +386,7 @@ export async function getTags(lang) {
 	return await plc.translateTags(tags, lang);
 }
 
-export async function exportPlaylist(playlist_id) {
+export async function exportPL(playlist_id) {
 	try {
 		return await plc.exportPlaylist(playlist_id);
 	} catch(err) {
@@ -385,7 +398,7 @@ export async function exportPlaylist(playlist_id) {
 	}
 }
 		
-export async function importPlaylist(playlist) {
+export async function importPL(playlist) {
 	try {
 		return await plc.importPlaylist(playlist);
 	} catch(err) {
@@ -787,6 +800,7 @@ export function sendMessage(message, duration) {
 }
 
 export async function sendCommand(command, options) {
+	if (!state.player.ready) throw '[Player] Player is not ready yet!';
 	switch (command) {
 	case 'play':
 		playPlayer();
