@@ -793,8 +793,8 @@ input[type=range]:focus::-ms-fill-upper {
 .ps:hover>.ps__scrollbar-y-rail {
 	opacity: .8;
 }
-.ps>.ps__scrollbar-y-rail {
-	top: 0px !important;
+.panel .ps>.ps__scrollbar-y-rail {
+	top: -18px !important;
 	z-index:9999;
 	width: 12px;
 }
@@ -954,7 +954,6 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 
 .modal .modal-body {
-	max-height:  calc(95vh - 150px);
 	overflow-y: auto;
 }
 
@@ -971,6 +970,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     justify-content: flex-end;
 	padding: 0;
 	border: 0;
+    margin-top: 3px;
 }
 .modal .modal-footer > button {
 	order: 0;
@@ -1088,6 +1088,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 .nickname {
     font-size: 22px;
+}
+.avatar {
+	padding: 1px;
 }
 /* placeholders */
 
