@@ -59,7 +59,6 @@ var settingsNotUpdated;
 }(function ($, window, document) {
 	$(function () {
 		// Once page is loaded
-
 		plData = {
 			'0' : {
 				name: 'Standard playlists',
@@ -163,7 +162,11 @@ var settingsNotUpdated;
 		};
 
 		$('.changePseudo').click( function() {
-			showProfil();
+			if(logInfos.token) {
+				showProfil();
+			} else {
+				$('#loginModal').modal('show');
+			}
 		});
 
 		var mugenToken = readCookie('mugenToken');
@@ -505,7 +508,12 @@ var settingsNotUpdated;
 
 		/* login stuff */
 
+		$('#profilModal,#loginModal,#modalBox').on('shown.bs.modal', function (e) {
+			resizeModal();
+		});
+
 		$('#profilModal').on('show.bs.modal', function (e) {
+			
 			if(logInfos && logInfos.role === 'guest') {
 				$(this).find('.profileData').hide();
 			} else {
@@ -1663,6 +1671,8 @@ var settingsNotUpdated;
 		$('#playlist1').parent().css('height', 'calc(100% - ' + (scope === 'public' ? 0 : topHeight1) + 'px ');
 		$('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
 
+		resizeModal();
+
 		if(!isTouchScreen) {
 			$('#nav-profil,#nav-userlist').perfectScrollbar();
 			$('.playlistContainer').perfectScrollbar();
@@ -1671,6 +1681,15 @@ var settingsNotUpdated;
 		}
 	});
 
+	resizeModal = function() {
+		$('#profilModal,#loginModal,#modalBox').each( (k, modal) => {
+			var $modal = $(modal);
+			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
+						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
+			$modal.find('.modal-body').css('max-height', $('body').height() - shrink + 'px');
+		});
+		
+	};
 	/** 
     * Init bootstrapSwitchs
     */

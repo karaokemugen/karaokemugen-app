@@ -74,7 +74,7 @@
 	"TAG_REMIX": "Remix",
 	"TAG_ONA": "ONA",
 	"REQUESTED_BY": "Demandé par",
-	"HELP_MSG": "Utilisation : \n\nkaraokemugen [--help] [--version] [--debug] [--test]\n\n\tOptions : \n\n\t\t--help     Affiche ce message d'aide\n\t\t--version  Affiche les infos de version\n\t\t--debug    Affiche les messages de debug\n\n",
+	"HELP_MSG": "Utilisation : \n\nkaraokemugen [--help] [--version] [--debug] [--test]\n\n\tOptions : \n\n\t\t--help     Affiche ce message d'aide\n\t\t--version  Affiche les infos de version\n\t\t--debug    Affiche les messages de debug\n\t\t--generate Génère une nouvelle base de données puis quitte l'app.\n\t\t--validate Valide/vérifie/met à jour les .karas sans écrire de base de données puis quitte\n\n",
 	"DAY": "jour(s)",
 	"HOUR": "heure(s)",
 	"MINUTE": "minute(s)",
@@ -281,5 +281,12 @@
 	"AVATAR_IMPORT": "Importer un avatar",
 	"AUTOMIX_CREATED": "Liste AutoMix crée avec succès",
 	"AUTOMIX_ERROR": "Erreur lors de la création de la liste AutoMix",
+	"LOGIN": "Identification",
+	"NEW_ACCOUNT": "Nouveau compte",
+	"GUEST_CONTINUE": "CONTINUER COMME INVITÉ",
+	"OR": "OU",
+	"SIGN_UP": "Continuer",
+	"PROFILE": "Profil",
+	"PASSWORDCONF": "Mot de passe (confirmation)",
 	"_": "DO NOT MODIFY"
 }

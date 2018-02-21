@@ -49,7 +49,7 @@ async function backupDir(directory) {
 	);
 }
 
-async function backupKaraDirs(config) {
+export async function backupKaraDirs(config) {
 	const backupPromises = [];
 	for (const pathKara of config.PathKaras.split('|')) {
 		const resolvedPath = resolve(config.appPath, pathKara);
@@ -58,7 +58,7 @@ async function backupKaraDirs(config) {
 	await Promise.all(backupPromises);
 }
 
-async function deleteBackupDirs(config) {
+export async function deleteBackupDirs(config) {
 	const deletePromises = [];
 	for (const pathKara of config.PathKaras.split('|')) {
 		const pathBackup = pathKara + '_backup';
@@ -80,7 +80,7 @@ async function extractKaraFiles(karaDir) {
 	return karaFiles;
 }
 
-async function extractAllKaraFiles() {
+export async function extractAllKaraFiles() {
 	let karaFiles = [];
 	for (const resolvedPath of resolvedPathKaras()) {
 		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
@@ -88,7 +88,7 @@ async function extractAllKaraFiles() {
 	return karaFiles;
 }
 
-async function getAllKaras(karafiles) {
+export async function getAllKaras(karafiles) {
 	const karaPromises = [];
 	for (const karafile of karafiles) {
 		karaPromises.push(readAndCompleteKarafile(karafile));
