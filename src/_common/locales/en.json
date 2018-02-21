@@ -75,7 +75,7 @@
 	"TAG_ONA": "Original Network Animation",
 	"TAG_ONA_SHORT": "ONA",
 	"REQUESTED_BY": "Requested by",
-	"HELP_MSG": "Usage : \n\nkaraokemugen [--help] [--version] [--debug]\n\n\tOptions : \n\n\t\t--help     Displays this message\n\t\t--version  Displays version info\n\t\t--debug    Displays additional debug messages\n\n",
+	"HELP_MSG": "Usage : \n\nkaraokemugen [--help] [--version] [--debug]\n\n\tOptions : \n\n\t\t--help     Displays this message\n\t\t--version  Displays version info\n\t\t--debug    Displays additional debug messages\n\t\t--generate Generates a new database then quits\n\t\t--validate Validates/checks/updates .kara files without writing a database then quits\n\n",
 	"DAY": "day(s)",
 	"HOUR": "hour(s)",
 	"MINUTE": "minute(s)",
@@ -271,6 +271,7 @@
 	"USER_UPDATED": "%s's profile updated",
 	"USER_UPDATE_ERROR": "Failed to update %s's profile",
 	"USER_VIEW_ERROR": "Unable to view user's profile",
+<<<<<<< HEAD
 	"FAVORITES_VIEW_ERROR": "Unable to view your favorites",
 	"FAVORITES_ADDED": "%s added to your favorites",
 	"FAVORITES_ADD_SONG_ERROR": "Unable to add %s to your favorites",
@@ -279,5 +280,16 @@
 	"AVATAR_IMPORT": "Import new avatar",
 	"AUTOMIX_CREATED": "AutoMix list created successfully",
 	"AUTOMIX_ERROR": "Error creating AutoMix list",
+	"AVATAR_IMPORT": "Import new avatar",
+	"ACCOUNT": "My account",
+	"HELP": "Help",
+	"USERLIST": "Users",
+	"LOGIN": "Login",
+	"NEW_ACCOUNT": "New account",
+	"GUEST_CONTINUE": "CONTINUE AS GUEST",
+	"OR": "OR",
+	"SIGN_UP": "Sign up",
+	"PROFILE": "Profile",
+	"PASSWORDCONF": "Password confirmation",
 	"_": "DO NOT MODIFY"
 } 

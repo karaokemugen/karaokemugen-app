@@ -74,7 +74,7 @@
 	"TAG_REMIX": "Remix",
 	"TAG_ONA": "ONA",
 	"REQUESTED_BY": "Demandé par",
-	"HELP_MSG": "Utilisation : \n\nkaraokemugen [--help] [--version] [--debug] [--test]\n\n\tOptions : \n\n\t\t--help     Affiche ce message d'aide\n\t\t--version  Affiche les infos de version\n\t\t--debug    Affiche les messages de debug\n\n",
+	"HELP_MSG": "Utilisation : \n\nkaraokemugen [--help] [--version] [--debug] [--test]\n\n\tOptions : \n\n\t\t--help     Affiche ce message d'aide\n\t\t--version  Affiche les infos de version\n\t\t--debug    Affiche les messages de debug\n\t\t--generate Génère une nouvelle base de données puis quitte l'app.\n\t\t--validate Valide/vérifie/met à jour les .karas sans écrire de base de données puis quitte\n\n",
 	"DAY": "jour(s)",
 	"HOUR": "heure(s)",
 	"MINUTE": "minute(s)",
@@ -270,6 +270,7 @@
 	"USER_UPDATED": "Mise à jour du profil de %s effectuée",
 	"USER_UPDATE_ERROR": "Impossible de mettre à jour le profil de %s",
 	"USER_VIEW_ERROR": "Impossible d'afficher le profil de l'utilisateur",
+<<<<<<< HEAD
 	"FAVORITES_VIEW_ERROR": "Impossible d'afficher vos favoris",
 	"FAVORITES_ADDED": "%s ajouté à vos favoris",
 	"FAVORITES_ADD_SONG_ERROR": "Impossible d'ajouter %s à vos favoris",
@@ -278,6 +279,16 @@
 	"AVATAR_IMPORT": "Importer un avatar",
 	"AUTOMIX_CREATED": "Liste AutoMix crée avec succès",
 	"AUTOMIX_ERROR": "Erreur lors de la création de la liste AutoMix",
+	"AVATAR_IMPORT": "Importer un avatar",
+	"ACCOUNT": "Mon compte",
+	"HELP": "Aide",
+	"USERLIST": "Participants",
+	"LOGIN": "Identification",
+	"NEW_ACCOUNT": "Nouveau compte",
+	"GUEST_CONTINUE": "CONTINUER COMME INVITÉ",
+	"OR": "OU",
+	"SIGN_UP": "Continuer",
+	"PROFILE": "Profil",
+	"PASSWORDCONF": "Mot de passe (confirmation)",
 	"_": "DO NOT MODIFY"
-
 }

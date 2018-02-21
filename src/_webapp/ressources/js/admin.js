@@ -223,7 +223,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 				if (idPlaylistTo > 0) {
 					url = scope + '/playlists/' + idPlaylistTo + '/karas';
-					var requestedby = idPlaylistFrom == -1 || li.data('pseudo_add') == undefined ? logInfos.username : li.data('pseudo_add');
+					var requestedby = idPlaylistFrom == -1 || li.data('username') == undefined ? logInfos.username : li.data('username');
 					data = { requestedby: requestedby, kara_id: idKara };
 				} else if (idPlaylistTo == -1) {
 					//displayMessage('warning', 'Error','can\'t add kara to the kara list from database');

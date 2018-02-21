@@ -9,7 +9,10 @@ var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a
 var bcTags;             // Object : list of blacklist criterias tags
 var showInfoMessage;	// Object : list of info codes to show as a toast
 var softErrorMessage; 
-var logInfos			// Object : contains all login infos : role, token, username
+var logInfos;			// Object : contains all login infos : role, token, username
+var pseudo;
+var pathAvatar;
+var pathVideo;
 
 var DEBUG;
 var SOCKETDEBUG;
@@ -56,7 +59,6 @@ var settingsNotUpdated;
 }(function ($, window, document) {
 	$(function () {
 		// Once page is loaded
-
 		plData = {
 			'0' : {
 				name: 'Standard playlists',
@@ -160,7 +162,7 @@ var settingsNotUpdated;
 		};
 
 		$('.changePseudo').click( function() {
-			if (logInfos.username) {
+			if(logInfos.token) {
 				showProfil();
 			} else {
 				$('#loginModal').modal('show');
@@ -202,6 +204,14 @@ var settingsNotUpdated;
 				});
 			});
 
+			if(logInfos.role != 'guest') {
+				$('.pseudoChange').show(); 
+				$('#searchParent').css('width',''); 
+			} else { 
+				$('.pseudoChange').hide(); 
+				$('#searchParent').css('width','100%'); 
+			} 
+			
 			initSwitchs();
 
 			$('.bootstrap-switch').promise().then(function(){
@@ -362,7 +372,7 @@ var settingsNotUpdated;
 			var previewFile = el.closest('.detailsKara').data('previewfile');
 			if(previewFile) {
 				setTimeout(function() {
-					$('#video').attr('src', '/previews/' + previewFile);
+					$('#video').attr('src', pathVideo + previewFile);
 					$('#video')[0].play();
 					$('.overlay').show();
 				}, 1);
@@ -497,6 +507,20 @@ var settingsNotUpdated;
 		});
 
 		/* login stuff */
+
+		$('#profilModal,#loginModal,#modalBox').on('shown.bs.modal', function (e) {
+			resizeModal();
+		});
+
+		$('#profilModal').on('show.bs.modal', function (e) {
+			
+			if(logInfos && logInfos.role === 'guest') {
+				$(this).find('.profileData').hide();
+			} else {
+				$(this).find('.profileData').show();
+			}
+		});
+
 		login = function(username, password) {
 
 			var url = 'auth/login';
@@ -568,40 +592,79 @@ var settingsNotUpdated;
 			}
 		});
 
+		$('#password, #signupPasswordConfirmation').on('keypress', (e) => {
+			if(e.which == 13) {
+				$(e.target).parent().parent().find('.login').click();
+			}
+		});
+
 		$('.logout').click( () => {
-			eraseCookie("mugenToken");
+			eraseCookie('mugenToken');
 			window.location.reload();
-			/*
-			logInfos = { token : '' };
-			setupAjax();
-			*/
 		});
 		/* login stuff END */
-		/* profil stuff */
-		showProfil = function() {
-			if(logInfos.role != 'guest') {
-				$('#profilModal').modal('show');
+
+		$('#nav-userlist').on('click', '.userlist > li', (e) => {
+			var $li = $(e.currentTarget);
+			var $details = $li.find('.userDetails');
+			var login = $li.data('login');
+			if($li.hasClass('open')) {
+				$li.removeClass('open');
+				$details.empty();
+			} else {
 				$.ajax({
-					url: 'public/myaccount/', 	
+					url: 'public/users/' + login, 	
 					type: 'GET'})
 					.done(function (response) {
-						//var user = response.find(a => a.login==logInfos.username);
-						
-						$.each(response, function(i, k) {
-							var $element = $('.profileContent [name="' + i + '"]');
-							$element.attr('oldval', k);
-		
-							if(i === 'avatar_file' && k) {
-								$element.attr('src', '/avatars/' + k);
-							} else if( i === 'login') {
-								$element.text(k);
-							} else if (i !== 'password') {
-								$element.val(k);
-							}
-						});
-						
+						$li.addClass('open');
+						$details.empty().html(
+							'<div><i class="glyphicon glyphicon-envelope"></i> ' + (response.email ? response.email : '') + '</div>'
+						+	'<div><i class="glyphicon glyphicon-link"></i> ' + (response.url ? response.url : '') + '</div>'
+						+	'<div><i class="glyphicon glyphicon-leaf"></i> ' + (response.bio ? response.bio : '') + '</div>');	
 					});
 			}
+		});
+		/* profil stuff */
+		showProfil = function() {
+			$('#profilModal').modal('show');
+			$.ajax({
+				url: 'public/myaccount/', 	
+				type: 'GET'})
+				.done(function (response) {
+					$.each(response, function(i, k) {
+						var $element = $('.profileContent [name="' + i + '"]');
+						$element.attr('oldval', k);
+
+						if(i === 'avatar_file' && k) {
+							$element.attr('src', pathAvatar + k);
+						} else if( i === 'login') {
+							$element.text(k);
+						} else if (i !== 'password') {
+							$element.val(k);
+						}
+					});
+				});
+
+			$.ajax({
+				url: 'public/users/', 	
+				type: 'GET'})
+				.done(function (response) {
+					var users = [response.filter(a => a.flag_online==1), response.filter(a => a.flag_online==0)];
+					var $userlist = $('.userlist');
+					var userlistStr = '';
+					users.forEach( (userList) => {
+						$.each(userList, function(i, k) {
+							userlistStr +=
+								'<li ' + dataToDataAttribute(k) + ' class="list-group-item' + (k.flag_online==1 ? ' online' : '') + '">'
+							+	'<div class="userLine">'
+							+	'<span class="nickname">' + k.nickname + '</span>'
+							+	'<img class="avatar" src="' + pathAvatar + k.avatar_file + '"/>'
+							+	'</div><div class="userDetails">'
+							+	'</li>';
+						});
+					});
+					$userlist.empty().append($(userlistStr));
+				});	
 		};
 
 		$('.profileData .profileLine input').on('keypress', (e) => {
@@ -613,7 +676,6 @@ var settingsNotUpdated;
 		$('.profileData .profileLine input').on('blur', (e) => {
 			var $input = $(e.target);
 			if ($input.attr('oldval') !== $input.val()) {
-				console.log($input.attr('oldval'), $input.val());
 				// TODO gestion confirmation password
 				var profileData = $('.profileData .profileLine > input').serialize();
 				$.ajax({
@@ -624,6 +686,7 @@ var settingsNotUpdated;
 					.done(function (response) {
 						$('.profileContent .profileLine > input').removeClass('redBorders');
 						$input.attr('oldval', $input.val());
+						pseudo = response.nickname;
 					})
 					.fail( (response) => {
 						var listFieldErr = Object.keys(response.responseJSON);
@@ -663,7 +726,7 @@ var settingsNotUpdated;
 			})
 				.done(function (response) {
 					$('.profileContent .profileLine > input').removeClass('redBorders');
-					$('[name="avatar_file"]').attr('src', response.avatar_file);
+					$('[name="avatar_file"]').attr('src', pathAvatar + response.avatar_file);
 				})
 				.fail( (response) => {
 					var listFieldErr = Object.keys(response.responseJSON);
@@ -707,6 +770,9 @@ var settingsNotUpdated;
 	refreshTime = 1000;
 	mode = 'list';
 	logInfos = { username : null, role : null };
+	pathAvatar = '/avatars/';
+	pathVideo = '/previews/';
+	
 
 	DEBUG =  query.DEBUG != undefined;
 	SOCKETDEBUG =  query.SOCKETDEBUG != undefined;
@@ -959,9 +1025,9 @@ var settingsNotUpdated;
 							var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
 							+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
 							+	(idPlaylist > 0 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
-							+	kara.pos + '" data-pseudo_add="' + kara.pseudo_add + '"' : '')
+							+	kara.pos + '" data-username="' + kara.username + '"' : '')
 							+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
-							+	(kara.pseudo_add == logInfos.username ? 'user' : '' );
+							+	(kara.username == logInfos.username ? 'user' : '' );
 
 							var badges = '';
 							if(kara.misc) {
@@ -976,8 +1042,9 @@ var settingsNotUpdated;
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
 								+   (isTouchScreen ? '' : infoKaraHtml) + playKara + '</div>')
-								+   '<div class="contentDiv"">' + buildKaraTitle(kara, filter)
-								+	badges
+								+   '<div class="contentDiv">'
+								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
+								+	'<div>' + badges + '</div>'
 								+   '</div>'
 								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')
 								+   '</li>'; 
@@ -1250,9 +1317,7 @@ var settingsNotUpdated;
 			// building the options
 			var optionHtml = '';
 			$.each(playlistList, function (key, value) {
-				var params = Object.keys(value).map(function (k) {
-					return 'data-' + k + '="' +  value[k] + '"';
-				}).join(' ');
+				var params = dataToDataAttribute(value);
 				optionHtml += '<option ' + params + '  value=' + value.playlist_id + '> ' + value.name + '</option>';
 			});
 			$('select[type="playlist_select"]').empty().html(optionHtml);
@@ -1488,7 +1553,7 @@ var settingsNotUpdated;
 		if (!infoKara.is(':visible')) { // || infoKara.length == 0
 			var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 
-			$.ajax({ url: urlInfoKara }).done(function (data) {console.log('ahhh', data[0]);
+			$.ajax({ url: urlInfoKara }).done(function (data) {
 				var detailsHtml = buildKaraDetails(data[0], mode);
 				detailsHtml = $(detailsHtml).hide();
 				liKara.find('.contentDiv').after(detailsHtml);
@@ -1521,7 +1586,7 @@ var settingsNotUpdated;
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 		var details = {
-			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
+			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['username'] ? i18n.__('DETAILS_ADDED_3', data['username']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'BLCTYPE_6': 			data['author']
 			, 'DETAILS_VIEWS':		data['viewcount']
@@ -1606,14 +1671,25 @@ var settingsNotUpdated;
 		$('#playlist1').parent().css('height', 'calc(100% - ' + (scope === 'public' ? 0 : topHeight1) + 'px ');
 		$('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
 
+		resizeModal();
+
 		if(!isTouchScreen) {
-			$('#nav-profil').perfectScrollbar();
+			$('#nav-profil,#nav-userlist').perfectScrollbar();
 			$('.playlistContainer').perfectScrollbar();
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
 		}
 	});
 
+	resizeModal = function() {
+		$('#profilModal,#loginModal,#modalBox').each( (k, modal) => {
+			var $modal = $(modal);
+			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
+						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
+			$modal.find('.modal-body').css('max-height', $('body').height() - shrink + 'px');
+		});
+		
+	};
 	/** 
     * Init bootstrapSwitchs
     */
