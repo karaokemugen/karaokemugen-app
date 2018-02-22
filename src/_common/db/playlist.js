@@ -145,8 +145,10 @@ export const getPlaylistContentsForPlayer = `SELECT ak.kara_id AS kara_id,
       												pc.pseudo_add AS pseudo_add,
       												ak.videofile AS videofile,
 	  												pc.pos AS pos,
-	  												pc.flag_playing AS flag_playing,		  											pc.pk_id_plcontent AS 			playlistcontent_id,
-	  												ak.kid AS kid
+													pc.flag_playing AS flag_playing,
+													pc.pk_id_plcontent AS 			playlistcontent_id,
+													ak.kid AS kid,
+													pc.fk_id_user AS user_id
 											FROM karasdb.all_karas AS ak 
 											INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 											WHERE pc.fk_id_playlist = $playlist_id
@@ -291,6 +293,11 @@ export const testCurrentPlaylist = `SELECT pk_id_playlist AS playlist_id
 								FROM playlist 
 								WHERE flag_current = 1;
 								`;
+
+export const setPLCFree = `UPDATE playlist_content 
+							SET flag_free = 1
+							WHERE pk_id_plcontent = $plc_id;
+							`;
 
 export const testPublicPlaylist = `SELECT pk_id_playlist AS playlist_id
 								FROM playlist 

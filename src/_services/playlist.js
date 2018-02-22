@@ -44,12 +44,33 @@ export function getPlayingPos(playlist) {
 	return undefined;	
 }
 
+export async function freePLC(plc_id) {
+	return await plDB.setPLCFree(plc_id);
+}
+
+export async function updateSongsLeft(username,playlist_id) {
+	const conf = getConfig();
+	const user = await findUserByName(username);	
+	let songsLeft;
+	if (user.flag_admin == 0) {
+		const count = await karaDB.getSongCountForUser(playlist_id,username);
+		console.log(count);
+		songsLeft = conf.EngineSongsPerUser - count.count;
+	} else {
+		songsLeft = -1;
+	}
+	emitWS('songsAvailableUpdated', {
+		username: username,
+		songsLeft: songsLeft
+	});		
+}
+
 export async function isUserAllowedToAddKara(playlist_id,requester) {
 	const limit = getConfig().EngineSongsPerUser;
 	try { 
 		const count = await karaDB.getSongCountForUser(playlist_id,requester);	
 		if (count.count >= limit) {
-			logger.info('[PLC] User '+requester+' tried to add more songs than he/she was allowed ('+limit+')');
+			logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
 			return false;
 		} else {
 			return true;
@@ -581,6 +602,7 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	karaList.forEach(function(kara) {
 		karaAdded.push(kara.kara_id);
 	});
+	updateSongsLeft(requester, playlist_id);
 	return karaAdded;
 }
 
@@ -1122,10 +1144,6 @@ export async function playCurrentSong() {
 		video: kara.videofile,
 		subtitle: ass
 	};		
-	//If karaoke is present in the public playlist, we're deleting it.
-	const playlist_id = await isAPublicPlaylist();
-	const plc = await getPLCByKID(kara.kid,playlist_id);
-	if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id],playlist_id); 
 	return kara;
 }
 

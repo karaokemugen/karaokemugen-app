@@ -8,9 +8,10 @@ export const addKaraToPlaylist = `INSERT INTO playlist_content(
 									fk_id_user,									
 									pos,
 									flag_playing,
+									flag_free,
 									pseudo_add,
 									NORM_pseudo_add) 
-								SELECT $playlist_id,$kara_id,k.kid,$created_at,$user_id,$pos,0,u.nickname,u.NORM_nickname
+								SELECT $playlist_id,$kara_id,k.kid,$created_at,$user_id,$pos,0,0,u.nickname,u.NORM_nickname
 								FROM karasdb.kara AS k,
 								     user AS u							
 								WHERE pk_id_kara = $kara_id
@@ -132,6 +133,6 @@ export const getSongCountPerUser = `SELECT COUNT(1) AS count
 									WHERE u.login = $username
 									  AND u.pk_id_user = pc.fk_id_user
 									  AND pc.fk_id_playlist = $playlist_id
-									  AND pc.pos > IFNULL((select pos from playlist_content WHERE flag_playing  = 1),0)
+									  AND flag_free = 0
 									`;
 

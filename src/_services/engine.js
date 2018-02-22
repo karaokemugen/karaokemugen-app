@@ -1,6 +1,6 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {updateConfig, configureHost, getConfig} from '../_common/utils/config';
-import {initUserSystem} from '../_services/user';
+import {initUserSystem, findUserByID} from '../_services/user';
 import {initDBSystem, getStats} from '../_dao/database';
 import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
@@ -303,12 +303,28 @@ async function tryToReadKaraInPlaylist() {
 			state.engine.currentlyPlayingKara = kara.kara_id;
 			emitEngineStatus();
 			//Add a view to the viewcount
-			addViewcountKara(kara.kara_id,kara.kid);	
+			addViewcountKara(kara.kara_id,kara.kid);				
+			//Free karaoke
+			await plc.freePLC([kara.playlistcontent_id]);
+			//If karaoke is present in the public playlist, we're marking it free.
+			const publicPlaylist_id = await plc.isAPublicPlaylist();
+			const plcontent = await plc.getPLCByKID(kara.kid,publicPlaylist_id);
+			if (plcontent) await plc.freePLC([plcontent.playlistcontent_id]);			
+			let modePlaylist_id;
+			if (getConfig().EnginePrivateMode) {
+				modePlaylist_id = state.engine.currentPlaylistID;
+			} else {
+				modePlaylist_id = publicPlaylist_id;
+			}
+			const user = await findUserByID(plcontent.user_id);
+			plc.updateSongsLeft(user.login,modePlaylist_id);
+			return true;
 		} catch(err) {
-			logger.info('Cannot find a song to play');
+			logger.info('[Engine] Cannot find a song to play');
 			state.engine.status = 'stop';
 			emitEngineStatus();
 			stopPlayer(true);					
+			throw err;
 		}
 	}
 }

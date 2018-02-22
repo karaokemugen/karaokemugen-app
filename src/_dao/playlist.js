@@ -38,6 +38,10 @@ export async function deletePlaylist(id) {
 	return await getUserDb().run(sql.deletePlaylist, { $playlist_id: id });
 }
 
+export async function setPLCFree(plc_id) {
+	return await getUserDb().run(sql.setPLCFree, {$plc_id: plc_id});
+}
+
 export async function updatePlaylistKaraCount(id,karaCount) {
 	return await getUserDb().run(sql.updatePlaylistKaraCount, {
 		$playlist_id: id,
