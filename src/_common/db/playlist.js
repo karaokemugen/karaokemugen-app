@@ -79,6 +79,14 @@ export const updatePlaylistDuration = `UPDATE playlist SET time_left =
     								  	AND playlist_content.pos >= 0)
 									WHERE pk_id_playlist = $playlist_id;`;
 
+export const getPlaylistContentsKaraIDs = `SELECT pc.fk_id_kara AS kara_id,
+										pc.pk_id_plcontent AS playlistcontent_id,
+										pc.flag_playing AS flag_playing      
+										FROM playlist_content AS pc
+										WHERE pc.fk_id_playlist = $playlist_id
+										ORDER BY pc.pos,pc.created_at DESC;
+										`;
+
 export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
       									ak.kid AS kid,
       									ak.title AS title,
@@ -293,6 +301,7 @@ export const testPlaylistFlagPlaying = `SELECT pk_id_plcontent
 									WHERE fk_id_playlist = $playlist_id
 										AND flag_playing = 1
 									`;
+
 export const setCurrentPlaylist = `UPDATE playlist 
 									SET flag_current = 1 
 									WHERE pk_id_playlist = $playlist_id;				`;
@@ -320,7 +329,8 @@ export const setPublicPlaylist = `UPDATE playlist
 
 export const unsetPlaying = `UPDATE playlist_content 
 							SET flag_playing = 0 
-							WHERE fk_id_playlist = $playlist_id;
+							WHERE fk_id_playlist = $playlist_id
+							 AND flag_playing = 1;
 							`;
 
 export const setPlaying = `UPDATE playlist_content 

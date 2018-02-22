@@ -5,6 +5,10 @@ export async function getUserByName(username) {
 	return await getUserDb().get(sql.selectUserByName, { $username: username });
 }
 
+export async function getUserIDByName(username) {
+	return await getUserDb().get(sql.selectUserIDByName, { $username: username });
+}
+
 export async function checkUserNameExists(username) {
 	return await getUserDb().get(sql.testUserName, { $login: username });
 }

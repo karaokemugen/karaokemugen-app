@@ -2,7 +2,7 @@ import {uuidRegexp} from './constants';
 import {getStats} from '../_dao/database';
 import {ASSToLyrics} from '../_common/utils/ass';
 import {getConfig} from '../_common/utils/config';
-import {findUserByName} from '../_services/user';
+import {findUserIDByName} from '../_services/user';
 const blcDB = require('../_dao/blacklist');
 const tagDB = require('../_dao/tag');
 const wlDB = require('../_dao/whitelist');
@@ -478,7 +478,7 @@ function isAllKarasInPlaylist(karas, karasToRemove) {
 export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;	
 	let karaList = [];	
-	const user = await findUserByName(requester);	
+	const user = await findUserIDByName(requester);	
 	if (!user) throw 'User does not exist';
 	const date_add = now();			
 	karas.forEach((kara_id) => {
@@ -493,8 +493,8 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	const numUsersInPlaylist = await plDB.countPlaylistUsers(playlist_id);
 	const playlistMaxPos = await plDB.getMaxPosInPlaylist(playlist_id);	
 	if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist';
-	const karasInPlaylist = await plDB.getPlaylistContents(playlist_id);	
-	karaList = isAllKarasInPlaylist(karaList,karasInPlaylist);
+	const pl = await plDB.getPlaylistKaraIDs(playlist_id);	
+	karaList = isAllKarasInPlaylist(karaList,pl);
 	if (karaList.length === 0) throw `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`;
 	// If pos is provided, we need to update all karas above that and add 
 	// karas.length to the position
@@ -502,7 +502,6 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	// And use that +1 to set our playlist position.
 	// If pos is -1, we must add it after the currently flag_playing karaoke.
 	const conf = getConfig();
-	const pl = await getPlaylistContents(playlist_id);
 	const playingObject = getPlayingPos(pl);
 	const playingPos = playingObject ? playingObject.plc_id_pos : 0;
 	// Position management here :

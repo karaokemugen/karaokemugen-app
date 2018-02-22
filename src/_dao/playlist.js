@@ -94,6 +94,11 @@ export async function getPlaylistContents(id,forPlayer) {
 	return await getUserDb().all(query, { $playlist_id: id });
 }
 
+export async function getPlaylistKaraIDs(id) {
+	return await getUserDb().all(sql.getPlaylistContentsKaraIDs, { $playlist_id: id });
+}
+
+
 export async function getPlaylistPos(id) {
 	return await getUserDb().all(sql.getPlaylistPos, { $playlist_id: id });
 }
