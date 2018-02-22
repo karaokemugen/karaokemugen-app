@@ -134,11 +134,6 @@ export async function findUserByName(username, opt) {
 	return false;	
 }
 
-export async function findUserIDByName(username) {
-	//Check if user exists in db
-	return await db.getUserIDByName(username);	
-}
-
 export async function findUserByID(id) {
 	const userdata = await db.getUserByID(id);
 	if (userdata) {

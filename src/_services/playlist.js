@@ -478,7 +478,7 @@ function isAllKarasInPlaylist(karas, karasToRemove) {
 export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;	
 	let karaList = [];	
-	const user = await findUserIDByName(requester);	
+	const user = await findUserByName(requester);	
 	if (!user) throw 'User does not exist';
 	const date_add = now();			
 	karas.forEach((kara_id) => {
