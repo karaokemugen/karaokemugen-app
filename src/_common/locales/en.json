@@ -289,5 +289,8 @@
 	"SIGN_UP": "Sign up",
 	"PROFILE": "Profile",
 	"PASSWORDCONF": "Password confirmation",
+	"UPVOTE_DONE": "Upvoted karaoke %s",
+	"UPVOTE_ALREADY_DONE": "You already upvoted this !",
+	"UPVOTE_FAILED": "Failed to upvote this karaoke",
 	"_": "DO NOT MODIFY"
 } 

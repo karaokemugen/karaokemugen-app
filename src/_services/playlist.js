@@ -584,6 +584,10 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	return karaAdded;
 }
 
+export async function getPLCInfo(plc_id) {
+	return await plDB.getPLCInfo(plc_id);
+}
+
 async function checkPLCandKaraInPlaylist(plcList,playlist_id) {
 	let index = 0;
 	let newPLCList = [];	

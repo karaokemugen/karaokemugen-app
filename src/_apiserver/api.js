@@ -8,6 +8,7 @@ import {resolve} from 'path';
 import multer from 'multer';
 const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
+const upvote = require('../_services/upvote.js');
 import {emitWS} from '../_ws/websocket';
 import {decode} from 'jwt-simple';
 import passport from 'passport';
@@ -3895,7 +3896,42 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 				});
 		});
-
+	routerPublic.route('/playlists/public/karas/:plc_id/upvote')
+		/**
+	 * @api {post} public/playlists/public/karas/:plc_id Upvote a song in public playlist
+	 * @apiName PostUpvote
+	 * @apiVersion 2.1.0
+	 * @apiGroup Playlists
+	 * @apiPermission public
+	 * 
+	 * @apiParam {Number} plc_id Target playlist content ID
+	 * 
+	 * @apiSuccess {String} code Return code
+	 * @apiSuccess {String} args Name of song being upvoted
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": 'UPVOTE_DONE',
+	 *   "args": 'Shoujo Kakumei Utena - OP - Rinbu Revolution'
+	 * }
+	 * @apiError UPVOTE_FAILED Unable to upvote karaoke
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+	
+		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+			// Post an upvote
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			upvote.addUpvote(req.params.plc_id,token.username)
+				.then((kara) => {
+					res.json(OKMessage(null, 'UPVOTE_DONE', kara));
+				})
+				.catch((err) => {						
+					res.statusCode = 500;
+					res.json(errMessage(err.code,err.message));
+				});
+		});
 	routerPublic.route('/tags')
 	/**
 	* @api {get} public/tags Get tag list
