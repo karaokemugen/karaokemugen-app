@@ -1376,6 +1376,9 @@ export async function initAPIServer(listenPort) {
  *       "EngineDisplayConnectionInfoMessage": "",
  *       "EngineDisplayConnectionInfoQRCode": "1",
  *       "EngineDisplayNickname": "1",
+ * 		 "EngineFreeUpvotes": "1",
+ *       "EngineFreeUpvotesRequiredPercentage": "33",
+ *       "EngineFreeUpvotesRequiredMin": "4",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
  *       "EngineRepeatPlaylist": "0",
@@ -1432,6 +1435,9 @@ export async function initAPIServer(listenPort) {
  * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
  * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
  * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
+ * @apiParam {Boolean} EngineFreeUpvotes Enable/disable Free Songs By Upvotes feature
+ * @apiParam {Number} EngineFreeUpvotesRequiredMin Minimum number of upvotes required to free a song
+ * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
  * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
  * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
@@ -1489,6 +1495,21 @@ export async function initAPIServer(listenPort) {
 					in: 'body',
 					notEmpty: true,
 					isBoolean: true,
+				},
+				'EngineFreeUpvotes': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true
+				},
+				'EngineFreeUpvotesRequiredMin': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
+				},
+				'EngineFreeUpvotesRequiredPercent': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
 				},
 				'EnginePrivateMode': {
 					in: 'body',
@@ -1582,6 +1603,7 @@ export async function initAPIServer(listenPort) {
 					req.sanitize('EngineDisplayConnectionInfoHost').trim();
 					req.sanitize('EngineDisplayConnectionInfoHost').unescape();
 					req.sanitize('EngineAutoPlay').toInt();
+					req.sanitize('EngineFreeUpvotes').toInt();
 					req.sanitize('EngineRepeatPlaylist').toInt();
 					req.sanitize('EngineSmartInsert').toInt();
 					req.sanitize('EngineJinglesInterval').toInt();
@@ -2834,6 +2856,9 @@ export async function initAPIServer(listenPort) {
  *       "EngineDisplayConnectionInfoMessage": "",
  *       "EngineDisplayConnectionInfoQRCode": "1",
  *       "EngineDisplayNickname": "1",
+ * 		 "EngineFreeUpvotes": "1",
+ * 		 "EngineFreeUpvotesPercent": "33",
+ * 		 "EngineFreeUpvotesMin": "4",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
  *       "EngineRepeatPlaylist": "0",
