@@ -93,8 +93,8 @@ export async function updatePlaylistDuration(id) {
 
 export async function getPlaylistContents(id,forPlayer) {
 	const query = forPlayer ? sql.getPlaylistContentsForPlayer : sql.getPlaylistContents;
-	return await getUserDb().all(query, { 
-		$playlist_id: id,
+	if (forPlayer) return await getUserDb().all(query, { $playlist_id: id });
+	return await getUserDb().all(query, { $playlist_id: id,
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
 	});
 }
