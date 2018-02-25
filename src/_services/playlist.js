@@ -1047,7 +1047,7 @@ async function getCurrentPlaylist() {
 
 export async function playCurrentSong() {
 	const conf = getConfig();
-	const playlist = await getCurrentPlaylist();
+	const playlist = await getCurrentPlaylist();	
 	// Search for currently playing song
 	let readpos = false;
 	playlist.content.forEach((kara, index) => {
