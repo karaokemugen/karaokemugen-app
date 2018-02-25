@@ -35,7 +35,7 @@ export async function initConfig(appPath, argv) {
 	configureLocale();
 	await loadConfigFiles(appPath);
 	configureHost();
-
+	if (config.JwtSecret == 'Change me') setConfig( {JwtSecret: uuidV4() });
 	return getConfig();
 }
 
@@ -69,17 +69,8 @@ async function loadConfigFiles(appPath) {
 
 	await loadConfig(defaultConfigFile);
 	defaultConfig = config;
-	if (await asyncExists(overrideConfigFile)) {
-		await loadConfig(overrideConfigFile);
-		config = {...config, appFirstRun: false};
-	} else {
-		config = {...config, appFirstRun: true};
-		setConfig( { JwtSecret: uuidV4() });
-
-	}
-	if (await asyncExists(versionFile)) {
-		await loadConfig(versionFile);
-	}
+	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
+	if (await asyncExists(versionFile)) await loadConfig(versionFile);
 }
 
 
@@ -124,11 +115,11 @@ export async function setConfig(configPart) {
 }
 
 export async function updateConfig(newConfig) {
-	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','app','os','EngineDefaultLocale'];
+	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','appPath','os','EngineDefaultLocale'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {		
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))            
-			&& (newConfig[k] !== defaultConfig[k])
+			&& (newConfig[k] != defaultConfig[k])
             && (filteredConfig[k] = v);		
 	});
 	await asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');	

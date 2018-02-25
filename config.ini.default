@@ -122,8 +122,11 @@ PathVideosHTTP = ""
 ; Video output driver for mpv
 ; If you have blue window issues in Windows, set mpvVideoOutput to "direct3d", otherwise don't touch this
 ; mpv should detect automatically which video output driver to use
-mpvVideoOutput = ""
+mpvVideoOutput = "" 
 
 ; Auth configuration
 ; Time (in minutes) before a user account is set to expire after its last login/action 
 AuthExpireTime = 15
+
+; App's first run. Overriden in config.ini
+appFirstRUn = 1
