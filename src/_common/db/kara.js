@@ -55,7 +55,7 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
       							ak.videofile AS videofile,
       							ak.videolength AS duration,
 								ak.gain AS gain,
-								(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
         							ELSE 0
       							END) AS flag_dejavu,
@@ -87,7 +87,7 @@ export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
       							ak.videofile AS videofile,
 	  							ak.videolength AS duration,
 		  						ak.gain AS gain,
-								(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
         							ELSE 0
       							END) AS flag_dejavu,
@@ -121,7 +121,7 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
       						ak.videofile AS videofile,
 	  						ak.videolength AS duration,
 	  						ak.gain AS gain,
-							(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+							(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     						THEN 1
         						ELSE 0
       						END) AS flag_dejavu,

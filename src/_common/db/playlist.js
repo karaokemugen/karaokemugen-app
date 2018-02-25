@@ -128,7 +128,7 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
 	      									THEN 1
         									ELSE 0
       									END) AS flag_blacklisted,
-										(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+										(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     									THEN 1
         									ELSE 0
       									END) AS flag_dejavu,
@@ -214,7 +214,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
     							INNER JOIN playlist_content ON all_karas.kara_id = playlist_content.fk_id_kara
     							WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
     							AND playlist_content.pos BETWEEN (SELECT ifnull(pos,0) FROM playlist_content WHERE flag_playing = 1) AND pc.pos) AS time_before_play,
-								(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
         							ELSE 0
       							END) AS flag_dejavu,
@@ -241,7 +241,7 @@ export const getPLCByKID = `SELECT ak.kara_id AS kara_id,
 								pc.flag_playing AS flag_playing,
 								pc.pk_id_plcontent AS playlistcontent_id,
 								ak.kid AS kid,
-								(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM 	viewcount WHERE fk_id_kara = ak.kara_id)
+								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM 	viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
         							ELSE 0
       							END) AS flag_dejavu,
