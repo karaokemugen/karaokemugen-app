@@ -6,6 +6,8 @@
 	"DETAILS_ADDED_3": "par %s",
 	"DETAILS_PLAYING_IN": "Lecture",
 	"DETAILS_PLAYING_IN_2": " dans %s (~%s)",
+	"DETAILS_LAST_PLAYED": "Joué",
+	"DETAILS_LAST_PLAYED_2": "il y a %s",
 	"DETAILS_VIEWS": "Vues",
 	"DETAILS_DURATION": "Durée",
 	"DETAILS_LANGUAGE": "Langue",

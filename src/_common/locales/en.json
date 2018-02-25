@@ -6,6 +6,8 @@
 	"DETAILS_ADDED_3": "by %s",
 	"DETAILS_PLAYING_IN" : "Playing",
 	"DETAILS_PLAYING_IN_2" : " in %s (~%s)",
+	"DETAILS_LAST_PLAYED": "Last played",
+	"DETAILS_LAST_PLAYED_2": "%s ago",
 	"DETAILS_VIEWS": "Views",
 	"DETAILS_DURATION": "Duration",
 	"DETAILS_LANGUAGE": "Language",
