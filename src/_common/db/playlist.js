@@ -81,7 +81,8 @@ export const updatePlaylistDuration = `UPDATE playlist SET time_left =
 
 export const getPlaylistContentsKaraIDs = `SELECT pc.fk_id_kara AS kara_id,
 										pc.pk_id_plcontent AS playlistcontent_id,
-										pc.flag_playing AS flag_playing      
+										pc.flag_playing AS flag_playing,
+										pc.pos AS pos
 										FROM playlist_content AS pc
 										WHERE pc.fk_id_playlist = $playlist_id
 										ORDER BY pc.pos,pc.created_at DESC;

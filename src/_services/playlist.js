@@ -517,13 +517,11 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 			pos = Math.min(playlistMaxPos.maxpos + 1, userMaxPosition.maxpos + numUsersInPlaylist);
 		}
 	}
-	console.log('Pos: '+pos);
 	if (pos == -1) {
 		// Find out position of currently playing karaoke
 		// If no flag_playing is found, we'll add songs at the end of playlist.
 		pos = playingPos + 1;
 	}
-	console.log('Pos 2: '+pos);
 	if (pos) {
 		await plDB.shiftPosInPlaylist(playlist_id,pos,karas.length);
 		karaList.forEach((kara,index) => {
