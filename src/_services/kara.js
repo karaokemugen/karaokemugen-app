@@ -46,8 +46,8 @@ function initValidators() {
 function langValidator(value) {
 	const langs = value.replace('"', '').split(',');
 	let result = null;
-	for (const lang of langs) {
-		if (!(lang === 'und' || hasLang('2B', value))) {
+	for (const lang of langs) {		
+		if (!(lang === 'und' || hasLang('2B', lang))) {
 			result = `Lang '${lang}' is invalid`;
 			break;
 		}
@@ -68,6 +68,8 @@ const karaConstraints = {
 	type: {presence: true, inclusion: karaTypesArray},
 	series: function(value, attributes) {
 		if (!serieRequired(attributes['type'])) {
+			return { presence: {allowEmpty: true} };
+		} else {
 			return { presence: {allowEmpty: false} };
 		}
 	},
@@ -122,6 +124,6 @@ export function verifyKaraData(karaData) {
 }
 
 /** Mutualisation du code gérant l'obligation d'avoir une série associée au kara. */
-export function serieRequired(karaType) {
+export function serieRequired(karaType) {	
 	return karaType !== karaTypes.MV && karaType !== karaTypes.LIVE;
 }
