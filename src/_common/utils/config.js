@@ -70,6 +70,7 @@ async function loadConfigFiles(appPath) {
 	defaultConfig = config;
 	if (await asyncExists(overrideConfigFile)) {
 		await loadConfig(overrideConfigFile);
+		config = {...config, appFirstRun: true};
 	}
 	if (await asyncExists(versionFile)) {
 		await loadConfig(versionFile);
