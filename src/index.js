@@ -61,9 +61,9 @@ async function main() {
 	console.log('--------------------------------------------------------------------');
 	console.log('\n');
 
-	logger.debug('[Launcher] SysPath detected : ' + appPath);
-	logger.debug('[Launcher] Locale detected : ' + config.EngineDefaultLocale);
-	logger.debug('[Launcher] Detected OS : ' + config.os);
+	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
+	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
+	logger.debug(`[Launcher] Detected OS : ${config.os}`);
 
 	if (argv.help) {
 		console.log(i18n.__('HELP_MSG'));

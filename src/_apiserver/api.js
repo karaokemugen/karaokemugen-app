@@ -2767,16 +2767,17 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get((req, res) => {
 			//We don't want to return all settings.
 			let settings = {};
 			const conf = getConfig();
 			for (var key in conf) {
 				if (conf.hasOwnProperty(key)) {
-
 					if (!key.startsWith('Path') &&
 						!key.startsWith('Admin') &&
-						!key.startsWith('Bin')
+						!key.startsWith('Bin') &&
+						!key.startsWith('appPath') &&
+						!key.startsWith('Jwt')
 					) {
 						settings[key] = conf[key];
 					}
