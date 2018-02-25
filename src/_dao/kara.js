@@ -11,7 +11,9 @@ export async function getSongCountForUser(playlist_id,username) {
 }
 
 export async function getAllKaras() {
-	return await getUserDb().all(sql.getAllKaras);
+	return await getUserDb().all(sql.getAllKaras, {
+		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
+	});
 }
 
 export async function getKara(id) {
