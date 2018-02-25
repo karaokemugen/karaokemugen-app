@@ -23,6 +23,7 @@ var pageSize;        // Int : number of karas disaplyed per "page" (per chunk)
 var saveLastDetailsKara;    // Matrice saving the differents opened kara details to display them again when needed
 var playlistToAdd;          // Int : id of playlist users are adding their kara to
 var isTouchScreen;
+var showedLoginAfter401; // to only show the login once after login error
 var socket;
 var settings;
 var kmStats;
@@ -129,11 +130,10 @@ var settingsNotUpdated;
 				} else {
 					return JSON.stringify(res);
 				}
-			
 			},
 			error: function (res, textStatus, errorThrown) {
 				console.log(res.status + '  - ' + textStatus + '  - ' + errorThrown + (res.responseJSON ? ' : ' +  res.responseJSON.message : ''));
-				if(res.status != 0 && res.status != 200 && res.responseJSON) {
+				if(res.status != 0 && res.status != 200) {
 					var errMessage = 'unknown';
 					var code = '';
 					if(res.status == 500 && res.responseJSON.code) {
@@ -144,6 +144,10 @@ var settingsNotUpdated;
 						errMessage = i18n.__(res.responseJSON.code, args);
 					} else if(res.status == 401) {
 						errMessage = i18n.__('UNAUTHORIZED');
+						if(!showedLoginAfter401) {
+							$('#loginModal').modal('show');
+							showedLoginAfter401 = true;
+						}
 					} else {
 						code = i18n.__('UNKNOWN_ERROR');
 						errMessage = res.responseText;
@@ -162,7 +166,7 @@ var settingsNotUpdated;
 		};
 
 		$('.changePseudo').click( function() {
-			if(logInfos.token) {
+			if(logInfos.token && !showedLoginAfter401) {
 				showProfil();
 			} else {
 				$('#loginModal').modal('show');
@@ -181,6 +185,9 @@ var settingsNotUpdated;
 
 		// Some html & stats init
 		initApp = function() {
+
+			showedLoginAfter401 = false;
+
 			$.ajax({ url: 'public/stats' }).done(function (data) {
 				kmStats = data;
 				if(scope === 'public') {
@@ -224,7 +231,7 @@ var settingsNotUpdated;
 				bcTags = data;
 			});
 		};
-		initApp();
+		if(logInfos.token) initApp();
 
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
@@ -545,6 +552,7 @@ var settingsNotUpdated;
 
 				}).fail(function(response) {
 					//displayMessage('info','', i18n.__('LOG_ERROR'));
+					$('#loginModal').modal('show');
 					$('#password').val('').focus();
 					$('#password, #login').addClass('redBorders');
 				});
@@ -626,11 +634,13 @@ var settingsNotUpdated;
 		});
 		/* profil stuff */
 		showProfil = function() {
-			$('#profilModal').modal('show');
 			$.ajax({
 				url: 'public/myaccount/', 	
 				type: 'GET'})
 				.done(function (response) {
+
+					$('#profilModal').modal('show');
+
 					$.each(response, function(i, k) {
 						var $element = $('.profileContent [name="' + i + '"]');
 						$element.attr('oldval', k);
@@ -643,28 +653,30 @@ var settingsNotUpdated;
 							$element.val(k);
 						}
 					});
+
+							
+					$.ajax({
+						url: 'public/users/', 	
+						type: 'GET'})
+						.done(function (response) {
+							var users = [response.filter(a => a.flag_online==1), response.filter(a => a.flag_online==0)];
+							var $userlist = $('.userlist');
+							var userlistStr = '';
+							users.forEach( (userList) => {
+								$.each(userList, function(i, k) {
+									userlistStr +=
+										'<li ' + dataToDataAttribute(k) + ' class="list-group-item' + (k.flag_online==1 ? ' online' : '') + '">'
+									+	'<div class="userLine">'
+									+	'<span class="nickname">' + k.nickname + '</span>'
+									+	'<img class="avatar" src="' + pathAvatar + k.avatar_file + '"/>'
+									+	'</div><div class="userDetails">'
+									+	'</li>';
+								});
+							});
+							$userlist.empty().append($(userlistStr));
+						});	
 				});
 
-			$.ajax({
-				url: 'public/users/', 	
-				type: 'GET'})
-				.done(function (response) {
-					var users = [response.filter(a => a.flag_online==1), response.filter(a => a.flag_online==0)];
-					var $userlist = $('.userlist');
-					var userlistStr = '';
-					users.forEach( (userList) => {
-						$.each(userList, function(i, k) {
-							userlistStr +=
-								'<li ' + dataToDataAttribute(k) + ' class="list-group-item' + (k.flag_online==1 ? ' online' : '') + '">'
-							+	'<div class="userLine">'
-							+	'<span class="nickname">' + k.nickname + '</span>'
-							+	'<img class="avatar" src="' + pathAvatar + k.avatar_file + '"/>'
-							+	'</div><div class="userDetails">'
-							+	'</li>';
-						});
-					});
-					$userlist.empty().append($(userlistStr));
-				});	
 		};
 
 		$('.profileData .profileLine input').on('keypress', (e) => {
