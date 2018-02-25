@@ -122,8 +122,8 @@ export async function initDBSystem() {
 	if (conf.optGenerateDB) {
 		// Manual generation triggered.
 		// Delete any existing karas.sqlite3 file
-		if(await asyncExists(karaDbFile)) {
-			await closeKaraDatabase();
+		if(await asyncExists(karaDbFile)) {			
+			if (karaDb) await closeKaraDatabase();
 			await asyncUnlink(karaDbFile);
 			doGenerate = true;
 		}
@@ -131,7 +131,7 @@ export async function initDBSystem() {
 		const karaDbFileStats = await asyncStat(karaDbFile);
 		if (karaDbFileStats.size === 0) doGenerate = true;	
 	}
-	await closeKaraDatabase();	
+	if (karaDb) await closeKaraDatabase();
 	await openKaraDatabase();
 	await migrateKaraDb();
 	await closeUserDatabase();	
