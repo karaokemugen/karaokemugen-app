@@ -9,6 +9,7 @@ import logger from 'winston';
 require('winston-daily-rotate-file');
 import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
+import uuidV4 from 'uuid/v4';
 
 /** Object containing all config */
 let config = {};
@@ -70,7 +71,11 @@ async function loadConfigFiles(appPath) {
 	defaultConfig = config;
 	if (await asyncExists(overrideConfigFile)) {
 		await loadConfig(overrideConfigFile);
+		config = {...config, appFirstRun: false};
+	} else {
 		config = {...config, appFirstRun: true};
+		setConfig( { JwtSecret: uuidV4() });
+
 	}
 	if (await asyncExists(versionFile)) {
 		await loadConfig(versionFile);
