@@ -1027,6 +1027,7 @@ var settingsNotUpdated;
 							+	(idPlaylist > 0 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
 							+	kara.pos + '" data-username="' + kara.username + '"' : '')
 							+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
+							+	(kara.flag_dejavu ? 'dejavu' : '' ) + ' '
 							+	(kara.username == logInfos.username ? 'user' : '' );
 
 							var badges = '';
@@ -1582,12 +1583,27 @@ var settingsNotUpdated;
     * @return {String} the details, as html
     */
 	buildKaraDetails = function(data, htmlMode) {
-		var playTime = new Date(Date.now() + data['time_before_play']*1000);
+		var todayDate = Date.now();
+		var playTime = new Date(todayDate + data['time_before_play']*1000);
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
+
+
+		var lastPlayed = data['lastplayed_at'];
+		var lastPlayedStr = '';
+		if(lastPlayed) {
+			lastPlayed = 1000 * lastPlayed;
+			var difference = todayDate - lastPlayed;
+			if(difference < 60 * 60 * 24) { // more than 24h ago
+				lastPlayedStr = i18n.__('DETAILS_LAST_PLAYED_2', '<span class="time">' + secondsTimeSpanToHMS(difference, 'hm') + '</span>');
+			} else {
+				lastPlayedStr = '<span class="time">' + new Date(lastPlayed).toLocaleDateString() + '</span>';
+			}
+		}
 		var details = {
 			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['username'] ? i18n.__('DETAILS_ADDED_3', data['username']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
+			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
 			, 'BLCTYPE_6': 			data['author']
 			, 'DETAILS_VIEWS':		data['viewcount']
 			, 'BLCTYPE_4':				data['creator']
