@@ -115,8 +115,8 @@ export async function initEngine() {
 			process.exit(1);
 		}		
 	}
-	createPreviews();
 	await initDBSystem();
+	createPreviews();
 	initPlayerSystem(state.engine);
 	initFrontend(ports.frontend);
 	initAPIServer(ports.apiserver);
