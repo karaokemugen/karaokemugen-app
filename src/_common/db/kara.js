@@ -54,8 +54,13 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
 								ak.viewcount AS viewcount,      
       							ak.videofile AS videofile,
       							ak.videolength AS duration,
-								ak.gain AS gain
- 							FROM karasdb.all_karas AS ak
+								ak.gain AS gain,
+								(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+	     							THEN 1
+        							ELSE 0
+      							END) AS flag_dejavu,
+								(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
+							FROM karasdb.all_karas AS ak							
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
 							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
 							`;
@@ -81,8 +86,13 @@ export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
 	  							ak.viewcount AS viewcount,      
       							ak.videofile AS videofile,
 	  							ak.videolength AS duration,
-		  						ak.gain AS gain
- 							FROM all_karas AS ak
+		  						ak.gain AS gain,
+								(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+	     							THEN 1
+        							ELSE 0
+      							END) AS flag_dejavu,
+								(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
+							FROM all_karas AS ak
 							WHERE ak.kid = $kid;
 							`;
 
@@ -110,7 +120,12 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
 	  						ak.viewcount AS viewcount,      
       						ak.videofile AS videofile,
 	  						ak.videolength AS duration,
-	  						ak.gain AS gain	  
+	  						ak.gain AS gain,
+							(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+	     						THEN 1
+        						ELSE 0
+      						END) AS flag_dejavu,
+							(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
  						FROM karasdb.all_karas AS ak
 						WHERE ak.kara_id = $kara_id  						  
   						`;

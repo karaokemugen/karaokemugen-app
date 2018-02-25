@@ -1,4 +1,6 @@
 import {getUserDb, transaction} from './database';
+import {getConfig} from '../_common/utils/config';
+import {now} from 'unix-timestamp';
 const sql = require('../_common/db/playlist');
 
 export async function countKarasInPlaylist(id) {
@@ -105,13 +107,18 @@ export async function getPlaylistPos(id) {
 
 export async function getPLCInfo(id,forUser) {
 	const query = sql.getPLCInfo + (forUser ? ' AND p.flag_visible = 1' : '');
-	return await getUserDb().get(query, { $playlistcontent_id: id });
+	return await getUserDb().get(query,  
+		{
+			$playlistcontent_id: id,
+			$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
+		});
 }
 
 export async function getPLCByKID(kid,playlist_id) {
-	return await getUserDb().get(sql.getPLCByKID, {
+	return await getUserDb().get(sql.getPLCByKID,{
 		$kid: kid,
-		$playlist_id: playlist_id
+		$playlist_id: playlist_id,
+		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
 	});
 }
 

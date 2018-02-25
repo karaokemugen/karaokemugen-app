@@ -127,10 +127,14 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
       									(CASE WHEN bl.fk_id_kara = ak.kara_id
 	      									THEN 1
         									ELSE 0
-      									END) AS flag_blacklisted
+      									END) AS flag_blacklisted,
+										(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+	     									THEN 1
+        									ELSE 0
+      									END) AS flag_dejavu,
+										(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
 									FROM karasdb.all_karas AS ak 
 									INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
-									LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
 									LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 									LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
 									WHERE pc.fk_id_playlist = $playlist_id
@@ -147,7 +151,7 @@ export const getPlaylistContentsForPlayer = `SELECT ak.kara_id AS kara_id,
       												pc.pseudo_add AS pseudo_add,
       												ak.videofile AS videofile,
 	  												pc.pos AS pos,
-	  												pc.flag_playing AS flag_playing,		  											pc.pk_id_plcontent AS 			playlistcontent_id,
+	  												pc.flag_playing AS flag_playing,		  												pc.pk_id_plcontent AS 			playlistcontent_id,
 	  												ak.kid AS kid
 											FROM karasdb.all_karas AS ak 
 											INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
@@ -207,11 +211,15 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 	  							(SELECT ifnull(SUM(all_karas.videolength) - ak.videolength,0)
     							FROM karasdb.all_karas AS all_karas
     							INNER JOIN playlist_content ON all_karas.kara_id = playlist_content.fk_id_kara
-								WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
-    							AND playlist_content.pos BETWEEN (SELECT ifnull(pos,0) FROM playlist_content WHERE flag_playing = 1) AND pc.pos) AS time_before_play
+    							WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
+    							AND playlist_content.pos BETWEEN (SELECT ifnull(pos,0) FROM playlist_content WHERE flag_playing = 1) AND pc.pos) AS time_before_play,
+								(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+	     							THEN 1
+        							ELSE 0
+      							END) AS flag_dejavu,
+								(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
 						FROM karasdb.all_karas AS ak
 						INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
-						LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
 						LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 						LEFT OUTER JOIN playlist AS p ON pc.fk_id_playlist = p.pk_id_playlist
 						LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
@@ -230,8 +238,13 @@ export const getPLCByKID = `SELECT ak.kara_id AS kara_id,
 								pc.pos AS pos,
 								pc.flag_playing AS flag_playing,
 								pc.pk_id_plcontent AS playlistcontent_id,
-								ak.kid AS kid 
-							FROM karasdb.all_karas AS ak 
+								ak.kid AS kid,
+								(CASE WHEN $dejavu_time > (SELECT max(modified_at) FROM 	viewcount WHERE fk_id_kara = ak.kara_id)
+	     							THEN 1
+        							ELSE 0
+      							END) AS flag_dejavu,
+								(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
+							FROM karasdb.all_karas AS ak
 							INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id 
 							WHERE pc.fk_id_playlist = $playlist_id  
 								AND pc.kid = $kid 
@@ -336,13 +349,16 @@ export const unsetPlaying = `UPDATE playlist_content
 
 export const setPlaying = `UPDATE playlist_content 
 						SET flag_playing = 1 
-						WHERE pk_id_plcontent = $playlistcontent_id;`;
+						WHERE pk_id_plcontent = $playlistcontent_id;
+						`;
 
 export const countPlaylistUsers = `SELECT COUNT(DISTINCT fk_id_user) AS NumberOfUsers
                             FROM playlist_content
-                            WHERE fk_id_playlist = $playlist_id;`;
+                            WHERE fk_id_playlist = $playlist_id;
+							`;
 
 export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
                                         FROM playlist_content
                                         WHERE fk_id_playlist = $playlist_id
-                                            AND fk_id_user = $user_id;`;
+                                            AND fk_id_user = $user_id;
+										`;

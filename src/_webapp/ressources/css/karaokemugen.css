@@ -231,6 +231,9 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 .playlist-main li.list-group-item[currentlyPlaying] {
 	background-color: #3a5064;
 }
+.playlist-main li.list-group-item[dejavu] {
+	background-color: hsla(18, 26%, 29%, 0.7)
+}
 
 .playlist-main .list-group-item.liType {
 	background-color: #607e97;

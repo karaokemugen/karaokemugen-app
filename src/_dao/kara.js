@@ -1,4 +1,6 @@
 import {getUserDb, transaction} from './database';
+import {now} from 'unix-timestamp';
+import {getConfig} from '../_common/utils/config';
 const sql = require('../_common/db/kara');
 
 export async function getSongCountForUser(playlist_id,username) {
@@ -13,7 +15,11 @@ export async function getAllKaras() {
 }
 
 export async function getKara(id) {
-	return await getUserDb().get(sql.getKara, { $kara_id: id });
+	return await getUserDb().get(sql.getKara,
+		{
+			$kara_id: id,
+			$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
+		});
 }
 
 export async function getASS(id) {
