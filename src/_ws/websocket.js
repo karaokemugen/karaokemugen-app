@@ -4,7 +4,7 @@ const logger = require('winston');
 let io;
 
 export async function emitWS(type,data) {
-	logger.debug('[WS] Sending message '+type+' : '+JSON.stringify(data));
+	//logger.debug('[WS] Sending message '+type+' : '+JSON.stringify(data));
 	io.sockets.emit(type,data);
 }
 
