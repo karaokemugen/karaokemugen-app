@@ -2,7 +2,7 @@ import {uuidRegexp} from './constants';
 import {getStats} from '../_dao/database';
 import {ASSToLyrics} from '../_common/utils/ass';
 import {getConfig} from '../_common/utils/config';
-import {findUserIDByName} from '../_services/user';
+import {findUserByName} from '../_services/user';
 const blcDB = require('../_dao/blacklist');
 const tagDB = require('../_dao/tag');
 const wlDB = require('../_dao/whitelist');
@@ -505,7 +505,7 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	const playingObject = getPlayingPos(pl);
 	const playingPos = playingObject ? playingObject.plc_id_pos : 0;
 	// Position management here :
-	if (conf.EngineSmartInsert == 1) {
+	if (conf.EngineSmartInsert == 1 && user.flag_admin == 0) {
 		if (userMaxPosition == null) {
 			// No songs yet from that user, they go first.
 			pos = -1;			
@@ -517,17 +517,17 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 			pos = Math.min(playlistMaxPos.maxpos + 1, userMaxPosition.maxpos + numUsersInPlaylist);
 		}
 	}
+	console.log('Pos: '+pos);
 	if (pos == -1) {
 		// Find out position of currently playing karaoke
 		// If no flag_playing is found, we'll add songs at the end of playlist.
 		pos = playingPos + 1;
 	}
+	console.log('Pos 2: '+pos);
 	if (pos) {
-		//logger.debug('[PLC] Shifting position in playlist from pos '+pos+' by '+karas.length+' positions');
 		await plDB.shiftPosInPlaylist(playlist_id,pos,karas.length);
-		const startpos = pos;
 		karaList.forEach((kara,index) => {
-			karaList[index].pos = startpos+index;
+			karaList[index].pos = pos+index;
 		});
 	} else {		
 		const startpos = playlistMaxPos.maxpos + 1.0;
