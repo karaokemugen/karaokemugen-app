@@ -112,8 +112,8 @@ ajx = function(type, url, data, doneCallback) {
 
 /* format seconds to Hour Minute Second */
 secondsTimeSpanToHMS = function(s, format) {
-	if (format === '24h') {
-		var d = Math.floor(s/(3600 * 24));
+	var d = Math.floor(s/(3600 * 24));
+	if (format === '24h' || format === 'dhm') {
 		s -= d * 3600 * 24;
 	}
 
@@ -124,6 +124,9 @@ secondsTimeSpanToHMS = function(s, format) {
 
 	var result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m'+(s < 10 ? '0'+s : s ) + 's';
 	if (format === 'hm') result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
+	if (format === 'dhm') {
+		result = (d > 0 ? d+'d' : '')+(h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
+	}
 	return result; 
 };
 
