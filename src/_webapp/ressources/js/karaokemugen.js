@@ -1588,12 +1588,11 @@ var settingsNotUpdated;
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 
-
 		var lastPlayed = data['lastplayed_at'];
 		var lastPlayedStr = '';
 		if(lastPlayed) {
 			lastPlayed = 1000 * lastPlayed;
-			var difference = todayDate - lastPlayed;
+			var difference = (todayDate - lastPlayed)/1000;
 			if(difference < 60 * 60 * 24) { // more than 24h ago
 				lastPlayedStr = i18n.__('DETAILS_LAST_PLAYED_2', '<span class="time">' + secondsTimeSpanToHMS(difference, 'hm') + '</span>');
 			} else {
