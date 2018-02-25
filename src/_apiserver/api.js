@@ -2774,10 +2774,12 @@ export async function initAPIServer(listenPort) {
 			for (var key in conf) {
 				if (conf.hasOwnProperty(key)) {
 					if (!key.startsWith('Path') &&
-						!key.startsWith('Admin') &&
 						!key.startsWith('Bin') &&
 						!key.startsWith('appPath') &&
-						!key.startsWith('Jwt')
+						!key.startsWith('Jwt') &&
+						!key.startsWith('is') &&
+						!key.startsWith('mpv') &&
+						!key.startsWith('os')
 					) {
 						settings[key] = conf[key];
 					}
