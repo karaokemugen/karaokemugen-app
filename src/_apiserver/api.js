@@ -2776,7 +2776,8 @@ export async function initAPIServer(listenPort) {
 					if (!key.startsWith('Path') &&
 						!key.startsWith('Admin') &&
 						!key.startsWith('Bin') &&
-						!key.startsWith('appPath')
+						!key.startsWith('appPath') &&
+						!key.startsWith('Jwt')
 					) {
 						settings[key] = conf[key];
 					}
