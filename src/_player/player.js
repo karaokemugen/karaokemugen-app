@@ -49,10 +49,6 @@ function emitPlayerEnd() {
 	emit('playerEnd');
 }
 
-function emitPlayerSkip() {
-	emit('playerSkip');
-}
-
 async function extractAllBackgroundFiles() {
 	let backgroundFiles = [];
 	for (const resolvedPath of resolvedPathBackgrounds()) {
@@ -284,42 +280,36 @@ export async function play(videodata) {
 	state.player.playing = true;
 	//Search for video file in the different PathVideos
 	const PathsVideos = conf.PathVideos.split('|');
-	let videoFile = await resolveFileInDirs(videodata.video,PathsVideos);		
-	if (!videoFile) {
+	let videoFile;
+	try {
+		videoFile = await resolveFileInDirs(videodata.video,PathsVideos);
+	} catch (err) {
 		logger.warn(`[Player] Video NOT FOUND : ${videodata.video}`);
 		if (conf.PathVideosHTTP) {
 			videoFile = `${conf.PathVideosHTTP}/${encodeURIComponent(videodata.video)}`;
 			logger.info(`[Player] Trying to play video directly from the configured http source : ${conf.PathVideosHTTP}`);
 		} else {
-			logger.error('[Player] No other source available for this video.');
+			throw `No video source for ${videodata.video}`;
 		}
-	}
-	if(videoFile !== undefined) {
-		logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
-		logger.info(`[Player] Loading video : ${videoFile}`);
-		if (isEmpty(videodata.gain)) videodata.gain = 0;			
-		try { 
-			await player.load(videoFile,'replace',[`replaygain-fallback=${videodata.gain}`]);
-			state.player.videoType = 'song';
-			player.play();
-			state.player.playerstatus = 'play';
-			if (videodata.subtitle) player.addSubtitles(`memory://${videodata.subtitle}`);
-			// Displaying infos about current song on screen.					
-			displaySongInfo(videodata.infos);
-			state.player.currentSongInfos = videodata.infos;
-			loadBackground('append');
-			state.player._playing = true;
-			emitPlayerState();
-		} catch(err) {
-			logger.error(`[Player] Error loading video ${videodata.video} : ${JSON.stringify(err)}`);
-		}
-	} else {			
-		if (state.engine.status != 'stop') {
-			logger.warn('[Player] Skipping playback due to missing video');
-			emitPlayerSkip();
-		} 
-	}
-	
+	}	
+	if (isEmpty(videodata.gain)) videodata.gain = 0;			
+	logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
+	logger.info(`[Player] Loading video : ${videoFile}`);		
+	try { 
+		await player.load(videoFile,'replace',[`replaygain-fallback=${videodata.gain}`]);
+		state.player.videoType = 'song';
+		player.play();
+		state.player.playerstatus = 'play';
+		if (videodata.subtitle) player.addSubtitles(`memory://${videodata.subtitle}`);
+		// Displaying infos about current song on screen.					
+		displaySongInfo(videodata.infos);
+		state.player.currentSongInfos = videodata.infos;
+		loadBackground('append');
+		state.player._playing = true;
+		emitPlayerState();
+	} catch(err) {
+		logger.error(`[Player] Error loading video ${videodata.video} : ${JSON.stringify(err)}`);
+	}	
 }
 
 export function setFullscreen(fsState) {

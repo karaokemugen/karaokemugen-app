@@ -293,6 +293,7 @@ async function tryToReadKaraInPlaylist() {
 	if(!state.player.playing) {
 		try {
 			const kara = await plc.playCurrentSong();			
+			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(kara));
 			await play({
 				video: kara.path.video,
 				subtitle: kara.path.subtitle,
@@ -304,10 +305,14 @@ async function tryToReadKaraInPlaylist() {
 			//Add a view to the viewcount
 			addViewcountKara(kara.kara_id,kara.kid);	
 		} catch(err) {
-			logger.info('Cannot find a song to play');
-			state.engine.status = 'stop';
-			emitEngineStatus();
-			stopPlayer(true);					
+			logger.error(`[Engine] Error during song playback : ${err}`);
+			emitEngineStatus();			
+			if (state.engine.status != 'stop') {
+				logger.warn('[Player] Skipping playback due to missing video');
+				next();
+			} else {                                   
+				stopPlayer(true);					
+			}				
 		}
 	}
 }
