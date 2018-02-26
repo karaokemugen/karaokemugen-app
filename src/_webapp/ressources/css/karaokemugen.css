@@ -222,17 +222,17 @@ select.form-control {
 }
 
 body:not(.touch) .playlist-main .list-group-item:nth-child(even):hover {
-	background-color: hsla(0, 0%, 15%, .9);
+	filter: brightness(117%);
 }
 body:not(.touch) .playlist-main .list-group-item:hover {
-	background-color: hsla(0, 0%, 15%, .8);
+	filter: brightness(120%);
 }
 
 .playlist-main li.list-group-item[currentlyPlaying] {
 	background-color: #3a5064;
 }
 .playlist-main li.list-group-item[dejavu] {
-	background-color: hsla(18, 26%, 29%, 0.7)
+	background-color: hsla(30, 22%, 29%, 0.6);
 }
 
 .playlist-main .list-group-item.liType {
