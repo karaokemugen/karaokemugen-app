@@ -51,7 +51,7 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
       							ak.author AS author,
       							ak.NORM_author AS NORM_author,
       							ak.misc AS misc,
-								ak.viewcount AS viewcount,      
+								(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
       							ak.videofile AS videofile,
       							ak.videolength AS duration,
 								ak.gain AS gain,
@@ -83,7 +83,7 @@ export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
       							ak.author AS author,
       							ak.NORM_author AS NORM_author,
       							ak.misc AS misc,
-	  							ak.viewcount AS viewcount,      
+	  							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
       							ak.videofile AS videofile,
 	  							ak.videolength AS duration,
 		  						ak.gain AS gain,
@@ -117,7 +117,7 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
       						ak.author AS author,
       						ak.NORM_author AS NORM_author,
       						ak.misc AS misc,
-	  						ak.viewcount AS viewcount,      
+	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
       						ak.videofile AS videofile,
 	  						ak.videolength AS duration,
 	  						ak.gain AS gain,
@@ -145,11 +145,6 @@ export const isKaraInPlaylist = `SELECT fk_id_kara
 							WHERE fk_id_playlist = $playlist_id 
 							  AND fk_id_kara = $kara_id;
 								`;
-
-export const updateTotalViewcounts = `UPDATE karasdb.kara SET viewcount = 
-									(SELECT COUNT(kid) FROM viewcount WHERE kid=$kid)
-									WHERE kid=$kid;
-									`;
 
 export const removeKaraFromPlaylist = `DELETE FROM playlist_content 
 									WHERE pk_id_plcontent IN ($playlistcontent_id);
