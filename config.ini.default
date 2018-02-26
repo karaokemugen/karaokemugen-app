@@ -129,4 +129,4 @@ mpvVideoOutput = ""
 AuthExpireTime = 15
 
 ; App's first run. Overriden in config.ini
-appFirstRUn = 1
+appFirstRun = 1
