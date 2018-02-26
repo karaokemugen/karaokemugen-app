@@ -155,6 +155,7 @@ async function checkPaths(config) {
 	// If no karaoke is found, copy the samples directory if it exists
 	if (!await asyncExists(resolve(appPath, 'app/data'))) {
 		if (await asyncExists(resolve(appPath, 'samples'))) {
+			logger.debug('[Launcher] app/data is missing - copying samples inside');
 			await asyncMkdirp(resolve(appPath, 'app/data'));
 			await copy(
 				resolve(appPath, 'samples'),
