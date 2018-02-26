@@ -52,10 +52,6 @@ export async function addViewcount(kara_id,kid,datetime) {
 	});
 }
 
-export async function updateTotalViewcounts(kid) {
-	return await getUserDb().run(sql.updateTotalViewcounts, { $kid: kid });
-}
-
 export async function addKaraToPlaylist(karaList) {
 	const karas = karaList.map((kara) => ({
 		$playlist_id: kara.playlist_id,

@@ -318,14 +318,7 @@ async function tryToReadKaraInPlaylist() {
 }
 
 async function addViewcountKara(kara_id, kid) {
-	// Add one viewcount to the table
-	try {
-		await addViewcount(kara_id,kid,now());
-		// Recalculate viewcount and edit it in karasdb
-		await updateTotalViewcounts(kid);		
-	} catch (err) {
-		logger.error(`[Engine] Failed to update viewcounts on karaoke ID ${kid} : ${err}`);
-	}
+	return await addViewcount(kara_id,kid,now());			
 }
 	
 export async function getKaras(filter,lang,from,size) {

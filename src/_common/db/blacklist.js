@@ -92,7 +92,7 @@ export const getBlacklistContents = `SELECT
 	  									ak.NORM_songwriter AS NORM_songwriter,
 	  									ak.year AS year,
       									ak.misc AS misc,    
-      									ak.viewcount AS viewcount,  
+      									(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
       									ak.videolength AS duration,
       									bl.created_at AS created_at,
       									bl.reason AS reason_add,

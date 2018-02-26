@@ -119,7 +119,7 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
       									pc.flag_playing AS flag_playing,      
       									ak.videofile AS videofile,
 	  									ak.videolength AS duration,	  
-	  									ak.viewcount AS viewcount,
+	  									(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
       									(CASE WHEN wl.fk_id_kara = ak.kara_id
 	     									THEN 1
         									ELSE 0
@@ -200,7 +200,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
       							ak.videofile AS videofile,
 	  							ak.videolength AS duration,
 	  							ak.gain AS gain,
-	  							ak.viewcount AS viewcount,
+	  							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
       							(CASE WHEN wl.fk_id_kara = ak.kara_id
 	     							THEN 1
         							ELSE 0
