@@ -12,6 +12,7 @@ import {emitWS} from '../_ws/websocket';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
+import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 const plc = require('./playlist');
 const logger = require('winston');
 import {promisify} from 'util';
@@ -115,12 +116,13 @@ export async function initEngine() {
 			process.exit(1);
 		}		
 	}
-	await initDBSystem();
+	await initDBSystem();	
 	createPreviews();
 	initPlayerSystem(state.engine);
-	initFrontend(ports.frontend);
+	initFrontend(ports.frontend);	
 	initAPIServer(ports.apiserver);
 	initWSServer(ports.ws);
+	welcomeToYoukousoKaraokeMugen(ports.frontend);
 	initUserSystem();	
 	//Initialize engine
 	// Test if current/public playlists exist
@@ -135,7 +137,7 @@ export async function initEngine() {
 	if (!await plc.isAPublicPlaylist()) {
 		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1);
 		logger.info('[Engine] Initial public playlist created');
-	}
+	}	
 }
 
 function exit() {

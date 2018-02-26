@@ -84,7 +84,8 @@ async function main() {
 	if (argv.validate && argv.generate) {
 		logger.error('[Launcher] --validate and --generate are mutually exclusive!');
 		process.exit(1);
-	}
+	}	
+	if (argv.nobrowser) setConfig({optNoBrowser: true});
 	logger.info('[Launcher] Loaded configuration files');
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
