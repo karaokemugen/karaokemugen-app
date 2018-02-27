@@ -2,6 +2,7 @@
 
 import {resolve} from 'path';
 import {asyncRequired} from './files';
+import {exit} from '../../_services/engine';
 import logger from 'winston';
 
 // Check if binaries are available
@@ -21,7 +22,7 @@ export async function checkBinaries(config) {
 		await Promise.all(requiredBinariesChecks);
 	} catch (err) {
 		binMissing(binariesPath, err);
-		process.exit(1);
+		exit();
 	}
 
 	return binariesPath;

@@ -10,6 +10,7 @@ const sizeOf = require('image-size');
 import {buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
 import {spawn} from 'child_process';
+import {exit} from '../_services/engine';
 const mpv = require('node-mpv');
 import {promisify} from 'util';
 const sleep = promisify(setTimeout);
@@ -198,7 +199,7 @@ async function startmpv() {
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
 		logger.error(`[Player] mpv binary : ${conf.BinmpvPath}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
-		process.exit(1);
+		exit(1);
 	}
 	if (conf.os === 'darwin' && parseInt(mpvVersionSplit[1]) > 26) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);

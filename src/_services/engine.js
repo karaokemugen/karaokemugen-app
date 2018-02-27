@@ -6,15 +6,17 @@ import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
 import {initFrontend} from '../_webapp/frontend';
 import {getAllTags} from '../_dao/tag';
-import {addViewcount,updateTotalViewcounts} from '../_dao/kara';
+import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {emitWS} from '../_ws/websocket';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
+import readlineSync from 'readline-sync';
+import {promisify} from 'util';
+
 const plc = require('./playlist');
 const logger = require('winston');
-import {promisify} from 'util';
 const sleep = promisify(setTimeout);
 
 const ports = {
@@ -138,8 +140,15 @@ export async function initEngine() {
 	}
 }
 
-function exit() {
-	process.exit(0);
+export function exit(rc) {
+	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
+	//On other systems or if terminal is not a TTY we exit immediately.
+	// non-TTY terminals have no stdin support.
+	
+	if (process.platform != 'win32' || !process.stdout.isTTY) process.exit(rc);
+	console.log('\n');
+	readlineSync.question('Press enter to exit', {hideEchoBack: true});
+	process.exit(rc);
 }
 
 async function playPlayer() {
@@ -612,7 +621,7 @@ export async function setPublicPL(playlist_id) {
 
 export function shutdown() {
 	logger.info('[Engine] Dropping the mic, shutting down!');
-	sleep(1000).then(exit());
+	sleep(1000).then(process.exit(0));
 	return;
 }
 

@@ -102,6 +102,7 @@
     "passport-jwt": "^3.0.1",
     "passport-local": "^1.0.0",
     "qrcode": "^1.2.0",
+    "readline-sync": "^1.4.9",
     "socket.io": "^2.0.4",
     "sqlite": "^2.8.0",
     "systeminformation": "^3.32.4",

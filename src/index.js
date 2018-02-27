@@ -6,58 +6,41 @@ import {setConfig,initConfig,configureBinaries} from './_common/utils/config';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import minimist from 'minimist';
-
 import i18n from 'i18n';
-
 import net from 'net';
 import logger from 'winston';
-
-import {initEngine} from './_services/engine';
+import {exit, initEngine} from './_services/engine';
 import resolveSysPath from './_common/utils/resolveSyspath';
 import {karaGenerationBatch} from './_admin/generate_karasfiles';
 import {startExpressReactServer} from './_webapp/react';
-
 import {openDatabases} from './_dao/database';
 
 process.on('uncaughtException', function (exception) {
-	console.log(exception); // to see your exception details in the console
-	// if you are on production, maybe you can send the exception details to your
-	// email as well ?
+	console.log(exception); 
 });
 
 process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-	// application specific logging, throwing an error, or other logic here
+	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);	
 });
 
-
-/**
- * Clear console - and welcome message
- * Node does not like the octal clear screen sequence.
- * So we wrote it in hexa (1B)
- */
-process.stdout.write('\x1Bc');
 const argv = parseArgs();
 const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
 if (appPath) {
 	main()
-		.then(() => logger.info('[Launcher] Initialization complete'))
 		.catch(err => {
 			logger.error(`[Launcher] Error during async launch : ${err}`);
-			process.exit(1);
+			exit(1);
 		});
 } else {
 	logger.error('[Launcher] Unable to detect SysPath !');
-	process.exit(1);
+	exit(1);
 }
 
 async function main() {
 
-	/** Note : No logging before config initialization (which initializes the loger, heh.) */
-
 	let config = await initConfig(appPath, argv);
 	console.log('--------------------------------------------------------------------');
-	console.log('Karaoke Mugen '+config.VersionNo+' '+config.VersionName);
+	console.log(`Karaoke Mugen ${config.VersionNo} (${config.VersionName})`);
 	console.log('--------------------------------------------------------------------');
 	console.log('\n');
 
@@ -82,10 +65,9 @@ async function main() {
 		setConfig({optValidateKaras: true});
 	}
 	if (argv.validate && argv.generate) {
-		logger.error('[Launcher] --validate and --generate are mutually exclusive!');
+		console.log('Error : --validate and --generate are mutually exclusive!');
 		process.exit(1);
 	}
-	logger.info('[Launcher] Loaded configuration files');
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
 	// Checking binaries
@@ -165,7 +147,7 @@ async function checkPaths(config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.PathAvatars));
 
 	await Promise.all(checks);
-	logger.info('[Launcher] Directory checks complete');
+	logger.debug('[Launcher] Directory checks complete');
 }
 
 function verifyOpenPort(port) {
