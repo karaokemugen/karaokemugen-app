@@ -18,7 +18,7 @@ export const initializationCatchphrases = [
 	'"Shinji, get in the f*cking karaoke room!" --Gendo Ikari',
 	'"Everything is going according to the purerisuto. (Translator note : purerisuto means playlist)" --Bad Fansubs 101',
 	'"People are silent when they stop singing?" --Shirou',
-	'"I am the handle of my mic. Rhythm is my body and lyrics are my blood. I have created over a thousand karaokes. Unknown to Silence, Nor known to Noise. Have withstood pain to create many Times. Yet, those hands will never hold anything. So as I sing, Unlimited Karaoke Works." --Gilgamesh',
+	'"I am the handle of my mic. Rhythm is my body and lyrics are my blood. I have created over a thousand karaokes. Unknown to Silence, Nor known to Noise. Have withstood pain to create many Times. Yet, those hands will never hold anything. So as I sing, Unlimited Karaoke Works." --Archer',
 	'"You are already singing." --Kenshiro',
 	'"Karaoke is not beautiful, and that is why it is beautiful." --Kino',
 	'"Hey, want to become a karaoke maker?" -- ／人◕ ‿‿ ◕人＼'
