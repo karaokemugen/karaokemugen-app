@@ -784,6 +784,7 @@ export async function initAPIServer(listenPort) {
  *               "playlistcontent_id": 4946,
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
  *               "serie": "Dynasty Warriors 3",
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
@@ -1107,6 +1108,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
  * @apiSuccess {String} data/previewfile Filename of the preview file associated with the karaoke. Can be undefined if the preview hasn't been generated yet by the server.
  * @apiSuccess {String} data/pseudo_add Nickname of user who added/requested the song. this nickname can be changed (`username` cannot) hence why it is displayed here.
+ * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
  * @apiSuccess {String} data/singer Singer's name, if known.
@@ -1154,6 +1156,7 @@ export async function initAPIServer(listenPort) {
  *           "pos": 12,
  *           "previewfile": "JAP - C3 ~ Cube X Cursed X Curious.1201230.mp4"
  *           "pseudo_add": "Axel",
+ * 			 "requested": 20,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *           "serie_altname": "C-Cube/CxCxC",
  *           "singer": null,
@@ -1654,6 +1657,7 @@ export async function initAPIServer(listenPort) {
  *               "language_i18n": "Allemand",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
+ * 				 "requested": 20,
  *               "serie": null,
  *               "serie_altname": null,
  *               "singer": "Dschinghis Khan",
@@ -1867,6 +1871,7 @@ export async function initAPIServer(listenPort) {
  *               "misc": null,
  *               "misc_i18n": null,
  *               "reason_add": "Blacklisted Tag : Jean-Jacques Debout (type 6)",
+ * 				 "requested": 20
  *               "serie": "Capitaine Flam",
  *               "serie_altname": "Kyaputen Fyucha",
  *               "singer": "Richard Simon",
@@ -2552,6 +2557,7 @@ export async function initAPIServer(listenPort) {
  *               "playlistcontent_id": 4946,
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
  *               "serie": "Dynasty Warriors 3",
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
@@ -2648,6 +2654,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
  * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
  * @apiSuccess {String} data/pseudo_add Nickname of user who added this song
+ * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
  * @apiSuccess {String} data/singer Singer's name, if known.
@@ -2694,6 +2701,7 @@ export async function initAPIServer(listenPort) {
  *           "playlistcontent_id": 4961,
  *           "pos": 12,
  *           "pseudo_add": "Axel",
+ * 			 "requested": 20,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *           "serie_altname": "C-Cube/CxCxC",
  *           "singer": null,
@@ -2879,6 +2887,7 @@ export async function initAPIServer(listenPort) {
  *               "language_i18n": "Allemand",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
+ * 				 "requested": 20,
  *               "serie": null,
  *               "serie_altname": null,
  *               "singer": "Dschinghis Khan",
@@ -2983,6 +2992,7 @@ export async function initAPIServer(listenPort) {
  *               "language_i18n": "Allemand",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
+ * 				 "requested": 20,
  *               "serie": null,
  *               "serie_altname": null,
  *               "singer": "Dschinghis Khan",
@@ -3209,6 +3219,7 @@ export async function initAPIServer(listenPort) {
  * 				 "lastplayed_at": null,
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
+ * 				 "requested": 20
  *               "serie": "Dynasty Warriors 3",
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
@@ -3329,6 +3340,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/lastplayed_at Last time the song has been played in UNIX timestamp. `null` if never played before
  * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/misc_i18n Translated tag list
+ * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
  * @apiSuccess {String} data/singer Singer's name, if known.
@@ -3365,6 +3377,7 @@ export async function initAPIServer(listenPort) {
  * 			 "lastplayed_at": null,
  *           "misc": null,
  *           "misc_i18n": null,
+ * 			 "requested": 20,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *           "serie_altname": "C-Cube/CxCxC",
  *           "singer": null,
@@ -3614,6 +3627,7 @@ export async function initAPIServer(listenPort) {
  *               "playlistcontent_id": 4946,
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
  *               "serie": "Dynasty Warriors 3",
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
@@ -3776,6 +3790,7 @@ export async function initAPIServer(listenPort) {
  *               "playlistcontent_id": 4946,
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20
  *               "serie": "Dynasty Warriors 3",
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
