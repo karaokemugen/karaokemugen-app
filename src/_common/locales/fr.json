@@ -88,7 +88,7 @@
 	"TAG_SEGACD": "Mega CD",
 	"TAG_VOCALOID": "Vocaloid",
 	"REQUESTED_BY": "Demandé par",
-	"HELP_MSG": "Utilisation : \n\nkaraokemugen [--help] [--version] [--debug] [--test]\n\n\tOptions : \n\n\t\t--help     Affiche ce message d'aide\n\t\t--version  Affiche les infos de version\n\t\t--debug    Affiche les messages de debug\n\t\t--generate Génère une nouvelle base de données puis quitte l'app.\n\t\t--validate Valide/vérifie/met à jour les .karas sans écrire de base de données puis quitte\n\n",
+	"HELP_MSG": "Utilisation : \n\nkaraokemugen [option]\n\n\tOptions : \n\n\t\t--help      Affiche ce message d'aide\n\t\t--version  Affiche les infos de version\n\t\t--debug     Affiche les messages de debug\n\t\t--generate  Génère une nouvelle base de données puis quitte l'app.\n\t\t--validate  Valide/vérifie/met à jour les .karas sans écrire de base de données puis quitte\n\n\t--nobrowser Ne pas démarrer de navigateur web au lancement\n\n",
 	"DAY": "jour(s)",
 	"HOUR": "heure(s)",
 	"MINUTE": "minute(s)",
