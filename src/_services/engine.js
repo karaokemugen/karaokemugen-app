@@ -129,12 +129,12 @@ export async function initEngine() {
 	if (currentPL_id) {
 		internalState.currentPlaylistID = currentPL_id;
 	} else {
-		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0);
+		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0,0,'admin');
 		logger.info('[Engine] Initial current playlist created');
 		plc.buildDummyPlaylist(internalState.currentPlaylistID);
 	}
 	if (!await plc.isAPublicPlaylist()) {
-		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1);
+		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1,0,'admin');
 		logger.info('[Engine] Initial public playlist created');
 	}
 }
