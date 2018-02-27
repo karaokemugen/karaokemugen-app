@@ -1158,6 +1158,7 @@ export async function initAPIServer(listenPort) {
  * 
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
  * @apiParam {Number} plc_id Playlist content ID. 
+ * @apiParam {String} lang Lang in ISO639-2B. 
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -1259,7 +1260,8 @@ export async function initAPIServer(listenPort) {
  * }
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
-			engine.getPLCInfo(req.params.plc_id,req.query.lang)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLCInfo(req.params.plc_id,req.query.lang,token)
 				.then((kara) => {
 					res.json(OKMessage(kara));
 				})
@@ -2797,8 +2799,8 @@ export async function initAPIServer(listenPort) {
  */
 
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			const seenFromUser = true;
-			engine.getPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLCInfo(req.params.plc_id,req.query.lang,token)
 				.then((kara) => {
 					res.json(OKMessage(kara));
 				})
