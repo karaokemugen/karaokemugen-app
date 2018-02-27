@@ -11,7 +11,7 @@ import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras,
-	selectTags, selectViewcountKaras,
+	selectTags, selectViewcountKaras, selectRequestKaras,
 	selectWhitelistKaras,
 	updateSeriesAltNames
 } from '../_common/db/generation';
@@ -465,6 +465,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		blacklistCriteriaKaras,
 		blacklistKaras,
 		viewcountKaras,
+		requestKaras,
 		playlistKaras
 	] = await Promise.all([
 		db.all(selectTags),
@@ -474,6 +475,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectBLCKaras),
 		userdb.all(selectBlacklistKaras),
 		userdb.all(selectViewcountKaras),
+		userdb.all(selectRequestKaras),
 		userdb.all(selectPlaylistKaras)
 	]);
 
@@ -489,6 +491,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`DELETE FROM blacklist_criteria WHERE uniquevalue NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM blacklist WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM viewcount WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`DELETE FROM request WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM playlist_content WHERE kid NOT IN (${karaKIDs});`)
 	]);
 	const karaIdByKid = new Map();
@@ -513,6 +516,11 @@ export async function checkUserdbIntegrity(uuid, config) {
 	viewcountKaras.forEach(vck => {
 		if (karaIdByKid.has(vck.kid) && karaIdByKid.get(vck.kid) !== vck.id_kara) {
 			sql += `UPDATE viewcount SET fk_id_kara = ${karaIdByKid.get(vck.kid)} WHERE kid = '${vck.kid}';`;
+		}
+	});
+	requestKaras.forEach(rqk => {
+		if (karaIdByKid.has(rqk.kid) && karaIdByKid.get(rqk.kid) !== rqk.id_kara) {
+			sql += `UPDATE request SET fk_id_kara = ${karaIdByKid.get(rqk.kid)} WHERE kid = '${rqk.kid}';`;
 		}
 	});
 	playlistKaras.forEach(plck => {
