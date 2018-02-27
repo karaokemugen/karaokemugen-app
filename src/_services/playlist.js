@@ -475,7 +475,12 @@ function isAllKarasInPlaylist(karas, karasToRemove) {
 	return karas.filter(k => !karasToRemove.map(ktr => ktr.kara_id).includes(k.kara_id));
 }
 
-export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
+async function addKaraToRequests(user_id,karaList) {		
+	return await karaDB.addKaraToRequests(user_id,karaList,now());
+}
+
+export async function addKaraToPlaylist(karas, requester, playlist_id, pos, opts) {
+	if (!opts) opts = {};
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;	
 	let karaList = [];	
 	const user = await findUserByName(requester);	
@@ -495,7 +500,9 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist';
 	const pl = await plDB.getPlaylistKaraIDs(playlist_id);	
 	karaList = isAllKarasInPlaylist(karaList,pl);
-	if (karaList.length === 0) throw `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`;
+	if (karaList.length === 0) throw `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`;	
+	// Song requests by admins are ignored.
+	if (!opts.addByAdmin) addKaraToRequests(user.id,karaList);
 	// If pos is provided, we need to update all karas above that and add 
 	// karas.length to the position
 	// If pos is not provided, we need to get the maximum position in the PL

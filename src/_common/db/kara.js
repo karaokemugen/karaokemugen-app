@@ -30,6 +30,14 @@ export const addViewcount = `INSERT INTO viewcount(
 							VALUES($kara_id,$kid,$modified_at);
 							`;
 
+export const addRequested = `INSERT INTO request(
+								fk_id_user,
+								fk_id_kara,
+								kid,
+								requested_at)
+							VALUES($user_id,$kara_id,(SELECT kid FROM karasdb.all_karas WHERE kara_id = $kara_id),$requested_at);
+							`;
+
 export const getAllKaras = `SELECT ak.kara_id AS kara_id,
       							ak.kid AS kid,
       							ak.title AS title,
@@ -52,6 +60,7 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
       							ak.NORM_author AS NORM_author,
       							ak.misc AS misc,
 								(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+								(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       							ak.videofile AS videofile,
       							ak.videolength AS duration,
 								ak.gain AS gain,
@@ -84,6 +93,7 @@ export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
       							ak.NORM_author AS NORM_author,
       							ak.misc AS misc,
 	  							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+								(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       							ak.videofile AS videofile,
 	  							ak.videolength AS duration,
 		  						ak.gain AS gain,
@@ -118,6 +128,7 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
       						ak.NORM_author AS NORM_author,
       						ak.misc AS misc,
 	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+							(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       						ak.videofile AS videofile,
 	  						ak.videolength AS duration,
 	  						ak.gain AS gain,
