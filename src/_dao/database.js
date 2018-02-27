@@ -17,7 +17,7 @@ let karaDb;
 let userDb;
 
 export function transaction(items, sql) {
-	retry({times: 5, interval: 100}, (callback) => {
+	retry({times: 10, interval: 100}, (callback) => {
 		getUserDb().run('begin transaction')
 			.then(() => {							
 				each(items, (data,callback) => {
@@ -38,8 +38,8 @@ export function transaction(items, sql) {
 				});
 			})
 			.catch((err) => {
-				logger.error('[DBI] Failed to begin transaction : '+err);
-				logger.error('[DBI] Transaction will be retried');
+				logger.debug('[DBI] Failed to begin transaction : '+err);
+				logger.debug('[DBI] Transaction will be retried');
 				callback(err);
 			});
 	},(err) => {
