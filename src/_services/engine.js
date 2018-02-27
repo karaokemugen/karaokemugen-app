@@ -119,6 +119,7 @@ export async function initEngine() {
 			process.exit(1);
 		}		
 	}
+	//Database system is the foundation of every other <system className=""></system>
 	await initDBSystem();
 	let inits = [];
 	createPreviews();

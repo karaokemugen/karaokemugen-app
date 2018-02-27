@@ -128,7 +128,7 @@ export async function initPlayerSystem(initialState) {
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
 	emitPlayerState();
-	logger.info('[Player] Player is READY');					
+	logger.debug('[Player] Player is READY');					
 }
 
 function getmpvVersion(path) {
