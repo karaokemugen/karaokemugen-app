@@ -274,6 +274,7 @@
 	"USER_UPDATED": "%s's profile updated",
 	"USER_UPDATE_ERROR": "Failed to update %s's profile",
 	"USER_VIEW_ERROR": "Unable to view user's profile",
+	"USER_REQUESTS_VIEW_ERROR": "Unable to fetch user's most requested songs",
 	"AVATAR_IMPORT": "Import new avatar",
 	"ACCOUNT": "My account",
 	"HELP": "Help",

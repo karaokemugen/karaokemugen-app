@@ -10,6 +10,41 @@ export const testNickname = `SELECT pk_id_user
 								WHERE nickname = $nickname
 								  OR NORM_nickname = $NORM_nickname;
 							`;
+export const getUserRequests = `SELECT ak.kara_id AS kara_id,
+      							ak.kid AS kid,
+      							ak.title AS title,
+								ak.NORM_title AS NORM_title,
+      							ak.songorder AS songorder,
+      							ak.serie AS serie,
+      							ak.NORM_serie AS NORM_serie,
+      							ak.serie_altname AS serie_altname,
+      							ak.NORM_serie_altname AS NORM_serie_altname,
+      							ak.singer AS singer,
+      							ak.NORM_singer AS NORM_singer,
+      							ak.songtype AS songtype,      
+      							ak.creator AS creator,
+	  							ak.songwriter AS songwriter,
+	  							ak.NORM_songwriter AS NORM_songwriter,
+	  							ak.year AS year,
+	  							ak.NORM_creator AS NORM_creator,
+      							ak.language AS language,
+      							ak.author AS author,
+      							ak.NORM_author AS NORM_author,
+      							ak.misc AS misc,
+								(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+								(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
+      							ak.videofile AS videofile,
+      							ak.videolength AS duration,
+								ak.gain AS gain,
+								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
+	     							THEN 1
+        							ELSE 0
+      							END) AS flag_dejavu,
+								(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
+							FROM karasdb.all_karas AS ak							
+ 							WHERE ak.kara_id IN (SELECT r.fk_id_kara FROM request AS r LEFT OUTER JOIN user AS u ON u.pk_id_user = r.fk_id_user WHERE u.login = $username)
+							ORDER BY requested DESC, ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
+							`;
 
 export const testUserID = `SELECT pk_id_user
 								FROM user

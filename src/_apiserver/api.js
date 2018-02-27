@@ -3944,7 +3944,7 @@ export async function initAPIServer(listenPort) {
 					res.statusCode = 500;
 					res.json(errMessage('GUEST_LIST_ERROR',err));
 				});
-		});
+		});	
 	routerPublic.route('/users/:username')
 	/**
  * @api {get} public/users/:username View user details (public)
@@ -4108,7 +4108,94 @@ export async function initAPIServer(listenPort) {
 				});
 
 		});
-
+	routerPublic.route('/users/:username/requests')
+	/**
+ * @api {get} public/users/:username/requests View user's most requested songs
+ * @apiName GetUserRequestedKaras
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission public
+ *
+ * @apiParam {String} username Username to check details for.
+ * @apiSuccess {Object} data Kara object
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+* {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ * 	             "flag_dejavu": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",*
+ * 				 "username": "admin",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError USER_REQUESTS_VIEW_ERROR Unable to view user requested karas
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_REQUESTS_VIEW_ERROR",
+ *   "message": null
+ * }
+ */
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+			user.getUserRequests(req.params.username)
+				.then((requestdata) => {
+					res.json(OKMessage(requestdata));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('USER_REQUESTS_VIEW_ERROR',err));
+				});						
+		})
+	/**
 	routerPublic.route('/myaccount')
 	/**
  * @api {get} public/myaccount View own user details
