@@ -5,6 +5,7 @@ import {initDBSystem, getStats} from '../_dao/database';
 import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
 import {initFrontend} from '../_webapp/frontend';
+import {initializationCatchphrases} from '../_services/constants';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
@@ -14,6 +15,7 @@ import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSub
 import {now} from 'unix-timestamp';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
+import {sample} from 'lodash';
 
 const plc = require('./playlist');
 const logger = require('winston');
@@ -118,12 +120,13 @@ export async function initEngine() {
 		}		
 	}
 	await initDBSystem();
+	let inits = [];
 	createPreviews();
-	initPlayerSystem(state.engine);
-	initFrontend(ports.frontend);
-	initAPIServer(ports.apiserver);
-	initWSServer(ports.ws);
-	initUserSystem();	
+	inits.push(initPlayerSystem(state.engine));
+	inits.push(initFrontend(ports.frontend));
+	inits.push(initAPIServer(ports.apiserver));
+	inits.push(initWSServer(ports.ws));
+	inits.push(initUserSystem());
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await plc.isACurrentPlaylist();
@@ -132,12 +135,16 @@ export async function initEngine() {
 	} else {
 		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0);
 		logger.info('[Engine] Initial current playlist created');
-		plc.buildDummyPlaylist(internalState.currentPlaylistID);
+		inits.push(plc.buildDummyPlaylist(internalState.currentPlaylistID));
 	}
 	if (!await plc.isAPublicPlaylist()) {
 		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1);
 		logger.info('[Engine] Initial public playlist created');
 	}
+	await Promise.all(inits);
+	logger.info('[Engine] Initialization complete');
+	const catchphrase = sample(initializationCatchphrases);
+	console.log(`\n${catchphrase}\n`);
 }
 
 export function exit(rc) {
@@ -274,7 +281,7 @@ async function playerEnding() {
 		internalState.playerNeedsRestart = false;				
 		try {
 			await restartmpv();
-			logger.debug('[Engine] Player restart complete');
+			logger.info('[Engine] Player restart complete');
 		} catch(err) {
 			throw err;
 		}
@@ -494,7 +501,7 @@ export async function deletePL(playlist_id) {
 }
 
 export async function deleteKara(plc_ids,playlist_id) {
-	logger.info(`[Engine] Deleting karaokes from playlist ${playlist_id} : ${plc_ids}`);
+	logger.debug(`[Engine] Deleting karaokes from playlist ${playlist_id} : ${plc_ids}`);
 	let karas;
 	if (typeof plc_ids === 'string') {
 		karas = plc_ids.split(',');
@@ -519,7 +526,7 @@ export async function deleteKara(plc_ids,playlist_id) {
 }
 
 export async function deleteWLC(wlc_ids) {
-	logger.info(`[Engine] Deleting karaokes from whitelist : ${wlc_ids}`);
+	logger.debug(`[Engine] Deleting karaokes from whitelist : ${wlc_ids}`);
 	let karas;
 	if (typeof wlc_ids === 'string') {
 		karas = wlc_ids.split(',');
@@ -543,7 +550,7 @@ export function updateSettings(newConfig) {
 			setting != 'PlayerStayOnTop') {
 			if (conf[setting] != newConfig[setting]) {
 				internalState.playerNeedsRestart = true;
-				logger.info('[Engine] Setting mpv to restart after next song');
+				logger.debug('[Engine] Setting mpv to restart after next song');
 			}
 		}
 	}
@@ -714,7 +721,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			playlist_id = await plc.isAPublicPlaylist();
 		}
 	}	
-	logger.info(`[Engine] Adding karaokes to playlist ${playlist_id} : ${kara_id}`);	
+	logger.debug(`[Engine] Adding karaokes to playlist ${playlist_id} : ${kara_id}`);	
 	try {
 		if (!addByAdmin) {
 			// Check user quota first
@@ -771,7 +778,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 }
 
 export async function copyKaraToPL(plc_id, playlist_id, pos) {
-	logger.info(`[Engine] Copying karaokes to playlist ${playlist_id} : ${plcs}`);
+	logger.debug(`[Engine] Copying karaokes to playlist ${playlist_id} : ${plcs}`);
 	const plcs = plc_id.split(',');
 	try {
 		await plc.copyKaraToPlaylist(plcs, playlist_id, pos);

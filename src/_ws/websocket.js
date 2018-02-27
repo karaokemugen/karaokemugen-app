@@ -18,7 +18,7 @@ export async function initWSServer(listenPort) {
 
 	// Initializing socket.io
 	io = require('socket.io').listen(server);	
-	logger.info(`[WS] Websocket channel is READY and listens on port ${listenPort}`);
+	logger.debug(`[WS] Websocket channel is READY and listens on port ${listenPort}`);
 }
 	
 	

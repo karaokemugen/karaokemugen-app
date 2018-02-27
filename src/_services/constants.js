@@ -8,6 +8,22 @@ export const videoFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg)$';
 export const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
 export const subFileRegexp = '^.+\\.ass$';
 
+export const initializationCatchphrases = [
+	'"Karaoke Mugen is combat-ready!" --Nanami-chan',
+	'"Karaoke Mugen, ittekimasu!" --Nanami-chan',
+	'"Smile! Sweet! Sister! Sadistic! Surprise! SING!" --The Karaoke Mugen Dev Team',
+	'"Let us achieve world domination through karaoke!" --Axel Terizaki',
+	'"Listen to my song!" --Every Macross Idol',
+	'"DATABASE DATABASE WOW WOW" --MAN WITH A MISSION',
+	'"Shinji, get in the f*cking karaoke room!" --Gendo Ikari',
+	'"Everything is going according to the purerisuto. (Translator note : purerisuto means playlist)" --Bad Fansubs 101',
+	'"People are silent when they stop singing?" --Shirou',
+	'"I am the handle of my mic. Rhythm is my body and lyrics are my blood. I have created over a thousand karaokes. Unknown to Silence, Nor known to Noise. Have withstood pain to create many Times. Yet, those hands will never hold anything. So as I sing, Unlimited Karaoke Works." --Gilgamesh',
+	'"You are already singing." --Kenshiro',
+	'"Karaoke is not beautiful, and that is why it is beautiful." --Kino',
+	'"Hey, want to become a karaoke maker?" -- ／人◕ ‿‿ ◕人＼'
+];
+
 export const karaTypes = Object.freeze({
 	OP: 'OP',
 	ED: 'ED',

@@ -72,7 +72,7 @@ export async function editUser(username,user,avatar) {
 			user.avatar_file = currentUser.avatar_file;
 		}
 		await db.editUser(user);
-		logger.info(`[User] ${username} (${user.nickname}) profile updated`);	
+		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);	
 		return user;
 	} catch (err) {
 		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
@@ -200,7 +200,7 @@ export async function addUser(user) {
 	}	
 	try {
 		await db.addUser(user);
-		logger.info(`[User] Created user ${user.login}`);
+		logger.debug(`[User] Created user ${user.login}`);
 		logger.debug(`[User] User data : ${JSON.stringify(user)}`);
 		return true;
 	} catch(err) {
@@ -227,7 +227,7 @@ export async function deleteUser(username) {
 	try {
 		const user = await findUserByName(username);
 		await db.deleteUser(user.id);
-		logger.info(`[User] Deleted user ${username} (id ${user.id})`);
+		logger.debug(`[User] Deleted user ${username} (id ${user.id})`);
 		return true;
 	} catch (err) {
 		const ret = {

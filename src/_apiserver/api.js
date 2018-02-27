@@ -66,7 +66,7 @@ export async function initAPIServer(listenPort) {
 	let routerAdmin = express.Router();
 	
 	app.listen(listenPort, () => {
-		logger.info(`[API] API server is READY and listens on port ${listenPort}`);
+		logger.debug(`[API] API server is READY and listens on port ${listenPort}`);
 	});
 
 	// Auth system

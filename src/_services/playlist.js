@@ -1014,7 +1014,7 @@ export async function next() {
 	});
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (readpos >= playlist.length && conf.EngineRepeatPlaylist == 0) {
-		logger.info('[PLC] next : current position is last song. End of playlist.');	
+		logger.debug('[PLC] End of playlist.');	
 		await setPlaying(null,playlist_id);
 		throw 'Current position is last song!';
 	} else {
@@ -1095,7 +1095,6 @@ export async function playCurrentSong() {
 }
 
 export async function buildDummyPlaylist(playlist_id) {
-	logger.info('[PLC] Dummy Plug : Adding some karaokes to the current playlist...');
 	const stats = await getStats();
 	let karaCount = stats.totalcount;
 	// Limiting to 5 sample karas to add if there's more. 

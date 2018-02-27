@@ -141,14 +141,14 @@ export async function initDBSystem() {
 	await closeKaraDatabase();	
 	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
 	await compareDatabasesUUIDs();
-	logger.info('[DBI] Database Interface is READY');
+	logger.debug('[DBI] Database Interface is READY');
 	getStats().then((stats) => {
-		logger.info('[DBI] Karaoke count   : ' + stats.totalcount);
-		logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-		logger.info('[DBI] Total series    : ' + stats.totalseries);
-		logger.info('[DBI] Total languages : ' + stats.totallanguages);
-		logger.info('[DBI] Total artists   : ' + stats.totalartists);
-		logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
+		logger.info('Karaoke count   : ' + stats.totalcount);
+		logger.info('Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
+		logger.info('Series count    : ' + stats.totalseries);
+		logger.info('Languages count : ' + stats.totallanguages);
+		logger.info('Artists count   : ' + stats.totalartists);
+		logger.info('Playlists count : ' + stats.totalplaylists);
 	});
 	return true;	
 }
@@ -208,7 +208,7 @@ async function generateDatabase() {
 	const conf = getConfig();
 
 	const failedKaras = await DBgenerator.run(conf);
-	logger.info('[DBI] Karaokes database created');
+	logger.debug('[DBI] Karaokes database created');
 	if (conf.optGenerateDB) {
 		if (failedKaras) {
 			logger.info('[DBI] Database generation completed with errors!');
