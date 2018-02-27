@@ -432,7 +432,6 @@ button.closeParent.bottom  {
 }
 .list-group-item > .contentDiv > *{
 	flex-grow: 1;
-	flex-shrink: 0;
 }
 
 .list-group-item > .typeDiv {
