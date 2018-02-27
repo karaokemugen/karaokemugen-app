@@ -4006,7 +4006,7 @@ export async function initAPIServer(listenPort) {
 				});						
 		})
 	/**
- * @api {put} admin/users/:username Edit a user
+ * @api {put} public/users/:username Edit a user
  * @apiName EditUser
  * @apiVersion 2.1.0
  * @apiGroup Users
