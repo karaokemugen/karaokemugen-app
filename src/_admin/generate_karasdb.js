@@ -119,8 +119,7 @@ function prepareKaraInsertData(kara, index) {
 		$kara_songorder: kara.order,
 		$kara_videofile: kara.videofile,
 		$kara_dateadded: kara.dateadded,
-		$kara_datemodif: kara.datemodif,
-		$kara_viewcount: kara.viewcount,
+		$kara_datemodif: kara.datemodif,		
 		$kara_gain: kara.videogain,
 		$kara_videolength: kara.videoduration,
 		$kara_checksum: kara.checksum
