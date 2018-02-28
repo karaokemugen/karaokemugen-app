@@ -429,7 +429,12 @@ async function getKaraByKID(kid) {
 }
 
 async function getPLCByKID(kid,playlist_id) {
-	return await plDB.getPLCByKID(kid,playlist_id);
+	try {
+		return await plDB.getPLCByKID(kid,playlist_id);
+	} catch(err) {
+		console.log(err);
+	}
+	
 }
 
 export function filterPlaylist(playlist,searchText) {
@@ -496,9 +501,11 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	karas.forEach((kara_id) => {
 		karaList.push({
 			kara_id: parseInt(kara_id),
-			user_id: user.id,
+			username: requester,
+			pseudo_add: user.nickname,
+			NORM_pseudo_add: deburr(user.nickname),
 			playlist_id: parseInt(playlist_id),
-			date_add: date_add,				
+			created_at: date_add,				
 		});				
 	});
 	const [userMaxPosition,
@@ -717,11 +724,15 @@ export async function exportPlaylist(playlist_id) {
 	plContents.forEach((plc) => {
 		let plcObject = {};
 		plcObject.kid = plc.kid;
+		plcObject.pseudo_add = plc.pseudo_add;
+		plcObject.created_at = plc.created_at;
+		plcObject.pos = plc.pos;
+		plcObject.username = plc.username;
 		if (plc.flag_playing === 1) plcObject.flag_playing = 1;
 		plcFiltered.push(plcObject);
 	});
 	pl.Header = {
-		version: 2,
+		version: 3,
 		description: 'Karaoke Mugen Playlist File',
 	};
 	pl.PlaylistInformation = plInfo;
@@ -729,36 +740,31 @@ export async function exportPlaylist(playlist_id) {
 	return pl;							
 }
 
-function checkImportedKIDs(playlist) {
+async function checkImportedKIDs(playlist) {
 	let karasToImport = [];
-	let karasUnknown = [];	
-	eachSeries(playlist,(kara,callback) => {
-		getKaraByKID(kara.kid).then((karaFromDB) => {
-			if (karaFromDB) {
-				karasToImport.push(karaFromDB.kara_id);
-				callback();
-			} else {
-				logger.warn(`[PLC] importPlaylist : KID ${kara.kid} unknown`);
-				karasUnknown.push(kara.kid);
-				callback();
-			}
-		}).catch((err) => {
-			callback(err);
-		});
-	}, (err) => {
-		if (err) throw err;
-		return { 
-			karasToImport: karasToImport, 
-			karasUnknown: karasUnknown 
-		};
-	});
+	let karasUnknown = [];
+	console.log(playlist);
+	for (const kara in playlist) {
+		const karaFromDB = await getKaraByKID(playlist[kara].kid);
+		if (karaFromDB) {
+			playlist[kara].kara_id = karaFromDB.kara_id;
+			karasToImport.push(playlist[kara]);			
+		} else {
+			logger.warn(`[PLC] importPlaylist : KID ${kara.kid} unknown`);
+			karasUnknown.push(kara.kid);			
+		}
+	}
+	return { 
+		karasToImport: karasToImport, 
+		karasUnknown: karasUnknown 
+	};	
 }
 
 export async function importPlaylist(playlist) {
 	// Check if format is valid :
 	// Header must contain :
 	// description = Karaoke Mugen Playlist File
-	// version <= 2
+	// version <= 3
 	// 
 	// PlaylistContents array must contain at least one element.
 	// That element needs to have at least kid. flag_playing is optional
@@ -766,9 +772,7 @@ export async function importPlaylist(playlist) {
 	// Test each element for those.
 	//
 	// PlaylistInformation must contain :
-	// - created_at : (number)
 	// - flag_visible : (0 / 1)
-	// - modified_at : (number)
 	// - name : playlist name
 	//
 	// If all tests pass, then add playlist, then add karas
@@ -776,7 +780,7 @@ export async function importPlaylist(playlist) {
 	let playingKara;
 	if (playlist.Header === undefined) throw 'No Header section';
 	if (playlist.Header.description !== 'Karaoke Mugen Playlist File') throw 'Not a .kmplaylist file';
-	if (playlist.Header.version > 2) throw `Cannot import this version (${playlist.Header.version})`;
+	if (playlist.Header.version > 3) throw `Cannot import this version (${playlist.Header.version})`;
 	if (playlist.PlaylistContents === undefined) throw 'No PlaylistContents section';
 	if (playlist.PlaylistInformation === undefined) throw 'No PlaylistInformation section';
 	if (isNaN(playlist.PlaylistInformation.created_at)) throw 'Creation time is not valid';
@@ -784,25 +788,40 @@ export async function importPlaylist(playlist) {
 	if (playlist.PlaylistInformation.flag_visible !== 0 && 
 		playlist.PlaylistInformation.flag_visible !== 1) throw 'Visible flag must be boolean';
 	if (isEmpty(playlist.PlaylistInformation.name)) throw 'Playlist name must not be empty';
+	let flag_playingDetected = false;
 	if (playlist.PlaylistContents !== undefined) {
-		playlist.PlaylistContents.forEach((kara) => {
+		playlist.PlaylistContents.forEach((kara,index) => {
 			if (!(new RegExp(uuidRegexp).test(kara.kid))) throw 'KID is not a valid UUID!';
+			if (isNaN(kara.created_at)) throw 'Karaoke added time is not a number';
 			if (!isNaN(kara.flag_playing)) {
-				if (kara.flag_playing === 1) {
-					playingKara = kara.kid;						
-				} else {
-					throw 'flag_playing must be 1 or not present!';
-				}
+				if (kara.flag_playing !== 1) throw 'flag_playing must be 1 or not present!';
+				if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
+				flag_playingDetected = true;
+				playingKara = kara.kid;
 			}
+			if (isNaN(kara.pos)) throw 'Position must be a number';
+			if (isEmpty(kara.pseudo_add)) throw 'All karaokes must have a nickname associated with them';
+			playlist.PlaylistContents[index].NORM_pseudo_add = deburr(kara.pseudo_add);
+			const user = findUserByName(kara.username);
+			if (!user) playlist.PlaylistContents[index].username = 'admin';			
 		});
 	}
 
 	// Validations done. First creating playlist.
 	const playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0);
-	const ret = checkImportedKIDs(playlist.PlaylistContents);
-	await addKaraToPlaylist(ret.karasToImport,'Administrateur',playlist_id);
-	const plcPlaying = await getPLCByKID(playingKara,playlist_id);
-	await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
+	const ret = await checkImportedKIDs(playlist.PlaylistContents);	
+	playlist.PlaylistContents = ret.karasToImport;	
+	playlist.PlaylistContents.forEach((kara,index) => {
+		playlist.PlaylistContents[index].playlist_id = playlist_id;
+	});
+	console.log(playlist.PlaylistContents);
+	await karaDB.addKaraToPlaylist(playlist.PlaylistContents);
+	if (playingKara) {
+		console.log(playingKara);
+		const plcPlaying = await getPLCByKID(playingKara,playlist_id);				
+		console.log(plcPlaying);
+		await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
+	}
 	return {
 		playlist_id: playlist_id,
 		karasUnknown: ret.karasUnknown

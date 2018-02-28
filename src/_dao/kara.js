@@ -1,6 +1,8 @@
 import {getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
+import {deburr} from 'lodash';
+
 const sql = require('../_common/db/kara');
 
 export async function getSongCountForUser(playlist_id,username) {
@@ -53,11 +55,14 @@ export async function addViewcount(kara_id,kid,datetime) {
 }
 
 export async function addKaraToPlaylist(karaList) {
+	console.log(karaList);
 	const karas = karaList.map((kara) => ({
 		$playlist_id: kara.playlist_id,
-		$user_id: kara.user_id,
+		$username: kara.username,
+		$pseudo_add: kara.pseudo_add,
+		$NORM_pseudo_add: kara.NORM_pseudo_add,
 		$kara_id: kara.kara_id,
-		$created_at: kara.date_add,
+		$created_at: kara.created_at,
 		$pos: kara.pos
 	}));
 	return await transaction(karas, sql.addKaraToPlaylist);

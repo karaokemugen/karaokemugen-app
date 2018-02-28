@@ -417,6 +417,7 @@ export async function importPL(playlist) {
 	try {
 		return await plc.importPlaylist(playlist);
 	} catch(err) {
+		logger.error(err);
 		throw err;
 	}
 }

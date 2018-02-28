@@ -10,11 +10,11 @@ export const addKaraToPlaylist = `INSERT INTO playlist_content(
 									flag_playing,
 									pseudo_add,
 									NORM_pseudo_add) 
-								SELECT $playlist_id,$kara_id,k.kid,$created_at,$user_id,$pos,0,u.nickname,u.NORM_nickname
+								SELECT $playlist_id,$kara_id,k.kid,$created_at,u.pk_id_user,$pos,0,$pseudo_add,$NORM_pseudo_add
 								FROM karasdb.kara AS k,
 								     user AS u							
 								WHERE pk_id_kara = $kara_id
-									AND u.pk_id_user = $user_id;
+									AND u.login = $username;
 								`;
 
 export const addKaraToWhitelist = `INSERT INTO whitelist(fk_id_kara,kid,created_at)
