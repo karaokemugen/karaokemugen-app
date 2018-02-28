@@ -28,10 +28,9 @@ export async function getFavorites(username, filter, lang, from, size) {
 }
 
 export async function addToFavorites(username, kara_id) {
-	kara_id = [kara_id];
 	try {
 		const plInfo = await getFavoritesPlaylist(username);
-		await addKaraToPlaylist(kara_id, username, plInfo.playlist_id);
+		await addKaraToPlaylist([kara_id], username, plInfo.playlist_id);
 		await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
 		return plInfo;
 	} catch(err) {
