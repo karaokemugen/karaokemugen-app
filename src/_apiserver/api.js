@@ -4493,9 +4493,7 @@ export async function initAPIServer(listenPort) {
 					}
 				});
 
-		});
-
-	routerPublic.route('/favorites/:plc_id([0-9]+)')
+		})
 	/**
  * @api {delete} public/favorites/:plc_id Delete karaoke from your favorites
  * @apiName DeleteFavorites
