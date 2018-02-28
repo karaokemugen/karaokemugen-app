@@ -39,8 +39,18 @@ export async function addToFavorites(username, kara_id) {
 	}
 }
 
-export async function deleteFavorite(username, plc_id) {
+export async function deleteFavorite(username, kara_id) {
 	const plInfo = await getFavoritesPlaylist(username);
+	const plContents = await getPlaylistContents(plInfo.playlist_id);
+	let plc_id;
+	const isKaraInPL = plContents.some((plc) => {
+		if (plc.kara_id === kara_id) {
+			plc_id = plc.playlistcontent_id;
+			return true;
+		}
+		return false;
+	});
+	if (!isKaraInPL) throw 'Karaoke ID is not present in this favorites list';
 	await deleteKaraFromPlaylist([plc_id], plInfo.playlist_id);
 	await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
 	return plInfo;

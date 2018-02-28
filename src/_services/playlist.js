@@ -370,7 +370,7 @@ async function unsetCurrentAllPlaylists() {
 }
 
 async function updatePlaylistKaraCount(playlist_id) {
-	const count = await plDB.countKarasInPlaylist(playlist_id);
+	const count = await plDB.countKarasInPlaylist(playlist_id);	
 	await plDB.updatePlaylistKaraCount(playlist_id,count.karaCount);
 }
 
@@ -568,7 +568,6 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	}	
 	await karaDB.addKaraToPlaylist(karaList);
 	await updatePlaylistLastEditTime(playlist_id);
-	await updatePlaylistKaraCount(playlist_id);
 	// Checking if a flag_playing is present inside the playlist.					
 	// If not, we'll have to set the karaoke we just added as the currently playing one. 
 	if (!await isPlaylistFlagPlaying(playlist_id)) {
@@ -577,6 +576,7 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	} else {
 		await updatePlaylistDuration(playlist_id);				
 	}
+	await updatePlaylistKaraCount(playlist_id);
 	let karaAdded = [];
 	karaList.forEach(function(kara) {
 		karaAdded.push(kara.kara_id);
@@ -811,7 +811,6 @@ export async function importPlaylist(playlist,username) {
 			karasUnknown: karasUnknown
 		};
 	} catch (err) {
-		console.log(err);
 		throw err;
 	}
 	
