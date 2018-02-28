@@ -551,7 +551,6 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 		});
 	}	
 	await karaDB.addKaraToPlaylist(karaList);
-	const updates = []
 	await Promise.all([
 		updatePlaylistLastEditTime(playlist_id),
 		updatePlaylistKaraCount(playlist_id)
