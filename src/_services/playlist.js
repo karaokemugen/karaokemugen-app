@@ -15,7 +15,7 @@ import logger from 'winston';
 import {deburr, isEmpty, sample, shuffle} from 'lodash';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {eachOf, eachSeries, timesSeries} from 'async';
+import {eachOf} from 'async';
 import {emitWS} from '../_ws/websocket';
 import {emit} from '../_common/utils/pubsub';
 
@@ -429,12 +429,7 @@ async function getKaraByKID(kid) {
 }
 
 async function getPLCByKID(kid,playlist_id) {
-	try {
 		return await plDB.getPLCByKID(kid,playlist_id);
-	} catch(err) {
-		console.log(err);
-	}
-	
 }
 
 export function filterPlaylist(playlist,searchText) {
@@ -743,7 +738,6 @@ export async function exportPlaylist(playlist_id) {
 async function checkImportedKIDs(playlist) {
 	let karasToImport = [];
 	let karasUnknown = [];
-	console.log(playlist);
 	for (const kara in playlist) {
 		const karaFromDB = await getKaraByKID(playlist[kara].kid);
 		if (karaFromDB) {
@@ -814,12 +808,9 @@ export async function importPlaylist(playlist) {
 	playlist.PlaylistContents.forEach((kara,index) => {
 		playlist.PlaylistContents[index].playlist_id = playlist_id;
 	});
-	console.log(playlist.PlaylistContents);
 	await karaDB.addKaraToPlaylist(playlist.PlaylistContents);
 	if (playingKara) {
-		console.log(playingKara);
 		const plcPlaying = await getPLCByKID(playingKara,playlist_id);				
-		console.log(plcPlaying);
 		await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
 	}
 	return {
@@ -1143,27 +1134,12 @@ export async function buildDummyPlaylist(playlist_id) {
 	if (karaCount > 5) karaCount = 5;
 	if (karaCount > 0) {
 		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
-		timesSeries(karaCount,(n,next) => {				
-			getRandomKara(playlist_id).then((kara_id) => {
-				addKaraToPlaylist(
-					[kara_id],
-					'admin',
-					playlist_id
-				).then(() => {
-					next();
-				}).catch((err) => {
-					logger.error('[PLC] Dummy Plug : '+err);
-					next(err);
-				});
-			}).catch((err) => {
-				logger.error(`[PLC] Dummy Plug : failure to get random karaokes to add : ${err}`);
-				next(err);
-			});
-		},(err) => {
-			if (err) throw err;
-			logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
-			return true;
-		});
+		for (let i = 1; i <= karaCount; i++) {
+			const kara_id = await getRandomKara(playlist_id);
+			await addKaraToPlaylist([kara_id],'admin',playlist_id);
+		}
+		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
+		return true;		
 	} else {
 		logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
 		return true;

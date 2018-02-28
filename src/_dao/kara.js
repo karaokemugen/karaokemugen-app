@@ -55,7 +55,6 @@ export async function addViewcount(kara_id,kid,datetime) {
 }
 
 export async function addKaraToPlaylist(karaList) {
-	console.log(karaList);
 	const karas = karaList.map((kara) => ({
 		$playlist_id: kara.playlist_id,
 		$username: kara.username,

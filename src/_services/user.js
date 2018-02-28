@@ -242,7 +242,6 @@ export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
 	Promise.resolve().then(function resolver() {
-		console.log('Cleanup');
 		return updateExpiredUsers()
 			.then(resolver)
 			.catch((err) => {
