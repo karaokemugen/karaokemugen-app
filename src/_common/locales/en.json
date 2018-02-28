@@ -271,7 +271,6 @@
 	"USER_UPDATED": "%s's profile updated",
 	"USER_UPDATE_ERROR": "Failed to update %s's profile",
 	"USER_VIEW_ERROR": "Unable to view user's profile",
-	"FAVORITES_VIEW_ERROR": "Unable to view your favorites",
 	"FAVORITES_ADDED": "%s added to your favorites",
 	"FAVORITES_ADD_SONG_ERROR": "Unable to add %s to your favorites",
 	"FAVORITES_DELETED": "Favorite karaoke deleted",
