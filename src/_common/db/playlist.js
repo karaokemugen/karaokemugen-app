@@ -254,31 +254,37 @@ export const getPLCByKID = `SELECT ak.kara_id AS kara_id,
 							ORDER BY pc.pos;
 						`;
 
-export const getPlaylistInfo = `SELECT pk_id_playlist AS playlist_id, 
-									name, 
-									num_karas, 
-									length, 
-									time_left, 
-									created_at, 
-									modified_at, 
-									flag_visible, 
-									flag_current, 
-									flag_public  
-									FROM playlist 
+export const getPlaylistInfo = `SELECT p.pk_id_playlist AS playlist_id, 
+									p.name AS name, 
+									p.num_karas AS num_karas, 
+									p.length AS length, 
+									p.time_left AS time_left, 
+									p.created_at AS created_at, 
+									p.modified_at AS modified_at, 
+									p.flag_visible AS flag_visible, 
+									p.flag_current AS flag_current, 
+									p.flag_public AS flag_public,
+									p.flag_favorites AS flag_favorites,
+									u.login AS username 
+									FROM playlist AS p, user AS u
 									WHERE pk_id_playlist = $playlist_id
+									  AND u.pk_id_user = p.fk_id_user
 							`;
 
-export const getPlaylists = `SELECT pk_id_playlist AS playlist_id, 
-									name, 
-									num_karas, 
-									length, 
-									time_left, 
-									created_at, 
-									modified_at, 
-									flag_visible, 
-									flag_current, 
-									flag_public
- 							FROM playlist
+export const getPlaylists = `SELECT p.pk_id_playlist AS playlist_id, 
+									p.name AS name, 
+									p.num_karas AS num_karas, 
+									p.length AS length, 
+									p.time_left AS time_left, 
+									p.created_at AS created_at, 
+									p.modified_at AS modified_at, 
+									p.flag_visible AS flag_visible, 
+									p.flag_current AS flag_current, 
+									p.flag_public AS flag_public,
+									p.flag_favorites AS flag_favorites,
+									u.login AS username
+ 							FROM playlist AS p, user AS u
+							WHERE p.fk_id_user = u.pk_id_user
  							`;
 
 export const testCurrentPlaylist = `SELECT pk_id_playlist AS playlist_id

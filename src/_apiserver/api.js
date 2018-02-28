@@ -2485,7 +2485,7 @@ export async function initAPIServer(listenPort) {
  * @api {get} public/playlists/ Get list of playlists (public)
  * @apiName GetPlaylistsPublic
  * @apiGroup Playlists
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiPermission public
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiSuccess {Object[]} playlists Playlists information
@@ -2499,12 +2499,14 @@ export async function initAPIServer(listenPort) {
  *           "flag_current": 1,
  *           "flag_public": 0,
  *           "flag_visible": 1,
+ * 			 "flag_favorites": 0,
  *           "length": 0,
  *           "modified_at": 1508408078,
  *           "name": "Liste de lecture courante",
  *           "num_karas": 6,
  *           "playlist_id": 1,
- *           "time_left": 0
+ *           "time_left": 0,
+ * 			 "username": 'admin'
  *       }
  *   ]
  * }
@@ -2515,8 +2517,8 @@ export async function initAPIServer(listenPort) {
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get list of playlists, only return the visible ones
-			const seenFromUser = true;
-			engine.getAllPLs(seenFromUser)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getAllPLs(token)
 				.then((playlists) => {
 					res.json(OKMessage(playlists));
 				})
@@ -2531,19 +2533,21 @@ export async function initAPIServer(listenPort) {
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
  * @apiPermission public
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
  * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
+ * @apiSuccess {Number} data/flag_favorites Is playlist a favorites playlist? if displayed by a regular user, he'll only get to see his own favorites playlist.
  * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
- * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
+ * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users? 
  * @apiSuccess {Number} data/length Duration of playlist in seconds
  * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
  * @apiSuccess {String} data/name Name of playlist
  * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
  * @apiSuccess {Number} data/playlist_id Database's playlist ID
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ * @apiSuccess {Number} data/username User who created the playlist
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK 
@@ -2551,6 +2555,7 @@ export async function initAPIServer(listenPort) {
  *   "data": {
  *       "created_at": 1508313440,
  *       "flag_current": 1,
+ * 		 "flag_favorites": 0,
  *       "flag_public": 0,
  *       "flag_visible": 1,
  *       "length": 0,
@@ -2558,7 +2563,8 @@ export async function initAPIServer(listenPort) {
  *       "name": "Liste de lecture courante",
  *       "num_karas": 6,
  *       "playlist_id": 1,
- *       "time_left": 0
+ *       "time_left": 0,
+ * 		 "username": admin
  *   }
  *}
  * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
@@ -2570,8 +2576,8 @@ export async function initAPIServer(listenPort) {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
-			const seenFromUser = true;
-			engine.getPLInfo(req.params.pl_id,seenFromUser)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getPLInfo(req.params.pl_id,token)
 				.then((playlist) => {							
 					res.json(OKMessage(playlist));
 				})
@@ -2676,8 +2682,8 @@ export async function initAPIServer(listenPort) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			const seenFromUser = true;
-			engine.getPLContents(req.params.pl_id,filter,lang,seenFromUser,from,size)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getPLContents(req.params.pl_id,filter,lang,token,from,size)
 				.then((playlist) => {
 					if (playlist == null) res.statusCode = 404;
 					res.json(OKMessage(playlist));
@@ -3620,8 +3626,8 @@ export async function initAPIServer(listenPort) {
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
-
-			engine.getCurrentPLInfo()
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getCurrentPLInfo(token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3727,7 +3733,8 @@ export async function initAPIServer(listenPort) {
 			} else {
 				to = req.query.to;
 			}
-			engine.getCurrentPLContents(filter, lang, from, to)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getCurrentPLContents(filter, lang, from, to, token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3781,7 +3788,8 @@ export async function initAPIServer(listenPort) {
 
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
-			engine.getPublicPLInfo()
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getPublicPLInfo(token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3887,7 +3895,8 @@ export async function initAPIServer(listenPort) {
 			} else {
 				from = req.query.from;
 			}
-			engine.getPublicPLContents(filter, lang, from, to)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getPublicPLContents(filter, lang, from, to, token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})

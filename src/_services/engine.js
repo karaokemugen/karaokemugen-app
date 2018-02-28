@@ -460,8 +460,10 @@ export async function getPLCInfo(plc_id, lang, userToken) {
 	return output;
 }
 
-export async function getAllPLs(seenFromUser) {
-	return await plc.getPlaylists(seenFromUser);
+export async function getAllPLs(token) {
+	let seenFromUser = true;
+	if (token.role != 'admin') seenFromUser = false;
+	return await plc.getPlaylists(seenFromUser,token.username);
 }
 
 export async function createPL(playlist,username) {
@@ -474,8 +476,10 @@ export async function createPL(playlist,username) {
 		username);
 }
 
-export async function getPLInfo(playlist_id, seenFromUser) {
-	return await plc.getPlaylistInfo(playlist_id, seenFromUser);
+export async function getPLInfo(playlist_id, token) {
+	let seenFromUser = true;
+	if (token.role != 'admin') seenFromUser = false;
+	return await plc.getPlaylistInfo(playlist_id, seenFromUser, token.username);
 }
 
 export async function deletePL(playlist_id) {
@@ -643,8 +647,10 @@ export async function emptyWL() {
 	return await plc.emptyWhitelist();
 }
 
-export async function getPLContents(playlist_id,filter,lang,seenFromUser,from,size) {
+export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
+		let seenFromUser = false;
+		if (token.role != 'admin') seenFromUser = true;
 		const pl = await plc.getPlaylistContents(playlist_id,seenFromUser);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);

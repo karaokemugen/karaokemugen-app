@@ -352,13 +352,13 @@ export async function createPlaylist(name,flag_visible,flag_current,flag_public,
 	return pl.lastID;
 }
 
-export async function getPlaylistInfo(playlist_id,seenFromUser) {
-	if (!await isPlaylist(playlist_id,seenFromUser)) throw `Playlist ${playlist_id} unknown`;
-	return await plDB.getPlaylistInfo(playlist_id,seenFromUser);
+export async function getPlaylistInfo(playlist_id,seenFromUser,username) {
+	if (!await isPlaylist(playlist_id,seenFromUser,username)) throw `Playlist ${playlist_id} unknown`;
+	return await plDB.getPlaylistInfo(playlist_id,seenFromUser,username);
 }
 
-export async function getPlaylists(seenFromUser) {
-	return await plDB.getPlaylists(seenFromUser);
+export async function getPlaylists(seenFromUser,username) {
+	return await plDB.getPlaylists(seenFromUser,username);
 }
 
 async function unsetPublicAllPlaylists() {

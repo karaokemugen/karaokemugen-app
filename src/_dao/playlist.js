@@ -126,16 +126,19 @@ export async function getPLCByKID(kid,playlist_id) {
 	});
 }
 
-export async function getPlaylistInfo(id,forUser) {
-	let query = sql.getPlaylistInfo + (forUser ? ' AND flag_visible = 1' : '');
-	return await getUserDb().get(query, { $playlist_id: id });
+export async function getPlaylistInfo(id, forUser, username) {
+	let query = sql.getPlaylistInfo + (forUser ? ' AND flag_visible = 1 OR (p.flag_visible = 0 AND p.flag_favorites = 1 AND u.login = $username)' : '');
+	return await getUserDb().get(query, { 
+		$playlist_id: id,
+		$username: username 
+	});
 }
 
-export async function getPlaylists(forUser) {
+export async function getPlaylists(forUser,username) {
 	const query = sql.getPlaylists
-		+ (forUser ? ' WHERE flag_visible = 1' : '')
+		+ (forUser ? ' AND p.flag_visible = 1 OR (p.flag_visible = 0 AND p.flag_favorites = 1 AND u.login = $username)' : '')
 		+ ' ORDER BY flag_current DESC, flag_public DESC, name';
-	return await getUserDb().all(query);
+	return await getUserDb().all(query,{$username: username});
 }
 
 export async function findCurrentPlaylist() {

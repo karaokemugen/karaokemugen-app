@@ -843,3 +843,76 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
+
+	/**
+ * @api {get} public/playlists/ Get list of playlists (public)
+ * @apiName GetPlaylistsPublic
+ * @apiGroup Playlists
+ * @apiVersion 2.0.0
+ * @apiPermission public
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
+ * @apiSuccess {Object[]} playlists Playlists information
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "created_at": 1508313440,
+ *           "flag_current": 1,
+ *           "flag_public": 0,
+ *           "flag_visible": 1,
+ *           "length": 0,
+ *           "modified_at": 1508408078,
+ *           "name": "Liste de lecture courante",
+ *           "num_karas": 6,
+ *           "playlist_id": 1,
+ *           "time_left": 0
+ *       }
+ *   ]
+ * }
+ * @apiError PL_LIST_ERROR Unable to fetch a list of playlists
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+	/**
+ * @api {get} public/playlists/:pl_id Get playlist information (public)
+ * @apiName GetPlaylistPublic
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiVersion 2.0.0
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
+ * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
+ * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
+ * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
+ * @apiSuccess {Number} data/length Duration of playlist in seconds
+ * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
+ * @apiSuccess {String} data/name Name of playlist
+ * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
+ * @apiSuccess {Number} data/playlist_id Database's playlist ID
+ * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK 
+ * {
+ *   "data": {
+ *       "created_at": 1508313440,
+ *       "flag_current": 1,
+ *       "flag_public": 0,
+ *       "flag_visible": 1,
+ *       "length": 0,
+ *       "modified_at": 1508408078,
+ *       "name": "Liste de lecture courante",
+ *       "num_karas": 6,
+ *       "playlist_id": 1,
+ *       "time_left": 0
+ *   }
+ *}
+ * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
