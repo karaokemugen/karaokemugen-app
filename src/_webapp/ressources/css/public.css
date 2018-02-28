@@ -283,7 +283,7 @@ body.touch  .list-group-item[valid="true"]:after {
     .toastMessage {
         top: 3px;
     }
-    .fullLyrics, .showVideo {
+    .fullLyrics, .showVideo, .makeFav {
         width: 46px;
         height: 46px;
         font-size: 18px;
