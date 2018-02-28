@@ -3,7 +3,8 @@ import {open} from 'sqlite';
 import {getConfig} from '../_common/utils/config';
 import {join, resolve} from 'path';
 import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
-import {retry, each} from 'async';
+import promiseRetry from 'promise-retry';
+
 const DBgenerator = require('../_admin/generate_karasdb.js');
 const sql = require('../_common/db/database');
 
@@ -16,37 +17,26 @@ moment.locale('fr');
 let karaDb;
 let userDb;
 
-export function transaction(items, sql) {
-	retry({times: 5, interval: 100}, (callback) => {
-		getUserDb().run('begin transaction')
-			.then(() => {							
-				each(items, (data,callback) => {
-					getUserDb().prepare(sql).then((stmt) => {
-						stmt.run(data).then(() => {
-							callback(); 
-						}).catch((err) => {
-							callback(err); 
-						});										
-					});								
-				}, (err) => {
-					if (err) callback(err);
-					getUserDb().run('commit').then(() => {
-						callback(); 
-					}).catch((err) => {
-						callback(err);
-					});
-				});
-			})
-			.catch((err) => {
-				logger.error('[DBI] Failed to begin transaction : '+err);
-				logger.error('[DBI] Transaction will be retried');
-				callback(err);
-			});
-	},(err) => {
-		// Retry failed completely after 5 tries
-		if (err) throw err;						
+async function doTransaction(items, sql) {	
+	await getUserDb().run('begin transaction');
+	for (const data in items) {
+		const stmt = await getUserDb().prepare(sql);
+		await stmt.run(items[data]);
+	}
+	return await getUserDb().run('commit');
+}
+
+export async function transaction(items, sql) {
+	await promiseRetry((retry) => {
+		return doTransaction(items, sql).catch(retry);		
+	}, {
+		retries: 5,
+		minTimeout: 100
+	}).then(() => { 
 		return true;
-	});		
+	}).catch((err) => { 
+		throw err;
+	});	
 }
 
 export function openDatabases(config) {
@@ -73,11 +63,11 @@ async function openUserDatabase() {
 		userDb = await open(userDbFile, {verbose: true});
 		// Trace event. DO NOT UNCOMMENT
 		// unless you want to flood your console.
-		/*
+		///*
 		userDb.driver.on('trace',function(sql){
 			console.log(sql);
 		});
-		*/
+		//*/
 	} else {
 		throw 'User database already opened';
 	}
