@@ -113,40 +113,19 @@ async function generateBlacklist() {
 }				
 
 async function BLCgetTagName(blcList) {
-	eachOf(blcList,(blc,index,callback) => {	
-		tagDB.getTag(blc.blcvalue).then((res) => {
-			if (res) {
-				blcList[index].blcuniquevalue = res.name;
-				callback();
-			} else { 
-				callback('getTag returned empty result');
-			}								
-		}).catch((err) => {
-			callback(err);
-		});	
-	},(err) => {
-		if (err) throw err;
-		return blcList;
-	});				
+	for (const index in blcList) {
+		const res = await tagDB.getTag(blcList[index].blcvalue);
+		if (res) blcList[index].blcuniquevalue = res.name;
+	}
+	return blcList;	
 }
 
 async function BLCGetKID(blcList) {
-	eachOf(blcList,(blc,index,callback) => {	
-		karaDB.getKara(blc.blcvalue).then((res) => {
-			if (res) {
-				blcList[index].blcuniquevalue = res.kid;
-				callback();
-			} else { 
-				callback('getKara returned empty result');
-			}								
-		})	
-			.catch((err) => {
-				callback(err);
-			});	
-	},(err) => {
-		if (err) throw err;
-		return blcList;		
-	});							
+	for (const index in blcList) {
+		const res = await karaDB.getKara(blcList[index].blcvalue);
+		if (res) blcList[index].blcuniquevalue = res.kid;
+	}
+	return blcList;	
 }
 
 export async function addBlacklistCriteria(blctype, blcvalues) {
@@ -572,38 +551,25 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	return karaAdded;
 }
 
-function checkPLCandKaraInPlaylist(plcList,playlist_id) {
-	eachOf(plcList, (playlistContent,index,callback) => {				
-		plDB.getPLCInfo(playlistContent.plc_id).then((playlistContentData) => {
-			if (playlistContentData) {
-				//We got a hit!
-				// Let's check if the kara we're trying to add is 
-				// already in the playlist we plan to copy it to.
-				isKaraInPlaylist(playlistContentData.kara_id,playlist_id).then((isKaraInPL) => {
-					//Karaoke song is already in playlist, abort mission
-					//since we don't want duplicates in playlists.
-					if (isKaraInPL) {
-						callback(`Karaoke song ${playlistContentData.kara_id} is already in playlist ${playlist_id}`);
-					} else {
-						// All OK. We need some info though.
-						plcList[index].kara_id = playlistContentData.kara_id;
-						plcList[index].requester = playlistContentData.nickname;
-						plcList[index].NORM_requester = playlistContentData.NORM_pseudo_add;
-						callback();
-					}									
-				}).catch((err) => {
-					throw err;
-				});							
-			} else {
-				callback(`PLC ${playlistContent.plc_id} does not exist`);
-			}							
-		}).catch((err) => {						
-			callback(err);
-		});				
-	}, (err) => {
-		if (err) throw err;
-		return plcList;
-	});
+async function checkPLCandKaraInPlaylist(plcList,playlist_id) {
+	let plcToAdd = [];
+	for (const index in plcList) {
+		const plcData = await plDB.getPLCInfo(plcList[index].plc_id);
+		if (!plcData) throw `PLC ${plcList[index].plc_id} does not exist`;
+		//We got a hit!
+		// Let's check if the kara we're trying to add is 
+		// already in the playlist we plan to copy it to.
+		if (!await isKaraInPlaylist(plcData.kara_id,playlist_id)) {
+			plcList[index].kara_id = plcData.kara_id;
+			plcList[index].pseudo_add = plcData.nickname;
+			plcList[index].NORM_pseudo_add = plcData.NORM_nickname;
+			plcList[index].created_at = now();
+			plcList[index].username = plcData.username;
+			plcList[index].playlist_id = playlist_id;
+			plcToAdd.push(plcList[index]);
+		}
+	}
+	return plcToAdd;	
 }
 
 export async function copyKaraToPlaylist(plcs,playlist_id,pos) {
@@ -618,7 +584,7 @@ export async function copyKaraToPlaylist(plcs,playlist_id,pos) {
 			date_add: date_add,				
 		});				
 	});
-	plcList = checkPLCandKaraInPlaylist(plcList);
+	plcList = await checkPLCandKaraInPlaylist(plcList);
 	// If pos is provided, we need to update all karas above that and add 
 	// karas.length to the position
 	// If pos is not provided, we need to get the maximum position in the PL
