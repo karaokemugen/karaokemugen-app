@@ -655,11 +655,16 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,opt) {
 	return playlist_id;
 }
 
-export async function editKaraFromPlaylist(plc_id,pos,flag_playing) {
-	if (flag_playing == 0) throw 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one';
+export async function editKaraFromPlaylist(plc_id,pos,flag_playing,token) {
 	const kara = await plDB.getPLCInfo(plc_id);
 	if (!kara) throw 'PLCID unknown!';
 	const playlist_id = kara.playlist_id;
+	let seenFromUser;
+	if (token.role != 'admin') seenFromUser = true;
+	const playlist = await getPlaylistInfo(playlist_id,seenFromUser,token.username);
+	if (!playlist) throw 'Access to playlist denied';
+	if (playlist.flag_favorites === 1) throw 'Karaokes in favorite playlists cannot be modified';
+	if (flag_playing == 0) throw 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one';
 	if (flag_playing) {
 		await setPlaying(plc_id,playlist_id);
 		if (await isCurrentPlaylist(playlist_id)) emitPlayingUpdated();

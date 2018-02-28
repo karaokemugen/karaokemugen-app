@@ -530,8 +530,8 @@ export async function deleteWLC(wlc_ids) {
 	return await plc.deleteKaraFromWhitelist(karas);	
 }
 
-export async function editPLC(plc_id, pos, flag_playing) {
-	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing);
+export async function editPLC(plc_id, pos, flag_playing,token) {
+	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing, token);
 }
 
 export function updateSettings(newConfig) {

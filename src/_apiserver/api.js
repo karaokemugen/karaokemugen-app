@@ -1321,7 +1321,8 @@ export async function initAPIServer(listenPort) {
 					if (result.isEmpty()) {
 						if (req.body.pos != undefined) req.sanitize('pos').toInt();
 						if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
-						engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing)
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);					
+						engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,token)
 							.then(() => {
 								// pl_id is returned from this promise
 								res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
