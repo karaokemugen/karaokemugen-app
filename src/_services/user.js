@@ -7,7 +7,6 @@ import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
-import {forever} from 'async';
 import {promisify} from 'util';
 const sleep = promisify(setTimeout);
 
@@ -242,15 +241,16 @@ export async function deleteUser(username) {
 export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
-	forever((next) => {
-		updateExpiredUsers()
-			.then(() => {
-				next();
-			})
+	Promise.resolve().then(function resolver() {
+		console.log('Cleanup');
+		return updateExpiredUsers()
+			.then(resolver)
 			.catch((err) => {
 				logger.error(`[User] Expiring user accounts failed : ${err}`);
-				next();
+				resolver();
 			});
+	}).catch((err) => {
+		logger.error(`[User] Cleanup expiring user accounts system failed entirely. You need to restart Karaoke Mugen : ${err}`);
 	});
 }
 
