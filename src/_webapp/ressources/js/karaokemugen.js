@@ -46,6 +46,7 @@ var closeButton;
 var closeButtonBottom;
 var showFullTextButton;
 var showVideoButton;
+var makeFavButton;
 var dragHandleHtml;
 var playKaraHtml;
 
@@ -363,11 +364,36 @@ var settingsNotUpdated;
 					scrollToElement(playlist.parent(), detailsKara,  liKara.find('.lyricsKara'));
 				});
 			});
+
 			$('.playlist-main').on('click', '.showVideo', function() {
 				showVideo($(this));
-			})
+			});
+
+			$('.playlist-main').on('click', '.makeFav', function() {
+				var liKara = $(this).closest('li');
+				var idKara = liKara.attr('idkara');
+				makeFav(idKara, !$(this).hasClass('currentFav'), $(this));
+			});
+	
 		}
 
+		makeFav = function(idKara, make, $el) {
+			var type = make ? 'POST' : 'DELETE';
+			$.ajax({
+				url: 'public/favorites',
+				type: type,
+				data: { 'kara_id' : idKara } })
+				.done(function (response) {
+					if($el) {
+						if(make) {
+							$el.addClass('currentFav');
+						} else {
+							$el.removeClass('currentFav');
+						}
+					}
+				}).fail(function(response) {
+				});
+		};
 		showVideo = function(el) {
 			var previewFile = el.closest('.detailsKara').data('previewfile');
 			if(previewFile) {
@@ -800,6 +826,7 @@ var settingsNotUpdated;
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
 	showFullTextButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	showVideoButton = '<button class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	makeFavButton = '<button class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
@@ -884,7 +911,7 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.fullLyrics, .showVideo');
+			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav');
             
 			if($this.length > 0) {
 				e.preventDefault();
@@ -906,6 +933,8 @@ var settingsNotUpdated;
 					});
 				} else if($this.hasClass('showVideo')) {
 					showVideo($this);
+				} else if($this.hasClass('makeFav')) {
+					makeFav(idKara, !$this.hasClass('currentFav'), $this);
 				}
 				
 			} 
@@ -914,7 +943,7 @@ var settingsNotUpdated;
 		manager2.on('tap click', function (e) {
 			e.gesture = e;
 			var target = $(e.gesture.target);
-			if(target.closest('.fullLyrics, .showVideo').length > 0
+			if(target.closest('.fullLyrics, .showVideo, .makeFav').length > 0
 								|| target.closest('.actionDiv').length > 0
 								|| target.closest('.infoDiv').length > 0
 								|| target.closest('[name="checkboxKara"]').length > 0
@@ -1609,14 +1638,23 @@ var settingsNotUpdated;
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
 		infoKaraTemp = 'no mode specified';
+		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButton.replace('makeFav','makeFav currentFav') : makeFavButton;
+		
 		if (htmlMode == 'list') {
-			infoKaraTemp = '<div class="detailsKara alert alert-info">' + (isTouchScreen ? '' : closeButton)
+			infoKaraTemp = '<div class="detailsKara alert alert-info">'
+				+ (isTouchScreen ? '' : closeButton)
 				+ (data['previewfile'] ? showVideoButton : '')
-				+ showFullTextButton + htmlTable + '</div>';
+				+ makeFavButtonAdapt
+				+ showFullTextButton
+				+ htmlTable
+				+ '</div>';
 		} else if (htmlMode == 'mobile') {
 			infoKaraTemp = '<div class="detailsKara z-depth-1">'
-			+ (data['previewfile'] ? showVideoButton : '')
-			+ showFullTextButton + htmlTable + '</div>';
+				+ (data['previewfile'] ? showVideoButton : '')
+				+ makeFavButtonAdapt
+				+ showFullTextButton
+				+ htmlTable
+				+ '</div>';
 		}
 		return infoKaraTemp;
 	};
