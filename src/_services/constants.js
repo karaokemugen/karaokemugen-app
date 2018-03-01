@@ -8,6 +8,29 @@ export const videoFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg)$';
 export const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
 export const subFileRegexp = '^.+\\.ass$';
 
+export const defaultGuestNames = [
+	'Jean-Michel Normal',
+	'Sakura du 93',
+	'Dark Kirito 64',
+	'Alex Teriyaki',
+	'Le Grandblue avec une chaussure noire',
+	'MC-kun',
+	'Beauf-kun',
+	'La Castafiore',
+	'xXNarutoSasukeXx',
+	'Lionel Shaoran',
+	'Pico',
+	'Coco',
+	'Chico',
+	'Dark Flame Master',
+	'MAGI System',
+	'MAMMUTH!',
+	'NinaDeFMA',
+	'Hokuto de Cuisine',
+	'S€phir0th69',
+	'Brigade SOS'
+];
+
 export const initializationCatchphrases = [
 	'"Karaoke Mugen is combat-ready!" --Nanami-chan',
 	'"Karaoke Mugen, ittekimasu!" --Nanami-chan',
