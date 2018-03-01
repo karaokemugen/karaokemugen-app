@@ -324,9 +324,9 @@ async function addViewcountKara(kara_id, kid) {
 	}
 }
 	
-export async function getKaras(filter,lang,from,size) {
+export async function getKaras(filter,lang,from,size,token) {
 	try {
-		const pl = await plc.getAllKaras();
+		const pl = await plc.getAllKaras(token.username);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		return {

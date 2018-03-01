@@ -415,8 +415,8 @@ export async function getBlacklistCriterias() {
 	return await blcDB.getBlacklistCriterias();
 }
 
-export async function getAllKaras() {
-	return await karaDB.getAllKaras();
+export async function getAllKaras(username) {
+	return await karaDB.getAllKaras(username);
 }
 
 export async function getRandomKara(playlist_id,filter) {

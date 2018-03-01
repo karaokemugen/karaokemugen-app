@@ -8,8 +8,8 @@ export async function getSongCountForUser(playlist_id,username) {
 	});
 }
 
-export async function getAllKaras() {
-	return await getUserDb().all(sql.getAllKaras);
+export async function getAllKaras(username) {
+	return await getUserDb().all(sql.getAllKaras, {$username: username});
 }
 
 export async function getKara(id, username) {

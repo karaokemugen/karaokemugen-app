@@ -3281,6 +3281,7 @@ export async function initAPIServer(listenPort) {
  *               "created_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
+ * 				 "flag_favorites": 1,
  *               "gain": 0,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
@@ -3332,8 +3333,9 @@ export async function initAPIServer(listenPort) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			if (from < 0) from = 0;					
-			engine.getKaras(filter,lang,from,size)
+			if (from < 0) from = 0;
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getKaras(filter,lang,from,size,token)
 				.then((karas) => {
 					res.json(OKMessage(karas));
 				})
