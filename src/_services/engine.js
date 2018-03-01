@@ -462,7 +462,7 @@ export async function getPLCInfo(plc_id, lang, userToken) {
 
 export async function getAllPLs(token) {
 	let seenFromUser = true;
-	if (token.role != 'admin') seenFromUser = false;
+	if (token.role == 'admin') seenFromUser = false;
 	return await plc.getPlaylists(seenFromUser,token.username);
 }
 
