@@ -15,7 +15,6 @@ import logger from 'winston';
 import {deburr, isEmpty, sample, shuffle} from 'lodash';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {eachOf} from 'async';
 import {emitWS} from '../_ws/websocket';
 import {emit} from '../_common/utils/pubsub';
 
@@ -408,7 +407,7 @@ async function getKaraByKID(kid) {
 }
 
 async function getPLCByKID(kid,playlist_id) {
-		return await plDB.getPLCByKID(kid,playlist_id);
+	return await plDB.getPLCByKID(kid,playlist_id);
 }
 
 export function filterPlaylist(playlist,searchText) {

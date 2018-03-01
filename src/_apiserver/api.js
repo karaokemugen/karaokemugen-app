@@ -3886,50 +3886,6 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('TAGS_LIST_ERROR',err));
 				});
 		});
-	routerPublic.route('/guests')
-	/**
- * @api {get} public/guests List guest accounts
- * @apiName GetGuests
- * @apiVersion 2.1.0
- * @apiGroup Users
- * @apiPermission public
- * 
- * @apiSuccess {Number} data/user_id ID of the guest user
- * @apiSuccess {String} data/nickname Name of guest account
- * @apiSuccess {String} data/NORM_nickname Name of guest account deburr'ed
- * @apiSuccess {String} data/login Login to use for account
- * @apiSuccess {String} data/avatar_file Avatar's filename for this account.
- * @apiSuccess {String} data/available 0 = account is locked by someone. 1 = account is available for use
- * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "data": [
- *       {
- *           "user_id": 1,
- *           "nickname": "Naruto",
- *           "avatar_file": "naruto.jpg"
- *       }
- *   ]
- * }
- * @apiError GUEST_LIST_ERROR Unable to list guest accounts
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "GUEST_LIST_ERROR",
- * }
- */
-		.get((req, res) => {
-			user.listGuests()
-				.then((guests) => {
-					res.json(OKMessage(guests));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('GUEST_LIST_ERROR',err));
-				});
-		});
 	routerPublic.route('/users/:username')
 	/**
  * @api {get} public/users/:username View user details (public)

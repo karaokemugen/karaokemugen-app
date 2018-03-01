@@ -1,7 +1,6 @@
 import {getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
-import {deburr} from 'lodash';
 
 const sql = require('../_common/db/kara');
 
