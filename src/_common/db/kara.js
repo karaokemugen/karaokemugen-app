@@ -54,7 +54,15 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
 								ak.viewcount AS viewcount,      
       							ak.videofile AS videofile,
       							ak.videolength AS duration,
-								ak.gain AS gain
+								ak.gain AS gain,
+								EXISTS(
+    							SELECT 1 FROM playlist_content pc
+    							JOIN playlist p ON pc.fk_id_playlist = p.pk_id_playlist
+    							JOIN user u ON   u.pk_id_user = p.fk_id_user
+    							WHERE pc.fk_id_kara = ak.kara_id 
+									AND p.flag_favorites = 1 
+									AND u.login = $username
+							) AS flag_favorites
  							FROM karasdb.all_karas AS ak
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
 							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
