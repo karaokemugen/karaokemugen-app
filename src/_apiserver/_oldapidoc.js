@@ -985,3 +985,36 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
+
+	/**
+ * @api {get} admin/playlists/ Get list of playlists
+ * @apiName GetPlaylists
+ * @apiGroup Playlists
+ * @apiVersion 2.0.0
+ * @apiPermission admin
+ *
+ * @apiSuccess {Object[]} playlists Playlists information
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "created_at": 1508313440,
+ *           "flag_current": 1,
+ *           "flag_public": 0,
+ *           "flag_visible": 1,
+ *           "length": 0,
+ *           "modified_at": 1508408078,
+ *           "name": "Liste de lecture courante",
+ *           "num_karas": 6,
+ *           "playlist_id": 1,
+ *           "time_left": 0
+ *       }
+ *   ]
+ * }
+ * @apiError PL_LIST_ERROR Unable to fetch a list of playlists
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
