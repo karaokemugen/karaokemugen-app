@@ -443,8 +443,8 @@ export async function shufflePL(playlist_id) {
 	}	
 }
 
-export async function getKaraInfo(kara_id, lang, username) {
-	const kara = await plc.getKara(kara_id, username);
+export async function getKaraInfo(kara_id, lang, token) {
+	const kara = await plc.getKara(kara_id, token.username);
 	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;

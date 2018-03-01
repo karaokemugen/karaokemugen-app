@@ -231,7 +231,7 @@ export async function initAPIServer(listenPort) {
  * @api {get} admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
  * @apiGroup Playlists
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiPermission admin
  *
  * @apiSuccess {Object[]} playlists Playlists information
@@ -245,12 +245,14 @@ export async function initAPIServer(listenPort) {
  *           "flag_current": 1,
  *           "flag_public": 0,
  *           "flag_visible": 1,
+ * 			 "flag_favorites": 1,
  *           "length": 0,
  *           "modified_at": 1508408078,
  *           "name": "Liste de lecture courante",
  *           "num_karas": 6,
  *           "playlist_id": 1,
- *           "time_left": 0
+ *           "time_left": 0,
+ * 			 "username": 'admin'
  *       }
  *   ]
  * }
@@ -262,7 +264,8 @@ export async function initAPIServer(listenPort) {
 
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Get list of playlists
-			engine.getAllPLs()
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getAllPLs(token)
 				.then((playlists) => {
 					res.json(OKMessage(playlists));
 				})
@@ -2518,7 +2521,7 @@ export async function initAPIServer(listenPort) {
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get list of playlists, only return the visible ones
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);	
 			engine.getAllPLs(token)
 				.then((playlists) => {
 					res.json(OKMessage(playlists));
@@ -3250,7 +3253,7 @@ export async function initAPIServer(listenPort) {
 	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Karaokes
  * @apiPermission public
  * 
@@ -3470,7 +3473,8 @@ export async function initAPIServer(listenPort) {
  * }
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			engine.getKaraInfo(req.params.kara_id,req.query.lang)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getKaraInfo(req.params.kara_id,req.query.lang,token)
 				.then((kara) => {	
 					res.json(OKMessage(kara));
 				})
