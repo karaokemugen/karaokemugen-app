@@ -121,13 +121,13 @@ export async function initEngine() {
 	}
 	//Database system is the foundation of every other <system className=""></system>
 	await initDBSystem();
+	await initUserSystem();
 	let inits = [];
 	createPreviews();
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(ports.frontend));
 	inits.push(initAPIServer(ports.apiserver));
-	inits.push(initWSServer(ports.ws));
-	inits.push(initUserSystem());
+	inits.push(initWSServer(ports.ws));	
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await plc.isACurrentPlaylist();

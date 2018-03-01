@@ -175,7 +175,7 @@ export async function updateUserFingerprint(username, fingerprint) {
 	return await db.updateUserFingerprint(username, fingerprint);
 }
 
-export async function addUser(user) {
+export async function addUser(user,role) {
 	let ret = {};
 	user.nickname = user.login;
 	user.password = hashPassword(user.password);
@@ -187,7 +187,8 @@ export async function addUser(user) {
 		throw ret;
 	}
 	user.flag_online = 1;
-	user.flag_admin = 0;	
+	user.flag_admin = 0;
+	if (role === 'admin') user.flag_admin = 1;		
 	
 	// Check if login already exists.
 	if (await db.checkUserNameExists(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
@@ -251,6 +252,16 @@ export async function initUserSystem() {
 	}).catch((err) => {
 		logger.error(`[User] Cleanup expiring user accounts system failed entirely. You need to restart Karaoke Mugen : ${err}`);
 	});
+
+	// Check if a admin user exists
+	// Replace password by a random generated one once the welcome branch has been merged
+	
+	if (!await findUserByName('admin')) await addUser({
+		login: 'admin',
+		password: 'gurdil',
+	}, 'admin');
+
+	
 }
 
 
