@@ -7,14 +7,14 @@ export const requireAuth = passport.authenticate('jwt', { session: false });
 
 export const updateUserLoginTime = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
-	updateLastLoginName(token.username);	
+	updateLastLoginName(token.username);
 	next();
 };
 
 export const requireValidUser = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
 	findUserByName(token.username)
-		.then(() => {
+		.then(() => {			
 			next();
 		})
 		.catch(() => {

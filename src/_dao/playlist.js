@@ -135,10 +135,15 @@ export async function getPlaylistInfo(id, forUser, username) {
 }
 
 export async function getPlaylists(forUser,username) {
-	const query = sql.getPlaylists
-		+ (forUser ? ' AND p.flag_visible = 1 OR (p.flag_visible = 0 AND p.flag_favorites = 1 AND u.login = $username)' : '')
-		+ ' ORDER BY flag_current DESC, flag_public DESC, name';
-	return await getUserDb().all(query,{$username: username});
+	let query = sql.getPlaylists;	
+	const order = ' ORDER BY flag_current DESC, flag_public DESC, name';
+	if (forUser) {
+		query = query + ' AND p.flag_visible = 1 OR (p.flag_visible = 0 AND p.flag_favorites = 1 AND u.login = $username)' + order;
+		return await getUserDb().all(query,{$username: username});
+	} else {
+		query = query + order;
+		return await getUserDb().all(query);
+	}
 }
 
 export async function findCurrentPlaylist() {
