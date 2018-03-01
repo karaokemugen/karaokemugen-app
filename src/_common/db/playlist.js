@@ -284,8 +284,7 @@ export const getPlaylists = `SELECT p.pk_id_playlist AS playlist_id,
 									p.flag_favorites AS flag_favorites,
 									u.login AS username
  							FROM playlist AS p, user AS u
-							WHERE p.fk_id_user = u.pk_id_user
-							  AND p.flag_visible = 1							
+							WHERE p.fk_id_user = u.pk_id_user  
  							`;
 
 export const getFavoritePlaylists = `

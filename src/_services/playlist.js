@@ -383,7 +383,7 @@ async function updatePlaylistDuration(playlist_id) {
 }
 
 export async function getPlaylistContents(playlist_id,seenFromUser,forPlayer) {
-	if (!await isPlaylist(playlist_id,seenFromUser)) throw `Playlist ${playlist_id} unknown`;
+	if (!await isPlaylist(playlist_id,seenFromUser)) throw `Playlist ${playlist_id} unknown`;		
 	return await plDB.getPlaylistContents(playlist_id,forPlayer);
 }
 
