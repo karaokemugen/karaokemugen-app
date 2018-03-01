@@ -26,6 +26,10 @@
     border: 0;
     order: 3;
 }
+.header button.btn.favorites.on {
+    color: firebrick;
+}
+
 .header {
 	position: fixed;
 	z-index: 1337;

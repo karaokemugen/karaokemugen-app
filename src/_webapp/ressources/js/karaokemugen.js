@@ -95,6 +95,13 @@ var settingsNotUpdated;
 				html : deleteCriteriaHtml,
 				canTransferKara : false,
 				canAddKara : true,
+			},
+			'-5' : {
+				name : 'Favorites',
+				url : 'public/favorites',
+				html : '',
+				canTransferKara : true,
+				canAddKara : true,
 			}
 		};
 		// Background things
@@ -434,7 +441,17 @@ var settingsNotUpdated;
 				});
 			});
 		});
-
+		$('.favorites').on('click', function() {
+			var $this = $(this);
+			var newOptionVal;
+			$this.toggleClass('on');
+			if($this.hasClass('on')) {
+				newOptionVal = $('#selectPlaylist1 > option[data-flag_favorites=1]').val();
+			} else {
+				newOptionVal = -1;
+			}
+			$('#selectPlaylist1').val(newOptionVal).change();
+		});
 		$('.plBrowse button').on('click', function() {
 			var $this = $(this);
 			var panel = $this.closest('.panel');
@@ -1349,14 +1366,19 @@ var settingsNotUpdated;
 			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] });
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'num_karas' : kmStats.totalcount });
 			
+			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
+			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="1"></option>';
 			// building the options
-			var optionHtml = '';
+			var optionListHtml = '';
 			$.each(playlistList, function (key, value) {
 				var params = dataToDataAttribute(value);
-				optionHtml += '<option ' + params + '  value=' + value.playlist_id + '> ' + value.name + '</option>';
+				var optionHtml = '<option ' + params + '  value=' + value.playlist_id + '> ' + value.name + '</option>';
+				optionListHtml += optionHtml;
+				
 			});
-			$('select[type="playlist_select"]').empty().html(optionHtml);
-
+			$('select[type="playlist_select"]').empty().html(optionListHtml);
+			if(scope === 'public') $('#selectPlaylist1').empty().html(searchOptionListHtml);
+			
 			// setting the right values to newly refreshed selects
 			// for public interface, panel1Default to keep kara list, playlistToAddId to show the playlist where users can add
 			// for admin, check cookies
@@ -1453,9 +1475,9 @@ var settingsNotUpdated;
 		
 		var plInfos = '';
 		if(idPlaylist) {
-			plInfos = idPlaylist > -4 ? range.from + '-' + max : '';
+			plInfos = idPlaylist != -4? range.from + '-' + max : '';
 			plInfos +=
-				(idPlaylist > -4 ?
+				(idPlaylist != -4 ?
 					' / ' + dashboard.attr('karacount') + (!isTouchScreen ? ' karas' : '')
 					: '') +
 				(idPlaylist > -1 ?
