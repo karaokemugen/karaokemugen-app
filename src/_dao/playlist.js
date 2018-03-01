@@ -138,7 +138,9 @@ export async function getPlaylists(forUser,username) {
 	let query = sql.getPlaylists;	
 	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';	
 	if (forUser) {
-		return await getUserDb().all(query + ' UNION ' + sql.getFavoritePlaylists + order,{$username: username});
+		//Temporarily disabled complex playlist query until we work how isPlaylist behaves and add user token everywhere.
+		//return await getUserDb().all(query + ' UNION ' + sql.getFavoritePlaylists + order,{$username: username});
+		return await getUserDb().all(query + ' AND p.flag_visible = 1 ' + order);
 	} else {		
 		return await getUserDb().all(query + order);
 	}
