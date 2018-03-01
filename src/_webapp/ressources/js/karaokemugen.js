@@ -182,6 +182,12 @@ var settingsNotUpdated;
 
 		// Some html & stats init
 		initApp = function() {
+			if(logInfos.role === 'user' || logInfos.role === 'admin')  {
+				$('.favorites').show();
+			} else {
+				$('.favorites').hide();	
+			}
+
 			$.ajax({ url: 'public/stats' }).done(function (data) {
 				kmStats = data;
 				if(scope === 'public') {

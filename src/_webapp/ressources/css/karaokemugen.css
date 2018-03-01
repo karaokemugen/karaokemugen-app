@@ -907,7 +907,8 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .plDashboard .plSearch {
     flex-grow: 100;
 	flex-basis: 25%;
-    float: right;
+	float: right;
+	order: 1;
 }
 
 .modal {
