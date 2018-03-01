@@ -3473,7 +3473,8 @@ export async function initAPIServer(listenPort) {
  * }
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			engine.getKaraInfo(req.params.kara_id,req.query.lang)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getKaraInfo(req.params.kara_id,req.query.lang,token)
 				.then((kara) => {	
 					res.json(OKMessage(kara));
 				})
