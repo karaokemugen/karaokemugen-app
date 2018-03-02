@@ -115,7 +115,7 @@ export async function initFavoritesSystem() {
 		const isFavoritePLExists = playlists.some(pl => {
 			if (pl.fk_user_id == user.user_id && pl.flag_favorites == 1 && user.type == 1) return true;
 			return false;
-		})
+		});
 		if (!isFavoritePLExists) await createPlaylist('Faves : '+user.login,0,0,0,1,user.login);
 	}
 }
