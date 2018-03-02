@@ -5,6 +5,7 @@ import {initDBSystem, getStats} from '../_dao/database';
 import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
 import {initFrontend} from '../_webapp/frontend';
+import {initFavoritesSystem} from '../_services/favorites';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount, updateTotalViewcounts} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
@@ -122,7 +123,8 @@ export async function initEngine() {
 	initFrontend(ports.frontend);
 	initAPIServer(ports.apiserver);
 	initWSServer(ports.ws);
-	initUserSystem();	
+	initUserSystem();
+	initFavoritesSystem();	
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await plc.isACurrentPlaylist();

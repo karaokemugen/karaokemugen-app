@@ -1,6 +1,6 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
-import {setCurrentPlaylist, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, translateKaraInfo, filterPlaylist} from '../_services/playlist';
-import {checkUserNameExists} from '../_services/user';
+import {getPlaylists, setCurrentPlaylist, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, translateKaraInfo, filterPlaylist} from '../_services/playlist';
+import {listUsers, checkUserNameExists} from '../_services/user';
 import moment from 'moment';
 moment.locale('fr');
 import logger from 'winston';
@@ -102,4 +102,20 @@ export async function createAutoMix(params, username) {
 		playlist_id: playlist_id,
 		playlist_name: autoMixPLName
 	};
+}
+
+export async function initFavoritesSystem() {
+	// Let's make sure all our users have a favorites playlist
+	logger.debug('[Favorites] Check if everyone has a favorites playlist');
+	const [playlists, users] = await Promise.all([
+		await getPlaylists(false,'admin'),
+		await listUsers()
+	]);	
+	for (const user of users) {		
+		const isFavoritePLExists = playlists.some(pl => {
+			if (pl.fk_user_id == user.user_id && pl.flag_favorites == 1 && user.type == 1) return true;
+			return false;
+		})
+		if (!isFavoritePLExists) await createPlaylist('Faves : '+user.login,0,0,0,1,user.login);
+	}
 }
