@@ -12,6 +12,8 @@ const loginErr = {
 
 async function checkLogin(username, password) {
 	const config = getConfig();
+	console.log(username);
+	console.log(password);
 	if (!await checkUserName(username)) throw false;
 	if (!await checkPassword(username, password)) throw false;
 	const role = await getRole(username);

@@ -12,7 +12,7 @@ import {emit,on} from '../_common/utils/pubsub';
 import {emitWS} from '../_ws/websocket';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
-import {startPoll} from '../_services/poll';
+import {startPoll, timerPoll} from '../_services/poll';
 import {now} from 'unix-timestamp';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
@@ -150,6 +150,7 @@ export async function initEngine() {
 	console.log(`\n${catchphrase}\n`);
 
 	startPoll();
+	timerPoll();
 
 }
 

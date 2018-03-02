@@ -4399,37 +4399,70 @@ export async function initAPIServer(listenPort) {
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
 
- * @apiSuccess {Object} data/Playlistcontents Playlistcontents object (see `/public/playlist/current/karas`)
- * @apiSuccess {Number} data/poll_votes Number of votes in the current poll for this song 
+ * @apiSuccess {Array} data/poll Array of Playlistcontents objects (see `/public/playlist/current/karas` for sample)
+ * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
+ * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "data": [
- *       {
- *           "NORM_nickname": "Administrator",
- *           "avatar_file": "",
- *           "flag_admin": 1,
- *           "flag_online": 0,
- *           "type": 1,
- *           "last_login": 0,
- *           "login": "admin",
- *           "nickname": "Administrator",
- *           "user_id": 1
+ *   "data": {
+ *       "flag_uservoted": false,
+ *       "infos": {
+ *           "count": 4,
+ *           "from": 0,
+ *           "to": 999999
  *       },
- *       {
- *           "NORM_nickname": "test",
- *           "avatar_file": "user/3.jpg",
- *           "flag_admin": 0,
- *           "flag_online": 0,
- *           "type": 1,
- *           "last_login": 1511953198,
- *           "login": "test",
- *           "nickname": "test",
- *           "user_id": 3
- *       }
- *   ]
+ *       "poll": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": "MADHOUSE",
+ *               "NORM_pseudo_add": "Administrator",
+ *               "NORM_serie": "Death Parade",
+ *               "NORM_serie_altname": null,
+ *               "NORM_singer": "NoisyCell",
+ *               "NORM_songwriter": "Ryosuke,Ryo",
+ *               "NORM_title": "Last Theater",
+ *               "author": null,
+ *               "created_at": 1520026875.38,
+ *               "creator": "MADHOUSE",
+ *               "duration": 71,
+ *               "flag_blacklisted": 0,
+ *               "flag_dejavu": 0,
+ *               "flag_playing": 0,
+ *               "flag_whitelisted": 0,
+ *               "gain": -8.62,
+ *               "kara_id": 1452,
+ *               "kid": "75b80966-ac1e-42db-bf2f-b97e0d84fe1d",
+ *               "language": "eng",
+ *               "language_i18n": "Anglais",
+ *               "lastplayed_at": null,
+ *               "misc": null,
+ *               "misc_i18n": null,
+ *               "playlistcontent_id": 19,
+ *               "pos": 14,
+ *               "pseudo_add": "Administrator",
+ *               "serie": "Death Parade",
+ *               "serie_altname": null,
+ *               "singer": "NoisyCell",
+ *               "songorder": 1,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": "Ryosuke,Ryo",
+ *               "title": "Last Theater",
+ *               "username": "admin",
+ *               "videofile": "ANG - Death Parade - ED1 - Last Theater.avi",
+ *               "viewcount": 0,
+ *               "votes": 0,
+ *               "year": "2015"
+ *           },
+ *           ...
+ *       ]
+ *   }
  * }
  * @apiError POLL_LIST_ERROR Unable to list current poll
+ * @apiError POLL_NOT_ACTIVE No poll is in progress
+ * @apiError POLL_ALREADY_VOTED This user has already voted
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -4459,8 +4492,43 @@ export async function initAPIServer(listenPort) {
 				})
 				.catch((err) => {
 					res.statusCode = 500;
-					res.json(errMessage('POLL_LIST_ERROR',err));
+					res.json(errMessage(err.code));
 				});
+		})
+		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+			//Validate form data
+			req.check({
+				'playlistcontent_id': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
+				}
+			});
+
+			req.getValidationResult()
+				.then((result) => {
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('playlistcontent_id').toInt();
+						
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);												
+						poll.addPollVote(req.body.playlistcontent_id,token)
+							.then((ret) => {
+								emitWS('songPollUpdated', ret.data);
+								res.json(OKMessage(null,ret.code,ret.data));
+							})
+							.catch((err) => {
+								res.statusCode = 500;
+								res.json(errMessage(err.code,err.message));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;								
+						res.json(result.mapped());
+					}
+				});
+
 		});
 
 

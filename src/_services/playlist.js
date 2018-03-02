@@ -560,8 +560,8 @@ async function checkPLCandKaraInPlaylist(plcList,playlist_id) {
 		// already in the playlist we plan to copy it to.
 		if (!await isKaraInPlaylist(plcData.kara_id,playlist_id)) {
 			plcList[index].kara_id = plcData.kara_id;
-			plcList[index].pseudo_add = plcData.nickname;
-			plcList[index].NORM_pseudo_add = plcData.NORM_nickname;
+			plcList[index].pseudo_add = plcData.pseudo_add;
+			plcList[index].NORM_pseudo_add = plcData.NORM_pseudo_add;
 			plcList[index].created_at = now();
 			plcList[index].username = plcData.username;
 			plcList[index].playlist_id = playlist_id;
@@ -583,7 +583,7 @@ export async function copyKaraToPlaylist(plcs,playlist_id,pos) {
 			date_add: date_add,				
 		});				
 	});
-	plcList = await checkPLCandKaraInPlaylist(plcList);
+	plcList = await checkPLCandKaraInPlaylist(plcList, playlist_id);
 	// If pos is provided, we need to update all karas above that and add 
 	// karas.length to the position
 	// If pos is not provided, we need to get the maximum position in the PL
@@ -598,13 +598,14 @@ export async function copyKaraToPlaylist(plcs,playlist_id,pos) {
 			plcList[index].pos = startpos + index;
 			index++;
 		});
-	}								
+	}	
 	await karaDB.addKaraToPlaylist(plcList);
 	await Promise.all([
 		updatePlaylistLastEditTime(playlist_id),
 		updatePlaylistDuration(playlist_id),
 		updatePlaylistKaraCount(playlist_id)
 	]);
+	emitWS('')
 }
 
 export async function deleteKaraFromPlaylist(plcs,playlist_id) {
