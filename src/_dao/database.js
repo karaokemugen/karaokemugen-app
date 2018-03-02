@@ -212,9 +212,17 @@ async function generateDatabase() {
 }
 
 async function migrateUserDb() {
-	return await getUserDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata')});
+	let force = false;
+	if (getConfig().VersionNo == 'Next') {
+		force = 'last';
+	}
+	return await getUserDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata'), force: force});
 }
 
 async function migrateKaraDb() {
-	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
+	let force = false;
+	if (getConfig().VersionNo == 'Next') {
+		force = 'last';
+	}
+	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb'), force: force});
 }
