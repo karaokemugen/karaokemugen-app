@@ -1086,9 +1086,11 @@ export async function playCurrentSong() {
 		subtitle: ass
 	};		
 	//If karaoke is present in the public playlist, we're deleting it.
-	const playlist_id = await isAPublicPlaylist();
-	const plc = await getPLCByKID(kara.kid,playlist_id);
-	if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id],playlist_id); 
+	if (conf.EngineRemovePublicOnPlay) {
+		const playlist_id = await isAPublicPlaylist();
+		const plc = await getPLCByKID(kara.kid,playlist_id);
+		if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id],playlist_id); 
+	}
 	return kara;
 }
 
