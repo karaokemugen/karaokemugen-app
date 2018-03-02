@@ -288,5 +288,6 @@
 	"SIGN_UP": "Continuer",
 	"PROFILE": "Profil",
 	"PASSWORDCONF": "Mot de passe (confirmation)",
-	"_": "DO NOT MODIFY"
+	"_": "DO NOT MODIFY",
+	"START_FAV_MIX": "Créer un automix"
 }

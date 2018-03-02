@@ -289,5 +289,6 @@
 	"SIGN_UP": "Sign up",
 	"PROFILE": "Profile",
 	"PASSWORDCONF": "Password confirmation",
-	"_": "DO NOT MODIFY"
+	"_": "DO NOT MODIFY",
+	"START_FAV_MIX": "Create an automix"
 } 

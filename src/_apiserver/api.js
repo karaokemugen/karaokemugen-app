@@ -156,7 +156,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/automix')
 	/**
- * @api {get} admin/mix Generate a automix playlist
+ * @api {post} admin/automix Generate a automix playlist
  * @apiName PostMix
  * @apiGroup Favorites
  * @apiVersion 2.1.0
