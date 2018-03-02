@@ -153,6 +153,7 @@
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
 	"ENGINEDISPLAYCONNECTIONINFO": "Show network information",
 	"ENGINEREMOVEPUBLICONPLAY": "Remove songs from public playlist once played",
+	"ENGINESONGPOLL": "Public Poll",
 	"ENGINESONGPOLLCHOICES": "Number of songs users can choose from during public poll",
 	"ENGINESONGPOLLTIMEOUT": "Public poll duration (in seconds)",
     "MESSAGE": "Message",

@@ -37,7 +37,7 @@ let internalState = {
 	archivedStatus: {},
 	playerNeedsRestart: false,
 	currentlyPlayingKara: undefined,
-	counterToJingle: 1
+	counterToJingle: 1,	
 };
 
 let initialState = {
@@ -47,7 +47,8 @@ let initialState = {
 	ontop: true,
 	playlist: null,
 	timeposition: 0,
-	frontendPort: ports.frontend
+	frontendPort: ports.frontend,
+	songPoll: false
 };
 
 on('playingUpdated', () => {

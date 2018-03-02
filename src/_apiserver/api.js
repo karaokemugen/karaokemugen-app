@@ -1302,6 +1302,7 @@ export async function initAPIServer(listenPort) {
  * 		 "EngineRemovePublicOnPlay": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPoll": "0",
  * 		 "EngineSongPollChoices": "4",
  * 		 "EngineSongPollTimeout": "30",
  *       "EngineSongsPerUser": "10000",
@@ -1361,8 +1362,9 @@ export async function initAPIServer(listenPort) {
  * @apiParam {Boolean} EngineRemovePublicOnPlay Enable/disable auto removal of songs in public playlist if they've just been played 
  * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
  * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
- * @apiParam {Boolean} EngineSongPollChoices Number of songs the public can choose from during a public poll
- * @apiParam {Boolean} EngineSongPollTimeout Poll duration in seconds
+ * @apiParam {Boolean} EngineSongPoll Enable/disable public song poll
+ * @apiParam {Number} EngineSongPollChoices Number of songs the public can choose from during a public poll
+ * @apiParam {Number} EngineSongPollTimeout Poll duration in seconds
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
@@ -1427,6 +1429,11 @@ export async function initAPIServer(listenPort) {
 					notEmpty: true,
 					isInt: true,
 				},
+				'EngineSongPoll': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},				
 				'EngineSongPollChoices': {
 					in: 'body',
 					notEmpty: true,
@@ -1525,6 +1532,7 @@ export async function initAPIServer(listenPort) {
 					req.sanitize('EngineDisplayConnectionInfoHost').unescape();
 					req.sanitize('EngineAutoPlay').toInt();
 					req.sanitize('EngineRemovePublicOnPlay').toInt();
+					req.sanitize('EngineSongPoll').toInt();
 					req.sanitize('EngineSongPollChoices').toInt();
 					req.sanitize('EngineSongPollTimeout').toInt();
 					req.sanitize('EngineRepeatPlaylist').toInt();
@@ -2787,6 +2795,7 @@ export async function initAPIServer(listenPort) {
  * 		 "EngineRemovePublicOnPlay": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPoll": "0",
  * 		 "EngineSongPollChoices": "4",
  * 		 "EngineSongPollTimeout": "30",
  *       "EngineSongsPerUser": "10000",

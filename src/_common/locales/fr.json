@@ -179,6 +179,7 @@
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
 	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les infos du réseau",
 	"ENGINEREMOVEPUBLICONPLAY": "Retirer une chanson de la liste publique une fois jouée",
+	"ENGINESONGPOLL": "Sondage public",
 	"ENGINESONGPOLLCHOICES": "Nombre de chansons proposées au sondage public",
 	"ENGINESONGPOLLTIMEOUT": "Durée du sondage public (en secondes)",
 	"ERROR": "Erreur",
