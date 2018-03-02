@@ -21,6 +21,7 @@ process.on('uncaughtException', function (exception) {
 
 process.on('unhandledRejection', (reason, p) => {
 	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);	
+	console.log('Stack : ' + reason.stack);
 });
 
 const argv = parseArgs();

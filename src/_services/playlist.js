@@ -461,7 +461,7 @@ export function filterPlaylist(playlist,searchText) {
 	return playlist.filter(textSearch);
 }
 
-function isAllKarasInPlaylist(karas, karasToRemove) {
+export function isAllKarasInPlaylist(karas, karasToRemove) {
 	return karas.filter(k => !karasToRemove.map(ktr => ktr.kara_id).includes(k.kara_id));
 }
 

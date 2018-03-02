@@ -12,6 +12,7 @@ import {emit,on} from '../_common/utils/pubsub';
 import {emitWS} from '../_ws/websocket';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
+import {startPoll} from '../_services/poll';
 import {now} from 'unix-timestamp';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
@@ -129,6 +130,7 @@ export async function initEngine() {
 	inits.push(initFrontend(ports.frontend));
 	inits.push(initAPIServer(ports.apiserver));
 	inits.push(initWSServer(ports.ws));	
+	startPoll();	
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await plc.isACurrentPlaylist();
@@ -245,6 +247,13 @@ async function next() {
 	} catch(err) {
 		logger.warn(`[Engine] Next song is not available : ${err}`);
 	}
+}
+
+function setSongPoll(enabled) {
+	const oldState = state.engine.songPoll;
+	state.engine.songPoll = enabled;
+	emitEngineStatus();
+	if (!oldState && enabled && state.engine.status == 'play') startPoll();
 }
 
 function setPrivateOn() {
@@ -544,14 +553,14 @@ export async function editPLC(plc_id, pos, flag_playing) {
 }
 
 export function updateSettings(newConfig) {
-	let conf = getConfig();
+	const oldConfig = getConfig();
 	let setting;
 	// Determine if mpv needs to be restarted
 	for (setting in newConfig) {
 		if (setting.startsWith('Player') &&
 			setting != 'PlayerFullscreen' &&
 			setting != 'PlayerStayOnTop') {
-			if (conf[setting] != newConfig[setting]) {
+			if (oldConfig[setting] != newConfig[setting]) {
 				internalState.playerNeedsRestart = true;
 				logger.debug('[Engine] Setting mpv to restart after next song');
 			}
@@ -559,14 +568,20 @@ export function updateSettings(newConfig) {
 	}
 	
 	updateConfig(newConfig);	
-	conf = getConfig();
+	const conf = getConfig();
 	// Toggling and updating settings
 	if (conf.EnginePrivateMode === 1) {
 		setPrivateOn();
 	} else {
 		setPrivateOff();
 	}
-	
+
+	if (conf.EngineSongPoll === 1) {
+		setSongPoll(true);
+	} else {
+		setSongPoll(false);
+	}
+
 	configureHost();
 
 	// Determine which settings we send back. We get rid of all system and admin settings
