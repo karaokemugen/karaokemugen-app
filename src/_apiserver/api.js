@@ -7,6 +7,7 @@ const user = require('../_services/user');
 import {resolve} from 'path';
 const multer = require('multer');
 const engine = require('../_services/engine');
+const poll = require('../_services/poll');
 import {emitWS} from '../_ws/websocket';
 import {decode} from 'jwt-simple';
 import passport from 'passport';
@@ -4385,6 +4386,84 @@ export async function initAPIServer(listenPort) {
 				});
 
 		});
+
+	routerPublic.route('/songpoll')
+	/**
+ * @api {get} public/songpoll Get current poll status
+ * @apiName GetPoll
+ * @apiVersion 2.1.0
+ * @apiGroup Song Poll
+ * @apiPermission public
+ *
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated 
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+
+ * @apiSuccess {Object} data/Playlistcontents Playlistcontents object (see `/public/playlist/current/karas`)
+ * @apiSuccess {Number} data/poll_votes Number of votes in the current poll for this song 
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_nickname": "Administrator",
+ *           "avatar_file": "",
+ *           "flag_admin": 1,
+ *           "flag_online": 0,
+ *           "type": 1,
+ *           "last_login": 0,
+ *           "login": "admin",
+ *           "nickname": "Administrator",
+ *           "user_id": 1
+ *       },
+ *       {
+ *           "NORM_nickname": "test",
+ *           "avatar_file": "user/3.jpg",
+ *           "flag_admin": 0,
+ *           "flag_online": 0,
+ *           "type": 1,
+ *           "last_login": 1511953198,
+ *           "login": "test",
+ *           "nickname": "test",
+ *           "user_id": 3
+ *       }
+ *   ]
+ * }
+ * @apiError POLL_LIST_ERROR Unable to list current poll
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "POLL_LIST_ERROR",
+ *   "message": null
+ * }
+ */
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			const lang = req.query.lang;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from);
+			}
+			poll.getPoll(token,lang,from,size)
+				.then(function(poll){
+					res.json(OKMessage(poll));
+				})
+				.catch((err) => {
+					res.statusCode = 500;
+					res.json(errMessage('POLL_LIST_ERROR',err));
+				});
+		})
+
+
 	// Add headers
 	app.use(function (req, res, next) {
 

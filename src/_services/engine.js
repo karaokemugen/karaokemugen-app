@@ -6,6 +6,7 @@ import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
 import {initFrontend} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
+import {initPollSystem} from '../_services/poll';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
@@ -129,8 +130,7 @@ export async function initEngine() {
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(ports.frontend));
 	inits.push(initAPIServer(ports.apiserver));
-	inits.push(initWSServer(ports.ws));	
-	startPoll();	
+	inits.push(initWSServer(ports.ws));			
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await plc.isACurrentPlaylist();
@@ -149,6 +149,10 @@ export async function initEngine() {
 	logger.info('[Engine] Initialization complete');
 	const catchphrase = sample(initializationCatchphrases);
 	console.log(`\n${catchphrase}\n`);
+
+	await initPollSystem();
+	startPoll();
+
 }
 
 export function exit(rc) {

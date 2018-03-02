@@ -266,6 +266,8 @@
 	"LYRICS_VIEW_ERROR": "Unable to display lyrics for %s",
 	"TAGS_LIST_ERROR": "Unable to display tag list",
 	"GUEST_LIST_ERROR": "Unable to list guest accounts",
+	"POLL_LIST_ERROR": "Unable to fetch current poll",
+	"POLL_NOT_ACTIVE": "No poll is currently running",
 	"USER_CREATED": "User created",
 	"USER_CREATE_ERROR": "Unable to create user",
 	"USER_ALREADY_EXISTS": "User name/nickname already exists!",

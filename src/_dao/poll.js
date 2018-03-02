@@ -18,3 +18,7 @@ export async function addPollChoices(karaList,poll_id) {
 	}));
 	return await transaction(data,sql.addPollChoices);	
 }
+
+export async function fetchPoll() {
+	return await getUserDb().all(sql.getPoll);
+}
