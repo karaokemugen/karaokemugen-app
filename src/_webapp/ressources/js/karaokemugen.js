@@ -120,7 +120,7 @@ var settingsNotUpdated;
 				if(data) { // if server response qualifies as the standard error structure
 					if(res.code) {
 						// TODO recoder la fonction pour interpréter comme i18n server ?
-						var args = typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
+						var args = res.args && typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
 							return res.args[e];
 						}) : [res.args];
 						//var args = res.args;
@@ -1643,7 +1643,7 @@ var settingsNotUpdated;
 		var playTimeDate = playTime.getHours() + 'h' + ('0' + playTime.getMinutes()).slice(-2);
 		var beforePlayTime = secondsTimeSpanToHMS(data['time_before_play'], 'hm');
 		var details = {
-			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['username'] ? i18n.__('DETAILS_ADDED_3', data['username']) : '')
+			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'BLCTYPE_6': 			data['author']
 			, 'DETAILS_VIEWS':		data['viewcount']
@@ -1823,7 +1823,11 @@ var settingsNotUpdated;
 				}
 			}
 		}).done(function() {
-			if(doneCallback) doneCallback();
+			var idSearchList = $('#searchPlaylist1').val();
+			if(doneCallback) {
+				if(idSearchList == 1) doneCallback();
+				else  failCallback();
+			}
 			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		}).fail(function() {
 			if(failCallback) failCallback();
