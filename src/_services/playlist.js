@@ -604,8 +604,7 @@ export async function copyKaraToPlaylist(plcs,playlist_id,pos) {
 		updatePlaylistLastEditTime(playlist_id),
 		updatePlaylistDuration(playlist_id),
 		updatePlaylistKaraCount(playlist_id)
-	]);
-	emitWS('')
+	]);	
 }
 
 export async function deleteKaraFromPlaylist(plcs,playlist_id) {
