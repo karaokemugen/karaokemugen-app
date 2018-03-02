@@ -133,5 +133,15 @@ mpvVideoOutput = ""
 ; Time (in minutes) before a user account is set to expire after its last login/action 
 AuthExpireTime = 15
 
-; App's first run. Overriden in config.ini
+; App's first run. Overridden in config.ini
 appFirstRUn = 1
+
+; Public poll system settings
+; Number of choices presented to the user
+EngineSongPollChoices 4
+
+; How long the poll lasts (it'll be cut short when it hits the last 10 seconds of the current song)
+EngineSongPollTimeout 30
+
+; Remove karaokes from public playlist once played ?
+EngineRemovePublicOnPlay 1

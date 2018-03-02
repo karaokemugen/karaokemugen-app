@@ -1299,8 +1299,11 @@ export async function initAPIServer(listenPort) {
  *       "EngineDisplayNickname": "1",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
+ * 		 "EngineRemovePublicOnPlay": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPollChoices": "4",
+ * 		 "EngineSongPollTimeout": "30",
  *       "EngineSongsPerUser": "10000",
  *       "PathAltname": "../times/series_altnames.csv",
  *       "PathBackgrounds": "app/backgrounds",
@@ -1355,8 +1358,11 @@ export async function initAPIServer(listenPort) {
  * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
  * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Boolean} EngineRemovePublicOnPlay Enable/disable auto removal of songs in public playlist if they've just been played 
  * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
  * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
+ * @apiParam {Boolean} EngineSongPollChoices Number of songs the public can choose from during a public poll
+ * @apiParam {Boolean} EngineSongPollTimeout Poll duration in seconds
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
@@ -1415,6 +1421,21 @@ export async function initAPIServer(listenPort) {
 					in: 'body',
 					notEmpty: true,
 					isBoolean: true,
+				},
+				'EngineSongPollTimeout': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'EngineSongPollChoices': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'EngineRemovePublicOnPlay': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
 				},
 				'EngineSongsPerUser': {
 					in: 'body',
@@ -1503,6 +1524,9 @@ export async function initAPIServer(listenPort) {
 					req.sanitize('EngineDisplayConnectionInfoHost').trim();
 					req.sanitize('EngineDisplayConnectionInfoHost').unescape();
 					req.sanitize('EngineAutoPlay').toInt();
+					req.sanitize('EngineRemovePublicOnPlay').toInt();
+					req.sanitize('EngineSongPollChoices').toInt();
+					req.sanitize('EngineSongPollTimeout').toInt();
 					req.sanitize('EngineRepeatPlaylist').toInt();
 					req.sanitize('EngineSmartInsert').toInt();
 					req.sanitize('EngineJinglesInterval').toInt();
@@ -2760,8 +2784,11 @@ export async function initAPIServer(listenPort) {
  *       "EngineDisplayNickname": "1",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
+ * 		 "EngineRemovePublicOnPlay": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPollChoices": "4",
+ * 		 "EngineSongPollTimeout": "30",
  *       "EngineSongsPerUser": "10000",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
