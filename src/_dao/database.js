@@ -18,12 +18,18 @@ let karaDb;
 let userDb;
 
 async function doTransaction(items, sql) {	
-	await getUserDb().run('begin transaction');
-	for (const data in items) {
-		const stmt = await getUserDb().prepare(sql);
-		await stmt.run(items[data]);
+	try {
+		logger.debug('SQL in transaction : '+sql);
+		await getUserDb().run('BEGIN TRANSACTION');
+		for (const data in items) {
+			const stmt = await getUserDb().prepare(sql);
+			await stmt.run(items[data]);
+		}
+		return await getUserDb().run('COMMIT');
+	} catch(err) {
+		await getUserDb().run('ROLLBACK');
+		throw err;
 	}
-	return await getUserDb().run('commit');
 }
 
 export async function transaction(items, sql) {
@@ -34,7 +40,7 @@ export async function transaction(items, sql) {
 		minTimeout: 100
 	}).then(() => { 
 		return true;
-	}).catch((err) => { 
+	}).catch((err) => {
 		throw err;
 	});	
 }
@@ -65,7 +71,7 @@ async function openUserDatabase() {
 		// unless you want to flood your console.
 		/*
 		userDb.driver.on('trace',function(sql){
-			console.log(sql);
+			logger.debug(sql);
 		});
 		*/
 	} else {
