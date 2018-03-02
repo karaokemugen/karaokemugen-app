@@ -4461,7 +4461,7 @@ export async function initAPIServer(listenPort) {
 					res.statusCode = 500;
 					res.json(errMessage('POLL_LIST_ERROR',err));
 				});
-		})
+		});
 
 
 	// Add headers
