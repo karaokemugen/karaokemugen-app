@@ -218,17 +218,9 @@ async function generateDatabase() {
 }
 
 async function migrateUserDb() {
-	let force = false;
-	if (getConfig().VersionNo == 'Next') {
-		force = 'last';
-	}
-	return await getUserDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata'), force: force});
+	return await getUserDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata')});
 }
 
 async function migrateKaraDb() {
-	let force = false;
-	if (getConfig().VersionNo == 'Next') {
-		force = 'last';
-	}
-	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb'), force: force});
+	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
 }
