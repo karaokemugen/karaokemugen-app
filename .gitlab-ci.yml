@@ -96,6 +96,7 @@ deploy_win:
     - mkdir -p /shelter/_Windows-$CI_COMMIT_REF_NAME
     - cp -f ../bin/karaokemugen-app.exe /shelter/_Windows-$CI_COMMIT_REF_NAME/KaraokeMugen.exe
     - cp -f ../config.ini.default /shelter/_Windows-$CI_COMMIT_REF_NAME/
+    - sed -e 's/app\//..\/app\//g' -i /shelter/_Windows-$CI_COMMIT_REF_NAME/config.ini.default
     - cp -f *.node /shelter/_Windows-$CI_COMMIT_REF_NAME/
   only:
     - master
@@ -117,8 +118,9 @@ deploy_osx:
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"
     - mkdir -p /shelter/_macOS-$CI_COMMIT_REF_NAME
-    - cp -f ../bin/karaokemugen-app /shelter/_macOS-$CI_COMMIT_REF_NAME/
+    - cp -f ../bin/karaokemugen-app /shelter/_macOS-$CI_COMMIT_REF_NAME/    
     - cp -f ../config.ini.default /shelter/_macOS-$CI_COMMIT_REF_NAME/
+    - sed -e 's/app\//..\/app\//g' -i /shelter/_macOS-$CI_COMMIT_REF_NAME/config.ini.default
     - cp -f *.node /shelter/_macOS-$CI_COMMIT_REF_NAME/
   only:
     - master
