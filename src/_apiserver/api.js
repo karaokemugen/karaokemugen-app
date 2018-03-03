@@ -116,7 +116,7 @@ export async function initAPIServer(listenPort) {
  * This API does not require any authorization method and can be accessed from anyone.
  */
 	/**
- * @api {post} admin/shutdown Shutdown the entire application
+ * @api {post} /admin/shutdown Shutdown the entire application
  * @apiDescription
  * Shutdowns application completely. Kind of a self-destruct button.
  * @apiName PostShutdown
@@ -147,7 +147,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/playlists')
 	/**
- * @api {get} admin/playlists/ Get list of playlists
+ * @api {get} /admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
  * @apiGroup Playlists
  * @apiVersion 2.0.0
@@ -192,7 +192,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {post} admin/playlists/ Create a playlist
+ * @api {post} /admin/playlists/ Create a playlist
  * @apiName PostPlaylist
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -283,7 +283,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/playlists/:pl_id([0-9]+)')
 	/**
- * @api {get} admin/playlists/:pl_id Get playlist information
+ * @api {get} /admin/playlists/:pl_id Get playlist information
  * @apiName GetPlaylist
  * @apiGroup Playlists
  * @apiPermission admin
@@ -338,7 +338,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {put} admin/playlists/:pl_id Update a playlist's information
+ * @api {put} /admin/playlists/:pl_id Update a playlist's information
  * @apiName PutPlaylist
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -409,7 +409,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {delete} admin/playlists/:pl_id Delete a playlist
+ * @api {delete} /admin/playlists/:pl_id Delete a playlist
  * @apiName DeletePlaylist
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -446,7 +446,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/users/:username')
 	/**
- * @api {get} admin/users/:username View user details (admin)
+ * @api {get} /admin/users/:username View user details (admin)
  * @apiName GetUserAdmin
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -509,7 +509,7 @@ export async function initAPIServer(listenPort) {
 				});						
 		})
 	/**
- * @api {delete} admin/users/:username Delete an user
+ * @api {delete} /admin/users/:username Delete an user
  * @apiName DeleteUser
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -546,7 +546,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
 	/**
- * @api {put} admin/playlists/:pl_id/empty Empty a playlist
+ * @api {put} /admin/playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -585,7 +585,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/whitelist/empty')
 	/**
- * @api {put} admin/whitelist/empty Empty whitelist
+ * @api {put} /admin/whitelist/empty Empty whitelist
  * @apiName PutEmptyWhitelist
  * @apiVersion 2.0.0
  * @apiGroup Whitelist
@@ -620,7 +620,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/blacklist/criterias/empty')
 	/**
- * @api {put} admin/blacklist/criterias/empty Empty list of blacklist criterias
+ * @api {put} /admin/blacklist/criterias/empty Empty list of blacklist criterias
  * @apiName PutEmptyBlacklist
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
@@ -656,7 +656,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
 	/**
- * @api {put} admin/playlists/:pl_id/setCurrent Set playlist to current
+ * @api {put} /admin/playlists/:pl_id/setCurrent Set playlist to current
  * @apiName PutSetCurrentPlaylist
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -695,7 +695,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
 	/**
- * @api {put} admin/playlists/:pl_id/setPublic Set playlist to public
+ * @api {put} /admin/playlists/:pl_id/setPublic Set playlist to public
  * @apiName PutSetPublicPlaylist
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -734,7 +734,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
 	/**
- * @api {get} admin/playlists/:pl_id/karas Get list of karaokes in a playlist
+ * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
  * @apiVersion 2.1.0
  * @apiGroup Playlists
@@ -842,7 +842,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {post} admin/playlists/:pl_id/karas Add karaokes to playlist
+ * @api {post} /admin/playlists/:pl_id/karas Add karaokes to playlist
  * @apiName PatchPlaylistKaras
  * @apiVersion 2.1.0
  * @apiGroup Playlists
@@ -924,7 +924,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {patch} admin/playlists/:pl_id/karas Copy karaokes to another playlist
+ * @api {patch} /admin/playlists/:pl_id/karas Copy karaokes to another playlist
  * @apiName PatchPlaylistKaras
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -1004,7 +1004,7 @@ export async function initAPIServer(listenPort) {
 		})
 
 	/**
- * @api {delete} admin/playlists/:pl_id/karas Delete karaokes from playlist
+ * @api {delete} /admin/playlists/:pl_id/karas Delete karaokes from playlist
  * @apiName DeletePlaylistKaras
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -1070,7 +1070,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 	/**
- * @api {get} admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
+ * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
  * @apiVersion 2.1.0
  * @apiGroup Playlists
@@ -1192,7 +1192,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {put} admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
+ * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -1262,7 +1262,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/settings')
 	/**
- * @api {get} admin/settings Get settings
+ * @api {get} /admin/settings Get settings
  * @apiName GetSettings
  * @apiVersion 2.1.0
  * @apiGroup Main
@@ -1338,7 +1338,7 @@ export async function initAPIServer(listenPort) {
 			res.json(OKMessage(getConfig()));
 		})
 	/**
- * @api {put} admin/settings Update settings
+ * @api {put} /admin/settings Update settings
  * @apiName PutSettings
  * @apiVersion 2.1.0
  * @apiPermission admin
@@ -1536,7 +1536,7 @@ export async function initAPIServer(listenPort) {
 			
 	routerAdmin.route('/player/message')
 	/**
- * @api {post} admin/player/message Send a message to screen or users' devices
+ * @api {post} /admin/player/message Send a message to screen or users' devices
  * @apiName PostPlayerMessage
  * @apiVersion 2.0.0
  * @apiGroup Player
@@ -1616,7 +1616,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/whitelist')
 	/**
- * @api {get} admin/whitelist Get whitelist
+ * @api {get} /admin/whitelist Get whitelist
  * @apiName GetWhitelist
  * @apiVersion 2.0.0
  * @apiGroup Whitelist
@@ -1710,7 +1710,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {post} admin/whitelist Add song to whitelist
+ * @api {post} /admin/whitelist Add song to whitelist
  * @apiName PostWhitelist
  * @apiVersion 2.0.0
  * @apiGroup Whitelist
@@ -1773,7 +1773,7 @@ export async function initAPIServer(listenPort) {
 			});
 		})
 	/**
- * @api {delete} admin/whitelist Delete whitelist item
+ * @api {delete} /admin/whitelist Delete whitelist item
  * @apiName DeleteWhitelist
  * @apiVersion 2.0.0
  * @apiGroup Whitelist
@@ -1828,7 +1828,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/blacklist')
 	/**
- * @api {get} admin/blacklist Get blacklist
+ * @api {get} /admin/blacklist Get blacklist
  * @apiName GetBlacklist
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
@@ -1924,7 +1924,7 @@ export async function initAPIServer(listenPort) {
 		});				
 	routerAdmin.route('/blacklist/criterias')
 	/**
- * @api {get} admin/blacklist/criterias Get list of blacklist criterias
+ * @api {get} /admin/blacklist/criterias Get list of blacklist criterias
  * @apiName GetBlacklistCriterias
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
@@ -1969,7 +1969,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {post} admin/blacklist/criterias Add a blacklist criteria
+ * @api {post} /admin/blacklist/criterias Add a blacklist criteria
  * @apiName PostBlacklistCriterias
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
@@ -2044,7 +2044,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
 	/**
- * @api {delete} admin/blacklist/criterias/:blc_id Delete a blacklist criteria
+ * @api {delete} /admin/blacklist/criterias/:blc_id Delete a blacklist criteria
  * @apiName DeleteBlacklistCriterias
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
@@ -2084,7 +2084,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {put} admin/blacklist/criterias/:blc_id Edit a blacklist criteria
+ * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
  * @apiName PutBlacklistCriterias
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
@@ -2153,7 +2153,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/player')
 	/**
- * @api {put} admin/player Send commands to player
+ * @api {put} /admin/player Send commands to player
  * @apiName PutPlayerCommando
  * @apiVersion 2.0.0
  * @apiGroup Player
@@ -2221,7 +2221,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/playlists/:pl_id([0-9]+)/export')
 	/**
- * @api {get} admin/playlists/:pl_id/export Export a playlist
+ * @api {get} /admin/playlists/:pl_id/export Export a playlist
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getPlaylistExport
  * @apiVersion 2.0.0
@@ -2287,7 +2287,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/playlists/import')
 	/**
- * @api {post} admin/playlists/import Import a playlist
+ * @api {post} /admin/playlists/import Import a playlist
  * @apiName postPlaylistImport
  * @apiVersion 2.0.0
  * @apiGroup Playlists
@@ -2355,7 +2355,7 @@ export async function initAPIServer(listenPort) {
 
 	routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
 	/**
- * @api {put} admin/playlists/:pl_id/shuffle Shuffle a playlist
+ * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
  * @apiVersion 2.0.0
@@ -2401,7 +2401,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/playlists')
 	/**
- * @api {get} public/playlists/ Get list of playlists (public)
+ * @api {get} /public/playlists/ Get list of playlists (public)
  * @apiName GetPlaylistsPublic
  * @apiGroup Playlists
  * @apiVersion 2.0.0
@@ -2446,7 +2446,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerPublic.route('/playlists/:pl_id([0-9]+)')
 	/**
- * @api {get} public/playlists/:pl_id Get playlist information (public)
+ * @api {get} /public/playlists/:pl_id Get playlist information (public)
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
  * @apiPermission public
@@ -2502,7 +2502,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
 	/**
- * @api {get} public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
+ * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.1.0
  * @apiGroup Playlists
@@ -2612,7 +2612,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 	/**
- * @api {get} public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
+ * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
  * @apiVersion 2.1.0
  * @apiGroup Playlists
@@ -2735,7 +2735,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerPublic.route('/settings')
 	/**
- * @api {get} public/settings Get settings (public)
+ * @api {get} /public/settings Get settings (public)
  * @apiName GetSettingsPublic
  * @apiVersion 2.1.0
  * @apiGroup Main
@@ -2801,7 +2801,7 @@ export async function initAPIServer(listenPort) {
 		});				
 	routerPublic.route('/stats')
 	/**
- * @api {get} public/stats Get statistics
+ * @api {get} /public/stats Get statistics
  * @apiName GetStats
  * @apiVersion 2.0.0
  * @apiGroup Main
@@ -2841,7 +2841,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/whitelist')
 	/**
- * @api {get} public/whitelist Get whitelist (public)
+ * @api {get} /public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
  * @apiVersion 2.0.0
  * @apiGroup Whitelist
@@ -2945,7 +2945,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/blacklist')
 	/**
- * @api {get} public/blacklist Get blacklist (public)
+ * @api {get} /public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
@@ -3049,7 +3049,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/blacklist/criterias')
 	/**
- * @api {get} public/blacklist/criterias Get list of blacklist criterias (public)
+ * @api {get} /public/blacklist/criterias Get list of blacklist criterias (public)
  * @apiName GetBlacklistCriteriasPublic
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
@@ -3103,7 +3103,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/player')
 	/**
- * @api {get} public/player Get player status
+ * @api {get} /public/player Get player status
  * @apiName GetPlayer
  * @apiVersion 2.0.0
  * @apiGroup Player
@@ -3303,7 +3303,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerPublic.route('/karas/:kara_id([0-9]+)')
 	/**
- * @api {get} public/karas/:kara_id Get song info from database
+ * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 2.1.0
  * @apiGroup Karaokes
@@ -3402,7 +3402,7 @@ export async function initAPIServer(listenPort) {
 				});
 		})
 	/**
- * @api {post} public/karas/:kara_id Add karaoke to current/public playlist
+ * @api {post} /public/karas/:kara_id Add karaoke to current/public playlist
  * @apiName PostKaras
  * @apiVersion 2.1.0
  * @apiGroup Playlists
@@ -3476,7 +3476,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')
 	/**
- * @api {post} public/karas/:kara_id/lyrics Get song lyrics
+ * @api {post} /public/karas/:kara_id/lyrics Get song lyrics
  * @apiName GetKarasLyrics
  * @apiVersion 2.0.0
  * @apiGroup Karaokes
@@ -3510,7 +3510,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerPublic.route('/playlists/current')
 	/**
- * @api {get} public/playlists/current Get current playlist information
+ * @api {get} /public/playlists/current Get current playlist information
  * @apiName GetPlaylistCurrent
  * @apiGroup Playlists
  * @apiPermission public
@@ -3564,7 +3564,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/playlists/current/karas')
 	/**
- * @api {get} public/playlists/current/karas Get list of karaokes in the current playlist
+ * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
  * @apiVersion 2.1.0
  * @apiGroup Playlists
@@ -3672,7 +3672,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/playlists/public')
 	/**
- * @api {get} public/playlists/public Get public playlist information
+ * @api {get} /public/playlists/public Get public playlist information
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
  * @apiPermission public
@@ -3726,7 +3726,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/playlists/public/karas')
 	/**
- * @api {get} public/playlists/public/karas Get list of karaokes in the public playlist
+ * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.1.0
  * @apiGroup Playlists
@@ -3834,7 +3834,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/tags')
 	/**
-	* @api {get} public/tags Get tag list
+	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
 	* @apiVersion 2.0.0
 	* @apiGroup Karaokes
@@ -3888,7 +3888,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerPublic.route('/users/:username')
 	/**
- * @api {get} public/users/:username View user details (public)
+ * @api {get} /public/users/:username View user details (public)
  * @apiName GetUser
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -3947,7 +3947,7 @@ export async function initAPIServer(listenPort) {
 				});						
 		})
 	/**
- * @api {put} admin/users/:username Edit a user
+ * @api {put} /admin/users/:username Edit a user
  * @apiName EditUser
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -4052,7 +4052,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/myaccount')
 	/**
- * @api {get} public/myaccount View own user details
+ * @api {get} /public/myaccount View own user details
  * @apiName GetMyAccount
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -4115,7 +4115,7 @@ export async function initAPIServer(listenPort) {
 				});						
 		})
 	/**
- * @api {put} public/myaccount Edit your own account
+ * @api {put} /public/myaccount Edit your own account
  * @apiName EditMyAccount
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -4215,7 +4215,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/users')
 	/**
- * @api {get} public/users List users
+ * @api {get} /public/users List users
  * @apiName GetUsers
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -4281,7 +4281,7 @@ export async function initAPIServer(listenPort) {
 		})
 		
 	/**
- * @api {post} public/users Create new user
+ * @api {post} /public/users Create new user
  * @apiName PostUser
  * @apiVersion 2.1.0
  * @apiGroup Users
