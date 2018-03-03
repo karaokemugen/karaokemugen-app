@@ -79,6 +79,19 @@ pkg_osx:
     - next
     - tags
 
+deploy_shelter_win:
+  stage: deploy
+  dependencies:
+    - pkg_win
+  script:
+    - mkdir -p /shelter/_macOS-$CI_COMMIT_REF_NAME
+    - cp -f bin/karaokemugen-app /shelter/_macOS-$CI_COMMIT_REF_NAME/
+    - cp -f config.ini.default /shelter/_macOS-$CI_COMMIT_REF_NAME/
+  only:
+    - next
+    - master
+    - tags
+
 deploy_win:
   stage: deploy
   dependencies:
@@ -92,7 +105,7 @@ deploy_win:
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.ini.default .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"    
   only:
     - master
     - next
@@ -116,7 +129,20 @@ deploy_osx:
     - master
     - next
     - tags
-  
+
+deploy_shelter_win:
+  stage: deploy
+  dependencies:
+    - pkg_win
+  script:
+    - mkdir -p /shelter/_macOS-$CI_COMMIT_REF_NAME
+    - cp -f bin/karaokemugen-app /shelter/_macOS-$CI_COMMIT_REF_NAME/
+    - cp -f config.ini.default /shelter/_macOS-$CI_COMMIT_REF_NAME/
+  only:
+    - next
+    - master
+    - tags
+
 apidoc:
   stage: deploy
   script:
