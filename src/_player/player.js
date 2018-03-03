@@ -268,7 +268,7 @@ async function startmpv() {
 						displayingInfo == false &&
 						state.player.videoType == 'song')						
 			displaySongInfo(state.player.currentSongInfos);
-		if (Math.floor(position) == Math.floor(state.player.duration / 2) && displayingInfo == false && state.player.videoType == 'song') displayInfo(8000);
+		if (Math.floor(position) == Math.floor(state.player.duration / 2) && displayingInfo == false && state.player.videoType == 'song') displayInfo(8000);	
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	state.player.ready = true;	

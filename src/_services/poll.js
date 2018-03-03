@@ -13,29 +13,42 @@ let poll = [];
 let voters = [];
 let pollUUID;
 let pollEnding = false;
+let playerEnding = false;
+let playerPlaying = false;
 
 on('engineStatusChange', (newstate) => {
 	state.engine = newstate[0];
 	if (!state.engine.songPoll && poll.length > 0) stopPoll();
 });
 
-on('songNearEnd', () => {
-	endPoll();
-});
-
-on('songStart', () => {
-	startPoll();
-	timerPoll();
+on('playerStatusChange', (player) => {
+	if (player.songType == 'song') {
+		if (!playerPlaying) {
+			playerPlaying = true;
+			startPoll();
+		}
+		if (player.position >= player.duration - 10) {
+			if (!playerEnding) {
+				playerEnding = true;
+				endPoll();
+			}
+		} else {
+			playerEnding = false;
+		}		
+	} else {
+		playerPlaying = false;
+	}
 });
 
 export async function timerPoll() {
 	const internalUUID = pollUUID = uuidV4();
-	await sleep(30000);
+	await sleep(getConfig().EngineSongPollTimeout * 1000);
 	if (internalUUID == pollUUID) endPoll();
 }
 
 export function endPoll() {
 	pollEnding = true;
+	console.log('Ending poll');
 	getPollResults().then(winner => {
 		emitWS('songPollResult',winner);
 		stopPoll();
@@ -46,6 +59,7 @@ export function stopPoll() {
 	poll = [];
 	voters = [];
 	pollEnding = false;
+	emitWS('songPollEnded');
 }
 
 export async function getPollResults(lang) {
@@ -97,6 +111,7 @@ export async function addPollVote(playlistcontent_id,token) {
 
 export async function startPoll() {
 	const conf = getConfig();
+	console.log('Starting poll');
 	poll = [];	
 	voters = [];
 	pollEnding = false;
@@ -118,6 +133,7 @@ export async function startPoll() {
 		poll[index].votes = 0;
 	}
 	emitWS('newSongPoll',poll);
+	timerPoll();
 }
 
 function hasUserVoted(username) {

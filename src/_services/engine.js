@@ -12,7 +12,7 @@ import {emit,on} from '../_common/utils/pubsub';
 import {emitWS} from '../_ws/websocket';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
-import {startPoll, timerPoll} from '../_services/poll';
+import {startPoll, stopPoll} from '../_services/poll';
 import {now} from 'unix-timestamp';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
@@ -148,10 +148,6 @@ export async function initEngine() {
 	logger.info('[Engine] Initialization complete');
 	const catchphrase = sample(initializationCatchphrases);
 	console.log(`\n${catchphrase}\n`);
-
-	startPoll();
-	timerPoll();
-
 }
 
 export function exit(rc) {
@@ -257,6 +253,7 @@ function setSongPoll(enabled) {
 	state.engine.songPoll = enabled;
 	emitEngineStatus();
 	if (!oldState && enabled && state.engine.status == 'play') startPoll();
+	if (oldState && !enabled) stopPoll();
 }
 
 function setPrivateOn() {
