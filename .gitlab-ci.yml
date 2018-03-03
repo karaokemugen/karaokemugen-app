@@ -94,7 +94,7 @@ deploy_win:
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
     - mkdir -p /shelter/_Windows-$CI_COMMIT_REF_NAME
-    - cp -f ../bin/karaokemugen-app /shelter/_Windows-$CI_COMMIT_REF_NAME/KaraokeMugen.exe
+    - cp -f ../bin/karaokemugen-app.exe /shelter/_Windows-$CI_COMMIT_REF_NAME/KaraokeMugen.exe
     - cp -f ../config.ini.default /shelter/_Windows-$CI_COMMIT_REF_NAME/
     - cp -f *.node /shelter/_Windows-$CI_COMMIT_REF_NAME/
   only:
