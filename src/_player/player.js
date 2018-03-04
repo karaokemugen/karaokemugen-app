@@ -277,7 +277,7 @@ async function startmpv() {
 
 export async function play(videodata) {
 	const conf = getConfig();
-	logger.debug('[Player] Play event triggered');	
+	logger.debug('[Player] Play event triggered');		
 	state.player.playing = true;
 	//Search for video file in the different PathVideos
 	const PathsVideos = conf.PathVideos.split('|');
@@ -295,7 +295,7 @@ export async function play(videodata) {
 	}	
 	if (isEmpty(videodata.gain)) videodata.gain = 0;			
 	logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
-	logger.info(`[Player] Loading video : ${videoFile}`);		
+	logger.debug(`[Player] Loading video : ${videoFile}`);		
 	try { 
 		await player.load(videoFile,'replace',[`replaygain-fallback=${videodata.gain}`]);
 		state.player.videoType = 'song';

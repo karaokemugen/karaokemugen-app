@@ -294,11 +294,13 @@ async function playerEnding() {
 		internalState.counterToJingle = 0;
 	} else {										
 		try {
-			await plc.next();
-			displayInfo();				
-			await tryToReadKaraInPlaylist();
 			internalState.counterToJingle++;
-		} catch(err) {
+			displayInfo();				
+			if (state.engine.status != 'stop') {
+				await plc.next();				
+				await tryToReadKaraInPlaylist();				
+			}
+		} catch(err) {                   
 			displayInfo();				
 			logger.warn(`[Engine] Next song is not available : ${err}`);
 			stopPlayer();
@@ -311,6 +313,7 @@ async function tryToReadKaraInPlaylist() {
 		try {
 			const kara = await plc.playCurrentSong();			
 			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(kara));
+			logger.info(`[Engine] Playing song : ${kara.serie}${kara.title}`);
 			await play({
 				video: kara.path.video,
 				subtitle: kara.path.subtitle,
