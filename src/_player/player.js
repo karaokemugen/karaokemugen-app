@@ -123,7 +123,7 @@ export async function initPlayerSystem(initialState) {
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
 	frontendPort = initialState.frontendPort;
-	currentJinglesList = jinglesList = await buildJinglesList();
+	currentJinglesList = jinglesList = buildJinglesList();
 	await buildQRCode(`http://${conf.osHost}:${initialState.frontend_port}`);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
