@@ -278,6 +278,15 @@ export async function initUserSystem() {
 		password: 'gurdil',
 	}, 'admin');
 
+	if (getConfig().isTest) {
+		await addUser({
+			login: 'adminTest',
+			password: 'ceciestuntest',
+		}, 'admin');
+	} else {
+		if (await findUserByName('adminTest')) await deleteUser('adminTest');
+	}
+
 	createDefaultGuests();
 }
 
