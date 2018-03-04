@@ -213,7 +213,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 								FROM karasdb.all_karas AS all_karas
     							INNER JOIN playlist_content ON all_karas.kara_id = playlist_content.fk_id_kara
     							WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
-    							AND playlist_content.pos BETWEEN (SELECT ifnull(pos,0) FROM playlist_content WHERE flag_playing = 1) AND pc.pos) AS time_before_play,
+    							AND playlist_content.pos BETWEEN (SELECT ifnull(pos,0) FROM playlist_content WHERE flag_playing = 1 AND fk_id_playlist = pc.fk_id_playlist) AND pc.pos) AS time_before_play,
 								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
         							ELSE 0

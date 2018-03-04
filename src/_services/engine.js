@@ -15,7 +15,7 @@ import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSub
 import {now} from 'unix-timestamp';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
-import {cloneDeep, sample} from 'lodash';
+import {isEmpty, cloneDeep, sample} from 'lodash';
 
 const plc = require('./playlist');
 const logger = require('winston');
@@ -317,7 +317,11 @@ async function tryToReadKaraInPlaylist() {
 			let karaForLogging = cloneDeep(kara);
 			karaForLogging.path.subtitle = '[Not logging ASS data]';
 			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging));
-			logger.info(`[Engine] Playing song : ${kara.serie}${kara.title}`);			
+			let serie = kara.serie;
+			let title = kara.title;
+			if (isEmpty(serie)) serie = kara.singer;
+			if (isEmpty(title)) title = '';
+			logger.info(`[Engine] Playing ${serie}${title}`);						
 			await play({
 				video: kara.path.video,
 				subtitle: kara.path.subtitle,
