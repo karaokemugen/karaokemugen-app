@@ -121,6 +121,7 @@ deploy_osx:
     - cp -f ../bin/karaokemugen-app /shelter/_macOS-$CI_COMMIT_REF_NAME/    
     - cp -f ../config.ini.default /shelter/_macOS-$CI_COMMIT_REF_NAME/
     - sed -e 's/app\//..\/app\//g' -i /shelter/_macOS-$CI_COMMIT_REF_NAME/config.ini.default
+    - sed -e 's/mpv...\/app/mpv.app/g' -i /shelter/_macOS-$CI_COMMIT_REF_NAME/config.ini.default
     - cp -f *.node /shelter/_macOS-$CI_COMMIT_REF_NAME/
   only:
     - master
