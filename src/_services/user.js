@@ -279,10 +279,12 @@ export async function initUserSystem() {
 	}, 'admin');
 
 	if (getConfig().isTest) {
-		await addUser({
-			login: 'adminTest',
-			password: 'ceciestuntest',
-		}, 'admin');
+		if (!await findUserByName('adminTest')) {
+			await addUser({
+				login: 'adminTest',
+				password: 'ceciestuntest',
+			}, 'admin');
+		}
 	} else {
 		if (await findUserByName('adminTest')) await deleteUser('adminTest');
 	}
