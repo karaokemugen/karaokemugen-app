@@ -1057,7 +1057,7 @@ export async function playCurrentSong() {
 		readpos = 0;
 		updatePlayingKara = true;
 	}
-	const kara = playlist.content[readpos];
+	const kara = playlist.content[readpos];	
 	if (!kara) throw 'No karaoke found in playlist object';
 	// If there's no kara with a playing flag, we set the first one in the playlist
 	if (updatePlayingKara) await setPlaying(kara.playlistcontent_id,playlist.id);

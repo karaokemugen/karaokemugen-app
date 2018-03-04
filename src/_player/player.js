@@ -293,7 +293,6 @@ export async function play(videodata) {
 			throw `No video source for ${videodata.video}`;
 		}
 	}	
-	if (isEmpty(videodata.gain)) videodata.gain = 0;			
 	logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
 	logger.debug(`[Player] Loading video : ${videoFile}`);		
 	try { 

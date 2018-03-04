@@ -315,7 +315,7 @@ async function tryToReadKaraInPlaylist() {
 			let karaForLogging = cloneDeep(kara);
 			karaForLogging.path.subtitle = '[Not logging ASS data]';
 			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging));
-			logger.info(`[Engine] Playing song : ${kara.serie}${kara.title}`);
+			logger.info(`[Engine] Playing song : ${kara.serie}${kara.title}`);			
 			await play({
 				video: kara.path.video,
 				subtitle: kara.path.subtitle,
