@@ -70,7 +70,7 @@ async function main() {
 	}
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
-	if (argv.test) {
+	if (!argv.test) {
 		// Checking binaries
 		await configureBinaries(config);
 	}
