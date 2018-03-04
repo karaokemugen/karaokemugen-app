@@ -433,7 +433,7 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 500 Internal Server Error
  */
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {					
-			engine.deletePlaylist(req.params.pl_id)
+			engine.deletePL(req.params.pl_id)
 				.then(() => {
 					emitWS('playlistsUpdated');
 					res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
