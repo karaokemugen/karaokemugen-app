@@ -135,3 +135,6 @@ AuthExpireTime = 15
 
 ; App's first run. Overriden in config.ini
 appFirstRUn = 1
+
+; Activate the creation of previews
+CreatePreviews = 1

@@ -1330,7 +1330,8 @@ export async function initAPIServer(listenPort) {
  *       "isTest": false,
  *       "mpvVideoOutput": "direct3d",
  *       "os": "win32",
- *       "osHost": "10.202.40.43"
+ *       "osHost": "10.202.40.43",
+ *       "CreatePreviews ": "1"
  *   }
  * }
  */
