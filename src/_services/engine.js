@@ -123,7 +123,7 @@ export async function initEngine() {
 	await initDBSystem();
 	await initUserSystem();
 	let inits = [];
-	if (conf.CreatePreviews > 0) {
+	if (conf.EngineCreatePreviews > 0) {
 		createPreviews();
 	}
 	inits.push(initPlayerSystem(state.engine));
