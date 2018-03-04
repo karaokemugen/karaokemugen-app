@@ -887,11 +887,7 @@ export function translateBlacklistCriterias(blcs, lang) {
 		if (blc.type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
 			karaDB.getKara(blc.value).then((kara) => {
-				translateKaraInfo(kara,lang).then((karaTranslated) => {
-					blclist[index].value = karaTranslated;							
-				}).catch((err) => {
-					throw err;
-				});						
+				blclist[index].value =	translateKaraInfo(kara,lang);
 			}).catch((err) => {
 				throw err;
 			});
