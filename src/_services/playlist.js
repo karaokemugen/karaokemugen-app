@@ -884,7 +884,7 @@ export async function translateBlacklistCriterias(blcs, lang) {
 		if (blcList[i].type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
 			const kara = await karaDB.getKara(blcList[i].value);
-			const karaTranslated = await translateKaraInfo(kara,lang);
+			const karaTranslated = translateKaraInfo(kara,lang);
 			blcList[i].value = karaTranslated;										
 		}
 		// No need to do anything, values have been modified if necessary			

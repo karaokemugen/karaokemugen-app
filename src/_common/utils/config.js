@@ -29,7 +29,7 @@ export async function initConfig(appPath, argv) {
 	configureLogger(appPath, !!argv.debug);
 
 	config = {...config, appPath: appPath};
-	config = {...config, isTest: !!argv.isTest};
+	config = {...config, isTest: !!argv.test};
 	config = {...config, os: process.platform};
 
 	configureLocale();
