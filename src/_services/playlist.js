@@ -261,7 +261,7 @@ export async function setPublicPlaylist(playlist_id) {
 export async function deletePlaylist(playlist_id) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	if (await isPublicPlaylist(playlist_id)) throw `Playlist ${playlist_id} is public. Unable to delete it`;
-	if (await isCurrentPlaylist(playlist_id)) throw `Playlist ${playlist_id} is public. Unable to delete it`;
+	if (await isCurrentPlaylist(playlist_id)) throw `Playlist ${playlist_id} is current. Unable to delete it`;
 	await plDB.deletePlaylist(playlist_id);
 }
 

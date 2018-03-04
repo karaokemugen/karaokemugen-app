@@ -381,7 +381,7 @@ describe('Managing settings', function(){
 				SETTINGS = response.body;
 			});
 	});
-	/*
+	
 	it('Update settings', function() {
 		var data = SETTINGS;
 		return request
@@ -392,9 +392,9 @@ describe('Managing settings', function(){
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response){
-				assert.equal(response.body.data.isTest,'true');
+				assert.equal(response.body.data.isTest,true);
 			});
-	});*/
+	});
 });
 
 describe('Managing whitelist', function() {
@@ -586,7 +586,8 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				new_playlist_id = response.body;
+				assert.equal(response.body.code, 'PL_CREATED');
+				new_playlist_id = response.body.data;
 			});
 	});
 	
@@ -599,7 +600,8 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				new_playlist_current_id = response.body;
+				assert.equal(response.body.code, 'PL_CREATED');
+				new_playlist_current_id = response.body.data;
 			});
 	});
 	it('Create a new PUBLIC playlist', function() {
@@ -611,7 +613,8 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				new_playlist_public_id = response.body;
+				assert.equal(response.body.code, 'PL_CREATED');
+				new_playlist_public_id = response.body.data;
 			});
 	});
 	var edit_playlist = {
@@ -619,7 +622,7 @@ describe('Managing playlists', function() {
 		flag_visible: 'true',
 		pl_id:'new_playlist_id'
 	};
-	/*
+	
 	it('Edit a playlist', function() {
 		return request
 			.put('/api/v1/admin/playlists/'+new_playlist_id)
@@ -628,21 +631,20 @@ describe('Managing playlists', function() {
 			.send(edit_playlist)
 			.expect(200)
 			.then(function(response) {
-				console.log(response.body);
 				assert.equal(response.body.code,'PL_UPDATED');
 				assert.equal(response.body.data,new_playlist_id);
 			});
 	});
-	
+
 	it('Try to delete a CURRENT playlist (should fail)', function() {
 		return request
 			.delete('/api/v1/admin/playlists/'+new_playlist_current_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
-			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.equal(response.body,'Playlist to delete is current. Unable to delete it')
+				assert.equal(response.body.code,'PL_DELETE_ERROR');
+				assert.equal(response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it');
 			});
 	});
 
@@ -654,9 +656,11 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.equal(response.body,'Playlist to delete is public. Unable to delete it')
+				assert.equal(response.body.code,'PL_DELETE_ERROR');
+				assert.equal(response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it');
 			});
 	});
+	
 	it('Delete a playlist', function() {
 		return request
 			.delete('/api/v1/admin/playlists/'+new_playlist_id)
@@ -665,9 +669,11 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				// OK
+				assert.equal(response.body.code,'PL_DELETED');
+				assert.equal(response.body.data,new_playlist_id);
 			});
 	});
+	
 	it('Empty playlist', function() {
 		return request
 			.put('/api/v1/admin/playlists/'+new_playlist_public_id+'/empty')
@@ -676,9 +682,10 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body,'Playlist '+new_playlist_public_id+' emptied');
+				assert.equal(response.body.code,'PL_EMPTIED');
+				assert.equal(response.body.data,new_playlist_public_id);
 			});
-	});*/
+	});
 });
 /*
 describe('Ending tests', function() {
