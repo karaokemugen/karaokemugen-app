@@ -123,7 +123,9 @@ export async function initEngine() {
 	await initDBSystem();
 	await initUserSystem();
 	let inits = [];
-	createPreviews();
+	if (conf.EngineCreatePreviews > 0) {
+		createPreviews();
+	}
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(ports.frontend));
 	inits.push(initAPIServer(ports.apiserver));

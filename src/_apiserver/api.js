@@ -1302,6 +1302,7 @@ export async function initAPIServer(listenPort) {
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
  *       "EngineSongsPerUser": "10000",
+ *       "EngineCreatePreviews": "1",
  *       "PathAltname": "../times/series_altnames.csv",
  *       "PathBackgrounds": "app/backgrounds",
  *       "PathBin": "app/bin",

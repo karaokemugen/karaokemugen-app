@@ -59,6 +59,9 @@ EngineSmartInsert = 0
 ; 20 songs = about 30 minutes of openings/endings.
 EngineJinglesInterval = 20
 
+; Activate the creation of previews
+EngineCreatePreviews = 1
+
 ; Set the player's background.
 ; Specify the filename, it will be searched in the app/backgrounds folder
 PlayerBackground = ""
