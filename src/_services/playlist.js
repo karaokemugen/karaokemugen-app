@@ -848,8 +848,8 @@ export function translateKaraInfo(karalist, lang) {
 }
 
 
-export function translateBlacklistCriterias(blcs, lang) {
-	const blclist = blcs;
+export async function translateBlacklistCriterias(blcs, lang) {
+	const blcList = blcs;
 	// If lang is not provided, assume we're using node's system locale
 	if (!lang) lang = getConfig().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
@@ -861,44 +861,35 @@ export function translateBlacklistCriterias(blcs, lang) {
 	});
 	i18n.setLocale(lang);
 	// We need to read the detected locale in ISO639-1
-	blclist.forEach((blc, index) => {
-		if (blc.type === 1) {
+	for (const i in blcList) {
+		if (blcList[i].type === 1) {
 			// We just need to translate the tag name if there is a translation
-			if (typeof blc.value != 'string') throw `BLC value is not a string : ${blc.value}`;
-			if (blc.value.startsWith('TAG_')) {
-				blclist[index].value_i18n = i18n.__(blc.value);
+			if (typeof blcList[i].value != 'string') throw `BLC value is not a string : ${blcList[i].value}`;
+			if (blcList[i].value.startsWith('TAG_')) {
+				blcList[i].value_i18n = i18n.__(blcList[i].value);
 			} else {
-				blclist[index].value_i18n = blc.value;
+				blcList[i].value_i18n = blcList[i].value;
 			}
 		}			
-		if (blc.type >= 2 && blc.type <= 999) {
+		if (blcList[i].type >= 2 && blcList[i].type <= 999) {
 			// We need to get the tag name and then translate it if needed
-			tagDB.getTag(blc.value).then((res) => {	
-				if (typeof res.name != 'string') throw 'Tag name is not a string : '+JSON.stringify(res);
-				if (res.name.startsWith('TAG_')) {
-					blclist[index].value_i18n = i18n.__(res.name);
-				} else {
-					blclist[index].value_i18n = res.name;
-				}							
-			}).catch((err) => {
-				throw err;						
-			});	
+			const tag = await tagDB.getTag(blcList[i].value);
+			if (typeof tag.name != 'string') throw 'Tag name is not a string : '+JSON.stringify(tag);
+			if (tag.name.startsWith('TAG_')) {
+				blcList[i].value_i18n = i18n.__(tag.name);
+			} else {
+				blcList[i].value_i18n = tag.name;
+			}										
 		}								
-		if (blc.type === 1001) {
+		if (blcList[i].type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
-			karaDB.getKara(blc.value).then((kara) => {
-				translateKaraInfo(kara,lang).then((karaTranslated) => {
-					blclist[index].value = karaTranslated;							
-				}).catch((err) => {
-					throw err;
-				});						
-			}).catch((err) => {
-				throw err;
-			});
+			const kara = await karaDB.getKara(blcList[i].value);
+			const karaTranslated = await translateKaraInfo(kara,lang);
+			blcList[i].value = karaTranslated;										
 		}
 		// No need to do anything, values have been modified if necessary			
-	});
-	return blclist;				
+	}
+	return blcList;				
 }
 
 export function translateTags(taglist,lang) {

@@ -429,7 +429,7 @@ export async function importPL(playlist) {
 
 export async function getBLC(lang) {
 	const blcs = await plc.getBlacklistCriterias();
-	return plc.translateBlacklistCriterias(blcs, lang);
+	return await plc.translateBlacklistCriterias(blcs, lang);
 }
 
 export async function addBLC(blctype, blcvalue) {
