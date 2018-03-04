@@ -151,11 +151,9 @@ export async function addBlacklistCriteria(blctype, blcvalues) {
 
 async function isAllKaras(karas) {	
 	let err;
-	karas.forEach(kara_id => {
-		isKara(kara_id).then((res) => {
-			if (!res) err = true;
-		});
-	});
+	for (const kara_id of karas) {
+		if (!await isKara(kara_id)) err = true;
+	}		
 	if (err) {
 		return false;
 	} else {
