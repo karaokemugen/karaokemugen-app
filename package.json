@@ -7,7 +7,7 @@
   "scripts": {
     "start": "babel-node src/index.js --",
     "debug": "babel-node $NODE_DEBUG_OPTION src/index.js -- --debug",
-    "test": "mocha --require babel-register --timeout 5000",
+    "test": "mocha --require babel-register --timeout 10000",
     "build": "rm -Rf dist && babel --source-maps --copy-files -d dist/ src/ && cd react_client && yarn build && mv -f build ../dist/_dashboard",
     "install": "cd react_client && yarn install",
     "buildReact": "cd react_client && yarn build && mv -f build ../src/_dashboard",
