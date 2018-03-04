@@ -533,10 +533,10 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 500 Internal Server Error
  */
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {					
-			user.deleteUser(req.params.user_id)
+			user.deleteUser(req.params.username)
 				.then(() => {
 					emitWS('usersUpdated');
-					res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.user_id));
+					res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.username));
 				})
 				.catch((err) => {
 					res.statusCode = 500;
