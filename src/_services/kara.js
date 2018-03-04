@@ -41,6 +41,9 @@ function initValidators() {
 	if (!validate.validators.langValidator) {
 		validate.validators.langValidator = langValidator;
 	}
+	if (!validate.validators.integerValidator) {
+		validate.validators.integerValidator = integerValidator;
+	}
 }
 
 function langValidator(value) {
@@ -51,6 +54,14 @@ function langValidator(value) {
 			result = `Lang '${lang}' is invalid`;
 			break;
 		}
+	}
+	return result;
+}
+
+function integerValidator(value) {
+	let result = null;	
+	if (value !== 'und' && value < 0) {
+		result = ` '${value}' is invalid`;
 	}
 	return result;
 }
@@ -74,9 +85,8 @@ const karaConstraints = {
 		}
 	},
 	lang: {langValidator: true},
-	//FIXME : Order and year must be numeric, but this is not compatible with allowEmpty: true
-	order: {presence: {allowEmpty: true}},
-	year: {presence: {allowEmpty: true}},
+	order: {integerValidator: true},
+	year: {integerValidator: true},
 	KID: {presence: true, format: uuidRegexp},
 	dateadded: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	datemodif: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
