@@ -138,7 +138,9 @@ export async function initEngine() {
 	} else {
 		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0);
 		logger.info('[Engine] Initial current playlist created');
-		inits.push(plc.buildDummyPlaylist(internalState.currentPlaylistID));
+		if (!conf.isTest) {
+			inits.push(plc.buildDummyPlaylist(internalState.currentPlaylistID));
+		}
 	}
 	if (!await plc.isAPublicPlaylist()) {
 		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1);
