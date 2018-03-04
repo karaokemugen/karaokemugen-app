@@ -24,6 +24,9 @@ test:
     - npm install -g yarn
     - yarn install  
     - touch mpv
+    - echo "BinffmpegLinux=../ffmpeg/ffmpeg" >>config.ini
+    - echo "BinffprobeLinux=../ffmpeg/ffprobe" >>config.ini
+    - echo "BinPlayerLinux=mpv" >>config.ini
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
     - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
