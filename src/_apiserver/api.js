@@ -3105,7 +3105,7 @@ export async function initAPIServer(listenPort) {
 	/**
  * @api {get} /public/player Get player status
  * @apiName GetPlayer
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Player
  * @apiPermission public
  * @apiDescription Player info is updated very frequently. You can poll it to get precise information from player and engine altogether.
@@ -3140,30 +3140,9 @@ export async function initAPIServer(listenPort) {
  *       "volume": 100
  *   }
  * }
- * @apiError PLAYER_STATUS_ERROR Error fetching player status (is the player running?)
- *
- * @apiErrorExample Error-Response:
- * HTTP/1.1 500 Internal Server Error
- * {
- *   "code": "PLAYER_STATUS_ERROR"
- * }
- */		
+ */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			// Get player status
-			// What's playing, time in seconds, duration of song
-
-			//return status of the player
-
-			engine.getPlayerStatus()
-				.then((status) => {
-					res.json(OKMessage(status));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('PLAYER_STATUS_ERROR',err));
-				});
-
+			res.json(OKMessage(engine.getPlayerStatus()));
 		});
 	routerPublic.route('/karas')
 	/**
