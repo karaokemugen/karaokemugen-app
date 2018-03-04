@@ -223,10 +223,22 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 						INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 						LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user    	
 						LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
-						LEFT OUTER JOIN playlist AS p ON pc.fk_id_playlist = p.pk_id_playlist
 						LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
+						LEFT OUTER JOIN playlist AS p ON pc.fk_id_playlist = p.pk_id_playlist
 						WHERE  pc.pk_id_plcontent = $playlistcontent_id
 							`;
+
+export const getPLCInfoMini = `SELECT pc.fk_id_kara AS kara_id,
+							pc.pseudo_add AS pseudo_add,
+							pc.NORM_pseudo_add AS NORM_pseudo_add,
+						  u.login AS username,
+							pc.pk_id_plcontent AS playlistcontent_id,
+						  pc.fk_id_playlist AS playlist_id  
+				  FROM playlist_content AS pc				  
+				  LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user    	
+				  WHERE  pc.pk_id_plcontent = $playlistcontent_id
+					  `;
+
 
 export const getPLCByKID = `SELECT ak.kara_id AS kara_id,
 								ak.title AS title,

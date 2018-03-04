@@ -117,6 +117,13 @@ export async function getPLCInfo(id,forUser) {
 		});
 }
 
+export async function getPLCInfoMini(id) {
+	return await getUserDb().get(sql.getPLCInfoMini,  
+		{
+			$playlistcontent_id: id			
+		});
+}
+
 export async function getPLCByKID(kid,playlist_id) {
 	return await getUserDb().get(sql.getPLCByKID,{
 		$kid: kid,
@@ -193,6 +200,7 @@ export async function unsetPlaying(playlist_id) {
 export async function setPlaying(plc_id) {
 	return await getUserDb().run(sql.setPlaying, { $playlistcontent_id: plc_id });
 }
+
 export async function countPlaylistUsers(playlist_id){
 	return await getUserDb().run(sql.countPlaylistUsers, { $playlist_id: playlist_id });
 }

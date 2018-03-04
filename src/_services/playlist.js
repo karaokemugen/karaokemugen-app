@@ -550,8 +550,8 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 
 async function checkPLCandKaraInPlaylist(plcList,playlist_id) {
 	let plcToAdd = [];
-	for (const index in plcList) {
-		const plcData = await plDB.getPLCInfo(plcList[index].plc_id);
+	for (const index in plcList) {		
+		const plcData = await plDB.getPLCInfoMini(plcList[index].plc_id);
 		if (!plcData) throw `PLC ${plcList[index].plc_id} does not exist`;
 		//We got a hit!
 		// Let's check if the kara we're trying to add is 
@@ -620,13 +620,13 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id) {
 
 export async function editKaraFromPlaylist(plc_id,pos,flag_playing) {
 	if (flag_playing == 0) throw 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one';
-	const kara = await plDB.getPLCInfo(plc_id);
+	const kara = await plDB.getPLCInfoMini(plc_id);
 	if (!kara) throw 'PLCID unknown!';
 	const playlist_id = kara.playlist_id;
 	if (pos) {
 		await raisePosInPlaylist(pos,playlist_id);
 		await plDB.setPos(plc_id,pos);
-		await reorderPlaylist(playlist_id);
+		await reorderPlaylist(playlist_id);		
 	}
 	await updatePlaylistLastEditTime(playlist_id);
 	if (flag_playing) {
