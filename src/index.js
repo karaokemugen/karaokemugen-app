@@ -2,33 +2,16 @@
  * @fileoverview Launcher source file
  */
 import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
-import {setConfig,initConfig,configureBinaries} from './_common/utils/config';
+import {initConfig,configureBinaries} from './_common/utils/config';
+import {parseCommandLineArgs} from './args.js';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
-import minimist from 'minimist';
-import i18n from 'i18n';
 import net from 'net';
 import logger from 'winston';
 import {exit, initEngine} from './_services/engine';
 import resolveSysPath from './_common/utils/resolveSyspath';
-import {karaGenerationBatch} from './_admin/generate_karasfiles';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
-
-const help = `Usage : 
-
-karaokemugen [--help] [--version] [--debug]
-
-Options : 
---help     Displays this message
---version  Displays version info
---debug    Displays additional debug messages
---generate Generates a new database then quits
---validate Validates/checks/updates .kara files without writing a database then quits
---online   Launches in online mode
---test     Launches in test mode
-
-`;
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception); 
@@ -38,7 +21,7 @@ process.on('unhandledRejection', (reason, p) => {
 	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);	
 });
 
-const argv = parseArgs();
+
 const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
 if (appPath) {
 	main()
@@ -52,7 +35,7 @@ if (appPath) {
 }
 
 async function main() {
-
+	await parseCommandLineArgs();
 	let config = await initConfig(appPath, argv);
 	console.log('--------------------------------------------------------------------');
 	console.log(`Karaoke Mugen ${config.VersionNo} (${config.VersionName})`);
@@ -62,31 +45,6 @@ async function main() {
 	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
 	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] Detected OS : ${config.os}`);
-
-	if (argv.help) {
-		console.log(help);
-		process.exit(0);
-	}
-	if (argv.version) {
-		console.log('Karaoke Mugen '+ config.VersionNo + ' - (' + config.VersionName+')');
-		process.exit(0);
-	}
-	if (argv.generate && !argv.validate) {
-		logger.info('[Launcher] Database generation requested');
-		setConfig({optGenerateDB: true});
-	}
-	if (argv.validate && !argv.generate) {
-		logger.info('[Launcher] .kara folder validation requested');
-		setConfig({optValidateKaras: true});
-	}
-	if (argv.validate && argv.generate) {
-		console.log('Error : --validate and --generate are mutually exclusive!');
-		process.exit(1);
-	}
-	if (argv.online) {
-		logger.info('[Launcher] Online mode requested');
-		setConfig({optOnline: true});
-	}
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
 	// Checking binaries
@@ -94,12 +52,6 @@ async function main() {
 
 	// Checking paths, create them if needed.
 	await checkPaths(config);
-
-	if (argv.karagen) {
-		logger.info('[Launcher] .kara generation requested');
-		await karaGenerationBatch();
-		process.exit(0);
-	}
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	logger.debug('[Launcher] Copying input.conf to ' + resolve(appPath, config.PathTemp));
@@ -131,18 +83,6 @@ async function main() {
 	 * Calling engine.
 	 */		
 	initEngine();
-}
-
-/**
- * Workaround for bug https://github.com/babel/babel/issues/5542
- * Delete this once the bug is resolved.
- */
-function parseArgs() {
-	if (process.argv.indexOf('--') >= 0) {
-		return minimist(process.argv.slice(3));
-	} else {
-		return minimist(process.argv.slice(2));
-	}
 }
 
 /**
