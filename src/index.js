@@ -153,6 +153,11 @@ async function restoreBackupFolder(pathKara, config) {
 	}
 }
 
+/**
+ * Workaround for bug https://github.com/babel/babel/issues/5542
+ * Delete this once the bug is resolved.
+ */
+
 function parseArgs() {
 	if (process.argv.indexOf('--') >= 0) {
 		return minimist(process.argv.slice(3));

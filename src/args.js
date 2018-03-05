@@ -59,8 +59,3 @@ export async function parseCommandLineArgs(argv) {
 }
 
 
-/**
- * Workaround for bug https://github.com/babel/babel/issues/5542
- * Delete this once the bug is resolved.
- */
-
