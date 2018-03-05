@@ -1,5 +1,5 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
-import {updateConfig, configureHost, getConfig} from '../_common/utils/config';
+import {mergeConfig, getConfig} from '../_common/utils/config';
 import {initUserSystem} from '../_services/user';
 import {initDBSystem, getStats} from '../_dao/database';
 import {initAPIServer} from '../_apiserver/api';
@@ -52,6 +52,15 @@ let initialState = {
 
 on('playingUpdated', () => {
 	playingUpdated();
+});
+
+on('playerNeedsRestart', () => {
+	internalState.playerNeedsRestart = true;
+});
+
+on('modeUpdated', mode => {
+	if (mode === 0) setPrivateOn();
+	if (mode === 1) setPrivateOff();
 });
 
 on('engineStatusChange', (newstate) => {
@@ -555,47 +564,8 @@ export async function editPLC(plc_id, pos, flag_playing) {
 	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing);
 }
 
-export function updateSettings(newConfig) {
-	let conf = getConfig();
-	let setting;
-	// Determine if mpv needs to be restarted
-	for (setting in newConfig) {
-		if (setting.startsWith('Player') &&
-			setting != 'PlayerFullscreen' &&
-			setting != 'PlayerStayOnTop') {
-			if (conf[setting] != newConfig[setting]) {
-				internalState.playerNeedsRestart = true;
-				logger.debug('[Engine] Setting mpv to restart after next song');
-			}
-		}
-	}
-	
-	updateConfig(newConfig);	
-	conf = getConfig();
-	// Toggling and updating settings
-	if (conf.EnginePrivateMode === 1) {
-		setPrivateOn();
-	} else {
-		setPrivateOff();
-	}
-	
-	configureHost();
-
-	// Determine which settings we send back. We get rid of all system and admin settings
-	let publicSettings = {};
-	for (var key in conf) {
-		if (conf.hasOwnProperty(key)) {
-			if (!key.startsWith('Path') &&
-				!key.startsWith('Admin') &&
-				!key.startsWith('Bin') &&
-				!key.startsWith('os')
-			) {
-				publicSettings[key] = conf[key];
-			}
-		}
-	}
-	//logger.debug('[Engine] Settings being saved : '+JSON.stringify(settingsToSave));
-	return publicSettings;				
+export function updateSettings(newConfig) {	
+	return mergeConfig(newConfig);				
 }
 
 export async function editPL(playlist_id, playlist) {
