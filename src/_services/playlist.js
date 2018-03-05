@@ -814,21 +814,30 @@ export function translateKaraInfo(karalist, lang) {
 		if (kara.language != null) {
 			const karalangs = kara.language.split(',');
 			let languages = [];
-			karalangs.forEach(function(karalang){
+			let langdata;
+			karalangs.forEach(karalang => {
 				// Special case : und
 				// Undefined language
 				// In this case we return something different.
-				if (karalang === 'und') {
+				// Special case 2 : mul
+				// mul is for multilanguages, when a karaoke has too many languages to list.
+				switch (karalang) {
+				case 'und':
 					languages.push(i18n.__('UNDEFINED_LANGUAGE'));
-				} else {
+					break;
+				case 'mul':
+					languages.push(i18n.__('MULTI_LANGUAGE'));						
+					break;
+				default:
 					// We need to convert ISO639-2B to ISO639-1 to get its language
-					const langdata = langs.where('2B',karalang);
+					langdata = langs.where('2B',karalang);
 					if (langdata === undefined) {
 						languages.push(__('UNKNOWN_LANGUAGE'));
 					} else {
 						languages.push(getLanguage(detectedLocale[1],langdata[1]));
 					}
-				}
+					break;
+				}				
 			});
 			karas[index].language_i18n = languages.join();
 		}
