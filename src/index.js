@@ -15,6 +15,21 @@ import {karaGenerationBatch} from './_admin/generate_karasfiles';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
 
+const help = `Usage : 
+
+karaokemugen [--help] [--version] [--debug]
+
+Options : 
+--help     Displays this message
+--version  Displays version info
+--debug    Displays additional debug messages
+--generate Generates a new database then quits
+--validate Validates/checks/updates .kara files without writing a database then quits
+--online   Launches in online mode
+--test     Launches in test mode
+
+`;
+
 process.on('uncaughtException', function (exception) {
 	console.log(exception); 
 });
@@ -49,7 +64,7 @@ async function main() {
 	logger.debug(`[Launcher] Detected OS : ${config.os}`);
 
 	if (argv.help) {
-		console.log(i18n.__('HELP_MSG'));
+		console.log(help);
 		process.exit(0);
 	}
 	if (argv.version) {
@@ -67,6 +82,10 @@ async function main() {
 	if (argv.validate && argv.generate) {
 		console.log('Error : --validate and --generate are mutually exclusive!');
 		process.exit(1);
+	}
+	if (argv.online) {
+		logger.info('[Launcher] Online mode requested');
+		setConfig({optOnline: true});
 	}
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 

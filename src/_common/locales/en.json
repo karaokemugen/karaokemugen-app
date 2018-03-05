@@ -78,7 +78,6 @@
 	"TAG_ONA": "Original Network Animation",
 	"TAG_DS": "DS",
 	"REQUESTED_BY": "Requested by",
-	"HELP_MSG": "Usage : \n\nkaraokemugen [--help] [--version] [--debug]\n\n\tOptions : \n\n\t\t--help     Displays this message\n\t\t--version  Displays version info\n\t\t--debug    Displays additional debug messages\n\t\t--generate Generates a new database then quits\n\t\t--validate Validates/checks/updates .kara files without writing a database then quits\n\n",
 	"DAY": "day(s)",
 	"HOUR": "hour(s)",
 	"MINUTE": "minute(s)",
