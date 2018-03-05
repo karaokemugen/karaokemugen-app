@@ -354,6 +354,10 @@ span:not(.hideCommands) {
 	order: 3
 }
 
+.automixUserlist {
+	max-height: 200px;
+    overflow-y: auto;
+}
 
 .toastMessageContainer {
 	__top: auto;

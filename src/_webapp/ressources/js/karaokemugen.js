@@ -1022,7 +1022,7 @@ var settingsNotUpdated;
 				//alert(end - start);
 				var htmlContent = '', data;
             
-				if(idPlaylist != -4) {
+				if(idPlaylist != -4) {	// general case
 					data = response.content;
 					if(response.infos) {
 						dashboard.attr('karacount', response.infos.count );
@@ -1060,7 +1060,7 @@ var settingsNotUpdated;
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
 								+	'<div>' + badges + '</div>'
 								+   '</div>'
-								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')
+								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
 								+   '</li>'; 
 							}
 						}

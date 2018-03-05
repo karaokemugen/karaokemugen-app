@@ -55,6 +55,7 @@ export async function initAPIServer(listenPort) {
 					if (typeof input === 'string' && input.includes(',')) {
 						return input.split(',');
 					}
+					return input;
 				}
 				return false;
 			},
