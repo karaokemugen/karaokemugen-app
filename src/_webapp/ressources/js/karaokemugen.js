@@ -60,6 +60,9 @@ var settingsNotUpdated;
 	yourcode(window.jQuery, window, document);
 }(function ($, window, document) {
 	$(function () {
+		
+		initSwitchs();
+		
 		// Once page is loaded
 		plData = {
 			'0' : {
@@ -186,65 +189,14 @@ var settingsNotUpdated;
 		if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			setupAjax();
+			if(scope === 'admin' && mugenToken.role !== 'admin') {
+				$('#loginModal').modal('show');
+			} else {
+				initApp();
+			}
 		} else {
 			$('#loginModal').modal('show');
 		}  
-
-		// Some html & stats init
-		initApp = function() {
-			showedLoginAfter401 = false;
-			if(logInfos.role === 'user' || logInfos.role === 'admin')  {
-				$('.favorites').show();
-			} else {
-				$('.favorites').hide();	
-			}
-
-			$.ajax({ url: 'public/stats' }).done(function (data) {
-				kmStats = data;
-				if(scope === 'public') {
-					$('#selectPlaylist1 > option[value=-1]')
-						.data('num_karas', kmStats.totalcount).attr('data-num_karas', kmStats.totalcount);
-				}
-			});
-
-			passwordUpdating = $.Deferred().resolve();
-			settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
-			
-			settingsUpdating.done( function() {
-				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
-				playlistsUpdating = refreshPlaylistSelects();
-				playlistsUpdating.done(function () {
-					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
-					refreshPlaylistDashboard(1);
-					refreshPlaylistDashboard(2);
-					
-					$(window).trigger('resize');
-				});
-			});
-
-			if(logInfos.role != 'guest') {
-				$('.pseudoChange').show(); 
-				$('#searchParent').css('width',''); 
-			} else { 
-				$('.pseudoChange').hide(); 
-				$('#searchParent').css('width','100%'); 
-			} 
-			
-			initSwitchs();
-
-			$('.bootstrap-switch').promise().then(function(){
-				$(this).each(function(){
-					$(this).attr('title', $(this).find('input').attr('title'));
-				});
-			});
-			
-			$.ajax({ url: 'public/tags', }).done(function (data) {
-				bcTags = data;
-			});
-		};
-		if(logInfos.token) initApp();
-
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
 		$('#searchPlaylist1, #searchPlaylist2').on('input', function () {
@@ -594,7 +546,6 @@ var settingsNotUpdated;
 					createCookie('mugenToken', response.token, -1);
 					logInfos = response;
 					displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
-					setupAjax();
 					initApp();
 
 				}).fail(function(response) {
@@ -1752,6 +1703,57 @@ var settingsNotUpdated;
 		var $option = $('<span>' + icon + ' ' + playlist.text + '</span>');
 
 		return $option;
+	};
+
+	// Some html & stats init
+	initApp = function() {
+
+		setupAjax();
+
+		showedLoginAfter401 = false;
+
+		$.ajax({ url: 'public/stats' }).done(function (data) {
+			kmStats = data;
+			if(scope === 'public') {
+				$('#selectPlaylist1 > option[value=-1]')
+					.data('num_karas', kmStats.totalcount).attr('data-num_karas', kmStats.totalcount);
+			}
+		});
+
+		passwordUpdating = $.Deferred().resolve();
+		settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
+		
+		settingsUpdating.done( function() {
+			settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
+			playlistsUpdating = refreshPlaylistSelects();
+			playlistsUpdating.done(function () {
+				playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
+				refreshPlaylistDashboard(1);
+				refreshPlaylistDashboard(2);
+				
+				$(window).trigger('resize');
+			});
+		});
+
+		if(logInfos.role != 'guest') {
+			$('.pseudoChange').show(); 
+			$('#searchParent').css('width',''); 
+		} else { 
+			$('.pseudoChange').hide(); 
+			$('#searchParent').css('width','100%'); 
+		} 
+		
+		initSwitchs();
+
+		$('.bootstrap-switch').promise().then(function(){
+			$(this).each(function(){
+				$(this).attr('title', $(this).find('input').attr('title'));
+			});
+		});
+		
+		$.ajax({ url: 'public/tags', }).done(function (data) {
+			bcTags = data;
+		});
 	};
 
 	$(window).resize(function () {
