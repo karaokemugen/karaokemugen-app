@@ -10,6 +10,8 @@ require('winston-daily-rotate-file');
 import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
+import {watch} from 'chokidar';
+import {emit} from './pubsub';
 
 /** Object containing all config */
 let config = {};
@@ -21,6 +23,47 @@ let defaultConfig = {};
  */
 export function getConfig() {
 	return {...config};
+}
+
+export function mergeConfig(newConfig) {
+	let conf = getConfig();
+	// Determine if mpv needs to be restarted
+	for (const setting in newConfig) {
+		if (setting.startsWith('Player') &&
+			setting != 'PlayerFullscreen' &&
+			setting != 'PlayerStayOnTop') {
+			if (conf[setting] != newConfig[setting]) {
+				emit('playerNeedsRestart');
+				logger.debug('[Engine] Setting mpv to restart after next song');
+			}
+		}
+	}
+	
+	updateConfig(newConfig);	
+	conf = getConfig();
+	// Toggling and updating settings
+	if (conf.EnginePrivateMode === 1) {
+		emit('modeUpdated',0);		
+	} else {
+		emit('modeUpdated',1);
+	}
+	
+	configureHost();
+
+	// Determine which settings we send back. We get rid of all system and admin settings
+	let publicSettings = {};
+	for (const key in conf) {
+		if (conf.hasOwnProperty(key)) {
+			if (!key.startsWith('Path') &&
+				!key.startsWith('Admin') &&
+				!key.startsWith('Bin') &&
+				!key.startsWith('os')
+			) {
+				publicSettings[key] = conf[key];
+			}
+		}
+	}
+	return publicSettings;
 }
 
 /** Initializing configuration */
@@ -36,6 +79,16 @@ export async function initConfig(appPath, argv) {
 	await loadConfigFiles(appPath);
 	configureHost();
 	if (config.JwtSecret == 'Change me') setConfig( {JwtSecret: uuidV4() });
+
+	//Configure watcher
+	const configWatcher = watch(resolve(appPath, 'config.ini'));
+	configWatcher.on('change', () => {
+		logger.debug('[Config] config file has been changed from the outside world');
+		loadConfig(resolve(appPath, 'config.ini')).then(() => {
+			mergeConfig(getConfig());
+		});
+	});
+
 	return getConfig();
 }
 
@@ -122,6 +175,7 @@ export async function updateConfig(newConfig) {
 			&& (newConfig[k] != defaultConfig[k])
             && (filteredConfig[k] = v);		
 	});
+	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
 	await asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');	
 }
 
