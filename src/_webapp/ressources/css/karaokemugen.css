@@ -22,14 +22,14 @@ body {
 	z-index: 2337;
 	background-color: #1E2124;
 	top: 0;
-	height: 85px;
+	height: 75px;
 	width: 100%;
 	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
 }
 
 .header .btn {
 	height: 100%;
-	width: 85px;
+	width: 75px;
 	padding: 0px;
 	margin: 0px;
 	font-size: 2rem;
@@ -43,7 +43,7 @@ body {
 	cursor: pointer;
 	height: 24px;
 	width: 100%;
-	top: 85px;
+	top: 75px;
 	position: fixed;
 	z-index: 1337;
 	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
@@ -315,6 +315,13 @@ button[name="infoKara"]:before {
 .showVideo:before {
 	content:"\e009";
 }
+.makeFav:before {
+	content:"\e143";
+}
+.makeFav.currentFav:before {
+	content:"\e005";
+    color: firebrick;
+}
 .playKara:before {
 	content:"\e072";
 }
@@ -397,7 +404,7 @@ button[name="infoKara"]:before {
 	text-transform: capitalize;
  }
 
-.list-group-item .fullLyrics, .list-group-item .showVideo, button.closeParent  {
+.list-group-item .fullLyrics, .list-group-item .showVideo, .list-group-item .makeFav, button.closeParent  {
 	position: absolute;
 	top: 10px;
 	right: 10px;
@@ -405,19 +412,23 @@ button[name="infoKara"]:before {
 .list-group-item .fullLyrics  {
 	right: 49px;
 }
-.list-group-item .showVideo  {
+.list-group-item .makeFav  {
 	right: 88px;
 }
-
-.list-group-item .fullLyrics.mobile, .list-group-item .showVideo.mobile {
+.list-group-item .showVideo  {
+	right: 127px;
+}
+.list-group-item .fullLyrics.mobile, .list-group-item .makeFav.mobile, .list-group-item .showVideo.mobile {
 	right: 10px;
 	border-color: transparent;
 	background-color: hsla(0, 0%, 32%, 0.87);
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.10), 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.1);
 }
-
-.list-group-item .showVideo.mobile  {
+.list-group-item .makeFav.mobile  {
 	right: 62px;
+}
+.list-group-item .showVideo.mobile  {
+	right: 114px;
 }
 
 button.closeParent.bottom  {
@@ -898,7 +909,8 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .plDashboard .plSearch {
     flex-grow: 100;
 	flex-basis: 25%;
-    float: right;
+	float: right;
+	order: 1;
 }
 
 .modal {

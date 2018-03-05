@@ -6,6 +6,7 @@ import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
 import {initFrontend} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
+import {initFavoritesSystem} from '../_services/favorites';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
@@ -20,6 +21,7 @@ import {isEmpty, cloneDeep, sample} from 'lodash';
 const plc = require('./playlist');
 const logger = require('winston');
 const sleep = promisify(setTimeout);
+
 
 const ports = {
 	frontend: 1337,
@@ -139,20 +141,21 @@ export async function initEngine() {
 	inits.push(initFrontend(ports.frontend));
 	inits.push(initAPIServer(ports.apiserver));
 	inits.push(initWSServer(ports.ws));	
+	inits.push(initFavoritesSystem);
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await plc.isACurrentPlaylist();
 	if (currentPL_id) {
 		internalState.currentPlaylistID = currentPL_id;
 	} else {
-		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0);
+		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0,0,'admin');
 		logger.info('[Engine] Initial current playlist created');
 		if (!conf.isTest) {
 			inits.push(plc.buildDummyPlaylist(internalState.currentPlaylistID));
 		}
 	}
 	if (!await plc.isAPublicPlaylist()) {
-		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1);
+		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1,0,'admin');
 		logger.info('[Engine] Initial public playlist created');
 	}
 	await Promise.all(inits);
@@ -360,9 +363,9 @@ async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());			
 }
 	
-export async function getKaras(filter,lang,from,size) {
+export async function getKaras(filter,lang,from,size,token) {
 	try {
-		const pl = await plc.getAllKaras();
+		const pl = await plc.getAllKaras(token.username);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		return {
@@ -435,9 +438,9 @@ export async function exportPL(playlist_id) {
 	}
 }
 		
-export async function importPL(playlist) {
+export async function importPL(playlist,username) {
 	try {
-		return await plc.importPlaylist(playlist);
+		return await plc.importPlaylist(playlist,username);
 	} catch(err) {
 		logger.error(err);
 		throw err;
@@ -480,41 +483,48 @@ export async function shufflePL(playlist_id) {
 	}	
 }
 
-export async function getKaraInfo(kara_id, lang) {
-	const kara = await plc.getKara(kara_id);
+export async function getKaraInfo(kara_id, lang, token) {
+	const kara = await plc.getKara(kara_id, token.username);
 	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;
 	return output;
 }
 
-export async function getPLCInfo(plc_id, lang, seenFromUser) {
-	const kara = await plc.getKaraFromPlaylist(plc_id, seenFromUser);
+
+export async function getPLCInfo(plc_id, lang, userToken) {
+	const kara = await plc.getKaraFromPlaylist(plc_id, userToken);
 	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;
 	return output;
 }
 
-export async function getAllPLs(seenFromUser) {
-	return await plc.getPlaylists(seenFromUser);
+export async function getAllPLs(token) {
+	let seenFromUser = true;
+	if (token.role == 'admin') seenFromUser = false;
+	return await plc.getPlaylists(seenFromUser,token.username);
 }
 
-export async function createPL(playlist) {
+export async function createPL(playlist,username) {
 	return await plc.createPlaylist(
 		playlist.name,
 		playlist.flag_visible,
 		playlist.flag_current,
-		playlist.flag_public);
+		playlist.flag_public,
+		0,
+		username);
 }
 
-export async function getPLInfo(playlist_id, seenFromUser) {
-	return await plc.getPlaylistInfo(playlist_id, seenFromUser);
+export async function getPLInfo(playlist_id, token) {
+	let seenFromUser = true;
+	if (token.role != 'admin') seenFromUser = false;
+	return await plc.getPlaylistInfo(playlist_id, seenFromUser, token.username);
 }
 
-export async function deletePL(playlist_id) {
+export async function deletePL(playlist_id, token) {
 	try {
-		return await plc.deletePlaylist(playlist_id);
+		return await plc.deletePlaylist(playlist_id, token);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
@@ -560,8 +570,8 @@ export async function deleteWLC(wlc_ids) {
 	return await plc.deleteKaraFromWhitelist(karas);	
 }
 
-export async function editPLC(plc_id, pos, flag_playing) {
-	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing);
+export async function editPLC(plc_id, pos, flag_playing,token) {
+	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing, token);
 }
 
 export function updateSettings(newConfig) {	
@@ -638,8 +648,10 @@ export async function emptyWL() {
 	return await plc.emptyWhitelist();
 }
 
-export async function getPLContents(playlist_id,filter,lang,seenFromUser,from,size) {
+export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
+		let seenFromUser = false;
+		if (token.role != 'admin') seenFromUser = true;
 		const pl = await plc.getPlaylistContents(playlist_id,seenFromUser);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);

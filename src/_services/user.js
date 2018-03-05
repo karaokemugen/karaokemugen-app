@@ -1,6 +1,9 @@
 const db = require('../_dao/user');
+import {deletePlaylist} from '../_services/playlist';
+import {getFavoritesPlaylist} from '../_dao/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
+import {createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
 import {isEmpty, sampleSize, deburr} from 'lodash';
 import {now} from 'unix-timestamp';
@@ -201,7 +204,8 @@ export async function addUser(user,role) {
 	}	
 	try {
 		await db.addUser(user);
-		logger.debug(`[User] Created user ${user.login}`);
+		await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
+		logger.info(`[User] Created user ${user.login}`);
 		logger.debug(`[User] User data : ${JSON.stringify(user)}`);
 		return true;
 	} catch(err) {
@@ -227,6 +231,8 @@ export async function deleteUser(username) {
 	}
 	try {
 		const user = await findUserByName(username);		
+		const plInfo = await getFavoritesPlaylist(username);
+		await deletePlaylist(plInfo.playlist_id, {force: true});
 		await db.deleteUser(user.id);
 		logger.debug(`[User] Deleted user ${username} (id ${user.id})`);
 		return true;
