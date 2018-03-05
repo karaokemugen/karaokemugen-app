@@ -75,7 +75,12 @@ async function main() {
 	/**
 	 * Test if network ports are available
 	 */
-	[1337, 1338, 1339, 1340].forEach(port => verifyOpenPort(port));
+	const ports = [config.appFrontendPort,
+		config.appAdminPort,
+		config.appAPIPort,
+		config.appWSPort
+	];
+	ports.forEach(port => verifyOpenPort(port));
 
 	await restoreKaraBackupFolders(config);
 	await openDatabases(config);

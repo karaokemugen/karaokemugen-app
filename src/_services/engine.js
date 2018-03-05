@@ -21,11 +21,6 @@ const plc = require('./playlist');
 const logger = require('winston');
 const sleep = promisify(setTimeout);
 
-const ports = {
-	frontend: 1337,
-	apiserver: 1339,
-	ws: 1340	
-};
 let publicState = {};
 let state = {};
 
@@ -47,7 +42,7 @@ let initialState = {
 	ontop: true,
 	playlist: null,
 	timeposition: 0,
-	frontendPort: ports.frontend
+	frontendPort: getConfig().appFrontendPort
 };
 
 on('playingUpdated', () => {
@@ -136,9 +131,9 @@ export async function initEngine() {
 		createPreviews();
 	}
 	inits.push(initPlayerSystem(state.engine));
-	inits.push(initFrontend(ports.frontend));
-	inits.push(initAPIServer(ports.apiserver));
-	inits.push(initWSServer(ports.ws));	
+	inits.push(initFrontend(conf.appFrontendPort));
+	inits.push(initAPIServer(conf.appAPIPort));
+	inits.push(initWSServer(conf.appWSPort));	
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await plc.isACurrentPlaylist();
