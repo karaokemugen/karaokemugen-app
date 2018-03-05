@@ -2,7 +2,7 @@
  * @fileoverview Launcher source file
  */
 import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
-import {initConfig,configureBinaries} from './_common/utils/config';
+import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
@@ -36,9 +36,10 @@ if (appPath) {
 }
 
 async function main() {
-	const argv = parseArgs();
+	const argv = parseArgs();	
 	let config = await initConfig(appPath, argv);
 	await parseCommandLineArgs(argv);
+	config = getConfig();
 	console.log('--------------------------------------------------------------------');
 	console.log(`Karaoke Mugen ${config.VersionNo} (${config.VersionName})`);
 	console.log('--------------------------------------------------------------------');
@@ -70,8 +71,6 @@ async function main() {
 			resolve(appPath, config.PathAvatars, 'blank.png')
 		);
 	}
-
-	
 
 	/**
 	 * Test if network ports are available

@@ -7,14 +7,16 @@ const help = `Usage :
 karaokemugen [options]
 
 Options : 
---help     Displays this message
---version  Displays version info
---debug    Displays additional debug messages
---generate Generates a new database then quits
---validate Validates/checks/updates .kara files without writing a database then quits
---slave    Launches in slave mode
---test     Launches in test mode
---master   Launches in master mode
+--help        Displays this message
+--version     Displays version info
+--debug       Displays additional debug messages
+--generate    Generates a new database then quits
+--validate    Validates/checks/updates .kara files without writing a database then quits
+--slave       Launches in slave mode
+--test        Launches in test mode
+--master      Launches in master mode
+--config file Specify a config file to use (default is config.ini)
+
 `;
 
 export async function parseCommandLineArgs(argv) {	
