@@ -93,42 +93,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				}
 			);
 		});
-		$('#startFavMix').click(function() {
-
-
-			$.ajax({
-				url: 'public/users/', 	
-				type: 'GET'})
-				.done(function (response) {
-					var userList = response.filter(u => u.type<2);
-					
-					var userlistStr = '';
-					$.each(userList, function(i, k) {
-						userlistStr +=
-							'<div class="checkbox"><label>'
-						+	'<input type="checkbox" name="users"'
-						+	' value="' + k.login + '" ' + (k.flag_online==1 ? 'checked' : '') + '>'
-						+	k.nickname + '</label></div>';
-					});
-
-					displayModal('custom', i18n.__('START_FAV_MIX'), 
-						userlistStr	+ '<input type="text"name="duration" placeholder="200 (min)"/>',
-						function(data){
-
-							$.ajax({
-								url: 'admin/automix',
-								type: 'POST',
-								data: data })
-								.done(function(response) {
-									var idNewPlaylist = response.playlist_id;
-									playlistsUpdating.done(function () {
-										$('#selectPlaylist2').val(idNewPlaylist).change();
-									});
-								});
-						}
-					);
-				});	
-		});
+	
 		$('#settings select').change(function () {
 			setSettings($(this));
 		});
@@ -691,6 +656,40 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					});
 				}
 			});
+		} else if (name == 'startFavMix') {
+			$.ajax({
+				url: 'public/users/', 	
+				type: 'GET'})
+				.done(function (response) {
+					var userList = response.filter(u => u.type<2);
+					
+					var userlistStr = '<div class="automixUserlist">';
+					$.each(userList, function(i, k) {
+						userlistStr +=
+							'<div class="checkbox"><label>'
+						+	'<input type="checkbox" name="users"'
+						+	' value="' + k.login + '" ' + (k.flag_online==1 ? 'checked' : '') + '>'
+						+	k.nickname + '</label></div>';
+					});
+					userlistStr += '</div>';
+
+					displayModal('custom', i18n.__('START_FAV_MIX'), 
+						userlistStr	+ '<input type="text"name="duration" placeholder="200 (min)"/>',
+						function(data){
+							if(!data.duration) data.duration = 200;
+							$.ajax({
+								url: 'admin/automix',
+								type: 'POST',
+								data: data })
+								.done(function(response) {
+									var idNewPlaylist = response.playlist_id;
+									playlistsUpdating.done(function () {
+										select.val(idNewPlaylist).change();
+									});
+								});
+						}
+					);
+				});	
 		}
       
        
