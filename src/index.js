@@ -8,6 +8,7 @@ import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import net from 'net';
 import logger from 'winston';
+import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
 import resolveSysPath from './_common/utils/resolveSyspath';
 import {startExpressReactServer} from './_webapp/react';
@@ -35,8 +36,9 @@ if (appPath) {
 }
 
 async function main() {
-	await parseCommandLineArgs();
+	const argv = parseArgs();
 	let config = await initConfig(appPath, argv);
+	await parseCommandLineArgs(argv);
 	console.log('--------------------------------------------------------------------');
 	console.log(`Karaoke Mugen ${config.VersionNo} (${config.VersionName})`);
 	console.log('--------------------------------------------------------------------');
@@ -68,6 +70,9 @@ async function main() {
 			resolve(appPath, config.PathAvatars, 'blank.png')
 		);
 	}
+
+	
+
 	/**
 	 * Test if network ports are available
 	 */
@@ -145,5 +150,13 @@ async function restoreBackupFolder(pathKara, config) {
 			logger.info('[Launcher] Clearing karas database : generation will occur shortly');
 			await asyncUnlink(karasDbFile);
 		}
+	}
+}
+
+function parseArgs() {
+	if (process.argv.indexOf('--') >= 0) {
+		return minimist(process.argv.slice(3));
+	} else {
+		return minimist(process.argv.slice(2));
 	}
 }

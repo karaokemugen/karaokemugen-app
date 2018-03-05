@@ -1,5 +1,4 @@
 import {getConfig, setConfig} from './_common/utils/config';
-import minimist from 'minimist';
 import logger from 'winston';
 import {karaGenerationBatch} from './_admin/generate_karasfiles';
 
@@ -18,8 +17,7 @@ Options :
 --master   Launches in master mode
 `;
 
-export async function parseCommandLineArgs() {
-	const argv = parseArgs();
+export async function parseCommandLineArgs(argv) {	
 	const config = getConfig();
 	if (argv.help) {
 		console.log(help);
@@ -57,8 +55,7 @@ export async function parseCommandLineArgs() {
 		logger.info('[Launcher] .kara generation requested');
 		await karaGenerationBatch();
 		process.exit(0);
-	}
-	return argv;
+	}	
 }
 
 
@@ -66,10 +63,4 @@ export async function parseCommandLineArgs() {
  * Workaround for bug https://github.com/babel/babel/issues/5542
  * Delete this once the bug is resolved.
  */
-function parseArgs() {
-	if (process.argv.indexOf('--') >= 0) {
-		return minimist(process.argv.slice(3));
-	} else {
-		return minimist(process.argv.slice(2));
-	}
-}
+
