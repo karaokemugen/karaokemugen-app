@@ -5,13 +5,13 @@ import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/ut
 import {getConfig} from '../_common/utils/config';
 import {createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
-import {deburr} from 'lodash';
+import {isEmpty, sampleSize, deburr} from 'lodash';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
-import {forever} from 'async';
 import {promisify} from 'util';
+import {defaultGuestNames} from '../_services/constants';
 const sleep = promisify(setTimeout);
 
 async function updateExpiredUsers() {
@@ -75,7 +75,7 @@ export async function editUser(username,user,avatar) {
 			user.avatar_file = currentUser.avatar_file;
 		}
 		await db.editUser(user);
-		logger.info(`[User] ${username} (${user.nickname}) profile updated`);	
+		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);	
 		return user;
 	} catch (err) {
 		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
@@ -179,19 +179,20 @@ export async function updateUserFingerprint(username, fingerprint) {
 	return await db.updateUserFingerprint(username, fingerprint);
 }
 
-export async function addUser(user) {
+export async function addUser(user,role) {
 	let ret = {};
-	user.nickname = user.login;
-	user.password = hashPassword(user.password);
-	user.last_login = now();
-	user.NORM_nickname = deburr(user.nickname);
-	if (!user.type) user.type = 1;
-	if (user.type === 1 && user.password === null) {
+	if (!user.type) user.type = 1;	
+	if (user.type === 1 && isEmpty(user.password)) {
 		ret.code = 'USER_EMPTY_PASSWORD';
 		throw ret;
-	}
+	}	
+	user.nickname = user.login;
+	if (!isEmpty(user.password))	user.password = hashPassword(user.password);
+	user.last_login = now();
+	user.NORM_nickname = deburr(user.nickname);
 	user.flag_online = 1;
-	user.flag_admin = 0;	
+	user.flag_admin = 0;
+	if (role === 'admin') user.flag_admin = 1;		
 	
 	// Check if login already exists.
 	if (await db.checkUserNameExists(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
@@ -229,11 +230,11 @@ export async function deleteUser(username) {
 		throw ret;
 	}
 	try {
-		const user = await findUserByName(username);
+		const user = await findUserByName(username);		
 		const plInfo = await getFavoritesPlaylist(username);
 		await deletePlaylist(plInfo.playlist_id, {force: true});
-		await db.deleteUser(user.id);		
-		logger.info(`[User] Deleted user ${username} (id ${user.id})`);
+		await db.deleteUser(user.id);
+		logger.debug(`[User] Deleted user ${username} (id ${user.id})`);
 		return true;
 	} catch (err) {
 		const ret = {
@@ -245,19 +246,56 @@ export async function deleteUser(username) {
 	}
 }
 
+async function createDefaultGuests() {
+	const guests = await listGuests();
+	if (guests.length > 0) return 'No creation of guest account needed';			
+	// May be modified later.
+	let maxGuests = 10;	
+	logger.debug('[User] Creating ${maxGuests} default guest accounts');
+	const guestsToCreate = sampleSize(defaultGuestNames, maxGuests);	
+	for (let i = 0; i < maxGuests; i++) {
+		if (!await findUserByName(guestsToCreate[i])) await addUser({
+			login: guestsToCreate[i],
+			type: 2
+		});
+	}
+	logger.debug('[User] Default guest accounts created');
+}
+
 export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
-	forever((next) => {
-		updateExpiredUsers()
-			.then(() => {
-				next();
-			})
+	Promise.resolve().then(function resolver() {
+		return updateExpiredUsers()
+			.then(resolver)
 			.catch((err) => {
 				logger.error(`[User] Expiring user accounts failed : ${err}`);
-				next();
+				resolver();
 			});
+	}).catch((err) => {
+		logger.error(`[User] Cleanup expiring user accounts system failed entirely. You need to restart Karaoke Mugen : ${err}`);
 	});
+
+	// Check if a admin user exists
+	// Replace password by a random generated one once the welcome branch has been merged
+	
+	if (!await findUserByName('admin')) await addUser({
+		login: 'admin',
+		password: 'gurdil',
+	}, 'admin');
+
+	if (getConfig().isTest) {
+		if (!await findUserByName('adminTest')) {
+			await addUser({
+				login: 'adminTest',
+				password: 'ceciestuntest',
+			}, 'admin');
+		}
+	} else {
+		if (await findUserByName('adminTest')) await deleteUser('adminTest');
+	}
+
+	createDefaultGuests();
 }
 
 

@@ -15,11 +15,21 @@
     white-space: nowrap;
 }
 
-.header button {
+.header button.btn {
     font-size : 21px;
     line-height: 21px;
     width: 60px;
 }
+.header button.btn.favorites {
+    display: none;
+    height: calc(100% - 1px);
+    border: 0;
+    order: 3;
+}
+.header button.btn.favorites.on {
+    color: firebrick;
+}
+
 .header {
 	position: fixed;
 	z-index: 1337;
@@ -115,6 +125,9 @@ div.bootstrap-switch-large{
     __box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.20), 0 1px 8px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
 }
 
+.header .pseudoChange {
+    order: 10;
+}
 .header .getLucky {
     max-width: 60px;
     font-size: 17px;
@@ -122,7 +135,8 @@ div.bootstrap-switch-large{
     padding: 10px;
     background-color: hsla(0, 0%, 20%, .9);
     border-width: 0px;
-    border-bottom: solid 1px hsla(0, 0%, 35%, 1)
+    border-bottom: solid 1px hsla(0, 0%, 35%, 1);
+    order: 5;
 }
 .header .getLucky:hover {
     background-color: hsla(0, 0%, 14%, 1);
@@ -283,11 +297,12 @@ body.touch  .list-group-item[valid="true"]:after {
     .toastMessage {
         top: 3px;
     }
-    .fullLyrics, .showVideo {
+    .fullLyrics, .showVideo, .makeFav {
         width: 46px;
         height: 46px;
         font-size: 18px;
     }
+
     .playlist-main {
         padding: 0px;
     }
@@ -304,7 +319,10 @@ body.touch  .list-group-item[valid="true"]:after {
     .headerInputs, .header > div > div {
         padding: 0px;
     }
-    
+        
+    .header button.btn.favorites {
+        order: 0;
+    }
         
     #searchParent ::-webkit-input-placeholder {
         font-size: 2rem;

@@ -41,16 +41,27 @@ function initValidators() {
 	if (!validate.validators.langValidator) {
 		validate.validators.langValidator = langValidator;
 	}
+	if (!validate.validators.integerValidator) {
+		validate.validators.integerValidator = integerValidator;
+	}
 }
 
 function langValidator(value) {
 	const langs = value.replace('"', '').split(',');
 	let result = null;
-	for (const lang of langs) {
-		if (!(lang === 'und' || hasLang('2B', value))) {
+	for (const lang of langs) {		
+		if (!(lang === 'und' || hasLang('2B', lang))) {
 			result = `Lang '${lang}' is invalid`;
 			break;
 		}
+	}
+	return result;
+}
+
+function integerValidator(value) {
+	let result = null;	
+	if (value !== 'und' && value < 0) {
+		result = ` '${value}' is invalid`;
 	}
 	return result;
 }
@@ -68,13 +79,14 @@ const karaConstraints = {
 	type: {presence: true, inclusion: karaTypesArray},
 	series: function(value, attributes) {
 		if (!serieRequired(attributes['type'])) {
+			return { presence: {allowEmpty: true} };
+		} else {
 			return { presence: {allowEmpty: false} };
 		}
 	},
 	lang: {langValidator: true},
-	//FIXME : Order and year must be numeric, but this is not compatible with allowEmpty: true
-	order: {presence: {allowEmpty: true}},
-	year: {presence: {allowEmpty: true}},
+	order: {integerValidator: true},
+	year: {integerValidator: true},
 	KID: {presence: true, format: uuidRegexp},
 	dateadded: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	datemodif: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
@@ -122,6 +134,6 @@ export function verifyKaraData(karaData) {
 }
 
 /** Mutualisation du code gérant l'obligation d'avoir une série associée au kara. */
-export function serieRequired(karaType) {
+export function serieRequired(karaType) {	
 	return karaType !== karaTypes.MV && karaType !== karaTypes.LIVE;
 }

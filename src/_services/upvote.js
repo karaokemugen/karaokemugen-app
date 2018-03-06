@@ -1,5 +1,5 @@
 import {insertUpvote,getUpvotesByPLC} from '../_dao/upvote';
-import {freePLC, updateSongsLeft, isACurrentPlaylist, isAPublicPlaylist, getPLCInfo} from '../_services/playlist';
+import {freePLC, updateSongsLeft, isACurrentPlaylist, isAPublicPlaylist, getPLCInfoMini} from '../_services/playlist';
 import {listUsers, findUserByName} from '../_services/user';
 import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
@@ -11,7 +11,7 @@ export async function vote(plc_id,username,downvote) {
 
 export async function addUpvote(plc_id,username) {
 	try {
-		const plc = await getPLCInfo(plc_id);
+		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {message: 'PLC ID unknown'};
 		const user = await findUserByName(username);
 		const userList = await getUpvotesByPLC(plc_id);
@@ -42,7 +42,7 @@ export async function addUpvote(plc_id,username) {
 
 export async function deleteUpvote(plc_id,username) {
 	try {
-		const plc = await getPLCInfo(plc_id);
+		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {message: 'PLC ID unknown'};
 		const user = await findUserByName(username);
 		const userList = await getUpvotesByPLC(plc_id);

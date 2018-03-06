@@ -1,20 +1,25 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
-import {updateConfig, configureHost, getConfig} from '../_common/utils/config';
+import {mergeConfig, getConfig} from '../_common/utils/config';
 import {initUserSystem, findUserByID} from '../_services/user';
 import {initDBSystem, getStats} from '../_dao/database';
 import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
 import {initFrontend} from '../_webapp/frontend';
+import {initializationCatchphrases} from '../_services/constants';
+import {initFavoritesSystem} from '../_services/favorites';
 import {getAllTags} from '../_dao/tag';
-import {addViewcount, updateTotalViewcounts} from '../_dao/kara';
+import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {emitWS} from '../_ws/websocket';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
+import readlineSync from 'readline-sync';
+import {promisify} from 'util';
+import {isEmpty, cloneDeep, sample} from 'lodash';
+
 const plc = require('./playlist');
 const logger = require('winston');
-import {promisify} from 'util';
 const sleep = promisify(setTimeout);
 
 
@@ -49,6 +54,15 @@ let initialState = {
 
 on('playingUpdated', () => {
 	playingUpdated();
+});
+
+on('playerNeedsRestart', () => {
+	internalState.playerNeedsRestart = true;
+});
+
+on('modeUpdated', mode => {
+	if (mode === 0) setPrivateOn();
+	if (mode === 1) setPrivateOff();
 });
 
 on('engineStatusChange', (newstate) => {
@@ -116,31 +130,49 @@ export async function initEngine() {
 			process.exit(1);
 		}		
 	}
-	createPreviews();
+	//Database system is the foundation of every other <system className=""></system>
 	await initDBSystem();
-	initPlayerSystem(state.engine);
-	initFrontend(ports.frontend);
-	initAPIServer(ports.apiserver);
-	initWSServer(ports.ws);
-	initUserSystem();	
+	await initUserSystem();
+	let inits = [];
+	if (conf.EngineCreatePreviews > 0) {
+		createPreviews();
+	}
+	inits.push(initPlayerSystem(state.engine));
+	inits.push(initFrontend(ports.frontend));
+	inits.push(initAPIServer(ports.apiserver));
+	inits.push(initWSServer(ports.ws));	
+	inits.push(initFavoritesSystem);
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await plc.isACurrentPlaylist();
 	if (currentPL_id) {
 		internalState.currentPlaylistID = currentPL_id;
 	} else {
-		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0);
+		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0,0,'admin');
 		logger.info('[Engine] Initial current playlist created');
-		plc.buildDummyPlaylist(internalState.currentPlaylistID);
+		if (!conf.isTest) {
+			inits.push(plc.buildDummyPlaylist(internalState.currentPlaylistID));
+		}
 	}
 	if (!await plc.isAPublicPlaylist()) {
-		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1);
+		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1,0,'admin');
 		logger.info('[Engine] Initial public playlist created');
 	}
+	await Promise.all(inits);
+	logger.info('[Engine] Initialization complete');
+	const catchphrase = sample(initializationCatchphrases);
+	console.log(`\n${catchphrase}\n`);
 }
 
-function exit() {
-	process.exit(0);
+export function exit(rc) {
+	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
+	//On other systems or if terminal is not a TTY we exit immediately.
+	// non-TTY terminals have no stdin support.
+	
+	if (process.platform != 'win32' || !process.stdout.isTTY) process.exit(rc);
+	console.log('\n');
+	readlineSync.question('Press enter to exit', {hideEchoBack: true});
+	process.exit(rc);
 }
 
 async function playPlayer() {
@@ -266,7 +298,7 @@ async function playerEnding() {
 		internalState.playerNeedsRestart = false;				
 		try {
 			await restartmpv();
-			logger.debug('[Engine] Player restart complete');
+			logger.info('[Engine] Player restart complete');
 		} catch(err) {
 			throw err;
 		}
@@ -278,11 +310,13 @@ async function playerEnding() {
 		internalState.counterToJingle = 0;
 	} else {										
 		try {
-			await plc.next();
-			displayInfo();				
-			await tryToReadKaraInPlaylist();
 			internalState.counterToJingle++;
-		} catch(err) {
+			displayInfo();				
+			if (state.engine.status != 'stop') {
+				await plc.next();				
+				await tryToReadKaraInPlaylist();				
+			}
+		} catch(err) {                   
 			displayInfo();				
 			logger.warn(`[Engine] Next song is not available : ${err}`);
 			stopPlayer();
@@ -294,6 +328,14 @@ async function tryToReadKaraInPlaylist() {
 	if(!state.player.playing) {
 		try {
 			const kara = await plc.playCurrentSong();			
+			let karaForLogging = cloneDeep(kara);
+			karaForLogging.path.subtitle = '[Not logging ASS data]';
+			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging));
+			let serie = kara.serie;
+			let title = kara.title;
+			if (isEmpty(serie)) serie = kara.singer;
+			if (isEmpty(title)) title = '';
+			logger.info(`[Engine] Playing ${serie}${title}`);						
 			await play({
 				video: kara.path.video,
 				subtitle: kara.path.subtitle,
@@ -320,29 +362,25 @@ async function tryToReadKaraInPlaylist() {
 			plc.updateSongsLeft(user.login,modePlaylist_id);
 			return true;
 		} catch(err) {
-			logger.info('[Engine] Cannot find a song to play');
-			state.engine.status = 'stop';
-			emitEngineStatus();
-			stopPlayer(true);					
-			throw err;
+			logger.error(`[Engine] Error during song playback : ${err}`);
+			emitEngineStatus();			
+			if (state.engine.status != 'stop') {
+				logger.warn('[Player] Skipping playback due to missing video');
+				next();
+			} else {                                   
+				stopPlayer(true);					
+			}				
 		}
 	}
 }
 
 async function addViewcountKara(kara_id, kid) {
-	// Add one viewcount to the table
-	try {
-		await addViewcount(kara_id,kid,now());
-		// Recalculate viewcount and edit it in karasdb
-		await updateTotalViewcounts(kid);		
-	} catch (err) {
-		logger.error(`[Engine] Failed to update viewcounts on karaoke ID ${kid} : ${err}`);
-	}
+	return await addViewcount(kara_id,kid,now());			
 }
 	
-export async function getKaras(filter,lang,from,size) {
+export async function getKaras(filter,lang,from,size,token) {
 	try {
-		const pl = await plc.getAllKaras();
+		const pl = await plc.getAllKaras(token.username);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		return {
@@ -419,13 +457,14 @@ export async function importPL(playlist,username) {
 	try {
 		return await plc.importPlaylist(playlist,username);
 	} catch(err) {
+		logger.error(err);
 		throw err;
 	}
 }
 
 export async function getBLC(lang) {
 	const blcs = await plc.getBlacklistCriterias();
-	return plc.translateBlacklistCriterias(blcs, lang);
+	return await plc.translateBlacklistCriterias(blcs, lang);
 }
 
 export async function addBLC(blctype, blcvalue) {
@@ -459,8 +498,8 @@ export async function shufflePL(playlist_id) {
 	}	
 }
 
-export async function getKaraInfo(kara_id, lang, username) {
-	const kara = await plc.getKara(kara_id, username);
+export async function getKaraInfo(kara_id, lang, token) {
+	const kara = await plc.getKara(kara_id, token.username);
 	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].videofile);
 	if (previewfile) output[0].previewfile = previewfile;
@@ -476,8 +515,10 @@ export async function getPLCInfo(plc_id, lang, userToken) {
 	return output;
 }
 
-export async function getAllPLs(seenFromUser) {
-	return await plc.getPlaylists(seenFromUser);
+export async function getAllPLs(token) {
+	let seenFromUser = true;
+	if (token.role == 'admin') seenFromUser = false;
+	return await plc.getPlaylists(seenFromUser,token.username);
 }
 
 export async function createPL(playlist,username) {
@@ -490,13 +531,15 @@ export async function createPL(playlist,username) {
 		username);
 }
 
-export async function getPLInfo(playlist_id, seenFromUser) {
-	return await plc.getPlaylistInfo(playlist_id, seenFromUser);
+export async function getPLInfo(playlist_id, token) {
+	let seenFromUser = true;
+	if (token.role != 'admin') seenFromUser = false;
+	return await plc.getPlaylistInfo(playlist_id, seenFromUser, token.username);
 }
 
-export async function deletePL(playlist_id) {
+export async function deletePL(playlist_id, token) {
 	try {
-		return await plc.deletePlaylist(playlist_id);
+		return await plc.deletePlaylist(playlist_id, token);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
@@ -507,7 +550,7 @@ export async function deletePL(playlist_id) {
 }
 
 export async function deleteKara(plc_ids,playlist_id) {
-	logger.info(`[Engine] Deleting karaokes from playlist ${playlist_id} : ${plc_ids}`);
+	logger.debug(`[Engine] Deleting karaokes from playlist ${playlist_id} : ${plc_ids}`);
 	let karas;
 	if (typeof plc_ids === 'string') {
 		karas = plc_ids.split(',');
@@ -532,7 +575,7 @@ export async function deleteKara(plc_ids,playlist_id) {
 }
 
 export async function deleteWLC(wlc_ids) {
-	logger.info(`[Engine] Deleting karaokes from whitelist : ${wlc_ids}`);
+	logger.debug(`[Engine] Deleting karaokes from whitelist : ${wlc_ids}`);
 	let karas;
 	if (typeof wlc_ids === 'string') {
 		karas = wlc_ids.split(',');
@@ -542,51 +585,12 @@ export async function deleteWLC(wlc_ids) {
 	return await plc.deleteKaraFromWhitelist(karas);	
 }
 
-export async function editPLC(plc_id, pos, flag_playing) {
-	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing);
+export async function editPLC(plc_id, pos, flag_playing,token) {
+	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing, token);
 }
 
-export function updateSettings(newConfig) {
-	let conf = getConfig();
-	let setting;
-	// Determine if mpv needs to be restarted
-	for (setting in newConfig) {
-		if (setting.startsWith('Player') &&
-			setting != 'PlayerFullscreen' &&
-			setting != 'PlayerStayOnTop') {
-			if (conf[setting] != newConfig[setting]) {
-				internalState.playerNeedsRestart = true;
-				logger.info('[Engine] Setting mpv to restart after next song');
-			}
-		}
-	}
-	
-	updateConfig(newConfig);	
-	conf = getConfig();
-	// Toggling and updating settings
-	if (conf.EnginePrivateMode === 1) {
-		setPrivateOn();
-	} else {
-		setPrivateOff();
-	}
-	
-	configureHost();
-
-	// Determine which settings we send back. We get rid of all system and admin settings
-	let publicSettings = {};
-	for (var key in conf) {
-		if (conf.hasOwnProperty(key)) {
-			if (!key.startsWith('Path') &&
-				!key.startsWith('Admin') &&
-				!key.startsWith('Bin') &&
-				!key.startsWith('os')
-			) {
-				publicSettings[key] = conf[key];
-			}
-		}
-	}
-	//logger.debug('[Engine] Settings being saved : '+JSON.stringify(settingsToSave));
-	return publicSettings;				
+export function updateSettings(newConfig) {	
+	return mergeConfig(newConfig);				
 }
 
 export async function editPL(playlist_id, playlist) {
@@ -634,7 +638,7 @@ export async function setPublicPL(playlist_id) {
 
 export function shutdown() {
 	logger.info('[Engine] Dropping the mic, shutting down!');
-	sleep(1000).then(exit());
+	sleep(1000).then(process.exit(0));
 	return;
 }
 
@@ -659,8 +663,10 @@ export async function emptyWL() {
 	return await plc.emptyWhitelist();
 }
 
-export async function getPLContents(playlist_id,filter,lang,seenFromUser,from,size) {
+export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
+		let seenFromUser = false;
+		if (token.role != 'admin') seenFromUser = true;
 		const pl = await plc.getPlaylistContents(playlist_id,seenFromUser);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
@@ -727,7 +733,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			playlist_id = await plc.isAPublicPlaylist();
 		}
 	}	
-	logger.info(`[Engine] Adding karaokes to playlist ${playlist_id} : ${kara_id}`);	
+	logger.debug(`[Engine] Adding karaokes to playlist ${playlist_id} : ${kara_id}`);	
 	try {
 		if (!addByAdmin) {
 			// Check user quota first
@@ -784,7 +790,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 }
 
 export async function copyKaraToPL(plc_id, playlist_id, pos) {
-	logger.info(`[Engine] Copying karaokes to playlist ${playlist_id} : ${plcs}`);
+	logger.debug(`[Engine] Copying karaokes to playlist ${playlist_id} : ${plcs}`);
 	const plcs = plc_id.split(',');
 	try {
 		await plc.copyKaraToPlaylist(plcs, playlist_id, pos);

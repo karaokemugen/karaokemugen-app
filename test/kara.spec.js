@@ -31,7 +31,7 @@ describe('Kara validator', () => {
 
 	it('Should not valid a kara with missing required infos', () => {
 		const invalidKara = { ...validKara, title: ''};
-		expect(karaDataValidationErrors(invalidKara)).to.have.property('title');
+		expect(karaDataValidationErrors(invalidKara)).to.be.undefined;
 	});
 
 	it('Should not valid a kara without series', () => {

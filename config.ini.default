@@ -61,12 +61,20 @@ EngineAutoPlay = 0
 ; RepeatPlaylist : when at the end of playlist, go back to position 1 and keep playing.
 EngineRepeatPlaylist = 0
 
+; Time in minutes before a song isn't considered as Deja Vu anymore.
+; I've just been in this place before, higher on the street,
+; and I know it's my time to come home!
+EngineMaxDejaVuTime = 60
+
 ; SmartInsert : gives priority to people who have not enqueued a lot of songs.
 EngineSmartInsert = 0
 
 ; Number of songs between two jingles/eyecatches. 0 to disable.
 ; 20 songs = about 30 minutes of openings/endings.
 EngineJinglesInterval = 20
+
+; Activate the creation of previews
+EngineCreatePreviews = 1
 
 ; Set the player's background.
 ; Specify the filename, it will be searched in the app/backgrounds folder
@@ -136,8 +144,11 @@ PathVideosHTTP = ""
 ; Video output driver for mpv
 ; If you have blue window issues in Windows, set mpvVideoOutput to "direct3d", otherwise don't touch this
 ; mpv should detect automatically which video output driver to use
-mpvVideoOutput = ""
+mpvVideoOutput = "" 
 
 ; Auth configuration
 ; Time (in minutes) before a user account is set to expire after its last login/action 
 AuthExpireTime = 15
+
+; App's first run. Overriden in config.ini
+appFirstRun = 1
