@@ -14,8 +14,12 @@ export const updateUserLoginTime = (req, res, next) => {
 export const requireValidUser = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
 	findUserByName(token.username)
-		.then(() => {			
-			next();
+		.then((user) => {
+			if (!user) {
+				res.status(403).send('User logged in unknown');
+			} else {
+				next();
+			}			
 		})
 		.catch(() => {
 			res.status(403).send('User logged in unknown');
