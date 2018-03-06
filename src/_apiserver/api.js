@@ -3921,25 +3921,28 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 				});
 		});
-	routerPublic.route('/playlists/public/karas/:plc_id/upvote')
+	routerPublic.route('/playlists/public/karas/:plc_id/vote')
 		/**
-	 * @api {post} public/playlists/public/karas/:plc_id Upvote a song in public playlist
-	 * @apiName PostUpvote
+	 * @api {post} public/playlists/public/karas/:plc_id Up/downvote a song in public playlist
+	 * @apiName PostVote
 	 * @apiVersion 2.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
 	 * 
 	 * @apiParam {Number} plc_id Target playlist content ID
-	 * 
+	 * @apiParam {String} [downvote] If anything is specified in this parameter, it'll be a downvote instead of upvote.
 	 * @apiSuccess {String} code Return code
 	 * @apiSuccess {String} args Name of song being upvoted
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
 	 * {
 	 *   "code": 'UPVOTE_DONE',
-	 *   "args": 'Shoujo Kakumei Utena - OP - Rinbu Revolution'
+	 *   "args": 'Shoujo Kakumei Utena - Rinbu Revolution'
 	 * }
 	 * @apiError UPVOTE_FAILED Unable to upvote karaoke
+	 * @apiError DOWNVOTE_FAILED Unable to downvote karaoke
+	 * @apiError UPVOTE_ALREADY_DONE Karaoke has already been upvoted by this user
+	 * @apiError DOWNVOTE_ALREADY_DONE Karaoke has already been downvoted by this user
 	 *
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
@@ -3948,9 +3951,10 @@ export async function initAPIServer(listenPort) {
 		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Post an upvote
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			upvote.addUpvote(req.params.plc_id,token.username)
+			upvote.vote(req.params.plc_id,token.username,req.body.downvote)
 				.then((kara) => {
-					res.json(OKMessage(null, 'UPVOTE_DONE', kara));
+					emitWS('playlistContentsUpdated', kara.playlist_id);
+					res.json(OKMessage(null, kara.code, kara));
 				})
 				.catch((err) => {						
 					res.statusCode = 500;
