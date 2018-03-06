@@ -2816,7 +2816,7 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireWebappLimited, requireAuth, requireValid, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			engine.getPLCInfo(req.params.plc_id,req.query.lang,token)
 				.then((kara) => {
@@ -3334,7 +3334,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappOpen, requireAuth, requireValid, updateUserLoginTime, (req, res) => {
+		.get(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			const filter = req.query.filter;
@@ -3385,7 +3385,7 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireWebappOpen, requireAuth, requireValid, updateUserLoginTime, (req, res) => {
+		.get(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getRandomKara(req.query.filter)
 				.then((kara_id) => {
 					if (!kara_id) {
