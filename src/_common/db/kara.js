@@ -11,7 +11,7 @@ export const addKaraToPlaylist = `INSERT INTO playlist_content(
 									flag_free,
 									pseudo_add,
 									NORM_pseudo_add) 
-								SELECT $playlist_id,$kara_id,k.kid,$created_at,u.pk_id_user,$pos,0,0,0,u.nickname,u.NORM_nickname
+								SELECT $playlist_id,$kara_id,k.kid,$created_at,u.pk_id_user,$pos,0,0,$pseudo_add,$NORM_pseudo_add
 								FROM karasdb.kara AS k,
 								     user AS u							
 								WHERE pk_id_kara = $kara_id

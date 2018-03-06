@@ -119,3 +119,9 @@ export async function initFavoritesSystem() {
 		if (!isFavoritePLExists) await createPlaylist('Faves : '+user.login,0,0,0,1,user.login);
 	}
 }
+
+export async function findFavoritesPlaylist(username) {
+	const plInfo = await getFavoritesPlaylist(username);
+	if (plInfo) return plInfo.playlist_id;
+	return false;
+}

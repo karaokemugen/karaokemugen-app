@@ -413,8 +413,8 @@ export async function initAPIServer(listenPort) {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			const playlist_id = req.params.pl_id;
-
-			engine.getPLInfo(playlist_id)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLInfo(playlist_id, token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -918,8 +918,8 @@ export async function initAPIServer(listenPort) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			const seenFromUser = false;
-			engine.getPLContents(playlist_id,filter,lang,seenFromUser,from,size)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLContents(playlist_id,filter,lang,token,from,size)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -1612,7 +1612,7 @@ export async function initAPIServer(listenPort) {
 					'Bottom'
 				]
 				);
-			req.getValidationResult().then(function(result) {
+			req.getValidationResult().then((result) => {
 				if (result.isEmpty()) {
 					req.sanitize('EngineAllowViewWhitelist').toInt();
 					req.sanitize('EngineAllowViewBlacklist').toInt();
@@ -2927,7 +2927,7 @@ export async function initAPIServer(listenPort) {
 						!key.startsWith('mpv') &&
 						!key.startsWith('os')
 					) {
-						settings[key] = conf[key];
+						settings[key] = conf[key];		
 					}
 				}
 			}
@@ -3313,11 +3313,8 @@ export async function initAPIServer(listenPort) {
  *               "created_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
-<<<<<<< HEAD
  * 	             "flag_dejavu": 0,
-=======
  * 				 "flag_favorites": 1,
->>>>>>> 199-systeme-de-favoris
  *               "gain": 0,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
@@ -3439,11 +3436,8 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
-<<<<<<< HEAD
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default `EngineMaxDejaVuTime` is at 60 minutes)
-=======
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
->>>>>>> 199-systeme-de-favoris
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
@@ -3479,11 +3473,8 @@ export async function initAPIServer(listenPort) {
  *           "created_at": 1508427958,
  *           "creator": null,
  *           "duration": 0,
-<<<<<<< HEAD
  * 	         "flag_dejavu": 0,
-=======
  * 		     "flag_favorites": 0,
->>>>>>> 199-systeme-de-favoris
  *           "gain": 0,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
  *           "language": "jpn",
@@ -3578,27 +3569,19 @@ export async function initAPIServer(listenPort) {
 */
 		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {
-					const token = decode(req.get('authorization'), getConfig().JwtSecret);
-					engine.addKaraToPL(null, req.params.kara_id, token.username, null)
-						.then((data) => {
-							emitWS('playlistContentsUpdated',data.playlist_id);
-							emitWS('playlistInfoUpdated',data.playlist_id);
-							res.statusCode = 201;
-							res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
-						})
-						.catch((err) => {
-							res.statusCode = 500;
-							res.json(errMessage(err.code,err.message,err.data));
-						});
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
-				}
-			});
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.addKaraToPL(null, req.params.kara_id, token.username, null)
+				.then((data) => {
+					emitWS('playlistContentsUpdated',data.playlist_id);
+					emitWS('playlistInfoUpdated',data.playlist_id);
+					res.statusCode = 201;
+					res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
+				})
+				.catch((err) => {
+					res.statusCode = 500;
+					res.json(errMessage(err.code,err.message,err.data));
+				});				
+			
 		});
 
 	routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')

@@ -150,12 +150,11 @@ export async function getPLCByKID(kid,playlist_id) {
 	});
 }
 
-export async function getPlaylistInfo(id, forUser, username) {
-	let query = sql.getPlaylistInfo + (forUser ? ' AND flag_visible = 1 OR (p.flag_visible = 0 AND p.flag_favorites = 1 AND u.login = $username)' : '');
-	return await getUserDb().get(query, { 
-		$playlist_id: id,
-		$username: username 
+export async function getPlaylistInfo(id) {
+	const truc = await getUserDb().get(sql.getPlaylistInfo, {
+		$playlist_id: id
 	});
+	return truc;
 }
 
 export async function getPlaylists(forUser,username) {

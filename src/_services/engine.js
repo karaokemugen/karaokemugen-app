@@ -1,6 +1,6 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {mergeConfig, getConfig} from '../_common/utils/config';
-import {initUserSystem, findUserByID} from '../_services/user';
+import {initUserSystem, findUserByName, findUserByID} from '../_services/user';
 import {initDBSystem, getStats} from '../_dao/database';
 import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
@@ -532,9 +532,8 @@ export async function createPL(playlist,username) {
 }
 
 export async function getPLInfo(playlist_id, token) {
-	let seenFromUser = true;
-	if (token.role != 'admin') seenFromUser = false;
-	return await plc.getPlaylistInfo(playlist_id, seenFromUser, token.username);
+	if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
+	return await plc.getPlaylistInfo(playlist_id);	
 }
 
 export async function deletePL(playlist_id, token) {
@@ -585,8 +584,11 @@ export async function deleteWLC(wlc_ids) {
 	return await plc.deleteKaraFromWhitelist(karas);	
 }
 
-export async function editPLC(plc_id, pos, flag_playing,token) {
-	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing, token);
+export async function editPLC(plc_id, pos, flag_playing, token) {
+	const plcData = await plc.getPLCInfoMini(plc_id);
+	if (!plcData) throw 'PLC ID unknown';
+	if (!await testPlaylistVisible(plcData.playlist_id,token)) throw `Playlist ${plc.playlist_id} unknown`;
+	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing, token);	
 }
 
 export function updateSettings(newConfig) {	
@@ -663,11 +665,18 @@ export async function emptyWL() {
 	return await plc.emptyWhitelist();
 }
 
+async function testPlaylistVisible(playlist_id, token) {
+	let seenFromUser = false;
+	const user = await findUserByName(token.username);
+	if (token.role != 'admin' && user.favoritesPlaylistID == playlist_id) seenFromUser = true;
+	if (!await plc.isPlaylist(playlist_id,seenFromUser)) return false;
+	return true;
+}
+
 export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
-		let seenFromUser = false;
-		if (token.role != 'admin') seenFromUser = true;
-		const pl = await plc.getPlaylistContents(playlist_id,seenFromUser);
+		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;			
+		const pl = await plc.getPlaylistContents(playlist_id);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		if (from == -1) {

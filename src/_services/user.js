@@ -1,6 +1,6 @@
 const db = require('../_dao/user');
 import {deletePlaylist} from '../_services/playlist';
-import {getFavoritesPlaylist} from '../_dao/favorites';
+import {findFavoritesPlaylist} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
 import {createPlaylist} from '../_services/playlist';
@@ -132,6 +132,7 @@ export async function findUserByName(username, opt) {
 			userdata.fingerprint = null;
 			userdata.email = null;
 		}
+		if (userdata.type === 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);
 		return userdata;
 	}
 	return false;	
@@ -231,8 +232,8 @@ export async function deleteUser(username) {
 	}
 	try {
 		const user = await findUserByName(username);		
-		const plInfo = await getFavoritesPlaylist(username);
-		await deletePlaylist(plInfo.playlist_id, {force: true});
+		const playlist_id = await findFavoritesPlaylist(username);
+		await deletePlaylist(playlist_id, {force: true});
 		await db.deleteUser(user.id);
 		logger.debug(`[User] Deleted user ${username} (id ${user.id})`);
 		return true;

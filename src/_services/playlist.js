@@ -224,7 +224,7 @@ export async function editBlacklistCriteria(blc_id, blctype, blcvalue) {
 	await generateBlacklist();	
 }
 
-async function isPlaylist(playlist_id,seenFromUser) {
+export async function isPlaylist(playlist_id,seenFromUser) {
 	return await plDB.findPlaylist(playlist_id,seenFromUser);	
 }
 
@@ -362,9 +362,8 @@ export async function createPlaylist(name,flag_visible,flag_current,flag_public,
 	return pl.lastID;
 }
 
-export async function getPlaylistInfo(playlist_id,seenFromUser,username) {
-	if (!await isPlaylist(playlist_id,seenFromUser,username)) throw `Playlist ${playlist_id} unknown`;
-	return await plDB.getPlaylistInfo(playlist_id,seenFromUser,username);
+export async function getPlaylistInfo(playlist_id) {
+	return await plDB.getPlaylistInfo(playlist_id);
 }
 
 export async function getPlaylists(seenFromUser,username) {
@@ -392,8 +391,7 @@ async function updatePlaylistDuration(playlist_id) {
 	await plDB.updatePlaylistDuration(playlist_id);
 }
 
-export async function getPlaylistContents(playlist_id,seenFromUser,forPlayer) {
-	if (!await isPlaylist(playlist_id,seenFromUser)) throw `Playlist ${playlist_id} unknown`;		
+export async function getPlaylistContents(playlist_id,forPlayer) {	
 	return await plDB.getPlaylistContents(playlist_id,forPlayer);
 }
 
@@ -603,6 +601,10 @@ export async function getPLCInfo(plc_id) {
 	return await plDB.getPLCInfo(plc_id);
 }
 
+export async function getPLCInfoMini(plc_id) {
+	return await plDB.getPLCInfoMini(plc_id);
+}
+
 async function checkPLCandKaraInPlaylist(plcList,playlist_id) {
 	let plcToAdd = [];
 	for (const index in plcList) {		
@@ -675,15 +677,12 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,opt) {
 	return playlist_id;
 }
 
-export async function editKaraFromPlaylist(plc_id,pos,flag_playing,token) {
+export async function editKaraFromPlaylist(plc_id,pos,flag_playing) {
 	if (flag_playing == 0) throw 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one';
 	const kara = await plDB.getPLCInfoMini(plc_id);
 	if (!kara) throw 'PLCID unknown!';
 	const playlist_id = kara.playlist_id;
-	let seenFromUser;
-	if (token.role != 'admin') seenFromUser = true;
-	const playlist = await getPlaylistInfo(playlist_id,seenFromUser,token.username);
-	if (!playlist) throw 'Access to playlist denied';
+	const playlist = await getPlaylistInfo(playlist_id);	
 	if (playlist.flag_favorites === 1) throw 'Karaokes in favorite playlists cannot be modified';
 	if (flag_playing) {
 		await setPlaying(plc_id,playlist_id);
@@ -724,6 +723,7 @@ export async function reorderPlaylist(playlist_id, opt) {
 	case 'name':
 		pl = await getPlaylistKaraNames(playlist_id);
 		break;
+	default:
 	case 'pos':
 		pl = await getPlaylistPos(playlist_id);
 		pl.sort(sortByPos);		
@@ -1068,7 +1068,7 @@ export async function shufflePlaylist(playlist_id) {
 	
 export async function prev() {
 	const playlist_id = await isACurrentPlaylist();
-	const playlist = await getPlaylistContents(playlist_id,false,true);
+	const playlist = await getPlaylistContents(playlist_id,true);
 	if (playlist.length == 0) throw 'Playlist is empty!';
 	let readpos = 0;
 	playlist.forEach((kara, index) => {
@@ -1084,7 +1084,7 @@ export async function prev() {
 export async function next() {
 	const conf = getConfig();
 	const playlist_id = await isACurrentPlaylist();
-	const playlist = await getPlaylistContents(playlist_id,false,true);
+	const playlist = await getPlaylistContents(playlist_id,true);
 	if (playlist.length == 0) throw 'Playlist is empty!';
 	let readpos = 0;
 	playlist.forEach((kara, index) => {
@@ -1109,7 +1109,7 @@ export async function next() {
 async function getCurrentPlaylist() {
 	// Returns current playlist contents and where we're at.
 	const playlist_id = await isACurrentPlaylist();
-	const playlist = await getPlaylistContents(playlist_id,false,true);
+	const playlist = await getPlaylistContents(playlist_id,true);
 	// Setting readpos to 0. If no flag_playing is found in current playlist
 	// Then karaoke will begin at the first element of the playlist (0)
 	let readpos = 0;
