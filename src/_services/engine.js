@@ -329,7 +329,19 @@ async function tryToReadKaraInPlaylist() {
 async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());			
 }
-	
+
+function sortByRanking(a,b) {
+	if (a.requested < b.requested) return -1;
+	if (a.requested > b.requested) return 1;
+	return 0;
+}
+
+export async function getTop50(filter,lang,from,size) {
+	const karas = await getKaras(filter,lang,from,size);
+	karas.sort(sortByRanking);
+	return karas.slice(0,50);
+}
+
 export async function getKaras(filter,lang,from,size) {
 	try {
 		const pl = await plc.getAllKaras();
