@@ -83,7 +83,7 @@ export async function initConfig(appPath, argv) {
 	//Configure watcher
 	const configWatcher = watch(resolve(appPath, 'config.ini'));
 	configWatcher.on('change', () => {
-		logger.debug('[Config] config file has been changed from the outside world');
+		logger.debug('[Config] Config file has been changed from the outside world');
 		loadConfig(resolve(appPath, 'config.ini')).then(() => {
 			mergeConfig(getConfig());
 		});

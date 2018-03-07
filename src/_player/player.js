@@ -285,12 +285,12 @@ export async function play(videodata) {
 	try {
 		videoFile = await resolveFileInDirs(videodata.video,PathsVideos);
 	} catch (err) {
-		logger.warn(`[Player] Video NOT FOUND : ${videodata.video}`);
+		logger.warn(`[Player] Video NOT FOUND : ${videodata.video} (in ${PathsVideos.toString()})`);
 		if (conf.PathVideosHTTP) {
 			videoFile = `${conf.PathVideosHTTP}/${encodeURIComponent(videodata.video)}`;
 			logger.info(`[Player] Trying to play video directly from the configured http source : ${conf.PathVideosHTTP}`);
 		} else {
-			throw `No video source for ${videodata.video}`;
+			throw `No video source for ${videodata.video} (tried in ${PathsVideos.toString()} and HTTP source)`;
 		}
 	}	
 	logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
