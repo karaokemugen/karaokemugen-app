@@ -8,6 +8,7 @@ cache:
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
+  - npm install -g pkg@4.2.6 yarn apidoc
 
 stages:
   - test
@@ -21,7 +22,6 @@ test:
     - wget -c https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz    
     - tar xf ffmpeg-release-64bit-static.tar.xz
     - mv ffmpeg-3* ffmpeg
-    - npm install -g yarn
     - yarn install  
     - touch mpv
     - echo "BinffmpegLinux=ffmpeg/ffmpeg" >>config.ini
@@ -43,8 +43,6 @@ build:
     paths:
       - dist/
   script:
-    - npm install -g yarn
-    - yarn install
     - npm run-script build    
   only:
     - master
@@ -61,7 +59,6 @@ pkg_win:
     paths:
       - bin/
   script:
-    - npm install -g pkg@4.2.6
     - mkdir -p bin
     - pkg . --targets node8-win-x64 --out-path bin 
   only:
@@ -78,7 +75,6 @@ pkg_osx:
     paths:
       - bin/
   script:
-    - npm install -g pkg@4.2.6
     - mkdir -p bin
     - pkg . --targets node8-macos-x64 --out-path bin 
   only:
@@ -137,8 +133,7 @@ deploy_osx:
 
 apidoc:
   stage: deploy
-  script:
-    - npm install -g apidoc
+  script:    
     - apidoc -i src -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd apidoc; mirror -Rnev --parallel=10"
