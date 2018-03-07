@@ -454,7 +454,7 @@ export async function getKara(kara_id, username) {
 	return kara;
 }
 
-async function getPLCByKID(kid,playlist_id) {
+export async function getPLCByKID(kid,playlist_id) {
 	return await plDB.getPLCByKID(kid,playlist_id);
 }
 

@@ -358,7 +358,7 @@ async function tryToReadKaraInPlaylist() {
 			} else {
 				modePlaylist_id = publicPlaylist_id;
 			}
-			const user = await findUserByID(plcontent.user_id);
+			const user = await findUserByID(kara.user_id);
 			plc.updateSongsLeft(user.login,modePlaylist_id);
 			return true;
 		} catch(err) {
