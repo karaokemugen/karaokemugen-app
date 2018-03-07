@@ -181,7 +181,7 @@ var settingsNotUpdated;
 		if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			if(scope === 'admin' && mugenToken.role !== 'admin') {
+			if(scope === 'admin' && logInfos.role !== 'admin') {
 				$('#loginModal').modal('show');
 			} else {
 				initApp();
