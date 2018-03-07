@@ -444,7 +444,7 @@ var settingsNotUpdated;
 
 		/* set the right value for switchs */
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			$(this).val($(this).is(':checked') ? 1 : 0);
+			$(this).val($(this).is(':checked') ? '1' : '0');
 		});
 
 
