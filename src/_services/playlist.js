@@ -666,7 +666,7 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,opt) {
 	if (!opt) opt = {};
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	// Removing karaoke here.
-	await karaDB.removeKaraFromPlaylist(plcs);
+	await karaDB.removeKaraFromPlaylist(plcs,playlist_id);
 	if (!opt.sortBy) opt.sortBy = 'pos';	
 	await Promise.all([
 		updatePlaylistDuration(playlist_id),
