@@ -2,7 +2,7 @@ import {spawn, spawnSync} from 'child_process';
 import logger from 'winston';
 import {asyncRequired} from './files';
 import {getConfig} from './config';
-import probe from '../modules/node-ffprobe';
+import probe from 'node-ffprobe';
 
 export async function extractSubtitles(videofile, extractfile, config) {
 
@@ -83,7 +83,9 @@ export function getVideoDuration(videofile, config) {
 	const conf = config || getConfig();
 	const res = {};
 	return new Promise((resolve) => {
-		probe(conf.BinffprobePath, videofile, function(err, videodata) {
+		probe.SYNC = true;
+		probe.FFPROBE_PATH = conf.BinffprobePath;
+		probe(videofile, function(err, videodata) {
 			if (err) {
 				logger.warn('Video ' + videofile + ' probe error : ' + err);
 				res.error = true;
