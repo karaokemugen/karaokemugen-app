@@ -9,6 +9,7 @@ import readChunk from 'read-chunk';
 
 /** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
+	logger.debug(`[File] Checking if ${file} exists`);
 	return promisify(exists)(file);
 }
 
@@ -81,7 +82,7 @@ export async function asyncCheckOrMkdir(...dir) {
  */
 export async function resolveFileInDirs(filename, dirs) {
 	for (const dir of dirs) {
-		const resolved = resolve(dir, filename);
+		const resolved = resolve(dir, filename);		
 		if (await asyncExists(resolved)) {
 			return resolved;
 		}
