@@ -6,10 +6,11 @@ import logger from 'winston';
 import {videoFileRegexp, imageFileRegexp} from '../../_services/constants';
 import fileType from 'file-type';
 import readChunk from 'read-chunk';
+import {getConfig} from './config';
 
 /** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
-	logger.debug(`[File] Checking if ${file} exists`);
+	//logger.debug(`[File] Checking if ${file} exists`);
 	return promisify(exists)(file);
 }
 
@@ -82,7 +83,7 @@ export async function asyncCheckOrMkdir(...dir) {
  */
 export async function resolveFileInDirs(filename, dirs) {
 	for (const dir of dirs) {
-		const resolved = resolve(dir, filename);		
+		const resolved = resolve(getConfig().appPath, dir, filename);		
 		if (await asyncExists(resolved)) {
 			return resolved;
 		}
