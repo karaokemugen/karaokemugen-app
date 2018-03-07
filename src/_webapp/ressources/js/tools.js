@@ -77,13 +77,22 @@ displayModal = function(type, title, message, callback, placeholder) {
 			input.val(placeholder ? placeholder : '');
 			okButton.click(function(){
 				var data = {};
-				if(body.find('input, select').length > 1) {
-					body.find('input, select').map(function(k, v){
-						data[v.name] = $(v).val();
-					});
-				} else {
-					data = input.val();
-				}
+				data = input.val();
+				callback(data);
+			});
+		} else if ( type === 'custom') {
+			input.hide();
+			okButton.click(function(){
+				var data = {};
+
+				body.find('input[type="checkbox"]:checked, input[type!="checkbox"], select').map(function(k, v){
+					if(!data[v.name]) {
+						data[v.name] =  $(v).val();
+					} else {
+						data[v.name] += ',' + $(v).val();
+					}
+				});
+
 				callback(data);
 			});
 		} else {

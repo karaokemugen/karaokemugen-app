@@ -47,6 +47,7 @@ var closeButton;
 var closeButtonBottom;
 var showFullTextButton;
 var showVideoButton;
+var makeFavButton;
 var dragHandleHtml;
 var playKaraHtml;
 
@@ -98,6 +99,13 @@ var settingsNotUpdated;
 				html : deleteCriteriaHtml,
 				canTransferKara : false,
 				canAddKara : true,
+			},
+			'-5' : {
+				name : 'Favorites',
+				url : 'public/favorites',
+				html : '',
+				canTransferKara : true,
+				canAddKara : true,
 			}
 		};
 		// Background things
@@ -116,7 +124,7 @@ var settingsNotUpdated;
 				if(data) { // if server response qualifies as the standard error structure
 					if(res.code) {
 						// TODO recoder la fonction pour interpréter comme i18n server ?
-						var args = typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
+						var args = res.args && typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
 							return res.args[e];
 						}) : [res.args];
 						//var args = res.args;
@@ -189,7 +197,6 @@ var settingsNotUpdated;
 		} else {
 			$('#loginModal').modal('show');
 		}  
-
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
 		$('#searchPlaylist1, #searchPlaylist2').on('input', function () {
@@ -327,11 +334,36 @@ var settingsNotUpdated;
 					scrollToElement(playlist.parent(), detailsKara,  liKara.find('.lyricsKara'));
 				});
 			});
+
 			$('.playlist-main').on('click', '.showVideo', function() {
 				showVideo($(this));
-			})
+			});
+
+			$('.playlist-main').on('click', '.makeFav', function() {
+				var liKara = $(this).closest('li');
+				var idKara = liKara.attr('idkara');
+				makeFav(idKara, !$(this).hasClass('currentFav'), $(this));
+			});
+	
 		}
 
+		makeFav = function(idKara, make, $el) {
+			var type = make ? 'POST' : 'DELETE';
+			$.ajax({
+				url: 'public/favorites',
+				type: type,
+				data: { 'kara_id' : idKara } })
+				.done(function (response) {
+					if($el) {
+						if(make) {
+							$el.addClass('currentFav');
+						} else {
+							$el.removeClass('currentFav');
+						}
+					}
+				}).fail(function(response) {
+				});
+		};
 		showVideo = function(el) {
 			var previewFile = el.closest('.detailsKara').data('previewfile');
 			if(previewFile) {
@@ -366,7 +398,17 @@ var settingsNotUpdated;
 				});
 			});
 		});
-
+		$('.favorites').on('click', function() {
+			var $this = $(this);
+			var newOptionVal;
+			$this.toggleClass('on');
+			if($this.hasClass('on')) {
+				newOptionVal = $('#selectPlaylist1 > option[data-flag_favorites=1]').val();
+			} else {
+				newOptionVal = -1;
+			}
+			$('#selectPlaylist1').val(newOptionVal).change();
+		});
 		$('.plBrowse button').on('click', function() {
 			var $this = $(this);
 			var panel = $this.closest('.panel');
@@ -768,6 +810,7 @@ var settingsNotUpdated;
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
 	showFullTextButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	showVideoButton = '<button class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	makeFavButton = '<button class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
@@ -852,7 +895,7 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.fullLyrics, .showVideo');
+			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav');
             
 			if($this.length > 0) {
 				e.preventDefault();
@@ -874,6 +917,8 @@ var settingsNotUpdated;
 					});
 				} else if($this.hasClass('showVideo')) {
 					showVideo($this);
+				} else if($this.hasClass('makeFav')) {
+					makeFav(idKara, !$this.hasClass('currentFav'), $this);
 				}
 				
 			} 
@@ -882,7 +927,7 @@ var settingsNotUpdated;
 		manager2.on('tap click', function (e) {
 			e.gesture = e;
 			var target = $(e.gesture.target);
-			if(target.closest('.fullLyrics, .showVideo').length > 0
+			if(target.closest('.fullLyrics, .showVideo, .makeFav').length > 0
 								|| target.closest('.actionDiv').length > 0
 								|| target.closest('.infoDiv').length > 0
 								|| target.closest('[name="checkboxKara"]').length > 0
@@ -977,7 +1022,7 @@ var settingsNotUpdated;
 				//alert(end - start);
 				var htmlContent = '', data;
             
-				if(idPlaylist != -4) {
+				if(idPlaylist != -4) {	// general case
 					data = response.content;
 					if(response.infos) {
 						dashboard.attr('karacount', response.infos.count );
@@ -1015,7 +1060,7 @@ var settingsNotUpdated;
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
 								+	'<div>' + badges + '</div>'
 								+   '</div>'
-								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')
+								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
 								+   '</li>'; 
 							}
 						}
@@ -1283,14 +1328,19 @@ var settingsNotUpdated;
 			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] });
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'num_karas' : kmStats.totalcount });
 			
+			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
+			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="1"></option>';
 			// building the options
-			var optionHtml = '';
+			var optionListHtml = '';
 			$.each(playlistList, function (key, value) {
 				var params = dataToDataAttribute(value);
-				optionHtml += '<option ' + params + '  value=' + value.playlist_id + '> ' + value.name + '</option>';
+				var optionHtml = '<option ' + params + '  value=' + value.playlist_id + '> ' + value.name + '</option>';
+				optionListHtml += optionHtml;
+				
 			});
-			$('select[type="playlist_select"]').empty().html(optionHtml);
-
+			$('select[type="playlist_select"]').empty().html(optionListHtml);
+			if(scope === 'public') $('#selectPlaylist1').empty().html(searchOptionListHtml);
+			
 			// setting the right values to newly refreshed selects
 			// for public interface, panel1Default to keep kara list, playlistToAddId to show the playlist where users can add
 			// for admin, check cookies
@@ -1387,9 +1437,9 @@ var settingsNotUpdated;
 		
 		var plInfos = '';
 		if(idPlaylist) {
-			plInfos = idPlaylist > -4 ? range.from + '-' + max : '';
+			plInfos = idPlaylist != -4? range.from + '-' + max : '';
 			plInfos +=
-				(idPlaylist > -4 ?
+				(idPlaylist != -4 ?
 					' / ' + dashboard.attr('karacount') + (!isTouchScreen ? ' karas' : '')
 					: '') +
 				(idPlaylist > -1 ?
@@ -1568,7 +1618,7 @@ var settingsNotUpdated;
 			}
 		}
 		var details = {
-			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['username'] ? i18n.__('DETAILS_ADDED_3', data['username']) : '')
+			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
 			, 'BLCTYPE_6': 			data['author']
@@ -1592,14 +1642,23 @@ var settingsNotUpdated;
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
 		infoKaraTemp = 'no mode specified';
+		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButton.replace('makeFav','makeFav currentFav') : makeFavButton;
+		
 		if (htmlMode == 'list') {
-			infoKaraTemp = '<div class="detailsKara alert alert-info">' + (isTouchScreen ? '' : closeButton)
+			infoKaraTemp = '<div class="detailsKara alert alert-info">'
+				+ (isTouchScreen ? '' : closeButton)
 				+ (data['previewfile'] ? showVideoButton : '')
-				+ showFullTextButton + htmlTable + '</div>';
+				+ makeFavButtonAdapt
+				+ showFullTextButton
+				+ htmlTable
+				+ '</div>';
 		} else if (htmlMode == 'mobile') {
 			infoKaraTemp = '<div class="detailsKara z-depth-1">'
-			+ (data['previewfile'] ? showVideoButton : '')
-			+ showFullTextButton + htmlTable + '</div>';
+				+ (data['previewfile'] ? showVideoButton : '')
+				+ makeFavButtonAdapt
+				+ showFullTextButton
+				+ htmlTable
+				+ '</div>';
 		}
 		return infoKaraTemp;
 	};
@@ -1791,7 +1850,11 @@ var settingsNotUpdated;
 				}
 			}
 		}).done(function() {
-			if(doneCallback) doneCallback();
+			var idSearchList = $('#searchPlaylist1').val();
+			if(doneCallback) {
+				if(idSearchList == 1) doneCallback();
+				else  failCallback();
+			}
 			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		}).fail(function() {
 			if(failCallback) failCallback();

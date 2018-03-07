@@ -26,7 +26,9 @@ export async function createPlaylist(pl) {
 		$modified_at: pl.modified_at,
 		$flag_visible: pl.flag_visible,
 		$flag_current: pl.flag_current,
-		$flag_public: pl.flag_public
+		$flag_public: pl.flag_public,
+		$flag_favorites: pl.flag_favorites,
+		$username: pl.username
 	});
 }
 
@@ -36,6 +38,10 @@ export async function emptyPlaylist(id) {
 
 export async function deletePlaylist(id) {
 	return await getUserDb().run(sql.deletePlaylist, { $playlist_id: id });
+}
+
+export async function setPLCFree(plc_id) {
+	return await getUserDb().run(sql.setPLCFree, {$plc_id: plc_id});
 }
 
 export async function updatePlaylistKaraCount(id,karaCount) {
@@ -91,6 +97,13 @@ export async function updatePlaylistDuration(id) {
 	return await getUserDb().run(sql.updatePlaylistDuration, { $playlist_id: id });
 }
 
+export async function trimPlaylist(id,pos) {
+	return await getUserDb().run(sql.trimPlaylist, { 
+		$playlist_id: id,
+		$pos: pos
+	});
+}
+
 export async function getPlaylistContents(id,forPlayer) {
 	const query = forPlayer ? sql.getPlaylistContentsForPlayer : sql.getPlaylistContents;
 	if (forPlayer) return await getUserDb().all(query, { $playlist_id: id });
@@ -108,12 +121,17 @@ export async function getPlaylistPos(id) {
 	return await getUserDb().all(sql.getPlaylistPos, { $playlist_id: id });
 }
 
-export async function getPLCInfo(id,forUser) {
+export async function getPlaylistKaraNames(id) {
+	return await getUserDb().all(sql.getPlaylistKaraNames, { $playlist_id: id });
+}
+
+export async function getPLCInfo(id,forUser, username) {
 	const query = sql.getPLCInfo + (forUser ? ' AND p.flag_visible = 1' : '');
 	return await getUserDb().get(query,  
 		{
 			$playlistcontent_id: id,
-			$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
+			$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
+			$username: username
 		});
 }
 
@@ -132,16 +150,23 @@ export async function getPLCByKID(kid,playlist_id) {
 	});
 }
 
-export async function getPlaylistInfo(id,forUser) {
-	let query = sql.getPlaylistInfo + (forUser ? ' AND flag_visible = 1' : '');
-	return await getUserDb().get(query, { $playlist_id: id });
+export async function getPlaylistInfo(id) {
+	const truc = await getUserDb().get(sql.getPlaylistInfo, {
+		$playlist_id: id
+	});
+	return truc;
 }
 
-export async function getPlaylists(forUser) {
-	const query = sql.getPlaylists
-		+ (forUser ? ' WHERE flag_visible = 1' : '')
-		+ ' ORDER BY flag_current DESC, flag_public DESC, name';
-	return await getUserDb().all(query);
+export async function getPlaylists(forUser,username) {
+	let query = sql.getPlaylists;	
+	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';	
+	if (forUser) {
+		//Temporarily disabled complex playlist query until we work how isPlaylist behaves and add user token everywhere.
+		//return await getUserDb().all(query + ' UNION ' + sql.getFavoritePlaylists + order,{$username: username});
+		return await getUserDb().all(query + ' AND p.flag_visible = 1 ' + order);
+	} else {		
+		return await getUserDb().all(query + order);
+	}
 }
 
 export async function findCurrentPlaylist() {

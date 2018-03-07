@@ -1,16 +1,18 @@
-const express = require('express');
-const expressValidator = require('express-validator');
-const logger = require('winston');
+import express from 'express';
+import expressValidator from 'express-validator';
+import logger from 'winston';
 import {setConfig, getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
 const user = require('../_services/user');
 import {resolve} from 'path';
-const multer = require('multer');
-const engine = require('../_services/engine');
+import multer from 'multer';
+const engine = require ('../_services/engine');
+const favorites = require('../_services/favorites');
+const upvote = require('../_services/upvote.js');
 import {emitWS} from '../_ws/websocket';
 import {decode} from 'jwt-simple';
 import passport from 'passport';
-import {configurePassport} from '../_webapp/passport_manager.js';
+import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
 
@@ -49,6 +51,15 @@ export async function initAPIServer(listenPort) {
 	app.use(expressValidator({
 		customValidators: {
 			enum: (input, options) => options.includes(input),
+			stringsArray: (input) => {
+				if (input) {
+					if (typeof input === 'string' && input.includes(',')) {
+						return input.split(',');
+					}
+					return input;
+				}
+				return false;
+			},
 			numbersArray: (input) => {
 				if (input) {
 					// Test if we get a single number or a list of comma separated numbers
@@ -108,8 +119,8 @@ export async function initAPIServer(listenPort) {
  * Requires authorization token from admin user to use this API
  */
 	/**
- * @apiDefine adminorown Admin access or own user only
- * Requires authorization token from either admin user or the user the data belongs to to use this API
+ * @apiDefine own Own user only
+ * Requires authorization token from the user the data belongs to to use this API
  */
 	/**
  * @apiDefine public Public access
@@ -145,12 +156,84 @@ export async function initAPIServer(listenPort) {
 					res.json(err);
 				});
 		});
+	routerAdmin.route('/automix')
+	/**
+ * @api {post} admin/automix Generate a automix playlist
+ * @apiName PostMix
+ * @apiGroup Favorites
+ * @apiVersion 2.1.0
+ * @apiPermission admin
+ *
+ * @apiParam {String} users Comma-separated list of usernames to pick favorites from
+ * @apiParam {Number} duration Duration wished for the generatedplaylist in minutes
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data/playlist_id ID of playlist created
+ * @apiSuccess {String} data/playlist_name Name of playlist created
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *   "code": "AUTOMIX_CREATED",
+ *   "data": {
+ *           "playlist_id": 12,
+ *           "playlist_name": 'Soirée Kara 07/10/2018'
+ *   }
+ * }
+ * @apiError AUTOMIX_ERROR Unable to create the automix playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "AUTOMIX_ERROR",
+ *   "message": "User axel does not exist."
+ * }
+ */
+
+		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+			req.check({
+				'users': {
+					in: 'body',
+					notEmpty: true,
+					stringsArray: true
+				},
+				'duration': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
+				}
+			});
+
+			req.getValidationResult()
+				.then((result) => {
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('duration').toInt();
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);						
+						favorites.createAutoMix(req.body, token.username)
+							.then((new_playlist) => {
+								emitWS('playlistsUpdated');
+								res.statusCode = 201;
+								res.json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
+							})
+							.catch((err) => {
+								logger.error(err);
+								res.statusCode = 500;
+								res.json(errMessage('AUTOMIX_ERROR',err));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;								
+						res.json(result.mapped());
+					}
+				});
+		});
 	routerAdmin.route('/playlists')
 	/**
  * @api {get} /admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
  * @apiGroup Playlists
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiPermission admin
  *
  * @apiSuccess {Object[]} playlists Playlists information
@@ -164,12 +247,14 @@ export async function initAPIServer(listenPort) {
  *           "flag_current": 1,
  *           "flag_public": 0,
  *           "flag_visible": 1,
+ * 			 "flag_favorites": 1,
  *           "length": 0,
  *           "modified_at": 1508408078,
  *           "name": "Liste de lecture courante",
  *           "num_karas": 6,
  *           "playlist_id": 1,
- *           "time_left": 0
+ *           "time_left": 0,
+ * 			 "username": 'admin'
  *       }
  *   ]
  * }
@@ -181,7 +266,8 @@ export async function initAPIServer(listenPort) {
 
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Get list of playlists
-			engine.getAllPLs()
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getAllPLs(token)
 				.then((playlists) => {
 					res.json(OKMessage(playlists));
 				})
@@ -259,9 +345,10 @@ export async function initAPIServer(listenPort) {
 						req.sanitize('flag_visible').toBoolean();
 						req.sanitize('flag_public').toBoolean();
 						req.sanitize('flag_current').toBoolean();
-
+						
 						//Now we add playlist
-						engine.createPL(req.body)
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);						
+						engine.createPL(req.body, token.username)
 							.then((new_playlist) => {
 								emitWS('playlistsUpdated');
 								res.statusCode = 201;
@@ -326,8 +413,8 @@ export async function initAPIServer(listenPort) {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			const playlist_id = req.params.pl_id;
-
-			engine.getPLInfo(playlist_id)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLInfo(playlist_id, token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -432,8 +519,9 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {					
-			engine.deletePL(req.params.pl_id)
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.deletePL(req.params.pl_id,token)
 				.then(() => {
 					emitWS('playlistsUpdated');
 					res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
@@ -830,8 +918,8 @@ export async function initAPIServer(listenPort) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			const seenFromUser = false;
-			engine.getPLContents(playlist_id,filter,lang,seenFromUser,from,size)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLContents(playlist_id,filter,lang,token,from,size)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -1078,6 +1166,7 @@ export async function initAPIServer(listenPort) {
  * 
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
  * @apiParam {Number} plc_id Playlist content ID. 
+ * @apiParam {String} lang Lang in ISO639-2B. 
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -1093,7 +1182,11 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
+<<<<<<< HEAD
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
+=======
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+>>>>>>> 199-systeme-de-favoris
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
@@ -1140,7 +1233,11 @@ export async function initAPIServer(listenPort) {
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
  *           "flag_whitelisted": 0,
+<<<<<<< HEAD
  *           "flag_dejavu": 0,
+=======
+ * 			 "flag_favorites": 0,
+>>>>>>> 199-systeme-de-favoris
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
@@ -1181,7 +1278,8 @@ export async function initAPIServer(listenPort) {
  * }
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
-			engine.getPLCInfo(req.params.plc_id,req.query.lang)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLCInfo(req.params.plc_id,req.query.lang,token)
 				.then((kara) => {
 					res.json(OKMessage(kara));
 				})
@@ -1241,7 +1339,8 @@ export async function initAPIServer(listenPort) {
 					if (result.isEmpty()) {
 						if (req.body.pos != undefined) req.sanitize('pos').toInt();
 						if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
-						engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing)
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);					
+						engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,token)
 							.then(() => {
 								// pl_id is returned from this promise
 								res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
@@ -1297,6 +1396,9 @@ export async function initAPIServer(listenPort) {
  *       "EngineDisplayConnectionInfoMessage": "",
  *       "EngineDisplayConnectionInfoQRCode": "1",
  *       "EngineDisplayNickname": "1",
+ * 		 "EngineFreeUpvotes": "1",
+ *       "EngineFreeUpvotesRequiredPercentage": "33",
+ *       "EngineFreeUpvotesRequiredMin": "4",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
  *       "EngineRepeatPlaylist": "0",
@@ -1354,6 +1456,9 @@ export async function initAPIServer(listenPort) {
  * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
  * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
  * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
+ * @apiParam {Boolean} EngineFreeUpvotes Enable/disable Free Songs By Upvotes feature
+ * @apiParam {Number} EngineFreeUpvotesRequiredMin Minimum number of upvotes required to free a song
+ * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
  * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
  * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
@@ -1411,6 +1516,21 @@ export async function initAPIServer(listenPort) {
 					in: 'body',
 					notEmpty: true,
 					isBoolean: true,
+				},
+				'EngineFreeUpvotes': {
+					in: 'body',
+					notEmpty: true,
+					isBoolean: true
+				},
+				'EngineFreeUpvotesRequiredMin': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
+				},
+				'EngineFreeUpvotesRequiredPercent': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
 				},
 				'EnginePrivateMode': {
 					in: 'body',
@@ -1492,7 +1612,7 @@ export async function initAPIServer(listenPort) {
 					'Bottom'
 				]
 				);
-			req.getValidationResult().then(function(result) {
+			req.getValidationResult().then((result) => {
 				if (result.isEmpty()) {
 					req.sanitize('EngineAllowViewWhitelist').toInt();
 					req.sanitize('EngineAllowViewBlacklist').toInt();
@@ -1504,6 +1624,7 @@ export async function initAPIServer(listenPort) {
 					req.sanitize('EngineDisplayConnectionInfoHost').trim();
 					req.sanitize('EngineDisplayConnectionInfoHost').unescape();
 					req.sanitize('EngineAutoPlay').toInt();
+					req.sanitize('EngineFreeUpvotes').toInt();
 					req.sanitize('EngineRepeatPlaylist').toInt();
 					req.sanitize('EngineSmartInsert').toInt();
 					req.sanitize('EngineJinglesInterval').toInt();
@@ -2327,7 +2448,8 @@ export async function initAPIServer(listenPort) {
 			});
 			req.getValidationResult().then((result) =>  {
 				if (result.isEmpty()) {
-					engine.importPL(JSON.parse(req.body.playlist))
+					const token = decode(req.get('authorization'), getConfig().JwtSecret);
+					engine.importPL(JSON.parse(req.body.playlist),token.username)
 						.then((result) => {									
 							const response = {
 								message: 'Playlist imported',
@@ -2405,7 +2527,7 @@ export async function initAPIServer(listenPort) {
  * @api {get} /public/playlists/ Get list of playlists (public)
  * @apiName GetPlaylistsPublic
  * @apiGroup Playlists
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiPermission public
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiSuccess {Object[]} playlists Playlists information
@@ -2419,12 +2541,14 @@ export async function initAPIServer(listenPort) {
  *           "flag_current": 1,
  *           "flag_public": 0,
  *           "flag_visible": 1,
+ * 			 "flag_favorites": 0,
  *           "length": 0,
  *           "modified_at": 1508408078,
  *           "name": "Liste de lecture courante",
  *           "num_karas": 6,
  *           "playlist_id": 1,
- *           "time_left": 0
+ *           "time_left": 0,
+ * 			 "username": 'admin'
  *       }
  *   ]
  * }
@@ -2435,8 +2559,8 @@ export async function initAPIServer(listenPort) {
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get list of playlists, only return the visible ones
-			const seenFromUser = true;
-			engine.getAllPLs(seenFromUser)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);	
+			engine.getAllPLs(token)
 				.then((playlists) => {
 					res.json(OKMessage(playlists));
 				})
@@ -2451,19 +2575,21 @@ export async function initAPIServer(listenPort) {
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
  * @apiPermission public
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
  * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
+ * @apiSuccess {Number} data/flag_favorites Is playlist a favorites playlist? if displayed by a regular user, he'll only get to see his own favorites playlist.
  * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
- * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
+ * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users? 
  * @apiSuccess {Number} data/length Duration of playlist in seconds
  * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
  * @apiSuccess {String} data/name Name of playlist
  * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
  * @apiSuccess {Number} data/playlist_id Database's playlist ID
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ * @apiSuccess {Number} data/username User who created the playlist
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK 
@@ -2471,6 +2597,7 @@ export async function initAPIServer(listenPort) {
  *   "data": {
  *       "created_at": 1508313440,
  *       "flag_current": 1,
+ * 		 "flag_favorites": 0,
  *       "flag_public": 0,
  *       "flag_visible": 1,
  *       "length": 0,
@@ -2478,7 +2605,8 @@ export async function initAPIServer(listenPort) {
  *       "name": "Liste de lecture courante",
  *       "num_karas": 6,
  *       "playlist_id": 1,
- *       "time_left": 0
+ *       "time_left": 0,
+ * 		 "username": admin
  *   }
  *}
  * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
@@ -2490,8 +2618,8 @@ export async function initAPIServer(listenPort) {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
-			const seenFromUser = true;
-			engine.getPLInfo(req.params.pl_id,seenFromUser)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getPLInfo(req.params.pl_id,token)
 				.then((playlist) => {							
 					res.json(OKMessage(playlist));
 				})
@@ -2598,8 +2726,8 @@ export async function initAPIServer(listenPort) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			const seenFromUser = true;
-			engine.getPLContents(req.params.pl_id,filter,lang,seenFromUser,from,size)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getPLContents(req.params.pl_id,filter,lang,token,from,size)
 				.then((playlist) => {
 					if (playlist == null) res.statusCode = 404;
 					res.json(OKMessage(playlist));
@@ -2634,6 +2762,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default, `EngineMaxDejaVuTime` is at 60 minutes)
@@ -2681,6 +2810,7 @@ export async function initAPIServer(listenPort) {
  *           "duration": 0,
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
+ * 			 "flag_favorites": 0,
  *           "flag_whitelisted": 0,
  * 	         "flag_dejavu": 0,
  *           "gain": 0,
@@ -2723,8 +2853,8 @@ export async function initAPIServer(listenPort) {
  */
 
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			const seenFromUser = true;
-			engine.getPLCInfo(req.params.plc_id,req.query.lang,seenFromUser)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getPLCInfo(req.params.plc_id,req.query.lang,token)
 				.then((kara) => {
 					res.json(OKMessage(kara));
 				})
@@ -2759,6 +2889,9 @@ export async function initAPIServer(listenPort) {
  *       "EngineDisplayConnectionInfoMessage": "",
  *       "EngineDisplayConnectionInfoQRCode": "1",
  *       "EngineDisplayNickname": "1",
+ * 		 "EngineFreeUpvotes": "1",
+ * 		 "EngineFreeUpvotesPercent": "33",
+ * 		 "EngineFreeUpvotesMin": "4",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
  *       "EngineRepeatPlaylist": "0",
@@ -2794,7 +2927,7 @@ export async function initAPIServer(listenPort) {
 						!key.startsWith('mpv') &&
 						!key.startsWith('os')
 					) {
-						settings[key] = conf[key];
+						settings[key] = conf[key];		
 					}
 				}
 			}
@@ -3181,6 +3314,7 @@ export async function initAPIServer(listenPort) {
  *               "creator": null,
  *               "duration": 0,
  * 	             "flag_dejavu": 0,
+ * 				 "flag_favorites": 1,
  *               "gain": 0,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
@@ -3233,8 +3367,9 @@ export async function initAPIServer(listenPort) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			if (from < 0) from = 0;					
-			engine.getKaras(filter,lang,from,size)
+			if (from < 0) from = 0;
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getKaras(filter,lang,from,size,token)
 				.then((karas) => {
 					res.json(OKMessage(karas));
 				})
@@ -3289,7 +3424,7 @@ export async function initAPIServer(listenPort) {
  * @apiGroup Karaokes
  * @apiPermission public
  * 
- * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
+ * @apiParam {Number} kara_id Karaoke ID you want to fetch information from 
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
@@ -3302,6 +3437,7 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default `EngineMaxDejaVuTime` is at 60 minutes)
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
@@ -3338,6 +3474,7 @@ export async function initAPIServer(listenPort) {
  *           "creator": null,
  *           "duration": 0,
  * 	         "flag_dejavu": 0,
+ * 		     "flag_favorites": 0,
  *           "gain": 0,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
  *           "language": "jpn",
@@ -3371,7 +3508,8 @@ export async function initAPIServer(listenPort) {
  * }
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			engine.getKaraInfo(req.params.kara_id,req.query.lang)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.getKaraInfo(req.params.kara_id,req.query.lang,token)
 				.then((kara) => {	
 					res.json(OKMessage(kara));
 				})
@@ -3431,27 +3569,19 @@ export async function initAPIServer(listenPort) {
 */
 		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {
-					const token = decode(req.get('authorization'), getConfig().JwtSecret);
-					engine.addKaraToPL(null, req.params.kara_id, token.username, null)
-						.then((data) => {
-							emitWS('playlistContentsUpdated',data.playlist_id);
-							emitWS('playlistInfoUpdated',data.playlist_id);
-							res.statusCode = 201;
-							res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
-						})
-						.catch((err) => {
-							res.statusCode = 500;
-							res.json(errMessage(err.code,err.message,err.data));
-						});
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
-				}
-			});
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			engine.addKaraToPL(null, req.params.kara_id, token.username, null)
+				.then((data) => {
+					emitWS('playlistContentsUpdated',data.playlist_id);
+					emitWS('playlistInfoUpdated',data.playlist_id);
+					res.statusCode = 201;
+					res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
+				})
+				.catch((err) => {
+					res.statusCode = 500;
+					res.json(errMessage(err.code,err.message,err.data));
+				});				
+			
 		});
 
 	routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')
@@ -3530,8 +3660,8 @@ export async function initAPIServer(listenPort) {
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
-
-			engine.getCurrentPLInfo()
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getCurrentPLInfo(token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3639,7 +3769,8 @@ export async function initAPIServer(listenPort) {
 			} else {
 				to = req.query.to;
 			}
-			engine.getCurrentPLContents(filter, lang, from, to)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getCurrentPLContents(filter, lang, from, to, token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3693,7 +3824,8 @@ export async function initAPIServer(listenPort) {
 
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
-			engine.getPublicPLInfo()
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getPublicPLInfo(token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3801,7 +3933,8 @@ export async function initAPIServer(listenPort) {
 			} else {
 				from = req.query.from;
 			}
-			engine.getPublicPLContents(filter, lang, from, to)
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
+			engine.getPublicPLContents(filter, lang, from, to, token)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3811,7 +3944,46 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 				});
 		});
-
+	routerPublic.route('/playlists/public/karas/:plc_id/vote')
+		/**
+	 * @api {post} public/playlists/public/karas/:plc_id Up/downvote a song in public playlist
+	 * @apiName PostVote
+	 * @apiVersion 2.1.0
+	 * @apiGroup Playlists
+	 * @apiPermission public
+	 * 
+	 * @apiParam {Number} plc_id Target playlist content ID
+	 * @apiParam {String} [downvote] If anything is specified in this parameter, it'll be a downvote instead of upvote.
+	 * @apiSuccess {String} code Return code
+	 * @apiSuccess {String} args Name of song being upvoted
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": 'UPVOTE_DONE',
+	 *   "args": 'Shoujo Kakumei Utena - Rinbu Revolution'
+	 * }
+	 * @apiError UPVOTE_FAILED Unable to upvote karaoke
+	 * @apiError DOWNVOTE_FAILED Unable to downvote karaoke
+	 * @apiError UPVOTE_ALREADY_DONE Karaoke has already been upvoted by this user
+	 * @apiError DOWNVOTE_ALREADY_DONE Karaoke has already been downvoted by this user
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+	
+		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+			// Post an upvote
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			upvote.vote(req.params.plc_id,token.username,req.body.downvote)
+				.then((kara) => {
+					emitWS('playlistContentsUpdated', kara.playlist_id);
+					res.json(OKMessage(null, kara.code, kara));
+				})
+				.catch((err) => {						
+					res.statusCode = 500;
+					res.json(errMessage(err.code,err.message));
+				});
+		});
 	routerPublic.route('/tags')
 	/**
 	* @api {get} /public/tags Get tag list
@@ -4036,7 +4208,7 @@ export async function initAPIServer(listenPort) {
  * @apiName GetMyAccount
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission Own
+ * @apiPermission own
  *
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
@@ -4192,6 +4364,235 @@ export async function initAPIServer(listenPort) {
 
 		});
 
+	routerPublic.route('/favorites')
+	/**
+ * @api {get} public/favorites View own favorites
+ * @apiName GetFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission own
+ *
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ * 				 "username": "admin",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError FAVORITES_VIEW_ERROR Unable to fetch list of karaokes in favorites
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+		.get(requireAuth, updateUserLoginTime, (req,res) => {
+			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			const filter = req.query.filter;
+			const lang = req.query.lang;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from);
+			}
+			favorites.getFavorites(token.username, filter, lang, from, size)
+				.then((karas) => {
+					res.json(OKMessage(karas));
+				})
+				.catch(function(err){
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('FAVORITES_VIEW_ERROR',err));
+				});						
+		})
+	/**
+ * @api {post} public/favorites Add karaoke to your favorites
+ * @apiName PostFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission own
+ *
+ * @apiParam {Number} kara_id kara ID to add
+ * @apiSuccess {Number} args/kara_id ID of kara added
+ * @apiSuccess {Number} args/kara Name of kara added
+ * @apiSuccess {Number} args/playlist_id ID of destinaton playlist
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ * 		 "kara": "Les Nuls - MV - Vous me subirez",
+ *       "playlist_id": 1,
+ *       "kara_id": 4946
+ *   },
+ *   "code": "FAVORITES_ADDED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_ADD_SONG_ERROR Unable to add songs to the playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_ADD_SONG_ERROR",
+ *   "message": "Karaoke unknown"
+ * }
+ */
+		.post(requireAuth, updateUserLoginTime, (req,res) => {
+			req.checkBody({
+				'kara_id': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+			});
+			req.getValidationResult()
+				.then((result) => {							
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('kara_id').toInt();
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);
+						favorites.addToFavorites(token.username,req.body.kara_id)
+							.then((result) => {
+								emitWS('favoritesUpdated',token.username);
+								emitWS('playlistInfoUpdated',result.playlist_id);
+								emitWS('playlistContentsUpdated',result.playlist_id);
+								res.json(OKMessage(null,'FAVORITES_ADDED',result));	
+							})
+							.catch(function(err){
+								res.statusCode = 500;
+								res.json(errMessage('FAVORITES_ADD_SONG_ERROR',err.message,err.data));
+							});
+								
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;
+						res.json(result.mapped());
+					}
+				});
+
+		})
+	/**
+ * @api {delete} public/favorites/ Delete karaoke from your favorites
+ * @apiName DeleteFavorites
+ * @apiVersion 2.1.0
+ * @apiGroup Favorites
+ * @apiPermission public
+ * 
+ * @apiParam {Number} kara_id Kara ID to delete
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_DELETED",
+ *   "data": null
+ * }
+ * @apiError FAVORITES_DELETE_ERROR Unable to delete the favorited song
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": null,
+ *   "code": "FAVORITES_DELETE_ERROR",
+ *   "message": "Kara ID unknown"
+ * }
+ */
+		.delete(requireAuth, updateUserLoginTime, (req, res) => {
+			req.check({
+				'kara_id': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				}
+			});
+			req.getValidationResult().then((result) =>  {
+				if (result.isEmpty()) {
+					req.sanitize('kara_id').toInt();
+					const token = decode(req.get('authorization'), getConfig().JwtSecret);
+					favorites.deleteFavorite(token.username,req.body.kara_id)
+						.then((data) => {
+							emitWS('favoritesUpdated',token.username);
+							emitWS('playlistContentsUpdated',data.playlist_id);
+							emitWS('playlistInfoUpdated',data.playlist_id);
+							res.statusCode = 200;
+							res.json(OKMessage(null,'FAVORITE_DELETED',data));
+						})
+						.catch((err) => {
+							logger.error(err.message);
+							res.statusCode = 500;
+							res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
+						});
+				}
+			});
+			// Delete kara from favorites
+			// Deletion is through kara ID.			
+		});
 
 	routerPublic.route('/users')
 	/**

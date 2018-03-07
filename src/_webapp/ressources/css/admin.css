@@ -1,6 +1,6 @@
 .underHeader {
-	top: 105px;
-	height: calc(100% - 105px);
+	top: 95px;
+	height: calc(100% - 95px);
 }
 .playlist-main, .panel  {
 	height: 100%;
@@ -130,7 +130,7 @@ span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:befo
 	display: none;
 }
 #mutestatus i {
-	top: 28px;
+	top: 24px;
 }
 #mutestatus[name="mute"] > i.mute {
 	display: none;
@@ -262,7 +262,8 @@ span:not(.hideCommands) {
 	display: none;
 }
 
-.plDashboard[data-playlist_id^="-"] .flagsContainer button {
+.plDashboard[data-playlist_id^="-"] .flagsContainer button,
+.plDashboard[data-flag_favorites="1"] .flagsContainer button {
 	display: none;
 }
 
@@ -353,6 +354,10 @@ span:not(.hideCommands) {
 	order: 3
 }
 
+.automixUserlist {
+	max-height: 200px;
+    overflow-y: auto;
+}
 
 .toastMessageContainer {
 	__top: auto;

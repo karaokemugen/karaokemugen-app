@@ -18,20 +18,25 @@ let karaDb;
 let userDb;
 
 async function doTransaction(items, sql) {	
-	await getUserDb().run('begin transaction');
-	for (const data in items) {
-		const stmt = await getUserDb().prepare(sql);
-		await stmt.run(items[data]);
+	try {
+		await getUserDb().run('begin transaction');
+		for (const index in items) {
+			const stmt = await getUserDb().prepare(sql);
+			await stmt.run(items[index]);
+		}
+		return await getUserDb().run('commit');		
+	} catch(err) {
+		throw err;
 	}
-	return await getUserDb().run('commit');
 }
 
 export async function transaction(items, sql) {
 	await promiseRetry((retry) => {
-		return doTransaction(items, sql).catch(retry);		
+		return doTransaction(items, sql).catch(retry);					
 	}, {
-		retries: 5,
-		minTimeout: 100
+		retries: 10,
+		minTimeout: 100,
+		maxTimeout: 200
 	}).then(() => { 
 		return true;
 	}).catch((err) => { 
@@ -63,11 +68,11 @@ async function openUserDatabase() {
 		userDb = await open(userDbFile, {verbose: true});
 		// Trace event. DO NOT UNCOMMENT
 		// unless you want to flood your console.
-		/*
+		///*
 		userDb.driver.on('trace',function(sql){
-			console.log(sql);
+			logger.debug(sql);			
 		});
-		*/
+		//*/
 	} else {
 		throw 'User database already opened';
 	}

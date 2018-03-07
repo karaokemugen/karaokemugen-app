@@ -41,6 +41,20 @@ EngineAllowViewBlacklistCriterias = 1
 ; Songs already played don't count towards this limit.
 EngineSongsPerUser = 10000
 
+; Upvote free mechanic enable/disable
+; Make us free na splash kasaneta...
+; Disable this if you don't want to allow users to free songs via upvotes.
+; Songs will only be freed once played, if you disable this
+EngineFreeUpvotes = 1
+
+; Minimum percentage of upvotes / online users required to free a song
+; Change this number as your karaoke session goes
+EngineFreeUpvotesRequiredPercent = 33
+
+; Minimum number of votes required to free a song
+; You need at least this many votes to free a song, no matter the percentage of online users reached
+EngineFreeUpvotesRequiredMin = 4
+
 ; AutoPlay : if a karaoke song is added to the current playlist, start playing immediately if the karaoke is stopped.
 EngineAutoPlay = 0
 

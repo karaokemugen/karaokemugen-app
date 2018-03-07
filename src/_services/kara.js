@@ -50,7 +50,7 @@ function langValidator(value) {
 	const langs = value.replace('"', '').split(',');
 	let result = null;
 	for (const lang of langs) {		
-		if (!(lang === 'und' || hasLang('2B', lang))) {
+		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
 			result = `Lang '${lang}' is invalid`;
 			break;
 		}
