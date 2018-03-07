@@ -577,7 +577,7 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 		karaList.forEach((kara,index) => {
 			karaList[index].pos = startpos+index;
 		});
-	}	
+	}		
 	await karaDB.addKaraToPlaylist(karaList);
 	await updatePlaylistLastEditTime(playlist_id);
 	// Checking if a flag_playing is present inside the playlist.					
