@@ -285,7 +285,7 @@ export async function play(videodata) {
 	try {
 		videoFile = await resolveFileInDirs(videodata.video,PathsVideos);
 	} catch (err) {
-		logger.debug('[Player] Error while resolving video path : ${err}');
+		logger.debug(`[Player] Error while resolving video path : ${err}`);
 		logger.warn(`[Player] Video NOT FOUND : ${videodata.video} (in ${PathsVideos.toString()})`);
 		if (conf.PathVideosHTTP) {
 			videoFile = `${conf.PathVideosHTTP}/${encodeURIComponent(videodata.video)}`;
