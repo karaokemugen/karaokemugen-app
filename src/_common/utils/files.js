@@ -1,44 +1,23 @@
-import {open, read, exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
+import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
 import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
 import {videoFileRegexp, imageFileRegexp} from '../../_services/constants';
+import fileType from 'file-type';
+import readChunk from 'read-chunk';
+import {getConfig} from './config';
 
 /** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
+	//logger.debug(`[File] Checking if ${file} exists`);
 	return promisify(exists)(file);
 }
 
 export async function detectFileType(file) {
-	const asyncOpen = promisify(open);
-	const fd = await asyncOpen(file,'r');
-	let buffer = new Buffer(8);
-	const asyncRead = promisify(read);
-	await asyncRead(fd, buffer, 0, 8, 0);
-	const shortStart = buffer.toString('hex',0,4);
-	const longStart = buffer.toString('hex',0,8);
-	logger.debug(`[FileType] File ${file} signature : ${longStart}`);
-	switch(shortStart) {
-	case 'ffd8ffdb':
-	case 'ffd8ffe0': 
-	case 'ffd8ffe1': 
-		return 'jpg';				
-	case '89504e47': 
-		return 'png';
-	case '47494638': 
-		return 'gif';
-	case '1a45dfa3': 
-		return 'mkv';
-	case '52494646': 
-		return 'avi';
-	}
-	switch(longStart) {
-	case '0000001866747970': 
-		return 'mp4';
-	}
-	// Unable to detect
-	return false;	
+	const buffer = await readChunk(file, 0, 4100);
+	const detected = fileType(buffer);
+	return detected.ext;	
 }
 
 /** Function used to read a file with a Promise */
@@ -104,7 +83,7 @@ export async function asyncCheckOrMkdir(...dir) {
  */
 export async function resolveFileInDirs(filename, dirs) {
 	for (const dir of dirs) {
-		const resolved = resolve(dir, filename);
+		const resolved = resolve(getConfig().appPath, dir, filename);		
 		if (await asyncExists(resolved)) {
 			return resolved;
 		}

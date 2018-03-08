@@ -15,7 +15,7 @@ CREATE TABLE tmp (
 	time_left	INTEGER NOT NULL,
 	fk_id_user INTEGER NOT NULL
 );
-INSERT INTO tmp SELECT pk_id_playlist,name,NORM_NAME,num_karas,length,created_at,modified_at,flag_visible,flag_current,flag_public,0,time_left,0 FROM playlist;
+INSERT INTO tmp SELECT pk_id_playlist,name,NORM_NAME,num_karas,length,created_at,modified_at,flag_visible,flag_current,flag_public,0,time_left,1 FROM playlist;
 PRAGMA foreign_keys = "0";
 DROP TABLE playlist;
 ALTER TABLE tmp RENAME TO playlist;

@@ -75,7 +75,7 @@ export async function initFrontend(port) {
 		res.type('txt').send('Not found');
 	});
 	app.listen(port);
-	logger.info(`[Webapp] Webapp is READY and listens on port ${port}`);   			
+	logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);   			
 }
 		
 

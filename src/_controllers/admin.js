@@ -1,7 +1,7 @@
 import {getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
 import {requireAuth, requireAdmin} from './passport_manager.js';
-import {addUser, listUsers} from '../_dao/user';
+import {listUsers} from '../_dao/user';
 
 
 module.exports = function adminController(router) {

@@ -33,7 +33,7 @@ export const selectUserByID = `SELECT u.pk_id_user AS id,
  							FROM user AS u
 							WHERE u.pk_id_user = $id
 							`;
-
+							
 export const selectUserByName = `SELECT u.pk_id_user AS id,
     							u.type AS type,
 								u.login AS login,
