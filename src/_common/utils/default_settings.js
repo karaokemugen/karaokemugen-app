@@ -179,6 +179,8 @@ AuthExpireTime: 15,
 
 // Value: {boolean}
 // App's first run. Overriden in config.ini .
-appFirstRun: 1
+appFirstRun: 1,
+
+appPath: "../"
 
 };

@@ -121,6 +121,7 @@ async function loadConfigFiles(appPath) {
 	const versionFile = resolve(__dirname, '../../VERSION');
 
 	config = defaults;
+	config.appPath = appPath;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
 	if (await asyncExists(versionFile)) await loadConfig(versionFile);
 }
