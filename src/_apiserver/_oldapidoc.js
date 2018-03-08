@@ -103,6 +103,7 @@
  */
 
 /**
+<<<<<<< HEAD
  * @api {get} admin/settings Get settings
  * @apiName GetSettings
  * @apiVersion 2.0.0
@@ -424,6 +425,8 @@
  * HTTP/1.1 500 Internal Server Error
  */
 /**
+=======
+>>>>>>> next
  * @api {get} public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.0.0
@@ -604,6 +607,77 @@
  */
 
 /**
+ * @api {get} /public/karas Get complete list of karaokes
+ * @apiName GetKaras
+ * @apiVersion 2.0.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * 
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError SONG_LIST_ERROR Unable to fetch list of karaokes
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+/**
+>>>>>>> next
  * @api {get} public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 2.0.0
@@ -1001,6 +1075,66 @@
  * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
  * @apiSuccess {Number} data/infos/from Items listed are from this position
  * @apiSuccess {Number} data/infos/size How many items listed.
+=======
+/**
+ * @api {get} public/playlists/:pl_id Get playlist information (public)
+ * @apiName GetPlaylistPublic
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiVersion 2.0.0
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
+ * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
+ * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
+ * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
+ * @apiSuccess {Number} data/length Duration of playlist in seconds
+ * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
+ * @apiSuccess {String} data/name Name of playlist
+ * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
+ * @apiSuccess {Number} data/playlist_id Database's playlist ID
+ * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK 
+ * {
+ *   "data": {
+ *       "created_at": 1508313440,
+ *       "flag_current": 1,
+ *       "flag_public": 0,
+ *       "flag_visible": 1,
+ *       "length": 0,
+ *       "modified_at": 1508408078,
+ *       "name": "Liste de lecture courante",
+ *       "num_karas": 6,
+ *       "playlist_id": 1,
+ *       "time_left": 0
+ *   }
+ *}
+ * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+/**
+ * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
+ * @apiName GetPlaylistKaras
+ * @apiVersion 2.1.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * 
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+>>>>>>> next
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -1009,6 +1143,7 @@
  *       "content": [
  *           {
  *               "NORM_author": null,
+<<<<<<< HEAD
  *               "NORM_creator": "Eurovision",
  *               "NORM_serie": null,
  *               "NORM_serie_altname": null,
@@ -1135,7 +1270,8 @@
  * {
  *   "code": "PLAYER_STATUS_ERROR"
  * }
- */		
+ 
+
 /**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
@@ -1161,6 +1297,7 @@
  *           {
  *               "NORM_author": null,
  *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
  *               "NORM_serie": "Dynasty Warriors 3",
  *               "NORM_serie_altname": "DW3/DW 3",
  *               "NORM_singer": null,
@@ -1170,6 +1307,9 @@
  *               "created_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
  *               "gain": 0,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
@@ -1177,6 +1317,9 @@
  *               "language_i18n": "Chinois",
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
  *               "serie": "Dynasty Warriors 3",
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
@@ -1320,6 +1463,82 @@
  *   }
  *}
  * @apiError PL_VIEW_PUBLIC_ERROR Unable to fetch info from public playlist
+
+
+/**
+ * @api {get} /public/player Get player status
+ * @apiName GetPlayer
+ * @apiVersion 2.0.0
+ * @apiGroup Player
+ * @apiPermission public
+ * @apiDescription Player info is updated very frequently. You can poll it to get precise information from player and engine altogether.
+ * @apiSuccess {Number} data/currentlyPlaying Karaoke ID of song being played
+ * @apiSuccess {Number} data/duration Current's song duration in seconds
+ * @apiSuccess {Boolean} data/fullscreen Player's fullscreen status
+ * @apiSuccess {Boolean} data/muteStatus Player's volume mute status
+ * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
+ * @apiSuccess {String=pause,stop,play} data/playerStatus Player's status (not to mistake with engine's status, see below). Player status is `pause` if displaying a background.
+ * @apiSuccess {Boolean} data/private Engine's public/private status
+ * @apiSuccess {Boolean} data/showSubs Player's showing subtitles or not
+ * @apiSuccess {String=pause,play,stop} data/status Engine's status
+ * @apiSuccess {Boolean} data/onTop Player's Always-on-top status
+ * @apiSuccess {String} data/subText Text/lyrics being displayed on screen
+ * @apiSuccess {Number} data/timePosition Player's current position in the song.
+ * @apiSuccess {Number} data/volume Volume (from `0` to `100`)
+ * Example Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "currentlyPlaying": 1020,
+ *       "duration": 0,
+ *       "fullscreen": false,
+ *       "muteStatus": false,
+ *       "onTop": true,
+ *       "playerStatus": "pause",
+ *       "private": true,
+ *       "showSubs": true,
+ *       "status": "stop",
+ *       "subText": null,
+ *       "timePosition": 0,
+ *       "volume": 100
+ *   }
+ * } 
+ * @apiError PLAYER_STATUS_ERROR Error fetching player status (is the player running?)
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PLAYER_STATUS_ERROR"
+ * }
+ */		
+/**
+ * @api {get} admin/playlists/ Get list of playlists
+ * @apiName GetPlaylists
+ * @apiGroup Playlists
+ * @apiVersion 2.0.0
+ * @apiPermission admin
+ *
+ * @apiSuccess {Object[]} playlists Playlists information
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "created_at": 1508313440,
+ *           "flag_current": 1,
+ *           "flag_public": 0,
+ *           "flag_visible": 1,
+ *           "length": 0,
+ *           "modified_at": 1508408078,
+ *           "name": "Liste de lecture courante",
+ *           "num_karas": 6,
+ *           "playlist_id": 1,
+ *           "time_left": 0
+ *       }
+ *   ]
+ * }
+ * @apiError PL_LIST_ERROR Unable to fetch a list of playlists
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error

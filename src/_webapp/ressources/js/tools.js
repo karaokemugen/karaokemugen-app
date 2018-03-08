@@ -77,13 +77,22 @@ displayModal = function(type, title, message, callback, placeholder) {
 			input.val(placeholder ? placeholder : '');
 			okButton.click(function(){
 				var data = {};
-				if(body.find('input, select').length > 1) {
-					body.find('input, select').map(function(k, v){
-						data[v.name] = $(v).val();
-					});
-				} else {
-					data = input.val();
-				}
+				data = input.val();
+				callback(data);
+			});
+		} else if ( type === 'custom') {
+			input.hide();
+			okButton.click(function(){
+				var data = {};
+
+				body.find('input[type="checkbox"]:checked, input[type!="checkbox"], select').map(function(k, v){
+					if(!data[v.name]) {
+						data[v.name] =  $(v).val();
+					} else {
+						data[v.name] += ',' + $(v).val();
+					}
+				});
+
 				callback(data);
 			});
 		} else {
@@ -112,8 +121,8 @@ ajx = function(type, url, data, doneCallback) {
 
 /* format seconds to Hour Minute Second */
 secondsTimeSpanToHMS = function(s, format) {
-	if (format === '24h') {
-		var d = Math.floor(s/(3600 * 24));
+	var d = Math.floor(s/(3600 * 24));
+	if (format === '24h' || format === 'dhm') {
 		s -= d * 3600 * 24;
 	}
 
@@ -124,6 +133,9 @@ secondsTimeSpanToHMS = function(s, format) {
 
 	var result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m'+(s < 10 ? '0'+s : s ) + 's';
 	if (format === 'hm') result = (h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
+	if (format === 'dhm') {
+		result = (d > 0 ? d+'d' : '')+(h > 0 ? h+'h' : '')+(m < 10 ? '0'+m : m)+'m';
+	}
 	return result; 
 };
 

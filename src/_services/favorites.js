@@ -1,6 +1,6 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
-import {setCurrentPlaylist, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, translateKaraInfo, filterPlaylist} from '../_services/playlist';
-import {checkUserNameExists} from '../_services/user';
+import {getPlaylists, setCurrentPlaylist, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, translateKaraInfo, filterPlaylist} from '../_services/playlist';
+import {listUsers, checkUserNameExists} from '../_services/user';
 import moment from 'moment';
 moment.locale('fr');
 import logger from 'winston';
@@ -28,10 +28,9 @@ export async function getFavorites(username, filter, lang, from, size) {
 }
 
 export async function addToFavorites(username, kara_id) {
-	kara_id = [kara_id];
 	try {
 		const plInfo = await getFavoritesPlaylist(username);
-		await addKaraToPlaylist(kara_id, username, plInfo.playlist_id);
+		await addKaraToPlaylist([kara_id], username, plInfo.playlist_id);
 		await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
 		return plInfo;
 	} catch(err) {
@@ -39,8 +38,18 @@ export async function addToFavorites(username, kara_id) {
 	}
 }
 
-export async function deleteFavorite(username, plc_id) {
+export async function deleteFavorite(username, kara_id) {
 	const plInfo = await getFavoritesPlaylist(username);
+	const plContents = await getPlaylistContents(plInfo.playlist_id);
+	let plc_id;
+	const isKaraInPL = plContents.some((plc) => {
+		if (plc.kara_id === kara_id) {
+			plc_id = plc.playlistcontent_id;
+			return true;
+		}
+		return false;
+	});
+	if (!isKaraInPL) throw 'Karaoke ID is not present in this favorites list';
 	await deleteKaraFromPlaylist([plc_id], plInfo.playlist_id);
 	await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
 	return plInfo;
@@ -93,4 +102,26 @@ export async function createAutoMix(params, username) {
 		playlist_id: playlist_id,
 		playlist_name: autoMixPLName
 	};
+}
+
+export async function initFavoritesSystem() {
+	// Let's make sure all our users have a favorites playlist
+	logger.debug('[Favorites] Check if everyone has a favorites playlist');
+	const [playlists, users] = await Promise.all([
+		await getPlaylists(false,'admin'),
+		await listUsers()
+	]);	
+	for (const user of users) {		
+		const isFavoritePLExists = playlists.some(pl => {
+			if (pl.fk_user_id == user.user_id && pl.flag_favorites == 1 && user.type == 1) return true;
+			return false;
+		});
+		if (!isFavoritePLExists) await createPlaylist('Faves : '+user.login,0,0,0,1,user.login);
+	}
+}
+
+export async function findFavoritesPlaylist(username) {
+	const plInfo = await getFavoritesPlaylist(username);
+	if (plInfo) return plInfo.playlist_id;
+	return false;
 }

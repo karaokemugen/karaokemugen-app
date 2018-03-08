@@ -1,4 +1,7 @@
 import {getUserDb, transaction} from './database';
+import {now} from 'unix-timestamp';
+import {getConfig} from '../_common/utils/config';
+
 const sql = require('../_common/db/kara');
 
 export async function getSongCountForUser(playlist_id,username) {
@@ -8,16 +11,20 @@ export async function getSongCountForUser(playlist_id,username) {
 	});
 }
 
-export async function getAllKaras() {
-	return await getUserDb().all(sql.getAllKaras);
+export async function getAllKaras(username) {
+	return await getUserDb().all(sql.getAllKaras, {
+		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
+		$username: username
+	});
 }
 
 export async function getKara(id, username) {
-	if (!username) username = '';
-	return await getUserDb().get(sql.getKara, { 
-		$kara_id: id,
-		$username: username
-	});
+	return await getUserDb().get(sql.getKara,
+		{
+			$kara_id: id,
+			$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
+			$username: username
+		});
 }
 
 export async function getASS(id) {
@@ -44,16 +51,14 @@ export async function addViewcount(kara_id,kid,datetime) {
 	});
 }
 
-export async function updateTotalViewcounts(kid) {
-	return await getUserDb().run(sql.updateTotalViewcounts, { $kid: kid });
-}
-
 export async function addKaraToPlaylist(karaList) {
 	const karas = karaList.map((kara) => ({
 		$playlist_id: kara.playlist_id,
-		$user_id: kara.user_id,
+		$username: kara.username,
+		$pseudo_add: kara.pseudo_add,
+		$NORM_pseudo_add: kara.NORM_pseudo_add,
 		$kara_id: kara.kara_id,
-		$created_at: kara.date_add,
+		$created_at: kara.created_at,
 		$pos: kara.pos
 	}));
 	return await transaction(karas, sql.addKaraToPlaylist);
