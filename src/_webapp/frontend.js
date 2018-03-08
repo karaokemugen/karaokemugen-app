@@ -35,10 +35,19 @@ export async function initFrontend(port) {
 	app.use('/previews',express.static(resolve(conf.appPath,conf.PathPreviews)));
 	//Path to user avatars
 	app.use('/avatars',express.static(resolve(conf.appPath,conf.PathAvatars)));
-	app.use('/admin', routerAdmin);		
+	app.use('/admin', routerAdmin);	
+
+	var view = 'public';
+	if(conf.WebappMode === '0') {
+		view = 'publicClosed';
+	} else if (conf.WebappMode === '1') {
+		view = 'publicLimited';
+	}
+
 	app.get('/', (req, res) => {
-		res.render('public', {'layout': 'publicHeader',
+		res.render(view, {'layout': 'publicHeader',
 			'clientAdress'	:		'http://'+address(),
+			'WebappMode'	:	conf.WebappMode,
 			'query'			:	JSON.stringify(req.query)
 		});
 	});
