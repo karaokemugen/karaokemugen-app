@@ -828,7 +828,7 @@ var settingsNotUpdated;
 	transferKaraHtml = '<button name="transferKara" class="btn btn-sm btn-action"></button>';
 	checkboxKaraHtml = '<span name="checkboxKara"></span>';
 	infoKaraHtml = '<button name="infoKara" class="btn btn-sm btn-action"></button>';
-	likeKaraHtml = '<button name="likeKara" class="btn btn-sm btn-action">+1</button>';
+	likeKaraHtml = '<button class="likeKara btn btn-sm btn-action"></button>';
 	closeButton = '<button class="closeParent btn btn-action"></button>';
 	closeButtonBottom = '<button class="closeParent bottom btn btn-action"></button>';
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
