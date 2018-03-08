@@ -103,7 +103,6 @@
  */
 
 /**
-<<<<<<< HEAD
  * @api {get} admin/settings Get settings
  * @apiName GetSettings
  * @apiVersion 2.0.0
@@ -677,7 +676,6 @@
  */
 
 /**
->>>>>>> next
  * @api {get} public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 2.0.0
@@ -1134,7 +1132,6 @@
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
->>>>>>> next
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -1143,7 +1140,6 @@
  *       "content": [
  *           {
  *               "NORM_author": null,
-<<<<<<< HEAD
  *               "NORM_creator": "Eurovision",
  *               "NORM_serie": null,
  *               "NORM_serie_altname": null,
