@@ -1,5 +1,5 @@
 $(document).ready(function () {
-		
+	
 	$('#choixPseudo').focus(function(){
 		//this.setSelectionRange(0, this.value.length);
 		this.value = '';
@@ -92,6 +92,13 @@ getPublicSettings = function() {
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {
 			playlistToAddId = data.playlist_id;
 			playlistToAddName = data.name;
+
+			if(webappMode === 1) {
+				$('#selectPlaylist1').empty()
+					.append('<option default value="' + playlistToAddId + '"  data-playlist_id="' +  playlistToAddId + '"><option>')
+					.change();
+			}
+
 			promise.resolve();
 		});
 
@@ -135,119 +142,122 @@ swipeManager.on('swipe', function (e) {
 // for each side
 [1,2].forEach(function(side){
 	
-	swipable = $('.list-group[side="' + side + '"]');
-
+	var swipable = $('.list-group[side="' + side + '"]');
 	
-	var manager = new Hammer.Manager(swipable[0],{
-		prevent_default: false
-	});
-	
-	var panner = new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 50 });
-	var tapper = new Hammer.Tap();
-	
-	manager.add(panner);
-	manager.add(tapper);
-
-	if(side == 1) {
-		manager.on('panstart', function (e) {
-			/*var target = $(e.target).closest('li').get(0);
-			if(target) currentPanning = target;*/
+	if(swipable.length > 0) {
+		
+		
+		var manager = new Hammer.Manager(swipable[0],{
+			prevent_default: false
 		});
-		manager.on('pan', function (e) {
-			e.gesture = e;
-			
-			if ((e.gesture.pointerType === 'touch' || e.gesture.pointerType === 'mouse')) {
-				var $this = $(currentPanning);
-				var direction = e.gesture.direction;
-				var x = e.gesture.deltaX;
-				var velocityX = e.gesture.velocityX;
-				DEBUG && console.log(e,direction,x );
-				if(direction != 4 &&  direction != 2) {
-					return false;
-				}
-				
-				if(x > $this.innerWidth() * .12) {
-					$this.velocity({ translateX: x
-					}, { duration: 50, queue: false, easing: 'easeOutQuad' });
+		
+		var panner = new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 50 });
+		var tapper = new Hammer.Tap();
+		
+		manager.add(panner);
+		manager.add(tapper);
 
-				}
-				
-				
-				
-				// Swipe Left
-				if (direction === 4 && (x > $this.innerWidth()  * sensibility || velocityX < -0.75)) {
-					swipeLeft = true;
-					$this.attr('valid', true) ;
-				}
-				if(direction === 2 && (x < -1 * $this.innerWidth()  * sensibility )) {
-					swipeLeft = false;
-					$this.attr('valid', false) ;
-				}
-				// Swipe Right
-				if (direction === 2 && (x < -1 * $this.innerWidth()  * sensibility  || velocityX > 0.75)) {
-					swipeRight = true;
-				}
-			}
-		}).on('panend', function (e) {
-			if(currentPanning) {
+		if(side == 1) {
+			manager.on('panstart', function (e) {
+				/*var target = $(e.target).closest('li').get(0);
+				if(target) currentPanning = target;*/
+			});
+			manager.on('pan', function (e) {
 				e.gesture = e;
-				var $this = $(currentPanning);
-				// Reset if list-group is moved back into original position
-				if (Math.abs(e.gesture.deltaX) < $this.innerWidth() * sensibility) {
-					swipeRight = false;
-					swipeLeft = false;
-					$this.attr('valid', false) ;
-				}
-	
-				if (e.gesture.pointerType === 'touch' || e.gesture.pointerType === 'mouse') {
-					if (swipeLeft) {
-						var fullWidth;
-						if (swipeLeft) {
-							fullWidth = $this.innerWidth();
-						} else {
-							fullWidth = -1 * $this.innerWidth();
-						}
 				
-						heightSave = $this.height();
-						$this.velocity({ translateX: fullWidth
-						}, { duration: 100, queue: false, easing: 'easeOutQuad', complete: function () {
-							if( $this.is(':visible') ) {
-								$this.removeClass('list-group-item');
-								$this.velocity({ height: 0
-								}, { duration: 100, queue: false, easing: 'easeOutQuad', complete: function () {
-								}});
-								var idKara = $this.attr('idkara');
-								$this.hide();
-								addKaraPublic(idKara, function() {
-									$this.remove();
-								}, function() {	// if it fails
-									$this.show();
-									
-									$this.attr('valid', false) ;
-									$this.addClass('list-group-item');
-									//revert back the kara
-									$this.velocity('stop', true).velocity({ translateX: 0, 
-									}, { duration: 200, easing: 'easeOutQuad', complete: function () {
-										$this.velocity({ height: heightSave
-										}, { duration: 200, easing: 'easeOutQuad', complete: function () {
-											$this.height('auto');
-										}});
-									}});
-								});
-							}
-						}});
-				
-					} else {
-						$this.velocity({ translateX: 0
-						}, { duration: 100, queue: false, easing: 'easeOutQuad',  complete: function () {
-						}});
+				if ((e.gesture.pointerType === 'touch' || e.gesture.pointerType === 'mouse')) {
+					var $this = $(currentPanning);
+					var direction = e.gesture.direction;
+					var x = e.gesture.deltaX;
+					var velocityX = e.gesture.velocityX;
+					DEBUG && console.log(e,direction,x );
+					if(direction != 4 &&  direction != 2) {
+						return false;
 					}
-					swipeLeft = false;
-					swipeRight = false;
-				}
-			}
-			
-		});
-	} 
+					
+					if(x > $this.innerWidth() * .12) {
+						$this.velocity({ translateX: x
+						}, { duration: 50, queue: false, easing: 'easeOutQuad' });
 
+					}
+					
+					
+					
+					// Swipe Left
+					if (direction === 4 && (x > $this.innerWidth()  * sensibility || velocityX < -0.75)) {
+						swipeLeft = true;
+						$this.attr('valid', true) ;
+					}
+					if(direction === 2 && (x < -1 * $this.innerWidth()  * sensibility )) {
+						swipeLeft = false;
+						$this.attr('valid', false) ;
+					}
+					// Swipe Right
+					if (direction === 2 && (x < -1 * $this.innerWidth()  * sensibility  || velocityX > 0.75)) {
+						swipeRight = true;
+					}
+				}
+			}).on('panend', function (e) {
+				if(currentPanning) {
+					e.gesture = e;
+					var $this = $(currentPanning);
+					// Reset if list-group is moved back into original position
+					if (Math.abs(e.gesture.deltaX) < $this.innerWidth() * sensibility) {
+						swipeRight = false;
+						swipeLeft = false;
+						$this.attr('valid', false) ;
+					}
+		
+					if (e.gesture.pointerType === 'touch' || e.gesture.pointerType === 'mouse') {
+						if (swipeLeft) {
+							var fullWidth;
+							if (swipeLeft) {
+								fullWidth = $this.innerWidth();
+							} else {
+								fullWidth = -1 * $this.innerWidth();
+							}
+					
+							heightSave = $this.height();
+							$this.velocity({ translateX: fullWidth
+							}, { duration: 100, queue: false, easing: 'easeOutQuad', complete: function () {
+								if( $this.is(':visible') ) {
+									$this.removeClass('list-group-item');
+									$this.velocity({ height: 0
+									}, { duration: 100, queue: false, easing: 'easeOutQuad', complete: function () {
+									}});
+									var idKara = $this.attr('idkara');
+									$this.hide();
+									addKaraPublic(idKara, function() {
+										$this.remove();
+									}, function() {	// if it fails
+										$this.show();
+										
+										$this.attr('valid', false) ;
+										$this.addClass('list-group-item');
+										//revert back the kara
+										$this.velocity('stop', true).velocity({ translateX: 0, 
+										}, { duration: 200, easing: 'easeOutQuad', complete: function () {
+											$this.velocity({ height: heightSave
+											}, { duration: 200, easing: 'easeOutQuad', complete: function () {
+												$this.height('auto');
+											}});
+										}});
+									});
+								}
+							}});
+					
+						} else {
+							$this.velocity({ translateX: 0
+							}, { duration: 100, queue: false, easing: 'easeOutQuad',  complete: function () {
+							}});
+						}
+						swipeLeft = false;
+						swipeRight = false;
+					}
+				}
+				
+			});
+		} 
+		
+	}
 });
