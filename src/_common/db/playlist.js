@@ -135,7 +135,10 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
 										(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     									THEN 1
         									ELSE 0
-      									END) AS flag_dejavu,
+										  END) AS flag_dejavu,
+										  (SELECT COUNT(*) 
+    								FROM upvote AS up
+    								WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
 										(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
 									FROM karasdb.all_karas AS ak 
 									INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
