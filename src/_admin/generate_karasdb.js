@@ -127,14 +127,14 @@ function prepareKaraInsertData(kara, index) {
 }
 
 function prepareAllKarasInsertData(karas) {
-	// Les index JS commencent à 0.
+	// Remember JS indexes start at 0.
 	return karas.map((kara, index) => prepareKaraInsertData(kara, index + 1));
 }
 
 function getSeries(kara) {
 	const series = new Set();
 
-	// Séries extraites du fichier kara
+	// Extracted series names from kara files
 	if (kara.series && kara.series.trim()) {
 		kara.series.split(',').forEach(serie => {
 			if (serie.trim()) {
@@ -143,7 +143,7 @@ function getSeries(kara) {
 		});
 	}
 
-	// Au moins une série est obligatoire pour les karas non LIVE/MV.
+	// At least one series is mandatory if kara is not LIVE/MV type
 	if (serieRequired(kara.type) && isEmpty(series)) {
 		logger.error(`Karaoke series cannot be detected! (${JSON.stringify(kara)})`);
 		error = true;
@@ -276,7 +276,7 @@ function getKaraTags(kara, allTags) {
 
 	if (kara.lang) {
 		kara.lang.split(',').forEach(lang => {
-			if (lang === 'und' || hasLang('2B', lang)) {
+			if (lang === 'und' || lang === 'mul' || hasLang('2B', lang)) {
 				result.add(getTagId(lang.trim() + ',5', allTags));
 			}
 		});
@@ -291,7 +291,8 @@ function getTypes(kara, allTags) {
 	const result = new Set();
 
 	karaTypesMap.forEach((value, key) => {
-		// Ajout d'espaces car certaines clés sont incluses dans d'autres : MV et AMV par exemple.
+		// Adding spaces since some keys are included in others.
+		// For example MV and AMV.
 		if (` ${kara.type} `.includes(` ${key} `)) {
 			result.add(getTagId(value, allTags));
 		}
@@ -370,7 +371,6 @@ async function insertAss(db, karas) {
 
 async function runSqlStatementOnData(stmtPromise, data) {
 	const stmt = await stmtPromise;
-
 	const sqlPromises = data.map(sqlData => stmt.run(sqlData));
 	await Promise.all(sqlPromises);
 	await stmt.finalize();
@@ -394,7 +394,6 @@ export async function run(config) {
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
 		// Preparing data to insert
-
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);

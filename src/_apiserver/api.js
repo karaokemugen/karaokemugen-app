@@ -44,7 +44,7 @@ export async function initAPIServer(listenPort) {
 	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
 	app.use(urlencoded({ extended: true, limit: '50mb' }));
 	app.use(json());		
-	// Calling express validator with a custom validator, used for the player commands
+	// Calling express validator with custom validators, used for the player commands
 	// to check if they're from the allowed list.
 	// We use another custom validator to test for array of numbers
 	// used mainly with adding/removing lists of karaokes
@@ -110,6 +110,7 @@ export async function initAPIServer(listenPort) {
 	// 400 : BAD REQUEST
 	// 500 : INTERNAL ERROR
 	// 403 : FORBIDDEN
+	// 503 : TEMPORARILY UNAVAILABLE
 
 	// In case of error, return the correct code and object 'error'
 
@@ -158,7 +159,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerAdmin.route('/automix')
 	/**
- * @api {post} admin/automix Generate a automix playlist
+ * @api {post} /admin/automix Generate a automix playlist
  * @apiName PostMix
  * @apiGroup Favorites
  * @apiVersion 2.1.0
@@ -3946,7 +3947,7 @@ export async function initAPIServer(listenPort) {
 		});
 	routerPublic.route('/playlists/public/karas/:plc_id/vote')
 		/**
-	 * @api {post} public/playlists/public/karas/:plc_id Up/downvote a song in public playlist
+	 * @api {post} /public/playlists/public/karas/:plc_id Up/downvote a song in public playlist
 	 * @apiName PostVote
 	 * @apiVersion 2.1.0
 	 * @apiGroup Playlists
@@ -4366,7 +4367,7 @@ export async function initAPIServer(listenPort) {
 
 	routerPublic.route('/favorites')
 	/**
- * @api {get} public/favorites View own favorites
+ * @api {get} /public/favorites View own favorites
  * @apiName GetFavorites
  * @apiVersion 2.1.0
  * @apiGroup Favorites
@@ -4468,7 +4469,7 @@ export async function initAPIServer(listenPort) {
 				});						
 		})
 	/**
- * @api {post} public/favorites Add karaoke to your favorites
+ * @api {post} /public/favorites Add karaoke to your favorites
  * @apiName PostFavorites
  * @apiVersion 2.1.0
  * @apiGroup Favorites
@@ -4537,7 +4538,7 @@ export async function initAPIServer(listenPort) {
 
 		})
 	/**
- * @api {delete} public/favorites/ Delete karaoke from your favorites
+ * @api {delete} /public/favorites/ Delete karaoke from your favorites
  * @apiName DeleteFavorites
  * @apiVersion 2.1.0
  * @apiGroup Favorites

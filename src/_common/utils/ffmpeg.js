@@ -11,7 +11,7 @@ export async function extractSubtitles(videofile, extractfile, config) {
 	spawnSync(conf.BinffmpegPath, ['-y', '-i', videofile, extractfile], {encoding: 'utf8'});
 
 	// Verify if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything
-	await asyncRequired(extractfile);
+	return await asyncRequired(extractfile);
 }
 
 export async function createPreview(videopreview, config) {

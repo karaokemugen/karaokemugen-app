@@ -2,7 +2,7 @@
 
 import {resolve} from 'path';
 import {parse, stringify} from 'ini';
-import {sync} from 'os-locale';
+import osLocale from 'os-locale';
 import i18n from 'i18n';
 import {address} from 'ip';
 import logger from 'winston';
@@ -19,7 +19,7 @@ let defaultConfig = {};
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
- * without passing by this module's fonctions.
+ * without passing by this module's functions.
  */
 export function getConfig() {
 	return {...config};
@@ -34,7 +34,7 @@ export function mergeConfig(newConfig) {
 			setting != 'PlayerStayOnTop') {
 			if (conf[setting] != newConfig[setting]) {
 				emit('playerNeedsRestart');
-				logger.debug('[Engine] Setting mpv to restart after next song');
+				logger.debug('[Config] Setting mpv to restart after next song');
 			}
 		}
 	}
@@ -142,7 +142,7 @@ function configureLocale() {
 		cookie: 'locale',
 		register: global
 	});
-	const detectedLocale = sync().substring(0, 2);
+	const detectedLocale = osLocale.sync().substring(0, 2);
 	i18n.setLocale(detectedLocale);
 	config = {...config, EngineDefaultLocale: detectedLocale };
 }

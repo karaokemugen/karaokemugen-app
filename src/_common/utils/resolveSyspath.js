@@ -1,5 +1,5 @@
-// récupère le chemin absolu vers l'applicatif lancé
-// permet de résoudre le problème du finder MacOS qui execute dans l'environnement du dossier utilisateur
+// Find out absolute path to app's binary
+// Workaround for macOS' finder behavior where it executes any application from the user's home directory, no matter where the app is located.
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
@@ -7,7 +7,6 @@ const path = require('path');
 module.exports = function(testfile, callerDirname, paths){
 
 	if(!testfile) {
-		console.log('utils/resolveSyspath Fail : Unable to locate Syspath without target test file');
 		return false;
 	}
 
@@ -34,7 +33,5 @@ module.exports = function(testfile, callerDirname, paths){
 		if(fs.existsSync(path.join(basepath,paths[j])))
 			return path.join(basepath,paths[j]);
 	}
-
-	console.log('utils/resolveSyspath Fail : Can not locate '+testfile);
 	return false;
 };
