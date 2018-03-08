@@ -17,10 +17,10 @@ const sleep = promisify(setTimeout);
 let currentJinglesList = [];
 let jinglesList = [];
 let displayingInfo = false;
-
 let frontendPort;
 let player;
 let state = {};
+
 state.player = {
 	volume: 100,
 	playing: false,
@@ -40,6 +40,10 @@ state.player = {
 
 on('engineStatusChange', (newstate) => {
 	state.engine = newstate[0];	
+});
+
+on('jinglesReady', (list) => {
+	currentJinglesList = jinglesList = list[0];	
 });
 
 function emitPlayerState() {
@@ -123,7 +127,7 @@ export async function initPlayerSystem(initialState) {
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
 	frontendPort = initialState.frontendPort;
-	currentJinglesList = jinglesList = buildJinglesList();
+	buildJinglesList();
 	await buildQRCode(`http://${conf.osHost}:${initialState.frontend_port}`);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
