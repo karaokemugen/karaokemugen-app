@@ -677,7 +677,6 @@
  */
 
 /**
->>>>>>> next
  * @api {get} public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 2.0.0
