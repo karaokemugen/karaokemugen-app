@@ -3944,9 +3944,9 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 				});
 		});
-	routerPublic.route('/playlists/public/karas/:plc_id/vote')
+	routerPublic.route('/playlists/public/karas/:plc_id([0-9]+)/vote')
 		/**
-	 * @api {post} public/playlists/public/karas/:plc_id Up/downvote a song in public playlist
+	 * @api {post} public/playlists/public/karas/:plc_id/vote Up/downvote a song in public playlist
 	 * @apiName PostVote
 	 * @apiVersion 2.1.0
 	 * @apiGroup Playlists
