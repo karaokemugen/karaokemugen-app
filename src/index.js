@@ -24,7 +24,7 @@ process.on('unhandledRejection', (reason, p) => {
 });
 
 const argv = parseArgs();
-const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
+const appPath = resolveSysPath('config.ini.sample',__dirname,['./','../']);
 if (appPath) {
 	main()
 		.catch(err => {

@@ -12,6 +12,7 @@ import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
 import {emit} from './pubsub';
+import {defaults} from './default_settings.js';
 
 /** Object containing all config */
 let config = {};
@@ -116,16 +117,13 @@ function configureLogger(appPath, debug) {
 }
 
 async function loadConfigFiles(appPath) {
-	const defaultConfigFile = resolve(appPath, 'config.ini.default');
 	const overrideConfigFile = resolve(appPath, 'config.ini');
 	const versionFile = resolve(__dirname, '../../VERSION');
 
-	await loadConfig(defaultConfigFile);
-	defaultConfig = config;
+	config = defaults;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
 	if (await asyncExists(versionFile)) await loadConfig(versionFile);
 }
-
 
 async function loadConfig(configFile) {
 	logger.debug(`[Config] Reading configuration file ${configFile}`);
