@@ -188,7 +188,7 @@ export async function initAPIServer(listenPort) {
  * }
  */
 
-		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			req.check({
 				'users': {
 					in: 'body',
@@ -4453,7 +4453,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, updateUserLoginTime, (req,res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			const filter = req.query.filter;
 			const lang = req.query.lang;
@@ -4515,7 +4515,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(requireWebappLimited, requireAuth, updateUserLoginTime, (req,res) => {
+		.post(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			req.checkBody({
 				'kara_id': {
 					in: 'body',
@@ -4581,7 +4581,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.delete(requireWebappLimited, requireAuth, updateUserLoginTime, (req, res) => {
+		.delete(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Delete kara from favorites
 			// Deletion is through kara ID.
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
