@@ -346,6 +346,10 @@ var settingsNotUpdated;
 				makeFav(idKara, !$(this).hasClass('currentFav'), $(this));
 			});
 
+			$('.playlist-main').on('click', '.likeKara', function() {
+				likeKara(!$(this).hasClass('currentLike'), $(this));
+			});
+
 		}
 
 		makeFav = function(idKara, make, $el) {
@@ -376,16 +380,16 @@ var settingsNotUpdated;
 			}
 		};
 
-		likeKara = function(idKara, like, $el) {
+		likeKara = function(like, $el) {
 			var idPlc = parseInt($el.closest('li').attr('idplaylistcontent'));
-			var data = {};
+			var dataLikeKara = {};
 			if (!like) {
-				data = {'downvote' : 'true'};
+				dataLikeKara = {'downvote' : 'true'};
 			}
 			$.ajax({
-				url: 'public/playlists/public/karas'+idPlc,
+				url: 'public/playlists/public/karas/'+idPlc+'/vote',
 				type: 'POST',
-				data: data })
+				data: dataLikeKara })
 				.done(function (response) {
 					if($el) {
 						if(like) {
@@ -944,7 +948,7 @@ var settingsNotUpdated;
 				} else if($this.hasClass('makeFav')) {
 					makeFav(idKara, !$this.hasClass('currentFav'), $this);
 				}else if($this.hasClass('likeKara')) {
-					likeKara(idKara, !$this.hasClass('currentLike'), $this);
+					likeKara(!$this.hasClass('currentLike'), $this);
 				}
 			}
 		});
