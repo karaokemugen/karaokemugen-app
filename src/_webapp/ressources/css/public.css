@@ -58,8 +58,12 @@
 .underHeader {
     position: relative;	
     top: calc( 60px + 30px );
-    height: calc(100% - 60px - 30px );
+    height: calc( 100% - 60px - 30px );
 }  
+.underHeader.mode1 {
+    top: calc( 30px );
+    height: calc( 100% - 30px );
+}
 .bootstrap-switch-container i {
     font-size: 20px;
     top: 3px;
