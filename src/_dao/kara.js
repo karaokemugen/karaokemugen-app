@@ -61,8 +61,7 @@ export async function addKaraToPlaylist(karaList) {
 		$created_at: kara.created_at,
 		$pos: kara.pos
 	}));
-	return await getUserDb().run(sql.addKaraToPlaylist, karas[0]);
-	//return await transaction(karas, sql.addKaraToPlaylist);
+	return await transaction(karas, sql.addKaraToPlaylist);
 }
 
 export async function addKaraToWhitelist(karaList,date_added) {

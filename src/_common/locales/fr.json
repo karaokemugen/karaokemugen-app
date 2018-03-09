@@ -155,7 +155,7 @@
 	"ENGINEDISPLAYNICKNAME": "Afficher les pseudos",
 	"ENGINEFREEUPVOTES": "Libération des chansons par vote",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum de votes requis pour libérer une chanson",
-	"ENGINEFREEUPVOTESREQUIREDPERCENT": "Pourcentage de votes requis (par rapport aux utilisateurs en ligne) pour libérer une chanson",
+	"ENGINEFREEUPVOTESREQUIREDPERCENT": "Pourcentage de votes requis pour libérer une chanson",
 	"PLAYERFULLSCREEN": "Plein écran",
 	"PLAYERSTAYONTOP": "Toujours au dessus",
 	"PLAYERNOBAR": "Masquer la barre de progression",

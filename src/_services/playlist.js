@@ -454,7 +454,7 @@ export async function getKara(kara_id, username) {
 	return kara;
 }
 
-async function getPLCByKID(kid,playlist_id) {
+export async function getPLCByKID(kid,playlist_id) {
 	return await plDB.getPLCByKID(kid,playlist_id);
 }
 
@@ -577,7 +577,7 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 		karaList.forEach((kara,index) => {
 			karaList[index].pos = startpos+index;
 		});
-	}	
+	}		
 	await karaDB.addKaraToPlaylist(karaList);
 	await updatePlaylistLastEditTime(playlist_id);
 	// Checking if a flag_playing is present inside the playlist.					
@@ -666,7 +666,7 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,opt) {
 	if (!opt) opt = {};
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	// Removing karaoke here.
-	await karaDB.removeKaraFromPlaylist(plcs);
+	await karaDB.removeKaraFromPlaylist(plcs,playlist_id);
 	if (!opt.sortBy) opt.sortBy = 'pos';	
 	await Promise.all([
 		updatePlaylistDuration(playlist_id),

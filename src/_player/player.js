@@ -17,10 +17,10 @@ const sleep = promisify(setTimeout);
 let currentJinglesList = [];
 let jinglesList = [];
 let displayingInfo = false;
-
 let frontendPort;
 let player;
 let state = {};
+
 state.player = {
 	volume: 100,
 	playing: false,
@@ -40,6 +40,10 @@ state.player = {
 
 on('engineStatusChange', (newstate) => {
 	state.engine = newstate[0];	
+});
+
+on('jinglesReady', (list) => {
+	currentJinglesList = jinglesList = list[0];	
 });
 
 function emitPlayerState() {
@@ -123,7 +127,7 @@ export async function initPlayerSystem(initialState) {
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
 	frontendPort = initialState.frontendPort;
-	currentJinglesList = jinglesList = buildJinglesList();
+	buildJinglesList();
 	await buildQRCode(`http://${conf.osHost}:${initialState.frontend_port}`);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
@@ -285,12 +289,13 @@ export async function play(videodata) {
 	try {
 		videoFile = await resolveFileInDirs(videodata.video,PathsVideos);
 	} catch (err) {
+		logger.debug(`[Player] Error while resolving video path : ${err}`);
 		logger.warn(`[Player] Video NOT FOUND : ${videodata.video}`);
 		if (conf.PathVideosHTTP) {
 			videoFile = `${conf.PathVideosHTTP}/${encodeURIComponent(videodata.video)}`;
 			logger.info(`[Player] Trying to play video directly from the configured http source : ${conf.PathVideosHTTP}`);
 		} else {
-			throw `No video source for ${videodata.video}`;
+			throw `No video source for ${videodata.video} (tried in ${PathsVideos.toString()} and HTTP source)`;
 		}
 	}	
 	logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);

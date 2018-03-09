@@ -18,16 +18,16 @@ let error = false;
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
-	const infos = karaFileName.split(/\s+-\s+/); // LANGUE - SERIE - NUMERO - TITRE
+	const infos = karaFileName.split(/\s+-\s+/); // LANGUAGE - SERIES - ORDER - TITLE
 
 	if (infos.length < 3) {
 		throw 'Kara filename \'' + karaFileName + '\' does not respect naming convention';
 	}
-	// On ajoute en 5ème position le numéro extrait du champ type.
+	// Addming in 5th position the number extracted from the type field.
 	const orderInfos = infos[2].match(/^([a-zA-Z0-9 ]{2,30}?)(\d*)$/);
 	infos.push(orderInfos[2] ? +orderInfos[2] : 0);
 
-	// On renvoie un objet avec les champs explicitement nommés.
+	// Let's return an object with our data correctly positionned.
 	return {
 		lang: infos[0],
 		serie: infos[1],
@@ -54,8 +54,6 @@ export async function getDataFromKaraFile(karafile) {
 	karaData.datemodif = timestamp.now();
 
 	karaData.karafile = karafile;
-
-	karaData.lang = trim(karaData.lang, '"'); // Nettoyage du champ lang du fichier kara.
 
 	let videoFile;
 

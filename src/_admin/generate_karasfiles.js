@@ -1,5 +1,5 @@
 /**
- * Génération de fichiers kara.
+ * .kara files generation
  */
 
 import logger from 'winston';
@@ -13,9 +13,9 @@ import {getType} from '../_services/constants';
 import {getKara} from '../_services/kara';
 
 /**
- * Génération de fichiers karaokés en mode batch. Le répertoire d'import est scanné à la recherche de fichiers
- * vidéo, respectant la convention de nommage KM. Si un tel fichier est trouvé, le kara associé est créé, et les
- * fichiers vidéo/sous-titre déplacés dans leurs répertoires respectifs.
+ * Generating kara files in batch mode. The import folder is scanned for video files
+ * which respect the KM naming convention. If such a file is found, the associated 
+ * karaoke file is created, and subtitle files are moved to their own directories.
  */
 export async function karaGenerationBatch() {
 
@@ -26,7 +26,7 @@ export async function karaGenerationBatch() {
 
 async function importVideoFile(videoFile) {
 
-	logger.info('[KaraGen] Génération du fichier kara pour la vidéo ' + videoFile);
+	logger.info('[KaraGen] Generating kara file for video ' + videoFile);
 
 	let karaData = getKara({ videofile: videoFile, subfile: 'dummy.ass' });
 
@@ -56,25 +56,25 @@ function karaDataInfosFromFilename(videoFile) {
 			return { ...common, series: filenameInfos.serie };
 		}
 	} catch (err) {
-		// Fichier ne respectant pas la convention de nommage.
+		// File not named correctly
 		logger.warn('[KaraGen] Bad kara file name: ' + err);
 	}
 	return {};
 }
 
 async function findSubFile(videoPath, karaData) {
-	// Remplacement de l'extension de la vidéo par .ass (dans le même répertoire).
+	// Replacing file extension by .ass in the same directory
 	const assFile = replaceExt(videoPath, '.ass');
 
 	if (await asyncExists(assFile)) {
-		// Si un fichier de sous-titres est trouvé, on met à jour karaData en conséquence.
+		// If a subfile is found, adding it to karaData
 		karaData.subfile = replaceExt(karaData.videofile, '.ass');
 		return assFile;
 	} else if (videoPath.endsWith('.mkv') || videoPath.endsWith('.mp4')) {
 		try {
 			return await extractVideoSubtitles(videoPath, karaData.KID);
 		} catch (err) {
-			// Non bloquant.
+			// Non-blocking.
 			logger.debug('[KaraGen] Could not extract subtitles from video file ' + videoPath);
 		}
 	} else {
@@ -84,16 +84,16 @@ async function findSubFile(videoPath, karaData) {
 
 
 async function generateAndMoveFiles(videoPath, subPath, karaData) {
-	// Génération du fichier kara dans le premier répertoire kara.
+	// Generating kara file in the first kara folder
 	const karaFilename = replaceExt(karaData.videofile, '.kara');
 	const karaPath = resolve(resolvedPathKaras()[0], karaFilename);
 	await writeKara(karaPath, karaData);
 
-	// Déplacement de la vidéo dans le premier répertoire vidéo.
+	// Moving video in the first video folder.
 	const videoDest = resolve(resolvedPathVideos()[0], karaData.videofile);
 	await asyncMove(videoPath, videoDest);
 
-	// Déplacement du fichier de sous-titres dans le premier répertoire de sous-titres.
+	// Moving subfile in the first lyrics folder.
 	if (subPath && karaData.subfile !== 'dummy.ass') {
 		const subDest = resolve(resolvedPathSubs()[0], karaData.subfile);
 		await asyncMove(subPath, subDest);

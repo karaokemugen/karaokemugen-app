@@ -6,6 +6,7 @@ import logger from 'winston';
 import {videoFileRegexp, imageFileRegexp} from '../../_services/constants';
 import fileType from 'file-type';
 import readChunk from 'read-chunk';
+import {getConfig} from './config';
 
 /** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
@@ -61,27 +62,23 @@ export function asyncMove(...args) {
 
 /** Function used to verify if a required file exists. It throws an exception if not. */
 export async function asyncRequired(file) {
-	const exists = await asyncExists(file);
-	if (!exists) {
-		throw 'File \'' + file + '\' does not exist';
-	}
+	if (!await asyncExists(file)) throw 'File \'' + file + '\' does not exist';
 }
 
 export async function asyncCheckOrMkdir(...dir) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
-		logger.warn('[Launcher] Creating folder ' + resolvedDir);
+		logger.debug('[Launcher] Creating folder ' + resolvedDir);
 		return await asyncMkdirp(resolvedDir);
 	}
 }
 
 /**
  * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
- * Beware: we believe the paths sent as arguments are already resolved.
  */
 export async function resolveFileInDirs(filename, dirs) {
 	for (const dir of dirs) {
-		const resolved = resolve(dir, filename);
+		const resolved = resolve(getConfig().appPath, dir, filename);		
 		if (await asyncExists(resolved)) {
 			return resolved;
 		}
@@ -105,7 +102,7 @@ export function isImageFile(filename) {
 	return new RegExp(imageFileRegexp).test(filename);
 }
 
-/** Remplacement de l'extension dans un nom de fichier. */
+/** Replacing extension in filename */
 export function replaceExt(filename, newExt) {
 	return filename.replace(/\.[^.]+$/, newExt);
 }

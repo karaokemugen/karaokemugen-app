@@ -38,7 +38,7 @@ let internalState = {
 	currentPlayingPLC: undefined,
 	archivedStatus: {},
 	playerNeedsRestart: false,
-	currentlyPlayingKara: undefined,
+	currentlyPlayingKara: null,
 	counterToJingle: 1
 };
 
@@ -85,7 +85,7 @@ on('publicStatusChange', () => {
 		subText: state.player.subtext,
 		showSubs: state.player.showsubs,
 		volume: state.player.volume,
-	};	
+	};
 	emitWS('playerStatus',publicState);
 });
 
@@ -110,7 +110,7 @@ function emitPublicStatus() {
 	emit('publicStatusChange');
 }
 function emitEngineStatus() {
-	emit('engineStatusChange', state);
+	emit('engineStatusChange', state.engine);
 }
 
 export async function initEngine() {
@@ -343,7 +343,7 @@ async function tryToReadKaraInPlaylist() {
 				infos: kara.infos
 			});
 			state.engine.currentlyPlayingKara = kara.kara_id;
-			emitEngineStatus();
+			emitEngineStatus();			
 			//Add a view to the viewcount
 			addViewcountKara(kara.kara_id,kara.kid);				
 			//Free karaoke
@@ -358,7 +358,7 @@ async function tryToReadKaraInPlaylist() {
 			} else {
 				modePlaylist_id = publicPlaylist_id;
 			}
-			const user = await findUserByID(plcontent.user_id);
+			const user = await findUserByID(kara.user_id);
 			plc.updateSongsLeft(user.login,modePlaylist_id);
 			return true;
 		} catch(err) {

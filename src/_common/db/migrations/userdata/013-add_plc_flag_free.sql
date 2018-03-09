@@ -14,7 +14,7 @@ CREATE TABLE tmp (
 	flag_free INTEGER NOT NULL
 );
 
-INSERT INTO tmp SELECT pk_id_plcontent,fk_id_playlist,fk_id_kara,kid,created_at,pos,flag_playing,pseudo_add,NORM_pseudo_add,fk_id_user,0 FROM playlist_content;
+INSERT INTO tmp SELECT pk_id_plcontent,fk_id_playlist,fk_id_kara,kid,created_at,pos,flag_playing,pseudo_add,NORM_pseudo_add,IFNULL(fk_id_user,1),0 FROM playlist_content;
 PRAGMA foreign_keys = "0";
 DROP TABLE playlist_content;
 ALTER TABLE tmp RENAME TO playlist_content;

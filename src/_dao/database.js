@@ -4,6 +4,7 @@ import {getConfig} from '../_common/utils/config';
 import {join, resolve} from 'path';
 import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
 import promiseRetry from 'promise-retry';
+import {exit} from '../_services/engine';
 
 const DBgenerator = require('../_admin/generate_karasdb.js');
 const sql = require('../_common/db/database');
@@ -11,7 +12,7 @@ const sql = require('../_common/db/database');
 // Setting up moment tools
 import moment from 'moment';
 require('moment-duration-format');
-moment.locale('fr');
+
 
 // Setting up databases
 let karaDb;
@@ -68,11 +69,11 @@ async function openUserDatabase() {
 		userDb = await open(userDbFile, {verbose: true});
 		// Trace event. DO NOT UNCOMMENT
 		// unless you want to flood your console.
-		///*
+		/*
 		userDb.driver.on('trace',function(sql){
 			logger.debug(sql);			
 		});
-		//*/
+		*/
 	} else {
 		throw 'User database already opened';
 	}
@@ -137,14 +138,14 @@ export async function initDBSystem() {
 	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
 	await compareDatabasesUUIDs();
 	logger.debug('[DBI] Database Interface is READY');
-	getStats().then((stats) => {
-		logger.info('Karaoke count   : ' + stats.totalcount);
-		logger.info('Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-		logger.info('Series count    : ' + stats.totalseries);
-		logger.info('Languages count : ' + stats.totallanguages);
-		logger.info('Artists count   : ' + stats.totalartists);
-		logger.info('Playlists count : ' + stats.totalplaylists);
-	});
+	const stats = await getStats();
+	moment.locale(getConfig().EngineDefaultLocale);	
+	logger.info('Karaoke count   : ' + stats.totalcount);
+	logger.info('Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day], H [hour], m [minute], s [second]'));
+	logger.info('Series count    : ' + stats.totalseries);
+	logger.info('Languages count : ' + stats.totallanguages);
+	logger.info('Artists count   : ' + stats.totalartists);
+	logger.info('Playlists count : ' + stats.totalplaylists);
 	return true;	
 }
 
@@ -206,11 +207,11 @@ async function generateDatabase() {
 	logger.debug('[DBI] Karaokes database created');
 	if (conf.optGenerateDB) {
 		if (failedKaras) {
-			logger.info('[DBI] Database generation completed with errors!');
-			process.exit(1);
+			logger.error('[DBI] Database generation completed with errors!');
+			exit(1);
 		} else {
 			logger.info('[DBI] Database generation completed successfully!');
-			process.exit(0);
+			exit(0);
 		}
 	}
 	return true;

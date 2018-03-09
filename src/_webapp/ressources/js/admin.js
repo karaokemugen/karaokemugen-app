@@ -410,6 +410,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			$(htmlString).insertBefore('#pipSettings');
 		} else if (e === 'EngineDisplayConnectionInfo') {
 			$(htmlString).insertBefore('#connexionInfoSettings');
+		} else if (e === 'EngineFreeUpvotes') {
+			$(htmlString).insertBefore('#freeUpvotesSettings');
 		} else {
 			htmlSettings += htmlString;
 		}
@@ -428,13 +430,16 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
 					if (input.attr('type') !== 'checkbox') {
 						input.val(val);
-					} else {
+					} else { // only checkbox here
+						val =  parseInt(val);
 						input.bootstrapSwitch('state', val, true);
 						input.val(val);
 						if (input.attr('name') === 'PlayerPIP') {
 							val ? $('#pipSettings').show('500') : $('#pipSettings').hide('500');
 						} else if (input.attr('name') === 'EngineDisplayConnectionInfo') {
 							val ? $('#connexionInfoSettings').show('500') : $('#connexionInfoSettings').hide('500');
+						} else if (input.attr('name') === 'EngineFreeUpvotes') {
+							val ? $('#freeUpvotesSettings').show('500') : $('#freeUpvotesSettings').hide('500');
 						}
 					}
 				}
