@@ -1408,10 +1408,13 @@ var settingsNotUpdated;
 			// because storing var as data in html via jquery doesn't affect actual html attributes...
 			var optionAttrList = option.prop('attributes');
 			var attrList = dashboard.prop('attributes');
-			var attrListStr = Object.keys(attrList).map(function(k,v){
-				return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
-			}).join(' ');
-			dashboard.removeAttr(attrListStr);
+			if(attrList) {
+				var attrListStr = Object.keys(attrList).map(function(k,v){
+					return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
+				}).join(' ');
+				dashboard.removeAttr(attrListStr);
+			}
+		
 			
 			$.each(optionAttrList, function() {
 				dashboard.attr(this.name, this.value);
@@ -1499,10 +1502,17 @@ var settingsNotUpdated;
 				barCss.addClass('cssTransform');
 
 				$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
-					$('#karaInfo').attr('idKara', dataKara[0].kara_id);
-					$('#karaInfo').attr('length', dataKara[0].duration);
-					$('#karaInfo > span').text( buildKaraTitle(dataKara[0]) );
-					$('#karaInfo > span').data('text', buildKaraTitle(dataKara[0]) );
+					var kara = dataKara[0];
+					$('#karaInfo').attr('idKara', kara.kara_id);
+					$('#karaInfo').attr('length', kara.duration);
+					$('#karaInfo > span').text( buildKaraTitle(kara) );
+					$('#karaInfo > span').data('text', buildKaraTitle(kara) );
+					
+					if(webappMode === 1) {
+						$('#playlist1').html('<li class="list-group-item"  idKara="' + kara.kara_id + '">' 
+							+ buildKaraDetails(kara, mode))
+							+ '<li>';
+					}
 				});
 			} 
 			if (data.showSubs != oldState.showSubs) {
