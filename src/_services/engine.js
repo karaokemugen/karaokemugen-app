@@ -57,7 +57,16 @@ on('playingUpdated', () => {
 });
 
 on('playerNeedsRestart', () => {
-	internalState.playerNeedsRestart = true;
+	if (state.engine.status == 'stop' && !internalState.playerNeedsRestart) {
+		internalState.playerNeedsRestart = true;
+		logger.info('[Engine] Player will restart in 5 seconds');
+		sleep(5000).then(() => {
+			restartPlayer();
+			internalState.playerNeedsRestart = false;
+		});
+	} else {
+		internalState.playerNeedsRestart = true;	
+	}	
 });
 
 on('modeUpdated', mode => {
@@ -111,6 +120,15 @@ function emitPublicStatus() {
 }
 function emitEngineStatus() {
 	emit('engineStatusChange', state.engine);
+}
+
+async function restartPlayer() {
+	try {
+		await restartmpv();
+		logger.info('[Engine] Player restart complete');
+	} catch(err) {
+		throw err;
+	}
 }
 
 export async function initEngine() {
@@ -296,12 +314,7 @@ async function playerEnding() {
 	if (internalState.playerNeedsRestart) {
 		logger.info('[Engine] Player restarts, please wait');
 		internalState.playerNeedsRestart = false;				
-		try {
-			await restartmpv();
-			logger.info('[Engine] Player restart complete');
-		} catch(err) {
-			throw err;
-		}
+		await restartPlayer();
 	}
 	const conf = getConfig();
 	logger.debug('[Jingles] Songs before next jingle : '+ (conf.EngineJinglesInterval - internalState.counterToJingle));
@@ -591,8 +604,8 @@ export async function editPLC(plc_id, pos, flag_playing, token) {
 	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing, token);	
 }
 
-export function updateSettings(newConfig) {	
-	return mergeConfig(newConfig);				
+export function updateSettings(newConfig) {		
+	return mergeConfig(getConfig(), newConfig);				
 }
 
 export async function editPL(playlist_id, playlist) {

@@ -25,14 +25,13 @@ export function getConfig() {
 	return {...config};
 }
 
-export function mergeConfig(newConfig) {
-	let conf = getConfig();
+export function mergeConfig(oldConfig, newConfig) {
 	// Determine if mpv needs to be restarted
 	for (const setting in newConfig) {
 		if (setting.startsWith('Player') &&
 			setting != 'PlayerFullscreen' &&
 			setting != 'PlayerStayOnTop') {
-			if (conf[setting] != newConfig[setting]) {
+			if (oldConfig[setting] != newConfig[setting]) {
 				emit('playerNeedsRestart');
 				logger.debug('[Config] Setting mpv to restart after next song');
 			}
@@ -40,7 +39,7 @@ export function mergeConfig(newConfig) {
 	}
 	
 	updateConfig(newConfig);	
-	conf = getConfig();
+	const conf = getConfig();
 	// Toggling and updating settings
 	if (conf.EnginePrivateMode === 1) {
 		emit('modeUpdated',0);		
@@ -84,8 +83,9 @@ export async function initConfig(appPath, argv) {
 	const configWatcher = watch(resolve(appPath, 'config.ini'));
 	configWatcher.on('change', () => {
 		logger.debug('[Config] Config file has been changed from the outside world');
+		const oldConf = getConfig();
 		loadConfig(resolve(appPath, 'config.ini')).then(() => {
-			mergeConfig(getConfig());
+			mergeConfig(oldConf, getConfig());
 		});
 	});
 
