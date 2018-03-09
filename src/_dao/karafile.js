@@ -9,7 +9,6 @@ import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {createHash} from 'crypto';
-import {trim} from 'lodash';
 import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from '../_common/utils/ffmpeg';

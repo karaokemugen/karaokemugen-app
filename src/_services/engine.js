@@ -676,7 +676,7 @@ async function testPlaylistVisible(playlist_id, token) {
 export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;			
-		const pl = await plc.getPlaylistContents(playlist_id);
+		const pl = await plc.getPlaylistContents(playlist_id,token);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		if (from == -1) {
