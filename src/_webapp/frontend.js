@@ -8,7 +8,6 @@ const logger = require('winston');
 import i18n from 'i18n';
 import {getConfig} from '../_common/utils/config';
 
-
 export async function initFrontend(port) {
 	const app = express();
 	app.engine('hbs', exphbs({
@@ -19,6 +18,12 @@ export async function initFrontend(port) {
 				var args = Array.prototype.slice.call(arguments);
 				var options = args.pop();						
 				return i18n.__.apply(options.data.root, args);	
+			},
+			if_eq: function(a, b, opts) {
+				if(a == b)
+					return opts.fn(this);
+				else
+					return opts.inverse(this);
 			}
 		}
 	}));
