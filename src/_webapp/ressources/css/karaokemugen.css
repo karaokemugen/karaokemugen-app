@@ -378,7 +378,7 @@ button[name="infoKara"]:before {
 	background-color: #286090;
 }
 
-.list-group-item > div.detailsKara, .lyricsKara {
+.list-group-item > div.detailsKara, .list-group-item.karaCard div.details, .lyricsKara {
 	min-height: 56px;
 	padding: 10px;
 	margin: 0;
@@ -389,19 +389,21 @@ button[name="infoKara"]:before {
 	position: relative;
 }
 
-.detailsKara tr > td:first-child {
+.detailsKara tr > td:first-child, .karaCard .details tr > td:first-child {
 	font-weight: bold;
 	padding-right: 7px;
 }
 
-.detailsKara .time {
+.detailsKara .time, .karaCard .details .time {
 	color: #DDC5EA;
 }
-
+.list-group-item.karaCard div.details {
+	background-color: hsla(166, 22%, 18%, 1)
+}
 .list-group-item .lyricsKara {
 	background-color: #303340;
 	text-align: center;
-	text-transform: capitalize;
+	text-transform: none;
  }
 
 .list-group-item .fullLyrics, .list-group-item .showVideo, .list-group-item .makeFav, button.closeParent  {
@@ -416,9 +418,7 @@ button[name="infoKara"]:before {
 .list-group-item .makeFav  {
 	right: 88px;
 }
-.list-group-item .karaCard .makeFav {
-	right: 10px;
-}
+
 .list-group-item .showVideo  {
 	right: 127px;
 }
@@ -430,6 +430,9 @@ button[name="infoKara"]:before {
 }
 .list-group-item .makeFav.mobile  {
 	right: 62px;
+}
+.list-group-item.karaCard .makeFav {
+	right: 10px;
 }
 .list-group-item .showVideo.mobile  {
 	right: 114px;
