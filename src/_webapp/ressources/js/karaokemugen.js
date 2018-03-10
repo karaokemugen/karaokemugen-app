@@ -1681,6 +1681,7 @@ var settingsNotUpdated;
 			});
 			infoKaraTemp = '<div class="topRightButtons">' + makeFavButtonAdapt + '</div>' + htmlTable;
 			$('.karaCard .details').html(infoKaraTemp);
+			$('.karaCard > div').show();
 		}
 		return infoKaraTemp;
 	};

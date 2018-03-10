@@ -44,12 +44,12 @@ export async function initFrontend(port) {
 	app.use('/admin', routerAdmin);	
 
 	app.get('/', (req, res) => {
-		var conf = getConfig();
+		var config = getConfig();
 			
 		var view = 'public';
-		if(conf.WebappMode === '0') {
+		if(config.WebappMode === '0') {
 			view = 'publicClosed';
-		} else if (conf.WebappMode === '1') {
+		} else if (config.WebappMode === '1') {
 			view = 'publicLimited';
 		}
 		res.render(view, {'layout': 'publicHeader',

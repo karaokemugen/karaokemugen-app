@@ -378,6 +378,10 @@ button[name="infoKara"]:before {
 	background-color: #286090;
 }
 
+.karaCard > div {
+	display: none;
+}
+
 .list-group-item > div.detailsKara, .list-group-item.karaCard div.details, .lyricsKara {
 	min-height: 56px;
 	padding: 10px;
