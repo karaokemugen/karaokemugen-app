@@ -268,6 +268,8 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 							`;
 
 export const getPLCInfoMini = `SELECT pc.fk_id_kara AS kara_id,
+							ak.title AS title,
+							ak.serie AS serie,
 							pc.pseudo_add AS pseudo_add,
 							pc.NORM_pseudo_add AS NORM_pseudo_add,
 						  u.login AS username,
@@ -275,8 +277,9 @@ export const getPLCInfoMini = `SELECT pc.fk_id_kara AS kara_id,
 						  pc.fk_id_playlist AS playlist_id,
 						  (SELECT COUNT(*) 
     								FROM upvote AS up
-    								WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes
-				  FROM playlist_content AS pc				  
+									WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes
+				  FROM karasdb.all_karas AS ak
+				  INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id 
 				  LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user    	
 				  WHERE  pc.pk_id_plcontent = $playlistcontent_id
 					  `;
