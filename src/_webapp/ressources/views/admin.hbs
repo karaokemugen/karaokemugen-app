@@ -283,6 +283,16 @@
                             </select>
                     </div>
                 </div>
+                   <div class="form-group">
+                    <label for="WebappMode" class="col-xs-4 control-label">{{i18n "WEBAPPMODE"}}</label>
+                    <div class="col-xs-6">
+                        <select type="number" class="form-control" name="WebappMode">
+								<option value="0">{{i18n "WEBAPPMODE_CLOSED"}}</option>
+                                <option value="1">{{i18n "WEBAPPMODE_LIMITED"}}</option>
+                                <option value="2">{{i18n "WEBAPPMODE_OPEN"}}</option>
+                            </select>
+                    </div>
+                </div>
                 <div id="pipSettings" class="well well-sm settingsGroupPanel">
                     <div class="form-group">
                         <label for="PlayerPIPSize" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}} (%)</label>

@@ -155,8 +155,8 @@
 	"ENGINEDISPLAYNICKNAME": "Afficher les pseudos",
 	"WEBAPPMODE": "Mode de l'interface publique",
 	"WEBAPPMODE_CLOSED": "Fermé",
-	"WEBAPPMODE_MINIMAL": "Chanson en cours et playlists uniquement",
-	"WEBAPPMODE_FULL": "Ouvert (défaut)",
+	"WEBAPPMODE_LIMITED": "Chanson en cours et playlists uniquement",
+	"WEBAPPMODE_OPEN": "Ouvert (défaut)",
 	"WEBAPPMODE_CLOSED_API_MESSAGE": "Sorrymasen, l'API est désactivée pour le moment.",
 	"ENGINEFREEUPVOTES": "Libération des chansons par vote",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum de votes requis pour libérer une chanson",
@@ -320,5 +320,5 @@
 	"DOWNVOTE_ALREADY_DONE": "Vous avez déjà renié ce karaoké !",
 	"DOWNVOTE_FAILED": "Impossible de renier ce karaoké",
 	"START_FAV_MIX": "Créer un automix",
-	"_": "DO NOT MODIFY"	
+	"_": "DO NOT MODIFY",
 }
