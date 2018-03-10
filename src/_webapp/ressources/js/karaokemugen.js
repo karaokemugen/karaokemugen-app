@@ -1486,7 +1486,7 @@ var settingsNotUpdated;
 					DEBUG && console.log('ERR : Kara status unknown : ' + status);
 				}
 			}
-			if($('input[name="lyrics"]').is(':checked') || mode == 'mobile' && $('#switchInfoBar').hasClass('showLyrics')) {
+			if($('input[name="lyrics"]').is(':checked') || (mode == 'mobile' || webappMode == 1) && $('#switchInfoBar').hasClass('showLyrics')) {
 				var text = data['subText'];
 				/* if(oldState['subText'] != null && text != null && text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) {
                     text.replace(oldState['subText'], "<span style='color:red;'>" + oldState['subText'] + "</span>");
@@ -1509,9 +1509,7 @@ var settingsNotUpdated;
 					$('#karaInfo > span').data('text', buildKaraTitle(kara) );
 					
 					if(webappMode === 1) {
-						$('#playlist1').html('<li class="list-group-item"  idKara="' + kara.kara_id + '">' 
-							+ buildKaraDetails(kara, 'karaCard'))
-							+ '<li>';
+						buildKaraDetails(kara, 'karaCard');
 					}
 				});
 			} 
@@ -1675,14 +1673,10 @@ var settingsNotUpdated;
 				if (typeof data === 'object') {
 					lyrics =  data.join('<br/>');
 				}
-				$('.karaCard').parent().find('.lyricsKara').html(lyrics);
+				$('.karaCard .lyricsKara').html(lyrics);
 			});
-			var lyricsDiv = '<div class="lyricsKara alert alert-info"></div>';
-			infoKaraTemp = '<div class="detailsKara karaCard z-depth-1">'
-			+ htmlTable
-			+ makeFavButtonAdapt
-			+ '</div>'
-			+ lyricsDiv;
+			infoKaraTemp = htmlTable + makeFavButtonAdapt;
+			$('.karaCard .details').html(infoKaraTemp);
 		}
 		return infoKaraTemp;
 	};
