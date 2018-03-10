@@ -191,7 +191,7 @@
 	"GOTO_BOTTOM": "Go to the end of the playlist",
 	"ERROR": "Error",
 	"LOG_ERROR": "Invalid credentials",
-	"LOG_SUCCESS": "Connected as %s",	
+	"LOG_SUCCESS": "Connected as %s",
 	"NO_MORE_GUESTS_AVAILABLE": "No more guest accounts available, please create your own account!",
 	"UNKNOWN_ERROR": "Something wrong happened. Here's the message : ",
 	"UNAUTHORIZED": "Access forbidden. Your role doesn't permit this action",
@@ -303,5 +303,6 @@
 	"DOWNVOTE_ALREADY_DONE": "You already downvoted this !",
 	"DOWNVOTE_FAILED": "Failed to downvote this karaoke",
 	"START_FAV_MIX": "Create an automix",
+	"QUOTA" : "Requests left:",
 	"_": "DO NOT MODIFY"
-} 
+}

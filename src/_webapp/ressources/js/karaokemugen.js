@@ -1987,6 +1987,17 @@ var settingsNotUpdated;
 		}
 	});
 
+	socket.on('songsAvailableUpdated', function(data){
+		if (logInfos.username === data.username) {
+			var quota = data.songsLeft;
+			if (data.songsLeft == -1) {
+				quota = '\u221e';
+			}
+			$('#plQuota').text(i18n.__('QUOTA')+' '+quota);
+			DEBUG && console.log(data.username, data.songsLeft);
+		}
+	});
+
 	socket.on('blacklistUpdated', function(){
 		var idPlaylist = -2;
 		var side = sideOfPlaylist(idPlaylist);

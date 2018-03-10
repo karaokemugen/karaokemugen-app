@@ -2966,6 +2966,8 @@ export async function initAPIServer(listenPort) {
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getKMStats()
 				.then((stats) => {
+					const token = decode(req.get('authorization'), getConfig().JwtSecret);
+					updateSongsLeft(token.username);
 					res.json(OKMessage(stats));
 				})
 				.catch((err) => {
@@ -4260,7 +4262,6 @@ export async function initAPIServer(listenPort) {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			user.findUserByName(token.username, {public:false})
 				.then((userdata) => {
-					updateSongsLeft(username);
 					res.json(OKMessage(userdata));
 				})
 				.catch(function(err){
