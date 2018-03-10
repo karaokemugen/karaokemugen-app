@@ -224,12 +224,12 @@ div.bootstrap-switch-large{
     overflow: hidden;
 }
 
-body.touch:not(.mode1) .playlist-main .list-group-item  {
+body.touch:not(.mode1) .playlist-main .list-group-item:not(.filler)  {
     width: calc(100% - 12px);
     overflow: visible;
 }
 
-body.touch:not(.mode1)  .list-group-item:after { 
+body.touch:not(.mode1)  .list-group-item:not(.filler):after { 
     content:"";
     position: absolute; 
     top:0; 

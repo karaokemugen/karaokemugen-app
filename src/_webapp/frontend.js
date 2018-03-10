@@ -13,6 +13,7 @@ export async function initFrontend(port) {
 	app.engine('hbs', exphbs({
 		layoutsDir: join(__dirname, 'ressources/views/layouts/'), 
 		extname: '.hbs',
+		
 		helpers: {
 			i18n: function() {
 				var args = Array.prototype.slice.call(arguments);
@@ -42,17 +43,18 @@ export async function initFrontend(port) {
 	app.use('/avatars',express.static(resolve(conf.appPath,conf.PathAvatars)));
 	app.use('/admin', routerAdmin);	
 
-	var view = 'public';
-	if(conf.WebappMode === '0') {
-		view = 'publicClosed';
-	} else if (conf.WebappMode === '1') {
-		view = 'publicLimited';
-	}
-
 	app.get('/', (req, res) => {
+		var conf = getConfig();
+			
+		var view = 'public';
+		if(conf.WebappMode === '0') {
+			view = 'publicClosed';
+		} else if (conf.WebappMode === '1') {
+			view = 'publicLimited';
+		}
 		res.render(view, {'layout': 'publicHeader',
-			'clientAdress'	:		'http://'+address(),
-			'WebappMode'	:	conf.WebappMode,
+			'clientAdress'	:	'http://'+address(),
+			'webappMode'	:	conf.WebappMode,
 			'query'			:	JSON.stringify(req.query)
 		});
 	});

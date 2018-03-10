@@ -22,14 +22,14 @@
     
 </head>
 
-<body scope="public" class='mode{{WebappMode}}'>
-	{{{ body }}}
+<body scope="public" class='mode{{webappMode}}'>
+	{{{body}}}
 </body>
     <script>
         var query = {{{query}}};
-        var webappMode = {{WebappMode}};
+        var webappMode = {{webappMode}};
     </script>
-   {{#if_eq WebappMode "0"}}
+   {{#if_eq webappMode "0"}}
 
    {{else}}
         <script src="{{clientAdress}}:1340/socket.io/socket.io.js"></script>
