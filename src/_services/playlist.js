@@ -51,6 +51,13 @@ export async function updateSongsLeft(username,playlist_id) {
 	const conf = getConfig();
 	const user = await findUserByName(username);	
 	let songsLeft;
+	if (!playlist_id) {
+		if (conf.EnginePrivateMode == 1) {
+			playlist_id = await isACurrentPlaylist();				
+		} else {
+			playlist_id = await isAPublicPlaylist();
+		}
+	}			
 	if (user.flag_admin == 0) {
 		const count = await karaDB.getSongCountForUser(playlist_id,username);
 		console.log(count);

@@ -132,7 +132,7 @@ export async function findUserByName(username, opt) {
 			userdata.fingerprint = null;
 			userdata.email = null;
 		}
-		if (userdata.type === 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);
+		if (userdata.type === 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);		
 		return userdata;
 	}
 	return false;	
@@ -188,7 +188,7 @@ export async function addUser(user,role) {
 		throw ret;
 	}	
 	user.nickname = user.login;
-	if (!isEmpty(user.password))	user.password = hashPassword(user.password);
+	if (!isEmpty(user.password)) user.password = hashPassword(user.password);
 	user.last_login = now();
 	user.NORM_nickname = deburr(user.nickname);
 	user.flag_online = 1;

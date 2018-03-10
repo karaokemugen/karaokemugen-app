@@ -9,6 +9,7 @@ import multer from 'multer';
 const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
 const upvote = require('../_services/upvote.js');
+import {updateSongsLeft} from '../_services/playlist.js');
 import {emitWS} from '../_ws/websocket';
 import {decode} from 'jwt-simple';
 import passport from 'passport';
@@ -4259,6 +4260,7 @@ export async function initAPIServer(listenPort) {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			user.findUserByName(token.username, {public:false})
 				.then((userdata) => {
+					updateSongsLeft(username);
 					res.json(OKMessage(userdata));
 				})
 				.catch(function(err){
