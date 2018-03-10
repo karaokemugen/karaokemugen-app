@@ -158,6 +158,7 @@
 	"WEBAPPMODE_LIMITED": "Chanson en cours et playlists uniquement",
 	"WEBAPPMODE_OPEN": "Ouvert (défaut)",
 	"WEBAPPMODE_CLOSED_API_MESSAGE": "Sorrymasen, l'API est désactivée pour le moment.",
+	"WEBAPPMODE_CLOSED_MESSAGE": "Stop ! Nous sommes fermés pour le moment.",
 	"ENGINEFREEUPVOTES": "Libération des chansons par vote",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum de votes requis pour libérer une chanson",
 	"ENGINEFREEUPVOTESREQUIREDPERCENT": "Pourcentage de votes requis pour libérer une chanson",
