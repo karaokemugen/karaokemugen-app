@@ -146,7 +146,7 @@
 	"WEBAPPMODE_LIMITED": "Song information and playlists only",
 	"WEBAPPMODE_OPEN": "Opened (default)",
 	"WEBAPPMODE_CLOSED_API_MESSAGE": "Sorrymasen, API is disabled right now.",
-	"WEBAPPMODE_CLOSED_MESSAGE": "Stop ! We're closed right now.",
+	"WEBAPPMODE_CLOSED_MESSAGE": "Stop! We're closed right now.",
 	"ENGINEFREEUPVOTES": "Allow users to upvote songs to free them",
 	"ENGINEFREEUPVOTESREQUIREDMIN": "Minimum votes required to free a song",
 	"ENGINEFREEUPVOTESREQUIREDPERCENT": "Percentage of upvotes / online users required to to free a song",
