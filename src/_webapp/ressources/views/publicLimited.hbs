@@ -91,6 +91,52 @@
         </div>
     </div>
 </div>
+
+<div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "LOGIN"}}</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {{i18n "NEW_ACCOUNT"}}</a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
+                    <div class="modal-message">
+                        <button class="btn btn-default guest">
+                             {{i18n "GUEST_CONTINUE"}}
+                        </button>
+                    </div>
+                    <div>
+                     {{i18n "OR"}}
+                    </div>
+                    <div class="modal-message">
+                            <input type="text" class="form-control" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="password" class="form-control" id="password" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
+                    </div>
+                    <div></div>
+                    <div>
+                        <button type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                            <i class="glyphicon glyphicon-ok"></i>
+                        </button>
+                    </div>
+                </div>
+                <div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
+                    <div class="">
+                            <input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
+                            <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
+                    </div>
+                    <div>
+                        <button id="signup" type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                             {{i18n "SIGN_UP"}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
  <div class="popup" id="settingsPublic" hidden>
     <span id="settingsPublicTitle">  {{i18n "CL_HELP"}} </span>
     <span id="settingsPublicContent">
