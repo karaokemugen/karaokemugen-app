@@ -800,7 +800,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 }
 
 export async function copyKaraToPL(plc_id, playlist_id, pos) {
-	logger.debug(`[Engine] Copying karaokes to playlist ${playlist_id} : ${plcs}`);
+	logger.debug(`[Engine] Copying karaokes to playlist ${playlist_id} : ${plc_id}`);
 	const plcs = plc_id.split(',');
 	try {
 		await plc.copyKaraToPlaylist(plcs, playlist_id, pos);
