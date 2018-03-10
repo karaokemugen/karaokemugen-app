@@ -1654,17 +1654,21 @@ var settingsNotUpdated;
 		
 		if (htmlMode == 'list') {
 			infoKaraTemp = '<div class="detailsKara alert alert-info">'
+				+ '<div class="topRightButtons">'
 				+ (isTouchScreen ? '' : closeButton)
-				+ (data['previewfile'] ? showVideoButton : '')
 				+ makeFavButtonAdapt
 				+ showFullTextButton
+				+ (data['previewfile'] ? showVideoButton : '')
+				+ '</div>'
 				+ htmlTable
 				+ '</div>';
 		} else if (htmlMode == 'mobile') {
 			infoKaraTemp = '<div class="detailsKara z-depth-1">'
-				+ (data['previewfile'] ? showVideoButton : '')
+				+ '<div class="topRightButtons">'
 				+ makeFavButtonAdapt
 				+ showFullTextButton
+				+ (data['previewfile'] ? showVideoButton : '')
+				+ '</div>'
 				+ htmlTable
 				+ '</div>';
 		} else if (htmlMode == 'karaCard') {
@@ -1675,7 +1679,7 @@ var settingsNotUpdated;
 				}
 				$('.karaCard .lyricsKara').html(lyrics);
 			});
-			infoKaraTemp = htmlTable + makeFavButtonAdapt;
+			infoKaraTemp = '<div class="topRightButtons">' + makeFavButtonAdapt + '</div>' + htmlTable;
 			$('.karaCard .details').html(infoKaraTemp);
 		}
 		return infoKaraTemp;
