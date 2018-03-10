@@ -3561,7 +3561,7 @@ export async function initAPIServer(listenPort) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			engine.getKaraInfo(req.params.kara_id,req.query.lang,token)
 				.then((kara) => {	

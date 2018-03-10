@@ -1510,7 +1510,7 @@ var settingsNotUpdated;
 					
 					if(webappMode === 1) {
 						$('#playlist1').html('<li class="list-group-item"  idKara="' + kara.kara_id + '">' 
-							+ buildKaraDetails(kara, mode))
+							+ buildKaraDetails(kara, 'karaCard'))
 							+ '<li>';
 					}
 				});
@@ -1651,7 +1651,7 @@ var settingsNotUpdated;
 			} else return '';
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
-		infoKaraTemp = 'no mode specified';
+		var infoKaraTemp = 'no mode specified';
 		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButton.replace('makeFav','makeFav currentFav') : makeFavButton;
 		
 		if (htmlMode == 'list') {
@@ -1669,6 +1669,20 @@ var settingsNotUpdated;
 				+ showFullTextButton
 				+ htmlTable
 				+ '</div>';
+		} else if (htmlMode == 'karaCard') {
+			$.ajax({ url: 'public/karas/' + data.kara_id + '/lyrics' }).done(function (data) {
+				var lyrics = i18n.__('NOLYRICS');
+				if (typeof data === 'object') {
+					lyrics =  data.join('<br/>');
+				}
+				$('.karaCard').parent().find('.lyricsKara').html(lyrics);
+			});
+			var lyricsDiv = '<div class="lyricsKara alert alert-info"></div>';
+			infoKaraTemp = '<div class="detailsKara karaCard z-depth-1">'
+			+ htmlTable
+			+ makeFavButtonAdapt
+			+ '</div>'
+			+ lyricsDiv;
 		}
 		return infoKaraTemp;
 	};

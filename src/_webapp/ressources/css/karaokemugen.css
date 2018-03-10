@@ -409,11 +409,15 @@ button[name="infoKara"]:before {
 	top: 10px;
 	right: 10px;
 }
+
 .list-group-item .fullLyrics  {
 	right: 49px;
 }
 .list-group-item .makeFav  {
 	right: 88px;
+}
+.list-group-item .karaCard .makeFav {
+	right: 10px;
 }
 .list-group-item .showVideo  {
 	right: 127px;
