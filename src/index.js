@@ -10,7 +10,6 @@ import i18n from 'i18n';
 import net from 'net';
 import logger from 'winston';
 import {exit, initEngine} from './_services/engine';
-import resolveSysPath from './_common/utils/resolveSyspath';
 import {karaGenerationBatch} from './_admin/generate_karasfiles';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
@@ -25,9 +24,9 @@ process.on('unhandledRejection', (reason, p) => {
 const argv = parseArgs();
 let appPath;
 if (process.pkg) {
-	appPath = resolveSysPath(undefined,process.execPath,'../');
+	appPath = join(process.execPath,'../');
 } else {
-	appPath = resolveSysPath('config.ini.sample',__dirname,['./','../']);
+	appPath = join(__dirname,'../');
 }
 if (appPath) {
 	main()
