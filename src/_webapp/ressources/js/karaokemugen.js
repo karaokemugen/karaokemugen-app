@@ -1348,6 +1348,10 @@ var settingsNotUpdated;
 				if(scope === 'public') {
 					select1.val(val1? val1 : panel1Default);
 					select2.val(val2? val2 : playlistToAddId);
+					if (webappMode == 1) {
+						var currentPlaylistId = select2.find('option[data-flag_current="1"]').attr('value');
+						select2.val(currentPlaylistId);
+					}
 				} else {
 					var plVal1Cookie = readCookie('plVal1');
 					var plVal2Cookie = readCookie('plVal2');
