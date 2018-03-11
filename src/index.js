@@ -15,6 +15,7 @@ import {karaGenerationBatch} from './_admin/generate_karasfiles';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
 
+
 process.on('uncaughtException', function (exception) {
 	console.log(exception); 
 });
@@ -67,6 +68,11 @@ async function main() {
 	if (argv.validate && argv.generate) {
 		console.log('Error : --validate and --generate are mutually exclusive!');
 		process.exit(1);
+	}
+	if (argv.updateBase) {
+		logger.info('[Launcher] Base update requested');
+		setConfig({optBaseUpdate: true});
+		setConfig({optGenerateDB: true});
 	}
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 

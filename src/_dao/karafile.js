@@ -8,9 +8,7 @@ import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {createHash} from 'crypto';
-import {trim} from 'lodash';
-import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
+import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
@@ -150,10 +148,4 @@ async function findSubFile(videoFile, kara) {
 	}
 	// Non-blocking case if file isn't found
 	return '';
-}
-
-function checksum(str, algorithm, encoding) {
-	return createHash(algorithm || 'md5')
-		.update(str, 'utf8')
-		.digest(encoding || 'hex');
 }

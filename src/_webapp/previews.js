@@ -47,7 +47,8 @@ export async function cleanUpPreviewsFolder(config) {
 	// If not then delete preview file
 	for (const previewfile of previewfiles) {
 		let deletePreview = true;
-		const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);		const size = previewparts[2];				
+		const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);		
+		const size = previewparts[2];				
 		const previewfileWOExt = basename(previewparts[1]);
 		for (const videofile of videofiles) {
 			const videofileWOExt = basename(videofile, extname(videofile));

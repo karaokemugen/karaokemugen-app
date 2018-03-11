@@ -7,6 +7,7 @@ import {videoFileRegexp, imageFileRegexp} from '../../_services/constants';
 import fileType from 'file-type';
 import readChunk from 'read-chunk';
 import {getConfig} from './config';
+import {createHash} from 'crypto';
 
 /** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
@@ -105,4 +106,57 @@ export function isImageFile(filename) {
 /** Replacing extension in filename */
 export function replaceExt(filename, newExt) {
 	return filename.replace(/\.[^.]+$/, newExt);
+}
+
+export function checksum(str, algorithm, encoding) {
+	return createHash(algorithm || 'md5')
+		.update(str, 'utf8')
+		.digest(encoding || 'hex');
+}
+
+export async function compareFiles(file1, file2) {	
+	if (!await asyncExists(file1) || !await asyncExists(file2)) return false;
+	const [file1data, file2data] = await Promise.all([
+		asyncReadFile(file1, 'utf-8'),
+		asyncReadFile(file2, 'utf-8')
+	]);
+	if (file1data == file2data) return true;
+	return false;
+}
+
+async function compareAllFiles(files, dir1, dir2) {
+	let updatedFiles = [];
+	for (const file of files) {
+		if (!await compareFiles(resolve(dir1, file), resolve(dir2, file))) updatedFiles.push(file);
+	}
+	return updatedFiles;
+}
+
+export async function compareDirs(dir1, dir2) {
+	let newFiles = [];
+	let removedFiles = [];
+	let commonFiles = [];
+	const [dir1List, dir2List] = await Promise.all([
+		asyncReadDir(dir1),
+		asyncReadDir(dir2)
+	]);
+	for (const file of dir2List) {
+		if (!dir1List.includes(file)) {
+			newFiles.push(file);
+		} else {
+			commonFiles.push(file);
+		}
+	}
+	for (const file of dir1List) {
+		if (!dir2List.includes(file)) {
+			removedFiles.push(file);
+		}
+	}
+	const updatedFiles = await compareAllFiles(commonFiles, dir1, dir2);
+	return {
+		updatedFiles: updatedFiles,
+		commonFiles: commonFiles,
+		removedFiles: removedFiles,
+		newFiles: newFiles
+	};
 }
