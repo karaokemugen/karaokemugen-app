@@ -53,7 +53,6 @@ export async function updateSongsLeft(username,playlist_id) {
 	let songsLeft;
 	if (user.flag_admin == 0) {
 		const count = await karaDB.getSongCountForUser(playlist_id,username);
-		console.log(count);
 		songsLeft = conf.EngineSongsPerUser - count.count;
 	} else {
 		songsLeft = -1;
