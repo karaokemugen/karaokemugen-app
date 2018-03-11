@@ -108,6 +108,7 @@ deploy_win:
 
 latest-tag:
   stage: deploy
+  script:
     - echo $CI_COMMIT_REF_NAME >latest
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put latest"
   only: 
