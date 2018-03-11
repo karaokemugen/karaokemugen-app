@@ -18,7 +18,6 @@ import {getKara} from '../_services/kara';
  * karaoke file is created, and subtitle files are moved to their own directories.
  */
 export async function karaGenerationBatch() {
-
 	const importFiles = await asyncReadDir(resolvedPathImport());
 	const importPromises = filterVideos(importFiles).map(videoFile => importVideoFile(videoFile));
 	await Promise.all(importPromises);
