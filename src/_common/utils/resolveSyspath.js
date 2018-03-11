@@ -5,10 +5,8 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = function(testfile, callerDirname, paths){
-
 	if(!testfile) {
-		console.log('utils/resolveSyspath Fail : Unable to locate Syspath without target test file');
-		return false;
+		return path.join(callerDirname,paths);
 	}
 
 	callerDirname = callerDirname ? callerDirname : __dirname;

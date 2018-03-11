@@ -16,15 +16,19 @@ import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
 
 process.on('uncaughtException', function (exception) {
-	console.log(exception); 
+	console.log(exception);
 });
 
 process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);	
+	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
-
 const argv = parseArgs();
-const appPath = resolveSysPath('config.ini.sample',__dirname,['./','../']);
+let appPath;
+if (process.pkg) {
+	appPath = resolveSysPath(undefined,process.execPath,'../');
+} else {
+	appPath = resolveSysPath('config.ini.sample',__dirname,['./','../']);
+}
 if (appPath) {
 	main()
 		.catch(err => {
@@ -110,7 +114,7 @@ async function main() {
 
 	/**
 	 * Calling engine.
-	 */		
+	 */
 	initEngine();
 }
 
@@ -127,7 +131,7 @@ function parseArgs() {
 }
 
 /**
- * Checking if application paths exist. 
+ * Checking if application paths exist.
  */
 async function checkPaths(config) {
 
