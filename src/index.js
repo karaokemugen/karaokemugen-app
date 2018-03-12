@@ -74,6 +74,10 @@ async function main() {
 		setConfig({optBaseUpdate: true});
 		setConfig({optGenerateDB: true});
 	}
+	if (argv.test) {
+		logger.info('[Launcher] KARAOKE MUGEN RUNNING IN TEST MODE. DO NOT USE IT IN PRODUCTION');
+		setConfig({isTest: true});
+	}
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
 	// Checking binaries
