@@ -1,7 +1,7 @@
 import download from 'download';
 import {basename, resolve} from 'path';
 import {getConfig} from '../_common/utils/config';
-import {asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
+import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
 import decompress from 'decompress';
 import FTP from 'basic-ftp';
 import logger from 'winston';
@@ -122,12 +122,12 @@ async function compareVideos(localFiles, remoteFiles) {
 	} else {
 		logger.info('[Updater] No new videos to download');
 	}
-	
 }
 
 async function ftpClose(ftp) {
 	return await ftp.close();
 }
+
 async function ftpConnect(ftp) {		
 	await ftp.connect(shelter.host, 21);
 	await ftp.login(shelter.user, shelter.password);
@@ -161,7 +161,7 @@ async function listLocalVideos() {
 	return localVideos;
 }
 
-export async function removeFiles(files, dir) {
+async function removeFiles(files, dir) {
 	if (files.length == 0) return true;
 	for (const file of files) {		
 		await asyncUnlink(resolve(dir, file));
@@ -169,7 +169,7 @@ export async function removeFiles(files, dir) {
 	}
 }
 
-export async function updateFiles(files, dirSource, dirDest) {
+async function updateFiles(files, dirSource, dirDest) {
 	if (files.length == 0) return true;
 	for (const file of files) {		
 		await copy(resolve(dirSource, file), resolve(dirDest, file), {overwrite: true});
@@ -177,15 +177,27 @@ export async function updateFiles(files, dirSource, dirDest) {
 	}
 }
 
+async function checkDirs() {
+	const conf = getConfig();
+	const karaPaths = conf.pathKaras.split('|');
+	const karaPath = karaPaths[0];	
+	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) throw 'Your base folder is a git repository. We cannot update it, please run "git pull" to get updates';
+}
+
 export async function runBaseUpdate() {
-	const [base, remoteVideos, localVideos] = await Promise.all([
-		downloadBase(),
-		listRemoteVideos(),
-		listLocalVideos()
-	]);
-	const archiveName = await decompressBase();
-	await Promise.all([
-		compareBases(archiveName),
-		compareVideos(localVideos, remoteVideos)
-	]);
+	try {
+		await checkDirs();
+		const [base, remoteVideos, localVideos] = await Promise.all([
+			downloadBase(),
+			listRemoteVideos(),
+			listLocalVideos()
+		]);
+		const archiveName = await decompressBase();
+		await Promise.all([
+			compareBases(archiveName),
+			compareVideos(localVideos, remoteVideos)
+		]);
+	} catch (err) {
+		throw err;
+	}	
 }
