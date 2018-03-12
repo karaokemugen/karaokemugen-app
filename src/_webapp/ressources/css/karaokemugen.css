@@ -300,6 +300,7 @@ button[name="transferKara"]:before {
 button[name="infoKara"]:before {
 	content:"\e086";
 }
+
 #panel2 .actionDiv > button[name="transferKara"]:before {
 	content:"\e091";
 }
@@ -316,12 +317,23 @@ button[name="infoKara"]:before {
 	content:"\e009";
 }
 .makeFav:before {
+	content:"\e007";
+}
+
+.makeFav.currentFav:before {
+	content:"\e006";
+    color: firebrick;
+}
+
+.likeKara:before {
 	content:"\e143";
 }
-.makeFav.currentFav:before {
+
+.likeKara.currentLike:before {
 	content:"\e005";
     color: firebrick;
 }
+
 .playKara:before {
 	content:"\e072";
 }
@@ -378,7 +390,11 @@ button[name="infoKara"]:before {
 	background-color: #286090;
 }
 
-.list-group-item > div.detailsKara, .lyricsKara {
+.karaCard > div {
+	display: none;
+}
+
+.list-group-item > div.detailsKara, .list-group-item.karaCard div.details, .lyricsKara {
 	min-height: 56px;
 	padding: 10px;
 	margin: 0;
@@ -389,52 +405,53 @@ button[name="infoKara"]:before {
 	position: relative;
 }
 
-.detailsKara tr > td:first-child {
+.detailsKara tr > td:first-child, .karaCard .details tr > td:first-child {
 	font-weight: bold;
 	padding-right: 7px;
 }
 
-.detailsKara .time {
+.detailsKara .time, .karaCard .details .time {
 	color: #DDC5EA;
 }
-
+.list-group-item.karaCard div.details {
+	background-color: hsla(166, 22%, 18%, 1)
+}
 .list-group-item .lyricsKara {
 	background-color: #303340;
 	text-align: center;
-	text-transform: capitalize;
+	text-transform: none;
  }
 
-.list-group-item .fullLyrics, .list-group-item .showVideo, .list-group-item .makeFav, button.closeParent  {
+.detailsKara .topRightButtons, .karaCard .details .topRightButtons, .lyricsKara button.closeParent  {
 	position: absolute;
 	top: 10px;
 	right: 10px;
 }
-.list-group-item .fullLyrics  {
-	right: 49px;
+.detailsKara .topRightButtons {
+	height: calc(100% - 20px);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap-reverse;
 }
-.list-group-item .makeFav  {
-	right: 88px;
+.topRightButtons button {
+	margin: 3px;
 }
-.list-group-item .showVideo  {
-	right: 127px;
+.topRightButtons button.mobile {
+	margin: 5px;
+	height: 42px;
+	width: 42px;
 }
-.list-group-item .fullLyrics.mobile, .list-group-item .makeFav.mobile, .list-group-item .showVideo.mobile {
-	right: 10px;
-	border-color: transparent;
-	background-color: hsla(0, 0%, 32%, 0.87);
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.10), 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.1);
-}
-.list-group-item .makeFav.mobile  {
-	right: 62px;
-}
-.list-group-item .showVideo.mobile  {
-	right: 114px;
-}
-
 button.closeParent.bottom  {
 	bottom: 10px;
 	top: auto;
 }
+.list-group-item .fullLyrics.mobile, .list-group-item .makeFav.mobile, .list-group-item .showVideo.mobile {
+	border-color: transparent;
+	background-color: hsla(0, 0%, 32%, 0.87);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.10), 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.1);
+}
+
+
 .list-group-item > .contentDiv {
 	padding: 3px 7px;
 	overflow: auto;

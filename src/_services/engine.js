@@ -17,6 +17,7 @@ import {now} from 'unix-timestamp';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
 import {isEmpty, cloneDeep, sample} from 'lodash';
+import {runBaseUpdate} from '../_updater/karabase_updater.js';
 
 const plc = require('./playlist');
 const logger = require('winston');
@@ -147,6 +148,10 @@ export async function initEngine() {
 			logger.error(`[Engine] Validation failed : ${err}`);
 			process.exit(1);
 		}		
+	}
+	if (conf.optBaseUpdate) {		
+		await runBaseUpdate();	
+		logger.info('[Updater] Done updating everything');
 	}
 	//Database system is the foundation of every other <system className=""></system>
 	await initDBSystem();
@@ -689,7 +694,7 @@ async function testPlaylistVisible(playlist_id, token) {
 export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;			
-		const pl = await plc.getPlaylistContents(playlist_id);
+		const pl = await plc.getPlaylistContents(playlist_id,token);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		if (from == -1) {
