@@ -1,5 +1,3 @@
-
-
 const logger = require('winston');
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
 import {resolve, join} from 'path';

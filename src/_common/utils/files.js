@@ -74,6 +74,11 @@ export async function asyncCheckOrMkdir(...dir) {
 	}
 }
 
+export async function isGitRepo(dir) {
+	const dirContents = await asyncReadDir(dir);
+	return dirContents.includes('.git');
+}
+
 /**
  * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
  */

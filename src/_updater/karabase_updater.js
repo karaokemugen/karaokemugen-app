@@ -1,12 +1,14 @@
 import download from 'download';
 import {basename, resolve} from 'path';
 import {getConfig} from '../_common/utils/config';
-import {asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
+import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
 import decompress from 'decompress';
 import FTP from 'basic-ftp';
 import logger from 'winston';
 import {copy} from 'fs-extra';
 import {createWriteStream} from 'fs';
+import prettyBytes from 'pretty-bytes';
+import _cliProgress from 'cli-progress';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
@@ -96,12 +98,18 @@ async function compareVideos(localFiles, remoteFiles) {
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
 			if (localFile.name == remoteFile.name) {
-				if (localFile.size != remoteFile.size) updatedFiles.push(localFile.name);
+				if (localFile.size != remoteFile.size) updatedFiles.push({
+					name: localFile.name,
+					size: localFile.size
+				});
 				return true;
 			}
 			return false;			
 		});
-		if (!filePresent) addedFiles.push(remoteFile.name);
+		if (!filePresent) addedFiles.push({
+			name: remoteFile.name,
+			size: remoteFile.size
+		});
 	}
 	for (const localFile of localFiles) {
 		const filePresent = remoteFiles.some(remoteFile => {
@@ -116,31 +124,42 @@ async function compareVideos(localFiles, remoteFiles) {
 	await ftpConnect(ftp);
 	if (removedFiles.length > 0) await removeFiles(removedFiles, VideosPath);	
 	if (filesToDownload.length > 0) {
-		logger.info('[Updater] Downloading new and updated videos');	
-		await downloadVideos(ftp, filesToDownload, VideosPath);
+		filesToDownload.sort((a,b) => {
+			return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
+		});
+		let bytesToDownload;
+		for (const file of filesToDownload) {
+			bytesToDownload = bytesToDownload + file.size;
+		}
+		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated videos (size : ${prettyBytes(bytesToDownload)})`);		
+		await downloadVideos(ftp, filesToDownload, VideosPath, bytesToDownload);
 		logger.info('[Updater] Done updating videos');
 	} else {
 		logger.info('[Updater] No new videos to download');
 	}
-	
 }
 
 async function ftpClose(ftp) {
 	return await ftp.close();
 }
+
 async function ftpConnect(ftp) {		
 	await ftp.connect(shelter.host, 21);
 	await ftp.login(shelter.user, shelter.password);
 	await ftp.useDefaultSettings;	
 }
 
-async function downloadVideos(ftp, files, VideosPath) {
+async function downloadVideos(ftp, files, VideosPath, totalBytes) {
 	const conf = getConfig();
+	const bar1 = new _cliProgress.Bar({}, _cliProgress.Presets.shades_classic);
+	bar1.start(totalBytes, 0);
 	for (const file of files) {
 		logger.info('[Updater] Downloading '+file);
 		const outputFile = resolve(conf.appPath, VideosPath, file);
-		await ftp.download(createWriteStream(outputFile), file);		
+		await ftp.download(createWriteStream(outputFile), file);
+		bar1.increment(file.size);
 	}
+	bar1.stop();
 }
 
 
@@ -161,7 +180,7 @@ async function listLocalVideos() {
 	return localVideos;
 }
 
-export async function removeFiles(files, dir) {
+async function removeFiles(files, dir) {
 	if (files.length == 0) return true;
 	for (const file of files) {		
 		await asyncUnlink(resolve(dir, file));
@@ -169,7 +188,7 @@ export async function removeFiles(files, dir) {
 	}
 }
 
-export async function updateFiles(files, dirSource, dirDest) {
+async function updateFiles(files, dirSource, dirDest) {
 	if (files.length == 0) return true;
 	for (const file of files) {		
 		await copy(resolve(dirSource, file), resolve(dirDest, file), {overwrite: true});
@@ -177,15 +196,27 @@ export async function updateFiles(files, dirSource, dirDest) {
 	}
 }
 
+async function checkDirs() {
+	const conf = getConfig();
+	const karaPaths = conf.pathKaras.split('|');
+	const karaPath = karaPaths[0];	
+	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) throw 'Your base folder is a git repository. We cannot update it, please run "git pull" to get updates';
+}
+
 export async function runBaseUpdate() {
-	const [base, remoteVideos, localVideos] = await Promise.all([
-		downloadBase(),
-		listRemoteVideos(),
-		listLocalVideos()
-	]);
-	const archiveName = await decompressBase();
-	await Promise.all([
-		compareBases(archiveName),
-		compareVideos(localVideos, remoteVideos)
-	]);
+	try {
+		await checkDirs();
+		const [base, remoteVideos, localVideos] = await Promise.all([
+			downloadBase(),
+			listRemoteVideos(),
+			listLocalVideos()
+		]);
+		const archiveName = await decompressBase();
+		await Promise.all([
+			compareBases(archiveName),
+			compareVideos(localVideos, remoteVideos)
+		]);
+	} catch (err) {
+		throw err;
+	}	
 }

@@ -135,7 +135,11 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
 										(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     									THEN 1
         									ELSE 0
-      									END) AS flag_dejavu,
+										  END) AS flag_dejavu,
+										  (SELECT COUNT(*) 
+    								FROM upvote AS up
+    								WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
+									EXISTS(SELECT fk_id_plcontent FROM upvote, user as u2 WHERE fk_id_plcontent  = pc.pk_id_plcontent AND fk_id_user = u2.pk_id_user AND u2.login = $username) AS flag_upvoted,
 										(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
 									FROM karasdb.all_karas AS ak 
 									INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
@@ -146,7 +150,7 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
 									ORDER BY pc.pos,pc.created_at DESC;
 									`;
 
-export const getPlaylistContentsForPlayer = `SELECT ak.kara_id AS kara_id,
+export const getPlaylistContentsMini = `SELECT ak.kara_id AS kara_id,
       												ak.title AS title,
       												ak.songorder AS songorder,
       												ak.serie AS serie,
@@ -154,14 +158,17 @@ export const getPlaylistContentsForPlayer = `SELECT ak.kara_id AS kara_id,
 	  												ak.singer AS singer,
       												ak.gain AS gain,
       												pc.pseudo_add AS pseudo_add,
+													pc.created_at AS created_at,
       												ak.videofile AS videofile,
 	  												pc.pos AS pos,
 													pc.flag_playing AS flag_playing,
 													pc.pk_id_plcontent AS 			playlistcontent_id,
 													ak.kid AS kid,
-													pc.fk_id_user AS user_id
+													pc.fk_id_user AS user_id,
+													u.login AS username
 											FROM karasdb.all_karas AS ak 
 											INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
+											LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
 											WHERE pc.fk_id_playlist = $playlist_id
 											ORDER BY pc.pos;
 											`;
@@ -249,6 +256,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 								(SELECT COUNT(*) 
     								FROM upvote AS up
     								WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
+								EXISTS(SELECT fk_id_plcontent FROM upvote, user as u2 WHERE fk_id_plcontent  = pc.pk_id_plcontent AND fk_id_user = u2.pk_id_user AND u2.login = $username) AS flag_upvoted,
 								(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
 						FROM karasdb.all_karas AS ak
 						INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
