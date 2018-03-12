@@ -254,7 +254,6 @@
 	"MESSAGE_SENT": "Message envoyé",
 	"COMMAND_SEND_ERROR": "Impossible d'envoyer la commande",
 	"COMMAND_SENT": "Commande %s envoyée",
-	"PLAYER_STATUS_ERROR": "Impossible d'afficher l'état du lecteur",
 	"SONG_LIST_ERROR": "Impossible d'afficher la liste des karaokés",
 	"GET_LUCKY_ERROR": "Impossible de sélectionner un karaoké au hasard",
 	"GET_UNLUCKY": "Aucune chanson ne peut être ajoutée. Sont-elles déjà toutes en liste de lecture ?",

@@ -7,7 +7,7 @@ export const requireWebappLimitedNoAuth = (req, res, next) => {
 	} else {
 		res.status(503).send('API is in restricted mode');
 	}
-}
+};
 
 export const requireWebappLimited = (req, res, next) => {	
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);		
