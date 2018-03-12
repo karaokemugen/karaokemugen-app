@@ -93,13 +93,13 @@ deploy_win:
     - tar xvzf dist_win.tar.gz
     - rm dist_win.tar.gz
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
-    - cp -f ../config.ini.default .
+    - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
     - mkdir -p /shelter/_Windows-$CI_COMMIT_REF_NAME
     - cp -f ../bin/karaokemugen-app.exe /shelter/_Windows-$CI_COMMIT_REF_NAME/KaraokeMugen.exe
-    - cp -f ../config.ini.default /shelter/_Windows-$CI_COMMIT_REF_NAME/
-    - sed -e 's/app\//..\/app\//g' -i /shelter/_Windows-$CI_COMMIT_REF_NAME/config.ini.default
+    - cp -f ../config.ini.sample /shelter/_Windows-$CI_COMMIT_REF_NAME/
+    - sed -e 's/app\//..\/app\//g' -i /shelter/_Windows-$CI_COMMIT_REF_NAME/config.ini.sample
     - cp -f *.node /shelter/_Windows-$CI_COMMIT_REF_NAME/
   only:
     - master
@@ -125,14 +125,14 @@ deploy_osx:
     - tar xvzf dist_macos.tar.gz
     - rm dist_macos.tar.gz
     - cp -f ../bin/karaokemugen-app KaraokeMugen
-    - cp -f ../config.ini.default .
+    - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"
     - mkdir -p /shelter/_macOS-$CI_COMMIT_REF_NAME
     - cp -f ../bin/karaokemugen-app /shelter/_macOS-$CI_COMMIT_REF_NAME/    
-    - cp -f ../config.ini.default /shelter/_macOS-$CI_COMMIT_REF_NAME/
-    - sed -e 's/app\//..\/app\//g' -i /shelter/_macOS-$CI_COMMIT_REF_NAME/config.ini.default
-    - sed -e 's/mpv...\/app/mpv.app/g' -i /shelter/_macOS-$CI_COMMIT_REF_NAME/config.ini.default
+    - cp -f ../config.ini.sample /shelter/_macOS-$CI_COMMIT_REF_NAME/
+    - sed -e 's/app\//..\/app\//g' -i /shelter/_macOS-$CI_COMMIT_REF_NAME/config.ini.sample
+    - sed -e 's/mpv...\/app/mpv.app/g' -i /shelter/_macOS-$CI_COMMIT_REF_NAME/config.ini.sample
     - cp -f *.node /shelter/_macOS-$CI_COMMIT_REF_NAME/
   only:
     - master
