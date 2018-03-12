@@ -16,7 +16,7 @@ import {defaults} from './default_settings.js';
 
 /** Object containing all config */
 let config = {};
-let defaultConfig = {};
+
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
@@ -170,7 +170,7 @@ export async function updateConfig(newConfig) {
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))
-			&& (newConfig[k] != defaultConfig[k])
+			&& (newConfig[k] != defaults[k])
             && (filteredConfig[k] = v);
 	});
 	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
