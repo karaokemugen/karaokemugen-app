@@ -1442,7 +1442,6 @@ var settingsNotUpdated;
 			// because storing var as data in html via jquery doesn't affect actual html attributes...
 			var optionAttrList = option.prop('attributes');
 			var attrList = dashboard.prop('attributes');
-<<<<<<< HEAD
 			if(attrList) {
 				var attrListStr = Object.keys(attrList).map(function(k,v){
 					return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
@@ -1451,13 +1450,6 @@ var settingsNotUpdated;
 			}
 		
 			
-=======
-			var attrListStr = Object.keys(attrList).map(function(k,v){
-				return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
-			}).join(' ');
-			dashboard.removeAttr(attrListStr);
-
->>>>>>> 167-mode-public-permettre-de-like-une-suggestion
 			$.each(optionAttrList, function() {
 				dashboard.attr(this.name, this.value);
 			});
