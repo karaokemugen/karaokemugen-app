@@ -1,5 +1,5 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
-import {mergeConfig, getConfig} from '../_common/utils/config';
+import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
 import {initUserSystem, findUserByName, findUserByID} from '../_services/user';
 import {initDBSystem, getStats} from '../_dao/database';
 import {initAPIServer} from '../_apiserver/api';
@@ -150,8 +150,9 @@ export async function initEngine() {
 		}		
 	}
 	if (conf.optBaseUpdate) {		
-		await runBaseUpdate();	
-		logger.info('[Updater] Done updating everything');
+		if (!await runBaseUpdate()) setConfig({optGenerateDB: true});
+		logger.info('[Updater] Done updating karaokes');
+		
 	}
 	//Database system is the foundation of every other <system className=""></system>
 	await initDBSystem();

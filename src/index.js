@@ -75,7 +75,6 @@ async function main() {
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');
 		setConfig({optBaseUpdate: true});
-		setConfig({optGenerateDB: true});
 	}
 	if (argv.test) {
 		logger.info('[Launcher] KARAOKE MUGEN RUNNING IN TEST MODE. DO NOT USE IT IN PRODUCTION');

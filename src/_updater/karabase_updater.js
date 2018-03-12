@@ -8,7 +8,7 @@ import logger from 'winston';
 import {copy} from 'fs-extra';
 import {createWriteStream} from 'fs';
 import prettyBytes from 'pretty-bytes';
-import _cliProgress from 'cli-progress';
+//import _cliProgress from 'cli-progress';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
@@ -51,7 +51,8 @@ async function listRemoteVideos() {
 	return list.filter(file => file.name.length > 2);
 }
 
-async function compareBases(archive) {
+async function compareBases() {
+	const archive = await decompressBase();
 	const conf = getConfig();
 	const archiveWOExt = basename(archive, '.zip');
 	const pathSubs = conf.PathSubs.split('|');
@@ -75,16 +76,27 @@ async function compareBases(archive) {
 		compareDirs(karasMinePath, karasBasePath),
 		compareDirs(lyricsMinePath, lyricsBasePath)
 	]);
-	logger.info('[Updater] Updating base files');
-	await Promise.all([
-		updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath),
-		updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath),
-		updateFiles(lyricsToUpdate.updatedFiles, lyricsBasePath, lyricsMinePath),
-		updateFiles(karasToUpdate.updatedFiles, karasBasePath, karasMinePath),
-		removeFiles(karasToUpdate.removedFiles, karasMinePath),
-		removeFiles(lyricsToUpdate.removedFiles, lyricsMinePath)
-	]);	
-	logger.info('[Updater] Done updating base files');
+	if (lyricsToUpdate.newFiles.length == 0 &&
+		lyricsToUpdate.updatedFiles.length == 0 &&
+		lyricsToUpdate.removedFiles.length == 0 &&
+		karasToUpdate.newFiles.length == 0 &&
+		karasToUpdate.removedFiles.length == 0 &&
+		karasToUpdate.updatedFiles.length == 0) {
+		logger.info('[Updater] No update for your base');
+		return false;
+	} else {
+		logger.info('[Updater] Updating base files');
+		await Promise.all([
+			updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath),
+			updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath),
+			updateFiles(lyricsToUpdate.updatedFiles, lyricsBasePath, lyricsMinePath),
+			updateFiles(karasToUpdate.updatedFiles, karasBasePath, karasMinePath),
+			removeFiles(karasToUpdate.removedFiles, karasMinePath),
+			removeFiles(lyricsToUpdate.removedFiles, lyricsMinePath)
+		]);	
+		logger.info('[Updater] Done updating base files');
+		return true;
+	}	
 }
 
 async function compareVideos(localFiles, remoteFiles) {
@@ -118,7 +130,6 @@ async function compareVideos(localFiles, remoteFiles) {
 		});
 		if (!filePresent) removedFiles.push(localFile.name);
 	}
-	logger.info('[Updater] Done comparing videos');
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	const ftp = new FTP.Client();
 	await ftpConnect(ftp);
@@ -127,15 +138,17 @@ async function compareVideos(localFiles, remoteFiles) {
 		filesToDownload.sort((a,b) => {
 			return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
 		});
-		let bytesToDownload;
+		let bytesToDownload = 0;
 		for (const file of filesToDownload) {
 			bytesToDownload = bytesToDownload + file.size;
 		}
 		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated videos (size : ${prettyBytes(bytesToDownload)})`);		
 		await downloadVideos(ftp, filesToDownload, VideosPath, bytesToDownload);
 		logger.info('[Updater] Done updating videos');
+		return true;
 	} else {
 		logger.info('[Updater] No new videos to download');
+		return false;
 	}
 }
 
@@ -146,20 +159,23 @@ async function ftpClose(ftp) {
 async function ftpConnect(ftp) {		
 	await ftp.connect(shelter.host, 21);
 	await ftp.login(shelter.user, shelter.password);
-	await ftp.useDefaultSettings;	
+	await ftp.useDefaultSettings();	
 }
 
 async function downloadVideos(ftp, files, VideosPath, totalBytes) {
 	const conf = getConfig();
-	const bar1 = new _cliProgress.Bar({}, _cliProgress.Presets.shades_classic);
-	bar1.start(totalBytes, 0);
+	//const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb';
+	//const bar1 = new _cliProgress.Bar({format: barFormat}, _cliProgress.Presets.shades_classic);
+	//bar1.start(totalBytes / 1000000, 0);
+	let i = 0;
 	for (const file of files) {
-		logger.info('[Updater] Downloading '+file);
-		const outputFile = resolve(conf.appPath, VideosPath, file);
-		await ftp.download(createWriteStream(outputFile), file);
-		bar1.increment(file.size);
+		i++;
+		logger.info(`[Updater] (${i}/${files.length}) Downloading ${file.name} (${prettyBytes(file.size)})`);
+		const outputFile = resolve(conf.appPath, VideosPath, file.name);
+		await ftp.download(createWriteStream(outputFile), file.name);
+		//bar1.increment(file.size / 1000000);
 	}
-	bar1.stop();
+	//bar1.stop();
 }
 
 
@@ -198,7 +214,7 @@ async function updateFiles(files, dirSource, dirDest) {
 
 async function checkDirs() {
 	const conf = getConfig();
-	const karaPaths = conf.pathKaras.split('|');
+	const karaPaths = conf.PathKaras.split('|');
 	const karaPath = karaPaths[0];	
 	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) throw 'Your base folder is a git repository. We cannot update it, please run "git pull" to get updates';
 }
@@ -210,12 +226,13 @@ export async function runBaseUpdate() {
 			downloadBase(),
 			listRemoteVideos(),
 			listLocalVideos()
-		]);
-		const archiveName = await decompressBase();
-		await Promise.all([
-			compareBases(archiveName),
+		]);		
+		const [updateBase, updateVideos] = await Promise.all([
+			compareBases(),
 			compareVideos(localVideos, remoteVideos)
 		]);
+		if (updateBase || updateVideos) return true;
+		return false;
 	} catch (err) {
 		throw err;
 	}	
