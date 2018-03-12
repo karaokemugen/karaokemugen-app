@@ -14,7 +14,7 @@ import {decode} from 'jwt-simple';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
-import {requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
+import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
 
 function numberTest(element) {
@@ -1184,11 +1184,8 @@ export async function initAPIServer(listenPort) {
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
-<<<<<<< HEAD
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
-=======
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
->>>>>>> 199-systeme-de-favoris
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
@@ -1235,11 +1232,8 @@ export async function initAPIServer(listenPort) {
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
  *           "flag_whitelisted": 0,
-<<<<<<< HEAD
  *           "flag_dejavu": 0,
-=======
  * 			 "flag_favorites": 0,
->>>>>>> 199-systeme-de-favoris
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
@@ -3230,7 +3224,6 @@ export async function initAPIServer(listenPort) {
  *       }
  *   ]
  * }
-<<<<<<< HEAD
  * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
  * @apiError BLC_VIEW_FORBIDDEN Blacklist criterias are not viewable by users.
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
@@ -3299,8 +3292,6 @@ export async function initAPIServer(listenPort) {
  *       "volume": 100
  *   }
  * }
-<<<<<<< HEAD
- * @apiError PLAYER_STATUS_ERROR Error fetching player status (is the player running?)
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -3315,17 +3306,7 @@ export async function initAPIServer(listenPort) {
 			// What's playing, time in seconds, duration of song
 
 			//return status of the player
-
-			engine.getPlayerStatus()
-				.then((status) => {
-					res.json(OKMessage(status));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('PLAYER_STATUS_ERROR',err));
-				});
-
+			res.json(OKMessage(engine.getPlayerStatus()));			
 		});
 	routerPublic.route('/karas')
 	/**
@@ -3655,7 +3636,6 @@ export async function initAPIServer(listenPort) {
  * {
  *   "data": "Lyrics for this song are not available"
  * }
-<<<<<<< HEAD
  * @apiError LYRICS_VIEW_ERROR Unable to fetch lyrics data
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
@@ -4012,9 +3992,9 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 				});
 		});
-	routerPublic.route('/playlists/public/karas/:plc_id/vote')
+	routerPublic.route('/playlists/public/karas/:plc_id([0-9]+)/vote')
 		/**
-	 * @api {post} /public/playlists/public/karas/:plc_id Up/downvote a song in public playlist
+	 * @api {post} /public/playlists/public/karas/:plc_id/vote Up/downvote a song in public playlist
 	 * @apiName PostVote
 	 * @apiVersion 2.1.0
 	 * @apiGroup Playlists
@@ -4777,7 +4757,7 @@ export async function initAPIServer(listenPort) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.post(requireWebappLimited, (req,res) => {
+		.post(requireWebappLimitedNoAuth, (req,res) => {
 			//Validate form data
 			req.check({
 				'login': {

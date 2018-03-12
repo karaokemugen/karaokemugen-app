@@ -248,7 +248,7 @@ export async function trimPlaylist(playlist_id,duration) {
 	const durationSecs = duration * 60;
 	let durationPL = 0;
 	let lastPos = 1;
-	const pl = await getPlaylistContents(playlist_id);
+	const pl = await getPlaylistContentsMini(playlist_id);
 	const needsTrimming = pl.some((kara) => {
 		lastPos = kara.pos;
 		durationPL = durationPL + kara.duration;
@@ -256,9 +256,10 @@ export async function trimPlaylist(playlist_id,duration) {
 		return false;
 	});
 	if (needsTrimming) await plDB.trimPlaylist(playlist_id,lastPos);
-	await updatePlaylistLastEditTime(playlist_id);
-	await updatePlaylistDuration(playlist_id);
-	await updatePlaylistKaraCount(playlist_id);
+	await Promise.all([updatePlaylistLastEditTime(playlist_id),
+		updatePlaylistDuration(playlist_id),
+		updatePlaylistKaraCount(playlist_id)
+	]);
 }
 
 export async function setCurrentPlaylist(playlist_id) {
@@ -390,8 +391,12 @@ async function updatePlaylistDuration(playlist_id) {
 	await plDB.updatePlaylistDuration(playlist_id);
 }
 
-export async function getPlaylistContents(playlist_id,forPlayer) {	
-	return await plDB.getPlaylistContents(playlist_id,forPlayer);
+export async function getPlaylistContentsMini(playlist_id) {	
+	return await plDB.getPlaylistContentsMini(playlist_id);
+}
+
+export async function getPlaylistContents(playlist_id,token) {	
+	return await plDB.getPlaylistContents(playlist_id,token.username);
 }
 
 async function getPlaylistPos(playlist_id) {
@@ -426,18 +431,18 @@ export async function getAllKaras(username) {
 	return await karaDB.getAllKaras(username);
 }
 
-export async function getRandomKara(playlist_id,filter) {
+export async function getRandomKara(playlist_id, filter) {
 	// Get karaoke list	
 	let karas = await getAllKaras();
-	if (filter) karas = filterPlaylist(karas,filter);
+	if (filter) karas = filterPlaylist(karas, filter);
 	// Strip list to just kara IDs
 	karas.forEach((elem,index) => {
 		karas[index] = elem.kara_id;
 	});
 	//Now, get current playlist's contents.
-	const pl = await getPlaylistContents(playlist_id);
+	const pl = await getPlaylistContentsMini(playlist_id);
 	//Strip playlist to just kara IDs
-	pl.forEach(function(elem,index){
+	pl.forEach((elem,index) => {
 		pl[index] = elem.kara_id;
 	});
 	let allKarasNotInCurrentPlaylist = [];
@@ -740,7 +745,7 @@ export async function reorderPlaylist(playlist_id, opt) {
 
 export async function exportPlaylist(playlist_id) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
-	const plContents = await getPlaylistContents(playlist_id);
+	const plContents = await getPlaylistContentsMini(playlist_id);
 	const plInfo = await getPlaylistInfo(playlist_id);
 	let pl = {};
 	plInfo.playlist_id = undefined;
@@ -1026,7 +1031,7 @@ export async function shufflePlaylist(playlist_id) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
 	// the part after the song currently being played.
-	let playlist = await getPlaylistContents(playlist_id);
+	let playlist = await getPlaylistContentsMini(playlist_id);
 	if (!await isCurrentPlaylist(playlist_id)) {
 		playlist = shuffle(playlist);
 	} else {
@@ -1067,7 +1072,7 @@ export async function shufflePlaylist(playlist_id) {
 	
 export async function prev() {
 	const playlist_id = await isACurrentPlaylist();
-	const playlist = await getPlaylistContents(playlist_id,true);
+	const playlist = await getPlaylistContentsMini(playlist_id);
 	if (playlist.length == 0) throw 'Playlist is empty!';
 	let readpos = 0;
 	playlist.forEach((kara, index) => {
@@ -1083,7 +1088,7 @@ export async function prev() {
 export async function next() {
 	const conf = getConfig();
 	const playlist_id = await isACurrentPlaylist();
-	const playlist = await getPlaylistContents(playlist_id,true);
+	const playlist = await getPlaylistContentsMini(playlist_id);
 	if (playlist.length == 0) throw 'Playlist is empty!';
 	let readpos = 0;
 	playlist.forEach((kara, index) => {
@@ -1108,7 +1113,7 @@ export async function next() {
 async function getCurrentPlaylist() {
 	// Returns current playlist contents and where we're at.
 	const playlist_id = await isACurrentPlaylist();
-	const playlist = await getPlaylistContents(playlist_id,true);
+	const playlist = await getPlaylistContentsMini(playlist_id);
 	// Setting readpos to 0. If no flag_playing is found in current playlist
 	// Then karaoke will begin at the first element of the playlist (0)
 	let readpos = 0;

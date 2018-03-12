@@ -300,6 +300,7 @@ button[name="transferKara"]:before {
 button[name="infoKara"]:before {
 	content:"\e086";
 }
+
 #panel2 .actionDiv > button[name="transferKara"]:before {
 	content:"\e091";
 }
@@ -316,12 +317,23 @@ button[name="infoKara"]:before {
 	content:"\e009";
 }
 .makeFav:before {
+	content:"\e007";
+}
+
+.makeFav.currentFav:before {
+	content:"\e006";
+    color: firebrick;
+}
+
+.likeKara:before {
 	content:"\e143";
 }
-.makeFav.currentFav:before {
+
+.likeKara.currentLike:before {
 	content:"\e005";
     color: firebrick;
 }
+
 .playKara:before {
 	content:"\e072";
 }
