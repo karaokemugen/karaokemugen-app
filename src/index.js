@@ -10,22 +10,25 @@ import i18n from 'i18n';
 import net from 'net';
 import logger from 'winston';
 import {exit, initEngine} from './_services/engine';
-import resolveSysPath from './_common/utils/resolveSyspath';
 import {karaGenerationBatch} from './_admin/generate_karasfiles';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
 
 
 process.on('uncaughtException', function (exception) {
-	console.log(exception); 
+	console.log(exception);
 });
 
 process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);	
+	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
-
 const argv = parseArgs();
-const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
+let appPath;
+if (process.pkg) {
+	appPath = join(process.execPath,'../');
+} else {
+	appPath = join(__dirname,'../');
+}
 if (appPath) {
 	main()
 		.catch(err => {
@@ -120,7 +123,7 @@ async function main() {
 
 	/**
 	 * Calling engine.
-	 */		
+	 */
 	initEngine();
 }
 
@@ -137,7 +140,7 @@ function parseArgs() {
 }
 
 /**
- * Checking if application paths exist. 
+ * Checking if application paths exist.
  */
 async function checkPaths(config) {
 

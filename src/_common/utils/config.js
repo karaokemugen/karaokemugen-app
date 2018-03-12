@@ -12,6 +12,7 @@ import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
 import {emit} from './pubsub';
+import {defaults} from './default_settings.js';
 
 /** Object containing all config */
 let config = {};
@@ -37,16 +38,16 @@ export function mergeConfig(oldConfig, newConfig) {
 			}
 		}
 	}
-	
+
 	updateConfig(newConfig);	
 	const conf = getConfig();
 	// Toggling and updating settings
 	if (conf.EnginePrivateMode === 1) {
-		emit('modeUpdated',0);		
+		emit('modeUpdated',0);
 	} else {
 		emit('modeUpdated',1);
 	}
-	
+
 	configureHost();
 
 	// Determine which settings we send back. We get rid of all system and admin settings
@@ -115,16 +116,14 @@ function configureLogger(appPath, debug) {
 }
 
 async function loadConfigFiles(appPath) {
-	const defaultConfigFile = resolve(appPath, 'config.ini.default');
 	const overrideConfigFile = resolve(appPath, 'config.ini');
 	const versionFile = resolve(__dirname, '../../VERSION');
 
-	await loadConfig(defaultConfigFile);
-	defaultConfig = config;
+	config = {...config, ...defaults};
+	config.appPath = appPath;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
 	if (await asyncExists(versionFile)) await loadConfig(versionFile);
 }
-
 
 async function loadConfig(configFile) {
 	logger.debug(`[Config] Reading configuration file ${configFile}`);
@@ -169,18 +168,18 @@ export async function setConfig(configPart) {
 export async function updateConfig(newConfig) {
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','appPath','os','EngineDefaultLocale'];
 	const filteredConfig = {};
-	Object.entries(newConfig).forEach(([k, v]) => {		
-		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))            
+	Object.entries(newConfig).forEach(([k, v]) => {
+		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))
 			&& (newConfig[k] != defaultConfig[k])
-            && (filteredConfig[k] = v);		
+            && (filteredConfig[k] = v);
 	});
 	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
-	await asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');	
+	await asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');
 }
 
 /**
  * Functions used to manipulate configuration. We can pass a optional config object.
- * In this case, the method works with the configuration passed as argument rather than the current 
+ * In this case, the method works with the configuration passed as argument rather than the current
  * configuration.
  */
 
