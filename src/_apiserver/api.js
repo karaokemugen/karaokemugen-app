@@ -14,7 +14,8 @@ import {decode} from 'jwt-simple';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
-import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
+import {requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
+import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
 
 function numberTest(element) {
 	if (isNaN(element)) return false;
@@ -190,7 +191,7 @@ export async function initAPIServer(listenPort) {
  * }
  */
 
-		.post(requireAuth, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			req.check({
 				'users': {
 					in: 'body',
@@ -1434,7 +1435,8 @@ export async function initAPIServer(listenPort) {
  *       "isTest": false,
  *       "mpvVideoOutput": "direct3d",
  *       "os": "win32",
- *       "osHost": "10.202.40.43"
+ *       "osHost": "10.202.40.43",
+ * 		 "WebappMode": "2"
  *   }
  * }
  */
@@ -1474,6 +1476,7 @@ export async function initAPIServer(listenPort) {
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
+ * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -1549,6 +1552,11 @@ export async function initAPIServer(listenPort) {
 					isInt: true,
 				},
 				'EngineRepeatPlaylist': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'WebappMode': {
 					in: 'body',
 					notEmpty: true,
 					isInt: true,
@@ -1638,6 +1646,7 @@ export async function initAPIServer(listenPort) {
 					req.sanitize('EnginePrivateMode').toInt();
 					req.sanitize('PlayerPIP').toInt();
 					req.sanitize('PlayerPIPSize').toInt();
+					req.sanitize('WebappMode').toInt();
 					setConfig(req.body)
 						.then((publicSettings) => {
 							emitWS('settingsUpdated',publicSettings);
@@ -2554,11 +2563,14 @@ export async function initAPIServer(listenPort) {
  *   ]
  * }
  * @apiError PL_LIST_ERROR Unable to fetch a list of playlists
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {			
 			// Get list of playlists, only return the visible ones
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);	
 			engine.getAllPLs(token)
@@ -2568,7 +2580,7 @@ export async function initAPIServer(listenPort) {
 				.catch((err) => {
 					res.statusCode = 500;
 					res.json(errMessage('PL_LIST_ERROR',err));	
-				});
+				});						
 		});
 	routerPublic.route('/playlists/:pl_id([0-9]+)')
 	/**
@@ -2611,11 +2623,13 @@ export async function initAPIServer(listenPort) {
  *   }
  *}
  * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
@@ -2628,7 +2642,7 @@ export async function initAPIServer(listenPort) {
 					logger.error(err.message);
 					res.statusCode = 500;
 					res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
-				});
+				});			
 		});
 	routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
 	/**
@@ -2706,13 +2720,16 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  * @apiError PL_VIEW_SONGS_ERROR Unable to fetch list of karaokes in a playlist
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get playlist contents, only if visible
-			//Access :pl_id by req.params.pl_id					
+			//Access :pl_id by req.params.pl_id
+					
 			const filter = req.query.filter;
 			const lang = req.query.lang;
 			let size;
@@ -2844,16 +2861,19 @@ export async function initAPIServer(listenPort) {
  *   ]
  * }
  * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * 
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  *   "code": "PL_VIEW_CONTENT_ERROR",
  *   "message": "PLCID unknown!"
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			engine.getPLCInfo(req.params.plc_id,req.query.lang,token)
 				.then((kara) => {
@@ -2863,7 +2883,7 @@ export async function initAPIServer(listenPort) {
 					logger.error(err.message);
 					res.statusCode = 500;
 					res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
-				});
+				});			
 		});
 	routerPublic.route('/settings')
 	/**
@@ -2911,6 +2931,7 @@ export async function initAPIServer(listenPort) {
  *       "VersionName": "Finé Fiévreuse",
  *       "VersionNo": "v2.0 Release Candidate 1",
  *       "mpvVideoOutput": "direct3d",
+ * 		 "WebappMode": "2"
  *   }
  * }
  */
@@ -2978,7 +2999,7 @@ export async function initAPIServer(listenPort) {
 	/**
  * @api {get} /public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Whitelist
  * @apiPermission public
  * @apiDescription If `EngineAllowViewWhitelist` is set to `0` in configuration, then returns an error message (see below)
@@ -3038,17 +3059,18 @@ export async function initAPIServer(listenPort) {
  * }
  * @apiError WL_VIEW_ERROR Whitelist could not be viewed
  * @apiError WL_VIEW_FORBIDDEN Whitelist view is not allowed for users
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  *   "code": "WL_VIEW_FORBIDDEN"
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			const conf = getConfig();
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			//Returns whitelist IF the settings allow public to see it
-			if (conf.EngineAllowViewWhitelist == 1) {
+			if (getConfig().EngineAllowViewWhitelist == 1) {
 				const lang = req.query.lang;
 				const filter = req.query.filter;
 				let size;
@@ -3075,14 +3097,14 @@ export async function initAPIServer(listenPort) {
 			} else {
 				res.StatusCode = 403;
 				res.json(errMessage('WL_VIEW_FORBIDDEN'));
-			}
+			}			
 		});
 
 	routerPublic.route('/blacklist')
 	/**
  * @api {get} /public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Blacklist
  * @apiPermission public
  * @apiDescription If `EngineAllowViewBlacklist` is set to `0` in configuration, then returns an error message (see below)
@@ -3142,17 +3164,18 @@ export async function initAPIServer(listenPort) {
  * }
  * @apiError BL_VIEW_ERROR Blacklist could not be viewed
  * @apiError BL_VIEW_FORBIDDEN Blacklist view is not allowed for users
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  *   "code": "BL_VIEW_FORBIDDEN"
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			const conf = getConfig();
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			//Get list of blacklisted karas IF the settings allow public to see it
-			if (conf.EngineAllowViewBlacklist == 1) {
+			if (getConfig().EngineAllowViewBlacklist == 1) {
 				const lang = req.query.lang;
 				const filter = req.query.filter;
 				let size;
@@ -3186,7 +3209,7 @@ export async function initAPIServer(listenPort) {
 	/**
  * @api {get} /public/blacklist/criterias Get list of blacklist criterias (public)
  * @apiName GetBlacklistCriteriasPublic
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Blacklist
  * @apiPermission public
  * 
@@ -3207,20 +3230,21 @@ export async function initAPIServer(listenPort) {
  *       }
  *   ]
  * }
-
-* @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
-* @apiError BLC_VIEW_FORBIDDEN Blacklist criterias are not viewable by users.
-*
-* @apiErrorExample Error-Response:
-* HTTP/1.1 500 Internal Server Error
-* {
-*   "code": "BLC_VIEW_FORBIDDEN"
-* }
-*/		
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			const conf = getConfig();
+<<<<<<< HEAD
+ * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
+ * @apiError BLC_VIEW_FORBIDDEN Blacklist criterias are not viewable by users.
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_VIEW_FORBIDDEN"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */		
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			//Get list of blacklist criterias IF the settings allow public to see it
-			if (conf.EngineAllowViewBlacklistCriterias == 1) {
+			if (getConfig().EngineAllowViewBlacklistCriterias == 1) {
 				engine.getBLC()
 					.then(function(blc){
 						res.json(OKMessage(blc));
@@ -3275,9 +3299,33 @@ export async function initAPIServer(listenPort) {
  *       "volume": 100
  *   }
  * }
- */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			res.json(OKMessage(engine.getPlayerStatus()));
+<<<<<<< HEAD
+ * @apiError PLAYER_STATUS_ERROR Error fetching player status (is the player running?)
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PLAYER_STATUS_ERROR"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */		
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+			// Get player status
+			// What's playing, time in seconds, duration of song
+
+			//return status of the player
+
+			engine.getPlayerStatus()
+				.then((status) => {
+					res.json(OKMessage(status));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('PLAYER_STATUS_ERROR',err));
+				});
+
 		});
 	routerPublic.route('/karas')
 	/**
@@ -3347,11 +3395,13 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  * @apiError SONG_LIST_ERROR Unable to fetch list of karaokes
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			const filter = req.query.filter;
@@ -3385,7 +3435,7 @@ export async function initAPIServer(listenPort) {
 	/**
  * @api {get} /public/karas/random Get a random karaoke ID
  * @apiName GetKarasRandom
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiDescription This selects a random karaoke from the database. What you will do with it depends entirely on you.
@@ -3396,12 +3446,14 @@ export async function initAPIServer(listenPort) {
  *   "data": 4550
  * }
  * @apiError GET_UNLUCKY Unable to find a random karaoke
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getRandomKara(req.query.filter)
 				.then((kara_id) => {
 					if (!kara_id) {
@@ -3500,15 +3552,17 @@ export async function initAPIServer(listenPort) {
  *   ]
  * }
  * @apiError SONG_VIEW_ERROR Unable to list songs
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  *   "code": "SONG_VIEW_ERROR",
  *   "message": null
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			engine.getKaraInfo(req.params.kara_id,req.query.lang,token)
 				.then((kara) => {	
@@ -3555,7 +3609,7 @@ export async function initAPIServer(listenPort) {
 
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR Karaoke already present in playlist
-*
+* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 * @apiErrorExample Error-Response:
 * HTTP/1.1 500 Internal Server Error
 * {
@@ -3567,8 +3621,10 @@ export async function initAPIServer(listenPort) {
 *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
 *   "message": "User quota reached"
 * }
+* @apiErrorExample Error-Response:
+* HTTP/1.1 403 Forbidden
 */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.post(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			engine.addKaraToPL(null, req.params.kara_id, token.username, null)
@@ -3589,7 +3645,7 @@ export async function initAPIServer(listenPort) {
 	/**
  * @api {post} /public/karas/:kara_id/lyrics Get song lyrics
  * @apiName GetKarasLyrics
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiParam {Number} kara_id Karaoke ID to get lyrics from
@@ -3599,16 +3655,18 @@ export async function initAPIServer(listenPort) {
  * {
  *   "data": "Lyrics for this song are not available"
  * }
-
-* @apiError LYRICS_VIEW_ERROR Unable to fetch lyrics data
-*
-* @apiErrorExample Error-Response:
-* HTTP/1.1 500 Internal Server Error
-* {
-*   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
-* }
-*/			
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+<<<<<<< HEAD
+ * @apiError LYRICS_VIEW_ERROR Unable to fetch lyrics data
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ * {
+ *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
+ * }
+ */			
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getLyrics(req.params.kara_id)
 				.then((kara) => {							
 					res.json(OKMessage(kara));
@@ -3625,7 +3683,7 @@ export async function initAPIServer(listenPort) {
  * @apiName GetPlaylistCurrent
  * @apiGroup Playlists
  * @apiPermission public
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiDescription This route allows to check basic information about the current playlist, no matter which ID it has (and without you having to know it)
  * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
  * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
@@ -3655,11 +3713,13 @@ export async function initAPIServer(listenPort) {
  *   }
  *}
  * @apiError PL_VIEW_CURRENT_ERROR Unable to fetch info from current playlist
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
 			engine.getCurrentPLInfo(token)
@@ -3749,12 +3809,14 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  * @apiError PL_VIEW_SONGS_CURRENT_ERROR Unable to fetch list of karaokes of current playlist
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
 			const lang = req.query.lang;
 			const filter = req.query.filter;
@@ -3788,7 +3850,7 @@ export async function initAPIServer(listenPort) {
  * @apiName GetPlaylistPublic
  * @apiGroup Playlists
  * @apiPermission public
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiDescription This route allows to check basic information about the public playlist, no matter which ID it has (and without you having to know it)
  * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
  * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
@@ -3818,13 +3880,16 @@ export async function initAPIServer(listenPort) {
  *   }
  *}
  * @apiError PL_VIEW_PUBLIC_ERROR Unable to fetch info from public playlist
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			// Get current Playlist
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+			// Get public Playlist
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
 			engine.getPublicPLInfo(token)
 				.then((playlist) => {
@@ -3913,12 +3978,14 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  * @apiError PL_VIEW_SONGS_PUBLIC_ERROR Unable to fetch list of karaokes of public playlist
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get public Playlist
 			const lang = req.query.lang;
 			const filter = req.query.filter;
@@ -3989,7 +4056,7 @@ export async function initAPIServer(listenPort) {
 	/**
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
-	* @apiVersion 2.0.0
+	* @apiVersion 2.1.0
 	* @apiGroup Karaokes
 	* @apiPermission public
 	* 
@@ -4024,11 +4091,13 @@ export async function initAPIServer(listenPort) {
 	*   ]
 	* }
 	* @apiError TAGS_LIST_ERROR Unable to get list of tags
-	*
+	* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
+	* @apiErrorExample Error-Response:
+    * HTTP/1.1 403 Forbidden
 	*/
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getTags(req.query.lang)
 				.then((tags) => {
 					res.json(OKMessage(tags));
@@ -4080,15 +4149,17 @@ export async function initAPIServer(listenPort) {
  *   ]
  * }
  * @apiError USER_VIEW_ERROR Unable to view user details
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  *   "code": "USER_VIEW_ERROR",
  *   "message": null
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			user.findUserByName(req.params.username, {public:true})
 				.then((userdata) => {
 					res.json(OKMessage(userdata));
@@ -4247,15 +4318,17 @@ export async function initAPIServer(listenPort) {
  *   ]
  * }
  * @apiError USER_VIEW_ERROR Unable to view user details
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  *   "code": "USER_VIEW_ERROR",
  *   "message": null
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			user.findUserByName(token.username, {public:false})
 				.then((userdata) => {
@@ -4300,11 +4373,13 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  * @apiError USER_UPDATE_ERROR Unable to edit user
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.put(upload.single('avatarfile'), requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+		.put(upload.single('avatarfile'), requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			req.check({
 				//FIXME : keep email/url optional and make sure it works with the isURL and isEmail validators
 				'nickname': {
@@ -4438,11 +4513,13 @@ export async function initAPIServer(listenPort) {
  *   }
  * }
  * @apiError FAVORITES_VIEW_ERROR Unable to fetch list of karaokes in favorites
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, updateUserLoginTime, (req,res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			const token = decode(req.get('authorization'), getConfig().JwtSecret);
 			const filter = req.query.filter;
 			const lang = req.query.lang;
@@ -4493,7 +4570,7 @@ export async function initAPIServer(listenPort) {
  *   "data": null
  * }
  * @apiError FAVORITES_ADD_SONG_ERROR Unable to add songs to the playlist
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -4501,8 +4578,10 @@ export async function initAPIServer(listenPort) {
  *   "code": "FAVORITES_ADD_SONG_ERROR",
  *   "message": "Karaoke unknown"
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.post(requireAuth, updateUserLoginTime, (req,res) => {
+		.post(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
 			req.checkBody({
 				'kara_id': {
 					in: 'body',
@@ -4555,7 +4634,7 @@ export async function initAPIServer(listenPort) {
  *   "data": null
  * }
  * @apiError FAVORITES_DELETE_ERROR Unable to delete the favorited song
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -4563,8 +4642,12 @@ export async function initAPIServer(listenPort) {
  *   "code": "FAVORITES_DELETE_ERROR",
  *   "message": "Kara ID unknown"
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.delete(requireAuth, updateUserLoginTime, (req, res) => {
+		.delete(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+			// Delete kara from favorites
+			// Deletion is through kara ID.			
 			req.check({
 				'kara_id': {
 					in: 'body',
@@ -4591,8 +4674,6 @@ export async function initAPIServer(listenPort) {
 						});
 				}
 			});
-			// Delete kara from favorites
-			// Deletion is through kara ID.			
 		});
 
 	routerPublic.route('/users')
@@ -4642,15 +4723,17 @@ export async function initAPIServer(listenPort) {
  *   ]
  * }
  * @apiError USER_LIST_ERROR Unable to list users
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  *   "code": "USER_LIST_ERROR",
  *   "message": null
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			user.listUsers()
 				.then(function(users){
 					res.json(OKMessage(users));
@@ -4682,7 +4765,7 @@ export async function initAPIServer(listenPort) {
  * }
  * @apiError USER_CREATE_ERROR Unable to create user
  * @apiError USER_ALREADY_EXISTS This username already exists 
- *
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -4690,9 +4773,11 @@ export async function initAPIServer(listenPort) {
  *   "code": "USER_ALREADY_EXISTS",
  *   "message": null
  * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
  */
 
-		.post((req,res) => {
+		.post(requireWebappLimited, (req,res) => {
 			//Validate form data
 			req.check({
 				'login': {

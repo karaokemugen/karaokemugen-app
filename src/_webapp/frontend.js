@@ -8,17 +8,23 @@ const logger = require('winston');
 import i18n from 'i18n';
 import {getConfig} from '../_common/utils/config';
 
-
 export async function initFrontend(port) {
 	const app = express();
 	app.engine('hbs', exphbs({
 		layoutsDir: join(__dirname, 'ressources/views/layouts/'), 
 		extname: '.hbs',
+		
 		helpers: {
 			i18n: function() {
 				var args = Array.prototype.slice.call(arguments);
 				var options = args.pop();						
 				return i18n.__.apply(options.data.root, args);	
+			},
+			if_eq: function(a, b, opts) {
+				if(a == b)
+					return opts.fn(this);
+				else
+					return opts.inverse(this);
 			}
 		}
 	}));
@@ -35,10 +41,20 @@ export async function initFrontend(port) {
 	app.use('/previews',express.static(resolve(conf.appPath,conf.PathPreviews)));
 	//Path to user avatars
 	app.use('/avatars',express.static(resolve(conf.appPath,conf.PathAvatars)));
-	app.use('/admin', routerAdmin);		
+	app.use('/admin', routerAdmin);	
+
 	app.get('/', (req, res) => {
-		res.render('public', {'layout': 'publicHeader',
-			'clientAdress'	:		'http://'+address(),
+		var config = getConfig();
+			
+		var view = 'public';
+		if(config.WebappMode === '0') {
+			view = 'publicClosed';
+		} else if (config.WebappMode === '1') {
+			view = 'publicLimited';
+		}
+		res.render(view, {'layout': 'publicHeader',
+			'clientAdress'	:	'http://'+address(),
+			'webappMode'	:	conf.WebappMode,
 			'query'			:	JSON.stringify(req.query)
 		});
 	});

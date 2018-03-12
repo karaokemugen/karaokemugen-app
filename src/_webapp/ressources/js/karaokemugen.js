@@ -1348,6 +1348,10 @@ var settingsNotUpdated;
 				if(scope === 'public') {
 					select1.val(val1? val1 : panel1Default);
 					select2.val(val2? val2 : playlistToAddId);
+					if (webappMode == 1) {
+						var currentPlaylistId = select2.find('option[data-flag_current="1"]').attr('value');
+						select2.val(currentPlaylistId);
+					}
 				} else {
 					var plVal1Cookie = readCookie('plVal1');
 					var plVal2Cookie = readCookie('plVal2');
@@ -1408,10 +1412,13 @@ var settingsNotUpdated;
 			// because storing var as data in html via jquery doesn't affect actual html attributes...
 			var optionAttrList = option.prop('attributes');
 			var attrList = dashboard.prop('attributes');
-			var attrListStr = Object.keys(attrList).map(function(k,v){
-				return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
-			}).join(' ');
-			dashboard.removeAttr(attrListStr);
+			if(attrList) {
+				var attrListStr = Object.keys(attrList).map(function(k,v){
+					return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
+				}).join(' ');
+				dashboard.removeAttr(attrListStr);
+			}
+		
 			
 			$.each(optionAttrList, function() {
 				dashboard.attr(this.name, this.value);
@@ -1483,7 +1490,7 @@ var settingsNotUpdated;
 					DEBUG && console.log('ERR : Kara status unknown : ' + status);
 				}
 			}
-			if($('input[name="lyrics"]').is(':checked') || mode == 'mobile' && $('#switchInfoBar').hasClass('showLyrics')) {
+			if($('input[name="lyrics"]').is(':checked') || (mode == 'mobile' || webappMode == 1) && $('#switchInfoBar').hasClass('showLyrics')) {
 				var text = data['subText'];
 				/* if(oldState['subText'] != null && text != null && text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) {
                     text.replace(oldState['subText'], "<span style='color:red;'>" + oldState['subText'] + "</span>");
@@ -1499,10 +1506,15 @@ var settingsNotUpdated;
 				barCss.addClass('cssTransform');
 
 				$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
-					$('#karaInfo').attr('idKara', dataKara[0].kara_id);
-					$('#karaInfo').attr('length', dataKara[0].duration);
-					$('#karaInfo > span').text( buildKaraTitle(dataKara[0]) );
-					$('#karaInfo > span').data('text', buildKaraTitle(dataKara[0]) );
+					var kara = dataKara[0];
+					$('#karaInfo').attr('idKara', kara.kara_id);
+					$('#karaInfo').attr('length', kara.duration);
+					$('#karaInfo > span').text( buildKaraTitle(kara) );
+					$('#karaInfo > span').data('text', buildKaraTitle(kara) );
+					
+					if(webappMode === 1) {
+						buildKaraDetails(kara, 'karaCard');
+					}
 				});
 			} 
 			if (data.showSubs != oldState.showSubs) {
@@ -1641,24 +1653,39 @@ var settingsNotUpdated;
 			} else return '';
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
-		infoKaraTemp = 'no mode specified';
+		var infoKaraTemp = 'no mode specified';
 		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButton.replace('makeFav','makeFav currentFav') : makeFavButton;
 		
 		if (htmlMode == 'list') {
 			infoKaraTemp = '<div class="detailsKara alert alert-info">'
+				+ '<div class="topRightButtons">'
 				+ (isTouchScreen ? '' : closeButton)
-				+ (data['previewfile'] ? showVideoButton : '')
 				+ makeFavButtonAdapt
 				+ showFullTextButton
+				+ (data['previewfile'] ? showVideoButton : '')
+				+ '</div>'
 				+ htmlTable
 				+ '</div>';
 		} else if (htmlMode == 'mobile') {
 			infoKaraTemp = '<div class="detailsKara z-depth-1">'
-				+ (data['previewfile'] ? showVideoButton : '')
+				+ '<div class="topRightButtons">'
 				+ makeFavButtonAdapt
 				+ showFullTextButton
+				+ (data['previewfile'] ? showVideoButton : '')
+				+ '</div>'
 				+ htmlTable
 				+ '</div>';
+		} else if (htmlMode == 'karaCard') {
+			$.ajax({ url: 'public/karas/' + data.kara_id + '/lyrics' }).done(function (data) {
+				var lyrics = i18n.__('NOLYRICS');
+				if (typeof data === 'object') {
+					lyrics =  data.join('<br/>');
+				}
+				$('.karaCard .lyricsKara').html(lyrics);
+			});
+			infoKaraTemp = '<div class="topRightButtons">' + makeFavButtonAdapt + '</div>' + htmlTable;
+			$('.karaCard .details').html(infoKaraTemp);
+			$('.karaCard > div').show();
 		}
 		return infoKaraTemp;
 	};

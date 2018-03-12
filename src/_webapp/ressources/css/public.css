@@ -58,8 +58,12 @@
 .underHeader {
     position: relative;	
     top: calc( 60px + 30px );
-    height: calc(100% - 60px - 30px );
+    height: calc( 100% - 60px - 30px );
 }  
+.underHeader.mode1 {
+    top: calc( 30px );
+    height: calc( 100% - 30px );
+}
 .bootstrap-switch-container i {
     font-size: 20px;
     top: 3px;
@@ -220,12 +224,12 @@ div.bootstrap-switch-large{
     overflow: hidden;
 }
 
-body.touch .playlist-main .list-group-item  {
+body.touch:not(.mode1) .playlist-main .list-group-item:not(.filler)  {
     width: calc(100% - 12px);
     overflow: visible;
 }
 
-body.touch  .list-group-item:after { 
+body.touch:not(.mode1)  .list-group-item:not(.filler):after { 
     content:"";
     position: absolute; 
     top:0; 
@@ -237,14 +241,14 @@ body.touch  .list-group-item:after {
     border-color: transparent;
     border-left-color: hsla(0, 0%, 20%, .67);
 }
-body.touch  .list-group-item:nth-child(even):after {
+body.touch:not(.mode1)  .list-group-item:nth-child(even):after {
     border-left-color: hsla(0, 0%, 27%, 0.6);
 }
-body.touch .list-group-item.pressed:after { 
+body.touch:not(.mode1) .list-group-item.pressed:after { 
     border-left-color: hsla(151, 31%, 12%, 0.6);
 }
 
-body.touch  .list-group-item[valid="true"]:after { 
+body.touch:not(.mode1)  .list-group-item[valid="true"]:after { 
     border-left-color: hsla(151, 37%, 25%, 0.7);
 }
 
@@ -262,7 +266,7 @@ body.touch  .list-group-item[valid="true"]:after {
 }
 */
 
-#mobileHelp, #mobileActions {
+#mobileHelp, #mobileActions:not(.mode1) {
     display: none;
 }
 
@@ -279,6 +283,74 @@ body.touch  .list-group-item[valid="true"]:after {
 	display: none;
 }
 /* mobile */
+
+
+.fixed-action-btn.left {
+    bottom: 12px;
+    left: 12px;
+    right: auto;
+    position: fixed;
+    padding-top: 15px;
+    z-index: 9876;
+}
+
+.btn-floating.btn-large {
+    font-size: 23px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    transition: .3s;
+    cursor: pointer;
+    vertical-align: middle;
+    display: inline-block;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    line-height: 40px;
+    padding: 0;
+    background-color: #546e7a;
+    text-align: center;
+}
+.btn-large > i {
+    line-height: 60px;
+    font-weight: 30px;
+    text-align: center;
+    __left: 31%;
+}
+.fixed-action-btn ul {
+    left: 0;
+    right: 0;
+    text-align: center;
+    position: absolute;
+    bottom: 64px;
+    margin: 0;
+    opacity: 0;
+    transition: all .5s ease;
+}
+
+.fixed-action-btn ul li {
+    margin-bottom: 7px;
+    list-style-type: none;
+}
+.fixed-action-btn ul {
+    padding-left: 0px;
+}
+.fixed-action-btn ul li a {
+    transform: scaleY(0.9) scaleX(0.9) translateY(0px) translateX(0px);
+}
+.z-depth-3 {
+    box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+}
+
+
+#switchInfoBar.showLyrics > i.infos {
+    display: none;
+}
+#switchInfoBar:not(.showLyrics) > i.lyrics {
+    display: none;
+}
+
 
 @media (max-width: 1025px) {
     .toastMessage {
@@ -342,75 +414,10 @@ body.touch  .list-group-item[valid="true"]:after {
         height: 60px;
     }
 
-    .fixed-action-btn.left {
-        bottom: 12px;
-        left: 12px;
-        right: auto;
-        position: fixed;
-        padding-top: 15px;
-        z-index: 9876;
-    }
-    
-    .btn-floating.btn-large {
-        font-size: 23px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        transition: .3s;
-        cursor: pointer;
-        vertical-align: middle;
-        display: inline-block;
-        color: #fff;
-        position: relative;
-        overflow: hidden;
-        z-index: 1;
-        line-height: 40px;
-        padding: 0;
-        background-color: #546e7a;
-        text-align: center;
-    }
-    .btn-large > i {
-        line-height: 60px;
-        font-weight: 30px;
-        text-align: center;
-        __left: 31%;
-    }
-    .fixed-action-btn ul {
-        left: 0;
-        right: 0;
-        text-align: center;
-        position: absolute;
-        bottom: 64px;
-        margin: 0;
-        opacity: 0;
-        transition: all .5s ease;
-    }
-
-    .fixed-action-btn ul li {
-        margin-bottom: 7px;
-        list-style-type: none;
-    }
-    .fixed-action-btn ul {
-        padding-left: 0px;
-    }
-    .fixed-action-btn ul li a {
-        transform: scaleY(0.9) scaleX(0.9) translateY(0px) translateX(0px);
-    }
-    .z-depth-3 {
-        box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
-    }
-
     #progressBar {
         box-shadow: none;
     }
 
-    #switchInfoBar.showLyrics > i.infos {
-        display: none;
-    }
-    #switchInfoBar:not(.showLyrics) > i.lyrics {
-        display: none;
-    }
-    
    #mobileHelp, #mobileActions {
        display: block;
    }
