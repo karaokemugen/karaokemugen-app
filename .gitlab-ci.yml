@@ -8,7 +8,7 @@ cache:
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
-  - npm install -g pkg@4.2.6 yarn apidoc babel-cli babel-preset-env mocha chai supertest babel-register
+  - npm install -g pkg@4.2.6 yarn apidoc
 
 stages:
   - test
@@ -22,7 +22,7 @@ test:
     - wget -c https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz    
     - tar xf ffmpeg-release-64bit-static.tar.xz
     - mv ffmpeg-3* ffmpeg
-    - yarn install --production=true
+    - yarn install
     - touch mpv
     - echo "BinffmpegLinux=ffmpeg/ffmpeg" >>config.ini
     - echo "BinffprobeLinux=ffmpeg/ffprobe" >>config.ini
@@ -44,6 +44,9 @@ build:
       - dist/
   script:
     - npm run-script build    
+    - yarn install --production
+    - cd node_modules
+    - find -name *.node -delete
   only:
     - master
     - next
