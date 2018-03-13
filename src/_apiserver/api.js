@@ -17,6 +17,16 @@ import authController from '../_controllers/auth';
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
 
+function toString(o) {
+	Object.keys(o).forEach(k => {
+		if (typeof o[k] === 'object') {
+			return toString(o[k]);
+		}    
+		o[k] = '' + o[k];
+	});
+	return o;
+}
+
 function numberTest(element) {
 	if (isNaN(element)) return false;
 	return true;
@@ -1478,6 +1488,8 @@ export async function initAPIServer(listenPort) {
  */
 		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, function(req,res){
 			//Update settings
+			// Convert body to strings
+			req.body = toString(req.body);
 			req.checkBody({
 				'EngineAllowViewBlacklist': {
 					in: 'body',
