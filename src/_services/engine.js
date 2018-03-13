@@ -16,7 +16,9 @@ import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSub
 import {now} from 'unix-timestamp';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
-import {isEmpty, cloneDeep, sample} from 'lodash';
+import isEmpty from 'lodash.isempty';
+import cloneDeep from 'lodash.clonedeep';
+import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
 
 const plc = require('./playlist');

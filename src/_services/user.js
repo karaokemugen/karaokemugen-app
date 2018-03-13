@@ -5,7 +5,9 @@ import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/ut
 import {getConfig} from '../_common/utils/config';
 import {createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
-import {isEmpty, sampleSize, deburr} from 'lodash';
+import isEmpty from 'lodash.isempty';
+import sampleSize from 'lodash.samplesize';
+import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
