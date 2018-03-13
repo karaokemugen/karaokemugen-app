@@ -13,6 +13,18 @@ if(fs.existsSync('config.ini')) {
 
 }
 
+function toString(o) {
+	Object.keys(o).forEach(k => {
+		if (typeof o[k] === 'object') {
+			return toString(o[k]);
+		}
+    
+		o[k] = '' + o[k];
+	});
+  
+	return o;
+}
+
 const usernameAdmin = 'adminTest';
 const passwordAdmin = 'ceciestuntest';
 let token;
@@ -387,7 +399,7 @@ describe('Managing settings', function(){
 	});
 	
 	it('Update settings', function() {
-		var data = SETTINGS;
+		var data = toString(SETTINGS);
 		return request
 			.put('/api/v1/admin/settings')
 			.set('Accept', 'application/json')
@@ -396,7 +408,7 @@ describe('Managing settings', function(){
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response){
-				assert.equal(response.body.data.isTest,true);
+				assert.equal(response.body.data.isTest,'true');
 			});
 	});
 });
