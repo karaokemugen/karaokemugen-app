@@ -1,69 +1,23 @@
-<div id="header" class="header">
-    <div class="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12 headerInputs">
-        <button class="btn btn-action btn-default favorites"><i class="glyphicon glyphicon-star"></i></button>
-        <div class="plSearch" id="searchParent" style="width: 100%;">
-            <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist" />
-        </div>
-        <button title="{{i18n "GET_LUCKY"}}" class="btn btn-lg btn-action btn-default getLucky  hidden-msm hidden-xs hidden-sm">
-            <img src="/ressources/img/clover.png">
-        </button>
-        <div class="hidden-msm hidden-sm hidden-xs pseudoChange">
-            <input list="pseudo" type="text" id="choixPseudo" class="form-control" placeholder="{{i18n "NICKNAME"}}" />
-            <datalist id="pseudo">
-            </datalist>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs">
-        <div class="dropdown pull-right">
-            <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
-            </span><i class="glyphicon glyphicon-menu-hamburger"></i></button>
-            <ul class="dropdown-menu">
-                <li><a href="#" class="changePseudo"><i class="glyphicon glyphicon-user"></i> {{i18n "ACCOUNT"}}</a></li>
-                <li><a href="/admin" id="logAdmin" target="_blank"><i class="glyphicon glyphicon-wrench"></i> Admin</a></li>
-                <li><a href="#" class="showSettings"><i class="glyphicon glyphicon-info-sign"></i> {{i18n "HELP"}}</a></li>
-                <li><a href="#" onclick="endOfTheWorldAsWeKnowIt();"><i class="glyphicon glyphicon-gift"></i> {{i18n "4TH_IMPACT"}}</a></li>
-            </ul>
-        </div>
-        <div class="pull-right btn-group switchParent">
-            <input title='{{i18n "SWITCH_SEARCH_VIEW"}}' type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-right" data-on-text="<i class='glyphicon glyphicon-menu-hamburger'></i>"
-                data-off-text="<i class='glyphicon glyphicon-search'></i>" data-size="large" />
-            <input title='{{i18n "SWITCH_BAR_INFOS"}}' type="checkbox" value="1" name="lyrics" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-subtitles'></i>"
-                data-off-text="<i class='glyphicon glyphicon-info-sign'></i>" data-size="large" />
-        </div>
-    </div>
-</div>
-<div id="progressBar" class="underHeader">
+<div id="progressBar" class="underHeader mode1">
     <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
     <div id="progressBarColor" class="cssTransform"></div>
 </div>
-<div id="underHeader" class="underHeader container-fluid">
-    <div class="playlist-main row" id="playlist">
-        <div class="panel col-lg-8 col-md-7 col-msm-12 col-sm-12 col-xs-12" id="panel1" side="1">
-             <div class="plDashboard" >
-                <div class="plSelect">
-                    <select id="selectPlaylist1" side="1" hidden >
-                        <option value="-1" default data-playlist_id="-1"></option>
-                        <option value="-5" data-playlist_id="-5"></option>
-                    </select>
-                </div>
-            </div>
+<div id="underHeader" class="underHeader container-fluid mode1">
+     <div class="playlist-main row" id="playlist">
+        <div class="panel col-lg-4 col-md-5 col-msm-12 col-sm-12 col-xs-12" id="panel1" side="1">
             <div class="playlistContainer">
                 <ul id="playlist1" side="1" class="list-group">
+                    <li class="list-group-item karaCard">
+                        <div class="details z-depth-1"></div>
+                        <div class="lyricsKara alert alert-info"></div>
+                    </li>
                 </ul>
            </div>
-            <div class="plFooter">
-                <div class="plBrowse">
-                    <button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
-                    <button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
-                    <button title="{{i18n "GOTO_BOTTOM"}}" class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
-                </div>
-                <div class="plInfos"></div>
-            </div>
         </div>
          
-        <div class="panel col-lg-4 col-md-5 col-msm-12 col-sm-12 col-xs-12" id="panel2" side="2">
+        <div class="panel col-lg-8 col-md-7 col-msm-12 col-sm-12 col-xs-12" id="panel2" side="2">
            <div class="panel-heading container-fluid plDashboard">
-                <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6 plSelect">
+                <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6 plSelect hidden">
                     <select id="selectPlaylist2" side="2" type="playlist_select" class="select2 form-control">
                         <option value="" selected>...</option>
                     </select>
@@ -87,6 +41,7 @@
                  <div class="pull-left plSearch">
                     <input type="text" class="form-control input-md" side="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
                 </div>
+                
             </div>
             
             <div class="playlistContainer">
@@ -107,13 +62,12 @@
 </div>
 <div class="toastMessageContainer">
 </div>
-<div class="fixed-action-btn left click-to-toggle" id="mobileActions">
+<div class="fixed-action-btn left click-to-toggle mode1" id="mobileActions">
     <a class="btn-floating btn-large waves-effect z-depth-3" id="menuMobile"  style="background-color:#123456" data-opened=false>
         <i class="glyphicon glyphicon-menu-hamburger"></i>
     </a>
     <ul style="opacity: 0; display: none;">
         <li><a class="z-depth-3 btn-floating btn-large" onclick="endOfTheWorldAsWeKnowIt();" style="background-color:hsla(0, 71%, 14%, .4)"><i class="glyphicon glyphicon-gift"></i></a></li>
-        <li><a class="z-depth-3 btn-floating btn-large getLucky"  style="background-color:#111">   <img style="height: 80%;margin-top: 10%" src="/ressources/img/clover.png"></a></li>
         <li><a class="z-depth-3 btn-floating btn-large showSettings" style="background-color:#613114"><i class="glyphicon glyphicon-question-sign"></i></a></li>
         <li><a class="z-depth-3 btn-floating btn-large changePseudo" id="changePseudo" style="background-color:#431b50"><i class="glyphicon glyphicon-user"></i></a></li>
         <li><a class="z-depth-3 btn-floating btn-large" id="switchInfoBar" style="background-color:#125633">
@@ -145,6 +99,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">

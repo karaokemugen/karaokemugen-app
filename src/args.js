@@ -12,11 +12,9 @@ Options :
 --debug       Displays additional debug messages
 --generate    Generates a new database then quits
 --validate    Validates/checks/updates .kara files without writing a database then quits
---slave       Launches in slave mode
 --test        Launches in test mode
---master      Launches in master mode
 --config file Specify a config file to use (default is config.ini)
-
+--updateBase  Update karaoke base files (no generation)
 `;
 
 export async function parseCommandLineArgs(argv) {	
@@ -41,23 +39,15 @@ export async function parseCommandLineArgs(argv) {
 		console.log('Error : --validate and --generate are mutually exclusive!');
 		process.exit(1);
 	}
-	if (argv.master) {
-		logger.info('[Launcher] Master mode engaged');
-		setConfig({optMaster: true});
-	}
-	if (argv.slave) {
-		logger.info('[Launcher] Slave mode engaged');
-		setConfig({optSlave: true});
-	}
-	if (argv.master && argv.slave) {
-		console.log('Error : --master and --slave are mutually exclusive!');
-		process.exit(1);
-	}
 	if (argv.karagen) {
 		logger.info('[Launcher] .kara generation requested');
 		await karaGenerationBatch();
 		process.exit(0);
-	}	
+	}
+	if (argv.updateBase) {
+		logger.info('[Launcher] Base update requested');
+		setConfig({optBaseUpdate: true});
+	}
 }
 
 

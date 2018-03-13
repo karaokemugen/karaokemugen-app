@@ -20,6 +20,19 @@ class Database extends Component {
 			});
 	}
 
+	dbupdate() {
+		this.props.loading(true);
+		axios.post('/api/karas/update')
+			.then(res => {
+				this.props.loading(false);
+				this.props.infoMessage(res.data);
+			})
+			.catch(err => {
+				this.props.loading(false);
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+	}
+
 	render() {
 		return (
 			<Segment
@@ -37,9 +50,12 @@ class Database extends Component {
 							/>
 						</Grid.Column>
 					</Grid>
-					<Grid columns={1} stackable style={{ padding: '1em' }}>
+					<Grid columns={2} stackable style={{ padding: '1em' }}>
 						<Grid.Column textAlign='center'>
 							<Button primary onClick={this.dbregen.bind(this)} active={!this.props.loadingActive}>Régénérer la base de données</Button>
+						</Grid.Column>
+						<Grid.Column textAlign='center'>
+							<Button primary onClick={this.dbupdate.bind(this)} active={!this.props.loadingActive}>Mettre à jour les fichiers de la base</Button>
 						</Grid.Column>
 					</Grid>
 				</Container>

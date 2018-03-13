@@ -1,8 +1,13 @@
 const db = require('../_dao/user');
+import {deletePlaylist} from '../_services/playlist';
+import {findFavoritesPlaylist} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
+import {createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
-import {isEmpty, sampleSize, deburr} from 'lodash';
+import isEmpty from 'lodash.isempty';
+import sampleSize from 'lodash.samplesize';
+import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
@@ -129,6 +134,7 @@ export async function findUserByName(username, opt) {
 			userdata.fingerprint = null;
 			userdata.email = null;
 		}
+		if (userdata.type === 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);
 		return userdata;
 	}
 	return false;	
@@ -201,7 +207,8 @@ export async function addUser(user,role) {
 	}	
 	try {
 		await db.addUser(user);
-		logger.debug(`[User] Created user ${user.login}`);
+		if (user.type == 1) await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
+		logger.info(`[User] Created user ${user.login}`);
 		logger.debug(`[User] User data : ${JSON.stringify(user)}`);
 		return true;
 	} catch(err) {
@@ -227,6 +234,8 @@ export async function deleteUser(username) {
 	}
 	try {
 		const user = await findUserByName(username);		
+		const playlist_id = await findFavoritesPlaylist(username);
+		await deletePlaylist(playlist_id, {force: true});
 		await db.deleteUser(user.id);
 		logger.debug(`[User] Deleted user ${username} (id ${user.id})`);
 		return true;
@@ -244,7 +253,7 @@ async function createDefaultGuests() {
 	const guests = await listGuests();
 	if (guests.length > 0) return 'No creation of guest account needed';			
 	// May be modified later.
-	let maxGuests = 10;	
+	let maxGuests = guests.length;	
 	logger.debug('[User] Creating ${maxGuests} default guest accounts');
 	const guestsToCreate = sampleSize(defaultGuestNames, maxGuests);	
 	for (let i = 0; i < maxGuests; i++) {

@@ -8,7 +8,7 @@ var oldState;           // Object : last player state saved
 var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a flood of search
 var bcTags;             // Object : list of blacklist criterias tags
 var showInfoMessage;	// Object : list of info codes to show as a toast
-var softErrorMessage; 
+var softErrorMessage;
 var logInfos;			// Object : contains all login infos : role, token, username
 var pseudo;
 var pathAvatar;
@@ -37,16 +37,18 @@ var settingsUpdating;
 var passwordUpdating;
 
 /* html */
-var addKaraHtml;      
+var addKaraHtml;
 var deleteKaraHtml;
 var deleteCriteriaHtml;
 var transferKaraHtml;
 var infoKaraHtml;
 var checkboxKaraHtml;
+var likeKaraHtml;
 var closeButton;
 var closeButtonBottom;
 var showFullTextButton;
 var showVideoButton;
+var makeFavButton;
 var dragHandleHtml;
 var playKaraHtml;
 
@@ -59,6 +61,9 @@ var settingsNotUpdated;
 	yourcode(window.jQuery, window, document);
 }(function ($, window, document) {
 	$(function () {
+
+		initSwitchs();
+
 		// Once page is loaded
 		plData = {
 			'0' : {
@@ -95,25 +100,32 @@ var settingsNotUpdated;
 				html : deleteCriteriaHtml,
 				canTransferKara : false,
 				canAddKara : true,
+			},
+			'-5' : {
+				name : 'Favorites',
+				url : 'public/favorites',
+				html : '',
+				canTransferKara : true,
+				canAddKara : true,
 			}
 		};
 		// Background things
-		var rdmFlip = Math.floor(Math.random() * 2) + 1;    
+		var rdmFlip = Math.floor(Math.random() * 2) + 1;
 		$('#panel' + rdmFlip + ' > .playlistContainer').attr('flipped', true);
 		$('#panel' + non(rdmFlip) + ' > .playlistContainer').attr('flipped', false);
-		var rdmColor = Math.floor(Math.random() * 20) + 1; 
+		var rdmColor = Math.floor(Math.random() * 20) + 1;
 		if (rdmColor == 20) $('.playlistContainer').attr('noGreyFace', true);
 
 		// Setup
 		$.ajaxSetup({
 			dataFilter: function(res) {
-				
+
 				res = JSON.parse(res);
 				var data = res.data;
 				if(data) { // if server response qualifies as the standard error structure
 					if(res.code) {
 						// TODO recoder la fonction pour interpréter comme i18n server ?
-						var args = typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
+						var args = res.args && typeof res.args === 'object' ? Object.keys(res.args).map(function(e) {
 							return res.args[e];
 						}) : [res.args];
 						//var args = res.args;
@@ -124,7 +136,7 @@ var settingsNotUpdated;
 							displayMessage('info', '', errMessage, '2000');
 						}
 					}
-					
+
 					DEBUG && res.message && console.log(res.message);
 					return JSON.stringify(data);
 				} else {
@@ -157,7 +169,7 @@ var settingsNotUpdated;
 				}
 			}
 		});
-		
+
 		setupAjax = function () {
 			$.ajaxSetup({
 				cache: false,
@@ -178,61 +190,14 @@ var settingsNotUpdated;
 		if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			setupAjax();
+			if(scope === 'admin' && logInfos.role !== 'admin') {
+				$('#loginModal').modal('show');
+			} else {
+				initApp();
+			}
 		} else {
 			$('#loginModal').modal('show');
-		}  
-
-		// Some html & stats init
-		initApp = function() {
-
-			showedLoginAfter401 = false;
-
-			$.ajax({ url: 'public/stats' }).done(function (data) {
-				kmStats = data;
-				if(scope === 'public') {
-					$('#selectPlaylist1 > option[value=-1]')
-						.data('num_karas', kmStats.totalcount).attr('data-num_karas', kmStats.totalcount);
-				}
-			});
-
-			passwordUpdating = $.Deferred().resolve();
-			settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
-			
-			settingsUpdating.done( function() {
-				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
-				playlistsUpdating = refreshPlaylistSelects();
-				playlistsUpdating.done(function () {
-					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
-					refreshPlaylistDashboard(1);
-					refreshPlaylistDashboard(2);
-					
-					$(window).trigger('resize');
-				});
-			});
-
-			if(logInfos.role != 'guest') {
-				$('.pseudoChange').show(); 
-				$('#searchParent').css('width',''); 
-			} else { 
-				$('.pseudoChange').hide(); 
-				$('#searchParent').css('width','100%'); 
-			} 
-			
-			initSwitchs();
-
-			$('.bootstrap-switch').promise().then(function(){
-				$(this).each(function(){
-					$(this).attr('title', $(this).find('input').attr('title'));
-				});
-			});
-			
-			$.ajax({ url: 'public/tags', }).done(function (data) {
-				bcTags = data;
-			});
-		};
-		if(logInfos.token) initApp();
-
+		}
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
 		$('#searchPlaylist1, #searchPlaylist2').on('input', function () {
@@ -263,43 +228,43 @@ var settingsNotUpdated;
 					}
 					$this.val(newSelection);
 					if($this.val()) $this.change();
-    
+
 					e.preventDefault();
 					return false;
 				});
-              
+
 			} else {
 				var side = $this.attr('side');
 				var isNew = $this.find('[data-select2-tag="true"][value="' + val + '"]');
-                
+
 				if(isNew.length > 0) {
 					e.preventDefault(); // si c'est une nouvelle entrée, le serveur nous dira quand elle sera crée
 					refreshPlaylistSelects();
 				} else if(val != oldVal && val == $('select[type="playlist_select"][side!="' + side + '"] > option:selected[value="' + val + '"]').val()) {
 					$('select[type="playlist_select"][side!="' + side + '"]').val(oldVal);
-                   
+
 					refreshPlaylistSelects().done( function() {
 						$('select[type="playlist_select"]').change();
 					});
 				} else {
 					createCookie('plVal' + side, val, 365);
-    
+
 					$('#playlist' + side).empty();
 					$('#searchPlaylist' + side).val('');
-    
+
 					playlistContentUpdating = fillPlaylist(side);
 					refreshPlaylistDashboard(side);
 				}
 			}
 		});
-		
+
 		$('.overlay').on('click touchstart', function() {
 			var video = $('#video');
 			$('.overlay').hide();
 			video[0].pause();
 			video.removeAttr('src');
 		});
-		
+
 		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="addKara"]', function() {
 			var idKara = $(this).closest('li').attr('idkara');
 			addKaraPublic(idKara);
@@ -327,7 +292,7 @@ var settingsNotUpdated;
 						return a.kara_id;
 					}).join();
 					var urlPost = getPlData(idPlaylistTo).url;
-                   
+
 					$.ajax({
 						url: urlPost,
 						type: 'POST',
@@ -361,7 +326,7 @@ var settingsNotUpdated;
 
 				if(lyricsKara.length == 0) {
 					liKara.append($('<div class="lyricsKara alert alert-info">' + closeButton + '<div class="lyricsKaraLoad">...</div>' + closeButtonBottom + '</div>')
-						.hide().fadeIn(animTime));                
+						.hide().fadeIn(animTime));
 				} else if (!lyricsKara.is(':visible')) {
 					lyricsKara.fadeIn(animTime);
 				}
@@ -370,11 +335,40 @@ var settingsNotUpdated;
 					scrollToElement(playlist.parent(), detailsKara,  liKara.find('.lyricsKara'));
 				});
 			});
+
 			$('.playlist-main').on('click', '.showVideo', function() {
 				showVideo($(this));
-			})
+			});
+
+			$('.playlist-main').on('click', '.makeFav', function() {
+				var liKara = $(this).closest('li');
+				var idKara = liKara.attr('idkara');
+				makeFav(idKara, !$(this).hasClass('currentFav'), $(this));
+			});
+
+			$('.playlist-main').on('click', '.likeKara', function() {
+				likeKara(!$(this).hasClass('currentLike'), $(this));
+			});
+
 		}
 
+		makeFav = function(idKara, make, $el) {
+			var type = make ? 'POST' : 'DELETE';
+			$.ajax({
+				url: 'public/favorites',
+				type: type,
+				data: { 'kara_id' : idKara } })
+				.done(function (response) {
+					if($el) {
+						if(make) {
+							$el.addClass('currentFav');
+						} else {
+							$el.removeClass('currentFav');
+						}
+					}
+				}).fail(function(response) {
+				});
+		};
 		showVideo = function(el) {
 			var previewFile = el.closest('.detailsKara').data('previewfile');
 			if(previewFile) {
@@ -386,10 +380,32 @@ var settingsNotUpdated;
 			}
 		};
 
+		likeKara = function(like, $el) {
+			var idPlc = parseInt($el.closest('li').attr('idplaylistcontent'));
+			var dataLikeKara = {};
+			if (!like) {
+				dataLikeKara = {'downvote' : 'true'};
+			}
+			$.ajax({
+				url: 'public/playlists/public/karas/'+idPlc+'/vote',
+				type: 'POST',
+				data: dataLikeKara })
+				.done(function (response) {
+					if($el) {
+						if(like) {
+							$el.addClass('currentLike');
+						} else {
+							$el.removeClass('currentLike');
+						}
+					}
+				}).fail(function(response) {
+				});
+		};
+
 		// pick a random kara & add it after (not) asking user's confirmation
 		$('.getLucky').on('click', function () {
 			var filter = $('#searchPlaylist' + 1).val();
-            
+
 			$.ajax({ url: 'public/karas/random?filter=' + filter }).done(function (data) {
 				var chosenOne = data;
 				$.ajax({ url: 'public/karas/' + chosenOne }).done(function (data) {
@@ -401,7 +417,7 @@ var settingsNotUpdated;
 							data: { requestedby : logInfos.username }
 						}).done(function () {
 							playlistContentUpdating.done( function() {
-								scrollToKara(2, chosenOne); 
+								scrollToKara(2, chosenOne);
 							});
 							//displayMessage('success', '', 'Kara ajouté à la playlist <i>' + playlistToAdd + '</i>.');
 						});
@@ -409,7 +425,17 @@ var settingsNotUpdated;
 				});
 			});
 		});
-
+		$('.favorites').on('click', function() {
+			var $this = $(this);
+			var newOptionVal;
+			$this.toggleClass('on');
+			if($this.hasClass('on')) {
+				newOptionVal = $('#selectPlaylist1 > option[data-flag_favorites=1]').val();
+			} else {
+				newOptionVal = -1;
+			}
+			$('#selectPlaylist1').val(newOptionVal).change();
+		});
 		$('.plBrowse button').on('click', function() {
 			var $this = $(this);
 			var panel = $this.closest('.panel');
@@ -418,7 +444,7 @@ var settingsNotUpdated;
 			var num_karas = dashboard.attr('karacount');
 			var side = panel.attr('side');
 			var playlist = $('#playlist' + side);
-			
+
 			if($this.attr('action') === 'goTo') {
 				var from, scrollHeight;
 
@@ -445,14 +471,14 @@ var settingsNotUpdated;
 
 		/* set the right value for switchs */
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			$(this).val($(this).is(':checked') ? 1 : 0);
+			$(this).val($(this).is(':checked') ? '1' : '0');
 		});
 
 
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
-			if(container.attr('flagScroll') == true || container.attr('flagScroll') == 'true' )  { 
+			if(container.attr('flagScroll') == true || container.attr('flagScroll') == 'true' )  {
 				//container.attr('flagScroll', false);
 			} else {
 				var playlist = container.find('ul').first();
@@ -466,13 +492,13 @@ var settingsNotUpdated;
 				var shift = 2 * parseInt((12*pageSize/20)/2);
 				var fillerBottom = playlist.find('.filler').last();
 				var fillerTop = playlist.find('.filler').first();
-				
+
 				if (fillerTop.length > 0 && fillerBottom.length > 0) {
 					var scrollDown = container.offset().top + container.innerHeight() >= fillerBottom.offset().top && to < karaCount && nbKaraInPlaylist >= pageSize;
 					var scrollUp = fillerTop.offset().top + fillerTop.innerHeight() > container.offset().top + 10 && from > 0;
 					DEBUG && console.log(container.offset().top,container.innerHeight() , fillerBottom.offset().top ,to < karaCount , nbKaraInPlaylist >= pageSize);
 					DEBUG && console.log(scrollUpdating, (!scrollUpdating || scrollUpdating.state() == 'resolved') , scrollDown, scrollUp);
-				
+
 					if (  (!scrollUpdating || scrollUpdating.state() == 'resolved')  && (scrollDown || scrollUp)) {
 
 
@@ -485,9 +511,9 @@ var settingsNotUpdated;
 							from = Math.max(0, from - shift);
 							to = from + pageSize;
 						}
-						
+
 						DEBUG && console.log('Affichage des karas de ' + from + ' à ' + to);
-						
+
 						setPlaylistRange(idPlaylist, from, to);
 						scrollUpdating = fillPlaylist(side, 'reposition', scrollUp ? "top" : "bottom");
 					}
@@ -520,7 +546,7 @@ var settingsNotUpdated;
 		});
 
 		$('#profilModal').on('show.bs.modal', function (e) {
-			
+
 			if(logInfos && logInfos.role === 'guest') {
 				$(this).find('.profileData').hide();
 			} else {
@@ -541,13 +567,12 @@ var settingsNotUpdated;
 				type: 'POST',
 				data: data })
 				.done(function (response) {
-					
+
 					$('#loginModal').modal('hide');
 					$('#password, #login').removeClass('redBorders');
 					createCookie('mugenToken', response.token, -1);
 					logInfos = response;
 					displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
-					setupAjax();
 					initApp();
 
 				}).fail(function(response) {
@@ -561,7 +586,7 @@ var settingsNotUpdated;
 			var username = $('#login').val();
 			var password = $('#password').val();
 			login(username, password);
-			
+
 		});
 		$('#nav-login .guest').click( function() {
 			new Fingerprint2( { excludeUserAgent: true }).get(function(result, components) {
@@ -587,7 +612,7 @@ var settingsNotUpdated;
 						if(response == true) {
 							displayMessage('info', 'Info',  i18n.__('CL_NEW_USER', username));
 						}
-						
+
 						$('#loginModal').modal('hide');
 						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
 						login(username, password);
@@ -621,21 +646,21 @@ var settingsNotUpdated;
 				$details.empty();
 			} else {
 				$.ajax({
-					url: 'public/users/' + login, 	
+					url: 'public/users/' + login,
 					type: 'GET'})
 					.done(function (response) {
 						$li.addClass('open');
 						$details.empty().html(
 							'<div><i class="glyphicon glyphicon-envelope"></i> ' + (response.email ? response.email : '') + '</div>'
 						+	'<div><i class="glyphicon glyphicon-link"></i> ' + (response.url ? response.url : '') + '</div>'
-						+	'<div><i class="glyphicon glyphicon-leaf"></i> ' + (response.bio ? response.bio : '') + '</div>');	
+						+	'<div><i class="glyphicon glyphicon-leaf"></i> ' + (response.bio ? response.bio : '') + '</div>');
 					});
 			}
 		});
 		/* profil stuff */
 		showProfil = function() {
 			$.ajax({
-				url: 'public/myaccount/', 	
+				url: 'public/myaccount/',
 				type: 'GET'})
 				.done(function (response) {
 
@@ -654,9 +679,9 @@ var settingsNotUpdated;
 						}
 					});
 
-							
+
 					$.ajax({
-						url: 'public/users/', 	
+						url: 'public/users/',
 						type: 'GET'})
 						.done(function (response) {
 							var users = [response.filter(a => a.flag_online==1), response.filter(a => a.flag_online==0)];
@@ -674,7 +699,7 @@ var settingsNotUpdated;
 								});
 							});
 							$userlist.empty().append($(userlistStr));
-						});	
+						});
 				});
 
 		};
@@ -691,7 +716,7 @@ var settingsNotUpdated;
 				// TODO gestion confirmation password
 				var profileData = $('.profileData .profileLine > input').serialize();
 				$.ajax({
-					url: 'public/myaccount', 	
+					url: 'public/myaccount',
 					type: 'PUT',
 					data: profileData
 				})
@@ -704,7 +729,7 @@ var settingsNotUpdated;
 						var listFieldErr = Object.keys(response.responseJSON);
 						listFieldErr.forEach((v, k) => {
 							var $element = $('.profileContent [name="' + v + '"]');
-								
+
 							if(v === 'avatar_file') {
 								// TODO
 							} else if( v === 'login') {
@@ -716,7 +741,7 @@ var settingsNotUpdated;
 								$element.focus();
 							}
 						});
-						
+
 					});
 			}
 		});
@@ -726,11 +751,11 @@ var settingsNotUpdated;
 			$.each(this.files, function(i, file) {
 				dataFile.append('avatarfile', file);
 			});
-			
+
 			dataFile.append('nickname', logInfos.username);
 
 			$.ajax({
-				url: 'public/myaccount', 	
+				url: 'public/myaccount',
 				type: 'PUT',
 				contentType: false,
 				processData: false,
@@ -744,7 +769,7 @@ var settingsNotUpdated;
 					var listFieldErr = Object.keys(response.responseJSON);
 					listFieldErr.forEach((v, k) => {
 						var $element = $('.profileContent [name="' + v + '"]');
-							
+
 						if(v === 'avatar_file') {
 							// TODO
 						} else if( v === 'login') {
@@ -756,11 +781,11 @@ var settingsNotUpdated;
 							$element.focus();
 						}
 					});
-					
+
 				});
-			
+
 		});
-	
+
 		/* profil stuff END */
 		/* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
 		if(isTouchScreen) {
@@ -769,12 +794,12 @@ var settingsNotUpdated;
 			});
 			$('#progressBarColor').addClass('cssTransition');
 		}
-        
+
 		$(window).trigger('resize');
 	});
 
 	socket = io( window.location.protocol + '//' + window.location.hostname + ':1340');
-    
+
 	isTouchScreen =  'ontouchstart' in document.documentElement || query.TOUCHSCREEN != undefined;
 	if(isTouchScreen) $('body').addClass('touch');
 	isSmall = $(window).width() < 1025;
@@ -784,17 +809,17 @@ var settingsNotUpdated;
 	logInfos = { username : null, role : null };
 	pathAvatar = '/avatars/';
 	pathVideo = '/previews/';
-	
+
 
 	DEBUG =  query.DEBUG != undefined;
 	SOCKETDEBUG =  query.SOCKETDEBUG != undefined;
 	isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
 	dragAndDrop = true;
 	stopUpdate = false;
-    
+
 	pageSize = isTouchScreen ? 108 : 132;
 	if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
-	
+
 	saveLastDetailsKara = [[]];
 	playlistRange = {};
 	ajaxSearch = {}, timer;
@@ -807,11 +832,13 @@ var settingsNotUpdated;
 	transferKaraHtml = '<button name="transferKara" class="btn btn-sm btn-action"></button>';
 	checkboxKaraHtml = '<span name="checkboxKara"></span>';
 	infoKaraHtml = '<button name="infoKara" class="btn btn-sm btn-action"></button>';
+	likeKaraHtml = '<button class="likeKara btn btn-sm btn-action"></button>';
 	closeButton = '<button class="closeParent btn btn-action"></button>';
 	closeButtonBottom = '<button class="closeParent bottom btn btn-action"></button>';
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
 	showFullTextButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	showVideoButton = '<button class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	makeFavButton = '<button class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
@@ -840,7 +867,7 @@ var settingsNotUpdated;
 
 	softErrorMessage = [
 		'PLAYLIST_MODE_ADD_SONG_ERROR'];
-	
+
 	tagAcrList = {  'TAG_SPECIAL': 'SPE',
 		'TAG_GAMECUBE': 'GCN',
 		'TAG_TOKU': 'TKU',
@@ -869,7 +896,7 @@ var settingsNotUpdated;
 		'TAG_REMIX': 'RMX',
 		'TAG_VOICELESS': 'NOV',
 		'TAG_ROMANCE': 'ROM' };
-		
+
 	settingsNotUpdated= [];
 
 	/* touchscreen event handling part */
@@ -883,12 +910,12 @@ var settingsNotUpdated;
 			});
 		};
 	}(Hammer.Manager.prototype.emit);
-        
-        
+
+
 	if (isTouchScreen || scope == 'public') {
-        
+
 		/* tap on full lyrics */
-        
+
 		var elem = $('.playlist-main');
 		var manager2 = new Hammer.Manager(elem[0],{
 			prevent_default: false
@@ -896,11 +923,11 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.fullLyrics, .showVideo');
-            
+			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav, .likeKara');
+
 			if($this.length > 0) {
 				e.preventDefault();
-            
+
 				var liKara = $this.closest('li');
 				var idKara = liKara.attr('idkara');
 				if($this.hasClass('fullLyrics')) {
@@ -912,21 +939,24 @@ var settingsNotUpdated;
 							} else {
 								displayModal('alert',i18n.__('LYRICS'), '<center>' + data.join('<br/>') + '</center');
 							}
-						} else { 
-							displayMessage('warning','', i18n.__('NOLYRICS')); 
+						} else {
+							displayMessage('warning','', i18n.__('NOLYRICS'));
 						}
 					});
 				} else if($this.hasClass('showVideo')) {
 					showVideo($this);
+				} else if($this.hasClass('makeFav')) {
+					makeFav(idKara, !$this.hasClass('currentFav'), $this);
+				}else if($this.hasClass('likeKara')) {
+					likeKara(!$this.hasClass('currentLike'), $this);
 				}
-				
-			} 
+			}
 		});
-    
+
 		manager2.on('tap click', function (e) {
 			e.gesture = e;
 			var target = $(e.gesture.target);
-			if(target.closest('.fullLyrics, .showVideo').length > 0
+			if(target.closest('.fullLyrics, .showVideo, .makeFav').length > 0
 								|| target.closest('.actionDiv').length > 0
 								|| target.closest('.infoDiv').length > 0
 								|| target.closest('[name="checkboxKara"]').length > 0
@@ -937,21 +967,21 @@ var settingsNotUpdated;
 			$this.toggleClass('opened');
 			toggleDetailsKara($this);
 			$this.removeClass('pressed');
-    
+
 		});
-    
-        
+
+
 		$('.playlistContainer').on('touchstart mousedown', 'li', function (e) {
 			var $this = $(e.target).closest('li');
 			if($this) currentPanning = $this.get(0);
-		
+
 			$this.addClass('pressed');
 		}).on('touchend mouseup', 'li', function (e) {
 			var $this = $(e.target).closest('li');
 			$this.removeClass('drag');
 			$this.removeClass('pressed');
 		});
-	}  
+	}
 
 	//Will make a request to /locales/en.json and then cache the results
 	i18n = new I18n({
@@ -998,14 +1028,14 @@ var settingsNotUpdated;
 		html = singlePlData.html;
 		canTransferKara = singlePlData.canTransferKara;
 		canAddKara = singlePlData.canAddKara;
-        
+
 
 		dragHandle = isTouchScreen && scope == 'admin' && idPlaylist > 0 ? dragHandleHtml : '';
 		playKara = scope === 'admin' && idPlaylist > 0 ? playKaraHtml : '';
 
 		// public users can add kara to one list, current or public
 		canAddKara = scope === 'admin' ? canAddKara : $('#selectPlaylist' + side + ' > option:selected').data('flag_' + playlistToAdd) == '1';
-     
+
 		urlFiltre = url + '?filter=' + filter + fromTo;
 
 		// ask for the kara list from given playlist
@@ -1020,8 +1050,8 @@ var settingsNotUpdated;
 				//var end = window.performance.now();
 				//alert(end - start);
 				var htmlContent = '', data;
-            
-				if(idPlaylist != -4) {
+
+				if(idPlaylist != -4) {	// general case
 					data = response.content;
 					if(response.infos) {
 						dashboard.attr('karacount', response.infos.count );
@@ -1033,7 +1063,7 @@ var settingsNotUpdated;
 						if (data.hasOwnProperty(key)) {
 							var kara = data[key];
 							if (kara.language === null) kara.language = '';
-                            
+
 							var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
 							+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
 							+	(idPlaylist > 0 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
@@ -1054,13 +1084,14 @@ var settingsNotUpdated;
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
-								+   (isTouchScreen ? '' : infoKaraHtml) + playKara + '</div>')
+								+   (isTouchScreen ? '' : infoKaraHtml) + playKara
+								+	(dashboard.data('flag_public') === 1 ? likeKaraHtml : '') + '</div>')
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
 								+	'<div>' + badges + '</div>'
 								+   '</div>'
-								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')
-								+   '</li>'; 
+								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
+								+   '</li>';
 							}
 						}
 					}
@@ -1068,14 +1099,14 @@ var settingsNotUpdated;
 					// creating filler space for dyanmic scrolling
 					var fillerTopH = Math.min(response.infos.from * 34, container.height()/1.5);
 					var fillerBottomH = Math.min((count - response.infos.from - pageSize) * 34, container.height()/1.5);
-					
+
 					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px"><div class="loader"><div></div></div></li>';
 					var fillerBottom = '<li class="list-group-item filler" style="height:' + fillerBottomH + 'px"><div class="loader"><div></div></div></li>';
-					
+
 					htmlContent =	fillerTop
 								+	htmlContent
 								+	fillerBottom;
-					
+
 
 					if(scrollingType) {
 						container.css('overflow-y','hidden');
@@ -1084,7 +1115,7 @@ var settingsNotUpdated;
 							var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
 						}
 					}
-		
+
 					window.requestAnimationFrame( function() {
 						document.getElementById('playlist' + side).innerHTML = htmlContent;
 						deferred.resolve();
@@ -1092,7 +1123,7 @@ var settingsNotUpdated;
 						//window.requestAnimationFrame( function() {
 						var y = container.scrollTop();
 						if(scrollingType) {
-							
+
 							container.css('overflow-y','auto');
 							if(scrollingType === 'reposition') {
 								var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
@@ -1108,7 +1139,7 @@ var settingsNotUpdated;
 									if(currentlyPlaying.length > 0) y = currentlyPlaying.offset().top - currentlyPlaying.parent().offset().top;
 								}
 							}
-							container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix							
+							container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix
 						}
 						container.scrollTop(
 							Math.min(playlist.height() - fillerBottomH - container.height(),
@@ -1133,11 +1164,11 @@ var settingsNotUpdated;
 							+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
 							+	'</span></div>');
 							$.each(listTypeBlc, function(k, v){
-								if(v !== 'BLCTYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('BLCTYPE_',''), text: i18n.__(v)}));                        
+								if(v !== 'BLCTYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('BLCTYPE_',''), text: i18n.__(v)}));
 							});
 						}
 					}
-                   
+
 					for (var k in data) {
 						if (data.hasOwnProperty(k)) {
 							if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
@@ -1164,14 +1195,14 @@ var settingsNotUpdated;
 					$('#bcType').change();
 					deferred.resolve();
 				}
-              
-                
-           
+
+
+
 				// depending on the playlist we're in, notify if the other playlist can add & transfer to us
 				$('#panel' + non(side)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
-            
+
 				//var time = console.timeEnd('html'); DEBUG && console.log(data.length);
-           
+
 				// drag & drop part
 				// TODO revoir pour bien définir le drag&drop selon les droits
 				if (dragAndDrop && scope === 'public' && mode != 'mobile' && !isTouchScreen) {
@@ -1196,7 +1227,7 @@ var settingsNotUpdated;
 							},
 							appendTo: dropZone,
 							zIndex: 9999,
-							delay: 0, 
+							delay: 0,
 							distance: 0
 						});
 						dropZone.droppable({
@@ -1245,7 +1276,7 @@ var settingsNotUpdated;
                 }
                     */
 					/*
-                helper: function(event, ui){ 
+                helper: function(event, ui){
                     var li = $(ui);
                     li.find('.detailsKara, .lyricsKara').remove();
                     li.css('height', 'auto');
@@ -1254,10 +1285,10 @@ var settingsNotUpdated;
                         ui.placeholder.height(ui.item.height());
                     },
                     */
-                
+
 				}
 			});
-		  
+
 		return deferred.promise();
 	};
 	/**
@@ -1269,7 +1300,7 @@ var settingsNotUpdated;
 		lengthFactor = lengthFactor ? lengthFactor : 1;
 		var parent = $('#playlist' + side).parent();
 		var element = parent.find('li[idkara="' + idKara + '"]');
-		
+
 		if (element.length > 0) {
 			/*var willParentSroll = parent[0].scrollTop != parent[0].clientTop|| (parent[0].clientHeight != parent[0].scrollHeight
 									&& parent.scrollTop() + element.offset().top - parent.offset().top != 0);*/
@@ -1291,8 +1322,8 @@ var settingsNotUpdated;
 			});
 		}
 	};
-    
-	/** 
+
+	/**
     * Generic function scrolling to an element in its parent
     * @param {Element} parent - parent of the element
     * @param {Element} element - element to scroll to
@@ -1307,7 +1338,7 @@ var settingsNotUpdated;
 		}
 	};
 
-	/** 
+	/**
     * refresh playlist lists
     */
 	refreshPlaylistSelects = function () {
@@ -1316,7 +1347,7 @@ var settingsNotUpdated;
 		var playlistList = {};
 		var select1 = $('#selectPlaylist1'), select2 = $('#selectPlaylist2');
 		var val1 = select1.val(), val2 = select2.val();
-        
+
 		$.ajax({ url: scope + '/playlists', }).done(function (data) {
 			playlistList = data; // object containing all the playlists
 			var shiftCount = 0;
@@ -1326,14 +1357,19 @@ var settingsNotUpdated;
 			if (scope === 'admin' || settings['EngineAllowViewBlacklistCriterias'] == 1)  playlistList.splice(shiftCount, 0, { 'playlist_id': -4, 'name': 'Blacklist criterias', 'flag_visible' : settings['EngineAllowViewBlacklistCriterias']});
 			if (scope === 'admin' || settings['EngineAllowViewBlacklist'] == 1)           playlistList.splice(shiftCount, 0, { 'playlist_id': -2, 'name': 'Blacklist', 'flag_visible' : settings['EngineAllowViewBlacklist'] });
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'num_karas' : kmStats.totalcount });
-			
+
+			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
+			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="1"></option>';
 			// building the options
-			var optionHtml = '';
+			var optionListHtml = '';
 			$.each(playlistList, function (key, value) {
 				var params = dataToDataAttribute(value);
-				optionHtml += '<option ' + params + '  value=' + value.playlist_id + '> ' + value.name + '</option>';
+				var optionHtml = '<option ' + params + '  value=' + value.playlist_id + '> ' + value.name + '</option>';
+				optionListHtml += optionHtml;
+
 			});
-			$('select[type="playlist_select"]').empty().html(optionHtml);
+			$('select[type="playlist_select"]').empty().html(optionListHtml);
+			if(scope === 'public') $('#selectPlaylist1').empty().html(searchOptionListHtml);
 
 			// setting the right values to newly refreshed selects
 			// for public interface, panel1Default to keep kara list, playlistToAddId to show the playlist where users can add
@@ -1342,13 +1378,17 @@ var settingsNotUpdated;
 				if(scope === 'public') {
 					select1.val(val1? val1 : panel1Default);
 					select2.val(val2? val2 : playlistToAddId);
+					if (webappMode == 1) {
+						var currentPlaylistId = select2.find('option[data-flag_current="1"]').attr('value');
+						select2.val(currentPlaylistId);
+					}
 				} else {
 					var plVal1Cookie = readCookie('plVal1');
 					var plVal2Cookie = readCookie('plVal2');
 					select1.val(val1? val1 : plVal1Cookie ? plVal1Cookie : -1);
 					select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : playlistToAddId);
 				}
-			
+
 				$('.plSelect .select2').select2({ theme: 'bootstrap',
 					templateResult: formatPlaylist,
 					templateSelection : formatPlaylist,
@@ -1361,7 +1401,7 @@ var settingsNotUpdated;
 				}
 				deferred.resolve();
 			});
-		}).fail(function (data) {	
+		}).fail(function (data) {
 			DEBUG && console.log(data);
 		});
 		return deferred.promise();
@@ -1397,15 +1437,18 @@ var settingsNotUpdated;
 				if (option.data(e) == '1') dashboard.find('button[name="' + e + '"]').removeClass('btn-default').addClass('btn-primary');
 				else dashboard.find('button[name="' + e + '"]').removeClass('btn-primary').addClass('btn-default');
 			});
-			
+
 			// overcomplicated stuff to copy data about playlist from select to container
 			// because storing var as data in html via jquery doesn't affect actual html attributes...
 			var optionAttrList = option.prop('attributes');
 			var attrList = dashboard.prop('attributes');
-			var attrListStr = Object.keys(attrList).map(function(k,v){
-				return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
-			}).join(' ');
-			dashboard.removeAttr(attrListStr);
+			if(attrList) {
+				var attrListStr = Object.keys(attrList).map(function(k,v){
+					return attrList[v].name.indexOf('data-') > -1 ? attrList[v].name : '';
+				}).join(' ');
+				dashboard.removeAttr(attrListStr);
+			}
+		
 			
 			$.each(optionAttrList, function() {
 				dashboard.attr(this.name, this.value);
@@ -1426,25 +1469,25 @@ var settingsNotUpdated;
 		var idPlaylist = dashboard.find('.plSelect select > option:selected').val();
 
 		var range = getPlaylistRange(idPlaylist);
-        
+
 		var max = range.from + $('#playlist' + side + ' > li[idkara]').length;
-		
+
 		var plInfos = '';
 		if(idPlaylist) {
-			plInfos = idPlaylist > -4 ? range.from + '-' + max : '';
+			plInfos = idPlaylist != -4? range.from + '-' + max : '';
 			plInfos +=
-				(idPlaylist > -4 ?
+				(idPlaylist != -4 ?
 					' / ' + dashboard.attr('karacount') + (!isTouchScreen ? ' karas' : '')
 					: '') +
 				(idPlaylist > -1 ?
 					' ~ dur. ' + secondsTimeSpanToHMS(dashboard.data('length'), 'hm') + ' / re. ' + secondsTimeSpanToHMS(dashboard.data('time_left'), 'hm')
 					: '');
-					
+
 			dashboard.parent().find('.plInfos').text(plInfos).data('from', range.from).data('to', max);
 		}
 	};
 
-	/** 
+	/**
     * refresh the player infos
     * @param {Function} callback - function to call at the end of the refresh
     * @param {anything} param1 - param to give to this function
@@ -1452,7 +1495,7 @@ var settingsNotUpdated;
 	refreshPlayerInfos = function (data, callback, param1) {
 		if (oldState != data) {
 			var newWidth = $('#karaInfo').width() * parseInt(10000 * ( data.timePosition + refreshTime/1000) / $('#karaInfo').attr('length')) / 10000 + 'px';
-          
+
 			if (data.timePosition != oldState.timePosition && !stopUpdate && $('#karaInfo').attr('length') != 0) {
 				var elm = document.getElementById('progressBarColor');
 				elm.style.transform =  'translateX(' + newWidth + ')';
@@ -1477,7 +1520,7 @@ var settingsNotUpdated;
 					DEBUG && console.log('ERR : Kara status unknown : ' + status);
 				}
 			}
-			if($('input[name="lyrics"]').is(':checked') || mode == 'mobile' && $('#switchInfoBar').hasClass('showLyrics')) {
+			if($('input[name="lyrics"]').is(':checked') || (mode == 'mobile' || webappMode == 1) && $('#switchInfoBar').hasClass('showLyrics')) {
 				var text = data['subText'];
 				/* if(oldState['subText'] != null && text != null && text.indexOf(oldState['subText']) > -1 && text != oldState['subText']) {
                     text.replace(oldState['subText'], "<span style='color:red;'>" + oldState['subText'] + "</span>");
@@ -1486,19 +1529,24 @@ var settingsNotUpdated;
 				$('#karaInfo > span').html(text);
 			}
 			if (data.currentlyPlaying !== oldState.currentlyPlaying && data.currentlyPlaying > 0) {
-                
+
 				var barCss = $('#progressBarColor.cssTransform');
 				barCss.removeClass('cssTransform');
 				$('#progressBarColor').stop().css({transform : 'translateX(0)'});
 				barCss.addClass('cssTransform');
 
 				$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
-					$('#karaInfo').attr('idKara', dataKara[0].kara_id);
-					$('#karaInfo').attr('length', dataKara[0].duration);
-					$('#karaInfo > span').text( buildKaraTitle(dataKara[0]) );
-					$('#karaInfo > span').data('text', buildKaraTitle(dataKara[0]) );
+					var kara = dataKara[0];
+					$('#karaInfo').attr('idKara', kara.kara_id);
+					$('#karaInfo').attr('length', kara.duration);
+					$('#karaInfo > span').text( buildKaraTitle(kara) );
+					$('#karaInfo > span').data('text', buildKaraTitle(kara) );
+					
+					if(webappMode === 1) {
+						buildKaraDetails(kara, 'karaCard');
+					}
 				});
-			} 
+			}
 			if (data.showSubs != oldState.showSubs) {
 				if (data.showSubs) {
 					$('#showSubs').attr('name','hideSubs');
@@ -1535,8 +1583,8 @@ var settingsNotUpdated;
 			}
 		}
 	};
- 
-	/** 
+
+	/**
     * Build kara title for users depending on the data
     * @param {Object} data - data from the kara
     * @param {String} search - (optional) search made by the user
@@ -1556,7 +1604,7 @@ var settingsNotUpdated;
 		}
 		return titleText;
 	};
- 
+
 	toggleDetailsKara = function (el) {
 		var liKara = el.closest('li');
 		var idKara = parseInt(liKara.attr('idkara'));
@@ -1579,7 +1627,7 @@ var settingsNotUpdated;
 		} else if (infoKara.is(':visible')) {
 			saveDetailsKara(idPlaylist, idKara, 'remove');
 			infoKara.add(liKara.find('.lyricsKara')).fadeOut(animTime);
-            
+
 			liKara.find('[name="infoKara"]').css('border-color', '');
 		} else {
 			saveDetailsKara(idPlaylist, idKara, 'add');
@@ -1588,7 +1636,7 @@ var settingsNotUpdated;
 		}
 	};
 
-	/** 
+	/**
     * Build kara details depending on the data
     * @param {Object} data - data from the kara
     * @param {String} mode - html mode
@@ -1612,7 +1660,7 @@ var settingsNotUpdated;
 			}
 		}
 		var details = {
-			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['username'] ? i18n.__('DETAILS_ADDED_3', data['username']) : '')
+			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
 			, 'BLCTYPE_6': 			data['author']
@@ -1635,22 +1683,46 @@ var settingsNotUpdated;
 			} else return '';
 		});
 		var htmlTable = '<table>' + htmlDetails.join('') + '</table>';
-		infoKaraTemp = 'no mode specified';
+		var infoKaraTemp = 'no mode specified';
+		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButton.replace('makeFav','makeFav currentFav') : makeFavButton;
+
 		if (htmlMode == 'list') {
-			infoKaraTemp = '<div class="detailsKara alert alert-info">' + (isTouchScreen ? '' : closeButton)
+			infoKaraTemp = '<div class="detailsKara alert alert-info">'
+				+ '<div class="topRightButtons">'
+				+ (isTouchScreen ? '' : closeButton)
+				+ makeFavButtonAdapt
+				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
-				+ showFullTextButton + htmlTable + '</div>';
+				+ '</div>'
+				+ htmlTable
+				+ '</div>';
 		} else if (htmlMode == 'mobile') {
 			infoKaraTemp = '<div class="detailsKara z-depth-1">'
-			+ (data['previewfile'] ? showVideoButton : '')
-			+ showFullTextButton + htmlTable + '</div>';
+				+ '<div class="topRightButtons">'
+				+ makeFavButtonAdapt
+				+ showFullTextButton
+				+ (data['previewfile'] ? showVideoButton : '')
+				+ '</div>'
+				+ htmlTable
+				+ '</div>';
+		} else if (htmlMode == 'karaCard') {
+			$.ajax({ url: 'public/karas/' + data.kara_id + '/lyrics' }).done(function (data) {
+				var lyrics = i18n.__('NOLYRICS');
+				if (typeof data === 'object') {
+					lyrics =  data.join('<br/>');
+				}
+				$('.karaCard .lyricsKara').html(lyrics);
+			});
+			infoKaraTemp = '<div class="topRightButtons">' + makeFavButtonAdapt + '</div>' + htmlTable;
+			$('.karaCard .details').html(infoKaraTemp);
+			$('.karaCard > div').show();
 		}
 		return infoKaraTemp;
 	};
-	
+
 	/*
 	*	Manage memory of opened kara details
-	*	idPlaylist {Int} : id of the playlist the details are opened/closed in 
+	*	idPlaylist {Int} : id of the playlist the details are opened/closed in
 	*	idKara {Int} : id of the kara having his details opened
 	*	command {Int} : command to execute, "add"/"remove" to add/remove to/from the list, nothing to just know if the details are opened
 	*/
@@ -1690,9 +1762,60 @@ var settingsNotUpdated;
 		return $option;
 	};
 
+	// Some html & stats init
+	initApp = function() {
+
+		setupAjax();
+
+		showedLoginAfter401 = false;
+
+		$.ajax({ url: 'public/stats' }).done(function (data) {
+			kmStats = data;
+			if(scope === 'public') {
+				$('#selectPlaylist1 > option[value=-1]')
+					.data('num_karas', kmStats.totalcount).attr('data-num_karas', kmStats.totalcount);
+			}
+		});
+
+		passwordUpdating = $.Deferred().resolve();
+		settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
+
+		settingsUpdating.done( function() {
+			settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
+			playlistsUpdating = refreshPlaylistSelects();
+			playlistsUpdating.done(function () {
+				playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
+				refreshPlaylistDashboard(1);
+				refreshPlaylistDashboard(2);
+
+				$(window).trigger('resize');
+			});
+		});
+
+		if(logInfos.role != 'guest') {
+			$('.pseudoChange').show();
+			$('#searchParent').css('width','');
+		} else {
+			$('.pseudoChange').hide();
+			$('#searchParent').css('width','100%');
+		}
+
+		initSwitchs();
+
+		$('.bootstrap-switch').promise().then(function(){
+			$(this).each(function(){
+				$(this).attr('title', $(this).find('input').attr('title'));
+			});
+		});
+
+		$.ajax({ url: 'public/tags', }).done(function (data) {
+			bcTags = data;
+		});
+	};
+
 	$(window).resize(function () {
 		//  initSwitchs();
-		isSmall = $(window).width() < 1025;        
+		isSmall = $(window).width() < 1025;
 		var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
 		var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
 		$('#playlist1').parent().css('height', 'calc(100% - ' + (scope === 'public' ? 0 : topHeight1) + 'px ');
@@ -1715,9 +1838,9 @@ var settingsNotUpdated;
 						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
 			$modal.find('.modal-body').css('max-height', $('body').height() - shrink + 'px');
 		});
-		
+
 	};
-	/** 
+	/**
     * Init bootstrapSwitchs
     */
 	initSwitchs = function () {
@@ -1744,7 +1867,7 @@ var settingsNotUpdated;
 
 	getPlaylistRange = function(idPl) {
 		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();
-        
+
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
 		return playlistRange[idPl][search] ? playlistRange[idPl][search] : { from : 0, to : pageSize };
 	};
@@ -1760,10 +1883,10 @@ var settingsNotUpdated;
 		var singlePlData = plData[idPlNorm] ? jQuery.extend({}, plData[idPlNorm]) : null;
 
 		if(singlePlData) singlePlData.url = singlePlData.url.replace('pl_id', idPl);
-        
+
 		return singlePlData;
 	};
-    
+
 	sideOfPlaylist = function(idPlaylist) {
 		var side = $('.plSelect select option:selected[value="' + idPlaylist + '"]').parent().attr('side');
 		return side;
@@ -1771,7 +1894,7 @@ var settingsNotUpdated;
 
 	addKaraPublic = function(idKara, doneCallback, failCallback) {
 		//var karaName = $('li[idkara="' + idKara + '"]').first().find('.contentDiv').text();
-		
+
 		$.ajax({ url: 'public/karas/' + idKara,
 			type: 'POST',
 			data: { requestedby : logInfos.username },
@@ -1779,12 +1902,16 @@ var settingsNotUpdated;
 				var side = 2;
 				if(sideOfPlaylist(playlistToAddId) == side) {
 					playlistContentUpdating.done( function() {
-						scrollToKara(side, idKara); 
+						scrollToKara(side, idKara);
 					});
 				}
 			}
 		}).done(function() {
-			if(doneCallback) doneCallback();
+			var idSearchList = $('#searchPlaylist1').val();
+			if(doneCallback) {
+				if(idSearchList == 1) doneCallback();
+				else  failCallback();
+			}
 			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		}).fail(function() {
 			if(failCallback) failCallback();
@@ -1796,21 +1923,21 @@ var settingsNotUpdated;
 	socket.on('playerStatus', function(data){
 		refreshPlayerInfos(data);
 	});
-    
+
 	socket.on('settingsUpdated', function(){
 		passwordUpdating.done(function () {
 			settingsUpdating.done(function () {
 				settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
 
 				settingsUpdating.done(function (){
-					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
+					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
 																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
 						playlistsUpdating = refreshPlaylistSelects();
-			
+
 						playlistsUpdating.done(function () {
 							refreshPlaylistDashboard(1);
 							refreshPlaylistDashboard(2);
-					
+
 						});
 					}
 				});
@@ -1819,16 +1946,16 @@ var settingsNotUpdated;
 	});
 
 	socket.on('playlistsUpdated', function(){
-    
+
 		if(!(($('#selectPlaylist2').data('select2') && $('#selectPlaylist2').data('select2').isOpen())
-				|| ($('#selectPlaylist1').data('select2') && $('#selectPlaylist1').data('select2').isOpen()))) { 
+				|| ($('#selectPlaylist1').data('select2') && $('#selectPlaylist1').data('select2').isOpen()))) {
 			playlistsUpdating = refreshPlaylistSelects();
 		}
 	});
 
 	socket.on('playlistInfoUpdated', function(idPlaylist){
 		if (idPlaylist) {
-			if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen() 
+			if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
 																|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
 				playlistsUpdating = refreshPlaylistSelects();
 
@@ -1838,7 +1965,7 @@ var settingsNotUpdated;
 						refreshPlaylistDashboard(side);
 					});
 				}
-               
+
 			}
 		}
 	});
@@ -1846,13 +1973,13 @@ var settingsNotUpdated;
 	socket.on('playingUpdated', function(data){
 		var side = sideOfPlaylist(data.playlist_id);
 		DEBUG && console.log(side, data.playlist_id);
-		
+
 		if(side) {
 			var playlist = $('#playlist' + side);
 			var container = playlist.parent();
 			var previousCurrentlyPlaying = playlist.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
 			var newCurrentlyPlaying = playlist.find('li[idplaylistcontent="' + data.plc_id + '"]');
-			
+
 			if(previousCurrentlyPlaying.length > 0 && newCurrentlyPlaying.length > 0 && isVisible(previousCurrentlyPlaying, container)) {
 				var posKaraMarker = previousCurrentlyPlaying.offset().top;
 				var newPosKaraMarker = newCurrentlyPlaying.offset().top;
@@ -1895,7 +2022,7 @@ var settingsNotUpdated;
 		if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
 			playlistContentUpdating = fillPlaylist(side);
 		}
-       
+
 	});
 
 	socket.on('whitelistUpdated', function(idPlaylist){
@@ -1919,7 +2046,7 @@ var settingsNotUpdated;
 		packet.data = ['*'].concat(args);
 		onevent.call(this, packet);
 	};
-    
+
 	socket.on('*', function(e, data) {
 		true && SOCKETDEBUG && DEBUG && console.log(e, data);
 	});

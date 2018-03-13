@@ -10,30 +10,29 @@ import net from 'net';
 import logger from 'winston';
 import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
-import resolveSysPath from './_common/utils/resolveSyspath';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
 
+
 process.on('uncaughtException', function (exception) {
-	console.log(exception); 
+	console.log(exception);
 });
 
 process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);	
+	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
-
-
-const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
-if (appPath) {
-	main()
-		.catch(err => {
-			logger.error(`[Launcher] Error during async launch : ${err}`);
-			exit(1);
-		});
+let appPath;
+if (process.pkg) {
+	appPath = join(process.execPath,'../');
 } else {
-	logger.error('[Launcher] Unable to detect SysPath !');
-	exit(1);
+	appPath = join(__dirname,'../');
 }
+
+main()
+	.catch(err => {
+		logger.error(`[Launcher] Error during launch : ${err}`);
+		exit(1);
+	});
 
 async function main() {
 	const argv = parseArgs();	
@@ -90,12 +89,28 @@ async function main() {
 
 	/**
 	 * Calling engine.
-	 */		
+	 */
 	initEngine();
 }
 
 /**
+<<<<<<< HEAD
  * Checking if application paths exist. 
+=======
+ * Workaround for bug https://github.com/babel/babel/issues/5542
+ * Delete this once the bug is resolved.
+ */
+function parseArgs() {
+	if (process.argv.indexOf('--') >= 0) {
+		return minimist(process.argv.slice(3));
+	} else {
+		return minimist(process.argv.slice(2));
+	}
+}
+
+/**
+ * Checking if application paths exist.
+>>>>>>> next
  */
 async function checkPaths(config) {
 
@@ -161,11 +176,3 @@ async function restoreBackupFolder(pathKara, config) {
  * Workaround for bug https://github.com/babel/babel/issues/5542
  * Delete this once the bug is resolved.
  */
-
-function parseArgs() {
-	if (process.argv.indexOf('--') >= 0) {
-		return minimist(process.argv.slice(3));
-	} else {
-		return minimist(process.argv.slice(2));
-	}
-}

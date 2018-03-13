@@ -1,5 +1,3 @@
-import { reporters } from 'mocha';
-
 const assert = require('assert');
 const supertest = require('supertest');
 const request = supertest('http://localhost:1339');
@@ -7,7 +5,7 @@ const fs = require('fs');
 const ini = require('ini');
 const extend = require('extend');
 
-var SETTINGS = ini.parse(fs.readFileSync('config.ini.default', 'utf-8'));
+var SETTINGS = ini.parse(fs.readFileSync('config.ini.sample', 'utf-8'));
 if(fs.existsSync('config.ini')) {
 	// et surcharge via le contenu du fichier personnalisé si présent
 	var configCustom = ini.parse(fs.readFileSync('config.ini', 'utf-8'));
@@ -15,10 +13,23 @@ if(fs.existsSync('config.ini')) {
 
 }
 
+function toString(o) {
+	Object.keys(o).forEach(k => {
+		if (typeof o[k] === 'object') {
+			return toString(o[k]);
+		}
+    
+		o[k] = '' + o[k];
+	});
+  
+	return o;
+}
+
 const usernameAdmin = 'adminTest';
 const passwordAdmin = 'ceciestuntest';
-var token;
-
+let token;
+let current_playlist_id;
+let current_plc_id;
 describe('Test public API', function() {
 	it('Basic connection test', function(done) {
 		request
@@ -139,15 +150,18 @@ describe('Test public API', function() {
 	});
 	it('List current playlist information', function() {
 		return request
-			.get('/api/v1/public/playlists/current/karas')
+			.get('/api/v1/public/playlists/current')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
-			.expect(200);
+			.expect(200)
+			.then((response) => {
+				current_playlist_id = response.body.data.playlist_id;				
+			});
 	});
 	it('List public playlist contents', function() {
 		return request
-			.get('/api/v1/public/playlists/public')
+			.get('/api/v1/public/playlists/public/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -167,6 +181,7 @@ describe('Test public API', function() {
 			});
 	});
 	var plc_id;
+	
 	it('List contents from current playlist', function() {
 		return request
 			.get('/api/v1/public/playlists/current/karas')
@@ -177,6 +192,7 @@ describe('Test public API', function() {
 			.then(function(response) {
 				// We get the PLC_ID of our last karaoke, the one we just added
 				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id;
+				current_plc_id = plc_id;
 				var result = false;
 				if (response.body.data.content.length >= 1) result = true;
 				assert.equal(result, true);
@@ -304,29 +320,29 @@ describe('Managing karaokes in playlists', function() {
 			});
 	});
 	
-	it('Edit karaoke from playlist 1 : flag_playing', function() {
+	it('Edit karaoke from current playlist : flag_playing', function() {
 		var data = {
 			flag_playing: '1'
 		};
 		return request
-			.put('/api/v1/admin/playlists/1/karas/'+plc_id)
+			.put('/api/v1/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(200)
-			.then(function(response) {
+			.then(function(response) {				
 				assert.equal(response.body.code,'PL_CONTENT_MODIFIED');
-				assert.equal(response.body.data, plc_id);
-			});
+				assert.equal(response.body.data, current_plc_id);
+			});			
 	});
 	
-	it('Edit karaoke from playlist 1 : position', function() {
+	it('Edit karaoke from current playlist : position', function() {
 		var data = {
 			pos: '1'
 		};
 		return request
-			.put('/api/v1/admin/playlists/1/karas/'+plc_id)
+			.put('/api/v1/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -334,8 +350,8 @@ describe('Managing karaokes in playlists', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.equal(response.body.code,'PL_CONTENT_MODIFIED');
-				assert.equal(response.body.data, plc_id);
-			});
+				assert.equal(response.body.data, current_plc_id);
+			});			
 	});
 	
 	it('Shuffle playlist 1', function() {
@@ -383,7 +399,7 @@ describe('Managing settings', function(){
 	});
 	
 	it('Update settings', function() {
-		var data = SETTINGS;
+		var data = toString(SETTINGS);
 		return request
 			.put('/api/v1/admin/settings')
 			.set('Accept', 'application/json')
@@ -392,7 +408,7 @@ describe('Managing settings', function(){
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response){
-				assert.equal(response.body.data.isTest,true);
+				assert.equal(response.body.data.isTest,'true');
 			});
 	});
 });

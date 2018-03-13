@@ -4,19 +4,27 @@ Welcome to Karaoke Mugen.
 
 Karaoke Mugen is a playlist manager for video karaoke. It's made of a webapp and an engine. The webapp allows users to add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
 
-It works like a japanese karaoke where anyone can add songs one after another to a playlist with their smartphone, tab or computer. Another mode allows users to add videos to a suggestion list the admin can then pick songs from.
+It works like a japanese karaoke where anyone can add songs one after another to a playlist with their smartphone, tablet or computer. Another mode allows users to add videos to a suggestion list the admin can then pick songs from.
 
 Karaoke Mugen works offline and does not require an Internet connection.
 
-## Download
+## Install
+
+If you don't want to install manually, prepared binaries are available [on the website](http://mugen.karaokes.moe/download.html) for Windows and macOS. For Linux, follow the following steps.
+
+### Download
 
 To install, git clone this repository or download a copy as ZIP.
 
-If you don't have `yarn`, install it :
+### Yarn
+
+If you don't have `yarn`, install it first :
 
 ```sh
 npm install -g yarn
 ```
+
+### Dependencies
 
 Then launch `yarn` to install dependencies.
 
@@ -24,17 +32,27 @@ Then launch `yarn` to install dependencies.
 yarn install
 ```
 
-If you don't want to install manually, prepared binaries are available [on the website](http://mugen.karaokes.moe/download.html)
+### React
+
+Part of the web application is in reactJS and needs to be built :
+
+```sh
+yarn BuildReact
+```
+
+### Samples
 
 Create a folder called `app/data` and put the contents of the `samples` folder inside to try it out.
+
+### Launch
 
 To launch the app :
 
 ```sh
-npm start
+yarn start
 ```
 
-Generating a database ie required on first launch and is done automatically if the file `app/data/karas.sqlite3` is missing. You can trigger it manually later by connectiong to `http://localhost:1338` (default password is `gurdil` or whatever `AdminPassword` is defined as in your `config.ini` file) after you manually placed karaokes in your `app/data/` folder (see below). Another way is to delete the `app/data/karas.sqlite3` and let the app regenerate it.
+Generating a database ie required on first launch and is done automatically if the file `app/data/karas.sqlite3` is missing. You can trigger it manually later by connectiong to `http://localhost:1338` (default password for user `admin` is `gurdil`). Another way is to delete the `app/data/karas.sqlite3` and let the app regenerate it or launch with the `--generate` command-line option.
 
 ## System requirements
 
@@ -51,7 +69,7 @@ It requires :
 mpv (video player) and ffmpeg/ffprobe (video processing) are required by Karaoke Mugen
 
 * mpv 0.25 or up for Windows/Linux, 0.27 or up required for macOS ([mpv's website](http://mpv.io))
-* ffmpeg / ffprobe ([ffmpeg's website](http://www.ffmpeg.org))
+* ffmpeg / ffprobe 3 or later ([ffmpeg's website](http://www.ffmpeg.org))
 
 #### Windows/macOS
 
