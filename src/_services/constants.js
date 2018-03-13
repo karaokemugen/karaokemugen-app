@@ -62,7 +62,7 @@ export const karaTypes = Object.freeze({
 
 export const karaTypesArray = Object.freeze(Object.keys(karaTypes));
 
-/** Map utilisée pour la génération de la base de données. */
+/** Map used for database generation */
 export const karaTypesMap = Object.freeze(new Map([
 	[karaTypes.OP, 'TYPE_OP,3'],
 	[karaTypes.ED, 'TYPE_ED,3'],
@@ -75,7 +75,7 @@ export const karaTypesMap = Object.freeze(new Map([
 	[karaTypes.LIVE, 'TYPE_LIVE,3'],
 ]));
 
-/** Extraction du type à partir d'une chaîne de caractères. */
+/** Extracting type from a string */
 export function getType(types) {
 	return types.split(/\s+/).find(t => karaTypesArray.includes(t));
 }
