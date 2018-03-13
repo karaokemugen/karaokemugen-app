@@ -4,7 +4,7 @@ import {resolve, join} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncCopy, asyncExists} from '../_common/utils/files';
 import remove from 'lodash.remove';
 import sample from 'lodash.sample';
-import isEmpty from 'lodash.isEmpty';
+import isEmpty from 'lodash.isempty';
 import {emit,on} from '../_common/utils/pubsub';
 const sizeOf = require('image-size');
 import {buildJinglesList} from './jingles';
