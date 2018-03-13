@@ -5,12 +5,24 @@ const fs = require('fs');
 const ini = require('ini');
 const extend = require('extend');
 
-var SETTINGS = ini.parse(fs.readFileSync('config.ini.default', 'utf-8'));
+var SETTINGS = ini.parse(fs.readFileSync('config.ini.sample', 'utf-8'));
 if(fs.existsSync('config.ini')) {
 	// et surcharge via le contenu du fichier personnalisé si présent
 	var configCustom = ini.parse(fs.readFileSync('config.ini', 'utf-8'));
 	extend(true,SETTINGS,configCustom);
 
+}
+
+function toString(o) {
+	Object.keys(o).forEach(k => {
+		if (typeof o[k] === 'object') {
+			return toString(o[k]);
+		}
+    
+		o[k] = '' + o[k];
+	});
+  
+	return o;
 }
 
 const usernameAdmin = 'adminTest';
@@ -387,7 +399,7 @@ describe('Managing settings', function(){
 	});
 	
 	it('Update settings', function() {
-		var data = SETTINGS;
+		var data = toString(SETTINGS);
 		return request
 			.put('/api/v1/admin/settings')
 			.set('Accept', 'application/json')
@@ -396,7 +408,7 @@ describe('Managing settings', function(){
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response){
-				assert.equal(response.body.data.isTest,true);
+				assert.equal(response.body.data.isTest,'true');
 			});
 	});
 });

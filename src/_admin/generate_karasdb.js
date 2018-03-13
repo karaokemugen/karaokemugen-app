@@ -1,7 +1,8 @@
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {resolve} from 'path';
-import {deburr, isEmpty} from 'lodash';
+import deburr from 'lodash.deburr';
+import isEmpty from 'lodash.isempty';
 import {open} from 'sqlite';
 import {forEach as csvForEach} from 'csv-string';
 import {has as hasLang} from 'langs';

@@ -2,7 +2,9 @@ const logger = require('winston');
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
 import {resolve, join} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncCopy, asyncExists} from '../_common/utils/files';
-import {remove, sample, isEmpty} from 'lodash';
+import remove from 'lodash.remove';
+import sample from 'lodash.sample';
+import isEmpty from 'lodash.isempty';
 import {emit,on} from '../_common/utils/pubsub';
 const sizeOf = require('image-size');
 import {buildJinglesList} from './jingles';
@@ -436,7 +438,7 @@ export function displayInfo(duration) {
 	}
 
 	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://mugen.karaokes.moe`;
-	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx30}{\\fscy30}{\\i1}'+version+'{\\i0}';
+	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {
 		command: [
 			'expand-properties',

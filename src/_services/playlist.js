@@ -12,10 +12,13 @@ const plDB = require('../_dao/playlist');
 import {resolve} from 'path';
 import {now} from 'unix-timestamp';
 import logger from 'winston';
-import {deburr, isEmpty, sample, shuffle} from 'lodash';
+import deburr from 'lodash.deburr';
+import isEmpty from 'lodash.isempty';
+import sample from 'lodash.sample';
+import shuffle from 'lodash.shuffle';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {emitWS} from '../_ws/websocket';
+import {emitWS} from '../_webapp/frontend';
 import {emit} from '../_common/utils/pubsub';
 
 function emitPlayingUpdated() {

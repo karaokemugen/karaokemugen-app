@@ -28,7 +28,8 @@ export const defaultGuestNames = [
 	'NinaDeFMA',
 	'Hokuto de Cuisine',
 	'S€phir0th69',
-	'Brigade SOS'
+	'Brigade SOS',
+	'Yamagami Lucy Kimiko Akie Airi Shiori Rinne Yoshiho Chihoko Ayano Fumika Chitose Sanae Mikiko Ichika Yukino Reina Eri Ai Tamiko Chikage Emilia Julia Shizue Erina Chisa Yumeka Natsuki Ranran Rieko Setsuri Chikako Azumi Marina Hideko Chiaki Misaki Naomi Campbell Miku Yuka Masako Sachiko Nana Mutsumi Haruka Yuna Shimako Yukie Rin Sakura Kanna Wakana Hazuki Honami Ruri Mihane Momoka Himari Nozomi Futaba Mayuyu'
 ];
 
 export const initializationCatchphrases = [
@@ -62,7 +63,7 @@ export const karaTypes = Object.freeze({
 
 export const karaTypesArray = Object.freeze(Object.keys(karaTypes));
 
-/** Map utilisée pour la génération de la base de données. */
+/** Map used for database generation */
 export const karaTypesMap = Object.freeze(new Map([
 	[karaTypes.OP, 'TYPE_OP,3'],
 	[karaTypes.ED, 'TYPE_ED,3'],
@@ -75,7 +76,7 @@ export const karaTypesMap = Object.freeze(new Map([
 	[karaTypes.LIVE, 'TYPE_LIVE,3'],
 ]));
 
-/** Extraction du type à partir d'une chaîne de caractères. */
+/** Extracting type from a string */
 export function getType(types) {
 	return types.split(/\s+/).find(t => karaTypesArray.includes(t));
 }

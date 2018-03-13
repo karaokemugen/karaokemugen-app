@@ -60,5 +60,9 @@ export const defaults = {
 	mpvVideoOutput: '',
 	AuthExpireTime: 15,
 	WebappMode: 2,
+	OnlineHost: 'mugen.karaokes.moe',
+	OnlinePort: 8800,
+	appFrontendPort: 1337,
+	appAdminPort: 1338,
 	appFirstRun: 1
 };
