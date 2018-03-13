@@ -8,7 +8,7 @@ cache:
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
-  - npm install -g pkg@4.2.6 yarn apidoc babel-cli babel-preset-env babel-preset-stage-2 mocha chai supertest babel-register
+  - npm install -g pkg@4.2.6 yarn apidoc babel-cli babel-preset-env mocha chai supertest babel-register
 
 stages:
   - test
