@@ -169,7 +169,8 @@ export async function initFrontend(port) {
 				'clientAdress'	:	'http://'+address(),
 				'mdpAdmin'		:	conf.AdminPassword,
 				'displays'		:	data.displays,
-				'query'			:	JSON.stringify(req.query)
+				'query'			:	JSON.stringify(req.query),
+				'webappMode'	:	conf.WebappMode
 			});
 		});		
 	});			
