@@ -15,6 +15,7 @@ Options :
 --test        Launches in test mode
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
+--online      Launches in online mode
 `;
 
 export async function parseCommandLineArgs(argv) {	
@@ -47,6 +48,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');
 		setConfig({optBaseUpdate: true});
+	}
+	if (argv.online) {
+		logger.info('[Launcher] Online mode activated');
+		setConfig({optOnline: true});
 	}
 }
 

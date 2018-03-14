@@ -35,7 +35,8 @@ state.player = {
 	showsubs: true,
 	stayontop: false,
 	fullscreen: false,
-	ready: false
+	ready: false,
+	url: null
 };
 
 on('engineStatusChange', (newstate) => {
@@ -128,7 +129,13 @@ export async function initPlayerSystem(initialState) {
 	state.player.stayontop = initialState.ontop;
 	frontendPort = initialState.frontendPort;
 	buildJinglesList();
-	await buildQRCode(`http://${conf.osHost}:${initialState.frontend_port}`);
+	
+	if (!isEmpty(conf.EngineConnectionInfoHost)) {
+		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
+	} else {
+		state.player.url = `http://${conf.osHost}:${initialState.frontend_port}`;
+	}
+	await buildQRCode(state.player.url);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
 	emitPlayerState();
@@ -432,8 +439,7 @@ export function displayInfo(duration) {
 	if (!duration) duration = 100000000;
 	let text = '';
 	if (conf.EngineDisplayConnectionInfo != 0) {
-		const url = `http://${conf.osHost}:${frontendPort}`;
-		text = __('GO_TO')+' '+url+' !';	
+		text = __('GO_TO')+' '+state.player.url+' !';	
 		if (!isEmpty(conf.EngineDisplayConnectionInfoMessage)) text = conf.EngineDisplayConnectionInfoMessage + ' - ' + text;
 	}
 

@@ -17,6 +17,7 @@ import isEmpty from 'lodash.isempty';
 import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
+import {openTunnel, closeTunnel} from '../_webapp/tunnel.js';
 
 const plc = require('./playlist');
 const logger = require('winston');
@@ -156,6 +157,12 @@ export async function initEngine() {
 	if (conf.EngineCreatePreviews > 0) {
 		createPreviews();
 	}
+	if (conf.optOnline || conf.OnlineMode == 1) {
+		const host = openTunnel();
+		setConfig({
+			EngineConnectionInfoHost: host,			
+		});
+	}
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem);
@@ -182,10 +189,13 @@ export async function initEngine() {
 }
 
 export function exit(rc) {
+	const conf = getConfig();
 	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
 	//On other systems or if terminal is not a TTY we exit immediately.
 	// non-TTY terminals have no stdin support.
 	
+	if (conf.optOnline || conf.OnlineMode == 1) closeTunnel();
+
 	if (process.platform != 'win32' || !process.stdout.isTTY) process.exit(rc);
 	console.log('\n');
 	readlineSync.question('Press enter to exit', {hideEchoBack: true});

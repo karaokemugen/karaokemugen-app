@@ -1,9 +1,30 @@
 import localtunnel from 'localtunnel';
+import randomstring from 'randomstring';
+import {getConfig} from '../_common/utils/config';
+import logger from 'winston';
 
+let tunnel;
 const opts = {
-	host: 'http://test.shelter.moe:8899',	
+	subdomain: randomstring.generate({
+		length: 3,
+		charset: 'alphabetic',
+		capitalization: 'lowercase'
+	}),
+	host: 'kara.moe',
+	port: 8900
 };
 
-const tunnel = localtunnel(1337, opts, (err, tunnel) => {
-	console.log('Tunnel 1337 is : '+tunnel.url);
+export function openTunnel() {
+	tunnel = localtunnel(getConfig().appFrontendPort, opts, (err, tunnel) => {	
+		return tunnel.url;
+	});
+}
+
+tunnel.on('error', (err) => {
+	logger.error(`[Online] Connection with ${opts.host} has been lost : ${err}`);
+	openTunnel();
 });
+
+export function closeTunnel() {
+	tunnel.close();
+}
