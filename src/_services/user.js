@@ -254,7 +254,7 @@ async function createDefaultGuests() {
 	if (guests.length > 0) return 'No creation of guest account needed';			
 	// May be modified later.
 	let maxGuests = guests.length;	
-	logger.debug('[User] Creating ${maxGuests} default guest accounts');
+	logger.debug(`[User] Creating ${maxGuests} default guest accounts`);
 	const guestsToCreate = sampleSize(defaultGuestNames, maxGuests);	
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await addUser({
