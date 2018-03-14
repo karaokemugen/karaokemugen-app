@@ -145,8 +145,14 @@ export async function initEngine() {
 		}		
 	}
 	if (conf.optBaseUpdate) {		
-		if (!await runBaseUpdate()) setConfig({optGenerateDB: true});
-		logger.info('[Updater] Done updating karaokes');
+		try {
+			if (await runBaseUpdate()) setConfig({optGenerateDB: true});
+			logger.info('[Updater] Done updating karaokes');
+		} catch(err) {
+			logger.error(`[Updater] Update failed : ${err}`);
+			exit(1);
+		}
+		
 		
 	}
 	//Database system is the foundation of every other <system className=""></system>
