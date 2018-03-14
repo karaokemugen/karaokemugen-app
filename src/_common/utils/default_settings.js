@@ -64,6 +64,5 @@ export const defaults = {
 	OnlinePort: 8800,
 	appFrontendPort: 1337,
 	appAdminPort: 1338,
-	appWSPort: 1340,
 	appFirstRun: 1
 };

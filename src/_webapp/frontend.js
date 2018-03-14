@@ -13,6 +13,14 @@ import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
 import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
+import {createServer} from 'http';
+
+let ws;
+
+export async function emitWS(type,data) {
+	//logger.debug('[WS] Sending message '+type+' : '+JSON.stringify(data));
+	ws.sockets.emit(type,data);
+}
 
 function numberTest(element) {
 	if (isNaN(element)) return false;
@@ -176,8 +184,14 @@ export async function initFrontend(port) {
 		// default to plain-text. send()
 		res.type('txt').send('Not found');
 	});
-	app.listen(port);
-	logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);   			
+	const server = createServer(app);
+	ws = require('socket.io').listen(server);	
+	server.listen(port, () => {
+		logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);   		
+	});
+	setTimeout(() => {
+		emitWS('test','mytest');
+	},15000);
 }
 		
 

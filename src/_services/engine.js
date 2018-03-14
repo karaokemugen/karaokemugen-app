@@ -2,14 +2,12 @@ import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
 import {initUserSystem, findUserByName, findUserByID} from '../_services/user';
 import {initDBSystem, getStats} from '../_dao/database';
-import {initWSServer} from '../_ws/websocket';
-import {initFrontend} from '../_webapp/frontend';
+import {initFrontend, emitWS} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
 import {initFavoritesSystem} from '../_services/favorites';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
-import {emitWS} from '../_ws/websocket';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
@@ -160,7 +158,6 @@ export async function initEngine() {
 	}
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));
-	inits.push(initWSServer(conf.appWSPort));	
 	inits.push(initFavoritesSystem);
 	//Initialize engine
 	// Test if current/public playlists exist

@@ -6,7 +6,7 @@ import multer from 'multer';
 const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
 const upvote = require('../_services/upvote.js');
-import {emitWS} from '../_ws/websocket';
+import {emitWS} from '../_webapp/frontend';
 import {decode} from 'jwt-simple';
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
