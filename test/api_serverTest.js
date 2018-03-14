@@ -31,14 +31,6 @@ let token;
 let current_playlist_id;
 let current_plc_id;
 describe('Test public API', function() {
-	it('Basic connection test', function(done) {
-		request
-			.get('/api/v1/public/')
-			.set('Accept', 'application/json')
-			.expect('Content-Type', 'text/html; charset=utf-8')
-			.expect(200, done);
-	});
-
 	it('Create a new user', function() {
 		var data = {
 			login: 'BakaToTest',
