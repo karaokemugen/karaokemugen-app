@@ -993,7 +993,7 @@ var settingsNotUpdated;
 
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
-		options.url = window.location.protocol + '//' + window.location.hostname + ':1339/api/v1/' + options.url;
+		options.url = window.location.protocol + '//' + window.location.hostname + ':1337/api/v1/' + options.url;
 	});
 
 	/**

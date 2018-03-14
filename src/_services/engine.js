@@ -2,7 +2,6 @@ import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
 import {initUserSystem, findUserByName, findUserByID} from '../_services/user';
 import {initDBSystem, getStats} from '../_dao/database';
-import {initAPIServer} from '../_apiserver/api';
 import {initWSServer} from '../_ws/websocket';
 import {initFrontend} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
@@ -161,7 +160,6 @@ export async function initEngine() {
 	}
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));
-	inits.push(initAPIServer(conf.appAPIPort));
 	inits.push(initWSServer(conf.appWSPort));	
 	inits.push(initFavoritesSystem);
 	//Initialize engine
