@@ -46,7 +46,7 @@ let initialState = {
 	ontop: true,
 	playlist: null,
 	timeposition: 0,
-	frontendPort: getConfig().appFrontendPort
+	frontendPort: null
 };
 
 on('playingUpdated', () => {
@@ -115,6 +115,7 @@ on('playerStatusChange', (states) => {
 function emitPublicStatus() {
 	emit('publicStatusChange');
 }
+
 function emitEngineStatus() {
 	emit('engineStatusChange', state.engine);
 }
@@ -131,6 +132,7 @@ async function restartPlayer() {
 export async function initEngine() {
 	const conf = getConfig();
 	state.engine = initialState;
+	state.engine.frontendPort = conf.appFrontendPort;
 	state.player = {};
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
