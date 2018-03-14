@@ -48,6 +48,10 @@ export async function parseCommandLineArgs(argv) {
 		logger.info('[Launcher] Base update requested');
 		setConfig({optBaseUpdate: true});
 	}
+	if (argv.test) {
+		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
+		setCOnfig({isTest: true});
+	}
 }
 
 
