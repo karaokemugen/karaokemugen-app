@@ -190,3 +190,13 @@ WebappMode = 2
 ; App's first run. Overriden in config.ini .
 appFirstRun = 1
 
+; Host and port to Karaoke Mugen online server.
+; Used when run in --slave mode
+OnlineHost = 'mugen.karaokes.moe'
+OnlinePort = 8800
+
+; Ports for KM modules
+appFrontendPort = 1337
+appAPIPort = 1339
+appAdminPort = 1338
+appWSPort = 1340

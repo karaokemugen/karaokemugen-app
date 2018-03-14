@@ -25,12 +25,6 @@ const plc = require('./playlist');
 const logger = require('winston');
 const sleep = promisify(setTimeout);
 
-
-const ports = {
-	frontend: 1337,
-	apiserver: 1339,
-	ws: 1340	
-};
 let publicState = {};
 let state = {};
 
@@ -52,7 +46,7 @@ let initialState = {
 	ontop: true,
 	playlist: null,
 	timeposition: 0,
-	frontendPort: ports.frontend
+	frontendPort: null
 };
 
 on('playingUpdated', () => {
@@ -121,6 +115,7 @@ on('playerStatusChange', (states) => {
 function emitPublicStatus() {
 	emit('publicStatusChange');
 }
+
 function emitEngineStatus() {
 	emit('engineStatusChange', state.engine);
 }
@@ -137,6 +132,7 @@ async function restartPlayer() {
 export async function initEngine() {
 	const conf = getConfig();
 	state.engine = initialState;
+	state.engine.frontendPort = conf.appFrontendPort;
 	state.player = {};
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
@@ -164,9 +160,9 @@ export async function initEngine() {
 		createPreviews();
 	}
 	inits.push(initPlayerSystem(state.engine));
-	inits.push(initFrontend(ports.frontend));
-	inits.push(initAPIServer(ports.apiserver));
-	inits.push(initWSServer(ports.ws));	
+	inits.push(initFrontend(conf.appFrontendPort));
+	inits.push(initAPIServer(conf.appAPIPort));
+	inits.push(initWSServer(conf.appWSPort));	
 	inits.push(initFavoritesSystem);
 	//Initialize engine
 	// Test if current/public playlists exist

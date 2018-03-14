@@ -16,7 +16,7 @@ import {defaults} from './default_settings.js';
 
 /** Object containing all config */
 let config = {};
-
+let configFile = 'config.ini';
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
@@ -68,7 +68,7 @@ export function mergeConfig(oldConfig, newConfig) {
 
 /** Initializing configuration */
 export async function initConfig(appPath, argv) {
-
+	if (argv.config) configFile = argv.config;
 	configureLogger(appPath, !!argv.debug);
 
 	config = {...config, appPath: appPath};
@@ -80,11 +80,11 @@ export async function initConfig(appPath, argv) {
 	if (config.JwtSecret == 'Change me') setConfig( {JwtSecret: uuidV4() });
 
 	//Configure watcher
-	const configWatcher = watch(resolve(appPath, 'config.ini'));
+	const configWatcher = watch(resolve(appPath, configFile));
 	configWatcher.on('change', () => {
-		logger.debug('[Config] Config file has been changed from the outside world');
 		const oldConf = getConfig();
-		loadConfig(resolve(appPath, 'config.ini')).then(() => {
+		logger.debug('[Config] config file has been changed from the outside world');
+		loadConfig(resolve(appPath, configFile)).then(() => {
 			mergeConfig(oldConf, getConfig());
 		});
 	});
@@ -116,9 +116,8 @@ function configureLogger(appPath, debug) {
 }
 
 async function loadConfigFiles(appPath) {
-	const overrideConfigFile = resolve(appPath, 'config.ini');
+	const overrideConfigFile = resolve(appPath, configFile);
 	const versionFile = resolve(__dirname, '../../VERSION');
-
 	config = {...config, ...defaults};
 	config.appPath = appPath;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
@@ -174,7 +173,7 @@ export async function updateConfig(newConfig) {
             && (filteredConfig[k] = v);
 	});
 	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
-	await asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');
+	await asyncWriteFile(resolve(config.appPath, configFile), stringify(filteredConfig), 'utf-8');
 }
 
 /**
