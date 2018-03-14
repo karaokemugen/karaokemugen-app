@@ -1,6 +1,6 @@
 const assert = require('assert');
 const supertest = require('supertest');
-const request = supertest('http://localhost:1339');
+const request = supertest('http://localhost:1337');
 const fs = require('fs');
 const ini = require('ini');
 const extend = require('extend');
