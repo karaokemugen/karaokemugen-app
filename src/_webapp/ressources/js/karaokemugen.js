@@ -798,7 +798,7 @@ var settingsNotUpdated;
 		$(window).trigger('resize');
 	});
 
-	socket = io( window.location.protocol + '//' + window.location.hostname + ':1340');
+	socket = io( window.location.protocol + '//' + window.location.hostname + ':1337');
 
 	isTouchScreen =  'ontouchstart' in document.documentElement || query.TOUCHSCREEN != undefined;
 	if(isTouchScreen) $('body').addClass('touch');
@@ -993,7 +993,7 @@ var settingsNotUpdated;
 
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
-		options.url = window.location.protocol + '//' + window.location.hostname + ':1339/api/v1/' + options.url;
+		options.url = window.location.protocol + '//' + window.location.hostname + ':1337/api/v1/' + options.url;
 	});
 
 	/**

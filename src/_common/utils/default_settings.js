@@ -63,8 +63,6 @@ export const defaults = {
 	OnlineHost: 'mugen.karaokes.moe',
 	OnlinePort: 8800,
 	appFrontendPort: 1337,
-	appAPIPort: 1339,
 	appAdminPort: 1338,
-	appWSPort: 1340,
 	appFirstRun: 1
 };

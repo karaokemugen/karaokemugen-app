@@ -197,6 +197,4 @@ OnlinePort = 8800
 
 ; Ports for KM modules
 appFrontendPort = 1337
-appAPIPort = 1339
 appAdminPort = 1338
-appWSPort = 1340

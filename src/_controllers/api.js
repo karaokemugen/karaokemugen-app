@@ -1,19 +1,13 @@
-import express from 'express';
-import expressValidator from 'express-validator';
 import logger from 'winston';
 import {setConfig, getConfig} from '../_common/utils/config';
-import {urlencoded, json} from 'body-parser';
 const user = require('../_services/user');
 import {resolve} from 'path';
 import multer from 'multer';
 const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
 const upvote = require('../_services/upvote.js');
-import {emitWS} from '../_ws/websocket';
+import {emitWS} from '../_webapp/frontend';
 import {decode} from 'jwt-simple';
-import passport from 'passport';
-import {configurePassport} from '../_webapp/passport_manager';
-import authController from '../_controllers/auth';
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
 
@@ -25,11 +19,6 @@ function toString(o) {
 		o[k] = '' + o[k];
 	});
 	return o;
-}
-
-function numberTest(element) {
-	if (isNaN(element)) return false;
-	return true;
 }
 
 function errMessage(code,message,args) {
@@ -48,96 +37,40 @@ function OKMessage(data,code,args) {
 	};
 }
 
-export async function initAPIServer(listenPort) {
-	const conf = getConfig();
-	let app = express();
-	// Middleware for playlist and files import
-	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
-	app.use(urlencoded({ extended: true, limit: '50mb' }));
-	app.use(json());		
-	// Calling express validator with custom validators, used for the player commands
-	// to check if they're from the allowed list.
-	// We use another custom validator to test for array of numbers
-	// used mainly with adding/removing lists of karaokes
-	app.use(expressValidator({
-		customValidators: {
-			enum: (input, options) => options.includes(input),
-			stringsArray: (input) => {
-				if (input) {
-					if (typeof input === 'string' && input.includes(',')) {
-						return input.split(',');
-					}
-					return input;
-				}
-				return false;
-			},
-			numbersArray: (input) => {
-				if (input) {
-					// Test if we get a single number or a list of comma separated numbers
-					if (typeof input === 'string' && input.includes(',')) {
-						let array = input.split(',');
-						return array.some(numberTest);
-					} 
-					return numberTest(input);
-				}
-				return false;
-			}
-		}
-	}));
-	let routerPublic = express.Router();
-	let routerAdmin = express.Router();
-	
-	app.listen(listenPort, () => {
-		logger.debug(`[API] API server is READY and listens on port ${listenPort}`);
-	});
+// Rules :
+// version of the API is decided in the path
+// Example : /v1/, /v2/, etc.
+// We output JSON only.
 
-	// Auth system
-	routerAdmin.use(passport.initialize());
-	configurePassport();
-	
-	routerPublic.use((req, res, next) => {
-		// do logging
-		//logger.info('API_LOG',req)
-		// Logging is disabled. Enable it if you need to trace some info
-		next(); // make sure we go to the next routes and don't stop here
-	});			
+// Validators & sanitizers :
+// https://github.com/chriso/validator.js
 
-	routerPublic.get('/', (req, res) => {
-		res.send('Karaoke Mugen API Server ready.');
-	});
+// Reminder of HTTP codes:
+// 200 : OK
+// 201 : CREATED
+// 404 : NOT FOUND
+// 400 : BAD REQUEST
+// 500 : INTERNAL ERROR
+// 403 : FORBIDDEN
+// 503 : TEMPORARILY UNAVAILABLE
 
-	// Rules :
-	// version of the API is decided in the path
-	// Example : /v1/, /v2/, etc.
-	// We output JSON only.
-
-	// Validators & sanitizers :
-	// https://github.com/chriso/validator.js
-
-	// Reminder of HTTP codes:
-	// 200 : OK
-	// 201 : CREATED
-	// 404 : NOT FOUND
-	// 400 : BAD REQUEST
-	// 500 : INTERNAL ERROR
-	// 403 : FORBIDDEN
-	// 503 : TEMPORARILY UNAVAILABLE
-
-	// In case of error, return the correct code and object 'error'
-
-	// Admin routes
-	/**
+// In case of error, return the correct code and object 'error'
+/**
  * @apiDefine admin Admin access only
  * Requires authorization token from admin user to use this API
  */
-	/**
+/**
  * @apiDefine own Own user only
  * Requires authorization token from the user the data belongs to to use this API
  */
-	/**
+/**
  * @apiDefine public Public access
  * This API does not require any authorization method and can be accessed from anyone.
  */
+
+export function APIControllerAdmin(router) {
+	// Admin routes
+	
 	/**
  * @api {post} /admin/shutdown Shutdown the entire application
  * @apiDescription
@@ -154,7 +87,7 @@ export async function initAPIServer(listenPort) {
  * "Shutdown in progress."
  * 
  */
-	routerAdmin.route('/shutdown')
+	router.route('/shutdown')
 		.post(requireAuth, requireValidUser, requireAdmin, (req, res) => {
 			// Sends command to shutdown the app.
 
@@ -168,7 +101,7 @@ export async function initAPIServer(listenPort) {
 					res.json(err);
 				});
 		});
-	routerAdmin.route('/automix')
+	router.route('/automix')
 	/**
  * @api {post} /admin/automix Generate a automix playlist
  * @apiName PostMix
@@ -240,7 +173,7 @@ export async function initAPIServer(listenPort) {
 					}
 				});
 		});
-	routerAdmin.route('/playlists')
+	router.route('/playlists')
 	/**
  * @api {get} /admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
@@ -380,7 +313,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerAdmin.route('/playlists/:pl_id([0-9]+)')
+	router.route('/playlists/:pl_id([0-9]+)')
 	/**
  * @api {get} /admin/playlists/:pl_id Get playlist information
  * @apiName GetPlaylist
@@ -544,7 +477,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 				});
 		});
-	routerAdmin.route('/users/:username')
+	router.route('/users/:username')
 	/**
  * @api {get} /admin/users/:username View user details (admin)
  * @apiName GetUserAdmin
@@ -644,7 +577,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerAdmin.route('/playlists/:pl_id([0-9]+)/empty')
+	router.route('/playlists/:pl_id([0-9]+)/empty')
 	/**
  * @api {put} /admin/playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
@@ -683,7 +616,7 @@ export async function initAPIServer(listenPort) {
 					res.json(err);
 				});
 		});
-	routerAdmin.route('/whitelist/empty')
+	router.route('/whitelist/empty')
 	/**
  * @api {put} /admin/whitelist/empty Empty whitelist
  * @apiName PutEmptyWhitelist
@@ -718,7 +651,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('WL_EMPTY_ERROR',err));						
 				});
 		});
-	routerAdmin.route('/blacklist/criterias/empty')
+	router.route('/blacklist/criterias/empty')
 	/**
  * @api {put} /admin/blacklist/criterias/empty Empty list of blacklist criterias
  * @apiName PutEmptyBlacklist
@@ -754,7 +687,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('BLC_EMPTY_ERROR',err));
 				});
 		});
-	routerAdmin.route('/playlists/:pl_id([0-9]+)/setCurrent')
+	router.route('/playlists/:pl_id([0-9]+)/setCurrent')
 	/**
  * @api {put} /admin/playlists/:pl_id/setCurrent Set playlist to current
  * @apiName PutSetCurrentPlaylist
@@ -793,7 +726,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
 				});
 		});
-	routerAdmin.route('/playlists/:pl_id([0-9]+)/setPublic')
+	router.route('/playlists/:pl_id([0-9]+)/setPublic')
 	/**
  * @api {put} /admin/playlists/:pl_id/setPublic Set playlist to public
  * @apiName PutSetPublicPlaylist
@@ -832,7 +765,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
 				});
 		});
-	routerAdmin.route('/playlists/:pl_id([0-9]+)/karas')
+	router.route('/playlists/:pl_id([0-9]+)/karas')
 	/**
  * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
@@ -1168,7 +1101,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerAdmin.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+	router.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 	/**
  * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
@@ -1365,7 +1298,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerAdmin.route('/settings')
+	router.route('/settings')
 	/**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
@@ -1672,7 +1605,7 @@ export async function initAPIServer(listenPort) {
 			});
 		});
 			
-	routerAdmin.route('/player/message')
+	router.route('/player/message')
 	/**
  * @api {post} /admin/player/message Send a message to screen or users' devices
  * @apiName PostPlayerMessage
@@ -1752,7 +1685,7 @@ export async function initAPIServer(listenPort) {
 			});
 		});
 
-	routerAdmin.route('/whitelist')
+	router.route('/whitelist')
 	/**
  * @api {get} /admin/whitelist Get whitelist
  * @apiName GetWhitelist
@@ -1964,7 +1897,7 @@ export async function initAPIServer(listenPort) {
 			});
 		});
 
-	routerAdmin.route('/blacklist')
+	router.route('/blacklist')
 	/**
  * @api {get} /admin/blacklist Get blacklist
  * @apiName GetBlacklist
@@ -2060,7 +1993,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('BL_VIEW_ERROR',err));
 				});
 		});				
-	routerAdmin.route('/blacklist/criterias')
+	router.route('/blacklist/criterias')
 	/**
  * @api {get} /admin/blacklist/criterias Get list of blacklist criterias
  * @apiName GetBlacklistCriterias
@@ -2180,7 +2113,7 @@ export async function initAPIServer(listenPort) {
 			});
 		});
 
-	routerAdmin.route('/blacklist/criterias/:blc_id([0-9]+)')
+	router.route('/blacklist/criterias/:blc_id([0-9]+)')
 	/**
  * @api {delete} /admin/blacklist/criterias/:blc_id Delete a blacklist criteria
  * @apiName DeleteBlacklistCriterias
@@ -2289,7 +2222,7 @@ export async function initAPIServer(listenPort) {
 			});
 		});
 
-	routerAdmin.route('/player')
+	router.route('/player')
 	/**
  * @api {put} /admin/player Send commands to player
  * @apiName PutPlayerCommando
@@ -2357,7 +2290,7 @@ export async function initAPIServer(listenPort) {
 		});
 
 
-	routerAdmin.route('/playlists/:pl_id([0-9]+)/export')
+	router.route('/playlists/:pl_id([0-9]+)/export')
 	/**
  * @api {get} /admin/playlists/:pl_id/export Export a playlist
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
@@ -2423,7 +2356,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
 				});
 		});
-	routerAdmin.route('/playlists/import')
+	router.route('/playlists/import')
 	/**
  * @api {post} /admin/playlists/import Import a playlist
  * @apiName postPlaylistImport
@@ -2492,7 +2425,7 @@ export async function initAPIServer(listenPort) {
 		});
 
 
-	routerAdmin.route('/playlists/:pl_id([0-9]+)/shuffle')
+	router.route('/playlists/:pl_id([0-9]+)/shuffle')
 	/**
  * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
@@ -2535,10 +2468,28 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
+}
+
+export function APIControllerPublic(router) {
+		
+	/*
+	router.use((req, res, next) => {
+		// do logging
+		//logger.info('API_LOG',req)
+		// Logging is disabled. Enable it if you need to trace some info
+		next(); // make sure we go to the next routes and don't stop here
+	});			
+	*/
+
+	const conf = getConfig();	
+	// Middleware for playlist and files import
+	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
+	
+	
 	// Public routes
 
 
-	routerPublic.route('/playlists')
+	router.route('/playlists')
 	/**
  * @api {get} /public/playlists/ Get list of playlists (public)
  * @apiName GetPlaylistsPublic
@@ -2588,7 +2539,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_LIST_ERROR',err));	
 				});						
 		});
-	routerPublic.route('/playlists/:pl_id([0-9]+)')
+	router.route('/playlists/:pl_id([0-9]+)')
 	/**
  * @api {get} /public/playlists/:pl_id Get playlist information (public)
  * @apiName GetPlaylistPublic
@@ -2650,7 +2601,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 				});			
 		});
-	routerPublic.route('/playlists/:pl_id([0-9]+)/karas')
+	router.route('/playlists/:pl_id([0-9]+)/karas')
 	/**
  * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
@@ -2763,7 +2714,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerPublic.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+	router.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 	/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
@@ -2891,7 +2842,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
 				});			
 		});
-	routerPublic.route('/settings')
+	router.route('/settings')
 	/**
  * @api {get} /public/settings Get settings (public)
  * @apiName GetSettingsPublic
@@ -2961,7 +2912,7 @@ export async function initAPIServer(listenPort) {
 			}
 			res.json(OKMessage(settings));
 		});				
-	routerPublic.route('/stats')
+	router.route('/stats')
 	/**
  * @api {get} /public/stats Get statistics
  * @apiName GetStats
@@ -3001,7 +2952,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerPublic.route('/whitelist')
+	router.route('/whitelist')
 	/**
  * @api {get} /public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
@@ -3106,7 +3057,7 @@ export async function initAPIServer(listenPort) {
 			}			
 		});
 
-	routerPublic.route('/blacklist')
+	router.route('/blacklist')
 	/**
  * @api {get} /public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
@@ -3211,7 +3162,7 @@ export async function initAPIServer(listenPort) {
 			}
 		});
 
-	routerPublic.route('/blacklist/criterias')
+	router.route('/blacklist/criterias')
 	/**
  * @api {get} /public/blacklist/criterias Get list of blacklist criterias (public)
  * @apiName GetBlacklistCriteriasPublic
@@ -3265,7 +3216,7 @@ export async function initAPIServer(listenPort) {
 			}
 		});
 
-	routerPublic.route('/player')
+	router.route('/player')
 	/**
  * @api {get} /public/player Get player status
  * @apiName GetPlayer
@@ -3320,7 +3271,7 @@ export async function initAPIServer(listenPort) {
 			//return status of the player
 			res.json(OKMessage(engine.getPlayerStatus()));			
 		});
-	routerPublic.route('/karas')
+	router.route('/karas')
 	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
@@ -3424,7 +3375,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerPublic.route('/karas/random')
+	router.route('/karas/random')
 	/**
  * @api {get} /public/karas/random Get a random karaoke ID
  * @apiName GetKarasRandom
@@ -3462,7 +3413,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('GET_LUCKY_ERROR',err));
 				});
 		});
-	routerPublic.route('/karas/:kara_id([0-9]+)')
+	router.route('/karas/:kara_id([0-9]+)')
 	/**
  * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
@@ -3634,7 +3585,7 @@ export async function initAPIServer(listenPort) {
 			
 		});
 
-	routerPublic.route('/karas/:kara_id([0-9]+)/lyrics')
+	router.route('/karas/:kara_id([0-9]+)/lyrics')
 	/**
  * @api {post} /public/karas/:kara_id/lyrics Get song lyrics
  * @apiName GetKarasLyrics
@@ -3669,7 +3620,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
 				});
 		});
-	routerPublic.route('/playlists/current')
+	router.route('/playlists/current')
 	/**
  * @api {get} /public/playlists/current Get current playlist information
  * @apiName GetPlaylistCurrent
@@ -3725,7 +3676,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerPublic.route('/playlists/current/karas')
+	router.route('/playlists/current/karas')
 	/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
@@ -3836,7 +3787,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerPublic.route('/playlists/public')
+	router.route('/playlists/public')
 	/**
  * @api {get} /public/playlists/public Get public playlist information
  * @apiName GetPlaylistPublic
@@ -3894,7 +3845,7 @@ export async function initAPIServer(listenPort) {
 				});
 		});
 
-	routerPublic.route('/playlists/public/karas')
+	router.route('/playlists/public/karas')
 	/**
  * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
@@ -4004,7 +3955,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 				});
 		});
-	routerPublic.route('/playlists/public/karas/:plc_id([0-9]+)/vote')
+	router.route('/playlists/public/karas/:plc_id([0-9]+)/vote')
 		/**
 	 * @api {post} /public/playlists/public/karas/:plc_id/vote Up/downvote a song in public playlist
 	 * @apiName PostVote
@@ -4044,7 +3995,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage(err.code,err.message));
 				});
 		});
-	routerPublic.route('/tags')
+	router.route('/tags')
 	/**
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
@@ -4100,7 +4051,7 @@ export async function initAPIServer(listenPort) {
 					res.json(errMessage('TAGS_LIST_ERROR',err));
 				});
 		});
-	routerPublic.route('/users/:username')
+	router.route('/users/:username')
 	/**
  * @api {get} /public/users/:username View user details (public)
  * @apiName GetUser
@@ -4266,7 +4217,7 @@ export async function initAPIServer(listenPort) {
 
 		});
 
-	routerPublic.route('/myaccount')
+	router.route('/myaccount')
 	/**
  * @api {get} /public/myaccount View own user details
  * @apiName GetMyAccount
@@ -4432,7 +4383,7 @@ export async function initAPIServer(listenPort) {
 
 		});
 
-	routerPublic.route('/favorites')
+	router.route('/favorites')
 	/**
  * @api {get} /public/favorites View own favorites
  * @apiName GetFavorites
@@ -4668,7 +4619,7 @@ export async function initAPIServer(listenPort) {
 			});
 		});
 
-	routerPublic.route('/users')
+	router.route('/users')
 	/**
  * @api {get} /public/users List users
  * @apiName GetUsers
@@ -4808,39 +4759,6 @@ export async function initAPIServer(listenPort) {
 				});
 
 		});
-	// Add headers
-	app.use(function (req, res, next) {
-
-		// Website you wish to allow to connect
-		res.setHeader('Access-Control-Allow-Origin', '*');
-
-		// Request methods you wish to allow
-		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-		// Request headers you wish to allow
-		res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authorization, Accept, Key');
-
-		// Set to true if you need the website to include cookies in the requests sent
-		// to the API (e.g. in case you use sessions)
-		// res.setHeader('Access-Control-Allow-Credentials', true);
-
-		if (req.method === 'OPTIONS') {
-			res.statusCode = 200;
-			res.json();
-		} else {
-			// Pass to next layer of middleware
-			next();
-		}
-	});
-				
-	function routerAuth() {
-		const apiRouter = express.Router();
-		// Adding auth routes here.
-		authController(apiRouter);
-		return apiRouter;
-	}
-	app.use('/api/v1/auth', routerAuth());
-	app.use('/api/v1/public', routerPublic);
-	app.use('/api/v1/admin', routerAdmin);			
+	
 }
 

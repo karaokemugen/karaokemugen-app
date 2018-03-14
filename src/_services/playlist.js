@@ -18,7 +18,7 @@ import sample from 'lodash.sample';
 import shuffle from 'lodash.shuffle';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {emitWS} from '../_ws/websocket';
+import {emitWS} from '../_webapp/frontend';
 import {emit} from '../_common/utils/pubsub';
 
 function emitPlayingUpdated() {
