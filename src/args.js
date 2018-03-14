@@ -50,7 +50,7 @@ export async function parseCommandLineArgs(argv) {
 	}
 	if (argv.test) {
 		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
-		setCOnfig({isTest: true});
+		setConfig({isTest: true});
 	}
 }
 
