@@ -6,7 +6,7 @@ import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
-import net from 'net';
+import {createServer} from 'net';
 import logger from 'winston';
 import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
@@ -94,9 +94,7 @@ async function main() {
 }
 
 /**
-<<<<<<< HEAD
  * Checking if application paths exist. 
-=======
  * Workaround for bug https://github.com/babel/babel/issues/5542
  * Delete this once the bug is resolved.
  */
@@ -110,7 +108,6 @@ function parseArgs() {
 
 /**
  * Checking if application paths exist.
->>>>>>> next
  */
 async function checkPaths(config) {
 
@@ -134,7 +131,7 @@ async function checkPaths(config) {
 }
 
 function verifyOpenPort(port) {
-	const server = net.createServer();
+	const server = createServer();
 	server.once('error', err => {
 		if (err.code === 'EADDRINUSE') {
 			logger.error(`[Launcher] Port ${port} is already in use.`);

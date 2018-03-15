@@ -53,6 +53,10 @@ export async function parseCommandLineArgs(argv) {
 		logger.info('[Launcher] Online mode activated');
 		setConfig({optOnline: true});
 	}
+	if (argv.test) {
+		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
+		setConfig({isTest: true});
+	}
 }
 
 
