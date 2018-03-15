@@ -19,7 +19,6 @@ const shelter = {
 	password: 'musubi'
 };
 const gitAvailable = commandExists.sync('git');
-let gitRepo = false;
 
 async function downloadBase() {
 	if (gitAvailable) return true;
