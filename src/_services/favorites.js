@@ -1,9 +1,8 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
 import {getPlaylists, setCurrentPlaylist, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, translateKaraInfo, filterPlaylist} from '../_services/playlist';
 import {listUsers, checkUserNameExists} from '../_services/user';
-import moment from 'moment';
-moment.locale('fr');
 import logger from 'winston';
+import {date} from '../_common/utils/date';
 
 export async function getFavorites(username, filter, lang, from, size) {
 	try {
@@ -87,8 +86,8 @@ export async function createAutoMix(params, username) {
 	} else {
 		users = [params.users];
 	}
-	const plcList = await getAllFavorites(users);
-	const autoMixPLName = 'AutoMix ' + moment().format('L') + ' ' + moment().format('LT');
+	const plcList = await getAllFavorites(users);	
+	const autoMixPLName = `AutoMix ${date()}`;
 	const playlist_id = await createPlaylist(autoMixPLName,1,0,0,0,username);
 	// Copy karas from everyone listed	
 	await copyKaraToPlaylist(plcList, playlist_id);
