@@ -2,29 +2,24 @@ import localtunnel from 'localtunnel';
 import randomstring from 'randomstring';
 import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
+import {promisify} from 'util';
+const lt = promisify(localtunnel);
 
-let tunnel;
-const opts = {
-	subdomain: randomstring.generate({
-		length: 3,
-		charset: 'alphabetic',
-		capitalization: 'lowercase'
-	}),
-	host: 'kara.moe',
-	port: 8900
-};
-
-export function openTunnel() {
-	tunnel = localtunnel(getConfig().appFrontendPort, opts, (err, tunnel) => {	
-		return tunnel.url;
-	});
-}
-
-tunnel.on('error', (err) => {
-	logger.error(`[Online] Connection with ${opts.host} has been lost : ${err}`);
-	openTunnel();
-});
-
-export function closeTunnel() {
-	tunnel.close();
+export async function openTunnel() {
+	const conf = getConfig();
+	const opts = {
+		subdomain: randomstring.generate({
+			length: 4,
+			charset: 'alphabetic',
+			capitalization: 'lowercase'
+		}),
+		host: 'http://kara.moe',
+		port: 80
+	};	
+	const tunnel = await lt(conf.appFrontendPort, opts);
+	logger.info(`[Online] Connection established with Shelter (${opts.host}). Your URL is : ${tunnel.url}`);
+	tunnel.on('error', (err) => {
+		logger.error(`[Online] Connection with ${opts.host} has been lost : ${err}`);
+	});	
+	return tunnel.url;	
 }
