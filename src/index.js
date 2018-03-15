@@ -94,9 +94,7 @@ async function main() {
 }
 
 /**
-<<<<<<< HEAD
  * Checking if application paths exist. 
-=======
  * Workaround for bug https://github.com/babel/babel/issues/5542
  * Delete this once the bug is resolved.
  */
