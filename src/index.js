@@ -108,7 +108,6 @@ function parseArgs() {
 
 /**
  * Checking if application paths exist.
->>>>>>> next
  */
 async function checkPaths(config) {
 
