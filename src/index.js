@@ -12,7 +12,7 @@ import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
-
+import {logo} from './logo';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
@@ -39,8 +39,9 @@ async function main() {
 	let config = await initConfig(appPath, argv);
 	await parseCommandLineArgs(argv);
 	config = getConfig();
+	console.log(logo);
 	console.log('--------------------------------------------------------------------');
-	console.log(`Karaoke Mugen ${config.VersionNo} (${config.VersionName})`);
+	console.log(`Version ${config.VersionNo} (${config.VersionName})`);
 	console.log('--------------------------------------------------------------------');
 	console.log('\n');
 
