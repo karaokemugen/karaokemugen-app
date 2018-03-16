@@ -798,7 +798,7 @@ var settingsNotUpdated;
 		$(window).trigger('resize');
 	});
 
-	socket = io( window.location.protocol + '//' + window.location.hostname + ':' + window.location.port);
+	socket = io();
 
 	isTouchScreen =  'ontouchstart' in document.documentElement || query.TOUCHSCREEN != undefined;
 	if(isTouchScreen) $('body').addClass('touch');

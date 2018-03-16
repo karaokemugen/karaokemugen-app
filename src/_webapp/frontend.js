@@ -192,7 +192,7 @@ export async function initFrontend(port) {
 		res.type('txt').send('Not found');
 	});
 	const server = createServer(app);
-	ws = require('socket.io').listen(server);	
+	ws = require('socket.io').listen(server);
 	server.listen(port, () => {
 		logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);   		
 	});
