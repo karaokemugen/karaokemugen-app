@@ -147,7 +147,7 @@ export async function initFrontend(port) {
 		}
 		let url;
 		if (config.EngineConnectionInfoHost) {
-			url = config.EngineConnectionInfoHost
+			url = config.EngineConnectionInfoHost;
 		} else {
 			url = address();
 		}

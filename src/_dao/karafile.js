@@ -10,7 +10,7 @@ import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
-import {extractSubtitles, getVideoDuration, getVideoGain} from '../_common/utils/ffmpeg';
+import {extractSubtitles, getVideoInfo} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
 let error = false;
 
@@ -97,12 +97,12 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 		karaData.isKaraModified = true;
 		karaData.videosize = videoStats.size;
 
-		const [videogain, videoduration] = await Promise.all([getVideoGain(videoFile), getVideoDuration(videoFile)]);
+		const videoData = await getVideoInfo(videoFile);
+		console.log(videoData);
+		if (videoData.error) error = true;
 
-		if (videogain.error || videoduration.error) error = true;
-
-		karaData.videogain = videogain.data;
-		karaData.videoduration = videoduration.data;
+		karaData.videogain = videoData.audiogain;
+		karaData.videoduration = videoData.duration;
 	}
 }
 
