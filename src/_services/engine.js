@@ -164,11 +164,7 @@ export async function initEngine() {
 		createPreviews();
 	}
 	if (conf.optOnline || conf.OnlineMode == 1) {
-		const host = await openTunnel();
-		// Strip http:// from URL
-		setConfig({
-			EngineConnectionInfoHost: host.replace('http://','')
-		});
+		await openTunnel();
 	}
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));
