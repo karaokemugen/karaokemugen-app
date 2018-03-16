@@ -2527,7 +2527,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {			
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {			
 			// Get list of playlists, only return the visible ones
 				
 			engine.getAllPLs(req.authToken)
@@ -2586,7 +2586,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
@@ -2683,7 +2683,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get playlist contents, only if visible
 			//Access :pl_id by req.params.pl_id
 					
@@ -2830,7 +2830,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			
 			engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken)
 				.then((kara) => {
@@ -3025,7 +3025,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			//Returns whitelist IF the settings allow public to see it
 			if (getConfig().EngineAllowViewWhitelist == 1) {
 				const lang = req.query.lang;
@@ -3130,7 +3130,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			//Get list of blacklisted karas IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklist == 1) {
 				const lang = req.query.lang;
@@ -3198,7 +3198,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */		
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklistCriterias == 1) {
 				engine.getBLC()
@@ -3264,7 +3264,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */		
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get player status
 			// What's playing, time in seconds, duration of song
 
@@ -3345,7 +3345,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			const filter = req.query.filter;
@@ -3397,7 +3397,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getRandomKara(req.query.filter)
 				.then((kara_id) => {
 					if (!kara_id) {
@@ -3506,7 +3506,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			
 			engine.getKaraInfo(req.params.kara_id,req.query.lang,req.authToken)
 				.then((kara) => {	
@@ -3568,7 +3568,7 @@ export function APIControllerPublic(router) {
 * @apiErrorExample Error-Response:
 * HTTP/1.1 403 Forbidden
 */
-		.post(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.post(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			
 			engine.addKaraToPL(null, req.params.kara_id, req.authToken.username, null)
@@ -3609,7 +3609,7 @@ export function APIControllerPublic(router) {
  *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
  * }
  */			
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getLyrics(req.params.kara_id)
 				.then((kara) => {							
 					res.json(OKMessage(kara));
@@ -3662,7 +3662,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
 					
 			engine.getCurrentPLInfo(req.authToken)
@@ -3759,7 +3759,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
 			const lang = req.query.lang;
 			const filter = req.query.filter;
@@ -3831,7 +3831,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get public Playlist
 					
 			engine.getPublicPLInfo(req.authToken)
@@ -3928,7 +3928,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get public Playlist
 			const lang = req.query.lang;
 			const filter = req.query.filter;
@@ -4040,7 +4040,7 @@ export function APIControllerPublic(router) {
 	* @apiErrorExample Error-Response:
     * HTTP/1.1 403 Forbidden
 	*/
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			engine.getTags(req.query.lang)
 				.then((tags) => {
 					res.json(OKMessage(tags));
@@ -4102,7 +4102,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
 			user.findUserByName(req.params.username, {public:true})
 				.then((userdata) => {
 					res.json(OKMessage(userdata));
@@ -4271,7 +4271,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
 			
 			user.findUserByName(req.authToken.username, {public:false})
 				.then((userdata) => {
@@ -4322,7 +4322,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.put(upload.single('avatarfile'), requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+		.put(upload.single('avatarfile'), requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
 			req.check({
 				//FIXME : keep email/url optional and make sure it works with the isURL and isEmail validators
 				'nickname': {
@@ -4462,7 +4462,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
 			
 			const filter = req.query.filter;
 			const lang = req.query.lang;
@@ -4524,7 +4524,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+		.post(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
 			req.checkBody({
 				'kara_id': {
 					in: 'body',
@@ -4588,7 +4588,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.delete(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Delete kara from favorites
 			// Deletion is through kara ID.			
 			req.check({
@@ -4676,7 +4676,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
 			user.listUsers()
 				.then(function(users){
 					res.json(OKMessage(users));
