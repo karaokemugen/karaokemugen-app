@@ -3829,10 +3829,6 @@ node-fetch@^1.0.1:
     encoding "^0.1.11"
     is-stream "^1.0.1"
 
-"node-ffprobe@github:AxelTerizaki/node-ffprobe":
-  version "1.3.0"
-  resolved "https://codeload.github.com/AxelTerizaki/node-ffprobe/tar.gz/0b2b17f0a4cabb2fd77f0573c792bcda18fd3249"
-
 node-fingerprint@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/node-fingerprint/-/node-fingerprint-0.0.2.tgz#31cbabeb71a67ae7dd5a7dc042e51c3c75868501"

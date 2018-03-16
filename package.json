@@ -103,7 +103,6 @@
     "lodash.shuffle": "^4.2.0",
     "minimist": "^1.2.0",
     "multer": "^1.3.0",
-    "node-ffprobe": "github:AxelTerizaki/node-ffprobe",
     "node-mpv": "github:00SteinsGate00/Node-MPV#Node-MPV-2",
     "os-locale": "^2.1.0",
     "passport": "^0.4.0",
