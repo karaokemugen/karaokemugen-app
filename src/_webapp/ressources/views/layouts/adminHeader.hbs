@@ -28,6 +28,7 @@
 </body>
     <script>
         var query = {{{query}}};
+        var webappMode = {{webappMode}};
         var mdpAdmin = "{{mdpAdmin}}";
         var settingsOnOff = {
             "PlayerPIP": "{{i18n "PLAYERPIP"}}"
@@ -40,9 +41,10 @@
             , "PlayerNoHud": "{{i18n "PLAYERNOHUD"}}"
             , "EngineRepeatPlaylist": "{{i18n "ENGINEREPEATPLAYLIST"}}"
             , "EngineSmartInsert": "{{i18n "ENGINEENABLESMARTINSERT"}}"
-            , "EngineAutoPlay": "{{i18n "ENGINEAUTOPLAY"}}" };
+            , "EngineAutoPlay": "{{i18n "ENGINEAUTOPLAY"}}"
+            , "EngineFreeUpvotes": "{{i18n "ENGINEFREEUPVOTES"}}" };
     </script>
-    <script src="{{clientAdress}}:1340/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/vendors/js/assignIE.js"></script>
     <script src="/vendors/js/jquery-3.2.1.min.js"></script>
     <script src="/vendors/js/select2.min.js"></script>

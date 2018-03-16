@@ -22,14 +22,14 @@ body {
 	z-index: 2337;
 	background-color: #1E2124;
 	top: 0;
-	height: 85px;
+	height: 75px;
 	width: 100%;
 	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
 }
 
 .header .btn {
 	height: 100%;
-	width: 85px;
+	width: 75px;
 	padding: 0px;
 	margin: 0px;
 	font-size: 2rem;
@@ -43,7 +43,7 @@ body {
 	cursor: pointer;
 	height: 24px;
 	width: 100%;
-	top: 85px;
+	top: 75px;
 	position: fixed;
 	z-index: 1337;
 	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
@@ -222,14 +222,17 @@ select.form-control {
 }
 
 body:not(.touch) .playlist-main .list-group-item:nth-child(even):hover {
-	background-color: hsla(0, 0%, 15%, .9);
+	filter: brightness(117%);
 }
 body:not(.touch) .playlist-main .list-group-item:hover {
-	background-color: hsla(0, 0%, 15%, .8);
+	filter: brightness(120%);
 }
 
 .playlist-main li.list-group-item[currentlyPlaying] {
 	background-color: #3a5064;
+}
+.playlist-main li.list-group-item[dejavu] {
+	background-color: hsla(30, 22%, 29%, 0.6);
 }
 
 .playlist-main .list-group-item.liType {
@@ -297,6 +300,7 @@ button[name="transferKara"]:before {
 button[name="infoKara"]:before {
 	content:"\e086";
 }
+
 #panel2 .actionDiv > button[name="transferKara"]:before {
 	content:"\e091";
 }
@@ -312,6 +316,24 @@ button[name="infoKara"]:before {
 .showVideo:before {
 	content:"\e009";
 }
+.makeFav:before {
+	content:"\e007";
+}
+
+.makeFav.currentFav:before {
+	content:"\e006";
+    color: firebrick;
+}
+
+.likeKara:before {
+	content:"\e143";
+}
+
+.likeKara.currentLike:before {
+	content:"\e005";
+    color: firebrick;
+}
+
 .playKara:before {
 	content:"\e072";
 }
@@ -368,7 +390,11 @@ button[name="infoKara"]:before {
 	background-color: #286090;
 }
 
-.list-group-item > div.detailsKara, .lyricsKara {
+.karaCard > div {
+	display: none;
+}
+
+.list-group-item > div.detailsKara, .list-group-item.karaCard div.details, .lyricsKara {
 	min-height: 56px;
 	padding: 10px;
 	margin: 0;
@@ -379,48 +405,53 @@ button[name="infoKara"]:before {
 	position: relative;
 }
 
-.detailsKara tr > td:first-child {
+.detailsKara tr > td:first-child, .karaCard .details tr > td:first-child {
 	font-weight: bold;
 	padding-right: 7px;
 }
 
-.detailsKara .time {
+.detailsKara .time, .karaCard .details .time {
 	color: #DDC5EA;
 }
-
+.list-group-item.karaCard div.details {
+	background-color: hsla(166, 22%, 18%, 1)
+}
 .list-group-item .lyricsKara {
 	background-color: #303340;
 	text-align: center;
-	text-transform: capitalize;
+	text-transform: none;
  }
 
-.list-group-item .fullLyrics, .list-group-item .showVideo, button.closeParent  {
+.detailsKara .topRightButtons, .karaCard .details .topRightButtons, .lyricsKara button.closeParent  {
 	position: absolute;
 	top: 10px;
 	right: 10px;
 }
-.list-group-item .fullLyrics  {
-	right: 49px;
+.detailsKara .topRightButtons {
+	height: calc(100% - 20px);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap-reverse;
 }
-.list-group-item .showVideo  {
-	right: 88px;
+.topRightButtons button {
+	margin: 3px;
 }
-
-.list-group-item .fullLyrics.mobile, .list-group-item .showVideo.mobile {
-	right: 10px;
+.topRightButtons button.mobile {
+	margin: 5px;
+	height: 42px;
+	width: 42px;
+}
+button.closeParent.bottom  {
+	bottom: 10px;
+	top: auto;
+}
+.list-group-item .fullLyrics.mobile, .list-group-item .makeFav.mobile, .list-group-item .showVideo.mobile {
 	border-color: transparent;
 	background-color: hsla(0, 0%, 32%, 0.87);
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.10), 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.1);
 }
 
-.list-group-item .showVideo.mobile  {
-	right: 62px;
-}
 
-button.closeParent.bottom  {
-	bottom: 10px;
-	top: auto;
-}
 .list-group-item > .contentDiv {
 	padding: 3px 7px;
 	overflow: auto;
@@ -429,7 +460,6 @@ button.closeParent.bottom  {
 }
 .list-group-item > .contentDiv > *{
 	flex-grow: 1;
-	flex-shrink: 0;
 }
 
 .list-group-item > .typeDiv {
@@ -896,7 +926,8 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .plDashboard .plSearch {
     flex-grow: 100;
 	flex-basis: 25%;
-    float: right;
+	float: right;
+	order: 1;
 }
 
 .modal {

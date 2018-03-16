@@ -1,4 +1,5 @@
 import {isVideoFile, asyncReadDir} from '../_common/utils/files';
+import {emit} from '../_common/utils/pubsub';
 import {resolve} from 'path';
 import {resolvedPathJingles} from '../_common/utils/config';
 import {getVideoGain} from '../_common/utils/ffmpeg';
@@ -42,6 +43,7 @@ async function getAllVideoGains(jingleFiles) {
 
 export async function buildJinglesList() {
 	const jingleFiles = await extractAllJingleFiles();
-	const list = await getAllVideoGains(jingleFiles);	
+	const list = await getAllVideoGains(jingleFiles);		
+	emit('jinglesReady',list);
 	return list;
 }

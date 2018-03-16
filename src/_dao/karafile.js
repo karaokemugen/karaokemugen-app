@@ -8,9 +8,7 @@ import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {createHash} from 'crypto';
-import {trim} from 'lodash';
-import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
+import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
 import {extractSubtitles, getVideoDuration, getVideoGain} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
@@ -18,16 +16,16 @@ let error = false;
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
-	const infos = karaFileName.split(/\s+-\s+/); // LANGUE - SERIE - NUMERO - TITRE
+	const infos = karaFileName.split(/\s+-\s+/); // LANGUAGE - SERIES - ORDER - TITLE
 
 	if (infos.length < 3) {
 		throw 'Kara filename \'' + karaFileName + '\' does not respect naming convention';
 	}
-	// On ajoute en 5ème position le numéro extrait du champ type.
+	// Addming in 5th position the number extracted from the type field.
 	const orderInfos = infos[2].match(/^([a-zA-Z0-9 ]{2,30}?)(\d*)$/);
 	infos.push(orderInfos[2] ? +orderInfos[2] : 0);
 
-	// On renvoie un objet avec les champs explicitement nommés.
+	// Let's return an object with our data correctly positionned.
 	return {
 		lang: infos[0],
 		serie: infos[1],
@@ -54,8 +52,6 @@ export async function getDataFromKaraFile(karafile) {
 	karaData.datemodif = timestamp.now();
 
 	karaData.karafile = karafile;
-
-	karaData.lang = trim(karaData.lang, '"'); // Nettoyage du champ lang du fichier kara.
 
 	let videoFile;
 
@@ -152,10 +148,4 @@ async function findSubFile(videoFile, kara) {
 	}
 	// Non-blocking case if file isn't found
 	return '';
-}
-
-function checksum(str, algorithm, encoding) {
-	return createHash(algorithm || 'md5')
-		.update(str, 'utf8')
-		.digest(encoding || 'hex');
 }

@@ -2,91 +2,52 @@
  * @fileoverview Launcher source file
  */
 import {asyncCheckOrMkdir, asyncMkdirp, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
-import {setConfig,initConfig,configureBinaries} from './_common/utils/config';
+import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
+import {parseCommandLineArgs} from './args.js';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
-import minimist from 'minimist';
-
-import i18n from 'i18n';
-
-import net from 'net';
+import {createServer} from 'net';
 import logger from 'winston';
-
-import {initEngine} from './_services/engine';
-import resolveSysPath from './_common/utils/resolveSyspath';
-import {karaGenerationBatch} from './_admin/generate_karasfiles';
+import minimist from 'minimist';
+import {exit, initEngine} from './_services/engine';
 import {startExpressReactServer} from './_webapp/react';
-
 import {openDatabases} from './_dao/database';
+import {logo} from './logo';
 
 process.on('uncaughtException', function (exception) {
-	console.log(exception); // to see your exception details in the console
-	// if you are on production, maybe you can send the exception details to your
-	// email as well ?
+	console.log(exception);
 });
 
 process.on('unhandledRejection', (reason, p) => {
 	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-	// application specific logging, throwing an error, or other logic here
 });
-
-
-/**
- * Clear console - and welcome message
- * Node does not like the octal clear screen sequence.
- * So we wrote it in hexa (1B)
- */
-process.stdout.write('\x1Bc');
-const argv = parseArgs();
-const appPath = resolveSysPath('config.ini.default',__dirname,['./','../']);
-if (appPath) {
-	main()
-		.then(() => logger.info('[Launcher] Initialization complete'))
-		.catch(err => {
-			logger.error(`[Launcher] Error during async launch : ${err}`);
-			process.exit(1);
-		});
+let appPath;
+if (process.pkg) {
+	appPath = join(process.execPath,'../');
 } else {
-	logger.error('[Launcher] Unable to detect SysPath !');
-	process.exit(1);
+	appPath = join(__dirname,'../');
 }
 
+main()
+	.catch(err => {
+		logger.error(`[Launcher] Error during launch : ${err}`);
+		exit(1);
+	});
+
 async function main() {
-
-	/** Note : No logging before config initialization (which initializes the loger, heh.) */
-
+	const argv = parseArgs();	
 	let config = await initConfig(appPath, argv);
+	await parseCommandLineArgs(argv);
+	config = getConfig();
+	console.log(logo);
 	console.log('--------------------------------------------------------------------');
-	console.log('Karaoke Mugen '+config.VersionNo+' '+config.VersionName);
+	console.log(`Version ${config.VersionNo} (${config.VersionName})`);
 	console.log('--------------------------------------------------------------------');
 	console.log('\n');
 
 	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
 	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] Detected OS : ${config.os}`);
-
-	if (argv.help) {
-		console.log(i18n.__('HELP_MSG'));
-		process.exit(0);
-	}
-	if (argv.version) {
-		console.log('Karaoke Mugen '+ config.VersionNo + ' - (' + config.VersionName+')');
-		process.exit(0);
-	}
-	if (argv.generate && !argv.validate) {
-		logger.info('[Launcher] Database generation requested');
-		setConfig({optGenerateDB: true});
-	}
-	if (argv.validate && !argv.generate) {
-		logger.info('[Launcher] .kara folder validation requested');
-		setConfig({optValidateKaras: true});
-	}
-	if (argv.validate && argv.generate) {
-		logger.error('[Launcher] --validate and --generate are mutually exclusive!');
-		process.exit(1);
-	}	
-	if (argv.nobrowser) setConfig({optNoBrowser: true});
-	logger.info('[Launcher] Loaded configuration files');
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
 	// Checking binaries
@@ -94,12 +55,6 @@ async function main() {
 
 	// Checking paths, create them if needed.
 	await checkPaths(config);
-
-	if (argv.karagen) {
-		logger.info('[Launcher] .kara generation requested');
-		await karaGenerationBatch();
-		process.exit(0);
-	}
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	logger.debug('[Launcher] Copying input.conf to ' + resolve(appPath, config.PathTemp));
@@ -116,10 +71,16 @@ async function main() {
 			resolve(appPath, config.PathAvatars, 'blank.png')
 		);
 	}
+
 	/**
 	 * Test if network ports are available
 	 */
-	[1337, 1338, 1339, 1340].forEach(port => verifyOpenPort(port));
+	const ports = [config.appFrontendPort,
+		config.appAdminPort,
+		config.appAPIPort,
+		config.appWSPort
+	];
+	ports.forEach(port => verifyOpenPort(port));
 
 	await restoreKaraBackupFolders(config);
 	await openDatabases(config);
@@ -129,11 +90,12 @@ async function main() {
 
 	/**
 	 * Calling engine.
-	 */		
+	 */
 	initEngine();
 }
 
 /**
+ * Checking if application paths exist. 
  * Workaround for bug https://github.com/babel/babel/issues/5542
  * Delete this once the bug is resolved.
  */
@@ -146,7 +108,7 @@ function parseArgs() {
 }
 
 /**
- * Checking if application paths exist. 
+ * Checking if application paths exist.
  */
 async function checkPaths(config) {
 
@@ -177,11 +139,11 @@ async function checkPaths(config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.PathAvatars));
 
 	await Promise.all(checks);
-	logger.info('[Launcher] Directory checks complete');
+	logger.debug('[Launcher] Directory checks complete');
 }
 
 function verifyOpenPort(port) {
-	const server = net.createServer();
+	const server = createServer();
 	server.once('error', err => {
 		if (err.code === 'EADDRINUSE') {
 			logger.error(`[Launcher] Port ${port} is already in use.`);
@@ -218,3 +180,8 @@ async function restoreBackupFolder(pathKara, config) {
 		}
 	}
 }
+
+/**
+ * Workaround for bug https://github.com/babel/babel/issues/5542
+ * Delete this once the bug is resolved.
+ */

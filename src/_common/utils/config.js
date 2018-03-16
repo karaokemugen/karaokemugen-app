@@ -2,7 +2,7 @@
 
 import {resolve} from 'path';
 import {parse, stringify} from 'ini';
-import {sync} from 'os-locale';
+import osLocale from 'os-locale';
 import i18n from 'i18n';
 import {address} from 'ip';
 import logger from 'winston';
@@ -10,32 +10,85 @@ require('winston-daily-rotate-file');
 import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
+import {watch} from 'chokidar';
+import {emit} from './pubsub';
+import {defaults} from './default_settings.js';
 
 /** Object containing all config */
 let config = {};
-let defaultConfig = {};
+let configFile = 'config.ini';
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
- * without passing by this module's fonctions.
+ * without passing by this module's functions.
  */
 export function getConfig() {
 	return {...config};
 }
 
+export function mergeConfig(oldConfig, newConfig) {
+	// Determine if mpv needs to be restarted
+	for (const setting in newConfig) {
+		if (setting.startsWith('Player') &&
+			setting != 'PlayerFullscreen' &&
+			setting != 'PlayerStayOnTop') {
+			if (oldConfig[setting] != newConfig[setting]) {
+				emit('playerNeedsRestart');
+				logger.debug('[Config] Setting mpv to restart after next song');
+			}
+		}
+	}
+
+	updateConfig(newConfig);	
+	const conf = getConfig();
+	// Toggling and updating settings
+	if (conf.EnginePrivateMode === 1) {
+		emit('modeUpdated',0);
+	} else {
+		emit('modeUpdated',1);
+	}
+
+	configureHost();
+
+	// Determine which settings we send back. We get rid of all system and admin settings
+	let publicSettings = {};
+	for (const key in conf) {
+		if (conf.hasOwnProperty(key)) {
+			if (!key.startsWith('Path') &&
+				!key.startsWith('Admin') &&
+				!key.startsWith('Bin') &&
+				!key.startsWith('os')
+			) {
+				publicSettings[key] = conf[key];
+			}
+		}
+	}
+	return publicSettings;
+}
+
 /** Initializing configuration */
 export async function initConfig(appPath, argv) {
-
+	if (argv.config) configFile = argv.config;
 	configureLogger(appPath, !!argv.debug);
 
 	config = {...config, appPath: appPath};
-	config = {...config, isTest: !!argv.isTest};
 	config = {...config, os: process.platform};
 
 	configureLocale();
 	await loadConfigFiles(appPath);
 	configureHost();
 	if (config.JwtSecret == 'Change me') setConfig( {JwtSecret: uuidV4() });
+
+	//Configure watcher
+	const configWatcher = watch(resolve(appPath, configFile));
+	configWatcher.on('change', () => {
+		const oldConf = getConfig();
+		logger.debug('[Config] config file has been changed from the outside world');
+		loadConfig(resolve(appPath, configFile)).then(() => {
+			mergeConfig(oldConf, getConfig());
+		});
+	});
+
 	return getConfig();
 }
 
@@ -63,16 +116,13 @@ function configureLogger(appPath, debug) {
 }
 
 async function loadConfigFiles(appPath) {
-	const defaultConfigFile = resolve(appPath, 'config.ini.default');
-	const overrideConfigFile = resolve(appPath, 'config.ini');
+	const overrideConfigFile = resolve(appPath, configFile);
 	const versionFile = resolve(__dirname, '../../VERSION');
-
-	await loadConfig(defaultConfigFile);
-	defaultConfig = config;
+	config = {...config, ...defaults};
+	config.appPath = appPath;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
 	if (await asyncExists(versionFile)) await loadConfig(versionFile);
 }
-
 
 async function loadConfig(configFile) {
 	logger.debug(`[Config] Reading configuration file ${configFile}`);
@@ -89,13 +139,13 @@ function configureLocale() {
 		cookie: 'locale',
 		register: global
 	});
-	const detectedLocale = sync().substring(0, 2);
+	const detectedLocale = osLocale.sync().substring(0, 2);
 	i18n.setLocale(detectedLocale);
 	config = {...config, EngineDefaultLocale: detectedLocale };
 }
 
 export async function configureBinaries(config) {
-	logger.info('[Launcher] Checking if binaries are available');
+	logger.debug('[Launcher] Checking if binaries are available');
 	const binaries = await checkBinaries(config);
 	setConfig(binaries);
 }
@@ -117,17 +167,18 @@ export async function setConfig(configPart) {
 export async function updateConfig(newConfig) {
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','appPath','os','EngineDefaultLocale'];
 	const filteredConfig = {};
-	Object.entries(newConfig).forEach(([k, v]) => {		
-		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))            
-			&& (newConfig[k] != defaultConfig[k])
-            && (filteredConfig[k] = v);		
+	Object.entries(newConfig).forEach(([k, v]) => {
+		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))
+			&& (newConfig[k] != defaults[k])
+            && (filteredConfig[k] = v);
 	});
-	await asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');	
+	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
+	await asyncWriteFile(resolve(config.appPath, configFile), stringify(filteredConfig), 'utf-8');
 }
 
 /**
  * Functions used to manipulate configuration. We can pass a optional config object.
- * In this case, the method works with the configuration passed as argument rather than the current 
+ * In this case, the method works with the configuration passed as argument rather than the current
  * configuration.
  */
 

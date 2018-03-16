@@ -1,25 +1,26 @@
-
-
 const logger = require('winston');
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
 import {resolve, join} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncCopy, asyncExists} from '../_common/utils/files';
-import {remove, sample, isEmpty} from 'lodash';
+import remove from 'lodash.remove';
+import sample from 'lodash.sample';
+import isEmpty from 'lodash.isempty';
 import {emit,on} from '../_common/utils/pubsub';
 const sizeOf = require('image-size');
 import {buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
 import {spawn} from 'child_process';
+import {exit} from '../_services/engine';
 const mpv = require('node-mpv');
 import {promisify} from 'util';
 const sleep = promisify(setTimeout);
 let currentJinglesList = [];
 let jinglesList = [];
 let displayingInfo = false;
-
 let frontendPort;
 let player;
 let state = {};
+
 state.player = {
 	volume: 100,
 	playing: false,
@@ -34,11 +35,16 @@ state.player = {
 	showsubs: true,
 	stayontop: false,
 	fullscreen: false,
-	ready: false
+	ready: false,
+	url: null
 };
 
 on('engineStatusChange', (newstate) => {
 	state.engine = newstate[0];	
+});
+
+on('jinglesReady', (list) => {
+	currentJinglesList = jinglesList = list[0];	
 });
 
 function emitPlayerState() {
@@ -47,10 +53,6 @@ function emitPlayerState() {
 
 function emitPlayerEnd() {
 	emit('playerEnd');
-}
-
-function emitPlayerSkip() {
-	emit('playerSkip');
 }
 
 async function extractAllBackgroundFiles() {
@@ -126,12 +128,18 @@ export async function initPlayerSystem(initialState) {
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
 	frontendPort = initialState.frontendPort;
-	currentJinglesList = jinglesList = await buildJinglesList();
-	await buildQRCode(`http://${conf.osHost}:${initialState.frontend_port}`);
+	buildJinglesList();
+	
+	if (!isEmpty(conf.EngineConnectionInfoHost)) {
+		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
+	} else {
+		state.player.url = `http://${conf.osHost}:${initialState.frontend_port}`;
+	}
+	await buildQRCode(state.player.url);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
 	emitPlayerState();
-	logger.info('[Player] Player interface is READY');					
+	logger.debug('[Player] Player is READY');					
 }
 
 function getmpvVersion(path) {
@@ -202,7 +210,7 @@ async function startmpv() {
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
 		logger.error(`[Player] mpv binary : ${conf.BinmpvPath}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
-		process.exit(1);
+		exit(1);
 	}
 	if (conf.os === 'darwin' && parseInt(mpvVersionSplit[1]) > 26) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
@@ -280,46 +288,40 @@ async function startmpv() {
 
 export async function play(videodata) {
 	const conf = getConfig();
-	logger.debug('[Player] Play event triggered');	
+	logger.debug('[Player] Play event triggered');		
 	state.player.playing = true;
 	//Search for video file in the different PathVideos
 	const PathsVideos = conf.PathVideos.split('|');
-	let videoFile = await resolveFileInDirs(videodata.video,PathsVideos);		
-	if (!videoFile) {
+	let videoFile;
+	try {
+		videoFile = await resolveFileInDirs(videodata.video,PathsVideos);
+	} catch (err) {
+		logger.debug(`[Player] Error while resolving video path : ${err}`);
 		logger.warn(`[Player] Video NOT FOUND : ${videodata.video}`);
 		if (conf.PathVideosHTTP) {
 			videoFile = `${conf.PathVideosHTTP}/${encodeURIComponent(videodata.video)}`;
 			logger.info(`[Player] Trying to play video directly from the configured http source : ${conf.PathVideosHTTP}`);
 		} else {
-			logger.error('[Player] No other source available for this video.');
+			throw `No video source for ${videodata.video} (tried in ${PathsVideos.toString()} and HTTP source)`;
 		}
-	}
-	if(videoFile !== undefined) {
-		logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
-		logger.info(`[Player] Loading video : ${videoFile}`);
-		if (isEmpty(videodata.gain)) videodata.gain = 0;			
-		try { 
-			await player.load(videoFile,'replace',[`replaygain-fallback=${videodata.gain}`]);
-			state.player.videoType = 'song';
-			player.play();
-			state.player.playerstatus = 'play';
-			if (videodata.subtitle) player.addSubtitles(`memory://${videodata.subtitle}`);
-			// Displaying infos about current song on screen.					
-			displaySongInfo(videodata.infos);
-			state.player.currentSongInfos = videodata.infos;
-			loadBackground('append');
-			state.player._playing = true;
-			emitPlayerState();
-		} catch(err) {
-			logger.error(`[Player] Error loading video ${videodata.video} : ${JSON.stringify(err)}`);
-		}
-	} else {			
-		if (state.engine.status != 'stop') {
-			logger.warn('[Player] Skipping playback due to missing video');
-			emitPlayerSkip();
-		} 
-	}
-	
+	}	
+	logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
+	logger.debug(`[Player] Loading video : ${videoFile}`);		
+	try { 
+		await player.load(videoFile,'replace',[`replaygain-fallback=${videodata.gain}`]);
+		state.player.videoType = 'song';
+		player.play();
+		state.player.playerstatus = 'play';
+		if (videodata.subtitle) player.addSubtitles(`memory://${videodata.subtitle}`);
+		// Displaying infos about current song on screen.					
+		displaySongInfo(videodata.infos);
+		state.player.currentSongInfos = videodata.infos;
+		loadBackground('append');
+		state.player._playing = true;
+		emitPlayerState();
+	} catch(err) {
+		logger.error(`[Player] Error loading video ${videodata.video} : ${JSON.stringify(err)}`);
+	}	
 }
 
 export function setFullscreen(fsState) {
@@ -437,13 +439,12 @@ export function displayInfo(duration) {
 	if (!duration) duration = 100000000;
 	let text = '';
 	if (conf.EngineDisplayConnectionInfo != 0) {
-		const url = `http://${conf.osHost}:${frontendPort}`;
-		text = __('GO_TO')+' '+url+' !';	
+		text = __('GO_TO')+' '+state.player.url+' !';	
 		if (!isEmpty(conf.EngineDisplayConnectionInfoMessage)) text = conf.EngineDisplayConnectionInfoMessage + ' - ' + text;
 	}
 
 	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://mugen.karaokes.moe`;
-	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx30}{\\fscy30}{\\i1}'+version+'{\\i0}';
+	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {
 		command: [
 			'expand-properties',

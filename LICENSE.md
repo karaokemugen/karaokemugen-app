@@ -26,12 +26,3 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
-
-
-# Other modules
-
-## node-ffprobe
-
-node-ffprobe has been modified to be synchronous and manage files with spaces better.
-
-[Original code is here](https://github.com/ListenerApproved/node-ffprobe)
