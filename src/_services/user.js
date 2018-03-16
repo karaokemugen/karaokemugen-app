@@ -52,17 +52,21 @@ export async function validateUserNickname(nickname) {
 	return false;
 }
 
-export async function editUser(username,user,avatar) {
+export async function editUser(username,user,avatar,token) {
 	try {
-		const currentUser = await findUserByName(username);
+		const [editedUser, currentUser] = await Promise.all([
+			findUserByName(username),
+			findUserByName(token.username)
+		]);
 		if (currentUser.type == 2) throw 'Guests are not allowed to edit their profiles';
-		user.id = currentUser.id;
+		if (currentUser.flag_admin == 0 && username != token.username) throw 'User requesting edit is not administrator';
+		user.id = editedUser.id;
 		user.login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
 		// Check if login already exists.
-		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && currentUser.nickname != user.nickname) throw 'Nickname already exists';
+		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && editedUser.nickname != user.nickname) throw 'Nickname already exists';
 		user.NORM_nickname = deburr(user.nickname);		
 		if (user.password) {
 			user.password = hashPassword(user.password);
@@ -72,9 +76,9 @@ export async function editUser(username,user,avatar) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in 
 			// database
-			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);	
+			user.avatar_file = await replaceAvatar(editedUser.avatar_file,avatar);	
 		} else {
-			user.avatar_file = currentUser.avatar_file;
+			user.avatar_file = editedUser.avatar_file;
 		}
 		await db.editUser(user);
 		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);	

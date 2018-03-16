@@ -4127,6 +4127,7 @@ export function APIControllerPublic(router) {
  * @apiParam {String} bio User's bio info. Can be empty.
  * @apiParam {String} [email] User's mail. Can be empty.
  * @apiParam {String} [url] User's URL. Can be empty.
+ * @apiParam {String} [admin] Is User admin or not
  * @apiSuccess {String} args ID of user deleted
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of user deleted
@@ -4176,8 +4177,11 @@ export function APIControllerPublic(router) {
 				'password': {
 					in: 'body',
 					optional: true
+				},
+				'admin': {
+					in: 'body',
+					optional: true
 				}
-
 			});
 
 			req.getValidationResult()
@@ -4194,10 +4198,12 @@ export function APIControllerPublic(router) {
 						req.sanitize('url').unescape();
 						req.sanitize('nickname').unescape();
 						req.sanitize('login').unescape();
-						//Now we add user
+						req.sanitize('admin').toInt();
+						//Now we edit user
 						let avatar;
 						if (req.file) avatar = req.file;
-						user.editUser(req.params.username,req.body,avatar)
+						const token = decode(req.get('authorization'), getConfig().JwtSecret);
+						user.editUser(req.params.username,req.body,avatar,token)
 							.then(function(user){
 								emitWS('userUpdated',user.id);
 								res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
@@ -4363,7 +4369,7 @@ export function APIControllerPublic(router) {
 						if (req.file) avatar = req.file;
 						//Get username
 						const token = decode(req.get('authorization'), getConfig().JwtSecret);
-						user.editUser(token.username,req.body,avatar)
+						user.editUser(token.username,req.body,avatar,token)
 							.then(function(user){
 								emitWS('userUpdated',req.params.user_id);
 								res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
