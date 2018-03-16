@@ -22,27 +22,31 @@
     
 </head>
 
-<body scope="public">
-	{{{ body }}}
+<body scope="public" class='mode{{webappMode}}'>
+	{{{body}}}
 </body>
     <script>
         var query = {{{query}}};
+        var webappMode = {{webappMode}};
     </script>
-    <script src="{{clientAdress}}:1340/socket.io/socket.io.js"></script>
-    <script src="/vendors/js/assignIE.js"></script>
-    <script src="/vendors/js/jquery-3.2.1.min.js"></script>
-    <script src="/vendors/js/select2.min.js"></script>
-    <script src="/vendors/js/bootstrap.min.js"></script>
-    <script src="/vendors/js/bootstrap-switch.min.js"></script>
-    <script src="/vendors/js/velocity.min.js"></script>
-    <script src="/vendors/js/hammer.min.js"></script>
-    <script src="/vendors/js/hammer-time.min.js"></script>
-    <script src="/vendors/js/perfect-scrollbar.jquery.min.js"></script>
-    <script src="/vendors/js/i18n.js"></script>
-    <script src="/vendors/js/fingerprint2.min.js"></script>
-    <script src="/vendors/js/sprintf.min.js"></script>
-    <script src="/ressources/js/karaokemugen.js"></script>
-    <script src="/ressources/js/tools.js"></script>
-    <script src="/ressources/js/public.js"></script>
+   {{#if_eq webappMode "0"}}
 
+   {{else}}
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/vendors/js/assignIE.js"></script>
+        <script src="/vendors/js/jquery-3.2.1.min.js"></script>
+        <script src="/vendors/js/select2.min.js"></script>
+        <script src="/vendors/js/bootstrap.min.js"></script>
+        <script src="/vendors/js/bootstrap-switch.min.js"></script>
+        <script src="/vendors/js/velocity.min.js"></script>
+        <script src="/vendors/js/hammer.min.js"></script>
+        <script src="/vendors/js/hammer-time.min.js"></script>
+        <script src="/vendors/js/perfect-scrollbar.jquery.min.js"></script>
+        <script src="/vendors/js/i18n.js"></script>
+        <script src="/vendors/js/fingerprint2.min.js"></script>
+        <script src="/vendors/js/sprintf.min.js"></script>
+        <script src="/ressources/js/karaokemugen.js"></script>
+        <script src="/ressources/js/tools.js"></script>
+        <script src="/ressources/js/public.js"></script>
+    {{/if_eq}}
 </html>

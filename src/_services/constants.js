@@ -8,6 +8,47 @@ export const videoFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg)$';
 export const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
 export const subFileRegexp = '^.+\\.ass$';
 
+export const defaultGuestNames = [
+	'Jean-Michel Normal',
+	'Sakura du 93',
+	'Dark Kirito 64',
+	'Alex Teriyaki',
+	'Le Grandblue avec une chaussure noire',
+	'MC-kun',
+	'Beauf-kun',
+	'La Castafiore',
+	'xXNarutoSasukeXx',
+	'Lionel Shaoran',
+	'Pico',
+	'Coco',
+	'Chico',
+	'Dark Flame Master',
+	'MAGI System',
+	'MAMMUTH!',
+	'NinaDeFMA',
+	'Hokuto de Cuisine',
+	'S€phir0th69',
+	'Brigade SOS',
+	'Yamagami Lucy Kimiko Akie Airi Shiori Rinne Yoshiho Chihoko Ayano Fumika Chitose Sanae Mikiko Ichika Yukino Reina Eri Ai Tamiko Chikage Emilia Julia Shizue Erina Chisa Yumeka Natsuki Ranran Rieko Setsuri Chikako Azumi Marina Hideko Chiaki Misaki Naomi Campbell Miku Yuka Masako Sachiko Nana Mutsumi Haruka Yuna Shimako Yukie Rin Sakura Kanna Wakana Hazuki Honami Ruri Mihane Momoka Himari Nozomi Futaba Mayuyu'
+];
+
+export const initializationCatchphrases = [
+	'"Karaoke Mugen is combat-ready!" --Nanami-chan',
+	'"Karaoke Mugen, ittekimasu!" --Nanami-chan',
+	'"Smile! Sweet! Sister! Sadistic! Surprise! SING!" --The Karaoke Mugen Dev Team',
+	'"Let us achieve world domination through karaoke!" --Axel Terizaki',
+	'"Listen to my song!" --Every Macross Idol',
+	'"DATABASE DATABASE WOW WOW" --MAN WITH A MISSION',
+	'"Shinji, get in the f*cking karaoke room!" --Gendo Ikari',
+	'"Everything is going according to the purerisuto. (Translator note : purerisuto means playlist)" --Bad Fansubs 101',
+	'"Are people silent when they stop singing?" --Shirou',
+	'"I am the handle of my mic. Rhythm is my body and lyrics are my blood. I have created over a thousand karaokes. Unknown to Silence, Nor known to Noise. Have withstood pain to create many Times. Yet, those hands will never hold anything. So as I sing, Unlimited Karaoke Works." --Archer',
+	'"Take this microphone, mongrel, and let me judge if your voice is worth of joining that treasure of mine!" --Gilgamesh',
+	'"You are already singing." --Kenshiro',
+	'"Karaoke is not beautiful, and that is why it is beautiful." --Kino',
+	'"Hey, want to become a karaoke maker?" -- ／人◕ ‿‿ ◕人＼'
+];
+
 export const karaTypes = Object.freeze({
 	OP: 'OP',
 	ED: 'ED',
@@ -22,7 +63,7 @@ export const karaTypes = Object.freeze({
 
 export const karaTypesArray = Object.freeze(Object.keys(karaTypes));
 
-/** Map utilisée pour la génération de la base de données. */
+/** Map used for database generation */
 export const karaTypesMap = Object.freeze(new Map([
 	[karaTypes.OP, 'TYPE_OP,3'],
 	[karaTypes.ED, 'TYPE_ED,3'],
@@ -35,7 +76,7 @@ export const karaTypesMap = Object.freeze(new Map([
 	[karaTypes.LIVE, 'TYPE_LIVE,3'],
 ]));
 
-/** Extraction du type à partir d'une chaîne de caractères. */
+/** Extracting type from a string */
 export function getType(types) {
 	return types.split(/\s+/).find(t => karaTypesArray.includes(t));
 }

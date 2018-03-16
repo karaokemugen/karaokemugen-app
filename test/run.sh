@@ -2,5 +2,5 @@
 pwd
 ls -l /builds/karaokemugen/karaokemugen-app/app/data/*
 #node src/index.js --debug &disown
-sleep 30
-npm test
+sleep 90
+yarn test

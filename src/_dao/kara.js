@@ -1,6 +1,7 @@
 import {getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
+
 const sql = require('../_common/db/kara');
 
 export async function getSongCountForUser(playlist_id,username) {
@@ -10,26 +11,24 @@ export async function getSongCountForUser(playlist_id,username) {
 	});
 }
 
-export async function getAllKaras() {
+export async function getAllKaras(username) {
 	return await getUserDb().all(sql.getAllKaras, {
-		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
+		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
+		$username: username
 	});
 }
 
-export async function getKara(id) {
+export async function getKara(id, username) {
 	return await getUserDb().get(sql.getKara,
 		{
 			$kara_id: id,
-			$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
+			$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
+			$username: username
 		});
 }
 
 export async function getASS(id) {
 	return await getUserDb().get(sql.getASS, { $kara_id: id });
-}
-
-export async function getKaraByKID(kid) {
-	return await getUserDb().get(sql.getKaraByKID, { $kid: kid });
 }
 
 export async function isKara(id) {
@@ -73,9 +72,11 @@ export async function addKaraToRequests(user_id,karaList,date_add) {
 export async function addKaraToPlaylist(karaList) {
 	const karas = karaList.map((kara) => ({
 		$playlist_id: kara.playlist_id,
-		$user_id: kara.user_id,
+		$username: kara.username,
+		$pseudo_add: kara.pseudo_add,
+		$NORM_pseudo_add: kara.NORM_pseudo_add,
 		$kara_id: kara.kara_id,
-		$created_at: kara.date_add,
+		$created_at: kara.created_at,
 		$pos: kara.pos
 	}));
 	return await transaction(karas, sql.addKaraToPlaylist);
@@ -89,12 +90,12 @@ export async function addKaraToWhitelist(karaList,date_added) {
 	return await transaction(karas, sql.addKaraToWhitelist);
 }
 
-export async function removeKaraFromPlaylist(karaList) {
+export async function removeKaraFromPlaylist(karaList, playlist_id) {
 	// We're not using SQLite parameterization due to a limitation 
 	// keeping us from feeding a simple array/list to the statement.			
 	const karas = karaList.join(',');
 	const sqlRemoveKaraFromPlaylist = sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas);
-	return await getUserDb().run(sqlRemoveKaraFromPlaylist);
+	return await getUserDb().run(sqlRemoveKaraFromPlaylist, {$playlist_id: playlist_id});
 }
 
 export async function removeKaraFromWhitelist(wlcList) {

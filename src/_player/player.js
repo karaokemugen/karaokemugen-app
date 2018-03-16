@@ -1,10 +1,10 @@
-
-
 const logger = require('winston');
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
 import {resolve, join} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncCopy, asyncExists} from '../_common/utils/files';
-import {remove, sample, isEmpty} from 'lodash';
+import remove from 'lodash.remove';
+import sample from 'lodash.sample';
+import isEmpty from 'lodash.isempty';
 import {emit,on} from '../_common/utils/pubsub';
 const sizeOf = require('image-size');
 import {buildJinglesList} from './jingles';
@@ -17,10 +17,10 @@ const sleep = promisify(setTimeout);
 let currentJinglesList = [];
 let jinglesList = [];
 let displayingInfo = false;
-
 let frontendPort;
 let player;
 let state = {};
+
 state.player = {
 	volume: 100,
 	playing: false,
@@ -35,11 +35,16 @@ state.player = {
 	showsubs: true,
 	stayontop: false,
 	fullscreen: false,
-	ready: false
+	ready: false,
+	url: null
 };
 
 on('engineStatusChange', (newstate) => {
 	state.engine = newstate[0];	
+});
+
+on('jinglesReady', (list) => {
+	currentJinglesList = jinglesList = list[0];	
 });
 
 function emitPlayerState() {
@@ -123,12 +128,18 @@ export async function initPlayerSystem(initialState) {
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
 	frontendPort = initialState.frontendPort;
-	currentJinglesList = jinglesList = await buildJinglesList();
-	await buildQRCode(`http://${conf.osHost}:${initialState.frontend_port}`);
+	buildJinglesList();
+	
+	if (!isEmpty(conf.EngineConnectionInfoHost)) {
+		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
+	} else {
+		state.player.url = `http://${conf.osHost}:${initialState.frontend_port}`;
+	}
+	await buildQRCode(state.player.url);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
 	emitPlayerState();
-	logger.info('[Player] Player interface is READY');					
+	logger.debug('[Player] Player is READY');					
 }
 
 function getmpvVersion(path) {
@@ -277,7 +288,7 @@ async function startmpv() {
 
 export async function play(videodata) {
 	const conf = getConfig();
-	logger.debug('[Player] Play event triggered');	
+	logger.debug('[Player] Play event triggered');		
 	state.player.playing = true;
 	//Search for video file in the different PathVideos
 	const PathsVideos = conf.PathVideos.split('|');
@@ -285,17 +296,17 @@ export async function play(videodata) {
 	try {
 		videoFile = await resolveFileInDirs(videodata.video,PathsVideos);
 	} catch (err) {
+		logger.debug(`[Player] Error while resolving video path : ${err}`);
 		logger.warn(`[Player] Video NOT FOUND : ${videodata.video}`);
 		if (conf.PathVideosHTTP) {
 			videoFile = `${conf.PathVideosHTTP}/${encodeURIComponent(videodata.video)}`;
 			logger.info(`[Player] Trying to play video directly from the configured http source : ${conf.PathVideosHTTP}`);
 		} else {
-			throw `No video source for ${videodata.video}`;
+			throw `No video source for ${videodata.video} (tried in ${PathsVideos.toString()} and HTTP source)`;
 		}
 	}	
-	if (isEmpty(videodata.gain)) videodata.gain = 0;			
 	logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
-	logger.info(`[Player] Loading video : ${videoFile}`);		
+	logger.debug(`[Player] Loading video : ${videoFile}`);		
 	try { 
 		await player.load(videoFile,'replace',[`replaygain-fallback=${videodata.gain}`]);
 		state.player.videoType = 'song';
@@ -428,13 +439,12 @@ export function displayInfo(duration) {
 	if (!duration) duration = 100000000;
 	let text = '';
 	if (conf.EngineDisplayConnectionInfo != 0) {
-		const url = `http://${conf.osHost}:${frontendPort}`;
-		text = __('GO_TO')+' '+url+' !';	
+		text = __('GO_TO')+' '+state.player.url+' !';	
 		if (!isEmpty(conf.EngineDisplayConnectionInfoMessage)) text = conf.EngineDisplayConnectionInfoMessage + ' - ' + text;
 	}
 
 	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://mugen.karaokes.moe`;
-	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx30}{\\fscy30}{\\i1}'+version+'{\\i0}';
+	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {
 		command: [
 			'expand-properties',

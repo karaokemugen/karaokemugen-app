@@ -3,50 +3,42 @@ import {open} from 'sqlite';
 import {getConfig} from '../_common/utils/config';
 import {join, resolve} from 'path';
 import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
-import {retry, each} from 'async';
+import promiseRetry from 'promise-retry';
+import {exit} from '../_services/engine';
+import {duration} from '../_common/utils/date';
+
 const DBgenerator = require('../_admin/generate_karasdb.js');
 const sql = require('../_common/db/database');
-
-// Setting up moment tools
-import moment from 'moment';
-require('moment-duration-format');
-moment.locale('fr');
 
 // Setting up databases
 let karaDb;
 let userDb;
 
-export function transaction(items, sql) {
-	retry({times: 10, interval: 100}, (callback) => {
-		getUserDb().run('begin transaction')
-			.then(() => {							
-				each(items, (data,callback) => {
-					getUserDb().prepare(sql).then((stmt) => {
-						stmt.run(data).then(() => {
-							callback(); 
-						}).catch((err) => {
-							callback(err); 
-						});										
-					});								
-				}, (err) => {
-					if (err) callback(err);
-					getUserDb().run('commit').then(() => {
-						callback(); 
-					}).catch((err) => {
-						callback(err);
-					});
-				});
-			})
-			.catch((err) => {
-				logger.debug('[DBI] Failed to begin transaction : '+err);
-				logger.debug('[DBI] Transaction will be retried');
-				callback(err);
-			});
-	},(err) => {
-		// Retry failed completely after 5 tries
-		if (err) throw err;						
+async function doTransaction(items, sql) {	
+	try {
+		await getUserDb().run('begin transaction');
+		for (const index in items) {
+			const stmt = await getUserDb().prepare(sql);
+			await stmt.run(items[index]);
+		}
+		return await getUserDb().run('commit');		
+	} catch(err) {
+		throw err;
+	}
+}
+
+export async function transaction(items, sql) {
+	await promiseRetry((retry) => {
+		return doTransaction(items, sql).catch(retry);					
+	}, {
+		retries: 10,
+		minTimeout: 100,
+		maxTimeout: 200
+	}).then(() => { 
 		return true;
-	});		
+	}).catch((err) => { 
+		throw err;
+	});	
 }
 
 export function openDatabases(config) {
@@ -75,7 +67,7 @@ async function openUserDatabase() {
 		// unless you want to flood your console.
 		/*
 		userDb.driver.on('trace',function(sql){
-			console.log(sql);
+			logger.debug(sql);			
 		});
 		*/
 	} else {
@@ -141,15 +133,14 @@ export async function initDBSystem() {
 	await closeKaraDatabase();	
 	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
 	await compareDatabasesUUIDs();
-	logger.info('[DBI] Database Interface is READY');
-	getStats().then((stats) => {
-		logger.info('[DBI] Karaoke count   : ' + stats.totalcount);
-		logger.info('[DBI] Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day(s)], H [hour(s)], m [minute(s)], s [second(s)]'));
-		logger.info('[DBI] Total series    : ' + stats.totalseries);
-		logger.info('[DBI] Total languages : ' + stats.totallanguages);
-		logger.info('[DBI] Total artists   : ' + stats.totalartists);
-		logger.info('[DBI] Total playlists : ' + stats.totalplaylists);
-	});
+	logger.debug('[DBI] Database Interface is READY');
+	const stats = await getStats();
+	logger.info('Karaoke count   : ' + stats.totalcount);
+	logger.info('Total duration  : ' + duration(stats.totalduration));
+	logger.info('Series count    : ' + stats.totalseries);
+	logger.info('Languages count : ' + stats.totallanguages);
+	logger.info('Artists count   : ' + stats.totalartists);
+	logger.info('Playlists count : ' + stats.totalplaylists);
 	return true;	
 }
 
@@ -208,14 +199,14 @@ async function generateDatabase() {
 	const conf = getConfig();
 
 	const failedKaras = await DBgenerator.run(conf);
-	logger.info('[DBI] Karaokes database created');
+	logger.debug('[DBI] Karaokes database created');
 	if (conf.optGenerateDB) {
 		if (failedKaras) {
-			logger.info('[DBI] Database generation completed with errors!');
-			process.exit(1);
+			logger.error('[DBI] Database generation completed with errors!');
+			exit(1);
 		} else {
 			logger.info('[DBI] Database generation completed successfully!');
-			process.exit(0);
+			exit(0);
 		}
 	}
 	return true;

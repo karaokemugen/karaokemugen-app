@@ -8,6 +8,7 @@ cache:
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
+  - npm install -g pkg@4.2.6 yarn apidoc
 
 stages:
   - test
@@ -18,16 +19,22 @@ stages:
 test:
   stage: test
   script:
-    - npm install -g yarn
-    - yarn install  
+    - wget -c https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz    
+    - tar xf ffmpeg-release-64bit-static.tar.xz
+    - mv ffmpeg-3* ffmpeg
+    - yarn install
+    - touch mpv
+    - echo "BinffmpegLinux=ffmpeg/ffmpeg" >>config.ini
+    - echo "BinffprobeLinux=ffmpeg/ffprobe" >>config.ini
+    - echo "BinPlayerLinux=mpv" >>config.ini
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
     - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
     - export LANG=en_US
-    - npm start -- --debug --test &disown
+    - yarn start --debug --test &disown
     - bash test/run.sh
   only:
-    - test_disabled
+    - next
 
 build:
   stage: build
@@ -36,9 +43,10 @@ build:
     paths:
       - dist/
   script:
-    - npm install -g yarn
-    - yarn install
     - npm run-script build    
+    - yarn install --production
+    - cd node_modules
+    - find -name *.node -delete
   only:
     - master
     - next
@@ -54,7 +62,6 @@ pkg_win:
     paths:
       - bin/
   script:
-    - npm install -g pkg    
     - mkdir -p bin
     - pkg . --targets node8-win-x64 --out-path bin 
   only:
@@ -71,7 +78,6 @@ pkg_osx:
     paths:
       - bin/
   script:
-    - npm install -g pkg
     - mkdir -p bin
     - pkg . --targets node8-macos-x64 --out-path bin 
   only:
@@ -86,18 +92,26 @@ deploy_win:
   script:
     - mkdir build_win
     - cd build_win
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_win.tar.gz"
+    - wget http://mugen.karaokes.moe/downloads/dist_win.tar.gz
     - tar xvzf dist_win.tar.gz
     - rm dist_win.tar.gz
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
-    - cp -f ../config.ini.default .
+    - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"    
   only:
     - master
     - next
     - tags
-  
+
+latest_tag:
+  stage: deploy
+  script:
+    - echo $CI_COMMIT_REF_NAME >latest
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put latest"
+  only: 
+    - tags
+
 deploy_osx:
   stage: deploy
   dependencies:
@@ -105,23 +119,21 @@ deploy_osx:
   script:
     - mkdir build_mac
     - cd build_mac
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_macos.tar.gz"
+    - wget http://mugen.karaokes.moe/downloads/dist_macos.tar.gz
     - tar xvzf dist_macos.tar.gz
     - rm dist_macos.tar.gz
     - cp -f ../bin/karaokemugen-app KaraokeMugen
-    - cp -f ../config.ini.default .
+    - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"    
   only:
     - master
     - next
     - tags
-  
+
 apidoc:
   stage: deploy
-  script:
-    - apt-get update -qq && apt-get install -y -qq lftp zip
-    - npm install -g apidoc
+  script:    
     - apidoc -i src -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd apidoc; mirror -Rnev --parallel=10"

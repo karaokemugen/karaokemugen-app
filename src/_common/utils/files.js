@@ -1,9 +1,13 @@
-import {open, read, exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
+import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
 import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
 import {videoFileRegexp, imageFileRegexp} from '../../_services/constants';
+import fileType from 'file-type';
+import readChunk from 'read-chunk';
+import {getConfig} from './config';
+import {createHash} from 'crypto';
 
 /** Function used to verify a file exists with a Promise.*/
 export function asyncExists(file) {
@@ -11,34 +15,9 @@ export function asyncExists(file) {
 }
 
 export async function detectFileType(file) {
-	const asyncOpen = promisify(open);
-	const fd = await asyncOpen(file,'r');
-	let buffer = new Buffer(8);
-	const asyncRead = promisify(read);
-	await asyncRead(fd, buffer, 0, 8, 0);
-	const shortStart = buffer.toString('hex',0,4);
-	const longStart = buffer.toString('hex',0,8);
-	logger.debug(`[FileType] File ${file} signature : ${longStart}`);
-	switch(shortStart) {
-	case 'ffd8ffdb':
-	case 'ffd8ffe0': 
-	case 'ffd8ffe1': 
-		return 'jpg';				
-	case '89504e47': 
-		return 'png';
-	case '47494638': 
-		return 'gif';
-	case '1a45dfa3': 
-		return 'mkv';
-	case '52494646': 
-		return 'avi';
-	}
-	switch(longStart) {
-	case '0000001866747970': 
-		return 'mp4';
-	}
-	// Unable to detect
-	return false;	
+	const buffer = await readChunk(file, 0, 4100);
+	const detected = fileType(buffer);
+	return detected.ext;	
 }
 
 /** Function used to read a file with a Promise */
@@ -84,27 +63,28 @@ export function asyncMove(...args) {
 
 /** Function used to verify if a required file exists. It throws an exception if not. */
 export async function asyncRequired(file) {
-	const exists = await asyncExists(file);
-	if (!exists) {
-		throw 'File \'' + file + '\' does not exist';
-	}
+	if (!await asyncExists(file)) throw 'File \'' + file + '\' does not exist';
 }
 
 export async function asyncCheckOrMkdir(...dir) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
-		logger.warn('[Launcher] Creating folder ' + resolvedDir);
+		logger.debug('[Launcher] Creating folder ' + resolvedDir);
 		return await asyncMkdirp(resolvedDir);
 	}
 }
 
+export async function isGitRepo(dir) {
+	const dirContents = await asyncReadDir(dir);
+	return dirContents.includes('.git');
+}
+
 /**
  * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
- * Beware: we believe the paths sent as arguments are already resolved.
  */
 export async function resolveFileInDirs(filename, dirs) {
 	for (const dir of dirs) {
-		const resolved = resolve(dir, filename);
+		const resolved = resolve(getConfig().appPath, dir, filename);		
 		if (await asyncExists(resolved)) {
 			return resolved;
 		}
@@ -128,7 +108,60 @@ export function isImageFile(filename) {
 	return new RegExp(imageFileRegexp).test(filename);
 }
 
-/** Remplacement de l'extension dans un nom de fichier. */
+/** Replacing extension in filename */
 export function replaceExt(filename, newExt) {
 	return filename.replace(/\.[^.]+$/, newExt);
+}
+
+export function checksum(str, algorithm, encoding) {
+	return createHash(algorithm || 'md5')
+		.update(str, 'utf8')
+		.digest(encoding || 'hex');
+}
+
+export async function compareFiles(file1, file2) {	
+	if (!await asyncExists(file1) || !await asyncExists(file2)) return false;
+	const [file1data, file2data] = await Promise.all([
+		asyncReadFile(file1, 'utf-8'),
+		asyncReadFile(file2, 'utf-8')
+	]);
+	if (file1data == file2data) return true;
+	return false;
+}
+
+async function compareAllFiles(files, dir1, dir2) {
+	let updatedFiles = [];
+	for (const file of files) {
+		if (!await compareFiles(resolve(dir1, file), resolve(dir2, file))) updatedFiles.push(file);
+	}
+	return updatedFiles;
+}
+
+export async function compareDirs(dir1, dir2) {
+	let newFiles = [];
+	let removedFiles = [];
+	let commonFiles = [];
+	const [dir1List, dir2List] = await Promise.all([
+		asyncReadDir(dir1),
+		asyncReadDir(dir2)
+	]);
+	for (const file of dir2List) {
+		if (!dir1List.includes(file)) {
+			newFiles.push(file);
+		} else {
+			commonFiles.push(file);
+		}
+	}
+	for (const file of dir1List) {
+		if (!dir2List.includes(file)) {
+			removedFiles.push(file);
+		}
+	}
+	const updatedFiles = await compareAllFiles(commonFiles, dir1, dir2);
+	return {
+		updatedFiles: updatedFiles,
+		commonFiles: commonFiles,
+		removedFiles: removedFiles,
+		newFiles: newFiles
+	};
 }
