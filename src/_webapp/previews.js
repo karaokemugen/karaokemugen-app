@@ -30,7 +30,7 @@ async function extractPreviewFiles(previewDir) {
 	const previewFiles = [];
 	const dirListing = await asyncReadDir(previewDir);
 	for (const file of dirListing) {
-		if (!file.startsWith('.') && file.endsWith('.mp4')) {
+		if (!file.startsWith('.') && (!file.startsWith('output')) && file.endsWith('.mp4')) {
 			previewFiles.push(resolve(previewDir, file));
 		}
 	}
@@ -47,7 +47,8 @@ export async function cleanUpPreviewsFolder(config) {
 	// If not then delete preview file
 	for (const previewfile of previewfiles) {
 		let deletePreview = true;
-		const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);		const size = previewparts[2];				
+		const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);		
+		const size = previewparts[2];				
 		const previewfileWOExt = basename(previewparts[1]);
 		for (const videofile of videofiles) {
 			const videofileWOExt = basename(videofile, extname(videofile));
@@ -77,11 +78,11 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 			for (const previewfile of previewfiles) {
 				const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);
 				const size = previewparts[2];
-				if (basename(previewparts[1]) === (basename(videofile).replace(/\.[^.]+$/, ''))) {
+				if (basename(previewparts[1]).toLowerCase() === (basename(videofile).toLowerCase().replace(/\.[^.]+$/, ''))) {
 					if (size != videoStats.size)  {
 					//If it's different, remove previewfile and create a new one
 						asyncRemove(previewfile);						
-					} else {
+					} else {						
 						addPreview = false;
 					}
 				} 

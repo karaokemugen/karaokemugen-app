@@ -93,6 +93,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				}
 			);
 		});
+	
 		$('#settings select').change(function () {
 			setSettings($(this));
 		});
@@ -409,6 +410,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			$(htmlString).insertBefore('#pipSettings');
 		} else if (e === 'EngineDisplayConnectionInfo') {
 			$(htmlString).insertBefore('#connexionInfoSettings');
+		} else if (e === 'EngineFreeUpvotes') {
+			$(htmlString).insertBefore('#freeUpvotesSettings');
 		} else {
 			htmlSettings += htmlString;
 		}
@@ -427,13 +430,16 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
 					if (input.attr('type') !== 'checkbox') {
 						input.val(val);
-					} else {
+					} else { // only checkbox here
+						val =  parseInt(val);
 						input.bootstrapSwitch('state', val, true);
 						input.val(val);
 						if (input.attr('name') === 'PlayerPIP') {
 							val ? $('#pipSettings').show('500') : $('#pipSettings').hide('500');
 						} else if (input.attr('name') === 'EngineDisplayConnectionInfo') {
 							val ? $('#connexionInfoSettings').show('500') : $('#connexionInfoSettings').hide('500');
+						} else if (input.attr('name') === 'EngineFreeUpvotes') {
+							val ? $('#freeUpvotesSettings').show('500') : $('#freeUpvotesSettings').hide('500');
 						}
 					}
 				}
@@ -655,6 +661,40 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					});
 				}
 			});
+		} else if (name == 'startFavMix') {
+			$.ajax({
+				url: 'public/users/', 	
+				type: 'GET'})
+				.done(function (response) {
+					var userList = response.filter(u => u.type<2);
+					
+					var userlistStr = '<div class="automixUserlist">';
+					$.each(userList, function(i, k) {
+						userlistStr +=
+							'<div class="checkbox"><label>'
+						+	'<input type="checkbox" name="users"'
+						+	' value="' + k.login + '" ' + (k.flag_online==1 ? 'checked' : '') + '>'
+						+	k.nickname + '</label></div>';
+					});
+					userlistStr += '</div>';
+
+					displayModal('custom', i18n.__('START_FAV_MIX'), 
+						userlistStr	+ '<input type="text"name="duration" placeholder="200 (min)"/>',
+						function(data){
+							if(!data.duration) data.duration = 200;
+							$.ajax({
+								url: 'admin/automix',
+								type: 'POST',
+								data: data })
+								.done(function(response) {
+									var idNewPlaylist = response.playlist_id;
+									playlistsUpdating.done(function () {
+										select.val(idNewPlaylist).change();
+									});
+								});
+						}
+					);
+				});	
 		}
       
        
