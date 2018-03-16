@@ -104,10 +104,14 @@ export async function trimPlaylist(id,pos) {
 	});
 }
 
-export async function getPlaylistContents(id,forPlayer) {
-	const query = forPlayer ? sql.getPlaylistContentsForPlayer : sql.getPlaylistContents;
-	if (forPlayer) return await getUserDb().all(query, { $playlist_id: id });
-	return await getUserDb().all(query, { $playlist_id: id,
+export async function getPlaylistContentsMini(id) {
+	return await getUserDb().all(sql.getPlaylistContentsMini, { $playlist_id: id });
+}
+
+export async function getPlaylistContents(id, username) {	
+	return await getUserDb().all(sql.getPlaylistContents, { 
+		$playlist_id: id,
+		$username: username,
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
 	});
 }
@@ -125,7 +129,7 @@ export async function getPlaylistKaraNames(id) {
 	return await getUserDb().all(sql.getPlaylistKaraNames, { $playlist_id: id });
 }
 
-export async function getPLCInfo(id,forUser, username) {
+export async function getPLCInfo(id, forUser, username) {
 	const query = sql.getPLCInfo + (forUser ? ' AND p.flag_visible = 1' : '');
 	return await getUserDb().get(query,  
 		{

@@ -5,14 +5,10 @@ import {join, resolve} from 'path';
 import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
 import promiseRetry from 'promise-retry';
 import {exit} from '../_services/engine';
+import {duration} from '../_common/utils/date';
 
 const DBgenerator = require('../_admin/generate_karasdb.js');
 const sql = require('../_common/db/database');
-
-// Setting up moment tools
-import moment from 'moment';
-require('moment-duration-format');
-
 
 // Setting up databases
 let karaDb;
@@ -139,9 +135,8 @@ export async function initDBSystem() {
 	await compareDatabasesUUIDs();
 	logger.debug('[DBI] Database Interface is READY');
 	const stats = await getStats();
-	moment.locale(getConfig().EngineDefaultLocale);	
 	logger.info('Karaoke count   : ' + stats.totalcount);
-	logger.info('Total duration  : ' + moment.duration(stats.totalduration, 'seconds').format('D [day], H [hour], m [minute], s [second]'));
+	logger.info('Total duration  : ' + duration(stats.totalduration));
 	logger.info('Series count    : ' + stats.totalseries);
 	logger.info('Languages count : ' + stats.totallanguages);
 	logger.info('Artists count   : ' + stats.totalartists);

@@ -22,7 +22,7 @@ test:
     - wget -c https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz    
     - tar xf ffmpeg-release-64bit-static.tar.xz
     - mv ffmpeg-3* ffmpeg
-    - yarn install  
+    - yarn install
     - touch mpv
     - echo "BinffmpegLinux=ffmpeg/ffmpeg" >>config.ini
     - echo "BinffprobeLinux=ffmpeg/ffprobe" >>config.ini
@@ -44,6 +44,9 @@ build:
       - dist/
   script:
     - npm run-script build    
+    - yarn install --production
+    - cd node_modules
+    - find -name *.node -delete
   only:
     - master
     - next
@@ -89,23 +92,26 @@ deploy_win:
   script:
     - mkdir build_win
     - cd build_win
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_win.tar.gz"
+    - wget http://mugen.karaokes.moe/downloads/dist_win.tar.gz
     - tar xvzf dist_win.tar.gz
     - rm dist_win.tar.gz
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
-    - cp -f ../config.ini.default .
+    - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
-    - mkdir -p /shelter/_Windows-$CI_COMMIT_REF_NAME
-    - cp -f ../bin/karaokemugen-app.exe /shelter/_Windows-$CI_COMMIT_REF_NAME/KaraokeMugen.exe
-    - cp -f ../config.ini.default /shelter/_Windows-$CI_COMMIT_REF_NAME/
-    - sed -e 's/app\//..\/app\//g' -i /shelter/_Windows-$CI_COMMIT_REF_NAME/config.ini.default
-    - cp -f *.node /shelter/_Windows-$CI_COMMIT_REF_NAME/
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"    
   only:
     - master
     - next
     - tags
-  
+
+latest_tag:
+  stage: deploy
+  script:
+    - echo $CI_COMMIT_REF_NAME >latest
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put latest"
+  only: 
+    - tags
+
 deploy_osx:
   stage: deploy
   dependencies:
@@ -113,19 +119,13 @@ deploy_osx:
   script:
     - mkdir build_mac
     - cd build_mac
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; get dist_macos.tar.gz"
+    - wget http://mugen.karaokes.moe/downloads/dist_macos.tar.gz
     - tar xvzf dist_macos.tar.gz
     - rm dist_macos.tar.gz
     - cp -f ../bin/karaokemugen-app KaraokeMugen
-    - cp -f ../config.ini.default .
+    - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"
-    - mkdir -p /shelter/_macOS-$CI_COMMIT_REF_NAME
-    - cp -f ../bin/karaokemugen-app /shelter/_macOS-$CI_COMMIT_REF_NAME/    
-    - cp -f ../config.ini.default /shelter/_macOS-$CI_COMMIT_REF_NAME/
-    - sed -e 's/app\//..\/app\//g' -i /shelter/_macOS-$CI_COMMIT_REF_NAME/config.ini.default
-    - sed -e 's/mpv...\/app/mpv.app/g' -i /shelter/_macOS-$CI_COMMIT_REF_NAME/config.ini.default
-    - cp -f *.node /shelter/_macOS-$CI_COMMIT_REF_NAME/
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"    
   only:
     - master
     - next

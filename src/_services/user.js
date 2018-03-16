@@ -5,7 +5,9 @@ import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/ut
 import {getConfig} from '../_common/utils/config';
 import {createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
-import {isEmpty, sampleSize, deburr} from 'lodash';
+import isEmpty from 'lodash.isempty';
+import sampleSize from 'lodash.samplesize';
+import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
@@ -251,8 +253,8 @@ async function createDefaultGuests() {
 	const guests = await listGuests();
 	if (guests.length > 0) return 'No creation of guest account needed';			
 	// May be modified later.
-	let maxGuests = 10;	
-	logger.debug('[User] Creating ${maxGuests} default guest accounts');
+	let maxGuests = guests.length;	
+	logger.debug(`[User] Creating ${maxGuests} default guest accounts`);
 	const guestsToCreate = sampleSize(defaultGuestNames, maxGuests);	
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await addUser({

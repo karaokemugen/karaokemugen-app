@@ -1,10 +1,10 @@
-
-
 const logger = require('winston');
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
 import {resolve, join} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncCopy, asyncExists} from '../_common/utils/files';
-import {remove, sample, isEmpty} from 'lodash';
+import remove from 'lodash.remove';
+import sample from 'lodash.sample';
+import isEmpty from 'lodash.isempty';
 import {emit,on} from '../_common/utils/pubsub';
 const sizeOf = require('image-size');
 import {buildJinglesList} from './jingles';
@@ -35,7 +35,8 @@ state.player = {
 	showsubs: true,
 	stayontop: false,
 	fullscreen: false,
-	ready: false
+	ready: false,
+	url: null
 };
 
 on('engineStatusChange', (newstate) => {
@@ -128,7 +129,13 @@ export async function initPlayerSystem(initialState) {
 	state.player.stayontop = initialState.ontop;
 	frontendPort = initialState.frontendPort;
 	buildJinglesList();
-	await buildQRCode(`http://${conf.osHost}:${initialState.frontend_port}`);
+	
+	if (!isEmpty(conf.EngineConnectionInfoHost)) {
+		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
+	} else {
+		state.player.url = `http://${conf.osHost}:${initialState.frontend_port}`;
+	}
+	await buildQRCode(state.player.url);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
 	emitPlayerState();
@@ -432,13 +439,12 @@ export function displayInfo(duration) {
 	if (!duration) duration = 100000000;
 	let text = '';
 	if (conf.EngineDisplayConnectionInfo != 0) {
-		const url = `http://${conf.osHost}:${frontendPort}`;
-		text = __('GO_TO')+' '+url+' !';	
+		text = __('GO_TO')+' '+state.player.url+' !';	
 		if (!isEmpty(conf.EngineDisplayConnectionInfoMessage)) text = conf.EngineDisplayConnectionInfoMessage + ' - ' + text;
 	}
 
 	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://mugen.karaokes.moe`;
-	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx30}{\\fscy30}{\\i1}'+version+'{\\i0}';
+	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {
 		command: [
 			'expand-properties',

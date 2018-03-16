@@ -12,10 +12,11 @@ import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
 import {emit} from './pubsub';
+import {defaults} from './default_settings.js';
 
 /** Object containing all config */
 let config = {};
-let defaultConfig = {};
+let configFile = 'config.ini';
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
@@ -37,16 +38,16 @@ export function mergeConfig(oldConfig, newConfig) {
 			}
 		}
 	}
-	
+
 	updateConfig(newConfig);	
 	const conf = getConfig();
 	// Toggling and updating settings
 	if (conf.EnginePrivateMode === 1) {
-		emit('modeUpdated',0);		
+		emit('modeUpdated',0);
 	} else {
 		emit('modeUpdated',1);
 	}
-	
+
 	configureHost();
 
 	// Determine which settings we send back. We get rid of all system and admin settings
@@ -67,11 +68,10 @@ export function mergeConfig(oldConfig, newConfig) {
 
 /** Initializing configuration */
 export async function initConfig(appPath, argv) {
-
+	if (argv.config) configFile = argv.config;
 	configureLogger(appPath, !!argv.debug);
 
 	config = {...config, appPath: appPath};
-	config = {...config, isTest: !!argv.test};
 	config = {...config, os: process.platform};
 
 	configureLocale();
@@ -80,11 +80,11 @@ export async function initConfig(appPath, argv) {
 	if (config.JwtSecret == 'Change me') setConfig( {JwtSecret: uuidV4() });
 
 	//Configure watcher
-	const configWatcher = watch(resolve(appPath, 'config.ini'));
+	const configWatcher = watch(resolve(appPath, configFile));
 	configWatcher.on('change', () => {
-		logger.debug('[Config] Config file has been changed from the outside world');
 		const oldConf = getConfig();
-		loadConfig(resolve(appPath, 'config.ini')).then(() => {
+		logger.debug('[Config] config file has been changed from the outside world');
+		loadConfig(resolve(appPath, configFile)).then(() => {
 			mergeConfig(oldConf, getConfig());
 		});
 	});
@@ -116,16 +116,13 @@ function configureLogger(appPath, debug) {
 }
 
 async function loadConfigFiles(appPath) {
-	const defaultConfigFile = resolve(appPath, 'config.ini.default');
-	const overrideConfigFile = resolve(appPath, 'config.ini');
+	const overrideConfigFile = resolve(appPath, configFile);
 	const versionFile = resolve(__dirname, '../../VERSION');
-
-	await loadConfig(defaultConfigFile);
-	defaultConfig = config;
+	config = {...config, ...defaults};
+	config.appPath = appPath;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
 	if (await asyncExists(versionFile)) await loadConfig(versionFile);
 }
-
 
 async function loadConfig(configFile) {
 	logger.debug(`[Config] Reading configuration file ${configFile}`);
@@ -170,18 +167,18 @@ export async function setConfig(configPart) {
 export async function updateConfig(newConfig) {
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','appPath','os','EngineDefaultLocale'];
 	const filteredConfig = {};
-	Object.entries(newConfig).forEach(([k, v]) => {		
-		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))            
-			&& (newConfig[k] != defaultConfig[k])
-            && (filteredConfig[k] = v);		
+	Object.entries(newConfig).forEach(([k, v]) => {
+		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))
+			&& (newConfig[k] != defaults[k])
+            && (filteredConfig[k] = v);
 	});
 	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
-	await asyncWriteFile(resolve(config.appPath, 'config.ini'), stringify(filteredConfig), 'utf-8');	
+	await asyncWriteFile(resolve(config.appPath, configFile), stringify(filteredConfig), 'utf-8');
 }
 
 /**
  * Functions used to manipulate configuration. We can pass a optional config object.
- * In this case, the method works with the configuration passed as argument rather than the current 
+ * In this case, the method works with the configuration passed as argument rather than the current
  * configuration.
  */
 

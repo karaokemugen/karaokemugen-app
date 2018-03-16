@@ -1,34 +1,28 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
-import {mergeConfig, getConfig} from '../_common/utils/config';
+import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
 import {initUserSystem, findUserByName, findUserByID} from '../_services/user';
 import {initDBSystem, getStats} from '../_dao/database';
-import {initAPIServer} from '../_apiserver/api';
-import {initWSServer} from '../_ws/websocket';
-import {initFrontend} from '../_webapp/frontend';
+import {initFrontend, emitWS} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
 import {initFavoritesSystem} from '../_services/favorites';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
-import {emitWS} from '../_ws/websocket';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
-import {isEmpty, cloneDeep, sample} from 'lodash';
+import isEmpty from 'lodash.isempty';
+import cloneDeep from 'lodash.clonedeep';
+import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
+import {openTunnel, closeTunnel} from '../_webapp/tunnel.js';
 
 const plc = require('./playlist');
 const logger = require('winston');
 const sleep = promisify(setTimeout);
 
-
-const ports = {
-	frontend: 1337,
-	apiserver: 1339,
-	ws: 1340	
-};
 let publicState = {};
 let state = {};
 
@@ -50,7 +44,7 @@ let initialState = {
 	ontop: true,
 	playlist: null,
 	timeposition: 0,
-	frontendPort: ports.frontend
+	frontendPort: null
 };
 
 on('playingUpdated', () => {
@@ -119,6 +113,7 @@ on('playerStatusChange', (states) => {
 function emitPublicStatus() {
 	emit('publicStatusChange');
 }
+
 function emitEngineStatus() {
 	emit('engineStatusChange', state.engine);
 }
@@ -135,6 +130,7 @@ async function restartPlayer() {
 export async function initEngine() {
 	const conf = getConfig();
 	state.engine = initialState;
+	state.engine.frontendPort = conf.appFrontendPort;
 	state.player = {};
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
@@ -150,8 +146,15 @@ export async function initEngine() {
 		}		
 	}
 	if (conf.optBaseUpdate) {		
-		await runBaseUpdate();	
-		logger.info('[Updater] Done updating everything');
+		try {
+			if (await runBaseUpdate()) setConfig({optGenerateDB: true});
+			logger.info('[Updater] Done updating karaokes');
+		} catch(err) {
+			logger.error(`[Updater] Update failed : ${err}`);
+			exit(1);
+		}
+		
+		
 	}
 	//Database system is the foundation of every other <system className=""></system>
 	await initDBSystem();
@@ -160,10 +163,11 @@ export async function initEngine() {
 	if (conf.EngineCreatePreviews > 0) {
 		createPreviews();
 	}
+	if (conf.optOnline || conf.OnlineMode == 1) {
+		await openTunnel();
+	}
 	inits.push(initPlayerSystem(state.engine));
-	inits.push(initFrontend(ports.frontend));
-	inits.push(initAPIServer(ports.apiserver));
-	inits.push(initWSServer(ports.ws));	
+	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem);
 	//Initialize engine
 	// Test if current/public playlists exist
@@ -188,10 +192,13 @@ export async function initEngine() {
 }
 
 export function exit(rc) {
+	const conf = getConfig();
 	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
 	//On other systems or if terminal is not a TTY we exit immediately.
 	// non-TTY terminals have no stdin support.
 	
+	if (conf.optOnline || conf.OnlineMode == 1) closeTunnel();
+
 	if (process.platform != 'win32' || !process.stdout.isTTY) process.exit(rc);
 	console.log('\n');
 	readlineSync.question('Press enter to exit', {hideEchoBack: true});
@@ -694,7 +701,7 @@ async function testPlaylistVisible(playlist_id, token) {
 export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;			
-		const pl = await plc.getPlaylistContents(playlist_id);
+		const pl = await plc.getPlaylistContents(playlist_id,token);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		if (from == -1) {
