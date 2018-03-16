@@ -616,7 +616,11 @@ export async function editPLC(plc_id, pos, flag_playing, token) {
 	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing, token);	
 }
 
-export function updateSettings(newConfig) {		
+export function updateSettings(newConfig) {	
+	if (!isEmpty(newConfig.EngineConnectionInfoHost)) {
+		state.player.url = `http://${newConfig.EngineConnectionInfoHost}`;
+		emit('playerStatusChange', state.player);
+	}
 	return mergeConfig(getConfig(), newConfig);				
 }
 
