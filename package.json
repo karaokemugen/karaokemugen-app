@@ -74,6 +74,7 @@
     "ass-parser": "^0.2.0",
     "basic-ftp": "^2.8.3",
     "body-parser": "^1.18.2",
+    "chalk": "^2.3.2",
     "chokidar": "^2.0.2",
     "command-exists": "^1.2.2",
     "cookie-parser": "^1.4.3",
