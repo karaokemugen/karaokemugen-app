@@ -111,6 +111,7 @@
     "pretty-bytes": "^4.0.2",
     "promise-retry": "^1.1.1",
     "qrcode": "^1.2.0",
+    "randomstring": "^1.1.5",
     "read-chunk": "^2.1.0",
     "readline-sync": "^1.4.9",
     "simple-git": "^1.92.0",

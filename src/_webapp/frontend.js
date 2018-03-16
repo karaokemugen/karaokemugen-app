@@ -48,7 +48,6 @@ export async function initFrontend(port) {
 		}
 	}));
 	const routerAdmin = express.Router();
-	
 	app.use(passport.initialize());
 	configurePassport();
 	const conf = getConfig();
@@ -146,9 +145,16 @@ export async function initFrontend(port) {
 		} else if (config.WebappMode === '1') {
 			view = 'publicLimited';
 		}
+		let url;
+		if (config.EngineConnectionInfoHost) {
+			url = config.EngineConnectionInfoHost
+		} else {
+			url = address();
+		}
+
 		res.render(view, {'layout': 'publicHeader',
-			'clientAdress'	:	'http://'+address(),
-			'webappMode'	:	conf.WebappMode,
+			'clientAdress'	:	'http://'+url,
+			'webappMode'	:	config.WebappMode,
 			'query'			:	JSON.stringify(req.query)
 		});
 	});
@@ -178,7 +184,7 @@ export async function initFrontend(port) {
 	app.use((req, res) => {
 		res.status(404);
 		// respond with html page
-		if (req.accepts('html')) {
+		if (req.accepts('html')) {	
 			res.render('404', {url: req.url});
 			return;
 		}
