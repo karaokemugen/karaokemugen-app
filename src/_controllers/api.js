@@ -7,7 +7,6 @@ const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
 const upvote = require('../_services/upvote.js');
 import {emitWS} from '../_webapp/frontend';
-import {decode} from 'jwt-simple';
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
 
@@ -36,6 +35,7 @@ function OKMessage(data,code,args) {
 		data: data,		
 	};
 }
+
 
 // Rules :
 // version of the API is decided in the path
@@ -153,8 +153,8 @@ export function APIControllerAdmin(router) {
 					if (result.isEmpty()) {
 						// No errors detected
 						req.sanitize('duration').toInt();
-						const token = decode(req.get('authorization'), getConfig().JwtSecret);						
-						favorites.createAutoMix(req.body, token.username)
+												
+						favorites.createAutoMix(req.body, req.authToken.username)
 							.then((new_playlist) => {
 								emitWS('playlistsUpdated');
 								res.statusCode = 201;
@@ -211,8 +211,8 @@ export function APIControllerAdmin(router) {
 
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
 			// Get list of playlists
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			engine.getAllPLs(token)
+			
+			engine.getAllPLs(req.authToken)
 				.then((playlists) => {
 					res.json(OKMessage(playlists));
 				})
@@ -292,8 +292,8 @@ export function APIControllerAdmin(router) {
 						req.sanitize('flag_current').toBoolean();
 						
 						//Now we add playlist
-						const token = decode(req.get('authorization'), getConfig().JwtSecret);						
-						engine.createPL(req.body, token.username)
+												
+						engine.createPL(req.body, req.authToken.username)
 							.then((new_playlist) => {
 								emitWS('playlistsUpdated');
 								res.statusCode = 201;
@@ -358,8 +358,8 @@ export function APIControllerAdmin(router) {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			const playlist_id = req.params.pl_id;
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			engine.getPLInfo(playlist_id, token)
+			
+			engine.getPLInfo(playlist_id, req.authToken)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -465,8 +465,8 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 500 Internal Server Error
  */
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			engine.deletePL(req.params.pl_id,token)
+			
+			engine.deletePL(req.params.pl_id,req.authToken)
 				.then(() => {
 					emitWS('playlistsUpdated');
 					res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
@@ -863,8 +863,8 @@ export function APIControllerAdmin(router) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			engine.getPLContents(playlist_id,filter,lang,token,from,size)
+			
+			engine.getPLContents(playlist_id,filter,lang,req.authToken,from,size)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -932,8 +932,8 @@ export function APIControllerAdmin(router) {
 					if (result.isEmpty()) {
 						req.sanitize('playlist_id').toInt();
 						if (req.body.pos != undefined) req.sanitize('pos').toInt();
-						const token = decode(req.get('authorization'), getConfig().JwtSecret);
-						engine.addKaraToPL(playlist_id, req.body.kara_id, token.username, req.body.pos)
+						
+						engine.addKaraToPL(playlist_id, req.body.kara_id, req.authToken.username, req.body.pos)
 							.then((result) => {
 								emitWS('playlistInfoUpdated',playlist_id);
 								emitWS('playlistContentsUpdated',playlist_id);
@@ -1217,8 +1217,8 @@ export function APIControllerAdmin(router) {
  * }
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			engine.getPLCInfo(req.params.plc_id,req.query.lang,token)
+			
+			engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken)
 				.then((kara) => {
 					res.json(OKMessage(kara));
 				})
@@ -1278,8 +1278,8 @@ export function APIControllerAdmin(router) {
 					if (result.isEmpty()) {
 						if (req.body.pos != undefined) req.sanitize('pos').toInt();
 						if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
-						const token = decode(req.get('authorization'), getConfig().JwtSecret);					
-						engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,token)
+											
+						engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,req.authToken)
 							.then(() => {
 								// pl_id is returned from this promise
 								res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
@@ -2397,8 +2397,8 @@ export function APIControllerAdmin(router) {
 			});
 			req.getValidationResult().then((result) =>  {
 				if (result.isEmpty()) {
-					const token = decode(req.get('authorization'), getConfig().JwtSecret);
-					engine.importPL(JSON.parse(req.body.playlist),token.username)
+					
+					engine.importPL(JSON.parse(req.body.playlist),req.authToken.username)
 						.then((result) => {									
 							const response = {
 								message: 'Playlist imported',
@@ -2529,8 +2529,8 @@ export function APIControllerPublic(router) {
  */
 		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {			
 			// Get list of playlists, only return the visible ones
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);	
-			engine.getAllPLs(token)
+				
+			engine.getAllPLs(req.authToken)
 				.then((playlists) => {
 					res.json(OKMessage(playlists));
 				})
@@ -2590,8 +2590,8 @@ export function APIControllerPublic(router) {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
-			engine.getPLInfo(req.params.pl_id,token)
+					
+			engine.getPLInfo(req.params.pl_id,req.authToken)
 				.then((playlist) => {							
 					res.json(OKMessage(playlist));
 				})
@@ -2701,8 +2701,8 @@ export function APIControllerPublic(router) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
-			engine.getPLContents(req.params.pl_id,filter,lang,token,from,size)
+					
+			engine.getPLContents(req.params.pl_id,filter,lang,req.authToken,from,size)
 				.then((playlist) => {
 					if (playlist == null) res.statusCode = 404;
 					res.json(OKMessage(playlist));
@@ -2831,8 +2831,8 @@ export function APIControllerPublic(router) {
  */
 
 		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			engine.getPLCInfo(req.params.plc_id,req.query.lang,token)
+			
+			engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken)
 				.then((kara) => {
 					res.json(OKMessage(kara));
 				})
@@ -3363,8 +3363,8 @@ export function APIControllerPublic(router) {
 				from = parseInt(req.query.from);
 			}
 			if (from < 0) from = 0;
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			engine.getKaras(filter,lang,from,size,token)
+			
+			engine.getKaras(filter,lang,from,size,req.authToken)
 				.then((karas) => {
 					res.json(OKMessage(karas));
 				})
@@ -3507,8 +3507,8 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			engine.getKaraInfo(req.params.kara_id,req.query.lang,token)
+			
+			engine.getKaraInfo(req.params.kara_id,req.query.lang,req.authToken)
 				.then((kara) => {	
 					res.json(OKMessage(kara));
 				})
@@ -3570,8 +3570,8 @@ export function APIControllerPublic(router) {
 */
 		.post(requireWebappOpen, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			engine.addKaraToPL(null, req.params.kara_id, token.username, null)
+			
+			engine.addKaraToPL(null, req.params.kara_id, req.authToken.username, null)
 				.then((data) => {
 					emitWS('playlistContentsUpdated',data.playlist_id);
 					emitWS('playlistInfoUpdated',data.playlist_id);
@@ -3664,8 +3664,8 @@ export function APIControllerPublic(router) {
  */
 		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get current Playlist
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
-			engine.getCurrentPLInfo(token)
+					
+			engine.getCurrentPLInfo(req.authToken)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3775,8 +3775,8 @@ export function APIControllerPublic(router) {
 			} else {
 				to = req.query.to;
 			}
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
-			engine.getCurrentPLContents(filter, lang, from, to, token)
+					
+			engine.getCurrentPLContents(filter, lang, from, to, req.authToken)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3833,8 +3833,8 @@ export function APIControllerPublic(router) {
 
 		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Get public Playlist
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
-			engine.getPublicPLInfo(token)
+					
+			engine.getPublicPLInfo(req.authToken)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3944,8 +3944,8 @@ export function APIControllerPublic(router) {
 			} else {
 				from = req.query.from;
 			}
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);		
-			engine.getPublicPLContents(filter, lang, from, to, token)
+					
+			engine.getPublicPLContents(filter, lang, from, to, req.authToken)
 				.then((playlist) => {
 					res.json(OKMessage(playlist));
 				})
@@ -3984,8 +3984,8 @@ export function APIControllerPublic(router) {
 	
 		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
 			// Post an upvote
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			upvote.vote(req.params.plc_id,token.username,req.body.downvote)
+			
+			upvote.vote(req.params.plc_id,req.authToken.username,req.body.downvote)
 				.then((kara) => {
 					emitWS('playlistContentsUpdated', kara.playlist_id);
 					res.json(OKMessage(null, kara.code, kara));
@@ -4272,8 +4272,8 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
-			user.findUserByName(token.username, {public:false})
+			
+			user.findUserByName(req.authToken.username, {public:false})
 				.then((userdata) => {
 					res.json(OKMessage(userdata));
 				})
@@ -4362,8 +4362,8 @@ export function APIControllerPublic(router) {
 						let avatar;
 						if (req.file) avatar = req.file;
 						//Get username
-						const token = decode(req.get('authorization'), getConfig().JwtSecret);
-						user.editUser(token.username,req.body,avatar)
+						
+						user.editUser(req.authToken.username,req.body,avatar)
 							.then(function(user){
 								emitWS('userUpdated',req.params.user_id);
 								res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
@@ -4463,7 +4463,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 		.get(requireWebappLimited, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
-			const token = decode(req.get('authorization'), getConfig().JwtSecret);
+			
 			const filter = req.query.filter;
 			const lang = req.query.lang;
 			let size;
@@ -4478,7 +4478,7 @@ export function APIControllerPublic(router) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			favorites.getFavorites(token.username, filter, lang, from, size)
+			favorites.getFavorites(req.authToken.username, filter, lang, from, size)
 				.then((karas) => {
 					res.json(OKMessage(karas));
 				})
@@ -4537,10 +4537,10 @@ export function APIControllerPublic(router) {
 					if (result.isEmpty()) {
 						// No errors detected
 						req.sanitize('kara_id').toInt();
-						const token = decode(req.get('authorization'), getConfig().JwtSecret);
-						favorites.addToFavorites(token.username,req.body.kara_id)
+						
+						favorites.addToFavorites(req.authToken.username,req.body.kara_id)
 							.then((result) => {
-								emitWS('favoritesUpdated',token.username);
+								emitWS('favoritesUpdated',req.authToken.username);
 								emitWS('playlistInfoUpdated',result.playlist_id);
 								emitWS('playlistContentsUpdated',result.playlist_id);
 								res.json(OKMessage(null,'FAVORITES_ADDED',result));	
@@ -4601,10 +4601,10 @@ export function APIControllerPublic(router) {
 			req.getValidationResult().then((result) =>  {
 				if (result.isEmpty()) {
 					req.sanitize('kara_id').toInt();
-					const token = decode(req.get('authorization'), getConfig().JwtSecret);
-					favorites.deleteFavorite(token.username,req.body.kara_id)
+					
+					favorites.deleteFavorite(req.authToken.username,req.body.kara_id)
 						.then((data) => {
-							emitWS('favoritesUpdated',token.username);
+							emitWS('favoritesUpdated',req.authToken.username);
 							emitWS('playlistContentsUpdated',data.playlist_id);
 							emitWS('playlistInfoUpdated',data.playlist_id);
 							res.statusCode = 200;

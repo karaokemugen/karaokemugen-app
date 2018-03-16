@@ -12,7 +12,8 @@ import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
-
+import {logo} from './logo';
+import chalk from 'chalk';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
@@ -37,10 +38,10 @@ main()
 async function main() {
 	const argv = parseArgs();	
 	let config = await initConfig(appPath, argv);
-	console.log('--------------------------------------------------------------------');
-	console.log(`Karaoke Mugen ${config.VersionNo} (${config.VersionName})`);
-	console.log('--------------------------------------------------------------------');
-	console.log('\n');
+	console.log(chalk.blue(logo));
+	console.log('Karaoke Player & Manager - http://mugen.karaokes.moe');
+	console.log(`Version ${chalk.bold.green(config.VersionNo)} (${chalk.bold.green(config.VersionName)})`);
+	console.log('================================================================');
 	await parseCommandLineArgs(argv);
 	config = getConfig();
 	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
