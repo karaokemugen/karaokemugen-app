@@ -9,6 +9,7 @@ cache:
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
+  - rm -f /usr/local/bin/yarn
   - npm install -g pkg@4.2.6 yarn apidoc
 
 stages:
