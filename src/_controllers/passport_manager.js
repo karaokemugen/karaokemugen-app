@@ -13,6 +13,7 @@ export const updateUserLoginTime = (req, res, next) => {
 
 export const requireValidUser = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
+	req.authToken = token;
 	findUserByName(token.username)
 		.then((user) => {
 			if (!user) {
@@ -25,6 +26,7 @@ export const requireValidUser = (req, res, next) => {
 			res.status(403).send('User logged in unknown');
 		});
 };
+
 
 export const requireAdmin = (req, res, next) => {
 	const token = decode(req.get('authorization'), getConfig().JwtSecret);
