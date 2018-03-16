@@ -37,13 +37,12 @@ main()
 async function main() {
 	const argv = parseArgs();	
 	let config = await initConfig(appPath, argv);
-	await parseCommandLineArgs(argv);
-	config = getConfig();
 	console.log('--------------------------------------------------------------------');
 	console.log(`Karaoke Mugen ${config.VersionNo} (${config.VersionName})`);
 	console.log('--------------------------------------------------------------------');
 	console.log('\n');
-
+	await parseCommandLineArgs(argv);
+	config = getConfig();
 	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
 	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] Detected OS : ${config.os}`);
