@@ -151,6 +151,10 @@ export async function configureBinaries(config) {
 }
 
 export function configureHost() {
+	if (config.EngineDisplayConnectionInfoHost.includes('.kara.moe')) {
+		config.EngineDisplayConnectionInfoHost = '';
+		setConfig({EngineDIsplayConnectionInfoHost: ''});
+	}
 	if (config.EngineDisplayConnectionInfoHost === '') {
 		config = {...config, osHost: address()};
 	} else {

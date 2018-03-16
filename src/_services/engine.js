@@ -164,7 +164,7 @@ export async function initEngine() {
 		createPreviews();
 	}
 	if (conf.optOnline || conf.OnlineMode == 1) {
-		await openTunnel();
+		state.engine.url = await openTunnel();		
 	}
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));

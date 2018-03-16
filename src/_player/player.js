@@ -126,17 +126,26 @@ async function loadBackground(mode) {
 	}
 }
 
+function configureURL() {
+	const conf = getConfig();	
+	if (!isEmpty(conf.EngineConnectionInfoHost)) {
+		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
+	} else {
+		if (state.engine.url) {
+			state.player.url = state.engine.url;
+		} else {
+			state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
+		}		
+	}	
+}
+
 export async function initPlayerSystem(initialState) {
 	const conf = getConfig();
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
+	state.engine = initialState;
 	buildJinglesList();
-	
-	if (!isEmpty(conf.EngineConnectionInfoHost)) {
-		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
-	} else {
-		state.player.url = `http://${conf.osHost}:${initialState.frontendPort}`;
-	}
+	configureURL();
 	await buildQRCode(state.player.url);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
