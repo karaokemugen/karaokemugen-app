@@ -116,6 +116,7 @@
     "read-chunk": "^2.1.0",
     "readline-sync": "^1.4.9",
     "simple-git": "^1.92.0",
+    "semver": "^5.5.0",
     "socket.io": "^2.0.4",
     "sqlite": "^2.8.0",
     "systeminformation": "^3.32.4",
