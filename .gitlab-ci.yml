@@ -31,7 +31,7 @@ test:
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
     - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
     - export LANG=en_US
-    - npm start --debug --test &disown
+    - npm start -- --debug --test &disown
     - bash test/run.sh
   only:
     - next
