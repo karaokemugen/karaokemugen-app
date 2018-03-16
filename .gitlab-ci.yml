@@ -8,7 +8,7 @@ cache:
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
-  - yarn global add pkg@4.2.6 apidoc
+  - npm install -g pkg@4.2.6 apidoc
 
 stages:
   - test
@@ -22,7 +22,7 @@ test:
     - wget -c https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz    
     - tar xf ffmpeg-release-64bit-static.tar.xz
     - mv ffmpeg-3* ffmpeg
-    - yarn install
+    - npm install
     - touch mpv
     - echo "BinffmpegLinux=ffmpeg/ffmpeg" >>config.ini
     - echo "BinffprobeLinux=ffmpeg/ffprobe" >>config.ini
@@ -31,7 +31,7 @@ test:
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
     - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
     - export LANG=en_US
-    - yarn start --debug --test &disown
+    - npm start --debug --test &disown
     - bash test/run.sh
   only:
     - next
@@ -44,7 +44,7 @@ build:
       - dist/
   script:
     - npm run-script build    
-    - yarn install --production
+    - npm install --production
     - cd node_modules
     - find -name *.node -delete
   only:
