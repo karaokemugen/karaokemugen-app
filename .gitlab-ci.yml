@@ -8,7 +8,7 @@ cache:
 
 before_script:
   - apt-get update -qq && apt-get install -y -qq lftp zip
-  - npm install -g pkg@4.2.6 yarn apidoc
+  - yarn global add pkg@4.2.6 apidoc
 
 stages:
   - test
