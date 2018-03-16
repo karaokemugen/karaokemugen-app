@@ -15,8 +15,14 @@ export async function openTunnel() {
 		}),
 		host: 'http://kara.moe',
 		port: 80
-	};	
-	const tunnel = await lt(conf.appFrontendPort, opts);
+	};
+	let tunnel;
+	try {
+		tunnel = await lt(conf.appFrontendPort, opts);
+	} catch(err) {
+		logger.error(`[Online] Connection with Shelter failed : ${err}`);
+		throw err;
+	}
 	logger.info(`[Online] Connection established with Shelter (${opts.host}). Your URL is : ${tunnel.url}`);
 	tunnel.on('error', (err) => {
 		logger.error(`[Online] Connection with ${opts.host} has been lost : ${err}`);
