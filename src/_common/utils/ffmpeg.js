@@ -1,100 +1,57 @@
-import {spawn, spawnSync} from 'child_process';
+import execa from 'execa';
 import logger from 'winston';
 import {asyncRequired} from './files';
 import {getConfig} from './config';
-import probe from 'node-ffprobe';
+import {timeToSeconds} from './date';
 
-export async function extractSubtitles(videofile, extractfile, config) {
-
-	const conf = config || getConfig();
-
-	spawnSync(conf.BinffmpegPath, ['-y', '-i', videofile, extractfile], {encoding: 'utf8'});
+export async function extractSubtitles(videofile, extractfile) {	
+	await execa(getConfig().BinffmpegPath, ['-y', '-i', videofile, extractfile], {encoding: 'utf8'});
 
 	// Verify if the subfile exists. If it doesn't, it means ffmpeg didn't extract anything
 	return await asyncRequired(extractfile);
 }
 
-export async function createPreview(videopreview, config) {
-
-	const conf = config || getConfig();
-	return new Promise((resolve) => {
-		const proc = spawn(conf.BinffmpegPath, ['-y', '-ss', '0', '-i', videopreview.videofile, '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-threads', '1', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
-		let output = '';
-		
-		proc.stderr.on('data',(data) => {
-			output += data.toString();
-		});
-		proc.on('close', (code) => {
-			if (code !== 0) {
-				logger.error('Video ' + videopreview.videofile + ' not generated : ' + code);
-				logger.error(output);
-				resolve();
-			} else {
-				resolve();
-			}
-		});		
-	});
-
+export async function createPreview(videopreview) {	
+	try {
+		return await execa(getConfig().BinffmpegPath, ['-y', '-ss', '0', '-i', videopreview.videofile, '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-threads', '1', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
+	} catch(err) {
+		logger.error(`[ffmpeg] Video ${videopreview.videofile} not generated : ${err.code} (${err.message}`);
+		logger.error(`[ffmpeg] STDOUT: ${err.stdout}`);
+		logger.error(`[ffmpeg] STDERR: ${err.stderr}`);		
+		throw err;
+	}	
 }
 
-export function getVideoGain(videofile, config) {
+export async function getVideoInfo(videofile) {
+	try {
+		const result = await execa(getConfig().BinffmpegPath, ['-i', videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
+		const outputArray = result.stderr.split(' ');
+		const indexTrackGain = outputArray.indexOf('track_gain');
+		const indexDuration = outputArray.indexOf('Duration:');
+		let audiogain = 0;
+		let duration = 0;
+		let error = false;
+		if (indexTrackGain > -1) {			
+			let gain = parseFloat(outputArray[indexTrackGain + 2]);
+			audiogain = gain.toString();							
+		} else {
+			error = true;
+		}
+	
+		if (indexDuration > -1) {
+			duration = outputArray[indexDuration + 1].replace(',','');
+			duration = timeToSeconds(duration);
+		} else {
+			error = true;
+		}
 
-	const conf = config || getConfig();
-	return new Promise((resolve) => {
-		const proc = spawn(conf.BinffmpegPath, ['-i', videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
-
-		let output = '';
-
-		proc.stderr.on('data',(data) => {
-			output += data.toString();
-		});
-		const res = {};
-		proc.on('close', (code) => {
-			if (code !== 0) {
-				logger.warn('Video ' + videofile + ' gain calculation error : ' + code);
-				res.videogain = 0;
-				res.error = true;
-				resolve(res);
-			} else {
-				const outputArray = output.split(' ');
-				const index = outputArray.indexOf('track_gain');
-				if (index > -1) {
-					let audioGain = parseFloat(outputArray[index + 2]);
-					if (typeof audioGain === 'number') {
-						res.data = audioGain.toString();
-						resolve(res);
-					} else {
-						res.data = 0;
-						res.error = true;
-						resolve(res);
-					}
-				} else {
-					res.data = 0;
-					res.error = true;						
-					resolve(res);
-				}
-			}
-		});
-	});
-}
-
-export function getVideoDuration(videofile, config) {
-
-	const conf = config || getConfig();
-	const res = {};
-	return new Promise((resolve) => {
-		probe.SYNC = true;
-		probe.FFPROBE_PATH = conf.BinffprobePath;
-		probe(videofile, function(err, videodata) {
-			if (err) {
-				logger.warn('Video ' + videofile + ' probe error : ' + err);
-				res.error = true;
-				res.data = 0;
-				resolve(res);
-			} else {
-				res.data = Math.floor(videodata.format.duration);
-				resolve(res);				
-			}
-		});
-	});
+		return {
+			duration: duration,
+			audiogain: audiogain,
+			error: error
+		};
+	} catch(err) {
+		logger.warn(`Video ${videofile} probe error : ${err.code}`);
+		return { duration: 0, audiogain: 0, error: true };
+	}
 }
