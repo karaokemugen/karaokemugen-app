@@ -98,7 +98,6 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 		karaData.videosize = videoStats.size;
 
 		const videoData = await getVideoInfo(videoFile);
-		console.log(videoData);
 		if (videoData.error) error = true;
 
 		karaData.videogain = videoData.audiogain;
