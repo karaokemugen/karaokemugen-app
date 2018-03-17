@@ -15,7 +15,7 @@ export async function welcomeToYoukousoKaraokeMugen(port) {
 	const conf = getConfig();
 	if (conf.appFirstRun) {
 		const adminPassword = generateAdminPassword();
-		opn('http://localhost:' + port + '/welcome?admpwd=' + adminPassword);
+		opn('http://localhost:' + port + '/ressources/views/welcome.html?admpwd=' + adminPassword);
 	} else {
 		if (!conf.optNoBrowser) {
 			opn('http://localhost:' + port + '/admin');
