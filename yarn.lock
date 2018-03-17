@@ -977,9 +977,9 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-basic-ftp@^2.8.3:
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/basic-ftp/-/basic-ftp-2.8.3.tgz#8fde425510c52516899ebf1b257c084206a71ab8"
+basic-ftp@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/basic-ftp/-/basic-ftp-2.9.0.tgz#423e8bb2ae3bc0d67e87bca748ac21a3b01dd859"
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.1"
@@ -1283,6 +1283,12 @@ cli-cursor@^2.1.0:
   dependencies:
     restore-cursor "^2.0.0"
 
+cli-progress@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/cli-progress/-/cli-progress-1.8.0.tgz#5e8afc310f2058fbe33e9006e31c71c1c3b5da7f"
+  dependencies:
+    colors "^1.1.2"
+
 cli-width@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/cli-width/-/cli-width-2.2.0.tgz#ff19ede8a9a5e579324147b0c11f0fbcbabed639"
@@ -1335,6 +1341,10 @@ color-name@^1.1.1:
 colors@1.0.x:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
+
+colors@^1.1.2:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/colors/-/colors-1.2.1.tgz#f4a3d302976aaf042356ba1ade3b1a2c62d9d794"
 
 combined-stream@^1.0.5, combined-stream@~1.0.5:
   version "1.0.5"
