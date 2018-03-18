@@ -206,7 +206,7 @@ var settingsNotUpdated;
 			clearTimeout(timer);
 			timer = setTimeout(function () {
 				fillPlaylist(side);
-			}, 100);
+			}, 200);
 		});
 
 		// Allow pressing enter to validate a setting
