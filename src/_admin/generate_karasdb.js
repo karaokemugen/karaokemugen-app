@@ -122,8 +122,7 @@ function prepareKaraInsertData(kara, index) {
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,		
 		$kara_gain: kara.videogain,
-		$kara_videolength: kara.videoduration,
-		$kara_checksum: kara.checksum
+		$kara_videolength: kara.videoduration		
 	};
 }
 
@@ -354,7 +353,7 @@ function prepareTagsKaraInsertData(tagsByKara) {
 }
 
 async function insertAss(db, karas) {
-	const stmt = await db.prepare('INSERT INTO ass (fk_id_kara, ass, checksum) VALUES ($id_kara, $ass, $checksum);');
+	const stmt = await db.prepare('INSERT INTO ass (fk_id_kara, ass) VALUES ($id_kara, $ass);');
 	const insertPromises = [];
 	karas.forEach((kara, index) => {
 		const karaIndex = index + 1;
@@ -362,7 +361,6 @@ async function insertAss(db, karas) {
 			insertPromises.push(stmt.run({
 				$id_kara: karaIndex,
 				$ass: kara.ass,
-				$checksum: kara.ass_checksum
 			}));
 		}
 	});
@@ -387,7 +385,6 @@ export async function run(config) {
 
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
-
 		const db = await open(karas_dbfile, {verbose: true, Promise});		
 		await emptyDatabase(db);
 		await backupKaraDirs(conf);
@@ -427,7 +424,7 @@ export async function run(config) {
 
 		await checkUserdbIntegrity(null, conf);
 
-		await deleteBackupDirs(conf);
+		await deleteBackupDirs(conf);		
 		return error;
 	} catch (err) {
 		logger.error(err);

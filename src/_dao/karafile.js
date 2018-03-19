@@ -8,7 +8,7 @@ import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
+import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
 import {extractSubtitles, getVideoInfo} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
@@ -75,8 +75,7 @@ export async function getDataFromKaraFile(karafile) {
 	}
 
 	karaData.viewcount = 0;
-	karaData.checksum = checksum(stringify(karaData));
-
+	
 	if (error) karaData.error = true;
 
 	return karaData;
@@ -85,7 +84,6 @@ export async function getDataFromKaraFile(karafile) {
 export async function extractAssInfos(subFile, karaData) {
 	if (subFile) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
-		karaData.ass_checksum = checksum(karaData.ass);
 		// TODO Delete any temporary file.
 	} else {
 		karaData.ass = '';

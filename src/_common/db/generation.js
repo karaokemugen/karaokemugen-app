@@ -1,9 +1,9 @@
 /** Requêtes SQL utilisées. */
 
 export const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at,
-	modified_at, gain, videolength,checksum)
+	modified_at, gain, videolength)
 	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded,
-	$kara_datemodif, $kara_gain, $kara_videolength, $kara_checksum);`;
+	$kara_datemodif, $kara_gain, $kara_videolength);`;
 
 export const insertSeries = 'INSERT INTO serie(pk_id_serie, name, NORM_name) VALUES($id_serie, $serie, $serienorm );';
 
