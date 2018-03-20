@@ -192,7 +192,12 @@ async function startmpv() {
 		if (conf.PlayerPIPPositionY === 'Bottom') positionY = 99;		
 		mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
 	}
-	if (!isEmpty(conf.mpvVideoOutput)) mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+	if (!isEmpty(conf.mpvVideoOutput)) {
+		mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+	} else {
+		//Force direct3d for Windows users
+		if (conf.os == 'win32') mpvOptions.push('--vo=direct3d');
+	}
 	if (!isEmpty(conf.PlayerScreen)) {
 		mpvOptions.push(`--screen=${conf.PlayerScreen}`);
 		mpvOptions.push(`--fs-screen=${conf.PlayerScreen}`);
