@@ -49,7 +49,8 @@ export async function getDataFromKaraFile(karafile) {
 	if (!karaData.dateadded) {
 		karaData.isKaraModified = true;
 		karaData.dateadded = timestamp.now();
-	}	
+	}
+	karaData.datemodif = timestamp.now();
 
 	karaData.karafile = karafile;
 
@@ -109,8 +110,8 @@ export async function writeKara(karafile, karaData) {
 
 	if (karaData.isKaraModified === false) {
 		return;
-	}	
-	karaData.datemodif = timestamp.now();
+	}
+
 	const infosToWrite = getKara(karaData);
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
