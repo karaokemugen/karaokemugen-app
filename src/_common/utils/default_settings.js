@@ -4,7 +4,7 @@
 // you can change the default settings by using config.ini to bypass the default value .
 export const defaults = { 
 	JwtSecret: 'Change me',
-	EngineDisplayNickname : 1,
+	EngineDisplayNickname: 1,
 	EngineDisplayConnectionInfo: 1,
 	EngineDisplayConnectionInfoQRCode: 1,
 	EngineDisplayConnectionInfoMessage: '',

@@ -16,6 +16,7 @@ Options :
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
 --online      Launches in online mode
+--noVideo     (generation only) Do not try to fetch data from video files
 `;
 
 export async function parseCommandLineArgs(argv) {	
@@ -31,6 +32,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.generate && !argv.validate) {
 		logger.info('[Launcher] Database generation requested');
 		setConfig({optGenerateDB: true});
+		if (argv.noVideo) {
+			logger.info('[Launcher] Videos will not be read during generation');
+			setConfig({optNoVideo: true});
+		}
 	}
 	if (argv.validate && !argv.generate) {
 		logger.info('[Launcher] .kara folder validation requested');

@@ -8,10 +8,11 @@ import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
+import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
 import {extractSubtitles, getVideoInfo} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
+import {getConfig} from '../_common/utils/config';
 let error = false;
 
 export function karaFilenameInfos(karaFile) {
@@ -48,8 +49,11 @@ export async function getDataFromKaraFile(karafile) {
 	if (!karaData.dateadded) {
 		karaData.isKaraModified = true;
 		karaData.dateadded = timestamp.now();
+	}	
+	if (!karaData.datemodif) {
+		karaData.isKaraModified = true;
+		karaData.datemodif = timestamp.now();
 	}
-	karaData.datemodif = timestamp.now();
 
 	karaData.karafile = karafile;
 
@@ -66,16 +70,15 @@ export async function getDataFromKaraFile(karafile) {
 		karaData.ass = '';
 	}
 
-	if (videoFile) {
+	if (videoFile || getConfig().optNoVideo) {
 		const subFile = await findSubFile(videoFile, karaData);
 		await extractAssInfos(subFile, karaData);
-		await extractVideoTechInfos(videoFile, karaData);
+		await extractVideoTechInfos(videoFile, karaData);		
 		if (karaData.error) error = true;
 	}
 
 	karaData.viewcount = 0;
-	karaData.checksum = checksum(stringify(karaData));
-
+	
 	if (error) karaData.error = true;
 
 	return karaData;
@@ -84,7 +87,6 @@ export async function getDataFromKaraFile(karafile) {
 export async function extractAssInfos(subFile, karaData) {
 	if (subFile) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
-		karaData.ass_checksum = checksum(karaData.ass);
 		// TODO Delete any temporary file.
 	} else {
 		karaData.ass = '';
@@ -92,25 +94,27 @@ export async function extractAssInfos(subFile, karaData) {
 }
 
 export async function extractVideoTechInfos(videoFile, karaData) {
-	const videoStats = await asyncStat(videoFile);
-	if (videoStats.size !== +karaData.videosize) {
-		karaData.isKaraModified = true;
-		karaData.videosize = videoStats.size;
+	if (!getConfig().optNoVideo) {
+		const videoStats = await asyncStat(videoFile);
+		if (videoStats.size !== +karaData.videosize) {
+			karaData.isKaraModified = true;
+			karaData.videosize = videoStats.size;
 
-		const videoData = await getVideoInfo(videoFile);
-		if (videoData.error) error = true;
+			const videoData = await getVideoInfo(videoFile);
+			if (videoData.error) error = true;
 
-		karaData.videogain = videoData.audiogain;
-		karaData.videoduration = videoData.duration;
+			karaData.videogain = videoData.audiogain;
+			karaData.videoduration = videoData.duration;
+		}
 	}
 }
 
 export async function writeKara(karafile, karaData) {
 
-	if (karaData.isKaraModified === false) {
+	if (karaData.isKaraModified === false) {		
 		return;
-	}
-
+	}	
+	karaData.datemodif = timestamp.now();
 	const infosToWrite = getKara(karaData);
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
@@ -126,8 +130,9 @@ export async function extractVideoSubtitles(videoFile, kid) {
 }
 
 async function findSubFile(videoFile, kara) {
-	const videoExt = extname(videoFile);
-	if (kara.subfile === 'dummy.ass') {
+	const conf = getConfig();
+	if (kara.subfile === 'dummy.ass' && !conf.optNoVideo) {
+		const videoExt = extname(videoFile);
 		if (videoExt === '.mkv') {
 			try {
 				return await extractVideoSubtitles(videoFile, kara.KID);
@@ -139,7 +144,7 @@ async function findSubFile(videoFile, kara) {
 		}
 	} else {
 		try {
-			return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
+			if (kara.subfile != 'dummy.ass') return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
 		} catch (err) {
 			logger.warn(`[Kara] Could not find subfile '${kara.subfile}'.`);
 			error = true;
