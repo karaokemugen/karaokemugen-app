@@ -50,10 +50,6 @@ export async function getDataFromKaraFile(karafile) {
 		karaData.isKaraModified = true;
 		karaData.dateadded = timestamp.now();
 	}	
-	if (!karaData.datemodif) {
-		karaData.isKaraModified = true;
-		karaData.datemodif = timestamp.now();
-	}
 
 	karaData.karafile = karafile;
 
@@ -111,7 +107,7 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 
 export async function writeKara(karafile, karaData) {
 
-	if (karaData.isKaraModified === false) {		
+	if (karaData.isKaraModified === false) {
 		return;
 	}	
 	karaData.datemodif = timestamp.now();
