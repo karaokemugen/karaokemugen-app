@@ -63,9 +63,9 @@ export async function getDataFromKaraFile(karafile) {
 	} catch (err) {
 		logger.warn('[Kara] Video file not found : ' + karaData.videofile);
 		error = true;
-		karaData.videogain = 0;
-		karaData.videosize = 0;
-		karaData.videoduration = 0;
+		if (!karaData.videogain) karaData.videogain = 0;
+		if (!karaData.videosize) karaData.videosize = 0;
+		if (!karaData.videoduration) karaData.videoduration = 0;
 		karaData.ass = '';
 	}
 
