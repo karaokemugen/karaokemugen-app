@@ -125,7 +125,15 @@ export async function writeKara(karafile, karaData) {
 
 export async function parseKara(karaFile) {
 	const data = await asyncReadFile(karaFile, 'utf-8');
+	const karaObject = parseini(data);
+	const dataToChecksum = removeKaraChecksum(data);
+	karaObject.karachecksum = checksum(data);
 	return parseini(data);
+}
+
+function removeKaraChecksum(data) {
+	const arr = data.split('\n');
+	
 }
 
 export async function extractVideoSubtitles(videoFile, kid) {
