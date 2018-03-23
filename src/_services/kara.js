@@ -16,6 +16,7 @@ export function getKara(karaData) {
 	return {
 		videofile: karaData.videofile || '',
 		subfile: karaData.subfile || 'dummy.ass',
+		subchecksum: karaData.subchecksum || '',
 		title: karaData.title || '',
 		series: karaData.series || '',
 		type: karaData.type || '',
@@ -33,7 +34,7 @@ export function getKara(karaData) {
 		videosize: karaData.videosize || 0,
 		videogain: karaData.videogain || 0,
 		videoduration: karaData.videoduration || 0,
-		version: karaData.version || 1
+		version: karaData.version || 2
 	};
 }
 

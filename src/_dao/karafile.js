@@ -8,7 +8,7 @@ import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
+import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
 import {extractSubtitles, getVideoInfo} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
@@ -50,8 +50,10 @@ export async function getDataFromKaraFile(karafile) {
 		karaData.isKaraModified = true;
 		karaData.dateadded = timestamp.now();
 	}
-	karaData.datemodif = timestamp.now();
-
+	if (!karaData.datemodif) {
+		karaData.isKaraModified = true;
+		karaData.datemodif = timestamp.now();
+	}
 	karaData.karafile = karafile;
 
 	let videoFile;
@@ -84,7 +86,12 @@ export async function getDataFromKaraFile(karafile) {
 export async function extractAssInfos(subFile, karaData) {
 	if (subFile) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
-		// TODO Delete any temporary file.
+		const subChecksum = checksum(karaData.ass);
+		// Disable checking the checksum for now
+		if (subChecksum != karaData.subchecksum) {
+			karaData.isKaraModified = true;
+			karaData.subchecksum = subChecksum;
+		}		
 	} else {
 		karaData.ass = '';
 	}
