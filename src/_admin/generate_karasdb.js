@@ -21,6 +21,7 @@ import {serieRequired, verifyKaraData} from '../_services/kara';
 
 let error = false;
 
+
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
 	await db.run('DELETE FROM kara_serie;');
@@ -90,7 +91,7 @@ export async function extractAllKaraFiles() {
 }
 
 export async function getAllKaras(karafiles) {
-	const karaPromises = [];
+	const karaPromises = [];	
 	for (const karafile of karafiles) {
 		karaPromises.push(readAndCompleteKarafile(karafile));
 	}
@@ -105,7 +106,7 @@ async function readAndCompleteKarafile(karafile) {
 		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete : ${err}`);
 		error = true;
 		return karaData;
-	}
+	}	
 	await writeKara(karafile, karaData);
 	return karaData;
 }
@@ -385,28 +386,27 @@ export async function run(config) {
 
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
-		const db = await open(karas_dbfile, {verbose: true, Promise});		
+		const db = await open(karas_dbfile, {verbose: true, Promise});
 		await emptyDatabase(db);
 		await backupKaraDirs(conf);
-
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
+		// Can be done in background
+		deleteBackupDirs(conf);		
 		// Preparing data to insert
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
-
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-
 		const sqlUpdateSeriesAltNames = await prepareAltSeriesInsertData(series_altnamesfile);
-
+		
 		// Inserting data in a transaction
 
 		await db.run('begin transaction');
-
+		
 		const insertPromises = [
 			runSqlStatementOnData(db.prepare(insertKaras), sqlInsertKaras),
 			insertAss(db, karas),
@@ -418,13 +418,10 @@ export async function run(config) {
 
 		await Promise.all(insertPromises);
 		await runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames);
-
+		
 		await db.run('commit');
 		await db.close();
-
-		await checkUserdbIntegrity(null, conf);
-
-		await deleteBackupDirs(conf);		
+		await checkUserdbIntegrity(null, conf);		
 		return error;
 	} catch (err) {
 		logger.error(err);
