@@ -17,6 +17,7 @@ export function getKara(karaData) {
 		videofile: karaData.videofile || '',
 		subfile: karaData.subfile || 'dummy.ass',
 		subchecksum: karaData.subchecksum || '',
+		karachecksum: karaData.karachecksum || '',
 		title: karaData.title || '',
 		series: karaData.series || '',
 		type: karaData.type || '',
@@ -134,7 +135,7 @@ export function verifyKaraData(karaData) {
 	}
 }
 
-/** Mutualisation du code gérant l'obligation d'avoir une série associée au kara. */
+/** Only MV or LIVE types don't have to have a series filled. */
 export function serieRequired(karaType) {	
 	return karaType !== karaTypes.MV && karaType !== karaTypes.LIVE;
 }
