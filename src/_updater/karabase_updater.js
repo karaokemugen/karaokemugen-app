@@ -195,7 +195,6 @@ async function downloadVideos(ftp, files, VideosPath) {
 		ftp.trackProgress();
 		bar1.stop();
 	}
-	//bar1.stop();
 }
 
 

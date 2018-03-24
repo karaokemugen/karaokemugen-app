@@ -8,7 +8,7 @@ import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
+import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
 import {extractSubtitles, getVideoInfo} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
@@ -50,8 +50,10 @@ export async function getDataFromKaraFile(karafile) {
 		karaData.isKaraModified = true;
 		karaData.dateadded = timestamp.now();
 	}
-	karaData.datemodif = timestamp.now();
-
+	if (!karaData.datemodif) {
+		karaData.isKaraModified = true;
+		karaData.datemodif = timestamp.now();
+	}
 	karaData.karafile = karafile;
 
 	let videoFile;
@@ -61,9 +63,9 @@ export async function getDataFromKaraFile(karafile) {
 	} catch (err) {
 		logger.warn('[Kara] Video file not found : ' + karaData.videofile);
 		error = true;
-		karaData.videogain = 0;
-		karaData.videosize = 0;
-		karaData.videoduration = 0;
+		if (!karaData.videogain) karaData.videogain = 0;
+		if (!karaData.videosize) karaData.videosize = 0;
+		if (!karaData.videoduration) karaData.videoduration = 0;
 		karaData.ass = '';
 	}
 
@@ -84,7 +86,12 @@ export async function getDataFromKaraFile(karafile) {
 export async function extractAssInfos(subFile, karaData) {
 	if (subFile) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
-		// TODO Delete any temporary file.
+		const subChecksum = checksum(karaData.ass);
+		// Disable checking the checksum for now
+		if (subChecksum != karaData.subchecksum) {
+			karaData.isKaraModified = true;
+			karaData.subchecksum = subChecksum;
+		}		
 	} else {
 		karaData.ass = '';
 	}
@@ -108,17 +115,34 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 
 export async function writeKara(karafile, karaData) {
 
+	const infosToWrite = (getKara(karaData));
+	const checksum = compareKaraChecksums(karaData);
+	if (checksum) { 
+		karaData.isKaraModified = true;
+		infosToWrite.karachecksum = checksum;
+	}
 	if (karaData.isKaraModified === false) {
 		return;
 	}
-
-	const infosToWrite = getKara(karaData);
+	infosToWrite.datemodif = timestamp.now();
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
 
+function compareKaraChecksums(karaData) {
+	const oldChecksum = karaData.karachecksum;	
+	delete karaData.karachecksum;
+	const newChecksum = checksum(stringify(karaData));	
+	if (oldChecksum != newChecksum) {
+		return newChecksum;
+	} else {
+		return false;
+	}
+}
+
+
 export async function parseKara(karaFile) {
 	const data = await asyncReadFile(karaFile, 'utf-8');
-	return parseini(data);
+	return parseini(data);	
 }
 
 export async function extractVideoSubtitles(videoFile, kid) {
