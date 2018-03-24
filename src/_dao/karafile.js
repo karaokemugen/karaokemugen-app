@@ -116,25 +116,29 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 export async function writeKara(karafile, karaData) {
 
 	const infosToWrite = (getKara(karaData));
-	const checksum = compareKaraChecksums(karaData);
-	if (checksum) { 
+	const newChecksum = compareKaraChecksums(infosToWrite);
+	if (newChecksum) { 
 		karaData.isKaraModified = true;
-		infosToWrite.karachecksum = checksum;
+		infosToWrite.datemodif = timestamp.now();		
 	}
 	if (karaData.isKaraModified === false) {
 		return;
-	}
-	infosToWrite.datemodif = timestamp.now();
+	}	
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
 
-function compareKaraChecksums(karaData) {
-	const oldChecksum = karaData.karachecksum;	
-	delete karaData.karachecksum;
-	const newChecksum = checksum(stringify(karaData));	
+function compareKaraChecksums(data) {
+	const oldChecksum = data.karachecksum;	
+	const oldDatemodif = data.datemodif;
+	delete data.karachecksum;
+	delete data.datemodif;
+	const newChecksum = checksum(stringify(data));	
+	data.datemodif = oldDatemodif;
 	if (oldChecksum != newChecksum) {
-		return newChecksum;
+		data.karachecksum = newChecksum;
+		return true;
 	} else {
+		data.karachecksum = oldChecksum;
 		return false;
 	}
 }
