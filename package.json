@@ -40,7 +40,8 @@
     "lukino <LukinoProg@gmail.com>",
     "Benoît Courtine <benoit.courtine@gmail.com>",
     "Lua <deformer.lua@gmail.com>",
-    "mirukyu <A13x7950@gmail.com>"
+    "mirukyu <A13x7950@gmail.com>",
+    "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)"
   ],
   "engines": {
     "node": ">=8.0.0"
