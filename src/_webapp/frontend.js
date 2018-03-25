@@ -48,6 +48,7 @@ export async function initFrontend(port) {
 		}
 	}));
 	const routerAdmin = express.Router();
+	const routerWelcome = express.Router();
 	app.use(passport.initialize());
 	configurePassport();
 	const conf = getConfig();
@@ -135,6 +136,7 @@ export async function initFrontend(port) {
 	//Path to user avatars
 	app.use('/avatars',express.static(resolve(conf.appPath,conf.PathAvatars)));
 	app.use('/admin', routerAdmin);	
+	app.use('/welcome', routerWelcome);	
 
 	app.get('/', (req, res) => {
 		var config = getConfig();
@@ -178,9 +180,16 @@ export async function initFrontend(port) {
 				'query'			:	JSON.stringify(req.query),
 				'webappMode'	:	conf.WebappMode
 			});
-		});		
-	});			
-			
+		});
+	});
+	routerWelcome.get('/', (req, res) => {
+		res.render('welcome', {
+			'clientAdress'	:	'http://'+address(),
+			'appAdminPort'	:	conf.appAdminPort,
+			'query'			:	JSON.stringify(req.query),
+		});
+	});
+
 	app.use((req, res) => {
 		res.status(404);
 		// respond with html page

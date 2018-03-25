@@ -201,7 +201,7 @@ a:active {
 }
 #center-area .block p {
     color: #fff;
-    font-size: 21px; 
+    font-size: 21.5px; 
     font-weight: 300;
     line-height: 30px;
 }
@@ -242,7 +242,7 @@ a:active {
 #center-area .block .counter ul li:nth-child(3) {
     background-color: hsla(60, 50%, 58%, 0.2)
 }
-#center-area .block .counter ul li:nth-child(4) {
+#center-area .block .counter ul li:last-child {
     background-color: hsla(0, 12%, 54%, 0.4)
 }
 
