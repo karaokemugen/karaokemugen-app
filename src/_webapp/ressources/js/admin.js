@@ -7,18 +7,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	// Listen for the jQuery ready event on the document
 	$(function () {
 
-		/* init selects & switchs */
-
-		$('[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event, state) {
-			if (state) {
-				$('#playlist').show();
-				$('#manage').hide();
-			} else {
-				$('#playlist').hide();
-				$('#manage').show();
-			}
-		});
-
 		// handling small touchscreen screens with big virtual keyboard
 
 		$('select[type="playlist_select"]').on('select2:open', function () {
@@ -57,18 +45,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 
-		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			var val = $(this).attr('nameCommand');
-			if(!val) val =  $(this).attr('name');
-
-			$.ajax({
-				url: 'admin/player',
-				type: 'PUT',
-				data: { command: val }
-			}).done(function () {
-				// refreshPlayerInfos();
-			});
-		});
 
 		$('button[action="poweroff"]').click(function () {
 			$.ajax({
@@ -729,6 +705,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			scrollToKara(side, idKara, .55); 
 		}
 	};
+
 
 	// you know what it is
 	var k = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65], n = 0;
