@@ -318,5 +318,21 @@
 	"WLCM_ADMINISTRATION": "ADMINISTRATION",
 	"WLCM_UPDATE": "UPDATE",
 	"WLCM_SITE": "Website",
-	"WLCM_PUBLIC": "PUBLIC INTERFACE"
+	"WLCM_PUBLIC": "PUBLIC INTERFACE",
+	"INTRO_ADMIN_INTRO1": "Bienvenue sur Karaoke Mugen ! <br/> Avant de vous montrer comment ça marche, notez le mot de passe de l'utilisateur \"admin\" bien précieusement : <br/>%s<br/>Ce compte ne peut être supprimé et vous permettra de vous connecter en cas de problème avec le compte que nous allons créer ensuite.<br/>Cliquez sur continuer.<br/>",
+	"INTRO_ADMIN_INTRO2": "",
+	"INTRO_ADMIN_INTRO3": "",
+	"INTRO_ADMIN_LECTEUR": "",
+ 	"INTRO_ADMIN_MODE": "",
+ 	"INTRO_ADMIN_SETTINGS": "",
+ 	"INTRO_ADMIN_PLAYLISTS": "",
+ 	"INTRO_ADMIN_PLAYLISTS_2": "",
+ 	"INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "",
+ 	"INTRO_ADMIN_PLAYLISTS_MANAGE": "",
+	"INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON": "",
+	"INTRO_ADMIN_SETTINGS_SCREEN": "",
+	"INTRO_ADMIN_INTROFINAL": "",
+	"GUEST": "Guest",
+	"USER": "User",
+	"ADMIN": "Admin"
 } 
