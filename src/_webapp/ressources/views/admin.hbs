@@ -1,4 +1,4 @@
-<div id="header" class="header">
+<div id="header" class="header" introStep="6" introLabel="lecteur">
     <button title="{{i18n "SHUTDOWN"}}" action="poweroff" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-off"></i></button>
     <a title="{{i18n "MUTE_UNMUTE"}}" action="command" id="mutestatus" name="mute" class="btn btn-default btn-dark pull-right">
@@ -14,10 +14,10 @@
     <button title="{{i18n "MESSAGE"}}" id="adminMessage" class="btn btn-dark pull-right" style="border-left-width: 0px"><i class="glyphicon glyphicon-comment"></i></button>
 
     <div class="pull-left btn-group" style="width: 129px;">
-        <input title='{{i18n "SWITCH_PRIVATE"}}' type="checkbox" name="EnginePrivateMode" class="btn pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
-            data-off-text="<i class='glyphicon glyphicon-eye-open'></i> {{i18n "PUBLIC"}}" data-size="large" />
-        <input title='{{i18n "SWITCH_OPTIONS"}}' type="checkbox" checked name="kara_panel" class="btn pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  {{i18n "OPTIONS"}}"
-            data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  {{i18n "CL_PLAYLISTS"}}" data-size="large" />
+        <input title='{{i18n "SWITCH_PRIVATE"}}' data-introStep="7" data-introLabel="mode" type="checkbox" checked name="EnginePrivateMode" class="btn pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
+            data-off-text="<i class='glyphicon glyphicon-eye-open'></i> {{i18n "PUBLIC"}}" data-size="large"/>
+        <input title='{{i18n "SWITCH_OPTIONS"}}' data-introStep="13" data-introLabel="settings" type="checkbox" checked name="kara_panel" class="btn pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  {{i18n "OPTIONS"}}"
+            data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  {{i18n "CL_PLAYLISTS"}}" data-size="large"/>
     </div>
     <div class="pull-left btn-group">
         <button title="{{i18n "STOP_AFTER"}}" action="command" id="stopAfter" name="stopAfter" class="btn btn-danger-low" style="width: 50px;">
@@ -38,8 +38,8 @@
     <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
     <div id="progressBarColor" class="cssTransform"></div>
 </div>
-<div id="underHeader" class="underHeader container-fluid">
-    <div class="playlist-main row" id="playlist">
+<div id="underHeader" class="underHeader container-fluid" introStep="5"  introLabel="playlists">
+    <div class="playlist-main row" id="playlist" introStep="9"  introLabel="playlists_2">
         <div class="panel col-lg-6 col-xs-6" id="panel1" side="1">
             <div class="panel-heading container-fluid plDashboard">            
                 <div class="plSelect">
@@ -131,10 +131,10 @@
             </div>
         </div>
         
-        <div class="panel col-lg-6 col-xs-6" id="panel2" side="2">
-            <div class="panel-heading container-fluid plDashboard">            
+        <div class="panel col-lg-6 col-xs-6" id="panel2" side="2" introStep="12"  introLabel="playlists_manage_advanced">
+            <div class="panel-heading container-fluid plDashboard" introStep="10"  introLabel="playlists_manage">            
                 <div class="plSelect">
-                    <button title="{{i18n "PLAYLIST_COMMANDS"}}" class="btn btn-default pull-left showPlaylistCommands" side="1">
+                    <button title="{{i18n "PLAYLIST_COMMANDS"}}" class="btn btn-default pull-left showPlaylistCommands" side="1"  introStep="11"  introLabel="playlists_manage_button">
                         <i class="glyphicon glyphicon-wrench"></i>
                     </button>
                     <select id="selectPlaylist2" side="2" type="playlist_select" class="select2" style="overflow:hidden">
@@ -228,7 +228,7 @@
     </div>
     <div class="row" id="manage" hidden>
         <div class="col-lg-2 col-xs-0"></div>
-        <div class="panel col-lg-8 col-xs-12">
+        <div class="panel col-lg-8 col-xs-12" introStep="14"  introLabel="settings_screen">
             <div class="panel-heading container-fluid">
                 <center>
                     <h4> {{i18n "OPTIONS"}} </h4>
@@ -396,6 +396,7 @@
         <div class="modal-content">
             <ul class="nav nav-tabs nav-justified modal-header">
                 <li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">Login admin</a></li>
+               <li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {{i18n "NEW_ACCOUNT"}}</a></li>
             </ul>
             <div class="tab-content" id="nav-tabContent">
                 <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
@@ -411,8 +412,21 @@
                         </button>
                     </div>
                 </div>
-               
+                <div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
+                    <div class="">
+                            <input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
+                            <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
+                            
+                    </div>
+                    <div>
+                        <button id="signup" type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                                {{i18n "SIGN_UP"}}
+                        </button>
+                    </div>
+                </div>
             </div>
+           
         </div>
     </div>
 </div>
