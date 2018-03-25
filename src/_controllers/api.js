@@ -521,17 +521,14 @@ export function APIControllerAdmin(router) {
 				'password': {
 					in: 'body',
 					notEmpty: true,
-				},
-				'role': {
-					in: 'body',
-					notEmpty: true,
-					enum: [
-						'admin',
-						'user'
-					]
-				}												
+				}
 			});
-
+			req.checkBody('role')
+				.notEmpty()
+				.enum(['admin',
+					'user'					
+				]
+				);
 			req.getValidationResult()
 				.then((result) => {
 					if (result.isEmpty()) {
