@@ -21,7 +21,7 @@ export function getKara(karaData) {
 		title: karaData.title || '',
 		series: karaData.series || '',
 		type: karaData.type || '',
-		order: karaData.order || 0,
+		order: karaData.order || '',
 		year: karaData.year || '',
 		singer: karaData.singer || '',
 		tags: karaData.tags || '',
