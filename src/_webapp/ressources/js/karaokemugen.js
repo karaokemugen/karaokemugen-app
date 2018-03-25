@@ -28,6 +28,7 @@ var socket;
 var settings;
 var kmStats;
 var i18n;
+var introJs;
 
 /* promises */
 var scrollUpdating;
@@ -190,9 +191,18 @@ var settingsNotUpdated;
 		if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			if(scope === 'admin' && logInfos.role !== 'admin') {
+			if(scope === 'admin' && logInfos.role !== 'admin' && !query.admpwd) {
 				$('#loginModal').modal('show');
+			} else if(query.admpwd) { // app first run;
+				// login('admin', query.admpwd)
+				login('admin', 'gurdil').done(() => {
+					startIntro('admin');
+					var privateMode = $('input[name="EnginePrivateMode"]');
+					privateMode.val(1);
+					setSettings(privateMode);
+				})
 			} else {
+			
 				initApp();
 			}
 		} else {
@@ -554,34 +564,6 @@ var settingsNotUpdated;
 			}
 		});
 
-		login = function(username, password) {
-
-			var url = 'auth/login';
-			var data = { username: username, password: password};
-			if(!username) {
-				url = 'auth/login/guest';
-				data = { fingerprint : password };
-			}
-			$.ajax({
-				url: url,
-				type: 'POST',
-				data: data })
-				.done(function (response) {
-
-					$('#loginModal').modal('hide');
-					$('#password, #login').removeClass('redBorders');
-					createCookie('mugenToken', response.token, -1);
-					logInfos = response;
-					displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
-					initApp();
-
-				}).fail(function(response) {
-					//displayMessage('info','', i18n.__('LOG_ERROR'));
-					$('#loginModal').modal('show');
-					$('#password').val('').focus();
-					$('#password, #login').addClass('redBorders');
-				});
-		};
 		$('#nav-login .login').click( () => {
 			var username = $('#login').val();
 			var password = $('#password').val();
@@ -616,6 +598,10 @@ var settingsNotUpdated;
 						$('#loginModal').modal('hide');
 						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
 						login(username, password);
+						
+						if(introJs && introJs._currentStep) {
+							introJs.nextStep();
+						}
 
 					}).fail(function(response) {
 						//displayMessage('info','', i18n.__('LOG_ERROR'));
@@ -1457,9 +1443,11 @@ var settingsNotUpdated;
 			if (playlistRange[idPlaylist] == undefined) {
 				setPlaylistRange(idPlaylist, 0, pageSize);
 			}
-			playlistContentUpdating.done(function() {
-				refreshContentInfos(side);
-			});
+			if(playlistContentUpdating) {
+				playlistContentUpdating.done(function() {
+					refreshContentInfos(side);
+				});
+			}
 			$(window).resize();
 		});
 	};
@@ -1778,20 +1766,34 @@ var settingsNotUpdated;
 		});
 
 		passwordUpdating = $.Deferred().resolve();
-		settingsUpdating = scope ===  'admin' ?  getSettings() : getPublicSettings();
-
-		settingsUpdating.done( function() {
-			settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
-			playlistsUpdating = refreshPlaylistSelects();
-			playlistsUpdating.done(function () {
-				playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
-				refreshPlaylistDashboard(1);
-				refreshPlaylistDashboard(2);
-
-				$(window).trigger('resize');
+		if(scope === 'admin' && logInfos.role === 'admin') {
+			settingsUpdating = getSettings() ;
+		} else if (scope === 'public') {
+			settingsUpdating = getPublicSettings();
+		} else {
+			$(window).trigger('resize');
+			$('.plSelect .select2').select2({ theme: 'bootstrap',
+				templateResult: formatPlaylist,
+				templateSelection : formatPlaylist,
+				tags: false,
+				minimumResultsForSearch: 3
 			});
-		});
+		}
 
+		if(settingsUpdating) {
+			settingsUpdating.done( function() {
+				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
+				playlistsUpdating = refreshPlaylistSelects();
+				playlistsUpdating.done(function () {
+					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
+					refreshPlaylistDashboard(1);
+					refreshPlaylistDashboard(2);
+	
+					$(window).trigger('resize');
+				});
+			});
+		}
+		
 		if(logInfos.role != 'guest') {
 			$('.pseudoChange').show();
 			$('#searchParent').css('width','');
@@ -1825,7 +1827,7 @@ var settingsNotUpdated;
 
 		if(!isTouchScreen) {
 			$('#nav-profil,#nav-userlist').perfectScrollbar();
-			$('.playlistContainer').perfectScrollbar();
+			$('.playlistContainer, #manage > .panel').perfectScrollbar();
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
 		}
@@ -1856,7 +1858,78 @@ var settingsNotUpdated;
 			'labelWidth': '15',
 			'handleWidth': '59',
 			'data-inverse': 'false'
+		}).each((k,el) => {
+			var $el = $(el);
+			var $container = $(el).closest('.bootstrap-switch-container').find('.bootstrap-switch-handle-on');
+			var introLabel = $(el).data('introlabel');
+			var introStep  = $(el).data('introstep');
+			console.log($(el), introLabel, introStep);
+			if(introStep) {
+				$container.attr('introLabel', introLabel).attr('introStep', introStep);
+			}
 		});
+
+		
+		/* init selects & switchs */
+
+		$('[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event, state) {
+			if (state) {
+				$('#playlist').show();
+				$('#manage').hide();
+			} else {
+				$('#playlist').hide();
+				$('#manage').show();
+				if(introJs && introJs._currentStep) {
+					introJs.nextStep();
+				}
+			}
+		});
+
+		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
+			var val = $(this).attr('nameCommand');
+			if(!val) val =  $(this).attr('name');
+
+			$.ajax({
+				url: 'admin/player',
+				type: 'PUT',
+				data: { command: val }
+			}).done(function () {
+				// refreshPlayerInfos();
+			});
+		});
+	};
+
+	login = function(username, password) {
+		var deferred = $.Deferred();
+		var url = 'auth/login';
+		var data = { username: username, password: password};
+		if(!username) {
+			url = 'auth/login/guest';
+			data = { fingerprint : password };
+		}
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: data })
+			.done(function (response) {
+
+				$('#loginModal').modal('hide');
+				$('#password, #login').removeClass('redBorders');
+				createCookie('mugenToken', response.token, -1);
+				logInfos = response;
+				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
+				initApp();
+
+				deferred.resolve();
+
+			}).fail(function(response) {
+				//displayMessage('info','', i18n.__('LOG_ERROR'));
+				$('#loginModal').modal('show');
+				$('#password').val('').focus();
+				$('#password, #login').addClass('redBorders');
+			});
+			
+			return deferred;
 	};
 
 	/* opposite sideber of playlist : 1 or 2 */
