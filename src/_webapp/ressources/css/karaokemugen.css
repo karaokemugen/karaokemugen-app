@@ -1312,4 +1312,26 @@ input[type="text"]:focus, input[type="password"]:focus {
 .modal.introJsFix .introjs-showElement { z-index: 999999999 !important; }
 .introjs-tooltipReferenceLayer { z-index: 1000000000 !important;}
 .introjs-overlay { opacity: 0.7; }
-.hideNext .introjs-nextbutton { display: none;}
+.hideNext .introjs-nextbutton, .hideNext .btn-default:last-child { display: none;}
+
+.introjs-tooltip.introBottom {
+	transform: translateY(100%);
+}
+.introjs-tooltip {
+
+	padding: 15px;
+	background-color: hsla(133, 15%, 24%, .97);
+	min-width: 360px;
+	max-width: 500px;
+	border-radius: 0px;
+	box-shadow: 0 1px 10px hsla(133, 15%, 24%, 0.4);
+}
+.introjs-tooltiptext {
+    font-size: 14.5px;
+}
+.introjs-tooltiptext a {
+	color: hsla(208, 56%, 76%, 1);
+}
+.introjs-tooltipbuttons {
+	margin-top: 5px;
+}
