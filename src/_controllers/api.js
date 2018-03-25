@@ -477,6 +477,90 @@ export function APIControllerAdmin(router) {
 					res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 				});
 		});
+	router.route('/users')
+		/**
+ * @api {post} /admin/users Create new user (as admin)
+ * @apiName PostUserAdmin
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission admin
+ *
+ * @apiParam {String} login Login name for the user
+ * @apiParam {String} password Password for the user
+ * @apiParam {String} role `admin` or `user`
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Boolean} data Returns `true` if success
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "USER_CREATED",
+ *   "data": true
+ * }
+ * @apiError USER_CREATE_ERROR Unable to create user
+ * @apiError USER_ALREADY_EXISTS This username already exists 
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "Axel",
+ *   "code": "USER_ALREADY_EXISTS",
+ *   "message": null
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req,res) => {
+			//Validate form data
+			req.check({
+				'login': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'password': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'role': {
+					in: 'body',
+					notEmpty: true,
+					enum: [
+						'admin',
+						'user'
+					]
+				}												
+			});
+
+			req.getValidationResult()
+				.then((result) => {
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('login').trim();
+						req.sanitize('login').unescape();
+						req.sanitize('password').trim();
+						req.sanitize('password').unescape();
+						req.sanitize('role').trim();
+						req.sanitize('role').unescape();
+				
+						user.addUser(req.body,req.body.role)
+							.then(() => {
+								res.json(OKMessage(true,'USER_CREATED'));
+							})
+							.catch((err) => {
+								res.statusCode = 500;
+								res.json(errMessage(err.code,err.message));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;								
+						res.json(result.mapped());
+					}
+				});
+
+		});
+
 	router.route('/users/:username')
 	/**
  * @api {get} /admin/users/:username View user details (admin)
