@@ -38,8 +38,9 @@
 	            <nav class="collapse navbar-collapse" id="navbar">
 	                <ul class="nav navbar-nav navbar-right" id="top-nav">
 	                    <li class="current hidden" ><a href="#body">Home</a></li>
-	                    <li><a href="#about">About us</a></li>
-	                    <li><a href="#contact">Contact</a></li>
+	                    <li><a href="#about" class="hidden">{{i18n "WLCM_ABOUTUS"}}</a></li>
+	                    <li><a href="http://mugen.karaokes.moe/contact.html" target="_blank">{{i18n "WLCM_CONTACT"}}</a></li>
+	                    <li><a href="http://mugen.karaokes.moe/" target="_blank">{{i18n "WLCM_SITE"}}</a></li>
 	                </ul>
 	            </nav><!-- /.navbar-collapse -->
 	        </div><!-- /.container-fluid -->
@@ -50,10 +51,10 @@
 	            <div class="row">
 	                <div class="col-md-6">
 	                    <div class="block">
-	                        <h1 class="wow">WELCOME</h1>
-	                        <p class="wow" data-wow-delay="0.3s">Karaoke Mugen is a free, open-source playlist manager. <br/> Create your own Karaoke with your friends!</p>
-	                        <div class="wow" data-wow-delay="0.3s">
-	                        	<a class="btn btn-default btn-home" id="admin" role="button">Get Started</a>
+	                        <h1 class="wow">{{i18n "WLCM_WELCOME"}}</h1>
+	                        <p class="wow" data-wow-delay="0.5s">{{i18n "WLCM_MSG"}}<br/>{{i18n "WLCM_MSG2"}}</p>
+	                        <div class="wow" data-wow-delay="1s">
+	                        	<a class="btn btn-default btn-home" id="admin" role="button">{{i18n "WLCM_GETSTARTED"}}</a>
 	                        </div>
 	                    </div>
 	                </div>
@@ -64,13 +65,13 @@
 	                                <li>
 	                                    <div class="dash days_dash">
 	                                        <i class="digit glyphicon glyphicon-cog"></i>
-	                                        <div class="dash_title">ADMIN PANEL</div>
+	                                        <div class="dash_title">{{i18n "WLCM_KARAMANAGER"}}</div>
 	                                    </div>
 	                                </li>
 	                                <li>
 	                                    <div class="dash hours_dash">
-                                            <i class="digit glyphicon glyphicon-user"></i>
-	                                        <div class="dash_title">PUBLIC PANEL</div>
+                                            <i class="digit glyphicon glyphicon-wrench"></i>
+	                                        <div class="dash_title">{{i18n "WLCM_ADMINISTRATION"}}</div>
 	                                    </div>
 	                                </li>
 	                                <li>
@@ -79,10 +80,16 @@
 	                                        <div class="dash_title">FAQ</div>
 	                                    </div>
 	                                </li>
-	                                <li>
+	                                <li class="hidden">
 	                                    <div class="dash seconds_dash">
                                             <i class="digit glyphicon glyphicon-refresh"></i>
-	                                        <div class="dash_title">UPDATE</div>
+	                                        <div class="dash_title">{{i18n "WLCM_UPDATE"}}</div>
+	                                    </div>
+									</li>
+	                                <li>
+	                                    <div class="dash seconds_dash">
+                                            <i class="digit glyphicon glyphicon-user"></i>
+	                                        <div class="dash_title">{{i18n "WLCM_PUBLIC"}}</div>
 	                                    </div>
 	                                </li>
 	                            </ul>
@@ -99,17 +106,20 @@
         <script src="/vendors/js/select2.min.js"></script>
         <script src="/vendors/js/bootstrap.min.js"></script>   
         <script>
+		$('#admin').click(() => {
+			window.open('/admin' + window.location.search,'_blank');
+		});
         $('#welcome_dashboard').on('click','li', (e,k) => {
             var index = $(e.currentTarget).index();
 
             switch(index) {
                 case 0: window.open('/admin' + window.location.search,'_blank');
                 break;
-                case 1: window.open('/?welcome','_blank');
+                case 1: window.open(window.location.protocol + '//' + window.location.hostname + ':' + {{appAdminPort}},'_blank');
                 break;
-                case 2: 
+                case 2: window.open('http://mugen.karaokes.moe/docs/user-guide/faq/', '_blank');
                 break;
-                case 3:
+                case 4: window.open('/' + window.location.search,'_blank');
                 break;
             }
 
