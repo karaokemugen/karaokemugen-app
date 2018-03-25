@@ -87,12 +87,12 @@ export async function extractAssInfos(subFile, karaData) {
 	if (subFile) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
 		karaData.ass = karaData.ass.replace(/\r/g, '');
-		const subChecksum = checksum(karaData.ass);
+		/*const subChecksum = checksum(karaData.ass);
 		// Disable checking the checksum for now
 		if (subChecksum != karaData.subchecksum) {
 			karaData.isKaraModified = true;
 			karaData.subchecksum = subChecksum;
-		}		
+		}*/		
 	} else {
 		karaData.ass = '';
 	}
@@ -117,10 +117,10 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 export async function writeKara(karafile, karaData) {
 
 	const infosToWrite = (getKara(karaData));	
-	if (compareKaraChecksums(infosToWrite)) { 
+	/*if (compareKaraChecksums(infosToWrite)) { 
 		karaData.isKaraModified = true;
 		infosToWrite.datemodif = timestamp.now();		
-	}
+	}*/
 	if (karaData.isKaraModified === false) {
 		return;
 	}	
