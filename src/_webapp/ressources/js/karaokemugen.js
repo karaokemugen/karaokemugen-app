@@ -1591,6 +1591,9 @@ var settingsNotUpdated;
     * @return {String} the title
     */
 	buildKaraTitle = function(data, search) {
+		if(data.language.indexOf('mul') > -1) {
+			data.language = 'mul';
+		}
 		var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer,
 			data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
 		var titleClean = Object.keys(titleArray).map(function (k) {
