@@ -19,6 +19,7 @@ const shelter = {
 };
 const gitAvailable = commandExists.sync('git');
 let gitRepo = false;
+let updateRunning = false;
 
 async function downloadBase() {
 	const conf = getConfig();
@@ -244,6 +245,8 @@ async function checkDirs() {
 }
 
 export async function runBaseUpdate() {
+	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
+	updateRunning = true;	
 	try {
 		await checkDirs();
 		const [remoteVideos, localVideos] = await Promise.all([
@@ -255,7 +258,8 @@ export async function runBaseUpdate() {
 			compareBases(),
 			compareVideos(localVideos, remoteVideos)
 		]);
-		if (updateBase || updateVideos) return true;
+		updateRunning = false;
+		if (updateBase || updateVideos) return true;		
 		return false;
 	} catch (err) {
 		throw err;
