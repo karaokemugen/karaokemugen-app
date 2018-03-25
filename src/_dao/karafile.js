@@ -86,6 +86,7 @@ export async function getDataFromKaraFile(karafile) {
 export async function extractAssInfos(subFile, karaData) {
 	if (subFile) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
+		karaData.ass = karaData.ass.replace(/\r/g, '');
 		const subChecksum = checksum(karaData.ass);
 		// Disable checking the checksum for now
 		if (subChecksum != karaData.subchecksum) {
@@ -115,9 +116,8 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 
 export async function writeKara(karafile, karaData) {
 
-	const infosToWrite = (getKara(karaData));
-	const newChecksum = compareKaraChecksums(infosToWrite);
-	if (newChecksum) { 
+	const infosToWrite = (getKara(karaData));	
+	if (compareKaraChecksums(infosToWrite)) { 
 		karaData.isKaraModified = true;
 		infosToWrite.datemodif = timestamp.now();		
 	}
@@ -145,7 +145,8 @@ function compareKaraChecksums(data) {
 
 
 export async function parseKara(karaFile) {
-	const data = await asyncReadFile(karaFile, 'utf-8');
+	let data = await asyncReadFile(karaFile, 'utf-8');
+	data = data.replace(/\r/g, '');
 	return parseini(data);	
 }
 

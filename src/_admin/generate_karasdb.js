@@ -388,11 +388,11 @@ export async function run(config) {
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		await emptyDatabase(db);
-		await backupKaraDirs(conf);
+		//await backupKaraDirs(conf);
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
 		// Can be done in background
-		deleteBackupDirs(conf);		
+		//deleteBackupDirs(conf);		
 		// Preparing data to insert
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas);
