@@ -1,6 +1,7 @@
 /* css admin3 */
 html {
 	height: 100%;
+	overflow: hidden;
 }
 body {
 	background-color: #1E2124;
@@ -18,7 +19,7 @@ body {
 }
 
 .header {
-	position: fixed;
+	position: absolute;
 	z-index: 2337;
 	background-color: #1E2124;
 	top: 0;
@@ -1302,3 +1303,13 @@ input[type="text"]:focus, input[type="password"]:focus {
 		background-position: 0 20%;
 	}
 }
+
+
+
+
+.modal.introJsFix { z-index:999999997 !important; }
+.modal.introJsFix .introjs-fixedTooltip { z-index: 999999998 !important; }
+.modal.introJsFix .introjs-showElement { z-index: 999999999 !important; }
+.introjs-tooltipReferenceLayer { z-index: 1000000000 !important;}
+.introjs-overlay { opacity: 0.7; }
+.hideNext .introjs-nextbutton { display: none;}
