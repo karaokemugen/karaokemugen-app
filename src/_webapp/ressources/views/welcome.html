@@ -53,7 +53,7 @@
 	                        <h1 class="wow">WELCOME</h1>
 	                        <p class="wow" data-wow-delay="0.3s">Karaoke Mugen is a free, open-source playlist manager. <br/> Create your own Karaoke with your friends!</p>
 	                        <div class="wow" data-wow-delay="0.3s">
-	                        	<a class="btn btn-default btn-home" href="/admin?firstrun"  target="_blank" role="button">Get Started</a>
+	                        	<a class="btn btn-default btn-home" id="admin" role="button">Get Started</a>
 	                        </div>
 	                    </div>
 	                </div>
@@ -103,9 +103,9 @@
             var index = $(e.currentTarget).index();
 
             switch(index) {
-                case 0: window.open('/admin','_blank');
+                case 0: window.open('/admin' + window.location.search,'_blank');
                 break;
-                case 1: window.open('/','_blank');
+                case 1: window.open('/?welcome','_blank');
                 break;
                 case 2: 
                 break;
