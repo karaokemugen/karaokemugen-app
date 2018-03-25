@@ -5,9 +5,15 @@ import opn from 'opn';
 
 function generateAdminPassword() {
 	const adminPassword = randomstring.generate(8);
-	editUser('admin',{ 
-		password: adminPassword,
-		nickname: 'Dummy Plug System'});
+	editUser('admin',
+		{ 
+			password: adminPassword,
+			nickname: 'Dummy Plug System'
+		},
+		null,
+		{
+			username: 'admin'
+		});
 	return adminPassword;
 }
 
