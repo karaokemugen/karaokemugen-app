@@ -242,20 +242,25 @@ startIntro = function(mode){
 	if(mode =='admin') {
 		introSteps = [{
 			step: 1,
+			label: '1',
 			position: 'auto',
 			intro: i18n.__(prefix + 'INTRO1', query.admpwd), // add password
 		}, {
 			step: 2,
+			label: '2',
 			position: 'right',
 			element: $('#loginModal .modal-content').get(0),
 			intro: i18n.__(prefix + 'INTRO2'), 
 			tooltipClass : 'hideNext',
 		},{
 			step: 3,
+			label: '3',
 			position: 'auto',
 			intro: i18n.__(prefix + 'INTRO3', 'NOMDUSUJET'), 
 		},{
 			step: 20,
+			label: 'last',
+			tooltipClass : 'hideNext',
 			position: 'auto',
 			intro: i18n.__(prefix + 'INTROFINAL'), 
 		}];
@@ -270,7 +275,6 @@ startIntro = function(mode){
 		'SETTINGS' : { tooltipClass : 'hideNext' },
 		'PLAYLISTS_MANAGE_BUTTON' :  { tooltipClass : 'hideNext' },
 		'MODE' : { disableInteraction : true }
-
 	};
 	
 	$('[introStep]').each((k,v) => {
@@ -280,6 +284,7 @@ startIntro = function(mode){
 		
 		console.log(prefix + label + ' ' + position);
 		var options = {
+			label: $(v).attr('introLabel'),
 			step: $(v).attr('introStep'),
 			position: position,
 			element: v,
@@ -297,43 +302,49 @@ startIntro = function(mode){
 	introJs.setOptions({
 		steps: introSteps,
 		hideNext: true,
-		exitOnOverlayClick: false
-
+		exitOnOverlayClick: false,
+		nextLabel: i18n.__('INTRO_LABEL_NEXT'),
+		prevLabel: i18n.__('INTRO_LABEL_PREV'),
+		skipLabel: i18n.__('INTRO_LABEL_SKIP'),
+		doneLabel: i18n.__('INTRO_LABEL_DONE')
 	});
 
 	introJs.onchange(function(targetElement) {
-		var $el = $(targetElement);
-		if(this._currentStep == 2) {
+		var label = introJs._introItems[this._currentStep].label;
+		if(label == '3') {
 			var text = introJs._introItems[2].intro;
 			text = text.replace('NOMDUSUJET', logInfos.username);
 			introJs._introItems[2].intro = text;
-		} 
+		} else if(label == 'last') {
+			$('.introjs-tooltipbuttons > a').first().text(i18n.__('INTRO_LABEL_DONE'));
+		}
 	});
 
 	introJs.onafterchange(function(targetElement) {
-		var $el = $(targetElement);
-		if(this._currentStep == 1) {
+		var label = introJs._introItems[this._currentStep].label;
+		console.log(label);
+		if(label == '2') {
 			$('#loginModal').modal('show');
 			$('.nav-tabs a[href="#nav-signup"]').tab('show');
 							
 			$('#loginModal').addClass('introJsFix');
 			$('#signupRole').val('admin');
-		} else if (this._currentStep == 2) {
+		} else if (label == '3') {
 			if($('#loginModal').hasClass('in')) {
 				$('#nav-signup .login').click();
 				$('#loginModal').modal('hide');
 			}
-		} else if (this._currentStep == 12) {
+		} else if (label == 'settings') {
 			$('[name="kara_panel"]').bootstrapSwitch('state', true, false);
 		}
-
-		var buttons = $('.introjs-tooltipbuttons > a');
-		buttons.attr('class', 'btn btn-xs btn-default');
-	});
-	introJs.oncomplete(function() {
-		$('[name="kara_panel"]').bootstrapSwitch('state', true, false);
 	});
 
 	$('#loginModal').modal('show');
 	introJs.start();
+
+	var buttons = $('.introjs-tooltipbuttons > a');
+	buttons.each((k, el) => {
+		$(el).attr('previousClass', $(el).attr('class'));
+	});
+	buttons.attr('class', 'btn btn-xs btn-default');
 }
