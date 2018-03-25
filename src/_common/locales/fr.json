@@ -320,5 +320,16 @@
 	"DOWNVOTE_FAILED": "Impossible de renier ce karaoké",
 	"START_FAV_MIX": "Créer un automix",
 	"_": "DO NOT MODIFY",
-	"MINUTES": "MINUTES"
+	"MINUTES": "MINUTES",
+	"WLCM_ABOUTUS": "L'équipe",
+	"WLCM_CONTACT": "Contactez-nous",
+	"WLCM_WELCOME": "BIENVENUE",
+	"WLCM_MSG": "Karaoke Mugen est un gestionnaire de playlists gratuit & open-source",
+	"WLCM_MSG2": "Faîtes votre propre Karaoke avec vos amis !",
+	"WLCM_GETSTARTED": "Démarrer",
+	"WLCM_KARAMANAGER": "GESTION DU KARA",
+	"WLCM_ADMINISTRATION": "ADMINISTRATION",
+	"WLCM_UPDATE": "METTRE À JOUR",
+	"WLCM_SITE": "Site web",
+	"WLCM_PUBLIC": "INTERFACE PUBLIC"
 }

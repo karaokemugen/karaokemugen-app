@@ -307,5 +307,16 @@
 	"DOWNVOTE_ALREADY_DONE": "You already downvoted this !",
 	"DOWNVOTE_FAILED": "Failed to downvote this karaoke",
 	"START_FAV_MIX": "Create an automix",
-	"_": "DO NOT MODIFY"
+	"_": "DO NOT MODIFY",
+	"WLCM_ABOUTUS": "About us",
+	"WLCM_CONTACT": "Contact",
+	"WLCM_WELCOME": "WELCOME",
+	"WLCM_MSG": "Karaoke Mugen is a free, open-source playlist manager.",
+	"WLCM_MSG2": "Create your own Karaoke with your friends!",
+	"WLCM_GETSTARTED": "Get started",
+	"WLCM_KARAMANAGER": "KARAOKE MANAGER",
+	"WLCM_ADMINISTRATION": "ADMINISTRATION",
+	"WLCM_UPDATE": "UPDATE",
+	"WLCM_SITE": "Website",
+	"WLCM_PUBLIC": "PUBLIC INTERFACE"
 } 
