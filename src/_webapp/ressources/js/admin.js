@@ -300,6 +300,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			}
                 
 			$(this).toggleClass('btn-primary');
+
+			if(introJs && introJs._currentStep) {
+				introJs.nextStep();
+			}
 		});
         
 		$('.playlist-main').on('click', 'span[name="checkboxKara"]', function () {

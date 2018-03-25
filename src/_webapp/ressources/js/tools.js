@@ -243,7 +243,7 @@ startIntro = function(mode){
 		introSteps = [{
 			step: 1,
 			position: 'auto',
-			intro: i18n.__(prefix + 'INTRO1'), // add password
+			intro: i18n.__(prefix + 'INTRO1', query.admpwd), // add password
 		}, {
 			step: 2,
 			position: 'right',
@@ -253,56 +253,82 @@ startIntro = function(mode){
 		},{
 			step: 3,
 			position: 'auto',
-			intro: i18n.__(prefix + 'INTRO3'), 
+			intro: i18n.__(prefix + 'INTRO3', 'NOMDUSUJET'), 
 		},{
 			step: 20,
 			position: 'auto',
-			intro: i18n.__(prefix + 'INTRO4'), 
+			intro: i18n.__(prefix + 'INTROFINAL'), 
 		}];
 		$('#loginModal').modal('show');
 		$('.nav-tabs a[href="#nav-signup"]').tab('show');
 
-	} else {
+	} else {	// public
 
 	}
 	
 	var specialOptions = {
-		'settings' : { tooltipClass : 'hideNext' },
+		'SETTINGS' : { tooltipClass : 'hideNext' },
+		'PLAYLISTS_MANAGE_BUTTON' :  { tooltipClass : 'hideNext' },
+		'MODE' : { disableInteraction : true }
+
 	};
 	
 	$('[introStep]').each((k,v) => {
-		var label =  $(v).attr('introLabel');
-		console.log(prefix + label);
+		var label =  $(v).attr('introLabel').toUpperCase();
+		var position = $(v).attr('introPosition');
+		if(!position) position = 'auto';
+		
+		console.log(prefix + label + ' ' + position);
 		var options = {
 			step: $(v).attr('introStep'),
-			position: 'auto',
+			position: position,
 			element: v,
-			intro: i18n.__(prefix + $(v).attr('introLabel')), 
+			intro: i18n.__(prefix + label), 
 		};
 		options = Object.assign(options, specialOptions[label]);
 
 		introSteps.push(options);
 	});
+
 	introSteps = introSteps.sort(function(a, b) {
 		return a.step - b.step;
 	});
+
 	introJs.setOptions({
 		steps: introSteps,
 		hideNext: true,
-	});
-	
+		exitOnOverlayClick: false
 
-	introJs.onafterchange(function(targetElement) {console.log(this);
+	});
+
+	introJs.onchange(function(targetElement) {
+		var $el = $(targetElement);
+		if(this._currentStep == 2) {
+			var text = introJs._introItems[2].intro;
+			text = text.replace('NOMDUSUJET', logInfos.username);
+			introJs._introItems[2].intro = text;
+		} 
+	});
+
+	introJs.onafterchange(function(targetElement) {
 		var $el = $(targetElement);
 		if(this._currentStep == 1) {
 			$('#loginModal').modal('show');
 			$('.nav-tabs a[href="#nav-signup"]').tab('show');
 							
 			$('#loginModal').addClass('introJsFix');
+			$('#signupRole').val('admin');
 		} else if (this._currentStep == 2) {
-			$('#loginModal').modal('hide');
+			if($('#loginModal').hasClass('in')) {
+				$('#nav-signup .login').click();
+				$('#loginModal').modal('hide');
+			}
+		} else if (this._currentStep == 12) {
+			$('[name="kara_panel"]').bootstrapSwitch('state', true, false);
 		}
-		console.log(targetElement);
+
+		var buttons = $('.introjs-tooltipbuttons > a');
+		buttons.attr('class', 'btn btn-xs btn-default');
 	});
 	introJs.oncomplete(function() {
 		$('[name="kara_panel"]').bootstrapSwitch('state', true, false);

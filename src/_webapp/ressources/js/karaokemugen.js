@@ -188,21 +188,20 @@ var settingsNotUpdated;
 
 		var mugenToken = readCookie('mugenToken');
 
-		if(mugenToken) {
+		if(query.admpwd) { // app first run;
+			// login('admin', query.admpwd)
+			login('admin', 'gurdil').done(() => {
+				startIntro('admin');
+				var privateMode = $('input[name="EnginePrivateMode"]');
+				privateMode.val(1);
+				setSettings(privateMode);
+			});
+		} else if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			if(scope === 'admin' && logInfos.role !== 'admin' && !query.admpwd) {
+			if(scope === 'admin' && logInfos.role !== 'admin') {
 				$('#loginModal').modal('show');
-			} else if(query.admpwd) { // app first run;
-				// login('admin', query.admpwd)
-				login('admin', 'gurdil').done(() => {
-					startIntro('admin');
-					var privateMode = $('input[name="EnginePrivateMode"]');
-					privateMode.val(1);
-					setSettings(privateMode);
-				})
-			} else {
-			
+			} else {			
 				initApp();
 			}
 		} else {
@@ -586,10 +585,16 @@ var settingsNotUpdated;
 				$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
 				$('#signupPassword').focus();
 			} else {
+				var data = { login: username, password: password};
+				
+				if(scope === 'admin') {
+					data.role =  $('#signupRole').val();
+				}
+				
 				$.ajax({
-					url: 'public/users',
+					url: scope + '/users',
 					type: 'POST',
-					data: { login: username, password: password} })
+					data: data })
 					.done(function (response) {
 						if(response == true) {
 							displayMessage('info', 'Info',  i18n.__('CL_NEW_USER', username));
@@ -597,11 +602,9 @@ var settingsNotUpdated;
 
 						$('#loginModal').modal('hide');
 						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
-						login(username, password);
 						
-						if(introJs && introJs._currentStep) {
-							introJs.nextStep();
-						}
+						if(scope === 'public' || introJs && introJs._currentStep) login(username, password);
+						
 
 					}).fail(function(response) {
 						//displayMessage('info','', i18n.__('LOG_ERROR'));
@@ -782,6 +785,13 @@ var settingsNotUpdated;
 		}
 
 		$(window).trigger('resize');
+	});
+	//Will make a request to /locales/en.json and then cache the results
+	i18n = new I18n({
+		//these are the default values, you can omit
+		directory: '/locales',
+		locale: 'fr',
+		extension: '.json'
 	});
 
 	socket = io( window.location.protocol + '//' + window.location.hostname + ':' + window.location.port);
@@ -968,14 +978,6 @@ var settingsNotUpdated;
 			$this.removeClass('pressed');
 		});
 	}
-
-	//Will make a request to /locales/en.json and then cache the results
-	i18n = new I18n({
-		//these are the default values, you can omit
-		directory: '/locales',
-		locale: 'fr',
-		extension: '.json'
-	});
 
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
@@ -1802,7 +1804,7 @@ var settingsNotUpdated;
 			$('#searchParent').css('width','100%');
 		}
 
-		initSwitchs();
+		if(!introJs || !introJs._currentStep) initSwitchs();
 
 		$('.bootstrap-switch').promise().then(function(){
 			$(this).each(function(){
@@ -1863,7 +1865,6 @@ var settingsNotUpdated;
 			var $container = $(el).closest('.bootstrap-switch-container').find('.bootstrap-switch-handle-on');
 			var introLabel = $(el).data('introlabel');
 			var introStep  = $(el).data('introstep');
-			console.log($(el), introLabel, introStep);
 			if(introStep) {
 				$container.attr('introLabel', introLabel).attr('introStep', introStep);
 			}
@@ -1919,6 +1920,10 @@ var settingsNotUpdated;
 				logInfos = response;
 				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
 				initApp();
+
+				if(introJs && introJs._currentStep) {
+					introJs.nextStep();
+				}
 
 				deferred.resolve();
 
