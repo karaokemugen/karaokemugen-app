@@ -233,3 +233,81 @@ dataToDataAttribute = function(data) {
 	}).join(' ');
 	return result;
 };
+
+startIntro = function(mode){
+	introJs = introJs();
+
+	var prefix = mode == 'admin' ? 'INTRO_ADMIN_' : 'INTRO_PUBLIC_';
+	var introSteps = [];
+	if(mode =='admin') {
+		introSteps = [{
+			step: 1,
+			position: 'auto',
+			intro: i18n.__(prefix + 'INTRO1'), // add password
+		}, {
+			step: 2,
+			position: 'right',
+			element: $('#loginModal .modal-content').get(0),
+			intro: i18n.__(prefix + 'INTRO2'), 
+			tooltipClass : 'hideNext',
+		},{
+			step: 3,
+			position: 'auto',
+			intro: i18n.__(prefix + 'INTRO3'), 
+		},{
+			step: 20,
+			position: 'auto',
+			intro: i18n.__(prefix + 'INTRO4'), 
+		}];
+		$('#loginModal').modal('show');
+		$('.nav-tabs a[href="#nav-signup"]').tab('show');
+
+	} else {
+
+	}
+	
+	var specialOptions = {
+		'settings' : { tooltipClass : 'hideNext' },
+	};
+	
+	$('[introStep]').each((k,v) => {
+		var label =  $(v).attr('introLabel');
+		console.log(prefix + label);
+		var options = {
+			step: $(v).attr('introStep'),
+			position: 'auto',
+			element: v,
+			intro: i18n.__(prefix + $(v).attr('introLabel')), 
+		};
+		options = Object.assign(options, specialOptions[label]);
+
+		introSteps.push(options);
+	});
+	introSteps = introSteps.sort(function(a, b) {
+		return a.step - b.step;
+	});
+	introJs.setOptions({
+		steps: introSteps,
+		hideNext: true,
+	});
+	
+
+	introJs.onafterchange(function(targetElement) {console.log(this);
+		var $el = $(targetElement);
+		if(this._currentStep == 1) {
+			$('#loginModal').modal('show');
+			$('.nav-tabs a[href="#nav-signup"]').tab('show');
+							
+			$('#loginModal').addClass('introJsFix');
+		} else if (this._currentStep == 2) {
+			$('#loginModal').modal('hide');
+		}
+		console.log(targetElement);
+	});
+	introJs.oncomplete(function() {
+		$('[name="kara_panel"]').bootstrapSwitch('state', true, false);
+	});
+
+	$('#loginModal').modal('show');
+	introJs.start();
+}
