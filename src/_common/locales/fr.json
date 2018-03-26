@@ -319,8 +319,6 @@
 	"DOWNVOTE_ALREADY_DONE": "Vous avez déjà renié ce karaoké !",
 	"DOWNVOTE_FAILED": "Impossible de renier ce karaoké",
 	"START_FAV_MIX": "Créer un automix",
-	"_": "DO NOT MODIFY",
-	"MINUTES": "MINUTES",
 	"WLCM_ABOUTUS": "L'équipe",
 	"WLCM_CONTACT": "Contactez-nous",
 	"WLCM_WELCOME": "BIENVENUE",
@@ -341,7 +339,7 @@
 	"INTRO_ADMIN_PLAYLISTS_2": "Mais revenons aux playlists.<br />Il en existe différent types : <br /><br />- La liste <b>Karas</b> correspond à la base de donnée de vos karaokés. C'est ici que les utilisateurs chercheront les chansons qu'ils souhaient ajouter. Il n'y en a qu'une.<br /><br />- La liste avec l'attribut <i class='glyphicon glyphicon-facetime-video'></i> <b>Courante</b> est celle diffusée à l'écran. Il n'y en a qu'une.<br /><br />- La liste avec l'attribut <i class='glyphicon glyphicon-globe'></i> <b>Publique</b> est celle où votre public mettra ses suggestions.<br /><br />- Les listes <i class='glyphicon glyphicon-eye-open'></i> <b>visibles</b> seront visibles par votre public. Décochez l'attribut pour cacher certaines listes !<br /><br />- Les listes marquées <b>Faves</b> sont les listes de favoris de vos utilisateurs.<br /><br />- Les listes marquées <b>Automix</b> sont crées automatiquement via les favoris de vos invités.<br />",
 	"INTRO_ADMIN_PLAYLISTS_MANAGE": "Ici, vous pouvez choisir quelle playlist afficher, gérer ses propriétés, ou rechercher son contenu.",
 	"INTRO_ADMIN_PLAYLISTS_MANAGE_BUTTON": "Ce bouton vous permet d'activer le mode <b>avancé</b>, donnant accès à plus des fonctionnalités.<br/> Cliquez le bouton pour continuer.",
-	"INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "En mode avancé, vous pouvez effectuer des actions sur plusieurs karas en les selectionnant.<br/> Utilisez ensuite les boutons d'action tel que <i class='glyphicon glyphicon-minus'></i> ou <i class='glyphicon glyphicon-plus'></i>.<br/><br/>Les actions possibles changent selon le type de la playlist actuelle & de la playlist de destination.<br/><br/> D'autres opérations avancées sont possible, survoler le bouton vous renseignera sur sa fonction.",
+	"INTRO_ADMIN_PLAYLISTS_MANAGE_ADVANCED": "En mode avancé, vous pouvez effectuer des actions sur plusieurs karas en les selectionnant.<br/> Utilisez ensuite les boutons d'action tel que <i class='glyphicon glyphicon-minus'></i> ou <i class='glyphicon glyphicon-plus'></i>.<br/><br/>Les actions possibles changent selon le type de la playlist actuelle & de la playlist de destination.<br/><br/> D'autres opérations avancées sont possibles, survoler le bouton vous renseignera sur sa fonction.",
 	"INTRO_ADMIN_SETTINGS": "Karaoke mugen est personnalisable à souhait, via son panneau d'options.<br/> Vous pouvez y accèder en cliquant sur ce bouton.",
 	"INTRO_ADMIN_SETTINGS_SCREEN": "C'est ici que ça se passe, n'hésitez pas à essayer les différents paramètres.<br /> La plupart ne prendront effet qu'au changement de kara, si une chanson est en cours.",
 	"INTRO_ADMIN_INTROFINAL": "Fini ! Vous pouvez chanter !<br /><br />Merci d'avoir lu jusqu'ici. Nous allons désactiver le Dummy Plug System et vous allez pouvoir piloter votre EV... karaoké.<br /><br />Pour plus d'informations :<br /><br />-<a href='http://mugen.karaokes.moe/docs' target='_blank'> Consulter la documentation </a><br />- <a href='http://mugen.karaokes.moe/docs/user-guide/faq/' target='_blank'>FAQ</a><br />- <a href='http://mugen.karaokes.moe/contact.html' target='_blank'>Contacter l'équipe</a> (twitter / discord)<br /><br />Cliquez sur Terminer !<br />",
@@ -351,5 +349,6 @@
 	"INTRO_LABEL_DONE": "Terminer",
 	"GUEST": "Invité",
 	"USER": "Utilisateur",
-	"ADMIN": "Administrateur"
+	"ADMIN": "Administrateur",
+	"_": "DO NOT MODIFY"	
 }
