@@ -1,4 +1,4 @@
-import {insertUpvote,getUpvotesByPLC} from '../_dao/upvote';
+import {insertUpvote,removeUpvote, getUpvotesByPLC} from '../_dao/upvote';
 import {freePLC, updateSongsLeft, isACurrentPlaylist, isAPublicPlaylist, getPLCInfoMini} from '../_services/playlist';
 import {listUsers, findUserByName} from '../_services/user';
 import {getConfig} from '../_common/utils/config';
@@ -15,7 +15,9 @@ export async function addUpvote(plc_id,username) {
 		if (!plc) throw {message: 'PLC ID unknown'};
 		const user = await findUserByName(username);
 		const userList = await getUpvotesByPLC(plc_id);
-		if (userList.includes(user.id)) throw {code: 'UPVOTE_ALREADY_DONE'};		
+		userList.some(u => {
+			if (u.user_id == user.id) throw {code: 'UPVOTE_ALREADY_DONE'};
+		});
 		await insertUpvote(plc_id,user.id);
 		const upvotes = plc.upvotes + 1;
 		const ret = {
@@ -32,7 +34,7 @@ export async function addUpvote(plc_id,username) {
 		} else {
 			modePlaylist_id = await isAPublicPlaylist();
 		}
-		tryToFreeKara(plc_id, upvotes, username, modePlaylist_id);
+		tryToFreeKara(plc_id, upvotes, plc.username, modePlaylist_id);
 		return ret;
 	} catch(err) {
 		if (!err.code) err.code = 'UPVOTE_FAILED';
@@ -46,8 +48,12 @@ export async function deleteUpvote(plc_id,username) {
 		if (!plc) throw {message: 'PLC ID unknown'};
 		const user = await findUserByName(username);
 		const userList = await getUpvotesByPLC(plc_id);
-		if (!userList.includes(user.id)) throw {code: 'DOWNVOTE_ALREADY_DONE'};		
-		await deleteUpvote(plc_id,user.id);
+		const userIDs = [];
+		userList.forEach(u => {
+			userIDs.push(u.user_id);
+		});
+		if (!userIDs.includes(user.id)) throw {code: 'DOWNVOTE_ALREADY_DONE'};
+		await removeUpvote(plc_id,user.id);
 		const upvotes = plc.upvotes - 1;
 		const ret = {
 			upvotes: upvotes,
@@ -72,6 +78,6 @@ async function tryToFreeKara(plc_id, upvotes, username, playlist_id) {
 		upvotes >= conf.EngineFreeUpvotesRequiredMin) {
 		await freePLC(plc_id);
 		updateSongsLeft(username, playlist_id);
-		logger.debug(`[Upvote] PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`);		
+		logger.debug(`[Upvote] PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`);
 	}
 }

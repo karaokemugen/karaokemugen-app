@@ -12,7 +12,7 @@ export async function insertUpvote(plc_id,user_id) {
 	});
 }
 
-export async function deleteUpvote(plc_id,user_id) {
+export async function removeUpvote(plc_id,user_id) {
 	return await getUserDb().run(sql.deleteUpvote, {
 		$plc_id: plc_id,
 		$user_id: user_id

@@ -60,7 +60,7 @@ export async function addKaraToPlaylist(karaList) {
 		$kara_id: kara.kara_id,
 		$created_at: kara.created_at,
 		$pos: kara.pos
-	}));
+	}));	
 	return await transaction(karas, sql.addKaraToPlaylist);
 }
 

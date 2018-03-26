@@ -1049,13 +1049,18 @@ var settingsNotUpdated;
 								});
 							}
 							if (mode === 'list') {
+								var likeKara = likeKaraHtml;
+								if (kara.flag_upvoted === 1) {
+									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
+								}
+
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
 								+   (isTouchScreen ? '' : infoKaraHtml) + playKara
-								+	(dashboard.data('flag_public') === 1 && scope !== 'admin' ? likeKaraHtml : '') + '</div>')
+								+	(dashboard.data('flag_public') === 1 && scope !== 'admin' ? likeKara : '') + '</div>')
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
 								+	'<div>' + badges + '</div>'
@@ -1981,6 +1986,17 @@ var settingsNotUpdated;
 		if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
 			playlistContentUpdating = fillPlaylist(side);
 			refreshPlaylistDashboard(side, true);
+		}
+	});
+
+	socket.on('songsAvailableUpdated', function(data){
+		if (logInfos.username === data.username) {
+			var quota = data.songsLeft;
+			if (data.songsLeft == -1) {
+				quota = '\u221e';
+			}
+			$('#plQuota').text(i18n.__('QUOTA')+' '+quota);
+			DEBUG && console.log(data.username, data.songsLeft);
 		}
 	});
 

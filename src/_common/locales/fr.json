@@ -365,5 +365,6 @@
 	"DOWNVOTE_ALREADY_DONE": "Vous avez déjà renié ce karaoké !",
 	"DOWNVOTE_FAILED": "Impossible de renier ce karaoké",
 	"START_FAV_MIX": "Créer un automix",
+	"QUOTA": "Ajouts restants :",
 	"_": "DO NOT MODIFY"
 }

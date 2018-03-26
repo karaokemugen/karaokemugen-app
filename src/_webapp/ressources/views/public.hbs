@@ -52,15 +52,20 @@
                 </ul>
            </div>
             <div class="plFooter">
-                <div class="plBrowse">
-                    <button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
-                    <button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
-                    <button title="{{i18n "GOTO_BOTTOM"}}" class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
-                </div>
-                <div class="plInfos"></div>
+				<div class="left">
+					<div id="plQuota" class="plQuota right"></div>
+				</div>
+				<div class="right">
+					<div class="plBrowse">
+						<button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
+						<button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
+						<button title="{{i18n "GOTO_BOTTOM"}}" class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
+					</div>
+					<div class="plInfos"></div>
+				</div>
             </div>
         </div>
-         
+
         <div class="panel col-lg-4 col-md-5 col-msm-12 col-sm-12 col-xs-12" id="panel2" side="2">
            <div class="panel-heading container-fluid plDashboard">
                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6 plSelect">
@@ -88,7 +93,7 @@
                     <input type="text" class="form-control input-md" side="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
                 </div>
             </div>
-            
+
             <div class="playlistContainer">
                 <ul id="playlist2" side="2" class="list-group">
                     <li class="list-group-item"></li>
@@ -128,7 +133,7 @@
             </div>
             <div class="modal-body">
                 <div class="modal-message">
-                
+
                 </div>
                 <div class="form">
                     <input type="text" class="form-control" id="modalInput" name="modalInput"    />
@@ -200,9 +205,9 @@
             <div class="tab-content" id="nav-tabContent">
                 <div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab" class="modal-body tab-pane fade in active">
                     <div class="profileContent">
-                        
+
                             <div class="col-md-3 col-lg-3 col-xs-12 col-sm-12">
-                                
+
                                 <label for="avatar" title='{{i18n "AVATAR_IMPORT"}}' class="btn btn-default plGenericButton avatar" name="import">
                                     <img class="img-circle" name="avatar_file"
                                      src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
@@ -233,12 +238,12 @@
                                     <input class="form-control" name="password" type="text"/>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" class="modal-body tab-pane fade in">
                         <div class="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
-                            
+
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -246,9 +251,9 @@
                                 data-toggle="tooltip"><i class="glyphicon glyphicon-off"></i>
                         </button>
                     </div>
-                   
+
                 </div>
-                
+
             </div>
         </div>
     </div>

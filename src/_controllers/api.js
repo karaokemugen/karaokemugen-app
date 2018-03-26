@@ -5,10 +5,11 @@ import {resolve} from 'path';
 import multer from 'multer';
 const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
-const upvote = require('../_services/upvote.js');
+const upvote = require('../_services/upvote');
 import {emitWS} from '../_webapp/frontend';
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
+import {updateSongsLeft} from '../_services/playlist';
 
 function toString(o) {
 	Object.keys(o).forEach(k => {
@@ -25,14 +26,14 @@ function errMessage(code,message,args) {
 		code: code,
 		args: args,
 		message: message
-	};	
+	};
 }
 
 function OKMessage(data,code,args) {
 	return {
 		code: code,
-		args: args,		
-		data: data,		
+		args: args,
+		data: data,
 	};
 }
 
@@ -85,7 +86,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * "Shutdown in progress."
- * 
+ *
  */
 	router.route('/shutdown')
 		.post(requireAuth, requireValidUser, requireAdmin, async (req, res) => {
@@ -227,7 +228,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {Boolean} flag_public Is the playlist to create public? This unsets `flag_public` on the previous playlist which had it.
  * @apiParam {Boolean} flag_current Is the playlist to create current? This unsets `flag_current` on the previous playlist which had it.
  * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
- * 
+ *
  * @apiSuccess {String} args Name of playlist created
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of newly created playlist
@@ -238,7 +239,7 @@ export function APIControllerAdmin(router) {
  *   "args": "lol",
  *   "code": "PL_CREATED",
  *   "data": 4
- * } 
+ * }
  * @apiError PL_CREATE_ERROR Unable to create a playlist
  *
  * @apiErrorExample Error-Response:
@@ -325,7 +326,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -369,7 +370,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} name Name of playlist to create
  * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
- * 
+ *
  * @apiSuccess {String} args ID of playlist updated
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of playlist updated
@@ -380,7 +381,7 @@ export function APIControllerAdmin(router) {
  *   "args": 1,
  *   "code": "PL_UPDATED",
  *   "data": 1
- * } 
+ * }
  * @apiError PL_UPDATE_ERROR Unable to update a playlist
  *
  * @apiErrorExample Error-Response:
@@ -445,7 +446,7 @@ export function APIControllerAdmin(router) {
  *   "args": 3,
  *   "code": "PL_DELETED",
  *   "data": 3
- * } 
+ * }
  * @apiError PL_DELETE_ERROR Unable to delete a playlist
  *
  * @apiErrorExample Error-Response:
@@ -546,7 +547,7 @@ export function APIControllerAdmin(router) {
  *   "args": 3,
  *   "code": "USER_DELETED",
  *   "data": 3
- * } 
+ * }
  * @apiError USER_DELETE_ERROR Unable to delete a user
  *
  * @apiErrorExample Error-Response:
@@ -554,8 +555,6 @@ export function APIControllerAdmin(router) {
  */
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {					
 			try {
-
-			
 				await user.deleteUser(req.params.username);
 				emitWS('usersUpdated');
 				res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.username));
@@ -584,7 +583,7 @@ export function APIControllerAdmin(router) {
  *   "args": 1,
  *   "code": "PL_EMPTIED",
  *   "data": 1
- * } 
+ * }
  * @apiError PL_EMPTY_ERROR Unable to empty a playlist
  *
  * @apiErrorExample Error-Response:
@@ -617,7 +616,7 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 200 OK
  * {
  *   "code": "WL_EMPTIED"
- * } 
+ * }
  * @apiError WL_EMPTY_ERROR Unable to empty the whitelist
  *
  * @apiErrorExample Error-Response:
@@ -653,7 +652,7 @@ export function APIControllerAdmin(router) {
  * {
  *   "code": "BLC_EMPTIED",
  *   "data": null
- * } 
+ * }
  * @apiError BLC_EMPTY_ERROR Unable to empty list of blacklist criterias
  *
  * @apiErrorExample Error-Response:
@@ -679,7 +678,7 @@ export function APIControllerAdmin(router) {
  * @apiGroup Playlists
  * @apiPermission admin
  *
- * @apiParam {Number} pl_id Target playlist ID. 
+ * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {String} args ID of playlist updated
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data `null`
@@ -690,7 +689,7 @@ export function APIControllerAdmin(router) {
  *   "args": 1,
  *   "code": "PL_SET_CURRENT",
  *   "data": null
- * } 
+ * }
  * @apiError PL_SET_CURRENT_ERROR Unable to set this playlist to current. The playlist is a public one and can't be set to current at the same time. First set another playlist as public so this playlist has no flags anymore and can be set current.
  *
  * @apiErrorExample Error-Response:
@@ -716,7 +715,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {String} args ID of playlist updated
  * @apiSuccess {String} code Message to display
@@ -728,7 +727,7 @@ export function APIControllerAdmin(router) {
  *   "args": 1,
  *   "code": "PL_SET_PUBLIC",
  *   "data": null
- * } 
+ * }
  * @apiError PL_SET_PUBLIC_ERROR Unable to set this playlist to public. The playlist is a current one and can't be set to public at the same time. First set another playlist as current so this playlist has no flags anymore and can be set public.
  *
  * @apiErrorExample Error-Response:
@@ -753,14 +752,14 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -861,7 +860,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} kara_id List of `kara_id` separated by commas (`,`). Example : `1021,2209,44,872`
  * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
@@ -942,7 +941,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} plc_id List of `playlistcontent_id` separated by commas (`,`). Example : `1021,2209,44,872`
  * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist
@@ -1021,7 +1020,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} plc_id List of `plc_id` separated by commas (`,`). Example : `1021,2209,44,872`
  * @apiSuccess {String} args Name of playlist the song was deleted from
@@ -1085,10 +1084,10 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
- * @apiParam {Number} plc_id Playlist content ID. 
- * @apiParam {String} lang Lang in ISO639-2B. 
+ * @apiParam {Number} plc_id Playlist content ID.
+ * @apiParam {String} lang Lang in ISO639-2B.
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -1184,7 +1183,7 @@ export function APIControllerAdmin(router) {
  *       }
  *   ]
  * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -1210,7 +1209,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
  * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
  * @apiParam {Number} [pos] Position in target playlist where to move the song to.
@@ -1280,7 +1279,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.1.0
  * @apiGroup Main
  * @apiPermission admin
- * 
+ *
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -1366,7 +1365,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
  * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
  * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
- * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message) 
+ * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message)
  * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
  * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
  * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
@@ -1383,12 +1382,16 @@ export function APIControllerAdmin(router) {
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
  * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
  * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
- * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen 
+ * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
  * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
+<<<<<<< HEAD:src/_controllers/api.js
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
  * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
+=======
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
+>>>>>>> 167-mode-public-permettre-de-like-une-suggestion:src/_apiserver/api.js
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -1586,7 +1589,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Player
  * @apiPermission admin
- * 
+ *
  * @apiParam {String} message Message to display
  * @apiParam {Number} [duration=10000] Duration of message in miliseconds
  * @apiParam {String="users","screen"} [destination="screen"] `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
@@ -1666,7 +1669,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
- * 
+ *
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
@@ -1760,7 +1763,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
@@ -1793,7 +1796,7 @@ export function APIControllerAdmin(router) {
 					in: 'body',
 					notEmpty: true,
 					numbersArray: true,
-				},						
+				},
 			});
 			const result = await req.getValidationResult();
 			if (result.isEmpty()) {							
@@ -1822,7 +1825,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Whitelist
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number[]} wlc_id Whitelist content IDs to delete from whitelist, separated by commas
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
@@ -1876,7 +1879,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
- * 
+ *
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
@@ -1956,8 +1959,6 @@ export function APIControllerAdmin(router) {
 			}
 			if (from < 0) from = 0;	
 			try {
-
-											
 				const karas = await engine.getBL(filter,lang,from,size);
 				res.json(OKMessage(karas));
 			} catch(err) {
@@ -1973,7 +1974,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
- * 
+ *
  * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
  * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
  * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
@@ -2017,7 +2018,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} blcriteria_type Blacklist criteria type (refer to docs)
  * @apiParam {String} blcriteria_value Blacklist criteria value. Depending on type, can be number or string.
  * @apiSuccess {String} code Message to display
@@ -2059,7 +2060,7 @@ export function APIControllerAdmin(router) {
 				},
 				'blcriteria_value': {
 					in: 'body',
-					notEmpty: true,							
+					notEmpty: true,
 				}
 			});
 
@@ -2093,7 +2094,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} blc_id Blacklist criteria's ID to delete
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} args arguments for the message
@@ -2132,7 +2133,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} blc_id Blacklist criteria's ID to delete
  * @apiParam {Number} blcriteria_type New blacklist criteria's type
  * @apiParam {String} blcriteria_value New blacklist criteria's value
@@ -2201,7 +2202,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Player
  * @apiPermission admin
- * 
+ *
  * @apiParam {String=play,pause,stopNow,stopAfter,skip,prev,toggleFullscreen,toggleAlwaysOnTop,seek,goTo,mute,unmute,setVolume,showSubs,hideSubs} command Command to send to player
  * @apiParam {String} [option] Parameter for the command being sent
  * @apiSuccess {String} code Message to display
@@ -2303,7 +2304,7 @@ export function APIControllerAdmin(router) {
  *           "time_left": 0
  *       }
  *   }
- * } 
+ * }
  * @apiError PL_EXPORT_ERROR Unable to export playlist
  *
  * @apiErrorExample Error-Response:
@@ -2333,7 +2334,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
  *
  * @apiSuccessExample Success-Response:
@@ -2346,7 +2347,7 @@ export function APIControllerAdmin(router) {
  *       "playlist_id": 4,
  *       "unknownKaras": []
  *   }
- * } 
+ * }
  * @apiError PL_IMPORT_ERROR Unable to import playlist
  *
  * @apiErrorExample Error-Response:
@@ -2418,7 +2419,7 @@ export function APIControllerAdmin(router) {
  *   "code": "PL_SHUFFLE_ERROR",
  *   "message": "Playlist 10 unknown"
  * }
- */		
+ */
 
 		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
@@ -2515,7 +2516,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
  * @apiSuccess {Number} data/flag_favorites Is playlist a favorites playlist? if displayed by a regular user, he'll only get to see his own favorites playlist.
  * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
- * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users? 
+ * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
  * @apiSuccess {Number} data/length Duration of playlist in seconds
  * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
  * @apiSuccess {String} data/name Name of playlist
@@ -2525,7 +2526,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/username User who created the playlist
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -2571,12 +2572,12 @@ export function APIControllerPublic(router) {
  * @apiPermission public
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -2663,12 +2664,9 @@ export function APIControllerPublic(router) {
 				from = parseInt(req.query.from);
 			}
 			try {
-
 				const playlist = await engine.getPLContents(req.params.pl_id,filter,lang,req.authToken,from,size);
-		
 				if (playlist == null) res.statusCode = 404;
 				res.json(OKMessage(playlist));
-				
 			} catch(err) {
 				logger.error(err.message);
 				res.statusCode = 500;
@@ -2685,7 +2683,7 @@ export function APIControllerPublic(router) {
  * @apiPermission public
  * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
- * @apiParam {Number} plc_id Playlist content ID. 
+ * @apiParam {Number} plc_id Playlist content ID.
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -2779,9 +2777,14 @@ export function APIControllerPublic(router) {
  *       }
  *   ]
  * }
+<<<<<<< HEAD:src/_controllers/api.js
  * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * 
+=======
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
+ *
+>>>>>>> 167-mode-public-permettre-de-like-une-suggestion:src/_apiserver/api.js
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -2867,7 +2870,7 @@ export function APIControllerPublic(router) {
 						!key.startsWith('mpv') &&
 						!key.startsWith('os')
 					) {
-						settings[key] = conf[key];		
+						settings[key] = conf[key];
 					}
 				}
 			}
@@ -2899,11 +2902,12 @@ export function APIControllerPublic(router) {
  *        "totalplaylists": 5,
  *        "totalseries": 2525
  *    }
- * } 
+ * }
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const stats = await engine.getKMStats();
+				updateSongsLeft(req.authToken.username);
 				res.json(OKMessage(stats));
 			} catch(err) {
 				logger.error(err);
@@ -3127,7 +3131,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Blacklist
  * @apiPermission public
- * 
+ *
  * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
  * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
  * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
@@ -3235,13 +3239,13 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Karaokes
  * @apiPermission public
- * 
- * @apiParam {String} [filter] Filter list by this string. 
+ *
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -3375,8 +3379,8 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Karaokes
  * @apiPermission public
- * 
- * @apiParam {Number} kara_id Karaoke ID you want to fetch information from 
+ *
+ * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
@@ -3590,7 +3594,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -3631,14 +3635,14 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission public
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -3753,7 +3757,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -3796,14 +3800,14 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission public
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -3904,7 +3908,7 @@ export function APIControllerPublic(router) {
 	 * @apiVersion 2.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
-	 * 
+	 *
 	 * @apiParam {Number} plc_id Target playlist content ID
 	 * @apiParam {String} [downvote] If anything is specified in this parameter, it'll be a downvote instead of upvote.
 	 * @apiSuccess {String} code Return code
@@ -3944,7 +3948,7 @@ export function APIControllerPublic(router) {
 	* @apiVersion 2.1.0
 	* @apiGroup Karaokes
 	* @apiPermission public
-	* 
+	*
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {String} data/name_i18n Translated name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
@@ -4103,11 +4107,11 @@ export function APIControllerPublic(router) {
 				},
 				'email': {
 					in: 'body',
-					optional: true					
+					optional: true
 				},
 				'url': {
 					in: 'body',
-					optional: true					
+					optional: true
 				},
 				'bio': {
 					in: 'body',
@@ -4212,6 +4216,7 @@ export function APIControllerPublic(router) {
 		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const userdata = await user.findUserByName(req.authToken.username, {public:false});
+				updateSongsLeft(req.authToken.username);
 				res.json(OKMessage(userdata));
 			} catch(err) {
 				logger.error(err);
@@ -4267,11 +4272,11 @@ export function APIControllerPublic(router) {
 				},
 				'email': {
 					in: 'body',
-					optional: true					
+					optional: true
 				},
 				'url': {
 					in: 'body',
-					optional: true					
+					optional: true
 				},
 				'bio': {
 					in: 'body',
@@ -4322,12 +4327,12 @@ export function APIControllerPublic(router) {
  * @apiGroup Favorites
  * @apiPermission own
  *
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -4492,7 +4497,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Favorites
  * @apiPermission public
- * 
+ *
  * @apiParam {Number} kara_id Kara ID to delete
  * @apiSuccess {String} code Message to display
  *
@@ -4611,7 +4616,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('USER_LIST_ERROR',err));
 			}
 		})
-		
+
 	/**
  * @api {post} /public/users Create new user
  * @apiName PostUser
@@ -4631,8 +4636,13 @@ export function APIControllerPublic(router) {
  *   "data": true
  * }
  * @apiError USER_CREATE_ERROR Unable to create user
+<<<<<<< HEAD:src/_controllers/api.js
  * @apiError USER_ALREADY_EXISTS This username already exists 
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+=======
+ * @apiError USER_ALREADY_EXISTS This username already exists
+ *
+>>>>>>> 167-mode-public-permettre-de-like-une-suggestion:src/_apiserver/api.js
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -4654,7 +4664,7 @@ export function APIControllerPublic(router) {
 				'password': {
 					in: 'body',
 					notEmpty: true,
-				},												
+				},
 			});
 
 			const result = await req.getValidationResult();
