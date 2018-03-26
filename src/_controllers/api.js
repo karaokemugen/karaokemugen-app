@@ -88,18 +88,16 @@ export function APIControllerAdmin(router) {
  * 
  */
 	router.route('/shutdown')
-		.post(requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 			// Sends command to shutdown the app.
-
-			engine.shutdown()
-				.then(() => { 
-					res.json('Shutdown in progress'); 
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(err);
-				});
+			try {
+				await engine.shutdown();
+				res.json('Shutdown in progress'); 
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(err);				
+			}
 		});
 	router.route('/automix')
 	/**
@@ -134,7 +132,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'users': {
 					in: 'body',
@@ -148,31 +146,29 @@ export function APIControllerAdmin(router) {
 				}
 			});
 
-			req.getValidationResult()
-				.then((result) => {
-					if (result.isEmpty()) {
-						// No errors detected
-						req.sanitize('duration').toInt();
-												
-						favorites.createAutoMix(req.body, req.authToken.username)
-							.then((new_playlist) => {
-								emitWS('playlistsUpdated');
-								res.statusCode = 201;
-								res.json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
-							})
-							.catch((err) => {
-								logger.error(err);
-								res.statusCode = 500;
-								res.json(errMessage('AUTOMIX_ERROR',err));
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;								
-						res.json(result.mapped());
-					}
-				});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				// No errors detected
+				try {
+					req.sanitize('duration').toInt();
+					const new_playlist = await favorites.createAutoMix(req.body, req.authToken.username);
+					emitWS('playlistsUpdated');
+					res.statusCode = 201;
+					res.json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
+				
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('AUTOMIX_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;								
+				res.json(result.mapped());
+			}
 		});
+		
 	router.route('/playlists')
 	/**
  * @api {get} /admin/playlists/ Get list of playlists
@@ -209,18 +205,16 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 500 Internal Server Error
  */
 
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Get list of playlists
-			
-			engine.getAllPLs(req.authToken)
-				.then((playlists) => {
-					res.json(OKMessage(playlists));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;							
-					res.json(errMessage('PL_LIST_ERROR',err));
-				});
+			try {
+				const playlists = await engine.getAllPLs(req.authToken);
+				res.json(OKMessage(playlists));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;							
+				res.json(errMessage('PL_LIST_ERROR',err));
+			}
 		})
 	/**
  * @api {post} /admin/playlists/ Create a playlist
@@ -250,7 +244,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			
 		// Add playlist
 			req.check({
@@ -281,36 +275,33 @@ export function APIControllerAdmin(router) {
 				},
 			});
 
-			req.getValidationResult()
-				.then((result) => {
-					if (result.isEmpty()) {
-						// No errors detected
-						req.sanitize('name').trim();
-						req.sanitize('name').unescape();
-						req.sanitize('flag_visible').toBoolean();
-						req.sanitize('flag_public').toBoolean();
-						req.sanitize('flag_current').toBoolean();
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				// No errors detected
+				req.sanitize('name').trim();
+				req.sanitize('name').unescape();
+				req.sanitize('flag_visible').toBoolean();
+				req.sanitize('flag_public').toBoolean();
+				req.sanitize('flag_current').toBoolean();
 						
-						//Now we add playlist
-												
-						engine.createPL(req.body, req.authToken.username)
-							.then((new_playlist) => {
-								emitWS('playlistsUpdated');
-								res.statusCode = 201;
-								res.json(OKMessage(new_playlist,'PL_CREATED',req.body.name));
-							})
-							.catch((err) => {
-								logger.error(err);
-								res.statusCode = 500;
-								res.json(errMessage('PL_CREATE_ERROR',err,req.body.name));
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;								
-						res.json(result.mapped());
-					}
-				});
+				//Now we add playlist
+				try {												
+					const new_playlist = await engine.createPL(req.body, req.authToken.username);
+					emitWS('playlistsUpdated');
+					res.statusCode = 201;
+					res.json(OKMessage(new_playlist,'PL_CREATED',req.body.name));
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('PL_CREATE_ERROR',err,req.body.name));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;								
+				res.json(result.mapped());
+			}
+				
 		});
 
 	router.route('/playlists/:pl_id([0-9]+)')
@@ -354,20 +345,19 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
-			const playlist_id = req.params.pl_id;
-			
-			engine.getPLInfo(playlist_id, req.authToken)
-				.then((playlist) => {
-					res.json(OKMessage(playlist));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
-				});
+			try {
+				const playlist_id = req.params.pl_id;
+				const playlist = await engine.getPLInfo(playlist_id, req.authToken);
+				res.json(OKMessage(playlist));
+			} catch (err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
+				
+			}			
 		})
 	/**
  * @api {put} /admin/playlists/:pl_id Update a playlist's information
@@ -396,9 +386,8 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Update playlist info
-
 			req.check({
 				'name': {
 					in: 'body',
@@ -413,33 +402,31 @@ export function APIControllerAdmin(router) {
 				},
 			});
 
-			req.getValidationResult()
-				.then((result) => {
-					if (result.isEmpty()) {
-						// No errors detected
-						req.sanitize('name').trim();
-						req.sanitize('name').unescape();
-						req.sanitize('flag_visible').toBoolean();
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				// No errors detected
+				req.sanitize('name').trim();
+				req.sanitize('name').unescape();
+				req.sanitize('flag_visible').toBoolean();
 
-						//Now we add playlist
-						engine.editPL(req.params.pl_id,req.body)
-							.then(() => {
-								emitWS('playlistInfoUpdated',req.params.pl_id);
-								res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));	
-							})
-							.catch((err) => {
-								logger.error(err.message);
-								res.statusCode = 500;
-								res.json(errMessage('PL_UPDATE_ERROR',err.message,err.data));
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;
-						res.json(result.mapped());
-					}
-				});
+				//Now we add playlist
+				try {
+					await engine.editPL(req.params.pl_id,req.body);
+					emitWS('playlistInfoUpdated',req.params.pl_id);
+					res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));	
+				} catch(err) {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_UPDATE_ERROR',err.message,err.data));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
 		})
+
 	/**
  * @api {delete} /admin/playlists/:pl_id Delete a playlist
  * @apiName DeletePlaylist
@@ -464,18 +451,17 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
-			
-			engine.deletePL(req.params.pl_id,req.authToken)
-				.then(() => {
-					emitWS('playlistsUpdated');
-					res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
-				});
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				
+				await engine.deletePL(req.params.pl_id,req.authToken);
+				emitWS('playlistsUpdated');
+				res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
+			}
 		});
 	router.route('/users/:username')
 	/**
@@ -530,16 +516,17 @@ export function APIControllerAdmin(router) {
  *   "message": null
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req,res) => {
-			user.findUserByName(req.params.username, {public:false})
-				.then((userdata) => {
-					res.json(OKMessage(userdata));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('USER_VIEW_ERROR',err));
-				});						
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
+			try {
+
+				const userdata = await user.findUserByName(req.params.username, {public:false});
+				res.json(OKMessage(userdata));
+
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('USER_VIEW_ERROR',err));
+			}
 		})
 	/**
  * @api {delete} /admin/users/:username Delete an user
@@ -565,16 +552,17 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {					
-			user.deleteUser(req.params.username)
-				.then(() => {
-					emitWS('usersUpdated');
-					res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.username));
-				})
-				.catch((err) => {
-					res.statusCode = 500;
-					res.json(errMessage('USER_DELETE_ERROR',err.message,err.data));
-				});
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {					
+			try {
+
+			
+				await user.deleteUser(req.params.username);
+				emitWS('usersUpdated');
+				res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.username));
+			} catch(err) {
+				res.statusCode = 500;
+				res.json(errMessage('USER_DELETE_ERROR',err.message,err.data));
+			}
 		});
 
 	router.route('/playlists/:pl_id([0-9]+)/empty')
@@ -602,19 +590,18 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty playlist
-			engine.emptyPL(req.params.pl_id)
-				.then(() => {
-					emitWS('playlistContentsUpdated',req.params.pl_id);
-					res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));							
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_EMPTY_ERROR',err.message,err.data));
-					res.json(err);
-				});
+			try {
+				await engine.emptyPL(req.params.pl_id);
+				emitWS('playlistContentsUpdated',req.params.pl_id);
+				res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_EMPTY_ERROR',err.message,err.data));
+				res.json(err);
+			}
 		});
 	router.route('/whitelist/empty')
 	/**
@@ -636,20 +623,19 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty whitelist
-
-			engine.emptyWL()
-				.then(() => {
-					emitWS('blacklistUpdated');
-					emitWS('whitelistUpdated');
-					res.json(OKMessage(null,'WL_EMPTIED'));							
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('WL_EMPTY_ERROR',err));						
-				});
+			try {
+				await engine.emptyWL();
+				emitWS('blacklistUpdated');
+				emitWS('whitelistUpdated');
+				res.json(OKMessage(null,'WL_EMPTIED'));							
+			
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('WL_EMPTY_ERROR',err));						
+			}
 		});
 	router.route('/blacklist/criterias/empty')
 	/**
@@ -673,19 +659,17 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty blacklist criterias
-
-			engine.emptyBLC()
-				.then(() => {
-					emitWS('blacklistUpdated');
-					res.json(OKMessage(null,'BLC_EMPTIED'));							
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;							
-					res.json(errMessage('BLC_EMPTY_ERROR',err));
-				});
+			try {
+				await engine.emptyBLC();
+				emitWS('blacklistUpdated');
+				res.json(OKMessage(null,'BLC_EMPTIED'));							
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;							
+				res.json(errMessage('BLC_EMPTY_ERROR',err));
+			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/setCurrent')
 	/**
@@ -712,19 +696,18 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// set playlist to current
-
-			engine.setCurrentPL(req.params.pl_id)
-				.then(() => {
-					emitWS('playlistInfoUpdated',req.params.pl_id);
-					res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
-				});
+			try {
+				await engine.setCurrentPL(req.params.pl_id);
+				emitWS('playlistInfoUpdated',req.params.pl_id);
+				res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
+				
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
+			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/setPublic')
 	/**
@@ -751,19 +734,17 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Empty playlist
-
-			engine.setPublicPL(req.params.pl_id)
-				.then(() => {
-					emitWS('playlistInfoUpdated',req.params.pl_id);
-					res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
-				});
+			try {
+				await engine.setPublicPL(req.params.pl_id);
+				emitWS('playlistInfoUpdated',req.params.pl_id);
+				res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
+			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/karas')
 	/**
@@ -845,7 +826,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			const playlist_id = req.params.pl_id;
@@ -863,16 +844,16 @@ export function APIControllerAdmin(router) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			
-			engine.getPLContents(playlist_id,filter,lang,req.authToken,from,size)
-				.then((playlist) => {
-					res.json(OKMessage(playlist));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
-				});
+			try {
+
+				const playlist = await engine.getPLContents(playlist_id,filter,lang,req.authToken,from,size);
+				res.json(OKMessage(playlist));
+				
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
+			}
 		})
 	/**
  * @api {post} /admin/playlists/:pl_id/karas Add karaokes to playlist
@@ -911,7 +892,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
  * }
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//add a kara to a playlist
 			const playlist_id = req.params.pl_id;
 			req.checkBody({
@@ -927,34 +908,33 @@ export function APIControllerAdmin(router) {
 				}
 			});
 
-			req.getValidationResult()
-				.then((result) =>  {
-					if (result.isEmpty()) {
-						req.sanitize('playlist_id').toInt();
-						if (req.body.pos != undefined) req.sanitize('pos').toInt();
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				req.sanitize('playlist_id').toInt();
+				if (req.body.pos != undefined) req.sanitize('pos').toInt();
+				try {
+
 						
-						engine.addKaraToPL(playlist_id, req.body.kara_id, req.authToken.username, req.body.pos)
-							.then((result) => {
-								emitWS('playlistInfoUpdated',playlist_id);
-								emitWS('playlistContentsUpdated',playlist_id);
-								res.statusCode = 201;		
-								const args = {
-									playlist: result.playlist
-								};
-								res.json(OKMessage(null,'PL_SONG_ADDED',args));
-							})
-							.catch((err) => {
-								logger.error(err.message);
-								res.statusCode = 500;
-								res.json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));										
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;
-						res.json(result.mapped());
-					}
-				});
+					const result = await engine.addKaraToPL(playlist_id, req.body.kara_id, req.authToken.username, req.body.pos);
+					emitWS('playlistInfoUpdated',playlist_id);
+					emitWS('playlistContentsUpdated',playlist_id);
+					res.statusCode = 201;		
+					const args = {
+						playlist: result.playlist
+					};
+					res.json(OKMessage(null,'PL_SONG_ADDED',args));
+							
+				} catch(err) {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));										
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
 		})
 	/**
  * @api {patch} /admin/playlists/:pl_id/karas Copy karaokes to another playlist
@@ -993,7 +973,7 @@ export function APIControllerAdmin(router) {
  *   "message": "Karaoke song 176 is already in playlist 2"
  * }
  */
-		.patch(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.patch(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//add karas from a playlist to another
 			req.checkBody({
 				'plc_id': {
@@ -1008,32 +988,31 @@ export function APIControllerAdmin(router) {
 				}
 			});
 
-			req.getValidationResult()
-				.then((result) =>  {
-					if (result.isEmpty()) {
-						if (req.body.pos != undefined) req.sanitize('pos').toInt();
-						engine.copyKaraToPL(req.body.plc_id,req.params.pl_id,req.body.pos)
-							.then((pl_id) => {
-								emitWS('playlistContentsUpdated',pl_id);
-								res.statusCode = 201;
-								const args = {
-									plc_ids: req.body.plc_id.split(','),
-									playlist_id: parseInt(req.params.pl_id)
-								};
-								res.json(OKMessage(null,'PL_SONG_MOVED',args));
-							})
-							.catch((err) => {
-								logger.error(err.message);
-								res.statusCode = 500;
-								res.json(errMessage('PL_MOVE_SONG_ERROR',err.message,err.data));
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;
-						res.json(result.mapped());
-					}
-				});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				if (req.body.pos != undefined) req.sanitize('pos').toInt();
+				try {
+							
+					const pl_id = await	engine.copyKaraToPL(req.body.plc_id,req.params.pl_id,req.body.pos);
+					emitWS('playlistContentsUpdated',pl_id);
+					res.statusCode = 201;
+					const args = {
+						plc_ids: req.body.plc_id.split(','),
+						playlist_id: parseInt(req.params.pl_id)
+					};
+					res.json(OKMessage(null,'PL_SONG_MOVED',args));
+				} catch(err) {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_MOVE_SONG_ERROR',err.message,err.data));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+
 		})
 
 	/**
@@ -1065,7 +1044,7 @@ export function APIControllerAdmin(router) {
  *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
  * }
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Delete kara from playlist
 			// Deletion is through playlist content's ID.
 			// There is actually no need for a playlist number to be used at this moment.
@@ -1077,28 +1056,26 @@ export function APIControllerAdmin(router) {
 				}
 			});
 
-			req.getValidationResult()
-				.then((result) =>  {
-					if (result.isEmpty()) {
-						engine.deleteKara(req.body.plc_id,req.params.pl_id)
-							.then((data) => {
-								emitWS('playlistContentsUpdated',data.pl_id);
-								emitWS('playlistInfoUpdated',data.pl_id);
-								res.statusCode = 200;
-								res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
-							})
-							.catch((err) => {
-								logger.error(err.message);
-								res.statusCode = 500;
-								res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;
-						res.json(result.mapped());
-					}
-				});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				try {
+					const data = await engine.deleteKara(req.body.plc_id,req.params.pl_id);
+					emitWS('playlistContentsUpdated',data.pl_id);
+					emitWS('playlistInfoUpdated',data.pl_id);
+					res.statusCode = 200;
+					res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
+				} catch(err) {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+				
 		});
 
 	router.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
@@ -1216,17 +1193,16 @@ export function APIControllerAdmin(router) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
-			
-			engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken)
-				.then((kara) => {
-					res.json(OKMessage(kara));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_CONTENT_ERROR',err));
-				});
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				const kara = await engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken);
+				res.json(OKMessage(kara));
+				
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_CONTENT_ERROR',err));
+			}
 		})
 	/**
  * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
@@ -1257,7 +1233,7 @@ export function APIControllerAdmin(router) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update playlist's karaoke song
 			//Params: position
 			req.checkBody({
@@ -1273,29 +1249,28 @@ export function APIControllerAdmin(router) {
 				}
 			});
 
-			req.getValidationResult()
-				.then((result) =>  {
-					if (result.isEmpty()) {
-						if (req.body.pos != undefined) req.sanitize('pos').toInt();
-						if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
-											
-						engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,req.authToken)
-							.then(() => {
-								// pl_id is returned from this promise
-								res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
-							})
-							.catch((err) => {
-								logger.error(err);
-								res.statusCode = 500;
-								res.json(errMessage('PL_MODIFY_CONTENT_ERROR',err));
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;
-						res.json(result.mapped());
-					}
-				});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				if (req.body.pos != undefined) req.sanitize('pos').toInt();
+				if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
+				try {
+					await engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,req.authToken);
+							
+					// pl_id is returned from this promise
+					res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
+							
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('PL_MODIFY_CONTENT_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+				
 		});
 
 	router.route('/settings')
@@ -1377,7 +1352,7 @@ export function APIControllerAdmin(router) {
  *   }
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			res.json(OKMessage(getConfig()));
 		})
 	/**
@@ -1419,7 +1394,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, function(req,res){
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			//Update settings
 			// Convert body to strings
 			req.body = toString(req.body);
@@ -1560,49 +1535,48 @@ export function APIControllerAdmin(router) {
 					'Bottom'
 				]
 				);
-			req.getValidationResult().then((result) => {
-				if (result.isEmpty()) {
-					req.sanitize('EngineAllowViewWhitelist').toInt();
-					req.sanitize('EngineAllowViewBlacklist').toInt();
-					req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
-					req.sanitize('EngineDisplayConnectionInfoQRCode').toInt();
-					req.sanitize('EngineDisplayConnectionInfo').toInt();
-					req.sanitize('EngineDisplayConnectionInfoMessage').trim();
-					req.sanitize('EngineDisplayConnectionInfoMessage').unescape();
-					req.sanitize('EngineDisplayConnectionInfoHost').trim();
-					req.sanitize('EngineDisplayConnectionInfoHost').unescape();
-					req.sanitize('EngineAutoPlay').toInt();
-					req.sanitize('EngineFreeUpvotes').toInt();
-					req.sanitize('EngineRepeatPlaylist').toInt();
-					req.sanitize('EngineSmartInsert').toInt();
-					req.sanitize('EngineJinglesInterval').toInt();
-					req.sanitize('PlayerFullscreen').toInt();
-					req.sanitize('PlayerNoBar').toInt();
-					req.sanitize('PlayerNoHud').toInt();
-					req.sanitize('PlayerStayOnTop').toInt();
-					req.sanitize('PlayerScreen').toInt();
-					req.sanitize('EngineSongsPerUser').toInt();
-					req.sanitize('EnginePrivateMode').toInt();
-					req.sanitize('PlayerPIP').toInt();
-					req.sanitize('PlayerPIPSize').toInt();
-					req.sanitize('WebappMode').toInt();
-					setConfig(req.body)
-						.then((publicSettings) => {
-							emitWS('settingsUpdated',publicSettings);
-							res.json(OKMessage(req.body,'SETTINGS_UPDATED'));
-						})
-						.catch((err) => {
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('SETTINGS_UPDATE_ERROR',err));
-						});
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				req.sanitize('EngineAllowViewWhitelist').toInt();
+				req.sanitize('EngineAllowViewBlacklist').toInt();
+				req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
+				req.sanitize('EngineDisplayConnectionInfoQRCode').toInt();
+				req.sanitize('EngineDisplayConnectionInfo').toInt();
+				req.sanitize('EngineDisplayConnectionInfoMessage').trim();
+				req.sanitize('EngineDisplayConnectionInfoMessage').unescape();
+				req.sanitize('EngineDisplayConnectionInfoHost').trim();
+				req.sanitize('EngineDisplayConnectionInfoHost').unescape();
+				req.sanitize('EngineAutoPlay').toInt();
+				req.sanitize('EngineFreeUpvotes').toInt();
+				req.sanitize('EngineRepeatPlaylist').toInt();
+				req.sanitize('EngineSmartInsert').toInt();
+				req.sanitize('EngineJinglesInterval').toInt();
+				req.sanitize('PlayerFullscreen').toInt();
+				req.sanitize('PlayerNoBar').toInt();
+				req.sanitize('PlayerNoHud').toInt();
+				req.sanitize('PlayerStayOnTop').toInt();
+				req.sanitize('PlayerScreen').toInt();
+				req.sanitize('EngineSongsPerUser').toInt();
+				req.sanitize('EnginePrivateMode').toInt();
+				req.sanitize('PlayerPIP').toInt();
+				req.sanitize('PlayerPIPSize').toInt();
+				req.sanitize('WebappMode').toInt();
+				try {
+					const publicSettings = await setConfig(req.body);
+					emitWS('settingsUpdated',publicSettings);
+					res.json(OKMessage(req.body,'SETTINGS_UPDATED'));				
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('SETTINGS_UPDATE_ERROR',err));
 				}
-			});
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+			
 		});
 			
 	router.route('/player/message')
@@ -1637,7 +1611,7 @@ export function APIControllerAdmin(router) {
  *   "code": "MESSAGE_SEND_ERROR"
  * }
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'duration': {
 					in: 'body',
@@ -1654,35 +1628,35 @@ export function APIControllerAdmin(router) {
 				}
 			});
 
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {
-					req.sanitize('duration').toInt();
-					if(req.body.destination !== 'screen') {
-						emitWS('adminMessage', req.body );
-						if (req.body.destination === 'users') {
-							res.statusCode = 200;
-							res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
-						}
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				req.sanitize('duration').toInt();
+				if(req.body.destination !== 'screen') {
+					emitWS('adminMessage', req.body );
+					if (req.body.destination === 'users') {
+						res.statusCode = 200;
+						res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
 					}
-					if(req.body.destination !== 'users') {
-						engine.sendMessage(req.body.message,req.body.duration)
-							.then(() => {
-								res.statusCode = 200;
-								res.json(OKMessage(req.body,'MESSAGE_SENT'));
-							})
-							.catch((err) => {
-								logger.error(err);
-								res.statusCode = 500;
-								res.json(errMessage('MESSAGE_SEND_ERROR',err));
-							});
-					}
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
 				}
-			});
+				if(req.body.destination !== 'users') {
+					try {
+
+						
+						await engine.sendMessage(req.body.message,req.body.duration);
+						res.statusCode = 200;
+						res.json(OKMessage(req.body,'MESSAGE_SENT'));
+					} catch(err) {
+						logger.error(err);
+						res.statusCode = 500;
+						res.json(errMessage('MESSAGE_SEND_ERROR',err));
+					}
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}			
 		});
 
 	router.route('/whitelist')
@@ -1755,7 +1729,7 @@ export function APIControllerAdmin(router) {
  *   "code": "WL_VIEW_ERROR"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			const lang = req.query.lang;
 			const filter = req.query.filter;
 			let size;
@@ -1770,15 +1744,15 @@ export function APIControllerAdmin(router) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			engine.getWL(filter,lang,from,size)
-				.then((karas) => {
-					res.json(OKMessage(karas));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('WL_VIEW_ERROR',err));
-				});
+			try {
+				const karas = await engine.getWL(filter,lang,from,size);
+				res.json(OKMessage(karas));
+				
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('WL_VIEW_ERROR',err));
+			}
 		})
 	/**
  * @api {post} /admin/whitelist Add song to whitelist
@@ -1813,7 +1787,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No karaoke could be added, all are in whitelist already"
  * }
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'kara_id': {
 					in: 'body',
@@ -1821,27 +1795,26 @@ export function APIControllerAdmin(router) {
 					numbersArray: true,
 				},						
 			});
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {							
-					engine.addKaraToWL(req.body.kara_id)
-						.then(() => {
-							emitWS('whitelistUpdated');
-							emitWS('blacklistUpdated');
-							res.statusCode = 201;
-							res.json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));									
-						})
-						.catch((err) => {
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('WL_ADD_SONG_ERROR',err.message,err.data));
-						});
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {							
+				try {
+					await engine.addKaraToWL(req.body.kara_id);
+					emitWS('whitelistUpdated');
+					emitWS('blacklistUpdated');
+					res.statusCode = 201;
+					res.json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));															
+				} catch(err) {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('WL_ADD_SONG_ERROR',err.message,err.data));
 				}
-			});
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+			
 		})
 	/**
  * @api {delete} /admin/whitelist Delete whitelist item
@@ -1865,7 +1838,7 @@ export function APIControllerAdmin(router) {
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Delete kara from whitelist
 			// Deletion is through whitelist ID.
 			req.checkBody({
@@ -1875,26 +1848,25 @@ export function APIControllerAdmin(router) {
 					numbersArray: true,
 				}
 			});
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {
-					engine.deleteWLC(req.body.wlc_id)
-						.then(() => {
-							emitWS('whitelistUpdated');
-							emitWS('blacklistUpdated');
-							res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));							
-						})
-						.catch((err) => {
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('WL_DELETE_SONG_ERROR',err));
-						});
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				try {
+					await engine.deleteWLC(req.body.wlc_id);
+					emitWS('whitelistUpdated');
+					emitWS('blacklistUpdated');
+					res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));							
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('WL_DELETE_SONG_ERROR',err));
 				}
-			});
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+			
 		});
 
 	router.route('/blacklist')
@@ -1967,7 +1939,7 @@ export function APIControllerAdmin(router) {
  *   "code": "BL_VIEW_ERROR"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			const lang = req.query.lang;
 			const filter = req.query.filter;
 			let size;
@@ -1982,16 +1954,17 @@ export function APIControllerAdmin(router) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			if (from < 0) from = 0;										
-			engine.getBL(filter,lang,from,size)
-				.then((karas) => {
-					res.json(OKMessage(karas));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('BL_VIEW_ERROR',err));
-				});
+			if (from < 0) from = 0;	
+			try {
+
+											
+				const karas = await engine.getBL(filter,lang,from,size);
+				res.json(OKMessage(karas));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('BL_VIEW_ERROR',err));
+			}
 		});				
 	router.route('/blacklist/criterias')
 	/**
@@ -2027,17 +2000,16 @@ export function APIControllerAdmin(router) {
 *   "code": "BLC_VIEW_ERROR"
 * }
 */		
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Get list of blacklist criterias
-			engine.getBLC()
-				.then((blc) => {					
-					res.json(OKMessage(blc));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('BLC_VIEW_ERROR',err));
-				});
+			try {
+				const blc = await engine.getBLC();
+				res.json(OKMessage(blc));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('BLC_VIEW_ERROR',err));
+			}
 		})
 	/**
  * @api {post} /admin/blacklist/criterias Add a blacklist criteria
@@ -2077,7 +2049,7 @@ export function APIControllerAdmin(router) {
  *   }
  * }
  */		
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Add blacklist criteria
 			req.check({
 				'blcriteria_type': {
@@ -2091,26 +2063,27 @@ export function APIControllerAdmin(router) {
 				}
 			});
 
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {
-					engine.addBLC(req.body.blcriteria_type,req.body.blcriteria_value)
-						.then(() => {
-							emitWS('blacklistUpdated');
-							res.statusCode = 201;
-							res.json(OKMessage(req.body,'BLC_ADDED',req.body));
-						})
-						.catch((err) => {
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('BLC_ADD_ERROR',err));
-						});
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				try {
+					await engine.addBLC(req.body.blcriteria_type,req.body.blcriteria_value);
+					
+					emitWS('blacklistUpdated');
+					res.statusCode = 201;
+					res.json(OKMessage(req.body,'BLC_ADDED',req.body));
+						
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('BLC_ADD_ERROR',err));
 				}
-			});
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+			
 		});
 
 	router.route('/blacklist/criterias/:blc_id([0-9]+)')
@@ -2142,17 +2115,16 @@ export function APIControllerAdmin(router) {
  *   "message": "BLCID 5 unknown"
  * }
  */		
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
-			engine.deleteBLC(req.params.blc_id)
-				.then(() => {
-					emitWS('blacklistUpdated');
-					res.json(OKMessage(req.params.blc_id,'BLC_DELETED',req.params.blc_id));							
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('BLC_DELETE_ERROR',err));	
-				});
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				await engine.deleteBLC(req.params.blc_id);
+				emitWS('blacklistUpdated');
+				res.json(OKMessage(req.params.blc_id,'BLC_DELETED',req.params.blc_id));							
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('BLC_DELETE_ERROR',err));	
+			}
 		})
 	/**
  * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
@@ -2187,7 +2159,7 @@ export function APIControllerAdmin(router) {
  *   "message": "BLCID 12309 unknown"
  * }
  */		
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update BLC
 			req.check({
 				'blcriteria_type': {
@@ -2201,25 +2173,25 @@ export function APIControllerAdmin(router) {
 				}
 			});
 
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {
-					engine.editBLC(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value)
-						.then(() => {
-							emitWS('blacklistUpdated');
-							res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
-						})
-						.catch((err) => {
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('BLC_UPDATE_ERROR',err));
-						});
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				try {
+
+					await engine.editBLC(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value);
+					emitWS('blacklistUpdated');
+					res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('BLC_UPDATE_ERROR',err));
 				}
-			});
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+			
 		});
 
 	router.route('/player')
@@ -2249,7 +2221,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.checkBody('command')
 				.notEmpty()
 				.enum(['play',
@@ -2269,24 +2241,23 @@ export function APIControllerAdmin(router) {
 					'hideSubs',
 				]
 				);
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {
-					engine.sendCommand(req.body.command,req.body.options)
-						.then(() => {
-							res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
-						})
-						.catch((err) => {
-							logger.error(err);
-							res.statusCode = 500;
-							res.json(errMessage('COMMAND_SEND_ERROR',err));
-						});
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				try {
+					await engine.sendCommand(req.body.command,req.body.options);
+					res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('COMMAND_SEND_ERROR',err));
 				}
-			});
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+			
 		});
 
 
@@ -2343,18 +2314,17 @@ export function APIControllerAdmin(router) {
  *   "message": "Playlist 5 unknown"
  * }
  */		
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
-			engine.exportPL(req.params.pl_id)
-				.then(function(playlist){
-					// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
-					res.json(OKMessage(playlist));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
-				});
+			try {
+				const playlist = await engine.exportPL(req.params.pl_id);
+				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
+			}
 		});
 	router.route('/playlists/import')
 	/**
@@ -2386,7 +2356,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No header section"
  * }
  */		
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			req.check({
 				'playlist': {
@@ -2395,33 +2365,28 @@ export function APIControllerAdmin(router) {
 					isJSON: true,
 				}
 			});
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {
-					
-					engine.importPL(JSON.parse(req.body.playlist),req.authToken.username)
-						.then((result) => {									
-							const response = {
-								message: 'Playlist imported',
-								playlist_id: result.playlist_id
-							};
-							if (result.karasUnknown) {
-								response.unknownKaras = result.karasUnknown;
-							}
-							emitWS('playlistsUpdated');
-							res.json(OKMessage(response,'PL_IMPORTED',result.playlist_id));
-
-						})
-						.catch((err) => {
-							res.statusCode = 500;
-							res.json(errMessage('PL_IMPORT_ERROR',err));
-						});
-				} else {
-					// Errors detected
-					// Sending BAD REQUEST HTTP code and error object.
-					res.statusCode = 400;
-					res.json(result.mapped());
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				try {	
+					const data = await engine.importPL(JSON.parse(req.body.playlist),req.authToken.username);
+					const response = {
+						message: 'Playlist imported',
+						playlist_id: data.playlist_id
+					};
+					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;							
+					emitWS('playlistsUpdated');
+					res.json(OKMessage(response,'PL_IMPORTED',data.playlist_id));
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage('PL_IMPORT_ERROR',err));
 				}
-			});
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+			
 		});
 
 
@@ -2455,17 +2420,17 @@ export function APIControllerAdmin(router) {
  * }
  */		
 
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
-			engine.shufflePL(req.params.pl_id)
-				.then(() => {
-					emitWS('playlistContentsUpdated',req.params.pl_id);
-					res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));							
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
-				});
+		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+			try {
+				
+				await engine.shufflePL(req.params.pl_id);
+				emitWS('playlistContentsUpdated',req.params.pl_id);
+				res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));							
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
+			}
 		});
 
 }
@@ -2527,17 +2492,15 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {			
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {			
 			// Get list of playlists, only return the visible ones
-				
-			engine.getAllPLs(req.authToken)
-				.then((playlists) => {
-					res.json(OKMessage(playlists));
-				})
-				.catch((err) => {
-					res.statusCode = 500;
-					res.json(errMessage('PL_LIST_ERROR',err));	
-				});						
+			try {
+				const playlists = await engine.getAllPLs(req.authToken);
+				res.json(OKMessage(playlists));
+			} catch(err) {
+				res.statusCode = 500;
+				res.json(errMessage('PL_LIST_ERROR',err));	
+			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)')
 	/**
@@ -2586,20 +2549,18 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
-					
-			engine.getPLInfo(req.params.pl_id,req.authToken)
-				.then((playlist) => {							
-					res.json(OKMessage(playlist));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
-				});			
+			try {
+				const playlist = await engine.getPLInfo(req.params.pl_id,req.authToken);
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
+			}
 		});
 	router.route('/playlists/:pl_id([0-9]+)/karas')
 	/**
@@ -2683,7 +2644,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get playlist contents, only if visible
 			//Access :pl_id by req.params.pl_id
 					
@@ -2701,17 +2662,18 @@ export function APIControllerPublic(router) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-					
-			engine.getPLContents(req.params.pl_id,filter,lang,req.authToken,from,size)
-				.then((playlist) => {
-					if (playlist == null) res.statusCode = 404;
-					res.json(OKMessage(playlist));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
-				});
+			try {
+
+				const playlist = await engine.getPLContents(req.params.pl_id,filter,lang,req.authToken,from,size);
+		
+				if (playlist == null) res.statusCode = 404;
+				res.json(OKMessage(playlist));
+				
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
+			}
 		});
 
 	router.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
@@ -2830,17 +2792,16 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
-			
-			engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken)
-				.then((kara) => {
-					res.json(OKMessage(kara));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
-				});			
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+
+				const kara = await engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken);
+				res.json(OKMessage(kara));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
+			}
 		});
 	router.route('/settings')
 	/**
@@ -2892,7 +2853,7 @@ export function APIControllerPublic(router) {
  *   }
  * }
  */
-		.get((req, res) => {
+		.get(async (req, res) => {
 			//We don't want to return all settings.
 			let settings = {};
 			const conf = getConfig();
@@ -2940,16 +2901,15 @@ export function APIControllerPublic(router) {
  *    }
  * } 
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
-			engine.getKMStats()
-				.then((stats) => {
-					res.json(OKMessage(stats));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('STATS_ERROR',err));
-				});
+		.get(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const stats = await engine.getKMStats();
+				res.json(OKMessage(stats));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('STATS_ERROR',err));
+			}
 		});
 
 	router.route('/whitelist')
@@ -3025,7 +2985,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Returns whitelist IF the settings allow public to see it
 			if (getConfig().EngineAllowViewWhitelist == 1) {
 				const lang = req.query.lang;
@@ -3042,15 +3002,14 @@ export function APIControllerPublic(router) {
 				} else {
 					from = parseInt(req.query.from);
 				}
-				engine.getWL(filter,lang,from,size)
-					.then((karas) => {
-						res.json(OKMessage(karas));
-					})
-					.catch((err) => {
-						logger.error(err);
-						res.statusCode = 500;
-						res.json(errMessage('WL_VIEW_ERROR',err));
-					});
+				try {
+					const karas = await	engine.getWL(filter,lang,from,size);
+					res.json(OKMessage(karas));
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('WL_VIEW_ERROR',err));
+				}
 			} else {
 				res.StatusCode = 403;
 				res.json(errMessage('WL_VIEW_FORBIDDEN'));
@@ -3130,7 +3089,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklisted karas IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklist == 1) {
 				const lang = req.query.lang;
@@ -3147,15 +3106,14 @@ export function APIControllerPublic(router) {
 				} else {
 					from = parseInt(req.query.from);
 				}
-				engine.getBL(filter,lang,from,size)
-					.then((karas) => {
-						res.json(OKMessage(karas));
-					})
-					.catch((err) => {
-						logger.error(err);
-						res.statusCode = 500;
-						res.json(errMessage('BL_VIEW_ERROR',err));
-					});
+				try {
+					const karas = await engine.getBL(filter,lang,from,size);
+					res.json(OKMessage(karas));
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('BL_VIEW_ERROR',err));
+				}
 			} else {
 				res.StatusCode = 403;
 				res.json(errMessage('BL_VIEW_FORBIDDEN'));
@@ -3198,18 +3156,17 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */		
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklistCriterias == 1) {
-				engine.getBLC()
-					.then(function(blc){
-						res.json(OKMessage(blc));
-					})
-					.catch((err) => {
-						logger.error(err);
-						res.statusCode = 500;
-						res.json(errMessage('BLC_VIEW_ERROR',err));
-					});
+				try {
+					const blc = await engine.getBLC();
+					res.json(OKMessage(blc));
+				} catch(err) {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('BLC_VIEW_ERROR',err));
+				}
 			} else {
 				res.StatusCode = 403;
 				res.json(errMessage('BLC_VIEW_FORBIDDEN'));
@@ -3264,7 +3221,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */		
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get player status
 			// What's playing, time in seconds, duration of song
 
@@ -3345,7 +3302,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			const filter = req.query.filter;
@@ -3363,16 +3320,14 @@ export function APIControllerPublic(router) {
 				from = parseInt(req.query.from);
 			}
 			if (from < 0) from = 0;
-			
-			engine.getKaras(filter,lang,from,size,req.authToken)
-				.then((karas) => {
-					res.json(OKMessage(karas));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('SONG_LIST_ERROR',err));
-				});
+			try {
+				const karas = await engine.getKaras(filter,lang,from,size,req.authToken);
+				res.json(OKMessage(karas));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('SONG_LIST_ERROR',err));
+			}
 		});
 
 	router.route('/karas/random')
@@ -3397,21 +3352,21 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, (req, res) => {
-			engine.getRandomKara(req.query.filter)
-				.then((kara_id) => {
-					if (!kara_id) {
-						res.statusCode = 500;
-						res.json(errMessage('GET_UNLUCKY'));
-					} else {
-						res.json(OKMessage(kara_id));
-					}
-				})
-				.catch((err) => {
-					logger.error(err);
+		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const kara_id = await engine.getRandomKara(req.query.filter);
+				if (!kara_id) {
 					res.statusCode = 500;
-					res.json(errMessage('GET_LUCKY_ERROR',err));
-				});
+					res.json(errMessage('GET_UNLUCKY'));
+				} else {
+					res.json(OKMessage(kara_id));
+				}
+				
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('GET_LUCKY_ERROR',err));
+			}
 		});
 	router.route('/karas/:kara_id([0-9]+)')
 	/**
@@ -3506,17 +3461,15 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
-			
-			engine.getKaraInfo(req.params.kara_id,req.query.lang,req.authToken)
-				.then((kara) => {	
-					res.json(OKMessage(kara));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('SONG_VIEW_ERROR',err));
-				});
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const kara = await engine.getKaraInfo(req.params.kara_id,req.query.lang,req.authToken);
+				res.json(OKMessage(kara));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('SONG_VIEW_ERROR',err));
+			}
 		})
 	/**
  * @api {post} /public/karas/:kara_id Add karaoke to current/public playlist
@@ -3568,20 +3521,18 @@ export function APIControllerPublic(router) {
 * @apiErrorExample Error-Response:
 * HTTP/1.1 403 Forbidden
 */
-		.post(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, (req, res) => {
+		.post(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
-			
-			engine.addKaraToPL(null, req.params.kara_id, req.authToken.username, null)
-				.then((data) => {
-					emitWS('playlistContentsUpdated',data.playlist_id);
-					emitWS('playlistInfoUpdated',data.playlist_id);
-					res.statusCode = 201;
-					res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
-				})
-				.catch((err) => {
-					res.statusCode = 500;
-					res.json(errMessage(err.code,err.message,err.data));
-				});				
+			try {
+				const data = await engine.addKaraToPL(null, req.params.kara_id, req.authToken.username, null);
+				emitWS('playlistContentsUpdated',data.playlist_id);
+				emitWS('playlistInfoUpdated',data.playlist_id);
+				res.statusCode = 201;
+				res.json(OKMessage(data,'PLAYLIST_MODE_SONG_ADDED',data));
+			} catch(err) {
+				res.statusCode = 500;
+				res.json(errMessage(err.code,err.message,err.data));
+			}
 			
 		});
 
@@ -3609,16 +3560,15 @@ export function APIControllerPublic(router) {
  *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
  * }
  */			
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
-			engine.getLyrics(req.params.kara_id)
-				.then((kara) => {							
-					res.json(OKMessage(kara));
-				})
-				.catch((err) => {
-					logger.error(err.message);
-					res.statusCode = 500;
-					res.json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
-				});
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const kara = await engine.getLyrics(req.params.kara_id);
+				res.json(OKMessage(kara));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
+			}
 		});
 	router.route('/playlists/current')
 	/**
@@ -3662,18 +3612,16 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
-					
-			engine.getCurrentPLInfo(req.authToken)
-				.then((playlist) => {
-					res.json(OKMessage(playlist));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_CURRENT_ERROR',err));
-				});
+			try {					
+				const playlist = await engine.getCurrentPLInfo(req.authToken);
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_CURRENT_ERROR',err));
+			}
 		});
 
 	router.route('/playlists/current/karas')
@@ -3759,7 +3707,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
 			const lang = req.query.lang;
 			const filter = req.query.filter;
@@ -3775,16 +3723,14 @@ export function APIControllerPublic(router) {
 			} else {
 				to = req.query.to;
 			}
-					
-			engine.getCurrentPLContents(filter, lang, from, to, req.authToken)
-				.then((playlist) => {
-					res.json(OKMessage(playlist));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
-				});
+			try {	
+				const playlist = await engine.getCurrentPLContents(filter, lang, from, to, req.authToken);
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
+			}
 		});
 
 	router.route('/playlists/public')
@@ -3831,18 +3777,16 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
-					
-			engine.getPublicPLInfo(req.authToken)
-				.then((playlist) => {
-					res.json(OKMessage(playlist));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_PUBLIC_ERROR',err));
-				});
+			try {	
+				const playlist = await engine.getPublicPLInfo(req.authToken);
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_PUBLIC_ERROR',err));
+			}
 		});
 
 	router.route('/playlists/public/karas')
@@ -3928,7 +3872,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
 			const lang = req.query.lang;
 			const filter = req.query.filter;
@@ -3944,16 +3888,14 @@ export function APIControllerPublic(router) {
 			} else {
 				from = req.query.from;
 			}
-					
-			engine.getPublicPLContents(filter, lang, from, to, req.authToken)
-				.then((playlist) => {
-					res.json(OKMessage(playlist));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
-				});
+			try {
+				const playlist = await engine.getPublicPLContents(filter, lang, from, to, req.authToken);
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
+			}
 		});
 	router.route('/playlists/public/karas/:plc_id([0-9]+)/vote')
 		/**
@@ -3982,18 +3924,18 @@ export function APIControllerPublic(router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 */
 	
-		.post(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.post(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Post an upvote
-			
-			upvote.vote(req.params.plc_id,req.authToken.username,req.body.downvote)
-				.then((kara) => {
-					emitWS('playlistContentsUpdated', kara.playlist_id);
-					res.json(OKMessage(null, kara.code, kara));
-				})
-				.catch((err) => {						
-					res.statusCode = 500;
-					res.json(errMessage(err.code,err.message));
-				});
+			try {
+				const kara = await upvote.vote(req.params.plc_id,req.authToken.username,req.body.downvote);
+				
+				emitWS('playlistContentsUpdated', kara.playlist_id);
+				res.json(OKMessage(null, kara.code, kara));
+				
+			} catch(err) {						
+				res.statusCode = 500;
+				res.json(errMessage(err.code,err.message));
+			}
 		});
 	router.route('/tags')
 	/**
@@ -4040,16 +3982,15 @@ export function APIControllerPublic(router) {
 	* @apiErrorExample Error-Response:
     * HTTP/1.1 403 Forbidden
 	*/
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
-			engine.getTags(req.query.lang)
-				.then((tags) => {
-					res.json(OKMessage(tags));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('TAGS_LIST_ERROR',err));
-				});
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const tags = await engine.getTags(req.query.lang);
+				res.json(OKMessage(tags));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('TAGS_LIST_ERROR',err));
+			}
 		});
 	router.route('/users/:username')
 	/**
@@ -4102,16 +4043,15 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
-			user.findUserByName(req.params.username, {public:true})
-				.then((userdata) => {
-					res.json(OKMessage(userdata));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('USER_VIEW_ERROR',err));
-				});						
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const userdata = await user.findUserByName(req.params.username, {public:true});
+				res.json(OKMessage(userdata));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('USER_VIEW_ERROR',err));
+			}
 		})
 	/**
  * @api {put} /admin/users/:username Edit a user
@@ -4151,7 +4091,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(upload.single('avatarfile'), requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req, res) => {
+		.put(upload.single('avatarfile'), requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'login': {
 					in: 'body',
@@ -4180,42 +4120,40 @@ export function APIControllerPublic(router) {
 
 			});
 
-			req.getValidationResult()
-				.then((result) => {							
-					if (result.isEmpty()) {
-						// No errors detected
-						req.sanitize('bio').trim();
-						req.sanitize('email').trim();
-						req.sanitize('url').trim();
-						req.sanitize('nickname').trim();
-						req.sanitize('login').trim();
-						req.sanitize('bio').unescape();
-						req.sanitize('email').unescape();
-						req.sanitize('url').unescape();
-						req.sanitize('nickname').unescape();
-						req.sanitize('login').unescape();
-						//Now we add user
-						let avatar;
-						if (req.file) avatar = req.file;
-						user.editUser(req.params.username,req.body,avatar)
-							.then(function(user){
-								emitWS('userUpdated',user.id);
-								res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
-							})
-							.catch((err) => {
-								res.statusCode = 500;
-								res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
-							});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				// No errors detected
+				req.sanitize('bio').trim();
+				req.sanitize('email').trim();
+				req.sanitize('url').trim();
+				req.sanitize('nickname').trim();
+				req.sanitize('login').trim();
+				req.sanitize('bio').unescape();
+				req.sanitize('email').unescape();
+				req.sanitize('url').unescape();
+				req.sanitize('nickname').unescape();
+				req.sanitize('login').unescape();
+				//Now we add user
+				let avatar;
+				if (req.file) avatar = req.file;
+				try {
+					const user = await user.editUser(req.params.username,req.body,avatar);
+					emitWS('userUpdated',user.id);
+					res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+				}
 						
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;
-						res.json(result.mapped());
-					}
-				});
-
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
 		});
+
+		
 
 	router.route('/myaccount')
 	/**
@@ -4271,17 +4209,15 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
-			
-			user.findUserByName(req.authToken.username, {public:false})
-				.then((userdata) => {
-					res.json(OKMessage(userdata));
-				})
-				.catch(function(err){
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('USER_VIEW_ERROR',err));
-				});						
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const userdata = await user.findUserByName(req.authToken.username, {public:false});
+				res.json(OKMessage(userdata));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('USER_VIEW_ERROR',err));
+			}			
 		})
 	/**
  * @api {put} /public/myaccount Edit your own account
@@ -4322,7 +4258,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.put(upload.single('avatarfile'), requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
+		.put(upload.single('avatarfile'), requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			req.check({
 				//FIXME : keep email/url optional and make sure it works with the isURL and isEmail validators
 				'nickname': {
@@ -4346,42 +4282,37 @@ export function APIControllerPublic(router) {
 					optional: true
 				}
 			});
-			req.getValidationResult()
-				.then((result) => {							
-					if (result.isEmpty()) {
-						// No errors detected
-						req.sanitize('bio').trim();
-						req.sanitize('email').trim();
-						req.sanitize('url').trim();
-						req.sanitize('nickname').trim();
-						req.sanitize('bio').unescape();
-						req.sanitize('email').unescape();
-						req.sanitize('url').unescape();
-						req.sanitize('nickname').unescape();
-						//Now we add user
-						let avatar;
-						if (req.file) avatar = req.file;
-						//Get username
-						
-						user.editUser(req.authToken.username,req.body,avatar)
-							.then(function(user){
-								emitWS('userUpdated',req.params.user_id);
-								res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
-							})
-							.catch(function(err){
-								res.statusCode = 500;
-								res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
-							});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				// No errors detected
+				req.sanitize('bio').trim();
+				req.sanitize('email').trim();
+				req.sanitize('url').trim();
+				req.sanitize('nickname').trim();
+				req.sanitize('bio').unescape();
+				req.sanitize('email').unescape();
+				req.sanitize('url').unescape();
+				req.sanitize('nickname').unescape();
+				//Now we add user
+				let avatar;
+				if (req.file) avatar = req.file;
+				//Get username
+				try {						
+					const user = await user.editUser(req.authToken.username,req.body,avatar);
+					emitWS('userUpdated',req.params.user_id);
+					res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
+				}
 								
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;
-						res.json(result.mapped());
-					}
-				});
-
-		});
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+		});		
 
 	router.route('/favorites')
 	/**
@@ -4462,7 +4393,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			
 			const filter = req.query.filter;
 			const lang = req.query.lang;
@@ -4478,15 +4409,14 @@ export function APIControllerPublic(router) {
 			} else {
 				from = parseInt(req.query.from);
 			}
-			favorites.getFavorites(req.authToken.username, filter, lang, from, size)
-				.then((karas) => {
-					res.json(OKMessage(karas));
-				})
-				.catch(function(err){
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('FAVORITES_VIEW_ERROR',err));
-				});						
+			try {
+				const karas = await favorites.getFavorites(req.authToken.username, filter, lang, from, size);
+				res.json(OKMessage(karas));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('FAVORITES_VIEW_ERROR',err));
+			}			
 		})
 	/**
  * @api {post} /public/favorites Add karaoke to your favorites
@@ -4524,7 +4454,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req,res) => {
+		.post(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			req.checkBody({
 				'kara_id': {
 					in: 'body',
@@ -4532,33 +4462,30 @@ export function APIControllerPublic(router) {
 					isInt: true,
 				},
 			});
-			req.getValidationResult()
-				.then((result) => {							
-					if (result.isEmpty()) {
-						// No errors detected
-						req.sanitize('kara_id').toInt();
-						
-						favorites.addToFavorites(req.authToken.username,req.body.kara_id)
-							.then((result) => {
-								emitWS('favoritesUpdated',req.authToken.username);
-								emitWS('playlistInfoUpdated',result.playlist_id);
-								emitWS('playlistContentsUpdated',result.playlist_id);
-								res.json(OKMessage(null,'FAVORITES_ADDED',result));	
-							})
-							.catch(function(err){
-								res.statusCode = 500;
-								res.json(errMessage('FAVORITES_ADD_SONG_ERROR',err.message,err.data));
-							});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				// No errors detected
+				req.sanitize('kara_id').toInt();
+				try {
+					const data = await favorites.addToFavorites(req.authToken.username,req.body.kara_id);
+					emitWS('favoritesUpdated',req.authToken.username);
+					emitWS('playlistInfoUpdated',data.playlist_id);
+					emitWS('playlistContentsUpdated',data.playlist_id);
+					res.json(OKMessage(null,'FAVORITES_ADDED',data));	
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage('FAVORITES_ADD_SONG_ERROR',err.message,err.data));
+				}
 								
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;
-						res.json(result.mapped());
-					}
-				});
-
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
 		})
+
+		
 	/**
  * @api {delete} /public/favorites/ Delete karaoke from your favorites
  * @apiName DeleteFavorites
@@ -4588,7 +4515,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
+		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Delete kara from favorites
 			// Deletion is through kara ID.			
 			req.check({
@@ -4598,25 +4525,23 @@ export function APIControllerPublic(router) {
 					isInt: true,
 				}
 			});
-			req.getValidationResult().then((result) =>  {
-				if (result.isEmpty()) {
-					req.sanitize('kara_id').toInt();
-					
-					favorites.deleteFavorite(req.authToken.username,req.body.kara_id)
-						.then((data) => {
-							emitWS('favoritesUpdated',req.authToken.username);
-							emitWS('playlistContentsUpdated',data.playlist_id);
-							emitWS('playlistInfoUpdated',data.playlist_id);
-							res.statusCode = 200;
-							res.json(OKMessage(null,'FAVORITE_DELETED',data));
-						})
-						.catch((err) => {
-							logger.error(err.message);
-							res.statusCode = 500;
-							res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
-						});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				req.sanitize('kara_id').toInt();
+				try {					
+					const data = await favorites.deleteFavorite(req.authToken.username,req.body.kara_id);
+					emitWS('favoritesUpdated',req.authToken.username);
+					emitWS('playlistContentsUpdated',data.playlist_id);
+					emitWS('playlistInfoUpdated',data.playlist_id);
+					res.statusCode = 200;
+					res.json(OKMessage(null,'FAVORITE_DELETED',data));
+				} catch(err) {
+					logger.error(err.message);
+					res.statusCode = 500;
+					res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
 				}
-			});
+			}
+			
 		});
 
 	router.route('/users')
@@ -4676,16 +4601,15 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, (req, res) => {
-			user.listUsers()
-				.then(function(users){
-					res.json(OKMessage(users));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('USER_LIST_ERROR',err));
-				});
+		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const users = await	user.listUsers();
+				res.json(OKMessage(users));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('USER_LIST_ERROR',err));
+			}
 		})
 		
 	/**
@@ -4720,7 +4644,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.post(requireWebappLimitedNoAuth, (req,res) => {
+		.post(requireWebappLimitedNoAuth, async (req, res) => {
 			//Validate form data
 			req.check({
 				'login': {
@@ -4733,32 +4657,25 @@ export function APIControllerPublic(router) {
 				},												
 			});
 
-			req.getValidationResult()
-				.then((result) => {
-					if (result.isEmpty()) {
-						// No errors detected
-						req.sanitize('login').trim();
-						req.sanitize('login').unescape();
-						req.sanitize('password').trim();
-						req.sanitize('password').unescape();
-						
-						user.addUser(req.body)
-							.then(() => {
-								res.json(OKMessage(true,'USER_CREATED'));
-							})
-							.catch((err) => {
-								res.statusCode = 500;
-								res.json(errMessage(err.code,err.message));
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;								
-						res.json(result.mapped());
-					}
-				});
-
-		});
-	
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				// No errors detected
+				req.sanitize('login').trim();
+				req.sanitize('login').unescape();
+				req.sanitize('password').trim();
+				req.sanitize('password').unescape();
+				try {						
+					await user.addUser(req.body);
+					res.json(OKMessage(true,'USER_CREATED'));
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage(err.code,err.message));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;								
+				res.json(result.mapped());
+			}
+		});	
 }
-
