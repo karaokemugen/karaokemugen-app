@@ -33,7 +33,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			document.documentElement.scrollTop = 0; // For IE and Firefox
 		});
 
-
+		$('#volume').on('mouseleave', () => {
+			$('#volume').click();
+		});
 		$('button[action="command"], a[action="command"]').click(function (e) {
 			var name = $(this).attr('name');
 			var dataAjax = { command: name };
@@ -42,9 +44,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			if (e.target.name == 'setVolume') {
 				var btn = $(e.target);
-				var val = parseInt(btn.val()), base = 100;
-				val = Math.log(val) / Math.log(base);
-				val = val * 100;
+				var val = parseInt(btn.val()), base = 100, pow = .76;
+				val = Math.pow(val, pow) / Math.pow(base, pow);
+				val = val * base;
 				dataAjax = { command: btn.attr('name'), options: val };
 			}
 

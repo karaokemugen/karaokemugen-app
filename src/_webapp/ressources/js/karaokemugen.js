@@ -1540,9 +1540,9 @@ var settingsNotUpdated;
 				if(scope === 'admin') setSettings($('input[name="PlayerFullscreen"]'));
 			}
 			if (data.volume != oldState.volume) {
-				var val = data.volume, base = 100;
-				val = val / 100;
-				val = Math.pow(base, val);
+				var val = data.volume, base = 100, pow = .76;
+				val = val / base;
+				val =  base * Math.pow(val, 1/pow);
 				val = parseInt(val);
 				$('input[name="setVolume"]').val(val);
 			}
