@@ -366,7 +366,5 @@
 	"DOWNVOTE_FAILED": "Impossible de renier ce karaoké",
 	"START_FAV_MIX": "Créer un automix",
 	"QUOTA": "Restant :",
-	"_": "DO NOT MODIFY",
-	"FIRST_PUBLIC_RUN_WELCOME": "Hey, il semble que ce soit votre première fois ici !",
-	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE (~2 MIN)"
+	"_": "DO NOT MODIFY"
 }

@@ -141,15 +141,6 @@ swipeManager.on('swipe', function (e) {
 
 if(webappMode == 2) {
 
-	var publicTuto = readCookie('publicTuto');
-	if(!publicTuto) {
-		$('#loginModal').addClass('firstRun');
-		// TODO
-	}
-
-
-
-
 	// for each side
 	[1,2].forEach(function(side){
 		
