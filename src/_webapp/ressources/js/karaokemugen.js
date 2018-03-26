@@ -1468,7 +1468,7 @@ var settingsNotUpdated;
     * @param {anything} param1 - param to give to this function
     */
 	refreshPlayerInfos = function (data, callback, param1) {
-		if (oldState != data) {
+		if (oldState != data && logInfos.username) {
 			var newWidth = $('#karaInfo').width() * parseInt(10000 * ( data.timePosition + refreshTime/1000) / $('#karaInfo').attr('length')) / 10000 + 'px';
 
 			if (data.timePosition != oldState.timePosition && !stopUpdate && $('#karaInfo').attr('length') != 0) {
