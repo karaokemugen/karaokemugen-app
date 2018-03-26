@@ -16,8 +16,7 @@ export function getKara(karaData) {
 	return {
 		videofile: karaData.videofile || '',
 		subfile: karaData.subfile || 'dummy.ass',
-	//	subchecksum: karaData.subchecksum || '',
-	//	karachecksum: karaData.karachecksum || '',
+		subchecksum: karaData.subchecksum || '',
 		title: karaData.title || '',
 		series: karaData.series || '',
 		type: karaData.type || '',
