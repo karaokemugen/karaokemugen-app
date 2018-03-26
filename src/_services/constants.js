@@ -29,7 +29,6 @@ export const defaultGuestNames = [
 	'Hokuto de Cuisine',
 	'S€phir0th69',
 	'Brigade SOS',
-	'Yamagami Lucy Kimiko Akie Airi Shiori Rinne Yoshiho Chihoko Ayano Fumika Chitose Sanae Mikiko Ichika Yukino Reina Eri Ai Tamiko Chikage Emilia Julia Shizue Erina Chisa Yumeka Natsuki Ranran Rieko Setsuri Chikako Azumi Marina Hideko Chiaki Misaki Naomi Campbell Miku Yuka Masako Sachiko Nana Mutsumi Haruka Yuna Shimako Yukie Rin Sakura Kanna Wakana Hazuki Honami Ruri Mihane Momoka Himari Nozomi Futaba Mayuyu',
 	'THE GAME',
 	'Haruhi Suzumiya',
 	'Char Aznable',
