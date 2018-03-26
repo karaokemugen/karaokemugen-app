@@ -1055,7 +1055,7 @@ var settingsNotUpdated;
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
 								+   (isTouchScreen ? '' : infoKaraHtml) + playKara
-								+	(dashboard.data('flag_public') === 1 ? likeKaraHtml : '') + '</div>')
+								+	(dashboard.data('flag_public') === 1 && scope !== 'admin' ? likeKaraHtml : '') + '</div>')
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
 								+	'<div>' + badges + '</div>'
