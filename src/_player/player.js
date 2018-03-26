@@ -17,7 +17,6 @@ const sleep = promisify(setTimeout);
 let currentJinglesList = [];
 let jinglesList = [];
 let displayingInfo = false;
-let frontendPort;
 let player;
 let state = {};
 
@@ -41,6 +40,10 @@ state.player = {
 
 on('engineStatusChange', (newstate) => {
 	state.engine = newstate[0];	
+});
+
+on('playerStatusChange', (newstate) => {
+	state.player = newstate[0];	
 });
 
 on('jinglesReady', (list) => {
@@ -123,18 +126,26 @@ async function loadBackground(mode) {
 	}
 }
 
+function configureURL() {
+	const conf = getConfig();	
+	if (!isEmpty(conf.EngineConnectionInfoHost)) {
+		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
+	} else {
+		if (state.engine.url) {
+			state.player.url = state.engine.url;
+		} else {
+			state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
+		}		
+	}	
+}
+
 export async function initPlayerSystem(initialState) {
 	const conf = getConfig();
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
-	frontendPort = initialState.frontendPort;
+	state.engine = initialState;
 	buildJinglesList();
-	
-	if (!isEmpty(conf.EngineConnectionInfoHost)) {
-		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
-	} else {
-		state.player.url = `http://${conf.osHost}:${initialState.frontend_port}`;
-	}
+	configureURL();
 	await buildQRCode(state.player.url);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
@@ -181,7 +192,12 @@ async function startmpv() {
 		if (conf.PlayerPIPPositionY === 'Bottom') positionY = 99;		
 		mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
 	}
-	if (!isEmpty(conf.mpvVideoOutput)) mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+	if (!isEmpty(conf.mpvVideoOutput)) {
+		mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+	} else {
+		//Force direct3d for Windows users
+		if (conf.os == 'win32') mpvOptions.push('--vo=direct3d');
+	}
 	if (!isEmpty(conf.PlayerScreen)) {
 		mpvOptions.push(`--screen=${conf.PlayerScreen}`);
 		mpvOptions.push(`--fs-screen=${conf.PlayerScreen}`);

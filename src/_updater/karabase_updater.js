@@ -9,9 +9,8 @@ import {copy} from 'fs-extra';
 import {createWriteStream} from 'fs';
 import prettyBytes from 'pretty-bytes';
 import commandExists from 'command-exists';
-import git from 'simple-git';
-//import _cliProgress from 'cli-progress';
-
+import git from 'simple-git/promise';
+import _cliProgress from 'cli-progress';
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
 	host: 'mugen.karaokes.moe',
@@ -19,9 +18,10 @@ const shelter = {
 	password: 'musubi'
 };
 const gitAvailable = commandExists.sync('git');
+let gitRepo = false;
+let updateRunning = false;
 
 async function downloadBase() {
-	if (gitAvailable) return true;
 	const conf = getConfig();
 	const dest = resolve(conf.appPath, conf.PathTemp, 'archive');
 	if (await asyncExists(dest)) await asyncRemove(dest);
@@ -31,7 +31,6 @@ async function downloadBase() {
 }
 
 async function decompressBase() {
-	if (gitAvailable) return true;
 	const conf = getConfig();
 	const workPath = resolve(conf.appPath, conf.PathTemp, 'newbase');
 	const archivePath = resolve(conf.appPath, conf.PathTemp, 'archive');
@@ -39,7 +38,7 @@ async function decompressBase() {
 	const archive = archivePathList[0];	
 	if (await asyncExists(workPath)) await asyncRemove(workPath);
 	await asyncMkdirp(workPath);
-	logger.info('[Updater] Decompressing base');
+	logger.debug('[Updater] Decompressing base');
 	await decompress(resolve(archivePath, archive),workPath);
 	logger.debug('[Updater] Base decompressed');
 	return archive;
@@ -50,7 +49,6 @@ async function listRemoteVideos() {
 	logger.info('[Updater] Fetching current video list');
 	await ftpConnect(ftp);
 	const list = await ftp.list();	
-	logger.info('[Updater] Current videos listed');
 	await ftpClose(ftp);
 	// Filter . and ..
 	return list.filter(file => file.name.length > 2);
@@ -63,7 +61,7 @@ async function compareBases() {
 	const altnamesMinePath = resolve(conf.appPath, conf.PathAltname);
 	const lyricsMinePath = resolve(conf.appPath, pathSubs[0]);
 	const karasMinePath = resolve(conf.appPath, pathKaras[0]);		
-	if (!gitAvailable) {
+	if (!gitRepo) {
 		const archive = await decompressBase();
 		
 		const archiveWOExt = basename(archive, '.zip');
@@ -78,7 +76,7 @@ async function compareBases() {
 			);
 			logger.info('[Updater] Updated alternate series name data');
 		}
-		logger.info('[Updater] Comparing your base with the current one');
+		logger.debug('[Updater] Comparing your base with the current one');
 		const [karasToUpdate, lyricsToUpdate] = await Promise.all([
 			compareDirs(karasMinePath, karasBasePath),
 			compareDirs(lyricsMinePath, lyricsBasePath)
@@ -92,10 +90,10 @@ async function compareBases() {
 			logger.info('[Updater] No update for your base');
 			return false;
 		} else {
-			logger.info('[Updater] Updating base files');
+			logger.debug('[Updater] Updating base files');
 			await Promise.all([
-				updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath),
-				updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath),
+				updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath,true),
+				updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath,true),
 				updateFiles(lyricsToUpdate.updatedFiles, lyricsBasePath, lyricsMinePath),
 				updateFiles(karasToUpdate.updatedFiles, karasBasePath, karasMinePath),
 				removeFiles(karasToUpdate.removedFiles, karasMinePath),
@@ -106,8 +104,7 @@ async function compareBases() {
 		}
 	} else {
 		try {
-			const status = await git(resolve(karasMinePath,'../')).pull();
-			console.log(status);
+			await git(resolve(karasMinePath,'../')).pull();
 			return true;
 		} catch(err) {
 			throw `git failed : ${err}`;
@@ -179,20 +176,26 @@ async function ftpConnect(ftp) {
 	await ftp.useDefaultSettings();	
 }
 
-async function downloadVideos(ftp, files, VideosPath, totalBytes) {
+async function downloadVideos(ftp, files, VideosPath) {
 	const conf = getConfig();
-	//const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb';
-	//const bar1 = new _cliProgress.Bar({format: barFormat}, _cliProgress.Presets.shades_classic);
-	//bar1.start(totalBytes / 1000000, 0);
+	const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}';
+	const bar1 = new _cliProgress.Bar({
+		format: barFormat,
+		stopOnComplete: true
+	}, _cliProgress.Presets.shades_classic);
 	let i = 0;
 	for (const file of files) {
 		i++;
 		logger.info(`[Updater] (${i}/${files.length}) Downloading ${file.name} (${prettyBytes(file.size)})`);
+		bar1.start(Math.floor(file.size / 1000) / 1000, 0);	
 		const outputFile = resolve(conf.appPath, VideosPath, file.name);
-		await ftp.download(createWriteStream(outputFile), file.name);
-		//bar1.increment(file.size / 1000000);
+		ftp.trackProgress(info => {
+			bar1.update(Math.floor(info.bytes / 1000) / 1000);
+		});
+		await ftp.download(createWriteStream(outputFile), file.name);		
+		ftp.trackProgress();
+		bar1.stop();
 	}
-	//bar1.stop();
 }
 
 
@@ -221,11 +224,13 @@ async function removeFiles(files, dir) {
 	}
 }
 
-async function updateFiles(files, dirSource, dirDest) {
+async function updateFiles(files, dirSource, dirDest, isNew) {
 	if (files.length == 0) return true;
-	for (const file of files) {		
+	for (const file of files) {
+		let action = 'Updated';
+		if (isNew) action = 'Added';
 		await copy(resolve(dirSource, file), resolve(dirDest, file), {overwrite: true});
-		logger.info('[Updater] Updated : '+file);
+		logger.info(`[Updater] ${action} : ${file}`);
 	}
 }
 
@@ -240,18 +245,21 @@ async function checkDirs() {
 }
 
 export async function runBaseUpdate() {
+	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
+	updateRunning = true;	
 	try {
 		await checkDirs();
-		const [base, remoteVideos, localVideos] = await Promise.all([
-			downloadBase(),
+		const [remoteVideos, localVideos] = await Promise.all([
 			listRemoteVideos(),
 			listLocalVideos()
 		]);		
+		if (!gitRepo) await downloadBase();
 		const [updateBase, updateVideos] = await Promise.all([
 			compareBases(),
 			compareVideos(localVideos, remoteVideos)
 		]);
-		if (updateBase || updateVideos) return true;
+		updateRunning = false;
+		if (updateBase || updateVideos) return true;		
 		return false;
 	} catch (err) {
 		throw err;

@@ -13,6 +13,7 @@ import {exit, initEngine} from './_services/engine';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
 import {logo} from './logo';
+import chalk from 'chalk';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
@@ -37,14 +38,12 @@ main()
 async function main() {
 	const argv = parseArgs();	
 	let config = await initConfig(appPath, argv);
+	console.log(chalk.blue(logo));
+	console.log('Karaoke Player & Manager - http://mugen.karaokes.moe');
+	console.log(`Version ${chalk.bold.green(config.VersionNo)} (${chalk.bold.green(config.VersionName)})`);
+	console.log('================================================================');
 	await parseCommandLineArgs(argv);
 	config = getConfig();
-	console.log(logo);
-	console.log('--------------------------------------------------------------------');
-	console.log(`Version ${config.VersionNo} (${config.VersionName})`);
-	console.log('--------------------------------------------------------------------');
-	console.log('\n');
-
 	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
 	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] Detected OS : ${config.os}`);

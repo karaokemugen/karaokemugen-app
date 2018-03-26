@@ -4,7 +4,7 @@
 // you can change the default settings by using config.ini to bypass the default value .
 export const defaults = { 
 	JwtSecret: 'Change me',
-	EngineDisplayNickname : 1,
+	EngineDisplayNickname: 1,
 	EngineDisplayConnectionInfo: 1,
 	EngineDisplayConnectionInfoQRCode: 1,
 	EngineDisplayConnectionInfoMessage: '',
@@ -37,11 +37,8 @@ export const defaults = {
 	BinPlayerOSX: 'app/bin/mpv.app/Contents/MacOS/mpv',
 	BinPlayerLinux: '/usr/bin/mpv',
 	BinffmpegWindows: 'app/bin/ffmpeg.exe',
-	BinffprobeWindows: 'app/bin/ffprobe.exe',
 	BinffmpegLinux: '/usr/bin/ffmpeg',
-	BinffprobeLinux: '/usr/bin/ffprobe',
 	BinffmpegOSX: 'app/bin/ffmpeg',
-	BinffprobeOSX: 'app/bin/ffprobe',
 	PathBin: 'app/bin',
 	PathKaras: 'app/data/karas',
 	PathVideos: 'app/data/videos',

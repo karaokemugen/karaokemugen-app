@@ -266,7 +266,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
 }
 */
 
-#mobileHelp, #mobileActions:not(.mode1) {
+#mobileHelp, #mobileActions {
     display: none;
 }
 

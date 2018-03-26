@@ -21,6 +21,7 @@ import {serieRequired, verifyKaraData} from '../_services/kara';
 
 let error = false;
 
+
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
 	await db.run('DELETE FROM kara_serie;');
@@ -90,7 +91,7 @@ export async function extractAllKaraFiles() {
 }
 
 export async function getAllKaras(karafiles) {
-	const karaPromises = [];
+	const karaPromises = [];	
 	for (const karafile of karafiles) {
 		karaPromises.push(readAndCompleteKarafile(karafile));
 	}
@@ -105,7 +106,7 @@ async function readAndCompleteKarafile(karafile) {
 		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete : ${err}`);
 		error = true;
 		return karaData;
-	}
+	}	
 	await writeKara(karafile, karaData);
 	return karaData;
 }
@@ -122,8 +123,7 @@ function prepareKaraInsertData(kara, index) {
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,		
 		$kara_gain: kara.videogain,
-		$kara_videolength: kara.videoduration,
-		$kara_checksum: kara.checksum
+		$kara_videolength: kara.videoduration		
 	};
 }
 
@@ -354,7 +354,7 @@ function prepareTagsKaraInsertData(tagsByKara) {
 }
 
 async function insertAss(db, karas) {
-	const stmt = await db.prepare('INSERT INTO ass (fk_id_kara, ass, checksum) VALUES ($id_kara, $ass, $checksum);');
+	const stmt = await db.prepare('INSERT INTO ass (fk_id_kara, ass) VALUES ($id_kara, $ass);');
 	const insertPromises = [];
 	karas.forEach((kara, index) => {
 		const karaIndex = index + 1;
@@ -362,7 +362,6 @@ async function insertAss(db, karas) {
 			insertPromises.push(stmt.run({
 				$id_kara: karaIndex,
 				$ass: kara.ass,
-				$checksum: kara.ass_checksum
 			}));
 		}
 	});
@@ -387,29 +386,27 @@ export async function run(config) {
 
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
-
-		const db = await open(karas_dbfile, {verbose: true, Promise});		
+		const db = await open(karas_dbfile, {verbose: true, Promise});
 		await emptyDatabase(db);
-		await backupKaraDirs(conf);
-
+		//await backupKaraDirs(conf);
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
+		// Can be done in background
+		//deleteBackupDirs(conf);		
 		// Preparing data to insert
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
-
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-
 		const sqlUpdateSeriesAltNames = await prepareAltSeriesInsertData(series_altnamesfile);
-
+		
 		// Inserting data in a transaction
 
 		await db.run('begin transaction');
-
+		
 		const insertPromises = [
 			runSqlStatementOnData(db.prepare(insertKaras), sqlInsertKaras),
 			insertAss(db, karas),
@@ -421,13 +418,10 @@ export async function run(config) {
 
 		await Promise.all(insertPromises);
 		await runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames);
-
+		
 		await db.run('commit');
 		await db.close();
-
-		await checkUserdbIntegrity(null, conf);
-
-		await deleteBackupDirs(conf);
+		await checkUserdbIntegrity(null, conf);		
 		return error;
 	} catch (err) {
 		logger.error(err);

@@ -1,5 +1,13 @@
 # Versions
 
+## v2.0.7 - 17/02/2018
+
+Hé ben non c'était pas la dernière version la 2.0.6 vous y avez cru hein ?
+
+### Correctifs
+
+- Fix bug introduit dans la 2.0.6 empêchant d'initialiser la base au lancement.
+
 ## v2.0.6 - 15/02/2018
 
 Dernière version (fort probablement) avant le passage à la 2.1.

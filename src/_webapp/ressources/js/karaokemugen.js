@@ -54,7 +54,6 @@ var dragHandleHtml;
 var playKaraHtml;
 
 var listTypeBlc;
-var tagAcrList;
 var plData;
 var settingsNotUpdated;
 
@@ -215,7 +214,7 @@ var settingsNotUpdated;
 			clearTimeout(timer);
 			timer = setTimeout(function () {
 				fillPlaylist(side);
-			}, 100);
+			}, 200);
 		});
 
 		// Allow pressing enter to validate a setting
@@ -794,7 +793,7 @@ var settingsNotUpdated;
 		extension: '.json'
 	});
 
-	socket = io( window.location.protocol + '//' + window.location.hostname + ':' + window.location.port);
+	socket = io();
 
 	isTouchScreen =  'ontouchstart' in document.documentElement || query.TOUCHSCREEN != undefined;
 	if(isTouchScreen) $('body').addClass('touch');
@@ -863,35 +862,6 @@ var settingsNotUpdated;
 
 	softErrorMessage = [
 		'PLAYLIST_MODE_ADD_SONG_ERROR'];
-
-	tagAcrList = {  'TAG_SPECIAL': 'SPE',
-		'TAG_GAMECUBE': 'GCN',
-		'TAG_TOKU': 'TKU',
-		'TAG_OVA': 'OVA',
-		'TAG_CONCERT': 'CON',
-		'TAG_PARODY': 'PAR',
-		'TAG_HUMOR': 'HUM',
-		'TAG_ANIME': 'ANI',
-		'TAG_MECHA': 'MCH',
-		'TAG_REAL': 'IRL',
-		'TAG_VIDEOGAME': 'VG',
-		'TAG_MOVIE': 'MOV',
-		'TAG_TVSHOW': 'TV',
-		'TAG_SPOIL': 'SPL',
-		'TAG_LONG': 'LON',
-		'TAG_PS2': 'PS2',
-		'TAG_PS3': 'PS3',
-		'TAG_PSV': 'PSV',
-		'TAG_PSX': 'PSX',
-		'TAG_PSP': 'PSP',
-		'TAG_R18': 'R18',
-		'TAG_VOCALOID': 'VCA',
-		'TAG_XBOX360': 'XBX',
-		'TAG_PC': 'PC',
-		'TAG_SEGACD': 'SCD',
-		'TAG_REMIX': 'RMX',
-		'TAG_VOICELESS': 'NOV',
-		'TAG_ROMANCE': 'ROM' };
 
 	settingsNotUpdated= [];
 
@@ -1063,7 +1033,7 @@ var settingsNotUpdated;
 							var badges = '';
 							if(kara.misc) {
 								kara.misc.split(',').forEach(function(tag) {
-									badges += '<bdg>'  + (tagAcrList[tag] ? tagAcrList[tag] : '?') + '</bdg>';
+									badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
 								});
 							}
 							if (mode === 'list') {
@@ -1073,7 +1043,7 @@ var settingsNotUpdated;
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
 								+   (isTouchScreen ? '' : infoKaraHtml) + playKara
-								+	(dashboard.data('flag_public') === 1 ? likeKaraHtml : '') + '</div>')
+								+	(dashboard.data('flag_public') === 1 && scope !== 'admin' ? likeKaraHtml : '') + '</div>')
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
 								+	'<div>' + badges + '</div>'
@@ -1581,6 +1551,9 @@ var settingsNotUpdated;
     * @return {String} the title
     */
 	buildKaraTitle = function(data, search) {
+		if(data.language.indexOf('mul') > -1) {
+			data.language = 'mul';
+		}
 		var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer,
 			data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
 		var titleClean = Object.keys(titleArray).map(function (k) {
@@ -2064,7 +2037,9 @@ var settingsNotUpdated;
 				container.finish().animate({scrollTop: container.scrollTop() + newPosKaraMarker - posKaraMarker}, 1000, 'swing');
 			}
 			if(previousCurrentlyPlaying.length > 0) {
-				previousCurrentlyPlaying.get(0).removeAttribute('currentlyPlaying');
+				var prevCP = previousCurrentlyPlaying.get(0);
+				prevCP.removeAttribute('currentlyPlaying');
+				prevCP.setAttribute('dejavu', '');
 				// trick for IE/Edge not redrawing layout
 				var ul = previousCurrentlyPlaying.closest('ul');
 				ul.css('height',  ul.height());

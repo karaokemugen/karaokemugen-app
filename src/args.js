@@ -16,7 +16,8 @@ Options :
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
 --online      Launches in online mode
---nobrowser   Do not open a browser window upon launch
+--noBrowser   Do not open a browser window upon launch
+--noVideo     (generation only) Do not try to fetch data from video files
 `;
 
 export async function parseCommandLineArgs(argv) {	
@@ -32,6 +33,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.generate && !argv.validate) {
 		logger.info('[Launcher] Database generation requested');
 		setConfig({optGenerateDB: true});
+		if (argv.noVideo) {
+			logger.info('[Launcher] Videos will not be read during generation');
+			setConfig({optNoVideo: true});
+		}
 	}
 	if (argv.validate && !argv.generate) {
 		logger.info('[Launcher] .kara folder validation requested');
@@ -58,7 +63,7 @@ export async function parseCommandLineArgs(argv) {
 		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
 		setConfig({isTest: true});
 	}
-	if (argv.nobrowser) setConfig({optNoBrowser: true});
+	if (argv.noBrowser) setConfig({optNoBrowser: true});
 }
 
 
