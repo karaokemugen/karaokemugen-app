@@ -42,12 +42,21 @@ export const defaultGuestNames = [
 	'Norio Wakamoto',
 	'Nanami Ando',
 	'Ayako Suzumiya',
-	'I love Emilia'
+	'I love Emilia',
+	'Keikaku-kun',
+	'Random imouto',
+	'Onii-chan',
+	'Pedobear',
+	'Le Respect',
+	'Idolmaster > Love Live',
+	'Love Live > Idolmaster',
+	'Les yeux noisette d\'Asuna',
+	'Lelouch'	
 ];
 
 export const initializationCatchphrases = [
 	'"Karaoke Mugen is combat-ready!" --Nanami-chan',
-	'"Karaoke Mugen, ittekimasu!" --Nanami-chan',
+	'"Karaoke Mugen, ikouzo!" --Nanami-chan',
 	'"Smile! Sweet! Sister! Sadistic! Surprise! SING!" --The Karaoke Mugen Dev Team',
 	'"Let us achieve world domination through karaoke!" --Axel Terizaki',
 	'"Listen to my song!" --Every Macross Idol',
