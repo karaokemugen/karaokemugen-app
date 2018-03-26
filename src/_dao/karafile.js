@@ -51,8 +51,7 @@ export async function getDataFromKaraFile(karafile) {
 		karaData.dateadded = timestamp.now();
 	}
 	if (!karaData.datemodif) {
-		karaData.isKaraModified = true;
-		karaData.datemodif = timestamp.now();
+		karaData.isKaraModified = true;		
 	}
 	karaData.karafile = karafile;
 
@@ -87,12 +86,12 @@ export async function extractAssInfos(subFile, karaData) {
 	if (subFile) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
 		karaData.ass = karaData.ass.replace(/\r/g, '');
-		/*const subChecksum = checksum(karaData.ass);
+		const subChecksum = checksum(karaData.ass);
 		// Disable checking the checksum for now
 		if (subChecksum != karaData.subchecksum) {
 			karaData.isKaraModified = true;
 			karaData.subchecksum = subChecksum;
-		}*/		
+		}
 	} else {
 		karaData.ass = '';
 	}
@@ -117,32 +116,11 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 export async function writeKara(karafile, karaData) {
 
 	const infosToWrite = (getKara(karaData));	
-	/*if (compareKaraChecksums(infosToWrite)) { 
-		karaData.isKaraModified = true;
-		infosToWrite.datemodif = timestamp.now();		
-	}*/
 	if (karaData.isKaraModified === false) {
 		return;
 	}	
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
-
-function compareKaraChecksums(data) {
-	const oldChecksum = data.karachecksum;	
-	const oldDatemodif = data.datemodif;
-	delete data.karachecksum;
-	delete data.datemodif;
-	const newChecksum = checksum(stringify(data));	
-	data.datemodif = oldDatemodif;
-	if (oldChecksum != newChecksum) {
-		data.karachecksum = newChecksum;
-		return true;
-	} else {
-		data.karachecksum = oldChecksum;
-		return false;
-	}
-}
-
 
 export async function parseKara(karaFile) {
 	let data = await asyncReadFile(karaFile, 'utf-8');
