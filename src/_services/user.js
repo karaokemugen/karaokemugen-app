@@ -111,7 +111,7 @@ async function replaceAvatar(oldImageFile,avatar) {
 		const newAvatarPath = resolve(conf.PathAvatars,newAvatarFile);
 		const oldAvatarPath = resolve(conf.PathAvatars,oldImageFile);
 		if (await asyncExists(oldAvatarPath) &&
-			oldImageFile != 'blank.jpg') await asyncUnlink(oldAvatarPath);	
+			oldImageFile != 'blank.png') await asyncUnlink(oldAvatarPath);	
 		await asyncMove(avatar.path,newAvatarPath);
 		return newAvatarFile;
 	} catch (err) {
@@ -193,6 +193,7 @@ export async function addUser(user,role) {
 	if (!isEmpty(user.password)) user.password = hashPassword(user.password);
 	user.last_login = now();
 	user.NORM_nickname = deburr(user.nickname);
+	user.avatar_file = 'blank.png';
 	user.flag_online = 1;
 	user.flag_admin = 0;
 	if (role === 'admin') user.flag_admin = 1;		
