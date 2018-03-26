@@ -228,11 +228,12 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 	filter: brightness(120%);
 }
 
-.playlist-main li.list-group-item[currentlyPlaying] {
-	background-color: #3a5064;
-}
 .playlist-main li.list-group-item[dejavu] {
 	background-color: hsla(30, 22%, 29%, 0.6);
+}
+
+.playlist-main li.list-group-item[currentlyPlaying] {
+	background-color: #3a5064;
 }
 
 .playlist-main .list-group-item.liType {

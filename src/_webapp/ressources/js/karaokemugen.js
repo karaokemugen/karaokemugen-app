@@ -1959,7 +1959,9 @@ var settingsNotUpdated;
 				container.finish().animate({scrollTop: container.scrollTop() + newPosKaraMarker - posKaraMarker}, 1000, 'swing');
 			}
 			if(previousCurrentlyPlaying.length > 0) {
-				previousCurrentlyPlaying.get(0).removeAttribute('currentlyPlaying');
+				var prevCP = previousCurrentlyPlaying.get(0);
+				prevCP.removeAttribute('currentlyPlaying');
+				prevCP.setAttribute('dejavu', '');
 				// trick for IE/Edge not redrawing layout
 				var ul = previousCurrentlyPlaying.closest('ul');
 				ul.css('height',  ul.height());
