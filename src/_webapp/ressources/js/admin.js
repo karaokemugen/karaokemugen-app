@@ -563,6 +563,16 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 	});
 
+	$('#flag1, #flag2').on('contextmenu', 'button', function (e) {
+		e.preventDefault();
+		var btn = $(this);
+		var name = btn.attr('name');
+		var selector = btn.closest('.panel-heading').find('[type="playlist_select"]');
+		var idPlaylist = selector.find('option[data-' + name + '="1"]').val();
+		console.log(idPlaylist, selector);
+		selector.val(idPlaylist).change();
+	});
+
 	$('.import-file').change(function() {
 		if ( ! window.FileReader ) return alert( 'FileReader API is not supported by your browser.' ); 
 		
