@@ -365,6 +365,6 @@
 	"DOWNVOTE_ALREADY_DONE": "You already downvoted this !",
 	"DOWNVOTE_FAILED": "Failed to downvote this karaoke",
 	"START_FAV_MIX": "Create an automix",
-	"QUOTA" : "Requests left:",
+	"QUOTA" : "Left:",
 	"_": "DO NOT MODIFY"
 }

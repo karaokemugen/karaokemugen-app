@@ -883,11 +883,12 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     bottom: 0;
     width: 100%;
 	z-index: 10040;
-    font-size: 1.2rem;
+	font-size: 1.2rem;
+	display: flex;
 }
 
 .plFooter>.left {
-	width : 55%;
+	margin-left: 5px;
 }
 
 .plFooter>.right {

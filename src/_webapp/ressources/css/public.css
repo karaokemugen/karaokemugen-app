@@ -287,8 +287,8 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
 
 .fixed-action-btn.left {
     bottom: 12px;
-    left: 12px;
-    right: auto;
+    left: auto;
+    right: 12px;
     position: fixed;
     padding-top: 15px;
     z-index: 9876;
@@ -418,9 +418,9 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
         box-shadow: none;
     }
 
-   #mobileHelp, #mobileActions {
+    #mobileHelp, #mobileActions {
        display: block;
-   }
+    }
     .plFooter {
         font-size: 1.5rem;
     }
@@ -432,6 +432,10 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
         height: 26px;
         width: 26px;
         margin: 0px -1px;
+    }
+    
+    .plInfos, .plBrowse {
+        float: left;
     }
 }
 
