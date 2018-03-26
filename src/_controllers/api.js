@@ -4141,9 +4141,9 @@ export function APIControllerPublic(router) {
 				let avatar;
 				if (req.file) avatar = req.file;
 				try {
-					const user = await user.editUser(req.params.username,req.body,avatar);
+					const userdata = await user.editUser(req.params.username,req.body,avatar);
 					emitWS('userUpdated',user.id);
-					res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
+					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));	
 				} catch(err) {
 					res.statusCode = 500;
 					res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
@@ -4302,10 +4302,10 @@ export function APIControllerPublic(router) {
 				let avatar;
 				if (req.file) avatar = req.file;
 				//Get username
-				try {						
-					const user = await user.editUser(req.authToken.username,req.body,avatar);
+				try {											
+					const userdata = await user.editUser(req.authToken.username,req.body,avatar);
 					emitWS('userUpdated',req.params.user_id);
-					res.json(OKMessage(user,'USER_UPDATED',user.nickname));	
+					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));	
 				} catch(err) {
 					res.statusCode = 500;
 					res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
