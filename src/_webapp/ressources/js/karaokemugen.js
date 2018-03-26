@@ -53,7 +53,6 @@ var dragHandleHtml;
 var playKaraHtml;
 
 var listTypeBlc;
-var tagAcrList;
 var plData;
 var settingsNotUpdated;
 
@@ -868,35 +867,6 @@ var settingsNotUpdated;
 	softErrorMessage = [
 		'PLAYLIST_MODE_ADD_SONG_ERROR'];
 
-	tagAcrList = {  'TAG_SPECIAL': 'SPE',
-		'TAG_GAMECUBE': 'GCN',
-		'TAG_TOKU': 'TKU',
-		'TAG_OVA': 'OVA',
-		'TAG_CONCERT': 'CON',
-		'TAG_PARODY': 'PAR',
-		'TAG_HUMOR': 'HUM',
-		'TAG_ANIME': 'ANI',
-		'TAG_MECHA': 'MCH',
-		'TAG_REAL': 'IRL',
-		'TAG_VIDEOGAME': 'VG',
-		'TAG_MOVIE': 'MOV',
-		'TAG_TVSHOW': 'TV',
-		'TAG_SPOIL': 'SPL',
-		'TAG_LONG': 'LON',
-		'TAG_PS2': 'PS2',
-		'TAG_PS3': 'PS3',
-		'TAG_PSV': 'PSV',
-		'TAG_PSX': 'PSX',
-		'TAG_PSP': 'PSP',
-		'TAG_R18': 'R18',
-		'TAG_VOCALOID': 'VCA',
-		'TAG_XBOX360': 'XBX',
-		'TAG_PC': 'PC',
-		'TAG_SEGACD': 'SCD',
-		'TAG_REMIX': 'RMX',
-		'TAG_VOICELESS': 'NOV',
-		'TAG_ROMANCE': 'ROM' };
-
 	settingsNotUpdated= [];
 
 	/* touchscreen event handling part */
@@ -1075,7 +1045,7 @@ var settingsNotUpdated;
 							var badges = '';
 							if(kara.misc) {
 								kara.misc.split(',').forEach(function(tag) {
-									badges += '<bdg>'  + (tagAcrList[tag] ? tagAcrList[tag] : '?') + '</bdg>';
+									badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
 								});
 							}
 							if (mode === 'list') {
