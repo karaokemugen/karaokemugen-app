@@ -1066,7 +1066,7 @@ var settingsNotUpdated;
 								+	'<div>' + badges + '</div>'
 								+   '</div>'
 								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
-								+   '</li>';aprè
+								+   '</li>';
 							}
 						}
 					}
