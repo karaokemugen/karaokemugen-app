@@ -50,7 +50,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				dataAjax = { command: btn.attr('name'), options: val };
 			}
 
-			$.ajax({
+			// ask for the kara list from given playlist
+			if (ajaxSearch[name]) ajaxSearch[name].abort();
+			ajaxSearch[name] = $.ajax({
 				url: 'admin/player',
 				type: 'PUT',
 				data: dataAjax
