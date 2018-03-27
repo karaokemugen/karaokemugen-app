@@ -33,6 +33,19 @@ class Database extends Component {
 			});
 	}
 
+	dbresetviewcounts() {
+		this.props.loading(true);
+		axios.post('/api/db/resetviewcounts')
+			.then(res => {
+				this.props.loading(false);
+				this.props.infoMessage(res.data);
+			})
+			.catch(err => {
+				this.props.loading(false);
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+	}
+
 	render() {
 		return (
 			<Segment
@@ -56,6 +69,9 @@ class Database extends Component {
 						</Grid.Column>
 						<Grid.Column textAlign='center'>
 							<Button primary onClick={this.dbupdate.bind(this)} active={!this.props.loadingActive}>Mettre à jour les fichiers de la base</Button>
+						</Grid.Column>
+						<Grid.Column textAlign='center'>
+							<Button primary onClick={this.dbresetviewcounts.bind(this)} active={!this.props.loadingActive}>Réinitialiser le nombre de vues des karas</Button>
 						</Grid.Column>
 					</Grid>
 				</Container>

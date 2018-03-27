@@ -3,7 +3,7 @@ import {run} from '../_admin/generate_karasdb';
 import {requireAuth, requireAdmin} from './passport_manager.js';
 import {listUsers} from '../_dao/user';
 import {runBaseUpdate} from '../_updater/karabase_updater';
-
+import {resetViewcounts} from '../_dao/kara.js';
 
 module.exports = function adminController(router) {
 
@@ -27,6 +27,13 @@ module.exports = function adminController(router) {
 		listUsers()
 			.then(users => res.json(users))
 			.catch(err => res.status(500).send('Error while fetching users: ' + err));
+
+	});
+
+	router.post('/db/resetviewcounts', requireAuth, requireAdmin, (req, res) => {
+		resetViewcounts()
+			.then(() => res.status(200).send('Viewcounts successfully reset'))
+			.catch(err => res.status(500).send('Error resetting viewcounts: ' + err));
 
 	});
 
