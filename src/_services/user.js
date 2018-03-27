@@ -70,7 +70,7 @@ export async function editUser(username,user,avatar,token) {
 		user.NORM_nickname = deburr(user.nickname);	
 		if (user.password) {
 			user.password = hashPassword(user.password);
-			await db.updateUserPassword(username,user.password);
+			await db.updateUserPassword(user.id,user.password);
 		}
 		if (avatar) {
 			// If a new avatar was sent, it is contained in the avatar object
