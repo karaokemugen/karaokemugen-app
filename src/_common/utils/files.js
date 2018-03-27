@@ -69,7 +69,7 @@ export async function asyncRequired(file) {
 export async function asyncCheckOrMkdir(...dir) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
-		logger.debug('[Launcher] Creating folder ' + resolvedDir);
+		if (logger) logger.debug('[Launcher] Creating folder ' + resolvedDir);
 		return await asyncMkdirp(resolvedDir);
 	}
 }
