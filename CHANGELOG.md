@@ -1,5 +1,40 @@
 # Versions
 
+## v2.1-rc1 "Gabriel Glandeuse" - 01/04/2018
+
+Due to the many changes, you're advised to read the `config.ini.sample` file or the docs to find out about new settings.
+
+### New features
+
+- #101 Video previews can be generated (if you switch the setting on) for users to check what the karaoke video looks like on their device.
+- #115 Added a user system to better manage permissions and create new features
+- #127 Remade the dashboard in ReactJS and added new features inside
+- #150 Viewcounts can be reset in the dashboard
+- #151 Songs in lists now change colors if they're soon to be played, or have been played recently
+- #167 In public mode, song suggestions can be "liked" by users so the admin can get a better idea of what the public wants. Songs which receive enough "likes" don't count anymore in a user's quota.
+- #199 Added a favorites system. Users can add/remove favorite karaokes and add karas from that list.
+- #202 Public interface can now be closed down or limited by an admin to disallow adding new karaokes, for example.
+- #214 Current playlist now scrolls and follows the currently playing karaoke
+- #228 In private mode, makes sure people who didn't request many songs get priority
+- #234 `--validate` command-line argument to only validate .kara files (avoid generating database)
+- Many command-line arguments have been added. Run `npm start -- --help` to get a list.
+- #238 A bunch of new tags have been added to the file format
+
+### Enhancements
+
+- #201 Generating karaoke database is now faster and simpler
+- #218 Jingles are all played before being shuffled again to avoid repeats
+- #219 .kara files are now verified before being imported into a database
+- #226 The app has been entirely rewritten in ES2015+, meaning it's simpler to read and code for
+- #231 Config files have been reorganized. `config.ini.default` isn't needed anymore by the app to start up.
+
+### Fixes
+
+- #217 Obsolete blacklist criterias can now be deleted.
+- #227 Long titles now fit in playlists
+- #236 Viewcounts are now kept even after a database regeneration
+
+
 ## v2.0.7 - 17/02/2018
 
 Hé ben non c'était pas la dernière version la 2.0.6 vous y avez cru hein ?
