@@ -7,7 +7,7 @@ import i18n from 'i18n';
 import {address} from 'ip';
 import logger from 'winston';
 require('winston-daily-rotate-file');
-import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
+import {asyncCheckOrMkdir, asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
@@ -92,10 +92,11 @@ export async function initConfig(appPath, argv) {
 	return getConfig();
 }
 
-function configureLogger(appPath, debug) {
+async function configureLogger(appPath, debug) {
 	const tsFormat = () => (new Date()).toLocaleTimeString();
 	const consoleLogLevel = debug ? 'debug' : 'info';
-
+	const logDir = resolve(appPath, 'logs');
+	await asyncCheckOrMkdir(logDir);	
 	logger.configure({
 		transports: [
 			new (logger.transports.Console)({
@@ -105,7 +106,7 @@ function configureLogger(appPath, debug) {
 			}),
 			new (logger.transports.DailyRotateFile)({
 				timestap: tsFormat,
-				filename: resolve(appPath, 'karaokemugen'),
+				filename: resolve(appPath, 'logs', 'karaokemugen'),
 				datePattern: '.yyyy-MM-dd.log',
 				zippedArchive: true,
 				level: 'debug',
