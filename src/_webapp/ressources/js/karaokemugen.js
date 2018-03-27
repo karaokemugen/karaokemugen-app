@@ -187,9 +187,8 @@ var settingsNotUpdated;
 
 		var mugenToken = readCookie('mugenToken');
 
-		if(query.admpwd) { // app first run;
-			// login('admin', query.admpwd)
-			login('admin', 'gurdil').done(() => {
+		if(query.admpwd && scope === 'admin') { // app first run admin;
+			login('admin', query.admpwd).done(() => {
 				startIntro('admin');
 				var privateMode = $('input[name="EnginePrivateMode"]');
 				privateMode.val(1);
