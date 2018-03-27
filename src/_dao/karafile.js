@@ -51,7 +51,8 @@ export async function getDataFromKaraFile(karafile) {
 		karaData.dateadded = timestamp.now();
 	}
 	if (!karaData.datemodif) {
-		karaData.isKaraModified = true;		
+		karaData.isKaraModified = true;
+		karaData.datemodif = timestamp.now();
 	}
 	karaData.karafile = karafile;
 
