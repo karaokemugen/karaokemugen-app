@@ -19,6 +19,9 @@ Due to the many changes, you're advised to read the `config.ini.sample` file or 
 - #234 `--validate` command-line argument to only validate .kara files (avoid generating database)
 - Many command-line arguments have been added. Run `npm start -- --help` to get a list.
 - #238 A bunch of new tags have been added to the file format
+- #240 `config.ini` is now reloaded if modified outside of the app while it's running
+- #248 Updating the karaoke base from Shelter can now be done within the app's dashboard, or via commandline with the `--updateBase` argument.
+- #252 Wallpaper will now be changed once per version
 
 ### Enhancements
 
@@ -27,13 +30,17 @@ Due to the many changes, you're advised to read the `config.ini.sample` file or 
 - #219 .kara files are now verified before being imported into a database
 - #226 The app has been entirely rewritten in ES2015+, meaning it's simpler to read and code for
 - #231 Config files have been reorganized. `config.ini.default` isn't needed anymore by the app to start up.
+- #239 "Play after" feature has been fixed.
+- #246 mpv is now restarted at once if the karaoke isn't running.
+- #261 Log files are now in their own directories
 
 ### Fixes
 
 - #217 Obsolete blacklist criterias can now be deleted.
 - #227 Long titles now fit in playlists
 - #236 Viewcounts are now kept even after a database regeneration
-
+- #251 Karaoke Mugen's URL font on connection info display during play/stop mode has been enlarged as it was difficult to read from afar.
+- #260 .kara files' `datemodif` information is now written correctly.
 
 ## v2.0.7 - 17/02/2018
 
