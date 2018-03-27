@@ -180,3 +180,4 @@ export const getSongCountPerUser = `SELECT COUNT(1) AS count
 									  AND flag_free = 0
 									`;
 
+export const resetViewcounts = 'DELETE FROM viewcount;';
