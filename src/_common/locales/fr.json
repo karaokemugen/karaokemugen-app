@@ -397,4 +397,7 @@
 	"USER": "Utilisateur",
 	"ADMIN": "Administrateur",
 	"_": "DO NOT MODIFY"	
+	"QUOTA": "Restant :",
+	"FIRST_PUBLIC_RUN_WELCOME": "Hey, il semble que ce soit votre première fois ici !",
+	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE (~2 MIN)"
 }

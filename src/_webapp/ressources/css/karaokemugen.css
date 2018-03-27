@@ -1064,10 +1064,21 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .modal .modal-message div {
 	padding: 0;
 }
+.modal button.tour {
+	height: 100%;
+	width: 100%;
+	background-color: hsl(292, 45%, 28%);
+}
 .modal button.guest {
 	height: 100%;
 	width: 100%;
 	background-color: hsla(182, 45%, 28%, 1);
+}
+#loginModal .tour {
+	display: none;
+}
+#loginModal.firstRun .tour {
+	display: block;
 }
 .modal button.ok {
 	background-color: hsla(139, 14%, 22%, 1);
