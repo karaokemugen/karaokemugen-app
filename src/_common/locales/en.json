@@ -396,8 +396,8 @@
 	"GUEST": "Guest",
 	"USER": "User",
 	"ADMIN": "Admin",
-	"_": "DO NOT MODIFY"
 	"QUOTA" : "Left:",
 	"FIRST_PUBLIC_RUN_WELCOME": "Hey, seems like your first time here!",
-	"FOLLOW_TOUR": "FOLLOW GUIDED TOUR (~2 MIN)"
+	"FOLLOW_TOUR": "FOLLOW GUIDED TOUR (~2 MIN)",
+	"_": "DO NOT MODIFY",
 }
