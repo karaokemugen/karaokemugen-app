@@ -102,9 +102,12 @@ export async function validateKaras() {
 		const conf = getConfig();
 		await backupKaraDirs(conf);
 		const karaFiles = await extractAllKaraFiles();
-		const karas = await getAllKaras(karaFiles);
+		const karas = await getAllKaras(karaFiles);		 
 		verifyKIDsUnique(karas);
 		await deleteBackupDirs(conf);		
+		if (karas.some((kara) => {
+			return kara.error;
+		})) throw 'One kara failed validation process';
 	} catch(err) {
 		throw err;
 	}

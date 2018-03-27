@@ -95,7 +95,12 @@ export async function getAllKaras(karafiles) {
 	for (const karafile of karafiles) {
 		karaPromises.push(readAndCompleteKarafile(karafile));
 	}
-	return await Promise.all(karaPromises);
+	const karas = await Promise.all(karaPromises);
+	// Errors are non-blocking
+	if (karas.some((kara) => {
+		return kara.error;
+	})) error = true;
+	return karas;
 }
 
 async function readAndCompleteKarafile(karafile) {
