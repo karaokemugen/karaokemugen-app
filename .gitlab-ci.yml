@@ -30,9 +30,9 @@ test:
     - echo "BinffmpegLinux=ffmpeg/ffmpeg" >>config.ini
     - echo "BinPlayerLinux=mpv" >>config.ini
     - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
-    - mkdir -p /builds/karaokemugen/karaokemugen-app/app/db
     - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
     - export LANG=en_US
+    - node --version
     - npm start -- --debug --test &disown
     - bash test/run.sh
   only:
