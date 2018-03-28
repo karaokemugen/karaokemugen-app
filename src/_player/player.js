@@ -134,7 +134,11 @@ function configureURL() {
 		if (state.engine.url) {
 			state.player.url = state.engine.url;
 		} else {
-			state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
+			if (state.engine.frontendPort == 80) {
+				state.player.url = `http://${conf.osHost}`;
+			} else {
+				state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
+			}			
 		}		
 	}	
 }
