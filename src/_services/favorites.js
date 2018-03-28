@@ -64,7 +64,7 @@ async function getAllFavorites(userList) {
 			logger.error(`[AutoMix] Username ${user} does not exist`);
 		} else {
 			const plInfo = await getFavoritesPlaylist(user);
-			const pl = await getPlaylistContents(plInfo.playlist_id);
+			const pl = await getPlaylistContents(plInfo.playlist_id,user);
 			// Each PLC is pushed into a list if the kara_id doesn't exist already to avoid duplicates.
 			// Later on we could use that to give more weight to some karaokes
 			pl.forEach((plItem) => {
