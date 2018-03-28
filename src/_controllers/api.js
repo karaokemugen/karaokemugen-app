@@ -4636,13 +4636,10 @@ export function APIControllerPublic(router) {
  *   "data": true
  * }
  * @apiError USER_CREATE_ERROR Unable to create user
-<<<<<<< HEAD:src/_controllers/api.js
  * @apiError USER_ALREADY_EXISTS This username already exists 
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
-=======
  * @apiError USER_ALREADY_EXISTS This username already exists
  *
->>>>>>> 167-mode-public-permettre-de-like-une-suggestion:src/_apiserver/api.js
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {

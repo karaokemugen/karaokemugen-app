@@ -38,12 +38,12 @@ main()
 async function main() {
 	const argv = parseArgs();	
 	let config = await initConfig(appPath, argv);
+	await parseCommandLineArgs(argv);
 	console.log(chalk.blue(logo));
+	config = getConfig();
 	console.log('Karaoke Player & Manager - http://mugen.karaokes.moe');
 	console.log(`Version ${chalk.bold.green(config.VersionNo)} (${chalk.bold.green(config.VersionName)})`);
-	console.log('================================================================');
-	await parseCommandLineArgs(argv);
-	config = getConfig();
+	console.log('================================================================');	
 	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
 	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] Detected OS : ${config.os}`);
