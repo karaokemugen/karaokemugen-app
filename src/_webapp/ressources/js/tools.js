@@ -247,14 +247,14 @@ startIntro = function(mode){
 			intro: i18n.__(prefix + 'INTRO1', query.admpwd), // add password
 		}, {
 			step: 2,
-			label: '2',
+			label: 'preLogin',
 			position: 'right',
 			element: $('#loginModal .modal-content').get(0),
 			intro: i18n.__(prefix + 'INTRO2'), 
 			tooltipClass : 'hideNext',
 		},{
 			step: 3,
-			label: '3',
+			label: 'afterLogin',
 			position: 'auto',
 			intro: i18n.__(prefix + 'INTRO3', 'NOMDUSUJET'), 
 		},{
@@ -264,11 +264,30 @@ startIntro = function(mode){
 			position: 'auto',
 			intro: i18n.__(prefix + 'INTROFINAL'), 
 		}];
+
 		$('#loginModal').modal('show');
 		$('.nav-tabs a[href="#nav-signup"]').tab('show');
-
 	} else {	// public
-
+		introSteps = [{
+			step: 1,
+			label: 'preLogin',
+			position: 'auto',
+			element: $('#loginModal .modal-content').get(0),
+			intro: i18n.__(prefix + 'INTRO1'), 
+			tooltipClass : 'hideNext',
+		},{
+			step: 2,
+			label: 'afterLogin',
+			position: 'auto',
+			intro: i18n.__(prefix + 'INTRO2', 'NOMDUSUJET'), 
+		},{
+			step: 20,
+			label: 'last',
+			tooltipClass : 'hideNext',
+			position: 'auto',
+			intro: i18n.__(prefix + 'INTROFINAL'), 
+		}];
+		$('#loginModal').modal('show');
 	}
 	
 	var specialOptions = {
@@ -281,7 +300,7 @@ startIntro = function(mode){
 		var label =  $(v).attr('introLabel').toUpperCase();
 		var position = $(v).attr('introPosition');
 		if(!position) position = 'auto';
-		
+
 		console.log(prefix + label + ' ' + position);
 		var options = {
 			label: $(v).attr('introLabel'),
@@ -291,7 +310,6 @@ startIntro = function(mode){
 			intro: i18n.__(prefix + label), 
 		};
 		options = Object.assign(options, specialOptions[label]);
-
 		introSteps.push(options);
 	});
 
@@ -299,6 +317,7 @@ startIntro = function(mode){
 		return a.step - b.step;
 	});
 
+	console.log(introSteps);
 	introJs.setOptions({
 		steps: introSteps,
 		hideNext: true,
@@ -308,28 +327,22 @@ startIntro = function(mode){
 		skipLabel: i18n.__('INTRO_LABEL_SKIP'),
 		doneLabel: i18n.__('INTRO_LABEL_DONE')
 	});
-
-	introJs.onchange(function(targetElement) {
-		var label = introJs._introItems[this._currentStep].label;
-		if(label == '3') {
-			var text = introJs._introItems[2].intro;
-			text = text.replace('NOMDUSUJET', logInfos.username);
-			introJs._introItems[2].intro = text;
-		} else if(label == 'last') {
-			$('.introjs-tooltipbuttons > a').first().text(i18n.__('INTRO_LABEL_DONE'));
-		}
-	});
-
+			
 	introJs.onafterchange(function(targetElement) {
 		var label = introJs._introItems[this._currentStep].label;
 		console.log(label);
-		if(label == '2') {
+		if(label == 'preLogin') {
 			$('#loginModal').modal('show');
-			$('.nav-tabs a[href="#nav-signup"]').tab('show');
-							
+			if(mode === 'admin') {
+				$('.nav-tabs a[href="#nav-signup"]').tab('show');			
+				$('#signupRole').val('admin');
+			}
+			if(mode === 'public') {
+				$('#loginModal').removeClass('firstRun');
+				introJs.refresh();
+			}
 			$('#loginModal').addClass('introJsFix');
-			$('#signupRole').val('admin');
-		} else if (label == '3') {
+		} else if (label == 'afterLogin') {
 			if($('#loginModal').hasClass('in')) {
 				$('#nav-signup .login').click();
 				$('#loginModal').modal('hide');
@@ -339,7 +352,17 @@ startIntro = function(mode){
 		}
 	});
 
-	$('#loginModal').modal('show');
+	introJs.onchange(function(targetElement) {
+		var label = introJs._introItems[this._currentStep].label;
+		if(label == 'afterLogin') {
+			var text = introJs._introItems[this._currentStep].intro;
+			text = text.replace('NOMDUSUJET', logInfos.username);
+			introJs._introItems[this._currentStep].intro = text;
+		} else if(label == 'last') {
+			$('.introjs-tooltipbuttons > a').first().text(i18n.__('INTRO_LABEL_DONE'));
+		}
+	});
+
 	introJs.start();
 
 	var buttons = $('.introjs-tooltipbuttons > a');

@@ -25,6 +25,10 @@ $(document).ready(function () {
 		}
 	});
 
+	$('.btn.tour').click(function(){
+		startIntro('public');
+	});
+
 	$('.showSettings').click(function(){
 		displayModal('alert', $('#settingsPublicTitle').text(), $('#settingsPublicContent').html());
 	});
@@ -138,6 +142,7 @@ swipeManager.on('swipe', function (e) {
 		}
 	}
 });
+
 
 if(webappMode == 2) {
 

@@ -1844,20 +1844,20 @@ var settingsNotUpdated;
 
 		
 		/* init selects & switchs */
-
-		$('[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event, state) {
-			if (state) {
-				$('#playlist').show();
-				$('#manage').hide();
-			} else {
-				$('#playlist').hide();
-				$('#manage').show();
-				if(introJs && introJs._currentStep) {
-					introJs.nextStep();
+		if(scope === 'admin') {
+			$('[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event, state) {
+				if (state) {
+					$('#playlist').show();
+					$('#manage').hide();
+				} else {
+					$('#playlist').hide();
+					$('#manage').show();
+					if(introJs && introJs._currentStep) {
+						introJs.nextStep();
+					}
 				}
-			}
-		});
-
+			});
+		}
 		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			var val = $(this).attr('nameCommand');
 			if(!val) val =  $(this).attr('name');
@@ -1892,8 +1892,8 @@ var settingsNotUpdated;
 				logInfos = response;
 				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
 				initApp();
-
-				if(introJs && introJs._currentStep) {
+				
+				if(introJs && typeof introJs._currentStep !== 'undefined') {
 					introJs.nextStep();
 				}
 

@@ -394,6 +394,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
         
     .header button.btn.favorites {
         order: 0;
+        display: block;
     }
         
     #searchParent ::-webkit-input-placeholder {

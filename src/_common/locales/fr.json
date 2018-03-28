@@ -389,6 +389,8 @@
 	"INTRO_ADMIN_SETTINGS": "Karaoke mugen est personnalisable à souhait, via son panneau d'options.<br/> Vous pouvez y accèder en cliquant sur ce bouton.",
 	"INTRO_ADMIN_SETTINGS_SCREEN": "C'est ici que ça se passe, n'hésitez pas à essayer les différents paramètres.<br /> La plupart ne prendront effet qu'au changement de kara, si une chanson est en cours.",
 	"INTRO_ADMIN_INTROFINAL": "Fini ! Vous pouvez chanter !<br /><br />Merci d'avoir lu jusqu'ici. Nous allons désactiver le Dummy Plug System et vous allez pouvoir piloter votre EV... karaoké.<br /><br />Pour plus d'informations :<br /><br />-<a href='http://mugen.karaokes.moe/docs' target='_blank'> Consulter la documentation </a><br />- <a href='http://mugen.karaokes.moe/docs/user-guide/faq/' target='_blank'>FAQ</a><br />- <a href='http://mugen.karaokes.moe/contact.html' target='_blank'>Contacter l'équipe</a> (twitter / discord)<br /><br />Cliquez sur Terminer !<br />",
+	"INTRO_PUBLIC_INTRO1": "Bienvenue sur Karaoke Mugen ! <br /><br /> Avant que l'on commence, notez le mot de passe du compte <b>admin</b> bien précieusement : <br/>%s<br /><br />Ce compte ne peut être supprimé et vous permettra de vous connecter en cas de problème avec le compte que nous allons créer ensuite.<br/>",
+	"INTRO_PUBLIC_INTRO2": "Bienvenue %s !<br /><br />",
 	"INTRO_LABEL_NEXT": "Suivant >",
 	"INTRO_LABEL_PREV": "< Précédent",
 	"INTRO_LABEL_SKIP": "Quitter",
