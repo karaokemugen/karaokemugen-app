@@ -57,7 +57,7 @@ module.exports = function authController(router) {
  */
 		if (!req.body.password) req.body.password = '';		
 		try {
-			const token = await checkLogin(req.body.username, req.body.password)
+			const token = await checkLogin(req.body.username, req.body.password);
 			res.send(token);
 		} catch(err) {
 			res.status(401).send(loginErr);
@@ -102,7 +102,7 @@ module.exports = function authController(router) {
 			try {
 				const guest = await findFingerprint(req.body.fingerprint);	
 				if (guest) {
-					const token = await checkLogin(guest, req.body.fingerprint)
+					const token = await checkLogin(guest, req.body.fingerprint);
 					updateUserFingerprint(guest, req.body.fingerprint);
 					res.send(token);
 				} else {
