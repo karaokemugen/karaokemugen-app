@@ -1,48 +1,76 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {NavLink} from 'react-router-dom';
-import {Button, Container, Menu, Icon, Dropdown} from 'semantic-ui-react';
+import {push} from 'react-router-redux';
+import {Link} from 'react-router-dom';
+import {Menu, Icon, Button} from 'antd';
 
 import {logout} from '../actions/auth';
 
 class KMMenu extends Component {
 
+	state = {
+		current: '',
+		connectOpenKeys: []
+	};
+
+	handleClick = (e) => {
+		this.setState({
+			current: e.key,
+		});
+	};
+
 	connectMenu() {
 		if (this.props.authenticated) {
 			return (
-				<Menu.Menu position='right'>
-					<Menu.Item className='item'>
-						<Dropdown trigger={(<span><Icon name='user' />{this.props.username}</span>)}/>
-					</Menu.Item>
-					<Menu.Item className='item'>
-						<Button color='orange' onClick={this.props.logout}>Déconnexion</Button>
-					</Menu.Item>
-				</Menu.Menu>
+				<div>
+					<Menu
+						mode='horizontal'
+						theme='dark'
+						style={{ lineHeight: '56px' }}
+						onClick={() => this.setState({connectOpenKeys: []})}
+						openKeys={this.state.connectOpenKeys}
+					>
+						<Menu.Item key='user'><span><Icon type='user' />{this.props.username}</span></Menu.Item>
+						<Menu.Item key='logout'><Button icon='logout' onClick={this.props.logout}>Déconnexion</Button></Menu.Item>
+					</Menu>
+				</div>
 			);
 		} else {
 			return (
-				<Menu.Menu position='right'>
-					<Menu.Item className='item'>
-						<Button primary as={NavLink} to='/login'>Se connecter</Button>
-					</Menu.Item>
-				</Menu.Menu>
+				<div>
+					<Menu
+						mode='horizontal'
+						theme='dark'
+						style={{lineHeight: '56px'}}
+						onClick={() => this.setState({connectOpenKeys: []})}
+						openKeys={this.state.connectOpenKeys}
+					>
+						<Menu.Item key='login' style={{float: 'right'}}>
+							<Button icon='login' onClick={() => this.props.push('/login')}>Connexion</Button>
+						</Menu.Item>
+					</Menu>
+				</div>
 			);
 		}
 	}
 
 	render() {
 		return (
-			<div>
-				<Menu size='large' inverted>
-					<Container>
-						<Menu.Item to='/home' as={NavLink}>Accueil</Menu.Item>
-						<Menu.Item to='/config' as={NavLink}>Configuration</Menu.Item>
-						<Menu.Item to='/karas' as={NavLink}>Karas</Menu.Item>
-						<Menu.Item to='/db' as={NavLink}>Base de données</Menu.Item>
-						<Menu.Item to='/users' as={NavLink}>Utilisateurs</Menu.Item>
-						{this.connectMenu()}
-					</Container>
-				</Menu>
+			<div style={{display: 'flex', 'justify-content': 'space-between'}}>
+				<div>
+					<Menu
+						mode='horizontal'
+						theme='dark'
+						style={{ lineHeight: '56px' }}
+					>
+						<Menu.Item key='home'><Link to='/home'>Accueil</Link></Menu.Item>
+						<Menu.Item key='config'><Link to='/config'>Configuration</Link></Menu.Item>
+						<Menu.Item key='karas'><Link to='/karas'>Karas</Link></Menu.Item>
+						<Menu.Item key='db'><Link to='/db'>Base de données</Link></Menu.Item>
+						<Menu.Item key='users'><Link to='/users'>Utilisateurs</Link></Menu.Item>
+					</Menu>
+				</div>
+				{this.connectMenu()}
 			</div>
 		);
 	}
@@ -54,7 +82,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-	logout: () => dispatch(logout())
+	logout: () => dispatch(logout()),
+	push: (url) => dispatch(push(url))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(KMMenu);

@@ -4,6 +4,7 @@ import axios from 'axios';
 import {Provider} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
 import {Redirect, Route, Switch} from 'react-router-dom';
+import {Layout} from 'antd';
 import {history, store} from './store';
 
 import KMHeader from './layout/KMHeader';
@@ -18,6 +19,7 @@ import Karas from './pages/Karas';
 import Database from './pages/Database';
 import Users from './pages/Users';
 
+import './App.css';
 
 class App extends Component {
 
@@ -32,7 +34,7 @@ class App extends Component {
 		return (
 			<Provider store={store}>
 				<ConnectedRouter history={history}>
-					<div>
+					<Layout className="layout">
 						<KMHeader/>
 						<Switch>
 							<Redirect exact from='/' to='/home'/>
@@ -43,7 +45,7 @@ class App extends Component {
 							<Route path='/db' component={AuthRequired(Database)}/>
 							<Route path='/users' component={AuthRequired(Users)}/>
 						</Switch>
-					</div>
+					</Layout>
 				</ConnectedRouter>
 			</Provider>
 		);

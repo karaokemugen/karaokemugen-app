@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Message, Icon} from 'semantic-ui-react';
+
+import {Alert} from "antd";
 import {connect} from 'react-redux';
 
 import {infoMessage, warnMessage, errorMessage} from '../actions/navigation';
@@ -9,28 +10,37 @@ class Notifications extends Component {
 
 	info() {
 		return this.props.infomsg ? (
-			<Message info onDismiss={this.props.dismissInfo}>
-				<Message.Header><Icon name='info circle'/>Information</Message.Header>
-				{this.props.infomsg}
-			</Message>
+			<Alert
+				type="info"
+				showIcon
+				closable onClose={this.props.dismissInfo}
+				message="Information"
+				description={this.props.infomsg}
+			/>
 		) : null;
 	}
 
 	warn() {
 		return this.props.warnmsg ? (
-			<Message warning onDismiss={this.props.dismissWarn}>
-				<Message.Header><Icon name='warning circle'/>Avertissement</Message.Header>
-				{this.props.warnmsg}
-			</Message>
+			<Alert
+				type="warning"
+				showIcon
+				closable onClose={this.props.dismissWarn}
+				message="Avertissement"
+				description={this.props.warnmsg}
+			/>
 		) : null;
 	}
 
 	error() {
 		return this.props.errormsg ? (
-			<Message error onDismiss={this.props.dismissError}>
-				<Message.Header><Icon name='minus circle'/>Erreur</Message.Header>
-				{this.props.errormsg}
-			</Message>
+			<Alert
+				type="error"
+				showIcon
+				closable onClose={this.props.dismissError}
+				message="Erreur"
+				description={this.props.errormsg}
+			/>
 		) : null;
 	}
 

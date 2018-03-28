@@ -1,10 +1,43 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-
-import {Container, Grid, Header, Segment, Button, Table} from 'semantic-ui-react';
 import {connect} from 'react-redux';
+import {Button, Layout, Table} from 'antd';
 
 import {loading, errorMessage} from '../actions/navigation';
+
+const columns = [{
+	title: 'ID',
+	dataIndex: 'user_id',
+	key: 'user_id',
+}, {
+	title: 'Type',
+	dataIndex: 'type',
+	key: 'type',
+}, {
+	title: 'Avatar',
+	dataIndex: 'avatar_file',
+	key: 'avatar_file',
+}, {
+	title: 'Login',
+	dataIndex: 'login',
+	key: 'login',
+}, {
+	title: 'Pseudo',
+	dataIndex: 'nickname',
+	key: 'nickname',
+}, {
+	title: 'Dernière connexion',
+	dataIndex: 'last_login',
+	key: 'last_login',
+}, {
+	title: 'En ligne',
+	dataIndex: 'flag_online',
+	key: 'flag_online',
+}, {
+	title: 'Administrateur',
+	dataIndex: 'flag_admin',
+	key: 'flag_admin',
+}];
 
 class Users extends Component {
 
@@ -33,60 +66,11 @@ class Users extends Component {
 	}
 
 	render() {
-		const userRows = this.state.users.map(u =>
-			<Table.Row>
-				<Table.Cell>{u.user_id}</Table.Cell>
-				<Table.Cell>{u.type}</Table.Cell>
-				<Table.Cell>{u.avatar_file}</Table.Cell>
-				<Table.Cell>{u.login}</Table.Cell>
-				<Table.Cell>{u.nickname}</Table.Cell>
-				<Table.Cell>{u.last_login}</Table.Cell>
-				<Table.Cell>{u.flag_online}</Table.Cell>
-				<Table.Cell>{u.flag_admin}</Table.Cell>
-			</Table.Row>
-		);
-
 		return (
-			<Segment
-				inverted
-				vertical
-				style={{ margin: '1em 0em 1em', padding: '1em 0em 1em' }}
-			>
-				<Container textAlign='center'>
-					<Grid columns={2} stackable style={{ padding: '1em'}}>
-						<Grid.Column textAlign='left'>
-							<Header
-								as='h3'
-								content='Liste des utilisateurs'
-								inverted
-							/>
-						</Grid.Column>
-						<Grid.Column textAlign='right'>
-							<Button primary onClick={this.refresh.bind(this)}>Rafraîchir</Button>
-						</Grid.Column>
-					</Grid>
-					<Container>
-						<Table celled>
-							<Table.Header>
-								<Table.Row>
-									<Table.HeaderCell>ID</Table.HeaderCell>
-									<Table.HeaderCell>Type</Table.HeaderCell>
-									<Table.HeaderCell>Avatar</Table.HeaderCell>
-									<Table.HeaderCell>Login</Table.HeaderCell>
-									<Table.HeaderCell>Pseudo</Table.HeaderCell>
-									<Table.HeaderCell>Dernière connexion</Table.HeaderCell>
-									<Table.HeaderCell>En ligne</Table.HeaderCell>
-									<Table.HeaderCell>Administrateur</Table.HeaderCell>
-								</Table.Row>
-							</Table.Header>
-
-							<Table.Body>
-								{userRows}
-							</Table.Body>
-						</Table>
-					</Container>
-				</Container>
-			</Segment>
+			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
+				<Table dataSource={this.state.users} columns={columns}></Table>
+				<Button type='primary' onClick={this.refresh.bind(this)}>Rafraîchir</Button>
+			</Layout.Content>
 		);
 	}
 }

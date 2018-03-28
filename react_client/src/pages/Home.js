@@ -1,28 +1,13 @@
 import React, {Component} from 'react';
-
-import {Container, Grid, Header, Segment} from 'semantic-ui-react';
+import {Layout} from 'antd';
 import {connect} from 'react-redux';
 
 class Home extends Component {
 	render() {
 		return (
-			<Segment
-				inverted
-				vertical
-				style={{ margin: '1em 0em 1em', padding: '1em 0em 1em' }}
-			>
-				<Container textAlign='center'>
-					<Grid columns={2} stackable style={{ padding: '1em', height: '100%'}}>
-						<Grid.Column textAlign='left'>
-							<Header
-								as='h3'
-								content='Accueil'
-								inverted
-							/>
-						</Grid.Column>
-					</Grid>
-				</Container>
-			</Segment>
+			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
+				<h1>Accueil</h1>
+			</Layout.Content>
 		);
 	}
 }

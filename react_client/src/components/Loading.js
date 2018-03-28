@@ -1,15 +1,15 @@
 import React from 'react';
 
-import {Message, Icon} from 'semantic-ui-react';
+import {Alert, Spin} from 'antd';
 
 export default function Loading() {
 	return (
-		<Message icon>
-			<Icon name='circle notched' loading />
-			<Message.Content>
-				<Message.Header>Chargement en cours...</Message.Header>
-				Merci de patienter quelques instants.
-			</Message.Content>
-		</Message>
+		<Spin tip="Chargement en cours...">
+			<Alert
+				message="Chargement"
+				description="Merci de patientier quelques instants."
+				type="info"
+			/>
+		</Spin>
 	);
 }
