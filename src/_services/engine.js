@@ -28,10 +28,7 @@ let state = {};
 
 // Initial settings
 let internalState = {
-	endOfPlaylist: false,
 	currentPlaylistID: undefined,
-	currentPlayingPLC: undefined,
-	archivedStatus: {},
 	playerNeedsRestart: false,
 	currentlyPlayingKara: null,
 	counterToJingle: 1
