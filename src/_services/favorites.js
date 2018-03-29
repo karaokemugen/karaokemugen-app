@@ -1,5 +1,5 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
-import {getPlaylists, setCurrentPlaylist, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, translateKaraInfo, filterPlaylist} from '../_services/playlist';
+import {getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, translateKaraInfo, filterPlaylist} from '../_services/playlist';
 import {listUsers, checkUserNameExists} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_common/utils/date';
@@ -95,8 +95,6 @@ export async function createAutoMix(params, username) {
 	await shufflePlaylist(playlist_id);
 	// Cut playlist after duration
 	await trimPlaylist(playlist_id, params.duration);
-	// Make it current.
-	await setCurrentPlaylist(playlist_id);
 	return {
 		playlist_id: playlist_id,
 		playlist_name: autoMixPLName
