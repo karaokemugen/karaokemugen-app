@@ -13,7 +13,7 @@
             </datalist>
         </div>
     </div>
-    <div class="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs" introStep="21" introLabel="menu">
+    <div class="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs" introStep="23" introLabel="menu">
         <div class="dropdown pull-right">
             <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
             </span><i class="glyphicon glyphicon-menu-hamburger"></i></button>
@@ -38,9 +38,9 @@
     <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
     <div id="progressBarColor" class="cssTransform"></div>
 </div>
-<div id="underHeader" class="underHeader container-fluid">
+<div id="underHeader" class="underHeader container-fluid"  introStep="10" introLabel="kara">
     <div class="playlist-main row" id="playlist">
-        <div class="panel col-lg-8 col-md-7 col-msm-12 col-sm-12 col-xs-12" id="panel1" side="1">
+        <div class="panel col-lg-8 col-md-7 col-msm-12 col-sm-12 col-xs-12" id="panel1" side="1" introStep="9" introLabel="searchresult">
              <div class="plDashboard" >
                 <div class="plSelect">
                     <select id="selectPlaylist1" side="1" hidden >
@@ -49,11 +49,11 @@
                     </select>
                 </div>
             </div>
-            <div class="playlistContainer">
-                <ul id="playlist1" side="1" class="list-group" introStep="9" introLabel="searchresult">
+            <div class="playlistContainer" >
+                <ul id="playlist1" side="1" class="list-group" >
                 </ul>
            </div>
-            <div class="plFooter" introStep="13" introLabel="footer">
+            <div class="plFooter" introStep="13" introLabel="footer" introPosition="right">
                 <div class="plBrowse">
                     <button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
                     <button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
@@ -63,7 +63,7 @@
             </div>
         </div>
          
-        <div class="panel col-lg-4 col-md-5 col-msm-12 col-sm-12 col-xs-12" id="panel2" side="2"  introStep="19" introLabel="playlists">
+        <div class="panel col-lg-4 col-md-5 col-msm-12 col-sm-12 col-xs-12" id="panel2" side="2">
            <div class="panel-heading container-fluid plDashboard">
                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6 plSelect">
                     <select id="selectPlaylist2" side="2" type="playlist_select" class="select2 form-control">

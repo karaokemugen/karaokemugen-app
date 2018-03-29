@@ -271,7 +271,7 @@ startIntro = function(mode){
 		introSteps = [{
 			step: 1,
 			label: 'preLogin',
-			position: 'auto',
+			position: isSmall ? 'bottom' : 'right',
 			element: $('#loginModal .modal-content').get(0),
 			intro: i18n.__(prefix + 'INTRO1'), 
 			tooltipClass : 'hideNext',
@@ -281,7 +281,30 @@ startIntro = function(mode){
 			position: 'auto',
 			intro: i18n.__(prefix + 'INTRO2', 'NOMDUSUJET'), 
 		},{
-			step: 20,
+			step: 11,
+			label: 'karadetails',
+			position: 'auto',
+			intro: i18n.__(prefix + 'KARADETAILS'), 
+		},{
+			step: 17,
+			element: $('#underHeader').get(0),
+			label: 'change_screen',
+			position: 'auto',
+			intro: i18n.__(prefix + 'CHANGE_SCREEN'), 
+		},{
+			step: 19,
+			element: $('#underHeader').get(0),
+			label: 'playlists',
+			position: 'auto',
+			intro: i18n.__(prefix + 'PLAYLISTS'), 
+		},{
+			step: 21,
+			element: $('#underHeader').get(0),
+			label: 'change_screen2',
+			position: 'auto',
+			intro: i18n.__(prefix + 'CHANGE_SCREEN2'), 
+		},{
+			step: 27,
 			label: 'last',
 			tooltipClass : 'hideNext',
 			position: 'auto',
