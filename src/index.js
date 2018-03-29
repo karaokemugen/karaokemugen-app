@@ -83,7 +83,7 @@ async function main() {
 	await openDatabases(config);
 
 	/** Start React static frontend */
-	startExpressReactServer(1338);
+	startExpressReactServer(conf.appAdminPort);
 
 	/**
 	 * Calling engine.
