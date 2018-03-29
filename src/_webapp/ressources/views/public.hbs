@@ -1,8 +1,8 @@
-<div id="header" class="header">
+<div id="header" class="header"  introStep="7" introLabel="search">
     <div class="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12 headerInputs">
-        <button class="btn btn-action btn-default favorites"><i class="glyphicon glyphicon-star"></i></button>
+        <button class="btn btn-action btn-default favorites" introStep="15" introLabel="favorites"><i class="glyphicon glyphicon-star"></i></button>
         <div class="plSearch" id="searchParent" style="width: 100%;">
-            <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist"  introStep="5" introLabel="search"/>
+            <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist"/>
         </div>
         <button title="{{i18n "GET_LUCKY"}}" class="btn btn-lg btn-action btn-default getLucky  hidden-msm hidden-xs hidden-sm">
             <img src="/ressources/img/clover.png">
@@ -13,7 +13,7 @@
             </datalist>
         </div>
     </div>
-    <div class="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs">
+    <div class="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs" introStep="21" introLabel="menu">
         <div class="dropdown pull-right">
             <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
             </span><i class="glyphicon glyphicon-menu-hamburger"></i></button>
@@ -34,7 +34,7 @@
         </div>
     </div>
 </div>
-<div id="progressBar" class="underHeader">
+<div id="progressBar" class="underHeader" introStep="5" introLabel="progressbar">
     <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
     <div id="progressBarColor" class="cssTransform"></div>
 </div>
@@ -50,10 +50,10 @@
                 </div>
             </div>
             <div class="playlistContainer">
-                <ul id="playlist1" side="1" class="list-group">
+                <ul id="playlist1" side="1" class="list-group" introStep="9" introLabel="searchresult">
                 </ul>
            </div>
-            <div class="plFooter">
+            <div class="plFooter" introStep="13" introLabel="footer">
                 <div class="plBrowse">
                     <button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
                     <button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
@@ -63,7 +63,7 @@
             </div>
         </div>
          
-        <div class="panel col-lg-4 col-md-5 col-msm-12 col-sm-12 col-xs-12" id="panel2" side="2">
+        <div class="panel col-lg-4 col-md-5 col-msm-12 col-sm-12 col-xs-12" id="panel2" side="2"  introStep="19" introLabel="playlists">
            <div class="panel-heading container-fluid plDashboard">
                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6 plSelect">
                     <select id="selectPlaylist2" side="2" type="playlist_select" class="select2 form-control">
