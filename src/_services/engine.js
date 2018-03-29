@@ -42,8 +42,6 @@ let initialState = {
 	private: true, // [bool(true|false)] // karaoke mode
 	fullscreen: false,
 	ontop: true,
-	playlist: null,
-	timeposition: 0,
 	frontendPort: null
 };
 
