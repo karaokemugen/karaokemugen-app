@@ -63,8 +63,8 @@ on('playerNeedsRestart', () => {
 });
 
 on('modeUpdated', mode => {
-	if (mode === 0) setPrivateOn();
-	if (mode === 1) setPrivateOff();
+	if (mode === 0) setPrivate(true);
+	if (mode === 1) setPrivate(false);
 });
 
 on('engineStatusChange', (newstate) => {
@@ -291,13 +291,8 @@ async function next() {
 	}
 }
 
-function setPrivateOn() {
-	state.engine.private = true;
-	emitEngineStatus();
-}
-
-function setPrivateOff() {
-	state.engine.private = false;
+function setPrivate(private) {
+	state.engine.private = private;
 	emitEngineStatus();
 }
 
