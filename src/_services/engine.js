@@ -29,6 +29,7 @@ let state = {};
 // Initial settings
 let internalState = {
 	currentPlaylistID: undefined,
+	publicPlaylistID: undefined,
 	playerNeedsRestart: false,
 	currentlyPlayingKara: null,
 	counterToJingle: 1
@@ -178,8 +179,11 @@ export async function initEngine() {
 			inits.push(plc.buildDummyPlaylist(internalState.currentPlaylistID));
 		}
 	}
-	if (!await plc.isAPublicPlaylist()) {
-		plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1,0,'admin');
+	const publicPL_id = await plc.isAPublicPlaylist();
+	if (publicPL_id) {
+		internalState.publicPlaylistID = publicPL_id;
+	} else {
+		internalState.publicPlaylistID = await plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1,0,'admin');
 		logger.info('[Engine] Initial public playlist created');
 	}
 	await Promise.all(inits);
@@ -366,14 +370,13 @@ async function tryToReadKaraInPlaylist() {
 			//Free karaoke
 			await plc.freePLC([kara.playlistcontent_id]);
 			//If karaoke is present in the public playlist, we're marking it free.
-			const publicPlaylist_id = await plc.isAPublicPlaylist();
-			const plcontent = await plc.getPLCByKID(kara.kid,publicPlaylist_id);
+			const plcontent = await plc.getPLCByKID(kara.kid,internalState.publicPlaylistID);
 			if (plcontent) await plc.freePLC([plcontent.playlistcontent_id]);
 			let modePlaylist_id;
 			if (getConfig().EnginePrivateMode) {
-				modePlaylist_id = state.engine.currentPlaylistID;
+				modePlaylist_id = internalState.currentPlaylistID;
 			} else {
-				modePlaylist_id = publicPlaylist_id;
+				modePlaylist_id = internalState.publicPlaylistID;
 			}
 			const user = await findUserByID(kara.user_id);
 			plc.updateSongsLeft(user.login,modePlaylist_id);
@@ -633,9 +636,8 @@ export async function editPL(playlist_id, playlist) {
 
 export async function setCurrentPL(playlist_id) {
 	try {
-		const oldCurrentPL_id = await plc.isACurrentPlaylist();
 		await plc.setCurrentPlaylist(playlist_id);
-		emitWS('playlistInfoUpdated', oldCurrentPL_id);
+		emitWS('playlistInfoUpdated', internalState.currentPlaylistID);
 		internalState.currentPlaylistID = playlist_id;
 		return playlist_id;
 	} catch(err) {
@@ -648,10 +650,10 @@ export async function setCurrentPL(playlist_id) {
 }
 
 export async function setPublicPL(playlist_id) {
-	try {
-		const oldPublicPL_id = await plc.isAPublicPlaylist();
+	try {		
 		await plc.setPublicPlaylist(playlist_id);
-		emitWS('playlistInfoUpdated', oldPublicPL_id);
+		emitWS('playlistInfoUpdated', internalState.publicPlaylistID);
+		internalState.publicPlaylistID = playlist_id;
 		return playlist_id;
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
@@ -729,23 +731,19 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 }
 
 export async function getCurrentPLInfo() {
-	const playlist_id = await plc.isACurrentPlaylist();
-	return await plc.getPlaylistInfo(playlist_id);
+	return await plc.getPlaylistInfo(internalState.currentPlaylistID);
 }
 
-export async function getCurrentPLContents(filter,lang,from,size) {
-	const playlist_id = await plc.isACurrentPlaylist();
-	return await getPLContents(playlist_id, filter, lang, true, from, size);
+export async function getCurrentPLContents(filter,lang,from,size) {	
+	return await getPLContents(internalState.currentPlaylistID, filter, lang, true, from, size);
 }
 
 export async function getPublicPLInfo() {
-	const playlist_id = await plc.isAPublicPlaylist();
-	return await plc.getPlaylistInfo(playlist_id);
+	return await plc.getPlaylistInfo(internalState.publicPlaylistID);
 }
 
 export async function getPublicPLContents(filter,lang,from,size) {
-	const playlist_id = await plc.isAPublicPlaylist();
-	return await getPLContents(playlist_id, filter, lang, true, from, size);
+	return await getPLContents(internalState.publicPlaylistID, filter, lang, true, from, size);
 }
 
 export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
@@ -761,9 +759,9 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 	if (!playlist_id) {
 		addByAdmin = false;
 		if (state.engine.private) {
-			playlist_id = await plc.isACurrentPlaylist();
+			playlist_id = internalState.currentPlaylistID;
 		} else {
-			playlist_id = await plc.isAPublicPlaylist();
+			playlist_id = internalState.publicPlaylistID;
 		}
 	}
 	logger.debug(`[Engine] Adding karaokes to playlist ${playlist_id} : ${kara_id}`);
