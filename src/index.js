@@ -75,9 +75,7 @@ async function main() {
 	 * Test if network ports are available
 	 */
 	const ports = [config.appFrontendPort,
-		config.appAdminPort,
-		config.appAPIPort,
-		config.appWSPort
+		config.appAdminPort		
 	];
 	ports.forEach(port => verifyOpenPort(port));
 
