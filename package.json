@@ -10,7 +10,7 @@
     "test": "mocha --require babel-register --timeout 20000",
     "build": "rm -Rf dist && babel --source-maps --copy-files -d dist/ src/ && cd react_client && yarn build && mv -f build ../dist/_dashboard",
     "install": "cd react_client && yarn install",
-    "buildReact": "cd react_client && yarn build && mv -f build ../src/_dashboard",
+    "buildReact": "cd react_client && yarn build && rm -Rf ../src/_dashboard && mv -f build ../src/_dashboard",
     "startReact": "cd react_client && yarn start"
   },
   "homepage": "https://mugen.karaokes.moe",
