@@ -356,7 +356,7 @@ async function tryToReadKaraInPlaylist() {
 			const kara = await plc.playCurrentSong();
 			let karaForLogging = cloneDeep(kara);
 			karaForLogging.path.subtitle = '[Not logging ASS data]';
-			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging));
+			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
 			let serie = kara.serie;
 			let title = kara.title;
 			if (isEmpty(serie)) serie = kara.singer;

@@ -464,7 +464,6 @@ export async function getRandomKara(playlist_id, filter) {
 
 export async function getKara(kara_id, username) {
 	const kara = await karaDB.getKara(kara_id, username);
-	logger.debug('[PLC] Kara get : '+JSON.stringify(kara));
 	return kara;
 }
 
