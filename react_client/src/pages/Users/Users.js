@@ -3,12 +3,14 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Button, Layout, Table} from 'antd';
 
-import {loading, errorMessage} from '../actions/navigation';
+import {loading, errorMessage} from '../../actions/navigation';
+import {Link} from 'react-router-dom';
 
 const columns = [{
 	title: 'ID',
 	dataIndex: 'user_id',
 	key: 'user_id',
+	render: userId => <Link to={`/users/${userId}`}>{userId}</Link>
 }, {
 	title: 'Type',
 	dataIndex: 'type',
@@ -68,7 +70,11 @@ class Users extends Component {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Table dataSource={this.state.users} columns={columns}></Table>
+				<Table
+					dataSource={this.state.users}
+					columns={columns}
+					rowKey='user_id'
+				/>
 				<Button type='primary' onClick={this.refresh.bind(this)}>Rafraîchir</Button>
 			</Layout.Content>
 		);

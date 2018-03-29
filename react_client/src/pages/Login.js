@@ -14,7 +14,7 @@ class Login extends Component {
 		};
 	}
 
-	handleLogin = (e) => {
+	handleSubmit = (e) => {
 		e.preventDefault();
 		this.props.form.validateFields((err, values) => {
 			if (!err) {
@@ -34,15 +34,15 @@ class Login extends Component {
 				width: '320px',
 				height: '240px',
 				padding: '36px',
-				'box-shadow': '0 0 100px rgba(0,0,0,.08)'
+				boxShadow: '0 0 100px rgba(0,0,0,.08)'
 			}}>
-				<Form onSubmit={this.handleLogin} className='login-form'>
+				<Form onSubmit={this.handleSubmit} className='login-form'>
 					<Form.Item hasFeedback>
 						{getFieldDecorator('username', {
 							rules: [{ required: true}],
 						})(<Input
 							prefix={<Icon type='user'/>}
-							onPressEnter={this.handleLogin}
+							onPressEnter={this.handleSubmit}
 							placeholder='Username'
 						/>)}
 					</Form.Item>
@@ -52,7 +52,7 @@ class Login extends Component {
 						})(<Input
 							prefix={<Icon type='lock'/>}
 							type='password'
-							onPressEnter={this.handleLogin}
+							onPressEnter={this.handleSubmit}
 							placeholder='Password'
 						/>)}
 					</Form.Item>

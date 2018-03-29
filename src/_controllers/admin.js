@@ -1,7 +1,7 @@
 import {getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
 import {requireAuth, requireAdmin} from './passport_manager.js';
-import {listUsers} from '../_dao/user';
+import {getUserByID, listUsers} from '../_dao/user';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
 
@@ -29,6 +29,31 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send('Error while fetching users: ' + err));
 
 	});
+
+	router.get('/users/:userId', requireAuth, requireAdmin, (req, res) => {
+		getUserByID(req.params.userId)
+			.then(user => res.json(user))
+			.catch(err => res.status(500).send('Error while fetching user: ' + err));
+
+	});
+
+	router.get('/users/:userId', requireAuth, requireAdmin, (req, res) => {
+		getUserByID(req.params.userId)
+			.then(user => res.json(user))
+			.catch(err => res.status(500).send('Error while fetching user: ' + err));
+
+	});
+
+	router.post('/users/create', requireAuth, requireAdmin, (req, res) => {
+		console.log(req.body);
+		res.send('OK');
+	});
+
+	router.put('/users/:userId', requireAuth, requireAdmin, (req, res) => {
+		console.log(req.body);
+		res.send('OK');
+	});
+
 
 	router.post('/db/resetviewcounts', requireAuth, requireAdmin, (req, res) => {
 		resetViewcounts()

@@ -17,9 +17,10 @@ import Home from './pages/Home';
 import Config from './pages/Config';
 import Karas from './pages/Karas';
 import Database from './pages/Database';
-import Users from './pages/Users';
+import Users from './pages/Users/Users';
 
 import './App.css';
+import UserEdit from './pages/Users/UserEdit';
 
 class App extends Component {
 
@@ -43,6 +44,8 @@ class App extends Component {
 							<Route path='/config' component={AuthRequired(Config)}/>
 							<Route path='/karas' component={AuthRequired(Karas)}/>
 							<Route path='/db' component={AuthRequired(Database)}/>
+							<Route path='/users/create' component={AuthRequired(UserEdit)}/>
+							<Route path='/users/:userId' component={AuthRequired(UserEdit)}/>
 							<Route path='/users' component={AuthRequired(Users)}/>
 						</Switch>
 					</Layout>

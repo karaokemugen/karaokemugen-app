@@ -56,7 +56,7 @@ class KMMenu extends Component {
 
 	render() {
 		return (
-			<div style={{display: 'flex', 'justify-content': 'space-between'}}>
+			<div style={{display: 'flex', justifyContent: 'space-between'}}>
 				<div>
 					<Menu
 						mode='horizontal'
@@ -67,7 +67,10 @@ class KMMenu extends Component {
 						<Menu.Item key='config'><Link to='/config'>Configuration</Link></Menu.Item>
 						<Menu.Item key='karas'><Link to='/karas'>Karas</Link></Menu.Item>
 						<Menu.Item key='db'><Link to='/db'>Base de données</Link></Menu.Item>
-						<Menu.Item key='users'><Link to='/users'>Utilisateurs</Link></Menu.Item>
+						<Menu.SubMenu title='Utilisateurs'>
+							<Menu.Item key='userlist'><Link to='/users'>Liste des utilisateurs</Link></Menu.Item>
+							<Menu.Item key='newuser'><Link to='/users/create'>Nouvel utilisateur</Link></Menu.Item>
+						</Menu.SubMenu>
 					</Menu>
 				</div>
 				{this.connectMenu()}
