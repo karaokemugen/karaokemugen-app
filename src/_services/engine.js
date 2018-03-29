@@ -51,8 +51,9 @@ on('playerNeedsRestart', () => {
 		internalState.playerNeedsRestart = true;
 		logger.info('[Engine] Player will restart in 5 seconds');
 		sleep(5000).then(() => {
-			restartPlayer();
-			internalState.playerNeedsRestart = false;
+			restartPlayer().then(() => {
+				internalState.playerNeedsRestart = false;
+			});			
 		});
 	} else {
 		internalState.playerNeedsRestart = true;	
