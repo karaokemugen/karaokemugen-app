@@ -1,5 +1,9 @@
 # Karaoke Mugen
 
+Master branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master) [![coverage report](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/coverage.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master)
+
+Next branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next) [![coverage report](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/coverage.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next)
+
 Welcome to Karaoke Mugen.
 
 Karaoke Mugen is a playlist manager for video karaoke. It's made of a webapp and an engine. The webapp allows users to add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
