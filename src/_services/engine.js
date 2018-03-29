@@ -139,7 +139,7 @@ export async function initEngine() {
 			process.exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Validation failed : ${err}`);
-			process.exit(1);
+			exit(1);
 		}
 	}
 	if (conf.optBaseUpdate) {		
@@ -153,7 +153,7 @@ export async function initEngine() {
 		
 		
 	}
-	//Database system is the foundation of every other <system className=""></system>
+	//Database system is the foundation of every other system
 	await initDBSystem();
 	await initUserSystem();
 	let inits = [];
@@ -289,8 +289,8 @@ async function next() {
 	}
 }
 
-function setPrivate(private) {
-	state.engine.private = private;
+function setPrivate(privateMode) {
+	state.engine.private = privateMode;
 	emitEngineStatus();
 }
 
@@ -609,11 +609,14 @@ export async function editPLC(plc_id, pos, flag_playing, token) {
 }
 
 export function updateSettings(newConfig) {	
+	const conf = getConfig();
 	if (!isEmpty(newConfig.EngineConnectionInfoHost)) {
-		state.player.url = `http://${newConfig.EngineConnectionInfoHost}`;
-		emit('playerStatusChange', state.player);
+		state.player.url = `http://${newConfig.EngineConnectionInfoHost}`;		
+	} else {
+		state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
 	}
-	return mergeConfig(getConfig(), newConfig);				
+	emit('playerStatusChange', state.player);
+	return mergeConfig(conf, newConfig);				
 }
 
 export async function editPL(playlist_id, playlist) {
