@@ -1,17 +1,17 @@
 import {getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
-import {requireAuth, requireAdmin} from './passport_manager.js';
-import {getUserByID, listUsers} from '../_dao/user';
+import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js';
+import {editUser, addUser, findUserByID, listUsers} from '../_services/user';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
 
 module.exports = function adminController(router) {
 
-	router.get('/config', requireAuth, requireAdmin, (req, res) => {
+	router.get('/config', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		res.json(getConfig());
 	});
 
-	router.post('/db/regenerate', requireAuth, requireAdmin, (req, res) => {
+	router.post('/db/regenerate', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		run()
 			.then(() => res.status(200).send('DB successfully regenerated'))
 			.catch(err => res.status(500).send('Error while regenerating DB: ' + err));
@@ -23,39 +23,36 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send('Error while regenerating karas: ' + err));
 	});
 
-	router.get('/users', requireAuth, requireAdmin, (req, res) => {
+	router.get('/users', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		listUsers()
 			.then(users => res.json(users))
 			.catch(err => res.status(500).send('Error while fetching users: ' + err));
 
 	});
 
-	router.get('/users/:userId', requireAuth, requireAdmin, (req, res) => {
-		getUserByID(req.params.userId)
+	router.get('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		findUserByID(req.params.userId)
 			.then(user => res.json(user))
 			.catch(err => res.status(500).send('Error while fetching user: ' + err));
 
 	});
 
-	router.get('/users/:userId', requireAuth, requireAdmin, (req, res) => {
-		getUserByID(req.params.userId)
-			.then(user => res.json(user))
-			.catch(err => res.status(500).send('Error while fetching user: ' + err));
-
+	router.post('/users/create', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		let role = 'user';
+		if (req.body.flag_admin) role = 'admin';
+		addUser(req.body,role)
+			.then(() => res.status(200).send('User created'))
+			.catch(err => res.status(500).send('Error creating user: ' + err));			
 	});
 
-	router.post('/users/create', requireAuth, requireAdmin, (req, res) => {
-		console.log(req.body);
-		res.send('OK');
-	});
-
-	router.put('/users/:userId', requireAuth, requireAdmin, (req, res) => {
-		console.log(req.body);
-		res.send('OK');
+	router.put('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {		
+		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role)
+			.then(() => res.status(200).send('User edited'))
+			.catch(err => res.status(500).send('Error editing user: ' + err));			
 	});
 
 
-	router.post('/db/resetviewcounts', requireAuth, requireAdmin, (req, res) => {
+	router.post('/db/resetviewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		resetViewcounts()
 			.then(() => res.status(200).send('Viewcounts successfully reset'))
 			.catch(err => res.status(500).send('Error resetting viewcounts: ' + err));

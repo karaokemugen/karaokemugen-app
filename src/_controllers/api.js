@@ -4141,7 +4141,7 @@ export function APIControllerPublic(router) {
 				let avatar;
 				if (req.file) avatar = req.file;
 				try {
-					const userdata = await user.editUser(req.params.username,req.body,avatar);
+					const userdata = await user.editUser(req.params.username,req.body,avatar,req.authToken.role);
 					emitWS('userUpdated',user.id);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));	
 				} catch(err) {
@@ -4303,7 +4303,7 @@ export function APIControllerPublic(router) {
 				if (req.file) avatar = req.file;
 				//Get username
 				try {											
-					const userdata = await user.editUser(req.authToken.username,req.body,avatar);
+					const userdata = await user.editUser(req.authToken.username,req.body,avatar,req.authToken.role);
 					emitWS('userUpdated',req.params.user_id);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));	
 				} catch(err) {

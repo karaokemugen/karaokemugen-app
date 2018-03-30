@@ -52,15 +52,22 @@ export async function validateUserNickname(nickname) {
 	return false;
 }
 
-export async function editUser(username,user,avatar) {
+export async function editUser(username,user,avatar,role) {
 	try {
-		const currentUser = await findUserByName(username);
-		if (currentUser.type == 2) throw 'Guests are not allowed to edit their profiles';
+		let currentUser;
+		if (user.id) {
+			currentUser = await findUserByID(user.id);
+		} else {
+			currentUser = await findUserByName(username);
+		}
+		if (!currentUser) throw 'User unknown';
+		if (currentUser.type == 2 && role != 'admin') throw 'Guests are not allowed to edit their profiles';
 		user.id = currentUser.id;
 		user.login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
+		if (user.flag_admin && role != 'admin') throw 'Admin flag permission denied';
 		// Check if login already exists.
 		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && currentUser.nickname != user.nickname) throw 'Nickname already exists';
 		user.NORM_nickname = deburr(user.nickname);		
@@ -139,7 +146,7 @@ export async function findUserByName(username, opt) {
 	}
 	return false;	
 }
-
+ 
 export async function findUserByID(id) {
 	const userdata = await db.getUserByID(id);
 	if (userdata) {
@@ -189,7 +196,7 @@ export async function addUser(user,role) {
 		ret.code = 'USER_EMPTY_PASSWORD';
 		throw ret;
 	}	
-	user.nickname = user.login;
+	if (!user.nickname) user.nickname = user.login;
 	if (!isEmpty(user.password)) user.password = hashPassword(user.password);
 	user.last_login = now();
 	user.NORM_nickname = deburr(user.nickname);
