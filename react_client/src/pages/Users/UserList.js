@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Button, Layout, Table} from 'antd';
+import {Button, Checkbox, Layout, Table} from 'antd';
 
 import {loading, errorMessage} from '../../actions/navigation';
 import {Link} from 'react-router-dom';
@@ -21,6 +21,7 @@ const columns = [{
 		{ text: 'User', value: '1' },
 		{ text: 'Guest', value: '2' },
 	],
+	render: text => text === 1 ? 'User' : 'Guest',
 	filterMultiple: false,
 	onFilter: (value, record) => `${record.type}` === value,
 }, {
@@ -54,6 +55,7 @@ const columns = [{
 		{ text: 'Online', value: '1' },
 		{ text: 'Offline', value: '0' },
 	],
+	render: text => <Checkbox disabled defaultChecked={text === 1} />,
 	filterMultiple: false,
 	onFilter: (value, record) => `${record.flag_online}` === value,
 }, {
@@ -64,6 +66,7 @@ const columns = [{
 		{ text: 'Admin', value: '1' },
 		{ text: 'Standard', value: '0' },
 	],
+	render: text => <Checkbox disabled defaultChecked={text === 1} />,
 	filterMultiple: false,
 	onFilter: (value, record) => `${record.flag_admin}` === value,
 }];
