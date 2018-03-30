@@ -1,9 +1,10 @@
 import {getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
 import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js';
-import {editUser, addUser, findUserByID, listUsers} from '../_services/user';
+import {editUser, createUser, findUserByID, listUsers} from '../_services/user';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
+import {createUser} from '../_services/user';
 
 module.exports = function adminController(router) {
 
@@ -37,12 +38,10 @@ module.exports = function adminController(router) {
 
 	});
 
-	router.post('/users/create', requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		let role = 'user';
-		if (req.body.flag_admin) role = 'admin';
-		addUser(req.body,role)
-			.then(() => res.status(200).send('User created'))
-			.catch(err => res.status(500).send('Error creating user: ' + err));			
+	router.post('/users/create', requireAuth, requireAdmin, (req, res) => {
+		createUser(req.body)
+			.then(res.send('OK'))
+			.catch(err => res.status(500).send('Error while creating user: ' + err));
 	});
 
 	router.put('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {		

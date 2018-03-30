@@ -94,7 +94,10 @@ export const createUser = `INSERT INTO user(
 							NORM_nickname,
 							flag_online,
 							flag_admin,
-							last_login) 
+							last_login,
+							bio,
+							url,
+							email) 
 						VALUES (
 							$type,
 							$login,
@@ -103,7 +106,10 @@ export const createUser = `INSERT INTO user(
 							$NORM_nickname,
 							$flag_online,
 							$flag_admin,
-							$last_login);
+							$last_login,
+							$bio,
+							$url,
+							$email);
 						   `;
 
 export const updateExpiredUsers = `UPDATE user SET 

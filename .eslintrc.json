@@ -32,7 +32,8 @@
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "no-throw-literal": "off"
     },
     "parser": "babel-eslint",
     "parserOptions": {
