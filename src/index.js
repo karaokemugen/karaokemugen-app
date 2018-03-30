@@ -55,6 +55,13 @@ async function main() {
 	// Checking paths, create them if needed.
 	await checkPaths(config);
 
+	// Create a backup of our config file. Just in case.
+	logger.debug('[Launcher] Making a backup of config.ini');
+	await copy(
+		resolve(appPath, 'config.ini'),
+		resolve(appPath, 'config.ini.bak'),
+		{ overwrite: true }
+	);
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	logger.debug('[Launcher] Copying input.conf to ' + resolve(appPath, config.PathTemp));
 	await copy(
