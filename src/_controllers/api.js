@@ -537,7 +537,7 @@ export function APIControllerAdmin(router) {
  * @apiGroup Users
  * @apiPermission admin
  *
- * @apiParam {Number} username Username to delete
+ * @apiParam {Number} username User name to delete
  * @apiSuccess {String} args ID of user deleted
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of user deleted

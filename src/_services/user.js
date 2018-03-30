@@ -244,30 +244,10 @@ export async function checkUserNameExists(username) {
 	return await db.checkUserNameExists(username);	
 }
 
-export async function deleteUser(username) {
-	if (!await db.checkUserNameExists(username)) {
-		const ret = {
-			code: 'USER_NOT_EXISTS',
-			args: username
-		};
-		logger.error(`[User] User ${username} does not exist, unable to delete it`);
-		throw ret;
-	}
-	try {
-		const user = await findUserByName(username);		
-		const playlist_id = await findFavoritesPlaylist(username);
-		await deletePlaylist(playlist_id, {force: true});
-		await db.deleteUser(user.id);
-		logger.debug(`[User] Deleted user ${username} (id ${user.id})`);
-		return true;
-	} catch (err) {
-		const ret = {
-			code: 'USER_DELETE_ERROR',
-			data: err
-		};
-		logger.error(`[User] Unable to delete user ${username} : ${err}`);
-		throw ret;
-	}
+export async function deleteUser(username) {	
+	const user = await findUserByName(username);
+	if (!user) throw {code: 'USER_NOT_EXISTS'};
+	return await deleteUserById(user.id);	
 }
 
 export async function deleteUserById(id) {
