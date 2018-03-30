@@ -86,8 +86,8 @@ class UserForm extends Component {
 				<Form.Item hasFeedback>
 					{getFieldDecorator('bio', {
 						initialValue: this.props.user.bio
-					})(<Input
-						onPressEnter={this.handleSubmit}
+					})(<Input.TextArea
+						rows={3}
 						placeholder='Bio'
 					/>)}
 				</Form.Item>
