@@ -309,14 +309,16 @@ export async function initUserSystem() {
 	if (!await findUserByName('admin')) await createUser({
 		login: 'admin',
 		password: 'gurdil',
-	}, 'admin');
+		flag_admin: 1
+	});
 
 	if (getConfig().isTest) {
 		if (!await findUserByName('adminTest')) {
 			await createUser({
 				login: 'adminTest',
 				password: 'ceciestuntest',
-			}, 'admin');
+				flag_admin: 1
+			});
 		}
 	} else {
 		if (await findUserByName('adminTest')) await deleteUser('adminTest');
