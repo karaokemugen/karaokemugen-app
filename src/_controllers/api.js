@@ -1565,7 +1565,7 @@ export function APIControllerAdmin(router) {
 				req.sanitize('PlayerPIPSize').toInt();
 				req.sanitize('WebappMode').toInt();
 				try {
-					const publicSettings = await setConfig(req.body);
+					const publicSettings = await engine.updateSettings(req.body);
 					emitWS('settingsUpdated',publicSettings);
 					res.json(OKMessage(req.body,'SETTINGS_UPDATED'));				
 				} catch(err) {

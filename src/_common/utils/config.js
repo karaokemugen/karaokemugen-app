@@ -17,6 +17,7 @@ import {defaults} from './default_settings.js';
 /** Object containing all config */
 let config = {};
 let configFile = 'config.ini';
+let savingSettings;
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
@@ -26,7 +27,7 @@ export function getConfig() {
 	return {...config};
 }
 
-export function mergeConfig(oldConfig, newConfig) {
+export async function mergeConfig(oldConfig, newConfig) {
 	// Determine if mpv needs to be restarted
 	for (const setting in newConfig) {
 		if (setting.startsWith('Player') &&
@@ -39,7 +40,8 @@ export function mergeConfig(oldConfig, newConfig) {
 		}
 	}
 
-	updateConfig(newConfig);	
+
+	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings
 	if (conf.EnginePrivateMode === 1) {
@@ -82,11 +84,14 @@ export async function initConfig(appPath, argv) {
 	//Configure watcher
 	const configWatcher = watch(resolve(appPath, configFile));
 	configWatcher.on('change', () => {
-		const oldConf = getConfig();
-		logger.debug('[Config] config file has been changed from the outside world');
-		loadConfig(resolve(appPath, configFile)).then(() => {
-			mergeConfig(oldConf, getConfig());
-		});
+		if (!savingSettings) {
+			const oldConf = getConfig();
+			logger.debug('[Config] config file has been changed from the outside world');
+			loadConfig(resolve(appPath, configFile)).then(() => {
+				mergeConfig(oldConf, getConfig());
+			});
+		}
+		
 	});
 
 	return getConfig();
@@ -165,11 +170,12 @@ export function configureHost() {
 
 export async function setConfig(configPart) {
 	config = {...config, ...configPart};
-	await updateConfig(config);
+	updateConfig(config);
 	return getConfig();
 }
 
 export async function updateConfig(newConfig) {
+	savingSettings = true;		
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','appPath','os','EngineDefaultLocale'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
@@ -179,6 +185,7 @@ export async function updateConfig(newConfig) {
 	});
 	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
 	await asyncWriteFile(resolve(config.appPath, configFile), stringify(filteredConfig), 'utf-8');
+	savingSettings = false;
 }
 
 /**

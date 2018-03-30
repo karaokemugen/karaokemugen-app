@@ -611,7 +611,7 @@ export async function editPLC(plc_id, pos, flag_playing, token) {
 	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing, token);
 }
 
-export function updateSettings(newConfig) {	
+export async function updateSettings(newConfig) {	
 	const conf = getConfig();
 	if (!isEmpty(newConfig.EngineConnectionInfoHost)) {
 		state.player.url = `http://${newConfig.EngineConnectionInfoHost}`;		
@@ -619,7 +619,7 @@ export function updateSettings(newConfig) {
 		state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
 	}
 	emit('playerStatusChange', state.player);
-	return mergeConfig(conf, newConfig);				
+	return await mergeConfig(conf, newConfig);				
 }
 
 export async function editPL(playlist_id, playlist) {
