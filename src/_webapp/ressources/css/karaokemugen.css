@@ -938,6 +938,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 
 .modal input[type="text"], .modal input[type="password"]:not([exclude="true"]) {
 	height: 50px;
+	max-height: 9vh;
 	border-radius: 0;
 }
 
@@ -1025,6 +1026,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 .modalPage .modal-message {
 	height: 100px;
+    max-height: 18vh;
 }
 .modalPage .modal-body > div {
 	padding: 5px;
@@ -1079,6 +1081,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 #loginModal.firstRun .tour {
 	display: block;
+}
+#loginModal.hideLogin .loginRelated {
+	display: none;
 }
 .modal button.ok {
 	background-color: hsla(139, 14%, 22%, 1);
@@ -1342,9 +1347,8 @@ input[type="text"]:focus, input[type="password"]:focus {
 	}
 	.introjs-tooltip {
 		padding: 2.5vw;
-		background-color: hsla(133, 15%, 24%, .97);
 		min-width: 60vw;
-		max-width: 88vw;
+		max-width: 87vw;
 		border-radius: 0px;
 		box-shadow: 0 1px 10px hsla(133, 15%, 24%, 0.4);
 	}

@@ -13,7 +13,7 @@
             </datalist>
         </div>
     </div>
-    <div class="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs" introStep="23" introLabel="menu">
+    <div class="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs">
         <div class="dropdown pull-right">
             <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
             </span><i class="glyphicon glyphicon-menu-hamburger"></i></button>
@@ -113,7 +113,7 @@
     <a class="btn-floating btn-large waves-effect z-depth-3" id="menuMobile"  style="background-color:#123456" data-opened=false>
         <i class="glyphicon glyphicon-menu-hamburger"></i>
     </a>
-    <ul style="opacity: 0; display: none;">
+    <ul style="opacity: 0; display: none;" introStep="21" introLabel="menu">
         <li><a class="z-depth-3 btn-floating btn-large" onclick="endOfTheWorldAsWeKnowIt();" style="background-color:hsla(0, 71%, 14%, .4)"><i class="glyphicon glyphicon-gift"></i></a></li>
         <li><a class="z-depth-3 btn-floating btn-large getLucky"  style="background-color:#111">   <img style="height: 80%;margin-top: 10%" src="/ressources/img/clover.png"></a></li>
         <li><a class="z-depth-3 btn-floating btn-large showSettings" style="background-color:#613114"><i class="glyphicon glyphicon-question-sign"></i></a></li>
@@ -156,7 +156,7 @@
             </ul>
             <div class="tab-content" id="nav-tabContent">
                 <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
-                    <div class="tour">
+                    <div class="tour hidden">
                      {{i18n "FIRST_PUBLIC_RUN_WELCOME"}}
                     </div>
                     <div class="modal-message tour">
@@ -172,15 +172,15 @@
                              {{i18n "GUEST_CONTINUE"}}
                         </button>
                     </div>
-                    <div>
+                    <div class="loginRelated">
                      {{i18n "OR"}}
                     </div>
-                    <div class="modal-message">
+                    <div class="modal-message loginRelated">
                             <input type="text" class="form-control" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
                             <input type="password" class="form-control" id="password" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
                     </div>
-                    <div></div>
-                    <div>
+                    <div class="loginRelated"></div>
+                    <div class="loginRelated">
                         <button type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
                             <i class="glyphicon glyphicon-ok"></i>
                         </button>

@@ -289,7 +289,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     bottom: 12px;
     left: 12px;
     right: auto;
-    position: fixed;
+    position: absolute;
     padding-top: 15px;
     z-index: 9876;
 }
@@ -351,6 +351,9 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     display: none;
 }
 
+.introjs-tooltip {
+    background-color: hsla(25, 42%, 32%, 0.97)
+}
 
 @media (max-width: 1025px) {
     .toastMessage {
@@ -433,6 +436,9 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
         height: 26px;
         width: 26px;
         margin: 0px -1px;
+    }
+    #nav-signup input[type="text"],  #nav-signup input[type="password"]:not([exclude="true"]) {
+        max-height: 7vh;
     }
 }
 
