@@ -1,12 +1,7 @@
 import {getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
-<<<<<<< HEAD
-import {requireValidUser, requireAuth, requireAdmin} from './passport_manager.js';
-import {listUsers} from '../_dao/user';
-=======
 import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
->>>>>>> 247-user-management-in-dashboard
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
 
@@ -35,8 +30,6 @@ module.exports = function adminController(router) {
 
 	});
 
-<<<<<<< HEAD
-=======
 	router.get('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		findUserByID(req.params.userId)
 			.then(user => res.json(user))
@@ -62,7 +55,6 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send('Error deleting user: ' + err));
 	});
 
->>>>>>> 247-user-management-in-dashboard
 	router.post('/db/resetviewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		resetViewcounts()
 			.then(() => res.status(200).send('Viewcounts successfully reset'))
