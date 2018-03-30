@@ -190,48 +190,6 @@ export async function updateUserFingerprint(username, fingerprint) {
 	return await db.updateUserFingerprint(username, fingerprint);
 }
 
-export async function addUser(user,role) {
-	let ret = {};
-	if (!user.type) user.type = 1;	
-	if (user.type === 1 && isEmpty(user.password)) {
-		ret.code = 'USER_EMPTY_PASSWORD';
-		throw ret;
-	}	
-	if (!user.nickname) user.nickname = user.login;
-	if (!isEmpty(user.password)) user.password = hashPassword(user.password);
-	user.last_login = now();
-	user.NORM_nickname = deburr(user.nickname);
-	user.avatar_file = 'blank.png';
-	user.flag_online = 1;
-	user.flag_admin = 0;
-	user.bio = null;
-	user.url = null;
-	user.email = null;
-	if (role === 'admin') user.flag_admin = 1;		
-	
-	// Check if login already exists.
-	if (await db.checkUserNameExists(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
-		ret.code = 'USER_ALREADY_EXISTS';
-		ret.data = { username: user.login };
-		ret.message = null;
-		logger.error('[User] User/nickname '+user.login+' already exists, cannot create it');
-		throw ret;
-	}	
-	try {
-		await db.addUser(user);
-		if (user.type === 1) await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
-		logger.info(`[User] Created user ${user.login}`);
-		logger.debug(`[User] User data : ${JSON.stringify(user)}`);
-		return true;
-	} catch(err) {
-		ret.code = 'USER_CREATION_ERROR';
-		ret.data = err;
-		logger.error(`[User] Unable to create user ${user.login} : ${err}`);
-		throw ret;
-	}
-}
-
-/** Réécriture de addUser pour le dashboard en attendant de fusionner les deux méthodes. */
 export async function createUser(user) {
 
 	user.type = user.type || 1;

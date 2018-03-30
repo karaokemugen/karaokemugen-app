@@ -1,15 +1,16 @@
 import logger from 'winston';
 import {setConfig, getConfig} from '../_common/utils/config';
-const user = require('../_services/user');
 import {resolve} from 'path';
 import multer from 'multer';
-const engine = require ('../_services/engine');
-const favorites = require('../_services/favorites');
-const upvote = require('../_services/upvote');
 import {emitWS} from '../_webapp/frontend';
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
 import {updateSongsLeft} from '../_services/playlist';
+
+const engine = require ('../_services/engine');
+const favorites = require('../_services/favorites');
+const upvote = require('../_services/upvote');
+const user = require('../_services/user');
 
 function toString(o) {
 	Object.keys(o).forEach(k => {
@@ -4675,7 +4676,7 @@ export function APIControllerPublic(router) {
 				req.sanitize('password').trim();
 				req.sanitize('password').unescape();
 				try {						
-					await user.addUser(req.body);
+					await user.createUser({...req.body, flag_admin: 0});
 					res.json(OKMessage(true,'USER_CREATED'));
 				} catch(err) {
 					res.statusCode = 500;
