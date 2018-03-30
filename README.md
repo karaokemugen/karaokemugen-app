@@ -1,8 +1,8 @@
 # Karaoke Mugen
 
-Master branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master) [![coverage report](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/coverage.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master)
+Master branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master) -
+Next branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next)
 
-Next branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next) [![coverage report](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/coverage.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next)
 
 Welcome to Karaoke Mugen.
 
