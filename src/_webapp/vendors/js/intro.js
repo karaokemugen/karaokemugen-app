@@ -719,7 +719,7 @@
 
     var windowSize = _getWinSize();
     var tooltipHeight = _getOffset(tooltipLayer).height + 10;
-    var tooltipWidth = _getOffset(tooltipLayer).width + 20;
+    var tooltipWidth = _getOffset(tooltipLayer).width + 10;
     var targetOffset = _getOffset(targetElement);
 
     // If we check all the possible areas, and there are no valid places for the tooltip, the element

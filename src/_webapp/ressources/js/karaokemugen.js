@@ -574,6 +574,13 @@ var settingsNotUpdated;
 			});
 		});
 
+		$('#loginModal .nav-tabs a').click(function(){
+			if(introJs && typeof introJs._currentStep != 'undefined') {
+				setTimeout(() => {
+					introJs.refresh();
+				}, 200);
+			}
+		});
 		$('#nav-signup .login').click( () => {
 			var username = $('#signupLogin').val();
 			var password = $('#signupPassword').val();
@@ -602,8 +609,10 @@ var settingsNotUpdated;
 						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
 						
 						if(scope === 'public' || introJs && introJs._currentStep) login(username, password);
-						
-
+								
+						if(introJs && typeof introJs._currentStep !== 'undefined') {
+							introJs.nextStep();
+						}
 					}).fail(function(response) {
 						//displayMessage('info','', i18n.__('LOG_ERROR'));
 						$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
@@ -1585,6 +1594,8 @@ var settingsNotUpdated;
 				detailsHtml.fadeIn(animTime);
 				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
 				saveDetailsKara(idPlaylist, idKara, 'add');
+
+				if(introJs && introJs._currentStep) introJs.nextStep();
 			});
 		} else if (infoKara.is(':visible')) {
 			saveDetailsKara(idPlaylist, idKara, 'remove');

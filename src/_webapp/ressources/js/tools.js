@@ -290,7 +290,8 @@ startIntro = function(mode){
 			element: $('#underHeader').get(0),
 			label: 'change_screen',
 			position: 'auto',
-			intro: i18n.__(prefix + 'CHANGE_SCREEN'), 
+			intro: i18n.__(prefix + 'CHANGE_SCREEN'),
+			tooltipClass : isTouchScreen ? 'hideNext' : '',
 		},{
 			step: 19,
 			element: $('#underHeader').get(0),
@@ -298,19 +299,22 @@ startIntro = function(mode){
 			position: 'auto',
 			intro: i18n.__(prefix + 'PLAYLISTS'), 
 		},{
-			step: 21,
+			step: 23,
 			element: $('#underHeader').get(0),
 			label: 'change_screen2',
 			position: 'auto',
 			intro: i18n.__(prefix + 'CHANGE_SCREEN2'), 
+			tooltipClass : isTouchScreen ? 'hideNext' : ''
 		},{
 			step: 27,
 			label: 'last',
 			tooltipClass : 'hideNext',
 			position: 'auto',
-			intro: i18n.__(prefix + 'INTROFINAL'), 
+			intro: i18n.__(prefix + 'LAST'), 
 		}];
+
 		$('#loginModal').modal('show');
+		$('#loginModal').addClass('hideLogin');
 	}
 	
 	var specialOptions = {
@@ -344,6 +348,8 @@ startIntro = function(mode){
 	introJs.setOptions({
 		steps: introSteps,
 		hideNext: true,
+		showBullets: false,
+		showStepNumbers: false,
 		exitOnOverlayClick: false,
 		nextLabel: i18n.__('INTRO_LABEL_NEXT'),
 		prevLabel: i18n.__('INTRO_LABEL_PREV'),
@@ -368,7 +374,8 @@ startIntro = function(mode){
 		} else if (label == 'afterLogin') {
 			if($('#loginModal').hasClass('in')) {
 				$('#nav-signup .login').click();
-				$('#loginModal').modal('hide');
+				$('#loginModal').modal('hide')
+					.removeClass('hideLogin');
 			}
 		} else if (label == 'settings') {
 			$('[name="kara_panel"]').bootstrapSwitch('state', true, false);
@@ -381,6 +388,12 @@ startIntro = function(mode){
 			var text = introJs._introItems[this._currentStep].intro;
 			text = text.replace('NOMDUSUJET', logInfos.username);
 			introJs._introItems[this._currentStep].intro = text;
+		} else if (label == 'karadetails') {
+			introJs._introItems[this._currentStep].element = $('.detailsKara ').first().get(0);
+		} else if (label == 'playlists') {
+			$('#menuMobile').click();
+		}  else if (label == 'change_screen2') {
+			$('#menuMobile').click();
 		} else if(label == 'last') {
 			$('.introjs-tooltipbuttons > a').first().text(i18n.__('INTRO_LABEL_DONE'));
 		}
@@ -392,5 +405,5 @@ startIntro = function(mode){
 	buttons.each((k, el) => {
 		$(el).attr('previousClass', $(el).attr('class'));
 	});
-	buttons.attr('class', 'btn btn-xs btn-default');
+	buttons.attr('class', 'btn btn-default' + (isTouchScreen ? ' btn-sm' : ' btn-xs' ));
 }

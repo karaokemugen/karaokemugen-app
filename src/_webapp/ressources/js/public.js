@@ -126,7 +126,7 @@ var swipeManager = new Hammer.Manager(elem[0],{
 	prevent_default: true
 });
 
-var swipe = new Hammer.Swipe({'threshold' : 12,  direction : Hammer.DIRECTION_HORIZONTAL });
+var swipe = new Hammer.Swipe({'threshold' : 7,  direction : Hammer.DIRECTION_HORIZONTAL });
 
 swipeManager.add(swipe);
 
@@ -137,8 +137,10 @@ swipeManager.on('swipe', function (e) {
 		elem.css({transition: 'transform 1s ease'});
 		if(e.direction == 2 ) {
 			elem.css({transform: 'translateX('+ -1 * panelWidth+'px)'});
+			if(introJs && introJs._currentStep) introJs.goToStepNumber(19);
 		} else if (e.direction == 4) {
 			elem.css({transform: 'translateX(0)'});
+			if(introJs && introJs._currentStep) introJs.goToStepNumber(27);
 		}
 	}
 });
