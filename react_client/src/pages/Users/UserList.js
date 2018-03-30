@@ -45,7 +45,7 @@ const columns = [{
 	title: 'Last seen on',
 	dataIndex: 'last_login',
 	key: 'last_login',
-	render: (date) => (new Date(+date)).toString(),
+	render: (date) => (new Date(+date)).toLocaleString('fr-FR'),
 	sorter: (a,b) => a.last_login - b.last_login
 }, {
 	title: 'Logged in?',
