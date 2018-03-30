@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {Container, Grid, Header, Segment, Button} from 'semantic-ui-react';
 import {connect} from 'react-redux';
+import {Button, Layout} from 'antd';
 
 import {loading, infoMessage, errorMessage} from '../actions/navigation';
 
@@ -48,34 +48,35 @@ class Database extends Component {
 
 	render() {
 		return (
-			<Segment
-				inverted
-				vertical
-				style={{ margin: '1em 0em 1em', padding: '1em 0em 1em' }}
-			>
-				<Container textAlign='center'>
-					<Grid columns={1} stackable style={{ padding: '1em' }}>
-						<Grid.Column textAlign='left'>
-							<Header
-								as='h3'
-								content='Base de données'
-								inverted
-							/>
-						</Grid.Column>
-					</Grid>
-					<Grid columns={2} stackable style={{ padding: '1em' }}>
-						<Grid.Column textAlign='center'>
-							<Button primary onClick={this.dbregen.bind(this)} active={!this.props.loadingActive}>Régénérer la base de données</Button>
-						</Grid.Column>
-						<Grid.Column textAlign='center'>
-							<Button primary onClick={this.dbupdate.bind(this)} active={!this.props.loadingActive}>Mettre à jour les fichiers de la base</Button>
-						</Grid.Column>
-						<Grid.Column textAlign='center'>
-							<Button primary onClick={this.dbresetviewcounts.bind(this)} active={!this.props.loadingActive}>Réinitialiser le nombre de vues des karas</Button>
-						</Grid.Column>
-					</Grid>
-				</Container>
-			</Segment>
+			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
+				<div>
+					<Button
+						type='primary'
+						onClick={this.dbregen.bind(this)}
+						active={!this.props.loadingActive}
+					>
+						Regenerate your database (wow wow)
+					</Button>
+				</div>
+				<div>
+					<Button
+						type='primary'
+						onClick={this.dbupdate.bind(this)}
+						active={!this.props.loadingActive}
+					>
+						Update your karaoke base files from Shelter
+					</Button>
+				</div>
+				<div>
+					<Button
+						type='primary'
+						onClick={this.dbresetviewcounts.bind(this)}
+						active={!this.props.loadingActive}
+					>
+						Reset song viewcounts
+					</Button>
+				</div>
+			</Layout.Content>
 		);
 	}
 }
@@ -89,6 +90,5 @@ const mapDispatchToProps = (dispatch) => ({
 	infoMessage: (message) => dispatch(infoMessage(message)),
 	errorMessage: (message) => dispatch(errorMessage(message))
 });
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(Database);

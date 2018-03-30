@@ -1,7 +1,12 @@
 import {getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
+<<<<<<< HEAD
 import {requireValidUser, requireAuth, requireAdmin} from './passport_manager.js';
 import {listUsers} from '../_dao/user';
+=======
+import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js';
+import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
+>>>>>>> 247-user-management-in-dashboard
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
 
@@ -30,6 +35,34 @@ module.exports = function adminController(router) {
 
 	});
 
+<<<<<<< HEAD
+=======
+	router.get('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		findUserByID(req.params.userId)
+			.then(user => res.json(user))
+			.catch(err => res.status(500).send('Error while fetching user: ' + err));
+
+	});
+
+	router.post('/users/create', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		createUser(req.body)
+			.then(res.send('OK'))
+			.catch(err => res.status(500).send('Error while creating user: ' + err));
+	});
+
+	router.put('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {		
+		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role)
+			.then(() => res.status(200).send('User edited'))
+			.catch(err => res.status(500).send('Error editing user: ' + err));			
+	});
+
+	router.delete('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		deleteUserById(req.params.userId)
+			.then(() => res.status(200).send('User deleted'))
+			.catch(err => res.status(500).send('Error deleting user: ' + err));
+	});
+
+>>>>>>> 247-user-management-in-dashboard
 	router.post('/db/resetviewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		resetViewcounts()
 			.then(() => res.status(200).send('Viewcounts successfully reset'))

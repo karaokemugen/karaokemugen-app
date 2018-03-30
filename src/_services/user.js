@@ -1,4 +1,3 @@
-const db = require('../_dao/user');
 import {deletePlaylist} from '../_services/playlist';
 import {findFavoritesPlaylist} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
@@ -14,6 +13,8 @@ import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
+
+const db = require('../_dao/user');
 const sleep = promisify(setTimeout);
 
 async function updateExpiredUsers() {
@@ -52,15 +53,22 @@ export async function validateUserNickname(nickname) {
 	return false;
 }
 
-export async function editUser(username,user,avatar) {
+export async function editUser(username,user,avatar,role) {
 	try {
-		const currentUser = await findUserByName(username);
-		if (currentUser.type == 2) throw 'Guests are not allowed to edit their profiles';
+		let currentUser;
+		if (user.id) {
+			currentUser = await findUserByID(user.id);
+		} else {
+			currentUser = await findUserByName(username);
+		}
+		if (!currentUser) throw 'User unknown';
+		if (currentUser.type == 2 && role != 'admin') throw 'Guests are not allowed to edit their profiles';
 		user.id = currentUser.id;
 		user.login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
+		if (user.flag_admin && role != 'admin') throw 'Admin flag permission denied';
 		// Check if login already exists.
 		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && currentUser.nickname != user.nickname) throw 'Nickname already exists';
 		user.NORM_nickname = deburr(user.nickname);		
@@ -139,7 +147,7 @@ export async function findUserByName(username, opt) {
 	}
 	return false;	
 }
-
+ 
 export async function findUserByID(id) {
 	const userdata = await db.getUserByID(id);
 	if (userdata) {
@@ -182,73 +190,85 @@ export async function updateUserFingerprint(username, fingerprint) {
 	return await db.updateUserFingerprint(username, fingerprint);
 }
 
-export async function addUser(user,role) {
-	let ret = {};
-	if (!user.type) user.type = 1;	
-	if (user.type === 1 && isEmpty(user.password)) {
-		ret.code = 'USER_EMPTY_PASSWORD';
-		throw ret;
-	}	
-	user.nickname = user.login;
-	if (!isEmpty(user.password)) user.password = hashPassword(user.password);
+export async function createUser(user) {
+
+	user.type = user.type || 1;
+	user.nickname = user.nickname || user.login;
 	user.last_login = now();
 	user.NORM_nickname = deburr(user.nickname);
-	user.avatar_file = 'blank.png';
-	user.flag_online = 1;
-	user.flag_admin = 0;
-	if (role === 'admin') user.flag_admin = 1;		
-	
-	// Check if login already exists.
-	if (await db.checkUserNameExists(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
-		ret.code = 'USER_ALREADY_EXISTS';
-		ret.data = { username: user.login };
-		ret.message = null;
-		logger.error('[User] User/nickname '+user.login+' already exists, cannot create it');
-		throw ret;
-	}	
+	user.avatar_file = user.avatar_file || 'blank.png';
+	user.flag_online = user.flag_online || 1;
+	user.flag_admin = user.flag_admin || 0;
+	user.bio = user.bio || null;
+	user.url = user.url || null;
+	user.email = user.email || null;
+
+	await newUserIntegrityChecks(user);
+
+	if (user.password) {
+		user.password = hashPassword(user.password);
+	}
+
 	try {
 		await db.addUser(user);
-		if (user.type == 1) {
+		if (user.type === 1) {
 			await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
 			logger.info(`[User] Created user ${user.login}`);		
 			logger.debug(`[User] User data : ${JSON.stringify(user)}`);		
 		}
 		return true;
-	} catch(err) {
-		ret.code = 'USER_CREATION_ERROR';
-		ret.data = err;
+	} catch (err) {
 		logger.error(`[User] Unable to create user ${user.login} : ${err}`);
-		throw ret;
+		throw ({ code: 'USER_CREATION_ERROR', data: err});
 	}
 }
+
+async function newUserIntegrityChecks(user) {
+	if (user.id) {
+		throw ({ code: 'USER_WITH_ID'});
+	}
+	if (user.type === 1 && !user.password) {
+		throw ({ code: 'USER_EMPTY_PASSWORD'});
+	}
+	if (user.type === 2 && user.password) {
+		throw ({ code: 'GUEST_WITH_PASSWORD'});
+	}
+
+	// Check if login already exists.
+	if (await db.checkUserNameExists(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
+		logger.error('[User] User/nickname ' + user.login + ' already exists, cannot create it');
+		throw ({ code: 'USER_ALREADY_EXISTS', data: {username: user.login}});
+	}
+}
+
 
 export async function checkUserNameExists(username) {
 	return await db.checkUserNameExists(username);	
 }
 
-export async function deleteUser(username) {
-	if (!await db.checkUserNameExists(username)) {
-		const ret = {
-			code: 'USER_NOT_EXISTS',
-			args: username
-		};
-		logger.error(`[User] User ${username} does not exist, unable to delete it`);
-		throw ret;
-	}
+export async function deleteUser(username) {	
+	const user = await findUserByName(username);
+	if (!user) throw {code: 'USER_NOT_EXISTS'};
+	return await deleteUserById(user.id);	
+}
+
+export async function deleteUserById(id) {
+
 	try {
-		const user = await findUserByName(username);		
-		const playlist_id = await findFavoritesPlaylist(username);
-		await deletePlaylist(playlist_id, {force: true});
+		const user = await findUserByID(id);
+		if (!user) {
+			throw {code: 'USER_NOT_EXISTS'};
+		}
+		const playlist_id = await findFavoritesPlaylist(user.login);
+		if (playlist_id) {
+			await deletePlaylist(playlist_id, {force: true});
+		}
 		await db.deleteUser(user.id);
-		logger.debug(`[User] Deleted user ${username} (id ${user.id})`);
+		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
 		return true;
 	} catch (err) {
-		const ret = {
-			code: 'USER_DELETE_ERROR',
-			data: err
-		};
-		logger.error(`[User] Unable to delete user ${username} : ${err}`);
-		throw ret;
+		logger.error(`[User] Unable to delete user ${id} : ${err}`);
+		throw ({code: 'USER_DELETE_ERROR', data: err});
 	}
 }
 

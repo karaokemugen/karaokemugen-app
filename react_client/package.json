@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "semantic-ui-react": "^0.75.1",
-    "semantic-ui-css": "^2.2.12",
+    "antd": "^3.3.0",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
     "react-scripts": "1.0.17",
@@ -25,5 +24,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "proxy": { "/api/*": { "target": "http://localhost:1338", "secure": false }}
 }

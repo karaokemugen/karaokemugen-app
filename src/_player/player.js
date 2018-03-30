@@ -240,6 +240,7 @@ async function startmpv() {
 	if (conf.os === 'darwin' || conf.os === 'linux') socket = '/tmp/km-node-mpvsocket';	
 	player = new mpv(
 		{
+			ipc_command: '--input-ipc-server',
 			auto_restart: true,
 			audio_only: false,
 			binary: conf.BinmpvPath,
