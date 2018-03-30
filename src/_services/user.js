@@ -270,6 +270,26 @@ export async function deleteUser(username) {
 	}
 }
 
+export async function deleteUserById(id) {
+
+	try {
+		const user = await findUserByID(id);
+		if (!user) {
+			throw {code: 'USER_NOT_EXISTS'};
+		}
+		const playlist_id = await findFavoritesPlaylist(user.login);
+		if (playlist_id) {
+			await deletePlaylist(playlist_id, {force: true});
+		}
+		await db.deleteUser(user.id);
+		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
+		return true;
+	} catch (err) {
+		logger.error(`[User] Unable to delete user ${id} : ${err}`);
+		throw ({code: 'USER_DELETE_ERROR', data: err});
+	}
+}
+
 async function createDefaultGuests() {
 	const guests = await listGuests();
 	if (guests.length > 0) return 'No creation of guest account needed';			

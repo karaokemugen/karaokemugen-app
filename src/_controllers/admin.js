@@ -1,7 +1,7 @@
 import {getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
 import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js';
-import {editUser, createUser, findUserByID, listUsers} from '../_services/user';
+import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
 
@@ -37,7 +37,7 @@ module.exports = function adminController(router) {
 
 	});
 
-	router.post('/users/create', requireAuth, requireAdmin, (req, res) => {
+	router.post('/users/create', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		createUser(req.body)
 			.then(res.send('OK'))
 			.catch(err => res.status(500).send('Error while creating user: ' + err));
@@ -49,6 +49,11 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send('Error editing user: ' + err));			
 	});
 
+	router.delete('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		deleteUserById(req.params.userId)
+			.then(() => res.status(200).send('User deleted'))
+			.catch(err => res.status(500).send('Error deleting user: ' + err));
+	});
 
 	router.post('/db/resetviewcounts', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		resetViewcounts()
