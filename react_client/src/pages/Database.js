@@ -55,7 +55,7 @@ class Database extends Component {
 						onClick={this.dbregen.bind(this)}
 						active={!this.props.loadingActive}
 					>
-						Régénérer la base de données
+						Regenerate your database (wow wow)
 					</Button>
 				</div>
 				<div>
@@ -64,7 +64,7 @@ class Database extends Component {
 						onClick={this.dbupdate.bind(this)}
 						active={!this.props.loadingActive}
 					>
-						Mettre à jour les fichiers de la base
+						Update your karaoke base files from Shelter
 					</Button>
 				</div>
 				<div>
@@ -73,7 +73,7 @@ class Database extends Component {
 						onClick={this.dbresetviewcounts.bind(this)}
 						active={!this.props.loadingActive}
 					>
-						Réinitialiser le nombre de vues des karas
+						Reset song viewcounts
 					</Button>
 				</div>
 			</Layout.Content>

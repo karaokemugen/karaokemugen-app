@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
-import {Layout} from "antd";
+import {Layout} from 'antd';
 
 import {checkAuth} from '../actions/auth';
 

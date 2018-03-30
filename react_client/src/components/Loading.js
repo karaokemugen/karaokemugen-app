@@ -4,10 +4,10 @@ import {Alert, Spin} from 'antd';
 
 export default function Loading() {
 	return (
-		<Spin tip="Chargement en cours...">
+		<Spin tip="Loading...">
 			<Alert
-				message="Chargement"
-				description="Merci de patientier quelques instants."
+				message="Loading"
+				description="Please wait..."
 				type="info"
 			/>
 		</Spin>

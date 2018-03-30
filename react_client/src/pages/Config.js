@@ -32,7 +32,7 @@ class Config extends Component {
 	refresh() {
 		axios.get('/api/config')
 			.then(res => this.setState({config: this.configKeyValue(res.data), error: ''}))
-			.catch(err => this.props.errorMsg('Impossible de récupérer la configuration. ' + err));
+			.catch(err => this.props.errorMsg('Unable to fetch configuration ' + err));
 	}
 
 	configKeyValue = (data) => Object.entries(data).map(([k,v]) => ({key: k, value: v}));
@@ -45,7 +45,7 @@ class Config extends Component {
 					dataSource={this.state.config}
 					pagination={false}
 				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Rafraîchir</Button>
+				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 			</Layout.Content>
 		);
 	}

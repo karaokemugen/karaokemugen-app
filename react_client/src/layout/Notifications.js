@@ -26,7 +26,7 @@ class Notifications extends Component {
 				type="warning"
 				showIcon
 				closable onClose={this.props.dismissWarn}
-				message="Avertissement"
+				message="Warning"
 				description={this.props.warnmsg}
 			/>
 		) : null;
@@ -38,7 +38,7 @@ class Notifications extends Component {
 				type="error"
 				showIcon
 				closable onClose={this.props.dismissError}
-				message="Erreur"
+				message="Error"
 				description={this.props.errormsg}
 			/>
 		) : null;

@@ -23,7 +23,7 @@ class Karas extends Component {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Button type='primary' onClick={this.karagen.bind(this)} active={!this.props.loadingActive}>Générer les fichiers karas</Button>
+				<Button type='primary' onClick={this.karagen.bind(this)} active={!this.props.loadingActive}>Generate Kara files</Button>
 			</Layout.Content>
 		);
 	}

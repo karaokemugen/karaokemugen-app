@@ -31,7 +31,7 @@ class KMMenu extends Component {
 						openKeys={this.state.connectOpenKeys}
 					>
 						<Menu.Item key='user'><span><Icon type='user' />{this.props.username}</span></Menu.Item>
-						<Menu.Item key='logout'><Button icon='logout' onClick={this.props.logout}>Déconnexion</Button></Menu.Item>
+						<Menu.Item key='logout'><Button icon='logout' onClick={this.props.logout}>Log Out</Button></Menu.Item>
 					</Menu>
 				</div>
 			);
@@ -46,7 +46,7 @@ class KMMenu extends Component {
 						openKeys={this.state.connectOpenKeys}
 					>
 						<Menu.Item key='login' style={{float: 'right'}}>
-							<Button icon='login' onClick={() => this.props.push('/login')}>Connexion</Button>
+							<Button icon='login' onClick={() => this.props.push('/login')}>Log In</Button>
 						</Menu.Item>
 					</Menu>
 				</div>
@@ -63,13 +63,13 @@ class KMMenu extends Component {
 						theme='dark'
 						style={{ lineHeight: '56px' }}
 					>
-						<Menu.Item key='home'><Link to='/home'>Accueil</Link></Menu.Item>
+						<Menu.Item key='home'><Link to='/home'>Home</Link></Menu.Item>
 						<Menu.Item key='config'><Link to='/config'>Configuration</Link></Menu.Item>
 						<Menu.Item key='karas'><Link to='/karas'>Karas</Link></Menu.Item>
-						<Menu.Item key='db'><Link to='/db'>Base de données</Link></Menu.Item>
-						<Menu.SubMenu title='Utilisateurs'>
-							<Menu.Item key='userlist'><Link to='/users'>Liste des utilisateurs</Link></Menu.Item>
-							<Menu.Item key='newuser'><Link to='/users/create'>Nouvel utilisateur</Link></Menu.Item>
+						<Menu.Item key='db'><Link to='/db'>Database</Link></Menu.Item>
+						<Menu.SubMenu title='Users'>
+							<Menu.Item key='userlist'><Link to='/users'>User list</Link></Menu.Item>
+							<Menu.Item key='newuser'><Link to='/users/create'>Create new user</Link></Menu.Item>
 						</Menu.SubMenu>
 					</Menu>
 				</div>

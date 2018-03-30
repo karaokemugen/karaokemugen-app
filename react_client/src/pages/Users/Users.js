@@ -20,23 +20,23 @@ const columns = [{
 	dataIndex: 'avatar_file',
 	key: 'avatar_file',
 }, {
-	title: 'Login',
+	title: 'Username',
 	dataIndex: 'login',
 	key: 'login',
 }, {
-	title: 'Pseudo',
+	title: 'Nickname',
 	dataIndex: 'nickname',
 	key: 'nickname',
 }, {
-	title: 'Dernière connexion',
+	title: 'Last seen on',
 	dataIndex: 'last_login',
 	key: 'last_login',
 }, {
-	title: 'En ligne',
+	title: 'Logged in?',
 	dataIndex: 'flag_online',
 	key: 'flag_online',
 }, {
-	title: 'Administrateur',
+	title: 'Admin?',
 	dataIndex: 'flag_admin',
 	key: 'flag_admin',
 }];
@@ -75,7 +75,7 @@ class Users extends Component {
 					columns={columns}
 					rowKey='user_id'
 				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Rafraîchir</Button>
+				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 			</Layout.Content>
 		);
 	}

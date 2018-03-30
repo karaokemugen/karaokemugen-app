@@ -19,9 +19,9 @@ class UserForm extends Component {
 		const type = form.getFieldValue('type');
 		const id = form.getFieldValue('id');
 		if (type === '2' && value) {
-			callback('Un invité ne peut avoir de mot de passe');
+			callback('A guest cannot have a password');
 		} else if (type === '1' && !id && !value) {
-			callback('Un utilisateur doit avoir un mot de passe');
+			callback('A user must have a password');
 		} else {
 			callback();
 		}
@@ -51,8 +51,8 @@ class UserForm extends Component {
 						rules: [{required: true}],
 						initialValue: `${this.props.user.type}`
 					})(<Select>
-						<Select.Option value='1'>Utilisateur</Select.Option>
-						<Select.Option value='2'>Invité</Select.Option>
+						<Select.Option value='1'>User</Select.Option>
+						<Select.Option value='2'>Guest</Select.Option>
 					</Select>)}
 				</Form.Item>
 				<Form.Item hasFeedback>
@@ -62,7 +62,7 @@ class UserForm extends Component {
 					})(<Input
 						prefix={<Icon type='user'/>}
 						onPressEnter={this.handleSubmit}
-						placeholder='Login'
+						placeholder='Username'
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback>
@@ -72,7 +72,7 @@ class UserForm extends Component {
 						prefix={<Icon type='lock'/>}
 						type='password'
 						onPressEnter={this.handleSubmit}
-						placeholder='Mot de passe'
+						placeholder='Password'
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback>
@@ -81,7 +81,7 @@ class UserForm extends Component {
 						initialValue: this.props.user.nickname
 					})(<Input
 						onPressEnter={this.handleSubmit}
-						placeholder='Surnom'
+						placeholder='Nickname'
 					/>)}
 				</Form.Item>
 				<Form.Item>
@@ -93,13 +93,13 @@ class UserForm extends Component {
 							checked={this.state.adminChecked}
 							onChange={this.toggleAdmin}
 						>
-							Administrateur
+							Administrator
 						</Checkbox>
 					)}
 				</Form.Item>
 				<Form.Item>
 					<Button type='primary' htmlType='submit' className='login-form-button'>
-						Sauver
+						Save
 					</Button>
 				</Form.Item>
 			</Form>
