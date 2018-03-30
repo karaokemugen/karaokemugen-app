@@ -77,7 +77,6 @@ class UserForm extends Component {
 				</Form.Item>
 				<Form.Item hasFeedback>
 					{getFieldDecorator('nickname', {
-						rules: [{required: false}],
 						initialValue: this.props.user.nickname
 					})(<Input
 						onPressEnter={this.handleSubmit}
@@ -86,8 +85,7 @@ class UserForm extends Component {
 				</Form.Item>
 				<Form.Item hasFeedback>
 					{getFieldDecorator('bio', {
-						rules: [{required: false}],
-						initialValue: this.props.user.email
+						initialValue: this.props.user.bio
 					})(<Input
 						onPressEnter={this.handleSubmit}
 						placeholder='Bio'
@@ -95,7 +93,6 @@ class UserForm extends Component {
 				</Form.Item>
 				<Form.Item hasFeedback>
 					{getFieldDecorator('email', {
-						rules: [{required: false}],
 						initialValue: this.props.user.email
 					})(<Input
 						onPressEnter={this.handleSubmit}
@@ -104,8 +101,7 @@ class UserForm extends Component {
 				</Form.Item>
 				<Form.Item hasFeedback>
 					{getFieldDecorator('url', {
-						rules: [{required: false}],
-						initialValue: this.props.user.email
+						initialValue: this.props.user.url
 					})(<Input
 						onPressEnter={this.handleSubmit}
 						placeholder='Website'
