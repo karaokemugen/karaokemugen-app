@@ -281,7 +281,7 @@ async function createDefaultGuests() {
 	logger.debug(`[User] Creating ${maxGuests} default guest accounts`);
 	const guestsToCreate = sampleSize(defaultGuestNames, maxGuests);	
 	for (let i = 0; i < maxGuests; i++) {
-		if (!await findUserByName(guestsToCreate[i])) await addUser({
+		if (!await findUserByName(guestsToCreate[i])) await createUser({
 			login: guestsToCreate[i],
 			type: 2
 		});
@@ -306,14 +306,14 @@ export async function initUserSystem() {
 	// Check if a admin user exists
 	// Replace password by a random generated one once the welcome branch has been merged
 	
-	if (!await findUserByName('admin')) await addUser({
+	if (!await findUserByName('admin')) await createUser({
 		login: 'admin',
 		password: 'gurdil',
 	}, 'admin');
 
 	if (getConfig().isTest) {
 		if (!await findUserByName('adminTest')) {
-			await addUser({
+			await createUser({
 				login: 'adminTest',
 				password: 'ceciestuntest',
 			}, 'admin');
