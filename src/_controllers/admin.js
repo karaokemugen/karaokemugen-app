@@ -4,7 +4,6 @@ import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js
 import {editUser, createUser, findUserByID, listUsers} from '../_services/user';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
-import {createUser} from '../_services/user';
 
 module.exports = function adminController(router) {
 
