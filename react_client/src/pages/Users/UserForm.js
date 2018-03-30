@@ -93,6 +93,7 @@ class UserForm extends Component {
 				</Form.Item>
 				<Form.Item hasFeedback>
 					{getFieldDecorator('email', {
+						rules: [{type: 'email'}],
 						initialValue: this.props.user.email
 					})(<Input
 						onPressEnter={this.handleSubmit}
@@ -101,6 +102,7 @@ class UserForm extends Component {
 				</Form.Item>
 				<Form.Item hasFeedback>
 					{getFieldDecorator('url', {
+						rules: [{type: 'url'}],
 						initialValue: this.props.user.url
 					})(<Input
 						onPressEnter={this.handleSubmit}
