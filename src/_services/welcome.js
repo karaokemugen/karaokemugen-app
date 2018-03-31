@@ -24,7 +24,7 @@ export async function welcomeToYoukousoKaraokeMugen(port) {
 		opn('http://localhost:' + port + '/welcome?admpwd=' + adminPassword );
 	} else {
 		if (!conf.optNoBrowser) {
-			opn('http://localhost:' + port + '/admin');
+			opn('http://localhost:' + port + '/welcome');
 		}
 	}
 }
