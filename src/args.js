@@ -16,7 +16,8 @@ Options :
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
 --online      Launches in online mode (BETA)
---noVideo     (generation/validation only) Do not try to fetch data from video files
+--noBrowser   Do not open a browser window upon launch
+--noVideo     (generation only) Do not try to fetch data from video files
 `;
 
 export async function parseCommandLineArgs(argv) {	
@@ -62,6 +63,7 @@ export async function parseCommandLineArgs(argv) {
 		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
 		setConfig({isTest: true});
 	}
+	if (argv.noBrowser) setConfig({optNoBrowser: true});
 }
 
 

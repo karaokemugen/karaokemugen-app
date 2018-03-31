@@ -69,19 +69,19 @@ export async function editUser(username,user,avatar,role) {
 		if (!user.email) user.email = null;
 		if (user.flag_admin && role != 'admin') throw 'Admin flag permission denied';
 		// Check if login already exists.
-		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && currentUser.nickname != user.nickname) throw 'Nickname already exists';
-		user.NORM_nickname = deburr(user.nickname);		
+		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && editedUser.nickname != user.nickname) throw 'Nickname already exists';
+		user.NORM_nickname = deburr(user.nickname);	
 		if (user.password) {
 			user.password = hashPassword(user.password);
-			await db.updateUserPassword(username,user.password);
+			await db.updateUserPassword(user.id,user.password);
 		}
 		if (avatar) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in 
 			// database
-			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);	
+			user.avatar_file = await replaceAvatar(editedUser.avatar_file,avatar);	
 		} else {
-			user.avatar_file = currentUser.avatar_file;
+			user.avatar_file = editedUser.avatar_file;
 		}
 		await db.editUser(user);
 		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);	

@@ -1,7 +1,7 @@
 /**
  * @fileoverview Launcher source file
  */
-import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
+import {asyncCheckOrMkdir, asyncMkdirp, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
 import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {copy} from 'fs-extra';
@@ -117,7 +117,18 @@ function parseArgs() {
 async function checkPaths(config) {
 
 	const appPath = config.appPath;
-
+	
+	// If no karaoke is found, copy the samples directory if it exists
+	if (!await asyncExists(resolve(appPath, 'app/data'))) {
+		if (await asyncExists(resolve(appPath, 'samples'))) {
+			logger.debug('[Launcher] app/data is missing - copying samples inside');
+			await asyncMkdirp(resolve(appPath, 'app/data'));
+			await copy(
+				resolve(appPath, 'samples'),
+				resolve(appPath, 'app/data')
+			);
+		}
+	}	
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));

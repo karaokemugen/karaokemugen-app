@@ -11,6 +11,7 @@ import {emit,on} from '../_common/utils/pubsub';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
+import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
 import isEmpty from 'lodash.isempty';
@@ -18,7 +19,6 @@ import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
 import {openTunnel, closeTunnel} from '../_webapp/tunnel.js';
-
 const plc = require('./playlist');
 const logger = require('winston');
 const sleep = promisify(setTimeout);
@@ -192,6 +192,7 @@ export async function initEngine() {
 	logger.info(`[Engine] Karaoke Mugen is ${ready}`);
 	const catchphrase = sample(initializationCatchphrases);
 	console.log(`\n${catchphrase}\n`);
+	welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
 }
 
 export function exit(rc) {

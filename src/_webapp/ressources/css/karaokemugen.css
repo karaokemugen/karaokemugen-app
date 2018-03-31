@@ -1,6 +1,7 @@
 /* css admin3 */
 html {
 	height: 100%;
+	overflow: hidden;
 }
 body {
 	background-color: #1E2124;
@@ -18,7 +19,7 @@ body {
 }
 
 .header {
-	position: fixed;
+	position: absolute;
 	z-index: 2337;
 	background-color: #1E2124;
 	top: 0;
@@ -641,7 +642,7 @@ bdgc {
 	left: 50%;
     transform: translateX(-50%);
     position: fixed;
-	z-index: 10070;
+	z-index: 1000000070;
 	max-width:600px;
 	min-width:250px;
 }
@@ -652,7 +653,7 @@ bdgc {
 	padding: 10px;
 	margin: 7px;
     box-shadow: 2px 2px 1px #a5a5a5;
-	z-index: 10070;
+	z-index: 1000000070;
 	opacity: 0;
 	transition: opacity ease .5s;
 }
@@ -950,6 +951,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 
 .modal input[type="text"], .modal input[type="password"]:not([exclude="true"]) {
 	height: 50px;
+	max-height: 9vh;
 	border-radius: 0;
 }
 
@@ -1037,6 +1039,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 .modalPage .modal-message {
 	height: 100px;
+    max-height: 18vh;
 }
 .modalPage .modal-body > div {
 	padding: 5px;
@@ -1076,10 +1079,24 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .modal .modal-message div {
 	padding: 0;
 }
+.modal button.tour {
+	height: 100%;
+	width: 100%;
+	background-color: hsl(292, 45%, 28%);
+}
 .modal button.guest {
 	height: 100%;
 	width: 100%;
 	background-color: hsla(182, 45%, 28%, 1);
+}
+#loginModal .tour {
+	display: none;
+}
+#loginModal.firstRun .tour {
+	display: block;
+}
+#loginModal.hideLogin .loginRelated {
+	display: none;
 }
 .modal button.ok {
 	background-color: hsla(139, 14%, 22%, 1);
@@ -1305,12 +1322,51 @@ input[type="text"]:focus, input[type="password"]:focus {
 	border-color: hsla(208, 22%, 67%, 1);
 }
 
+.modal.introJsFix { z-index:999999997 !important; }
+.modal.introJsFix .introjs-fixedTooltip { z-index: 999999998 !important; }
+.modal.introJsFix .introjs-showElement { z-index: 999999999 !important; }
+.introjs-tooltipReferenceLayer { z-index: 1000000000 !important;}
+.introjs-overlay { opacity: 0.7; }
+.hideNext .introjs-nextbutton, .hideNext .btn-default:last-child { display: none;}
+
+.introjs-tooltip {
+	padding: 15px;
+	background-color: hsla(133, 15%, 24%, .97);
+	min-width: 360px;
+	max-width: 500px;
+	border-radius: 0px;
+	box-shadow: 0 1px 10px hsla(133, 15%, 24%, 0.4);
+}
+.introjs-tooltiptext {
+    font-size: 14.5px;
+}
+.introjs-tooltiptext a {
+	color: hsla(208, 56%, 76%, 1);
+}
+.introjs-tooltipbuttons {
+	margin-top: 5px;
+}
+.introjs-helperLayer {
+	border: none;
+	border-radius: 0;
+}
+
 @media (max-width: 1025px) {
 	.playlistContainer[flipped]:after {
 		background: url(/ressources/img/nanami_g_980w.jpg) no-repeat;
 		background-size: 100%;
 		background-position: 0 20%;
 	}
+}
+.introjs-tooltip.introBottom {
+	transform: translateY(240px);
+}
+.introjs-tooltip {
+	padding: 2.5vw;
+	min-width: 60vw;
+	max-width: 87vw;
+	border-radius: 0px;
+	box-shadow: 0 1px 10px hsla(133, 15%, 24%, 0.4);
 }
 
 .right {

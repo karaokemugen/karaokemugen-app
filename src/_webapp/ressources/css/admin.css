@@ -9,6 +9,12 @@
 #manage .bootstrap-switch-container > span {
 	line-height: 2.25;
 }
+#manage, #manage > .panel  {
+	height: calc(100% - 5px);
+}
+#manage > .panel {
+	overflow: auto;
+}
 
 .settingsGroupPanel {
 	padding: 16px 0px;

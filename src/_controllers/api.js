@@ -465,6 +465,87 @@ export function APIControllerAdmin(router) {
 				res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 			}
 		});
+	router.route('/users')
+		/**
+ * @api {post} /admin/users Create new user (as admin)
+ * @apiName PostUserAdmin
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission admin
+ *
+ * @apiParam {String} login Login name for the user
+ * @apiParam {String} password Password for the user
+ * @apiParam {String} role `admin` or `user`
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Boolean} data Returns `true` if success
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "USER_CREATED",
+ *   "data": true
+ * }
+ * @apiError USER_CREATE_ERROR Unable to create user
+ * @apiError USER_ALREADY_EXISTS This username already exists 
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "Axel",
+ *   "code": "USER_ALREADY_EXISTS",
+ *   "message": null
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req,res) => {
+			//Validate form data
+			req.check({
+				'login': {
+					in: 'body',
+					notEmpty: true,
+				},
+				'password': {
+					in: 'body',
+					notEmpty: true,
+				}
+			});
+			req.checkBody('role')
+				.notEmpty()
+				.enum(['admin',
+					'user'					
+				]
+				);
+			req.getValidationResult()
+				.then((result) => {
+					if (result.isEmpty()) {
+						// No errors detected
+						req.sanitize('login').trim();
+						req.sanitize('login').unescape();
+						req.sanitize('password').trim();
+						req.sanitize('password').unescape();
+						req.sanitize('role').trim();
+						req.sanitize('role').unescape();
+				
+						user.addUser(req.body,req.body.role)
+							.then(() => {
+								res.json(OKMessage(true,'USER_CREATED'));
+							})
+							.catch((err) => {
+								res.statusCode = 500;
+								res.json(errMessage(err.code,err.message));
+							});
+					} else {
+						// Errors detected
+						// Sending BAD REQUEST HTTP code and error object.
+						res.statusCode = 400;								
+						res.json(result.mapped());
+					}
+				});
+
+		});
+
 	router.route('/users/:username')
 	/**
  * @api {get} /admin/users/:username View user details (admin)
@@ -4072,6 +4153,7 @@ export function APIControllerPublic(router) {
  * @apiParam {String} bio User's bio info. Can be empty.
  * @apiParam {String} [email] User's mail. Can be empty.
  * @apiParam {String} [url] User's URL. Can be empty.
+ * @apiParam {String} [admin] Is User admin or not
  * @apiSuccess {String} args ID of user deleted
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of user deleted
@@ -4121,10 +4203,12 @@ export function APIControllerPublic(router) {
 				'password': {
 					in: 'body',
 					optional: true
+				},
+				'admin': {
+					in: 'body',
+					optional: true
 				}
-
 			});
-
 			const result = await req.getValidationResult();
 			if (result.isEmpty()) {
 				// No errors detected
@@ -4138,6 +4222,7 @@ export function APIControllerPublic(router) {
 				req.sanitize('url').unescape();
 				req.sanitize('nickname').unescape();
 				req.sanitize('login').unescape();
+				req.sanitize('admin').toInt();
 				//Now we add user
 				let avatar;
 				if (req.file) avatar = req.file;
@@ -4149,7 +4234,6 @@ export function APIControllerPublic(router) {
 					res.statusCode = 500;
 					res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
 				}
-						
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
@@ -4311,7 +4395,6 @@ export function APIControllerPublic(router) {
 					res.statusCode = 500;
 					res.json(errMessage('USER_UPDATE_ERROR',err.message,err.data));
 				}
-								
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.

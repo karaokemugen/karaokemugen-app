@@ -31,7 +31,7 @@
 }
 
 .header {
-	position: fixed;
+	position: absolute;
 	z-index: 1337;
 	background-color: #1E2124;
     top: 30px;
@@ -351,6 +351,9 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     display: none;
 }
 
+.introjs-tooltip {
+    background-color: hsla(25, 42%, 32%, 0.97)
+}
 
 @media (max-width: 1025px) {
     .toastMessage {
@@ -394,6 +397,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
         
     .header button.btn.favorites {
         order: 0;
+        display: block;
     }
         
     #searchParent ::-webkit-input-placeholder {
@@ -436,6 +440,11 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     
     .plInfos, .plBrowse {
         float: left;
+    }
+
+    #nav-signup input[type="text"],  #nav-signup input[type="password"]:not([exclude="true"]) {
+        max-height: 7vh;
+        min-height: 32px;
     }
 }
 

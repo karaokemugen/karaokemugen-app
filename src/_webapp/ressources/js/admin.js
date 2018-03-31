@@ -7,18 +7,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	// Listen for the jQuery ready event on the document
 	$(function () {
 
-		/* init selects & switchs */
-
-		$('[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event, state) {
-			if (state) {
-				$('#playlist').show();
-				$('#manage').hide();
-			} else {
-				$('#playlist').hide();
-				$('#manage').show();
-			}
-		});
-
 		// handling small touchscreen screens with big virtual keyboard
 
 		$('select[type="playlist_select"]').on('select2:open', function () {
@@ -61,18 +49,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 
-		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			var val = $(this).attr('nameCommand');
-			if(!val) val =  $(this).attr('name');
-
-			$.ajax({
-				url: 'admin/player',
-				type: 'PUT',
-				data: { command: val }
-			}).done(function () {
-				// refreshPlayerInfos();
-			});
-		});
 
 		$('button[action="poweroff"]').click(function () {
 			$.ajax({
@@ -102,9 +78,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			setSettings($(this));
 		});
 		$('#settings input[type!="checkbox"][exclude!="true"]').blur(function () {
-			setSettings($(this));
-		});
-		$('#settings input[type="checkbox"], input[name="EnginePrivateMode"]').on('switchChange.bootstrapSwitch', function () {
 			setSettings($(this));
 		});
 
@@ -333,6 +306,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			}
                 
 			$(this).toggleClass('btn-primary');
+
+			if(introManager && introManager._currentStep) {
+				introManager.nextStep();
+			}
 		});
         
 		$('.playlist-main').on('click', 'span[name="checkboxKara"]', function () {
@@ -437,7 +414,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				var input = $('[name="' + i + '"]');
 				// DEBUG && console.log(i, val);
 				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
-					if (input.attr('type') !== 'checkbox') {
+					if (input.attr('type') !== 'checkbox' || input.hasClass('hideInput')) {
 						input.val(val);
 					} else { // only checkbox here
 						val =  parseInt(val);
@@ -748,6 +725,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			scrollToKara(side, idKara, .55); 
 		}
 	};
+
 
 	// you know what it is
 	var k = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65], n = 0;

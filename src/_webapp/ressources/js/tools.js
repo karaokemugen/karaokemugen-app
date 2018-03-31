@@ -233,3 +233,219 @@ dataToDataAttribute = function(data) {
 	}).join(' ');
 	return result;
 };
+
+startIntro = function(mode){
+	if(!introManager) {
+		introManager = introJs();
+	} else {
+		introManager.goToStep(0);
+	}
+
+	var prefix = mode == 'admin' ? 'INTRO_ADMIN_' : 'INTRO_PUBLIC_';
+	var suffix = '_WIDE';
+	var introSteps = [];
+
+	if(mode =='admin') {
+		introSteps = [{
+			step: 1,
+			label: '1',
+			position: 'auto',
+			intro: i18n.__(prefix + 'INTRO1', query.admpwd), // add password
+		}, {
+			step: 2,
+			label: 'preLogin',
+			position: 'right',
+			element: $('#loginModal .modal-content').get(0),
+			intro: i18n.__(prefix + 'INTRO2'), 
+			tooltipClass : 'hideNext',
+		},{
+			step: 3,
+			label: 'afterLogin',
+			position: 'auto',
+			intro: i18n.__(prefix + 'INTRO3', 'NOMDUSUJET'), 
+		},{
+			step: 20,
+			label: 'last',
+			tooltipClass : 'hideNext',
+			position: 'auto',
+			intro: i18n.__(prefix + 'INTROFINAL'), 
+		}];
+
+		$('#loginModal').modal('show');
+		$('.nav-tabs a[href="#nav-signup"]').tab('show');
+	} else {	// public
+		introSteps = [{
+			step: 1,
+			label: 'preLogin',
+			position: isSmall ? 'bottom' : 'right',
+			element: $('#loginModal .modal-content').get(0),
+			intro: i18n.__(prefix + 'INTRO1'), 
+			tooltipClass : 'hideNext',
+		},{
+			step: 2,
+			label: 'afterLogin',
+			position: 'auto',
+			intro: i18n.__(prefix + 'INTRO2', 'NOMDUSUJET'), 
+		},{
+			step: 11,
+			label: 'karadetails',
+			position: 'auto',
+			intro: i18n.__(prefix + 'KARADETAILS')
+		},{
+			step: 17,
+			element: $('#underHeader').get(0),
+			label: 'change_screen',
+			position: 'auto',
+			requiresUser : true,
+			intro: i18n.__(prefix + 'CHANGE_SCREEN'),
+			tooltipClass : isTouchScreen ? 'hideNext' : '',
+		},{
+			step: 19,
+			element: $('#underHeader').get(0),
+			label: 'playlists',
+			position: 'auto',
+			intro: i18n.__(prefix + 'PLAYLISTS'), 
+		},{
+			step: 23,
+			element: $('#underHeader').get(0),
+			label: 'change_screen2',
+			position: 'auto',
+			requiresUser : true,
+			intro: i18n.__(prefix + 'CHANGE_SCREEN2'), 
+			tooltipClass : isTouchScreen ? 'hideNext' : ''
+		},{
+			step: 27,
+			label: 'last',
+			tooltipClass : 'hideNext',
+			position: 'auto',
+			intro: i18n.__(prefix + 'LAST'), 
+		}];
+
+		$('#loginModal').modal('show');
+		$('#loginModal').addClass('hideLogin');
+	}
+	
+	var specialOptions = {
+		'SETTINGS' : { tooltipClass : 'hideNext' },
+		'PLAYLISTS_MANAGE_BUTTON' :  { tooltipClass : 'hideNext' },
+		'MODE' : { disableInteraction : true },
+		'KARA' : { tooltipClass : 'hideNext' },
+	};
+	
+	$('[introStep]').each((k,v) => {
+		var label =  $(v).attr('introLabel').toUpperCase();
+		var position = $(v).attr('introPosition');
+		if(!position) position = 'auto';
+
+		var intro = i18n.__(prefix + label);
+		console.log(typeof i18n.__(prefix + label + suffix), i18n.__(prefix + label + suffix), prefix + label + suffix);
+		if(!isSmall && typeof i18n.__(prefix + label + suffix) != 'undefined') {
+			intro = i18n.__(prefix + label + suffix);
+		}
+		console.log(prefix + label + ' ' + position);
+		var options = {
+			requiresUser : $(v).attr('introRequiresUser') == 'true',
+			label: $(v).attr('introLabel'),
+			step: $(v).attr('introStep'),
+			position: position,
+			element: v,
+			intro: intro,
+		};
+		options = Object.assign(options, specialOptions[label]);
+		introSteps.push(options);
+	});
+
+	introSteps = introSteps.sort(function(a, b) {
+		return a.step - b.step;
+	});
+
+	introManager.setOptions({
+		steps: introSteps,
+		hideNext: true,
+		showBullets: false,
+		showStepNumbers: false,
+		exitOnOverlayClick: false,
+		nextLabel: i18n.__('INTRO_LABEL_NEXT'),
+		prevLabel: i18n.__('INTRO_LABEL_PREV'),
+		skipLabel: i18n.__('INTRO_LABEL_SKIP'),
+		doneLabel: i18n.__('INTRO_LABEL_DONE')
+	});
+			
+	introManager.onafterchange(function(targetElement) {
+		var label = introManager._introItems[this._currentStep].label;
+		console.log(label);
+		if(label == 'preLogin') {
+			$('#loginModal').modal('show');
+			if(mode === 'admin') {
+				$('.nav-tabs a[href="#nav-signup"]').tab('show');			
+				$('#signupRole').val('admin');
+			}
+			if(mode === 'public') {
+				$('#loginModal').removeClass('firstRun');
+				introManager.refresh();
+			}
+			$('#loginModal').addClass('introJsFix');
+		} else if (label == 'afterLogin') {
+			if($('#loginModal').hasClass('in')) {
+				$('#nav-signup .login').click();
+				$('#loginModal').modal('hide')
+					.removeClass('hideLogin');
+			}
+		} else if (label == 'settings') {
+			$('[name="kara_panel"]').bootstrapSwitch('state', true, false);
+		}
+	});
+
+	introManager.onchange(function(targetElement) {
+		
+		var element = introManager._introItems[this._currentStep];
+
+		var label = element.label;
+		if(label == 'afterLogin') {
+			var text = introManager._introItems[this._currentStep].intro;
+			text = text.replace('NOMDUSUJET', logInfos.username);
+			introManager._introItems[this._currentStep].intro = text;
+
+			introManager._introItems =  introManager._introItems.filter(function( obj ) {
+				return obj.requiresUser !== true;
+			});
+		} else if (label == 'karadetails') {
+			if( $('.detailsKara ').length > 0) {
+				introManager._introItems[this._currentStep].element = $('.detailsKara ').first().parent().get(0);
+			}
+		} else if (label == 'playlists') {
+			if(!isSmall) {
+				introManager._introItems[this._currentStep].element = $('#panel2').get(0);
+			}
+		} else if (label == 'menu') {
+			var menu = isSmall ? $('#menuMobile') : $('#menuPC') ;
+			menu.click();
+			if(!isSmall) {
+				introManager._introItems[this._currentStep].element = $('#menuPC').parent().find('ul').get(0);
+			}
+		} else if (label == 'change_screen2') {
+			$('#menuMobile').click();
+		} else if(label == 'last') {
+			$('.introjs-tooltipbuttons > a').first().text(i18n.__('INTRO_LABEL_DONE'));
+		}
+	});
+
+	introManager.onexit(() => {
+		if (scope === 'admin') {
+			var $appFirstRun = $('#settings [name="appFirstRun"]');
+			$appFirstRun.val(0);
+			setSettings($appFirstRun);
+		} else {
+			createCookie('publicTuto', 'true');
+			$('#loginModal').removeClass('firstRun');
+		}
+	});
+
+	introManager.start();
+
+	var buttons = $('.introjs-tooltipbuttons > a');
+	buttons.each((k, el) => {
+		$(el).attr('previousClass', $(el).attr('class'));
+	});
+	buttons.attr('class', 'btn btn-default' + (isTouchScreen ? ' btn-sm' : ' btn-xs' ));
+}
