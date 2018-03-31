@@ -301,8 +301,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
                 
 			$(this).toggleClass('btn-primary');
 
-			if(introJs && introJs._currentStep) {
-				introJs.nextStep();
+			if(introManager && introManager._currentStep) {
+				introManager.nextStep();
 			}
 		});
         

@@ -137,10 +137,10 @@ swipeManager.on('swipe', function (e) {
 		elem.css({transition: 'transform 1s ease'});
 		if(e.direction == 2 ) {
 			elem.css({transform: 'translateX('+ -1 * panelWidth+'px)'});
-			if(introJs && introJs._currentStep) introJs.goToStepNumber(19);
+			if(introManager && introManager._currentStep) introManager.goToStepNumber(19);
 		} else if (e.direction == 4) {
 			elem.css({transform: 'translateX(0)'});
-			if(introJs && introJs._currentStep) introJs.goToStepNumber(27);
+			if(introManager && introManager._currentStep) introManager.goToStepNumber(27);
 		}
 	}
 });
@@ -151,11 +151,7 @@ if(webappMode == 2) {
 	var publicTuto = readCookie('publicTuto');
 	if(!publicTuto) {
 		$('#loginModal').addClass('firstRun');
-		// TODO
 	}
-
-
-
 
 	// for each side
 	[1,2].forEach(function(side){

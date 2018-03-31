@@ -28,7 +28,7 @@ var socket;
 var settings;
 var kmStats;
 var i18n;
-var introJs;
+var introManager;
 
 /* promises */
 var scrollUpdating;
@@ -574,7 +574,7 @@ var settingsNotUpdated;
 			});
 		});
 		$('#nav-signup input').focus( function(){
-			if(introJs && typeof introJs._currentStep != 'undefined') {
+			if(introManager && typeof introManager._currentStep != 'undefined') {
 				setTimeout(() => {
 					if($(window).height() < 500)
 						$('.introjs-tooltip ').addClass('hidden');
@@ -582,9 +582,9 @@ var settingsNotUpdated;
 			}
 		});
 		$('#loginModal .nav-tabs a').click(function(){
-			if(introJs && typeof introJs._currentStep != 'undefined') {
+			if(introManager && typeof introManager._currentStep != 'undefined') {
 				setTimeout(() => {
-					introJs.refresh();
+					introManager.refresh();
 				}, 200);
 			}
 		});
@@ -615,10 +615,10 @@ var settingsNotUpdated;
 						$('#loginModal').modal('hide');
 						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
 						
-						if(scope === 'public' || introJs && introJs._currentStep) login(username, password);
+						if(scope === 'public' || introManager && introManager._currentStep) login(username, password);
 								
-						if(introJs && typeof introJs._currentStep !== 'undefined') {
-							introJs.nextStep();
+						if(introManager && typeof introManager._currentStep !== 'undefined') {
+							introManager.nextStep();
 						}
 					}).fail(function(response) {
 						//displayMessage('info','', i18n.__('LOG_ERROR'));
@@ -1602,7 +1602,7 @@ var settingsNotUpdated;
 				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
 				saveDetailsKara(idPlaylist, idKara, 'add');
 
-				if(introJs && introJs._currentStep) introJs.nextStep();
+				if(introManager && introManager._currentStep) introManager.nextStep();
 			});
 		} else if (infoKara.is(':visible')) {
 			saveDetailsKara(idPlaylist, idKara, 'remove');
@@ -1794,7 +1794,7 @@ var settingsNotUpdated;
 			$('#searchParent').css('width','100%');
 		}
 
-		if(!introJs || !introJs._currentStep) initSwitchs();
+		if(!introManager || !introManager._currentStep) initSwitchs();
 
 		$('.bootstrap-switch').promise().then(function(){
 			$(this).each(function(){
@@ -1870,8 +1870,8 @@ var settingsNotUpdated;
 				} else {
 					$('#playlist').hide();
 					$('#manage').show();
-					if(introJs && introJs._currentStep) {
-						introJs.nextStep();
+					if(introManager && introManager._currentStep) {
+						introManager.nextStep();
 					}
 				}
 			});
@@ -1911,8 +1911,8 @@ var settingsNotUpdated;
 				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
 				initApp();
 				
-				if(introJs && typeof introJs._currentStep !== 'undefined') {
-					introJs.nextStep();
+				if(introManager && typeof introManager._currentStep !== 'undefined') {
+					introManager.nextStep();
 				}
 
 				deferred.resolve();
