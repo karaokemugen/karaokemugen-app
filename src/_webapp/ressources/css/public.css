@@ -439,6 +439,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     }
     #nav-signup input[type="text"],  #nav-signup input[type="password"]:not([exclude="true"]) {
         max-height: 7vh;
+        min-height: 32px;
     }
 }
 

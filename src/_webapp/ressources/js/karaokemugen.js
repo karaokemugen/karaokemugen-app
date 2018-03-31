@@ -573,7 +573,14 @@ var settingsNotUpdated;
 				// console.log(components);
 			});
 		});
-
+		$('#nav-signup input').focus( function(){
+			if(introJs && typeof introJs._currentStep != 'undefined') {
+				setTimeout(() => {
+					if($(window).height() < 500)
+						$('.introjs-tooltip ').addClass('hidden');
+				}, 700);
+			}
+		});
 		$('#loginModal .nav-tabs a').click(function(){
 			if(introJs && typeof introJs._currentStep != 'undefined') {
 				setTimeout(() => {
