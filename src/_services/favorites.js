@@ -1,5 +1,5 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
-import {getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, translateKaraInfo, filterPlaylist} from '../_services/playlist';
+import {getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini, translateKaraInfo, filterPlaylist} from '../_services/playlist';
 import {listUsers, checkUserNameExists} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_common/utils/date';
@@ -7,7 +7,7 @@ import {date} from '../_common/utils/date';
 export async function getFavorites(username, filter, lang, from, size) {
 	try {
 		const plInfo = await getFavoritesPlaylist(username);
-		const pl = await getPlaylistContents(plInfo.playlist_id);
+		const pl = await getPlaylistContentsMini(plInfo.playlist_id);
 		let karalist = translateKaraInfo(pl,lang);
 		if (filter) karalist = filterPlaylist(karalist,filter);
 		return {
@@ -39,7 +39,7 @@ export async function addToFavorites(username, kara_id) {
 
 export async function deleteFavorite(username, kara_id) {
 	const plInfo = await getFavoritesPlaylist(username);
-	const plContents = await getPlaylistContents(plInfo.playlist_id);
+	const plContents = await getPlaylistContentsMini(plInfo.playlist_id);
 	let plc_id;
 	const isKaraInPL = plContents.some((plc) => {
 		if (plc.kara_id === kara_id) {
@@ -64,7 +64,7 @@ async function getAllFavorites(userList) {
 			logger.error(`[AutoMix] Username ${user} does not exist`);
 		} else {
 			const plInfo = await getFavoritesPlaylist(user);
-			const pl = await getPlaylistContents(plInfo.playlist_id,user);
+			const pl = await getPlaylistContentsMini(plInfo.playlist_id);
 			// Each PLC is pushed into a list if the kara_id doesn't exist already to avoid duplicates.
 			// Later on we could use that to give more weight to some karaokes
 			pl.forEach((plItem) => {
