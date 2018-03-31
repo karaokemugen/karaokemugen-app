@@ -476,12 +476,6 @@ var settingsNotUpdated;
 			});
 		});
 
-		/* set the right value for switchs */
-		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			$(this).val($(this).is(':checked') ? '1' : '0');
-		});
-
-
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
@@ -1794,7 +1788,7 @@ var settingsNotUpdated;
 			$('#searchParent').css('width','100%');
 		}
 
-		if(!introManager || !introManager._currentStep) initSwitchs();
+		initSwitchs();
 
 		$('.bootstrap-switch').promise().then(function(){
 			$(this).each(function(){
@@ -1838,7 +1832,7 @@ var settingsNotUpdated;
     * Init bootstrapSwitchs
     */
 	initSwitchs = function () {
-		$('input[switch="onoff"],[name="EnginePrivateMode"],[name="kara_panel"],[name="lyrics"]').bootstrapSwitch('destroy', true);
+		$('input[switch="onoff"],[name="EnginePrivateMode"],[name="kara_panel"],[name="lyrics"],#settings input[type="checkbox"]').bootstrapSwitch('destroy', true);
 
 		$('input[switch="onoff"]').bootstrapSwitch({
 			wrapperClass: 'btn btn-default',
@@ -1875,7 +1869,18 @@ var settingsNotUpdated;
 					}
 				}
 			});
+			
+			$('#settings input[type="checkbox"], input[name="EnginePrivateMode"]').on('switchChange.bootstrapSwitch', function () {
+				setSettings($(this));
+			});
+
 		}
+					
+		/* set the right value for switchs */
+		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
+			$(this).val($(this).is(':checked') ? '1' : '0');
+		});
+
 		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			var val = $(this).attr('nameCommand');
 			if(!val) val =  $(this).attr('name');

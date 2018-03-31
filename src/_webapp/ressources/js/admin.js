@@ -76,9 +76,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		$('#settings input[type!="checkbox"][exclude!="true"]').blur(function () {
 			setSettings($(this));
 		});
-		$('#settings input[type="checkbox"], input[name="EnginePrivateMode"]').on('switchChange.bootstrapSwitch', function () {
-			setSettings($(this));
-		});
 
 		$('#settings input').focus(function () {
 			$(this).attr('oldValue', $(this).val());
@@ -408,7 +405,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				var input = $('[name="' + i + '"]');
 				// DEBUG && console.log(i, val);
 				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
-					if (input.attr('type') !== 'checkbox') {
+					if (input.attr('type') !== 'checkbox' || input.hasClass('hideInput')) {
 						input.val(val);
 					} else { // only checkbox here
 						val =  parseInt(val);
