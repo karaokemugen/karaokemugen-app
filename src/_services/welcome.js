@@ -19,7 +19,7 @@ function generateAdminPassword() {
 
 export async function welcomeToYoukousoKaraokeMugen(port) {	
 	const conf = getConfig();
-	if (conf.appFirstRun == 1) {
+	if (+conf.appFirstRun == 1) {
 		const adminPassword = generateAdminPassword();
 		opn('http://localhost:' + port + '/welcome?admpwd=' + adminPassword );
 	} else {
