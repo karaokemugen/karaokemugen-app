@@ -472,44 +472,47 @@ export async function getPLCByKID(kid,playlist_id) {
 }
 
 export function filterPlaylist(playlist,searchText) {
+	function cleanStr(string) {
+		return string.toLowerCase().replace('\'','');
+	}
 	function textSearch(kara) {
 		searchText = deburr(searchText);
-		searchText = searchText.toLowerCase();
+		searchText = cleanStr(searchText)
 		let searchOK = [];
 		const searchWords = searchText.split(' ');
 		let searchWordID = 0;
 		searchWords.forEach((searchWord) => {
 			searchOK[searchWordID] = false;					
 			if (!isEmpty(kara.NORM_title)) {
-				if (kara.NORM_title.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+				if (cleanStr(kara.NORM_title).includes(searchWord)) searchOK[searchWordID] = true;
 			}
 			if (!isEmpty(kara.NORM_author)) {
-				if (kara.NORM_author.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+				if (cleanStr(kara.NORM_author).includes(searchWord)) searchOK[searchWordID] = true;
 			}
 			if (!isEmpty(kara.NORM_serie)) {
-				if (kara.NORM_serie.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+				if (cleanStr(kara.NORM_serie).includes(searchWord)) searchOK[searchWordID] = true;
 			}
 			if (!isEmpty(kara.NORM_serie_altname)) {
-				if (kara.NORM_serie_altname.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+				if (cleanStr(kara.NORM_serie_altname).includes(searchWord)) searchOK[searchWordID] = true;
 			}
 			if (!isEmpty(kara.NORM_singer)) {
-				if (kara.NORM_singer.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+				if (cleanStr(kara.NORM_singer).includes(searchWord)) searchOK[searchWordID] = true;
 			}
 			if (!isEmpty(kara.NORM_creator)) {
-				if (kara.NORM_creator.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+				if (cleanStr(kara.NORM_creator).includes(searchWord)) searchOK[searchWordID] = true;
 			}					
 			if (!isEmpty(kara.songtype_i18n_short)) {
-				if (kara.songtype_i18n_short.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+				if (cleanStr(kara.songtype_i18n_short).includes(searchWord)) searchOK[searchWordID] = true;
 				//Allows searches for "OP1", "OP2", and such to work.
 				let songorder = kara.songorder;
 				if (songorder === 0) songorder = '';
-				if ((kara.songtype_i18n_short.toLowerCase()+songorder).includes(searchWord)) searchOK[searchWordID] = true;
+				if ((cleanStr(kara.songtype_i18n_short)+songorder).includes(searchWord)) searchOK[searchWordID] = true;
 			}
 			if (!isEmpty(kara.misc_i18n)) {
-				if (kara.misc_i18n.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+				if (cleanStr(kara.misc_i18n).includes(searchWord)) searchOK[searchWordID] = true;
 			}
 			if (!isEmpty(kara.language_i18n)) {						
-				if (deburr(kara.language_i18n).toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;						
+				if (cleanStr(deburr(kara.language_i18n)).includes(searchWord)) searchOK[searchWordID] = true;						
 			}
 			searchWordID++;
 		});
