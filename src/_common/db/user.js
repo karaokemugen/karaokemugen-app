@@ -16,6 +16,10 @@ export const testUserID = `SELECT pk_id_user
 								WHERE pk_id_user = $id;
 						  `;
 
+export const reassignPlaylistToUser = 'UPDATE playlist SET fk_id_user = $id WHERE fk_id_user = $old_id;';
+
+export const reassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_id_user = $id WHERE fk_id_user = $old_id;';								
+
 export const selectUserByID = `SELECT u.pk_id_user AS id,
     							u.type AS type,
 								u.login AS login,

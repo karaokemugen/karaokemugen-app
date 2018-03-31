@@ -263,6 +263,8 @@ export async function deleteUserById(id) {
 		if (playlist_id) {
 			await deletePlaylist(playlist_id, {force: true});
 		}
+		//Reassign karas dans playlists owned by the user to the admin user
+		await db.reassignToUser(user.id,1);
 		await db.deleteUser(user.id);
 		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
 		return true;
