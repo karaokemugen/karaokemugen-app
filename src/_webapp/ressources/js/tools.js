@@ -384,7 +384,7 @@ startIntro = function(mode){
 				$('#loginModal').removeClass('firstRun');
 				introManager.refresh();
 			}
-			$('#loginModal').addClass('introManagerFix');
+			$('#loginModal').addClass('introJsFix');
 		} else if (label == 'afterLogin') {
 			if($('#loginModal').hasClass('in')) {
 				$('#nav-signup .login').click();
