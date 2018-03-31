@@ -109,8 +109,12 @@ export async function initFavoritesSystem() {
 		await listUsers()
 	]);	
 	for (const user of users) {		
+		console.log(user);
 		const isFavoritePLExists = playlists.some(pl => {
-			if (pl.fk_user_id == user.user_id && pl.flag_favorites == 1 && user.type == 1) return true;
+			if (pl.fk_user_id == user.user_id && pl.flag_favorites == 1 && user.type == 1) {
+				console.log('faves exist for '+user.login);
+				return true;
+			} 
 			return false;
 		});
 		if (!isFavoritePLExists) await createPlaylist('Faves : '+user.login,0,0,0,1,user.login);

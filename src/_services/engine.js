@@ -187,7 +187,9 @@ export async function initEngine() {
 		logger.info('[Engine] Initial public playlist created');
 	}
 	await Promise.all(inits);
-	logger.info('[Engine] Initialization complete');
+	let ready = 'READY';
+	if (Math.floor(Math.random() * Math.floor(10)) >= 7) ready = 'LADY';
+	logger.info(`[Engine] Karaoke Mugen is ${ready}`);
 	const catchphrase = sample(initializationCatchphrases);
 	console.log(`\n${catchphrase}\n`);
 }

@@ -258,6 +258,7 @@ export async function deleteUserById(id) {
 		if (!user) {
 			throw {code: 'USER_NOT_EXISTS'};
 		}
+		if (user.login === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Human Instrumentality Project'};
 		const playlist_id = await findFavoritesPlaylist(user.login);
 		if (playlist_id) {
 			await deletePlaylist(playlist_id, {force: true});
