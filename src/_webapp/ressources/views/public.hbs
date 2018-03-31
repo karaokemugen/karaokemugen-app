@@ -1,6 +1,6 @@
 <div id="header" class="header"  introStep="7" introLabel="search">
     <div class="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12 headerInputs">
-        <button class="btn btn-action btn-default favorites" introStep="15" introLabel="favorites"><i class="glyphicon glyphicon-star"></i></button>
+        <button class="btn btn-action btn-default favorites" introStep="15" introLabel="favorites" introRequiresUser="true"><i class="glyphicon glyphicon-star"></i></button>
         <div class="plSearch" id="searchParent" style="width: 100%;">
             <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist"/>
         </div>
@@ -15,7 +15,7 @@
     </div>
     <div class="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs">
         <div class="dropdown pull-right">
-            <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
+            <button class="btn btn-default btn-dark dropdown-toggle" id="menuPC" type="button" data-toggle="dropdown">
             </span><i class="glyphicon glyphicon-menu-hamburger"></i></button>
             <ul class="dropdown-menu">
                 <li><a href="#" class="changePseudo"><i class="glyphicon glyphicon-user"></i> {{i18n "ACCOUNT"}}</a></li>
