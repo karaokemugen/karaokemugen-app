@@ -4,7 +4,6 @@ import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/ut
 import {getConfig} from '../_common/utils/config';
 import {createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
-import isEmpty from 'lodash.isempty';
 import sampleSize from 'lodash.samplesize';
 import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
@@ -211,7 +210,7 @@ export async function createUser(user) {
 
 	try {
 		await db.addUser(user);
-		if (user.type === 1) {
+		if (user.type == 1) {
 			await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
 			logger.info(`[User] Created user ${user.login}`);		
 			logger.debug(`[User] User data : ${JSON.stringify(user)}`);		
