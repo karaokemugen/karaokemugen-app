@@ -289,7 +289,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     bottom: 12px;
     left: auto;
     right: 12px;
-    position: fixed;
+    position: absolute;
     padding-top: 15px;
     z-index: 9876;
 }
