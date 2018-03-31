@@ -296,8 +296,8 @@ startIntro = function(mode){
 			element: $('#underHeader').get(0),
 			label: 'change_screen',
 			position: 'auto',
-			requiresUser : true,
 			intro: i18n.__(prefix + 'CHANGE_SCREEN'),
+			requiresSmall: true,
 			tooltipClass : isTouchScreen ? 'hideNext' : '',
 		},{
 			step: 19,
@@ -310,8 +310,8 @@ startIntro = function(mode){
 			element: $('#underHeader').get(0),
 			label: 'change_screen2',
 			position: 'auto',
-			requiresUser : true,
 			intro: i18n.__(prefix + 'CHANGE_SCREEN2'), 
+			requiresSmall: true,
 			tooltipClass : isTouchScreen ? 'hideNext' : ''
 		},{
 			step: 27,
@@ -320,7 +320,6 @@ startIntro = function(mode){
 			position: 'auto',
 			intro: i18n.__(prefix + 'LAST'), 
 		}];
-
 		$('#loginModal').modal('show');
 		$('#loginModal').addClass('hideLogin');
 	}
@@ -407,7 +406,7 @@ startIntro = function(mode){
 			introManager._introItems[this._currentStep].intro = text;
 
 			introManager._introItems =  introManager._introItems.filter(function( obj ) {
-				return obj.requiresUser !== true;
+				return !(obj.requiresUser === true && (logInfos.role !== 'user' || logInfos.role !== 'admin') || (obj.requiresSmall == true && !isSmall))
 			});
 		} else if (label == 'karadetails') {
 			if( $('.detailsKara ').length > 0) {
@@ -423,9 +422,9 @@ startIntro = function(mode){
 			if(!isSmall) {
 				introManager._introItems[this._currentStep].element = $('#menuPC').parent().find('ul').get(0);
 			}
-		} else if (label == 'change_screen2') {
-			$('#menuMobile').click();
 		} else if(label == 'last') {
+			var menu = isSmall ? $('#menuMobile') : $('#menuPC') ;
+			menu.click();
 			$('.introjs-tooltipbuttons > a').first().text(i18n.__('INTRO_LABEL_DONE'));
 		}
 	});
