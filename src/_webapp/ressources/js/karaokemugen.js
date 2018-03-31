@@ -609,11 +609,8 @@ var settingsNotUpdated;
 						$('#loginModal').modal('hide');
 						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
 						
-						if(scope === 'public' || introManager && introManager._currentStep) login(username, password);
-								
-						if(introManager && typeof introManager._currentStep !== 'undefined') {
-							introManager.nextStep();
-						}
+						if(scope === 'public' || introManager &&  typeof introManager._currentStep !== 'undefined') login(username, password);
+					
 					}).fail(function(response) {
 						//displayMessage('info','', i18n.__('LOG_ERROR'));
 						$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
@@ -1793,7 +1790,7 @@ var settingsNotUpdated;
 			$('#searchParent').css('width','100%');
 		}
 
-		initSwitchs();
+		if(!introManager || !introManager._currentStep) initSwitchs(); 
 
 		$('.bootstrap-switch').promise().then(function(){
 			$(this).each(function(){
