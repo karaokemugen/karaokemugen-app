@@ -30,7 +30,7 @@ $(document).ready(function () {
 	});
 
 	$('.showSettings').click(function(){
-		displayModal('alert', $('#settingsPublicTitle').text(), $('#settingsPublicContent').html());
+		$('#settingsPublic').modal('show')
 	});
 
 	$('input[name="lyrics"]').on('switchChange.bootstrapSwitch', function () {
@@ -67,7 +67,10 @@ $(document).ready(function () {
     
 		$(this).data('opened', opened);
 	});
-  
+	$('.tourAgain').click(() => {
+		startIntro('public', 'afterLogin');
+		$('#settingsPublic').modal('hide')
+	});
 	$('#switchInfoBar').click(function(){
 		$(this).toggleClass('showLyrics');
 		if(  $(this).hasClass('showLyrics') ) {

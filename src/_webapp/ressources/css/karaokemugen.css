@@ -1079,7 +1079,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .modal .modal-message div {
 	padding: 0;
 }
-.modal button.tour {
+.modal button.tour, .modal button.tourAgain {
 	height: 100%;
 	width: 100%;
 	background-color: hsl(292, 45%, 28%);

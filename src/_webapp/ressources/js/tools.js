@@ -234,7 +234,7 @@ dataToDataAttribute = function(data) {
 	return result;
 };
 
-startIntro = function(mode){
+startIntro = function(mode, stepLabel){
 	if(!introManager) {
 		introManager = introJs();
 	} else {
@@ -272,7 +272,9 @@ startIntro = function(mode){
 		}];
 
 		$('#loginModal').modal('show');
-		$('.nav-tabs a[href="#nav-signup"]').tab('show');
+		$('.nav-tabs a[href="#nav-signup"]').tab('show');			
+		$('#signupRole').val('admin');
+
 	} else {	// public
 		introSteps = [{
 			step: 1,
@@ -320,8 +322,6 @@ startIntro = function(mode){
 			position: 'auto',
 			intro: i18n.__(prefix + 'LAST'), 
 		}];
-		$('#loginModal').modal('show');
-		$('#loginModal').addClass('hideLogin');
 	}
 	
 	var specialOptions = {
@@ -358,6 +358,11 @@ startIntro = function(mode){
 		return a.step - b.step;
 	});
 
+	if(stepLabel) {
+		var cutIndex = introSteps.findIndex(item => item.label === stepLabel);
+		introSteps = introSteps.slice(cutIndex);
+	}
+
 	introManager.setOptions({
 		steps: introSteps,
 		hideNext: true,
@@ -375,12 +380,10 @@ startIntro = function(mode){
 		console.log(label);
 		if(label == 'preLogin') {
 			$('#loginModal').modal('show');
-			if(mode === 'admin') {
-				$('.nav-tabs a[href="#nav-signup"]').tab('show');			
-				$('#signupRole').val('admin');
-			}
+			
 			if(mode === 'public') {
 				$('#loginModal').removeClass('firstRun');
+				$('#loginModal').addClass('hideLogin');
 				introManager.refresh();
 			}
 			$('#loginModal').addClass('introJsFix');
