@@ -18,6 +18,7 @@ import isEmpty from 'lodash.isempty';
 import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
+import {runKMUpdate} from '../_updater/software_updater.js';
 import {openTunnel, closeTunnel} from '../_webapp/tunnel.js';
 const plc = require('./playlist');
 const logger = require('winston');
@@ -151,8 +152,13 @@ export async function initEngine() {
 			logger.error(`[Updater] Update failed : ${err}`);
 			exit(1);
 		}
-		
-		
+	}
+	if (conf.optSoftUpdate) {
+		try {
+			await runKMUpdate();
+		} catch(err) {
+			logger.error(`[Updater] Software update failed : ${err}`);
+		}
 	}
 	//Database system is the foundation of every other system
 	await initDBSystem();
