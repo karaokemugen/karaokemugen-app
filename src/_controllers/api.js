@@ -1,5 +1,5 @@
 import logger from 'winston';
-import {setConfig, getConfig} from '../_common/utils/config';
+import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
