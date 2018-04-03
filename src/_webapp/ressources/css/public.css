@@ -327,6 +327,12 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     margin: 0;
     opacity: 0;
     transition: all .5s ease;
+
+    max-height: calc(100vh - 120px);
+    max-width: calc(100vw - 50px);
+    display: flex;
+    flex-wrap: wrap-reverse;
+    flex-direction: column;
 }
 
 .fixed-action-btn ul li {
