@@ -100,7 +100,10 @@ deploy_win:
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"    
+    - cd updater_info
+    - export RELFILE=`bash _ciPrepareInfoFiles.sh win32`
+    - cd ..
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip ; put updater_info/$RELFILE"    
   only:
     - master
     - next
@@ -127,7 +130,10 @@ deploy_osx:
     - cp -f ../bin/karaokemugen-app KaraokeMugen
     - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"    
+    - cd updater_info
+    - export RELFILE=`bash _ciPrepareInfoFiles.sh win32`
+    - cd ..
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip ; put updater_info/$RELFILE"    
   only:
     - master
     - next
