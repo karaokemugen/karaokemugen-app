@@ -1328,6 +1328,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 .introjs-tooltipReferenceLayer { z-index: 1000000000 !important;}
 .introjs-overlay { opacity: 0.7; }
 .hideNext .introjs-nextbutton, .hideNext .btn-default:last-child { display: none;}
+.hidePrev .introjs-nextbutton, .hidePrev .btn-default:nth-child(2) { display: none;}
 
 .introjs-tooltip {
 	padding: 15px;

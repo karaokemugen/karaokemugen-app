@@ -235,11 +235,7 @@ dataToDataAttribute = function(data) {
 };
 
 startIntro = function(mode, stepLabel){
-	if(!introManager) {
-		introManager = introJs();
-	} else {
-		introManager.goToStep(0);
-	}
+	introManager = introJs();
 
 	var prefix = mode == 'admin' ? 'INTRO_ADMIN_' : 'INTRO_PUBLIC_';
 	var suffix = '_WIDE';
@@ -251,6 +247,7 @@ startIntro = function(mode, stepLabel){
 			label: '1',
 			position: 'auto',
 			intro: i18n.__(prefix + 'INTRO1', query.admpwd), // add password
+			tooltipClass : 'hidePrev',
 		}, {
 			step: 2,
 			label: 'preLogin',
@@ -282,7 +279,7 @@ startIntro = function(mode, stepLabel){
 			position: isSmall ? 'bottom' : 'right',
 			element: $('#loginModal .modal-content').get(0),
 			intro: i18n.__(prefix + 'INTRO1'), 
-			tooltipClass : 'hideNext',
+			tooltipClass : 'hideNext hidePrev',
 		},{
 			step: 2,
 			label: 'afterLogin',
@@ -366,6 +363,7 @@ startIntro = function(mode, stepLabel){
 	introManager.setOptions({
 		steps: introSteps,
 		hideNext: true,
+		hidePrev: true,
 		showBullets: false,
 		showStepNumbers: false,
 		exitOnOverlayClick: false,
