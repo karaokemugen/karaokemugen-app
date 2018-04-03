@@ -61,11 +61,13 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 		$('#adminMessage').click(function () {
-			displayModal('prompt', 'Message indispensable', 
+			displayModal('custom', 'Message indispensable', 
 				'<select class="form-control" name="destination"><option value="screen">' + i18n.__('CL_SCREEN') + '</option>'
 																+ '<option value="users">' + i18n.__('CL_USERS') + '</option><option value="all">' + i18n.__('CL_ALL') + '</option></select>'
-																+ '<input type="text"name="duration" placeholder="5000 (ms)"/>', function(data){
-					var msgData =  { message: data.modalInput, destination : data.destination };
+																+ '<input type="text"name="duration" placeholder="5000 (ms)"/>'
+																+ '<input type="text" placeholder="Message" class="form-control" id="message" name="message">', function(data){
+																	
+					var msgData =  { message: data.message, destination : data.destination };
 					if (data.duration) {
 						msgData['duration'] = data.duration; 
 					}
