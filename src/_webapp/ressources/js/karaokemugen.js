@@ -336,6 +336,8 @@ var settingsNotUpdated;
 						.hide().fadeIn(animTime));
 				} else if (!lyricsKara.is(':visible')) {
 					lyricsKara.fadeIn(animTime);
+				} else {
+					lyricsKara.fadeOut(animTime);
 				}
 				$.ajax({ url: 'public/karas/' + idKara + '/lyrics' }).done(function (data) {
 					liKara.find('.lyricsKaraLoad').html(data.join('<br/>'));
