@@ -279,6 +279,9 @@ a:active {
     height: 60px;
 }
 
+.dash_title {
+    text-transform: uppercase;
+}
 
 
   /* latin */

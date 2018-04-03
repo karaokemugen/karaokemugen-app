@@ -75,9 +75,9 @@
 	                                    </div>
 	                                </li>
 	                                <li>
-	                                    <div class="dash minutes_dash">
-	                                        <i class="digit glyphicon glyphicon-question-sign"></i>
-	                                        <div class="dash_title">FAQ</div>
+	                                    <div class="dash seconds_dash">
+                                            <i class="digit glyphicon glyphicon-user"></i>
+	                                        <div class="dash_title">{{i18n "WLCM_PUBLIC"}}</div>
 	                                    </div>
 	                                </li>
 	                                <li class="hidden">
@@ -87,9 +87,9 @@
 	                                    </div>
 									</li>
 	                                <li>
-	                                    <div class="dash seconds_dash">
-                                            <i class="digit glyphicon glyphicon-user"></i>
-	                                        <div class="dash_title">{{i18n "WLCM_PUBLIC"}}</div>
+	                                    <div class="dash minutes_dash">
+	                                        <i class="digit glyphicon glyphicon-question-sign"></i>
+	                                        <div class="dash_title">{{i18n "CL_HELP"}}</div>
 	                                    </div>
 	                                </li>
 	                            </ul>
@@ -117,7 +117,7 @@
                 break;
                 case 1: window.open(window.location.protocol + '//' + window.location.hostname + ':' + {{appAdminPort}},'_blank');
                 break;
-                case 2: window.open('http://mugen.karaokes.moe/docs/user-guide/faq/', '_blank');
+                case 2: window.open('http://mugen.karaokes.moe/docs/' + navigator.language, '_blank');
                 break;
                 case 4: window.open('/' + window.location.search,'_blank');
                 break;
