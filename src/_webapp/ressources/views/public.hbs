@@ -22,6 +22,7 @@
                 <li><a href="/admin" id="logAdmin" target="_blank"><i class="glyphicon glyphicon-wrench"></i> Admin</a></li>
                 <li><a href="#" class="showSettings"><i class="glyphicon glyphicon-info-sign"></i> {{i18n "HELP"}}</a></li>
                 <li><a href="#" onclick="endOfTheWorldAsWeKnowIt();"><i class="glyphicon glyphicon-gift"></i> {{i18n "4TH_IMPACT"}}</a></li>
+                <li><a href="#" class="logout"><i class="glyphicon glyphicon-off"></i> {{i18n "LOGOUT"}}</a></li>
             </ul>
         </div>
         <div class="pull-right btn-group switchParent">
@@ -120,6 +121,7 @@
     </a>
     <ul style="opacity: 0; display: none;" introStep="21" introLabel="menu">
         <li><a class="z-depth-3 btn-floating btn-large" onclick="endOfTheWorldAsWeKnowIt();" style="background-color:hsla(0, 71%, 14%, .4)"><i class="glyphicon glyphicon-gift"></i></a></li>
+        <li><a class="z-depth-3 btn-floating btn-large logout"  style="background-color:#111"><i class="glyphicon glyphicon-off"></i> </a></li>
         <li><a class="z-depth-3 btn-floating btn-large getLucky"  style="background-color:#111">   <img style="height: 80%;margin-top: 10%" src="/ressources/img/clover.png"></a></li>
         <li><a class="z-depth-3 btn-floating btn-large showSettings" style="background-color:#613114"><i class="glyphicon glyphicon-question-sign"></i></a></li>
         <li><a class="z-depth-3 btn-floating btn-large changePseudo" id="changePseudo" style="background-color:#431b50"><i class="glyphicon glyphicon-user"></i></a></li>
@@ -260,9 +262,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                         <button class="logout btn btn-sm btn-default pull-right" type="button"
-                                data-toggle="tooltip"><i class="glyphicon glyphicon-off"></i>
-                        </button>
+                        
                     </div>
 
                 </div>

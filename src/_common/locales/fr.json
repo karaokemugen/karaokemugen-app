@@ -393,7 +393,7 @@
 	"INTRO_PUBLIC_INTRO2": "Bonjour %s !<br /><br /> <b>Karaoke Mugen</b> est se compose de 2 écrans : <br />L'écran de recherche (en arrière-plan actuellement), et l'écran de consultation.",
 	"INTRO_PUBLIC_INTRO2_WIDE": "Bonjour %s !<br /><br /> <b>Karaoke Mugen</b> est se compose en 2 parties : <br />L'écran de recherche (à droite), et l'écran de consultation (à gauche).",
 	"INTRO_PUBLIC_PROGRESSBAR": "Vous pouvez lire ici le nom de la chanson diffusée en ce moment.",
-	"INTRO_PUBLIC_SEARCH": "Si vous souhaitez ajouter un karaoké, vous pouvez le rechercher dans cette zone.",	
+	"INTRO_PUBLIC_SEARCH": "Si vous souhaitez ajouter un karaoké, vous pouvez le rechercher dans cette zone.",
 	"INTRO_PUBLIC_SEARCH_WIDE": "Si vous souhaitez ajouter un karaoké, vous pouvez le rechercher dans cette zone.<br /><br />Il est également possible de remplacer le titre de la chanson affiché par les paroles en cours via le bouton switch <i class='glyphicon glyphicon-info-sign'></i> / <i class='glyphicon glyphicon-subtitles'></i><br /><br />Enfin, si vous avez l’amour du risque, vous pouvez utiliser le bouton trèfle pour ajouter un karaoké aléatoire !",
 	"INTRO_PUBLIC_SEARCHRESULT": "Le résultat de votre recherche est affiché ici.<br />Vous pouvez faire défiler la liste à votre aise.<br /><br />Pour ajouter un Karaoke, faites le simplement glisser vers la droite.",
 	"INTRO_PUBLIC_SEARCHRESULT_WIDE": "Le résultat de votre recherche est affiché ici.<br />Vous pouvez faire défiler la liste à votre aise.<br /><br />Pour ajouter un Karaoke, cliquez simplement sur <i class='glyphicon glyphicon-plus'></i>.",
@@ -418,5 +418,6 @@
 	"QUOTA": "Restant :",
 	"FIRST_PUBLIC_RUN_WELCOME": "Il semble que ce soit votre 1ère fois ici !",
 	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE (~2 MIN)",
-	"_": "DO NOT MODIFY"	
+	"_": "DO NOT MODIFY",
+	"LOGOUT": "Déconnexion",
 }
