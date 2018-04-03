@@ -403,7 +403,7 @@ startIntro = function(mode, stepLabel){
 		var element = introManager._introItems[this._currentStep];
 
 		var label = element.label;
-		if(label == 'afterLogin') {
+		if(label === 'afterLogin') {
 			var text = introManager._introItems[this._currentStep].intro;
 			text = text.replace('NOMDUSUJET', logInfos.username);
 			introManager._introItems[this._currentStep].intro = text;
@@ -411,23 +411,27 @@ startIntro = function(mode, stepLabel){
 			introManager._introItems =  introManager._introItems.filter(function( obj ) {
 				return !(obj.requiresUser === true && (logInfos.role !== 'user' || logInfos.role !== 'admin') || (obj.requiresSmall == true && !isSmall))
 			});
-		} else if (label == 'karadetails') {
+		} else if (label === 'karadetails') {
 			if( $('.detailsKara ').length > 0) {
 				introManager._introItems[this._currentStep].element = $('.detailsKara ').first().parent().get(0);
 			}
-		} else if (label == 'playlists') {
+		} else if (label === 'playlists') {
 			if(!isSmall) {
 				introManager._introItems[this._currentStep].element = $('#panel2').get(0);
 			}
-		} else if (label == 'menu') {
+		} else if (label === 'menu') {
 			var menu = isSmall ? $('#menuMobile') : $('#menuPC') ;
 			menu.click();
 			if(!isSmall) {
 				introManager._introItems[this._currentStep].element = $('#menuPC').parent().find('ul').get(0);
 			}
-		} else if(label == 'last') {
-			var menu = isSmall ? $('#menuMobile') : $('#menuPC') ;
-			menu.click();
+		} else if(label === 'last') {
+			if(mode === 'public') {
+				var menu = isSmall ? $('#menuMobile') : $('#menuPC') ;
+				menu.click();
+			} else if (mode === 'admin') {
+				$('[name="kara_panel"]').bootstrapSwitch('state', true, false);
+			}
 			$('.introjs-tooltipbuttons > a').first().text(i18n.__('INTRO_LABEL_DONE'));
 		}
 	});
