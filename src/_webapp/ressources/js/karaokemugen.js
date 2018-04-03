@@ -254,7 +254,7 @@ var settingsNotUpdated;
 						$('select[type="playlist_select"]').change();
 					});
 				} else {
-					createCookie('plVal' + side, val, 365);
+					createCookie('mugenPlVal' + side, val, 365);
 
 					$('#playlist' + side).empty();
 					$('#searchPlaylist' + side).val('');
@@ -1314,9 +1314,10 @@ var settingsNotUpdated;
 		var deferred = $.Deferred();
 
 		var playlistList = {};
+		
 		var select1 = $('#selectPlaylist1'), select2 = $('#selectPlaylist2');
 		var val1 = select1.val(), val2 = select2.val();
-
+		
 		$.ajax({ url: scope + '/playlists', }).done(function (data) {
 			playlistList = data; // object containing all the playlists
 			var shiftCount = 0;
@@ -1352,8 +1353,12 @@ var settingsNotUpdated;
 						select2.val(currentPlaylistId);
 					}
 				} else {
-					var plVal1Cookie = readCookie('plVal1');
-					var plVal2Cookie = readCookie('plVal2');
+					var plVal1Cookie = readCookie('mugenPlVal1');
+					var plVal2Cookie = readCookie('mugenPlVal2');
+					if (plVal1Cookie == plVal2Cookie) {
+						plVal2Cookie == null;
+						plVal1Cookie == null
+					}
 					select1.val(val1? val1 : plVal1Cookie ? plVal1Cookie : -1);
 					select2.val(val2? val2 : plVal2Cookie ? plVal2Cookie : playlistToAddId);
 				}
@@ -1534,11 +1539,11 @@ var settingsNotUpdated;
 			}
 			if (data.onTop != oldState.onTop) {
 				$('input[name="PlayerStayOnTop"]').bootstrapSwitch('state', data.onTop, true);
-				if(scope === 'admin') setSettings($('input[name="PlayerStayOnTop"]'));
+				//if(scope === 'admin') setSettings($('input[name="PlayerStayOnTop"]'));
 			}
 			if (data.fullscreen != oldState.fullscreen) {
 				$('input[name="PlayerFullscreen"]').bootstrapSwitch('state', data.fullscreen, true);
-				if(scope === 'admin') setSettings($('input[name="PlayerFullscreen"]'));
+				//if(scope === 'admin') setSettings($('input[name="PlayerFullscreen"]'));
 			}
 			if (data.volume != oldState.volume) {
 				var val = data.volume, base = 100, pow = .76;
@@ -2007,7 +2012,9 @@ var settingsNotUpdated;
 				settingsUpdating.done(function (){
 					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
 																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
-						playlistsUpdating = refreshPlaylistSelects();
+						playlistsUpdating.done(function() {
+							playlistsUpdating = refreshPlaylistSelects();
+						});
 
 						playlistsUpdating.done(function () {
 							refreshPlaylistDashboard(1);
