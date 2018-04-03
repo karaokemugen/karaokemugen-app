@@ -11,7 +11,7 @@ module.exports = function adminController(router) {
 		res.json(getConfig());
 	});
 
-	router.post('/config/backup', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/config/backup', requireAuth, requireValidUser, requireAdmin, (req, res) => {		
 		backupConfig()
 			.then(() => res.status(200).send('Configuration file backuped to config.ini.backup'))
 			.catch(err => res.status(500).send('Error backuping config file: ' + err));

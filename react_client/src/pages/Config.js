@@ -3,14 +3,14 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Layout, Button, Table} from 'antd';
 
-import {errorMessage} from '../actions/navigation';
+import {loading, infoMessage, errorMessage} from '../actions/navigation';
 
 const columns = [{
-	title: 'Propriété',
+	title: 'Property',
 	dataIndex: 'key',
 	key: 'key',
 }, {
-	title: 'Valeur',
+	title: 'Value',
 	dataIndex: 'value',
 	key: 'value',
 }];
@@ -66,7 +66,10 @@ class Config extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-	errorMsg: (message) => dispatch(errorMessage(message))
+	loading: (active) => dispatch(loading(active)),
+	infoMessage: (message) => dispatch(infoMessage(message)),
+	errorMessage: (message) => dispatch(errorMessage(message))
 });
+
 
 export default connect(null, mapDispatchToProps)(Config);

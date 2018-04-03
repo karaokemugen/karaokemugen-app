@@ -6,13 +6,14 @@ import osLocale from 'os-locale';
 import i18n from 'i18n';
 import {address} from 'ip';
 import logger from 'winston';
-require('winston-daily-rotate-file');
+import {copy} from 'fs-extra';
 import {asyncCheckOrMkdir, asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
 import {emit} from './pubsub';
 import {defaults} from './default_settings.js';
+require('winston-daily-rotate-file');
 
 /** Object containing all config */
 let config = {};
@@ -178,8 +179,8 @@ export async function backupConfig() {
 	// Create a backup of our config file. Just in case.
 	logger.debug('[Config] Making a backup of config.ini');
 	return await copy(
-		resolve(appPath, 'config.ini'),
-		resolve(appPath, 'config.ini.backup'),
+		resolve(config.appPath, 'config.ini'),
+		resolve(config.appPath, 'config.ini.backup'),
 		{ overwrite: true }
 	);	
 }
