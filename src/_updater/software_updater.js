@@ -27,7 +27,8 @@ async function launchUpdater() {
 	let binary = 'yagu';
 	if (conf.os === 'win32') binary = 'YAGU.exe';
 	const release = conf.versionNo.toLowerCase();
-	execa(`./updater/${binary}`,`http://mugen.karaokes.moe/downloads/${release}.${conf.os}.json`);
+	if (!await asyncExists(conf.appPath, '/updater/', binary)) throw 'YAGU binary not available, aborting update';
+	execa(`${conf.appPath}/updater/${binary}`,`http://mugen.karaokes.moe/downloads/${release}.${conf.os}.json`);
 	logger.info('[Updater] Exiting after launching software update');
 	process.exit(0);
 }
