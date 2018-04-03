@@ -37,6 +37,19 @@ class Config extends Component {
 
 	configKeyValue = (data) => Object.entries(data).map(([k,v]) => ({key: k, value: v}));
 
+	configBackup() {
+		this.props.loading(true);
+		axios.post('/api/config/backup')
+			.then(res => {
+				this.props.loading(false);
+				this.props.infoMessage(res.data);
+			})
+			.catch(err => {
+				this.props.loading(false);
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+	}
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
@@ -46,6 +59,7 @@ class Config extends Component {
 					pagination={false}
 				/>
 				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
+				<Button type='primary' onClick={this.configBackup.bind(this)}>Backup config file</Button>
 			</Layout.Content>
 		);
 	}

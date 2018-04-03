@@ -174,6 +174,16 @@ export async function setConfig(configPart) {
 	return getConfig();
 }
 
+export async function backupConfig() {
+	// Create a backup of our config file. Just in case.
+	logger.debug('[Config] Making a backup of config.ini');
+	return await copy(
+		resolve(appPath, 'config.ini'),
+		resolve(appPath, 'config.ini.backup'),
+		{ overwrite: true }
+	);	
+}
+
 export async function updateConfig(newConfig) {
 	savingSettings = true;		
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','appPath','os','EngineDefaultLocale'];

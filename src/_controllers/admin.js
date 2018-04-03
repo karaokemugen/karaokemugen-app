@@ -1,4 +1,4 @@
-import {getConfig} from '../_common/utils/config';
+import {backupConfig, getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
 import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
@@ -9,6 +9,12 @@ module.exports = function adminController(router) {
 
 	router.get('/config', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		res.json(getConfig());
+	});
+
+	router.post('/config/backup', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		backupConfig()
+			.then(() => res.status(200).send('Configuration file backuped to config.ini.backup'))
+			.catch(err => res.status(500).send('Error backuping config file: ' + err));
 	});
 
 	router.post('/db/regenerate', requireAuth, requireValidUser, requireAdmin, (req, res) => {
