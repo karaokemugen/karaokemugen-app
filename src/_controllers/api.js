@@ -527,7 +527,7 @@ export function APIControllerAdmin(router) {
 						req.sanitize('password').unescape();
 						req.sanitize('role').trim();
 						req.sanitize('role').unescape();
-						if (req.body.role = 'admin') req.body.flag_admin = 1;
+						if (req.body.role === 'admin') req.body.flag_admin = 1;
 						user.createUser(req.body)
 							.then(() => {
 								res.json(OKMessage(true,'USER_CREATED'));
