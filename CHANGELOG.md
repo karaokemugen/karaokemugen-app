@@ -8,6 +8,8 @@ You're also advised to read [the documentation](http://mugen.karaokes.moe/docs/
 ).
 [API documentation](http://mugen.karaokes.moe/apidoc/) has also been updated.
 
+Contributors for this version : @Aeden, @AxelTerizaki, @bcourtine, @Kmeuh, @mirukyu, @spokeek, @Ziassan
+
 ### New features
 
 - #7 The app can now be updated from within the control panel or with the `--updateSoft` command-line flag. (BETA)
