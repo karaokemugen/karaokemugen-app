@@ -56,6 +56,8 @@ Contributors for this version : @Aeden, @AxelTerizaki, @bcourtine, @Kmeuh, @miru
 
 ## v2.0.7 - 17/02/2018
 
+Below here, patch notes were written in french.
+
 Hé ben non c'était pas la dernière version la 2.0.6 vous y avez cru hein ?
 
 ### Correctifs
