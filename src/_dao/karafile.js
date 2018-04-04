@@ -120,6 +120,8 @@ export async function writeKara(karafile, karaData) {
 	if (karaData.isKaraModified === false) {
 		return;
 	}	
+	infosToWrite.datemodif = timestamp.now();
+	karaData.datemodif = infosToWrite.datemodif;
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
 
