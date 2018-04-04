@@ -103,7 +103,7 @@ deploy_win:
     - cd ../updater_info
     - export RELFILE=`bash _ciPrepareInfoFiles.sh win32`
     - cd ..
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip ; put updater_info/$RELFILE"    
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put build_win/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip ; put updater_info/$RELFILE"    
   only:
     - master
     - next
@@ -133,7 +133,7 @@ deploy_osx:
     - cd ../updater_info
     - export RELFILE=`bash _ciPrepareInfoFiles.sh win32`
     - cd ..
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip ; put updater_info/$RELFILE"    
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip ; put updater_info/$RELFILE"    
   only:
     - master
     - next
