@@ -131,7 +131,7 @@ deploy_osx:
     - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
     - cd ../updater_info
-    - export RELFILE=`bash _ciPrepareInfoFiles.sh win32`
+    - export RELFILE=`bash _ciPrepareInfoFiles.sh darwin`
     - cd ..
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip ; put updater_info/$RELFILE"    
   only:
