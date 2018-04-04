@@ -1,15 +1,24 @@
 # Versions
 
-## v2.1-rc1 "Gabriel Glandeuse" - 01/04/2018
+## v2.1-rc1 "Gabriel Glandeuse" - 10/04/2018
 
 Due to the many changes, you're advised to read the `config.ini.sample` file or the docs to find out about new settings.
 
+You're also advised to read [the documentation](http://mugen.karaokes.moe/docs/
+).
+[API documentation](http://mugen.karaokes.moe/apidoc/) has also been updated.
+
+Contributors for this version : @Aeden, @AxelTerizaki, @bcourtine, @Kmeuh, @mirukyu, @spokeek, @Ziassan
+
 ### New features
 
+- #7 The app can now be updated from within the control panel or with the `--updateSoft` command-line flag. (BETA)
+- #223 An interactive tutorial has been added for admins and users. A welcome screen has also been added, and the app will open a browser on startup.
 - #101 Video previews can be generated (if you switch the setting on) for users to check what the karaoke video looks like on their device.
 - #115 Added a user system to better manage permissions and create new features
-- #127 Remade the dashboard in ReactJS and added new features inside
-- #150 Viewcounts can be reset in the dashboard
+- #127 Remade the control panel in ReactJS and added new features inside
+- #150 Viewcounts can be reset in the control panel.
+- #247 Users can be managed from the control panel.
 - #151 Songs in lists now change colors if they're soon to be played, or have been played recently
 - #167 In public mode, song suggestions can be "liked" by users so the admin can get a better idea of what the public wants. Songs which receive enough "likes" don't count anymore in a user's quota.
 - #199 Added a favorites system. Users can add/remove favorite karaokes and add karas from that list.
@@ -17,11 +26,12 @@ Due to the many changes, you're advised to read the `config.ini.sample` file or 
 - #214 Current playlist now scrolls and follows the currently playing karaoke
 - #228 In private mode, makes sure people who didn't request many songs get priority
 - #234 `--validate` command-line argument to only validate .kara files (avoid generating database)
-- Many command-line arguments have been added. Run `npm start -- --help` to get a list.
+- Many command-line arguments have been added. Run `yarn start --help` to get a list.
 - #238 A bunch of new tags have been added to the file format
 - #240 `config.ini` is now reloaded if modified outside of the app while it's running
-- #248 Updating the karaoke base from Shelter can now be done within the app's dashboard, or via commandline with the `--updateBase` argument.
+- #248 Updating the karaoke base from Shelter can now be done within the app's control panel, or via commandline with the `--updateBase` argument.
 - #252 Wallpaper will now be changed once per version
+- #266 Added a button in control panel to backup your config.ini file (creates a config.ini.backup file)
 
 ### Enhancements
 
@@ -33,6 +43,7 @@ Due to the many changes, you're advised to read the `config.ini.sample` file or 
 - #239 "Play after" feature has been fixed.
 - #246 mpv is now restarted at once if the karaoke isn't running.
 - #261 Log files are now in their own directories
+- #267 Quotes are now ignored when doing searches
 
 ### Fixes
 
@@ -41,8 +52,11 @@ Due to the many changes, you're advised to read the `config.ini.sample` file or 
 - #236 Viewcounts are now kept even after a database regeneration
 - #251 Karaoke Mugen's URL font on connection info display during play/stop mode has been enlarged as it was difficult to read from afar.
 - #260 .kara files' `datemodif` information is now written correctly.
+- #244 Lyrics panel in kara information can now be closed.
 
 ## v2.0.7 - 17/02/2018
+
+Below here, patch notes were written in french.
 
 Hé ben non c'était pas la dernière version la 2.0.6 vous y avez cru hein ?
 

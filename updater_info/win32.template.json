@@ -1,0 +1,15 @@
+{
+    "version": "_NEWVERSION",
+    "files": [ 
+        {
+            "path": "http://mugen.karaokes.moe/downloads/KaraokeMugen-_RELEASE-win64.zip",
+            "output": "./",
+            "type": "zip"
+        }        
+    ],
+    "actions": [ 
+        {
+            "cmd": "./KaraokeMugen.exe"           
+        }        
+    ]
+}

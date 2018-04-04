@@ -3,9 +3,6 @@
 Master branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master) -
 Next branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next)
 
-
-Welcome to Karaoke Mugen.
-
 Karaoke Mugen is a playlist manager for video karaoke. It's made of a webapp and an engine. The webapp allows users to add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
 
 It works like a japanese karaoke where anyone can add songs one after another to a playlist with their smartphone, tablet or computer. Another mode allows users to add videos to a suggestion list the admin can then pick songs from.
@@ -36,17 +33,9 @@ Then launch `yarn` to install dependencies.
 yarn install
 ```
 
-### React
-
-Part of the web application is in reactJS and needs to be built :
-
-```sh
-yarn BuildReact
-```
-
 ### Samples
 
-Create a folder called `app/data` and put the contents of the `samples` folder inside to try it out.
+Samples (in the `samples` folder) will be automatically copied to `app/data` if it's empty.
 
 ### Launch
 
@@ -56,7 +45,9 @@ To launch the app :
 yarn start
 ```
 
-Generating a database ie required on first launch and is done automatically if the file `app/data/karas.sqlite3` is missing. You can trigger it manually later by connectiong to `http://localhost:1338` (default password for user `admin` is `gurdil`). Another way is to delete the `app/data/karas.sqlite3` and let the app regenerate it or launch with the `--generate` command-line option.
+Generating a database ie required on first launch and is done automatically if the file `app/db/karas.sqlite3` is missing. You can trigger it manually later by connectiong to `http://localhost:1338`. Another way is to delete the `app/db/karas.sqlite3` and let the app regenerate it or launch with the `--generate` command-line option.
+
+On first run, the app will invite you to create an admin user and follow a guided tour of the admin panel. You can trigger this tour/admin creation process again by adding appFirstRun=1` to your config file.
 
 ## System requirements
 
@@ -73,7 +64,7 @@ It requires :
 mpv (video player) and ffmpeg/ffprobe (video processing) are required by Karaoke Mugen
 
 * mpv 0.25 or up for Windows/Linux, 0.27 or up required for macOS ([mpv's website](http://mpv.io))
-* ffmpeg / ffprobe 3 or later ([ffmpeg's website](http://www.ffmpeg.org))
+* ffmpeg 3 or later ([ffmpeg's website](http://www.ffmpeg.org))
 
 #### Windows/macOS
 
@@ -83,9 +74,9 @@ You can also specify paths where to find those binaries in your `config.ini` fil
 
 #### Linux
 
-Make sure ffmpeg/ffprobe/mpv are available in `/usr/bin`. If that's not the case, modify those paths in `config.ini`
+Make sure ffmpeg/mpv are available in `/usr/bin`. If that's not the case, modify those paths in `config.ini`
 
-Linux distributions often package old versions of ffmpeg/ffprobe/mpv, update them first via their own websites' instructions.
+Linux distributions often package old versions of ffmpeg/mpv, update them first via their own websites' instructions.
 
 ## Languages
 
@@ -111,21 +102,21 @@ Currently french and english are supported. Translators are welcome!
   * In public mode, songs are added to a suggestion list. It's up to the admin to add songs from this list.
 * Export/import playlists
 * REST API so you can develop custom clients or web interfaces.
-* And many other things! Check out the [feature list](http://mugen.karaokes.moe/features.html) (in french only!)
+* And many other things! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
 
 ## How it works
 
 * See the download section
-* Place karaoke songs inside the `app/data` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://mugen.karaokes.moe/docs/user-guide/manage/) (in french)
+* Place karaoke songs inside the `app/data` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://mugen.karaokes.moe/docs/en/user-guide/manage/) (in french)
 * The webapp listens on port 1337 by default : `http://localhost:1337`
-* Switch to the admin panel via `http://localhost:1337/admin`. Default password is  `gurdil` and username can be anything you want. From there, you can manage your playlists and launch the karaoke session!
+* Switch to the admin panel via `http://localhost:1337/admin`. From there, you can manage your playlists and launch the karaoke session!
 
 In the repository mentionned above, you'll find a database of karaoke songs ready for use. Beware, it's about 160Gb big once the videos have been downloaded.
 
-For more information, check out the [documentation site!](http://mugen.karaokes.moe/docs/) (in french)
+For more information, check out the [documentation site!](http://mugen.karaokes.moe/docs/en/)
 
 ## How to contribute
 
-Read the [dedicated section on the documentation website](http://mugen.karaokes.moe/docs/dev-guide/code/) (in french for now!)
+Read the [dedicated section on the documentation website](http://mugen.karaokes.moe/docs/en/dev-guide/code/)
 
 Everything's there, and if you have questions, you can come to [our Discord](https://discord.gg/a8dMYek) in the #karaoke_dev section!
