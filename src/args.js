@@ -28,7 +28,7 @@ export async function parseCommandLineArgs(argv) {
 		process.exit(0);
 	}
 	if (argv.version) {
-		console.log('Karaoke Mugen '+ config.VersionNo + ' - (' + config.VersionName+')');
+		// Version number is already displayed so we exit here.
 		process.exit(0);
 	}
 	if (argv.generate && !argv.validate) {
