@@ -198,7 +198,7 @@ export async function initEngine() {
 	logger.info(`[Engine] Karaoke Mugen is ${ready}`);
 	const catchphrase = sample(initializationCatchphrases);
 	console.log(`\n${catchphrase}\n`);
-	welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
+	if (!conf.isTest) welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
 }
 
 export function exit(rc) {
