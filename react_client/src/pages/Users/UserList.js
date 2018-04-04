@@ -52,7 +52,7 @@ class UserList extends Component {
 				<Table
 					dataSource={this.state.users}
 					columns={this.columns}
-					rowKey='user_id'
+					rowKey='nickname'
 				/>
 				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 				<Modal
@@ -91,7 +91,7 @@ class UserList extends Component {
 	}, {
 		title: 'Avatar',
 		dataIndex: 'avatar_file',
-		key: 'avatar_file',
+		key: 'avatar_file',		
 		sorter: (a, b) => a.avatar_file.localeCompare(b.avatar_file)
 	}, {
 		title: 'Username',
