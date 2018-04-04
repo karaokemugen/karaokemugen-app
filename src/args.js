@@ -12,6 +12,7 @@ Options :
 --debug       Displays additional debug messages
 --generate    Generates a new database then quits
 --validate    Validates/checks/updates .kara files without writing a database then quits
+--strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
 --test        Launches in test mode
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
@@ -22,7 +23,6 @@ Options :
 `;
 
 export async function parseCommandLineArgs(argv) {	
-	const config = getConfig();
 	if (argv.help) {
 		console.log(help);
 		process.exit(0);
@@ -46,6 +46,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.validate && argv.generate) {
 		console.log('Error : --validate and --generate are mutually exclusive!');
 		process.exit(1);
+	}
+	if (argv.strict) {
+		logger.info('[Launcher] Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.');
+		setConfig({optStrict: true});
 	}
 	if (argv.karagen) {
 		logger.info('[Launcher] .kara generation requested');

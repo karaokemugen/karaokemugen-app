@@ -36,23 +36,31 @@ export function karaFilenameInfos(karaFile) {
 	};
 }
 
-export async function getDataFromKaraFile(karafile) {
+function strictModeError(karaData, data) {	
+	logger.error(`[Gen] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,'\n')}`);
+	error = true;
+}
 
+export async function getDataFromKaraFile(karafile) {
+	const conf = getConfig();
 	const karaData = await parseKara(karafile);
 	karaData.isKaraModified = false;
 
 	if (!karaData.KID) {
 		karaData.isKaraModified = true;
 		karaData.KID = uuidV4();
+		if (conf.optStrict) strictModeError(karaData, 'kid');
 	}
 	timestamp.round = true;
 	if (!karaData.dateadded) {
 		karaData.isKaraModified = true;
 		karaData.dateadded = timestamp.now();
+		if (conf.optStrict) strictModeError(karaData, 'dateadded');
 	}
 	if (!karaData.datemodif) {
 		karaData.isKaraModified = true;
 		karaData.datemodif = timestamp.now();
+		if (conf.optStrict) strictModeError(karaData, 'datemodif');
 	}
 	karaData.karafile = karafile;
 
@@ -89,9 +97,10 @@ export async function extractAssInfos(subFile, karaData) {
 		karaData.ass = karaData.ass.replace(/\r/g, '');
 		const subChecksum = checksum(karaData.ass);
 		// Disable checking the checksum for now
-		if (subChecksum != karaData.subchecksum) {
+		if (subChecksum != karaData.subchecksum) {			
 			karaData.isKaraModified = true;
 			karaData.subchecksum = subChecksum;
+			if (getConfig().optStrict) strictModeError(karaData, 'subchecksum');
 		}
 	} else {
 		karaData.ass = '';
@@ -99,10 +108,11 @@ export async function extractAssInfos(subFile, karaData) {
 }
 
 export async function extractVideoTechInfos(videoFile, karaData) {
-	if (!getConfig().optNoVideo) {
+	const conf = getConfig();
+	if (!conf.optNoVideo) {
 		const videoStats = await asyncStat(videoFile);
 		if (videoStats.size !== +karaData.videosize) {
-			karaData.isKaraModified = true;
+			karaData.isKaraModified = true;			
 			karaData.videosize = videoStats.size;
 
 			const videoData = await getVideoInfo(videoFile);
@@ -110,14 +120,14 @@ export async function extractVideoTechInfos(videoFile, karaData) {
 
 			karaData.videogain = videoData.audiogain;
 			karaData.videoduration = videoData.duration;
+			if (conf.optStrict) strictModeError(karaData, 'videosize/gain/duration');			
 		}
 	}
 }
 
 export async function writeKara(karafile, karaData) {
-
 	const infosToWrite = (getKara(karaData));	
-	if (karaData.isKaraModified === false) {
+	if (karaData.isKaraModified === false) {		
 		return;
 	}	
 	infosToWrite.datemodif = timestamp.now();
