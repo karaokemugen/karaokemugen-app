@@ -680,7 +680,7 @@ var settingsNotUpdated;
 						url: 'public/users/',
 						type: 'GET'})
 						.done(function (response) {
-							var users = [response.filter(a => a.flag_online==1), response.filter(a => a.flag_online==0)];
+							var users = [response.filter(a => a.flag_online==1)] //, response.filter(a => a.flag_online==0)];
 							var $userlist = $('.userlist');
 							var userlistStr = '';
 							users.forEach( (userList) => {
@@ -1833,7 +1833,7 @@ var settingsNotUpdated;
 			var $modal = $(modal);
 			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
 						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
-			$modal.find('.modal-body').css('max-height', $('body').height() - shrink + 'px');
+			$modal.find('.modal-body').css('max-height', $('body').height() - shrink - 15 + 'px');
 		});
 
 	};
