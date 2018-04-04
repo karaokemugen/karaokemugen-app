@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Button, Checkbox, Divider, Icon, Layout, Modal, Table} from 'antd';
+import {Avatar, Button, Checkbox, Divider, Icon, Layout, Modal, Table} from 'antd';
 
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 import {Link} from 'react-router-dom';
@@ -52,7 +52,7 @@ class UserList extends Component {
 				<Table
 					dataSource={this.state.users}
 					columns={this.columns}
-					rowKey='user_id'
+					rowKey='nickname'
 				/>
 				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 				<Modal
@@ -91,7 +91,8 @@ class UserList extends Component {
 	}, {
 		title: 'Avatar',
 		dataIndex: 'avatar_file',
-		key: 'avatar_file',
+		key: 'avatar_file',		
+		render: (text, record) => <Avatar shape="square" size="large" src={`/static/avatars/${record.avatar_file}`}/>,
 		sorter: (a, b) => a.avatar_file.localeCompare(b.avatar_file)
 	}, {
 		title: 'Username',

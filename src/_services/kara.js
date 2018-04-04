@@ -27,7 +27,7 @@ export function getKara(karaData) {
 		songwriter: karaData.songwriter || '',
 		creator: karaData.creator || '',
 		author: karaData.author || '',
-		lang: karaData.lang || '',
+		lang: karaData.lang || 'und',
 		KID: karaData.KID || uuidV4(),
 		dateadded: karaData.dateadded || timestamp.now(),
 		datemodif: karaData.datemodif || timestamp.now(),

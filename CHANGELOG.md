@@ -2,7 +2,7 @@
 
 ## v2.1-rc1 "Gabriel Glandeuse" - 10/04/2018
 
-Due to the many changes, you're advised to read the `config.ini.sample` file or the docs to find out about new settings.
+Due to the many changes in this version, you're advised to read the `config.ini.sample` file or the docs to find out about new settings.
 
 You're also advised to read [the documentation](http://mugen.karaokes.moe/docs/
 ).
