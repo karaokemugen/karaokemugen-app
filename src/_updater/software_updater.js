@@ -9,8 +9,9 @@ import execa from 'execa';
 const latestURL = 'http://mugen.karaokes.moe/downloads/latest';
 
 export async function runKMUpdate() {
+	throw 'Software updater is disabled in this version due to bugs.';
 	// Check if an update is necessary
-	try {
+	/* try {
 		const conf = getConfig();
 		if (!checkSystem()) throw 'System not compatible with self-updates, please update manually';	
 		let latestVersion = true;
@@ -19,7 +20,8 @@ export async function runKMUpdate() {
 		launchUpdater();
 	} catch(err) {
 		throw err;
-	}	
+	}
+	*/
 }
 
 async function launchUpdater() {
@@ -27,8 +29,10 @@ async function launchUpdater() {
 	let binary = 'yagu';
 	if (conf.os === 'win32') binary = 'YAGU.exe';
 	const release = conf.versionNo.toLowerCase();
-	if (!await asyncExists(conf.appPath, '/updater/', binary)) throw 'YAGU binary not available, aborting update';
-	execa(`${conf.appPath}/updater/${binary}`,`http://mugen.karaokes.moe/downloads/${release}.${conf.os}.json`);
+	const url = `http://mugen.karaokes.moe/downloads/${release}.${conf.os}.json`;
+	const binaryPath = resolve(conf.appPath,'/updater/',binary);
+	if (!await asyncExists(binaryPath)) throw 'YAGU binary not available, aborting update';
+	execa(binaryPath,url);
 	logger.info('[Updater] Exiting after launching software update');
 	process.exit(0);
 }

@@ -1,6 +1,6 @@
 # Versions
 
-## v2.1-rc1 "Gabriel Glandeuse" - 10/04/2018
+## v2.1-rc1 "Gabriel Glandeuse" - 05/04/2018
 
 Due to the many changes in this version, you're advised to read the `config.ini.sample` file or the docs to find out about new settings.
 
@@ -10,9 +10,12 @@ You're also advised to read [the documentation](http://mugen.karaokes.moe/docs/
 
 Contributors for this version : @Aeden, @AxelTerizaki, @bcourtine, @Kmeuh, @mirukyu, @spokeek, @Ziassan
 
+### Known bugs
+
+- Software updates (#7) are not working properly yet. This will be fixed in the final release. In the meantime it has been disabled.
+
 ### New features
 
-- #7 The app can now be updated from within the control panel or with the `--updateSoft` command-line flag. (BETA)
 - #223 An interactive tutorial has been added for admins and users. A welcome screen has also been added, and the app will open a browser on startup.
 - #101 Video previews can be generated (if you switch the setting on) for users to check what the karaoke video looks like on their device.
 - #115 Added a user system to better manage permissions and create new features
