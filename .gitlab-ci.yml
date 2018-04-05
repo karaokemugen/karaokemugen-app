@@ -36,7 +36,9 @@ test:
     - yarn start --debug --test &disown
     - bash test/run.sh
   only:
+    - master
     - next
+    - tags
 
 build:
   stage: build
@@ -99,7 +101,7 @@ deploy_win:
     - rm dist_win.tar.gz
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.ini.sample .
-    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
+    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *    
     - cd ../updater_info
     - export RELFILE=`bash _ciPrepareInfoFiles.sh win32`
     - cd ..
