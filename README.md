@@ -30,7 +30,7 @@ npm install -g yarn
 Then launch `yarn` to install dependencies.
 
 ```sh
-yarn install
+yarn setup
 ```
 
 ### Samples

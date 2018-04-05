@@ -33,7 +33,7 @@ test:
     - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
     - export LANG=en_US
     - node --version
-    - npm start -- --debug --test &disown
+    - yarn start --debug --test &disown
     - bash test/run.sh
   only:
     - next
@@ -45,7 +45,7 @@ build:
     paths:
       - dist/
   script:
-    - npm run-script build    
+    - yarn build
     - yarn install --production
     - cd node_modules
     - find -name *.node -delete
