@@ -99,6 +99,14 @@ deploy_win:
     - wget http://mugen.karaokes.moe/downloads/dist_win.tar.gz
     - tar xvzf dist_win.tar.gz
     - rm dist_win.tar.gz
+    - mkdir -p app/jingles
+    - cd app/jingles
+    - wget https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar
+    - tar xvf archive.tar
+    - mv -f jingles-master*/* .
+    - rm -Rf jingles-master*    
+    = rm -f archive.tar
+    - cd ../..
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *    
@@ -129,6 +137,14 @@ deploy_osx:
     - wget http://mugen.karaokes.moe/downloads/dist_macos.tar.gz
     - tar xvzf dist_macos.tar.gz
     - rm dist_macos.tar.gz
+    - mkdir -p app/jingles
+    - cd app/jingles
+    - wget https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar
+    - tar xvf archive.tar
+    - mv -f jingles-master*/* .
+    - rm -Rf jingles-master*    
+    = rm -f archive.tar
+    - cd ../..
     - cp -f ../bin/karaokemugen-app KaraokeMugen
     - cp -f ../config.ini.sample .
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
