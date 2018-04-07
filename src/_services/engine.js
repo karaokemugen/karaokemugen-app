@@ -377,10 +377,10 @@ async function tryToReadKaraInPlaylist() {
 			//Add a view to the viewcount
 			addViewcountKara(kara.kara_id,kara.kid);
 			//Free karaoke
-			await plc.freePLC([kara.playlistcontent_id]);
+			await plc.freePLC(kara.playlistcontent_id);
 			//If karaoke is present in the public playlist, we're marking it free.
 			const plcontent = await plc.getPLCByKID(kara.kid,internalState.publicPlaylistID);
-			if (plcontent) await plc.freePLC([plcontent.playlistcontent_id]);
+			if (plcontent) await plc.freePLC(plcontent.playlistcontent_id);
 			let modePlaylist_id;
 			if (getConfig().EnginePrivateMode) {
 				modePlaylist_id = internalState.currentPlaylistID;
