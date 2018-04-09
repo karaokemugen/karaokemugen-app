@@ -498,6 +498,9 @@ export function filterPlaylist(playlist,searchText) {
 			if (!isEmpty(kara.NORM_singer)) {
 				if (cleanStr(kara.NORM_singer).includes(searchWord)) searchOK[searchWordID] = true;
 			}
+			if (!isEmpty(kara.NORM_songwriter)) {
+				if (cleanStr(kara.NORM_songwriter).includes(searchWord)) searchOK[searchWordID] = true;
+			}
 			if (!isEmpty(kara.NORM_creator)) {
 				if (cleanStr(kara.NORM_creator).includes(searchWord)) searchOK[searchWordID] = true;
 			}					
