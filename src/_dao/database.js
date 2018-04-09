@@ -132,6 +132,11 @@ export async function initDBSystem() {
 	if (doGenerate) await generateDatabase();
 	await closeKaraDatabase();	
 	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
+	await getUserDb().run('PRAGMA TEMP_STORE=MEMORY');
+	await getUserDb().run('PRAGMA JOURNAL_MODE=WAL');
+	await getUserDb().run('PRAGMA SYNCHRONOUS=OFF');
+	await getUserDb().run('PRAGMA LOCKING_MODE=EXCLUSIVE');
+
 	await compareDatabasesUUIDs();
 	logger.debug('[DBI] Database Interface is READY');
 	const stats = await getStats();
