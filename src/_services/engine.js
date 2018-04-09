@@ -63,8 +63,8 @@ on('playerNeedsRestart', () => {
 });
 
 on('modeUpdated', mode => {
-	if (mode === 0) setPrivate(true);
-	if (mode === 1) setPrivate(false);
+	if (+mode === 0) setPrivate(false);
+	if (+mode === 1) setPrivate(true);
 });
 
 on('engineStatusChange', (newstate) => {
@@ -767,6 +767,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 	}
 	if (!playlist_id) {
 		addByAdmin = false;
+		console.log(state.engine.private);
 		if (state.engine.private) {
 			playlist_id = internalState.currentPlaylistID;
 		} else {

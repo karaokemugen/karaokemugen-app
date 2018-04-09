@@ -45,12 +45,8 @@ export async function mergeConfig(oldConfig, newConfig) {
 	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings
-	if (conf.EnginePrivateMode === 1) {
-		emit('modeUpdated',0);
-	} else {
-		emit('modeUpdated',1);
-	}
-
+	emit('modeUpdated',conf.EnginePrivateMode);
+	
 	configureHost();
 
 	// Determine which settings we send back. We get rid of all system and admin settings
