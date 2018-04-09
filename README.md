@@ -9,9 +9,37 @@ It works like a japanese karaoke where anyone can add songs one after another to
 
 Karaoke Mugen works offline and does not require an Internet connection.
 
+## Features
+
+* Can use single videos or videos + included subtitles.
+* Works with .ass subtitles
+* Skip, pause, play, stop, rewind playback from the webapp.
+* Manage playlists, shuffle them, order them, copy songs from one to another, etc.
+* Web interface for smartphone/tablet/PC ~~IE6 compatible~~
+* Displays karaoke information at the beginning and end of song
+* Tag/metadata system for karaokes : year, studio, singer, songwriter, language, etc.
+* Keep track of who asked for this or that song.
+* Public or private mode :
+  * In private mode (default) songs added by users are directly played one after the other in the current playlist
+  * In public mode, songs are added to a suggestion list. It's up to the admin to add songs from this list.
+* Export/import playlists
+* REST API so you can develop custom clients or web interfaces.
+* And many other things! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
+
+## How it works
+
+* See the install section below
+* Place karaoke songs inside the `app/data` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://mugen.karaokes.moe/docs/en/user-guide/manage/). If you don't want to add a full karaoke base for now, Karaoke Mugen will copy its samples in your `app/data` if it's left empty so you can try out the app.
+* Launch the app (see the launch section below). It will open a browser on the welcome screen. Follow the guided tour for admins.
+* Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and have fun!
+
+In the repository mentionned above, you'll find a karaoke songs database ready for use. Beware, it's about 180Gb big once the videos have been downloaded.
+
+For more information, check out the [documentation site!](http://mugen.karaokes.moe/docs/en/)
+
 ## Install
 
-If you don't want to install manually, prepared binaries are available [on the website](http://mugen.karaokes.moe/download.html) for Windows and macOS. For Linux, follow the following steps.
+If you don't want to install manually, prepared binaries are available [on the website](http://mugen.karaokes.moe/en/download.html) for Windows and macOS. For Linux, follow the following steps.
 
 ### Download
 
@@ -33,10 +61,6 @@ Then launch `yarn` to install dependencies.
 yarn setup
 ```
 
-### Samples
-
-Samples (in the `samples` folder) will be automatically copied to `app/data` if it's empty.
-
 ### Launch
 
 To launch the app :
@@ -45,19 +69,15 @@ To launch the app :
 yarn start
 ```
 
-Generating a database ie required on first launch and is done automatically if the file `app/db/karas.sqlite3` is missing. You can trigger it manually later by connectiong to `http://localhost:1338`. Another way is to delete the `app/db/karas.sqlite3` and let the app regenerate it or launch with the `--generate` command-line option.
+Generating a database ie required on first launch and is done automatically if the file `app/db/karas.sqlite3` is missing. You can trigger it manually later by connectiong to the admin panel from the welcome screen. Another way is to delete the `app/db/karas.sqlite3` and let the app regenerate it on startup or launch with the `--generate` command-line option.
 
-On first run, the app will invite you to create an admin user and follow a guided tour of the admin panel. You can trigger this tour/admin creation process again by adding appFirstRun=1` to your config file.
+On first run, the app will invite you to create an admin user and follow a guided tour of the admin panel. You can trigger this tour/admin creation process again by adding `appFirstRun=1` to your config file.
 
 ## System requirements
 
 The app is multi-platform and works on Linux/Windows/OSX.
 
-It requires :
-
-* NodeJS 8
-* npm 5
-* yarn 1
+It requires nodeJS 8.x or above and mpv/ffmpeg binaries (see below).
 
 ### Binaries
 
@@ -78,42 +98,9 @@ Make sure ffmpeg/mpv are available in `/usr/bin`. If that's not the case, modify
 
 Linux distributions often package old versions of ffmpeg/mpv, update them first via their own websites' instructions.
 
-## Languages
-
-Karaoke Mugen is written in NodeJS and uses Babel / ES2015+
-
 ## Translations
 
 Currently french and english are supported. Translators are welcome!
-
-## Features
-
-* Can use single videos or videos + included subtitles.
-* Works with .ass subtitles
-* Skip, pause, play, stop, rewind playback from the webapp.
-* Display song lyrics from within the web interface.
-* Manage playlists, shuffle them, order them, copy songs from one to another, etc.
-* Web interface for smartphone/tablet/PC ~~IE6 compatible~~
-* Displays karaoke information at the beginning and end of song
-* Tag/metadata system for karaokes : year, studio, singer, songwriter, language, etc.
-* Keep track of who asked for this or that song.
-* Public or private mode :
-  * In private mode (default) songs added by users are directly played one after the other in the current playlist
-  * In public mode, songs are added to a suggestion list. It's up to the admin to add songs from this list.
-* Export/import playlists
-* REST API so you can develop custom clients or web interfaces.
-* And many other things! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
-
-## How it works
-
-* See the download section
-* Place karaoke songs inside the `app/data` folder. See the [karaoke base repository](https://lab.shelter.moe/karaokemugen/karaokebase) and [documentation](http://mugen.karaokes.moe/docs/en/user-guide/manage/) (in french)
-* The webapp listens on port 1337 by default : `http://localhost:1337`
-* Switch to the admin panel via `http://localhost:1337/admin`. From there, you can manage your playlists and launch the karaoke session!
-
-In the repository mentionned above, you'll find a database of karaoke songs ready for use. Beware, it's about 160Gb big once the videos have been downloaded.
-
-For more information, check out the [documentation site!](http://mugen.karaokes.moe/docs/en/)
 
 ## How to contribute
 
