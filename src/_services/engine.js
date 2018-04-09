@@ -44,6 +44,9 @@ let initialState = {
 	frontendPort: null
 };
 
+state.engine = initialState;
+state.player = {};
+
 on('playingUpdated', () => {
 	playingUpdated();
 });
@@ -88,7 +91,7 @@ on('publicStatusChange', () => {
 		showSubs: state.player.showsubs,
 		volume: state.player.volume,
 	};
-	emitWS('playerStatus',publicState);
+	if (state.player.ready) emitWS('playerStatus',publicState);
 });
 
 on('playerEnd', () => {
@@ -127,9 +130,7 @@ async function restartPlayer() {
 
 export async function initEngine() {
 	const conf = getConfig();
-	state.engine = initialState;
-	state.engine.frontendPort = conf.appFrontendPort;
-	state.player = {};
+	state.engine.frontendPort = conf.appFrontendPort;	
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
 	state.engine.private = conf.EnginePrivateMode > 0;
