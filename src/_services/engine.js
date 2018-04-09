@@ -215,9 +215,9 @@ export function exit(rc) {
 	logger.info('[Engine] Player has shut down');
 
 	closeUserDatabase().then(() => {
-		logger.info('[Engine] Database closed');
-		if (process.platform != 'win32' || !process.stdout.isTTY) process.exit(rc);
-		console.log('\n');
+		logger.info('[Engine] Database closed');		
+		console.log('\nMata ne !\n');
+		if (process.platform != 'win32' || !process.stdout.isTTY) process.exit(rc); 
 		readlineSync.question('Press enter to exit', {hideEchoBack: true});
 		process.exit(rc);	
 	});
