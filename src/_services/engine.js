@@ -1,7 +1,7 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
 import {initUserSystem, findUserByName, findUserByID} from '../_services/user';
-import {initDBSystem, getStats} from '../_dao/database';
+import {initDBSystem, getStats, closeUserDatabase} from '../_dao/database';
 import {initFrontend, emitWS} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
 import {initFavoritesSystem} from '../_services/favorites';
@@ -9,7 +9,7 @@ import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {validateKaras} from '../_services/kara';
-import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
+import {displayInfo, playJingle, quitmpv, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import readlineSync from 'readline-sync';
@@ -138,7 +138,7 @@ export async function initEngine() {
 			logger.info('[Engine] Starting validation process, please wait...');
 			await validateKaras();
 			logger.info('[Engine] Validation completed successfully. Yayifications!');
-			process.exit(0);
+			exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Validation failed : ${err}`);
 			exit(1);
@@ -202,6 +202,7 @@ export async function initEngine() {
 }
 
 export function exit(rc) {
+	logger.info('[Engine] Initializing shutdown sequence');
 	const conf = getConfig();
 	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
 	//On other systems or if terminal is not a TTY we exit immediately.
@@ -209,10 +210,18 @@ export function exit(rc) {
 	
 	if (conf.optOnline || conf.OnlineMode == 1) closeTunnel();
 
-	if (process.platform != 'win32' || !process.stdout.isTTY) process.exit(rc);
-	console.log('\n');
-	readlineSync.question('Press enter to exit', {hideEchoBack: true});
-	process.exit(rc);
+	if (state.player.ready) quitmpv();
+	logger.info('[Engine] Player has shut down');
+
+	closeUserDatabase().then(() => {
+		logger.info('[Engine] Database closed');
+		if (process.platform != 'win32' || !process.stdout.isTTY) process.exit(rc);
+		console.log('\n');
+		readlineSync.question('Press enter to exit', {hideEchoBack: true});
+		process.exit(rc);	
+	});
+
+	
 }
 
 async function playPlayer() {
@@ -675,7 +684,7 @@ export async function setPublicPL(playlist_id) {
 
 export function shutdown() {
 	logger.info('[Engine] Dropping the mic, shutting down!');
-	sleep(1000).then(process.exit(0));
+	sleep(1000).then(exit(0));
 	return;
 }
 

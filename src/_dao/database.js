@@ -75,10 +75,6 @@ async function openUserDatabase() {
 	}
 }
 
-export function closeDatabases() {
-	return Promise.all([closeKaraDatabase(), closeUserDatabase()]);
-}
-
 async function closeKaraDatabase() {
 	if (!karaDb) {
 		logger.warn('[DB] Kara database already closed');
@@ -88,7 +84,7 @@ async function closeKaraDatabase() {
 	}
 }
 
-async function closeUserDatabase() {
+export async function closeUserDatabase() {
 	if (!userDb) {
 		logger.warn('[DB] User database already closed');
 	} else {
