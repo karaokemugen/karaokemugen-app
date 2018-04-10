@@ -606,11 +606,11 @@ export async function getPLInfo(playlist_id, token) {
 }
 
 export async function deletePL(playlist_id, token) {
+	const pl = await plc.getPlaylistInfo(playlist_id);
 	try {
-		logger.info(`[Engine] Deleting playlist ${playlist_id} (by ${token.username})`);
+		logger.info(`[Engine] Deleting playlist ${pl.name} (by ${token.username})`);
 		return await plc.deletePlaylist(playlist_id, token);
-	} catch(err) {
-		const pl = await plc.getPlaylistInfo(playlist_id);
+	} catch(err) {		
 		throw {
 			message: err,
 			data: pl.name
@@ -818,12 +818,15 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			playlist_id = internalState.publicPlaylistID;
 		}
 	}
-	const [pl, kara] = await Promise.all([
+	let [pl, kara] = await Promise.all([
 		plc.getPlaylistInfo(playlist_id),
 		plc.getKara(parseInt(karas[0], 10))
-	]);	
-	logger.info(`[Engine] Adding ${karas.length} karaokes to playlist ${pl.name} by ${requester} : ${kara.title}...`);
+	]);
+	if (!pl) pl = {};
+	if (!kara) kara = {};
 	try {
+		logger.info(`[Engine] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
+		
 		if (!addByAdmin) {
 			// Check user quota first
 			if (!await plc.isUserAllowedToAddKara(playlist_id,requester)) {
@@ -851,26 +854,15 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 		}
 	} catch(err) {
 		logger.error(`[Engine] Unable to add karaokes : ${err}`);
-		if (addByAdmin) {
-			throw {
-				code: errorCode,
-				message: err,
-				data: {
-					kara: karas,
-					playlist: pl.name
-				}
-			};
-		} else {
-			throw {
-				code: errorCode,
-				message: err,
-				data: {
-					kara: kara.title,
-					playlist: pl.name,
-					user: requester
-				}
-			};
-		}
+		throw {
+			code: errorCode,
+			message: err,
+			data: {
+				kara: karas,
+				playlist: pl.name,
+				user: requester
+			}
+		};		
 	}
 }
 
