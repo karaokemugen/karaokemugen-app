@@ -505,11 +505,11 @@ export async function getTags(lang) {
 }
 
 export async function exportPL(playlist_id) {
+	const pl = await plc.getPlaylistInfo(playlist_id);		
 	try {
-		logger.debug(`[Engine] Exporting playlist ${playlist_id}`);
+		logger.debug(`[Engine] Exporting playlist ${pl.name}`);
 		return await plc.exportPlaylist(playlist_id);
 	} catch(err) {
-		const pl = plc.getPlaylistInfo(playlist_id);
 		throw {
 			message: err,
 			data: pl.name
@@ -557,7 +557,7 @@ export async function shufflePL(playlist_id) {
 	const pl = await plc.getPlaylistInfo(playlist_id);
 	try {
 		await plc.shufflePlaylist(playlist_id);
-		logger.info('[Engine] Playlist {$pl.name} shuffled');
+		logger.info(`[Engine] Playlist ${pl.name} shuffled`);
 		return pl.name;
 	} catch(err) {
 		throw {
@@ -619,7 +619,7 @@ export async function deletePL(playlist_id, token) {
 }
 
 export async function deleteKara(plc_ids,playlist_id) {
-	const pl = plc.getPlaylistInfo(playlist_id);
+	const pl = await plc.getPlaylistInfo(playlist_id);
 	let karas;
 	if (typeof plc_ids === 'string') {
 		karas = plc_ids.split(',');
@@ -673,7 +673,7 @@ export async function updateSettings(newConfig) {
 
 export async function editPL(playlist_id, playlist) {
 	try {
-		logger.info(`[Engine] Editing playlist ${playlist_id} : {JSON.stringify(playlist)}`);
+		logger.info(`[Engine] Editing playlist ${playlist_id} : ${JSON.stringify(playlist)}`);
 		return await plc.editPlaylist(playlist_id,playlist.name,playlist.flag_visible);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
@@ -812,7 +812,6 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 	}
 	if (!playlist_id) {
 		addByAdmin = false;
-		console.log(state.engine.private);
 		if (state.engine.private) {
 			playlist_id = internalState.currentPlaylistID;
 		} else {
@@ -821,9 +820,9 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 	}
 	const [pl, kara] = await Promise.all([
 		plc.getPlaylistInfo(playlist_id),
-		plc.getKara(parseInt(kara_id[0], 10))
+		plc.getKara(parseInt(karas[0], 10))
 	]);	
-	logger.info(`[Engine] Adding ${kara_id.length} karaokes to playlist ${pl.name} by ${requester} : ${kara.title}...`);
+	logger.info(`[Engine] Adding ${karas.length} karaokes to playlist ${pl.name} by ${requester} : ${kara.title}...`);
 	try {
 		if (!addByAdmin) {
 			// Check user quota first
@@ -900,9 +899,7 @@ export async function addKaraToWL(kara_id) {
 	} else {
 		karas = [kara_id];
 	}
-	const [kara] = await Promise.all([
-		plc.getKara(parseInt(karas[0], 10))
-	]);
+	const kara = await plc.getKara(parseInt(karas[0], 10));	
 	logger.profile(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
 	try {
 		return await plc.addKaraToWhitelist(karas);
