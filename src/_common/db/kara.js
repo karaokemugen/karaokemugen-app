@@ -71,7 +71,7 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
 								) AS flag_favorites
 							FROM karasdb.all_karas AS ak							
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
-							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
+							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype DESC, ak.songorder, ak.title
 							`;
 
 export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
