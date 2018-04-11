@@ -1,7 +1,7 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
 import {initUserSystem, findUserByName, findUserByID} from '../_services/user';
-import {initDBSystem, getStats} from '../_dao/database';
+import {initDBSystem, getStats, closeUserDatabase} from '../_dao/database';
 import {initFrontend, emitWS} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
 import {initFavoritesSystem} from '../_services/favorites';
@@ -9,7 +9,7 @@ import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {validateKaras} from '../_services/kara';
-import {displayInfo, playJingle, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
+import {displayInfo, playJingle, quitmpv, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {now} from 'unix-timestamp';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import readlineSync from 'readline-sync';
@@ -27,7 +27,7 @@ const sleep = promisify(setTimeout);
 let publicState = {};
 let state = {};
 
-// Initial settings
+// Internal settings
 let internalState = {
 	currentPlaylistID: undefined,
 	publicPlaylistID: undefined,
@@ -36,7 +36,8 @@ let internalState = {
 	counterToJingle: 1
 };
 
-let initialState = {
+// Initial settings.
+state.engine = {
 	status: 'stop', // [stop,play,pause] // general engine status
 	private: true, // [bool(true|false)] // karaoke mode
 	fullscreen: false,
@@ -44,12 +45,14 @@ let initialState = {
 	frontendPort: null
 };
 
+state.player = {};
+
 on('playingUpdated', () => {
 	playingUpdated();
 });
 
 on('playerNeedsRestart', () => {
-	if (state.engine.status == 'stop' && !internalState.playerNeedsRestart) {
+	if (state.engine.status === 'stop' && !internalState.playerNeedsRestart) {
 		internalState.playerNeedsRestart = true;
 		logger.info('[Engine] Player will restart in 5 seconds');
 		sleep(5000).then(() => {
@@ -88,7 +91,7 @@ on('publicStatusChange', () => {
 		showSubs: state.player.showsubs,
 		volume: state.player.volume,
 	};
-	emitWS('playerStatus',publicState);
+	if (state.player.ready) emitWS('playerStatus',publicState);
 });
 
 on('playerEnd', () => {
@@ -101,7 +104,7 @@ on('playerSkip', () => {
 
 on('playerStatusChange', (states) => {
 	//FIXME: Simplify this
-	if (internalState.fullscreen != states.fullscreen){
+	if (internalState.fullscreen !== states.fullscreen){
 		internalState.fullscreen = states.fullscreen;
 	}
 	state.player = states[0];
@@ -127,9 +130,7 @@ async function restartPlayer() {
 
 export async function initEngine() {
 	const conf = getConfig();
-	state.engine = initialState;
-	state.engine.frontendPort = conf.appFrontendPort;
-	state.player = {};
+	state.engine.frontendPort = conf.appFrontendPort;	
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
 	state.engine.private = conf.EnginePrivateMode > 0;
@@ -138,7 +139,7 @@ export async function initEngine() {
 			logger.info('[Engine] Starting validation process, please wait...');
 			await validateKaras();
 			logger.info('[Engine] Validation completed successfully. Yayifications!');
-			process.exit(0);
+			exit(0);
 		} catch(err) {
 			logger.error(`[Engine] Validation failed : ${err}`);
 			exit(1);
@@ -167,7 +168,7 @@ export async function initEngine() {
 	if (conf.EngineCreatePreviews > 0) {
 		createPreviews();
 	}
-	if (conf.optOnline || conf.OnlineMode == 1) {
+	if (conf.optOnline || conf.OnlineMode === 1) {
 		state.engine.url = await openTunnel();		
 	}
 	inits.push(initPlayerSystem(state.engine));
@@ -202,21 +203,28 @@ export async function initEngine() {
 }
 
 export function exit(rc) {
+	logger.info('[Engine] Shutdown in progress');
 	const conf = getConfig();
 	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
 	//On other systems or if terminal is not a TTY we exit immediately.
 	// non-TTY terminals have no stdin support.
 	
-	if (conf.optOnline || conf.OnlineMode == 1) closeTunnel();
+	if (conf.optOnline || conf.OnlineMode === 1) closeTunnel();
 
-	if (process.platform != 'win32' || !process.stdout.isTTY) process.exit(rc);
-	console.log('\n');
-	readlineSync.question('Press enter to exit', {hideEchoBack: true});
-	process.exit(rc);
+	if (state.player.ready) quitmpv();
+	logger.info('[Engine] Player has shut down');
+
+	closeUserDatabase().then(() => {
+		logger.info('[Engine] Database closed');		
+		console.log('\nMata ne !\n');
+		if (process.platform !== 'win32' || !process.stdout.isTTY) process.exit(rc); 
+		readlineSync.question('Press enter to exit', {hideEchoBack: true});
+		process.exit(rc);	
+	});
 }
 
 async function playPlayer() {
-	if(state.engine.status !== 'play') {
+	if (state.engine.status !== 'play') {
 		// Switch to playing mode and ask which karaoke to play next
 		if (state.engine.status === 'pause') resume();
 		if (state.engine.status === 'stop') await tryToReadKaraInPlaylist();
@@ -230,15 +238,16 @@ async function playPlayer() {
 }
 
 function sendMessageToPlayer(string, duration) {
-	message(string,duration);
+	logger.info('[Engine] I have a message from another time...');	
+	message(string, duration);
 }
 
 function stopPlayer(now) {
 	if (now) {
-		logger.info('[Engine] Karaoke stopping NOW.');
+		logger.info('[Engine] Karaoke stopping NOW');
 		stop();
 	} else {
-		logger.info('[Engine] Karaoke stopping after current song.');
+		logger.info('[Engine] Karaoke stopping after current song');
 	}
 	if (state.engine.status !== 'stop') {
 		state.engine.status = 'stop';
@@ -248,15 +257,18 @@ function stopPlayer(now) {
 
 function pausePlayer() {
 	pause();
+	logger.info('[Engine] Karaoke paused');
 	state.engine.status = 'pause';
 	emitEngineStatus();
 }
 
 function mutePlayer() {
+	logger.info('[Engine] Player muted');
 	mute();
 }
 
 function unmutePlayer() {
+	logger.info('[Engine] Player unmuted');
 	unmute();
 }
 
@@ -273,14 +285,17 @@ function setVolumePlayer(volume) {
 }
 
 function showSubsPlayer() {
+	logger.info('[Engine] Showing lyrics on screen');
 	showSubs();
 }
 
 function hideSubsPlayer() {
+	logger.info('[Engine] Hiding lyrics on screen');
 	hideSubs();
 }
 
 async function prev() {
+	logger.info('[Engine] Going to previous song');
 	stopPlayer(true);
 	try {
 		await plc.prev();
@@ -293,6 +308,7 @@ async function prev() {
 }
 
 async function next() {
+	logger.info('[Engine] Going to next song');
 	stopPlayer(true);
 	try {
 		await plc.next();
@@ -303,18 +319,35 @@ async function next() {
 }
 
 function setPrivate(privateMode) {
-	state.engine.private = privateMode;
+	if (state.engine.private !== privateMode) {
+		if (privateMode) {
+			logger.info('[Engine] Karaoke mode switching to private');
+		} else {
+			logger.info('[Engine] Karaoke mode switching to public');
+		}
+	}
+	state.engine.private = privateMode;	
 	emitEngineStatus();
 }
 
 function toggleFullScreenPlayer() {
 	state.engine.fullscreen = !state.engine.fullscreen;
 	setFullscreen(state.engine.fullscreen);
+	if (state.engine.fullscreen) {
+		logger.info('[Engine] Player going to full screen');
+	} else {
+		logger.info('[Engine] Player going to windowed mode');
+	}	
 	emitEngineStatus();
 }
 
 function toggleOnTopPlayer() {
 	state.engine.ontop = toggleOnTop();
+	if (state.engine.ontop) {
+		logger.info('[Engine] Player staying on top');
+	} else {
+		logger.info('[Engine] Player NOT staying on top');
+	}
 	emitEngineStatus();
 }
 
@@ -342,7 +375,7 @@ async function playerEnding() {
 		try {
 			internalState.counterToJingle++;
 			displayInfo();
-			if (state.engine.status != 'stop') {
+			if (state.engine.status !== 'stop') {
 				await plc.next();
 				await tryToReadKaraInPlaylist();
 			}
@@ -355,7 +388,7 @@ async function playerEnding() {
 }
 
 async function tryToReadKaraInPlaylist() {
-	if(!state.player.playing) {
+	if (!state.player.playing) {
 		try {
 			const kara = await plc.playCurrentSong();
 			let karaForLogging = cloneDeep(kara);
@@ -382,7 +415,7 @@ async function tryToReadKaraInPlaylist() {
 			const plcontent = await plc.getPLCByKID(kara.kid,internalState.publicPlaylistID);
 			if (plcontent) await plc.freePLC(plcontent.playlistcontent_id);
 			let modePlaylist_id;
-			if (getConfig().EnginePrivateMode) {
+			if (state.engine.private) {
 				modePlaylist_id = internalState.currentPlaylistID;
 			} else {
 				modePlaylist_id = internalState.publicPlaylistID;
@@ -393,7 +426,7 @@ async function tryToReadKaraInPlaylist() {
 		} catch(err) {
 			logger.error(`[Engine] Error during song playback : ${err}`);
 			emitEngineStatus();
-			if (state.engine.status != 'stop') {
+			if (state.engine.status !== 'stop') {
 				logger.warn('[Player] Skipping playback due to missing video');
 				next();
 			} else {
@@ -415,10 +448,10 @@ export async function getKaras(filter,lang,from,size,token) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from),
-				to: parseInt(from)+parseInt(size)
+				from: parseInt(from, 10),
+				to: parseInt(from, 10)+parseInt(size, 10)
 			},
-			content: karalist.slice(from,parseInt(from)+parseInt(size))
+			content: karalist.slice(from,parseInt(from, 10)+parseInt(size, 10))
 		};
 	} catch(err) {
 		throw err;
@@ -426,6 +459,7 @@ export async function getKaras(filter,lang,from,size,token) {
 }
 
 export async function getRandomKara(filter) {
+	logger.debug('[Engine] Requesting a random song');
 	return await plc.getRandomKara(internalState.currentPlaylistID,filter);
 }
 
@@ -437,10 +471,10 @@ export async function getWL(filter,lang,from,size) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from),
-				to: parseInt(from)+parseInt(size)
+				from: parseInt(from, 10),
+				to: parseInt(from, 10)+parseInt(size, 10)
 			},
-			content: karalist.slice(from,parseInt(from)+parseInt(size))
+			content: karalist.slice(from,parseInt(from, 10)+parseInt(size, 10))
 		};
 	} catch(err) {
 		throw err;
@@ -455,10 +489,10 @@ export async function getBL(filter,lang,from,size) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from),
-				to: parseInt(from)+parseInt(size)
+				from: parseInt(from, 10),
+				to: parseInt(from, 10)+parseInt(size, 10)
 			},
-			content: karalist.slice(from,parseInt(from)+parseInt(size))
+			content: karalist.slice(from,parseInt(from, 10)+parseInt(size, 10))
 		};
 	} catch(err) {
 		throw err;
@@ -471,10 +505,11 @@ export async function getTags(lang) {
 }
 
 export async function exportPL(playlist_id) {
+	const pl = await plc.getPlaylistInfo(playlist_id);		
 	try {
+		logger.debug(`[Engine] Exporting playlist ${pl.name}`);
 		return await plc.exportPlaylist(playlist_id);
 	} catch(err) {
-		const pl = plc.getPlaylistInfo(playlist_id);
 		throw {
 			message: err,
 			data: pl.name
@@ -484,6 +519,7 @@ export async function exportPL(playlist_id) {
 
 export async function importPL(playlist,username) {
 	try {
+		logger.debug(`[Engine] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
 		return await plc.importPlaylist(playlist,username);
 	} catch(err) {
 		logger.error(err);
@@ -503,14 +539,17 @@ export async function addBLC(blctype, blcvalue) {
 	} else {
 		blcvalues = [blcvalue];
 	}
+	logger.info(`[Blacklist] Adding criteria ${blctype} = ${blcvalues}`);
 	return await plc.addBlacklistCriteria(blctype, blcvalues);
 }
 
 export async function deleteBLC(blc_id) {
+	logger.info(`[Blacklist] Deleting criteria ${blc_id}`);
 	return await plc.deleteBlacklistCriteria(blc_id);
 }
 
 export async function editBLC(blc_id, blctype, blcvalue) {
+	logger.info(`[Blacklist] Editing criteria ${blc_id} : ${blctype} = ${blcvalue}`);
 	return await plc.editBlacklistCriteria(blc_id, blctype, blcvalue);
 }
 
@@ -518,6 +557,7 @@ export async function shufflePL(playlist_id) {
 	const pl = await plc.getPlaylistInfo(playlist_id);
 	try {
 		await plc.shufflePlaylist(playlist_id);
+		logger.info(`[Engine] Playlist ${pl.name} shuffled`);
 		return pl.name;
 	} catch(err) {
 		throw {
@@ -546,7 +586,7 @@ export async function getPLCInfo(plc_id, lang, userToken) {
 
 export async function getAllPLs(token) {
 	let seenFromUser = true;
-	if (token.role == 'admin') seenFromUser = false;
+	if (token.role === 'admin') seenFromUser = false;
 	return await plc.getPlaylists(seenFromUser,token.username);
 }
 
@@ -566,10 +606,11 @@ export async function getPLInfo(playlist_id, token) {
 }
 
 export async function deletePL(playlist_id, token) {
+	const pl = await plc.getPlaylistInfo(playlist_id);
 	try {
+		logger.info(`[Engine] Deleting playlist ${pl.name} (by ${token.username})`);
 		return await plc.deletePlaylist(playlist_id, token);
-	} catch(err) {
-		const pl = await plc.getPlaylistInfo(playlist_id);
+	} catch(err) {		
 		throw {
 			message: err,
 			data: pl.name
@@ -578,23 +619,22 @@ export async function deletePL(playlist_id, token) {
 }
 
 export async function deleteKara(plc_ids,playlist_id) {
-	logger.debug(`[Engine] Deleting karaokes from playlist ${playlist_id} : ${plc_ids}`);
+	const pl = await plc.getPlaylistInfo(playlist_id);
 	let karas;
 	if (typeof plc_ids === 'string') {
 		karas = plc_ids.split(',');
 	} else {
 		karas = [plc_ids];
 	}
-	let pl;
+	const plcData = await plc.getPLCInfoMini(karas[0]);
+	logger.info(`[Engine] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);	
 	try {
 		await plc.deleteKaraFromPlaylist(karas, playlist_id);
-		pl = await plc.getPlaylistInfo(playlist_id);
 		return {
 			pl_id: playlist_id,
 			pl_name: pl.name
 		};
 	} catch(err) {
-		pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
 			message: err,
 			data: pl.name
@@ -603,7 +643,7 @@ export async function deleteKara(plc_ids,playlist_id) {
 }
 
 export async function deleteWLC(wlc_ids) {
-	logger.debug(`[Engine] Deleting karaokes from whitelist : ${wlc_ids}`);
+	logger.info(`[Engine] Deleting karaokes from whitelist : ${wlc_ids}`);
 	let karas;
 	if (typeof wlc_ids === 'string') {
 		karas = wlc_ids.split(',');
@@ -633,6 +673,7 @@ export async function updateSettings(newConfig) {
 
 export async function editPL(playlist_id, playlist) {
 	try {
+		logger.info(`[Engine] Editing playlist ${playlist_id} : ${JSON.stringify(playlist)}`);
 		return await plc.editPlaylist(playlist_id,playlist.name,playlist.flag_visible);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
@@ -644,13 +685,14 @@ export async function editPL(playlist_id, playlist) {
 }
 
 export async function setCurrentPL(playlist_id) {
+	const pl = await plc.getPlaylistInfo(playlist_id);
 	try {
+		logger.info(`[Engine] Playlist ${pl.name} is now current`);
 		await plc.setCurrentPlaylist(playlist_id);
 		emitWS('playlistInfoUpdated', internalState.currentPlaylistID);
 		internalState.currentPlaylistID = playlist_id;
 		return playlist_id;
 	} catch(err) {
-		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
 			message: err,
 			data: pl.name
@@ -659,13 +701,14 @@ export async function setCurrentPL(playlist_id) {
 }
 
 export async function setPublicPL(playlist_id) {
-	try {		
+	const pl = await plc.getPlaylistInfo(playlist_id);		
+	try {
+		logger.info(`[Engine] Playlist ${pl.name} is now public`);
 		await plc.setPublicPlaylist(playlist_id);
 		emitWS('playlistInfoUpdated', internalState.publicPlaylistID);
 		internalState.publicPlaylistID = playlist_id;
 		return playlist_id;
 	} catch(err) {
-		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
 			message: err,
 			data: pl.name
@@ -675,16 +718,16 @@ export async function setPublicPL(playlist_id) {
 
 export function shutdown() {
 	logger.info('[Engine] Dropping the mic, shutting down!');
-	sleep(1000).then(process.exit(0));
-	return;
+	exit(0);	
 }
 
 export async function emptyPL(playlist_id) {
+	const pl = await plc.getPlaylistInfo(playlist_id);		
 	try {
+		logger.info(`[Engine] Emptying playlist ${pl.name}`);
 		await plc.emptyPlaylist(playlist_id);
 		return playlist_id;
 	} catch(err) {
-		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
 			message: err,
 			data: pl.name
@@ -693,17 +736,19 @@ export async function emptyPL(playlist_id) {
 }
 
 export async function emptyBLC() {
+	logger.info('[Blacklist] Wiping criterias');
 	return await plc.emptyBlacklistCriterias();
 }
 
 export async function emptyWL() {
+	logger.info('[Whitelist] Wiping whitelist');
 	return await plc.emptyWhitelist();
 }
 
 async function testPlaylistVisible(playlist_id, token) {
 	let seenFromUser = false;
 	const user = await findUserByName(token.username);
-	if (token.role != 'admin' && user.favoritesPlaylistID == playlist_id) seenFromUser = true;
+	if (token.role !== 'admin' && user.favoritesPlaylistID === playlist_id) seenFromUser = true;
 	if (!await plc.isPlaylist(playlist_id,seenFromUser)) return false;
 	return true;
 }
@@ -714,7 +759,7 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 		const pl = await plc.getPlaylistContents(playlist_id,token);
 		let karalist = plc.translateKaraInfo(pl,lang);
 		if (filter) karalist = plc.filterPlaylist(karalist,filter);
-		if (from == -1) {
+		if (from === -1) {
 			const pos = plc.getPlayingPos(karalist);
 			if (!pos) {
 				from = 0;
@@ -725,10 +770,10 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from),
-				to: parseInt(from)+parseInt(size)
+				from: parseInt(from, 10),
+				to: parseInt(from, 10)+parseInt(size, 10)
 			},
-			content: karalist.slice(from,parseInt(from)+parseInt(size))
+			content: karalist.slice(from,parseInt(from, 10)+parseInt(size,10))
 		};
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
@@ -767,15 +812,21 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 	}
 	if (!playlist_id) {
 		addByAdmin = false;
-		console.log(state.engine.private);
 		if (state.engine.private) {
 			playlist_id = internalState.currentPlaylistID;
 		} else {
 			playlist_id = internalState.publicPlaylistID;
 		}
 	}
-	logger.debug(`[Engine] Adding karaokes to playlist ${playlist_id} : ${kara_id}`);
+	let [pl, kara] = await Promise.all([
+		plc.getPlaylistInfo(playlist_id),
+		plc.getKara(parseInt(karas[0], 10))
+	]);
+	if (!pl) pl = {};
+	if (!kara) kara = {};
 	try {
+		logger.info(`[Engine] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
+		
 		if (!addByAdmin) {
 			// Check user quota first
 			if (!await plc.isUserAllowedToAddKara(playlist_id,requester)) {
@@ -784,13 +835,11 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			}
 		}
 		await plc.addKaraToPlaylist(karas, requester, playlist_id, pos);
-		if (conf.EngineAutoPlay == 1 &&
-			playlist_id == internalState.currentPlaylistID &&
-			state.engine.status == 'stop' ) {
+		if (+conf.EngineAutoPlay === 1 &&
+			+playlist_id === internalState.currentPlaylistID &&
+			state.engine.status === 'stop' ) {
 			playPlayer();
-		}
-		const pl = await plc.getPlaylistInfo(playlist_id);
-		const kara = await plc.getKara(parseInt(kara_id));
+		}		
 		if (addByAdmin) {
 			return {
 				playlist: pl.name
@@ -799,45 +848,35 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			return {
 				kara: kara.title,
 				playlist: pl.name,
-				kara_id: parseInt(kara_id),
+				kara_id: parseInt(kara_id, 10),
 				playlist_id: playlist_id
 			};
 		}
 	} catch(err) {
 		logger.error(`[Engine] Unable to add karaokes : ${err}`);
-		const pl = await plc.getPlaylistInfo(playlist_id);
-		if (addByAdmin) {
-			throw {
-				code: errorCode,
-				message: err,
-				data: {
-					kara: karas,
-					playlist: pl.name
-				}
-			};
-		} else {
-			const kara = await plc.getKara(parseInt(kara_id));
-			throw {
-				code: errorCode,
-				message: err,
-				data: {
-					kara: kara.title,
-					playlist: pl.name,
-					user: requester
-				}
-			};
-		}
+		throw {
+			code: errorCode,
+			message: err,
+			data: {
+				kara: karas,
+				playlist: pl.name,
+				user: requester
+			}
+		};		
 	}
 }
 
 export async function copyKaraToPL(plc_id, playlist_id, pos) {
-	logger.debug(`[Engine] Copying karaokes to playlist ${playlist_id} : ${plc_id}`);
 	const plcs = plc_id.split(',');
+	const [plcData, pl] = await Promise.all([
+		plc.getPLCInfoMini(plc_id[0]),
+		plc.getPlaylistInfo(playlist_id)
+	]);
+	logger.info(`[Engine] Copying ${plcs.length} karaokes to playlist ${pl.name} : ${plcData.title}...`);	
 	try {
 		await plc.copyKaraToPlaylist(plcs, playlist_id, pos);
 		return playlist_id;
 	} catch(err) {
-		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
 			message: err,
 			data: pl.name
@@ -852,6 +891,8 @@ export async function addKaraToWL(kara_id) {
 	} else {
 		karas = [kara_id];
 	}
+	const kara = await plc.getKara(parseInt(karas[0], 10));	
+	logger.profile(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
 	try {
 		return await plc.addKaraToWhitelist(karas);
 	} catch(err) {
@@ -919,6 +960,9 @@ export async function sendCommand(command, options) {
 		if (!options && typeof options !== 'undefined') throw 'Command setVolume must have a value';
 		if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
 		setVolumePlayer(options);
+		break;
+	default:
+		// Unknown commands are not possible, they're filtered by API's validation.
 		break;
 	}
 }

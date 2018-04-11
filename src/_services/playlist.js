@@ -463,8 +463,11 @@ export async function getRandomKara(playlist_id, filter) {
 }
 
 export async function getKara(kara_id, username) {
-	const kara = await karaDB.getKara(kara_id, username);
-	return kara;
+	return await karaDB.getKara(kara_id, username);	
+}
+
+export async function getKaraMini(kara_id) {
+	return await karaDB.getKaraMini(kara_id);
 }
 
 export async function getPLCByKID(kid,playlist_id) {

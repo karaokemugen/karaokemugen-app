@@ -14,6 +14,7 @@ import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
 import {logo} from './logo';
 import chalk from 'chalk';
+import {createInterface} from 'readline';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
@@ -22,6 +23,26 @@ process.on('uncaughtException', function (exception) {
 process.on('unhandledRejection', (reason, p) => {
 	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
+
+process.on('SIGINT', () => {
+	exit('SIGINT');
+});
+
+// CTRL+C for Windows :
+
+if (process.platform === 'win32' ) {
+	const rl = createInterface({
+	  input: process.stdin,
+	  output: process.stdout
+	});
+  
+	rl.on('SIGINT', () => {
+	  exit('SIGINT');
+	});
+}
+
+// Main app begins here.
+
 let appPath;
 if (process.pkg) {
 	appPath = join(process.execPath,'../');

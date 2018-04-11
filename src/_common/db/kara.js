@@ -71,7 +71,7 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
 								) AS flag_favorites
 							FROM karasdb.all_karas AS ak							
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
-							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
+							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype DESC, ak.songorder, ak.title
 							`;
 
 export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
@@ -146,6 +146,36 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
  						FROM karasdb.all_karas AS ak
 						WHERE ak.kara_id = $kara_id  						  
   						`;
+
+export const getKaraMini = `SELECT ak.kara_id AS kara_id,
+    						ak.kid AS kid,
+      						ak.title AS title,
+      						ak.NORM_title AS NORM_title,
+      						ak.songorder AS songorder,
+      						ak.serie AS serie,
+      						ak.NORM_serie AS NORM_serie,
+      						ak.serie_altname AS serie_altname,
+      						ak.NORM_serie_altname AS NORM_serie_altname,
+      						ak.singer AS singer,
+      						ak.NORM_singer AS NORM_singer,
+      						ak.songtype AS songtype,
+	  						ak.songwriter AS songwriter,
+	  						ak.NORM_songwriter AS NORM_songwriter,
+	  						ak.year AS year,  
+      						ak.creator AS creator,
+      						ak.NORM_creator AS NORM_creator,
+      						ak.language AS language,
+      						ak.author AS author,
+      						ak.NORM_author AS NORM_author,
+      						ak.misc AS misc,
+	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+      						ak.videofile AS videofile,
+	  						ak.videolength AS duration,
+	  						ak.gain AS gain							
+ 						FROM karasdb.all_karas AS ak
+						WHERE ak.kara_id = $kara_id  						  
+  						`;
+
 
 export const getASS = `SELECT a.ass AS ass
   					FROM karasdb.ass AS a
