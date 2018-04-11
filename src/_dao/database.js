@@ -135,7 +135,7 @@ export async function initDBSystem() {
 	await getUserDb().run('PRAGMA TEMP_STORE=MEMORY');
 	await getUserDb().run('PRAGMA JOURNAL_MODE=WAL');
 	await getUserDb().run('PRAGMA SYNCHRONOUS=OFF');
-	await getUserDb().run('PRAGMA LOCKING_MODE=EXCLUSIVE');
+	//await getUserDb().run('PRAGMA LOCKING_MODE=EXCLUSIVE');
 
 	await compareDatabasesUUIDs();
 	logger.debug('[DBI] Database Interface is READY');
