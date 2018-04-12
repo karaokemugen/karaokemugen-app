@@ -831,7 +831,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission admin
  *
@@ -874,6 +874,7 @@ export function APIControllerAdmin(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -889,7 +890,6 @@ export function APIControllerAdmin(router) {
  *               "songwriter": null,
  *               "title": "Circuit",
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -1163,7 +1163,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission admin
  *
@@ -1210,7 +1210,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
  * @apiSuccess {String} data/title Song's title
  * @apiSuccess {String} data/username Username who submitted this karaoke. Can be different from `pseudo_add`.
- * @apiSuccess {String} data/videofile Video's filename
+ * @apiSuccess {String} data/mediafile Media's filename
  * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
  * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
  * @apiSuccessExample Success-Response:
@@ -1241,6 +1241,7 @@ export function APIControllerAdmin(router) {
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
  * 			 "lastplayed_at": null,
+ *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "misc": null,
  *           "misc_i18n": null,
  *           "playlist_id": 2,
@@ -1259,7 +1260,6 @@ export function APIControllerAdmin(router) {
  *           "time_before_play": 0,
  *           "title": "Hana",
  * 			 "username": "axelterizaki",
- *           "videofile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "viewcount": 0,
  *           "year": ""
  *       }
@@ -1358,7 +1358,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Main
  * @apiPermission admin
  *
@@ -1410,8 +1410,8 @@ export function APIControllerAdmin(router) {
  *       "PathKaras": "../times/karas",
  *       "PathSubs": "../times/lyrics",
  *       "PathTemp": "app/temp",
- *       "PathVideos": "app/data/videos",
- *       "PathVideosHTTP": "",
+ *       "PathMedias": "app/data/medias",
+ *       "PathMediasHTTP": "",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
  *       "PlayerNoBar": "1",
@@ -1748,7 +1748,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/whitelist Get whitelist
  * @apiName GetWhitelist
- * @apiVersion 2.0.0
+ * @apiVersion 2.2.0
  * @apiGroup Whitelist
  * @apiPermission admin
  *
@@ -1793,7 +1793,7 @@ export function APIControllerAdmin(router) {
  *               "songtype_i18n_short": "MV",
  *               "songwriter": "Ralph Siegel",
  *               "title": "Moskau",
- *               "videofile": "ALL - Dschinghis Khan - MV - Moskau.avi",
+ *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "viewcount": 0,
  *               "whitelist_id": 1,
  *               "year": "1980"
@@ -1958,7 +1958,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/blacklist Get blacklist
  * @apiName GetBlacklist
- * @apiVersion 2.0.0
+ * @apiVersion 2.2.0
  * @apiGroup Blacklist
  * @apiPermission admin
  *
@@ -2004,7 +2004,7 @@ export function APIControllerAdmin(router) {
  *               "songtype_i18n_short": "OP",
  *               "songwriter": "Roger Dumas",
  *               "title": "",
- *               "videofile": "FR - Capitaine Flam - OP.avi",
+ *               "mediafile": "FR - Capitaine Flam - OP.avi",
  *               "viewcount": 0,
  *               "year": "1981"
  *           }
@@ -2649,7 +2649,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
@@ -2692,6 +2692,7 @@ export function APIControllerPublic(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -2707,7 +2708,6 @@ export function APIControllerPublic(router) {
  *               "songwriter": null,
  *               "title": "Circuit",
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -2760,7 +2760,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
@@ -2789,6 +2789,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
  * @apiSuccess {Number} data/lastplayed_at Time when the song was last played at in UNIX timestamp. `null` if never played before.
+ * @apiSuccess {String} data/mediafile Video's filename
  * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/misc_i18n Translated tag list
  * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
@@ -2805,7 +2806,6 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
  * @apiSuccess {String} data/title Song's title
  * @apiSuccess {String} data/username Username who added that song
- * @apiSuccess {String} data/videofile Video's filename
  * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
  * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
  * @apiSuccessExample Success-Response:
@@ -2836,6 +2836,7 @@ export function APIControllerPublic(router) {
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
  * 			 "lastplayed_at": null,
+ *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "misc": null,
  *           "misc_i18n": null,
  *           "playlist_id": 2,
@@ -2853,20 +2854,14 @@ export function APIControllerPublic(router) {
  *           "time_before_play": 0,
  *           "title": "Hana",
  * 			 "username": "axelterizaki",
- *           "videofile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "viewcount": 0,
  *           "year": ""
  *       }
  *   ]
  * }
-<<<<<<< HEAD:src/_controllers/api.js
  * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * 
-=======
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
- *
->>>>>>> 167-mode-public-permettre-de-like-une-suggestion:src/_apiserver/api.js
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -3002,7 +2997,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Whitelist
  * @apiPermission public
  * @apiDescription If `EngineAllowViewWhitelist` is set to `0` in configuration, then returns an error message (see below)
@@ -3036,6 +3031,7 @@ export function APIControllerPublic(router) {
  *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
  *               "language": "ger",
  *               "language_i18n": "Allemand",
+ *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
  *               "serie": null,
@@ -3047,7 +3043,6 @@ export function APIControllerPublic(router) {
  *               "songtype_i18n_short": "MV",
  *               "songwriter": "Ralph Siegel",
  *               "title": "Moskau",
- *               "videofile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "viewcount": 0,
  *               "whitelist_id": 1,
  *               "year": "1980"
@@ -3106,7 +3101,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Blacklist
  * @apiPermission public
  * @apiDescription If `EngineAllowViewBlacklist` is set to `0` in configuration, then returns an error message (see below)
@@ -3140,6 +3135,7 @@ export function APIControllerPublic(router) {
  *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
  *               "language": "ger",
  *               "language_i18n": "Allemand",
+ *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
  *               "serie": null,
@@ -3151,7 +3147,6 @@ export function APIControllerPublic(router) {
  *               "songtype_i18n_short": "MV",
  *               "songwriter": "Ralph Siegel",
  *               "title": "Moskau",
- *               "videofile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "viewcount": 0,
  *               "whitelist_id": 1,
  *               "year": "1980"
@@ -3318,7 +3313,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Karaokes
  * @apiPermission public
  *
@@ -3357,6 +3352,7 @@ export function APIControllerPublic(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "serie": "Dynasty Warriors 3",
@@ -3368,7 +3364,6 @@ export function APIControllerPublic(router) {
  *               "songtype_i18n_short": "ED",
  *               "songwriter": null,
  *               "title": "Circuit",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -3458,7 +3453,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Karaokes
  * @apiPermission public
  *
@@ -3481,6 +3476,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
  * @apiSuccess {Number} data/lastplayed_at Last time the song has been played in UNIX timestamp. `null` if never played before
+ * @apiSuccess {String} data/mediafile Media's filename
  * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/misc_i18n Translated tag list
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
@@ -3492,7 +3488,6 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
  * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
  * @apiSuccess {String} data/title Song's title
- * @apiSuccess {String} data/videofile Video's filename
  * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
  * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
  * @apiSuccessExample Success-Response:
@@ -3518,6 +3513,7 @@ export function APIControllerPublic(router) {
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
  * 			 "lastplayed_at": null,
+ *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "misc": null,
  *           "misc_i18n": null,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
@@ -3530,7 +3526,6 @@ export function APIControllerPublic(router) {
  *           "songwriter": null,
  *           "time_before_play": 0,
  *           "title": "Hana",
- *           "videofile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "viewcount": 0,
  *           "year": ""
  *       }
@@ -3714,7 +3709,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
  *
@@ -3757,6 +3752,7 @@ export function APIControllerPublic(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -3772,7 +3768,6 @@ export function APIControllerPublic(router) {
  *               "songwriter": null,
  *               "title": "Circuit",*
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -3879,7 +3874,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
  *
@@ -3922,6 +3917,7 @@ export function APIControllerPublic(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -3937,7 +3933,6 @@ export function APIControllerPublic(router) {
  *               "songwriter": null,
  *               "title": "Circuit",
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -4407,7 +4402,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/favorites View own favorites
  * @apiName GetFavorites
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Favorites
  * @apiPermission own
  *
@@ -4447,6 +4442,7 @@ export function APIControllerPublic(router) {
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
  *               "language": "chi",
  *               "language_i18n": "Chinois",
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -4462,7 +4458,6 @@ export function APIControllerPublic(router) {
  *               "songwriter": null,
  *               "title": "Circuit",
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },

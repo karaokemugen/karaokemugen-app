@@ -30,7 +30,7 @@ state.player = {
 	mutestatus: false,
 	subtext: null,
 	currentSongInfos: null,
-	videoType: 'background',
+	mediaType: 'background',
 	showsubs: true,
 	stayontop: false,
 	fullscreen: false,
@@ -269,7 +269,7 @@ async function startmpv() {
 			state.player._playing = false;
 			state.player.playerstatus = 'stop';
 			player.pause();
-			state.player.videoType = 'background';
+			state.player.mediaType = 'background';
 			emitPlayerEnd();
 		}
 		state.player.mutestatus = status.mute;
@@ -298,50 +298,50 @@ async function startmpv() {
 		// Display informations if timeposition is 8 seconds before end of song
 		if (position >= (state.player.duration - 8) && 
 						displayingInfo == false &&
-						state.player.videoType == 'song')						
+						state.player.mediaType == 'song')						
 			displaySongInfo(state.player.currentSongInfos);
-		if (Math.floor(position) == Math.floor(state.player.duration / 2) && displayingInfo == false && state.player.videoType == 'song') displayInfo(8000);
+		if (Math.floor(position) == Math.floor(state.player.duration / 2) && displayingInfo == false && state.player.mediaType == 'song') displayInfo(8000);
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	state.player.ready = true;	
 	return true;
 }
 
-export async function play(videodata) {
+export async function play(mediadata) {
 	const conf = getConfig();
 	logger.debug('[Player] Play event triggered');		
 	state.player.playing = true;
-	//Search for video file in the different PathVideos
-	const PathsVideos = conf.PathVideos.split('|');
-	let videoFile;
+	//Search for media file in the different Pathmedias
+	const PathsMedias = conf.PathMedias.split('|');
+	let mediaFile;
 	try {
-		videoFile = await resolveFileInDirs(videodata.video,PathsVideos);
+		mediaFile = await resolveFileInDirs(mediadata.media,PathsMedias);
 	} catch (err) {
-		logger.debug(`[Player] Error while resolving video path : ${err}`);
-		logger.warn(`[Player] Video NOT FOUND : ${videodata.video}`);
-		if (conf.PathVideosHTTP) {
-			videoFile = `${conf.PathVideosHTTP}/${encodeURIComponent(videodata.video)}`;
-			logger.info(`[Player] Trying to play video directly from the configured http source : ${conf.PathVideosHTTP}`);
+		logger.debug(`[Player] Error while resolving media path : ${err}`);
+		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
+		if (conf.PathMediasHTTP) {
+			mediaFile = `${conf.PathMediasHTTP}/${encodeURIComponent(mediadata.media)}`;
+			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.PathMediasHTTP}`);
 		} else {
-			throw `No video source for ${videodata.video} (tried in ${PathsVideos.toString()} and HTTP source)`;
+			throw `No media source for ${mediadata.media} (tried in ${PathsMedias.toString()} and HTTP source)`;
 		}
 	}	
-	logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
-	logger.debug(`[Player] Loading video : ${videoFile}`);		
+	logger.debug(`[Player] Audio gain adjustment : ${mediadata.gain}`);
+	logger.debug(`[Player] Loading media : ${mediaFile}`);		
 	try { 
-		await player.load(videoFile,'replace',[`replaygain-fallback=${videodata.gain}`]);
-		state.player.videoType = 'song';
+		await player.load(mediaFile,'replace',[`replaygain-fallback=${mediadata.gain}`]);
+		state.player.mediaType = 'song';
 		player.play();
 		state.player.playerstatus = 'play';
-		if (videodata.subtitle) player.addSubtitles(`memory://${videodata.subtitle}`);
+		if (mediadata.subtitle) player.addSubtitles(`memory://${mediadata.subtitle}`);
 		// Displaying infos about current song on screen.					
-		displaySongInfo(videodata.infos);
-		state.player.currentSongInfos = videodata.infos;
+		displaySongInfo(mediadata.infos);
+		state.player.currentSongInfos = mediadata.infos;
 		loadBackground('append');
 		state.player._playing = true;
 		emitPlayerState();
 	} catch(err) {
-		logger.error(`[Player] Error loading video ${videodata.video} : ${JSON.stringify(err)}`);
+		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
 	}	
 }
 
@@ -502,7 +502,7 @@ export async function skip() {
 
 export async function playJingle() {
 	state.player.playing = true;
-	state.player.videoType = 'jingle';
+	state.player.mediaType = 'jingle';
 	if (currentJinglesList.length > 0) {
 		logger.info('[Player] Jingle time !');
 		const jingle = sample(currentJinglesList);

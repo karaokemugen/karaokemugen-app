@@ -25,9 +25,9 @@ export const getWhitelistContents = `SELECT wl.pk_id_whitelist AS whitelist_id,
       									ak.author AS author,
       									ak.NORM_author AS NORM_author,
       									ak.misc AS misc,    
-      									ak.videolength AS duration,  
+      									ak.duration AS duration,  
       									wl.created_at AS created_at,
-      									ak.videofile AS videofile
+      									ak.mediafile AS mediafile
  									FROM karasdb.all_karas AS ak 
 									INNER JOIN whitelist AS wl ON wl.fk_id_kara = ak.kara_id
 									ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title;

@@ -2,7 +2,7 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import validate from 'validate.js';
 import {has as hasLang} from 'langs';
-import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, videoFileRegexp} from './constants';
+import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
 import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
@@ -14,7 +14,7 @@ export function getKara(karaData) {
 	timestamp.round = true;
 
 	return {
-		videofile: karaData.videofile || '',
+		mediafile: karaData.mediafile || '',
 		subfile: karaData.subfile || 'dummy.ass',
 		subchecksum: karaData.subchecksum || '',
 		title: karaData.title || '',
@@ -31,9 +31,9 @@ export function getKara(karaData) {
 		KID: karaData.KID || uuidV4(),
 		dateadded: karaData.dateadded || timestamp.now(),
 		datemodif: karaData.datemodif || timestamp.now(),
-		videosize: karaData.videosize || 0,
-		videogain: karaData.videogain || 0,
-		videoduration: karaData.videoduration || 0,
+		mediasize: karaData.mediasize || 0,
+		mediagain: karaData.mediagain || 0,
+		mediaduration: karaData.mediaduration || 0,
 		version: karaData.version || 2
 	};
 }
@@ -68,9 +68,9 @@ function integerValidator(value) {
 }
 
 const karaConstraints = {
-	videofile: {
+	mediafile: {
 		presence: {allowEmpty: false},
-		format: videoFileRegexp
+		format: mediaFileRegexp
 	},
 	subfile: {
 		presence: {allowEmpty: false},
@@ -91,9 +91,9 @@ const karaConstraints = {
 	KID: {presence: true, format: uuidRegexp},
 	dateadded: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	datemodif: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	videosize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	videogain: {numericality: true},
-	videoduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	mediasize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	mediagain: {numericality: true},
+	mediaduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	version: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}}
 };
 

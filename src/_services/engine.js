@@ -400,7 +400,7 @@ async function tryToReadKaraInPlaylist() {
 			if (isEmpty(title)) title = '';
 			logger.info(`[Engine] Playing ${serie}${title}`);
 			await play({
-				video: kara.path.video,
+				media: kara.path.media,
 				subtitle: kara.path.subtitle,
 				gain: kara.gain,
 				infos: kara.infos
@@ -427,7 +427,7 @@ async function tryToReadKaraInPlaylist() {
 			logger.error(`[Engine] Error during song playback : ${err}`);
 			emitEngineStatus();
 			if (state.engine.status !== 'stop') {
-				logger.warn('[Player] Skipping playback due to missing video');
+				logger.warn('[Player] Skipping playback due to missing media');
 				next();
 			} else {
 				stopPlayer(true);
@@ -570,7 +570,7 @@ export async function shufflePL(playlist_id) {
 export async function getKaraInfo(kara_id, lang, token) {
 	const kara = await plc.getKara(kara_id, token.username);
 	let output = plc.translateKaraInfo(kara, lang);
-	const previewfile = await isPreviewAvailable(output[0].videofile);
+	const previewfile = await isPreviewAvailable(output[0].mediafile);
 	if (previewfile) output[0].previewfile = previewfile;
 	return output;
 }
@@ -579,7 +579,7 @@ export async function getKaraInfo(kara_id, lang, token) {
 export async function getPLCInfo(plc_id, lang, userToken) {
 	const kara = await plc.getKaraFromPlaylist(plc_id, userToken);
 	let output = plc.translateKaraInfo(kara, lang);
-	const previewfile = await isPreviewAvailable(output[0].videofile);
+	const previewfile = await isPreviewAvailable(output[0].mediafile);
 	if (previewfile) output[0].previewfile = previewfile;
 	return output;
 }

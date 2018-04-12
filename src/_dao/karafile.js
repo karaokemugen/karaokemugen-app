@@ -9,8 +9,8 @@ import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
-import {resolvedPathSubs, resolvedPathTemp, resolvedPathVideos} from '../_common/utils/config';
-import {extractSubtitles, getVideoInfo} from '../_common/utils/ffmpeg';
+import {resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common/utils/config';
+import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
 let error = false;
@@ -64,23 +64,23 @@ export async function getDataFromKaraFile(karafile) {
 	}
 	karaData.karafile = karafile;
 
-	let videoFile;
+	let mediaFile;
 
 	try {
-		videoFile = await resolveFileInDirs(karaData.videofile, resolvedPathVideos());
+		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
 	} catch (err) {
-		logger.warn('[Kara] Video file not found : ' + karaData.videofile);
+		logger.warn('[Kara] Media file not found : ' + karaData.mediafile);
 		error = true;
-		if (!karaData.videogain) karaData.videogain = 0;
-		if (!karaData.videosize) karaData.videosize = 0;
-		if (!karaData.videoduration) karaData.videoduration = 0;
+		if (!karaData.mediagain) karaData.mediagain = 0;
+		if (!karaData.mediasize) karaData.mediasize = 0;
+		if (!karaData.mediaduration) karaData.mediaduration = 0;
 		karaData.ass = '';
 	}
 
-	if (videoFile || getConfig().optNoVideo) {
-		const subFile = await findSubFile(videoFile, karaData);
+	if (mediaFile || getConfig().optNoMedia) {
+		const subFile = await findSubFile(mediaFile, karaData);
 		await extractAssInfos(subFile, karaData);
-		await extractVideoTechInfos(videoFile, karaData);		
+		await extractMediaTechInfos(mediaFile, karaData);		
 		if (karaData.error) error = true;
 	}
 
@@ -107,20 +107,20 @@ export async function extractAssInfos(subFile, karaData) {
 	}
 }
 
-export async function extractVideoTechInfos(videoFile, karaData) {
+export async function extractMediaTechInfos(mediaFile, karaData) {
 	const conf = getConfig();
-	if (!conf.optNoVideo) {
-		const videoStats = await asyncStat(videoFile);
-		if (videoStats.size !== +karaData.videosize) {
+	if (!conf.optNoMedia) {
+		const mediaStats = await asyncStat(mediaFile);
+		if (mediaStats.size !== +karaData.mediasize) {
 			karaData.isKaraModified = true;			
-			karaData.videosize = videoStats.size;
+			karaData.mediasize = mediaStats.size;
 
-			const videoData = await getVideoInfo(videoFile);
-			if (videoData.error) error = true;
+			const mediaData = await getMediaInfo(mediaFile);
+			if (mediaData.error) error = true;
 
-			karaData.videogain = videoData.audiogain;
-			karaData.videoduration = videoData.duration;
-			if (conf.optStrict) strictModeError(karaData, 'videosize/gain/duration');			
+			karaData.mediagain = mediaData.audiogain;
+			karaData.mediaduration = mediaData.duration;
+			if (conf.optStrict) strictModeError(karaData, 'mediasize/gain/duration');			
 		}
 	}
 }
@@ -148,7 +148,7 @@ export async function extractVideoSubtitles(videoFile, kid) {
 
 async function findSubFile(videoFile, kara) {
 	const conf = getConfig();
-	if (kara.subfile === 'dummy.ass' && !conf.optNoVideo) {
+	if (kara.subfile === 'dummy.ass' && !conf.optNoMedia) {
 		const videoExt = extname(videoFile);
 		if (videoExt === '.mkv') {
 			try {

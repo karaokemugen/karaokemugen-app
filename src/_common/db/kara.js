@@ -53,8 +53,8 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
       							ak.NORM_author AS NORM_author,
       							ak.misc AS misc,
 								(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
-      							ak.videofile AS videofile,
-      							ak.videolength AS duration,
+      							ak.mediafile AS mediafile,
+      							ak.duration AS duration,
 								ak.gain AS gain,
 								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
@@ -93,8 +93,8 @@ export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
       							ak.NORM_author AS NORM_author,
       							ak.misc AS misc,
 	  							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
-      							ak.videofile AS videofile,
-	  							ak.videolength AS duration,
+      							ak.mediafile AS mediafile,
+	  							ak.duration AS duration,
 		  						ak.gain AS gain,
 								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
@@ -127,8 +127,8 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
       						ak.NORM_author AS NORM_author,
       						ak.misc AS misc,
 	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
-      						ak.videofile AS videofile,
-	  						ak.videolength AS duration,
+      						ak.mediafile AS mediafile,
+	  						ak.duration AS duration,
 	  						ak.gain AS gain,
 							(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     						THEN 1
@@ -169,8 +169,8 @@ export const getKaraMini = `SELECT ak.kara_id AS kara_id,
       						ak.NORM_author AS NORM_author,
       						ak.misc AS misc,
 	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
-      						ak.videofile AS videofile,
-	  						ak.videolength AS duration,
+      						ak.mediafile AS mediafile,
+	  						ak.duration AS duration,
 	  						ak.gain AS gain							
  						FROM karasdb.all_karas AS ak
 						WHERE ak.kara_id = $kara_id  						  

@@ -3,7 +3,7 @@ import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
-import {videoFileRegexp, imageFileRegexp} from '../../_services/constants';
+import {mediaFileRegexp, imageFileRegexp} from '../../_services/constants';
 import fileType from 'file-type';
 import readChunk from 'read-chunk';
 import {getConfig} from './config';
@@ -92,12 +92,12 @@ export async function resolveFileInDirs(filename, dirs) {
 	throw 'File \'' + filename + '\' not found in any listed directory: ' + dirs;
 }
 
-export function filterVideos(files) {
-	return files.filter(file => !file.startsWith('.') && isVideoFile(file));
+export function filterMedias(files) {
+	return files.filter(file => !file.startsWith('.') && isMediaFile(file));
 }
 
-export function isVideoFile(filename) {
-	return new RegExp(videoFileRegexp).test(filename);
+export function isMediaFile(filename) {
+	return new RegExp(mediaFileRegexp).test(filename);
 }
 
 export function filterImages(files) {

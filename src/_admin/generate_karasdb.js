@@ -124,11 +124,11 @@ function prepareKaraInsertData(kara, index) {
 		$titlenorm: deburr(kara.title),
 		$kara_year: kara.year,
 		$kara_songorder: kara.order,
-		$kara_videofile: kara.videofile,
+		$kara_mediafile: kara.mediafile,
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,		
-		$kara_gain: kara.videogain,
-		$kara_videolength: kara.videoduration		
+		$kara_gain: kara.mediagain,
+		$kara_duration: kara.mediaduration		
 	};
 }
 

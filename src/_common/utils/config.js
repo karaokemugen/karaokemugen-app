@@ -221,9 +221,9 @@ export function resolvedPathSubs(overrideConfig) {
 	return conf.PathSubs.split('|').map(path => resolve(conf.appPath, path));
 }
 
-export function resolvedPathVideos(overrideConfig) {
+export function resolvedPathMedias(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
-	return conf.PathVideos.split('|').map(path => resolve(conf.appPath, path));
+	return conf.PathMedias.split('|').map(path => resolve(conf.appPath, path));
 }
 
 export function resolvedPathImport(overrideConfig) {
