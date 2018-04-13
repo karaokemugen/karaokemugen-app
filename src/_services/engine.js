@@ -869,9 +869,9 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 export async function copyKaraToPL(plc_id, playlist_id, pos) {
 	const plcs = plc_id.split(',');
 	const [plcData, pl] = await Promise.all([
-		plc.getPLCInfoMini(plc_id[0]),
+		plc.getPLCInfoMini(plcs[0]),
 		plc.getPlaylistInfo(playlist_id)
-	]);
+	]);	
 	logger.info(`[Engine] Copying ${plcs.length} karaokes to playlist ${pl.name} : ${plcData.title}...`);	
 	try {
 		await plc.copyKaraToPlaylist(plcs, playlist_id, pos);
