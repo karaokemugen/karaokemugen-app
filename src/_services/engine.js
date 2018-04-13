@@ -247,6 +247,7 @@ function stopPlayer(now) {
 		logger.info('[Engine] Karaoke stopping NOW');
 		stop();
 	} else {
+		plc.next();
 		logger.info('[Engine] Karaoke stopping after current song');
 	}
 	if (state.engine.status !== 'stop') {
@@ -311,7 +312,6 @@ async function next() {
 	logger.info('[Engine] Going to next song');
 	stopPlayer(true);
 	try {
-		await plc.next();
 		playPlayer();
 	} catch(err) {
 		logger.warn(`[Engine] Next song is not available : ${err}`);
@@ -921,6 +921,7 @@ export async function sendCommand(command, options) {
 		break;
 	case 'stopAfter':
 		stopPlayer();
+		await plc.next();		
 		break;
 	case 'skip':
 		next();
