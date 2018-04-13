@@ -473,7 +473,7 @@ var settingsNotUpdated;
 		// generic close button
 		$('.playlist-main').on('click', '.closeParent', function () {
 			var el = $(this);
-			el.parent().fadeOut(animTime, function(){
+			el.closest('.alert').fadeOut(animTime, function(){
 				el.parent().remove();
 			});
 		});
