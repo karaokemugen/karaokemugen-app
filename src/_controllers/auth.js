@@ -96,7 +96,7 @@ module.exports = function authController(router) {
  *   "message": null
  * }
  */
-		if (!req.body.fingerprint || req.body.fingerprint == '') {
+		if (!req.body.fingerprint || req.body.fingerprint === '') {
 			res.status(401).send(loginErr);
 		} else {			
 			try {
@@ -140,7 +140,7 @@ function decodeJwtToken(token, config) {
 
 async function getRole(username) {
 	const user = await findUserByName(username);
-	if (user.type == 2) return 'guest';
-	if (user.flag_admin == 1) return 'admin';
+	if (+user.type === 2) return 'guest';
+	if (+user.flag_admin === 1) return 'admin';
 	return 'user';
 }

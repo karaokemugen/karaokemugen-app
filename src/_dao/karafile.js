@@ -97,7 +97,7 @@ export async function extractAssInfos(subFile, karaData) {
 		karaData.ass = karaData.ass.replace(/\r/g, '');
 		const subChecksum = checksum(karaData.ass);
 		// Disable checking the checksum for now
-		if (subChecksum != karaData.subchecksum) {			
+		if (subChecksum !== karaData.subchecksum) {			
 			karaData.isKaraModified = true;
 			karaData.subchecksum = subChecksum;
 			if (getConfig().optStrict) strictModeError(karaData, 'subchecksum');
@@ -161,7 +161,7 @@ async function findSubFile(videoFile, kara) {
 		}
 	} else {
 		try {
-			if (kara.subfile != 'dummy.ass') return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
+			if (kara.subfile !== 'dummy.ass') return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
 		} catch (err) {
 			logger.warn(`[Kara] Could not find subfile '${kara.subfile}'.`);
 			error = true;

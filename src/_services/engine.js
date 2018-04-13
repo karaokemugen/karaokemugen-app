@@ -1,6 +1,6 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
-import {initUserSystem, findUserByName, findUserByID} from '../_services/user';
+import {initUserSystem, findUserByName} from '../_services/user';
 import {initDBSystem, getStats, closeUserDatabase} from '../_dao/database';
 import {initFrontend, emitWS} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
@@ -471,10 +471,10 @@ export async function getKaras(filter,lang,from,size,token) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from, 10),
-				to: parseInt(from, 10)+parseInt(size, 10)
+				from: from,
+				to: from+size
 			},
-			content: karalist.slice(from,parseInt(from, 10)+parseInt(size, 10))
+			content: karalist.slice(from,from+size)
 		};
 	} catch(err) {
 		throw err;
@@ -494,10 +494,10 @@ export async function getWL(filter,lang,from,size) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from, 10),
-				to: parseInt(from, 10)+parseInt(size, 10)
+				from: from,
+				to: from+size
 			},
-			content: karalist.slice(from,parseInt(from, 10)+parseInt(size, 10))
+			content: karalist.slice(from,from+size)
 		};
 	} catch(err) {
 		throw err;
@@ -512,10 +512,10 @@ export async function getBL(filter,lang,from,size) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from, 10),
-				to: parseInt(from, 10)+parseInt(size, 10)
+				from: from,
+				to: from+size
 			},
-			content: karalist.slice(from,parseInt(from, 10)+parseInt(size, 10))
+			content: karalist.slice(from,from+size)
 		};
 	} catch(err) {
 		throw err;
@@ -793,10 +793,10 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from, 10),
-				to: parseInt(from, 10)+parseInt(size, 10)
+				from: from,
+				to: from+size
 			},
-			content: karalist.slice(from,parseInt(from, 10)+parseInt(size,10))
+			content: karalist.slice(from,from+parseInt(size,10))
 		};
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);

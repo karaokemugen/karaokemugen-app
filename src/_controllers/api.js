@@ -917,13 +917,13 @@ export function APIControllerAdmin(router) {
 			if (!req.query.size) {
 				size = 999999;
 			} else {
-				size = parseInt(req.query.size);
+				size = parseInt(req.query.size, 10);
 			}
 			let from;
 			if (!req.query.from) {
 				from = 0;
 			} else {
-				from = parseInt(req.query.from);
+				from = parseInt(req.query.from, 10);
 			}
 			try {
 
@@ -992,7 +992,7 @@ export function APIControllerAdmin(router) {
 			const result = await req.getValidationResult();
 			if (result.isEmpty()) {
 				req.sanitize('playlist_id').toInt();
-				if (req.body.pos != undefined) req.sanitize('pos').toInt();
+				if (req.body.pos) req.sanitize('pos').toInt();
 				try {
 
 						
@@ -1071,7 +1071,7 @@ export function APIControllerAdmin(router) {
 
 			const result = await req.getValidationResult();
 			if (result.isEmpty()) {
-				if (req.body.pos != undefined) req.sanitize('pos').toInt();
+				if (req.body.pos) req.sanitize('pos').toInt();
 				try {
 							
 					const pl_id = await	engine.copyKaraToPL(req.body.plc_id,req.params.pl_id,req.body.pos);
@@ -1079,7 +1079,7 @@ export function APIControllerAdmin(router) {
 					res.statusCode = 201;
 					const args = {
 						plc_ids: req.body.plc_id.split(','),
-						playlist_id: parseInt(req.params.pl_id)
+						playlist_id: parseInt(req.params.pl_id, 10)
 					};
 					res.json(OKMessage(null,'PL_SONG_MOVED',args));
 				} catch(err) {
@@ -1332,8 +1332,8 @@ export function APIControllerAdmin(router) {
 
 			const result = await req.getValidationResult();
 			if (result.isEmpty()) {
-				if (req.body.pos != undefined) req.sanitize('pos').toInt();
-				if (req.body.flag_playing != undefined) req.sanitize('flag_playing').toInt();
+				if (req.body.pos) req.sanitize('pos').toInt();
+				if (req.body.flag_playing) req.sanitize('flag_playing').toInt();
 				try {
 					await engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,req.authToken);
 							
@@ -1821,13 +1821,13 @@ export function APIControllerAdmin(router) {
 			if (!req.query.size) {
 				size = 999999;
 			} else {
-				size = parseInt(req.query.size);
+				size = parseInt(req.query.size, 10);
 			}
 			let from;
 			if (!req.query.from) {
 				from = 0;
 			} else {
-				from = parseInt(req.query.from);
+				from = parseInt(req.query.from, 10);
 			}
 			try {
 				const karas = await engine.getWL(filter,lang,from,size);
@@ -2031,13 +2031,13 @@ export function APIControllerAdmin(router) {
 			if (!req.query.size) {
 				size = 999999;
 			} else {
-				size = parseInt(req.query.size);
+				size = parseInt(req.query.size, 10);
 			}
 			let from;
 			if (!req.query.from) {
 				from = 0;
 			} else {
-				from = parseInt(req.query.from);
+				from = parseInt(req.query.from, 10);
 			}
 			if (from < 0) from = 0;	
 			try {
@@ -2737,13 +2737,13 @@ export function APIControllerPublic(router) {
 			if (!req.query.size) {
 				size = 999999;
 			} else {
-				size = parseInt(req.query.size);
+				size = parseInt(req.query.size, 10);
 			}
 			let from;
 			if (!req.query.from) {
 				from = 0;
 			} else {
-				from = parseInt(req.query.from);
+				from = parseInt(req.query.from, 10);
 			}
 			try {
 				const playlist = await engine.getPLContents(req.params.pl_id,filter,lang,req.authToken,from,size);
@@ -3074,20 +3074,20 @@ export function APIControllerPublic(router) {
  */
 		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Returns whitelist IF the settings allow public to see it
-			if (getConfig().EngineAllowViewWhitelist == 1) {
+			if (getConfig().EngineAllowViewWhitelist === 1) {
 				const lang = req.query.lang;
 				const filter = req.query.filter;
 				let size;
 				if (!req.query.size) {
 					size = 999999;
 				} else {
-					size = parseInt(req.query.size);
+					size = parseInt(req.query.size, 10);
 				}
 				let from;
 				if (!req.query.from) {
 					from = 0;
 				} else {
-					from = parseInt(req.query.from);
+					from = parseInt(req.query.from, 10);
 				}
 				try {
 					const karas = await	engine.getWL(filter,lang,from,size);
@@ -3178,20 +3178,20 @@ export function APIControllerPublic(router) {
  */
 		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklisted karas IF the settings allow public to see it
-			if (getConfig().EngineAllowViewBlacklist == 1) {
+			if (getConfig().EngineAllowViewBlacklist === 1) {
 				const lang = req.query.lang;
 				const filter = req.query.filter;
 				let size;
 				if (!req.query.size) {
 					size = 999999;
 				} else {
-					size = parseInt(req.query.size);
+					size = parseInt(req.query.size, 10);
 				}
 				let from;
 				if (!req.query.from) {
 					from = 0;
 				} else {
-					from = parseInt(req.query.from);
+					from = parseInt(req.query.from, 10);
 				}
 				try {
 					const karas = await engine.getBL(filter,lang,from,size);
@@ -3245,7 +3245,7 @@ export function APIControllerPublic(router) {
  */		
 		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklist criterias IF the settings allow public to see it
-			if (getConfig().EngineAllowViewBlacklistCriterias == 1) {
+			if (getConfig().EngineAllowViewBlacklistCriterias === 1) {
 				try {
 					const blc = await engine.getBLC();
 					res.json(OKMessage(blc));
@@ -3398,13 +3398,13 @@ export function APIControllerPublic(router) {
 			if (!req.query.size) {
 				size = 999999;
 			} else {
-				size = parseInt(req.query.size);
+				size = parseInt(req.query.size, 10);
 			}
 			let from;
 			if (!req.query.from) {
 				from = 0;
 			} else {
-				from = parseInt(req.query.from);
+				from = parseInt(req.query.from, 10);
 			}
 			if (from < 0) from = 0;
 			try {
@@ -4301,9 +4301,9 @@ export function APIControllerPublic(router) {
  */
 		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const userdata = await user.findUserByName(req.authToken.username, {public:false});
+				const userData = await user.findUserByName(req.authToken.username, {public:false});
 				updateSongsLeft(userData.id);
-				res.json(OKMessage(userdata));
+				res.json(OKMessage(userData));
 			} catch(err) {
 				logger.error(err);
 				res.statusCode = 500;
@@ -4491,13 +4491,13 @@ export function APIControllerPublic(router) {
 			if (!req.query.size) {
 				size = 999999;
 			} else {
-				size = parseInt(req.query.size);
+				size = parseInt(req.query.size, 10);
 			}
 			let from;
 			if (!req.query.from) {
 				from = 0;
 			} else {
-				from = parseInt(req.query.from);
+				from = parseInt(req.query.from, 10);
 			}
 			try {
 				const karas = await favorites.getFavorites(req.authToken.username, filter, lang, from, size);
