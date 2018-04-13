@@ -98,8 +98,7 @@ export async function isCurrentPlaylist(playlist_id) {
 	if (await isPlaylist(playlist_id)) {
 		const res = await plDB.findCurrentPlaylist();
 		const pl_id = parseInt(playlist_id, 10);
-		if (res.playlist_id === pl_id) return true;
-		return false;
+		return res.playlist_id === pl_id;
 	}
 	return false;
 }
@@ -108,14 +107,7 @@ export async function isPublicPlaylist(playlist_id) {
 	if (await isPlaylist(playlist_id)) {
 		const res = await plDB.findPublicPlaylist();		
 		const pl_id = parseInt(playlist_id, 10);
-		if (res.playlist_id === pl_id)
-		{
-			console.log('lol');
-			console.log(res.playlist_id);
-			console.log(pl_id);
-			return true;
-		}
-		return false;
+		return res.playlist_id === pl_id;
 	}
 	return false;
 }
@@ -368,10 +360,10 @@ export async function editPlaylist(playlist_id,name,flag_visible) {
 }				
 
 export async function createPlaylist(name,flag_visible,flag_current,flag_public,flag_favorites,username) {
-	if (flag_current === 1 && flag_public === 1) throw 'A playlist cannot be current and public at the same time!';
-	if (flag_favorites === 1 && (flag_public === 1 || flag_public === 1)) throw 'A playlist cannot be favorite and current/public at the same time!';	
-	if (flag_public === 1) await unsetPublicAllPlaylists();
-	if (flag_current === 1) await unsetCurrentAllPlaylists();	
+	if (flag_current && flag_public) throw 'A playlist cannot be current and public at the same time!';
+	if (flag_favorites && (flag_public || flag_public)) throw 'A playlist cannot be favorite and current/public at the same time!';	
+	if (flag_public) await unsetPublicAllPlaylists();
+	if (flag_current) await unsetCurrentAllPlaylists();	
 	const pl = await plDB.createPlaylist({
 		name: name,
 		NORM_name: deburr(name),
