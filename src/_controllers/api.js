@@ -2989,7 +2989,8 @@ export function APIControllerPublic(router) {
 		.get(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const stats = await engine.getKMStats();
-				updateSongsLeft(req.authToken.username);
+				const userData = await user.findUserByName(req.authToken.username);
+				updateSongsLeft(userData.id);
 				res.json(OKMessage(stats));
 			} catch(err) {
 				logger.error(err);
@@ -4301,7 +4302,7 @@ export function APIControllerPublic(router) {
 		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const userdata = await user.findUserByName(req.authToken.username, {public:false});
-				updateSongsLeft(req.authToken.username);
+				updateSongsLeft(userData.id);
 				res.json(OKMessage(userdata));
 			} catch(err) {
 				logger.error(err);

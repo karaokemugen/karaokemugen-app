@@ -410,18 +410,7 @@ async function tryToReadKaraInPlaylist() {
 			//Add a view to the viewcount
 			addViewcountKara(kara.kara_id,kara.kid);
 			//Free karaoke
-			await plc.freePLC(kara.playlistcontent_id);
-			//If karaoke is present in the public playlist, we're marking it free.
-			const plcontent = await plc.getPLCByKID(kara.kid,internalState.publicPlaylistID);
-			if (plcontent) await plc.freePLC(plcontent.playlistcontent_id);
-			let modePlaylist_id;
-			if (state.engine.private) {
-				modePlaylist_id = internalState.currentPlaylistID;
-			} else {
-				modePlaylist_id = internalState.publicPlaylistID;
-			}
-			const user = await findUserByID(kara.user_id);
-			plc.updateSongsLeft(user.login,modePlaylist_id);
+			updateUserQuotas(kara);
 			return true;
 		} catch(err) {
 			logger.error(`[Engine] Error during song playback : ${err}`);
@@ -434,6 +423,40 @@ async function tryToReadKaraInPlaylist() {
 			}
 		}
 	}
+}
+
+async function updateUserQuotas(kara) {
+	//If karaokes are present in the public playlist, we're marking it free.			
+	//First find which KIDs are to be freed. All those before the currently playing kara 
+	// are to be set free.
+	let modePlaylist_id;
+	if (state.engine.private) {
+		modePlaylist_id = internalState.currentPlaylistID;
+	} else {
+		modePlaylist_id = internalState.publicPlaylistID;
+	}	
+	await plc.freePLCBeforePos(kara.pos, internalState.currentPlaylistID);
+	// For every KID we check if it exists and add the PLC to a list
+	const [publicPlaylist, currentPlaylist] = await Promise.all([
+		plc.getPlaylistContentsMini(internalState.publicPlaylistID),
+		plc.getPlaylistContentsMini(internalState.currentPlaylistID)
+	]);	
+	let freeTasks = [];
+	let usersNeedingUpdate = [];
+	for (const currentSong of currentPlaylist) {
+		publicPlaylist.some(publicSong => {
+			if (publicSong.kid === currentSong.kid && currentSong.flag_free === 1) {
+				freeTasks.push(plc.freePLC(publicSong.playlistcontent_id));	
+				if (!usersNeedingUpdate.includes(publicSong.user_id)) usersNeedingUpdate.push(publicSong.user_id);
+				return true;
+			}
+			return false;
+		});
+	}
+	await Promise.all(freeTasks);
+	usersNeedingUpdate.forEach(user_id => {
+		plc.updateSongsLeft(user_id,modePlaylist_id);	
+	});		
 }
 
 async function addViewcountKara(kara_id, kid) {

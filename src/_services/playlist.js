@@ -2,7 +2,7 @@ import {uuidRegexp} from './constants';
 import {getStats} from '../_dao/database';
 import {ASSToLyrics} from '../_common/utils/ass';
 import {getConfig} from '../_common/utils/config';
-import {findUserByName} from '../_services/user';
+import {findUserByID, findUserByName} from '../_services/user';
 const blcDB = require('../_dao/blacklist');
 const tagDB = require('../_dao/tag');
 const wlDB = require('../_dao/whitelist');
@@ -50,9 +50,13 @@ export async function freePLC(plc_id) {
 	return await plDB.setPLCFree(plc_id);
 }
 
-export async function updateSongsLeft(username,playlist_id) {
+export async function freePLCBeforePos(pos, playlist_id) {
+	await plDB.setPLCFreeBeforePos(pos, playlist_id);	
+}
+
+export async function updateSongsLeft(user_id,playlist_id) {
 	const conf = getConfig();
-	const user = await findUserByName(username);	
+	const user = await findUserByID(user_id);	
 	let songsLeft;
 	if (!playlist_id) {
 		if (conf.EnginePrivateMode == 1) {
@@ -62,21 +66,23 @@ export async function updateSongsLeft(username,playlist_id) {
 		}
 	}			
 	if (user.flag_admin == 0) {
-		const count = await karaDB.getSongCountForUser(playlist_id,username);
+		const count = await karaDB.getSongCountForUser(playlist_id,user_id);
 		songsLeft = conf.EngineSongsPerUser - count.count;
 	} else {
 		songsLeft = -1;
 	}
+	logger.debug(`[User] Updating songs left for ${user.login} : ${songsLeft}`);
 	emitWS('songsAvailableUpdated', {
-		username: username,
+		username: user.login,
 		songsLeft: songsLeft
 	});		
 }
 
 export async function isUserAllowedToAddKara(playlist_id,requester) {
 	const limit = getConfig().EngineSongsPerUser;
-	try { 
-		const count = await karaDB.getSongCountForUser(playlist_id,requester);	
+	try {
+		const user = findUserByName(requester);
+		const count = await karaDB.getSongCountForUser(playlist_id,user.id);	
 		if (count.count >= limit) {
 			logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
 			return false;

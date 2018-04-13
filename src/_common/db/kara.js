@@ -203,9 +203,8 @@ export const removeKaraFromWhitelist = `DELETE FROM whitelist
 									`;
 
 export const getSongCountPerUser = `SELECT COUNT(1) AS count
-									FROM playlist_content AS pc, user AS u
-									WHERE u.login = $username
-									  AND u.pk_id_user = pc.fk_id_user
+									FROM playlist_content AS pc
+									WHERE pc.fk_id_user = $user_id
 									  AND pc.fk_id_playlist = $playlist_id
 									  AND flag_free = 0
 									`;

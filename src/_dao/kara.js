@@ -4,10 +4,10 @@ import {getConfig} from '../_common/utils/config';
 
 const sql = require('../_common/db/kara');
 
-export async function getSongCountForUser(playlist_id,username) {
+export async function getSongCountForUser(playlist_id,user_id) {
 	return await getUserDb().get(sql.getSongCountPerUser, {
 		$playlist_id: playlist_id,
-		$username: username
+		$user_id: user_id
 	});
 }
 
