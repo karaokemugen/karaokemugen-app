@@ -455,7 +455,6 @@ export function APIControllerAdmin(router) {
  */
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				
 				await engine.deletePL(req.params.pl_id,req.authToken);
 				emitWS('playlistsUpdated');
 				res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));

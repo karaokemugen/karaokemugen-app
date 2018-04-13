@@ -630,6 +630,12 @@ export async function getPLInfo(playlist_id, token) {
 
 export async function deletePL(playlist_id, token) {
 	const pl = await plc.getPlaylistInfo(playlist_id);
+	if (!pl) {
+		throw {
+			message: 'Playlist unknown',
+			data: null
+		};
+	}
 	try {
 		logger.info(`[Engine] Deleting playlist ${pl.name} (by ${token.username})`);
 		return await plc.deletePlaylist(playlist_id, token);

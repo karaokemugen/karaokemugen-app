@@ -97,7 +97,8 @@ export async function isUserAllowedToAddKara(playlist_id,requester) {
 export async function isCurrentPlaylist(playlist_id) {
 	if (await isPlaylist(playlist_id)) {
 		const res = await plDB.findCurrentPlaylist();
-		if (res.playlist_id === playlist_id) return true;
+		const pl_id = parseInt(playlist_id, 10);
+		if (res.playlist_id === pl_id) return true;
 		return false;
 	}
 	return false;
@@ -105,8 +106,15 @@ export async function isCurrentPlaylist(playlist_id) {
 					
 export async function isPublicPlaylist(playlist_id) {
 	if (await isPlaylist(playlist_id)) {
-		const res = await plDB.findPublicPlaylist();
-		if (res.playlist_id === playlist_id) return true;
+		const res = await plDB.findPublicPlaylist();		
+		const pl_id = parseInt(playlist_id, 10);
+		if (res.playlist_id === pl_id)
+		{
+			console.log('lol');
+			console.log(res.playlist_id);
+			console.log(pl_id);
+			return true;
+		}
 		return false;
 	}
 	return false;
