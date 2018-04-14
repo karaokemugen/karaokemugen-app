@@ -637,7 +637,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			type = 'POST';
 			url = 'admin/playlists';
 
-			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST', playlistName),'',
+			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST'),'',
 				function(playlistName) {
 					data = { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 };
 					ajx(type, url, data, function (idNewPlaylist) {
