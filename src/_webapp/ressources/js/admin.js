@@ -373,22 +373,23 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	panel1Default = -1;
 
 	// dynamic creation of switchable settings 
-	var htmlSettings = '';
-	$.each(settingsOnOff, function (e, val) {
-		var htmlString = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
-												+ '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
-		if (e === 'PlayerPIP') {
-			$(htmlString).insertBefore('#pipSettings');
-		} else if (e === 'EngineDisplayConnectionInfo') {
-			$(htmlString).insertBefore('#connexionInfoSettings');
-		} else if (e === 'EngineFreeUpvotes') {
-			$(htmlString).insertBefore('#freeUpvotesSettings');
-		} else {
-			htmlSettings += htmlString;
-		}
+	$.each(settingsOnOff, function (tab, settingsList) {
+		var htmlSettings = '';
+		$.each(settingsList, function (e, val) {
+			var htmlString = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
+													+ '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
+			if (e === 'PlayerPIP') {
+				$(htmlString).insertBefore('#pipSettings');
+			} else if (e === 'EngineDisplayConnectionInfo') {
+				$(htmlString).insertBefore('#connexionInfoSettings');
+			} else if (e === 'EngineFreeUpvotes') {
+				$(htmlString).insertBefore('#freeUpvotesSettings');
+			} else {
+				htmlSettings += htmlString;
+			}
+		});
+		$('#nav-' + tab).append(htmlSettings);	
 	});
-
-	$('#settings').append(htmlSettings);
 
 	// nameExclude = input not being updated (most likely user is on it)
 	getSettings = function (nameExclude) {

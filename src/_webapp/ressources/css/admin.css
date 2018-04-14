@@ -10,12 +10,17 @@
 	line-height: 2.25;
 }
 #manage, #manage > .panel  {
-	height: calc(100% - 5px);
+	height: 100%;
+    margin: 5px;
 }
 #manage > .panel {
 	overflow: auto;
+    background-color: transparent;
 }
-
+#settings {
+    background-color: #2d2d2f;
+	padding: 0;
+}
 .settingsGroupPanel {
 	padding: 16px 0px;
 	background-color:transparent;
@@ -33,9 +38,6 @@
 .hiddenHeader #underHeader {
 	top: 24px;
 	height: calc(100% - 24px);
-}
-.form-horizontal {
-	padding: 0px 40px;
 }
 
 .list-group > li > button {

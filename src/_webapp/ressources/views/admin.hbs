@@ -228,128 +228,139 @@
     </div>
     <div class="row" id="manage" hidden>
         <div class="col-lg-2 col-xs-0"></div>
-        <div class="panel col-lg-8 col-xs-12" introStep="14"  introLabel="settings_screen">
-            <div class="panel-heading container-fluid">
-                <center>
-                    <h4> {{i18n "OPTIONS"}} </h4>
-                </center>
-            </div>
-            <br/>
-           
+        <div class="panel col-lg-8 col-xs-12 modalPage" introStep="14"  introLabel="settings_screen">
             <form class="form-horizontal" id="settings">
-                <div class="form-group">
-                    <label for="PlayerStayOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
-                    <div class="col-xs-6">
-                        <input action="command" switch="onoff" type="checkbox" name="PlayerStayOnTop" nameCommand="toggleAlwaysOnTop">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="PlayerFullscreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
-                    <div class="col-xs-6">
-                        <input action="command" switch="onoff" type="checkbox" name="PlayerFullscreen" nameCommand="toggleFullscreen">
-                    </div>
-                </div>
-               
-                <div class="form-group">
-                    <label for="EngineSongsPerUser" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
-                    <div class="col-xs-6">
-                        <input type="number" class="form-control" name="EngineSongsPerUser" placeholder="1000">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="EngineJingleInterval" class="col-xs-4 control-label">{{i18n "ENGINEJINGLESINTERVAL"}}</label>
-                    <div class="col-xs-6">
-                        <input type="number" class="form-control" name="EngineJinglesInterval" placeholder="20">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="PlayerScreen" class="col-xs-4 control-label">{{i18n "MONITOR_NUMBER"}}</label>
-                    <div class="col-xs-6">
-                        <select type="number" class="form-control" name="PlayerScreen">
-								{{#each displays}}
-									<option value="{{@index}}"> ({{resolutionx}}x{{resolutiony}}) {{model}}</option>
-								{{/each}}
-                            </select>
-                    </div>
-                </div>
-                   <div class="form-group">
-                    <label for="WebappMode" class="col-xs-4 control-label">{{i18n "WEBAPPMODE"}}</label>
-                    <div class="col-xs-6">
-                        <select type="number" class="form-control" name="WebappMode">
-								<option value="0">{{i18n "WEBAPPMODE_CLOSED"}}</option>
-                                <option value="1">{{i18n "WEBAPPMODE_LIMITED"}}</option>
-                                <option value="2">{{i18n "WEBAPPMODE_OPEN"}}</option>
-                            </select>
-                    </div>
-                </div>
-                <div id="pipSettings" class="well well-sm settingsGroupPanel">
-                    <div class="form-group">
-                        <label for="PlayerPIPSize" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}} (%)</label>
-                        <div class="col-xs-6">
-                            <input type="range" name="PlayerPIPSize">
+                <ul class="nav nav-tabs nav-justified">
+                    <li class="modal-title active"><a data-toggle="tab" href="#nav-player" role="tab" aria-controls="nav-login" aria-selected="true">{{i18n "SETTINGS_PLAYER"}}</a></li>
+                    <li class="modal-title" ><a data-toggle="tab" href="#nav-karaoke" role="tab" aria-controls="nav-lokaraokegin" aria-selected="false">{{i18n "SETTINGS_KARAOKE"}}</a></li>
+                    <li class="modal-title" ><a data-toggle="tab" href="#nav-interface" role="tab" aria-controls="nav-interface" aria-selected="false">{{i18n "SETTINGS_INTERFACE"}}</a></li>
+                </ul>
+    
+                <div class="tab-content">
+                    <div id="nav-player" role="tabpanel" aria-labelledby="nav-player-tab" class="modal-body tab-pane fade in active">
+                        <div class="form-group">
+                            <label for="PlayerStayOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
+                            <div class="col-xs-6">
+                                <input action="command" switch="onoff" type="checkbox" name="PlayerStayOnTop" nameCommand="toggleAlwaysOnTop">
+                            </div>
                         </div>
-                    </div>
+                        <div class="form-group">
+                            <label for="PlayerFullscreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
+                            <div class="col-xs-6">
+                                <input action="command" switch="onoff" type="checkbox" name="PlayerFullscreen" nameCommand="toggleFullscreen">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="PlayerScreen" class="col-xs-4 control-label">{{i18n "MONITOR_NUMBER"}}</label>
+                            <div class="col-xs-6">
+                                <select type="number" class="form-control" name="PlayerScreen">
+                                        {{#each displays}}
+                                            <option value="{{@index}}"> ({{resolutionx}}x{{resolutiony}}) {{model}}</option>
+                                        {{/each}}
+                                    </select>
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="PlayerPIPPositionX" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_X"}}</label>
-                        <div class="col-xs-6">
-                            <select type="number" class="form-control" name="PlayerPIPPositionX">
-                                <option value="Left" > {{i18n "LEFT"}} </option>
-                                <option value="Center" default> {{i18n "CENTER"}} </option>
-                                <option value="Right" > {{i18n "RIGHT"}} </option>
-                            </select>
+                        <div id="connexionInfoSettings" class="well well-sm settingsGroupPanel">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label" for="EngineDisplayConnectionInfoQRCode">{{i18n "ENGINEDISPLAYCONNECTIONINFOQRCODE"}}</label>
+                                <div class="col-xs-6">
+                                    <input name="EngineDisplayConnectionInfoQRCode" type="checkbox">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="EngineDisplayConnectionInfoHost" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOHOST"}}</label>
+                                <div class="col-xs-6">
+                                    <input class="form-control" name="EngineDisplayConnectionInfoHost">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="EngineDisplayConnectionInfoMessage" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOMESSAGE"}}</label>
+                                <div class="col-xs-6">
+                                    <input class="form-control" name="EngineDisplayConnectionInfoMessage">
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="PlayerPIPPositionY" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_Y"}}</label>
-                        <div class="col-xs-6">
-                            <select type="number" class="form-control" name="PlayerPIPPositionY">
-                                <option value="Bottom" > {{i18n "BOTTOM"}} </option>
-                                <option value="Center" default> {{i18n "CENTER"}} </option>
-                                <option value="Top" > {{i18n "TOP"}} </option>
-                            </select>
+
+                        
+                        <div id="pipSettings" class="well well-sm settingsGroupPanel">
+                            <div class="form-group">
+                                <label for="PlayerPIPSize" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}} (%)</label>
+                                <div class="col-xs-6">
+                                    <input type="range" name="PlayerPIPSize">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="PlayerPIPPositionX" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_X"}}</label>
+                                <div class="col-xs-6">
+                                    <select type="number" class="form-control" name="PlayerPIPPositionX">
+                                        <option value="Left" > {{i18n "LEFT"}} </option>
+                                        <option value="Center" default> {{i18n "CENTER"}} </option>
+                                        <option value="Right" > {{i18n "RIGHT"}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="PlayerPIPPositionY" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_Y"}}</label>
+                                <div class="col-xs-6">
+                                    <select type="number" class="form-control" name="PlayerPIPPositionY">
+                                        <option value="Bottom" > {{i18n "BOTTOM"}} </option>
+                                        <option value="Center" default> {{i18n "CENTER"}} </option>
+                                        <option value="Top" > {{i18n "TOP"}} </option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div id="connexionInfoSettings" class="well well-sm settingsGroupPanel">
-                    <div class="form-group">
-                        <label class="col-xs-4 control-label" for="EngineDisplayConnectionInfoQRCode">{{i18n "ENGINEDISPLAYCONNECTIONINFOQRCODE"}}</label>
-                        <div class="col-xs-6">
-                            <input name="EngineDisplayConnectionInfoQRCode" type="checkbox">
+                    <div id="nav-interface" role="tabpanel" aria-labelledby="nav-interface-tab" class="modal-body tab-pane fade">
+                    
+                        <div class="form-group">
+                            <label for="WebappMode" class="col-xs-4 control-label">{{i18n "WEBAPPMODE"}}</label>
+                            <div class="col-xs-6">
+                                <select type="number" class="form-control" name="WebappMode">
+                                        <option value="0">{{i18n "WEBAPPMODE_CLOSED"}}</option>
+                                        <option value="1">{{i18n "WEBAPPMODE_LIMITED"}}</option>
+                                        <option value="2">{{i18n "WEBAPPMODE_OPEN"}}</option>
+                                    </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="EngineDisplayConnectionInfoHost" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOHOST"}}</label>
-                        <div class="col-xs-6">
-                            <input class="form-control" name="EngineDisplayConnectionInfoHost">
+                    <div id="nav-karaoke" role="tabpanel" aria-labelledby="nav-karaoke-tab" class="modal-body tab-pane fade">
+                        <div class="form-group">
+                            <label for="EngineSongsPerUser" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
+                            <div class="col-xs-6">
+                                <input type="number" class="form-control" name="EngineSongsPerUser" placeholder="1000">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="EngineDisplayConnectionInfoMessage" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOMESSAGE"}}</label>
-                        <div class="col-xs-6">
-                            <input class="form-control" name="EngineDisplayConnectionInfoMessage">
+                        <div class="form-group">
+                            <label for="EngineJingleInterval" class="col-xs-4 control-label">{{i18n "ENGINEJINGLESINTERVAL"}}</label>
+                            <div class="col-xs-6">
+                                <input type="number" class="form-control" name="EngineJinglesInterval" placeholder="20">
+                            </div>
                         </div>
+                            
+                        <div id="freeUpvotesSettings" class="well well-sm settingsGroupPanel">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label" for="EngineFreeUpvotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
+                                <div class="col-xs-6">
+                                    <input class="form-control" name="EngineFreeUpvotesRequiredMin">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="EngineFreeUpvotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
+                                <div class="col-xs-6">
+                                    <input class="form-control" name="EngineFreeUpvotesRequiredPercent">
+                                </div>
+                            </div>
+                        
+                        </div>            
+                        <input name="appFirstRun" class="hideInput hidden">
                     </div>
-                </div>
-                 <div id="freeUpvotesSettings" class="well well-sm settingsGroupPanel">
-                    <div class="form-group">
-                        <label class="col-xs-4 control-label" for="EngineFreeUpvotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
-                        <div class="col-xs-6">
-                            <input class="form-control" name="EngineFreeUpvotesRequiredMin">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="EngineFreeUpvotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
-                        <div class="col-xs-6">
-                            <input class="form-control" name="EngineFreeUpvotesRequiredPercent">
-                        </div>
-                    </div>
-                  
                 </div>            
-                <input name="appFirstRun" class="hideInput hidden">
             </form>
-
         </div>
         <div class="col-lg-2 col-xs-0"></div>
     </div>

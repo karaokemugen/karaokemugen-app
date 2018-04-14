@@ -1041,7 +1041,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	height: 100px;
     max-height: 18vh;
 }
-.modalPage .modal-body > div {
+.modal.modalPage .modal-body > div {
 	padding: 5px;
 	text-align: center;
 }
@@ -1061,14 +1061,17 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 .modalPage .nav-tabs>li.active>a, .modalPage .nav-tabs>li.active>a:focus, .modalPage .nav-tabs>li.active>a:hover {
     cursor: default;
-    background-color: #3a3c45;
+    background-color: transparent;
 	border: none;
 	color: #EEE;
+}
+#manage .modalPage .nav-tabs>li.active>a, #manage .modalPage .nav-tabs>li.active>a:focus, #manage .modalPage .nav-tabs>li.active>a:hover {
+    border-left: 1px solid #1E2124;
 }
 .modalPage .nav-tabs.nav-justified>li {
     flex-grow: 1;
 }
-.modalPage .tab-content {
+.modal.modalPage .tab-content {
 	padding: 5px;
 }
 .nav>li>a:focus, .nav>li>a:hover {

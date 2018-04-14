@@ -31,18 +31,27 @@
         var query = {{{query}}};
         var webappMode = {{webappMode}};
         var settingsOnOff = {
-            "PlayerPIP": "{{i18n "PLAYERPIP"}}"
-            , "EngineDisplayConnectionInfo": "{{i18n "ENGINEDISPLAYCONNECTIONINFO"}}"
-            , "EngineAllowViewBlacklist": "{{i18n "ENGINEALLOWVIEWBLACKLIST"}}"
-            , "EngineAllowViewBlacklistCriterias": "{{i18n "ENGINEALLOWVIEWBLACKLISTCRITERIAS"}}"
-            , "EngineAllowViewWhitelist": "{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
-            , "EngineDisplayNickname": "{{i18n "ENGINEDISPLAYNICKNAME"}}"
-            , "PlayerNoBar": "{{i18n "PLAYERNOBAR"}}"
-            , "PlayerNoHud": "{{i18n "PLAYERNOHUD"}}"
-            , "EngineRepeatPlaylist": "{{i18n "ENGINEREPEATPLAYLIST"}}"
-            , "EngineSmartInsert": "{{i18n "ENGINEENABLESMARTINSERT"}}"
-            , "EngineAutoPlay": "{{i18n "ENGINEAUTOPLAY"}}"
-            , "EngineFreeUpvotes": "{{i18n "ENGINEFREEUPVOTES"}}" };
+            'player' : 
+                { "PlayerPIP": "{{i18n "PLAYERPIP"}}"
+                , "EngineDisplayConnectionInfo": "{{i18n "ENGINEDISPLAYCONNECTIONINFO"}}"
+                , "EngineDisplayNickname": "{{i18n "ENGINEDISPLAYNICKNAME"}}"
+                , "PlayerNoBar": "{{i18n "PLAYERNOBAR"}}"
+                , "PlayerNoHud": "{{i18n "PLAYERNOHUD"}}"
+                },
+            'interface' :
+                { "EngineAllowViewBlacklist": "{{i18n "ENGINEALLOWVIEWBLACKLIST"}}"
+                , "EngineAllowViewBlacklistCriterias": "{{i18n "ENGINEALLOWVIEWBLACKLISTCRITERIAS"}}"
+                , "EngineAllowViewWhitelist": "{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
+                },
+            'karaoke' :
+                { "EngineRepeatPlaylist": "{{i18n "ENGINEREPEATPLAYLIST"}}"
+                , "EngineSmartInsert": "{{i18n "ENGINEENABLESMARTINSERT"}}"
+                , "EngineAutoPlay": "{{i18n "ENGINEAUTOPLAY"}}"
+                , "EngineFreeUpvotes": "{{i18n "ENGINEFREEUPVOTES"}}" 
+                }
+            };
+
+
     </script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/vendors/js/assignIE.js"></script>

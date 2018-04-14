@@ -419,5 +419,8 @@
 	"FIRST_PUBLIC_RUN_WELCOME": "Il semble que ce soit votre 1ère fois ici !",
 	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE (~2 MIN)",
 	"_": "DO NOT MODIFY",
-	"LOGOUT": "Déconnexion"
+	"LOGOUT": "Déconnexion",
+	"SETTINGS_PLAYER": "Lecteur",
+	"SETTINGS_KARAOKE": "Karaoké",
+	"SETTINGS_INTERFACE": "Interface"
 }
