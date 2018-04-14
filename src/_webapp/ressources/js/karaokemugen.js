@@ -1593,33 +1593,35 @@ var settingsNotUpdated;
 		var idPlaylist = parseInt( el.closest('.panel').find('.plDashboard').data('playlist_id'));
 		var infoKara = liKara.find('.detailsKara');
 
-		if (!infoKara.is(':visible') && !liKara.hasClass('loading')) { // || infoKara.length == 0
-			var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
-			liKara.addClass('loading');
-			$.ajax({ url: urlInfoKara }).done(function (data) {
-				var detailsHtml = buildKaraDetails(data[0], mode);
-				detailsHtml = $(detailsHtml).hide();
-				liKara.find('.contentDiv').after(detailsHtml);
-				$(detailsHtml).data(data[0]);
-
-				detailsHtml.fadeIn(animTime);
-				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
+		if(!liKara.hasClass('loading')) { // if we're already loading the div, don't do anything
+			if (!infoKara.is(':visible') ) { // || infoKara.length == 0
+				var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
+				liKara.addClass('loading');
+				$.ajax({ url: urlInfoKara }).done(function (data) {
+					var detailsHtml = buildKaraDetails(data[0], mode);
+					detailsHtml = $(detailsHtml).hide();
+					liKara.find('.contentDiv').after(detailsHtml);
+					$(detailsHtml).data(data[0]);
+	
+					detailsHtml.fadeIn(animTime);
+					liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
+					saveDetailsKara(idPlaylist, idKara, 'add');
+	
+					liKara.removeClass('loading');
+	
+					if(introManager && introManager._currentStep) introManager.nextStep();
+				}).always(function (data) {
+					liKara.removeClass('loading');
+				});
+			} else if (infoKara.is(':visible')) {
+				saveDetailsKara(idPlaylist, idKara, 'remove');
+				infoKara.add(liKara.find('.lyricsKara')).fadeOut(animTime);
+				liKara.find('[name="infoKara"]').css('border-color', '');
+			} else {
 				saveDetailsKara(idPlaylist, idKara, 'add');
-
-				liKara.removeClass('loading');
-
-				if(introManager && introManager._currentStep) introManager.nextStep();
-			}).always(function (data) {
-				liKara.removeClass('loading');
-			});
-		} else if (infoKara.is(':visible')) {
-			saveDetailsKara(idPlaylist, idKara, 'remove');
-			infoKara.add(liKara.find('.lyricsKara')).fadeOut(animTime);
-			liKara.find('[name="infoKara"]').css('border-color', '');
-		} else {
-			saveDetailsKara(idPlaylist, idKara, 'add');
-			infoKara.fadeIn(animTime);
-			liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
+				infoKara.fadeIn(animTime);
+				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
+			}
 		}
 	};
 
