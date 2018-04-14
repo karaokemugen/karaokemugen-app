@@ -1059,14 +1059,14 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	border: none;
 	color: #EEE;
 }
+#manage .modalPage .nav-tabs > li > a {
+    border-left: 1px solid hsla(210, 9%, 13%, 0.25);
+}
 .modalPage .nav-tabs>li.active>a, .modalPage .nav-tabs>li.active>a:focus, .modalPage .nav-tabs>li.active>a:hover {
     cursor: default;
     background-color: transparent;
 	border: none;
 	color: #EEE;
-}
-#manage .modalPage .nav-tabs>li.active>a, #manage .modalPage .nav-tabs>li.active>a:focus, #manage .modalPage .nav-tabs>li.active>a:hover {
-    border-left: 1px solid #1E2124;
 }
 .modalPage .nav-tabs.nav-justified>li {
     flex-grow: 1;
