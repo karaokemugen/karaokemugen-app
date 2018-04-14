@@ -175,7 +175,6 @@ export async function initFrontend(port) {
 					
 			res.render('admin', {'layout': 'adminHeader',
 				'clientAdress'	:	'http://'+address(),
-				'mdpAdmin'		:	conf.AdminPassword,
 				'displays'		:	data.displays,
 				'query'			:	JSON.stringify(req.query),
 				'webappMode'	:	conf.WebappMode

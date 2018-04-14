@@ -35,7 +35,6 @@ var scrollUpdating;
 var playlistsUpdating;
 var playlistContentUpdating;
 var settingsUpdating;
-var passwordUpdating;
 
 /* html */
 var addKaraHtml;
@@ -588,7 +587,6 @@ var settingsNotUpdated;
 			var username = $('#signupLogin').val();
 			var password = $('#signupPassword').val();
 			var passwordConfirmation = $('#signupPasswordConfirmation').val();
-			console.log(password !== passwordConfirmation, password, passwordConfirmation);
 			if(password !== passwordConfirmation) {
 				$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
 				$('#signupPassword').focus();
@@ -1766,7 +1764,6 @@ var settingsNotUpdated;
 			}
 		});
 
-		passwordUpdating = $.Deferred().resolve();
 		if(scope === 'admin' && logInfos.role === 'admin') {
 			settingsUpdating = getSettings() ;
 		} else if (scope === 'public') {
@@ -2013,24 +2010,22 @@ var settingsNotUpdated;
 	});
 
 	socket.on('settingsUpdated', function(){
-		passwordUpdating.done(function () {
-			settingsUpdating.done(function () {
-				settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
+		settingsUpdating.done(function () {
+			settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
 
-				settingsUpdating.done(function (){
-					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
-																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
-						playlistsUpdating.done(function() {
-							playlistsUpdating = refreshPlaylistSelects();
-						});
+			settingsUpdating.done(function (){
+				if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
+																	|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+					playlistsUpdating.done(function() {
+						playlistsUpdating = refreshPlaylistSelects();
+					});
 
-						playlistsUpdating.done(function () {
-							refreshPlaylistDashboard(1);
-							refreshPlaylistDashboard(2);
+					playlistsUpdating.done(function () {
+						refreshPlaylistDashboard(1);
+						refreshPlaylistDashboard(2);
 
-						});
-					}
-				});
+					});
+				}
 			});
 		});
 	});

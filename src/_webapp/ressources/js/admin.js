@@ -356,23 +356,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			}
 		});
 
-		/* password case handlers */
-
-		$('#confirmPassword, #passwordSettings').on('input', function () {
-			if ($('#confirmPassword').val() === $('#passwordSettings').val() && $('#passwordSettings').val() !== '') {
-				$('#sendPassword').attr('oldvalue', $('#sendPassword').val());
-				$('#sendPassword').val($('#confirmPassword').val());
-				$('#sendPassword').removeClass('btn-danger').addClass('btn-success');
-				$('#sendPassword').prop('disabled', false);
-			} else {
-				$('#sendPassword').addClass('btn-danger').removeClass('btn-success');
-				$('#sendPassword').prop('disabled', true);
-			}
-		});
-		$('#sendPassword').click(function () {
-			setSettings($(this), true);
-		});
-
 		setStopUpdate = function (stop) {
 			stopUpdate = stop;
 		};
@@ -445,11 +428,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	};
 
 	/* el is the html element containing the value being updated */
-	setSettings = function (el, changeAdminPass) {
+	setSettings = function (el) {
 		//    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
 		if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
 			settingsUpdating = getSettings(el.attr('name'));
-			if(changeAdminPass) passwordUpdating = $.Deferred();
 
 			$('#settings').promise().then(function () {
 				settingsArray = {};
@@ -464,9 +446,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					settingsArray[obj.name] = obj.value;
 				});
 				settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
-				// ignore currently typed value if the pass is not changing
-				settingsArray['AdminPassword'] = changeAdminPass ? $('button[name="AdminPassword"]').val() : $('button[name="AdminPassword"]').attr('oldValue');
-		
+
 				DEBUG && console.log('setSettings : ', settingsArray);
 
 				$.ajax({
@@ -474,14 +454,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					url: 'admin/settings',
 					data: settingsArray
 				}).done(function () {
-					if (changeAdminPass) {
-						setupAjax(settingsArray['AdminPassword']);
-						$('button[name="AdminPassword"]').attr('oldValue', settingsArray['AdminPassword']);
-						
-						passwordUpdating.resolve();
-					}
+				
 				}).fail(function () {
-					if (changeAdminPass) { passwordUpdating.resolve(); }
 					el.val(el.attr('oldValue')).focus();
 				});
 			});
