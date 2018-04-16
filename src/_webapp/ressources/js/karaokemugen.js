@@ -1930,19 +1930,23 @@ var settingsNotUpdated;
 				
 				if(introManager && typeof introManager._currentStep !== 'undefined') {
 					introManager.nextStep();
+				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
+					$('#helpModal').modal('show');
 				}
 
 				deferred.resolve();
-
 			}).fail(function(response) {
 				//displayMessage('info','', i18n.__('LOG_ERROR'));
 				$('#loginModal').modal('show');
 				$('#password').val('').focus();
 				$('#password, #login').addClass('redBorders');
 			});
-			
 			return deferred;
 	};
+
+	$('#helpModal .confirm').click(function(){
+		createCookie('mugenTouchscreenHelp', true, -1);
+	});
 
 	/* opposite sideber of playlist : 1 or 2 */
 	non = function (side) {

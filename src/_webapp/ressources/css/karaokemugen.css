@@ -9,7 +9,9 @@ body {
 	height: 100%;
 	margin: 0;
 }
-
+div > a {
+	color: hsla(208, 91%, 79%, 1);
+}
 .form-control {
 	background-color: #f3f3f3;
 }
@@ -1038,12 +1040,20 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	display: flex;
 }
 .modalPage .modal-message {
+	height: 50px;
+	max-height: 10vh;
+}
+#loginModal .modal-message {
 	height: 100px;
-    max-height: 18vh;
+	max-height: 18vh;
 }
 .modal.modalPage .modal-body > div {
 	padding: 5px;
 	text-align: center;
+}
+.modal.modalPage .modal-body div.text {
+	text-align: left;
+	line-height: 2.6em;
 }
 #loginModal .modal-body button, #loginModal .modal-body input {
 	width: 100%;
@@ -1091,6 +1101,11 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	height: 100%;
 	width: 100%;
 	background-color: hsla(182, 45%, 28%, 1);
+}
+.modal button.confirm {
+	height: 100%;
+	width: 100%;
+	background-color: rgb(15, 95, 108);
 }
 #loginModal .tour {
 	display: none;
