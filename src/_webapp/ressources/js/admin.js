@@ -50,6 +50,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 
+		$('button[action="account"]').click(function () {
+			$('#loginModal').modal('show');
+		});
+
 		$('button[action="poweroff"]').click(function () {
 			$.ajax({
 				url: 'admin/shutdown',
