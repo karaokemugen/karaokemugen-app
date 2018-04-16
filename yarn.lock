@@ -2844,6 +2844,12 @@ iconv-lite@0.4.19, iconv-lite@^0.4.17, iconv-lite@~0.4.13:
   version "0.4.19"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.19.tgz#f7468f60135f5e5dad3399c0a81be9a1603a082b"
 
+iconv-lite@^0.4.15:
+  version "0.4.21"
+  resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.21.tgz#c47f8733d02171189ebc4a400f3218d348094798"
+  dependencies:
+    safer-buffer "^2.1.0"
+
 ieee754@^1.1.4:
   version "1.1.11"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.11.tgz#c16384ffe00f5b7835824e67b6f2bd44a5229455"
@@ -4005,6 +4011,12 @@ node-fingerprint@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/node-fingerprint/-/node-fingerprint-0.0.2.tgz#31cbabeb71a67ae7dd5a7dc042e51c3c75868501"
 
+node-id3@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/node-id3/-/node-id3-0.1.3.tgz#4fb2b11e14d3b2723fa259b4e47d4f651b77a957"
+  dependencies:
+    iconv-lite "^0.4.15"
+
 "node-mpv@github:00SteinsGate00/Node-MPV#Node-MPV-2":
   version "1.1.2"
   resolved "https://codeload.github.com/00SteinsGate00/Node-MPV/tar.gz/4b9d248c2293d4f19f1eabe61637d9500b203556"
@@ -4834,6 +4846,10 @@ safefs@^3.1.2:
   resolved "https://registry.yarnpkg.com/safefs/-/safefs-3.2.2.tgz#8170c1444d7038e08caea05a374fae2fa349e15c"
   dependencies:
     graceful-fs "*"
+
+safer-buffer@^2.1.0:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
 
 scandirectory@^2.5.0:
   version "2.5.0"
