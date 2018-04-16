@@ -84,14 +84,12 @@ async function loadBackground(mode) {
 	// Default background
 	let backgroundFiles = [];
 	const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
-	let internalImageFile = join(__dirname,'assets/background.jpg');
-	let backgroundImageFile = internalImageFile;
+	let backgroundImageFile = defaultImageFile;
 	if (!isEmpty(conf.PlayerBackground)) {
 		backgroundImageFile = resolve(conf.appPath,conf.PathBackgrounds,conf.PlayerBackground);	
 		if (await asyncExists(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn(`[Player] Unable to find background file ${backgroundImageFile}, reverting to default one`);
-			if (await asyncExists(defaultImageFile)) await asyncCopy(internalImageFile,defaultImageFile);
 			backgroundFiles.push(defaultImageFile);
 		} 				
 	} else {
@@ -99,10 +97,7 @@ async function loadBackground(mode) {
 		backgroundFiles = await extractAllBackgroundFiles();
 		// If backgroundFiles is empty, it means no file was found in the directories scanned.
 		// Reverting to original, supplied background :
-		if (backgroundFiles.length === 0) {
-			if (!await asyncExists(defaultImageFile)) await asyncCopy(internalImageFile,defaultImageFile);
-			backgroundFiles.push(defaultImageFile);
-		}
+		if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);		
 	}
 	backgroundImageFile = sample(backgroundFiles);
 	logger.debug('[Player] Background : '+backgroundImageFile);

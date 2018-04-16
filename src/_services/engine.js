@@ -312,6 +312,7 @@ async function next() {
 	logger.info('[Engine] Going to next song');
 	stopPlayer(true);
 	try {
+		await plc.next();
 		playPlayer();
 	} catch(err) {
 		logger.warn(`[Engine] Next song is not available : ${err}`);
