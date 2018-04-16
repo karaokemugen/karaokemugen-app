@@ -12,59 +12,29 @@ import logger from 'winston';
  */
 export function getKara(karaData) {
 	timestamp.round = true;
-	switch (karaData.version) {
-	case 0:
-	case 1:
-	case 2:
-		return {
-			mediafile: karaData.videofile || '',
-			subfile: karaData.subfile || 'dummy.ass',
-			subchecksum: karaData.subchecksum || '',
-			title: karaData.title || '',
-			series: karaData.series || '',
-			type: karaData.type || '',
-			order: karaData.order || '',
-			year: karaData.year || '',
-			singer: karaData.singer || '',
-			tags: karaData.tags || '',
-			songwriter: karaData.songwriter || '',
-			creator: karaData.creator || '',
-			author: karaData.author || '',
-			lang: karaData.lang || 'und',
-			KID: karaData.KID || uuidV4(),
-			dateadded: karaData.dateadded || timestamp.now(),
-			datemodif: karaData.datemodif || timestamp.now(),
-			mediasize: karaData.videosize || 0,
-			mediagain: karaData.videogain || 0,
-			mediaduration: karaData.videoduration || 0,
-			version: karaData.version || 2
-		};
-	default:
-	case 3:
-		return {
-			mediafile: karaData.mediafile || '',
-			subfile: karaData.subfile || 'dummy.ass',
-			subchecksum: karaData.subchecksum || '',
-			title: karaData.title || '',
-			series: karaData.series || '',
-			type: karaData.type || '',
-			order: karaData.order || '',
-			year: karaData.year || '',
-			singer: karaData.singer || '',
-			tags: karaData.tags || '',
-			songwriter: karaData.songwriter || '',
-			creator: karaData.creator || '',
-			author: karaData.author || '',
-			lang: karaData.lang || 'und',
-			KID: karaData.KID || uuidV4(),
-			dateadded: karaData.dateadded || timestamp.now(),
-			datemodif: karaData.datemodif || timestamp.now(),
-			mediasize: karaData.mediasize || 0,
-			mediagain: karaData.mediagain || 0,
-			mediaduration: karaData.mediaduration || 0,
-			version: karaData.version
-		};
-	}	
+	return {
+		mediafile: karaData.mediafile || '',
+		subfile: karaData.subfile || 'dummy.ass',
+		subchecksum: karaData.subchecksum || '',
+		title: karaData.title || '',
+		series: karaData.series || '',
+		type: karaData.type || '',
+		order: karaData.order || '',
+		year: karaData.year || '',
+		singer: karaData.singer || '',
+		tags: karaData.tags || '',
+		songwriter: karaData.songwriter || '',
+		creator: karaData.creator || '',
+		author: karaData.author || '',
+		lang: karaData.lang || 'und',
+		KID: karaData.KID || uuidV4(),
+		dateadded: karaData.dateadded || timestamp.now(),
+		datemodif: karaData.datemodif || timestamp.now(),
+		mediasize: karaData.mediasize || 0,
+		mediagain: karaData.mediagain || 0,
+		mediaduration: karaData.mediaduration || 0,
+		version: karaData.version || 3
+	};		
 }
 
 function initValidators() {
