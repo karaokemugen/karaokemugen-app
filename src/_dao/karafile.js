@@ -13,7 +13,10 @@ import {resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common
 import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
+
 let error = false;
+const karaDataLatestVersion = 3;
+
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
@@ -44,6 +47,13 @@ function strictModeError(karaData, data) {
 export async function getDataFromKaraFile(karafile) {
 	const conf = getConfig();
 	const karaData = await parseKara(karafile);
+	
+	// Code to keep compatibility with v2 kara files. Remove this in a few months or so.
+	karaData.mediafile = karaData.mediafile || karaData.videofile;
+	karaData.mediasize = karaData.mediasize || karaData.videosize;
+	karaData.mediagain = karaData.mediagain || karaData.videogain;
+	karaData.mediaduration = karaData.mediaduration || karaData.videoduration;
+
 	karaData.isKaraModified = false;
 
 	if (!karaData.KID) {
@@ -64,7 +74,7 @@ export async function getDataFromKaraFile(karafile) {
 	}
 	karaData.karafile = karafile;
 
-	let mediaFile;
+	let mediaFile;	
 
 	try {
 		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
