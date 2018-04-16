@@ -94,7 +94,7 @@ const karaConstraints = {
 	videosize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	videogain: {numericality: true},
 	videoduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	version: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}}
+	version: {numericality: {onlyInteger: true, lowerThanOrEqualTo: 2}}
 };
 
 export async function validateKaras() {
