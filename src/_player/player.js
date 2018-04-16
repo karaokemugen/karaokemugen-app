@@ -11,6 +11,7 @@ import {buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
 import {spawn} from 'child_process';
 import {exit} from '../_services/engine';
+import {getID3} from './id3tag';
 const mpv = require('node-mpv');
 import {promisify} from 'util';
 const sleep = promisify(setTimeout);
@@ -180,6 +181,7 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
+		//'--log-file='+resolve(conf.appPath,'mpv.log'),
 		'--volume='+state.player.volume,
 		'--input-conf='+resolve(conf.appPath,conf.PathTemp,'input.conf'),
 	];
@@ -328,8 +330,20 @@ export async function play(mediadata) {
 	}	
 	logger.debug(`[Player] Audio gain adjustment : ${mediadata.gain}`);
 	logger.debug(`[Player] Loading media : ${mediaFile}`);		
-	try { 
-		await player.load(mediaFile,'replace',[`replaygain-fallback=${mediadata.gain}`]);
+	try {
+		let options = [];
+		options.push(`replaygain-fallback=${mediadata.gain}`) ;
+		if (mediaFile.endsWith('.mp3')) {
+			const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
+			const id3tags = await getID3(mediaFile);
+			if (!id3tags.image) {
+				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
+				options.push('force-window=yes');
+				options.push('image-display-duration=inf');
+				options.push('vid=1');
+			}
+		}
+		await player.load(mediaFile,'replace', options);
 		state.player.mediaType = 'song';
 		player.play();
 		state.player.playerstatus = 'play';
