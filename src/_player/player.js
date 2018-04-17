@@ -181,7 +181,7 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
-		//'--log-file='+resolve(conf.appPath,'mpv.log'),
+		'--log-file='+resolve(conf.appPath,'mpv.log'),
 		'--volume='+state.player.volume,
 		'--input-conf='+resolve(conf.appPath,conf.PathTemp,'input.conf'),
 	];
@@ -248,8 +248,8 @@ async function startmpv() {
 			binary: conf.BinmpvPath,
 			socket: socket,
 			time_update: 1,
-			verbose: false,
-			debug: false,
+			verbose: true,
+			debug: true,
 		},
 		mpvOptions
 	);	
@@ -333,8 +333,9 @@ export async function play(mediadata) {
 	try {
 		let options = [];
 		options.push(`replaygain-fallback=${mediadata.gain}`) ;
+		const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
+			
 		if (mediaFile.endsWith('.mp3')) {
-			const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
 				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
