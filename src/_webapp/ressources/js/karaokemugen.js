@@ -625,7 +625,7 @@ var settingsNotUpdated;
 			}
 		});
 
-		$('.logout').click( () => {
+		$('.logout, .btn[action="logout"]').click( () => {
 			eraseCookie('mugenToken');
 			window.location.reload();
 		});

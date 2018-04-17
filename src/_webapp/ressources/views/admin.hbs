@@ -1,8 +1,19 @@
 <div id="header" class="header" introStep="6" introLabel="lecteur" introTooltipClass="_introBottom">
-    <button title="{{i18n "SHUTDOWN"}}" action="poweroff" class="btn btn-default btn-dark pull-right">
-		<i class="glyphicon glyphicon-off"></i></button>
-    <button title="{{i18n "ACCOUNT"}}" action="account" class="btn btn-default btn-dark pull-right">
-		<i class="glyphicon glyphicon-user"></i></button>
+   
+    <div class="dropdown btn btn-default btn-dark pull-right" id="manageButton">
+        <button class="btn btn-default btn-dark pull-right dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <i class="glyphicon glyphicon-cog"></i></button>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li title="{{i18n "ACCOUNT"}}" action="account" class="btn btn-default btn-dark">
+		        <i class="glyphicon glyphicon-user"></i></li>
+            <li title="{{i18n "LOGOUT"}}" action="logout" class="btn btn-default btn-dark">
+		        <i class="glyphicon glyphicon-off"></i></li>
+            <li title="{{i18n "SHUTDOWN"}}" action="poweroff" class="btn btn-default btn-dark">
+                <img class="glyphicon" src="/ressources/img/moon.png"></li>
+        </ul>
+    </div>
+    
     <a title="{{i18n "MUTE_UNMUTE"}}" action="command" id="mutestatus" name="mute" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-volume-up unmute"></i>
 		<i class="glyphicon glyphicon-volume-off mute"></i>
@@ -394,6 +405,67 @@
     </div>
 </div>
 
+<div class="modal modalPage fade" id="profilModal" role="dialog" type="prompt" tabindex="21">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab" aria-controls="nav-profil" aria-selected="true"> {{i18n "PROFILE"}}</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {{i18n "USERLIST"}}</a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab" class="modal-body tab-pane fade in active">
+                    <div class="profileContent">
+
+                            <div class="col-md-3 col-lg-3 col-xs-12 col-sm-12">
+
+                                <label for="avatar" title='{{i18n "AVATAR_IMPORT"}}' class="btn btn-default plGenericButton avatar" name="import">
+                                    <img class="img-circle" name="avatar_file"
+                                     src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
+                                     alt="User Pic">
+                                    <input id="avatar" class="import-file" type="file" accept="image/*" style="display: none;"/>
+                                </label>
+                                <p name="login"></p>
+                            </div>
+                            <div class="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
+                                 <div class="profileLine">
+                                    <i class="glyphicon glyphicon-user"></i>
+                                    <input class="form-control" name="nickname" type="text"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-envelope"></i>
+                                    <input class="form-control" name="email" type="text"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-link"></i>
+                                    <input class="form-control" name="url" type="text"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-leaf"></i>
+                                    <input class="form-control" name="bio" type="text"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-lock"></i>
+                                    <input class="form-control" name="password" type="text"/>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" class="modal-body tab-pane fade in">
+                        <div class="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
