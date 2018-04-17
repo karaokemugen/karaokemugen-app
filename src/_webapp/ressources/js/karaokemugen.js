@@ -712,39 +712,47 @@ var settingsNotUpdated;
 			}
 		});
 
-		$('.profileData .profileLine input').on('blur', (e) => {
+		$('.profileData .profileLine input[name!="password"]').on('blur', (e) => {
 			var $input = $(e.target);
 			if ($input.attr('oldval') !== $input.val()) {
 				// TODO gestion confirmation password
-				var profileData = $('.profileData .profileLine > input').serialize();
-				$.ajax({
-					url: 'public/myaccount',
-					type: 'PUT',
-					data: profileData
-				})
-					.done(function (response) {
-						$('.profileContent .profileLine > input').removeClass('redBorders');
-						$input.attr('oldval', $input.val());
-						pseudo = response.nickname;
+				var $password = $('.profileData .profileLine > input[name="password"]');
+				var $passwordConfirmation = $('.profileData .profileLine > input.passwordConfirmation');
+				if($password.val() !== $passwordConfirmation.val()) {
+					$password.val('').addClass('redBorders');
+					$passwordConfirmation.val('').addClass('redBorders');
+					$input.focus();
+				} else {
+					var profileData = $('.profileData .profileLine > input[name]').serialize();
+					$.ajax({ 
+						url: 'public/myaccount',
+						type: 'PUT',
+						data: profileData
 					})
-					.fail( (response) => {
-						var listFieldErr = Object.keys(response.responseJSON);
-						listFieldErr.forEach((v, k) => {
-							var $element = $('.profileContent [name="' + v + '"]');
+						.done(function (response) {
+							$('.profileContent .profileLine > input').removeClass('redBorders');
+							$input.attr('oldval', $input.val());
+							pseudo = response.nickname;
+						})
+						.fail( (response) => {
+							var listFieldErr = Object.keys(response.responseJSON);
+							listFieldErr.forEach((v, k) => {
+								var $element = $('.profileContent [name="' + v + '"]');
 
-							if(v === 'avatar_file') {
-								// TODO
-							} else if( v === 'login') {
-								// TODO
-							} else if (v !== 'password') {
-								$element.addClass('redBorders');
-							}
-							if( k === 0 ) {
-								$element.focus();
-							}
+								if(v === 'avatar_file') {
+									// TODO
+								} else if( v === 'login') {
+									// TODO
+								} else if (v !== 'password') {
+									$element.addClass('redBorders');
+								}
+								if( k === 0 ) {
+									$element.focus();
+								}
+							});
+
 						});
-
-					});
+					}
 			}
 		});
 

@@ -429,26 +429,32 @@
                             <div class="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
                                  <div class="profileLine">
                                     <i class="glyphicon glyphicon-user"></i>
-                                    <input class="form-control" name="nickname" type="text"/>
+                                    <input class="form-control" name="nickname" type="text" placeholder="{{{ i18n "PROFILE_USERNAME" }}}"/>
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-envelope"></i>
-                                    <input class="form-control" name="email" type="text"/>
+                                    <input class="form-control" name="email" type="text" placeholder="{{{ i18n "PROFILE_MAIL" }}}"/>
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-link"></i>
-                                    <input class="form-control" name="url" type="text"/>
+                                    <input class="form-control" name="url" type="text" placeholder="{{{ i18n "PROFILE_URL" }}}"/>
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-leaf"></i>
-                                    <input class="form-control" name="bio" type="text"/>
+                                    <input class="form-control" name="bio" type="text" placeholder="{{{ i18n "PROFILE_BIO" }}}"/>
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-lock"></i>
-                                    <input class="form-control" name="password" type="text"/>
+                                    <div class="row">
+                                        <div class="col-md-6 col-xs-12 profileLine">
+                                            <input class="form-control" name="password" type="password" placeholder="{{{ i18n "PROFILE_PASSWORD" }}}"/>
+                                        </div>
+                                        <div class="col-md-6 col-xs-12 profileLine">
+                                            <input class="form-control passwordConfirmation" type="password" placeholder="{{{ i18n "PROFILE_PASSWORDCONF" }}}"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                     <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" class="modal-body tab-pane fade in">

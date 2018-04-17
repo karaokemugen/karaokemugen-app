@@ -51,7 +51,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 
 		$('.btn[action="account"]').click(function () {
-			$('#profilModal').modal('show');
+			showProfil()
 		});
 
 		$('.btn[action="poweroff"]').click(function () {

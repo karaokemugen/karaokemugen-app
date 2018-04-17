@@ -360,7 +360,12 @@
 	"OR": "OU",
 	"SIGN_UP": "Continuer",
 	"PROFILE": "Profil",
-	"PASSWORDCONF": "Mot de passe (confirmation)",
+	"PROFILE_USERNAME": "Pseudonyme",
+	"PROFILE_MAIL": "Courriel",
+	"PROFILE_URL": "Site web",
+	"PROFILE_BIO": "Biographie",
+	"PROFILE_PASSWORD": "Mdp",
+	"PROFILE_PASSWORDCONF": "Confirmer",
 	"UPVOTE_DONE": "Karaoke %s reçoit un soutien !",
 	"UPVOTE_ALREADY_DONE": "Vous soutenez déjà ce karaoké !",
 	"UPVOTE_FAILED": "Impossible de soutenir ce karaoké",
@@ -425,5 +430,6 @@
 	"LOGOUT": "Déconnexion",
 	"SETTINGS_PLAYER": "Lecteur",
 	"SETTINGS_KARAOKE": "Karaoké",
-	"SETTINGS_INTERFACE": "Interface"
+	"SETTINGS_INTERFACE": "Interface",
+	"PASSWORDCONF": "PASSWORDCONF"
 }
