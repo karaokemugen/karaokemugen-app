@@ -472,9 +472,17 @@ var settingsNotUpdated;
 		// generic close button
 		$('.playlist-main').on('click', '.closeParent', function () {
 			var el = $(this);
-			el.closest('.alert').fadeOut(animTime, function(){
-				el.parent().remove();
-			});
+			var container = el.closest('.alert');
+			
+			var infoKaraButton = container.closest('li').find('[name="infoKara"]');
+
+			if(container.hasClass('detailsKara') && infoKaraButton.length > 0) {
+				infoKaraButton.click();
+			} else {
+				container.fadeOut(animTime, function(){
+					el.parent().remove();
+				});
+			}
 		});
 
 		/* handling dynamic loading */
