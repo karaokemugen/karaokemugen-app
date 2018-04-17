@@ -26,7 +26,7 @@
     
     <button title="{{i18n "MESSAGE"}}" id="adminMessage" class="btn btn-dark pull-right" style="border-left-width: 0px"><i class="glyphicon glyphicon-comment"></i></button>
 
-    <div class="pull-left btn-group" style="width: 129px;">
+    <div class="pull-left btn-group switchs" style="width: 129px; max-width: 12.4vw;">
         <input title='{{i18n "SWITCH_PRIVATE"}}' data-introStep="7" data-introLabel="mode" type="checkbox" checked name="EnginePrivateMode" class="btn pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
             data-off-text="<i class='glyphicon glyphicon-eye-open'></i> {{i18n "PUBLIC"}}" data-size="large"/>
         <input title='{{i18n "SWITCH_OPTIONS"}}' data-introStep="13" data-introLabel="settings" type="checkbox" checked name="kara_panel" class="btn pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  {{i18n "OPTIONS"}}"
@@ -38,13 +38,11 @@
         <button title="{{i18n "STOP_NOW"}}" action="command" id="stopNow" name="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
         <button title="{{i18n "REWIND"}}" action="command" id="goTo" name="goTo" value="0" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
     </div>
-    <div id="centerBtns" class="header">
-        <div class="btn-group">
-            <button title="{{i18n "PREVIOUS_SONG"}}" action="command" id="prev" name="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
-            <button title="{{i18n "PLAY_PAUSE"}}" action="command" id="status" name="play" class="btn btn-primary"><i class="glyphicon glyphicon-play play"></i><i class="glyphicon glyphicon-pause pause"></i></button>
-            <button title="{{i18n "NEXT_SONG"}}" action="command" id="skip" name="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
-            <button class="btn btn-default hidden"></button>
-        </div>
+    <div class="btn-group centerBtns">
+        <button title="{{i18n "PREVIOUS_SONG"}}" action="command" id="prev" name="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
+        <button title="{{i18n "PLAY_PAUSE"}}" action="command" id="status" name="play" class="btn btn-primary"><i class="glyphicon glyphicon-play play"></i><i class="glyphicon glyphicon-pause pause"></i></button>
+        <button title="{{i18n "NEXT_SONG"}}" action="command" id="skip" name="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
+        <button class="btn btn-default hidden"></button>
     </div>
 </div>
 <div id="progressBar" class="underHeader">

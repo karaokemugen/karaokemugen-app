@@ -31,7 +31,6 @@
 }
 
 .header {
-	position: absolute;
 	z-index: 1337;
 	background-color: #1E2124;
     top: 30px;
@@ -57,11 +56,9 @@
 }
 .underHeader {
     position: relative;	
-    top: calc( 60px + 30px );
     height: calc( 100% - 60px - 30px );
 }  
 .underHeader.mode1 {
-    top: calc( 30px );
     height: calc( 100% - 30px );
 }
 .bootstrap-switch-container i {
@@ -187,7 +184,7 @@ div.bootstrap-switch-large{
     border: 3px solid #1E2124;
 }
 .playlist-main {
-    padding: 4px 0px;
+    padding: 3px 0px;
 }
 
 /* experimental, à vérifier */
@@ -271,6 +268,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
 }
 
 .header > div > div.switchParent {
+    height: calc(100% - 1px);
     padding: 0;
     display: flex;
 }
