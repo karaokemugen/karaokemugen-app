@@ -3,7 +3,7 @@
 Master branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master) -
 Next branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/next/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/next)
 
-Karaoke Mugen is a playlist manager for video karaoke. It's made of a webapp and an engine. The webapp allows users to add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
+Karaoke Mugen is a playlist manager and player for video karaoke. It's made of a webapp and an engine. The webapp allows users to add songs and admins to manage the karaoke session and playlists. The engine plays those songs on the computer used to display the video.
 
 It works like a japanese karaoke where anyone can add songs one after another to a playlist with their smartphone, tablet or computer. Another mode allows users to add videos to a suggestion list the admin can then pick songs from.
 
@@ -33,7 +33,7 @@ Karaoke Mugen works offline and does not require an Internet connection.
 * Launch the app (see the launch section below). It will open a browser on the welcome screen. Follow the guided tour for admins.
 * Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and have fun!
 
-In the repository mentionned above, you'll find a karaoke songs database ready for use. Beware, it's about 180Gb big once the videos have been downloaded.
+In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's about 180Gb big once the videos have been downloaded.
 
 For more information, check out the [documentation site!](http://mugen.karaokes.moe/docs/en/)
 
@@ -55,7 +55,7 @@ npm install -g yarn
 
 ### Dependencies
 
-Then launch `yarn` to install dependencies.
+Then launch `yarn` to install dependencies and build the React frontend.
 
 ```sh
 yarn setup
@@ -71,7 +71,7 @@ yarn start
 
 Generating a database ie required on first launch and is done automatically if the file `app/db/karas.sqlite3` is missing. You can trigger it manually later by connectiong to the admin panel from the welcome screen. Another way is to delete the `app/db/karas.sqlite3` and let the app regenerate it on startup or launch with the `--generate` command-line option.
 
-On first run, the app will invite you to create an admin user and follow a guided tour of the admin panel. You can trigger this tour/admin creation process again by adding `appFirstRun=1` to your config file.
+On first run, the app will make you create an admin user and follow a guided tour of the admin panel. You can trigger this tour/admin creation process again by adding `appFirstRun=1` to your config file.
 
 ## System requirements
 
@@ -81,7 +81,7 @@ It requires nodeJS 8.x or above and mpv/ffmpeg binaries (see below).
 
 ### Binaries
 
-mpv (video player) and ffmpeg/ffprobe (video processing) are required by Karaoke Mugen
+mpv (video player) and ffmpeg (video processing) are required by Karaoke Mugen
 
 * mpv 0.25 or up for Windows/Linux, 0.27 or up required for macOS ([mpv's website](http://mpv.io))
 * ffmpeg 3 or later ([ffmpeg's website](http://www.ffmpeg.org))

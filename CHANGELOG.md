@@ -1,5 +1,38 @@
 # Versions
 
+## v2.1.0 "Gabriel Glamoureuse" - 18/04/2018
+
+Refer to the previous release candidates for a full changelog.
+
+Changes sinces 2.1-rc1 :
+
+### Enhancements
+
+- Added a new tag for songs difficult to sing : TAG_HARDMODE
+- #287 When using the "stop after current song" button, hitting the Play button will play the next song, not the one you stopped at.
+- #253 Rearranged options panel
+- #284 Removed admin password change since it's not used anymore
+- #281 Songs are now properly ordered by types in lists (Opening first, then insert songs, then endings)
+- Added more log messages
+- Added some tasks before exiting the app (close database and mpv properly)
+
+### Fixes
+
+- #270 Fixed duplicate kara information panel when opening and closing it quickly.
+- #277 Fixed (hopefully) app slowdown under high load
+- Fixed some admin tutorial messages
+- #274 Songwriter is now a searchable item in karaoke lists
+- Fixed song quotas per user not being updated properly
+- Fixed song copy from one playlist to another
+- Tweaked french translation a little
+- #276 Fixed private/public mode switches 
+- Link to documentation is now correct in welcome screen
+
+### Delayed
+
+- #7 Auto-updater for the app has been moved to v2.2 as we still have some work to do and it's a little tricky.
+
+
 ## v2.1-rc1 "Gabriel Glandeuse" - 05/04/2018
 
 Due to the many changes in this version, you're advised to read the `config.ini.sample` file or the docs to find out about new settings.
