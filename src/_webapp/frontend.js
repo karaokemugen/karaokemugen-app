@@ -4,7 +4,7 @@ import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import {address} from 'ip';
 import {graphics} from 'systeminformation';
-const logger = require('winston');
+import logger from 'winston';
 import i18n from 'i18n';
 import {getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
@@ -40,7 +40,7 @@ export async function initFrontend(port) {
 				return i18n.__.apply(options.data.root, args);	
 			},
 			if_eq: function(a, b, opts) {
-				if(a == b)
+				if(a === b)
 					return opts.fn(this);
 				else
 					return opts.inverse(this);
@@ -48,6 +48,7 @@ export async function initFrontend(port) {
 		}
 	}));
 	const routerAdmin = express.Router();
+	const routerWelcome = express.Router();
 	app.use(passport.initialize());
 	configurePassport();
 	const conf = getConfig();
@@ -135,6 +136,7 @@ export async function initFrontend(port) {
 	//Path to user avatars
 	app.use('/avatars',express.static(resolve(conf.appPath,conf.PathAvatars)));
 	app.use('/admin', routerAdmin);	
+	app.use('/welcome', routerWelcome);	
 
 	app.get('/', (req, res) => {
 		var config = getConfig();
@@ -147,7 +149,7 @@ export async function initFrontend(port) {
 		}
 		let url;
 		if (config.EngineConnectionInfoHost) {
-			url = config.EngineConnectionInfoHost
+			url = config.EngineConnectionInfoHost;
 		} else {
 			url = address();
 		}
@@ -173,14 +175,20 @@ export async function initFrontend(port) {
 					
 			res.render('admin', {'layout': 'adminHeader',
 				'clientAdress'	:	'http://'+address(),
-				'mdpAdmin'		:	conf.AdminPassword,
 				'displays'		:	data.displays,
 				'query'			:	JSON.stringify(req.query),
 				'webappMode'	:	conf.WebappMode
 			});
-		});		
-	});			
-			
+		});
+	});
+	routerWelcome.get('/', (req, res) => {
+		res.render('welcome', {
+			'clientAdress'	:	'http://'+address(),
+			'appAdminPort'	:	conf.appAdminPort,
+			'query'			:	JSON.stringify(req.query),
+		});
+	});
+
 	app.use((req, res) => {
 		res.status(404);
 		// respond with html page
@@ -192,7 +200,7 @@ export async function initFrontend(port) {
 		res.type('txt').send('Not found');
 	});
 	const server = createServer(app);
-	ws = require('socket.io').listen(server);	
+	ws = require('socket.io').listen(server);
 	server.listen(port, () => {
 		logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);   		
 	});

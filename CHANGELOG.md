@@ -1,5 +1,105 @@
 # Versions
 
+## v2.1.0 "Gabriel Glamoureuse" - 18/04/2018
+
+Refer to the previous release candidates for a full changelog.
+
+Changes sinces 2.1-rc1 :
+
+### Enhancements
+
+- Added a new tag for songs difficult to sing : TAG_HARDMODE
+- #287 When using the "stop after current song" button, hitting the Play button will play the next song, not the one you stopped at.
+- #253 Rearranged options panel
+- #284 Removed admin password change since it's not used anymore
+- #281 Songs are now properly ordered by types in lists (Opening first, then insert songs, then endings)
+- Added more log messages
+- Added some tasks before exiting the app (close database and mpv properly)
+
+### Fixes
+
+- #270 Fixed duplicate kara information panel when opening and closing it quickly.
+- #277 Fixed (hopefully) app slowdown under high load
+- Fixed some admin tutorial messages
+- #274 Songwriter is now a searchable item in karaoke lists
+- Fixed song quotas per user not being updated properly
+- Fixed song copy from one playlist to another
+- Tweaked french translation a little
+- #276 Fixed private/public mode switches 
+- Link to documentation is now correct in welcome screen
+
+### Delayed
+
+- #7 Auto-updater for the app has been moved to v2.2 as we still have some work to do and it's a little tricky.
+
+
+## v2.1-rc1 "Gabriel Glandeuse" - 05/04/2018
+
+Due to the many changes in this version, you're advised to read the `config.ini.sample` file or the docs to find out about new settings.
+
+You're also advised to read [the documentation](http://mugen.karaokes.moe/docs/
+).
+[API documentation](http://mugen.karaokes.moe/apidoc/) has also been updated.
+
+Contributors for this version : @Aeden, @AxelTerizaki, @bcourtine, @Kmeuh, @mirukyu, @spokeek, @Ziassan
+
+### Known bugs
+
+- Software updates (#7) are not working properly yet. This will be fixed in the final release. In the meantime it has been disabled.
+
+### New features
+
+- #223 An interactive tutorial has been added for admins and users. A welcome screen has also been added, and the app will open a browser on startup.
+- #101 Video previews can be generated (if you switch the setting on) for users to check what the karaoke video looks like on their device.
+- #115 Added a user system to better manage permissions and create new features
+- #127 Remade the control panel in ReactJS and added new features inside
+- #150 Viewcounts can be reset in the control panel.
+- #247 Users can be managed from the control panel.
+- #151 Songs in lists now change colors if they're soon to be played, or have been played recently
+- #167 In public mode, song suggestions can be "liked" by users so the admin can get a better idea of what the public wants. Songs which receive enough "likes" don't count anymore in a user's quota.
+- #199 Added a favorites system. Users can add/remove favorite karaokes and add karas from that list.
+- #202 Public interface can now be closed down or limited by an admin to disallow adding new karaokes, for example.
+- #214 Current playlist now scrolls and follows the currently playing karaoke
+- #228 In private mode, makes sure people who didn't request many songs get priority
+- #234 `--validate` command-line argument to only validate .kara files (avoid generating database)
+- Many command-line arguments have been added. Run `yarn start --help` to get a list.
+- #238 A bunch of new tags have been added to the file format
+- #240 `config.ini` is now reloaded if modified outside of the app while it's running
+- #248 Updating the karaoke base from Shelter can now be done within the app's control panel, or via commandline with the `--updateBase` argument.
+- #252 Wallpaper will now be changed once per version
+- #266 Added a button in control panel to backup your config.ini file (creates a config.ini.backup file)
+
+### Enhancements
+
+- #201 Generating karaoke database is now faster and simpler
+- #218 Jingles are all played before being shuffled again to avoid repeats
+- #219 .kara files are now verified before being imported into a database
+- #226 The app has been entirely rewritten in ES2015+, meaning it's simpler to read and code for
+- #231 Config files have been reorganized. `config.ini.default` isn't needed anymore by the app to start up.
+- #239 "Play after" feature has been fixed.
+- #246 mpv is now restarted at once if the karaoke isn't running.
+- #261 Log files are now in their own directories
+- #267 Quotes are now ignored when doing searches
+
+### Fixes
+
+- #217 Obsolete blacklist criterias can now be deleted.
+- #227 Long titles now fit in playlists
+- #236 Viewcounts are now kept even after a database regeneration
+- #251 Karaoke Mugen's URL font on connection info display during play/stop mode has been enlarged as it was difficult to read from afar.
+- #260 .kara files' `datemodif` information is now written correctly.
+- #244 Lyrics panel in kara information can now be closed.
+
+## v2.0.7 - 17/02/2018
+
+Below here, patch notes were written in french.
+
+Hé ben non c'était pas la dernière version la 2.0.6 vous y avez cru hein ?
+
+### Correctifs
+
+- Fix bug introduit dans la 2.0.6 empêchant d'initialiser la base au lancement.
+
 ## v2.0.6 - 15/02/2018
 
 Dernière version (fort probablement) avant le passage à la 2.1.

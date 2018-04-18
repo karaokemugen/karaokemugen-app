@@ -51,6 +51,10 @@ export const testUserID = `SELECT pk_id_user
 								WHERE pk_id_user = $id;
 						  `;
 
+export const reassignPlaylistToUser = 'UPDATE playlist SET fk_id_user = $id WHERE fk_id_user = $old_id;';
+
+export const reassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_id_user = $id WHERE fk_id_user = $old_id;';								
+
 export const selectUserByID = `SELECT u.pk_id_user AS id,
     							u.type AS type,
 								u.login AS login,
@@ -129,7 +133,10 @@ export const createUser = `INSERT INTO user(
 							NORM_nickname,
 							flag_online,
 							flag_admin,
-							last_login) 
+							last_login,
+							bio,
+							url,
+							email) 
 						VALUES (
 							$type,
 							$login,
@@ -138,7 +145,10 @@ export const createUser = `INSERT INTO user(
 							$NORM_nickname,
 							$flag_online,
 							$flag_admin,
-							$last_login);
+							$last_login,
+							$bio,
+							$url,
+							$email);
 						   `;
 
 export const updateExpiredUsers = `UPDATE user SET 

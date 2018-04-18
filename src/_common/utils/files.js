@@ -69,7 +69,7 @@ export async function asyncRequired(file) {
 export async function asyncCheckOrMkdir(...dir) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
-		logger.debug('[Launcher] Creating folder ' + resolvedDir);
+		if (logger) logger.debug('[Launcher] Creating folder ' + resolvedDir);
 		return await asyncMkdirp(resolvedDir);
 	}
 }
@@ -125,7 +125,7 @@ export async function compareFiles(file1, file2) {
 		asyncReadFile(file1, 'utf-8'),
 		asyncReadFile(file2, 'utf-8')
 	]);
-	if (file1data == file2data) return true;
+	if (file1data === file2data) return true;
 	return false;
 }
 

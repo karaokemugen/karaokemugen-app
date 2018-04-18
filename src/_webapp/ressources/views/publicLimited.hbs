@@ -185,7 +185,8 @@
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-lock"></i>
-                                    <input class="form-control" name="password" type="text"/>
+                                    <input class="form-control" name="password" type="password" placeholder="{{{ i18n "PROFILE_PASSWORD" }}}"/>
+                                    <input class="form-control passwordConfirmation" type="password" placeholder="{{{ i18n "PROFILE_PASSWORDCONF" }}}" style="margin-left: 3px;"/>
                                 </div>
                             </div>
                             
@@ -208,27 +209,35 @@
         </div>
     </div>
 </div>
- <div class="popup" id="settingsPublic" hidden>
-    <span id="settingsPublicTitle">  {{i18n "CL_HELP"}} </span>
-    <span id="settingsPublicContent">
-        <div id="mobileHelp" class="col-lg-12 col-xs-12" style="line-height:1.8em;">
-            {{{ i18n "CL_HELP_PUBLIC_CONTENT" }}}
-            <br/>
-            <hr>
+<div class="modal modalPage fade" role="dialog" type="prompt" tabindex="22" id="settingsPublic" hidden>
+     <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-help" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "CL_HELP"}} </a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent-help">
+                <div id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" class="modal-body tab-pane fade in active">
+                        <div class="text">
+                            {{{ i18n "CL_HELP_DISCORD" }}}   
+                            <br/>   
+                        </div> 
+                        <hr>
+                        <div class="col-lg-3 col-xs-3">
+                            <b>{{i18n "MODE"}}</b>
+                            <br/>
+                            <b>{{i18n "VERSION"}}</b>
+                            <br/>
+                        </div>
+                        <div class="col-lg-9 col-xs-9">
+                            <span id="mode"></span>
+                            <br/>
+                                <span id="version"></span>
+                            <br/>
+                        </div>
+                </div>
+            </div>
         </div>
-            <div class="col-lg-3 col-xs-3">
-                <b>{{i18n "MODE"}}</b>
-                <br/>
-                <b>{{i18n "VERSION"}}</b>
-                <br/>
-            </div>
-            <div class="col-lg-9 col-xs-9">
-                <span id="mode"></span>
-                <br/>
-                    <span id="version"></span>
-                <br/>
-            </div>
-    </span>
+    </div>
 </div>
 
 <div class="overlay">

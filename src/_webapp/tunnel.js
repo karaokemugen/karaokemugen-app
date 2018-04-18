@@ -1,6 +1,6 @@
 import localtunnel from 'localtunnel';
 import randomstring from 'randomstring';
-import {setConfig, getConfig} from '../_common/utils/config';
+import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
 import {promisify} from 'util';
 const lt = promisify(localtunnel);
@@ -20,9 +20,7 @@ export async function openTunnel() {
 	try {
 		tunnel = await lt(conf.appFrontendPort, opts);
 		// Strip http:// from URL
-		setConfig({
-			EngineConnectionInfoHost: tunnel.url.replace('http://','')
-		});
+		
 	} catch(err) {
 		logger.error(`[Online] Connection with Shelter failed : ${err}`);
 		throw err;

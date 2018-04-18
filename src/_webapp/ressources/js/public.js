@@ -25,8 +25,12 @@ $(document).ready(function () {
 		}
 	});
 
+	$('.btn.tour').click(function(){
+		startIntro('public');
+	});
+
 	$('.showSettings').click(function(){
-		displayModal('alert', $('#settingsPublicTitle').text(), $('#settingsPublicContent').html());
+		$('#settingsPublic').modal('show')
 	});
 
 	$('input[name="lyrics"]').on('switchChange.bootstrapSwitch', function () {
@@ -63,7 +67,10 @@ $(document).ready(function () {
     
 		$(this).data('opened', opened);
 	});
-  
+	$('.tourAgain').click(() => {
+		startIntro('public', 'afterLogin');
+		$('#settingsPublic').modal('hide')
+	});
 	$('#switchInfoBar').click(function(){
 		$(this).toggleClass('showLyrics');
 		if(  $(this).hasClass('showLyrics') ) {
@@ -122,7 +129,7 @@ var swipeManager = new Hammer.Manager(elem[0],{
 	prevent_default: true
 });
 
-var swipe = new Hammer.Swipe({'threshold' : 12,  direction : Hammer.DIRECTION_HORIZONTAL });
+var swipe = new Hammer.Swipe({'threshold' : 7,  direction : Hammer.DIRECTION_HORIZONTAL });
 
 swipeManager.add(swipe);
 
@@ -133,13 +140,21 @@ swipeManager.on('swipe', function (e) {
 		elem.css({transition: 'transform 1s ease'});
 		if(e.direction == 2 ) {
 			elem.css({transform: 'translateX('+ -1 * panelWidth+'px)'});
+			if(introManager && introManager._currentStep) introManager.goToStepNumber(19);
 		} else if (e.direction == 4) {
 			elem.css({transform: 'translateX(0)'});
+			if(introManager && introManager._currentStep) introManager.goToStepNumber(27);
 		}
 	}
 });
 
+
 if(webappMode == 2) {
+
+	var publicTuto = readCookie('publicTuto');
+	if(!publicTuto) {
+		$('#loginModal').addClass('firstRun');
+	}
 
 	// for each side
 	[1,2].forEach(function(side){

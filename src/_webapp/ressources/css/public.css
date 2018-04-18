@@ -31,7 +31,6 @@
 }
 
 .header {
-	position: fixed;
 	z-index: 1337;
 	background-color: #1E2124;
     top: 30px;
@@ -57,11 +56,9 @@
 }
 .underHeader {
     position: relative;	
-    top: calc( 60px + 30px );
     height: calc( 100% - 60px - 30px );
 }  
 .underHeader.mode1 {
-    top: calc( 30px );
     height: calc( 100% - 30px );
 }
 .bootstrap-switch-container i {
@@ -187,7 +184,7 @@ div.bootstrap-switch-large{
     border: 3px solid #1E2124;
 }
 .playlist-main {
-    padding: 4px 0px;
+    padding: 3px 0px;
 }
 
 /* experimental, à vérifier */
@@ -266,11 +263,12 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
 }
 */
 
-#mobileHelp, #mobileActions:not(.mode1) {
+#mobileHelp, #mobileActions {
     display: none;
 }
 
 .header > div > div.switchParent {
+    height: calc(100% - 1px);
     padding: 0;
     display: flex;
 }
@@ -287,9 +285,9 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
 
 .fixed-action-btn.left {
     bottom: 12px;
-    left: 12px;
-    right: auto;
-    position: fixed;
+    left: auto;
+    right: 12px;
+    position: absolute;
     padding-top: 15px;
     z-index: 9876;
 }
@@ -327,6 +325,12 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     margin: 0;
     opacity: 0;
     transition: all .5s ease;
+
+    max-height: calc(100vh - 120px);
+    max-width: calc(100vw - 50px);
+    display: flex;
+    flex-wrap: wrap-reverse;
+    flex-direction: column;
 }
 
 .fixed-action-btn ul li {
@@ -351,6 +355,9 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     display: none;
 }
 
+.introjs-tooltip {
+    background-color: hsla(25, 42%, 32%, 0.97)
+}
 
 @media (max-width: 1025px) {
     .toastMessage {
@@ -394,6 +401,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
         
     .header button.btn.favorites {
         order: 0;
+        display: block;
     }
         
     #searchParent ::-webkit-input-placeholder {
@@ -418,9 +426,9 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
         box-shadow: none;
     }
 
-   #mobileHelp, #mobileActions {
+    #mobileHelp, #mobileActions {
        display: block;
-   }
+    }
     .plFooter {
         font-size: 1.5rem;
     }
@@ -432,6 +440,15 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
         height: 26px;
         width: 26px;
         margin: 0px -1px;
+    }
+    
+    .plInfos, .plBrowse {
+        float: left;
+    }
+
+    #nav-signup input[type="text"],  #nav-signup input[type="password"]:not([exclude="true"]) {
+        max-height: 7vh;
+        min-height: 32px;
     }
 }
 

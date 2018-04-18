@@ -1,7 +1,7 @@
 /**
  * @fileoverview Launcher source file
  */
-import {asyncCheckOrMkdir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
+import {asyncCheckOrMkdir, asyncMkdirp, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
 import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {copy} from 'fs-extra';
@@ -13,6 +13,8 @@ import {exit, initEngine} from './_services/engine';
 import {startExpressReactServer} from './_webapp/react';
 import {openDatabases} from './_dao/database';
 import {logo} from './logo';
+import chalk from 'chalk';
+import {createInterface} from 'readline';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
@@ -21,6 +23,26 @@ process.on('uncaughtException', function (exception) {
 process.on('unhandledRejection', (reason, p) => {
 	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
+
+process.on('SIGINT', () => {
+	exit('SIGINT');
+});
+
+// CTRL+C for Windows :
+
+if (process.platform === 'win32' ) {
+	const rl = createInterface({
+	  input: process.stdin,
+	  output: process.stdout
+	});
+  
+	rl.on('SIGINT', () => {
+	  exit('SIGINT');
+	});
+}
+
+// Main app begins here.
+
 let appPath;
 if (process.pkg) {
 	appPath = join(process.execPath,'../');
@@ -37,14 +59,12 @@ main()
 async function main() {
 	const argv = parseArgs();	
 	let config = await initConfig(appPath, argv);
+	console.log(chalk.blue(logo));
+	console.log('Karaoke Player & Manager - http://mugen.karaokes.moe');
+	console.log(`Version ${chalk.bold.green(config.VersionNo)} (${chalk.bold.green(config.VersionName)})`);
+	console.log('================================================================');	
 	await parseCommandLineArgs(argv);
 	config = getConfig();
-	console.log(logo);
-	console.log('--------------------------------------------------------------------');
-	console.log(`Version ${config.VersionNo} (${config.VersionName})`);
-	console.log('--------------------------------------------------------------------');
-	console.log('\n');
-
 	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
 	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
 	logger.debug(`[Launcher] Detected OS : ${config.os}`);
@@ -63,22 +83,26 @@ async function main() {
 		resolve(appPath, config.PathTemp, 'input.conf'),
 		{ overwrite: true }
 	);
+	logger.debug('[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
+	await copy(
+		join(__dirname, '/_player/assets/background.jpg'),
+		resolve(appPath, config.PathTemp, 'default.jpg'),
+		{ overwrite: true }
+	);
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
-	if (!await asyncExists(resolve(appPath, config.PathAvatars, 'blank.png'))) {
-		await copy(
-			join(__dirname, '/_webapp/ressources/img/blank.png'),
-			resolve(appPath, config.PathAvatars, 'blank.png')
-		);
-	}
+	await copy(
+		join(__dirname, '/_webapp/ressources/img/blank.png'),
+		resolve(appPath, config.PathAvatars, 'blank.png'),
+		{ overwrite: true }
+	);
+	
 
 	/**
 	 * Test if network ports are available
 	 */
 	const ports = [config.appFrontendPort,
-		config.appAdminPort,
-		config.appAPIPort,
-		config.appWSPort
+		config.appAdminPort		
 	];
 	ports.forEach(port => verifyOpenPort(port));
 
@@ -86,7 +110,7 @@ async function main() {
 	await openDatabases(config);
 
 	/** Start React static frontend */
-	startExpressReactServer(1338);
+	startExpressReactServer(config.appAdminPort);
 
 	/**
 	 * Calling engine.
@@ -113,7 +137,18 @@ function parseArgs() {
 async function checkPaths(config) {
 
 	const appPath = config.appPath;
-
+	
+	// If no karaoke is found, copy the samples directory if it exists
+	if (!await asyncExists(resolve(appPath, 'app/data'))) {
+		if (await asyncExists(resolve(appPath, 'samples'))) {
+			logger.debug('[Launcher] app/data is missing - copying samples inside');
+			await asyncMkdirp(resolve(appPath, 'app/data'));
+			await copy(
+				resolve(appPath, 'samples'),
+				resolve(appPath, 'app/data')
+			);
+		}
+	}	
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));

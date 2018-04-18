@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
+import {Layout} from 'antd';
+
 import {checkAuth} from '../actions/auth';
 
 import KMMenu from './KMMenu';
@@ -15,7 +17,9 @@ class KMHeader extends Component {
 	render() {
 		return (
 			<div>
-				<KMMenu/>
+				<Layout.Header style={{height: '56px'}}>
+					<KMMenu/>
+				</Layout.Header>
 				<Notifications/>
 			</div>
 		);

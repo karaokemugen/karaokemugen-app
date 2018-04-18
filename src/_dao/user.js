@@ -66,6 +66,21 @@ export async function editUser(user) {
 	});
 }
 
+export async function reassignToUser(old_id,id) {
+	const updates = [
+		getUserDb().run(sql.reassignPlaylistToUser, { 
+			$id: id,
+			$old_id: old_id
+		}),
+		getUserDb().run(sql.reassignPlaylistContentToUser, { 
+			$id: id,
+			$old_id: old_id
+		})
+	];
+	return await Promise.all(updates);
+	
+}
+
 export async function updateExpiredUsers(expireTime) {
 	return await getUserDb().run(sql.updateExpiredUsers, { $expire_time: expireTime });
 }
