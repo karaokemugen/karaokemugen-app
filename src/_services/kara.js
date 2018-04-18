@@ -16,24 +16,25 @@ export function getKara(karaData) {
 	return {
 		videofile: karaData.videofile || '',
 		subfile: karaData.subfile || 'dummy.ass',
+		subchecksum: karaData.subchecksum || '',
 		title: karaData.title || '',
 		series: karaData.series || '',
 		type: karaData.type || '',
-		order: karaData.order || 0,
+		order: karaData.order || '',
 		year: karaData.year || '',
 		singer: karaData.singer || '',
 		tags: karaData.tags || '',
 		songwriter: karaData.songwriter || '',
 		creator: karaData.creator || '',
 		author: karaData.author || '',
-		lang: karaData.lang || '',
+		lang: karaData.lang || 'und',
 		KID: karaData.KID || uuidV4(),
 		dateadded: karaData.dateadded || timestamp.now(),
 		datemodif: karaData.datemodif || timestamp.now(),
 		videosize: karaData.videosize || 0,
 		videogain: karaData.videogain || 0,
 		videoduration: karaData.videoduration || 0,
-		version: karaData.version || 1
+		version: karaData.version || 2
 	};
 }
 
@@ -93,7 +94,7 @@ const karaConstraints = {
 	videosize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	videogain: {numericality: true},
 	videoduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	version: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}}
+	version: {numericality: {onlyInteger: true, lowerThanOrEqualTo: 2}}
 };
 
 export async function validateKaras() {
@@ -101,9 +102,12 @@ export async function validateKaras() {
 		const conf = getConfig();
 		await backupKaraDirs(conf);
 		const karaFiles = await extractAllKaraFiles();
-		const karas = await getAllKaras(karaFiles);
+		const karas = await getAllKaras(karaFiles);		 
 		verifyKIDsUnique(karas);
 		await deleteBackupDirs(conf);		
+		if (karas.some((kara) => {
+			return kara.error;
+		})) throw 'One kara failed validation process';
 	} catch(err) {
 		throw err;
 	}
@@ -133,7 +137,7 @@ export function verifyKaraData(karaData) {
 	}
 }
 
-/** Mutualisation du code gérant l'obligation d'avoir une série associée au kara. */
+/** Only MV or LIVE types don't have to have a series filled. */
 export function serieRequired(karaType) {	
 	return karaType !== karaTypes.MV && karaType !== karaTypes.LIVE;
 }

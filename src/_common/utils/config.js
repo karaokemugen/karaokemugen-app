@@ -6,17 +6,19 @@ import osLocale from 'os-locale';
 import i18n from 'i18n';
 import {address} from 'ip';
 import logger from 'winston';
-require('winston-daily-rotate-file');
-import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
+import {copy} from 'fs-extra';
+import {asyncCheckOrMkdir, asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
 import {emit} from './pubsub';
 import {defaults} from './default_settings.js';
+require('winston-daily-rotate-file');
 
 /** Object containing all config */
 let config = {};
 let configFile = 'config.ini';
+let savingSettings;
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
@@ -26,12 +28,12 @@ export function getConfig() {
 	return {...config};
 }
 
-export function mergeConfig(oldConfig, newConfig) {
+export async function mergeConfig(oldConfig, newConfig) {
 	// Determine if mpv needs to be restarted
 	for (const setting in newConfig) {
 		if (setting.startsWith('Player') &&
-			setting != 'PlayerFullscreen' &&
-			setting != 'PlayerStayOnTop') {
+			setting !== 'PlayerFullscreen' &&
+			setting !== 'PlayerStayOnTop') {
 			if (oldConfig[setting] != newConfig[setting]) {
 				emit('playerNeedsRestart');
 				logger.debug('[Config] Setting mpv to restart after next song');
@@ -39,8 +41,12 @@ export function mergeConfig(oldConfig, newConfig) {
 		}
 	}
 
-	updateConfig(newConfig);	
+
+	setConfig(newConfig);
 	const conf = getConfig();
+	// Toggling and updating settings
+	emit('modeUpdated',conf.EnginePrivateMode);
+	
 	configureHost();
 
 	// Determine which settings we send back. We get rid of all system and admin settings
@@ -70,25 +76,29 @@ export async function initConfig(appPath, argv) {
 	configureLocale();
 	await loadConfigFiles(appPath);
 	configureHost();
-	if (config.JwtSecret == 'Change me') setConfig( {JwtSecret: uuidV4() });
+	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
 
 	//Configure watcher
 	const configWatcher = watch(resolve(appPath, configFile));
 	configWatcher.on('change', () => {
-		const oldConf = getConfig();
-		logger.debug('[Config] config file has been changed from the outside world');
-		loadConfig(resolve(appPath, configFile)).then(() => {
-			mergeConfig(oldConf, getConfig());
-		});
+		if (!savingSettings) {
+			const oldConf = getConfig();
+			logger.debug('[Config] config file has been changed from the outside world');
+			loadConfig(resolve(appPath, configFile)).then(() => {
+				mergeConfig(oldConf, getConfig());
+			});
+		}
+		
 	});
 
 	return getConfig();
 }
 
-function configureLogger(appPath, debug) {
+async function configureLogger(appPath, debug) {
 	const tsFormat = () => (new Date()).toLocaleTimeString();
 	const consoleLogLevel = debug ? 'debug' : 'info';
-
+	const logDir = resolve(appPath, 'logs');
+	await asyncCheckOrMkdir(logDir);	
 	logger.configure({
 		transports: [
 			new (logger.transports.Console)({
@@ -98,7 +108,7 @@ function configureLogger(appPath, debug) {
 			}),
 			new (logger.transports.DailyRotateFile)({
 				timestap: tsFormat,
-				filename: resolve(appPath, 'karaokemugen'),
+				filename: resolve(appPath, 'logs', 'karaokemugen'),
 				datePattern: '.yyyy-MM-dd.log',
 				zippedArchive: true,
 				level: 'debug',
@@ -144,6 +154,10 @@ export async function configureBinaries(config) {
 }
 
 export function configureHost() {
+	if (config.EngineDisplayConnectionInfoHost.includes('.kara.moe')) {
+		config.EngineDisplayConnectionInfoHost = '';
+		setConfig({EngineDIsplayConnectionInfoHost: ''});
+	}
 	if (config.EngineDisplayConnectionInfoHost === '') {
 		config = {...config, osHost: address()};
 	} else {
@@ -153,20 +167,32 @@ export function configureHost() {
 
 export async function setConfig(configPart) {
 	config = {...config, ...configPart};
-	await updateConfig(config);
+	updateConfig(config);
 	return getConfig();
 }
 
+export async function backupConfig() {
+	// Create a backup of our config file. Just in case.
+	logger.debug('[Config] Making a backup of config.ini');
+	return await copy(
+		resolve(config.appPath, 'config.ini'),
+		resolve(config.appPath, 'config.ini.backup'),
+		{ overwrite: true }
+	);	
+}
+
 export async function updateConfig(newConfig) {
+	savingSettings = true;		
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','appPath','os','EngineDefaultLocale'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))
-			&& (newConfig[k] != defaults[k])
+			&& (newConfig[k] !== defaults[k])
             && (filteredConfig[k] = v);
 	});
 	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));
 	await asyncWriteFile(resolve(config.appPath, configFile), stringify(filteredConfig), 'utf-8');
+	savingSettings = false;
 }
 
 /**

@@ -1,5 +1,5 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
-import {getPlaylists, setCurrentPlaylist, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, translateKaraInfo, filterPlaylist} from '../_services/playlist';
+import {getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini, translateKaraInfo, filterPlaylist} from '../_services/playlist';
 import {listUsers, checkUserNameExists} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_common/utils/date';
@@ -7,16 +7,16 @@ import {date} from '../_common/utils/date';
 export async function getFavorites(username, filter, lang, from, size) {
 	try {
 		const plInfo = await getFavoritesPlaylist(username);
-		const pl = await getPlaylistContents(plInfo.playlist_id);
+		const pl = await getPlaylistContentsMini(plInfo.playlist_id);
 		let karalist = translateKaraInfo(pl,lang);
 		if (filter) karalist = filterPlaylist(karalist,filter);
 		return {
 			infos: { 
 				count: karalist.length,
-				from: parseInt(from),
-				to: parseInt(from)+parseInt(size)
+				from: from,
+				to: from + size
 			},
-			content: karalist.slice(from,parseInt(from)+parseInt(size))
+			content: karalist.slice(from,from+size)
 		};
 	} catch(err) {
 		throw {
@@ -39,7 +39,7 @@ export async function addToFavorites(username, kara_id) {
 
 export async function deleteFavorite(username, kara_id) {
 	const plInfo = await getFavoritesPlaylist(username);
-	const plContents = await getPlaylistContents(plInfo.playlist_id);
+	const plContents = await getPlaylistContentsMini(plInfo.playlist_id);
 	let plc_id;
 	const isKaraInPL = plContents.some((plc) => {
 		if (plc.kara_id === kara_id) {
@@ -64,7 +64,7 @@ async function getAllFavorites(userList) {
 			logger.error(`[AutoMix] Username ${user} does not exist`);
 		} else {
 			const plInfo = await getFavoritesPlaylist(user);
-			const pl = await getPlaylistContents(plInfo.playlist_id);
+			const pl = await getPlaylistContentsMini(plInfo.playlist_id);
 			// Each PLC is pushed into a list if the kara_id doesn't exist already to avoid duplicates.
 			// Later on we could use that to give more weight to some karaokes
 			pl.forEach((plItem) => {
@@ -95,8 +95,6 @@ export async function createAutoMix(params, username) {
 	await shufflePlaylist(playlist_id);
 	// Cut playlist after duration
 	await trimPlaylist(playlist_id, params.duration);
-	// Make it current.
-	await setCurrentPlaylist(playlist_id);
 	return {
 		playlist_id: playlist_id,
 		playlist_name: autoMixPLName
@@ -111,11 +109,12 @@ export async function initFavoritesSystem() {
 		await listUsers()
 	]);	
 	for (const user of users) {		
+		console.log(user);
 		const isFavoritePLExists = playlists.some(pl => {
-			if (pl.fk_user_id == user.user_id && pl.flag_favorites == 1 && user.type == 1) return true;
+			if (pl.fk_user_id === user.user_id && pl.flag_favorites === 1 && user.type === 1) return true; 
 			return false;
 		});
-		if (!isFavoritePLExists) await createPlaylist('Faves : '+user.login,0,0,0,1,user.login);
+		if (!isFavoritePLExists) await createPlaylist(`Faves : ${user.login}`,0,0,0,1,user.login);
 	}
 }
 

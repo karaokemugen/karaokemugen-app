@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-
-import {Container, Grid, Header, Segment, Button} from 'semantic-ui-react';
 import {connect} from 'react-redux';
+import {Layout, Button} from 'antd';
 
-import {loading, infoMessage, errorMessage} from '../actions/navigation';
+import {errorMessage, infoMessage, loading} from '../actions/navigation';
 
 class Karas extends Component {
 
@@ -23,28 +22,9 @@ class Karas extends Component {
 
 	render() {
 		return (
-			<Segment
-				inverted
-				vertical
-				style={{ margin: '1em 0em 1em', padding: '1em 0em 1em' }}
-			>
-				<Container textAlign='center'>
-					<Grid columns={1} stackable style={{ padding: '1em' }}>
-						<Grid.Column textAlign='left'>
-							<Header
-								as='h3'
-								content='Fichiers kara'
-								inverted
-							/>
-						</Grid.Column>
-					</Grid>
-					<Grid columns={1} stackable style={{ padding: '1em' }}>
-						<Grid.Column textAlign='center'>
-							<Button primary onClick={this.karagen.bind(this)} active={!this.props.loadingActive}>Générer les fichiers karas</Button>
-						</Grid.Column>
-					</Grid>
-				</Container>
-			</Segment>
+			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
+				<Button type='primary' onClick={this.karagen.bind(this)} active={!this.props.loadingActive}>Generate Kara files</Button>
+			</Layout.Content>
 		);
 	}
 }

@@ -21,6 +21,8 @@ karaokemugen-app-macos
 dist/
 apidoc/
 bin/
+logs/
+updater/
 
 # Client react
 react_client/node_modules

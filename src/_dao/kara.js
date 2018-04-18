@@ -4,10 +4,10 @@ import {getConfig} from '../_common/utils/config';
 
 const sql = require('../_common/db/kara');
 
-export async function getSongCountForUser(playlist_id,username) {
+export async function getSongCountForUser(playlist_id,user_id) {
 	return await getUserDb().get(sql.getSongCountPerUser, {
 		$playlist_id: playlist_id,
-		$username: username
+		$user_id: user_id
 	});
 }
 
@@ -16,6 +16,10 @@ export async function getAllKaras(username) {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
 		$username: username
 	});
+}
+
+export async function getKaraMini(id) {
+	return await getUserDb().get(sql.getKaraMini, { $kara_id: id });
 }
 
 export async function getKara(id, username) {
@@ -51,6 +55,10 @@ export async function addViewcount(kara_id,kid,datetime) {
 	});
 }
 
+export async function resetViewcounts() {
+	return await getUserDb().run(sql.resetViewcounts);
+}
+
 export async function addKaraToPlaylist(karaList) {
 	const karas = karaList.map((kara) => ({
 		$playlist_id: kara.playlist_id,
@@ -60,7 +68,7 @@ export async function addKaraToPlaylist(karaList) {
 		$kara_id: kara.kara_id,
 		$created_at: kara.created_at,
 		$pos: kara.pos
-	}));
+	}));	
 	return await transaction(karas, sql.addKaraToPlaylist);
 }
 

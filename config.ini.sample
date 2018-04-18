@@ -153,11 +153,8 @@ BinPlayerWindows = "app/bin/mpv.exe"
 BinPlayerOSX = "app/bin/mpv.app/Contents/MacOS/mpv"
 BinPlayerLinux = "/usr/bin/mpv"
 BinffmpegWindows = "app/bin/ffmpeg.exe"
-BinffprobeWindows = "app/bin/ffprobe.exe"
 BinffmpegLinux = "/usr/bin/ffmpeg"
-BinffprobeLinux = "/usr/bin/ffprobe"
 BinffmpegOSX = "app/bin/ffmpeg"
-BinffprobeOSX = "app/bin/ffprobe"
 
 ; Paths - don't touch these unless you know what you're doing .
 PathBin = "app/bin"

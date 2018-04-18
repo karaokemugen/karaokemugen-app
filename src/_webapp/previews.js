@@ -52,10 +52,10 @@ export async function cleanUpPreviewsFolder(config) {
 		const previewfileWOExt = basename(previewparts[1]);
 		for (const videofile of videofiles) {
 			const videofileWOExt = basename(videofile, extname(videofile));
-			if (previewfileWOExt == videofileWOExt) {
+			if (previewfileWOExt === videofileWOExt) {
 				deletePreview = false;
 				const videoStats = await asyncStat(videofile);	
-				if (videoStats.size != size) {
+				if (videoStats.size !== size) {
 					deletePreview = true;
 				}
 			}
@@ -74,12 +74,12 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 		const videoStats = await asyncStat(videofile);		
 		const previewfileWOExt = basename(videofile, extname(videofile));
 		const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.size}.mp4`;		
-		if (previewfiles.length != 0) {
+		if (previewfiles.length !== 0) {
 			for (const previewfile of previewfiles) {
 				const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);
 				const size = previewparts[2];
 				if (basename(previewparts[1]).toLowerCase() === (basename(videofile).toLowerCase().replace(/\.[^.]+$/, ''))) {
-					if (size != videoStats.size)  {
+					if (size !== videoStats.size)  {
 					//If it's different, remove previewfile and create a new one
 						asyncRemove(previewfile);						
 					} else {						

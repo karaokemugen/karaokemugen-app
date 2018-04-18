@@ -7,7 +7,7 @@
 		"node": true,
 		"mocha":true
     },
-    "extends": "eslint:recommended",
+    "extends": "react-app",
     "plugins": [
         "react"
     ],
@@ -32,7 +32,8 @@
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "no-throw-literal": "off"
     },
     "parser": "babel-eslint",
     "parserOptions": {

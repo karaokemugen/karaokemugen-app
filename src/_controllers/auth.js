@@ -11,10 +11,8 @@ const loginErr = {
 };
 
 async function checkLogin(username, password) {
-	const config = getConfig();
-	console.log(username);
-	console.log(password);
-	if (!await checkUserName(username)) throw false;
+	const config = getConfig();	
+	if (!await checkUserNameExists(username)) throw false;
 	if (!await checkPassword(username, password)) throw false;
 	const role = await getRole(username);
 	updateLastLoginName(username);
@@ -30,7 +28,7 @@ module.exports = function authController(router) {
 
 	const requireAuth = passport.authenticate('jwt', { session: false });
 
-	router.post('/login', (req, res) => {
+	router.post('/login', async (req, res) => {
 		/**
  * @api {post} /auth/login Login / Sign in
  * @apiName AuthLogin
@@ -58,14 +56,15 @@ module.exports = function authController(router) {
  * HTTP/1.1 401 Unauthorized
  */
 		if (!req.body.password) req.body.password = '';		
-		checkLogin(req.body.username, req.body.password).then((token) => {
+		try {
+			const token = await checkLogin(req.body.username, req.body.password);
 			res.send(token);
-		}).catch(() => {
+		} catch(err) {
 			res.status(401).send(loginErr);
-		});
+		}
 	});
 
-	router.post('/login/guest', (req, res) => {
+	router.post('/login/guest', async (req, res) => {
 		/**
  * @api {post} /auth/login/guest Login / Sign in (as guest)
  * @apiName AuthLoginGuest
@@ -97,17 +96,15 @@ module.exports = function authController(router) {
  *   "message": null
  * }
  */
-		if (!req.body.fingerprint || req.body.fingerprint == '') {
+		if (!req.body.fingerprint || req.body.fingerprint === '') {
 			res.status(401).send(loginErr);
-		} else {
-			findFingerprint(req.body.fingerprint).then((guest) => {			
+		} else {			
+			try {
+				const guest = await findFingerprint(req.body.fingerprint);	
 				if (guest) {
-					checkLogin(guest, req.body.fingerprint).then((token) => {
-						updateUserFingerprint(guest, req.body.fingerprint);
-						res.send(token);
-					}).catch(() => {
-						res.status(401).send(loginErr);
-					});
+					const token = await checkLogin(guest, req.body.fingerprint);
+					updateUserFingerprint(guest, req.body.fingerprint);
+					res.send(token);
 				} else {
 					res.status(500).send({
 						code: 'NO_MORE_GUESTS_AVAILABLE',
@@ -115,10 +112,10 @@ module.exports = function authController(router) {
 						data: {
 						}
 					});
-				}
-			}).catch(() => {
+				}	
+			} catch (err) {
 				res.status(401).send(loginErr);
-			});	
+			}		
 		}		
 	});
 
@@ -141,13 +138,9 @@ function decodeJwtToken(token, config) {
 	return decode(token, conf.JwtSecret);
 }
 
-async function checkUserName(username) {
-	return await checkUserNameExists(username);
-}
-
 async function getRole(username) {
 	const user = await findUserByName(username);
-	if (user.type == 2) return 'guest';
-	if (user.flag_admin == 1) return 'admin';
+	if (+user.type === 2) return 'guest';
+	if (+user.flag_admin === 1) return 'admin';
 	return 'user';
 }

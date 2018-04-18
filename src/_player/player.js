@@ -1,4 +1,4 @@
-const logger = require('winston');
+import logger from 'winston';
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
 import {resolve, join} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncCopy, asyncExists} from '../_common/utils/files';
@@ -6,18 +6,18 @@ import remove from 'lodash.remove';
 import sample from 'lodash.sample';
 import isEmpty from 'lodash.isempty';
 import {emit,on} from '../_common/utils/pubsub';
-const sizeOf = require('image-size');
+import sizeOf from 'image-size';
 import {buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
 import {spawn} from 'child_process';
 import {exit} from '../_services/engine';
-const mpv = require('node-mpv');
+import mpv from 'node-mpv';
 import {promisify} from 'util';
+
 const sleep = promisify(setTimeout);
 let currentJinglesList = [];
 let jinglesList = [];
 let displayingInfo = false;
-let frontendPort;
 let player;
 let state = {};
 
@@ -41,6 +41,10 @@ state.player = {
 
 on('engineStatusChange', (newstate) => {
 	state.engine = newstate[0];	
+});
+
+on('playerStatusChange', (newstate) => {
+	state.player = newstate[0];	
 });
 
 on('jinglesReady', (list) => {
@@ -80,14 +84,12 @@ async function loadBackground(mode) {
 	// Default background
 	let backgroundFiles = [];
 	const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
-	let internalImageFile = join(__dirname,'assets/background.jpg');
-	let backgroundImageFile = internalImageFile;
+	let backgroundImageFile = defaultImageFile;
 	if (!isEmpty(conf.PlayerBackground)) {
 		backgroundImageFile = resolve(conf.appPath,conf.PathBackgrounds,conf.PlayerBackground);	
 		if (await asyncExists(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn(`[Player] Unable to find background file ${backgroundImageFile}, reverting to default one`);
-			if (await asyncExists(defaultImageFile)) await asyncCopy(internalImageFile,defaultImageFile);
 			backgroundFiles.push(defaultImageFile);
 		} 				
 	} else {
@@ -95,16 +97,13 @@ async function loadBackground(mode) {
 		backgroundFiles = await extractAllBackgroundFiles();
 		// If backgroundFiles is empty, it means no file was found in the directories scanned.
 		// Reverting to original, supplied background :
-		if (backgroundFiles.length === 0) {
-			if (!await asyncExists(defaultImageFile)) await asyncCopy(internalImageFile,defaultImageFile);
-			backgroundFiles.push(defaultImageFile);
-		}
+		if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);		
 	}
 	backgroundImageFile = sample(backgroundFiles);
 	logger.debug('[Player] Background : '+backgroundImageFile);
 	let videofilter = '';
-	if (conf.EngineDisplayConnectionInfoQRCode != 0 && 
-		conf.EngineDisplayConnectionInfo != 0) {			
+	if (conf.EngineDisplayConnectionInfoQRCode !== 0 && 
+		conf.EngineDisplayConnectionInfo !== 0) {			
 		const dimensions = sizeOf(backgroundImageFile);
 		let QRCodeWidth;
 		let QRCodeHeight;
@@ -123,18 +122,30 @@ async function loadBackground(mode) {
 	}
 }
 
+function configureURL() {
+	const conf = getConfig();	
+	if (!isEmpty(conf.EngineConnectionInfoHost)) {
+		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
+	} else {
+		if (state.engine.url) {
+			state.player.url = state.engine.url;
+		} else {
+			if (state.engine.frontendPort === 80) {
+				state.player.url = `http://${conf.osHost}`;
+			} else {
+				state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
+			}			
+		}		
+	}	
+}
+
 export async function initPlayerSystem(initialState) {
 	const conf = getConfig();
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
-	frontendPort = initialState.frontendPort;
+	state.engine = initialState;
 	buildJinglesList();
-	
-	if (!isEmpty(conf.EngineConnectionInfoHost)) {
-		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
-	} else {
-		state.player.url = `http://${conf.osHost}:${initialState.frontend_port}`;
-	}
+	configureURL();
 	await buildQRCode(state.player.url);
 	logger.debug('[Player] QRCode generated');
 	if (!conf.isTest) await startmpv();
@@ -181,22 +192,27 @@ async function startmpv() {
 		if (conf.PlayerPIPPositionY === 'Bottom') positionY = 99;		
 		mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
 	}
-	if (!isEmpty(conf.mpvVideoOutput)) mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+	if (!isEmpty(conf.mpvVideoOutput)) {
+		mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+	} else {
+		//Force direct3d for Windows users
+		if (conf.os === 'win32') mpvOptions.push('--vo=direct3d');
+	}
 	if (!isEmpty(conf.PlayerScreen)) {
 		mpvOptions.push(`--screen=${conf.PlayerScreen}`);
 		mpvOptions.push(`--fs-screen=${conf.PlayerScreen}`);
 	}
 	// Fullscreen is disabled if pipmode is set.
-	if (conf.PlayerFullscreen == 1 && !conf.PlayerPIP) {
+	if (conf.PlayerFullscreen === 1 && !conf.PlayerPIP) {
 		mpvOptions.push('--fullscreen');
 		state.player.fullscreen = true;		
 	}
-	if (conf.PlayerStayOnTop == 1) {
+	if (conf.PlayerStayOnTop === 1) {
 		state.player.stayontop = true;
 		mpvOptions.push('--ontop');
 	}
-	if (conf.PlayerNoHud == 1) mpvOptions.push('--no-osc');
-	if (conf.PlayerNoBar == 1) mpvOptions.push('--no-osd-bar');			
+	if (conf.PlayerNoHud === 1) mpvOptions.push('--no-osc');
+	if (conf.PlayerNoBar === 1) mpvOptions.push('--no-osd-bar');			
 	//On all platforms, check if we're using mpv at least version 0.20 or abort saying the mpv provided is too old. 
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
 	const mpvVersion = await getmpvVersion(conf.BinmpvPath);
@@ -205,14 +221,14 @@ async function startmpv() {
 	
 	//If we're on macOS, add --no-native-fs to get a real
 	// fullscreen experience on recent macOS versions.
-	if (parseInt(mpvVersionSplit[1]) < 25) {
+	if (parseInt(mpvVersionSplit[1], 10) < 25) {
 		// Version is too old. Abort.
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
 		logger.error(`[Player] mpv binary : ${conf.BinmpvPath}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
 		exit(1);
 	}
-	if (conf.os === 'darwin' && parseInt(mpvVersionSplit[1]) > 26) mpvOptions.push('--no-native-fs');
+	if (conf.os === 'darwin' && parseInt(mpvVersionSplit[1], 10) > 26) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
 	logger.debug(`[Player] mpv binary : ${conf.BinmpvPath}`);
 	let socket;
@@ -220,6 +236,7 @@ async function startmpv() {
 	if (conf.os === 'darwin' || conf.os === 'linux') socket = '/tmp/km-node-mpvsocket';	
 	player = new mpv(
 		{
+			ipc_command: '--input-ipc-server',
 			auto_restart: true,
 			audio_only: false,
 			binary: conf.BinmpvPath,
@@ -276,10 +293,10 @@ async function startmpv() {
 		emitPlayerState();		
 		// Display informations if timeposition is 8 seconds before end of song
 		if (position >= (state.player.duration - 8) && 
-						displayingInfo == false &&
-						state.player.videoType == 'song')						
+						!displayingInfo &&
+						state.player.videoType === 'song')						
 			displaySongInfo(state.player.currentSongInfos);
-		if (Math.floor(position) == Math.floor(state.player.duration / 2) && displayingInfo == false && state.player.videoType == 'song') displayInfo(8000);	
+		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.videoType === 'song') displayInfo(8000);
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	state.player.ready = true;	
@@ -438,7 +455,7 @@ export function displayInfo(duration) {
 	const conf = getConfig();
 	if (!duration) duration = 100000000;
 	let text = '';
-	if (conf.EngineDisplayConnectionInfo != 0) {
+	if (conf.EngineDisplayConnectionInfo !== 0) {
 		text = __('GO_TO')+' '+state.player.url+' !';	
 		if (!isEmpty(conf.EngineDisplayConnectionInfoMessage)) text = conf.EngineDisplayConnectionInfoMessage + ' - ' + text;
 	}
@@ -466,8 +483,8 @@ export async function restartmpv() {
 	return true;
 }
 
-async function quitmpv() {
-	logger.debug('[Player] quitting mpv');
+export async function quitmpv() {
+	logger.debug('[Player] Quitting mpv');
 	player.quit();
 	// Destroy mpv instance.
 	player = null;
@@ -491,7 +508,7 @@ export async function playJingle() {
 		});
 		//If our current jingle files list is empty after the previous removal
 		//Fill it again with the original list.
-		if (currentJinglesList.length == 0) {
+		if (currentJinglesList.length === 0) {
 			currentJinglesList = Array.prototype.concat(jinglesList);	
 		}
 		logger.debug('[Player] Playing jingle '+jingle.file);

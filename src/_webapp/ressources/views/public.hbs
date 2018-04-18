@@ -1,8 +1,12 @@
-<div id="header" class="header">
+<div id="progressBar" class="underHeader" introStep="5" introLabel="progressbar">
+    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
+    <div id="progressBarColor" class="cssTransform"></div>
+</div>
+<div id="header" class="header"  introStep="7" introLabel="search">
     <div class="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12 headerInputs">
-        <button class="btn btn-action btn-default favorites"><i class="glyphicon glyphicon-star"></i></button>
+        <button class="btn btn-action btn-default favorites" introStep="15" introLabel="favorites" introRequiresUser="true"><i class="glyphicon glyphicon-star"></i></button>
         <div class="plSearch" id="searchParent" style="width: 100%;">
-            <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist" />
+            <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist"/>
         </div>
         <button title="{{i18n "GET_LUCKY"}}" class="btn btn-lg btn-action btn-default getLucky  hidden-msm hidden-xs hidden-sm">
             <img src="/ressources/img/clover.png">
@@ -15,30 +19,30 @@
     </div>
     <div class="col-lg-4 col-md-5 hidden-msm hidden-sm hidden-xs">
         <div class="dropdown pull-right">
-            <button class="btn btn-default btn-dark dropdown-toggle" type="button" data-toggle="dropdown">
+            <button class="btn btn-default btn-dark dropdown-toggle" id="menuPC" type="button" data-toggle="dropdown">
             </span><i class="glyphicon glyphicon-menu-hamburger"></i></button>
             <ul class="dropdown-menu">
                 <li><a href="#" class="changePseudo"><i class="glyphicon glyphicon-user"></i> {{i18n "ACCOUNT"}}</a></li>
                 <li><a href="/admin" id="logAdmin" target="_blank"><i class="glyphicon glyphicon-wrench"></i> Admin</a></li>
                 <li><a href="#" class="showSettings"><i class="glyphicon glyphicon-info-sign"></i> {{i18n "HELP"}}</a></li>
                 <li><a href="#" onclick="endOfTheWorldAsWeKnowIt();"><i class="glyphicon glyphicon-gift"></i> {{i18n "4TH_IMPACT"}}</a></li>
+                <li><a href="#" class="logout"><i class="glyphicon glyphicon-off"></i> {{i18n "LOGOUT"}}</a></li>
             </ul>
         </div>
         <div class="pull-right btn-group switchParent">
-            <input title='{{i18n "SWITCH_SEARCH_VIEW"}}' type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-right" data-on-text="<i class='glyphicon glyphicon-menu-hamburger'></i>"
-                data-off-text="<i class='glyphicon glyphicon-search'></i>" data-size="large" />
+            <span class="hidden">
+                <input title='{{i18n "SWITCH_SEARCH_VIEW"}}' type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-right" data-on-text="<i class='glyphicon glyphicon-menu-hamburger'></i>"
+                    data-off-text="<i class='glyphicon glyphicon-search'></i>" data-size="large" />
+            </span>
             <input title='{{i18n "SWITCH_BAR_INFOS"}}' type="checkbox" value="1" name="lyrics" class="btn btn-default pull-left" data-on-text="<i class='glyphicon glyphicon-subtitles'></i>"
                 data-off-text="<i class='glyphicon glyphicon-info-sign'></i>" data-size="large" />
         </div>
     </div>
 </div>
-<div id="progressBar" class="underHeader">
-    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
-    <div id="progressBarColor" class="cssTransform"></div>
-</div>
-<div id="underHeader" class="underHeader container-fluid">
+
+<div id="underHeader" class="underHeader container-fluid"  introStep="10" introLabel="kara">
     <div class="playlist-main row" id="playlist">
-        <div class="panel col-lg-8 col-md-7 col-msm-12 col-sm-12 col-xs-12" id="panel1" side="1">
+        <div class="panel col-lg-8 col-md-7 col-msm-12 col-sm-12 col-xs-12" id="panel1" side="1" introStep="9" introLabel="searchresult">
              <div class="plDashboard" >
                 <div class="plSelect">
                     <select id="selectPlaylist1" side="1" hidden >
@@ -47,20 +51,25 @@
                     </select>
                 </div>
             </div>
-            <div class="playlistContainer">
-                <ul id="playlist1" side="1" class="list-group">
+            <div class="playlistContainer" >
+                <ul id="playlist1" side="1" class="list-group" >
                 </ul>
            </div>
-            <div class="plFooter">
-                <div class="plBrowse">
-                    <button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
-                    <button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
-                    <button title="{{i18n "GOTO_BOTTOM"}}" class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
-                </div>
-                <div class="plInfos"></div>
+            <div class="plFooter" introStep="13" introLabel="footer" introPosition="right">
+				<div class="right">
+					<div class="plBrowse">
+						<button title="{{i18n "GOTO_TOP"}}" class="btn btn-sm btn-action" action="goTo" value="top"><i class="glyphicon glyphicon glyphicon-menu-up"></i></button>
+						<button title="{{i18n "GOTO_PLAYING"}}" class="btn btn-sm btn-action" action="goTo" value="playing"><i class="glyphicon glyphicon glyphicon-play"></i></button>
+						<button title="{{i18n "GOTO_BOTTOM"}}" class="btn btn-sm btn-action" action="goTo" value="bottom"><i class="glyphicon glyphicon glyphicon-menu-down"></i></button>
+					</div>
+					<div class="plInfos"></div>
+				</div>
+                <div class="left">
+					<div id="plQuota" class="plQuota right"></div>
+				</div>
             </div>
         </div>
-         
+
         <div class="panel col-lg-4 col-md-5 col-msm-12 col-sm-12 col-xs-12" id="panel2" side="2">
            <div class="panel-heading container-fluid plDashboard">
                 <div class="col-lg-8 col-md-7 col-sm-6 col-xs-6 plSelect">
@@ -88,7 +97,7 @@
                     <input type="text" class="form-control input-md" side="2" id="searchPlaylist2" placeholder="&#xe003;" name="searchPlaylist"/>
                 </div>
             </div>
-            
+
             <div class="playlistContainer">
                 <ul id="playlist2" side="2" class="list-group">
                     <li class="list-group-item"></li>
@@ -111,8 +120,9 @@
     <a class="btn-floating btn-large waves-effect z-depth-3" id="menuMobile"  style="background-color:#123456" data-opened=false>
         <i class="glyphicon glyphicon-menu-hamburger"></i>
     </a>
-    <ul style="opacity: 0; display: none;">
+    <ul style="opacity: 0; display: none;" introStep="21" introLabel="menu">
         <li><a class="z-depth-3 btn-floating btn-large" onclick="endOfTheWorldAsWeKnowIt();" style="background-color:hsla(0, 71%, 14%, .4)"><i class="glyphicon glyphicon-gift"></i></a></li>
+        <li><a class="z-depth-3 btn-floating btn-large logout"  style="background-color:#111"><i class="glyphicon glyphicon-off"></i> </a></li>
         <li><a class="z-depth-3 btn-floating btn-large getLucky"  style="background-color:#111">   <img style="height: 80%;margin-top: 10%" src="/ressources/img/clover.png"></a></li>
         <li><a class="z-depth-3 btn-floating btn-large showSettings" style="background-color:#613114"><i class="glyphicon glyphicon-question-sign"></i></a></li>
         <li><a class="z-depth-3 btn-floating btn-large changePseudo" id="changePseudo" style="background-color:#431b50"><i class="glyphicon glyphicon-user"></i></a></li>
@@ -128,7 +138,7 @@
             </div>
             <div class="modal-body">
                 <div class="modal-message">
-                
+
                 </div>
                 <div class="form">
                     <input type="text" class="form-control" id="modalInput" name="modalInput"    />
@@ -154,20 +164,31 @@
             </ul>
             <div class="tab-content" id="nav-tabContent">
                 <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
+                    <div class="tour hidden">
+                     {{i18n "FIRST_PUBLIC_RUN_WELCOME"}}
+                    </div>
+                    <div class="modal-message tour">
+                        <button class="btn btn-default tour">
+                             {{i18n "FOLLOW_TOUR"}}
+                        </button>
+                    </div>
+                    <div class="tour">
+                     {{i18n "OR"}}
+                    </div>
                     <div class="modal-message">
                         <button class="btn btn-default guest">
                              {{i18n "GUEST_CONTINUE"}}
                         </button>
                     </div>
-                    <div>
+                    <div class="loginRelated">
                      {{i18n "OR"}}
                     </div>
-                    <div class="modal-message">
+                    <div class="modal-message loginRelated">
                             <input type="text" class="form-control" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
                             <input type="password" class="form-control" id="password" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
                     </div>
-                    <div></div>
-                    <div>
+                    <div class="loginRelated"></div>
+                    <div class="loginRelated">
                         <button type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
                             <i class="glyphicon glyphicon-ok"></i>
                         </button>
@@ -200,9 +221,9 @@
             <div class="tab-content" id="nav-tabContent">
                 <div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab" class="modal-body tab-pane fade in active">
                     <div class="profileContent">
-                        
+
                             <div class="col-md-3 col-lg-3 col-xs-12 col-sm-12">
-                                
+
                                 <label for="avatar" title='{{i18n "AVATAR_IMPORT"}}' class="btn btn-default plGenericButton avatar" name="import">
                                     <img class="img-circle" name="avatar_file"
                                      src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
@@ -230,52 +251,89 @@
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-lock"></i>
-                                    <input class="form-control" name="password" type="text"/>
+                                    <input class="form-control" name="password" type="password" placeholder="{{{ i18n "PROFILE_PASSWORD" }}}"/>
+                                    <input class="form-control passwordConfirmation" type="password" placeholder="{{{ i18n "PROFILE_PASSWORDCONF" }}}" style="margin-left: 3px;"/>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" class="modal-body tab-pane fade in">
                         <div class="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
-                            
+
                         </div>
                     </div>
                     <div class="modal-footer">
-                         <button class="logout btn btn-sm btn-default pull-right" type="button"
-                                data-toggle="tooltip"><i class="glyphicon glyphicon-off"></i>
-                        </button>
+                        
                     </div>
-                   
+
                 </div>
-                
+
             </div>
         </div>
     </div>
 </div>
- <div class="popup" id="settingsPublic" hidden>
-    <span id="settingsPublicTitle">  {{i18n "CL_HELP"}} </span>
-    <span id="settingsPublicContent">
-        <div id="mobileHelp" class="col-lg-12 col-xs-12" style="line-height:1.8em;">
-            {{{ i18n "CL_HELP_PUBLIC_CONTENT" }}}
-            <br/>
-            <hr>
+<div class="modal modalPage fade" role="dialog" type="prompt" tabindex="22" id="settingsPublic" hidden>
+     <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-help" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "CL_HELP"}} </a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent-help">
+                <div id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" class="modal-body tab-pane fade in active">
+                        <div id="mobileHelp" class="text">
+                            {{{ i18n "CL_HELP_PUBLIC_MOBILE" }}}
+                        </div>
+                        <div class="text">
+                            {{{ i18n "CL_HELP_DISCORD" }}}   
+                            <br/>   
+                        </div> 
+                        <div class="modal-message tour">
+                            <button class="btn btn-default tourAgain">
+                                    {{i18n "FOLLOW_TOUR"}}
+                            </button>
+                        </div>
+                            <hr>
+                        <div class="col-lg-3 col-xs-3">
+                            <b>{{i18n "MODE"}}</b>
+                            <br/>
+                            <b>{{i18n "VERSION"}}</b>
+                            <br/>
+                        </div>
+                        <div class="col-lg-9 col-xs-9">
+                            <span id="mode"></span>
+                            <br/>
+                                <span id="version"></span>
+                            <br/>
+                        </div>
+                </div>
+            </div>
         </div>
-            <div class="col-lg-3 col-xs-3">
-                <b>{{i18n "MODE"}}</b>
-                <br/>
-                <b>{{i18n "VERSION"}}</b>
-                <br/>
-            </div>
-            <div class="col-lg-9 col-xs-9">
-                <span id="mode"></span>
-                <br/>
-                    <span id="version"></span>
-                <br/>
-            </div>
-    </span>
+    </div>
 </div>
-
+<div class="modal modalPage fade" role="dialog" type="prompt" tabindex="23" id="helpModal" hidden>
+     <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-help" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "CL_HELP_INSTRUCTIONS"}} </a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent-help">
+                <div id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" class="modal-body tab-pane fade in active">
+                    <div id="mobileHelp" class="text">
+                        {{{ i18n "CL_HELP_PUBLIC_MOBILE" }}}
+                        <br/>
+                        {{{ i18n "CL_HELP_HELP" }}}
+                    </div>
+                    <div class="modal-message">
+                        <button data-dismiss="modal" class="btn btn-default confirm">
+                             <i class="glyphicon glyphicon-ok"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="overlay">
      <video id="video" type="video/mp4" autoplay>
     </video>

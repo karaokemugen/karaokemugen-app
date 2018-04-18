@@ -79,10 +79,6 @@ async function openUserDatabase() {
 	}
 }
 
-export function closeDatabases() {
-	return Promise.all([closeKaraDatabase(), closeUserDatabase()]);
-}
-
 async function closeKaraDatabase() {
 	if (!karaDb) {
 		logger.warn('[DB] Kara database already closed');
@@ -92,7 +88,7 @@ async function closeKaraDatabase() {
 	}
 }
 
-async function closeUserDatabase() {
+export async function closeUserDatabase() {
 	if (!userDb) {
 		logger.warn('[DB] User database already closed');
 	} else {
@@ -136,6 +132,11 @@ export async function initDBSystem() {
 	if (doGenerate) await generateDatabase();
 	await closeKaraDatabase();	
 	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
+	await getUserDb().run('PRAGMA TEMP_STORE=MEMORY');
+	await getUserDb().run('PRAGMA JOURNAL_MODE=WAL');
+	await getUserDb().run('PRAGMA SYNCHRONOUS=OFF');
+	//await getUserDb().run('PRAGMA LOCKING_MODE=EXCLUSIVE');
+
 	await compareDatabasesUUIDs();
 	logger.debug('[DBI] Database Interface is READY');
 	const stats = await getStats();

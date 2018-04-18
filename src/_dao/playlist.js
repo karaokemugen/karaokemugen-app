@@ -44,6 +44,13 @@ export async function setPLCFree(plc_id) {
 	return await getUserDb().run(sql.setPLCFree, {$plc_id: plc_id});
 }
 
+export async function setPLCFreeBeforePos(pos, playlist_id) {
+	return await getUserDb().run(sql.setPLCFreeBeforePos, {
+		$pos: pos,
+		$playlist_id: playlist_id
+	});
+}
+
 export async function updatePlaylistKaraCount(id,karaCount) {
 	return await getUserDb().run(sql.updatePlaylistKaraCount, {
 		$playlist_id: id,

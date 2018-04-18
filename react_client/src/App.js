@@ -4,20 +4,16 @@ import axios from 'axios';
 import {Provider} from 'react-redux';
 import {ConnectedRouter} from 'react-router-redux';
 import {Redirect, Route, Switch} from 'react-router-dom';
+import {Layout} from 'antd';
 import {history, store} from './store';
 
 import KMHeader from './layout/KMHeader';
 
 import AuthRequired from './components/AuthRequired';
 import DismissMessages from './components/DismissMessages';
-
-import Login from './pages/Login';
 import Home from './pages/Home';
-import Config from './pages/Config';
-import Karas from './pages/Karas';
-import Database from './pages/Database';
-import Users from './pages/Users';
 
+import './App.css';
 
 class App extends Component {
 
@@ -32,18 +28,20 @@ class App extends Component {
 		return (
 			<Provider store={store}>
 				<ConnectedRouter history={history}>
-					<div>
+					<Layout className="layout">
 						<KMHeader/>
 						<Switch>
 							<Redirect exact from='/' to='/home'/>
 							<Route path='/home' component={Home}/>
-							<Route path='/login' component={DismissMessages(Login)}/>
-							<Route path='/config' component={AuthRequired(Config)}/>
-							<Route path='/karas' component={AuthRequired(Karas)}/>
-							<Route path='/db' component={AuthRequired(Database)}/>
-							<Route path='/users' component={AuthRequired(Users)}/>
+							<Route path='/login' component={DismissMessages(import('./pages/Login'))}/>
+							<Route path='/config' component={AuthRequired(import('./pages/Config'))}/>
+							<Route path='/karas' component={AuthRequired(import('./pages/Karas'))}/>
+							<Route path='/db' component={AuthRequired(import('./pages/Database'))}/>
+							<Route path='/users/create' component={AuthRequired(import('./pages/Users/UserEdit'))}/>
+							<Route path='/users/:userId' component={AuthRequired(import('./pages/Users/UserEdit'))}/>
+							<Route path='/users' component={AuthRequired(import('./pages/Users/UserList'))}/>
 						</Switch>
-					</div>
+					</Layout>
 				</ConnectedRouter>
 			</Provider>
 		);

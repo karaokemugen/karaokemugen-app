@@ -7,18 +7,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	// Listen for the jQuery ready event on the document
 	$(function () {
 
-		/* init selects & switchs */
-
-		$('[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event, state) {
-			if (state) {
-				$('#playlist').show();
-				$('#manage').hide();
-			} else {
-				$('#playlist').hide();
-				$('#manage').show();
-			}
-		});
-
 		// handling small touchscreen screens with big virtual keyboard
 
 		$('select[type="playlist_select"]').on('select2:open', function () {
@@ -33,7 +21,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			document.documentElement.scrollTop = 0; // For IE and Firefox
 		});
 
-
+		$('#volume').on('mouseleave', () => {
+			$('#volume').click();
+		});
 		$('button[action="command"], a[action="command"]').click(function (e) {
 			var name = $(this).attr('name');
 			var dataAjax = { command: name };
@@ -42,13 +32,15 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			if (e.target.name == 'setVolume') {
 				var btn = $(e.target);
-				var val = parseInt(btn.val()), base = 100;
-				val = Math.log(val) / Math.log(base);
-				val = val * 100;
+				var val = parseInt(btn.val()), base = 100, pow = .76;
+				val = Math.pow(val, pow) / Math.pow(base, pow);
+				val = val * base;
 				dataAjax = { command: btn.attr('name'), options: val };
 			}
 
-			$.ajax({
+			// ask for the kara list from given playlist
+			if (ajaxSearch[name]) ajaxSearch[name].abort();
+			ajaxSearch[name] = $.ajax({
 				url: 'admin/player',
 				type: 'PUT',
 				data: dataAjax
@@ -57,20 +49,12 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 
-		$('input[action="command"][switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
-			var val = $(this).attr('nameCommand');
-			if(!val) val =  $(this).attr('name');
 
-			$.ajax({
-				url: 'admin/player',
-				type: 'PUT',
-				data: { command: val }
-			}).done(function () {
-				// refreshPlayerInfos();
-			});
+		$('.btn[action="account"]').click(function () {
+			showProfil()
 		});
 
-		$('button[action="poweroff"]').click(function () {
+		$('.btn[action="poweroff"]').click(function () {
 			$.ajax({
 				url: 'admin/shutdown',
 				type: 'POST',
@@ -81,11 +65,13 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 		$('#adminMessage').click(function () {
-			displayModal('prompt', 'Message indispensable', 
+			displayModal('custom', 'Message indispensable', 
 				'<select class="form-control" name="destination"><option value="screen">' + i18n.__('CL_SCREEN') + '</option>'
 																+ '<option value="users">' + i18n.__('CL_USERS') + '</option><option value="all">' + i18n.__('CL_ALL') + '</option></select>'
-																+ '<input type="text"name="duration" placeholder="5000 (ms)"/>', function(data){
-					var msgData =  { message: data.modalInput, destination : data.destination };
+																+ '<input type="text"name="duration" placeholder="5000 (ms)"/>'
+																+ '<input type="text" placeholder="Message" class="form-control" id="message" name="message">', function(data){
+																	
+					var msgData =  { message: data.message, destination : data.destination };
 					if (data.duration) {
 						msgData['duration'] = data.duration; 
 					}
@@ -98,9 +84,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			setSettings($(this));
 		});
 		$('#settings input[type!="checkbox"][exclude!="true"]').blur(function () {
-			setSettings($(this));
-		});
-		$('#settings input[type="checkbox"], input[name="EnginePrivateMode"]').on('switchChange.bootstrapSwitch', function () {
 			setSettings($(this));
 		});
 
@@ -224,8 +207,13 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 				if (idPlaylistTo > 0) {
 					url = scope + '/playlists/' + idPlaylistTo + '/karas';
-					var requestedby = idPlaylistFrom == -1 || li.data('username') == undefined ? logInfos.username : li.data('username');
-					data = { requestedby: requestedby, kara_id: idKara };
+					if(idPlaylistFrom > 0) {
+						data = { plc_id : idKaraPlaylist };
+						type = 'PATCH';
+					} else {
+						var requestedby = idPlaylistFrom == -1 || li.data('username') == undefined ? logInfos.username : li.data('username');
+						data = { requestedby: requestedby, kara_id: idKara };
+					}
 				} else if (idPlaylistTo == -1) {
 					//displayMessage('warning', 'Error','can\'t add kara to the kara list from database');
 					DEBUG && console.log('ERR: can\'t add kara to the kara list from database');
@@ -324,6 +312,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			}
                 
 			$(this).toggleClass('btn-primary');
+
+			if(introManager && introManager._currentStep) {
+				introManager.nextStep();
+			}
 		});
         
 		$('.playlist-main').on('click', 'span[name="checkboxKara"]', function () {
@@ -368,23 +360,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			}
 		});
 
-		/* password case handlers */
-
-		$('#confirmPassword, #passwordSettings').on('input', function () {
-			if ($('#confirmPassword').val() === $('#passwordSettings').val() && $('#passwordSettings').val() !== '') {
-				$('#sendPassword').attr('oldvalue', $('#sendPassword').val());
-				$('#sendPassword').val($('#confirmPassword').val());
-				$('#sendPassword').removeClass('btn-danger').addClass('btn-success');
-				$('#sendPassword').prop('disabled', false);
-			} else {
-				$('#sendPassword').addClass('btn-danger').removeClass('btn-success');
-				$('#sendPassword').prop('disabled', true);
-			}
-		});
-		$('#sendPassword').click(function () {
-			setSettings($(this), true);
-		});
-
 		setStopUpdate = function (stop) {
 			stopUpdate = stop;
 		};
@@ -402,22 +377,23 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	panel1Default = -1;
 
 	// dynamic creation of switchable settings 
-	var htmlSettings = '';
-	$.each(settingsOnOff, function (e, val) {
-		var htmlString = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
-												+ '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
-		if (e === 'PlayerPIP') {
-			$(htmlString).insertBefore('#pipSettings');
-		} else if (e === 'EngineDisplayConnectionInfo') {
-			$(htmlString).insertBefore('#connexionInfoSettings');
-		} else if (e === 'EngineFreeUpvotes') {
-			$(htmlString).insertBefore('#freeUpvotesSettings');
-		} else {
-			htmlSettings += htmlString;
-		}
+	$.each(settingsOnOff, function (tab, settingsList) {
+		var htmlSettings = '';
+		$.each(settingsList, function (e, val) {
+			var htmlString = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
+													+ '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
+			if (e === 'PlayerPIP') {
+				$(htmlString).insertBefore('#pipSettings');
+			} else if (e === 'EngineDisplayConnectionInfo') {
+				$(htmlString).insertBefore('#connexionInfoSettings');
+			} else if (e === 'EngineFreeUpvotes') {
+				$(htmlString).insertBefore('#freeUpvotesSettings');
+			} else {
+				htmlSettings += htmlString;
+			}
+		});
+		$('#nav-' + tab).append(htmlSettings);	
 	});
-
-	$('#settings').append(htmlSettings);
 
 	// nameExclude = input not being updated (most likely user is on it)
 	getSettings = function (nameExclude) {
@@ -428,7 +404,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				var input = $('[name="' + i + '"]');
 				// DEBUG && console.log(i, val);
 				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
-					if (input.attr('type') !== 'checkbox') {
+					if (input.attr('type') !== 'checkbox' || input.hasClass('hideInput')) {
 						input.val(val);
 					} else { // only checkbox here
 						val =  parseInt(val);
@@ -457,11 +433,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	};
 
 	/* el is the html element containing the value being updated */
-	setSettings = function (el, changeAdminPass) {
+	setSettings = function (el) {
 		//    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
 		if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
 			settingsUpdating = getSettings(el.attr('name'));
-			if(changeAdminPass) passwordUpdating = $.Deferred();
 
 			$('#settings').promise().then(function () {
 				settingsArray = {};
@@ -476,9 +451,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					settingsArray[obj.name] = obj.value;
 				});
 				settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
-				// ignore currently typed value if the pass is not changing
-				settingsArray['AdminPassword'] = changeAdminPass ? $('button[name="AdminPassword"]').val() : $('button[name="AdminPassword"]').attr('oldValue');
-		
+
 				DEBUG && console.log('setSettings : ', settingsArray);
 
 				$.ajax({
@@ -486,14 +459,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					url: 'admin/settings',
 					data: settingsArray
 				}).done(function () {
-					if (changeAdminPass) {
-						setupAjax(settingsArray['AdminPassword']);
-						$('button[name="AdminPassword"]').attr('oldValue', settingsArray['AdminPassword']);
-						
-						passwordUpdating.resolve();
-					}
+				
 				}).fail(function () {
-					if (changeAdminPass) { passwordUpdating.resolve(); }
 					el.val(el.attr('oldValue')).focus();
 				});
 			});
@@ -561,6 +528,16 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		}).done(function () {
 			//refreshPlaylistSelects();
 		});
+	});
+
+	$('#flag1, #flag2').on('contextmenu', 'button', function (e) {
+		e.preventDefault();
+		var btn = $(this);
+		var name = btn.attr('name');
+		var selector = btn.closest('.panel-heading').find('[type="playlist_select"]');
+		var idPlaylist = selector.find('option[data-' + name + '="1"]').val();
+		console.log(idPlaylist, selector);
+		selector.val(idPlaylist).change();
 	});
 
 	$('.import-file').change(function() {
@@ -639,7 +616,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			type = 'POST';
 			url = 'admin/playlists';
 
-			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST', playlistName),'',
+			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST'),'',
 				function(playlistName) {
 					data = { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 };
 					ajx(type, url, data, function (idNewPlaylist) {
@@ -729,6 +706,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			scrollToKara(side, idKara, .55); 
 		}
 	};
+
 
 	// you know what it is
 	var k = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65], n = 0;

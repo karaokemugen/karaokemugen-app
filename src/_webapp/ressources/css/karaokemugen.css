@@ -1,6 +1,7 @@
 /* css admin3 */
 html {
 	height: 100%;
+	overflow: hidden;
 }
 body {
 	background-color: #1E2124;
@@ -8,7 +9,9 @@ body {
 	height: 100%;
 	margin: 0;
 }
-
+div > a {
+	color: hsla(208, 91%, 79%, 1);
+}
 .form-control {
 	background-color: #f3f3f3;
 }
@@ -18,7 +21,6 @@ body {
 }
 
 .header {
-	position: fixed;
 	z-index: 2337;
 	background-color: #1E2124;
 	top: 0;
@@ -27,24 +29,52 @@ body {
 	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
 }
 
-.header .btn {
-	height: 100%;
+.header .btn, #manageButton li {
+	position: relative;
+	height: calc(100% - 1px);
 	width: 75px;
 	padding: 0px;
 	margin: 0px;
 	font-size: 2rem;
 }
-
-.header > .btn-group, .header img {
-	height: 100%
+.header div.headerInputs > .btn {
+	height: calc(100% - 0px);
 }
-
+#manageButton .dropdown-menu {
+	z-index: 1000000;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: none;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.2);
+}
+#manageButton.open > .dropdown-menu {
+    display: flex;
+    flex-direction: column;
+}
+#manageButton li {
+	height: 75px;
+	border: none;
+	border-top: solid 1px hsla(0, 0%, 35%, .6);
+	filter: contrast(115%);
+}
+#manageButton li > i, #manageButton li > img  {
+    top: calc(50% - 2px);
+    transform: translateY(-50%);
+}
+.header > .btn-group, .header img {
+	height: inherit;
+	max-height: inherit;
+}
+#manageButton li > img {
+	height: 20px;
+    transform: translateY(-69%);
+}
 #progressBar {
 	cursor: pointer;
 	height: 24px;
 	width: 100%;
-	top: 75px;
-	position: fixed;
+	position: relative;
 	z-index: 1337;
 	border-bottom: solid 1px hsla(0, 0%, 35%, 1);
 	background-color: #337ab7;
@@ -102,16 +132,15 @@ body {
 }
 
 .underHeader {
-  position: relative;	
-  top: 75px;
+  position: relative;
 }
 
-.playlist-main {
-  padding: 7px;
+.playlist-main, #manage {
+  padding: 3px;
 }
 
 .panel {
-	border: 4px solid #1E2124;
+	border: 3px solid #1E2124;
     background-color: #2d2d2f;
     margin: 0px;
 	padding: 0px;
@@ -228,11 +257,12 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 	filter: brightness(120%);
 }
 
-.playlist-main li.list-group-item[currentlyPlaying] {
-	background-color: #3a5064;
-}
 .playlist-main li.list-group-item[dejavu] {
 	background-color: hsla(30, 22%, 29%, 0.6);
+}
+
+.playlist-main li.list-group-item[currentlyPlaying] {
+	background-color: #3a5064;
 }
 
 .playlist-main .list-group-item.liType {
@@ -285,7 +315,7 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 	position: relative;
 }
 .btn-action, .actionDiv > button {
-	font-family: 'Glyphicons Halflings'; 
+	font-family: 'Glyphicons Halflings';
 }
 button[name="addKara"]:before {
 	content:"\2b";
@@ -528,7 +558,7 @@ button.closeParent.bottom  {
 	z-index: 2;
 }
 
-#playlist1.list-group > li.list-group-item  > .actionDiv, #playlist1.list-group > li.list-group-item  > .actionDiv > span, 
+#playlist1.list-group > li.list-group-item  > .actionDiv, #playlist1.list-group > li.list-group-item  > .actionDiv > span,
 #playlist2.list-group > li.list-group-item  > .infoDiv {
 	float: right;
 }
@@ -640,7 +670,7 @@ bdgc {
 	left: 50%;
     transform: translateX(-50%);
     position: fixed;
-	z-index: 10070;
+	z-index: 1000000070;
 	max-width:600px;
 	min-width:250px;
 }
@@ -651,7 +681,7 @@ bdgc {
 	padding: 10px;
 	margin: 7px;
     box-shadow: 2px 2px 1px #a5a5a5;
-	z-index: 10070;
+	z-index: 1000000070;
 	opacity: 0;
 	transition: opacity ease .5s;
 }
@@ -865,7 +895,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     color: black;
     text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
 }
-	
+
 .plDashboard {
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.10), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.16);
 }
@@ -880,9 +910,17 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	opacity: .93;
     position: absolute;
     bottom: 0;
-    right: 0;
+    width: 100%;
 	z-index: 10040;
-    font-size: 1.2rem;
+	font-size: 1.2rem;
+	display: flex;
+}
+
+.plFooter>.left {
+	margin-left: 5px;
+}
+
+.plFooter>.right {
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.30), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.36);
 }
 
@@ -905,6 +943,11 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .plInfos, .plBrowse {
 	background-color: hsla(107, 17%, 25%, 0.95);
     float: right;
+    padding: 2px;
+    line-height: 25px;
+}
+.plQuota {
+	background-color: hsla(107, 17%, 25%, 0.95);
     padding: 2px;
     line-height: 25px;
 }
@@ -936,6 +979,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 
 .modal input[type="text"], .modal input[type="password"]:not([exclude="true"]) {
 	height: 50px;
+	max-height: 9vh;
 	border-radius: 0;
 }
 
@@ -955,7 +999,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .modal .profileData .profileLine > input {
 	text-align: left;
 	border: 1px #9e9e9e solid;
-    border-width: 0px 0px 1px 0px;
+	border-width: 0px 0px 1px 0px;
+	padding-left: 1.4rem;
+    padding-right: 1.4rem;
 }
 .modal .profileData .profileLine > i {
 	text-align: center;
@@ -987,7 +1033,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	background-color: transparent;
 	color: #e9e9e9;
 }
-#loginModal input[type="text"]:not(:focus), .modal input[type="password"]:not(:focus) {
+#loginModal input[type="text"]:not(:focus), #loginModal input[type="password"]:not(:focus) {
     background-color: hsla(229, 9%, 30%, 1);
 }
 
@@ -1022,11 +1068,20 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	display: flex;
 }
 .modalPage .modal-message {
-	height: 100px;
+	height: 50px;
+	max-height: 10vh;
 }
-.modalPage .modal-body > div {
+#loginModal .modal-message {
+	height: 100px;
+	max-height: 18vh;
+}
+.modal.modalPage .modal-body > div {
 	padding: 5px;
 	text-align: center;
+}
+.modal.modalPage .modal-body div.text {
+	text-align: left;
+	line-height: 2.6em;
 }
 #loginModal .modal-body button, #loginModal .modal-body input {
 	width: 100%;
@@ -1042,16 +1097,19 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	border: none;
 	color: #EEE;
 }
+#manage .modalPage .nav-tabs > li > a {
+    border-left: 1px solid hsla(210, 9%, 13%, 0.25);
+}
 .modalPage .nav-tabs>li.active>a, .modalPage .nav-tabs>li.active>a:focus, .modalPage .nav-tabs>li.active>a:hover {
     cursor: default;
-    background-color: #3a3c45;
+    background-color: transparent;
 	border: none;
 	color: #EEE;
 }
 .modalPage .nav-tabs.nav-justified>li {
     flex-grow: 1;
 }
-.modalPage .tab-content {
+.modal.modalPage .tab-content {
 	padding: 5px;
 }
 .nav>li>a:focus, .nav>li>a:hover {
@@ -1062,10 +1120,29 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .modal .modal-message div {
 	padding: 0;
 }
+.modal button.tour, .modal button.tourAgain {
+	height: 100%;
+	width: 100%;
+	background-color: hsl(292, 45%, 28%);
+}
 .modal button.guest {
 	height: 100%;
 	width: 100%;
 	background-color: hsla(182, 45%, 28%, 1);
+}
+.modal button.confirm {
+	height: 100%;
+	width: 100%;
+	background-color: rgb(15, 95, 108);
+}
+#loginModal .tour {
+	display: none;
+}
+#loginModal.firstRun .tour {
+	display: block;
+}
+#loginModal.hideLogin .loginRelated {
+	display: none;
 }
 .modal button.ok {
 	background-color: hsla(139, 14%, 22%, 1);
@@ -1139,23 +1216,23 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     font-size: 1.8rem;
 	line-height:  30px;
 	height: 30px;
-    text-align:right; 
-    font-family: 'Glyphicons Halflings'; 
+    text-align:right;
+    font-family: 'Glyphicons Halflings';
 }
 
 .panel-heading  ::-moz-placeholder {  /* Firefox 19+ */
 	font-size: 2rem;
 	line-height:  21px;
 	height: 20px;
-    text-align:right; 
-    font-family: 'Glyphicons Halflings'; 
+    text-align:right;
+    font-family: 'Glyphicons Halflings';
 }
 .panel-heading  :-ms-input-placeholder {
 	font-size: 2rem;
 	line-height:  21px;
 	height: 20px;
-    text-align:right; 
-    font-family: 'Glyphicons Halflings'; 
+    text-align:right;
+    font-family: 'Glyphicons Halflings';
 }
 body .playlist-main li.list-group-item.filler {
     width: 100% !important;
@@ -1215,7 +1292,7 @@ input[type="text"]:focus, input[type="password"]:focus {
     font-size: 1.8rem;
     line-height: 1.8rem;
     padding-left: 1rem;
-	padding-right: 1rem;   
+	padding-right: 1rem;
 }
 
 
@@ -1265,7 +1342,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 	border-color: #9e9e9e;
 }
 
-.btn-default:active:focus, 
+.btn-default:active:focus,
 .btn-default:focus {
 	background-color: #444;
 	color: #ccc;
@@ -1291,9 +1368,35 @@ input[type="text"]:focus, input[type="password"]:focus {
 	border-color: hsla(208, 22%, 67%, 1);
 }
 
+.modal.introJsFix { z-index:999999997 !important; }
+.modal.introJsFix .introjs-fixedTooltip { z-index: 999999998 !important; }
+.modal.introJsFix .introjs-showElement { z-index: 999999999 !important; }
+.introjs-tooltipReferenceLayer { z-index: 1000000000 !important;}
+.introjs-overlay { opacity: 0.7; }
+.hideNext .introjs-nextbutton, .hideNext .btn-default:last-child { display: none;}
+.hidePrev .introjs-nextbutton, .hidePrev .btn-default:nth-child(2) { display: none;}
 
-
-
+.introjs-tooltip {
+	padding: 15px;
+	background-color: hsla(133, 15%, 24%, .97);
+	min-width: 360px;
+	max-width: 500px;
+	border-radius: 0px;
+	box-shadow: 0 1px 10px hsla(133, 15%, 24%, 0.4);
+}
+.introjs-tooltiptext {
+    font-size: 14.5px;
+}
+.introjs-tooltiptext a {
+	color: hsla(208, 56%, 76%, 1);
+}
+.introjs-tooltipbuttons {
+	margin-top: 5px;
+}
+.introjs-helperLayer {
+	border: none;
+	border-radius: 0;
+}
 
 @media (max-width: 1025px) {
 	.playlistContainer[flipped]:after {
@@ -1301,4 +1404,22 @@ input[type="text"]:focus, input[type="password"]:focus {
 		background-size: 100%;
 		background-position: 0 20%;
 	}
+	.introjs-tooltip {
+		padding: 2.5vw;
+		min-width: 60vw;
+		max-width: 87vw;
+		border-radius: 0px;
+		box-shadow: 0 1px 10px hsla(133, 15%, 24%, 0.4);
+	}
+	
+}
+.introjs-tooltip.introBottom {
+	transform: translateY(240px);
+}
+.right {
+	float: right;
+}
+
+.left {
+	float: left;
 }

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS user (
 	password	TEXT,
 	nickname	TEXT NOT NULL,
 	NORM_nickname	TEXT NOT NULL COLLATE NOCASE,
-	avatar_file	TEXT NOT NULL DEFAULT 'blank.jpg',
+	avatar_file	TEXT NOT NULL DEFAULT 'blank.png',
 	bio	TEXT,
 	url	TEXT,
 	email	TEXT,

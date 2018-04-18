@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Karaoke Mugen </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- CSS -->
+
+        <link rel="stylesheet" href="/vendors/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/ressources/css/main.css">
+    </head>
+
+    <body id="body">
+
+	    <!-- 
+	    Header start
+	    ==================== -->
+	    <div class="navbar-default navbar-fixed-top" id="navigation">
+	        <div class="container">
+	            <!-- Brand and toggle get grouped for better mobile display -->
+	            <div class="navbar-header">
+	                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+	                    <span class="sr-only">Toggle navigation</span>
+	                    <span class="icon-bar"></span>
+	                    <span class="icon-bar"></span>
+	                    <span class="icon-bar"></span>
+	                </button>
+	                <a class="navbar-brand" href="#">
+                        <img class="logo-1" height="50" src="/ressources/img/mic.png" alt="LOGO">
+	                    <span> KARAOKE MUGEN </span>
+	                </a>
+	            </div>
+
+	            <!-- Collect the nav links, forms, and other content for toggling -->
+	            <nav class="collapse navbar-collapse" id="navbar">
+	                <ul class="nav navbar-nav navbar-right" id="top-nav">
+	                    <li class="current hidden" ><a href="#body">Home</a></li>
+	                    <li><a href="#about" class="hidden">{{i18n "WLCM_ABOUTUS"}}</a></li>
+	                    <li><a href="http://mugen.karaokes.moe/contact.html" target="_blank">{{i18n "WLCM_CONTACT"}}</a></li>
+	                    <li><a href="http://mugen.karaokes.moe/" target="_blank">{{i18n "WLCM_SITE"}}</a></li>
+	                </ul>
+	            </nav><!-- /.navbar-collapse -->
+	        </div><!-- /.container-fluid -->
+	    </div>
+
+	    <section id="center-area">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-md-6">
+	                    <div class="block">
+	                        <h1 class="wow">{{i18n "WLCM_WELCOME"}}</h1>
+	                        <p class="wow" data-wow-delay="0.5s">{{i18n "WLCM_MSG"}}<br/>{{i18n "WLCM_MSG2"}}</p>
+	                        <div class="wow" data-wow-delay="1s">
+	                        	<a class="btn btn-default btn-home" id="admin" role="button">{{i18n "WLCM_GETSTARTED"}}</a>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="col-md-6 wow zoomIn">
+	                    <div class="block">
+	                        <div class="counter text-center">
+	                            <ul id="welcome_dashboard">
+	                                <li>
+	                                    <div class="dash days_dash">
+	                                        <i class="digit glyphicon glyphicon-cog"></i>
+	                                        <div class="dash_title">{{i18n "WLCM_KARAMANAGER"}}</div>
+	                                    </div>
+	                                </li>
+	                                <li>
+	                                    <div class="dash hours_dash">
+                                            <i class="digit glyphicon glyphicon-wrench"></i>
+	                                        <div class="dash_title">{{i18n "WLCM_ADMINISTRATION"}}</div>
+	                                    </div>
+	                                </li>
+	                                <li>
+	                                    <div class="dash seconds_dash">
+                                            <i class="digit glyphicon glyphicon-user"></i>
+	                                        <div class="dash_title">{{i18n "WLCM_PUBLIC"}}</div>
+	                                    </div>
+	                                </li>
+	                                <li class="hidden">
+	                                    <div class="dash seconds_dash">
+                                            <i class="digit glyphicon glyphicon-refresh"></i>
+	                                        <div class="dash_title">{{i18n "WLCM_UPDATE"}}</div>
+	                                    </div>
+									</li>
+	                                <li>
+	                                    <div class="dash minutes_dash">
+	                                        <i class="digit glyphicon glyphicon-question-sign"></i>
+	                                        <div class="dash_title">{{i18n "CL_HELP"}}</div>
+	                                    </div>
+	                                </li>
+	                            </ul>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div><!-- .row close -->
+	        </div><!-- .container close -->
+	    </section><!-- header close -->
+
+
+        <!-- Js -->
+        <script src="/vendors/js/jquery-3.2.1.min.js"></script>
+        <script src="/vendors/js/select2.min.js"></script>
+        <script src="/vendors/js/bootstrap.min.js"></script>   
+        <script>
+		$('#admin').click(() => {
+			window.open('/admin' + window.location.search,'_blank');
+		});
+        $('#welcome_dashboard').on('click','li', (e,k) => {
+            var index = $(e.currentTarget).index();
+
+            switch(index) {
+                case 0: window.open('/admin' + window.location.search,'_blank');
+                break;
+                case 1: window.open(window.location.protocol + '//' + window.location.hostname + ':' + {{appAdminPort}},'_blank');
+                break;
+                case 4: window.open('http://mugen.karaokes.moe/docs/', '_blank');
+                break;
+                case 2: window.open('/' + window.location.search,'_blank');
+                break;
+            }
+
+        });
+        
+        </script>
+    </body>
+</html>

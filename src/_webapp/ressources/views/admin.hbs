@@ -1,6 +1,19 @@
-<div id="header" class="header">
-    <button title="{{i18n "SHUTDOWN"}}" action="poweroff" class="btn btn-default btn-dark pull-right">
-		<i class="glyphicon glyphicon-off"></i></button>
+<div id="header" class="header" introStep="6" introLabel="lecteur" introTooltipClass="_introBottom">
+   
+    <div class="dropdown btn btn-default btn-dark pull-right" id="manageButton">
+        <button class="btn btn-default btn-dark pull-right dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <i class="glyphicon glyphicon-cog"></i></button>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li title="{{i18n "ACCOUNT"}}" action="account" class="btn btn-default btn-dark">
+		        <i class="glyphicon glyphicon-user"></i></li>
+            <li title="{{i18n "LOGOUT"}}" action="logout" class="btn btn-default btn-dark">
+		        <i class="glyphicon glyphicon-off"></i></li>
+            <li title="{{i18n "SHUTDOWN"}}" action="poweroff" class="btn btn-default btn-dark">
+                <img class="glyphicon" src="/ressources/img/moon.png"></li>
+        </ul>
+    </div>
+    
     <a title="{{i18n "MUTE_UNMUTE"}}" action="command" id="mutestatus" name="mute" class="btn btn-default btn-dark pull-right">
 		<i class="glyphicon glyphicon-volume-up unmute"></i>
 		<i class="glyphicon glyphicon-volume-off mute"></i>
@@ -13,11 +26,11 @@
     
     <button title="{{i18n "MESSAGE"}}" id="adminMessage" class="btn btn-dark pull-right" style="border-left-width: 0px"><i class="glyphicon glyphicon-comment"></i></button>
 
-    <div class="pull-left btn-group" style="width: 129px;">
-        <input title='{{i18n "SWITCH_PRIVATE"}}' type="checkbox" name="EnginePrivateMode" class="btn pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
-            data-off-text="<i class='glyphicon glyphicon-eye-open'></i> {{i18n "PUBLIC"}}" data-size="large" />
-        <input title='{{i18n "SWITCH_OPTIONS"}}' type="checkbox" checked name="kara_panel" class="btn pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  {{i18n "OPTIONS"}}"
-            data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  {{i18n "CL_PLAYLISTS"}}" data-size="large" />
+    <div class="pull-left btn-group switchs" style="width: 129px; max-width: 12.4vw;">
+        <input title='{{i18n "SWITCH_PRIVATE"}}' data-introStep="7" data-introLabel="mode" type="checkbox" checked name="EnginePrivateMode" class="btn pull-left" data-on-text="<i class='glyphicon glyphicon-eye-close'></i> {{i18n "PRIVATE"}}"
+            data-off-text="<i class='glyphicon glyphicon-eye-open'></i> {{i18n "PUBLIC"}}" data-size="large"/>
+        <input title='{{i18n "SWITCH_OPTIONS"}}' data-introStep="13" data-introLabel="settings" type="checkbox" checked name="kara_panel" class="btn pull-left" data-off-text="<i class='glyphicon glyphicon-cog'></i>  {{i18n "OPTIONS"}}"
+            data-on-text="<i class='glyphicon glyphicon glyphicon-music'></i>  {{i18n "CL_PLAYLISTS"}}" data-size="large"/>
     </div>
     <div class="pull-left btn-group">
         <button title="{{i18n "STOP_AFTER"}}" action="command" id="stopAfter" name="stopAfter" class="btn btn-danger-low" style="width: 50px;">
@@ -25,21 +38,19 @@
         <button title="{{i18n "STOP_NOW"}}" action="command" id="stopNow" name="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
         <button title="{{i18n "REWIND"}}" action="command" id="goTo" name="goTo" value="0" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
     </div>
-    <div id="centerBtns" class="header">
-        <div class="btn-group">
-            <button title="{{i18n "PREVIOUS_SONG"}}" action="command" id="prev" name="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
-            <button title="{{i18n "PLAY_PAUSE"}}" action="command" id="status" name="play" class="btn btn-primary"><i class="glyphicon glyphicon-play play"></i><i class="glyphicon glyphicon-pause pause"></i></button>
-            <button title="{{i18n "NEXT_SONG"}}" action="command" id="skip" name="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
-            <button class="btn btn-default hidden"></button>
-        </div>
+    <div class="btn-group centerBtns">
+        <button title="{{i18n "PREVIOUS_SONG"}}" action="command" id="prev" name="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
+        <button title="{{i18n "PLAY_PAUSE"}}" action="command" id="status" name="play" class="btn btn-primary"><i class="glyphicon glyphicon-play play"></i><i class="glyphicon glyphicon-pause pause"></i></button>
+        <button title="{{i18n "NEXT_SONG"}}" action="command" id="skip" name="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
+        <button class="btn btn-default hidden"></button>
     </div>
 </div>
 <div id="progressBar" class="underHeader">
     <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
     <div id="progressBarColor" class="cssTransform"></div>
 </div>
-<div id="underHeader" class="underHeader container-fluid">
-    <div class="playlist-main row" id="playlist">
+<div id="underHeader" class="underHeader container-fluid" introStep="5"  introLabel="playlists">
+    <div class="playlist-main row" id="playlist" introStep="9"  introLabel="playlists_2">
         <div class="panel col-lg-6 col-xs-6" id="panel1" side="1">
             <div class="panel-heading container-fluid plDashboard">            
                 <div class="plSelect">
@@ -131,10 +142,10 @@
             </div>
         </div>
         
-        <div class="panel col-lg-6 col-xs-6" id="panel2" side="2">
-            <div class="panel-heading container-fluid plDashboard">            
+        <div class="panel col-lg-6 col-xs-6" id="panel2" side="2" introStep="12"  introPosition="left" introLabel="playlists_manage_advanced">
+            <div class="panel-heading container-fluid plDashboard" introStep="10"  introLabel="playlists_manage">            
                 <div class="plSelect">
-                    <button title="{{i18n "PLAYLIST_COMMANDS"}}" class="btn btn-default pull-left showPlaylistCommands" side="1">
+                    <button title="{{i18n "PLAYLIST_COMMANDS"}}" class="btn btn-default pull-left showPlaylistCommands" side="1"  introStep="11"  introLabel="playlists_manage_button">
                         <i class="glyphicon glyphicon-wrench"></i>
                     </button>
                     <select id="selectPlaylist2" side="2" type="playlist_select" class="select2" style="overflow:hidden">
@@ -228,138 +239,139 @@
     </div>
     <div class="row" id="manage" hidden>
         <div class="col-lg-2 col-xs-0"></div>
-        <div class="panel col-lg-8 col-xs-12">
-            <div class="panel-heading container-fluid">
-                <center>
-                    <h4> {{i18n "OPTIONS"}} </h4>
-                </center>
-            </div>
-            <br/>
-           
+        <div class="panel col-lg-8 col-xs-12 modalPage" introStep="14"  introLabel="settings_screen">
             <form class="form-horizontal" id="settings">
-                <div class="form-group">
-                    <label for="PlayerStayOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
-                    <div class="col-xs-6">
-                        <input action="command" switch="onoff" type="checkbox" name="PlayerStayOnTop" nameCommand="toggleAlwaysOnTop">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="PlayerFullscreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
-                    <div class="col-xs-6">
-                        <input action="command" switch="onoff" type="checkbox" name="PlayerFullscreen" nameCommand="toggleFullscreen">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="AdminPassword" class="col-xs-4 control-label">{{i18n "ADMIN_PASSWORD_CHANGE"}}</label>
-                    <div class="col-xs-3">
-                        <input id="passwordSettings" type="password" exclude="true" class="form-control" placeholder="{{i18n "PASSWORD"}}">
-                    </div>
-                    <div class="col-xs-3">
-                        <input id="confirmPassword" type="password" exclude="true" class="form-control" placeholder="{{i18n "CONFIRM_PASSWORD"}}">
-                    </div>
-                    <button type="button" id="sendPassword" class="btn btn-danger" name="AdminPassword" oldvalue="{{mdpAdmin}}" disabled>
-                            <i class="glyphicon glyphicon-floppy-disk" value="">  </i>                     
-                        </button>
-                </div>
-                <div class="form-group">
-                    <label for="EngineSongsPerUser" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
-                    <div class="col-xs-6">
-                        <input type="number" class="form-control" name="EngineSongsPerUser" placeholder="1000">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="EngineJingleInterval" class="col-xs-4 control-label">{{i18n "ENGINEJINGLESINTERVAL"}}</label>
-                    <div class="col-xs-6">
-                        <input type="number" class="form-control" name="EngineJinglesInterval" placeholder="20">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="PlayerScreen" class="col-xs-4 control-label">{{i18n "MONITOR_NUMBER"}}</label>
-                    <div class="col-xs-6">
-                        <select type="number" class="form-control" name="PlayerScreen">
-								{{#each displays}}
-									<option value="{{@index}}"> ({{resolutionx}}x{{resolutiony}}) {{model}}</option>
-								{{/each}}
-                            </select>
-                    </div>
-                </div>
-                   <div class="form-group">
-                    <label for="WebappMode" class="col-xs-4 control-label">{{i18n "WEBAPPMODE"}}</label>
-                    <div class="col-xs-6">
-                        <select type="number" class="form-control" name="WebappMode">
-								<option value="0">{{i18n "WEBAPPMODE_CLOSED"}}</option>
-                                <option value="1">{{i18n "WEBAPPMODE_LIMITED"}}</option>
-                                <option value="2">{{i18n "WEBAPPMODE_OPEN"}}</option>
-                            </select>
-                    </div>
-                </div>
-                <div id="pipSettings" class="well well-sm settingsGroupPanel">
-                    <div class="form-group">
-                        <label for="PlayerPIPSize" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}} (%)</label>
-                        <div class="col-xs-6">
-                            <input type="range" name="PlayerPIPSize">
+                <ul class="nav nav-tabs nav-justified">
+                    <li class="modal-title active"><a data-toggle="tab" href="#nav-player" role="tab" aria-controls="nav-login" aria-selected="true">{{i18n "SETTINGS_PLAYER"}}</a></li>
+                    <li class="modal-title" ><a data-toggle="tab" href="#nav-karaoke" role="tab" aria-controls="nav-lokaraokegin" aria-selected="false">{{i18n "SETTINGS_KARAOKE"}}</a></li>
+                    <li class="modal-title" ><a data-toggle="tab" href="#nav-interface" role="tab" aria-controls="nav-interface" aria-selected="false">{{i18n "SETTINGS_INTERFACE"}}</a></li>
+                </ul>
+    
+                <div class="tab-content">
+                    <div id="nav-player" role="tabpanel" aria-labelledby="nav-player-tab" class="modal-body tab-pane fade in active">
+                        <div class="form-group">
+                            <label for="PlayerStayOnTop" class="col-xs-4 control-label">{{i18n "ALWAYS_ON_TOP"}}</label>
+                            <div class="col-xs-6">
+                                <input action="command" switch="onoff" type="checkbox" name="PlayerStayOnTop" nameCommand="toggleAlwaysOnTop">
+                            </div>
                         </div>
-                    </div>
+                        <div class="form-group">
+                            <label for="PlayerFullscreen" class="col-xs-4 control-label">{{i18n "FULLSCREEN"}}</label>
+                            <div class="col-xs-6">
+                                <input action="command" switch="onoff" type="checkbox" name="PlayerFullscreen" nameCommand="toggleFullscreen">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="PlayerScreen" class="col-xs-4 control-label">{{i18n "MONITOR_NUMBER"}}</label>
+                            <div class="col-xs-6">
+                                <select type="number" class="form-control" name="PlayerScreen">
+                                        {{#each displays}}
+                                            <option value="{{@index}}"> ({{resolutionx}}x{{resolutiony}}) {{model}}</option>
+                                        {{/each}}
+                                    </select>
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="PlayerPIPPositionX" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_X"}}</label>
-                        <div class="col-xs-6">
-                            <select type="number" class="form-control" name="PlayerPIPPositionX">
-                                <option value="Left" > {{i18n "LEFT"}} </option>
-                                <option value="Center" default> {{i18n "CENTER"}} </option>
-                                <option value="Right" > {{i18n "RIGHT"}} </option>
-                            </select>
+                        <div id="connexionInfoSettings" class="well well-sm settingsGroupPanel">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label" for="EngineDisplayConnectionInfoQRCode">{{i18n "ENGINEDISPLAYCONNECTIONINFOQRCODE"}}</label>
+                                <div class="col-xs-6">
+                                    <input name="EngineDisplayConnectionInfoQRCode" type="checkbox">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="EngineDisplayConnectionInfoHost" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOHOST"}}</label>
+                                <div class="col-xs-6">
+                                    <input class="form-control" name="EngineDisplayConnectionInfoHost">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="EngineDisplayConnectionInfoMessage" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOMESSAGE"}}</label>
+                                <div class="col-xs-6">
+                                    <input class="form-control" name="EngineDisplayConnectionInfoMessage">
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="PlayerPIPPositionY" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_Y"}}</label>
-                        <div class="col-xs-6">
-                            <select type="number" class="form-control" name="PlayerPIPPositionY">
-                                <option value="Bottom" > {{i18n "BOTTOM"}} </option>
-                                <option value="Center" default> {{i18n "CENTER"}} </option>
-                                <option value="Top" > {{i18n "TOP"}} </option>
-                            </select>
+
+                        
+                        <div id="pipSettings" class="well well-sm settingsGroupPanel">
+                            <div class="form-group">
+                                <label for="PlayerPIPSize" class="col-xs-4 control-label">{{i18n "VIDEO_SIZE"}} (%)</label>
+                                <div class="col-xs-6">
+                                    <input type="range" name="PlayerPIPSize">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="PlayerPIPPositionX" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_X"}}</label>
+                                <div class="col-xs-6">
+                                    <select type="number" class="form-control" name="PlayerPIPPositionX">
+                                        <option value="Left" > {{i18n "LEFT"}} </option>
+                                        <option value="Center" default> {{i18n "CENTER"}} </option>
+                                        <option value="Right" > {{i18n "RIGHT"}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="PlayerPIPPositionY" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_Y"}}</label>
+                                <div class="col-xs-6">
+                                    <select type="number" class="form-control" name="PlayerPIPPositionY">
+                                        <option value="Bottom" > {{i18n "BOTTOM"}} </option>
+                                        <option value="Center" default> {{i18n "CENTER"}} </option>
+                                        <option value="Top" > {{i18n "TOP"}} </option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div id="connexionInfoSettings" class="well well-sm settingsGroupPanel">
-                    <div class="form-group">
-                        <label class="col-xs-4 control-label" for="EngineDisplayConnectionInfoQRCode">{{i18n "ENGINEDISPLAYCONNECTIONINFOQRCODE"}}</label>
-                        <div class="col-xs-6">
-                            <input name="EngineDisplayConnectionInfoQRCode" type="checkbox">
+                    <div id="nav-interface" role="tabpanel" aria-labelledby="nav-interface-tab" class="modal-body tab-pane fade">
+                    
+                        <div class="form-group">
+                            <label for="WebappMode" class="col-xs-4 control-label">{{i18n "WEBAPPMODE"}}</label>
+                            <div class="col-xs-6">
+                                <select type="number" class="form-control" name="WebappMode">
+                                        <option value="0">{{i18n "WEBAPPMODE_CLOSED"}}</option>
+                                        <option value="1">{{i18n "WEBAPPMODE_LIMITED"}}</option>
+                                        <option value="2">{{i18n "WEBAPPMODE_OPEN"}}</option>
+                                    </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="EngineDisplayConnectionInfoHost" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOHOST"}}</label>
-                        <div class="col-xs-6">
-                            <input class="form-control" name="EngineDisplayConnectionInfoHost">
+                    <div id="nav-karaoke" role="tabpanel" aria-labelledby="nav-karaoke-tab" class="modal-body tab-pane fade">
+                        <div class="form-group">
+                            <label for="EngineSongsPerUser" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
+                            <div class="col-xs-6">
+                                <input type="number" class="form-control" name="EngineSongsPerUser" placeholder="1000">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="EngineDisplayConnectionInfoMessage" class="col-xs-4 control-label">{{i18n "ENGINEDISPLAYCONNECTIONINFOMESSAGE"}}</label>
-                        <div class="col-xs-6">
-                            <input class="form-control" name="EngineDisplayConnectionInfoMessage">
+                        <div class="form-group">
+                            <label for="EngineJingleInterval" class="col-xs-4 control-label">{{i18n "ENGINEJINGLESINTERVAL"}}</label>
+                            <div class="col-xs-6">
+                                <input type="number" class="form-control" name="EngineJinglesInterval" placeholder="20">
+                            </div>
                         </div>
+                            
+                        <div id="freeUpvotesSettings" class="well well-sm settingsGroupPanel">
+                            <div class="form-group">
+                                <label class="col-xs-4 control-label" for="EngineFreeUpvotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
+                                <div class="col-xs-6">
+                                    <input class="form-control" name="EngineFreeUpvotesRequiredMin">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="EngineFreeUpvotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
+                                <div class="col-xs-6">
+                                    <input class="form-control" name="EngineFreeUpvotesRequiredPercent">
+                                </div>
+                            </div>
+                        
+                        </div>            
+                        <input name="appFirstRun" class="hideInput hidden">
                     </div>
-                </div>
-                 <div id="freeUpvotesSettings" class="well well-sm settingsGroupPanel">
-                    <div class="form-group">
-                        <label class="col-xs-4 control-label" for="EngineFreeUpvotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
-                        <div class="col-xs-6">
-                            <input class="form-control" name="EngineFreeUpvotesRequiredMin">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="EngineFreeUpvotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
-                        <div class="col-xs-6">
-                            <input class="form-control" name="EngineFreeUpvotesRequiredPercent">
-                        </div>
-                    </div>
-                  
-                </div>
+                </div>            
             </form>
-
         </div>
         <div class="col-lg-2 col-xs-0"></div>
     </div>
@@ -391,11 +403,73 @@
     </div>
 </div>
 
+<div class="modal modalPage fade" id="profilModal" role="dialog" type="prompt" tabindex="21">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-profil" role="tab" aria-controls="nav-profil" aria-selected="true"> {{i18n "PROFILE"}}</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-userlist" role="tab" aria-controls="nav-userlist" aria-selected="false"> {{i18n "USERLIST"}}</a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div id="nav-profil" role="tabpanel" aria-labelledby="nav-profil-tab" class="modal-body tab-pane fade in active">
+                    <div class="profileContent">
+
+                            <div class="col-md-3 col-lg-3 col-xs-12 col-sm-12">
+
+                                <label for="avatar" title='{{i18n "AVATAR_IMPORT"}}' class="btn btn-default plGenericButton avatar" name="import">
+                                    <img class="img-circle" name="avatar_file"
+                                     src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
+                                     alt="User Pic">
+                                    <input id="avatar" class="import-file" type="file" accept="image/*" style="display: none;"/>
+                                </label>
+                                <p name="login"></p>
+                            </div>
+                            <div class="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
+                                 <div class="profileLine">
+                                    <i class="glyphicon glyphicon-user"></i>
+                                    <input class="form-control" name="nickname" type="text" placeholder="{{{ i18n "PROFILE_USERNAME" }}}"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-envelope"></i>
+                                    <input class="form-control" name="email" type="text" placeholder="{{{ i18n "PROFILE_MAIL" }}}"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-link"></i>
+                                    <input class="form-control" name="url" type="text" placeholder="{{{ i18n "PROFILE_URL" }}}"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-leaf"></i>
+                                    <input class="form-control" name="bio" type="text" placeholder="{{{ i18n "PROFILE_BIO" }}}"/>
+                                </div>
+                                <div class="profileLine">
+                                    <i class="glyphicon glyphicon-lock"></i>
+                                    <input class="form-control" name="password" type="password" placeholder="{{{ i18n "PROFILE_PASSWORD" }}}"/>
+                                    <input class="form-control passwordConfirmation" type="password" placeholder="{{{ i18n "PROFILE_PASSWORDCONF" }}}" style="margin-left: 3px;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="nav-userlist" role="tabpanel" aria-labelledby="nav-userlist-tab" class="modal-body tab-pane fade in">
+                        <div class="userlist list-group col-md-12 col-lg-12 col-xs-12 col-sm-12">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <ul class="nav nav-tabs nav-justified modal-header">
                 <li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">Login admin</a></li>
+               <li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {{i18n "NEW_ACCOUNT"}}</a></li>
             </ul>
             <div class="tab-content" id="nav-tabContent">
                 <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
@@ -411,8 +485,26 @@
                         </button>
                     </div>
                 </div>
-               
+                <div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
+                    <div class="">
+                            <input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
+                            <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
+                            <br/>
+                            <select class="form-control" id="signupRole" name="modalRole">
+                                <!-- <option value="guest">{{i18n "GUEST"}}</option> -->
+                                <option value="user" selected>{{i18n "USER"}}</option>
+                                <option value="admin">{{i18n "ADMIN"}}</option>
+                            </select>
+                    </div>
+                    <div>
+                        <button id="signup" type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                                {{i18n "SIGN_UP"}}
+                        </button>
+                    </div>
+                </div>
             </div>
+           
         </div>
     </div>
 </div>
