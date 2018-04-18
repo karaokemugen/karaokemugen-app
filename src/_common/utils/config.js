@@ -34,7 +34,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 		if (setting.startsWith('Player') &&
 			setting !== 'PlayerFullscreen' &&
 			setting !== 'PlayerStayOnTop') {
-			if (oldConfig[setting] !== newConfig[setting]) {
+			if (oldConfig[setting] != newConfig[setting]) {
 				emit('playerNeedsRestart');
 				logger.debug('[Config] Setting mpv to restart after next song');
 			}
