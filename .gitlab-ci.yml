@@ -25,7 +25,7 @@ test:
     - wget -c https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-64bit-static.tar.xz    
     - tar xf ffmpeg-release-64bit-static.tar.xz
     - mv ffmpeg-3* ffmpeg
-    - yarn install
+    - yarn install --check-files --force
     - touch mpv
     - echo "BinffmpegLinux=ffmpeg/ffmpeg" >>config.ini
     - echo "BinPlayerLinux=mpv" >>config.ini

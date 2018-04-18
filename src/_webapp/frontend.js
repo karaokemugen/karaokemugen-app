@@ -4,7 +4,7 @@ import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import {address} from 'ip';
 import {graphics} from 'systeminformation';
-const logger = require('winston');
+import logger from 'winston';
 import i18n from 'i18n';
 import {getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
@@ -40,7 +40,7 @@ export async function initFrontend(port) {
 				return i18n.__.apply(options.data.root, args);	
 			},
 			if_eq: function(a, b, opts) {
-				if(a == b)
+				if(a === b)
 					return opts.fn(this);
 				else
 					return opts.inverse(this);
@@ -175,7 +175,6 @@ export async function initFrontend(port) {
 					
 			res.render('admin', {'layout': 'adminHeader',
 				'clientAdress'	:	'http://'+address(),
-				'mdpAdmin'		:	conf.AdminPassword,
 				'displays'		:	data.displays,
 				'query'			:	JSON.stringify(req.query),
 				'webappMode'	:	conf.WebappMode

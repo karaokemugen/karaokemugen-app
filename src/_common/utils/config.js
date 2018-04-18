@@ -32,8 +32,8 @@ export async function mergeConfig(oldConfig, newConfig) {
 	// Determine if mpv needs to be restarted
 	for (const setting in newConfig) {
 		if (setting.startsWith('Player') &&
-			setting != 'PlayerFullscreen' &&
-			setting != 'PlayerStayOnTop') {
+			setting !== 'PlayerFullscreen' &&
+			setting !== 'PlayerStayOnTop') {
 			if (oldConfig[setting] != newConfig[setting]) {
 				emit('playerNeedsRestart');
 				logger.debug('[Config] Setting mpv to restart after next song');
@@ -76,7 +76,7 @@ export async function initConfig(appPath, argv) {
 	configureLocale();
 	await loadConfigFiles(appPath);
 	configureHost();
-	if (config.JwtSecret == 'Change me') setConfig( {JwtSecret: uuidV4() });
+	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
 
 	//Configure watcher
 	const configWatcher = watch(resolve(appPath, configFile));
@@ -187,7 +187,7 @@ export async function updateConfig(newConfig) {
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))
-			&& (newConfig[k] != defaults[k])
+			&& (newConfig[k] !== defaults[k])
             && (filteredConfig[k] = v);
 	});
 	logger.debug('[Config] Settings being saved : '+JSON.stringify(filteredConfig));

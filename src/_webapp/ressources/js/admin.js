@@ -50,7 +50,11 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 
-		$('button[action="poweroff"]').click(function () {
+		$('.btn[action="account"]').click(function () {
+			showProfil()
+		});
+
+		$('.btn[action="poweroff"]').click(function () {
 			$.ajax({
 				url: 'admin/shutdown',
 				type: 'POST',
@@ -356,23 +360,6 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			}
 		});
 
-		/* password case handlers */
-
-		$('#confirmPassword, #passwordSettings').on('input', function () {
-			if ($('#confirmPassword').val() === $('#passwordSettings').val() && $('#passwordSettings').val() !== '') {
-				$('#sendPassword').attr('oldvalue', $('#sendPassword').val());
-				$('#sendPassword').val($('#confirmPassword').val());
-				$('#sendPassword').removeClass('btn-danger').addClass('btn-success');
-				$('#sendPassword').prop('disabled', false);
-			} else {
-				$('#sendPassword').addClass('btn-danger').removeClass('btn-success');
-				$('#sendPassword').prop('disabled', true);
-			}
-		});
-		$('#sendPassword').click(function () {
-			setSettings($(this), true);
-		});
-
 		setStopUpdate = function (stop) {
 			stopUpdate = stop;
 		};
@@ -390,22 +377,23 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	panel1Default = -1;
 
 	// dynamic creation of switchable settings 
-	var htmlSettings = '';
-	$.each(settingsOnOff, function (e, val) {
-		var htmlString = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
-												+ '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
-		if (e === 'PlayerPIP') {
-			$(htmlString).insertBefore('#pipSettings');
-		} else if (e === 'EngineDisplayConnectionInfo') {
-			$(htmlString).insertBefore('#connexionInfoSettings');
-		} else if (e === 'EngineFreeUpvotes') {
-			$(htmlString).insertBefore('#freeUpvotesSettings');
-		} else {
-			htmlSettings += htmlString;
-		}
+	$.each(settingsOnOff, function (tab, settingsList) {
+		var htmlSettings = '';
+		$.each(settingsList, function (e, val) {
+			var htmlString = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
+													+ '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
+			if (e === 'PlayerPIP') {
+				$(htmlString).insertBefore('#pipSettings');
+			} else if (e === 'EngineDisplayConnectionInfo') {
+				$(htmlString).insertBefore('#connexionInfoSettings');
+			} else if (e === 'EngineFreeUpvotes') {
+				$(htmlString).insertBefore('#freeUpvotesSettings');
+			} else {
+				htmlSettings += htmlString;
+			}
+		});
+		$('#nav-' + tab).append(htmlSettings);	
 	});
-
-	$('#settings').append(htmlSettings);
 
 	// nameExclude = input not being updated (most likely user is on it)
 	getSettings = function (nameExclude) {
@@ -445,11 +433,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	};
 
 	/* el is the html element containing the value being updated */
-	setSettings = function (el, changeAdminPass) {
+	setSettings = function (el) {
 		//    DEBUG && console.log( $(e).attr('name'), $(e).val(), $(e));
 		if (el.attr('oldValue') !== el.val() || el.attr('type') === 'checkbox') {
 			settingsUpdating = getSettings(el.attr('name'));
-			if(changeAdminPass) passwordUpdating = $.Deferred();
 
 			$('#settings').promise().then(function () {
 				settingsArray = {};
@@ -464,9 +451,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					settingsArray[obj.name] = obj.value;
 				});
 				settingsArray['EnginePrivateMode'] = $('input[name="EnginePrivateMode"]').val();
-				// ignore currently typed value if the pass is not changing
-				settingsArray['AdminPassword'] = changeAdminPass ? $('button[name="AdminPassword"]').val() : $('button[name="AdminPassword"]').attr('oldValue');
-		
+
 				DEBUG && console.log('setSettings : ', settingsArray);
 
 				$.ajax({
@@ -474,14 +459,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 					url: 'admin/settings',
 					data: settingsArray
 				}).done(function () {
-					if (changeAdminPass) {
-						setupAjax(settingsArray['AdminPassword']);
-						$('button[name="AdminPassword"]').attr('oldValue', settingsArray['AdminPassword']);
-						
-						passwordUpdating.resolve();
-					}
+				
 				}).fail(function () {
-					if (changeAdminPass) { passwordUpdating.resolve(); }
 					el.val(el.attr('oldValue')).focus();
 				});
 			});
@@ -637,7 +616,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			type = 'POST';
 			url = 'admin/playlists';
 
-			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST', playlistName),'',
+			displayModal('prompt', i18n.__('CL_CREATE_PLAYLIST'),'',
 				function(playlistName) {
 					data = { name: playlistName, flag_visible: 0, flag_current: 0, flag_public: 0 };
 					ajx(type, url, data, function (idNewPlaylist) {

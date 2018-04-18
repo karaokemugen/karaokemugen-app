@@ -1,6 +1,6 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
 import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
-import {initUserSystem, findUserByName, findUserByID} from '../_services/user';
+import {initUserSystem, findUserByName} from '../_services/user';
 import {initDBSystem, getStats, closeUserDatabase} from '../_dao/database';
 import {initFrontend, emitWS} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
@@ -247,6 +247,7 @@ function stopPlayer(now) {
 		logger.info('[Engine] Karaoke stopping NOW');
 		stop();
 	} else {
+		plc.next();
 		logger.info('[Engine] Karaoke stopping after current song');
 	}
 	if (state.engine.status !== 'stop') {
@@ -410,18 +411,7 @@ async function tryToReadKaraInPlaylist() {
 			//Add a view to the viewcount
 			addViewcountKara(kara.kara_id,kara.kid);
 			//Free karaoke
-			await plc.freePLC(kara.playlistcontent_id);
-			//If karaoke is present in the public playlist, we're marking it free.
-			const plcontent = await plc.getPLCByKID(kara.kid,internalState.publicPlaylistID);
-			if (plcontent) await plc.freePLC(plcontent.playlistcontent_id);
-			let modePlaylist_id;
-			if (state.engine.private) {
-				modePlaylist_id = internalState.currentPlaylistID;
-			} else {
-				modePlaylist_id = internalState.publicPlaylistID;
-			}
-			const user = await findUserByID(kara.user_id);
-			plc.updateSongsLeft(user.login,modePlaylist_id);
+			updateUserQuotas(kara);
 			return true;
 		} catch(err) {
 			logger.error(`[Engine] Error during song playback : ${err}`);
@@ -436,6 +426,40 @@ async function tryToReadKaraInPlaylist() {
 	}
 }
 
+async function updateUserQuotas(kara) {
+	//If karaokes are present in the public playlist, we're marking it free.			
+	//First find which KIDs are to be freed. All those before the currently playing kara 
+	// are to be set free.
+	let modePlaylist_id;
+	if (state.engine.private) {
+		modePlaylist_id = internalState.currentPlaylistID;
+	} else {
+		modePlaylist_id = internalState.publicPlaylistID;
+	}	
+	await plc.freePLCBeforePos(kara.pos, internalState.currentPlaylistID);
+	// For every KID we check if it exists and add the PLC to a list
+	const [publicPlaylist, currentPlaylist] = await Promise.all([
+		plc.getPlaylistContentsMini(internalState.publicPlaylistID),
+		plc.getPlaylistContentsMini(internalState.currentPlaylistID)
+	]);	
+	let freeTasks = [];
+	let usersNeedingUpdate = [];
+	for (const currentSong of currentPlaylist) {
+		publicPlaylist.some(publicSong => {
+			if (publicSong.kid === currentSong.kid && currentSong.flag_free === 1) {
+				freeTasks.push(plc.freePLC(publicSong.playlistcontent_id));	
+				if (!usersNeedingUpdate.includes(publicSong.user_id)) usersNeedingUpdate.push(publicSong.user_id);
+				return true;
+			}
+			return false;
+		});
+	}
+	await Promise.all(freeTasks);
+	usersNeedingUpdate.forEach(user_id => {
+		plc.updateSongsLeft(user_id,modePlaylist_id);	
+	});		
+}
+
 async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());
 }
@@ -448,10 +472,10 @@ export async function getKaras(filter,lang,from,size,token) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from, 10),
-				to: parseInt(from, 10)+parseInt(size, 10)
+				from: from,
+				to: from+size
 			},
-			content: karalist.slice(from,parseInt(from, 10)+parseInt(size, 10))
+			content: karalist.slice(from,from+size)
 		};
 	} catch(err) {
 		throw err;
@@ -471,10 +495,10 @@ export async function getWL(filter,lang,from,size) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from, 10),
-				to: parseInt(from, 10)+parseInt(size, 10)
+				from: from,
+				to: from+size
 			},
-			content: karalist.slice(from,parseInt(from, 10)+parseInt(size, 10))
+			content: karalist.slice(from,from+size)
 		};
 	} catch(err) {
 		throw err;
@@ -489,10 +513,10 @@ export async function getBL(filter,lang,from,size) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from, 10),
-				to: parseInt(from, 10)+parseInt(size, 10)
+				from: from,
+				to: from+size
 			},
-			content: karalist.slice(from,parseInt(from, 10)+parseInt(size, 10))
+			content: karalist.slice(from,from+size)
 		};
 	} catch(err) {
 		throw err;
@@ -607,6 +631,12 @@ export async function getPLInfo(playlist_id, token) {
 
 export async function deletePL(playlist_id, token) {
 	const pl = await plc.getPlaylistInfo(playlist_id);
+	if (!pl) {
+		throw {
+			message: 'Playlist unknown',
+			data: null
+		};
+	}
 	try {
 		logger.info(`[Engine] Deleting playlist ${pl.name} (by ${token.username})`);
 		return await plc.deletePlaylist(playlist_id, token);
@@ -770,10 +800,10 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 		return {
 			infos: {
 				count: karalist.length,
-				from: parseInt(from, 10),
-				to: parseInt(from, 10)+parseInt(size, 10)
+				from: from,
+				to: from+size
 			},
-			content: karalist.slice(from,parseInt(from, 10)+parseInt(size,10))
+			content: karalist.slice(from,from+parseInt(size,10))
 		};
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
@@ -869,9 +899,9 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 export async function copyKaraToPL(plc_id, playlist_id, pos) {
 	const plcs = plc_id.split(',');
 	const [plcData, pl] = await Promise.all([
-		plc.getPLCInfoMini(plc_id[0]),
+		plc.getPLCInfoMini(plcs[0]),
 		plc.getPlaylistInfo(playlist_id)
-	]);
+	]);	
 	logger.info(`[Engine] Copying ${plcs.length} karaokes to playlist ${pl.name} : ${plcData.title}...`);	
 	try {
 		await plc.copyKaraToPlaylist(plcs, playlist_id, pos);
@@ -921,6 +951,7 @@ export async function sendCommand(command, options) {
 		break;
 	case 'stopAfter':
 		stopPlayer();
+		await plc.next();		
 		break;
 	case 'skip':
 		next();

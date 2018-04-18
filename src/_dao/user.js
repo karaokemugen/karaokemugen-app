@@ -72,7 +72,7 @@ export async function reassignToUser(old_id,id) {
 			$id: id,
 			$old_id: old_id
 		})
-	]
+	];
 	return await Promise.all(updates);
 	
 }

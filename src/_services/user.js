@@ -61,15 +61,15 @@ export async function editUser(username,user,avatar,role) {
 			currentUser = await findUserByName(username);
 		}
 		if (!currentUser) throw 'User unknown';
-		if (currentUser.type == 2 && role != 'admin') throw 'Guests are not allowed to edit their profiles';
+		if (currentUser.type === 2 && role !== 'admin') throw 'Guests are not allowed to edit their profiles';
 		user.id = currentUser.id;
 		user.login = username;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
-		if (user.flag_admin && role != 'admin') throw 'Admin flag permission denied';
+		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
 		// Check if login already exists.
-		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && currentUser.nickname != user.nickname) throw 'Nickname already exists';
+		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && currentUser.nickname !== user.nickname) throw 'Nickname already exists';
 		user.NORM_nickname = deburr(user.nickname);	
 		if (user.password) {
 			user.password = hashPassword(user.password);
@@ -108,9 +108,9 @@ async function replaceAvatar(oldImageFile,avatar) {
 	try {
 		const conf = getConfig();
 		const fileType = await detectFileType(avatar.path);
-		if (fileType != 'jpg' &&
-				fileType != 'gif' &&
-				fileType != 'png') {			
+		if (fileType !== 'jpg' &&
+				fileType !== 'gif' &&
+				fileType !== 'png') {			
 			throw 'Wrong avatar file type';			
 		}
 		// Construct the name of the new avatar file with its ID and filetype.
@@ -118,7 +118,7 @@ async function replaceAvatar(oldImageFile,avatar) {
 		const newAvatarPath = resolve(conf.PathAvatars,newAvatarFile);
 		const oldAvatarPath = resolve(conf.PathAvatars,oldImageFile);
 		if (await asyncExists(oldAvatarPath) &&
-			oldImageFile != 'blank.png') await asyncUnlink(oldAvatarPath);	
+			oldImageFile !== 'blank.png') await asyncUnlink(oldAvatarPath);	
 		await asyncMove(avatar.path,newAvatarPath);
 		return newAvatarFile;
 	} catch (err) {
@@ -210,7 +210,7 @@ export async function createUser(user) {
 
 	try {
 		await db.addUser(user);
-		if (user.type == 1) {
+		if (user.type === 1) {
 			await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
 			logger.info(`[User] Created user ${user.login}`);		
 			logger.debug(`[User] User data : ${JSON.stringify(user)}`);		

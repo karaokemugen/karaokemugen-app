@@ -1,5 +1,4 @@
 .underHeader {
-	top: 95px;
 	height: calc(100% - 95px);
 }
 .playlist-main, .panel  {
@@ -10,12 +9,16 @@
 	line-height: 2.25;
 }
 #manage, #manage > .panel  {
-	height: calc(100% - 5px);
+	height: 100%;
 }
 #manage > .panel {
 	overflow: auto;
+    background-color: transparent;
 }
-
+#settings {
+    background-color: #2d2d2f;
+	padding: 0;
+}
 .settingsGroupPanel {
 	padding: 16px 0px;
 	background-color:transparent;
@@ -23,7 +26,12 @@
 	border-width: 2px 0px;
 	padding: 16px 0px;
 }
-
+.header > .btn-group.switchs {
+	height: calc(100% - 0px);
+}
+.header, .header .btn, #manageButton li, .header input[type=range]  {
+	max-height: 7.4vw;
+}
 .hiddenHeader .header {
 	display: none;
 }
@@ -33,9 +41,6 @@
 .hiddenHeader #underHeader {
 	top: 24px;
 	height: calc(100% - 24px);
-}
-.form-horizontal {
-	padding: 0px 40px;
 }
 
 .list-group > li > button {
@@ -111,16 +116,10 @@ span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:befo
 	display: none;
 }
 
-#centerBtns {
-	background-color: transparent;
-	width: 255px;
-    left: calc(50% - 255*.5px);
-}
-#centerBtns > .btn-group {
-	width: 100%;
-	display: flex;
- 	justify-content: center;
- 	align-items: center; 
+.centerBtns {
+	left: 50%;
+    transform: translateX(-50%);
+    position: sticky;
 }
 
 #status[name="play"] > i.pause {
@@ -136,7 +135,8 @@ span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:befo
 	display: none;
 }
 #mutestatus i {
-	top: 24px;
+	top: 50%;
+    transform: translateY(-50%);
 }
 #mutestatus[name="mute"] > i.mute {
 	display: none;

@@ -165,6 +165,7 @@ export const getPlaylistContentsMini = `SELECT ak.kara_id AS kara_id,
 													pc.pk_id_plcontent AS 			playlistcontent_id,
 													ak.kid AS kid,
 													pc.fk_id_user AS user_id,
+													pc.flag_free AS flag_free,
 													u.login AS username
 											FROM karasdb.all_karas AS ak 
 											INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
@@ -370,6 +371,12 @@ export const testCurrentPlaylist = `SELECT pk_id_playlist AS playlist_id
 export const setPLCFree = `UPDATE playlist_content 
 							SET flag_free = 1
 							WHERE pk_id_plcontent = $plc_id;
+							`;
+
+export const setPLCFreeBeforePos = `UPDATE playlist_content
+							SET flag_free = 1
+							WHERE fk_id_playlist = $playlist_id
+							  AND pos <= $pos;
 							`;
 
 export const testPublicPlaylist = `SELECT pk_id_playlist AS playlist_id

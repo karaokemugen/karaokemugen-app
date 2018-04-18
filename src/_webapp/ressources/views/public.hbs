@@ -1,3 +1,7 @@
+<div id="progressBar" class="underHeader" introStep="5" introLabel="progressbar">
+    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
+    <div id="progressBarColor" class="cssTransform"></div>
+</div>
 <div id="header" class="header"  introStep="7" introLabel="search">
     <div class="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12 headerInputs">
         <button class="btn btn-action btn-default favorites" introStep="15" introLabel="favorites" introRequiresUser="true"><i class="glyphicon glyphicon-star"></i></button>
@@ -35,10 +39,7 @@
         </div>
     </div>
 </div>
-<div id="progressBar" class="underHeader" introStep="5" introLabel="progressbar">
-    <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
-    <div id="progressBarColor" class="cssTransform"></div>
-</div>
+
 <div id="underHeader" class="underHeader container-fluid"  introStep="10" introLabel="kara">
     <div class="playlist-main row" id="playlist">
         <div class="panel col-lg-8 col-md-7 col-msm-12 col-sm-12 col-xs-12" id="panel1" side="1" introStep="9" introLabel="searchresult">
@@ -250,7 +251,8 @@
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-lock"></i>
-                                    <input class="form-control" name="password" type="text"/>
+                                    <input class="form-control" name="password" type="password" placeholder="{{{ i18n "PROFILE_PASSWORD" }}}"/>
+                                    <input class="form-control passwordConfirmation" type="password" placeholder="{{{ i18n "PROFILE_PASSWORDCONF" }}}" style="margin-left: 3px;"/>
                                 </div>
                             </div>
 
@@ -271,7 +273,7 @@
         </div>
     </div>
 </div>
- <div class="modal modalPage fade" role="dialog" type="prompt" tabindex="22" id="settingsPublic" hidden>
+<div class="modal modalPage fade" role="dialog" type="prompt" tabindex="22" id="settingsPublic" hidden>
      <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <ul class="nav nav-tabs nav-justified modal-header">
@@ -279,40 +281,59 @@
             </ul>
             <div class="tab-content" id="nav-tabContent-help">
                 <div id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" class="modal-body tab-pane fade in active">
-  
-                    <span id="settingsPublicContent">
-                        <div id="mobileHelp" class="col-lg-12 col-xs-12" style="line-height:1.8em;">
-                            {{{ i18n "CL_HELP_PUBLIC_CONTENT" }}}
-                            <br/>
-                            <div class="modal-message tour">
-                                <button class="btn btn-default tourAgain">
-                                        {{i18n "FOLLOW_TOUR"}}
-                                </button>
-                            </div>
-                            <hr>
+                        <div id="mobileHelp" class="text">
+                            {{{ i18n "CL_HELP_PUBLIC_MOBILE" }}}
                         </div>
-                            <div class="col-lg-3 col-xs-3">
-                                <b>{{i18n "MODE"}}</b>
-                                <br/>
-                                <b>{{i18n "VERSION"}}</b>
-                                <br/>
-                            </div>
-                            <div class="col-lg-9 col-xs-9">
-                                <span id="mode"></span>
-                                <br/>
-                                    <span id="version"></span>
-                                <br/>
-                            </div>
-                    </span>
-                </div>
-                <div class="modal-footer">
-                    <br />
+                        <div class="text">
+                            {{{ i18n "CL_HELP_DISCORD" }}}   
+                            <br/>   
+                        </div> 
+                        <div class="modal-message tour">
+                            <button class="btn btn-default tourAgain">
+                                    {{i18n "FOLLOW_TOUR"}}
+                            </button>
+                        </div>
+                            <hr>
+                        <div class="col-lg-3 col-xs-3">
+                            <b>{{i18n "MODE"}}</b>
+                            <br/>
+                            <b>{{i18n "VERSION"}}</b>
+                            <br/>
+                        </div>
+                        <div class="col-lg-9 col-xs-9">
+                            <span id="mode"></span>
+                            <br/>
+                                <span id="version"></span>
+                            <br/>
+                        </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+<div class="modal modalPage fade" role="dialog" type="prompt" tabindex="23" id="helpModal" hidden>
+     <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-help" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "CL_HELP_INSTRUCTIONS"}} </a></li>
+            </ul>
+            <div class="tab-content" id="nav-tabContent-help">
+                <div id="nav-help" role="tabpanel" aria-labelledby="nav-help-tab" class="modal-body tab-pane fade in active">
+                    <div id="mobileHelp" class="text">
+                        {{{ i18n "CL_HELP_PUBLIC_MOBILE" }}}
+                        <br/>
+                        {{{ i18n "CL_HELP_HELP" }}}
+                    </div>
+                    <div class="modal-message">
+                        <button data-dismiss="modal" class="btn btn-default confirm">
+                             <i class="glyphicon glyphicon-ok"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="overlay">
      <video id="video" type="video/mp4" autoplay>
     </video>

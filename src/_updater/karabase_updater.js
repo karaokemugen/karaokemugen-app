@@ -81,12 +81,12 @@ async function compareBases() {
 			compareDirs(karasMinePath, karasBasePath),
 			compareDirs(lyricsMinePath, lyricsBasePath)
 		]);
-		if (lyricsToUpdate.newFiles.length == 0 &&
-		lyricsToUpdate.updatedFiles.length == 0 &&
-		lyricsToUpdate.removedFiles.length == 0 &&
-		karasToUpdate.newFiles.length == 0 &&
-		karasToUpdate.removedFiles.length == 0 &&
-		karasToUpdate.updatedFiles.length == 0) {
+		if (lyricsToUpdate.newFiles.length === 0 &&
+		lyricsToUpdate.updatedFiles.length === 0 &&
+		lyricsToUpdate.removedFiles.length === 0 &&
+		karasToUpdate.newFiles.length === 0 &&
+		karasToUpdate.removedFiles.length === 0 &&
+		karasToUpdate.updatedFiles.length === 0) {
 			logger.info('[Updater] No update for your base');
 			return false;
 		} else {
@@ -123,8 +123,8 @@ async function compareMedias(localFiles, remoteFiles) {
 	logger.info('[Updater] Comparing your medias with the current ones');
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
-			if (localFile.name == remoteFile.name) {
-				if (localFile.size != remoteFile.size) updatedFiles.push({
+			if (localFile.name === remoteFile.name) {
+				if (localFile.size !== remoteFile.size) updatedFiles.push({
 					name: localFile.name,
 					size: localFile.size
 				});
@@ -139,7 +139,7 @@ async function compareMedias(localFiles, remoteFiles) {
 	}
 	for (const localFile of localFiles) {
 		const filePresent = remoteFiles.some(remoteFile => {
-			if (localFile.name == remoteFile.name) return true;
+			if (localFile.name === remoteFile.name) return true;
 			return false;
 		});
 		if (!filePresent) removedFiles.push(localFile.name);
@@ -217,7 +217,7 @@ async function listLocalMedias() {
 }
 
 async function removeFiles(files, dir) {
-	if (files.length == 0) return true;
+	if (files.length === 0) return true;
 	for (const file of files) {		
 		await asyncUnlink(resolve(dir, file));
 		logger.info('[Updater] Removed : '+file);
@@ -225,7 +225,7 @@ async function removeFiles(files, dir) {
 }
 
 async function updateFiles(files, dirSource, dirDest, isNew) {
-	if (files.length == 0) return true;
+	if (files.length === 0) return true;
 	for (const file of files) {
 		let action = 'Updated';
 		if (isNew) action = 'Added';

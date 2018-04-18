@@ -35,7 +35,6 @@ var scrollUpdating;
 var playlistsUpdating;
 var playlistContentUpdating;
 var settingsUpdating;
-var passwordUpdating;
 
 /* html */
 var addKaraHtml;
@@ -473,9 +472,17 @@ var settingsNotUpdated;
 		// generic close button
 		$('.playlist-main').on('click', '.closeParent', function () {
 			var el = $(this);
-			el.parent().fadeOut(animTime, function(){
-				el.parent().remove();
-			});
+			var container = el.closest('.alert');
+			
+			var infoKaraButton = container.closest('li').find('[name="infoKara"]');
+
+			if(container.hasClass('detailsKara') && infoKaraButton.length > 0) {
+				infoKaraButton.click();
+			} else {
+				container.fadeOut(animTime, function(){
+					el.parent().remove();
+				});
+			}
 		});
 
 		/* handling dynamic loading */
@@ -588,7 +595,6 @@ var settingsNotUpdated;
 			var username = $('#signupLogin').val();
 			var password = $('#signupPassword').val();
 			var passwordConfirmation = $('#signupPasswordConfirmation').val();
-			console.log(password !== passwordConfirmation, password, passwordConfirmation);
 			if(password !== passwordConfirmation) {
 				$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
 				$('#signupPassword').focus();
@@ -627,7 +633,7 @@ var settingsNotUpdated;
 			}
 		});
 
-		$('.logout').click( () => {
+		$('.logout, .btn[action="logout"]').click( () => {
 			eraseCookie('mugenToken');
 			window.location.reload();
 		});
@@ -706,39 +712,47 @@ var settingsNotUpdated;
 			}
 		});
 
-		$('.profileData .profileLine input').on('blur', (e) => {
+		$('.profileData .profileLine input[name!="password"]').on('blur', (e) => {
 			var $input = $(e.target);
 			if ($input.attr('oldval') !== $input.val()) {
 				// TODO gestion confirmation password
-				var profileData = $('.profileData .profileLine > input').serialize();
-				$.ajax({
-					url: 'public/myaccount',
-					type: 'PUT',
-					data: profileData
-				})
-					.done(function (response) {
-						$('.profileContent .profileLine > input').removeClass('redBorders');
-						$input.attr('oldval', $input.val());
-						pseudo = response.nickname;
+				var $password = $('.profileData .profileLine > input[name="password"]');
+				var $passwordConfirmation = $('.profileData .profileLine > input.passwordConfirmation');
+				if($password.val() !== $passwordConfirmation.val()) {
+					$password.val('').addClass('redBorders');
+					$passwordConfirmation.val('').addClass('redBorders');
+					$input.focus();
+				} else {
+					var profileData = $('.profileData .profileLine > input[name]').serialize();
+					$.ajax({ 
+						url: 'public/myaccount',
+						type: 'PUT',
+						data: profileData
 					})
-					.fail( (response) => {
-						var listFieldErr = Object.keys(response.responseJSON);
-						listFieldErr.forEach((v, k) => {
-							var $element = $('.profileContent [name="' + v + '"]');
+						.done(function (response) {
+							$('.profileContent .profileLine > input').removeClass('redBorders');
+							$input.attr('oldval', $input.val());
+							pseudo = response.nickname;
+						})
+						.fail( (response) => {
+							var listFieldErr = Object.keys(response.responseJSON);
+							listFieldErr.forEach((v, k) => {
+								var $element = $('.profileContent [name="' + v + '"]');
 
-							if(v === 'avatar_file') {
-								// TODO
-							} else if( v === 'login') {
-								// TODO
-							} else if (v !== 'password') {
-								$element.addClass('redBorders');
-							}
-							if( k === 0 ) {
-								$element.focus();
-							}
+								if(v === 'avatar_file') {
+									// TODO
+								} else if( v === 'login') {
+									// TODO
+								} else if (v !== 'password') {
+									$element.addClass('redBorders');
+								}
+								if( k === 0 ) {
+									$element.focus();
+								}
+							});
+
 						});
-
-					});
+					}
 			}
 		});
 
@@ -1592,30 +1606,36 @@ var settingsNotUpdated;
 		var idPlc = parseInt(liKara.attr('idplaylistcontent'));
 		var idPlaylist = parseInt( el.closest('.panel').find('.plDashboard').data('playlist_id'));
 		var infoKara = liKara.find('.detailsKara');
-		if (!infoKara.is(':visible')) { // || infoKara.length == 0
-			var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
 
-			$.ajax({ url: urlInfoKara }).done(function (data) {
-				var detailsHtml = buildKaraDetails(data[0], mode);
-				detailsHtml = $(detailsHtml).hide();
-				liKara.find('.contentDiv').after(detailsHtml);
-				$(detailsHtml).data(data[0]);
-
-				detailsHtml.fadeIn(animTime);
-				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
+		if(!liKara.hasClass('loading')) { // if we're already loading the div, don't do anything
+			if (!infoKara.is(':visible') ) { // || infoKara.length == 0
+				var urlInfoKara = idPlaylist > 0 ? scope + '/playlists/' + idPlaylist + '/karas/' + idPlc : 'public/karas/' + idKara;
+				liKara.addClass('loading');
+				$.ajax({ url: urlInfoKara }).done(function (data) {
+					var detailsHtml = buildKaraDetails(data[0], mode);
+					detailsHtml = $(detailsHtml).hide();
+					liKara.find('.contentDiv').after(detailsHtml);
+					$(detailsHtml).data(data[0]);
+	
+					detailsHtml.fadeIn(animTime);
+					liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
+					saveDetailsKara(idPlaylist, idKara, 'add');
+	
+					liKara.removeClass('loading');
+	
+					if(introManager && introManager._currentStep) introManager.nextStep();
+				}).always(function (data) {
+					liKara.removeClass('loading');
+				});
+			} else if (infoKara.is(':visible')) {
+				saveDetailsKara(idPlaylist, idKara, 'remove');
+				infoKara.add(liKara.find('.lyricsKara')).fadeOut(animTime);
+				liKara.find('[name="infoKara"]').css('border-color', '');
+			} else {
 				saveDetailsKara(idPlaylist, idKara, 'add');
-
-				if(introManager && introManager._currentStep) introManager.nextStep();
-			});
-		} else if (infoKara.is(':visible')) {
-			saveDetailsKara(idPlaylist, idKara, 'remove');
-			infoKara.add(liKara.find('.lyricsKara')).fadeOut(animTime);
-
-			liKara.find('[name="infoKara"]').css('border-color', '');
-		} else {
-			saveDetailsKara(idPlaylist, idKara, 'add');
-			infoKara.fadeIn(animTime);
-			liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
+				infoKara.fadeIn(animTime);
+				liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
+			}
 		}
 	};
 
@@ -1760,7 +1780,6 @@ var settingsNotUpdated;
 			}
 		});
 
-		passwordUpdating = $.Deferred().resolve();
 		if(scope === 'admin' && logInfos.role === 'admin') {
 			settingsUpdating = getSettings() ;
 		} else if (scope === 'public') {
@@ -1927,19 +1946,23 @@ var settingsNotUpdated;
 				
 				if(introManager && typeof introManager._currentStep !== 'undefined') {
 					introManager.nextStep();
+				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
+					$('#helpModal').modal('show');
 				}
 
 				deferred.resolve();
-
 			}).fail(function(response) {
 				//displayMessage('info','', i18n.__('LOG_ERROR'));
 				$('#loginModal').modal('show');
 				$('#password').val('').focus();
 				$('#password, #login').addClass('redBorders');
 			});
-			
 			return deferred;
 	};
+
+	$('#helpModal .confirm').click(function(){
+		createCookie('mugenTouchscreenHelp', true, -1);
+	});
 
 	/* opposite sideber of playlist : 1 or 2 */
 	non = function (side) {
@@ -2007,24 +2030,22 @@ var settingsNotUpdated;
 	});
 
 	socket.on('settingsUpdated', function(){
-		passwordUpdating.done(function () {
-			settingsUpdating.done(function () {
-				settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
+		settingsUpdating.done(function () {
+			settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
 
-				settingsUpdating.done(function (){
-					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
-																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
-						playlistsUpdating.done(function() {
-							playlistsUpdating = refreshPlaylistSelects();
-						});
+			settingsUpdating.done(function (){
+				if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
+																	|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+					playlistsUpdating.done(function() {
+						playlistsUpdating = refreshPlaylistSelects();
+					});
 
-						playlistsUpdating.done(function () {
-							refreshPlaylistDashboard(1);
-							refreshPlaylistDashboard(2);
+					playlistsUpdating.done(function () {
+						refreshPlaylistDashboard(1);
+						refreshPlaylistDashboard(2);
 
-						});
-					}
-				});
+					});
+				}
 			});
 		});
 	});
