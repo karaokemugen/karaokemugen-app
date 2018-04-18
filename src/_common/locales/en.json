@@ -174,7 +174,7 @@
 	"FULLSCREEN": "Fullscreen",
 	"ADMIN_PASSWORD_CHANGE": "Change admin password",
 	"PASSWORD": "Password",
-	"CONFIRM_PASSWORD": "Confirm password",
+	"PASSWORDCONF": "Confirm password",
 	"SONGS_BY_USER": "Number of songs per user",
 	"MONITOR_NUMBER": "Monitor no.",
 	"VIDEO_SIZE": "Video size",

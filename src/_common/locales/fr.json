@@ -174,7 +174,7 @@
 	"FULLSCREEN": "Plein écran",
 	"ADMIN_PASSWORD_CHANGE": "Changer mot de passe admin",
 	"PASSWORD": "Mot de passe",
-	"CONFIRM_PASSWORD": "Confirmer mot de passe",
+	"PASSWORDCONF": "Confirmer mdp",
 	"SONGS_BY_USER": "Chansons par utilisateur",
 	"MONITOR_NUMBER": "Numéro de l'écran",
 	"VIDEO_SIZE": "Taille vidéo",
@@ -366,7 +366,7 @@
 	"PROFILE_MAIL": "Courriel",
 	"PROFILE_URL": "Site web",
 	"PROFILE_BIO": "Biographie",
-	"PROFILE_PASSWORD": "Mdp",
+	"PROFILE_PASSWORD": "Mot de passe",
 	"PROFILE_PASSWORDCONF": "Confirmer",
 	"UPVOTE_DONE": "Karaoke %s reçoit un soutien !",
 	"UPVOTE_ALREADY_DONE": "Vous soutenez déjà ce karaoké !",
@@ -432,6 +432,5 @@
 	"LOGOUT": "Déconnexion",
 	"SETTINGS_PLAYER": "Lecteur",
 	"SETTINGS_KARAOKE": "Karaoké",
-	"SETTINGS_INTERFACE": "Interface",
-	"PASSWORDCONF": "PASSWORDCONF"
+	"SETTINGS_INTERFACE": "Interface"
 }
