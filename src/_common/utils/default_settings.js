@@ -64,3 +64,42 @@ export const defaults = {
 	appAdminPort: 1338,
 	appFirstRun: 1,
 };
+
+const horizontalPosArray = ['Left', 'Right', 'Center'];
+const verticalPosArray = ['Top', 'Bottom', 'Center'];
+
+const configConstraints = {
+	EngineDisplayNickname: {boolIntValidator: true},
+	EngineDisplayConnectionInfo: {boolIntValidator: true},
+	EngineDisplayConnectionInfoQRCode: {boolIntValidator: true},
+	EnginePrivateMode: {boolIntValidator: true},
+	EngineAllowViewWhitelist: {boolIntValidator: true},
+	EngineAllowViewBlacklist: {boolIntValidator: true},
+	EngineAllowViewBlacklistCriterias: {boolIntValidator: true},
+	EngineSongsPerUser: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	EngineFreeUpvotes: {boolIntValidator: true},
+	EngineFreeUpvotesRequiredPercent: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100}},
+	EngineFreeUpvotesRequiredMin: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	EngineAutoPlay: {boolIntValidator: true},
+	EngineRepeatPlaylist: {boolIntValidator: true},
+	EngineMaxDejaVuTime: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	EngineSmartInsert: {boolIntValidator: true},
+	EngineJinglesInterval: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	EngineCreatePreviews: {boolIntValidator: true},
+	PlayerScreen: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	PlayerFullscreen: {boolIntValidator: true},
+	PlayerStayOnTop: {boolIntValidator: true},
+	PlayerNoHud: {boolIntValidator: true},
+	PlayerNoBar: {boolIntValidator: true},
+	PlayerPIP: {boolIntValidator: true},
+	PlayerPIPSize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100}},
+	PlayerPIPPositionX: {inclusion: horizontalPosArray},
+	PlayerPIPPositionY: {inclusion: verticalPosArray},
+	AuthExpireTime: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	WebappMode: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
+	OnlineMode: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	OnlinePort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	appFrontendPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	appAdminPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	appFirstRun: {boolIntValidator: true}
+};
