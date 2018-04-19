@@ -2,7 +2,9 @@
   "name": "karaokemugen-app",
   "version": "2.1.0",
   "description": "Karaoke playlist manager / player",
-  "bin": { "karaokemugen" : "./dist/index.js" },
+  "bin": {
+    "karaokemugen": "./dist/index.js"
+  },
   "main": "src/index.js",
   "scripts": {
     "start": "babel-node src/index.js --",
@@ -10,7 +12,7 @@
     "test": "mocha --require babel-register --timeout 20000",
     "build": "yarn buildReact && rm -Rf dist && babel --source-maps --copy-files -d dist/ src/",
     "install": "cd react_client && yarn install",
-	"setup": "yarn install && yarn buildReact",
+    "setup": "yarn install && yarn buildReact",
     "buildReact": "cd react_client && yarn build && rm -Rf ../src/_dashboard && mv -f build ../src/_dashboard",
     "startReact": "cd react_client && yarn start"
   },
