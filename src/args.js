@@ -27,6 +27,9 @@ export async function parseCommandLineArgs(argv) {
 		console.log(help);
 		process.exit(0);
 	}
+	if (argv.debug) {
+		process.env['NODE_ENV'] = 'development';
+	}
 	if (argv.version) {
 		// Version number is already displayed so we exit here.
 		process.exit(0);

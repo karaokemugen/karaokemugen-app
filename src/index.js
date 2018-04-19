@@ -50,6 +50,8 @@ if (process.pkg) {
 	appPath = join(__dirname,'../');
 }
 
+process.env['NODE_ENV'] = 'production'; // Default
+
 main()
 	.catch(err => {
 		logger.error(`[Launcher] Error during launch : ${err}`);
