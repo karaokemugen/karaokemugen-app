@@ -939,63 +939,66 @@ export function sendMessage(message, duration) {
 
 export async function sendCommand(command, options) {
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
+	if (internalState.commandInProgress) throw '[Engine] A command is already in progress';
+	internalState.commandInProgress = true;
 	switch (command) {
 	case 'play':
-		playPlayer();
+		await playPlayer();
 		break;
 	case 'stopNow':
-		stopPlayer(true);
+		await stopPlayer(true);
 		break;
 	case 'pause':
-		pausePlayer();
+		await pausePlayer();
 		break;
 	case 'stopAfter':
 		stopPlayer();
 		await plc.next();		
 		break;
 	case 'skip':
-		next();
+		await next();
 		break;
 	case 'prev':
-		prev();
+		await prev();
 		break;
 	case 'toggleFullscreen':
-		toggleFullScreenPlayer();
+		await toggleFullScreenPlayer();
 		break;
 	case 'toggleAlwaysOnTop':
-		toggleOnTopPlayer();
+		await toggleOnTopPlayer();
 		break;
 	case 'mute':
-		mutePlayer();
+		await mutePlayer();
 		break;
 	case 'unmute':
-		unmutePlayer();
+		await unmutePlayer();
 		break;
 	case 'showSubs':
-		showSubsPlayer();
+		await showSubsPlayer();
 		break;
 	case 'hideSubs':
-		hideSubsPlayer();
+		await hideSubsPlayer();
 		break;
 	case 'seek':
 		if (!options && typeof options !== 'undefined') options = 0;
 		if (isNaN(options)) throw 'Command seek must have a numeric option value';
-		seekPlayer(options);
+		await seekPlayer(options);
 		break;
 	case 'goTo':
 		if (!options && typeof options !== 'undefined') options = 0;
 		if (isNaN(options)) throw 'Command goTo must have a numeric option value';
-		goToPlayer(options);
+		await goToPlayer(options);
 		break;
 	case 'setVolume':
 		if (!options && typeof options !== 'undefined') throw 'Command setVolume must have a value';
 		if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
-		setVolumePlayer(options);
+		await setVolumePlayer(options);
 		break;
 	default:
 		// Unknown commands are not possible, they're filtered by API's validation.
 		break;
 	}
+	internalState.commandInProgress = false;
 }
 
 export function getPlayerStatus() {
