@@ -31,6 +31,19 @@ export const addViewcount = `INSERT INTO viewcount(
 							VALUES($kara_id,$kid,$modified_at);
 							`;
 
+export const getKaraHistory = `SELECT ak.title AS title,
+								ak.songorder AS songorder,
+      							ak.serie AS serie,
+								ak.singer AS singer,
+      							ak.songtype AS songtype,      
+      							ak.language AS language,
+      							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+      							vc.modified_at AS viewed_at
+							FROM karasdb.all_karas AS ak
+							INNER JOIN viewcount AS vc ON vc.fk_id_kara = ak.kara_id
+ 							ORDER BY vc.modified_at DESC
+							`;
+
 export const getAllKaras = `SELECT ak.kara_id AS kara_id,
       							ak.kid AS kid,
       							ak.title AS title,

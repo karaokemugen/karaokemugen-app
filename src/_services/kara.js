@@ -6,6 +6,8 @@ import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} f
 import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
 import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
+const karaDB = require('../_dao/kara');
+
 /**
  * Génère les informations à écrire dans un fichier kara, à partir d'un objet passé en paramètre, en filtrant les
  * champs non concernés, et en ajoutant les valeurs par défaut au besoin.
@@ -178,4 +180,8 @@ export function verifyKaraData(karaData) {
 /** Only MV or LIVE types don't have to have a series filled. */
 export function serieRequired(karaType) {	
 	return karaType !== karaTypes.MV && karaType !== karaTypes.LIVE;
+}
+
+export async function getKaraHistory() {
+	return await karaDB.getKaraHistory();
 }

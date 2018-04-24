@@ -22,6 +22,10 @@ export async function getKaraMini(id) {
 	return await getUserDb().get(sql.getKaraMini, { $kara_id: id });
 }
 
+export async function getKaraHistory() {
+	return await getUserDb().get(sql.getKaraHistory);
+}
+
 export async function getKara(id, username) {
 	return await getUserDb().get(sql.getKara,
 		{
