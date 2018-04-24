@@ -177,7 +177,6 @@
 	"ADMIN_PASSWORD_CHANGE": "Change admin password",
 	"PASSWORD": "Password",
 	"PASSWORDCONF": "Confirm password",
-	"SONGS_BY_USER": "Number of songs per user",
 	"MONITOR_NUMBER": "Monitor no.",
 	"VIDEO_SIZE": "Video size",
 	"VIDEO_POSITION_X": "Video position (X)",
@@ -434,5 +433,11 @@
 	"SETTINGS_PLAYER": "Player",
 	"SETTINGS_KARAOKE": "Karaoke",
 	"SETTINGS_INTERFACE": "Interface",
-	"_": "DO NOT MODIFY"
+	"_": "DO NOT MODIFY",
+	"QUOTA_TYPE": "Quota type",
+	"TIME_BY_USER": "Time per user (seconds)",
+	"QUOTA_TYPE_0": "No quota",
+	"QUOTA_TYPE_1": "Per song",
+	"QUOTA_TYPE_2": "Duration",
+	"SONGS_BY_USER": "Number of songs per user"
 }

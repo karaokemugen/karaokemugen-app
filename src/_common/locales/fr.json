@@ -177,7 +177,6 @@
 	"ADMIN_PASSWORD_CHANGE": "Changer mot de passe admin",
 	"PASSWORD": "Mot de passe",
 	"PASSWORDCONF": "Confirmer mdp",
-	"SONGS_BY_USER": "Chansons par utilisateur",
 	"MONITOR_NUMBER": "Numéro de l'écran",
 	"VIDEO_SIZE": "Taille vidéo",
 	"VIDEO_POSITION_X": "Position vidéo X",
@@ -434,5 +433,11 @@
 	"LOGOUT": "Déconnexion",
 	"SETTINGS_PLAYER": "Lecteur",
 	"SETTINGS_KARAOKE": "Karaoké",
-	"SETTINGS_INTERFACE": "Interface"
+	"SETTINGS_INTERFACE": "Interface",
+	"QUOTA_TYPE": "Type de quota",
+	"TIME_BY_USER": "Temps par utilisateur (secondes)",
+	"QUOTA_TYPE_0": "Pas de quota",
+	"QUOTA_TYPE_1": "Nombre de chansons",
+	"QUOTA_TYPE_2": "Durée",
+	"SONGS_BY_USER": "Chansons par utilisateur"
 }

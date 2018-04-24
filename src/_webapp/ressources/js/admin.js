@@ -406,6 +406,17 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
 					if (input.attr('type') !== 'checkbox' || input.hasClass('hideInput')) {
 						input.val(val);
+						if (input.attr('name') === 'EngineQuotaType') {
+							var $time = $('[name="EngineTimePerUser"]').closest('.form-group');
+							var $songs = $('[name="EngineSongsPerUser"]').closest('.form-group');
+							$time.hide();
+							$songs.hide();
+							if(val == 1) {
+								$songs.show();
+							} else if (val == 2) {
+								$time.show();
+							}
+						}
 					} else { // only checkbox here
 						val =  parseInt(val);
 						input.bootstrapSwitch('state', val, true);
