@@ -96,7 +96,7 @@ export const getBlacklistContents = `SELECT
       									ak.duration AS duration,
       									bl.created_at AS created_at,
       									bl.reason AS reason_add,
-      									ak.videofile AS videofile
+      									ak.mediafile AS mediafile
  									FROM karasdb.all_karas AS ak 
 									INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.kara_id
 									ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
