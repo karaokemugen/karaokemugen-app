@@ -1,7 +1,7 @@
 import logger from 'winston';
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
-import {resolve, join} from 'path';
-import {resolveFileInDirs, isImageFile, asyncReadDir, asyncCopy, asyncExists} from '../_common/utils/files';
+import {resolve} from 'path';
+import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_common/utils/files';
 import remove from 'lodash.remove';
 import sample from 'lodash.sample';
 import isEmpty from 'lodash.isempty';
@@ -11,12 +11,8 @@ import {buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
 import {spawn} from 'child_process';
 import {exit} from '../_services/engine';
-<<<<<<< HEAD
 import {getID3} from './id3tag';
-const mpv = require('node-mpv');
-=======
 import mpv from 'node-mpv';
->>>>>>> next
 import {promisify} from 'util';
 
 const sleep = promisify(setTimeout);
@@ -333,7 +329,6 @@ export async function play(mediadata) {
 	try {
 		let options = [];
 		options.push(`replaygain-fallback=${mediadata.gain}`) ;
-		const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
 			
 		if (mediaFile.endsWith('.mp3')) {
 			const id3tags = await getID3(mediaFile);
