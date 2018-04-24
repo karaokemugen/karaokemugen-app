@@ -68,7 +68,7 @@ export const defaults = {
 const horizontalPosArray = ['Left', 'Right', 'Center'];
 const verticalPosArray = ['Top', 'Bottom', 'Center'];
 
-const configConstraints = {
+export const configConstraints = {
 	EngineDisplayNickname: {boolIntValidator: true},
 	EngineDisplayConnectionInfo: {boolIntValidator: true},
 	EngineDisplayConnectionInfoQRCode: {boolIntValidator: true},
