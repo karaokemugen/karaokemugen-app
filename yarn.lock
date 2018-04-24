@@ -1532,7 +1532,7 @@ cuid@^1.3.8:
     core-js "^1.1.1"
     node-fingerprint "0.0.2"
 
-cycle@1.0.x, cycle@~1.0.3:
+cycle@1.0.x:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/cycle/-/cycle-1.0.3.tgz#21e80b2be8580f98b468f379430662b046c34ad2"
 
@@ -2270,12 +2270,6 @@ file-entry-cache@^2.0.0:
   dependencies:
     flat-cache "^1.2.1"
     object-assign "^4.0.1"
-
-file-stream-rotator@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/file-stream-rotator/-/file-stream-rotator-0.2.1.tgz#0d6fea1a9a7aba25a87cfd31b6e269e44e8f0af2"
-  dependencies:
-    moment "^2.11.2"
 
 file-type@5.2.0, file-type@^5.2.0:
   version "5.2.0"
@@ -3914,10 +3908,6 @@ mocha@^5.1.1:
     mkdirp "0.5.1"
     supports-color "4.4.0"
 
-moment@^2.11.2:
-  version "2.22.1"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.1.tgz#529a2e9bf973f259c9643d237fda84de3a26e8ad"
-
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -5413,10 +5403,6 @@ trim-right@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
 
-triple-beam@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/triple-beam/-/triple-beam-1.1.0.tgz#2ac387c8c4bd04bd26c61df891a6079f8592fe10"
-
 tunnel-agent@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/tunnel-agent/-/tunnel-agent-0.6.0.tgz#27a5dea06b36b04a0a9966774b290868f0fc40fd"
@@ -5648,20 +5634,11 @@ window-size@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
 
-winston-compat@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/winston-compat/-/winston-compat-0.1.1.tgz#8f38f5ec84b6a8c63e9f7791fdb89cae4e9a7cbb"
+winston-daily-rotate-file@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/winston-daily-rotate-file/-/winston-daily-rotate-file-1.7.2.tgz#6502bfa297824fd982da5e5647c7538578d2f9a0"
   dependencies:
-    cycle "~1.0.3"
-
-winston-daily-rotate-file@^3.1.2:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/winston-daily-rotate-file/-/winston-daily-rotate-file-3.1.3.tgz#2d8f114c9d8532376ba8e3aae1d7c6bb8bede106"
-  dependencies:
-    file-stream-rotator "^0.2.1"
-    semver "^5.5.0"
-    triple-beam "^1.1.0"
-    winston-compat "^0.1.1"
+    mkdirp "0.5.1"
 
 winston@^2.4.1:
   version "2.4.2"
