@@ -7,8 +7,7 @@ import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from
 import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
 /**
- * Génère les informations à écrire dans un fichier kara, à partir d'un objet passé en paramètre, en filtrant les
- * champs non concernés, et en ajoutant les valeurs par défaut au besoin.
+ * Generate info to write in a .kara file from an object passed as argument by filtering out unnecessary fields and adding default values if needed.
  */
 export function getKara(karaData) {
 	timestamp.round = true;
