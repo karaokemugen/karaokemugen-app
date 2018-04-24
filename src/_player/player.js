@@ -244,8 +244,8 @@ async function startmpv() {
 			binary: conf.BinmpvPath,
 			socket: socket,
 			time_update: 1,
-			verbose: true,
-			debug: true,
+			verbose: false,
+			debug: false,
 		},
 		mpvOptions
 	);	
