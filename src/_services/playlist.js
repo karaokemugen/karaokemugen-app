@@ -81,7 +81,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 export async function isUserAllowedToAddKara(playlist_id,requester) {
 	const limit = getConfig().EngineSongsPerUser;
 	try {
-		const user = findUserByName(requester);
+		const user = await findUserByName(requester);
 		const count = await karaDB.getSongCountForUser(playlist_id,user.id);	
 		if (count.count >= limit) {
 			logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
