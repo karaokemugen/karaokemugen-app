@@ -822,7 +822,7 @@ async function checkImportedKIDs(playlist) {
 	};	
 }
 
-export async function importPlaylist(playlist,username) {
+export async function importPlaylist(playlist, username, playlist_id) {
 	// Check if format is valid :
 	// Header must contain :
 	// description = Karaoke Mugen Playlist File
@@ -840,18 +840,18 @@ export async function importPlaylist(playlist,username) {
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database				
 	let playingKara;
-	if (playlist.Header === undefined) throw 'No Header section';
+	if (!playlist.Header) throw 'No Header section';
 	if (playlist.Header.description !== 'Karaoke Mugen Playlist File') throw 'Not a .kmplaylist file';
 	if (playlist.Header.version > 3) throw `Cannot import this version (${playlist.Header.version})`;
-	if (playlist.PlaylistContents === undefined) throw 'No PlaylistContents section';
-	if (playlist.PlaylistInformation === undefined) throw 'No PlaylistInformation section';
+	if (!playlist.PlaylistContents) throw 'No PlaylistContents section';
+	if (!playlist.PlaylistInformation) throw 'No PlaylistInformation section';
 	if (isNaN(playlist.PlaylistInformation.created_at)) throw 'Creation time is not valid';
 	if (isNaN(playlist.PlaylistInformation.modified_at)) throw 'Modification time is not valid';
 	if (playlist.PlaylistInformation.flag_visible !== 0 && 
 		playlist.PlaylistInformation.flag_visible !== 1) throw 'Visible flag must be boolean';
 	if (isEmpty(playlist.PlaylistInformation.name)) throw 'Playlist name must not be empty';
 	let flag_playingDetected = false;
-	if (playlist.PlaylistContents !== undefined) {
+	if (playlist.PlaylistContents) {
 		playlist.PlaylistContents.forEach((kara,index) => {
 			if (!(new RegExp(uuidRegexp).test(kara.kid))) throw 'KID is not a valid UUID!';
 			if (isNaN(kara.created_at)) throw 'Karaoke added time is not a number';
@@ -871,15 +871,18 @@ export async function importPlaylist(playlist,username) {
 
 	// Validations done. First creating playlist.
 	try {
-		const playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0,0,username);
-
-		const ret = await checkImportedKIDs(playlist.PlaylistContents);	
+		if (!playlist_id) {
+			playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0,0,username);
+		} else {
+			await emptyPlaylist(playlist_id);			
+		}
+		const ret = await checkImportedKIDs(playlist.PlaylistContents);
 		playlist.PlaylistContents = ret.karasToImport;	
 		playlist.PlaylistContents.forEach((kara,index) => {
 			playlist.PlaylistContents[index].playlist_id = playlist_id;
 		});
 		await karaDB.addKaraToPlaylist(playlist.PlaylistContents);
-		if (playingKara) {
+		if (playingKara) {	
 			const plcPlaying = await getPLCByKID(playingKara,playlist_id);				
 			await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
 		}

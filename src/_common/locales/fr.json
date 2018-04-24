@@ -353,6 +353,9 @@
 	"FAVORITES_ADD_SONG_ERROR": "Impossible d'ajouter %s à vos favoris",
 	"FAVORITES_DELETED": "Favori supprimé",
 	"FAVORITES_DELETE_ERROR": "Impossible de supprimer le favori",
+	"FAVORITES_IMPORTED": "Favoris importés",
+	"FAVORITES_IMPORT_ERROR": "Erreur d'importation des favoris",
+	"FAVORITES_EXPORT_ERROR": "Erreur d'exportation des favoris",
 	"AVATAR_IMPORT": "Importer un avatar",
 	"AUTOMIX_CREATED": "Liste AutoMix crée avec succès",
 	"AUTOMIX_ERROR": "Erreur lors de la création de la liste AutoMix",
@@ -430,9 +433,9 @@
 	"QUOTA": "Restant :",
 	"FIRST_PUBLIC_RUN_WELCOME": "Il semble que ce soit votre 1ère fois ici !",
 	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE (~2 MIN)",
-	"_": "DO NOT MODIFY",
 	"LOGOUT": "Déconnexion",
 	"SETTINGS_PLAYER": "Lecteur",
 	"SETTINGS_KARAOKE": "Karaoké",
-	"SETTINGS_INTERFACE": "Interface"
+	"SETTINGS_INTERFACE": "Interface",
+	"_": "DO NOT MODIFY"
 }

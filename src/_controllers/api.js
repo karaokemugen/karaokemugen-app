@@ -4627,7 +4627,128 @@ export function APIControllerPublic(router) {
 			}
 			
 		});
-
+	router.route('/favorites/export')
+	/**
+ * @api {get} /favorites/export Export favorites
+ * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
+ * @apiName getFavoritesExport
+ * @apiVersion 2.2.0
+ * @apiGroup Favorites
+ * @apiPermission public 
+ * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "Header": {
+ *           "description": "Karaoke Mugen Playlist File",
+ *           "version": 2
+ *       },
+ *       "PlaylistContents": [
+ *           {
+ *               "flag_playing": 1,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b"
+ *           },
+ *           {
+ *               "kid": "6da96a7d-7159-4ea7-a5ee-1d78a6eb44dd"
+ *           },
+ *           {
+ *               "kid": "5af7ba4c-2325-451d-a24f-e7fd7c2d3ba8"
+ *           },
+ *           {
+ *               "kid": "e0206f48-0f51-44e3-bf9a-b651916d0c05"
+ *           }
+ *       ],
+ *       "PlaylistInformation": {
+ *           "created_at": 1508936812,
+ *           "flag_visible": 0,
+ *           "modified_at": 1508936821,
+ *           "name": "Test",
+ *           "time_left": 0
+ *       }
+ *   }
+ * }
+ * @apiError FAVORITES_EXPORT_ERROR Unable to export favorites
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "FAVORITES_EXPORT_ERROR" 
+ * }
+ */		
+		.get(requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
+			// Returns the playlist and its contents in an exportable format (to save on disk)
+			try {
+				const playlist = await favorites.exportFavorites(req.authToken);
+				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('FAVORITES_EXPORT_ERROR',err.message,err.data));
+			}
+		});
+	router.route('/favorites/import')
+	/**
+ * @api {post} /favorites/import Import favorites
+ * @apiName postFavoritesImport
+ * @apiVersion 2.2.0
+ * @apiGroup Favorites
+ * @apiPermission public
+ *
+ * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "FAVORITES_IMPORTED",
+ *   "data": {
+ *       "message": "Favorites imported",
+ *       "unknownKaras": []
+ *   }
+ * }
+ * @apiError FAVORITES_IMPORT_ERROR Unable to import playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "FAVORITES_IMPORT_ERROR",
+ *   "message": "No header section"
+ * }
+ */		
+		.post(requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
+			// Imports a playlist and its contents in an importable format (posted as JSON data)
+			req.check({
+				'playlist': {
+					in: 'body',
+					notEmpty: true,
+					isJSON: true,
+				}
+			});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				try {	
+					const data = await favorites.importFavorites(JSON.parse(req.body.playlist),req.authToken);
+					const response = {
+						message: 'Favorites imported',
+						playlist_id: data.playlist_id
+					};
+					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;							
+					emitWS('playlistsUpdated');
+					res.json(OKMessage(response,'PL_IMPORTED',data.playlist_id));
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage('PL_IMPORT_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+			
+		});
 	router.route('/users')
 	/**
  * @api {get} /public/users List users
