@@ -2,7 +2,7 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import validate from 'validate.js';
 import {has as hasLang} from 'langs';
-import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, videoFileRegexp} from './constants';
+import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
 import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
@@ -12,9 +12,8 @@ import logger from 'winston';
  */
 export function getKara(karaData) {
 	timestamp.round = true;
-
 	return {
-		videofile: karaData.videofile || '',
+		mediafile: karaData.mediafile || '',
 		subfile: karaData.subfile || 'dummy.ass',
 		subchecksum: karaData.subchecksum || '',
 		title: karaData.title || '',
@@ -31,11 +30,11 @@ export function getKara(karaData) {
 		KID: karaData.KID || uuidV4(),
 		dateadded: karaData.dateadded || timestamp.now(),
 		datemodif: karaData.datemodif || timestamp.now(),
-		videosize: karaData.videosize || 0,
-		videogain: karaData.videogain || 0,
-		videoduration: karaData.videoduration || 0,
-		version: karaData.version || 2
-	};
+		mediasize: karaData.mediasize || 0,
+		mediagain: karaData.mediagain || 0,
+		mediaduration: karaData.mediaduration || 0,
+		version: karaData.version || 3
+	};		
 }
 
 function initValidators() {
@@ -67,10 +66,40 @@ function integerValidator(value) {
 	return result;
 }
 
-const karaConstraints = {
+const karaConstraintsV3 = {
+	mediafile: {
+		presence: {allowEmpty: false},
+		format: mediaFileRegexp
+	},
+	subfile: {
+		presence: {allowEmpty: false},
+		format: subFileRegexp
+	},
+	title: {presence: {allowEmpty: true}},
+	type: {presence: true, inclusion: karaTypesArray},
+	series: function(value, attributes) {
+		if (!serieRequired(attributes['type'])) {
+			return { presence: {allowEmpty: true} };
+		} else {
+			return { presence: {allowEmpty: false} };
+		}
+	},
+	lang: {langValidator: true},
+	order: {integerValidator: true},
+	year: {integerValidator: true},
+	KID: {presence: true, format: uuidRegexp},
+	dateadded: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	datemodif: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	mediasize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	mediagain: {numericality: true},
+	mediaduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
+	version: {numericality: {onlyInteger: true, equality: 3}}
+};
+
+const karaConstraintsV2 = {
 	videofile: {
 		presence: {allowEmpty: false},
-		format: videoFileRegexp
+		format: mediaFileRegexp
 	},
 	subfile: {
 		presence: {allowEmpty: false},
@@ -96,6 +125,7 @@ const karaConstraints = {
 	videoduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	version: {numericality: {onlyInteger: true, lowerThanOrEqualTo: 2}}
 };
+
 
 export async function validateKaras() {
 	try {
@@ -127,7 +157,15 @@ function verifyKIDsUnique(karas) {
 
 export function karaDataValidationErrors(karaData) {
 	initValidators();
-	return validate(karaData, karaConstraints);
+	switch (karaData.version) {
+	case 0:
+	case 1:
+	case 2:
+		return validate(karaData, karaConstraintsV2);			
+	default:
+	case 3:
+		return validate(karaData, karaConstraintsV3);
+	}		
 }
 
 export function verifyKaraData(karaData) {

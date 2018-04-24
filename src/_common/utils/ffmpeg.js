@@ -22,9 +22,9 @@ export async function createPreview(videopreview) {
 	}	
 }
 
-export async function getVideoInfo(videofile) {
+export async function getMediaInfo(mediafile) {
 	try {
-		const result = await execa(getConfig().BinffmpegPath, ['-i', videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
+		const result = await execa(getConfig().BinffmpegPath, ['-i', mediafile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 		const outputArray = result.stderr.split(' ');
 		const indexTrackGain = outputArray.indexOf('track_gain');
 		const indexDuration = outputArray.indexOf('Duration:');
@@ -51,7 +51,7 @@ export async function getVideoInfo(videofile) {
 			error: error
 		};
 	} catch(err) {
-		logger.warn(`Video ${videofile} probe error : ${err.code}`);
+		logger.warn(`Video ${mediafile} probe error : ${err.code}`);
 		return { duration: 0, audiogain: 0, error: true };
 	}
 }

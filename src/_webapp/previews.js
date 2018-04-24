@@ -5,7 +5,7 @@ import {
 	asyncExists, asyncReadDir, asyncRemove, asyncStat
 } from '../_common/utils/files';
 import {
-	getConfig, resolvedPathPreviews, resolvedPathVideos
+	getConfig, resolvedPathPreviews, resolvedPathMedias
 } from '../_common/utils/config';
 import {createPreview} from '../_common/utils/ffmpeg';
 
@@ -98,7 +98,7 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 	return previewFilesToCreate;
 }
 export async function isPreviewAvailable(videofile) {
-	const videofilename = resolvedPathVideos()+`/${videofile}`;
+	const videofilename = resolvedPathMedias()+`/${videofile}`;
 	let videoStats;
 	if (await asyncExists(videofilename)) {
 		videoStats = await asyncStat(videofilename);		

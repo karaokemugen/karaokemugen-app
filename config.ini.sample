@@ -146,7 +146,7 @@ BinffmpegOSX = "app/bin/ffmpeg"
 ; Paths - don't touch these unless you know what you're doing .
 PathBin = "app/bin"
 PathKaras = "app/data/karas"
-PathVideos = "app/data/videos"
+PathMedias = "app/data/videos"
 PathSubs = "app/data/lyrics"
 PathDB = "app/db"
 PathDBKarasFile = "karas.sqlite3"

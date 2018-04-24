@@ -38,13 +38,13 @@ export const generateBlacklist = `DELETE FROM blacklist;
     								UNION    
 								  SELECT k.pk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Song longer than ' || blc.value || ' seconds'
 									FROM blacklist_criteria blc
-									INNER JOIN karasdb.kara k on k.videolength >= blc.value
+									INNER JOIN karasdb.kara k on k.duration >= blc.value
 									WHERE blc.type = 1002
 									AND   k.pk_id_kara NOT IN (select fk_id_kara from whitelist)
     								UNION    
 								  SELECT k.pk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Song shorter than ' || blc.value || ' seconds'
 									FROM blacklist_criteria blc
-									INNER JOIN karasdb.kara k on k.videolength <= blc.value
+									INNER JOIN karasdb.kara k on k.duration <= blc.value
 									WHERE blc.type = 1003
 									AND   k.pk_id_kara NOT IN (select fk_id_kara from whitelist)
     							  	UNION    
@@ -93,7 +93,7 @@ export const getBlacklistContents = `SELECT
 	  									ak.year AS year,
       									ak.misc AS misc,    
       									(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
-      									ak.videolength AS duration,
+      									ak.duration AS duration,
       									bl.created_at AS created_at,
       									bl.reason AS reason_add,
       									ak.videofile AS videofile

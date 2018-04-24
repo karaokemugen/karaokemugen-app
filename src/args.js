@@ -19,7 +19,7 @@ Options :
 --updateSoft  Update Karaoke Mugen software
 --online      Launches in online mode (BETA)
 --noBrowser   Do not open a browser window upon launch
---noVideo     (generation only) Do not try to fetch data from video files
+--noMedia     (generation only) Do not try to fetch data from media files
 `;
 
 export async function parseCommandLineArgs(argv) {	
@@ -37,9 +37,9 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.generate && !argv.validate) {
 		logger.info('[Launcher] Database generation requested');
 		setConfig({optGenerateDB: true});
-		if (argv.noVideo) {
-			logger.info('[Launcher] Videos will not be read during generation');
-			setConfig({optNoVideo: true});
+		if (argv.noMedia) {
+			logger.info('[Launcher] Medias will not be read during generation');
+			setConfig({optNoMedia: true});
 		}
 	}
 	if (argv.validate && !argv.generate) {

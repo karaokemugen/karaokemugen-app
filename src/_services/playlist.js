@@ -1190,7 +1190,7 @@ export async function playCurrentSong() {
 	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;		
 	const ass = await getASS(kara.kara_id);
 	kara.path = {
-		video: kara.videofile,
+		media: kara.mediafile,
 		subtitle: ass
 	};		
 	return kara;

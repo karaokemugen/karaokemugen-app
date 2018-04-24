@@ -137,6 +137,8 @@
 	"TAG_MOBAGE_SHORT": "MOB",
 	"TAG_VN": "Visual Novel",
 	"TAG_VN_SHORT": "VN",
+	"TAG_SOUNDONLY": "Sound Only",
+	"TAG_SOUNDONLY_SHORT": "MP3",
 	"TAG_HARDMODE": "Good luck ;)",
 	"TAG_HARDMODE_SHORT": "HRD",
 	"REQUESTED_BY": "Requested by",

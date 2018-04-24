@@ -35,6 +35,6 @@ export const calculateSeriesCount = `SELECT COUNT(*) AS seriescount
 								  FROM karasdb.serie;
 								  `;
 
-export const calculateDuration = `SELECT SUM(videolength) AS totalduration 
+export const calculateDuration = `SELECT SUM(duration) AS totalduration 
 								 FROM karasdb.kara;
 								`;

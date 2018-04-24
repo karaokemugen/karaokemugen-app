@@ -70,13 +70,13 @@ export const updatePLCSetPos = `UPDATE playlist_content
 
 
 export const updatePlaylistDuration = `UPDATE playlist SET time_left = 
-    									(SELECT ifnull(SUM(karasdb.kara.videolength),0) AS duration
+    									(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
     									FROM karasdb.kara, playlist_content 
     									WHERE playlist_content.fk_id_kara = karasdb.kara.pk_id_kara  
     									AND playlist_content.fk_id_playlist = $playlist_id  
     									AND playlist_content.pos >= (select ifnull(pos,0) from playlist_content where flag_playing = 1 and playlist_content.fk_id_playlist = $playlist_id)),
     									length = 
-    									(SELECT ifnull(SUM(karasdb.kara.videolength),0) AS duration
+    									(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
     									FROM karasdb.kara, playlist_content 
     									WHERE playlist_content.fk_id_kara = 	karasdb.kara.pk_id_kara  
     								  	AND playlist_content.fk_id_playlist = $playlist_id
@@ -121,8 +121,8 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
       									pc.pos AS pos,
       									pc.pk_id_plcontent AS playlistcontent_id,
       									pc.flag_playing AS flag_playing,      
-      									ak.videofile AS videofile,
-	  									ak.videolength AS duration,	  
+      									ak.mediafile AS mediafile,
+	  									ak.duration AS duration,	  
 	  									(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
       									(CASE WHEN wl.fk_id_kara = ak.kara_id
 	     									THEN 1
@@ -159,7 +159,7 @@ export const getPlaylistContentsMini = `SELECT ak.kara_id AS kara_id,
       												ak.gain AS gain,
       												pc.pseudo_add AS pseudo_add,
 													pc.created_at AS created_at,
-      												ak.videofile AS videofile,
+      												ak.mediafile AS mediafile,
 	  												pc.pos AS pos,
 													pc.flag_playing AS flag_playing,
 													pc.pk_id_plcontent AS 			playlistcontent_id,
@@ -224,8 +224,8 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
       							pc.pk_id_plcontent AS playlistcontent_id,
 	    						pc.fk_id_playlist as playlist_id,      
       							pc.flag_playing AS flag_playing,	        
-      							ak.videofile AS videofile,
-	  							ak.videolength AS duration,
+      							ak.mediafile AS mediafile,
+	  							ak.duration AS duration,
 	  							ak.gain AS gain,
 								  (SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
 								  EXISTS(
@@ -244,7 +244,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 	      							THEN 1
         							ELSE 0
       							END) AS flag_blacklisted,
-	  							(SELECT ifnull(SUM(all_karas.videolength) - ak.videolength,0)
+	  							(SELECT ifnull(SUM(all_karas.duration) - ak.duration,0)
 								FROM karasdb.all_karas AS all_karas
     							INNER JOIN playlist_content ON all_karas.kara_id = playlist_content.fk_id_kara
     							WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
@@ -294,7 +294,7 @@ export const getPLCByKID = `SELECT ak.kara_id AS kara_id,
 								ak.singer AS singer,
 								ak.gain AS gain,
 								pc.pseudo_add AS pseudo_add,
-								ak.videofile AS videofile,
+								ak.mediafile AS mediafile,
 								pc.pos AS pos,
 								pc.flag_playing AS flag_playing,
 								pc.pk_id_plcontent AS playlistcontent_id,
