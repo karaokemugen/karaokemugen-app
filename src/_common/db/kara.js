@@ -206,7 +206,16 @@ export const getSongCountPerUser = `SELECT COUNT(1) AS count
 									FROM playlist_content AS pc
 									WHERE pc.fk_id_user = $user_id
 									  AND pc.fk_id_playlist = $playlist_id
-									  AND flag_free = 0
+									  AND pc.flag_free = 0
 									`;
+
+export const getTimeSpentPerUser = `SELECT SUM(ak.duration) AS timeSpent
+									FROM karasdb.all_karas AS ak
+									INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
+									WHERE pc.fk_id_user = $user_id
+									  AND pc.fk_id_playlist = $playlist_id
+									  AND pc.flag_free = 0
+									`;
+
 
 export const resetViewcounts = 'DELETE FROM viewcount;';

@@ -57,7 +57,7 @@ export async function freePLCBeforePos(pos, playlist_id) {
 export async function updateSongsLeft(user_id,playlist_id) {
 	const conf = getConfig();
 	const user = await findUserByID(user_id);	
-	let songsLeft;
+	let quotaLeft;
 	if (!playlist_id) {
 		if (conf.EnginePrivateMode === 1) {
 			playlist_id = await isACurrentPlaylist();				
@@ -65,33 +65,63 @@ export async function updateSongsLeft(user_id,playlist_id) {
 			playlist_id = await isAPublicPlaylist();
 		}
 	}			
-	if (user.flag_admin === 0) {
-		const count = await karaDB.getSongCountForUser(playlist_id,user_id);
-		songsLeft = conf.EngineSongsPerUser - count.count;
+	if (user.flag_admin === 0 && +conf.EngineQuotaType > 0) {
+		switch(+conf.EngineQuotaType) {
+		default:
+		case 1:
+			const count = await karaDB.getSongCountForUser(playlist_id,user_id);
+			quotaLeft = +conf.EngineSongsPerUser - count.count;
+			break;
+		case 2:
+			const time = await karaDB.getSongTimeSpentForUser(playlist_id,user_id);
+			quotaLeft = +conf.EngineTimePerUser - time.timeSpent;
+		}		
 	} else {
-		songsLeft = -1;
+		quotaLeft = null;
 	}
-	logger.debug(`[User] Updating songs left for ${user.login} : ${songsLeft}`);
-	emitWS('songsAvailableUpdated', {
+	logger.debug(`[User] Updating quota left for ${user.login} : ${quotaLeft}`);
+	emitWS('quotaAvailableUpdated', {
 		username: user.login,
-		songsLeft: songsLeft
+		quotaLeft: quotaLeft,
+		quotaType: +conf.EngineQuotaType
 	});		
 }
 
 export async function isUserAllowedToAddKara(playlist_id,requester) {
-	const limit = getConfig().EngineSongsPerUser;
-	try {
-		const user = findUserByName(requester);
-		const count = await karaDB.getSongCountForUser(playlist_id,user.id);	
-		if (count.count >= limit) {
-			logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
-			return false;
-		} else {
-			return true;
-		}
-	} catch (err) {
-		throw err;
-	}
+	const conf = getConfig();
+	if (+conf.EngineQuotaType === 0) return true;
+	const user = await findUserByName(requester);
+	let limit;
+	switch(+conf.EngineQuotaType) {
+	default:
+	case 1:
+		limit = getConfig().EngineSongsPerUser;
+		try {		
+			const count = await karaDB.getSongCountForUser(playlist_id,user.id);	
+			if (count.count >= limit) {
+				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
+				return false;
+			} else {
+				return true;
+			}
+		} catch (err) {
+			throw err;
+		}		
+	case 2:
+		limit = getConfig().EngineTimePerUser;
+		try {
+			const time = await karaDB.getTimeSpentForUser(playlist_id,user.id);
+			if (!time.timeSpent) time.timeSpent = 0;			
+			if ((limit - time.timeSpent) < 0) {
+				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit - time.timeSpent} seconds of time credit)`);
+				return false;
+			} else {
+				return true;
+			}
+		} catch(err) {
+			throw err;
+		}		
+	}		
 }
 
 export async function isCurrentPlaylist(playlist_id) {
