@@ -185,3 +185,7 @@ export function serieRequired(karaType) {
 export async function getKaraHistory() {
 	return await karaDB.getKaraHistory();
 }
+
+export async function getKaraViewcounts() {
+	return await karaDB.getKaraViewcounts();
+}

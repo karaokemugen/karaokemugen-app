@@ -44,6 +44,19 @@ export const getKaraHistory = `SELECT ak.title AS title,
  							ORDER BY vc.modified_at DESC
 							`;
 
+export const getKaraViewcounts = `SELECT ak.title AS title,
+								ak.songorder AS songorder,
+      							ak.serie AS serie,
+								ak.singer AS singer,
+      							ak.songtype AS songtype,      
+      							ak.language AS language,
+      							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount
+							FROM karasdb.all_karas AS ak
+							WHERE viewcount > 0
+ 							ORDER BY viewcount DESC
+							`;
+
+
 export const getAllKaras = `SELECT ak.kara_id AS kara_id,
       							ak.kid AS kid,
       							ak.title AS title,
