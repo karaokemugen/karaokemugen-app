@@ -26,6 +26,14 @@ export async function getKaraByKID(kid) {
 	return await getUserDb().get(sql.getKaraByKID, { $kid: kid });
 }
 
+export async function getKaraHistory() {
+	return await getUserDb().all(sql.getKaraHistory);
+}
+
+export async function getKaraViewcounts() {
+	return await getUserDb().all(sql.getKaraViewcounts);
+}
+
 export async function getKara(id, username) {
 	return await getUserDb().get(sql.getKara,
 		{
