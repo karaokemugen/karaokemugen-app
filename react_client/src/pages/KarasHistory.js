@@ -54,24 +54,27 @@ class KaraList extends Component {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
 		key: 'serie',	
-		render: record => (record.serie || record.singer)
+		render: (serie, record) => (serie || record.singer)
 	}, {
 		title: 'Type',
-		dataIndex: 'type',
-		key: 'type',		
-		render: record => (record.songtype + record.songorder)
+		dataIndex: 'songtype',
+		key: 'songtype',		
+		render: (songtype, record) => (songtype.replace('TYPE_','') + ' ' + record.songorder)
+	}, {
+		title: 'Title',
+		dataIndex: 'title',
+		key: 'title'		
 	}, {
 		title: 'View count',
 		dataIndex: 'viewcount',
 		key: 'viewcount',
-		render: record => (record.viewcount),
-		defaultSortOrder: 'descend',
-		sorter: (a, b) => a.viewcount - b.viewcount
+		render: viewcount => viewcount,
 	}, {
 		title: 'Seen on',
 		dataIndex: 'viewed_at',
-		key: 'viewed_at',
-		render: (viewed_at) => (new Date(+viewed_at)).toLocaleString('fr-FR'),
+		key: 'viewed_at',		
+		render: (viewed_at) => (new Date(viewed_at*1000)).toLocaleString('fr-FR'),
+		defaultSortOrder: 'descend',
 		sorter: (a,b) => a.viewed_at - b.viewed_at
 	}];
 }

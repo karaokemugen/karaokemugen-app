@@ -23,7 +23,7 @@ export async function getKaraMini(id) {
 }
 
 export async function getKaraHistory() {
-	return await getUserDb().get(sql.getKaraHistory);
+	return await getUserDb().all(sql.getKaraHistory);
 }
 
 export async function getKara(id, username) {
