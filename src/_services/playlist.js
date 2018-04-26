@@ -64,7 +64,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 		} else {
 			playlist_id = await isAPublicPlaylist();
 		}
-	}			
+	}		
 	if (user.flag_admin === 0 && +conf.EngineQuotaType > 0) {
 		switch(+conf.EngineQuotaType) {
 		default:
@@ -110,7 +110,7 @@ export async function isUserAllowedToAddKara(playlist_id,requester) {
 	case 2:
 		limit = getConfig().EngineTimePerUser;
 		try {
-			const time = await karaDB.getTimeSpentForUser(playlist_id,user.id);
+			const time = await karaDB.getSongTimeSpentForUser(playlist_id,user.id);
 			if (!time.timeSpent) time.timeSpent = 0;			
 			if ((limit - time.timeSpent) < 0) {
 				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit - time.timeSpent} seconds of time credit)`);
@@ -651,7 +651,7 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	karaList.forEach(function(kara) {
 		karaAdded.push(kara.kara_id);
 	});
-	updateSongsLeft(requester, playlist_id);
+	updateSongsLeft(user.id, playlist_id);
 	return karaAdded;
 }
 

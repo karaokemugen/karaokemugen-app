@@ -11,7 +11,7 @@ export async function getSongCountForUser(playlist_id,user_id) {
 	});
 }
 
-export async function getTimeSpentForUser(playlist_id,user_id) {
+export async function getSongTimeSpentForUser(playlist_id,user_id) {
 	return await getUserDb().get(sql.getTimeSpentPerUser, {
 		$playlist_id: playlist_id,
 		$user_id: user_id
