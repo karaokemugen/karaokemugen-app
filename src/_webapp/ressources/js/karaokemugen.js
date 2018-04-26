@@ -2116,14 +2116,22 @@ var settingsNotUpdated;
 		}
 	});
 
-	socket.on('songsAvailableUpdated', function(data){
+	socket.on('quotaAvailableUpdated', function(data){
 		if (logInfos.username === data.username) {
-			var quota = data.songsLeft;
-			if (data.songsLeft == -1) {
-				quota = '\u221e';
+			var quota = data.quotaLeft;
+		
+			var quotaString = '';
+			if(data.quotaType == 1) {
+				quotaString = data.quotaLeft
+			} else if (data.quotaType == 2) {
+				quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
 			}
-			$('#plQuota').text(i18n.__('QUOTA')+' '+quota);
-			DEBUG && console.log(data.username, data.songsLeft);
+			if (data.quotaLeft == -1) {
+				quotaString = '\u221e';
+			}
+
+			$('#plQuota').text(i18n.__('QUOTA')+' '+quotaString);
+			DEBUG && console.log(data.username, data.quotaLeft, data.quotaType);
 		}
 	});
 
