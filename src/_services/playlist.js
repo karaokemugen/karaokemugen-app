@@ -1,5 +1,6 @@
 import {uuidRegexp} from './constants';
 import {getStats} from '../_dao/database';
+import {asyncExists, asyncReadFile} from '../_common/utils/files';
 import {ASSToLyrics} from '../_common/utils/ass';
 import {getConfig} from '../_common/utils/config';
 import {findUserByID, findUserByName} from '../_services/user';
@@ -209,16 +210,19 @@ export async function addKaraToWhitelist(karas) {
 }
 
 export async function getKaraLyrics(kara_id) {
-	if (!await isKara(kara_id)) throw `Kara ${kara_id} unknown`;
-	const ASS = await getASS(kara_id);
+	const kara = await karaDB.getKaraMini(kara_id);	
+	if (!kara) throw `Kara ${kara_id} unknown`;
+	if (kara.subfile === 'dummy.ass') return 'Lyrics not available for this song';
+	const ASS = await karaDB.getASS(kara.subfile);
 	if (ASS) return ASSToLyrics(ASS);
 	return 'Lyrics not available for this song';		
 }
 
 async function getASS(kara_id) {
-	const ASS = await karaDB.getASS(kara_id);
-	if (ASS) return ASS.ass;
-	return false;
+	const kara = await karaDB.getKaraMini(kara_id);	
+	let ASS;	
+	if (kara.subfile !== 'dummy.ass') ASS = await karaDB.getASS(kara.subfile);
+	return ASS || false;
 }
 
 export async function deleteBlacklistCriteria(blc_id) {
