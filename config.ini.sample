@@ -77,6 +77,9 @@ EngineFreeUpvotesRequiredPercent = 33
 ; You need at least this many votes to free a song, no matter the percentage of online users reached .
 EngineFreeUpvotesRequiredMin = 4
 
+; Time (in minutes) before a song is automatically freed : {integer}
+EngineFreeAutoTime = 60
+
 ; AutoPlay: {boolean}
 ; AutoPlay : if a karaoke song is added to the current playlist, start playing immediately if the engine is stopped .
 EngineAutoPlay = 0

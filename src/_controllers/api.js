@@ -1393,6 +1393,7 @@ export function APIControllerAdmin(router) {
  * 		 "EngineFreeUpvotes": "1",
  *       "EngineFreeUpvotesRequiredPercentage": "33",
  *       "EngineFreeUpvotesRequiredMin": "4",
+ *       "EngineFreeAutoTime": "60",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
  * 		 "EngineQuotaType": "1",
@@ -1453,6 +1454,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
  * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
  * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
+ * @apiParam {Number} EngineFreeAutoTime Time in minutes before a song is automatically freed.
  * @apiParam {Boolean} EngineFreeUpvotes Enable/disable Free Songs By Upvotes feature
  * @apiParam {Number} EngineFreeUpvotesRequiredMin Minimum number of upvotes required to free a song
  * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
@@ -1526,6 +1528,11 @@ export function APIControllerAdmin(router) {
 					isBoolean: true
 				},
 				'EngineFreeUpvotesRequiredMin': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
+				},
+				'EngineFreeAutoTime': {
 					in: 'body',
 					notEmpty: true,
 					isInt: true
@@ -1643,6 +1650,7 @@ export function APIControllerAdmin(router) {
 				req.sanitize('EngineDisplayConnectionInfoHost').unescape();
 				req.sanitize('EngineAutoPlay').toInt();
 				req.sanitize('EngineFreeUpvotes').toInt();
+				req.sanitize('EngineFreeAutoTime').toInt();
 				req.sanitize('EngineRepeatPlaylist').toInt();
 				req.sanitize('EngineSmartInsert').toInt();
 				req.sanitize('EngineJinglesInterval').toInt();
@@ -2920,6 +2928,7 @@ export function APIControllerPublic(router) {
  *       "EngineDisplayConnectionInfoMessage": "",
  *       "EngineDisplayConnectionInfoQRCode": "1",
  *       "EngineDisplayNickname": "1",
+ *       "EngineFreeAutoTime": "60",
  * 		 "EngineFreeUpvotes": "1",
  * 		 "EngineFreeUpvotesPercent": "33",
  * 		 "EngineFreeUpvotesMin": "4",
