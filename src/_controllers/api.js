@@ -1395,9 +1395,11 @@ export function APIControllerAdmin(router) {
  *       "EngineFreeUpvotesRequiredMin": "4",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
+ * 		 "EngineQuotaType": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
  *       "EngineSongsPerUser": "10000",
+ * 		 "EngineTimePerUser": "10000",
  *       "EngineCreatePreviews": "1",
  *       "PathAltname": "../times/series_altnames.csv",
  *       "PathBackgrounds": "app/backgrounds",
@@ -1438,7 +1440,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/settings Update settings
  * @apiName PutSettings
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiPermission admin
  * @apiGroup Main
  * @apiDescription **Note :** All settings must be sent at once in a single request.
@@ -1456,9 +1458,11 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
  * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Number} EngineQuotaType Type of quota for users when adding songs. `0` = no quota, `1` = limited by number of songs, `2` = limited by total song duration.
  * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
  * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
+ * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
  * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
@@ -1467,12 +1471,9 @@ export function APIControllerAdmin(router) {
  * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
-<<<<<<< HEAD:src/_controllers/api.js
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
  * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
-=======
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
->>>>>>> 167-mode-public-permettre-de-like-une-suggestion:src/_apiserver/api.js
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -1540,6 +1541,16 @@ export function APIControllerAdmin(router) {
 					isBoolean: true,
 				},
 				'EngineSongsPerUser': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'EngineTimePerUser': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'EngineQuotaType': {
 					in: 'body',
 					notEmpty: true,
 					isInt: true,
@@ -1641,6 +1652,8 @@ export function APIControllerAdmin(router) {
 				req.sanitize('PlayerStayOnTop').toInt();
 				req.sanitize('PlayerScreen').toInt();
 				req.sanitize('EngineSongsPerUser').toInt();
+				req.sanitize('EngineTimePerUser').toInt();
+				req.sanitize('EngineQuotaType').toInt();
 				req.sanitize('EnginePrivateMode').toInt();
 				req.sanitize('PlayerPIP').toInt();
 				req.sanitize('PlayerPIPSize').toInt();
@@ -2886,10 +2899,10 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/settings Get settings (public)
  * @apiName GetSettingsPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Main
  * @apiPermission public
- * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries or admin password information.
+ * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries and other internal settings.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -2912,9 +2925,11 @@ export function APIControllerPublic(router) {
  * 		 "EngineFreeUpvotesMin": "4",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
+ *       "EngineQuotaType": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
  *       "EngineSongsPerUser": "10000",
+ *       "EngineTimePerUser": "10000",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
  *       "PlayerNoBar": "1",
