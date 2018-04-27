@@ -154,6 +154,7 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
       						ak.misc AS misc,
 	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
       						ak.mediafile AS mediafile,
+							ak.subfile AS subfile,
 	  						ak.duration AS duration,
 	  						ak.gain AS gain,
 							(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
@@ -196,17 +197,12 @@ export const getKaraMini = `SELECT ak.kara_id AS kara_id,
       						ak.misc AS misc,
 	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
       						ak.mediafile AS mediafile,
+							ak.subfile AS subfile,
 	  						ak.duration AS duration,
 	  						ak.gain AS gain							
  						FROM karasdb.all_karas AS ak
 						WHERE ak.kara_id = $kara_id  						  
   						`;
-
-
-export const getASS = `SELECT a.ass AS ass
-  					FROM karasdb.ass AS a
- 					WHERE a.fk_id_kara = $kara_id;
-					 `;
 
 export const isKara = `SELECT pk_id_kara 
 					FROM karasdb.kara 

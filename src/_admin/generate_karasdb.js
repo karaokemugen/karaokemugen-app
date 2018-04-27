@@ -25,7 +25,6 @@ let error = false;
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
 	await db.run('DELETE FROM kara_serie;');
-	await db.run('DELETE FROM ass;');
 	await db.run('DELETE FROM tag;');
 	await db.run('DELETE FROM serie;');
 	await db.run('DELETE FROM kara;');
@@ -125,6 +124,7 @@ function prepareKaraInsertData(kara, index) {
 		$kara_year: kara.year,
 		$kara_songorder: kara.order,
 		$kara_mediafile: kara.mediafile,
+		$kara_subfile: kara.subfile,
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,		
 		$kara_gain: kara.mediagain,
@@ -358,22 +358,6 @@ function prepareTagsKaraInsertData(tagsByKara) {
 	return data;
 }
 
-async function insertAss(db, karas) {
-	const stmt = await db.prepare('INSERT INTO ass (fk_id_kara, ass) VALUES ($id_kara, $ass);');
-	const insertPromises = [];
-	karas.forEach((kara, index) => {
-		const karaIndex = index + 1;
-		if (kara.ass) {
-			insertPromises.push(stmt.run({
-				$id_kara: karaIndex,
-				$ass: kara.ass,
-			}));
-		}
-	});
-	await Promise.all(insertPromises);
-	await stmt.finalize();
-}
-
 async function runSqlStatementOnData(stmtPromise, data) {
 	const stmt = await stmtPromise;
 	const sqlPromises = data.map(sqlData => stmt.run(sqlData));
@@ -414,7 +398,6 @@ export async function run(config) {
 		
 		const insertPromises = [
 			runSqlStatementOnData(db.prepare(insertKaras), sqlInsertKaras),
-			insertAss(db, karas),
 			runSqlStatementOnData(db.prepare(insertSeries), sqlInsertSeries),
 			runSqlStatementOnData(db.prepare(insertTags), sqlInsertTags),
 			runSqlStatementOnData(db.prepare(insertKaraTags), sqlInsertKarasTags),

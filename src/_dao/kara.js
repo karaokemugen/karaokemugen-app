@@ -1,6 +1,8 @@
 import {getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
+import {resolve} from 'path';
+import {asyncExists, asyncReadFile} from '../_common/utils/files';
 
 const sql = require('../_common/db/kara');
 
@@ -43,8 +45,11 @@ export async function getKara(id, username) {
 		});
 }
 
-export async function getASS(id) {
-	return await getUserDb().get(sql.getASS, { $kara_id: id });
+export async function getASS(sub) {
+	const conf = getConfig();
+	const subfile = resolve(conf.appPath,conf.PathSubs,sub);	
+	if (await asyncExists(subfile)) return await asyncReadFile(subfile, 'utf-8');
+	throw 'Subfile not found';
 }
 
 export async function isKara(id) {
