@@ -77,7 +77,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 			quotaLeft = +conf.EngineTimePerUser - time.timeSpent;
 		}		
 	} else {
-		quotaLeft = null;
+		quotaLeft = -1;
 	}
 	logger.debug(`[User] Updating quota left for ${user.login} : ${quotaLeft}`);
 	emitWS('quotaAvailableUpdated', {
@@ -87,7 +87,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 	});		
 }
 
-export async function isUserAllowedToAddKara(playlist_id,requester) {
+export async function isUserAllowedToAddKara(playlist_id,requester,duration) {
 	const conf = getConfig();
 	if (+conf.EngineQuotaType === 0) return true;
 	const user = await findUserByName(requester);
@@ -112,8 +112,8 @@ export async function isUserAllowedToAddKara(playlist_id,requester) {
 		try {
 			const time = await karaDB.getSongTimeSpentForUser(playlist_id,user.id);
 			if (!time.timeSpent) time.timeSpent = 0;			
-			if ((limit - time.timeSpent) < 0) {
-				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit - time.timeSpent} seconds of time credit)`);
+			if ((limit - time.timeSpent - duration) < 0) {
+				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit - time.timeSpent} seconds of time credit left and tried to add ${duration} seconds)`);
 				return false;
 			} else {
 				return true;
