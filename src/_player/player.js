@@ -177,7 +177,7 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
-		'--log-file='+resolve(conf.appPath,'mpv.log'),
+		'--log-file='+resolve(conf.appPath,'/logs/mpv.log'),
 		'--volume='+state.player.volume,
 		'--input-conf='+resolve(conf.appPath,conf.PathTemp,'input.conf'),
 	];
@@ -333,13 +333,11 @@ export async function play(mediadata) {
 		if (mediaFile.endsWith('.mp3')) {
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
-				logger.warn('[Player] Sound only media has no cover art! This is not supported yet by Karaoke Mugen');
-				/* Disabled until we can work out why multiple options don't work with mpv. See https://github.com/00SteinsGate00/Node-MPV/issues/41
+				const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
 				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
 				options.push('force-window=yes');
 				options.push('image-display-duration=inf');
-				options.push('vid=1');
-				*/
+				options.push('vid=1');				
 			}
 		}
 		await player.load(mediaFile,'replace', options);
