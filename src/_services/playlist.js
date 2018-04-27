@@ -14,6 +14,8 @@ import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {emitWS} from '../_webapp/frontend';
 import {emit} from '../_common/utils/pubsub';
+import {promisify} from 'util';
+const sleep = promisify(setTimeout);
 const blcDB = require('../_dao/blacklist');
 const tagDB = require('../_dao/tag');
 const wlDB = require('../_dao/whitelist');
@@ -1243,4 +1245,29 @@ export async function buildDummyPlaylist(playlist_id) {
 		logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
 		return true;
 	}				
+}
+
+async function updateFreeOrphanedSongs() {
+	// Flag songs as free if they are older than X minutes
+	try {
+		await karaDB.updateFreeOrphanedSongs(now() - (getConfig().EngineFreeAutoTime * 60));
+		//Sleep for one minute.
+		await sleep(60000);
+	} catch(err) {
+		await sleep(60000);
+		throw err;
+	}	
+}
+
+export async function initPlaylistSystem() {
+	Promise.resolve().then(function resolver() {
+		return updateFreeOrphanedSongs()
+			.then(resolver)
+			.catch((err) => {
+				logger.error(`[PLC] Freeing orphaned songs failed : ${err}`);
+				resolver();
+			});
+	}).catch((err) => {
+		logger.error(`[PLC] Freeing orphaned songs failed entirely. You need to restart Karaoke Mugen : ${err}`);
+	});
 }

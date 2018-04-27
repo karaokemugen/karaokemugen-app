@@ -219,3 +219,8 @@ export const getTimeSpentPerUser = `SELECT SUM(ak.duration) AS timeSpent
 
 
 export const resetViewcounts = 'DELETE FROM viewcount;';
+
+export const updateFreeOrphanedSongs = `UPDATE playlist_content SET 
+									flag_free = 1
+									WHERE created_at <= $expire_time;
+								`;

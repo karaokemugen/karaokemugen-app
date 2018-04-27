@@ -25,6 +25,10 @@ export async function getAllKaras(username) {
 	});
 }
 
+export async function updateFreeOrphanedSongs(expireTime) {
+	return await getUserDb().run(sql.updateFreeOrphanedSongs, { $expire_time: expireTime });
+}
+
 export async function getKaraMini(id) {
 	return await getUserDb().get(sql.getKaraMini, { $kara_id: id });
 }

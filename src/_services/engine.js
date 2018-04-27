@@ -171,6 +171,7 @@ export async function initEngine() {
 	if (conf.optOnline || conf.OnlineMode === 1) {
 		state.engine.url = await openTunnel();		
 	}
+	inits.push(plc.initPlaylistSystem());
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem);
