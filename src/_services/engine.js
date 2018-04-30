@@ -444,19 +444,23 @@ async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());
 }
 
+function formatKaraList(karaList,lang,filter,from,size) {
+	karaList = plc.trnaslateKaraInfo(karaList, lang);
+	if (filter) karaList = plc.filterPlaylist(karaList, filter);
+	return {
+		infos: {
+			count: karaList.length,
+			from: from,
+			to: from+size
+		},
+		content: karaList.slice(from,from+size)
+	};
+}
+
 export async function getKaras(filter,lang,from,size,token) {
 	try {
 		const pl = await plc.getAllKaras(token.username);
-		let karalist = plc.translateKaraInfo(pl,lang);
-		if (filter) karalist = plc.filterPlaylist(karalist,filter);
-		return {
-			infos: {
-				count: karalist.length,
-				from: from,
-				to: from+size
-			},
-			content: karalist.slice(from,from+size)
-		};
+		return formatKaraList(pl,lang,filter,from,size);		
 	} catch(err) {
 		throw err;
 	}
@@ -470,16 +474,7 @@ export async function getRandomKara(filter) {
 export async function getWL(filter,lang,from,size) {
 	try {
 		const pl = await plc.getWhitelistContents();
-		let karalist = plc.translateKaraInfo(pl,lang);
-		if (filter) karalist = plc.filterPlaylist(karalist,filter);
-		return {
-			infos: {
-				count: karalist.length,
-				from: from,
-				to: from+size
-			},
-			content: karalist.slice(from,from+size)
-		};
+		return formatKaraList(pl,lang,filter,from,size);		
 	} catch(err) {
 		throw err;
 	}
@@ -488,16 +483,7 @@ export async function getWL(filter,lang,from,size) {
 export async function getBL(filter,lang,from,size) {
 	try {
 		const pl = await plc.getBlacklistContents();
-		let karalist = plc.translateKaraInfo(pl,lang);
-		if (filter) karalist = plc.filterPlaylist(karalist,filter);
-		return {
-			infos: {
-				count: karalist.length,
-				from: from,
-				to: from+size
-			},
-			content: karalist.slice(from,from+size)
-		};
+		return formatKaraList(pl,lang,filter,from,size);		
 	} catch(err) {
 		throw err;
 	}
@@ -675,7 +661,11 @@ export async function updateSettings(newConfig) {
 	if (!isEmpty(newConfig.EngineConnectionInfoHost)) {
 		state.player.url = `http://${newConfig.EngineConnectionInfoHost}`;		
 	} else {
-		state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
+		if (+state.engine.frontendPort !== 80) {
+			state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
+		} else {
+			state.player.url = `http://${conf.osHost}`;
+		}
 	}
 	emit('playerStatusChange', state.player);
 	return await mergeConfig(conf, newConfig);				
@@ -769,24 +759,15 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
 		const pl = await plc.getPlaylistContents(playlist_id,token);
-		let karalist = plc.translateKaraInfo(pl,lang);
-		if (filter) karalist = plc.filterPlaylist(karalist,filter);
 		if (from === -1) {
-			const pos = plc.getPlayingPos(karalist);
+			const pos = plc.getPlayingPos(pl);
 			if (!pos) {
 				from = 0;
 			} else {
 				from = pos.index;
 			}
 		}
-		return {
-			infos: {
-				count: karalist.length,
-				from: from,
-				to: from+size
-			},
-			content: karalist.slice(from,from+parseInt(size,10))
-		};
+		return formatKaraList(pl,lang,filter,from,size);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
