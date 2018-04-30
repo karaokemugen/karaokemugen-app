@@ -934,17 +934,17 @@ export async function sendCommand(command, options) {
 		await hideSubsPlayer();
 		break;
 	case 'seek':
-		if (!options && typeof options !== 'undefined') options = 0;
+		if (!options) options = 0;
 		if (isNaN(options)) throw 'Command seek must have a numeric option value';
 		await seekPlayer(options);
 		break;
 	case 'goTo':
-		if (!options && typeof options !== 'undefined') options = 0;
+		if (!options) options = 0;
 		if (isNaN(options)) throw 'Command goTo must have a numeric option value';
 		await goToPlayer(options);
 		break;
 	case 'setVolume':
-		if (!options && typeof options !== 'undefined') throw 'Command setVolume must have a value';
+		if (!options) throw 'Command setVolume must have a value';
 		if (isNaN(options)) throw 'Command setVolume must have a numeric option value';
 		await setVolumePlayer(options);
 		break;
