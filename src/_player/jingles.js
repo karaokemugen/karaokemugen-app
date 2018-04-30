@@ -3,7 +3,7 @@ import {emit} from '../_common/utils/pubsub';
 import {resolve} from 'path';
 import {resolvedPathJingles} from '../_common/utils/config';
 import {getMediaInfo} from '../_common/utils/ffmpeg';
-const logger = require('winston');
+import logger from 'winston';
 
 export let jinglesList = [];
 export let currentJinglesList = [];
