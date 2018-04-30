@@ -192,8 +192,7 @@ export async function initEngine() {
 	let ready = 'READY';
 	if (Math.floor(Math.random() * Math.floor(10)) >= 9) ready = 'LADY';
 	logger.info(`[Engine] Karaoke Mugen is ${ready}`);
-	const catchphrase = sample(initializationCatchphrases);
-	console.log(`\n${catchphrase}\n`);
+	console.log(`\n${sample(initializationCatchphrases)}\n`);
 	if (!conf.isTest) welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
 }
 
@@ -218,18 +217,15 @@ export function exit(rc) {
 	});
 }
 
-async function playPlayer() {
-	if (state.engine.status !== 'play') {
+async function playPlayer() {	
+	if (state.engine.status === 'stop') {
 		// Switch to playing mode and ask which karaoke to play next
-		if (state.engine.status === 'pause') resume();
-		if (state.engine.status === 'stop') await tryToReadKaraInPlaylist();
+		await tryToReadKaraInPlaylist();
 		state.engine.status = 'play';
 		emitEngineStatus();
-	}
-	if (state.engine.status === 'play') {
-		// resume current play if needed
+	} else {
 		resume();
-	}
+	}	
 }
 
 function sendMessageToPlayer(string, duration) {
