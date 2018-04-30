@@ -30,6 +30,7 @@ let state = {};
 let internalState = {
 	currentPlaylistID: undefined,
 	publicPlaylistID: undefined,
+	modePlaylistID: undefined,
 	playerNeedsRestart: false,
 	currentlyPlayingKara: null,
 	counterToJingle: 1
@@ -110,6 +111,14 @@ function emitEngineStatus() {
 	emit('engineStatusChange', state.engine);
 }
 
+function updateModePlaylist() {
+	if (state.engine.private) {
+		internalState.modePlaylistID = internalState.currentPlaylistID;
+	} else {
+		internalState.modePlaylistID = internalState.publicPlaylistID;
+	}
+}
+
 async function restartPlayer() {
 	try {
 		await restartmpv();
@@ -157,7 +166,7 @@ export async function initEngine() {
 	}
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));
-	inits.push(initFavoritesSystem);
+	inits.push(initFavoritesSystem());
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await plc.isACurrentPlaylist();
@@ -177,9 +186,11 @@ export async function initEngine() {
 		internalState.publicPlaylistID = await plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1,0,'admin');
 		logger.info('[Engine] Initial public playlist created');
 	}
+	updateModePlaylist();
 	await Promise.all(inits);
+	
 	let ready = 'READY';
-	if (Math.floor(Math.random() * Math.floor(10)) >= 7) ready = 'LADY';
+	if (Math.floor(Math.random() * Math.floor(10)) >= 9) ready = 'LADY';
 	logger.info(`[Engine] Karaoke Mugen is ${ready}`);
 	const catchphrase = sample(initializationCatchphrases);
 	console.log(`\n${catchphrase}\n`);
@@ -414,12 +425,6 @@ async function updateUserQuotas(kara) {
 	//If karaokes are present in the public playlist, we're marking it free.			
 	//First find which KIDs are to be freed. All those before the currently playing kara 
 	// are to be set free.
-	let modePlaylist_id;
-	if (state.engine.private) {
-		modePlaylist_id = internalState.currentPlaylistID;
-	} else {
-		modePlaylist_id = internalState.publicPlaylistID;
-	}	
 	await plc.freePLCBeforePos(kara.pos, internalState.currentPlaylistID);
 	// For every KID we check if it exists and add the PLC to a list
 	const [publicPlaylist, currentPlaylist] = await Promise.all([
@@ -440,7 +445,7 @@ async function updateUserQuotas(kara) {
 	}
 	await Promise.all(freeTasks);
 	usersNeedingUpdate.forEach(user_id => {
-		plc.updateSongsLeft(user_id,modePlaylist_id);	
+		plc.updateSongsLeft(user_id,internalState.modePlaylistID);	
 	});		
 }
 
@@ -705,6 +710,7 @@ export async function setCurrentPL(playlist_id) {
 		await plc.setCurrentPlaylist(playlist_id);
 		emitWS('playlistInfoUpdated', internalState.currentPlaylistID);
 		internalState.currentPlaylistID = playlist_id;
+		updateModePlaylist();
 		return playlist_id;
 	} catch(err) {
 		throw {
@@ -721,6 +727,7 @@ export async function setPublicPL(playlist_id) {
 		await plc.setPublicPlaylist(playlist_id);
 		emitWS('playlistInfoUpdated', internalState.publicPlaylistID);
 		internalState.publicPlaylistID = playlist_id;
+		updateModePlaylist();
 		return playlist_id;
 	} catch(err) {
 		throw {
