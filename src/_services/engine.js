@@ -443,7 +443,7 @@ async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());
 }
 
-function formatKaraList(karaList,lang,filter,from,size) {
+export function formatKaraList(karaList,lang,filter,from,size) {
 	karaList = plc.translateKaraInfo(karaList, lang);
 	if (filter) karaList = plc.filterPlaylist(karaList, filter);
 	return {
