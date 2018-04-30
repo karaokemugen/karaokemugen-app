@@ -238,7 +238,6 @@ function stopPlayer(now) {
 		logger.info('[Engine] Karaoke stopping NOW');
 		stop();
 	} else {
-		plc.next();
 		logger.info('[Engine] Karaoke stopping after current song');
 	}
 	state.engine.status = 'stop';
@@ -445,7 +444,7 @@ async function addViewcountKara(kara_id, kid) {
 }
 
 function formatKaraList(karaList,lang,filter,from,size) {
-	karaList = plc.trnaslateKaraInfo(karaList, lang);
+	karaList = plc.translateKaraInfo(karaList, lang);
 	if (filter) karaList = plc.filterPlaylist(karaList, filter);
 	return {
 		infos: {
@@ -805,11 +804,8 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 	}
 	if (!playlist_id) {
 		addByAdmin = false;
-		if (state.engine.private) {
-			playlist_id = internalState.currentPlaylistID;
-		} else {
-			playlist_id = internalState.publicPlaylistID;
-		}
+		playlist_id = internalState.currentPlaylistID;
+		if (!state.engine.private) playlist_id = internalState.publicPlaylistID;
 	}
 	let [pl, kara] = await Promise.all([
 		plc.getPlaylistInfo(playlist_id),
@@ -829,22 +825,16 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 		}
 		await plc.addKaraToPlaylist(karas, requester, playlist_id, pos);
 		if (+conf.EngineAutoPlay === 1 &&
-			+playlist_id === internalState.currentPlaylistID &&
+			playlist_id === internalState.currentPlaylistID &&
 			state.engine.status === 'stop' ) {
 			playPlayer();
 		}		
-		if (addByAdmin) {
-			return {
-				playlist: pl.name
-			};
-		} else {
-			return {
-				kara: kara.title,
-				playlist: pl.name,
-				kara_id: parseInt(kara_id, 10),
-				playlist_id: playlist_id
-			};
-		}
+		return {
+			kara: kara.title,
+			playlist: pl.name,
+			kara_id: parseInt(kara_id, 10),
+			playlist_id: playlist_id
+		};		
 	} catch(err) {
 		logger.error(`[Engine] Unable to add karaokes : ${err}`);
 		throw {
@@ -897,6 +887,7 @@ export async function addKaraToWL(kara_id) {
 }
 
 export function sendMessage(message, duration) {
+	if (!state.player.ready) throw '[Player] Player is not ready yet!';
 	sendMessageToPlayer(message, duration);
 }
 
