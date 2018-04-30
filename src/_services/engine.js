@@ -19,8 +19,8 @@ import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
 import {openTunnel, closeTunnel} from '../_webapp/tunnel.js';
+import logger from 'winston';
 const plc = require('./playlist');
-const logger = require('winston');
 const sleep = promisify(setTimeout);
 
 let publicState = {};
@@ -97,15 +97,7 @@ on('playerEnd', () => {
 	playerEnding();
 });
 
-on('playerSkip', () => {
-	next();
-});
-
 on('playerStatusChange', (states) => {
-	//FIXME: Simplify this
-	if (internalState.fullscreen !== states.fullscreen){
-		internalState.fullscreen = states.fullscreen;
-	}
 	state.player = states[0];
 	emitPublicStatus();
 });
