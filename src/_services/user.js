@@ -12,6 +12,7 @@ import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
+import randomstring from 'randomstring';
 
 const db = require('../_dao/user');
 const sleep = promisify(setTimeout);
@@ -263,7 +264,7 @@ export async function deleteUserById(id) {
 		if (playlist_id) {
 			await deletePlaylist(playlist_id, {force: true});
 		}
-		//Reassign karas dans playlists owned by the user to the admin user
+		//Reassign karas and playlists owned by the user to the admin user
 		await db.reassignToUser(user.id,1);
 		await db.deleteUser(user.id);
 		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
@@ -305,12 +306,11 @@ export async function initUserSystem() {
 		logger.error(`[User] Cleanup expiring user accounts system failed entirely. You need to restart Karaoke Mugen : ${err}`);
 	});
 
-	// Check if a admin user exists
-	// Replace password by a random generated one once the welcome branch has been merged
-	
+	// Check if a admin user exists just in case. If not create it with a random password.
+
 	if (!await findUserByName('admin')) await createUser({
 		login: 'admin',
-		password: 'gurdil',
+		password: randomstring.generate(8),
 		flag_admin: 1
 	});
 
