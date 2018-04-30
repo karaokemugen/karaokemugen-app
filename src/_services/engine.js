@@ -229,7 +229,7 @@ async function playPlayer() {
 }
 
 function sendMessageToPlayer(string, duration) {
-	logger.info('[Engine] I have a message from another time...');	
+	logger.info(`[Engine] I have a message from another time... : ${string}`);	
 	message(string, duration);
 }
 
@@ -241,10 +241,8 @@ function stopPlayer(now) {
 		plc.next();
 		logger.info('[Engine] Karaoke stopping after current song');
 	}
-	if (state.engine.status !== 'stop') {
-		state.engine.status = 'stop';
-		emitEngineStatus();
-	}
+	state.engine.status = 'stop';
+	emitEngineStatus();	
 }
 
 function pausePlayer() {
@@ -382,7 +380,7 @@ async function playerEnding() {
 async function tryToReadKaraInPlaylist() {
 	if (!state.player.playing) {
 		try {
-			const kara = await plc.playCurrentSong();
+			const kara = await plc.getCurrentSong();
 			let karaForLogging = cloneDeep(kara);
 			karaForLogging.path.subtitle = '[Not logging ASS data]';
 			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
@@ -399,11 +397,8 @@ async function tryToReadKaraInPlaylist() {
 			});
 			state.engine.currentlyPlayingKara = kara.kara_id;
 			emitEngineStatus();
-			//Add a view to the viewcount
 			addViewcountKara(kara.kara_id,kara.kid);
-			//Free karaoke
-			updateUserQuotas(kara);
-			return true;
+			updateUserQuotas(kara);			
 		} catch(err) {
 			logger.error(`[Engine] Error during song playback : ${err}`);
 			emitEngineStatus();

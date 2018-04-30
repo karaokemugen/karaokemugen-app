@@ -1147,7 +1147,7 @@ async function getCurrentPlaylist() {
 	};
 }
 
-export async function playCurrentSong() {
+export async function getCurrentSong() {
 	const conf = getConfig();
 	const playlist = await getCurrentPlaylist();	
 	// Search for currently playing song
