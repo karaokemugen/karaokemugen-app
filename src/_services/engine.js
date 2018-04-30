@@ -370,6 +370,7 @@ async function playerEnding() {
 	const conf = getConfig();
 	logger.debug('[Jingles] Songs before next jingle : '+ (conf.EngineJinglesInterval - internalState.counterToJingle));
 	if (internalState.counterToJingle >= conf.EngineJinglesInterval) {
+		state.engine.currentlyPlayingKara = -1;
 		playJingle();
 		internalState.counterToJingle = 0;
 	} else {

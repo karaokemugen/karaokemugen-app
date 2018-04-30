@@ -259,8 +259,9 @@ async function startmpv() {
 	await loadBackground();	
 	player.observeProperty('sub-text',13);
 	player.observeProperty('volume',14);
+	player.observeProperty('duration',15);
 	player.on('statuschange',(status) => {
-		// si on affiche une image il faut considérer que c'est la pause d'après chanson
+		// If we're displaying an image, it means it's the pause inbetween songs
 		if (state.player._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			state.player.playing = false;
