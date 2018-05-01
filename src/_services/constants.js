@@ -50,7 +50,14 @@ export const defaultGuestNames = [
 	'Idolmaster > Love Live',
 	'Love Live > Idolmaster',
 	'Les yeux noisette d\'Asuna',
-	'Lelouch'	
+	'Lelouch',
+	'Phantom Thieves',
+	'Random Isekai MC',
+	'Houonin Kyouma',
+	'Miayzaki (retired)',
+	'Kyonko',
+	'My karaoke can\'t be this cute',
+	'No bully please'
 ];
 
 export const initializationCatchphrases = [

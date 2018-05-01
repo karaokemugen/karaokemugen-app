@@ -276,10 +276,11 @@ export async function trimPlaylist(playlist_id,duration) {
 		return false;
 	});
 	if (needsTrimming) await plDB.trimPlaylist(playlist_id,lastPos);
-	await Promise.all([updatePlaylistLastEditTime(playlist_id),
+	await Promise.all([
 		updatePlaylistDuration(playlist_id),
 		updatePlaylistKaraCount(playlist_id)
 	]);
+	updatePlaylistLastEditTime(playlist_id);	
 }
 
 export async function setCurrentPlaylist(playlist_id) {
@@ -287,28 +288,21 @@ export async function setCurrentPlaylist(playlist_id) {
 	if (pl.flag_public === 1) throw 'A current playlist cannot be set to public. Set another playlist to current first.';
 	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to public.';
 	await unsetCurrentAllPlaylists();
-	await Promise.all([
-		plDB.setCurrentPlaylist(playlist_id),
-		updatePlaylistLastEditTime(playlist_id)
-	]);	
+	await plDB.setCurrentPlaylist(playlist_id);	
+	updatePlaylistLastEditTime(playlist_id);
 }
 
 export async function setVisiblePlaylist(playlist_id) {
 	
 	const pl = await getPlaylistInfo(playlist_id);
 	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to visible.';
-	await Promise.all([
-		plDB.setVisiblePlaylist(playlist_id),
-		updatePlaylistLastEditTime(playlist_id)
-	]);
+	await plDB.setVisiblePlaylist(playlist_id);	
+	updatePlaylistLastEditTime(playlist_id);	
 }
 
 export async function unsetVisiblePlaylist(playlist_id) {
-	await Promise.all([
-		plDB.unsetVisiblePlaylist(playlist_id),
-		updatePlaylistLastEditTime(playlist_id)
-	]);
-	
+	await plDB.unsetVisiblePlaylist(playlist_id);	
+	updatePlaylistLastEditTime(playlist_id);	
 }
 
 export async function setPublicPlaylist(playlist_id) {
@@ -316,10 +310,8 @@ export async function setPublicPlaylist(playlist_id) {
 	if (pl.flag_current === 1) throw 'A public playlist cannot be set to current. Set another playlist to public first.';
 	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to current.';
 	await unsetPublicAllPlaylists();
-	await Promise.all([
-		plDB.setPublicPlaylist(playlist_id),
-		updatePlaylistLastEditTime(playlist_id)
-	]);	
+	await plDB.setPublicPlaylist(playlist_id);	
+	updatePlaylistLastEditTime(playlist_id);	
 }
 
 export async function deletePlaylist(playlist_id, opt) {
@@ -336,10 +328,10 @@ export async function emptyPlaylist(playlist_id) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	await plDB.emptyPlaylist(playlist_id);
 	await Promise.all([
-		updatePlaylistLastEditTime(playlist_id),
+		updatePlaylistKaraCount(playlist_id),
 		updatePlaylistDuration(playlist_id)
 	]);
-	
+	updatePlaylistLastEditTime(playlist_id);
 }
 
 export async function emptyWhitelist() {
@@ -611,7 +603,7 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 		});
 	}		
 	await karaDB.addKaraToPlaylist(karaList);
-	await updatePlaylistLastEditTime(playlist_id);
+	updatePlaylistLastEditTime(playlist_id);
 	// Checking if a flag_playing is present inside the playlist.					
 	// If not, we'll have to set the karaoke we just added as the currently playing one. updatePlaylistDuration is done by setPlaying already.
 	if (!await isPlaylistFlagPlaying(playlist_id)) {
@@ -703,9 +695,9 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,opt) {
 	await Promise.all([
 		updatePlaylistDuration(playlist_id),
 		updatePlaylistKaraCount(playlist_id),
-		updatePlaylistLastEditTime(playlist_id),		
 		reorderPlaylist(playlist_id, opt)
 	]);
+	updatePlaylistLastEditTime(playlist_id);
 	return playlist_id;
 }
 
@@ -725,7 +717,7 @@ export async function editKaraFromPlaylist(plc_id,pos,flag_playing) {
 		await plDB.setPos(plc_id,pos);
 		await reorderPlaylist(playlist_id);		
 	}
-	await updatePlaylistLastEditTime(playlist_id);
+	updatePlaylistLastEditTime(playlist_id);
 	return playlist_id;
 }
 
@@ -1094,7 +1086,7 @@ export async function shufflePlaylist(playlist_id) {
 		playlist[arraypos].pos = newpos;
 		arraypos++;
 	});
-	await updatePlaylistLastEditTime(playlist_id);
+	updatePlaylistLastEditTime(playlist_id);
 	await plDB.reorderPlaylist(playlist_id,playlist);
 }
 	
@@ -1155,7 +1147,7 @@ async function getCurrentPlaylist() {
 	};
 }
 
-export async function playCurrentSong() {
+export async function getCurrentSong() {
 	const conf = getConfig();
 	const playlist = await getCurrentPlaylist();	
 	// Search for currently playing song

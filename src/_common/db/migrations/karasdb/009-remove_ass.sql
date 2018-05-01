@@ -202,7 +202,7 @@ CREATE VIEW IF NOT EXISTS all_karas AS SELECT k.pk_id_kara AS kara_id, k.kid, k.
     WHERE k.pk_id_kara = kt8.fk_id_kara
     ) as NORM_songwriter
 FROM kara k
-order by language, serie, singer, songtype DESC, songorder
+order by language, serie, singer, songtype DESC, songorder;
 
 CREATE TABLE IF NOT EXISTS ass (
 	pk_id_ass			 INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,

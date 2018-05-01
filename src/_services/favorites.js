@@ -1,5 +1,6 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
-import {getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini, translateKaraInfo, filterPlaylist} from '../_services/playlist';
+import {getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini} from '../_services/playlist';
+import {formatKaraList} from '../_services/engine';
 import {listUsers, checkUserNameExists} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_common/utils/date';
@@ -8,16 +9,7 @@ export async function getFavorites(username, filter, lang, from, size) {
 	try {
 		const plInfo = await getFavoritesPlaylist(username);
 		const pl = await getPlaylistContentsMini(plInfo.playlist_id);
-		let karalist = translateKaraInfo(pl,lang);
-		if (filter) karalist = filterPlaylist(karalist,filter);
-		return {
-			infos: { 
-				count: karalist.length,
-				from: from,
-				to: from + size
-			},
-			content: karalist.slice(from,from+size)
-		};
+		return formatKaraList(pl, lang, filter, from, size);
 	} catch(err) {
 		throw {
 			message: err,
@@ -109,7 +101,6 @@ export async function initFavoritesSystem() {
 		await listUsers()
 	]);	
 	for (const user of users) {		
-		console.log(user);
 		const isFavoritePLExists = playlists.some(pl => {
 			if (pl.fk_user_id === user.user_id && pl.flag_favorites === 1 && user.type === 1) return true; 
 			return false;
