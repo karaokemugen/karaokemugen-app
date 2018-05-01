@@ -434,5 +434,6 @@
 	"LOGOUT": "Déconnexion",
 	"SETTINGS_PLAYER": "Lecteur",
 	"SETTINGS_KARAOKE": "Karaoké",
-	"SETTINGS_INTERFACE": "Interface"
+	"SETTINGS_INTERFACE": "Interface",
+	"JINGLE_TIME": "Instant jingle !"
 }
