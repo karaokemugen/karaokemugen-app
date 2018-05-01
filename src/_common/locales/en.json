@@ -439,5 +439,6 @@
 	"QUOTA_TYPE_0": "No quota",
 	"QUOTA_TYPE_1": "Per song",
 	"QUOTA_TYPE_2": "Duration",
-	"SONGS_BY_USER": "Number of songs per user"
+	"SONGS_BY_USER": "Number of songs per user",
+	"FREE_AUTO_TIME": "Songs are freed from quota after (min)"
 }

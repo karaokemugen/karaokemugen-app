@@ -439,5 +439,6 @@
 	"QUOTA_TYPE_0": "Pas de quota",
 	"QUOTA_TYPE_1": "Nombre de chansons",
 	"QUOTA_TYPE_2": "Durée",
-	"SONGS_BY_USER": "Chansons par utilisateur"
+	"SONGS_BY_USER": "Chansons par utilisateur",
+	"FREE_AUTO_TIME": "Libération d'une chanson du quota après (min)"
 }
