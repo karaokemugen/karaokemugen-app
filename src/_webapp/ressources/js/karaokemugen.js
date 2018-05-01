@@ -1520,24 +1520,33 @@ var settingsNotUpdated;
 				if (text) text = text.indexOf('\n') == -1 ? text:  text.substring(0, text.indexOf('\n') );
 				$('#karaInfo > span').html(text);
 			}
-			if (data.currentlyPlaying !== oldState.currentlyPlaying && data.currentlyPlaying > 0) {
-
+			if (data.currentlyPlaying !== oldState.currentlyPlaying) {
 				var barCss = $('#progressBarColor.cssTransform');
 				barCss.removeClass('cssTransform');
 				$('#progressBarColor').stop().css({transform : 'translateX(0)'});
 				barCss.addClass('cssTransform');
 
-				$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
-					var kara = dataKara[0];
-					$('#karaInfo').attr('idKara', kara.kara_id);
-					$('#karaInfo').attr('length', kara.duration);
-					$('#karaInfo > span').text( buildKaraTitle(kara) );
-					$('#karaInfo > span').data('text', buildKaraTitle(kara) );
-					
-					if(webappMode === 1) {
-						buildKaraDetails(kara, 'karaCard');
-					}
-				});
+				if( data.currentlyPlaying === -1 ) {
+					$('#karaInfo').attr('idKara', data.currentlyPlaying);
+					$('#karaInfo').attr('length', -1);
+					$('#karaInfo > span').text( i18n.__('JINGLE_TIME') );
+					$('#karaInfo > span').data('text',i18n.__('JINGLE_TIME') );
+
+				} else if ( data.currentlyPlaying > 0 ) {
+					$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
+						var kara = dataKara[0];
+						$('#karaInfo').attr('idKara', kara.kara_id);
+						$('#karaInfo').attr('length', kara.duration);
+						$('#karaInfo > span').text( buildKaraTitle(kara) );
+						$('#karaInfo > span').data('text', buildKaraTitle(kara) );
+						
+						if(webappMode === 1) {
+							buildKaraDetails(kara, 'karaCard');
+						}
+					});
+				} else {
+					console.log('ER: currentlyPlaying is bogus : ' + data.currentlyPlaying);
+				}
 			}
 			if (data.showSubs != oldState.showSubs) {
 				if (data.showSubs) {
