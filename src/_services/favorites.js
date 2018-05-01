@@ -101,7 +101,7 @@ export async function initFavoritesSystem() {
 		await listUsers()
 	]);	
 	for (const user of users) {		
-		const isFavoritePLExists = playlists.some(pl => {
+		const isFavoritePLExists = playlists.some(pl => {			
 			if (pl.fk_user_id === user.user_id && pl.flag_favorites === 1 && user.type === 1) return true; 
 			return false;
 		});
