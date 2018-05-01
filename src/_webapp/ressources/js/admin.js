@@ -409,12 +409,16 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 						if (input.attr('name') === 'EngineQuotaType') {
 							var $time = $('[name="EngineTimePerUser"]').closest('.form-group');
 							var $songs = $('[name="EngineSongsPerUser"]').closest('.form-group');
+							var $free = $('[name="EngineFreeAutoTime"]').closest('.form-group');
 							$time.hide();
 							$songs.hide();
+							$free.hide();
 							if(val == 1) {
 								$songs.show();
+								$free.show();
 							} else if (val == 2) {
 								$time.show();
+								$free.show();
 							}
 						}
 					} else { // only checkbox here

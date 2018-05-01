@@ -2122,7 +2122,7 @@ var settingsNotUpdated;
 		
 			var quotaString = '';
 			if(data.quotaType == 1) {
-				quotaString = data.quotaLeft
+				quotaString = data.quotaLeft;
 			} else if (data.quotaType == 2) {
 				quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
 			}
