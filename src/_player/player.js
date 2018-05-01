@@ -293,13 +293,13 @@ async function startmpv() {
 	player.on('timeposition',(position) => {
 		// Returns the position in seconds in the current song
 		state.player.timeposition = position;						
-		emitPlayerState();		
+		emitPlayerState();
 		// Display informations if timeposition is 8 seconds before end of song
 		if (position >= (state.player.duration - 8) && 
 						!displayingInfo &&
-						state.player.videoType === 'song')						
+						state.player.mediaType === 'song')						
 			displaySongInfo(state.player.currentSongInfos);
-		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.videoType === 'song') displayInfo(8000);
+		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.mediaType === 'song') displayInfo(8000);
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	state.player.ready = true;	
