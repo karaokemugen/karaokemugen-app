@@ -141,6 +141,16 @@ export async function writeKara(karafile, karaData) {
 		return;
 	}	
 	infosToWrite.datemodif = timestamp.now();
+	// Transforming medias -> videos for now
+	// Delete this when the .kara format update goes live
+	infosToWrite.videofile = infosToWrite.mediafile;
+	infosToWrite.videogain = infosToWrite.mediagain;
+	infosToWrite.videosize = infosToWrite.mediasize;
+	infosToWrite.videoduration = infosToWrite.mediaduration;
+	delete infosToWrite.mediaduration;
+	delete infosToWrite.mediasize;
+	delete infosToWrite.mediagain;
+	delete infosToWrite.mediafile;
 	karaData.datemodif = infosToWrite.datemodif;
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
