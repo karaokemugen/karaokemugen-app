@@ -49,6 +49,18 @@ EngineAllowViewBlacklistCriterias = 1
 ; Songs already played or freed don't count towards this limit .
 EngineSongsPerUser = 10000
 
+; Time allowed per user: {integer}
+; Time (in seconds) allowed per user to add songs to a playlist at once
+; Each song that passes gives back time
+EngineTimePerUser = 10000
+
+; Quota type for users: {integer}
+; Defines what kind of quota is applied to users to prevent them from adding too many songs
+; 0 : No quota
+; 1 : Songs
+; 2 : Time
+EngineQuotaType = 1
+
 ; Free upvotes: {boolean}
 ; enable/disable Upvote free mechanic .
 ; Make us free na splash kasaneta...NO
@@ -64,6 +76,9 @@ EngineFreeUpvotesRequiredPercent = 33
 ; Minimum number of votes required to free a song : {integer}
 ; You need at least this many votes to free a song, no matter the percentage of online users reached .
 EngineFreeUpvotesRequiredMin = 4
+
+; Time (in minutes) before a song is automatically freed : {integer}
+EngineFreeAutoTime = 60
 
 ; AutoPlay: {boolean}
 ; AutoPlay : if a karaoke song is added to the current playlist, start playing immediately if the engine is stopped .

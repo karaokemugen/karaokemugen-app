@@ -27,8 +27,7 @@ async function updateExpiredUsers() {
 	} catch(err) {
 		await sleep(60000);
 		throw err;
-	}
-	
+	}	
 }
 
 export async function updateLastLoginID(id) {
@@ -207,11 +206,7 @@ export async function createUser(user, opts) {
 	user.email = user.email || null;
 
 	await newUserIntegrityChecks(user);
-
-	if (user.password) {
-		user.password = hashPassword(user.password);
-	}
-
+	if (user.password) user.password = hashPassword(user.password);	
 	try {
 		await db.addUser(user);
 		if (user.type === 1 && opts.createFavoritePlaylist) {

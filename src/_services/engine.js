@@ -164,6 +164,7 @@ export async function initEngine() {
 	if (conf.optOnline || conf.OnlineMode === 1) {
 		state.engine.url = await openTunnel();		
 	}
+	inits.push(plc.initPlaylistSystem());
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
@@ -810,7 +811,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 	}
 	let [pl, kara] = await Promise.all([
 		plc.getPlaylistInfo(playlist_id),
-		plc.getKara(parseInt(karas[0], 10))
+		plc.getKaraMini(parseInt(karas[0], 10))
 	]);
 	if (!pl) pl = {};
 	if (!kara) kara = {};
@@ -819,7 +820,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 		
 		if (!addByAdmin) {
 			// Check user quota first
-			if (!await plc.isUserAllowedToAddKara(playlist_id,requester)) {
+			if (!await plc.isUserAllowedToAddKara(playlist_id,requester,kara.duration)) {
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
 				throw 'User quota reached';
 			}

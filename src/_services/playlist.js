@@ -1,6 +1,5 @@
 import {uuidRegexp} from './constants';
 import {getStats} from '../_dao/database';
-import {asyncExists, asyncReadFile} from '../_common/utils/files';
 import {ASSToLyrics} from '../_common/utils/ass';
 import {getConfig} from '../_common/utils/config';
 import {findUserByID, findUserByName} from '../_services/user';
@@ -15,6 +14,8 @@ import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {emitWS} from '../_webapp/frontend';
 import {emit} from '../_common/utils/pubsub';
+import {promisify} from 'util';
+const sleep = promisify(setTimeout);
 const blcDB = require('../_dao/blacklist');
 const tagDB = require('../_dao/tag');
 const wlDB = require('../_dao/whitelist');
@@ -58,41 +59,71 @@ export async function freePLCBeforePos(pos, playlist_id) {
 export async function updateSongsLeft(user_id,playlist_id) {
 	const conf = getConfig();
 	const user = await findUserByID(user_id);	
-	let songsLeft;
+	let quotaLeft;
 	if (!playlist_id) {
 		if (conf.EnginePrivateMode === 1) {
 			playlist_id = await isACurrentPlaylist();				
 		} else {
 			playlist_id = await isAPublicPlaylist();
 		}
-	}			
-	if (user.flag_admin === 0) {
-		const count = await karaDB.getSongCountForUser(playlist_id,user_id);
-		songsLeft = conf.EngineSongsPerUser - count.count;
+	}		
+	if (user.flag_admin === 0 && +conf.EngineQuotaType > 0) {
+		switch(+conf.EngineQuotaType) {
+		default:
+		case 1:
+			const count = await karaDB.getSongCountForUser(playlist_id,user_id);
+			quotaLeft = +conf.EngineSongsPerUser - count.count;
+			break;
+		case 2:
+			const time = await karaDB.getSongTimeSpentForUser(playlist_id,user_id);
+			quotaLeft = +conf.EngineTimePerUser - time.timeSpent;
+		}		
 	} else {
-		songsLeft = -1;
+		quotaLeft = -1;
 	}
-	logger.debug(`[User] Updating songs left for ${user.login} : ${songsLeft}`);
-	emitWS('songsAvailableUpdated', {
+	logger.debug(`[User] Updating quota left for ${user.login} : ${quotaLeft}`);
+	emitWS('quotaAvailableUpdated', {
 		username: user.login,
-		songsLeft: songsLeft
+		quotaLeft: quotaLeft,
+		quotaType: +conf.EngineQuotaType
 	});		
 }
 
-export async function isUserAllowedToAddKara(playlist_id,requester) {
-	const limit = getConfig().EngineSongsPerUser;
-	try {
-		const user = await findUserByName(requester);
-		const count = await karaDB.getSongCountForUser(playlist_id,user.id);	
-		if (count.count >= limit) {
-			logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
-			return false;
-		} else {
-			return true;
-		}
-	} catch (err) {
-		throw err;
-	}
+export async function isUserAllowedToAddKara(playlist_id,requester,duration) {
+	const conf = getConfig();
+	if (+conf.EngineQuotaType === 0) return true;
+	const user = await findUserByName(requester);
+	let limit;
+	switch(+conf.EngineQuotaType) {
+	default:
+	case 1:
+		limit = getConfig().EngineSongsPerUser;
+		try {		
+			const count = await karaDB.getSongCountForUser(playlist_id,user.id);	
+			if (count.count >= limit) {
+				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit})`);
+				return false;
+			} else {
+				return true;
+			}
+		} catch (err) {
+			throw err;
+		}		
+	case 2:
+		limit = getConfig().EngineTimePerUser;
+		try {
+			const time = await karaDB.getSongTimeSpentForUser(playlist_id,user.id);
+			if (!time.timeSpent) time.timeSpent = 0;			
+			if ((limit - time.timeSpent - duration) < 0) {
+				logger.info(`[PLC] User ${requester} tried to add more songs than he/she was allowed (${limit - time.timeSpent} seconds of time credit left and tried to add ${duration} seconds)`);
+				return false;
+			} else {
+				return true;
+			}
+		} catch(err) {
+			throw err;
+		}		
+	}		
 }
 
 export async function isCurrentPlaylist(playlist_id) {
@@ -617,7 +648,7 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 	karaList.forEach(function(kara) {
 		karaAdded.push(kara.kara_id);
 	});
-	updateSongsLeft(requester, playlist_id);
+	updateSongsLeft(user.id, playlist_id);
 	return karaAdded;
 }
 
@@ -1209,4 +1240,29 @@ export async function buildDummyPlaylist(playlist_id) {
 		logger.warn('[PLC] Dummy Plug : your database has no songs! Maybe you should try to regenerate it?');
 		return true;
 	}				
+}
+
+async function updateFreeOrphanedSongs() {
+	// Flag songs as free if they are older than X minutes
+	try {
+		await karaDB.updateFreeOrphanedSongs(now() - (getConfig().EngineFreeAutoTime * 60));
+		//Sleep for one minute.
+		await sleep(60000);
+	} catch(err) {
+		await sleep(60000);
+		throw err;
+	}	
+}
+
+export async function initPlaylistSystem() {
+	Promise.resolve().then(function resolver() {
+		return updateFreeOrphanedSongs()
+			.then(resolver)
+			.catch((err) => {
+				logger.error(`[PLC] Freeing orphaned songs failed : ${err}`);
+				resolver();
+			});
+	}).catch((err) => {
+		logger.error(`[PLC] Freeing orphaned songs failed entirely. You need to restart Karaoke Mugen : ${err}`);
+	});
 }

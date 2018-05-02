@@ -177,7 +177,6 @@
 	"ADMIN_PASSWORD_CHANGE": "Changer mot de passe admin",
 	"PASSWORD": "Mot de passe",
 	"PASSWORDCONF": "Confirmer mdp",
-	"SONGS_BY_USER": "Chansons par utilisateur",
 	"MONITOR_NUMBER": "Numéro de l'écran",
 	"VIDEO_SIZE": "Taille vidéo",
 	"VIDEO_POSITION_X": "Position vidéo X",
@@ -430,10 +429,17 @@
 	"QUOTA": "Restant :",
 	"FIRST_PUBLIC_RUN_WELCOME": "Il semble que ce soit votre 1ère fois ici !",
 	"FOLLOW_TOUR": "SUIVRE LA VISITE GUIDÉE (~2 MIN)",
-	"_": "DO NOT MODIFY",
 	"LOGOUT": "Déconnexion",
 	"SETTINGS_PLAYER": "Lecteur",
 	"SETTINGS_KARAOKE": "Karaoké",
 	"SETTINGS_INTERFACE": "Interface",
-	"JINGLE_TIME": "Instant jingle !"
+	"JINGLE_TIME": "Instant jingle !",
+	"QUOTA_TYPE": "Type de quota",
+	"TIME_BY_USER": "Temps par utilisateur (secondes)",
+	"QUOTA_TYPE_0": "Pas de quota",
+	"QUOTA_TYPE_1": "Nombre de chansons",
+	"QUOTA_TYPE_2": "Durée",
+	"SONGS_BY_USER": "Chansons par utilisateur",
+	"FREE_AUTO_TIME": "Libération d'une chanson du quota après (min)",
+	"_": "DO NOT MODIFY"
 }

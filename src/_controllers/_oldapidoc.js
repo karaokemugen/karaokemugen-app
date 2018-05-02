@@ -2740,3 +2740,141 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
+
+	/**
+ * @api {put} /admin/settings Update settings
+ * @apiName PutSettings
+ * @apiVersion 2.1.0
+ * @apiPermission admin
+ * @apiGroup Main
+ * @apiDescription **Note :** All settings must be sent at once in a single request.
+ * @apiParam {Boolean} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
+ * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
+ * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
+ * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message)
+ * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
+ * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
+ * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
+ * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
+ * @apiParam {Boolean} EngineFreeUpvotes Enable/disable Free Songs By Upvotes feature
+ * @apiParam {Number} EngineFreeUpvotesRequiredMin Minimum number of upvotes required to free a song
+ * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
+ * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
+ * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
+ * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
+ * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
+ * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
+ * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
+ * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
+ * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
+ * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
+ * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
+ * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
+ * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
+ * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ */
+	/**
+ * @api {get} /public/settings Get settings (public)
+ * @apiName GetSettingsPublic
+ * @apiVersion 2.1.0
+ * @apiGroup Main
+ * @apiPermission public
+ * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries or admin password information.
+ * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "EngineAllowNicknameChange": "1",
+ *       "EngineAllowViewBlacklist": "1",
+ *       "EngineAllowViewBlacklistCriterias": "1",
+ *       "EngineAllowViewWhitelist": "1",
+ *       "EngineAutoPlay": "0",
+ *       "EngineDefaultLocale": "fr",
+ *       "EngineDisplayConnectionInfo": "1",
+ *       "EngineDisplayConnectionInfoHost": "",
+ *       "EngineDisplayConnectionInfoMessage": "",
+ *       "EngineDisplayConnectionInfoQRCode": "1",
+ *       "EngineDisplayNickname": "1",
+ * 		 "EngineFreeUpvotes": "1",
+ * 		 "EngineFreeUpvotesPercent": "33",
+ * 		 "EngineFreeUpvotesMin": "4",
+ *       "EngineJinglesInterval": "1",
+ *       "EnginePrivateMode": "1",
+ *       "EngineRepeatPlaylist": "0",
+ *       "EngineSmartInsert": "1",
+ *       "EngineSongsPerUser": "10000",
+ *       "PlayerBackground": "",
+ *       "PlayerFullscreen": "0",
+ *       "PlayerNoBar": "1",
+ *       "PlayerNoHud": "1",
+ *       "PlayerPIP": "1",
+ *       "PlayerPIPPositionX": "Left",
+ *       "PlayerPIPPositionY": "Bottom",
+ *       "PlayerPIPSize": "30",
+ *       "PlayerScreen": "0",
+ *       "PlayerStayOnTop": "1",
+ *       "VersionName": "Finé Fiévreuse",
+ *       "VersionNo": "v2.0 Release Candidate 1",
+ *       "mpvVideoOutput": "direct3d",
+ * 		 "WebappMode": "2"
+ *   }
+ * }
+ */
+		.get(async (req, res) => {
+			//We don't want to return all settings.
+			let settings = {};
+			const conf = getConfig();
+			for (var key in conf) {
+				if (conf.hasOwnProperty(key)) {
+					if (!key.startsWith('Path') &&
+						!key.startsWith('Bin') &&
+						!key.startsWith('appPath') &&
+						!key.startsWith('Jwt') &&
+						!key.startsWith('is') &&
+						!key.startsWith('mpv') &&
+						!key.startsWith('os')
+					) {
+						settings[key] = conf[key];
+					}
+				}
+			}
+			res.json(OKMessage(settings));
+		});				
+	router.route('/stats')
+	/**
+ * @api {get} /public/stats Get statistics
+ * @apiName GetStats
+ * @apiVersion 2.0.0
+ * @apiGroup Main
+ * @apiPermission public
+ * @apiDescription Returns various stats on the current Karaoke Mugen instance
+ * @apiSuccess {Number} totalartists Total number of artists in database
+ * @apiSuccess {Number} totalcount Total number of karaokes in database
+ * @apiSuccess {Number} totalduration Sum of all karaoke durations in seconds.
+ * @apiSuccess {Number} totallanguages Total number of different languages in database
+ * @apiSuccess {Number} totalplaylists Total number of playlists in database
+ * @apiSuccess {Number} totalseries Total number of series in database
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *    "data": {
+ *        "totalartists": 542,
+ *        "totalcount": 4924,
+ *        "totalduration": 0,
+ *        "totallanguages": 16,
+ *        "totalplaylists": 5,
+ *        "totalseries": 2525
+ *    }
+ * }
+ */

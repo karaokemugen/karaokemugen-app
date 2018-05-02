@@ -13,11 +13,22 @@ export async function getSongCountForUser(playlist_id,user_id) {
 	});
 }
 
+export async function getSongTimeSpentForUser(playlist_id,user_id) {
+	return await getUserDb().get(sql.getTimeSpentPerUser, {
+		$playlist_id: playlist_id,
+		$user_id: user_id
+	});
+}
+
 export async function getAllKaras(username) {
 	return await getUserDb().all(sql.getAllKaras, {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
 		$username: username
 	});
+}
+
+export async function updateFreeOrphanedSongs(expireTime) {
+	return await getUserDb().run(sql.updateFreeOrphanedSongs, { $expire_time: expireTime });
 }
 
 export async function getKaraMini(id) {
