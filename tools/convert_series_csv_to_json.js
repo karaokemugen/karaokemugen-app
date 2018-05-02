@@ -29,7 +29,7 @@ async function main() {
 	});
 	await asyncWriteFile('series.json', JSON.stringify({
 		series: data
-	}), {encoding: 'utf8'});
+	}, null, 3), {encoding: 'utf8'});
 	return data;	
 }
 
