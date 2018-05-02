@@ -190,8 +190,11 @@ export async function updateUserFingerprint(username, fingerprint) {
 	return await db.updateUserFingerprint(username, fingerprint);
 }
 
-export async function createUser(user) {
+export async function createUser(user, opts) {
 
+	if (!opts) opts = {
+		createFavoritePlaylist: true
+	};
 	user.type = user.type || 1;
 	user.nickname = user.nickname || user.login;
 	user.last_login = now();
@@ -211,7 +214,7 @@ export async function createUser(user) {
 
 	try {
 		await db.addUser(user);
-		if (user.type === 1) {
+		if (user.type === 1 && opts.createFavoritePlaylist) {
 			await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
 			logger.info(`[User] Created user ${user.login}`);		
 			logger.debug(`[User] User data : ${JSON.stringify(user)}`);		
@@ -312,6 +315,8 @@ export async function initUserSystem() {
 		login: 'admin',
 		password: randomstring.generate(8),
 		flag_admin: 1
+	}, {
+		createFavoritePlaylist: false
 	});
 
 	if (getConfig().isTest) {

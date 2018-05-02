@@ -324,14 +324,14 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 		$('#karaInfo').click(function (e) {
-			if (status != undefined && status != '' && status != 'stop') {
+			if (status != undefined && status != '' && status != 'stop' && $(this).attr('length') != -1) {
 				//refreshPlayerInfos(goToPosition, e);
 				goToPosition(e);
 			}
 		});
 
 		$('#karaInfo').on('mousedown touchstart', function (e) {
-			if (status != undefined && status != '' && status != 'stop') {
+			if (status != undefined && status != '' && status != 'stop'  && $(this).attr('length') != -1) {
 				stopUpdate = true;
 				mouseDown = true;
 				$('#progressBarColor').removeClass('cssTransform')
@@ -477,24 +477,28 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		var futurTimeX = e.pageX - karaInfo.offset().left;
 		//var presentTimeX = $('#progressBarColor').width();
 		var futurTimeSec = songLength * futurTimeX / barInnerwidth;
-        
-		$('#progressBarColor').removeClass('cssTransform')
-			.css('transform', 'translateX(' + e.pageX + 'px)')
-			.addClass('');
+		
+		if(!isNaN(futurTimeSec) && futurTimeSec >= 0) {
+			$('#progressBarColor').removeClass('cssTransform')
+				.css('transform', 'translateX(' + e.pageX + 'px)')
+				.addClass('');
 
-		//var start_time = new Date().getTime();
-		$.ajax({
-			url: 'admin/player',
-			type: 'PUT',
-			data: { command: 'goTo', options: futurTimeSec},
-			complete : function() {
-				$('#progressBarColor').addClass('cssTransform'); 
-			}
-		})
-			.done(function () {
-				//var request_time = new Date().getTime() - start_time;
-				setStopUpdate(false);
-			});
+			//var start_time = new Date().getTime();
+			$.ajax({
+				url: 'admin/player',
+				type: 'PUT',
+				data: { command: 'goTo', options: futurTimeSec},
+				complete : function() {
+					$('#progressBarColor').addClass('cssTransform'); 
+				}
+			})
+				.done(function () {
+					//var request_time = new Date().getTime() - start_time;
+					setStopUpdate(false);
+				});
+		} else {
+			console.log('Err: problem calculating time for goTo command');
+		}
 	};
 
 	$('#flag1, #flag2').on('click', 'button', function () {

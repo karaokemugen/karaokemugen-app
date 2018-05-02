@@ -259,8 +259,9 @@ async function startmpv() {
 	await loadBackground();	
 	player.observeProperty('sub-text',13);
 	player.observeProperty('volume',14);
+	player.observeProperty('duration',15);
 	player.on('statuschange',(status) => {
-		// si on affiche une image il faut considérer que c'est la pause d'après chanson
+		// If we're displaying an image, it means it's the pause inbetween songs
 		if (state.player._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			state.player.playing = false;
@@ -292,13 +293,13 @@ async function startmpv() {
 	player.on('timeposition',(position) => {
 		// Returns the position in seconds in the current song
 		state.player.timeposition = position;						
-		emitPlayerState();		
+		emitPlayerState();
 		// Display informations if timeposition is 8 seconds before end of song
 		if (position >= (state.player.duration - 8) && 
 						!displayingInfo &&
-						state.player.videoType === 'song')						
+						state.player.mediaType === 'song')						
 			displaySongInfo(state.player.currentSongInfos);
-		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.videoType === 'song') displayInfo(8000);
+		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.mediaType === 'song') displayInfo(8000);
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	state.player.ready = true;	
