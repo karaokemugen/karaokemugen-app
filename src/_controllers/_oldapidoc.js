@@ -2830,28 +2830,7 @@
  *   }
  * }
  */
-		.get(async (req, res) => {
-			//We don't want to return all settings.
-			let settings = {};
-			const conf = getConfig();
-			for (var key in conf) {
-				if (conf.hasOwnProperty(key)) {
-					if (!key.startsWith('Path') &&
-						!key.startsWith('Bin') &&
-						!key.startsWith('appPath') &&
-						!key.startsWith('Jwt') &&
-						!key.startsWith('is') &&
-						!key.startsWith('mpv') &&
-						!key.startsWith('os')
-					) {
-						settings[key] = conf[key];
-					}
-				}
-			}
-			res.json(OKMessage(settings));
-		});				
-	router.route('/stats')
-	/**
+/**
  * @api {get} /public/stats Get statistics
  * @apiName GetStats
  * @apiVersion 2.0.0
