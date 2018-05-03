@@ -12,25 +12,43 @@ export function asyncWriteFile(...args) {
 
 async function main() {
 	let data = [];
+	const seriesFile = await asyncReadFile(process.argv[3], {encoding: 'utf8'});
+	const series = seriesFile.split('\n');
 	const content = await asyncReadFile(process.argv[2], {encoding: 'utf8'});
 	csvForEach(content, ':', parsedContent => {
 		const serie = parsedContent[0];
 		const altNames = parsedContent[1];
-		let aliases = null;
-		if (altNames) aliases = altNames.split('/');
-		data.push({
-			aliases: aliases,					
+		let obj = {
+			aliases: null,
 			name: serie,
 			i18n: {
-				jpn: serie,
-				fre: null,
+				jpn: serie
 			}
-		});							
+		}
+		if (altNames) obj.aliases = altNames.split('/');
+		if (obj.aliases === null) delete obj.aliases;
+		data.push(obj);							
 	});
+	let finalData = [];
+	for (const serieName of series) {
+		const seriesFound = data.some(serieObj => {
+			if (serieObj.name === serieName) {
+				finalData.push(serieObj);
+				return true;			
+			}
+			return false;
+		});		
+		if (!seriesFound) finalData.push({
+			name: serieName,
+			i18n: {
+				jpn: serieName
+			}
+		});
+	}
 	await asyncWriteFile('series.json', JSON.stringify({
-		series: data
-	}, null, 3), {encoding: 'utf8'});
-	return data;	
+		series: finalData
+	}, null, 2), {encoding: 'utf8'});
+	return finalData;	
 }
 
 main().then(content => console.log(content));
