@@ -474,6 +474,10 @@ export async function getAllKaras(username, filter, from, size) {
 	return await karaDB.getAllKaras(username, filter, from, size);
 }
 
+export async function countAllKaras(filter) {
+	return await karaDB.countAllKaras(filter);
+}
+
 export async function getRandomKara(playlist_id, filter, username) {
 	// Get karaoke list	
 	let karas = await getAllKaras(username, filter);

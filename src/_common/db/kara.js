@@ -103,6 +103,12 @@ export const getAllKaras = (filterClauses) => `SELECT ak.kara_id AS kara_id,
 							OFFSET $from
 							`;
 
+export const countAllKaras = (filterClauses) => `SELECT COUNT(*) as count
+							FROM karasdb.all_karas AS ak							
+ 							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
+ 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+							`;
+
 export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
 								ak.kid AS kid,
       							ak.title AS title,

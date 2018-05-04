@@ -445,11 +445,13 @@ async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());
 }
 
-export function formatKaraList(karaList, lang, from) {
+
+export function formatKaraList(karaList, lang, from, count) {
+
 	karaList = plc.translateKaraInfo(karaList, lang);
 	return {
 		infos: {
-			count: karaList.length,
+			count: count,
 			from: from,
 			to: from + karaList.length
 		},
@@ -459,8 +461,12 @@ export function formatKaraList(karaList, lang, from) {
 
 export async function getKaras(filter, lang, from, size, token) {
 	try {
-		const pl = await plc.getAllKaras(token.username, filter, from, size);
-		return formatKaraList(pl, lang, from, size);
+		const [pl, count] = await Promise.all([
+			plc.getAllKaras(token.username, filter, from, size),
+		    plc.countAllKaras(filter)
+		]);
+		return formatKaraList(pl, lang, from, count);
+
 	} catch(err) {
 		throw err;
 	}

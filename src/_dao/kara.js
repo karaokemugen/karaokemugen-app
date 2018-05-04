@@ -33,6 +33,14 @@ export async function getAllKaras(username, filter, from, size) {
 	});
 }
 
+export async function countAllKaras(filter) {
+
+	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.countAllKaras(filterClauses);
+		
+	return (await getUserDb().get(query)).count;
+}
+
 export async function updateFreeOrphanedSongs(expireTime) {
 	return await getUserDb().run(sql.updateFreeOrphanedSongs, { $expire_time: expireTime });
 }
