@@ -99,14 +99,6 @@ export const getAllKaras = (filterClauses) => `SELECT ak.kara_id AS kara_id,
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
  							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype DESC, ak.songorder, ak.title
-							LIMIT $size
-							OFFSET $from
-							`;
-
-export const countAllKaras = (filterClauses) => `SELECT COUNT(*) as count
-							FROM karasdb.all_karas AS ak							
- 							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
- 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 							`;
 
 export const getKaraByKID = `SELECT ak.kara_id AS kara_id,

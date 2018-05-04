@@ -20,25 +20,15 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 	});
 }
 
-export async function getAllKaras(username, filter, from, size) {
+export async function getAllKaras(username, filter) {
 
 	const filterClauses = filter ? buildClauses(filter) : [];
 	const query = sql.getAllKaras(filterClauses);
 
 	return await getUserDb().all(query, {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
-		$username: username,
-		$from: from || 1,
-		$size: size || Number.MAX_SAFE_INTEGER
+		$username: username
 	});
-}
-
-export async function countAllKaras(filter) {
-
-	const filterClauses = filter ? buildClauses(filter) : [];
-	const query = sql.countAllKaras(filterClauses);
-		
-	return (await getUserDb().get(query)).count;
 }
 
 export async function updateFreeOrphanedSongs(expireTime) {

@@ -462,13 +462,10 @@ export function formatKaraList(karaList, lang, from, count) {
 export async function getKaras(filter, lang, from, size, token) {
 	try {
 		logger.profile('All karas');
-		const [pl, count] = await Promise.all([
-			plc.getAllKaras(token.username, filter, from, size),
-		    plc.countAllKaras(filter)
-		]);
+		const pl = await plc.getAllKaras(token.username, filter);
+		const result = formatKaraList(pl.slice(from, size), lang, from, pl.length);
 		logger.profile('All karas');
-		return formatKaraList(pl, lang, from, count);
-
+		return result;
 	} catch(err) {
 		throw err;
 	}
