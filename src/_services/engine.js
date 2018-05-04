@@ -460,8 +460,11 @@ export function formatKaraList(karaList,lang,filter,from,size) {
 
 export async function getKaras(filter,lang,from,size,token) {
 	try {
+		logger.profile('All Karas');
 		const pl = await plc.getAllKaras(token.username);
-		return formatKaraList(pl,lang,filter,from,size);		
+		const karas = formatKaraList(pl,lang,filter,from,size);		
+		logger.profile('All Karas');
+		return karas;
 	} catch(err) {
 		throw err;
 	}
@@ -758,6 +761,7 @@ async function testPlaylistVisible(playlist_id, token) {
 
 export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
+		logger.profile('PLC');
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
 		const pl = await plc.getPlaylistContents(playlist_id,token);
 		if (from === -1) {
@@ -768,7 +772,9 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 				from = pos.index;
 			}
 		}
-		return formatKaraList(pl,lang,filter,from,size);
+		const plcontents = formatKaraList(pl,lang,filter,from,size);
+		logger.profile('PLC');
+		return plcontents;
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
