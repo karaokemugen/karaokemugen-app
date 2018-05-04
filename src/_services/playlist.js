@@ -506,63 +506,6 @@ export async function getPLCByKID(kid,playlist_id) {
 	return await plDB.getPLCByKID(kid,playlist_id);
 }
 
-export function filterPlaylist(playlist,searchText) {
-	function cleanStr(string) {
-		return string.toLowerCase().replace('\'','');
-	}
-	function textSearch(kara) {
-		searchText = deburr(searchText);
-		searchText = cleanStr(searchText);
-		let searchOK = [];
-		const searchWords = searchText.split(' ');
-		let searchWordID = 0;
-		searchWords.forEach((searchWord) => {
-			searchOK[searchWordID] = false;					
-			if (!isEmpty(kara.NORM_title)) {
-				if (cleanStr(kara.NORM_title).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_author)) {
-				if (cleanStr(kara.NORM_author).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_serie)) {
-				if (cleanStr(kara.NORM_serie).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_serie_altname)) {
-				if (cleanStr(kara.NORM_serie_altname).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_singer)) {
-				if (cleanStr(kara.NORM_singer).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_songwriter)) {
-				if (cleanStr(kara.NORM_songwriter).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_creator)) {
-				if (cleanStr(kara.NORM_creator).includes(searchWord)) searchOK[searchWordID] = true;
-			}					
-			if (!isEmpty(kara.songtype_i18n_short)) {
-				if (cleanStr(kara.songtype_i18n_short).includes(searchWord)) searchOK[searchWordID] = true;
-				//Allows searches for "OP1", "OP2", and such to work.
-				let songorder = kara.songorder;
-				if (songorder === 0) songorder = '';
-				if ((cleanStr(kara.songtype_i18n_short)+songorder).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.misc_i18n)) {
-				if (cleanStr(kara.misc_i18n).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.language_i18n)) {						
-				if (cleanStr(deburr(kara.language_i18n)).includes(searchWord)) searchOK[searchWordID] = true;						
-			}
-			searchWordID++;
-		});
-		if (searchOK.indexOf(false) > -1 ) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	return playlist.filter(textSearch);
-}
-
 function isAllKarasInPlaylist(karas, karasToRemove) {
 	return karas.filter(k => !karasToRemove.map(ktr => ktr.kara_id).includes(k.kara_id));
 }
