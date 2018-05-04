@@ -6,6 +6,8 @@ import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
 import promiseRetry from 'promise-retry';
 import {exit} from '../_services/engine';
 import {duration} from '../_common/utils/date';
+import deburr from 'lodash.deburr';
+
 
 const DBgenerator = require('../_admin/generate_karasdb.js');
 const sql = require('../_common/db/database');
@@ -13,6 +15,20 @@ const sql = require('../_common/db/database');
 // Setting up databases
 let karaDb;
 let userDb;
+
+export function buildClauses(filter) {
+	return deburr(filter)
+		.toLowerCase()
+		.replace('\'', '')
+		.split(' ')
+		.filter(s => !('' === s))
+		.map(word =>
+			`ak.NORM_misc LIKE '%${word}%' OR ak.NORM_title LIKE '%${word}%' OR ak.NORM_author LIKE '%${word}%' OR ak.NORM_serie LIKE '%${word}%' 
+			   OR ak.NORM_serie_altname LIKE '%${word}%' OR ak.NORM_singer LIKE '%${word}%' 
+			   OR ak.NORM_songwriter LIKE '%${word}%' OR ak.NORM_creator LIKE '%${word}%'`
+		);
+}
+
 
 async function doTransaction(items, sql) {	
 	try {
@@ -65,11 +81,11 @@ async function openUserDatabase() {
 		userDb = await open(userDbFile, {verbose: true});
 		// Trace event. DO NOT UNCOMMENT
 		// unless you want to flood your console.
-		/*
+		
 		userDb.driver.on('trace',function(sql){
 			logger.debug(sql);			
 		});
-		*/
+		
 	} else {
 		throw 'User database already opened';
 	}

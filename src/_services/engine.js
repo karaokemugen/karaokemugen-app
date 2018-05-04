@@ -445,40 +445,39 @@ async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());
 }
 
-export function formatKaraList(karaList,lang,filter,from,size) {
+
+export function formatKaraList(karaList, lang, from, count) {
+
 	karaList = plc.translateKaraInfo(karaList, lang);
-	if (filter) karaList = plc.filterPlaylist(karaList, filter);
 	return {
 		infos: {
-			count: karaList.length,
+			count: count,
 			from: from,
-			to: from+size
+			to: from + karaList.length
 		},
-		content: karaList.slice(from,from+size)
+		content: karaList
 	};
 }
 
-export async function getKaras(filter,lang,from,size,token) {
+export async function getKaras(filter, lang, from, size, token) {
 	try {
-		logger.profile('All Karas');
-		const pl = await plc.getAllKaras(token.username);
-		const karas = formatKaraList(pl,lang,filter,from,size);		
-		logger.profile('All Karas');
-		return karas;
+		const pl = await plc.getAllKaras(token.username, filter);
+		const result = formatKaraList(pl.slice(from, size), lang, from, pl.length);
+		return result;
 	} catch(err) {
 		throw err;
 	}
 }
 
-export async function getRandomKara(filter) {
+export async function getRandomKara(filter, token) {
 	logger.debug('[Engine] Requesting a random song');
-	return await plc.getRandomKara(internalState.currentPlaylistID,filter);
+	return await plc.getRandomKara(internalState.currentPlaylistID,filter,token.username);
 }
 
 export async function getWL(filter,lang,from,size) {
 	try {
-		const pl = await plc.getWhitelistContents();
-		return formatKaraList(pl,lang,filter,from,size);		
+		const pl = await plc.getWhitelistContents(filter);
+		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
 	} catch(err) {
 		throw err;
 	}
@@ -486,8 +485,8 @@ export async function getWL(filter,lang,from,size) {
 
 export async function getBL(filter,lang,from,size) {
 	try {
-		const pl = await plc.getBlacklistContents();
-		return formatKaraList(pl,lang,filter,from,size);		
+		const pl = await plc.getBlacklistContents(filter);
+		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
 	} catch(err) {
 		throw err;
 	}
@@ -761,9 +760,9 @@ async function testPlaylistVisible(playlist_id, token) {
 
 export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
-		logger.profile('PLC');
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
-		const pl = await plc.getPlaylistContents(playlist_id,token);
+		const pl = await plc.getPlaylistContents(playlist_id, token, filter);
+
 		if (from === -1) {
 			const pos = plc.getPlayingPos(pl);
 			if (!pos) {
@@ -772,9 +771,8 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 				from = pos.index;
 			}
 		}
-		const plcontents = formatKaraList(pl,lang,filter,from,size);
-		logger.profile('PLC');
-		return plcontents;
+		
+		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {

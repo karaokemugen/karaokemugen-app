@@ -1,4 +1,4 @@
-import {getUserDb, transaction} from './database';
+import {buildClauses, getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
@@ -20,8 +20,12 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 	});
 }
 
-export async function getAllKaras(username) {
-	return await getUserDb().all(sql.getAllKaras, {
+export async function getAllKaras(username, filter) {
+
+	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.getAllKaras(filterClauses);
+
+	return await getUserDb().all(query, {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
 		$username: username
 	});

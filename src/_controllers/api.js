@@ -3459,11 +3459,11 @@ export function APIControllerPublic(router) {
 
 		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara_id = await engine.getRandomKara(req.query.filter);
+				const kara_id = await engine.getRandomKara(req.query.filter, req.authToken);
 				if (!kara_id) {
 					res.statusCode = 500;
 					res.json(errMessage('GET_UNLUCKY'));
-				} else {
+				} else {					
 					res.json(OKMessage(kara_id));
 				}
 				

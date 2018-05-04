@@ -92,7 +92,7 @@ export const getPlaylistContentsKaraIDs = `SELECT pc.fk_id_kara AS kara_id,
 										ORDER BY pc.pos,pc.created_at DESC;
 										`;
 
-export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
+export const getPlaylistContents = (filterClauses) => `SELECT ak.kara_id AS kara_id,
       									ak.kid AS kid,
       									ak.title AS title,
       									ak.NORM_title AS NORM_title,
@@ -147,7 +147,8 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
 									LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 									LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
 									WHERE pc.fk_id_playlist = $playlist_id
-									ORDER BY pc.pos,pc.created_at DESC;
+									${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+									ORDER BY pc.pos,pc.created_at DESC
 									`;
 
 export const getPlaylistContentsMini = `SELECT ak.kara_id AS kara_id,
@@ -462,4 +463,11 @@ export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
 export const trimPlaylist = `DELETE FROM playlist_content
 							 WHERE fk_id_playlist = $playlist_id
 							 	AND pos > $pos;
+							`;
+
+export const countPlaylist = (filterClauses) => `SELECT COUNT(*) as count
+							FROM playlist_content, karasdb.all_karas AS ak							
+ 							WHERE playlist_content.fk_id_kara = ak.kara_id
+							AND playlist_content.fk_id_playlist = $playlist_id
+ 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 							`;
