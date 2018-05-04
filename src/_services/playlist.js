@@ -470,12 +470,8 @@ export async function getBlacklistCriterias() {
 	return await blcDB.getBlacklistCriterias();
 }
 
-export async function getAllKaras(username, filter, from, size) {
-	return await karaDB.getAllKaras(username, filter, from, size);
-}
-
-export async function countAllKaras(filter) {
-	return await karaDB.countAllKaras(filter);
+export async function getAllKaras(username, filter) {
+	return await karaDB.getAllKaras(username, filter);
 }
 
 export async function countWhitelist(filter) {
