@@ -25,8 +25,9 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 export async function getAllKaras(username, filter, from, size) {
 
 	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.getAllKaras(filterClauses);
 
-	return await getUserDb().all(sql.getAllKaras(filterClauses), {
+	return await getUserDb().all(query, {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
 		$username: username,
 		$from: from || 1,
@@ -38,7 +39,7 @@ function buildClauses(filter) {
 	return deburr(filter)
 		.toLowerCase()
 		.replace('\'', '')
-		.split(/s+/)
+		.split(' ')
 		.filter(s => !('' === s))
 		.map(word =>
 			`ak.NORM_title LIKE '%${word}%' OR ak.NORM_author LIKE '%${word}%' OR ak.NORM_serie LIKE '%${word}%' 
