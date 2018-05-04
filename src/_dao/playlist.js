@@ -115,15 +115,13 @@ export async function getPlaylistContentsMini(id) {
 	return await getUserDb().all(sql.getPlaylistContentsMini, { $playlist_id: id });
 }
 
-export async function getPlaylistContents(id, username, filter, from, size) {	
+export async function getPlaylistContents(id, username, filter) {
 	const filterClauses = filter ? buildClauses(filter) : [];
 	const query = sql.getPlaylistContents(filterClauses);
 	return await getUserDb().all(query, { 
 		$playlist_id: id,
 		$username: username,
-		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
-		$from: from || 1,
-		$size: size || Number.MAX_SAFE_INTEGER
+		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
 	});
 }
 
@@ -138,13 +136,6 @@ export async function getPlaylistPos(id) {
 
 export async function getPlaylistKaraNames(id) {
 	return await getUserDb().all(sql.getPlaylistKaraNames, { $playlist_id: id });
-}
-
-export async function countPlaylist(filter, id) {
-
-	const filterClauses = filter ? buildClauses(filter) : [];
-	const query = sql.countPlaylist(filterClauses);	
-	return (await getUserDb().get(query, { $playlist_id: id })).count;
 }
 
 export async function getPLCInfo(id, forUser, username) {

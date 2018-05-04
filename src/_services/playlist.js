@@ -438,8 +438,8 @@ export async function getPlaylistContentsMini(playlist_id) {
 	return await plDB.getPlaylistContentsMini(playlist_id);
 }
 
-export async function getPlaylistContents(playlist_id,token,filter,from,size) {	
-	return await plDB.getPlaylistContents(playlist_id,token.username,filter,from,size);
+export async function getPlaylistContents(playlist_id,token,filter) {
+	return await plDB.getPlaylistContents(playlist_id,token.username,filter);
 }
 
 async function getPlaylistPos(playlist_id) {
@@ -462,8 +462,8 @@ export async function getWhitelistContents() {
 	return await wlDB.getWhitelistContents();
 }
 
-export async function getBlacklistContents() {
-	return await blcDB.getBlacklistContents();
+export async function getBlacklistContents(filter) {
+	return await blcDB.getBlacklistContents(filter);
 }
 
 export async function getBlacklistCriterias() {
@@ -473,19 +473,6 @@ export async function getBlacklistCriterias() {
 export async function getAllKaras(username, filter) {
 	return await karaDB.getAllKaras(username, filter);
 }
-
-export async function countWhitelist(filter) {
-	return await wlDB.countWhitelist(filter);
-}
-
-export async function countBlacklist(filter) {
-	return await blcDB.countAllKaras(filter);
-}
-
-export async function countPlaylist(filter, id) {
-	return await plDB.countPlaylist(filter, id);
-}
-
 
 export async function getRandomKara(playlist_id, filter, username) {
 	// Get karaoke list	

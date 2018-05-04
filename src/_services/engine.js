@@ -478,11 +478,8 @@ export async function getRandomKara(filter, token) {
 
 export async function getWL(filter,lang,from,size) {
 	try {
-		const [pl, count] = await Promise.all([
-			plc.getWhitelistContents(filter, from, size),
-			plc.countWhitelist(filter)
-		]);
-		return formatKaraList(pl,lang,from,count);		
+		const pl = await plc.getWhitelistContents(filter);
+		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
 	} catch(err) {
 		throw err;
 	}
@@ -490,11 +487,8 @@ export async function getWL(filter,lang,from,size) {
 
 export async function getBL(filter,lang,from,size) {
 	try {
-		const [pl, count] = await Promise.all([
-			plc.getBlacklistContents(filter, from, size),
-			plc.countWhitelist(filter)
-		]);
-		return formatKaraList(pl,lang,from,count);		
+		const pl = await plc.getBlacklistContents(filter);
+		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
 	} catch(err) {
 		throw err;
 	}
@@ -770,10 +764,8 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
 		logger.profile('PLC');
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
-		const [pl, count] = await Promise.all([
-			plc.getPlaylistContents(playlist_id,token, filter, from, size),
-			plc.countPlaylist(filter, playlist_id)
-		]);	
+		const pl = await plc.getPlaylistContents(playlist_id,token, filter);
+
 		if (from === -1) {
 			const pos = plc.getPlayingPos(pl);
 			if (!pos) {
@@ -782,8 +774,9 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 				from = pos.index;
 			}
 		}
+		
 		logger.profile('PLC');
-		return formatKaraList(pl,lang,from, count);
+		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {

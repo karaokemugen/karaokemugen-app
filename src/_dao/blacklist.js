@@ -17,24 +17,12 @@ export async function deleteBlacklistCriteria(blc_id) {
 	return await getUserDb().run(sql.deleteBlacklistCriteria, { $id: blc_id });
 }
 
-export async function getBlacklistContents(filter, from, size) {
+export async function getBlacklistContents(filter) {
 	const filterClauses = filter ? buildClauses(filter) : [];
 	const query = sql.getBlacklistContents(filterClauses);
 
-	return await getUserDb().all(query, {
-		$from: from || 0,
-		$size: size || Number.MAX_SAFE_INTEGER
-	});
+	return await getUserDb().all(query);
 }
-
-export async function countBlacklist(filter) {
-
-	const filterClauses = filter ? buildClauses(filter) : [];
-	const query = sql.countBlacklist(filterClauses);
-		
-	return (await getUserDb().get(query)).count;
-}
-
 
 export async function isBLCriteria(blc_id) {
 	const res = await getUserDb().get(sql.isBLCriteria, { $id: blc_id });
