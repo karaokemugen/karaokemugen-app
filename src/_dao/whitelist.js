@@ -14,3 +14,11 @@ export async function getWhitelistContents(filter, from, size) {
 export async function emptyWhitelist() {
 	return await getUserDb().run(sql.emptyWhitelist);
 }
+
+export async function countWhitelist(filter) {
+
+	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.countWhitelist(filterClauses);
+		
+	return (await getUserDb().get(query)).count;
+}

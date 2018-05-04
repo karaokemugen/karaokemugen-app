@@ -140,6 +140,13 @@ export async function getPlaylistKaraNames(id) {
 	return await getUserDb().all(sql.getPlaylistKaraNames, { $playlist_id: id });
 }
 
+export async function countPlaylist(filter, id) {
+
+	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.countPlaylist(filterClauses);	
+	return (await getUserDb().get(query, { $playlist_id: id })).count;
+}
+
 export async function getPLCInfo(id, forUser, username) {
 	const query = sql.getPLCInfo + (forUser ? ' AND p.flag_visible = 1' : '');
 	return await getUserDb().get(query,  

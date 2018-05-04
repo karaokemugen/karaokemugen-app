@@ -466,3 +466,10 @@ export const trimPlaylist = `DELETE FROM playlist_content
 							 WHERE fk_id_playlist = $playlist_id
 							 	AND pos > $pos;
 							`;
+
+export const countPlaylist = (filterClauses) => `SELECT COUNT(*) as count
+							FROM playlist_content, karasdb.all_karas AS ak							
+ 							WHERE playlist_content.fk_id_kara = ak.kara_id
+							AND playlist_content.fk_id_playlist = $playlist_id
+ 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+							`;

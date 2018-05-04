@@ -478,6 +478,19 @@ export async function countAllKaras(filter) {
 	return await karaDB.countAllKaras(filter);
 }
 
+export async function countWhitelist(filter) {
+	return await wlDB.countWhitelist(filter);
+}
+
+export async function countBlacklist(filter) {
+	return await blcDB.countAllKaras(filter);
+}
+
+export async function countPlaylist(filter, id) {
+	return await plDB.countPlaylist(filter, id);
+}
+
+
 export async function getRandomKara(playlist_id, filter, username) {
 	// Get karaoke list	
 	let karas = await getAllKaras(username, filter);

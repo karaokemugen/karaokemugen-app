@@ -115,3 +115,9 @@ export const isBLCriteria = `SELECT pk_id_blcriteria
 							FROM blacklist_criteria 
 							WHERE pk_id_blcriteria = $id
 							`;
+
+export const countBlacklist = (filterClauses) => `SELECT COUNT(*) as count
+							FROM blacklist, karasdb.all_karas AS ak							
+ 							WHERE blacklist.fk_id_kara = ak.kara_id
+ 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+							`;

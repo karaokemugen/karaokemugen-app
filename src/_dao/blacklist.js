@@ -27,6 +27,15 @@ export async function getBlacklistContents(filter, from, size) {
 	});
 }
 
+export async function countBlacklist(filter) {
+
+	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.countBlacklist(filterClauses);
+		
+	return (await getUserDb().get(query)).count;
+}
+
+
 export async function isBLCriteria(blc_id) {
 	const res = await getUserDb().get(sql.isBLCriteria, { $id: blc_id });
 	return !!res;
