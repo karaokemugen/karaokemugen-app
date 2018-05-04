@@ -23,7 +23,7 @@ export function buildClauses(filter) {
 		.split(' ')
 		.filter(s => !('' === s))
 		.map(word =>
-			`ak.NORM_title LIKE '%${word}%' OR ak.NORM_author LIKE '%${word}%' OR ak.NORM_serie LIKE '%${word}%' 
+			`ak.NORM_misc LIKE '%${word}%' OR ak.NORM_title LIKE '%${word}%' OR ak.NORM_author LIKE '%${word}%' OR ak.NORM_serie LIKE '%${word}%' 
 			   OR ak.NORM_serie_altname LIKE '%${word}%' OR ak.NORM_singer LIKE '%${word}%' 
 			   OR ak.NORM_songwriter LIKE '%${word}%' OR ak.NORM_creator LIKE '%${word}%'`
 		);
