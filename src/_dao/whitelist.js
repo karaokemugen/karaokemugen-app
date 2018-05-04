@@ -1,8 +1,14 @@
-import {getUserDb} from './database';
+import {buildClauses, getUserDb} from './database';
 const sql = require('../_common/db/whitelist');
 
-export async function getWhitelistContents() {
-	return await getUserDb().all(sql.getWhitelistContents);
+export async function getWhitelistContents(filter, from, size) {
+	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.getWhitelistContents(filterClauses);
+
+	return await getUserDb().all(query, {
+		$from: from || 0,
+		$size: size || Number.MAX_SAFE_INTEGER
+	});	
 }
 
 export async function emptyWhitelist() {

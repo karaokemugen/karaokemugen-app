@@ -438,8 +438,8 @@ export async function getPlaylistContentsMini(playlist_id) {
 	return await plDB.getPlaylistContentsMini(playlist_id);
 }
 
-export async function getPlaylistContents(playlist_id,token) {	
-	return await plDB.getPlaylistContents(playlist_id,token.username);
+export async function getPlaylistContents(playlist_id,token,filter,from,size) {	
+	return await plDB.getPlaylistContents(playlist_id,token.username,filter,from,size);
 }
 
 async function getPlaylistPos(playlist_id) {

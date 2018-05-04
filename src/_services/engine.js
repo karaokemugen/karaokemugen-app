@@ -445,21 +445,7 @@ async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());
 }
 
-export function formatKaraList(karaList,lang,filter,from,size) {
-	karaList = plc.translateKaraInfo(karaList, lang);
-	if (filter) karaList = plc.filterPlaylist(karaList, filter);
-	return {
-		infos: {
-			count: karaList.length,
-			from: from,
-			to: from+size
-		},
-		content: karaList.slice(from,from+size)
-	};
-}
-
-
-export function formatKaraListTest(karaList, lang, from) {
+export function formatKaraList(karaList, lang, from) {
 	karaList = plc.translateKaraInfo(karaList, lang);
 	return {
 		infos: {
@@ -474,7 +460,7 @@ export function formatKaraListTest(karaList, lang, from) {
 export async function getKaras(filter, lang, from, size, token) {
 	try {
 		const pl = await plc.getAllKaras(token.username, filter, from, size);
-		return formatKaraListTest(pl, lang, from, size);
+		return formatKaraList(pl, lang, from, size);
 	} catch(err) {
 		throw err;
 	}
@@ -487,8 +473,8 @@ export async function getRandomKara(filter) {
 
 export async function getWL(filter,lang,from,size) {
 	try {
-		const pl = await plc.getWhitelistContents();
-		return formatKaraList(pl,lang,filter,from,size);		
+		const pl = await plc.getWhitelistContents(filter, from, size);
+		return formatKaraList(pl,lang,from,size);		
 	} catch(err) {
 		throw err;
 	}
@@ -496,8 +482,8 @@ export async function getWL(filter,lang,from,size) {
 
 export async function getBL(filter,lang,from,size) {
 	try {
-		const pl = await plc.getBlacklistContents();
-		return formatKaraList(pl,lang,filter,from,size);		
+		const pl = await plc.getBlacklistContents(filter, from, size);
+		return formatKaraList(pl,lang,from,size);		
 	} catch(err) {
 		throw err;
 	}
@@ -772,7 +758,7 @@ async function testPlaylistVisible(playlist_id, token) {
 export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
-		const pl = await plc.getPlaylistContents(playlist_id,token);
+		const pl = await plc.getPlaylistContents(playlist_id,token, filter, from, size);
 		if (from === -1) {
 			const pos = plc.getPlayingPos(pl);
 			if (!pos) {
@@ -781,7 +767,7 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 				from = pos.index;
 			}
 		}
-		return formatKaraList(pl,lang,filter,from,size);
+		return formatKaraList(pl,lang,from);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {

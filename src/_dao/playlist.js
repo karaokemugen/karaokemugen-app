@@ -1,4 +1,4 @@
-import {getUserDb, transaction} from './database';
+import {buildClauses, getUserDb, transaction} from './database';
 import {getConfig} from '../_common/utils/config';
 import {now} from 'unix-timestamp';
 const sql = require('../_common/db/playlist');
@@ -115,11 +115,15 @@ export async function getPlaylistContentsMini(id) {
 	return await getUserDb().all(sql.getPlaylistContentsMini, { $playlist_id: id });
 }
 
-export async function getPlaylistContents(id, username) {	
-	return await getUserDb().all(sql.getPlaylistContents, { 
+export async function getPlaylistContents(id, username, filter, from, size) {	
+	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.getPlaylistContents(filterClauses);
+	return await getUserDb().all(query, { 
 		$playlist_id: id,
 		$username: username,
-		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
+		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
+		$from: from || 1,
+		$size: size || Number.MAX_SAFE_INTEGER
 	});
 }
 

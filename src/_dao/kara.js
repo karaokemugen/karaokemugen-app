@@ -1,10 +1,8 @@
-import {getUserDb, transaction} from './database';
+import {buildClauses, getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_common/utils/files';
-import isEmpty from 'lodash.isempty';
-import deburr from 'lodash.deburr';
 
 const sql = require('../_common/db/kara');
 
@@ -33,19 +31,6 @@ export async function getAllKaras(username, filter, from, size) {
 		$from: from || 1,
 		$size: size || Number.MAX_SAFE_INTEGER
 	});
-}
-
-function buildClauses(filter) {
-	return deburr(filter)
-		.toLowerCase()
-		.replace('\'', '')
-		.split(' ')
-		.filter(s => !('' === s))
-		.map(word =>
-			`ak.NORM_title LIKE '%${word}%' OR ak.NORM_author LIKE '%${word}%' OR ak.NORM_serie LIKE '%${word}%' 
-			   OR ak.NORM_serie_altname LIKE '%${word}%' OR ak.NORM_singer LIKE '%${word}%' 
-			   OR ak.NORM_songwriter LIKE '%${word}%' OR ak.NORM_creator LIKE '%${word}%'`
-		);
 }
 
 export async function updateFreeOrphanedSongs(expireTime) {
