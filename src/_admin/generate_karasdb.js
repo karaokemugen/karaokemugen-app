@@ -18,9 +18,9 @@ import {
 } from '../_common/db/generation';
 import {karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
+import {join} from 'path';
 
 let error = false;
-
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
@@ -326,17 +326,28 @@ function getTagId(tagName, tags) {
 
 function prepareAllTagsInsertData(allTags) {
 	const data = [];
-
+	const translations = require(join(__dirname,'../_common/locales'));
+	
 	allTags.forEach((tag, index) => {
 		const tagParts = tag.split(',');
 		const tagName = tagParts[0];
 		const tagType = tagParts[1];
-
+		let tagNorm;
+		if (+tagType === 7) {
+			const tagTranslations = [];
+			for (const [key, value] of Object.entries(translations)) {				
+				// Key is the language, value is a i18n text
+				if (value[tagName]) tagTranslations.push(value[tagName]);
+			}			
+			tagNorm = tagTranslations.join(' ');			
+		} else {
+			tagNorm = tagName;
+		}		
 		data.push({
 			$id_tag: index + 1,
 			$tagtype: tagType,
 			$tagname: tagName,
-			$tagnamenorm: deburr(tagName),
+			$tagnamenorm: deburr(tagNorm)
 		});
 	});
 
