@@ -178,7 +178,8 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
   						`;
 
 export const getKaraMini = `SELECT ak.title AS title,
-      						ak.subfile AS subfile,	  						
+      						ak.subfile AS subfile,
+							ak.duration AS duration
  						FROM karasdb.all_karas AS ak
 						WHERE ak.kara_id = $kara_id  						  
   						`;
