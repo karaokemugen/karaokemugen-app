@@ -149,8 +149,6 @@ export const getPlaylistContents = (filterClauses) => `SELECT ak.kara_id AS kara
 									WHERE pc.fk_id_playlist = $playlist_id
 									${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 									ORDER BY pc.pos,pc.created_at DESC
-									LIMIT $size
-									OFFSET $from
 									`;
 
 export const getPlaylistContentsMini = `SELECT ak.kara_id AS kara_id,

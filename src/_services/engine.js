@@ -764,7 +764,7 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
 		logger.profile('PLC');
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
-		const pl = await plc.getPlaylistContents(playlist_id,token, filter);
+		const pl = await plc.getPlaylistContents(playlist_id, token, filter);
 
 		if (from === -1) {
 			const pos = plc.getPlayingPos(pl);
