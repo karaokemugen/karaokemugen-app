@@ -466,9 +466,9 @@ export async function getKaras(filter, lang, from, size, token) {
 	}
 }
 
-export async function getRandomKara(filter) {
+export async function getRandomKara(filter, token) {
 	logger.debug('[Engine] Requesting a random song');
-	return await plc.getRandomKara(internalState.currentPlaylistID,filter);
+	return await plc.getRandomKara(internalState.currentPlaylistID,filter,token.username);
 }
 
 export async function getWL(filter,lang,from,size) {

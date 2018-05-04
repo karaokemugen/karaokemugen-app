@@ -474,10 +474,9 @@ export async function getAllKaras(username, filter, from, size) {
 	return await karaDB.getAllKaras(username, filter, from, size);
 }
 
-export async function getRandomKara(playlist_id, filter) {
+export async function getRandomKara(playlist_id, filter, username) {
 	// Get karaoke list	
-	let karas = await getAllKaras();
-	if (filter) karas = filterPlaylist(karas, filter);
+	let karas = await getAllKaras(username, filter);
 	// Strip list to just kara IDs
 	karas.forEach((elem,index) => {
 		karas[index] = elem.kara_id;
