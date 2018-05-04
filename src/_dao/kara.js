@@ -3,6 +3,8 @@ import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_common/utils/files';
+import isEmpty from 'lodash.isempty';
+import deburr from 'lodash.deburr';
 
 const sql = require('../_common/db/kara');
 
@@ -20,11 +22,29 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 	});
 }
 
-export async function getAllKaras(username) {
-	return await getUserDb().all(sql.getAllKaras, {
+export async function getAllKaras(username, filter, from, size) {
+
+	const filterClauses = filter ? buildClauses(filter) : [];
+
+	return await getUserDb().all(sql.getAllKaras(filterClauses), {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
-		$username: username
+		$username: username,
+		$from: from || 1,
+		$size: size || Number.MAX_SAFE_INTEGER
 	});
+}
+
+function buildClauses(filter) {
+	return deburr(filter)
+		.toLowerCase()
+		.replace('\'', '')
+		.split(/s+/)
+		.filter(s => !('' === s))
+		.map(word =>
+			`ak.NORM_title LIKE '%${word}%' OR ak.NORM_author LIKE '%${word}%' OR ak.NORM_serie LIKE '%${word}%' 
+			   OR ak.NORM_serie_altname LIKE '%${word}%' OR ak.NORM_singer LIKE '%${word}%' 
+			   OR ak.NORM_songwriter LIKE '%${word}%' OR ak.NORM_creator LIKE '%${word}%'`
+		);
 }
 
 export async function updateFreeOrphanedSongs(expireTime) {

@@ -458,10 +458,23 @@ export function formatKaraList(karaList,lang,filter,from,size) {
 	};
 }
 
-export async function getKaras(filter,lang,from,size,token) {
+
+export function formatKaraListTest(karaList, lang, from) {
+	karaList = plc.translateKaraInfo(karaList, lang);
+	return {
+		infos: {
+			count: karaList.length,
+			from: from,
+			to: from + karaList.length
+		},
+		content: karaList
+	};
+}
+
+export async function getKaras(filter, lang, from, size, token) {
 	try {
-		const pl = await plc.getAllKaras(token.username);
-		return formatKaraList(pl,lang,filter,from,size);		
+		const pl = await plc.getAllKaras(token.username, filter, from, size);
+		return formatKaraListTest(pl, lang, from, size);
 	} catch(err) {
 		throw err;
 	}

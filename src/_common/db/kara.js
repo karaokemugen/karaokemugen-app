@@ -57,7 +57,7 @@ export const getKaraViewcounts = `SELECT ak.title AS title,
 							`;
 
 
-export const getAllKaras = `SELECT ak.kara_id AS kara_id,
+export const getAllKaras = (filterClauses) => `SELECT ak.kara_id AS kara_id,
       							ak.kid AS kid,
       							ak.title AS title,
 								ak.NORM_title AS NORM_title,
@@ -97,7 +97,10 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
 								) AS flag_favorites
 							FROM karasdb.all_karas AS ak							
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
+ 							${filterClauses.map(clause => 'AND (' + clause + ')')}
 							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype DESC, ak.songorder, ak.title
+							LIMIT $size
+							OFFSET $from
 							`;
 
 export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
