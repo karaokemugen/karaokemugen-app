@@ -1,5 +1,5 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
-import {getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini} from '../_services/playlist';
+import {getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, getPlaylistContentsMini} from '../_services/playlist';
 import {formatKaraList} from '../_services/engine';
 import {listUsers, checkUserNameExists} from '../_services/user';
 import logger from 'winston';
@@ -8,8 +8,8 @@ import {date} from '../_common/utils/date';
 export async function getFavorites(username, filter, lang, from, size) {
 	try {
 		const plInfo = await getFavoritesPlaylist(username);
-		const pl = await getPlaylistContentsMini(plInfo.playlist_id);
-		return formatKaraList(pl, lang, filter, from, size);
+		const pl = await getPlaylistContents(plInfo.playlist_id, { username: username }, filter);
+		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
 	} catch(err) {
 		throw {
 			message: err,
