@@ -26,12 +26,4 @@ export const getWhitelistContents = (filterClauses) => `SELECT wl.pk_id_whitelis
 									WHERE 1 = 1
 									${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 									ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
-									LIMIT $size
-									OFFSET $from
 									`;
-
-export const countWhitelist = (filterClauses) => `SELECT COUNT(*) as count
-							FROM whitelist, karasdb.all_karas AS ak							
- 							WHERE whitelist.fk_id_kara = ak.kara_id
- 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-							`;
