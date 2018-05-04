@@ -461,10 +461,12 @@ export function formatKaraList(karaList, lang, from, count) {
 
 export async function getKaras(filter, lang, from, size, token) {
 	try {
+		logger.profile('All karas');
 		const [pl, count] = await Promise.all([
 			plc.getAllKaras(token.username, filter, from, size),
 		    plc.countAllKaras(filter)
 		]);
+		logger.profile('All karas');
 		return formatKaraList(pl, lang, from, count);
 
 	} catch(err) {
@@ -769,6 +771,7 @@ async function testPlaylistVisible(playlist_id, token) {
 
 export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
+		logger.profile('PLC');
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
 		const [pl, count] = await Promise.all([
 			plc.getPlaylistContents(playlist_id,token, filter, from, size),
@@ -782,6 +785,7 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 				from = pos.index;
 			}
 		}
+		logger.profile('PLC');
 		return formatKaraList(pl,lang,from, count);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
