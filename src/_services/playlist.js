@@ -241,7 +241,7 @@ export async function addKaraToWhitelist(karas) {
 }
 
 export async function getKaraLyrics(kara_id) {
-	const kara = await karaDB.getKaraMini(kara_id);	
+	const kara = await getKaraMini(kara_id);	
 	if (!kara) throw `Kara ${kara_id} unknown`;
 	if (kara.subfile === 'dummy.ass') return 'Lyrics not available for this song';
 	const ASS = await karaDB.getASS(kara.subfile);
@@ -250,7 +250,7 @@ export async function getKaraLyrics(kara_id) {
 }
 
 async function getASS(kara_id) {
-	const kara = await karaDB.getKaraMini(kara_id);	
+	const kara = await getKaraMini(kara_id);	
 	let ASS;	
 	if (kara.subfile !== 'dummy.ass') ASS = await karaDB.getASS(kara.subfile);
 	return ASS || false;
