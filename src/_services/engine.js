@@ -463,7 +463,7 @@ export async function getKaras(filter, lang, from, size, token) {
 	try {
 		logger.profile('All karas');
 		const pl = await plc.getAllKaras(token.username, filter);
-		const result = formatKaraList(pl.slice(from, size), lang, from, pl.length);
+		const result = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 		logger.profile('All karas');
 		return result;
 	} catch(err) {
@@ -479,7 +479,7 @@ export async function getRandomKara(filter, token) {
 export async function getWL(filter,lang,from,size) {
 	try {
 		const pl = await plc.getWhitelistContents(filter);
-		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
+		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	} catch(err) {
 		throw err;
 	}
@@ -488,7 +488,7 @@ export async function getWL(filter,lang,from,size) {
 export async function getBL(filter,lang,from,size) {
 	try {
 		const pl = await plc.getBlacklistContents(filter);
-		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
+		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	} catch(err) {
 		throw err;
 	}
@@ -776,7 +776,7 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 		}
 		
 		logger.profile('PLC');
-		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
+		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {

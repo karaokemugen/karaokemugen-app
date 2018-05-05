@@ -9,7 +9,7 @@ export async function getFavorites(username, filter, lang, from, size) {
 	try {
 		const plInfo = await getFavoritesPlaylist(username);
 		const pl = await getPlaylistContents(plInfo.playlist_id, { username: username }, filter);
-		return formatKaraList(pl.slice(from, size), lang, from, pl.length);
+		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	} catch(err) {
 		throw {
 			message: err,
