@@ -463,7 +463,6 @@ export async function getKaras(filter, lang, from, size, token) {
 	try {
 		const pl = await plc.getAllKaras(token.username, filter);
 		const result = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
-		logger.profile('All karas');
 		return result;
 	} catch(err) {
 		throw err;
@@ -773,7 +772,6 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 			}
 		}
 		
-		logger.profile('PLC');
 		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
@@ -883,7 +881,7 @@ export async function addKaraToWL(kara_id) {
 		karas = [kara_id];
 	}
 	const kara = await plc.getKara(parseInt(karas[0], 10));	
-	logger.profile(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
+	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
 	try {
 		return await plc.addKaraToWhitelist(karas);
 	} catch(err) {
