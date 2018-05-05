@@ -81,11 +81,11 @@ async function openUserDatabase() {
 		userDb = await open(userDbFile, {verbose: true});
 		// Trace event. DO NOT UNCOMMENT
 		// unless you want to flood your console.
-		
+		/*
 		userDb.driver.on('trace',function(sql){
-			logger.debug(sql);			
+			logger.debug(sql.replace('\t','').replace('\n',''));			
 		});
-		
+		*/
 	} else {
 		throw 'User database already opened';
 	}
