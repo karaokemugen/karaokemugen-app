@@ -63,7 +63,9 @@ export const defaultGuestNames = [
 	'Silver Mousquetaire',
 	'Kyonko',
 	'My karaoke can\'t be this cute',
-	'No bully please'
+	'No bully please',
+	'Le type avec un t-shirt blanc là-bas',
+	'David Goodenough'
 ];
 
 export const initializationCatchphrases = [
