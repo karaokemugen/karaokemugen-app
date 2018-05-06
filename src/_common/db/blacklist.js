@@ -99,7 +99,7 @@ export const getBlacklistContents = `SELECT
       									ak.videofile AS videofile
  									FROM karasdb.all_karas AS ak 
 									INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.kara_id
-									ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.singer, ak.title
+									ORDER BY ak.language, ak.serie IS NULL, ak.serie COLLATE NOCASE, ak.singer COLLATE NOCASE, ak.songtype DESC, ak.songorder, ak.title COLLATE NOCASE
 									`;
 
 export const editBlacklistCriteria = `UPDATE blacklist_criteria 
