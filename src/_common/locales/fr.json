@@ -200,6 +200,7 @@
 	"ENGINEALLOWVIEWBLACKLIST": "Liste noire visible",
 	"ENGINEALLOWVIEWBLACKLISTCRITERIAS": "Critères de liste noire visibles",
 	"ENGINEALLOWVIEWWHITELIST": "Liste blanche visible",
+	"ENGINECREATEPREVIEWS": "Activer la génération des aperçus vidéo",
 	"ENGINEDISPLAYNICKNAME": "Afficher les pseudos",
 	"WEBAPPMODE": "Mode de l'interface publique",
 	"WEBAPPMODE_CLOSED": "Fermé",

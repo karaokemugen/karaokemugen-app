@@ -200,6 +200,7 @@
 	"ENGINEALLOWVIEWBLACKLIST": "Allow users to view blacklist",
 	"ENGINEALLOWVIEWBLACKLISTCRITERIAS": "Allow users to view blacklist criterias",
 	"ENGINEALLOWVIEWWHITELIST": "Allow users to view whitelist",
+	"ENGINECREATEPREVIEWS": "Activate preview creation",
 	"ENGINEDISPLAYNICKNAME": "Display nicknames in karaokes",
 	"WEBAPPMODE": "Public interface mode",
 	"WEBAPPMODE_CLOSED": "Closed",
