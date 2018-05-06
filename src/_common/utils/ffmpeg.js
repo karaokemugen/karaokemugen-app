@@ -13,7 +13,7 @@ export async function extractSubtitles(videofile, extractfile) {
 
 export async function createPreview(videopreview) {	
 	try {
-		return await execa(getConfig().BinffmpegPath, ['-y', '-ss', '0', '-i', videopreview.videofile, '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-threads', '1', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
+		return await execa(getConfig().BinffmpegPath, ['-y', '-i', videopreview.videofile, '-ss', '0', '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-threads', '1', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
 	} catch(err) {
 		logger.error(`[ffmpeg] Video ${videopreview.videofile} not generated : ${err.code} (${err.message}`);
 		logger.error(`[ffmpeg] STDOUT: ${err.stdout}`);
