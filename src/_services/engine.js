@@ -144,8 +144,13 @@ export async function initEngine() {
 		exit(1);
 	}
 	if (conf.optBaseUpdate) try {
-		if (await runBaseUpdate()) setConfig({optGenerateDB: true});
-		logger.info('[Updater] Done updating karaokes');
+		if (await runBaseUpdate()) {
+			logger.info('[Updater] Done updating karaoke base');
+			setConfig({optGenerateDB: true});
+		} else {
+			logger.info('[Updater] No updates found, exiting');
+			exit(0);
+		}
 	} catch (err) {
 		logger.error(`[Updater] Update failed : ${err}`);
 		exit(1);

@@ -63,7 +63,6 @@ async function compareBases() {
 	const karasMinePath = resolve(conf.appPath, pathKaras[0]);		
 	if (!gitRepo) {
 		const archive = await decompressBase();
-		
 		const archiveWOExt = basename(archive, '.zip');
 		const karasBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt,'karas');
 		const lyricsBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'lyrics');
@@ -217,8 +216,7 @@ async function listLocalVideos() {
 }
 
 async function removeFiles(files, dir) {
-	if (files.length === 0) return true;
-	for (const file of files) {		
+	for (const file of files) {
 		await asyncUnlink(resolve(dir, file));
 		logger.info('[Updater] Removed : '+file);
 	}
@@ -259,9 +257,8 @@ export async function runBaseUpdate() {
 			compareVideos(localVideos, remoteVideos)
 		]);
 		updateRunning = false;
-		if (updateBase || updateVideos) return true;		
-		return false;
+		return !!(updateBase || updateVideos);
 	} catch (err) {
 		throw err;
-	}	
+	}
 }
