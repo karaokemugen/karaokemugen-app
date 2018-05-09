@@ -134,32 +134,26 @@ export async function initEngine() {
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
 	state.engine.private = conf.EnginePrivateMode > 0;
-	if (conf.optValidateKaras) {
-		try {
-			logger.info('[Engine] Starting validation process, please wait...');
-			await validateKaras();
-			logger.info('[Engine] Validation completed successfully. Yayifications!');
-			exit(0);
-		} catch(err) {
-			logger.error(`[Engine] Validation failed : ${err}`);
-			exit(1);
-		}
+	if (conf.optValidateKaras) try {
+		logger.info('[Engine] Starting validation process, please wait...');
+		await validateKaras();
+		logger.info('[Engine] Validation completed successfully. Yayifications!');
+		exit(0);
+	} catch (err) {
+		logger.error(`[Engine] Validation failed : ${err}`);
+		exit(1);
 	}
-	if (conf.optBaseUpdate) {		
-		try {
-			if (await runBaseUpdate()) setConfig({optGenerateDB: true});
-			logger.info('[Updater] Done updating karaokes');
-		} catch(err) {
-			logger.error(`[Updater] Update failed : ${err}`);
-			exit(1);
-		}
+	if (conf.optBaseUpdate) try {
+		if (await runBaseUpdate()) setConfig({optGenerateDB: true});
+		logger.info('[Updater] Done updating karaokes');
+	} catch (err) {
+		logger.error(`[Updater] Update failed : ${err}`);
+		exit(1);
 	}
-	if (conf.optSoftUpdate) {
-		try {
-			await runKMUpdate();
-		} catch(err) {
-			logger.error(`[Updater] Software update failed : ${err}`);
-		}
+	if (conf.optSoftUpdate) try {
+		await runKMUpdate();
+	} catch (err) {
+		logger.error(`[Updater] Software update failed : ${err}`);
 	}
 	//Database system is the foundation of every other system
 	await initDBSystem();
@@ -218,7 +212,7 @@ export function exit(rc) {
 		logger.info('[Engine] Database closed');		
 		console.log('\nMata ne !\n');
 		if (process.platform !== 'win32' || !process.stdout.isTTY) process.exit(rc); 
-		readlineSync.question('Press enter to exit', {hideEchoBack: true});
+		if (rc !== 0) readlineSync.question('Press enter to exit', {hideEchoBack: true});
 		process.exit(rc);	
 	});
 }
