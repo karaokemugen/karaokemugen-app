@@ -106,9 +106,14 @@
         <script src="/vendors/js/select2.min.js"></script>
         <script src="/vendors/js/bootstrap.min.js"></script>   
         <script>
+			
+		if( window.location.search.indexOf('admpwd') === -1 ) {
+			$('#admin').hide();
+		}
 		$('#admin').click(() => {
 			window.open('/admin' + window.location.search,'_blank');
 		});
+
         $('#welcome_dashboard').on('click','li', (e,k) => {
             var index = $(e.currentTarget).index();
 
