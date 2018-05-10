@@ -756,6 +756,9 @@ export async function exportPlaylist(playlist_id) {
 		plcObject.created_at = plc.created_at;
 		plcObject.pos = plc.pos;
 		plcObject.username = plc.username;
+		plcObject.serie = plc.serie;
+		plcObject.title = plc.title;
+		plcObject.type = plc.type;
 		if (plc.flag_playing === 1) plcObject.flag_playing = 1;
 		plcFiltered.push(plcObject);
 	});
