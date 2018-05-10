@@ -548,7 +548,7 @@ export async function playJingle() {
 			emitPlayerState();
 		}
 	} else {
-		logger.debug('[Jingle] No jingle to play.');
+		logger.debug('[Jingles] No jingle to play.');
 		state.player.playerstatus = 'play';
 		loadBackground();
 		displayInfo();
