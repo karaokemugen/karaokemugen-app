@@ -1,7 +1,8 @@
 var panel1Default;      // Int : default id of the playlist of the 1st panel (-1 means kara list)
 var status;             // String : status of the player
 var mode;               // String : way the kara list is constructed, atm "list" supported
-var scope;              // String : if we're in public or admin interface
+var scope;              // String : way the kara list is constructed, atm "list" supported
+var welcomeScreen;              // String : if we're in public or admin interface
 var refreshTime;        // Int (ms) : time unit between every call
 var stopUpdate;         // Boolean : allow to stop any automatic ajax update
 var oldState;           // Object : last player state saved
@@ -186,23 +187,32 @@ var settingsNotUpdated;
 
 		var mugenToken = readCookie('mugenToken');
 
-		if(query.admpwd && scope === 'admin') { // app first run admin;
-			login('admin', query.admpwd).done(() => {
-				startIntro('admin');
-				var privateMode = $('input[name="EnginePrivateMode"]');
-				privateMode.val(1);
-				setSettings(privateMode);
-			});
-		} else if(mugenToken) {
-			logInfos = parseJwt(mugenToken);
-			logInfos.token = mugenToken;
-			if(scope === 'admin' && logInfos.role !== 'admin') {
+		if(!welcomeScreen) {
+			if(query.admpwd && scope === 'admin') { // app first run admin;
+				login('admin', query.admpwd).done(() => {
+					startIntro('admin');
+					var privateMode = $('input[name="EnginePrivateMode"]');
+					privateMode.val(1);
+					setSettings(privateMode);
+				});
+			} else if(mugenToken) {
+				logInfos = parseJwt(mugenToken);
+				logInfos.token = mugenToken;
+				if(scope === 'admin' && logInfos.role !== 'admin') {
+					$('#loginModal').modal('show');
+				} else {			
+					initApp();
+				}
+			} else {
 				$('#loginModal').modal('show');
-			} else {			
-				initApp();
 			}
+		} else if (mugenToken) { 
+			logInfos = parseJwt(mugenToken);
+			$('#wlcm_login > span').text(logInfos.username);
+			$('#wlcm_disconnect').show();
 		} else {
-			$('#loginModal').modal('show');
+			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
+			$('#wlcm_disconnect').hide();
 		}
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
@@ -1386,7 +1396,7 @@ var settingsNotUpdated;
 					minimumResultsForSearch: 3
 				});
 
-				if(!select2.val()) {
+				if(!select2.val() && select2.length > 0) {
 					select2[0].selectedIndex = 0;
 				}
 				deferred.resolve();
@@ -1957,6 +1967,12 @@ var settingsNotUpdated;
 					introManager.nextStep();
 				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
 					$('#helpModal').modal('show');
+				}
+				
+				if (welcomeScreen) {
+					logInfos = parseJwt(response.token);
+					$('#wlcm_login > span').text(logInfos.username);
+					$('#wlcm_disconnect').show();
 				}
 
 				deferred.resolve();
