@@ -218,7 +218,10 @@
 	"PLAYLIST_EDIT": "Renommer la liste de lecture",
 	"PLAYLIST_DELETE": "Supprimer la liste de lecture",
 	"PLAYLIST_SHUFFLE": "Mélanger la liste de lecture",
-	"PLAYLIST_IMPORT": "Importer une liste de lecture",
+	"FAVORITES_IMPORT": "Importer vos favoris",
+	"FAVORITES_EXPORT": "Exporter vos favoris",
+	"IMPORT": "Importer",
+	"EXPORT": "Exporter",
 	"GET_LUCKY": "J'ai de la chance !",
 	"PLAYLIST_COMMANDS": "Commandes de liste de lecture",
 	"ADD_ALL_KARAS": "Ajouter tous les karas de cette liste",
@@ -437,5 +440,6 @@
 	"SETTINGS_PLAYER": "Lecteur",
 	"SETTINGS_KARAOKE": "Karaoké",
 	"SETTINGS_INTERFACE": "Interface",
-	"_": "DO NOT MODIFY"
+	"_": "DO NOT MODIFY",
+	"PLAYLIST_IMPORT": "PLAYLIST_IMPORT"
 }
