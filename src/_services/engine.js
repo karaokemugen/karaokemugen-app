@@ -618,7 +618,8 @@ export async function deletePL(playlist_id, token) {
 }
 
 export async function deleteKara(plc_ids,playlist_id,token) {
-	if (!playlist_id) playlist_id = internalState.modePlaylist_id;
+	// If playlist_id is null, set it to current/public PL ID
+	if (!playlist_id) playlist_id = internalState.modePlaylistID;
 	const pl = await plc.getPlaylistInfo(playlist_id);
 	let karas;
 	if (typeof plc_ids === 'string') {
