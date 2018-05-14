@@ -151,6 +151,7 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
 									`;
 
 export const getPlaylistContentsMini = `SELECT ak.kara_id AS kara_id,
+												    ak.language AS language,
       												ak.title AS title,
       												ak.songorder AS songorder,
       												ak.serie AS serie,
