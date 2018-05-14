@@ -286,6 +286,11 @@ var settingsNotUpdated;
 			addKaraPublic(idKara);
 		});
 
+		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="deleteKara"]', function() {
+			var idPlaylistContent = $(this).closest('li').attr('idplaylistcontent');
+			deleteKaraPublic(idPlaylistContent);
+		});
+
 		// (de)select all karas button
 		$('.playlist-main').on('click', '.actionDiv > button.clusterAction', function() {
 			var $this = $(this);
@@ -1073,14 +1078,18 @@ var settingsNotUpdated;
 								if (kara.flag_upvoted === 1) {
 									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
 								}
+								console.log(dashboard.data('flag_public') == 1 ? "yes" : "no",(dashboard.data('flag_public') == 1 && scope !== 'admin' ? likeKara : ''));
 
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
+								+	(scope !== 'admin' && kara.username == logInfos.username ? '<div class="actionDiv">' + deleteKaraHtml + '</div>' : '')
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
-								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
-								+   (isTouchScreen ? '' : infoKaraHtml) + playKara
-								+	(dashboard.data('flag_public') === 1 && scope !== 'admin' ? likeKara : '') + '</div>')
+								+   '<div class="infoDiv">'
+								+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
+								+	(scope === 'admin' ? playKara : '')
+								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
+								+	'</div>'
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
 								+	'<div>' + badges + '</div>'
@@ -2048,6 +2057,15 @@ var settingsNotUpdated;
 		});
 	};
 
+	deleteKaraPublic = function(idPlaylistContent) {
+		
+		$.ajax({ url: scope + '/playlists/' + playlistToAdd + '/karas/' + idPlaylistContent,
+			type: 'DELETE'
+		}).done(function() {
+	
+			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
+		});
+	};
 
 	/* partie socket */
 	socket.on('playerStatus', function(data){

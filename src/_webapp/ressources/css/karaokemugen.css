@@ -239,7 +239,7 @@ select.form-control {
 	z-index: 20;
 	overflow: auto;
 	padding: 0px;
-	line-height: 3rem;
+	line-height: 3.1rem;
 	__contain: style;
 }
 .playlistContainer ul > li {
