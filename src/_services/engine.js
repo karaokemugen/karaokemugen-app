@@ -617,7 +617,8 @@ export async function deletePL(playlist_id, token) {
 	}
 }
 
-export async function deleteKara(plc_ids,playlist_id) {
+export async function deleteKara(plc_ids,playlist_id,token) {
+	if (!playlist_id) playlist_id = internalState.modePlaylist_id;
 	const pl = await plc.getPlaylistInfo(playlist_id);
 	let karas;
 	if (typeof plc_ids === 'string') {
@@ -628,6 +629,8 @@ export async function deleteKara(plc_ids,playlist_id) {
 	const plcData = await plc.getPLCInfoMini(karas[0]);
 	logger.info(`[Engine] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);	
 	try {
+		//If token is present, a user is trying to remove a karaoke
+		if (token) if (plcData.username !== token.username) throw 'You cannot delete a song you did not add';
 		await plc.deleteKaraFromPlaylist(karas, playlist_id);
 		return {
 			pl_id: playlist_id,

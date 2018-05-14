@@ -4042,6 +4042,92 @@ export function APIControllerPublic(router) {
 				res.json(errMessage(err.code,err.message));
 			}
 		});
+	router.route('/playlists/public/karas/:plc_id([0-9]+)')
+		/**
+	 * @api {delete} /public/playlists/public/karas/:plc_id Delete song from public playlist
+	 * @apiName DeletePublicSong
+	 * @apiVersion 2.2.0
+	 * @apiGroup Playlists
+	 * @apiPermission public
+	 *
+	 * @apiParam {Number} plc_id Target playlist content ID
+	 * @apiSuccess {String} args Name of playlist the song was deleted from
+ 	 * @apiSuccess {String} code Message to display
+ 	 *
+ 	 * @apiSuccessExample Success-Response:
+ 	 * HTTP/1.1 200 OK
+ 	 * {
+ 	 *   "args": "Liste de lecture publique",
+ 	 *   "code": "PL_SONG_DELETED",
+ 	 *   "data": null
+ 	 * }
+ 	 * @apiError PL_DELETE_SONG_ERROR Unable to delete the song from the selected playlist
+ 	 *
+ 	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 500 Internal Server Error
+ 	 * {
+ 	 *   "args": "Liste de lecture publique",
+ 	 *   "code": "PL_DELETE_SONG_ERROR",
+ 	 *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
+ 	 * }
+ 	 */
+	
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const data = await engine.deleteKara(req.body.plc_id,null,req.authToken);
+				emitWS('playlistContentsUpdated',data.pl_id);
+				emitWS('playlistInfoUpdated',data.pl_id);
+				res.statusCode = 200;
+				res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
+			}			
+		});
+	router.route('/playlists/current/karas/:plc_id([0-9]+)')
+		/**
+	 * @api {delete} /public/playlists/current/karas/:plc_id Delete song from current playlist
+	 * @apiName DeleteCurrentSong
+	 * @apiVersion 2.2.0
+	 * @apiGroup Playlists
+	 * @apiPermission public
+	 *
+	 * @apiParam {Number} plc_id Target playlist content ID
+	 * @apiSuccess {String} args Name of playlist the song was deleted from
+ 	 * @apiSuccess {String} code Message to display
+ 	 *
+ 	 * @apiSuccessExample Success-Response:
+ 	 * HTTP/1.1 200 OK
+ 	 * {
+ 	 *   "args": "Liste de lecture publique",
+ 	 *   "code": "PL_SONG_DELETED",
+ 	 *   "data": null
+ 	 * }
+ 	 * @apiError PL_DELETE_SONG_ERROR Unable to delete the song from the selected playlist
+ 	 *
+ 	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 500 Internal Server Error
+ 	 * {
+ 	 *   "args": "Liste de lecture publique",
+ 	 *   "code": "PL_DELETE_SONG_ERROR",
+ 	 *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
+ 	 * }
+ 	 */
+	
+		.delete(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const data = await engine.deleteKara(req.body.plc_id,null,req.authToken);
+				emitWS('playlistContentsUpdated',data.pl_id);
+				emitWS('playlistInfoUpdated',data.pl_id);
+				res.statusCode = 200;
+				res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
+			}			
+		});
 	router.route('/tags')
 	/**
 	* @api {get} /public/tags Get tag list
