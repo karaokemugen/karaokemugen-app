@@ -116,7 +116,7 @@ export async function getPlaylistContentsMini(id) {
 }
 
 export async function getPlaylistContents(id, username, filter) {
-	const filterClauses = filter ? buildClauses(filter) : [];
+	const filterClauses = filter ? buildClauses(filter, 'playlist') : [];
 	const query = sql.getPlaylistContents(filterClauses);
 	return await getUserDb().all(query, { 
 		$playlist_id: id,

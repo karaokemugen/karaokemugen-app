@@ -16,14 +16,16 @@ const sql = require('../_common/db/database');
 let karaDb;
 let userDb;
 
-export function buildClauses(filter) {
+export function buildClauses(filter,source) {	
 	return deburr(filter)
 		.toLowerCase()
 		.replace('\'', '')
 		.split(' ')
 		.filter(s => !('' === s))
-		.map(word =>
-			`ak.NORM_misc LIKE '%${word}%' OR 
+		.map(word => {
+			let extraClauses = ''; 
+			if (source === 'playlist') extraClauses = `OR pc.NORM_pseudo_add LIKE '%${word}%'`;	
+			return `ak.NORM_misc LIKE '%${word}%' OR 
 			ak.NORM_title LIKE '%${word}%' OR 
 			ak.NORM_author LIKE '%${word}%' OR 
 			ak.NORM_serie LIKE '%${word}%' OR 
@@ -31,7 +33,8 @@ export function buildClauses(filter) {
 			ak.NORM_singer LIKE '%${word}%' OR 
 			ak.NORM_songwriter LIKE '%${word}%' OR 
 			ak.NORM_creator LIKE '%${word}%' OR
-			ak.language LIKE '%${word}%'`
+			ak.language LIKE '%${word}%'` + extraClauses;
+		}			
 		);
 }
 
