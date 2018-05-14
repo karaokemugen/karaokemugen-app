@@ -882,10 +882,11 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			};
 		}
 	} catch(err) {
-		logger.error(`[Engine] Unable to add karaokes : ${err}`);
+		logger.error(`[Engine] Unable to add karaokes : ${err.msg}`);
+		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 		throw {
 			code: errorCode,
-			message: err,
+			message: err.msg,
 			data: {
 				kara: karas,
 				playlist: pl.name,

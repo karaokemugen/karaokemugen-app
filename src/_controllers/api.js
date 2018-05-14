@@ -3560,7 +3560,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {post} /public/karas/:kara_id Add karaoke to current/public playlist
  * @apiName PostKaras
- * @apiVersion 2.1.0
+ * @apiVersion 2.1.2
  * @apiGroup Playlists
  * @apiPermission public
  * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
@@ -3591,7 +3591,8 @@ export function APIControllerPublic(router) {
  * }
 
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
-* @apiError PLAYLIST_MODE_ADD_SONG_ERROR Karaoke already present in playlist
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED All songs are already present in playlist
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR General error while adding song
 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 * @apiErrorExample Error-Response:
 * HTTP/1.1 500 Internal Server Error

@@ -329,6 +329,7 @@
 	"GET_UNLUCKY": "No song could be added. Are they already all in the current playlist?",
 	"SONG_VIEW_ERROR": "Unable to display karaoke info for %s",
 	"PLAYLIST_MODE_ADD_SONG_ERROR": "Unable to add %s to playlist %s",
+	"PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED": "This song is already present in the playlist",
 	"PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED": "You can't add any more songs for now. Wait until one of your songs is played!",
 	"PLAYLIST_MODE_SONG_ADDED": "%s added to playlist %s",
 	"LYRICS_VIEW_ERROR": "Unable to display lyrics for %s",

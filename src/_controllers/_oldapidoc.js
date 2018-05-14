@@ -1582,3 +1582,53 @@
 	* HTTP/1.1 500 Internal Server Error
 	*/
 	
+	/**
+ * @api {post} /public/karas/:kara_id Add karaoke to current/public playlist
+ * @apiName PostKaras
+ * @apiVersion 2.1.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
+ * @apiParam {Number} kara_id Karaoke ID to add to current/public playlist
+ * @apiSuccess {String} args/kara Karaoke title added
+ * @apiSuccess {Number} args/kara_id Karaoke ID added.
+ * @apiSuccess {String} args/playlist Name of playlist the song was added to
+ * @apiSuccess {Number} args/playlist_id Playlist ID the song was added to
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data See `args` above.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   },
+ *   "code": "PLAYLIST_MODE_SONG_ADDED",
+ *   "data": {
+ *       "kara": "Dragon Screamer",
+ *       "kara_id": "1029",
+ *       "playlist": "Courante",
+ *       "playlist_id": 1
+ *   }
+ * }
+
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR Karaoke already present in playlist
+* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+* @apiErrorExample Error-Response:
+* HTTP/1.1 500 Internal Server Error
+* {
+*   "args": {
+*       "kara": "1033",
+*       "playlist": 1,
+*       "user": "Axel"
+*   },
+*   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED",
+*   "message": "User quota reached"
+* }
+* @apiErrorExample Error-Response:
+* HTTP/1.1 403 Forbidden
+*/

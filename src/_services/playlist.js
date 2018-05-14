@@ -542,10 +542,10 @@ function isAllKarasInPlaylist(karas, karasToRemove) {
 }
 
 export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
-	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;	
+	if (!await isPlaylist(playlist_id)) throw {code: 1, msg: `Playlist ${playlist_id} unknown`};	
 	let karaList = [];	
 	const user = await findUserByName(requester);	
-	if (!user) throw 'User does not exist';
+	if (!user) throw {code: 2, msg: 'User does not exist'};
 	const date_add = now();			
 	karas.forEach((kara_id) => {
 		karaList.push({
@@ -565,10 +565,10 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 		plDB.countPlaylistUsers(playlist_id),
 		plDB.getMaxPosInPlaylist(playlist_id)
 	]);
-	if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist';
+	if (!await isAllKaras(karas)) throw {code: 3, msg: 'One of the karaokes does not exist'};
 	const pl = await plDB.getPlaylistKaraIDs(playlist_id);	
 	karaList = isAllKarasInPlaylist(karaList,pl);
-	if (karaList.length === 0) throw `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`;
+	if (karaList.length === 0) throw {code: 4, msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`};
 	// If pos is provided, we need to update all karas above that and add 
 	// karas.length to the position
 	// If pos is not provided, we need to get the maximum position in the PL
