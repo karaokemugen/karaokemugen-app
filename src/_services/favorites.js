@@ -1,5 +1,5 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
-import {getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContents, getPlaylistContentsMini} from '../_services/playlist';
+import {importPlaylist, exportPlaylist, getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini, getPlaylistContents} from '../_services/playlist';
 import {formatKaraList} from '../_services/engine';
 import {listUsers, checkUserNameExists} from '../_services/user';
 import logger from 'winston';
@@ -44,6 +44,16 @@ export async function deleteFavorite(username, kara_id) {
 	await deleteKaraFromPlaylist([plc_id], plInfo.playlist_id);
 	await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
 	return plInfo;
+}
+
+export async function exportFavorites(token) {
+	const plInfo = await getFavoritesPlaylist(token.username);
+	return await exportPlaylist(plInfo.playlist_id);
+}
+
+export async function importFavorites(favorites, token) {
+	const plInfo = await getFavoritesPlaylist(token.username);
+	return await importPlaylist(favorites.data, token.username, plInfo.playlist_id);
 }
 
 async function getAllFavorites(userList) {
