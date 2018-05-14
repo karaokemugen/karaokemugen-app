@@ -926,7 +926,7 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav, .likeKara');
+			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav, .likeKara, [name="deleteKara"]');
 
 			if($this.length > 0) {
 				e.preventDefault();
@@ -950,8 +950,12 @@ var settingsNotUpdated;
 					showVideo($this);
 				} else if($this.hasClass('makeFav')) {
 					makeFav(idKara, !$this.hasClass('currentFav'), $this);
-				}else if($this.hasClass('likeKara')) {
+				} else if($this.hasClass('likeKara')) {
 					likeKara(!$this.hasClass('currentLike'), $this);
+				} else if($this.hasClass('likeKara')) {
+					likeKara(!$this.hasClass('currentLike'), $this);
+				} else if($this.attr('name') == 'deleteKara') {
+					deleteKaraPublic(liKara.attr('idplaylistcontent'));
 				}
 			}
 		});
@@ -1083,12 +1087,12 @@ var settingsNotUpdated;
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
-								+	(scope !== 'admin' && kara.username == logInfos.username ? '<div class="actionDiv">' + deleteKaraHtml + '</div>' : '')
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
 								+   '<div class="infoDiv">'
 								+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
 								+	(scope === 'admin' ? playKara : '')
 								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
+								+	(scope !== 'admin' && kara.username == logInfos.username ?  deleteKaraHtml : '')
 								+	'</div>'
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
