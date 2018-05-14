@@ -76,7 +76,7 @@ async function openKaraDatabase() {
 	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);	
 	if (!karaDb) {
 		logger.debug('[DB] Opening kara database');
-		karaDb = await open(karaDbFile, {cached: true, verbose: true});		
+		karaDb = await open(karaDbFile, {verbose: true});		
 	} else {
 		throw 'Kara database already opened';
 	}
@@ -87,7 +87,7 @@ async function openUserDatabase() {
 	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	if (!userDb) {
 		logger.debug('[DB] Opening user database');
-		userDb = await open(userDbFile, {cached: true, verbose: true});
+		userDb = await open(userDbFile, {verbose: true});
 		// Trace event. DO NOT UNCOMMENT
 		// unless you want to flood your console.
 		/*
