@@ -4074,7 +4074,7 @@ export function APIControllerPublic(router) {
 	
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const data = await engine.deleteKara(req.body.plc_id,null,req.authToken);
+				const data = await engine.deleteKara(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
 				emitWS('playlistInfoUpdated',data.pl_id);
 				res.statusCode = 200;
@@ -4117,7 +4117,7 @@ export function APIControllerPublic(router) {
 	
 		.delete(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const data = await engine.deleteKara(req.body.plc_id,null,req.authToken);
+				const data = await engine.deleteKara(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
 				emitWS('playlistInfoUpdated',data.pl_id);
 				res.statusCode = 200;
