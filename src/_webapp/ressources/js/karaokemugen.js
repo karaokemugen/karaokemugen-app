@@ -286,6 +286,11 @@ var settingsNotUpdated;
 			addKaraPublic(idKara);
 		});
 
+		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="deleteKara"]', function() {
+			var idPlaylistContent = $(this).closest('li').attr('idplaylistcontent');
+			deleteKaraPublic(idPlaylistContent);
+		});
+
 		// (de)select all karas button
 		$('.playlist-main').on('click', '.actionDiv > button.clusterAction', function() {
 			var $this = $(this);
@@ -921,7 +926,7 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav, .likeKara');
+			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav, .likeKara, [name="deleteKara"]');
 
 			if($this.length > 0) {
 				e.preventDefault();
@@ -945,8 +950,12 @@ var settingsNotUpdated;
 					showVideo($this);
 				} else if($this.hasClass('makeFav')) {
 					makeFav(idKara, !$this.hasClass('currentFav'), $this);
-				}else if($this.hasClass('likeKara')) {
+				} else if($this.hasClass('likeKara')) {
 					likeKara(!$this.hasClass('currentLike'), $this);
+				} else if($this.hasClass('likeKara')) {
+					likeKara(!$this.hasClass('currentLike'), $this);
+				} else if($this.attr('name') == 'deleteKara') {
+					deleteKaraPublic(liKara.attr('idplaylistcontent'));
 				}
 			}
 		});
@@ -1073,14 +1082,18 @@ var settingsNotUpdated;
 								if (kara.flag_upvoted === 1) {
 									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
 								}
+								console.log(dashboard.data('flag_public') == 1 ? "yes" : "no",(dashboard.data('flag_public') == 1 && scope !== 'admin' ? likeKara : ''));
 
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
-								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
-								+   (isTouchScreen ? '' : infoKaraHtml) + playKara
-								+	(dashboard.data('flag_public') === 1 && scope !== 'admin' ? likeKara : '') + '</div>')
+								+   '<div class="infoDiv">'
+								+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
+								+	(scope === 'admin' ? playKara : '')
+								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
+								+	(scope !== 'admin' && kara.username == logInfos.username ?  deleteKaraHtml : '')
+								+	'</div>'
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
 								+	'<div>' + badges + '</div>'
@@ -2048,6 +2061,15 @@ var settingsNotUpdated;
 		});
 	};
 
+	deleteKaraPublic = function(idPlaylistContent) {
+		
+		$.ajax({ url: scope + '/playlists/' + playlistToAdd + '/karas/' + idPlaylistContent,
+			type: 'DELETE'
+		}).done(function() {
+	
+			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
+		});
+	};
 
 	/* partie socket */
 	socket.on('playerStatus', function(data){
