@@ -45,7 +45,7 @@
     "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)"
   ],
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=8.6.0"
   },
   "license": "MIT",
   "private": true,
