@@ -76,7 +76,7 @@ async function openKaraDatabase() {
 	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);	
 	if (!karaDb) {
 		logger.debug('[DB] Opening kara database');
-		karaDb = await open(karaDbFile, {verbose: true});		
+		karaDb = await open(karaDbFile, {cached: true, verbose: true});		
 	} else {
 		throw 'Kara database already opened';
 	}
@@ -87,7 +87,7 @@ async function openUserDatabase() {
 	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	if (!userDb) {
 		logger.debug('[DB] Opening user database');
-		userDb = await open(userDbFile, {verbose: true});
+		userDb = await open(userDbFile, {cached: true, verbose: true});
 		// Trace event. DO NOT UNCOMMENT
 		// unless you want to flood your console.
 		/*
@@ -104,8 +104,13 @@ async function closeKaraDatabase() {
 	if (!karaDb) {
 		logger.warn('[DB] Kara database already closed');
 	} else {
-		await karaDb.close();
-		karaDb = null;
+		try {
+			await karaDb.close();
+			karaDb = null;
+		} catch(err) {
+			logger.warn('[DB] Kara database is busy, force closing');
+			karaDb = null;
+		}		
 	}
 }
 
@@ -113,8 +118,13 @@ export async function closeUserDatabase() {
 	if (!userDb) {
 		logger.warn('[DB] User database already closed');
 	} else {
-		await userDb.close();
-		userDb = null;
+		try {
+			await userDb.close();
+			userDb = null;
+		} catch(err) {
+			logger.warn('[DB] User database is busy, force closing');
+			userDb = null;
+		}		
 	}
 }
 
