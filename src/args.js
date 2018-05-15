@@ -60,10 +60,6 @@ export async function parseCommandLineArgs(argv) {
 		logger.info('[Launcher] Base update requested');
 		setConfig({optBaseUpdate: true});
 	}
-	if (argv.updateSoft) {
-		logger.info('[Launcher] Software update requested');
-		setConfig({optSoftUpdate: true});
-	}
 	if (argv.online) {
 		logger.info('[Launcher] Online mode activated');
 		setConfig({optOnline: true});
