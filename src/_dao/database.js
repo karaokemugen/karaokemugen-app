@@ -6,6 +6,8 @@ import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
 import promiseRetry from 'promise-retry';
 import {exit} from '../_services/engine';
 import {duration} from '../_common/utils/date';
+import deburr from 'lodash.deburr';
+
 
 const DBgenerator = require('../_admin/generate_karasdb.js');
 const sql = require('../_common/db/database');
@@ -13,6 +15,29 @@ const sql = require('../_common/db/database');
 // Setting up databases
 let karaDb;
 let userDb;
+
+export function buildClauses(filter,source) {	
+	return deburr(filter)
+		.toLowerCase()
+		.replace('\'', '')
+		.split(' ')
+		.filter(s => !('' === s))
+		.map(word => {
+			let extraClauses = ''; 
+			if (source === 'playlist') extraClauses = `OR pc.NORM_pseudo_add LIKE '%${word}%'`;	
+			return `ak.NORM_misc LIKE '%${word}%' OR 
+			ak.NORM_title LIKE '%${word}%' OR 
+			ak.NORM_author LIKE '%${word}%' OR 
+			ak.NORM_serie LIKE '%${word}%' OR 
+			ak.NORM_serie_altname LIKE '%${word}%' OR 
+			ak.NORM_singer LIKE '%${word}%' OR 
+			ak.NORM_songwriter LIKE '%${word}%' OR 
+			ak.NORM_creator LIKE '%${word}%' OR
+			ak.language LIKE '%${word}%'` + extraClauses;
+		}			
+		);
+}
+
 
 async function doTransaction(items, sql) {	
 	try {
@@ -67,7 +92,7 @@ async function openUserDatabase() {
 		// unless you want to flood your console.
 		/*
 		userDb.driver.on('trace',function(sql){
-			logger.debug(sql);			
+			logger.debug(sql.replace('\t','').replace('\n',''));			
 		});
 		*/
 	} else {
@@ -79,8 +104,13 @@ async function closeKaraDatabase() {
 	if (!karaDb) {
 		logger.warn('[DB] Kara database already closed');
 	} else {
-		await karaDb.close();
-		karaDb = null;
+		try {
+			await karaDb.close();
+			karaDb = null;
+		} catch(err) {
+			logger.warn('[DB] Kara database is busy, force closing');
+			karaDb = null;
+		}		
 	}
 }
 
@@ -88,8 +118,13 @@ export async function closeUserDatabase() {
 	if (!userDb) {
 		logger.warn('[DB] User database already closed');
 	} else {
-		await userDb.close();
-		userDb = null;
+		try {
+			await userDb.close();
+			userDb = null;
+		} catch(err) {
+			logger.warn('[DB] User database is busy, force closing');
+			userDb = null;
+		}		
 	}
 }
 
@@ -200,7 +235,7 @@ async function generateDatabase() {
 	const conf = getConfig();
 
 	const failedKaras = await DBgenerator.run(conf);
-	logger.debug('[DBI] Karaokes database created');
+	logger.debug('[DBI] Karaoke database created');
 	if (conf.optGenerateDB) {
 		if (failedKaras) {
 			logger.error('[DBI] Database generation completed with errors!');

@@ -1,6 +1,3 @@
-/**
- * @fileoverview Launcher source file
- */
 import {asyncCheckOrMkdir, asyncMkdirp, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
 import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';

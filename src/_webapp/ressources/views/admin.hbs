@@ -2,15 +2,15 @@
    
     <div class="dropdown btn btn-default btn-dark pull-right" id="manageButton">
         <button class="btn btn-default btn-dark pull-right dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-            <i class="glyphicon glyphicon-cog"></i></button>
+            <i class="glyphicon glyphicon-menu-hamburger"></i></button>
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
             <li title="{{i18n "ACCOUNT"}}" action="account" class="btn btn-default btn-dark">
 		        <i class="glyphicon glyphicon-user"></i></li>
             <li title="{{i18n "LOGOUT"}}" action="logout" class="btn btn-default btn-dark">
-		        <i class="glyphicon glyphicon-off"></i></li>
+		        <i class="glyphicon glyphicon-log-out"></i></li>
             <li title="{{i18n "SHUTDOWN"}}" action="poweroff" class="btn btn-default btn-dark">
-                <img class="glyphicon" src="/ressources/img/moon.png"></li>
+                <i class="glyphicon glyphicon-off"></i></li>
         </ul>
     </div>
     
@@ -469,6 +469,19 @@
                                     <input class="form-control" name="password" type="password" placeholder="{{{ i18n "PROFILE_PASSWORD" }}}"/>
                                     <input class="form-control passwordConfirmation" type="password" placeholder="{{{ i18n "PROFILE_PASSWORDCONF" }}}" style="margin-left: 3px;"/>
                                 </div>
+                                 <div class="profileLine">
+                                    <i class="glyphicon glyphicon-star"></i>
+                                     <button type="button"  title='{{i18n "FAVORITES_IMPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6" data-dismiss="modal">
+                                        <i class="glyphicon glyphicon-import"></i> {{i18n "IMPORT"}}
+                                    </button>
+                                    <button type="button"  title='{{i18n "FAVORITES_EXPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6" data-dismiss="modal">
+                                        <i class="glyphicon glyphicon-export"></i> {{i18n "EXPORT"}}
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-xs-12 col-sm-12">
+
                             </div>
                         </div>
                     </div>
@@ -477,11 +490,8 @@
 
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        
-                    </div>
-
-                </div>
+                    <div class="modal-footer"> 
+                 </div>
 
             </div>
         </div>

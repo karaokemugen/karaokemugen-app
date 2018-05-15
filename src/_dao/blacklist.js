@@ -1,4 +1,4 @@
-import {getUserDb, transaction} from './database';
+import {buildClauses, getUserDb, transaction} from './database';
 const sql = require('../_common/db/blacklist');
 
 export async function emptyBlacklistCriterias() {
@@ -17,8 +17,11 @@ export async function deleteBlacklistCriteria(blc_id) {
 	return await getUserDb().run(sql.deleteBlacklistCriteria, { $id: blc_id });
 }
 
-export async function getBlacklistContents() {
-	return await getUserDb().all(sql.getBlacklistContents);
+export async function getBlacklistContents(filter) {
+	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.getBlacklistContents(filterClauses);
+
+	return await getUserDb().all(query);
 }
 
 export async function isBLCriteria(blc_id) {

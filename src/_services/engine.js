@@ -134,25 +134,26 @@ export async function initEngine() {
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
 	state.engine.private = conf.EnginePrivateMode > 0;
-	if (conf.optValidateKaras) {
-		try {
-			logger.info('[Engine] Starting validation process, please wait...');
-			await validateKaras();
-			logger.info('[Engine] Validation completed successfully. Yayifications!');
-			exit(0);
-		} catch(err) {
-			logger.error(`[Engine] Validation failed : ${err}`);
-			exit(1);
-		}
+	if (conf.optValidateKaras) try {
+		logger.info('[Engine] Starting validation process, please wait...');
+		await validateKaras();
+		logger.info('[Engine] Validation completed successfully. Yayifications!');
+		exit(0);
+	} catch (err) {
+		logger.error(`[Engine] Validation failed : ${err}`);
+		exit(1);
 	}
-	if (conf.optBaseUpdate) {		
-		try {
-			if (await runBaseUpdate()) setConfig({optGenerateDB: true});
-			logger.info('[Updater] Done updating karaokes');
-		} catch(err) {
-			logger.error(`[Updater] Update failed : ${err}`);
-			exit(1);
+	if (conf.optBaseUpdate) try {
+		if (await runBaseUpdate()) {
+			logger.info('[Updater] Done updating karaoke base');
+			setConfig({optGenerateDB: true});
+		} else {
+			logger.info('[Updater] No updates found, exiting');
+			exit(0);
 		}
+	} catch (err) {
+		logger.error(`[Updater] Update failed : ${err}`);
+		exit(1);
 	}
 	//Database system is the foundation of every other system
 	await initDBSystem();
@@ -213,7 +214,7 @@ export function exit(rc) {
 		logger.info('[Engine] Database closed');		
 		console.log('\nMata ne !\n');
 		if (process.platform !== 'win32' || !process.stdout.isTTY) process.exit(rc); 
-		readlineSync.question('Press enter to exit', {hideEchoBack: true});
+		if (rc !== 0) readlineSync.question('Press enter to exit', {hideEchoBack: true});
 		process.exit(rc);	
 	});
 }
@@ -445,37 +446,39 @@ async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());
 }
 
-export function formatKaraList(karaList,lang,filter,from,size) {
+
+export function formatKaraList(karaList, lang, from, count) {
+
 	karaList = plc.translateKaraInfo(karaList, lang);
-	if (filter) karaList = plc.filterPlaylist(karaList, filter);
 	return {
 		infos: {
-			count: karaList.length,
+			count: count,
 			from: from,
-			to: from+size
+			to: from + karaList.length
 		},
-		content: karaList.slice(from,from+size)
+		content: karaList
 	};
 }
 
-export async function getKaras(filter,lang,from,size,token) {
+export async function getKaras(filter, lang, from, size, token) {
 	try {
-		const pl = await plc.getAllKaras(token.username);
-		return formatKaraList(pl,lang,filter,from,size);		
+		const pl = await plc.getAllKaras(token.username, filter);
+		const result = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+		return result;
 	} catch(err) {
 		throw err;
 	}
 }
 
-export async function getRandomKara(filter) {
+export async function getRandomKara(filter, token) {
 	logger.debug('[Engine] Requesting a random song');
-	return await plc.getRandomKara(internalState.currentPlaylistID,filter);
+	return await plc.getRandomKara(internalState.currentPlaylistID,filter,token.username);
 }
 
 export async function getWL(filter,lang,from,size) {
 	try {
-		const pl = await plc.getWhitelistContents();
-		return formatKaraList(pl,lang,filter,from,size);		
+		const pl = await plc.getWhitelistContents(filter);
+		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	} catch(err) {
 		throw err;
 	}
@@ -483,8 +486,8 @@ export async function getWL(filter,lang,from,size) {
 
 export async function getBL(filter,lang,from,size) {
 	try {
-		const pl = await plc.getBlacklistContents();
-		return formatKaraList(pl,lang,filter,from,size);		
+		const pl = await plc.getBlacklistContents(filter);
+		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	} catch(err) {
 		throw err;
 	}
@@ -615,7 +618,9 @@ export async function deletePL(playlist_id, token) {
 	}
 }
 
-export async function deleteKara(plc_ids,playlist_id) {
+export async function deleteKara(plc_ids,playlist_id,token) {
+	// If playlist_id is null, set it to current/public PL ID
+	if (!playlist_id) playlist_id = internalState.modePlaylistID;
 	const pl = await plc.getPlaylistInfo(playlist_id);
 	let karas;
 	if (typeof plc_ids === 'string') {
@@ -626,6 +631,8 @@ export async function deleteKara(plc_ids,playlist_id) {
 	const plcData = await plc.getPLCInfoMini(karas[0]);
 	logger.info(`[Engine] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);	
 	try {
+		//If token is present, a user is trying to remove a karaoke
+		if (token) if (plcData.username !== token.username) throw 'You cannot delete a song you did not add';
 		await plc.deleteKaraFromPlaylist(karas, playlist_id);
 		return {
 			pl_id: playlist_id,
@@ -759,7 +766,8 @@ async function testPlaylistVisible(playlist_id, token) {
 export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 	try {
 		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
-		const pl = await plc.getPlaylistContents(playlist_id,token);
+		const pl = await plc.getPlaylistContents(playlist_id, token, filter);
+
 		if (from === -1) {
 			const pos = plc.getPlayingPos(pl);
 			if (!pos) {
@@ -768,7 +776,8 @@ export async function getPLContents(playlist_id,filter,lang,token,from,size) {
 				from = pos.index;
 			}
 		}
-		return formatKaraList(pl,lang,filter,from,size);
+		
+		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 	} catch(err) {
 		const pl = await plc.getPlaylistInfo(playlist_id);
 		throw {
@@ -838,10 +847,11 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			playlist_id: playlist_id
 		};		
 	} catch(err) {
-		logger.error(`[Engine] Unable to add karaokes : ${err}`);
+		logger.error(`[Engine] Unable to add karaokes : ${err.msg}`);
+		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 		throw {
 			code: errorCode,
-			message: err,
+			message: err.msg,
 			data: {
 				kara: karas,
 				playlist: pl.name,
@@ -877,7 +887,7 @@ export async function addKaraToWL(kara_id) {
 		karas = [kara_id];
 	}
 	const kara = await plc.getKara(parseInt(karas[0], 10));	
-	logger.profile(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
+	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
 	try {
 		return await plc.addKaraToWhitelist(karas);
 	} catch(err) {
@@ -936,25 +946,22 @@ export async function sendCommand(command, options) {
 		await hideSubsPlayer();
 		break;
 	case 'seek':
-		if (!options) options = 0;
-		if (isNaN(options)) {
+		if (!options || isNaN(options)) {
 			internalState.commandInProgress = false;
 			throw 'Command seek must have a numeric option value';
 		}
 		await seekPlayer(options);
 		break;
 	case 'goTo':
-		if (!options) options = 0;
-		if (isNaN(options)) {
+		if (!options || isNaN(options)) {
 			internalState.commandInProgress = false;
 			throw 'Command goTo must have a numeric option value';
 		}
 		await goToPlayer(options);
 		break;
 	case 'setVolume':
-		if (!options) throw 'Command setVolume must have a value';
-		if (isNaN(options)) {
-			internalState.commandInProgress = false;
+		if (!options || isNaN(options)) {
+			internalState.commandInProgress = false;			
 			throw 'Command setVolume must have a numeric option value';
 		}
 		await setVolumePlayer(options);

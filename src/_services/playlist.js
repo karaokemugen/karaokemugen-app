@@ -241,7 +241,7 @@ export async function addKaraToWhitelist(karas) {
 }
 
 export async function getKaraLyrics(kara_id) {
-	const kara = await karaDB.getKaraMini(kara_id);	
+	const kara = await getKaraMini(kara_id);	
 	if (!kara) throw `Kara ${kara_id} unknown`;
 	if (kara.subfile === 'dummy.ass') return 'Lyrics not available for this song';
 	const ASS = await karaDB.getASS(kara.subfile);
@@ -250,7 +250,7 @@ export async function getKaraLyrics(kara_id) {
 }
 
 async function getASS(kara_id) {
-	const kara = await karaDB.getKaraMini(kara_id);	
+	const kara = await getKaraMini(kara_id);	
 	let ASS;	
 	if (kara.subfile !== 'dummy.ass') ASS = await karaDB.getASS(kara.subfile);
 	return ASS || false;
@@ -438,8 +438,8 @@ export async function getPlaylistContentsMini(playlist_id) {
 	return await plDB.getPlaylistContentsMini(playlist_id);
 }
 
-export async function getPlaylistContents(playlist_id,token) {	
-	return await plDB.getPlaylistContents(playlist_id,token.username);
+export async function getPlaylistContents(playlist_id,token,filter) {
+	return await plDB.getPlaylistContents(playlist_id,token.username,filter);
 }
 
 async function getPlaylistPos(playlist_id) {
@@ -462,22 +462,21 @@ export async function getWhitelistContents() {
 	return await wlDB.getWhitelistContents();
 }
 
-export async function getBlacklistContents() {
-	return await blcDB.getBlacklistContents();
+export async function getBlacklistContents(filter) {
+	return await blcDB.getBlacklistContents(filter);
 }
 
 export async function getBlacklistCriterias() {
 	return await blcDB.getBlacklistCriterias();
 }
 
-export async function getAllKaras(username) {
-	return await karaDB.getAllKaras(username);
+export async function getAllKaras(username, filter) {
+	return await karaDB.getAllKaras(username, filter);
 }
 
-export async function getRandomKara(playlist_id, filter) {
+export async function getRandomKara(playlist_id, filter, username) {
 	// Get karaoke list	
-	let karas = await getAllKaras();
-	if (filter) karas = filterPlaylist(karas, filter);
+	let karas = await getAllKaras(username, filter);
 	// Strip list to just kara IDs
 	karas.forEach((elem,index) => {
 		karas[index] = elem.kara_id;
@@ -507,72 +506,15 @@ export async function getPLCByKID(kid,playlist_id) {
 	return await plDB.getPLCByKID(kid,playlist_id);
 }
 
-export function filterPlaylist(playlist,searchText) {
-	function cleanStr(string) {
-		return string.toLowerCase().replace('\'','');
-	}
-	function textSearch(kara) {
-		searchText = deburr(searchText);
-		searchText = cleanStr(searchText);
-		let searchOK = [];
-		const searchWords = searchText.split(' ');
-		let searchWordID = 0;
-		searchWords.forEach((searchWord) => {
-			searchOK[searchWordID] = false;					
-			if (!isEmpty(kara.NORM_title)) {
-				if (cleanStr(kara.NORM_title).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_author)) {
-				if (cleanStr(kara.NORM_author).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_serie)) {
-				if (cleanStr(kara.NORM_serie).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_serie_altname)) {
-				if (cleanStr(kara.NORM_serie_altname).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_singer)) {
-				if (cleanStr(kara.NORM_singer).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_songwriter)) {
-				if (cleanStr(kara.NORM_songwriter).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.NORM_creator)) {
-				if (cleanStr(kara.NORM_creator).includes(searchWord)) searchOK[searchWordID] = true;
-			}					
-			if (!isEmpty(kara.songtype_i18n_short)) {
-				if (cleanStr(kara.songtype_i18n_short).includes(searchWord)) searchOK[searchWordID] = true;
-				//Allows searches for "OP1", "OP2", and such to work.
-				let songorder = kara.songorder;
-				if (songorder === 0) songorder = '';
-				if ((cleanStr(kara.songtype_i18n_short)+songorder).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.misc_i18n)) {
-				if (cleanStr(kara.misc_i18n).includes(searchWord)) searchOK[searchWordID] = true;
-			}
-			if (!isEmpty(kara.language_i18n)) {						
-				if (cleanStr(deburr(kara.language_i18n)).includes(searchWord)) searchOK[searchWordID] = true;						
-			}
-			searchWordID++;
-		});
-		if (searchOK.indexOf(false) > -1 ) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	return playlist.filter(textSearch);
-}
-
 function isAllKarasInPlaylist(karas, karasToRemove) {
 	return karas.filter(k => !karasToRemove.map(ktr => ktr.kara_id).includes(k.kara_id));
 }
 
 export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
-	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;	
+	if (!await isPlaylist(playlist_id)) throw {code: 1, msg: `Playlist ${playlist_id} unknown`};	
 	let karaList = [];	
 	const user = await findUserByName(requester);	
-	if (!user) throw 'User does not exist';
+	if (!user) throw {code: 2, msg: 'User does not exist'};
 	const date_add = now();			
 	karas.forEach((kara_id) => {
 		karaList.push({
@@ -592,10 +534,10 @@ export async function addKaraToPlaylist(karas,requester,playlist_id,pos) {
 		plDB.countPlaylistUsers(playlist_id),
 		plDB.getMaxPosInPlaylist(playlist_id)
 	]);
-	if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist';
+	if (!await isAllKaras(karas)) throw {code: 3, msg: 'One of the karaokes does not exist'};
 	const pl = await plDB.getPlaylistKaraIDs(playlist_id);	
 	karaList = isAllKarasInPlaylist(karaList,pl);
-	if (karaList.length === 0) throw `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`;
+	if (karaList.length === 0) throw {code: 4, msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`};
 	// If pos is provided, we need to update all karas above that and add 
 	// karas.length to the position
 	// If pos is not provided, we need to get the maximum position in the PL
@@ -814,6 +756,9 @@ export async function exportPlaylist(playlist_id) {
 		plcObject.created_at = plc.created_at;
 		plcObject.pos = plc.pos;
 		plcObject.username = plc.username;
+		plcObject.serie = plc.serie;
+		plcObject.title = plc.title;
+		plcObject.type = plc.type;
 		if (plc.flag_playing === 1) plcObject.flag_playing = 1;
 		plcFiltered.push(plcObject);
 	});
@@ -849,7 +794,7 @@ async function checkImportedKIDs(playlist) {
 	};	
 }
 
-export async function importPlaylist(playlist,username) {
+export async function importPlaylist(playlist, username, playlist_id) {
 	// Check if format is valid :
 	// Header must contain :
 	// description = Karaoke Mugen Playlist File
@@ -867,18 +812,18 @@ export async function importPlaylist(playlist,username) {
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database				
 	let playingKara;
-	if (playlist.Header === undefined) throw 'No Header section';
+	if (!playlist.Header) throw 'No Header section';
 	if (playlist.Header.description !== 'Karaoke Mugen Playlist File') throw 'Not a .kmplaylist file';
 	if (playlist.Header.version > 3) throw `Cannot import this version (${playlist.Header.version})`;
-	if (playlist.PlaylistContents === undefined) throw 'No PlaylistContents section';
-	if (playlist.PlaylistInformation === undefined) throw 'No PlaylistInformation section';
+	if (!playlist.PlaylistContents) throw 'No PlaylistContents section';
+	if (!playlist.PlaylistInformation) throw 'No PlaylistInformation section';
 	if (isNaN(playlist.PlaylistInformation.created_at)) throw 'Creation time is not valid';
 	if (isNaN(playlist.PlaylistInformation.modified_at)) throw 'Modification time is not valid';
 	if (playlist.PlaylistInformation.flag_visible !== 0 && 
 		playlist.PlaylistInformation.flag_visible !== 1) throw 'Visible flag must be boolean';
 	if (isEmpty(playlist.PlaylistInformation.name)) throw 'Playlist name must not be empty';
 	let flag_playingDetected = false;
-	if (playlist.PlaylistContents !== undefined) {
+	if (playlist.PlaylistContents) {
 		playlist.PlaylistContents.forEach((kara,index) => {
 			if (!(new RegExp(uuidRegexp).test(kara.kid))) throw 'KID is not a valid UUID!';
 			if (isNaN(kara.created_at)) throw 'Karaoke added time is not a number';
@@ -898,15 +843,18 @@ export async function importPlaylist(playlist,username) {
 
 	// Validations done. First creating playlist.
 	try {
-		const playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0,0,username);
-
-		const ret = await checkImportedKIDs(playlist.PlaylistContents);	
+		if (!playlist_id) {
+			playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0,0,username);
+		} else {
+			await emptyPlaylist(playlist_id);			
+		}
+		const ret = await checkImportedKIDs(playlist.PlaylistContents);
 		playlist.PlaylistContents = ret.karasToImport;	
 		playlist.PlaylistContents.forEach((kara,index) => {
 			playlist.PlaylistContents[index].playlist_id = playlist_id;
 		});
 		await karaDB.addKaraToPlaylist(playlist.PlaylistContents);
-		if (playingKara) {
+		if (playingKara) {	
 			const plcPlaying = await getPLCByKID(playingKara,playlist_id);				
 			await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
 		}

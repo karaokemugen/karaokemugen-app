@@ -13,7 +13,7 @@ export const defaultGuestNames = [
 	'Sakura du 93',
 	'Dark Kirito 64',
 	'Alex Teriyaki',
-	'Le Grandblue avec une chaussure noire',
+	'Le Granblue avec une chaussure noire',
 	'MC-kun',
 	'Beauf-kun',
 	'La Castafiore',
@@ -54,10 +54,18 @@ export const defaultGuestNames = [
 	'Phantom Thieves',
 	'Random Isekai MC',
 	'Houonin Kyouma',
-	'Miayzaki (retired)',
+	'Miyazaki (retired)',	
+	'Blue Accordéon',
+	'Yellow Baguette',
+	'Pink A La Mode',
+	'Red Fromage',
+	'Black Beaujolais',
+	'Silver Mousquetaire',
 	'Kyonko',
 	'My karaoke can\'t be this cute',
-	'No bully please'
+	'No bully please',
+	'Le type avec un t-shirt blanc là-bas',
+	'David Goodenough'
 ];
 
 export const initializationCatchphrases = [

@@ -8,8 +8,6 @@ import logger from 'winston';
 import {copy} from 'fs-extra';
 import {createWriteStream} from 'fs';
 import prettyBytes from 'pretty-bytes';
-import commandExists from 'command-exists';
-import git from 'simple-git/promise';
 import _cliProgress from 'cli-progress';
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
@@ -17,8 +15,6 @@ const shelter = {
 	user: 'kmvideos',
 	password: 'musubi'
 };
-const gitAvailable = commandExists.sync('git');
-let gitRepo = false;
 let updateRunning = false;
 
 async function downloadBase() {
@@ -61,56 +57,45 @@ async function compareBases() {
 	const altnamesMinePath = resolve(conf.appPath, conf.PathAltname);
 	const lyricsMinePath = resolve(conf.appPath, pathSubs[0]);
 	const karasMinePath = resolve(conf.appPath, pathKaras[0]);		
-	if (!gitRepo) {
-		const archive = await decompressBase();
-		
-		const archiveWOExt = basename(archive, '.zip');
-		const karasBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt,'karas');
-		const lyricsBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'lyrics');
-		const altnamesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series_altnames.csv');
-		if (!await compareFiles(altnamesBasePath,altnamesMinePath)) {
-			copy(
-				altnamesBasePath,
-				altnamesMinePath,
-				{overwrite: true}
-			);
-			logger.info('[Updater] Updated alternate series name data');
-		}
-		logger.debug('[Updater] Comparing your base with the current one');
-		const [karasToUpdate, lyricsToUpdate] = await Promise.all([
-			compareDirs(karasMinePath, karasBasePath),
-			compareDirs(lyricsMinePath, lyricsBasePath)
-		]);
-		if (lyricsToUpdate.newFiles.length === 0 &&
+	const archive = await decompressBase();
+	const archiveWOExt = basename(archive, '.zip');
+	const karasBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt,'karas');
+	const lyricsBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'lyrics');
+	const altnamesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series_altnames.csv');
+	if (!await compareFiles(altnamesBasePath,altnamesMinePath)) {
+		copy(
+			altnamesBasePath,
+			altnamesMinePath,
+			{overwrite: true}
+		);
+		logger.info('[Updater] Updated alternate series name data');
+	}
+	logger.debug('[Updater] Comparing your base with the current one');
+	const [karasToUpdate, lyricsToUpdate] = await Promise.all([
+		compareDirs(karasMinePath, karasBasePath),
+		compareDirs(lyricsMinePath, lyricsBasePath)
+	]);
+	if (lyricsToUpdate.newFiles.length === 0 &&
 		lyricsToUpdate.updatedFiles.length === 0 &&
 		lyricsToUpdate.removedFiles.length === 0 &&
 		karasToUpdate.newFiles.length === 0 &&
 		karasToUpdate.removedFiles.length === 0 &&
 		karasToUpdate.updatedFiles.length === 0) {
-			logger.info('[Updater] No update for your base');
-			return false;
-		} else {
-			logger.debug('[Updater] Updating base files');
-			await Promise.all([
-				updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath,true),
-				updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath,true),
-				updateFiles(lyricsToUpdate.updatedFiles, lyricsBasePath, lyricsMinePath),
-				updateFiles(karasToUpdate.updatedFiles, karasBasePath, karasMinePath),
-				removeFiles(karasToUpdate.removedFiles, karasMinePath),
-				removeFiles(lyricsToUpdate.removedFiles, lyricsMinePath)
-			]);	
-			logger.info('[Updater] Done updating base files');
-			return true;
-		}
+		logger.info('[Updater] No update for your base');
+		return false;
 	} else {
-		try {
-			await git(resolve(karasMinePath,'../')).pull();
-			return true;
-		} catch(err) {
-			throw `git failed : ${err}`;
-		}		
-	}
-		
+		logger.debug('[Updater] Updating base files');
+		await Promise.all([
+			updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath,true),
+			updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath,true),
+			updateFiles(lyricsToUpdate.updatedFiles, lyricsBasePath, lyricsMinePath),
+			updateFiles(karasToUpdate.updatedFiles, karasBasePath, karasMinePath),
+			removeFiles(karasToUpdate.removedFiles, karasMinePath),
+			removeFiles(lyricsToUpdate.removedFiles, lyricsMinePath)
+		]);	
+		logger.info('[Updater] Done updating base files');
+		return true;
+	}	
 }
 
 async function compareMedias(localFiles, remoteFiles) {
@@ -217,8 +202,7 @@ async function listLocalMedias() {
 }
 
 async function removeFiles(files, dir) {
-	if (files.length === 0) return true;
-	for (const file of files) {		
+	for (const file of files) {
 		await asyncUnlink(resolve(dir, file));
 		logger.info('[Updater] Removed : '+file);
 	}
@@ -238,10 +222,7 @@ async function checkDirs() {
 	const conf = getConfig();
 	const karaPaths = conf.PathKaras.split('|');
 	const karaPath = karaPaths[0];	
-	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) {
-		gitRepo = true;
-		if (!gitAvailable) throw 'Your base folder is a git repository and we cannot detect if git is installed. We cannot update it, please run "git pull" to get updates or use your git client to do it.';		
-	}
+	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) throw 'Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it.';		
 }
 
 export async function runBaseUpdate() {
@@ -253,15 +234,14 @@ export async function runBaseUpdate() {
 			listRemoteMedias(),
 			listLocalMedias()
 		]);		
-		if (!gitRepo) await downloadBase();
-		const [updateBase, updateMedias] = await Promise.all([
+		await downloadBase();
+		const [updateBase, updateVideos] = await Promise.all([
 			compareBases(),
 			compareMedias(localMedias, remoteMedias)
 		]);
 		updateRunning = false;
-		if (updateBase || updateMedias) return true;		
-		return false;
+		return !!(updateBase || updateVideos);
 	} catch (err) {
 		throw err;
-	}	
+	}
 }

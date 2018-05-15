@@ -49,7 +49,8 @@ on('playerStatusChange', (newstate) => {
 });
 
 on('jinglesReady', (list) => {
-	currentJinglesList = jinglesList = list[0];	
+	jinglesList = Array.prototype.concat(list[0]);	
+	currentJinglesList = Array.prototype.concat(jinglesList); 
 });
 
 function emitPlayerState() {
@@ -548,7 +549,7 @@ export async function playJingle() {
 			emitPlayerState();
 		}
 	} else {
-		logger.debug('[Jingle] No jingle to play.');
+		logger.debug('[Jingles] No jingle to play.');
 		state.player.playerstatus = 'play';
 		loadBackground();
 		displayInfo();

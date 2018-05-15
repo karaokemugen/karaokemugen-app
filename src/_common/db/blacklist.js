@@ -70,7 +70,7 @@ export const deleteBlacklistCriteria = `DELETE FROM blacklist_criteria
     								WHERE pk_id_blcriteria = $id
 									`;
 
-export const getBlacklistContents = `SELECT 
+export const getBlacklistContents = (filterClauses) => `SELECT 
       									ak.kara_id AS kara_id,
       									ak.kid AS kid,
       									ak.title AS title,
@@ -99,7 +99,9 @@ export const getBlacklistContents = `SELECT
       									ak.mediafile AS mediafile
  									FROM karasdb.all_karas AS ak 
 									INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.kara_id
-									ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
+									WHERE 1 = 1
+									${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+									ORDER BY ak.language, ak.serie IS NULL, ak.serie COLLATE NOCASE, ak.singer COLLATE NOCASE, ak.songtype DESC, ak.songorder, ak.title COLLATE NOCASE
 									`;
 
 export const editBlacklistCriteria = `UPDATE blacklist_criteria 
