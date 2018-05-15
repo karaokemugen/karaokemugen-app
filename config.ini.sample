@@ -198,6 +198,13 @@ AuthExpireTime = 15
 ; 2 = Default behavior, public interface is fully available
 WebappMode = 2
 
+; Webapp's language for series
+; 0 = Series' names are displayed in their native language
+; 1 = Series' names are displayed according to the song's language (default) or fallbacks to english or original
+; 2 = Series' names are displayed according to the admin's language or fallbacks to the english name then original
+; 3 = Series' names are displayed according ot the user's language or fallbacks to the english name then original
+WebappSongLanguageMode = 1
+
 ; Value: {boolean}
 ; App's first run. Overriden in config.ini .
 appFirstRun = 1

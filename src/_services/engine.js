@@ -15,7 +15,6 @@ import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
 import isEmpty from 'lodash.isempty';
-import cloneDeep from 'lodash.clonedeep';
 import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
 import {openTunnel, closeTunnel} from '../_webapp/tunnel.js';
@@ -383,7 +382,7 @@ async function tryToReadKaraInPlaylist() {
 	if (!state.player.playing) {
 		try {
 			const kara = await plc.getCurrentSong();
-			let karaForLogging = cloneDeep(kara);
+			let karaForLogging = Object.assign(kara);
 			karaForLogging.path.subtitle = '[Not logging ASS data]';
 			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
 			let serie = kara.serie;
@@ -448,7 +447,6 @@ async function addViewcountKara(kara_id, kid) {
 
 
 export function formatKaraList(karaList, lang, from, count) {
-
 	karaList = plc.translateKaraInfo(karaList, lang);
 	return {
 		infos: {

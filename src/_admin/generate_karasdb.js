@@ -179,8 +179,7 @@ function getAllSeries(karas) {
 function prepareSerieInsertData(serie, index) {
 	return {
 		$id_serie: index,
-		$serie: serie,
-		$serienorm: deburr(serie)
+		$serie: serie		
 	};
 }
 
@@ -217,13 +216,12 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 
 	const altNameData = [];
 	const i18nData = [];
-	let index = 1;
 	if (await asyncExists(altSeriesFile)) {
 		const altNamesFile = require(altSeriesFile);
 		for (const serie of altNamesFile.series) {
 			if (serie.aliases) altNameData.push({
 				$serie_altnames: serie.aliases.join(','),
-				$serie_altnamesnorm: deburr(serie.aliases.join('.')),
+				$serie_altnamesnorm: deburr(serie.aliases.join(',')),
 				$serie_name: serie.name				
 			});
 			if (serie.i18n) {
@@ -232,11 +230,10 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 						$lang: lang,
 						$serie: serie.i18n[lang],
 						$serienorm: deburr(serie.i18n[lang]),
-						$id_serie: index
+						$name: serie.name						
 					});
 				}
 			}
-			index++;
 		}			
 	} else {
 		logger.warn('[Gen] No alternative series name file found, ignoring');
@@ -410,25 +407,24 @@ export async function run(config) {
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-		const seriesAltNamesData = await prepareAltSeriesInsertData(series_altnamesfile)
+		const seriesAltNamesData = await prepareAltSeriesInsertData(series_altnamesfile);
 		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
 		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 		
 		// Inserting data in a transaction
 
 		await db.run('begin transaction');
-		
-		const insertPromises = [
+		await Promise.all([
 			runSqlStatementOnData(db.prepare(insertKaras), sqlInsertKaras),
 			runSqlStatementOnData(db.prepare(insertSeries), sqlInsertSeries),
 			runSqlStatementOnData(db.prepare(insertTags), sqlInsertTags),
 			runSqlStatementOnData(db.prepare(insertKaraTags), sqlInsertKarasTags),
-			runSqlStatementOnData(db.prepare(insertKaraSeries), sqlInsertKarasSeries),
-			runSqlStatementOnData(db.prepare(inserti18nSeries), sqlInserti18nSeries)
-		];
-
-		await Promise.all(insertPromises);
-		await runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames);
+			runSqlStatementOnData(db.prepare(insertKaraSeries), sqlInsertKarasSeries)
+		]);
+		await Promise.all([
+			runSqlStatementOnData(db.prepare(inserti18nSeries), sqlInserti18nSeries),
+			runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames)
+		]);		
 		
 		await db.run('commit');
 		await db.close();

@@ -881,7 +881,8 @@ export function translateKaraInfo(karalist, lang) {
 	i18n.setLocale(lang);
 
 	// We need to read the detected locale in ISO639-1
-	const detectedLocale = langs.where('1',lang);
+	const detectedLocale = langs.where('1',lang);	
+	const engineLocale = langs.where('1',conf.EngienDefaultLocale);
 	// If the kara list provided is not an array (only a single karaoke)
 	// Put it into an array first
 	let karas;
@@ -892,7 +893,7 @@ export function translateKaraInfo(karalist, lang) {
 		karas = karalist;
 	}
 
-	karas.forEach(function(kara,index) {
+	karas.forEach((kara,index) => {
 		karas[index].songtype_i18n = i18n.__(kara.songtype);
 		karas[index].songtype_i18n_short = i18n.__(kara.songtype+'_SHORT');
 
@@ -936,6 +937,44 @@ export function translateKaraInfo(karalist, lang) {
 			karas[index].misc_i18n = tags.join();
 		} else {
 			karas[index].misc_i18n = null;
+		}
+		// We need to format the serie properly.
+		if (kara.serie) {
+			//Transform the i18n field we got from the database into an object.
+			const seriei18n = JSON.parse(kara.serie_i18n);
+			delete karas[index].serie_i18n;
+			karas[index].serie_i18n = {};						
+			const serieTrans = {};
+			seriei18n.forEach((serieLang) => {
+				serieTrans[serieLang.lang] = serieLang.name;
+			});
+			karas[index].serie_i18n = Object.assign(serieTrans);
+			let songLanguage;
+			switch (conf.WebappSongLanguageMode) {
+			case 0:
+				// We leave it as is.
+				break;
+			default:
+			case 1:
+				// Modify serie to be the song's language, falling back to its original if none is found.
+				songLanguage = kara.language;
+				break;
+			case 2:
+				// Modify serie to be the default locale's language, or fall back to
+				// original name
+				songLanguage = engineLocale['2B'];
+				break;			
+			case 3:
+				// Modify serie to be the user request's locale language, or fall back
+				// to original name
+				songLanguage = detectedLocale['2B'];
+				break;
+			}
+			if (songLanguage) if (serieTrans[songLanguage]) {
+				karas[index].serie = serieTrans[songLanguage];				
+			} else if (serieTrans.eng) {
+				karas[index].serie = serieTrans.eng;
+			}				
 		}
 	});
 	return karas;

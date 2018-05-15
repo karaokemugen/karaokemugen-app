@@ -1431,7 +1431,8 @@ export function APIControllerAdmin(router) {
  *       "mpvVideoOutput": "direct3d",
  *       "os": "win32",
  *       "osHost": "10.202.40.43",
- * 		 "WebappMode": "2"
+ * 		 "WebappMode": "2",
+ * 		 "WebappSongLanguageMode": "1"
  *   }
  * }
  */
@@ -1475,6 +1476,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
  * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
+ * @apiParam {Number} WebappSongLanguageMode How to display series : `0` = according to the original name, `1` = according to song's language, or defaults to the `series=` metadata, `2` = according to admin's language or fallbacks to english then original, `3` = according to user language or fallbacks to english then original
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
@@ -1577,6 +1579,11 @@ export function APIControllerAdmin(router) {
 					notEmpty: true,
 					isInt: true,
 				},
+				'WebappSongLanguageMode': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
 				'EngineSmartInsert': {
 					in: 'body',
 					notEmpty: true,
@@ -1666,6 +1673,7 @@ export function APIControllerAdmin(router) {
 				req.sanitize('PlayerPIP').toInt();
 				req.sanitize('PlayerPIPSize').toInt();
 				req.sanitize('WebappMode').toInt();
+				req.sanitize('WebappSongLanguageMode').toInt();
 				try {
 					const publicSettings = await engine.updateSettings(req.body);
 					emitWS('settingsUpdated',publicSettings);
@@ -2952,7 +2960,8 @@ export function APIControllerPublic(router) {
  *       "VersionName": "Finé Fiévreuse",
  *       "VersionNo": "v2.0 Release Candidate 1",
  *       "mpvVideoOutput": "direct3d",
- * 		 "WebappMode": "2"
+ * 		 "WebappMode": "2",
+ *       "WebappSongLanguageMode": "1"
  *   }
  * }
  */
