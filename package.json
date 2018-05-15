@@ -75,6 +75,7 @@
   },
   "dependencies": {
     "ass-parser": "^0.2.0",
+    "async-await-parallel": "^1.0.0",
     "basic-ftp": "^2.9.0",
     "body-parser": "^1.18.2",
     "chalk": "^2.3.2",
