@@ -96,7 +96,7 @@ export async function getAllKaras(karafiles) {
 	for (const karafile of karafiles) {
 		karaPromises.push(() => readAndCompleteKarafile(karafile));
 	}
-	const karas = await parallel(karaPromises, 512);
+	const karas = await parallel(karaPromises, 16);
 	// Errors are non-blocking
 	if (karas.some((kara) => {
 		return kara.error;
