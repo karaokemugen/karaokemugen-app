@@ -283,7 +283,6 @@
 	"PL_SET_PUBLIC": "Playlist %s is now the public playlist",
 	"PL_VIEW_SONGS_ERROR": "Unable to list playlist %s 's songs",
 	"PL_ADD_SONG_ERROR": "Unable to add one or more karaokes to playlist %s",
-	"PL_ADD_SONG_ALREADY_ADDED_ERROR": "Impossible, %s is already in the list!",
 	"PL_SONG_ADDED": "Karaoke added to playlist %s",
 	"PL_MOVE_SONG_ERROR": "Unable to transfer karaoke to playlist %s",
 	"PL_SONG_MOVED": "Karaoke tansferred to playlist %s",

@@ -261,7 +261,6 @@
 	"PL_SET_PUBLIC": "Liste de lecture %s est maintenant la liste de lecture publique",
 	"PL_VIEW_SONGS_ERROR": "Impossible de récupérer la liste des chansons de la liste de lecture %s",
 	"PL_ADD_SONG_ERROR": "Impossible d'ajouter le ou les karaokés à la liste de lecture %s",
-	"PL_ADD_SONG_ALREADY_ADDED_ERROR": "Impossible, %s est déjà dans la liste !",
 	"PL_SONG_ADDED": "Karaoké ajouté à la liste de lecture %s",
 	"PL_MOVE_SONG_ERROR": "Impossible de transférer le karaoké à la liste de lecture %s",
 	"PL_SONG_MOVED": "Karaoké transféré à la liste de lecture %s",
