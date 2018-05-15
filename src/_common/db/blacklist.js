@@ -101,7 +101,7 @@ export const getBlacklistContents = (filterClauses) => `SELECT
 									INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.kara_id
 									WHERE 1 = 1
 									${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-									ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
+									ORDER BY ak.language, ak.serie IS NULL, ak.serie COLLATE NOCASE, ak.singer COLLATE NOCASE, ak.songtype DESC, ak.songorder, ak.title COLLATE NOCASE
 									`;
 
 export const editBlacklistCriteria = `UPDATE blacklist_criteria 

@@ -1,5 +1,14 @@
 # Versions
 
+## v2.1.1 "Gabriel Grivoise" - 03/05/2018
+
+### Fixes
+
+- The Magical Girl tag is now properly displayed
+- A bug in the function checking if a user is allowed to add a karaoke has been fixed
+- Importing playlists has been fixed
+- #289 Throttled the commands sent to the player to avoid flooding it when user purposefully clicks like an idiot everywhere at high speeds.
+
 ## v2.1.0 "Gabriel Glamoureuse" - 18/04/2018
 
 Refer to the previous release candidates for a full changelog.

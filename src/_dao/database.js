@@ -235,7 +235,7 @@ async function generateDatabase() {
 	const conf = getConfig();
 
 	const failedKaras = await DBgenerator.run(conf);
-	logger.debug('[DBI] Karaokes database created');
+	logger.debug('[DBI] Karaoke database created');
 	if (conf.optGenerateDB) {
 		if (failedKaras) {
 			logger.error('[DBI] Database generation completed with errors!');

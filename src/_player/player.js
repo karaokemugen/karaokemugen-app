@@ -49,7 +49,8 @@ on('playerStatusChange', (newstate) => {
 });
 
 on('jinglesReady', (list) => {
-	currentJinglesList = jinglesList = list[0];	
+	jinglesList = Array.prototype.concat(list[0]);	
+	currentJinglesList = Array.prototype.concat(jinglesList); 
 });
 
 function emitPlayerState() {

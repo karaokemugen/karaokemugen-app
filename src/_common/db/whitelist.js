@@ -25,5 +25,5 @@ export const getWhitelistContents = (filterClauses) => `SELECT wl.pk_id_whitelis
 									INNER JOIN whitelist AS wl ON wl.fk_id_kara = ak.kara_id
 									WHERE 1 = 1
 									${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-									ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
+									ORDER BY ak.language, ak.serie IS NULL, ak.serie COLLATE NOCASE, ak.singer COLLATE NOCASE, ak.songtype DESC, ak.songorder, ak.title COLLATE NOCASE
 									`;

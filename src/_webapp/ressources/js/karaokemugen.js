@@ -1615,8 +1615,10 @@ var settingsNotUpdated;
     * @return {String} the title
     */
 	buildKaraTitle = function(data, search) {
-		if(data.language.indexOf('mul') > -1) {
+		if(data.language && data.language.indexOf('mul') > -1) {
 			data.language = 'mul';
+		} else if (!data.language) {
+			data.language = '';
 		}
 		var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
 			data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
