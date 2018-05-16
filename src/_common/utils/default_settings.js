@@ -60,7 +60,7 @@ export const defaults = {
 	mpvVideoOutput: '',
 	AuthExpireTime: 15,
 	WebappMode: 2,
-	WebappSongLanguageMode: 1,
+	WebappSongLanguageMode: 2,
 	OnlineMode: 0,
 	OnlineHost: 'karaokes.moe',
 	OnlinePort: 8800,
