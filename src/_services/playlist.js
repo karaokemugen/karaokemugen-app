@@ -1173,12 +1173,8 @@ export async function getCurrentSong() {
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 	if (kara.songorder === 0) kara.songorder = '';
 	// Construct mpv message to display.
-	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;		
-	const ass = await getASS(kara.kara_id);
-	kara.path = {
-		media: kara.mediafile,
-		subtitle: ass
-	};		
+	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;			
+	kara.subtitle = await getASS(kara.kara_id);	
 	return kara;
 }
 

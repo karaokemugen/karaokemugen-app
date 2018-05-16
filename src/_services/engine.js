@@ -382,8 +382,8 @@ async function tryToReadKaraInPlaylist() {
 	if (!state.player.playing) {
 		try {
 			const kara = await plc.getCurrentSong();
-			let karaForLogging = Object.assign(kara);
-			karaForLogging.path.subtitle = '[Not logging ASS data]';
+			let karaForLogging = { ...kara };
+			karaForLogging.subtitle = '[Not logging ASS data]';
 			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
 			let serie = kara.serie;
 			let title = kara.title;
@@ -391,8 +391,8 @@ async function tryToReadKaraInPlaylist() {
 			if (isEmpty(title)) title = '';
 			logger.info(`[Engine] Playing ${serie}${title}`);
 			await play({
-				media: kara.path.media,
-				subtitle: kara.path.subtitle,
+				media: kara.mediafile,
+				subtitle: kara.subtitle,
 				gain: kara.gain,
 				infos: kara.infos
 			});
