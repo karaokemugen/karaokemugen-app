@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS tmp (
     NORM_altname   TEXT COLLATE NOCASE
 );
 
-INSERT INTO tmp SELECT pk_id_serie,name,altname,NORM_altname FROM serie;
+INSERT INTO tmp SELECT pk_id_serie,name,name,altname,NORM_altname FROM serie;
 PRAGMA foreign_keys = "0";
 DROP TABLE serie;
 ALTER TABLE tmp RENAME TO serie;
