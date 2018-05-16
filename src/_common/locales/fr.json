@@ -452,10 +452,10 @@
 	"SONGS_BY_USER": "Chansons par utilisateur",
 	"FREE_AUTO_TIME": "Libération d'une chanson du quota après (min)",
 	"PLAYLIST_IMPORT": "Importer Playlist",
-	"_": "DO NOT MODIFY",
-	"SERIE_NAME_MODE": "Langage des titres de série",
-	"SERIE_NAME_MODE_ORIGINAL": "Original",
+	"SERIE_NAME_MODE": "Langue des titres de série",
+	"SERIE_NAME_MODE_ORIGINAL": "Titre original",
 	"SERIE_NAME_MODE_SONG": "Langue de la chanson",
-	"SERIE_NAME_MODE_ADMIN": "Langue de l'admin",
-	"SERIE_NAME_MODE_USER": "Langue de l'utilisateur"
+	"SERIE_NAME_MODE_ADMIN": "Langue de Karaoke Mugen",
+	"SERIE_NAME_MODE_USER": "Langue de l'utilisateur",
+	"_": "DO NOT MODIFY"	
 }
