@@ -77,7 +77,7 @@ On first run, the app will make you create an admin user and follow a guided tou
 
 The app is multi-platform and works on Linux/Windows/OSX.
 
-It requires nodeJS 8.x or above and mpv/ffmpeg binaries (see below).
+It requires nodeJS 8.4 or above and mpv/ffmpeg binaries (see below).
 
 ### Binaries
 
@@ -107,3 +107,7 @@ Currently french and english are supported. Translators are welcome!
 Read the [dedicated section on the documentation website](http://mugen.karaokes.moe/docs/en/dev-guide/code/)
 
 Everything's there, and if you have questions, you can come to [our Discord](https://discord.gg/a8dMYek) in the #karaoke_dev section!
+
+## Credits
+
+"Nanamin", Karaoke Mugen's mascott, is designed by [Sedeto](http://www.sedeto.fr)
