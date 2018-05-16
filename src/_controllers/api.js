@@ -4,8 +4,9 @@ import {resolve} from 'path';
 import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
-import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
+import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
 import {updateSongsLeft} from '../_services/playlist';
+import {getLang} from '../_controllers/lang';
 
 const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
@@ -90,7 +91,7 @@ export function APIControllerAdmin(router) {
  *
  */
 	router.route('/shutdown')
-		.post(requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 			// Sends command to shutdown the app.
 			try {
 				await engine.shutdown();
@@ -134,7 +135,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'users': {
 					in: 'body',
@@ -207,7 +208,7 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 500 Internal Server Error
  */
 
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Get list of playlists
 			try {
 				const playlists = await engine.getAllPLs(req.authToken);
@@ -246,7 +247,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			
 		// Add playlist
 			req.check({
@@ -347,7 +348,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			try {
@@ -388,7 +389,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Update playlist info
 			req.check({
 				'name': {
@@ -453,7 +454,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 				await engine.deletePL(req.params.pl_id,req.authToken);
 				emitWS('playlistsUpdated');
@@ -498,7 +499,7 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req,res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req,res) => {
 			//Validate form data
 			req.check({
 				'login': {
@@ -598,7 +599,7 @@ export function APIControllerAdmin(router) {
  *   "message": null
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			try {
 
 				const userdata = await user.findUserByName(req.params.username, {public:false});
@@ -634,7 +635,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {					
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {					
 			try {
 				await user.deleteUser(req.params.username);
 				emitWS('usersUpdated');
@@ -670,7 +671,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty playlist
 			try {
 				await engine.emptyPL(req.params.pl_id);
@@ -703,7 +704,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty whitelist
 			try {
 				await engine.emptyWL();
@@ -739,7 +740,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty blacklist criterias
 			try {
 				await engine.emptyBLC();
@@ -776,7 +777,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// set playlist to current
 			try {
 				await engine.setCurrentPL(req.params.pl_id);
@@ -814,7 +815,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Empty playlist
 			try {
 				await engine.setPublicPL(req.params.pl_id);
@@ -836,7 +837,6 @@ export function APIControllerAdmin(router) {
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -880,6 +880,9 @@ export function APIControllerAdmin(router) {
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -906,12 +909,11 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			const playlist_id = req.params.pl_id;
 			const filter = req.query.filter;
-			const lang = req.query.lang;
 			let size;
 			if (!req.query.size) {
 				size = 999999;
@@ -926,7 +928,7 @@ export function APIControllerAdmin(router) {
 			}
 			try {
 
-				const playlist = await engine.getPLContents(playlist_id,filter,lang,req.authToken,from,size);
+				const playlist = await engine.getPLContents(playlist_id,filter,req.lang,req.authToken,from,size);
 				res.json(OKMessage(playlist));
 				
 			} catch(err) {
@@ -972,7 +974,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
  * }
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//add a kara to a playlist
 			const playlist_id = req.params.pl_id;
 			req.checkBody({
@@ -1053,7 +1055,7 @@ export function APIControllerAdmin(router) {
  *   "message": "Karaoke song 176 is already in playlist 2"
  * }
  */
-		.patch(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.patch(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//add karas from a playlist to another
 			req.checkBody({
 				'plc_id': {
@@ -1124,7 +1126,7 @@ export function APIControllerAdmin(router) {
  *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
  * }
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Delete kara from playlist
 			// Deletion is through playlist content's ID.
 			// There is actually no need for a playlist number to be used at this moment.
@@ -1168,7 +1170,6 @@ export function APIControllerAdmin(router) {
  *
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
  * @apiParam {Number} plc_id Playlist content ID.
- * @apiParam {String} lang Lang in ISO639-2B.
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -1200,6 +1201,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {String} data/previewfile Filename of the preview file associated with the karaoke. Can be undefined if the preview hasn't been generated yet by the server.
  * @apiSuccess {String} data/pseudo_add Nickname of user who added/requested the song. this nickname can be changed (`username` cannot) hence why it is displayed here.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
+ * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
  * @apiSuccess {String} data/singer Singer's name, if known.
  * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
@@ -1249,6 +1251,9 @@ export function APIControllerAdmin(router) {
  *           "previewfile": "JAP - C3 ~ Cube X Cursed X Curious.1201230.mp4"
  *           "pseudo_add": "Axel",
  *           "serie": "C3 ~ Cube X Cursed X Curious",
+ *  		 "serie_i18n": {
+ * 				"fre":"Guerriers de la Dynastie"
+ *  			},
  *           "serie_altname": "C-Cube/CxCxC",
  *           "singer": null,
  *           "songorder": 1,
@@ -1273,9 +1278,9 @@ export function APIControllerAdmin(router) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const kara = await engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken);
+				const kara = await engine.getPLCInfo(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 				
 			} catch(err) {
@@ -1313,7 +1318,7 @@ export function APIControllerAdmin(router) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update playlist's karaoke song
 			//Params: position
 			req.checkBody({
@@ -1436,7 +1441,7 @@ export function APIControllerAdmin(router) {
  *   }
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			res.json(OKMessage(getConfig()));
 		})
 	/**
@@ -1483,7 +1488,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			//Update settings
 			// Convert body to strings
 			req.body = toString(req.body);
@@ -1724,7 +1729,7 @@ export function APIControllerAdmin(router) {
  *   "code": "MESSAGE_SEND_ERROR"
  * }
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'duration': {
 					in: 'body',
@@ -1781,9 +1786,9 @@ export function APIControllerAdmin(router) {
  * @apiPermission admin
  *
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
  * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
  * @apiSuccess {Number} data/infos/from Items listed are from this position
@@ -1813,6 +1818,9 @@ export function APIControllerAdmin(router) {
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
  *               "serie": null,
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								} 
  *               "serie_altname": null,
  *               "singer": "Dschinghis Khan",
  *               "songorder": 0,
@@ -1842,8 +1850,7 @@ export function APIControllerAdmin(router) {
  *   "code": "WL_VIEW_ERROR"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const lang = req.query.lang;
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			const filter = req.query.filter;
 			let size;
 			if (!req.query.size) {
@@ -1858,7 +1865,7 @@ export function APIControllerAdmin(router) {
 				from = parseInt(req.query.from, 10);
 			}
 			try {
-				const karas = await engine.getWL(filter,lang,from,size);
+				const karas = await engine.getWL(filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 				
 			} catch(err) {
@@ -1900,7 +1907,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No karaoke could be added, all are in whitelist already"
  * }
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'kara_id': {
 					in: 'body',
@@ -1951,7 +1958,7 @@ export function APIControllerAdmin(router) {
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Delete kara from whitelist
 			// Deletion is through whitelist ID.
 			req.checkBody({
@@ -1991,7 +1998,6 @@ export function APIControllerAdmin(router) {
  * @apiPermission admin
  *
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
@@ -2025,6 +2031,9 @@ export function APIControllerAdmin(router) {
  *               "reason_add": "Blacklisted Tag : Jean-Jacques Debout (type 6)",
  *               "serie": "Capitaine Flam",
  *               "serie_altname": "Kyaputen Fyucha",
+ * 				 "serie_i18n": {
+ * 					"fre":"Guerriers de la Dynastie"
+ * 				 },
  *               "singer": "Richard Simon",
  *               "songorder": 0,
  *               "songtype": "TYPE_OP",
@@ -2052,8 +2061,7 @@ export function APIControllerAdmin(router) {
  *   "code": "BL_VIEW_ERROR"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const lang = req.query.lang;
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			const filter = req.query.filter;
 			let size;
 			if (!req.query.size) {
@@ -2069,7 +2077,7 @@ export function APIControllerAdmin(router) {
 			}
 			if (from < 0) from = 0;	
 			try {
-				const karas = await engine.getBL(filter,lang,from,size);
+				const karas = await engine.getBL(filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -2111,7 +2119,7 @@ export function APIControllerAdmin(router) {
 *   "code": "BLC_VIEW_ERROR"
 * }
 */		
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Get list of blacklist criterias
 			try {
 				const blc = await engine.getBLC();
@@ -2160,7 +2168,7 @@ export function APIControllerAdmin(router) {
  *   }
  * }
  */		
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Add blacklist criteria
 			req.check({
 				'blcriteria_type': {
@@ -2226,7 +2234,7 @@ export function APIControllerAdmin(router) {
  *   "message": "BLCID 5 unknown"
  * }
  */		
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 				await engine.deleteBLC(req.params.blc_id);
 				emitWS('blacklistUpdated');
@@ -2270,7 +2278,7 @@ export function APIControllerAdmin(router) {
  *   "message": "BLCID 12309 unknown"
  * }
  */		
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update BLC
 			req.check({
 				'blcriteria_type': {
@@ -2332,7 +2340,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.checkBody('command')
 				.notEmpty()
 				.enum(['play',
@@ -2425,7 +2433,7 @@ export function APIControllerAdmin(router) {
  *   "message": "Playlist 5 unknown"
  * }
  */		
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
 				const playlist = await engine.exportPL(req.params.pl_id);
@@ -2467,7 +2475,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No header section"
  * }
  */		
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			req.check({
 				'playlist': {
@@ -2531,7 +2539,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 				
 				await engine.shufflePL(req.params.pl_id);
@@ -2603,7 +2611,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {			
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {			
 			// Get list of playlists, only return the visible ones
 			try {
 				const playlists = await engine.getAllPLs(req.authToken);
@@ -2660,7 +2668,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
@@ -2683,7 +2691,6 @@ export function APIControllerPublic(router) {
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -2727,6 +2734,9 @@ export function APIControllerPublic(router) {
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ *					"fre":"Guerriers de la Dynastie"
+ * 				}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -2755,7 +2765,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get playlist contents, only if visible
 			//Access :pl_id by req.params.pl_id
 					
@@ -2774,7 +2784,7 @@ export function APIControllerPublic(router) {
 				from = parseInt(req.query.from, 10);
 			}
 			try {
-				const playlist = await engine.getPLContents(req.params.pl_id,filter,lang,req.authToken,from,size);
+				const playlist = await engine.getPLContents(req.params.pl_id,filter,req.lang,req.authToken,from,size);
 				if (playlist == null) res.statusCode = 404;
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -2825,6 +2835,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
  * @apiSuccess {String} data/pseudo_add Nickname of user who added this song
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
+ * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
  * @apiSuccess {String} data/singer Singer's name, if known.
  * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
@@ -2873,6 +2884,9 @@ export function APIControllerPublic(router) {
  *           "pseudo_add": "Axel",
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *           "serie_altname": "C-Cube/CxCxC",
+ * 			 "serie_i18n": {
+ * 				"fre":"Guerriers de la Dynastie"
+ *  			}
  *           "singer": null,
  *           "songorder": 1,
  *           "songtype": "TYPE_ED",
@@ -2900,10 +2914,10 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 
-				const kara = await engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken);
+				const kara = await engine.getPLCInfo(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 			} catch(err) {
 				logger.error(err.message);
@@ -3013,7 +3027,7 @@ export function APIControllerPublic(router) {
  *    }
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const stats = await engine.getKMStats();
 				const userData = await user.findUserByName(req.authToken.username);
@@ -3035,7 +3049,6 @@ export function APIControllerPublic(router) {
  * @apiPermission public
  * @apiDescription If `EngineAllowViewWhitelist` is set to `0` in configuration, then returns an error message (see below)
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
@@ -3099,10 +3112,9 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Returns whitelist IF the settings allow public to see it
 			if (getConfig().EngineAllowViewWhitelist === 1) {
-				const lang = req.query.lang;
 				const filter = req.query.filter;
 				let size;
 				if (!req.query.size) {
@@ -3117,7 +3129,7 @@ export function APIControllerPublic(router) {
 					from = parseInt(req.query.from, 10);
 				}
 				try {
-					const karas = await	engine.getWL(filter,lang,from,size);
+					const karas = await	engine.getWL(filter,req.lang,from,size);
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -3139,7 +3151,6 @@ export function APIControllerPublic(router) {
  * @apiPermission public
  * @apiDescription If `EngineAllowViewBlacklist` is set to `0` in configuration, then returns an error message (see below)
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
@@ -3203,7 +3214,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklisted karas IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklist === 1) {
 				const lang = req.query.lang;
@@ -3270,7 +3281,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */		
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklistCriterias === 1) {
 				try {
@@ -3335,7 +3346,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */		
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get player status
 			// What's playing, time in seconds, duration of song
 
@@ -3351,7 +3362,6 @@ export function APIControllerPublic(router) {
  * @apiPermission public
  *
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -3389,6 +3399,9 @@ export function APIControllerPublic(router) {
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -3416,11 +3429,10 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			const filter = req.query.filter;
-			const lang = req.query.lang;
 			let size;
 			if (!req.query.size) {
 				size = 999999;
@@ -3435,7 +3447,7 @@ export function APIControllerPublic(router) {
 			}
 			if (from < 0) from = 0;
 			try {
-				const karas = await engine.getKaras(filter,lang,from,size,req.authToken);
+				const karas = await engine.getKaras(filter,req.lang,from,size,req.authToken);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -3466,7 +3478,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const kara_id = await engine.getRandomKara(req.query.filter, req.authToken);
 				if (!kara_id) {
@@ -3575,7 +3587,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const kara = await engine.getKaraInfo(req.params.kara_id,req.query.lang,req.authToken);
 				res.json(OKMessage(kara));
@@ -3636,7 +3648,7 @@ export function APIControllerPublic(router) {
 * @apiErrorExample Error-Response:
 * HTTP/1.1 403 Forbidden
 */
-		.post(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			try {
 				const data = await engine.addKaraToPL(null, req.params.kara_id, req.authToken.username, null);
@@ -3675,7 +3687,7 @@ export function APIControllerPublic(router) {
  *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
  * }
  */			
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const kara = await engine.getLyrics(req.params.kara_id);
 				res.json(OKMessage(kara));
@@ -3727,7 +3739,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
 			try {					
 				const playlist = await engine.getCurrentPLInfo(req.authToken);
@@ -3749,7 +3761,6 @@ export function APIControllerPublic(router) {
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -3793,6 +3804,9 @@ export function APIControllerPublic(router) {
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -3822,9 +3836,8 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
-			const lang = req.query.lang;
 			const filter = req.query.filter;
 			let from;
 			if (!req.query.from) {
@@ -3839,7 +3852,7 @@ export function APIControllerPublic(router) {
 				to = req.query.to;
 			}
 			try {	
-				const playlist = await engine.getCurrentPLContents(filter, lang, from, to, req.authToken);
+				const playlist = await engine.getCurrentPLContents(filter, req.lang, from, to, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3892,7 +3905,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
 			try {	
 				const playlist = await engine.getPublicPLInfo(req.authToken);
@@ -3914,7 +3927,6 @@ export function APIControllerPublic(router) {
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -3958,6 +3970,9 @@ export function APIControllerPublic(router) {
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -3987,9 +4002,8 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
-			const lang = req.query.lang;
 			const filter = req.query.filter;
 			let to;
 			if (!req.query.to) {
@@ -4004,7 +4018,7 @@ export function APIControllerPublic(router) {
 				from = req.query.from;
 			}
 			try {
-				const playlist = await engine.getPublicPLContents(filter, lang, from, to, req.authToken);
+				const playlist = await engine.getPublicPLContents(filter, req.lang, from, to, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -4039,7 +4053,7 @@ export function APIControllerPublic(router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 */
 	
-		.post(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Post an upvote
 			try {
 				const kara = await upvote.vote(req.params.plc_id,req.authToken.username,req.body.downvote);
@@ -4082,7 +4096,7 @@ export function APIControllerPublic(router) {
  	 * }
  	 */
 	
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const data = await engine.deleteKara(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
@@ -4125,7 +4139,7 @@ export function APIControllerPublic(router) {
  	 * }
  	 */
 	
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const data = await engine.deleteKara(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
@@ -4183,7 +4197,7 @@ export function APIControllerPublic(router) {
 	* @apiErrorExample Error-Response:
     * HTTP/1.1 403 Forbidden
 	*/
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const tags = await engine.getTags(req.query.lang);
 				res.json(OKMessage(tags));
@@ -4244,7 +4258,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const userdata = await user.findUserByName(req.params.username, {public:true});
 				res.json(OKMessage(userdata));
@@ -4293,7 +4307,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(upload.single('avatarfile'), requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(upload.single('avatarfile'), getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'login': {
 					in: 'body',
@@ -4413,7 +4427,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const userData = await user.findUserByName(req.authToken.username, {public:false});
 				updateSongsLeft(userData.id);
@@ -4463,7 +4477,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.put(upload.single('avatarfile'), requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.put(upload.single('avatarfile'), getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			req.check({
 				//FIXME : keep email/url optional and make sure it works with the isURL and isEmail validators
 				'nickname': {
@@ -4527,7 +4541,6 @@ export function APIControllerPublic(router) {
  * @apiPermission own
  *
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -4569,6 +4582,9 @@ export function APIControllerPublic(router) {
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -4597,10 +4613,9 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			
 			const filter = req.query.filter;
-			const lang = req.query.lang;
 			let size;
 			if (!req.query.size) {
 				size = 999999;
@@ -4614,7 +4629,7 @@ export function APIControllerPublic(router) {
 				from = parseInt(req.query.from, 10);
 			}
 			try {
-				const karas = await favorites.getFavorites(req.authToken.username, filter, lang, from, size);
+				const karas = await favorites.getFavorites(req.authToken.username, filter, req.lang, from, size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -4658,7 +4673,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			req.checkBody({
 				'kara_id': {
 					in: 'body',
@@ -4719,7 +4734,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.delete(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Delete kara from favorites
 			// Deletion is through kara ID.			
 			req.check({
@@ -4797,7 +4812,7 @@ export function APIControllerPublic(router) {
  *   "code": "FAVORITES_EXPORT_ERROR" 
  * }
  */		
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
 				const playlist = await favorites.exportFavorites(req.authToken);
@@ -4837,7 +4852,7 @@ export function APIControllerPublic(router) {
  *   "message": "No header section"
  * }
  */		
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			req.check({
 				'playlist': {
@@ -4926,7 +4941,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const users = await	user.listUsers();
 				res.json(OKMessage(users));
