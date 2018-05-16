@@ -338,6 +338,18 @@
                                     </select>
                             </div>
                         </div>
+                        
+                        <div class="form-group">
+                            <label for="WebappSongLanguageMode" class="col-xs-4 control-label">{{i18n "SERIE_NAME_MODE"}}</label>
+                            <div class="col-xs-6">
+                                <select type="number" class="form-control" name="WebappSongLanguageMode">
+                                        <option value="0">{{i18n "SERIE_NAME_MODE_ORIGINAL"}}</option>
+                                        <option value="1">{{i18n "SERIE_NAME_MODE_SONG"}}</option>
+                                        <option value="2">{{i18n "SERIE_NAME_MODE_ADMIN"}}</option>
+                                        <option value="3">{{i18n "SERIE_NAME_MODE_USER"}}</option>
+                                    </select>
+                            </div>
+                        </div>
                     </div>
                     <div id="nav-karaoke" role="tabpanel" aria-labelledby="nav-karaoke-tab" class="modal-body tab-pane fade">
                         
@@ -390,7 +402,8 @@
                                 </div>
                             </div>
                         
-                        </div>            
+                        </div>    
+                    
                         <input name="appFirstRun" class="hideInput hidden">
                     </div>
                 </div>            

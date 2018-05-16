@@ -453,5 +453,10 @@
 	"QUOTA_TYPE_2": "Duration",
 	"SONGS_BY_USER": "Number of songs per user",
 	"FREE_AUTO_TIME": "Songs are freed from quota after (min)",
-	"_": "DO NOT MODIFY"
+	"_": "DO NOT MODIFY",
+	"SERIE_NAME_MODE": "Serie language mode",
+	"SERIE_NAME_MODE_ORIGINAL": "Native",
+	"SERIE_NAME_MODE_SONG": "Song's language",
+	"SERIE_NAME_MODE_ADMIN": "Admin's language",
+	"SERIE_NAME_MODE_USER": "User's language"
 }
