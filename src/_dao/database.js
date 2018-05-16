@@ -47,7 +47,7 @@ export function langSelector(lang) {
 	const engineLocale = langs.where('1',conf.EngineDefaultLocale);
 	//Fallback to english for cases other than 0 (original name)
 	switch(+conf.WebappSongLanguageMode) {
-	case 0: return {main: '', fallback: ''};
+	case 0: return {main: null, fallback: null};
 	default: 
 	case 1: return {main: 'ak.language',fallback: '\'eng\''};
 	case 2: return {main: `'${engineLocale['2B']}'`, fallback: '\'eng\''};
