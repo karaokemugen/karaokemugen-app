@@ -453,5 +453,10 @@
 	"QUOTA_TYPE_2": "Duration",
 	"SONGS_BY_USER": "Number of songs per user",
 	"FREE_AUTO_TIME": "Songs are freed from quota after (min)",
+	"SERIE_NAME_MODE": "Series language mode",
+	"SERIE_NAME_MODE_ORIGINAL": "Original title",
+	"SERIE_NAME_MODE_SONG": "Song's language",
+	"SERIE_NAME_MODE_ADMIN": "Karaoke Mugen's language",
+	"SERIE_NAME_MODE_USER": "User's language",
 	"_": "DO NOT MODIFY"
 }

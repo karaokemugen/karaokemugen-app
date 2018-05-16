@@ -166,7 +166,7 @@ PathSubs = "app/data/lyrics"
 PathDB = "app/db"
 PathDBKarasFile = "karas.sqlite3"
 PathDBUserFile = "userdata.sqlite3"
-PathAltname = "app/data/series_altnames.csv"
+PathAltname = "app/data/series.json"
 PathBackgrounds = "app/backgrounds"
 PathJingles = "app/jingles"
 PathTemp = "app/temp"
@@ -197,6 +197,13 @@ AuthExpireTime = 15
 ; 1 = Only display current song and info, and current playlist if available (hide kara selection and search from the complete listing)
 ; 2 = Default behavior, public interface is fully available
 WebappMode = 2
+
+; Webapp's language for series
+; 0 = Series' names are displayed in their native language
+; 1 = Series' names are displayed according to the song's language (default) or fallbacks to english or original
+; 2 = Series' names are displayed according to the admin's language or fallbacks to the english name then original
+; 3 = Series' names are displayed according ot the user's language or fallbacks to the english name then original
+WebappSongLanguageMode = 1
 
 ; Value: {boolean}
 ; App's first run. Overriden in config.ini .

@@ -438,8 +438,8 @@ export async function getPlaylistContentsMini(playlist_id) {
 	return await plDB.getPlaylistContentsMini(playlist_id);
 }
 
-export async function getPlaylistContents(playlist_id,token,filter) {
-	return await plDB.getPlaylistContents(playlist_id,token.username,filter);
+export async function getPlaylistContents(playlist_id,token,filter,lang) {
+	return await plDB.getPlaylistContents(playlist_id,token.username,filter,lang);
 }
 
 async function getPlaylistPos(playlist_id) {
@@ -458,20 +458,20 @@ export async function getKaraFromPlaylist(plc_id,token) {
 	throw 'PLCID unknown!';
 }
 
-export async function getWhitelistContents() {
-	return await wlDB.getWhitelistContents();
+export async function getWhitelistContents(filter, lang) {
+	return await wlDB.getWhitelistContents(filter, lang);
 }
 
-export async function getBlacklistContents(filter) {
-	return await blcDB.getBlacklistContents(filter);
+export async function getBlacklistContents(filter, lang) {
+	return await blcDB.getBlacklistContents(filter, lang);
 }
 
 export async function getBlacklistCriterias() {
 	return await blcDB.getBlacklistCriterias();
 }
 
-export async function getAllKaras(username, filter) {
-	return await karaDB.getAllKaras(username, filter);
+export async function getAllKaras(username, filter, lang) {
+	return await karaDB.getAllKaras(username, filter, lang);
 }
 
 export async function getRandomKara(playlist_id, filter, username) {
@@ -881,7 +881,7 @@ export function translateKaraInfo(karalist, lang) {
 	i18n.setLocale(lang);
 
 	// We need to read the detected locale in ISO639-1
-	const detectedLocale = langs.where('1',lang);
+	const detectedLocale = langs.where('1',lang);	
 	// If the kara list provided is not an array (only a single karaoke)
 	// Put it into an array first
 	let karas;
@@ -892,7 +892,7 @@ export function translateKaraInfo(karalist, lang) {
 		karas = karalist;
 	}
 
-	karas.forEach(function(kara,index) {
+	karas.forEach((kara,index) => {
 		karas[index].songtype_i18n = i18n.__(kara.songtype);
 		karas[index].songtype_i18n_short = i18n.__(kara.songtype+'_SHORT');
 
@@ -936,6 +936,17 @@ export function translateKaraInfo(karalist, lang) {
 			karas[index].misc_i18n = tags.join();
 		} else {
 			karas[index].misc_i18n = null;
+		}
+		// We need to format the serie properly.
+		if (kara.serie) {
+			//Transform the i18n field we got from the database into an object.
+			const seriei18n = JSON.parse(kara.serie_i18n);
+			karas[index].serie_i18n = {};						
+			const serieTrans = {};
+			seriei18n.forEach((serieLang) => {
+				serieTrans[serieLang.lang] = serieLang.name;
+			});
+			karas[index].serie_i18n = Object.assign(serieTrans);					
 		}
 	});
 	return karas;

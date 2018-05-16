@@ -4,13 +4,12 @@ import {resolve} from 'path';
 import deburr from 'lodash.deburr';
 import isEmpty from 'lodash.isempty';
 import {open} from 'sqlite';
-import {forEach as csvForEach} from 'csv-string';
 import {has as hasLang} from 'langs';
-import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove} from '../_common/utils/files';
+import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncRemove} from '../_common/utils/files';
 import {getConfig, resolvedPathKaras} from '../_common/utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
-	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
+	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras,
 	selectTags, selectViewcountKaras,
 	selectWhitelistKaras,
@@ -181,8 +180,7 @@ function getAllSeries(karas) {
 function prepareSerieInsertData(serie, index) {
 	return {
 		$id_serie: index,
-		$serie: serie,
-		$serienorm: deburr(serie)
+		$serie: serie		
 	};
 }
 
@@ -217,27 +215,35 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 
 async function prepareAltSeriesInsertData(altSeriesFile) {
 
-	const data = [];
-
+	const altNameData = [];
+	const i18nData = [];
 	if (await asyncExists(altSeriesFile)) {
-		const content = await asyncReadFile(altSeriesFile, { encoding: 'utf8' });
-		csvForEach(content, ':', parsedContent => {
-			const serie = parsedContent[0];
-			const altNames = parsedContent[1];
-			if (serie && altNames) {
-				data.push({
-					$serie_altnames: altNames,
-					$serie_altnamesnorm: deburr(altNames),
-					$serie_name: serie
-				});
-				logger.debug('[Gen] Added alt. name "' + altNames + '" to ' + serie);
+		const altNamesFile = require(altSeriesFile);
+		for (const serie of altNamesFile.series) {
+			if (serie.aliases) altNameData.push({
+				$serie_altnames: serie.aliases.join(','),
+				$serie_altnamesnorm: deburr(serie.aliases.join(' ')),
+				$serie_name: serie.name				
+			});
+			if (serie.i18n) {
+				for (const lang of Object.keys(serie.i18n)) {
+					i18nData.push({
+						$lang: lang,
+						$serie: serie.i18n[lang],
+						$serienorm: deburr(serie.i18n[lang]),
+						$name: serie.name						
+					});
+				}
 			}
-		});
+		}			
 	} else {
 		logger.warn('[Gen] No alternative series name file found, ignoring');
 	}
 
-	return data;
+	return {
+		altNameData: altNameData,
+		i18nData: i18nData
+	};
 }
 
 function getAllKaraTags(karas) {
@@ -402,22 +408,24 @@ export async function run(config) {
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-		const sqlUpdateSeriesAltNames = await prepareAltSeriesInsertData(series_altnamesfile);
+		const seriesAltNamesData = await prepareAltSeriesInsertData(series_altnamesfile);
+		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
+		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 		
 		// Inserting data in a transaction
 
 		await db.run('begin transaction');
-		
-		const insertPromises = [
+		await Promise.all([
 			runSqlStatementOnData(db.prepare(insertKaras), sqlInsertKaras),
 			runSqlStatementOnData(db.prepare(insertSeries), sqlInsertSeries),
 			runSqlStatementOnData(db.prepare(insertTags), sqlInsertTags),
 			runSqlStatementOnData(db.prepare(insertKaraTags), sqlInsertKarasTags),
 			runSqlStatementOnData(db.prepare(insertKaraSeries), sqlInsertKarasSeries)
-		];
-
-		await Promise.all(insertPromises);
-		await runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames);
+		]);
+		await Promise.all([
+			runSqlStatementOnData(db.prepare(inserti18nSeries), sqlInserti18nSeries),
+			runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames)
+		]);		
 		
 		await db.run('commit');
 		await db.close();

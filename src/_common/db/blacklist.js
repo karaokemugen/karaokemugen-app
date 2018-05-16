@@ -24,7 +24,7 @@ export const generateBlacklist = `DELETE FROM blacklist;
     								UNION    
 								  SELECT k.pk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Series by name : ' ||  blc.value
 									FROM blacklist_criteria blc
-									INNER JOIN karasdb.kara k ON s.NORM_name LIKE ('%' || blc.value || '%')
+									INNER JOIN karasdb.kara k ON s.NORM_altname LIKE ('%' || blc.value || '%')
 									INNER JOIN karasdb.serie s ON s.pk_id_serie = ks.fk_id_serie
 									INNER JOIN karasdb.kara_serie ks ON ks.fk_id_kara = k.pk_id_kara
 								  	WHERE blc.type = 1000
@@ -70,16 +70,23 @@ export const deleteBlacklistCriteria = `DELETE FROM blacklist_criteria
     								WHERE pk_id_blcriteria = $id
 									`;
 
-export const getBlacklistContents = (filterClauses) => `SELECT 
+export const getBlacklistContents = (filterClauses, lang) => `SELECT 
       									ak.kara_id AS kara_id,
       									ak.kid AS kid,
       									ak.title AS title,
       									ak.NORM_title AS NORM_title,
       									ak.songorder AS songorder,
-      									ak.serie AS serie,
-      									ak.NORM_serie AS NORM_serie,
-      									ak.serie_altname AS serie_altname,
+      									COALESCE(
+									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
+									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
+									  ak.serie) AS serie,
+										COALESCE(
+									  (SELECT sl.NORM_name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
+									  (SELECT sl.NORM_name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
+									  ak.NORM_serie) AS NORM_serie,
+									    ak.serie_altname AS serie_altname,
       									ak.NORM_serie_altname AS NORM_serie_altname,
+										ak.serie_i18n AS serie_i18n,
       									ak.singer AS singer,
       									ak.NORM_singer AS NORM_singer,
       									ak.songtype AS songtype,      

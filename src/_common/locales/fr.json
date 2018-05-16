@@ -387,8 +387,8 @@
 	"WLCM_ABOUTUS": "L'équipe",
 	"WLCM_CONTACT": "Contactez-nous",
 	"WLCM_WELCOME": "BIENVENUE",
-	"WLCM_MSG": "Karaoke Mugen est un gestionnaire de playlists gratuit et open-source.", 
-	"WLCM_MSG2": "Faites votre propre karaoké avec vos amis !", 
+	"WLCM_MSG": "Karaoke Mugen est un gestionnaire de playlists gratuit et open-source.",
+	"WLCM_MSG2": "Faites votre propre karaoké avec vos amis !",
 	"WLCM_GETSTARTED": "Démarrer",
 	"WLCM_KARAMANAGER": "GESTION DU KARA",
 	"WLCM_ADMINISTRATION": "ADMINISTRATION",
@@ -452,5 +452,10 @@
 	"SONGS_BY_USER": "Chansons par utilisateur",
 	"FREE_AUTO_TIME": "Libération d'une chanson du quota après (min)",
 	"PLAYLIST_IMPORT": "Importer Playlist",
+	"SERIE_NAME_MODE": "Langue des titres de série",
+	"SERIE_NAME_MODE_ORIGINAL": "Titre original",
+	"SERIE_NAME_MODE_SONG": "Langue de la chanson",
+	"SERIE_NAME_MODE_ADMIN": "Langue de Karaoke Mugen",
+	"SERIE_NAME_MODE_USER": "Langue de l'utilisateur",
 	"_": "DO NOT MODIFY"	
 }

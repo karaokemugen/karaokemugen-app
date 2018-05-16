@@ -61,7 +61,7 @@ async function compareBases() {
 	const archiveWOExt = basename(archive, '.zip');
 	const karasBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt,'karas');
 	const lyricsBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'lyrics');
-	const altnamesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series_altnames.csv');
+	const altnamesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series.json');
 	if (!await compareFiles(altnamesBasePath,altnamesMinePath)) {
 		copy(
 			altnamesBasePath,
