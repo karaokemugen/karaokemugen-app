@@ -7,6 +7,7 @@ import promiseRetry from 'promise-retry';
 import {exit} from '../_services/engine';
 import {duration} from '../_common/utils/date';
 import deburr from 'lodash.deburr';
+import langs from 'langs';
 
 
 const DBgenerator = require('../_admin/generate_karasdb.js');
@@ -20,6 +21,7 @@ export function buildClauses(filter,source) {
 	return deburr(filter)
 		.toLowerCase()
 		.replace('\'', '')
+		.replace(',', '')
 		.split(' ')
 		.filter(s => !('' === s))
 		.map(word => {
@@ -33,11 +35,25 @@ export function buildClauses(filter,source) {
 			ak.NORM_singer LIKE '%${word}%' OR 
 			ak.NORM_songwriter LIKE '%${word}%' OR 
 			ak.NORM_creator LIKE '%${word}%' OR
-			ak.language LIKE '%${word}%'` + extraClauses;
+			ak.language LIKE '%${word}%' 
+			${extraClauses}`;
 		}			
 		);
 }
 
+export function langSelector(lang) {
+	const conf = getConfig();
+	const userLocale = langs.where('1',lang || conf.EngineDefaultLocale);	
+	const engineLocale = langs.where('1',conf.EngineDefaultLocale);
+	//Fallback to english for cases other than 0 (original name)
+	switch(+conf.WebappSongLanguageMode) {
+	case 0: return {main: '', fallback: ''};
+	default: 
+	case 1: return {main: 'ak.language',fallback: '\'eng\''};
+	case 2: return {main: `'${engineLocale['2B']}'`, fallback: '\'eng\''};
+	case 3: return {main: `'${userLocale['2B']}'`, fallback: '\'eng\''};
+	}
+}
 
 async function doTransaction(items, sql) {	
 	try {

@@ -92,13 +92,19 @@ export const getPlaylistContentsKaraIDs = `SELECT pc.fk_id_kara AS kara_id,
 										ORDER BY pc.pos,pc.created_at DESC;
 										`;
 
-export const getPlaylistContents = (filterClauses) => `SELECT ak.kara_id AS kara_id,
+export const getPlaylistContents = (filterClauses, lang) => `SELECT ak.kara_id AS kara_id,
       									ak.kid AS kid,
       									ak.title AS title,
       									ak.NORM_title AS NORM_title,
       									ak.songorder AS songorder,
-      									ak.serie AS serie,
-      									ak.NORM_serie AS NORM_serie,
+      									COALESCE(
+									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
+									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
+									  ak.serie) AS serie,
+										COALESCE(
+									  (SELECT sl.NORM_name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
+									  (SELECT sl.NORM_name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
+									  ak.NORM_serie) AS NORM_serie,
       									ak.serie_altname AS serie_altname,
       									ak.NORM_serie_altname AS NORM_serie_altname,
 										ak.serie_i18n AS serie_i18n,

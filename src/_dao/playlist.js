@@ -1,4 +1,4 @@
-import {buildClauses, getUserDb, transaction} from './database';
+import {langSelector, buildClauses, getUserDb, transaction} from './database';
 import {getConfig} from '../_common/utils/config';
 import {now} from 'unix-timestamp';
 const sql = require('../_common/db/playlist');
@@ -115,9 +115,9 @@ export async function getPlaylistContentsMini(id) {
 	return await getUserDb().all(sql.getPlaylistContentsMini, { $playlist_id: id });
 }
 
-export async function getPlaylistContents(id, username, filter) {
+export async function getPlaylistContents(id, username, filter, lang) {
 	const filterClauses = filter ? buildClauses(filter, 'playlist') : [];
-	const query = sql.getPlaylistContents(filterClauses);
+	const query = sql.getPlaylistContents(filterClauses, langSelector(lang));
 	return await getUserDb().all(query, { 
 		$playlist_id: id,
 		$username: username,

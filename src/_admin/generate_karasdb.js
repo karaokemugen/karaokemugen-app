@@ -221,7 +221,7 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 		for (const serie of altNamesFile.series) {
 			if (serie.aliases) altNameData.push({
 				$serie_altnames: serie.aliases.join(','),
-				$serie_altnamesnorm: deburr(serie.aliases.join(',')),
+				$serie_altnamesnorm: deburr(serie.aliases.join(' ')),
 				$serie_name: serie.name				
 			});
 			if (serie.i18n) {
