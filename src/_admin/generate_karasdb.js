@@ -22,16 +22,6 @@ import parallel from 'async-await-parallel';
 
 let error = false;
 
-async function emptyDatabase(db) {
-	await db.run('DELETE FROM kara_tag;');
-	await db.run('DELETE FROM kara_serie;');
-	await db.run('DELETE FROM tag;');
-	await db.run('DELETE FROM serie;');
-	await db.run('DELETE FROM kara;');
-	await db.run('DELETE FROM sqlite_sequence;');
-	await db.run('VACUUM;');
-}
-
 async function backupDir(directory) {
 	const backupDir = directory + '_backup';
 	if (await asyncExists(backupDir)) {
@@ -237,7 +227,8 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 			}
 		}			
 	} else {
-		logger.warn('[Gen] No alternative series name file found, ignoring');
+		logger.error('[Gen] No alternative series name file found!');
+		error = true;
 	}
 
 	return {
@@ -394,7 +385,6 @@ export async function run(config) {
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
-		await emptyDatabase(db);
 		//await backupKaraDirs(conf);
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);

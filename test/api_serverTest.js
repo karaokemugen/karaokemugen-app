@@ -92,15 +92,15 @@ describe('Test public API', function() {
 			});
 	});
 	
-	it('List songs with Dragon in their name', function() {
+	it('List songs with Dragon Ball in their name', function() {
 		return request
-			.get('/api/v1/public/karas?filter=Dragon&lang=fr')
+			.get('/api/v1/public/karas?filter=Dragon%20Ball&lang=fr')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.data.content[0].NORM_serie, 'Dragon Ball');
+				assert.equal(response.body.data.content[0].serie, 'Dragon Ball');
 			});
 	});
 	
