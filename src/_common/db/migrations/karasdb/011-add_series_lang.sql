@@ -28,7 +28,7 @@ CREATE VIEW IF NOT EXISTS all_karas AS SELECT k.pk_id_kara AS kara_id, k.kid, k.
     where ks.fk_id_serie = sl.fk_id_serie
     and k.pk_id_kara = ks.fk_id_kara 
     ) as serie_i18n
-,(select GROUP_CONCAT( sl.name, ' ')
+,(select GROUP_CONCAT( sl.NORM_name, ' ')
     from serie_lang sl, kara_serie ks
     where ks.fk_id_serie = sl.fk_id_serie
     and k.pk_id_kara = ks.fk_id_kara 
