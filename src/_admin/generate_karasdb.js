@@ -19,6 +19,7 @@ import {
 import {karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import {join} from 'path';
+import parallel from 'async-await-parallel';
 
 let error = false;
 
@@ -92,9 +93,9 @@ export async function extractAllKaraFiles() {
 export async function getAllKaras(karafiles) {
 	const karaPromises = [];	
 	for (const karafile of karafiles) {
-		karaPromises.push(readAndCompleteKarafile(karafile));
+		karaPromises.push(() => readAndCompleteKarafile(karafile));
 	}
-	const karas = await Promise.all(karaPromises);
+	const karas = await parallel(karaPromises, 16);
 	// Errors are non-blocking
 	if (karas.some((kara) => {
 		return kara.error;

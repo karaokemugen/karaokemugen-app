@@ -84,7 +84,7 @@ async function main() {
 	);
 	logger.debug('[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
 	await copy(
-		join(__dirname, '/_player/assets/background.jpg'),
+		join(__dirname, '/_player/assets/GabrielGenante.jpg'),
 		resolve(appPath, config.PathTemp, 'default.jpg'),
 		{ overwrite: true }
 	);
