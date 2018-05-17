@@ -445,17 +445,6 @@ async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());
 }
 
-export async function getTop50(filter,lang,from,size,token) {
-	let karas = await getKaras(filter,lang,from,size,token);
-	karas = karas.filter(kara => kara.requested > 0);
-	karas.sort((a,b) => {
-		if (a.requested < b.requested) return -1;
-		if (a.requested > b.requested) return 1;
-		return 0;
-	});
-	return karas.slice(0,50);
-}
-
 export function formatKaraList(karaList, lang, from, count) {
 	karaList = plc.translateKaraInfo(karaList, lang);
 	return {

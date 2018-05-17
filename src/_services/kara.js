@@ -185,6 +185,17 @@ export async function getKaraHistory() {
 	return await karaDB.getKaraHistory();
 }
 
+export async function getTop50(token, lang) {
+	let karas = await karaDB.getAllKaras(token.username, null, lang);
+	karas = karas.filter(kara => kara.requested > 0);
+	karas.sort((a,b) => {
+		if (a.requested < b.requested) return -1;
+		if (a.requested > b.requested) return 1;
+		return 0;
+	});	
+	return karas;
+}
+
 export async function getKaraViewcounts() {
 	return await karaDB.getKaraViewcounts();
 }

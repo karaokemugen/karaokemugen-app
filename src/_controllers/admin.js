@@ -1,8 +1,9 @@
 import {backupConfig, getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
 import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js';
+import {getLang} from './lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
-import {getKaraViewcounts, getKaraHistory} from '../_services/kara';
+import {getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
 
@@ -39,6 +40,12 @@ module.exports = function adminController(router) {
 
 	router.get('/karas/history', requireAuth, requireValidUser, requireAdmin, (req, res) =>{
 		getKaraHistory()
+			.then(karas => res.json(karas))
+			.catch(err => res.status(500).send('Error while fetching karas: ' + err));
+	});
+
+	router.get('/karas/ranking', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) =>{
+		getTop50(req.authToken, req.lang)
 			.then(karas => res.json(karas))
 			.catch(err => res.status(500).send('Error while fetching karas: ' + err));
 	});
