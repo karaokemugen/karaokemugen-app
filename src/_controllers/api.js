@@ -4284,15 +4284,11 @@ export function APIControllerPublic(router) {
 			}
 		})
 	/**
-<<<<<<< HEAD:src/_apiserver/api.js
- * @api {put} public/users/:username Edit a user
-=======
- * @api {put} /admin/users/:username Edit a user
->>>>>>> next:src/_controllers/api.js
+ * @api {put} /public/users/:username Edit a user
  * @apiName EditUser
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission admin
+ * @apiPermission public
  *
  * @apiParam {String} username Username to edit
  * @apiParam {String} login New login for user
