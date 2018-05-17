@@ -879,6 +879,7 @@ export function APIControllerAdmin(router) {
  *               "playlistcontent_id": 4946,
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
  *               "serie": "Dynasty Warriors 3",
  * 				 "serie_i18n": {
  * 								"fre":"Guerriers de la Dynastie"
@@ -1200,6 +1201,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
  * @apiSuccess {String} data/previewfile Filename of the preview file associated with the karaoke. Can be undefined if the preview hasn't been generated yet by the server.
  * @apiSuccess {String} data/pseudo_add Nickname of user who added/requested the song. this nickname can be changed (`username` cannot) hence why it is displayed here.
+ * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
@@ -1250,6 +1252,7 @@ export function APIControllerAdmin(router) {
  *           "pos": 12,
  *           "previewfile": "JAP - C3 ~ Cube X Cursed X Curious.1201230.mp4"
  *           "pseudo_add": "Axel",
+ * 			 "requested": 20,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *  		 "serie_i18n": {
  * 				"fre":"Guerriers de la Dynastie"
@@ -1817,6 +1820,7 @@ export function APIControllerAdmin(router) {
  *               "language_i18n": "Allemand",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
+ * 				 "requested": 20,
  *               "serie": null,
  * 				 "serie_i18n": {
  * 								"fre":"Guerriers de la Dynastie"
@@ -2029,6 +2033,7 @@ export function APIControllerAdmin(router) {
  *               "misc": null,
  *               "misc_i18n": null,
  *               "reason_add": "Blacklisted Tag : Jean-Jacques Debout (type 6)",
+ * 				 "requested": 20
  *               "serie": "Capitaine Flam",
  *               "serie_altname": "Kyaputen Fyucha",
  * 				 "serie_i18n": {
@@ -2733,6 +2738,7 @@ export function APIControllerPublic(router) {
  *               "playlistcontent_id": 4946,
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
  *               "serie": "Dynasty Warriors 3",
  * 				 "serie_i18n": {
  *					"fre":"Guerriers de la Dynastie"
@@ -2834,6 +2840,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
  * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
  * @apiSuccess {String} data/pseudo_add Nickname of user who added this song
+ * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
@@ -2882,6 +2889,7 @@ export function APIControllerPublic(router) {
  *           "playlistcontent_id": 4961,
  *           "pos": 12,
  *           "pseudo_add": "Axel",
+ * 			 "requested": 20,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *           "serie_altname": "C-Cube/CxCxC",
  * 			 "serie_i18n": {
@@ -3080,6 +3088,7 @@ export function APIControllerPublic(router) {
  *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
+ * 				 "requested": 20,
  *               "serie": null,
  *               "serie_altname": null,
  *               "singer": "Dschinghis Khan",
@@ -3182,6 +3191,7 @@ export function APIControllerPublic(router) {
  *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
+ * 				 "requested": 20,
  *               "serie": null,
  *               "serie_altname": null,
  *               "singer": "Dschinghis Khan",
@@ -3398,6 +3408,7 @@ export function APIControllerPublic(router) {
  *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
+ * 				 "requested": 20
  *               "serie": "Dynasty Warriors 3",
  * 				 "serie_i18n": {
  * 								"fre":"Guerriers de la Dynastie"
@@ -3524,6 +3535,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/mediafile Media's filename
  * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/misc_i18n Translated tag list
+ * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
  * @apiSuccess {String} data/singer Singer's name, if known.
@@ -3561,6 +3573,7 @@ export function APIControllerPublic(router) {
  *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "misc": null,
  *           "misc_i18n": null,
+ * 			 "requested": 20,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *           "serie_altname": "C-Cube/CxCxC",
  *           "singer": null,
@@ -3803,6 +3816,7 @@ export function APIControllerPublic(router) {
  *               "playlistcontent_id": 4946,
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
  *               "serie": "Dynasty Warriors 3",
  * 				 "serie_i18n": {
  * 								"fre":"Guerriers de la Dynastie"
@@ -3969,6 +3983,7 @@ export function APIControllerPublic(router) {
  *               "playlistcontent_id": 4946,
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20
  *               "serie": "Dynasty Warriors 3",
  * 				 "serie_i18n": {
  * 								"fre":"Guerriers de la Dynastie"
@@ -4269,7 +4284,11 @@ export function APIControllerPublic(router) {
 			}
 		})
 	/**
+<<<<<<< HEAD:src/_apiserver/api.js
+ * @api {put} public/users/:username Edit a user
+=======
  * @api {put} /admin/users/:username Edit a user
+>>>>>>> next:src/_controllers/api.js
  * @apiName EditUser
  * @apiVersion 2.1.0
  * @apiGroup Users
@@ -4370,9 +4389,191 @@ export function APIControllerPublic(router) {
 				res.json(result.mapped());
 			}
 		});
+	router.route('/top50')
+	/**
+ * @api {get} /public/top50 View Top 50 songs
+ * @apiName GetTop50
+ * @apiVersion 2.2.0
+ * @apiGroup Karas
+ * @apiPermission public
+ *
+ * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * 
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ * 	             "flag_dejavu": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ * 				 "requested": 20
+ *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {}
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError TOP50_LIST_ERROR Unable to fetch list of karaokes
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+			// if the query has a &filter=xxx
+			// then the playlist returned gets filtered with the text.
+			const filter = req.query.filter;
+			let size;
+			if (!req.query.size) {
+				size = 999999;
+			} else {
+				size = parseInt(req.query.size, 10);
+			}
+			let from;
+			if (!req.query.from) {
+				from = 0;
+			} else {
+				from = parseInt(req.query.from, 10);
+			}
+			if (from < 0) from = 0;
+			try {
+				const karas = await engine.getTop50(filter,req.lang,from,size,req.authToken);
+				res.json(OKMessage(karas));
+			} catch(err) {
+				res.statusCode = 500;
+				res.json(errMessage('TOP50_LIST_ERROR',err));
+			}				
+		});
 
-		
-
+	router.route('/users/:username/requests')
+	/**
+ * @api {get} public/users/:username/requests View user's most requested songs
+ * @apiName GetUserRequestedKaras
+ * @apiVersion 2.1.0
+ * @apiGroup Users
+ * @apiPermission public
+ *
+ * @apiParam {String} username Username to check details for.
+ * @apiSuccess {Object} data Kara object
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+* {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ * 	             "flag_dejavu": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
+ *               "serie": "Dynasty Warriors 3",
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",*
+ * 				 "username": "admin",
+ *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError USER_REQUESTS_VIEW_ERROR Unable to view user requested karas
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "USER_REQUESTS_VIEW_ERROR",
+ *   "message": null
+ * }
+ */
+		.get(requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+			user.getUserRequests(req.params.username)
+				.then((requestdata) => {
+					res.json(OKMessage(requestdata));
+				})
+				.catch((err) => {
+					logger.error(err);
+					res.statusCode = 500;
+					res.json(errMessage('USER_REQUESTS_VIEW_ERROR',err));
+				});						
+		});
 	router.route('/myaccount')
 	/**
  * @api {get} /public/myaccount View own user details

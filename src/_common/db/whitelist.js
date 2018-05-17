@@ -7,6 +7,7 @@ export const getWhitelistContents = (filterClauses, lang) => `SELECT wl.pk_id_wh
       									ak.kid AS kid,
       									ak.title AS title,
       									(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+										(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       									ak.songorder AS songorder,
       									COALESCE(
 									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),

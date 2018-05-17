@@ -31,6 +31,14 @@ export const addViewcount = `INSERT INTO viewcount(
 							VALUES($kara_id,$kid,$modified_at);
 							`;
 
+export const addRequested = `INSERT INTO request(
+								fk_id_user,
+								fk_id_kara,
+								kid,
+								requested_at)
+							VALUES($user_id,$kara_id,(SELECT kid FROM karasdb.all_karas WHERE kara_id = $kara_id),$requested_at);
+							`;
+
 export const getKaraHistory = `SELECT ak.title AS title,
 								ak.songorder AS songorder,
       							ak.serie AS serie,
@@ -86,6 +94,7 @@ export const getAllKaras = (filterClauses, lang) => `SELECT ak.kara_id AS kara_i
       							ak.NORM_author AS NORM_author,
       							ak.misc AS misc,
 								(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+								(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       							ak.mediafile AS mediafile,
       							ak.duration AS duration,
 								ak.gain AS gain,
@@ -128,8 +137,14 @@ export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
       							ak.NORM_author AS NORM_author,
       							ak.misc AS misc,
 	  							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+<<<<<<< HEAD
+								(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
+      							ak.videofile AS videofile,
+	  							ak.videolength AS duration,
+=======
       							ak.mediafile AS mediafile,
 	  							ak.duration AS duration,
+>>>>>>> next
 		  						ak.gain AS gain,
 								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
@@ -163,9 +178,15 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
       						ak.NORM_author AS NORM_author,
       						ak.misc AS misc,
 	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+<<<<<<< HEAD
+							(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
+      						ak.videofile AS videofile,
+	  						ak.videolength AS duration,
+=======
       						ak.mediafile AS mediafile,
 							ak.subfile AS subfile,
 	  						ak.duration AS duration,
+>>>>>>> next
 	  						ak.gain AS gain,
 							(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     						THEN 1

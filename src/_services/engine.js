@@ -445,7 +445,6 @@ async function addViewcountKara(kara_id, kid) {
 	return await addViewcount(kara_id,kid,now());
 }
 
-
 export function formatKaraList(karaList, lang, from, count) {
 	karaList = plc.translateKaraInfo(karaList, lang);
 	return {
@@ -461,8 +460,7 @@ export function formatKaraList(karaList, lang, from, count) {
 export async function getKaras(filter, lang, from, size, token) {
 	try {
 		const pl = await plc.getAllKaras(token.username, filter, lang);
-		const result = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
-		return result;
+		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);		
 	} catch(err) {
 		throw err;
 	}
@@ -802,8 +800,8 @@ export async function getPublicPLContents(filter,lang,from,size) {
 }
 
 export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
-	const conf = getConfig();
 	let addByAdmin = true;
+	const conf = getConfig();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
 	let karas;
 	if (typeof kara_id === 'string') {

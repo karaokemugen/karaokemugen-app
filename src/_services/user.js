@@ -52,6 +52,11 @@ export async function validateUserNickname(nickname) {
 	return false;
 }
 
+export async function getUserRequests(username) {
+	if (!await findUserByName(username)) throw 'User unknown';
+	return await db.getUserRequests(username);
+}
+
 export async function editUser(username,user,avatar,role) {
 	try {
 		let currentUser;
