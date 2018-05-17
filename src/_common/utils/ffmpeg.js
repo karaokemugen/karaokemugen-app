@@ -13,7 +13,7 @@ export async function extractSubtitles(videofile, extractfile) {
 
 export async function createPreview(videopreview) {	
 	try {
-		return await execa(getConfig().BinffmpegPath, ['-y', '-ss', '0', '-i', videopreview.videofile, '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-threads', '1', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
+		return await execa(getConfig().BinffmpegPath, ['-y', '-i', videopreview.videofile, '-ss', '0', '-c:v' , 'libx264', '-preset', 'ultrafast', '-tune', 'animation', '-vf', 'scale=-2:240', '-crf', '35', '-c:a', 'aac', '-b:a', '96k', '-threads', '1', '-t', '15', videopreview.previewfile], {encoding: 'utf8'});
 	} catch(err) {
 		logger.error(`[ffmpeg] Video ${videopreview.videofile} not generated : ${err.code} (${err.message}`);
 		logger.error(`[ffmpeg] STDOUT: ${err.stdout}`);
@@ -22,9 +22,9 @@ export async function createPreview(videopreview) {
 	}	
 }
 
-export async function getVideoInfo(videofile) {
+export async function getMediaInfo(mediafile) {
 	try {
-		const result = await execa(getConfig().BinffmpegPath, ['-i', videofile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
+		const result = await execa(getConfig().BinffmpegPath, ['-i', mediafile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 		const outputArray = result.stderr.split(' ');
 		const indexTrackGain = outputArray.indexOf('track_gain');
 		const indexDuration = outputArray.indexOf('Duration:');
@@ -51,7 +51,7 @@ export async function getVideoInfo(videofile) {
 			error: error
 		};
 	} catch(err) {
-		logger.warn(`Video ${videofile} probe error : ${err.code}`);
+		logger.warn(`Video ${mediafile} probe error : ${err.code}`);
 		return { duration: 0, audiogain: 0, error: true };
 	}
 }

@@ -4,10 +4,10 @@
 
 import logger from 'winston';
 import {resolve} from 'path';
-import {resolvedPathImport, resolvedPathKaras, resolvedPathSubs, resolvedPathVideos} from '../_common/utils/config';
-import {asyncExists, asyncMove, asyncReadDir, filterVideos, replaceExt} from '../_common/utils/files';
+import {resolvedPathImport, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias} from '../_common/utils/config';
+import {asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_common/utils/files';
 import {
-	extractAssInfos, extractVideoSubtitles, extractVideoTechInfos, karaFilenameInfos, writeKara
+	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
 import {getKara} from '../_services/kara';
@@ -19,30 +19,30 @@ import {getKara} from '../_services/kara';
  */
 export async function karaGenerationBatch() {
 	const importFiles = await asyncReadDir(resolvedPathImport());
-	const importPromises = filterVideos(importFiles).map(videoFile => importVideoFile(videoFile));
+	const importPromises = filterMedias(importFiles).map(mediaFile => importMediaFile(mediaFile));
 	await Promise.all(importPromises);
 }
 
-async function importVideoFile(videoFile) {
+async function importMediaFile(mediaFile) {
 
-	logger.info('[KaraGen] Generating kara file for video ' + videoFile);
+	logger.info('[KaraGen] Generating kara file for media ' + mediaFile);
 
-	let karaData = getKara({ videofile: videoFile, subfile: 'dummy.ass' });
+	let karaData = getKara({ mediafile: mediaFile, subfile: 'dummy.ass' });
 
-	karaData = {...karaData, ...karaDataInfosFromFilename(videoFile)};
+	karaData = {...karaData, ...karaDataInfosFromFilename(mediaFile)};
 
-	const videoPath = resolve(resolvedPathImport(), videoFile);
-	const subPath = await findSubFile(videoPath, karaData);
+	const mediaPath = resolve(resolvedPathImport(), mediaFile);
+	const subPath = await findSubFile(mediaPath, karaData);
 	await extractAssInfos(subPath, karaData);
-	await extractVideoTechInfos(videoPath, karaData);
+	await extractMediaTechInfos(mediaPath, karaData);
 
-	await generateAndMoveFiles(videoPath, subPath, karaData);
+	await generateAndMoveFiles(mediaPath, subPath, karaData);
 
 }
 
-function karaDataInfosFromFilename(videoFile) {
+function karaDataInfosFromFilename(mediaFile) {
 	try {
-		const filenameInfos = karaFilenameInfos(videoFile);
+		const filenameInfos = karaFilenameInfos(mediaFile);
 		const common = {
 			title: filenameInfos.title,
 			type: getType(filenameInfos.type),
@@ -61,20 +61,20 @@ function karaDataInfosFromFilename(videoFile) {
 	return {};
 }
 
-async function findSubFile(videoPath, karaData) {
+async function findSubFile(mediaPath, karaData) {
 	// Replacing file extension by .ass in the same directory
-	const assFile = replaceExt(videoPath, '.ass');
+	const assFile = replaceExt(mediaPath, '.ass');
 
 	if (await asyncExists(assFile)) {
 		// If a subfile is found, adding it to karaData
-		karaData.subfile = replaceExt(karaData.videofile, '.ass');
+		karaData.subfile = replaceExt(karaData.mediafile, '.ass');
 		return assFile;
-	} else if (videoPath.endsWith('.mkv') || videoPath.endsWith('.mp4')) {
+	} else if (mediaPath.endsWith('.mkv') || mediaPath.endsWith('.mp4')) {
 		try {
-			return await extractVideoSubtitles(videoPath, karaData.KID);
+			return await extractVideoSubtitles(mediaPath, karaData.KID);
 		} catch (err) {
 			// Non-blocking.
-			logger.debug('[KaraGen] Could not extract subtitles from video file ' + videoPath);
+			logger.debug('[KaraGen] Could not extract subtitles from video file ' + mediaPath);
 		}
 	} else {
 		return '';
@@ -82,15 +82,15 @@ async function findSubFile(videoPath, karaData) {
 }
 
 
-async function generateAndMoveFiles(videoPath, subPath, karaData) {
+async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	// Generating kara file in the first kara folder
-	const karaFilename = replaceExt(karaData.videofile, '.kara');
+	const karaFilename = replaceExt(karaData.mediafile, '.kara');
 	const karaPath = resolve(resolvedPathKaras()[0], karaFilename);
 	await writeKara(karaPath, karaData);
 
-	// Moving video in the first video folder.
-	const videoDest = resolve(resolvedPathVideos()[0], karaData.videofile);
-	await asyncMove(videoPath, videoDest);
+	// Moving media in the first media folder.
+	const mediaDest = resolve(resolvedPathMedias()[0], karaData.mediafile);
+	await asyncMove(mediaPath, mediaDest);
 
 	// Moving subfile in the first lyrics folder.
 	if (subPath && karaData.subfile !== 'dummy.ass') {

@@ -36,6 +36,10 @@ export async function listGuests() {
 	return await getUserDb().all(sql.selectGuests);
 }
 
+export async function getUserRequests(username) {
+	return await getUserDb().all(sql.getUserRequests, {$username: username});
+}
+
 export async function addUser(user) {
 	return await getUserDb().run(sql.createUser, {
 		$type: user.type,

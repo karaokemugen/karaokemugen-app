@@ -49,6 +49,18 @@ EngineAllowViewBlacklistCriterias = 1
 ; Songs already played or freed don't count towards this limit .
 EngineSongsPerUser = 10000
 
+; Time allowed per user: {integer}
+; Time (in seconds) allowed per user to add songs to a playlist at once
+; Each song that passes gives back time
+EngineTimePerUser = 10000
+
+; Quota type for users: {integer}
+; Defines what kind of quota is applied to users to prevent them from adding too many songs
+; 0 : No quota
+; 1 : Songs
+; 2 : Time
+EngineQuotaType = 1
+
 ; Free upvotes: {boolean}
 ; enable/disable Upvote free mechanic .
 ; Make us free na splash kasaneta...NO
@@ -64,6 +76,9 @@ EngineFreeUpvotesRequiredPercent = 33
 ; Minimum number of votes required to free a song : {integer}
 ; You need at least this many votes to free a song, no matter the percentage of online users reached .
 EngineFreeUpvotesRequiredMin = 4
+
+; Time (in minutes) before a song is automatically freed : {integer}
+EngineFreeAutoTime = 60
 
 ; AutoPlay: {boolean}
 ; AutoPlay : if a karaoke song is added to the current playlist, start playing immediately if the engine is stopped .
@@ -159,12 +174,12 @@ BinffmpegOSX = "app/bin/ffmpeg"
 ; Paths - don't touch these unless you know what you're doing .
 PathBin = "app/bin"
 PathKaras = "app/data/karas"
-PathVideos = "app/data/videos"
+PathMedias = "app/data/videos"
 PathSubs = "app/data/lyrics"
 PathDB = "app/db"
 PathDBKarasFile = "karas.sqlite3"
 PathDBUserFile = "userdata.sqlite3"
-PathAltname = "app/data/series_altnames.csv"
+PathAltname = "app/data/series.json"
 PathBackgrounds = "app/backgrounds"
 PathJingles = "app/jingles"
 PathTemp = "app/temp"
@@ -195,6 +210,13 @@ AuthExpireTime = 15
 ; 1 = Only display current song and info, and current playlist if available (hide kara selection and search from the complete listing)
 ; 2 = Default behavior, public interface is fully available
 WebappMode = 2
+
+; Webapp's language for series
+; 0 = Series' names are displayed in their native language
+; 1 = Series' names are displayed according to the song's language (default) or fallbacks to english or original
+; 2 = Series' names are displayed according to the admin's language or fallbacks to the english name then original
+; 3 = Series' names are displayed according ot the user's language or fallbacks to the english name then original
+WebappSongLanguageMode = 1
 
 ; Value: {boolean}
 ; App's first run. Overriden in config.ini .

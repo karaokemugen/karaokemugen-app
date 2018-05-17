@@ -1,6 +1,8 @@
-import {getUserDb, transaction} from './database';
+import {langSelector, buildClauses, getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
+import {resolve} from 'path';
+import {asyncExists, asyncReadFile} from '../_common/utils/files';
 
 const sql = require('../_common/db/kara');
 
@@ -11,15 +13,42 @@ export async function getSongCountForUser(playlist_id,user_id) {
 	});
 }
 
-export async function getAllKaras(username) {
-	return await getUserDb().all(sql.getAllKaras, {
+export async function getSongTimeSpentForUser(playlist_id,user_id) {
+	return await getUserDb().get(sql.getTimeSpentPerUser, {
+		$playlist_id: playlist_id,
+		$user_id: user_id
+	});
+}
+
+export async function getAllKaras(username, filter, lang) {
+
+	const filterClauses = filter ? buildClauses(filter) : [];
+	const query = sql.getAllKaras(filterClauses, langSelector(lang));
+
+	return await getUserDb().all(query, {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
 		$username: username
 	});
 }
 
+export async function updateFreeOrphanedSongs(expireTime) {
+	return await getUserDb().run(sql.updateFreeOrphanedSongs, { $expire_time: expireTime });
+}
+
 export async function getKaraMini(id) {
 	return await getUserDb().get(sql.getKaraMini, { $kara_id: id });
+}
+
+export async function getKaraByKID(kid) {
+	return await getUserDb().get(sql.getKaraByKID, { $kid: kid });
+}
+
+export async function getKaraHistory() {
+	return await getUserDb().all(sql.getKaraHistory);
+}
+
+export async function getKaraViewcounts() {
+	return await getUserDb().all(sql.getKaraViewcounts);
 }
 
 export async function getKara(id, username) {
@@ -31,8 +60,11 @@ export async function getKara(id, username) {
 		});
 }
 
-export async function getASS(id) {
-	return await getUserDb().get(sql.getASS, { $kara_id: id });
+export async function getASS(sub) {
+	const conf = getConfig();
+	const subfile = resolve(conf.appPath,conf.PathSubs,sub);	
+	if (await asyncExists(subfile)) return await asyncReadFile(subfile, 'utf-8');
+	throw 'Subfile not found';
 }
 
 export async function isKara(id) {
@@ -53,6 +85,24 @@ export async function addViewcount(kara_id,kid,datetime) {
 		$kid: kid,
 		$modified_at: datetime
 	});
+}
+
+export async function addRequested(user_id,kara_id,kid,datetime) {
+	return await getUserDb().run(sql.addRequested, {
+		$user_id: user_id,
+		$kara_id: kara_id,
+		$kid: kid,
+		$modified_at: datetime
+	});
+}
+
+export async function addKaraToRequests(user_id,karaList,date_add) {
+	const karas = karaList.map((kara) => ({
+		$user_id: user_id,
+		$kara_id: kara.kara_id,
+		$requested_at: date_add,		
+	}));
+	return await transaction(karas, sql.addRequested);
 }
 
 export async function resetViewcounts() {

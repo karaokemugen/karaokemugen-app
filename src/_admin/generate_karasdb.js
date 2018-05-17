@@ -4,34 +4,23 @@ import {resolve} from 'path';
 import deburr from 'lodash.deburr';
 import isEmpty from 'lodash.isempty';
 import {open} from 'sqlite';
-import {forEach as csvForEach} from 'csv-string';
 import {has as hasLang} from 'langs';
-import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncReadFile, asyncRemove} from '../_common/utils/files';
+import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncRemove} from '../_common/utils/files';
 import {getConfig, resolvedPathKaras} from '../_common/utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
-	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, selectBlacklistKaras, selectBLCKaras,
+	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras,
-	selectTags, selectViewcountKaras,
+	selectTags, selectViewcountKaras, selectRequestKaras,
 	selectWhitelistKaras,
 	updateSeriesAltNames
 } from '../_common/db/generation';
 import {karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
+import {join} from 'path';
+import parallel from 'async-await-parallel';
 
 let error = false;
-
-
-async function emptyDatabase(db) {
-	await db.run('DELETE FROM kara_tag;');
-	await db.run('DELETE FROM kara_serie;');
-	await db.run('DELETE FROM ass;');
-	await db.run('DELETE FROM tag;');
-	await db.run('DELETE FROM serie;');
-	await db.run('DELETE FROM kara;');
-	await db.run('DELETE FROM sqlite_sequence;');
-	await db.run('VACUUM;');
-}
 
 async function backupDir(directory) {
 	const backupDir = directory + '_backup';
@@ -93,9 +82,9 @@ export async function extractAllKaraFiles() {
 export async function getAllKaras(karafiles) {
 	const karaPromises = [];	
 	for (const karafile of karafiles) {
-		karaPromises.push(readAndCompleteKarafile(karafile));
+		karaPromises.push(() => readAndCompleteKarafile(karafile));
 	}
-	const karas = await Promise.all(karaPromises);
+	const karas = await parallel(karaPromises, 16);
 	// Errors are non-blocking
 	if (karas.some((kara) => {
 		return kara.error;
@@ -124,11 +113,12 @@ function prepareKaraInsertData(kara, index) {
 		$titlenorm: deburr(kara.title),
 		$kara_year: kara.year,
 		$kara_songorder: kara.order,
-		$kara_videofile: kara.videofile,
+		$kara_mediafile: kara.mediafile,
+		$kara_subfile: kara.subfile,
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,		
-		$kara_gain: kara.videogain,
-		$kara_videolength: kara.videoduration		
+		$kara_gain: kara.mediagain,
+		$kara_duration: kara.mediaduration		
 	};
 }
 
@@ -180,8 +170,7 @@ function getAllSeries(karas) {
 function prepareSerieInsertData(serie, index) {
 	return {
 		$id_serie: index,
-		$serie: serie,
-		$serienorm: deburr(serie)
+		$serie: serie		
 	};
 }
 
@@ -216,27 +205,36 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 
 async function prepareAltSeriesInsertData(altSeriesFile) {
 
-	const data = [];
-
+	const altNameData = [];
+	const i18nData = [];
 	if (await asyncExists(altSeriesFile)) {
-		const content = await asyncReadFile(altSeriesFile, { encoding: 'utf8' });
-		csvForEach(content, ':', parsedContent => {
-			const serie = parsedContent[0];
-			const altNames = parsedContent[1];
-			if (serie && altNames) {
-				data.push({
-					$serie_altnames: altNames,
-					$serie_altnamesnorm: deburr(altNames),
-					$serie_name: serie
-				});
-				logger.debug('[Gen] Added alt. name "' + altNames + '" to ' + serie);
+		const altNamesFile = require(altSeriesFile);
+		for (const serie of altNamesFile.series) {
+			if (serie.aliases) altNameData.push({
+				$serie_altnames: serie.aliases.join(','),
+				$serie_altnamesnorm: deburr(serie.aliases.join(' ')),
+				$serie_name: serie.name				
+			});
+			if (serie.i18n) {
+				for (const lang of Object.keys(serie.i18n)) {
+					i18nData.push({
+						$lang: lang,
+						$serie: serie.i18n[lang],
+						$serienorm: deburr(serie.i18n[lang]),
+						$name: serie.name						
+					});
+				}
 			}
-		});
+		}			
 	} else {
-		logger.warn('[Gen] No alternative series name file found, ignoring');
+		logger.error('[Gen] No alternative series name file found!');
+		error = true;
 	}
 
-	return data;
+	return {
+		altNameData: altNameData,
+		i18nData: i18nData
+	};
 }
 
 function getAllKaraTags(karas) {
@@ -326,17 +324,28 @@ function getTagId(tagName, tags) {
 
 function prepareAllTagsInsertData(allTags) {
 	const data = [];
-
+	const translations = require(join(__dirname,'../_common/locales'));
+	
 	allTags.forEach((tag, index) => {
 		const tagParts = tag.split(',');
 		const tagName = tagParts[0];
 		const tagType = tagParts[1];
-
+		let tagNorm;
+		if (+tagType === 7) {
+			const tagTranslations = [];
+			for (const [key, value] of Object.entries(translations)) {				
+				// Key is the language, value is a i18n text
+				if (value[tagName]) tagTranslations.push(value[tagName]);
+			}			
+			tagNorm = tagTranslations.join(' ');			
+		} else {
+			tagNorm = tagName;
+		}		
 		data.push({
 			$id_tag: index + 1,
 			$tagtype: tagType,
 			$tagname: tagName,
-			$tagnamenorm: deburr(tagName),
+			$tagnamenorm: deburr(tagNorm)
 		});
 	});
 
@@ -358,22 +367,6 @@ function prepareTagsKaraInsertData(tagsByKara) {
 	return data;
 }
 
-async function insertAss(db, karas) {
-	const stmt = await db.prepare('INSERT INTO ass (fk_id_kara, ass) VALUES ($id_kara, $ass);');
-	const insertPromises = [];
-	karas.forEach((kara, index) => {
-		const karaIndex = index + 1;
-		if (kara.ass) {
-			insertPromises.push(stmt.run({
-				$id_kara: karaIndex,
-				$ass: kara.ass,
-			}));
-		}
-	});
-	await Promise.all(insertPromises);
-	await stmt.finalize();
-}
-
 async function runSqlStatementOnData(stmtPromise, data) {
 	const stmt = await stmtPromise;
 	const sqlPromises = data.map(sqlData => stmt.run(sqlData));
@@ -392,7 +385,6 @@ export async function run(config) {
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
-		await emptyDatabase(db);
 		//await backupKaraDirs(conf);
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
@@ -406,23 +398,24 @@ export async function run(config) {
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-		const sqlUpdateSeriesAltNames = await prepareAltSeriesInsertData(series_altnamesfile);
+		const seriesAltNamesData = await prepareAltSeriesInsertData(series_altnamesfile);
+		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
+		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 		
 		// Inserting data in a transaction
 
 		await db.run('begin transaction');
-		
-		const insertPromises = [
+		await Promise.all([
 			runSqlStatementOnData(db.prepare(insertKaras), sqlInsertKaras),
-			insertAss(db, karas),
 			runSqlStatementOnData(db.prepare(insertSeries), sqlInsertSeries),
 			runSqlStatementOnData(db.prepare(insertTags), sqlInsertTags),
 			runSqlStatementOnData(db.prepare(insertKaraTags), sqlInsertKarasTags),
 			runSqlStatementOnData(db.prepare(insertKaraSeries), sqlInsertKarasSeries)
-		];
-
-		await Promise.all(insertPromises);
-		await runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames);
+		]);
+		await Promise.all([
+			runSqlStatementOnData(db.prepare(inserti18nSeries), sqlInserti18nSeries),
+			runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames)
+		]);		
 		
 		await db.run('commit');
 		await db.close();
@@ -464,6 +457,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		blacklistCriteriaKaras,
 		blacklistKaras,
 		viewcountKaras,
+		requestKaras,
 		playlistKaras
 	] = await Promise.all([
 		db.all(selectTags),
@@ -473,6 +467,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectBLCKaras),
 		userdb.all(selectBlacklistKaras),
 		userdb.all(selectViewcountKaras),
+		userdb.all(selectRequestKaras),
 		userdb.all(selectPlaylistKaras)
 	]);
 
@@ -488,6 +483,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`DELETE FROM blacklist_criteria WHERE uniquevalue NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM blacklist WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM viewcount WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`DELETE FROM request WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`DELETE FROM playlist_content WHERE kid NOT IN (${karaKIDs});`)
 	]);
 	const karaIdByKid = new Map();
@@ -512,6 +508,11 @@ export async function checkUserdbIntegrity(uuid, config) {
 	viewcountKaras.forEach(vck => {
 		if (karaIdByKid.has(vck.kid) && karaIdByKid.get(vck.kid) !== vck.id_kara) {
 			sql += `UPDATE viewcount SET fk_id_kara = ${karaIdByKid.get(vck.kid)} WHERE kid = '${vck.kid}';`;
+		}
+	});
+	requestKaras.forEach(rqk => {
+		if (karaIdByKid.has(rqk.kid) && karaIdByKid.get(rqk.kid) !== rqk.id_kara) {
+			sql += `UPDATE request SET fk_id_kara = ${karaIdByKid.get(rqk.kid)} WHERE kid = '${rqk.kid}';`;
 		}
 	});
 	playlistKaras.forEach(plck => {

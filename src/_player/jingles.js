@@ -1,9 +1,9 @@
-import {isVideoFile, asyncReadDir} from '../_common/utils/files';
+import {isMediaFile, asyncReadDir} from '../_common/utils/files';
 import {emit} from '../_common/utils/pubsub';
 import {resolve} from 'path';
 import {resolvedPathJingles} from '../_common/utils/config';
-import {getVideoInfo} from '../_common/utils/ffmpeg';
-const logger = require('winston');
+import {getMediaInfo} from '../_common/utils/ffmpeg';
+import logger from 'winston';
 
 export let jinglesList = [];
 export let currentJinglesList = [];
@@ -20,7 +20,7 @@ async function extractJingleFiles(jingleDir) {
 	const jingleFiles = [];
 	const dirListing = await asyncReadDir(jingleDir);
 	for (const file of dirListing) {
-		if (isVideoFile(file)) {
+		if (isMediaFile(file)) {
 			jingleFiles.push(resolve(jingleDir, file));
 		}
 	}
@@ -30,7 +30,7 @@ async function extractJingleFiles(jingleDir) {
 async function getAllVideoGains(jingleFiles) {	
 	let jinglesList = [];
 	for (const jinglefile of jingleFiles) {
-		const videodata = await getVideoInfo(jinglefile);
+		const videodata = await getMediaInfo(jinglefile);
 		jinglesList.push(
 			{ 
 				file: jinglefile,

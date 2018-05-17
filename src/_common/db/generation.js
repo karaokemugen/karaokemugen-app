@@ -1,11 +1,13 @@
 /** Requêtes SQL utilisées. */
 
-export const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, videofile, created_at,
-	modified_at, gain, videolength)
-	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_videofile, $kara_dateadded,
-	$kara_datemodif, $kara_gain, $kara_videolength);`;
+export const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, mediafile, subfile, created_at,
+	modified_at, gain, duration)
+	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_mediafile, $kara_subfile, $kara_dateadded,
+	$kara_datemodif, $kara_gain, $kara_duration);`;
 
-export const insertSeries = 'INSERT INTO serie(pk_id_serie, name, NORM_name) VALUES($id_serie, $serie, $serienorm );';
+export const inserti18nSeries = 'INSERT INTO serie_lang(fk_id_serie, lang, name, NORM_name) VALUES((SELECT pk_id_serie FROM serie WHERE name = $name), $lang, $serie, $serienorm);';
+
+export const insertSeries = 'INSERT INTO serie(pk_id_serie, name) VALUES($id_serie, $serie);';
 
 export const insertTags = `INSERT INTO tag(pk_id_tag, tagtype, name, NORM_name)
 	VALUES($id_tag, $tagtype, $tagname, $tagnamenorm);`;
