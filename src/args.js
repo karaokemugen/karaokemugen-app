@@ -17,7 +17,6 @@ Options :
 --test        Launches in test mode
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
---online      Launches in online mode (BETA)
 --noBrowser   Do not open a browser window upon launch
 --noMedia     (generation only) Do not try to fetch data from media files
 `;
@@ -66,10 +65,6 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');
 		setConfig({optBaseUpdate: true});
-	}
-	if (argv.online) {
-		logger.info('[Launcher] Online mode activated');
-		setConfig({optOnline: true});
 	}
 	if (argv.test) {
 		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');

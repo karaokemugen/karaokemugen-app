@@ -17,7 +17,6 @@ import {promisify} from 'util';
 import isEmpty from 'lodash.isempty';
 import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
-import {openTunnel, closeTunnel} from '../_webapp/tunnel.js';
 import logger from 'winston';
 const plc = require('./playlist');
 const sleep = promisify(setTimeout);
@@ -162,9 +161,6 @@ export async function initEngine() {
 	if (conf.EngineCreatePreviews > 0) {
 		createPreviews();
 	}
-	if (conf.optOnline || conf.OnlineMode === 1) {
-		state.engine.url = await openTunnel();		
-	}
 	inits.push(plc.initPlaylistSystem());
 	inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));
@@ -206,8 +202,6 @@ export function exit(rc) {
 	//On other systems or if terminal is not a TTY we exit immediately.
 	// non-TTY terminals have no stdin support.
 	
-	if (conf.optOnline || conf.OnlineMode === 1) closeTunnel();
-
 	if (state.player.ready) quitmpv();
 	logger.info('[Engine] Player has shut down');
 
