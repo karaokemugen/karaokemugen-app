@@ -29,6 +29,10 @@ export function getConfig() {
 	return {...config};
 }
 
+export function profile(func) {
+	if (config.optProfiling) logger.profile(func);
+}
+
 function configValidationErrors(conf) {
 	initValidators();
 	return validate(conf, configConstraints);

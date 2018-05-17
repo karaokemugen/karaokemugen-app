@@ -1,5 +1,5 @@
 import {createPreviews, isPreviewAvailable} from '../_webapp/previews';
-import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
+import {profile, setConfig, mergeConfig, getConfig} from '../_common/utils/config';
 import {initUserSystem, findUserByName} from '../_services/user';
 import {initDBSystem, getStats, closeUserDatabase} from '../_dao/database';
 import {initFrontend, emitWS} from '../_webapp/frontend';
@@ -128,6 +128,7 @@ async function restartPlayer() {
 }
 
 export async function initEngine() {
+	profile('Init');
 	const conf = getConfig();
 	state.engine.frontendPort = conf.appFrontendPort;	
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
@@ -195,6 +196,7 @@ export async function initEngine() {
 	logger.info(`[Engine] Karaoke Mugen is ${ready}`);
 	console.log(`\n${sample(initializationCatchphrases)}\n`);
 	if (!conf.isTest) welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
+	profile('Init');
 }
 
 export function exit(rc) {

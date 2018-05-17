@@ -13,6 +13,7 @@ Options :
 --generate    Generates a new database then quits
 --validate    Validates/checks/updates .kara files without writing a database then quits
 --strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
+--profiling   Displays profiling information for some functions
 --test        Launches in test mode
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
@@ -32,6 +33,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.version) {
 		// Version number is already displayed so we exit here.
 		process.exit(0);
+	}
+	if (argv.profiling) {
+		logger.info('[Launcher] Profiling enabled');
+		setConfig({optProfiling: true});
 	}
 	if (argv.generate && !argv.validate) {
 		logger.info('[Launcher] Database generation requested');
