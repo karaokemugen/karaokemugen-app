@@ -12,6 +12,7 @@ import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
+import randomstring from 'randomstring';
 
 const db = require('../_dao/user');
 const sleep = promisify(setTimeout);
@@ -26,8 +27,7 @@ async function updateExpiredUsers() {
 	} catch(err) {
 		await sleep(60000);
 		throw err;
-	}
-	
+	}	
 }
 
 export async function updateLastLoginID(id) {
@@ -194,8 +194,11 @@ export async function updateUserFingerprint(username, fingerprint) {
 	return await db.updateUserFingerprint(username, fingerprint);
 }
 
-export async function createUser(user) {
+export async function createUser(user, opts) {
 
+	if (!opts) opts = {
+		createFavoritePlaylist: true
+	};
 	user.type = user.type || 1;
 	user.nickname = user.nickname || user.login;
 	user.last_login = now();
@@ -208,14 +211,10 @@ export async function createUser(user) {
 	user.email = user.email || null;
 
 	await newUserIntegrityChecks(user);
-
-	if (user.password) {
-		user.password = hashPassword(user.password);
-	}
-
+	if (user.password) user.password = hashPassword(user.password);	
 	try {
 		await db.addUser(user);
-		if (user.type === 1) {
+		if (user.type === 1 && opts.createFavoritePlaylist) {
 			await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
 			logger.info(`[User] Created user ${user.login}`);		
 			logger.debug(`[User] User data : ${JSON.stringify(user)}`);		
@@ -268,7 +267,7 @@ export async function deleteUserById(id) {
 		if (playlist_id) {
 			await deletePlaylist(playlist_id, {force: true});
 		}
-		//Reassign karas dans playlists owned by the user to the admin user
+		//Reassign karas and playlists owned by the user to the admin user
 		await db.reassignToUser(user.id,1);
 		await db.deleteUser(user.id);
 		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
@@ -310,13 +309,14 @@ export async function initUserSystem() {
 		logger.error(`[User] Cleanup expiring user accounts system failed entirely. You need to restart Karaoke Mugen : ${err}`);
 	});
 
-	// Check if a admin user exists
-	// Replace password by a random generated one once the welcome branch has been merged
-	
+	// Check if a admin user exists just in case. If not create it with a random password.
+
 	if (!await findUserByName('admin')) await createUser({
 		login: 'admin',
-		password: 'gurdil',
+		password: randomstring.generate(8),
 		flag_admin: 1
+	}, {
+		createFavoritePlaylist: false
 	});
 
 	if (getConfig().isTest) {

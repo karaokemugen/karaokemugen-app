@@ -1,7 +1,8 @@
 var panel1Default;      // Int : default id of the playlist of the 1st panel (-1 means kara list)
 var status;             // String : status of the player
 var mode;               // String : way the kara list is constructed, atm "list" supported
-var scope;              // String : if we're in public or admin interface
+var scope;              // String : way the kara list is constructed, atm "list" supported
+var welcomeScreen;              // String : if we're in public or admin interface
 var refreshTime;        // Int (ms) : time unit between every call
 var stopUpdate;         // Boolean : allow to stop any automatic ajax update
 var oldState;           // Object : last player state saved
@@ -186,23 +187,32 @@ var settingsNotUpdated;
 
 		var mugenToken = readCookie('mugenToken');
 
-		if(query.admpwd && scope === 'admin') { // app first run admin;
-			login('admin', query.admpwd).done(() => {
-				startIntro('admin');
-				var privateMode = $('input[name="EnginePrivateMode"]');
-				privateMode.val(1);
-				setSettings(privateMode);
-			});
-		} else if(mugenToken) {
-			logInfos = parseJwt(mugenToken);
-			logInfos.token = mugenToken;
-			if(scope === 'admin' && logInfos.role !== 'admin') {
+		if(!welcomeScreen) {
+			if(query.admpwd && scope === 'admin') { // app first run admin;
+				login('admin', query.admpwd).done(() => {
+					startIntro('admin');
+					var privateMode = $('input[name="EnginePrivateMode"]');
+					privateMode.val(1);
+					setSettings(privateMode);
+				});
+			} else if(mugenToken) {
+				logInfos = parseJwt(mugenToken);
+				logInfos.token = mugenToken;
+				if(scope === 'admin' && logInfos.role !== 'admin') {
+					$('#loginModal').modal('show');
+				} else {			
+					initApp();
+				}
+			} else {
 				$('#loginModal').modal('show');
-			} else {			
-				initApp();
 			}
+		} else if (mugenToken) { 
+			logInfos = parseJwt(mugenToken);
+			$('#wlcm_login > span').text(logInfos.username);
+			$('#wlcm_disconnect').show();
 		} else {
-			$('#loginModal').modal('show');
+			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
+			$('#wlcm_disconnect').hide();
 		}
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
@@ -274,6 +284,11 @@ var settingsNotUpdated;
 		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="addKara"]', function() {
 			var idKara = $(this).closest('li').attr('idkara');
 			addKaraPublic(idKara);
+		});
+
+		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="deleteKara"]', function() {
+			var idPlaylistContent = $(this).closest('li').attr('idplaylistcontent');
+			deleteKaraPublic(idPlaylistContent);
 		});
 
 		// (de)select all karas button
@@ -911,7 +926,7 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav, .likeKara');
+			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav, .likeKara, [name="deleteKara"]');
 
 			if($this.length > 0) {
 				e.preventDefault();
@@ -935,8 +950,12 @@ var settingsNotUpdated;
 					showVideo($this);
 				} else if($this.hasClass('makeFav')) {
 					makeFav(idKara, !$this.hasClass('currentFav'), $this);
-				}else if($this.hasClass('likeKara')) {
+				} else if($this.hasClass('likeKara')) {
 					likeKara(!$this.hasClass('currentLike'), $this);
+				} else if($this.hasClass('likeKara')) {
+					likeKara(!$this.hasClass('currentLike'), $this);
+				} else if($this.attr('name') == 'deleteKara') {
+					deleteKaraPublic(liKara.attr('idplaylistcontent'));
 				}
 			}
 		});
@@ -1063,14 +1082,18 @@ var settingsNotUpdated;
 								if (kara.flag_upvoted === 1) {
 									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
 								}
+								console.log(dashboard.data('flag_public') == 1 ? "yes" : "no",(dashboard.data('flag_public') == 1 && scope !== 'admin' ? likeKara : ''));
 
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
 								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
 								+   (scope == 'admin' ? checkboxKaraHtml : '')
-								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="infoDiv">'
-								+   (isTouchScreen ? '' : infoKaraHtml) + playKara
-								+	(dashboard.data('flag_public') === 1 && scope !== 'admin' ? likeKara : '') + '</div>')
+								+   '<div class="infoDiv">'
+								+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
+								+	(scope === 'admin' ? playKara : '')
+								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
+								+	(scope !== 'admin' && kara.username == logInfos.username ?  deleteKaraHtml : '')
+								+	'</div>'
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
 								+	'<div>' + badges + '</div>'
@@ -1386,7 +1409,7 @@ var settingsNotUpdated;
 					minimumResultsForSearch: 3
 				});
 
-				if(!select2.val()) {
+				if(!select2.val() && select2.length > 0) {
 					select2[0].selectedIndex = 0;
 				}
 				deferred.resolve();
@@ -1520,24 +1543,33 @@ var settingsNotUpdated;
 				if (text) text = text.indexOf('\n') == -1 ? text:  text.substring(0, text.indexOf('\n') );
 				$('#karaInfo > span').html(text);
 			}
-			if (data.currentlyPlaying !== oldState.currentlyPlaying && data.currentlyPlaying > 0) {
-
+			if (data.currentlyPlaying !== oldState.currentlyPlaying) {
 				var barCss = $('#progressBarColor.cssTransform');
 				barCss.removeClass('cssTransform');
 				$('#progressBarColor').stop().css({transform : 'translateX(0)'});
 				barCss.addClass('cssTransform');
 
-				$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
-					var kara = dataKara[0];
-					$('#karaInfo').attr('idKara', kara.kara_id);
-					$('#karaInfo').attr('length', kara.duration);
-					$('#karaInfo > span').text( buildKaraTitle(kara) );
-					$('#karaInfo > span').data('text', buildKaraTitle(kara) );
-					
-					if(webappMode === 1) {
-						buildKaraDetails(kara, 'karaCard');
-					}
-				});
+				if( data.currentlyPlaying === -1 ) {
+					$('#karaInfo').attr('idKara', data.currentlyPlaying);
+					$('#karaInfo').attr('length', -1);
+					$('#karaInfo > span').text( i18n.__('JINGLE_TIME') );
+					$('#karaInfo > span').data('text',i18n.__('JINGLE_TIME') );
+
+				} else if ( data.currentlyPlaying > 0 ) {
+					$.ajax({ url: 'public/karas/' + data.currentlyPlaying }).done(function (dataKara) {
+						var kara = dataKara[0];
+						$('#karaInfo').attr('idKara', kara.kara_id);
+						$('#karaInfo').attr('length', kara.duration);
+						$('#karaInfo > span').text( buildKaraTitle(kara) );
+						$('#karaInfo > span').data('text', buildKaraTitle(kara) );
+						
+						if(webappMode === 1) {
+							buildKaraDetails(kara, 'karaCard');
+						}
+					});
+				} else {
+					console.log('ER: currentlyPlaying is bogus : ' + data.currentlyPlaying);
+				}
 			}
 			if (data.showSubs != oldState.showSubs) {
 				if (data.showSubs) {
@@ -1583,8 +1615,10 @@ var settingsNotUpdated;
     * @return {String} the title
     */
 	buildKaraTitle = function(data, search) {
-		if(data.language.indexOf('mul') > -1) {
+		if(data.language && data.language.indexOf('mul') > -1) {
 			data.language = 'mul';
+		} else if (!data.language) {
+			data.language = '';
 		}
 		var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
 			data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
@@ -1949,6 +1983,12 @@ var settingsNotUpdated;
 				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
 					$('#helpModal').modal('show');
 				}
+				
+				if (welcomeScreen) {
+					logInfos = parseJwt(response.token);
+					$('#wlcm_login > span').text(logInfos.username);
+					$('#wlcm_disconnect').show();
+				}
 
 				deferred.resolve();
 			}).fail(function(response) {
@@ -2023,6 +2063,15 @@ var settingsNotUpdated;
 		});
 	};
 
+	deleteKaraPublic = function(idPlaylistContent) {
+		
+		$.ajax({ url: scope + '/playlists/' + playlistToAdd + '/karas/' + idPlaylistContent,
+			type: 'DELETE'
+		}).done(function() {
+	
+			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
+		});
+	};
 
 	/* partie socket */
 	socket.on('playerStatus', function(data){
@@ -2116,14 +2165,22 @@ var settingsNotUpdated;
 		}
 	});
 
-	socket.on('songsAvailableUpdated', function(data){
+	socket.on('quotaAvailableUpdated', function(data){
 		if (logInfos.username === data.username) {
-			var quota = data.songsLeft;
-			if (data.songsLeft == -1) {
-				quota = '\u221e';
+			var quota = data.quotaLeft;
+		
+			var quotaString = '';
+			if(data.quotaType == 1) {
+				quotaString = data.quotaLeft;
+			} else if (data.quotaType == 2) {
+				quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
 			}
-			$('#plQuota').text(i18n.__('QUOTA')+' '+quota);
-			DEBUG && console.log(data.username, data.songsLeft);
+			if (data.quotaLeft == -1) {
+				quotaString = '\u221e';
+			}
+
+			$('#plQuota').text(i18n.__('QUOTA')+' '+quotaString);
+			DEBUG && console.log(data.username, data.quotaLeft, data.quotaType);
 		}
 	});
 

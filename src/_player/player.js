@@ -1,7 +1,7 @@
 import logger from 'winston';
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
-import {resolve, join} from 'path';
-import {resolveFileInDirs, isImageFile, asyncReadDir, asyncCopy, asyncExists} from '../_common/utils/files';
+import {resolve} from 'path';
+import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_common/utils/files';
 import remove from 'lodash.remove';
 import sample from 'lodash.sample';
 import isEmpty from 'lodash.isempty';
@@ -11,6 +11,7 @@ import {buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
 import {spawn} from 'child_process';
 import {exit} from '../_services/engine';
+import {getID3} from './id3tag';
 import mpv from 'node-mpv';
 import {promisify} from 'util';
 
@@ -31,7 +32,7 @@ state.player = {
 	mutestatus: false,
 	subtext: null,
 	currentSongInfos: null,
-	videoType: 'background',
+	mediaType: 'background',
 	showsubs: true,
 	stayontop: false,
 	fullscreen: false,
@@ -48,7 +49,8 @@ on('playerStatusChange', (newstate) => {
 });
 
 on('jinglesReady', (list) => {
-	currentJinglesList = jinglesList = list[0];	
+	jinglesList = Array.prototype.concat(list[0]);	
+	currentJinglesList = Array.prototype.concat(jinglesList); 
 });
 
 function emitPlayerState() {
@@ -176,6 +178,7 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
+		'--log-file='+resolve(conf.appPath,'/logs/mpv.log'),
 		'--volume='+state.player.volume,
 		'--input-conf='+resolve(conf.appPath,conf.PathTemp,'input.conf'),
 	];
@@ -257,15 +260,16 @@ async function startmpv() {
 	await loadBackground();	
 	player.observeProperty('sub-text',13);
 	player.observeProperty('volume',14);
+	player.observeProperty('duration',15);
 	player.on('statuschange',(status) => {
-		// si on affiche une image il faut considérer que c'est la pause d'après chanson
+		// If we're displaying an image, it means it's the pause inbetween songs
 		if (state.player._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
 			// immediate switch to Playing = False to avoid multiple trigger
 			state.player.playing = false;
 			state.player._playing = false;
 			state.player.playerstatus = 'stop';
 			player.pause();
-			state.player.videoType = 'background';
+			state.player.mediaType = 'background';
 			emitPlayerEnd();
 		}
 		state.player.mutestatus = status.mute;
@@ -290,54 +294,67 @@ async function startmpv() {
 	player.on('timeposition',(position) => {
 		// Returns the position in seconds in the current song
 		state.player.timeposition = position;						
-		emitPlayerState();		
+		emitPlayerState();
 		// Display informations if timeposition is 8 seconds before end of song
 		if (position >= (state.player.duration - 8) && 
 						!displayingInfo &&
-						state.player.videoType === 'song')						
+						state.player.mediaType === 'song')						
 			displaySongInfo(state.player.currentSongInfos);
-		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.videoType === 'song') displayInfo(8000);
+		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.mediaType === 'song') displayInfo(8000);
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	state.player.ready = true;	
 	return true;
 }
 
-export async function play(videodata) {
+export async function play(mediadata) {
 	const conf = getConfig();
 	logger.debug('[Player] Play event triggered');		
 	state.player.playing = true;
-	//Search for video file in the different PathVideos
-	const PathsVideos = conf.PathVideos.split('|');
-	let videoFile;
+	//Search for media file in the different Pathmedias
+	const PathsMedias = conf.PathMedias.split('|');
+	let mediaFile;
 	try {
-		videoFile = await resolveFileInDirs(videodata.video,PathsVideos);
+		mediaFile = await resolveFileInDirs(mediadata.media,PathsMedias);
 	} catch (err) {
-		logger.debug(`[Player] Error while resolving video path : ${err}`);
-		logger.warn(`[Player] Video NOT FOUND : ${videodata.video}`);
-		if (conf.PathVideosHTTP) {
-			videoFile = `${conf.PathVideosHTTP}/${encodeURIComponent(videodata.video)}`;
-			logger.info(`[Player] Trying to play video directly from the configured http source : ${conf.PathVideosHTTP}`);
+		logger.debug(`[Player] Error while resolving media path : ${err}`);
+		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
+		if (conf.PathMediasHTTP) {
+			mediaFile = `${conf.PathMediasHTTP}/${encodeURIComponent(mediadata.media)}`;
+			logger.info(`[Player] Trying to play media directly from the configured http source : ${conf.PathMediasHTTP}`);
 		} else {
-			throw `No video source for ${videodata.video} (tried in ${PathsVideos.toString()} and HTTP source)`;
+			throw `No media source for ${mediadata.media} (tried in ${PathsMedias.toString()} and HTTP source)`;
 		}
 	}	
-	logger.debug(`[Player] Audio gain adjustment : ${videodata.gain}`);
-	logger.debug(`[Player] Loading video : ${videoFile}`);		
-	try { 
-		await player.load(videoFile,'replace',[`replaygain-fallback=${videodata.gain}`]);
-		state.player.videoType = 'song';
+	logger.debug(`[Player] Audio gain adjustment : ${mediadata.gain}`);
+	logger.debug(`[Player] Loading media : ${mediaFile}`);		
+	try {
+		let options = [];
+		options.push(`replaygain-fallback=${mediadata.gain}`) ;
+			
+		if (mediaFile.endsWith('.mp3')) {
+			const id3tags = await getID3(mediaFile);
+			if (!id3tags.image) {
+				const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
+				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
+				options.push('force-window=yes');
+				options.push('image-display-duration=inf');
+				options.push('vid=1');				
+			}
+		}
+		await player.load(mediaFile,'replace', options);
+		state.player.mediaType = 'song';
 		player.play();
 		state.player.playerstatus = 'play';
-		if (videodata.subtitle) player.addSubtitles(`memory://${videodata.subtitle}`);
+		if (mediadata.subtitle) player.addSubtitles(`memory://${mediadata.subtitle}`);
 		// Displaying infos about current song on screen.					
-		displaySongInfo(videodata.infos);
-		state.player.currentSongInfos = videodata.infos;
+		displaySongInfo(mediadata.infos);
+		state.player.currentSongInfos = mediadata.infos;
 		loadBackground('append');
 		state.player._playing = true;
 		emitPlayerState();
 	} catch(err) {
-		logger.error(`[Player] Error loading video ${videodata.video} : ${JSON.stringify(err)}`);
+		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
 	}	
 }
 
@@ -498,7 +515,7 @@ export async function skip() {
 
 export async function playJingle() {
 	state.player.playing = true;
-	state.player.videoType = 'jingle';
+	state.player.mediaType = 'jingle';
 	if (currentJinglesList.length > 0) {
 		logger.info('[Player] Jingle time !');
 		const jingle = sample(currentJinglesList);
@@ -532,7 +549,7 @@ export async function playJingle() {
 			emitPlayerState();
 		}
 	} else {
-		logger.debug('[Jingle] No jingle to play.');
+		logger.debug('[Jingles] No jingle to play.');
 		state.player.playerstatus = 'play';
 		loadBackground();
 		displayInfo();

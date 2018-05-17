@@ -239,7 +239,7 @@ select.form-control {
 	z-index: 20;
 	overflow: auto;
 	padding: 0px;
-	line-height: 3rem;
+	line-height: 3.1rem;
 	__contain: style;
 }
 .playlistContainer ul > li {
@@ -995,7 +995,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .modal .profileData .profileLine {
 	display: flex;
 }
-
+.modal .profileLine .btn {
+	margin: 3px;
+}
 .modal .profileData .profileLine > input {
 	text-align: left;
 	border: 1px #9e9e9e solid;

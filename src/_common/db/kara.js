@@ -39,15 +39,48 @@ export const addRequested = `INSERT INTO request(
 							VALUES($user_id,$kara_id,(SELECT kid FROM karasdb.all_karas WHERE kara_id = $kara_id),$requested_at);
 							`;
 
-export const getAllKaras = `SELECT ak.kara_id AS kara_id,
+export const getKaraHistory = `SELECT ak.title AS title,
+								ak.songorder AS songorder,
+      							ak.serie AS serie,
+								ak.singer AS singer,
+      							ak.songtype AS songtype,      
+      							ak.language AS language,
+      							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+      							vc.modified_at AS viewed_at
+							FROM karasdb.all_karas AS ak
+							INNER JOIN viewcount AS vc ON vc.fk_id_kara = ak.kara_id
+ 							ORDER BY vc.modified_at DESC
+							`;
+
+export const getKaraViewcounts = `SELECT ak.title AS title,
+								ak.songorder AS songorder,
+      							ak.serie AS serie,
+								ak.singer AS singer,
+      							ak.songtype AS songtype,      
+      							ak.language AS language,
+      							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount
+							FROM karasdb.all_karas AS ak
+							WHERE viewcount > 0
+ 							ORDER BY viewcount DESC
+							`;
+
+
+export const getAllKaras = (filterClauses, lang) => `SELECT ak.kara_id AS kara_id,
       							ak.kid AS kid,
       							ak.title AS title,
 								ak.NORM_title AS NORM_title,
       							ak.songorder AS songorder,
-      							ak.serie AS serie,
-      							ak.NORM_serie AS NORM_serie,
+      							COALESCE(
+									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
+									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
+									  ak.serie) AS serie,
+								COALESCE(
+									  (SELECT sl.NORM_name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
+									  (SELECT sl.NORM_name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
+									  ak.NORM_serie) AS NORM_serie,
       							ak.serie_altname AS serie_altname,
       							ak.NORM_serie_altname AS NORM_serie_altname,
+								ak.serie_i18n AS serie_i18n,
       							ak.singer AS singer,
       							ak.NORM_singer AS NORM_singer,
       							ak.songtype AS songtype,      
@@ -62,8 +95,8 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
       							ak.misc AS misc,
 								(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
 								(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
-      							ak.videofile AS videofile,
-      							ak.videolength AS duration,
+      							ak.mediafile AS mediafile,
+      							ak.duration AS duration,
 								ak.gain AS gain,
 								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
@@ -80,7 +113,8 @@ export const getAllKaras = `SELECT ak.kara_id AS kara_id,
 								) AS flag_favorites
 							FROM karasdb.all_karas AS ak							
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
-							ORDER BY ak.language, ak.serie IS NULL, ak.serie, ak.songtype DESC, ak.songorder, ak.title
+ 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+							ORDER BY ak.language, ak.serie IS NULL, ak.serie COLLATE NOCASE, ak.singer COLLATE NOCASE, ak.songtype DESC, ak.songorder, ak.title COLLATE NOCASE
 							`;
 
 export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
@@ -92,6 +126,7 @@ export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
       							ak.NORM_serie AS NORM_serie,
       							ak.serie_altname AS serie_altname,
       							ak.NORM_serie_altname AS NORM_serie_altname,
+								ak.serie_i18n AS serie_i18n,
       							ak.singer AS singer,
       							ak.NORM_singer AS NORM_singer,
       							ak.songtype AS songtype,      
@@ -102,9 +137,14 @@ export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
       							ak.NORM_author AS NORM_author,
       							ak.misc AS misc,
 	  							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+<<<<<<< HEAD
 								(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       							ak.videofile AS videofile,
 	  							ak.videolength AS duration,
+=======
+      							ak.mediafile AS mediafile,
+	  							ak.duration AS duration,
+>>>>>>> next
 		  						ak.gain AS gain,
 								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     							THEN 1
@@ -124,6 +164,7 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
       						ak.NORM_serie AS NORM_serie,
       						ak.serie_altname AS serie_altname,
       						ak.NORM_serie_altname AS NORM_serie_altname,
+							ak.serie_i18n AS serie_i18n,
       						ak.singer AS singer,
       						ak.NORM_singer AS NORM_singer,
       						ak.songtype AS songtype,
@@ -137,9 +178,15 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
       						ak.NORM_author AS NORM_author,
       						ak.misc AS misc,
 	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+<<<<<<< HEAD
 							(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       						ak.videofile AS videofile,
 	  						ak.videolength AS duration,
+=======
+      						ak.mediafile AS mediafile,
+							ak.subfile AS subfile,
+	  						ak.duration AS duration,
+>>>>>>> next
 	  						ak.gain AS gain,
 							(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     						THEN 1
@@ -158,40 +205,12 @@ export const getKara = `SELECT ak.kara_id AS kara_id,
 						WHERE ak.kara_id = $kara_id  						  
   						`;
 
-export const getKaraMini = `SELECT ak.kara_id AS kara_id,
-    						ak.kid AS kid,
-      						ak.title AS title,
-      						ak.NORM_title AS NORM_title,
-      						ak.songorder AS songorder,
-      						ak.serie AS serie,
-      						ak.NORM_serie AS NORM_serie,
-      						ak.serie_altname AS serie_altname,
-      						ak.NORM_serie_altname AS NORM_serie_altname,
-      						ak.singer AS singer,
-      						ak.NORM_singer AS NORM_singer,
-      						ak.songtype AS songtype,
-	  						ak.songwriter AS songwriter,
-	  						ak.NORM_songwriter AS NORM_songwriter,
-	  						ak.year AS year,  
-      						ak.creator AS creator,
-      						ak.NORM_creator AS NORM_creator,
-      						ak.language AS language,
-      						ak.author AS author,
-      						ak.NORM_author AS NORM_author,
-      						ak.misc AS misc,
-	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
-      						ak.videofile AS videofile,
-	  						ak.videolength AS duration,
-	  						ak.gain AS gain							
+export const getKaraMini = `SELECT ak.title AS title,
+      						ak.subfile AS subfile,
+							ak.duration AS duration
  						FROM karasdb.all_karas AS ak
 						WHERE ak.kara_id = $kara_id  						  
   						`;
-
-
-export const getASS = `SELECT a.ass AS ass
-  					FROM karasdb.ass AS a
- 					WHERE a.fk_id_kara = $kara_id;
-					 `;
 
 export const isKara = `SELECT pk_id_kara 
 					FROM karasdb.kara 
@@ -217,7 +236,21 @@ export const getSongCountPerUser = `SELECT COUNT(1) AS count
 									FROM playlist_content AS pc
 									WHERE pc.fk_id_user = $user_id
 									  AND pc.fk_id_playlist = $playlist_id
-									  AND flag_free = 0
+									  AND pc.flag_free = 0
 									`;
 
+export const getTimeSpentPerUser = `SELECT SUM(ak.duration) AS timeSpent
+									FROM karasdb.all_karas AS ak
+									INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
+									WHERE pc.fk_id_user = $user_id
+									  AND pc.fk_id_playlist = $playlist_id
+									  AND pc.flag_free = 0
+									`;
+
+
 export const resetViewcounts = 'DELETE FROM viewcount;';
+
+export const updateFreeOrphanedSongs = `UPDATE playlist_content SET 
+									flag_free = 1
+									WHERE created_at <= $expire_time;
+								`;

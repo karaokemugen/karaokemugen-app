@@ -16,16 +16,18 @@ Options :
 --test        Launches in test mode
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
---updateSoft  Update Karaoke Mugen software
 --online      Launches in online mode (BETA)
 --noBrowser   Do not open a browser window upon launch
---noVideo     (generation only) Do not try to fetch data from video files
+--noMedia     (generation only) Do not try to fetch data from media files
 `;
 
 export async function parseCommandLineArgs(argv) {	
 	if (argv.help) {
 		console.log(help);
 		process.exit(0);
+	}
+	if (argv.debug) {
+		process.env['NODE_ENV'] = 'development';
 	}
 	if (argv.version) {
 		// Version number is already displayed so we exit here.
@@ -34,9 +36,9 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.generate && !argv.validate) {
 		logger.info('[Launcher] Database generation requested');
 		setConfig({optGenerateDB: true});
-		if (argv.noVideo) {
-			logger.info('[Launcher] Videos will not be read during generation');
-			setConfig({optNoVideo: true});
+		if (argv.noMedia) {
+			logger.info('[Launcher] Medias will not be read during generation');
+			setConfig({optNoMedia: true});
 		}
 	}
 	if (argv.validate && !argv.generate) {
@@ -59,10 +61,6 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');
 		setConfig({optBaseUpdate: true});
-	}
-	if (argv.updateSoft) {
-		logger.info('[Launcher] Software update requested');
-		setConfig({optSoftUpdate: true});
 	}
 	if (argv.online) {
 		logger.info('[Launcher] Online mode activated');

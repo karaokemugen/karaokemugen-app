@@ -4,8 +4,9 @@ import {resolve} from 'path';
 import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
-import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager.js';
+import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
 import {updateSongsLeft} from '../_services/playlist';
+import {getLang} from '../_controllers/lang';
 
 const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
@@ -90,7 +91,7 @@ export function APIControllerAdmin(router) {
  *
  */
 	router.route('/shutdown')
-		.post(requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 			// Sends command to shutdown the app.
 			try {
 				await engine.shutdown();
@@ -134,7 +135,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'users': {
 					in: 'body',
@@ -207,7 +208,7 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 500 Internal Server Error
  */
 
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Get list of playlists
 			try {
 				const playlists = await engine.getAllPLs(req.authToken);
@@ -246,7 +247,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			
 		// Add playlist
 			req.check({
@@ -347,7 +348,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			try {
@@ -388,7 +389,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Update playlist info
 			req.check({
 				'name': {
@@ -453,7 +454,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 				await engine.deletePL(req.params.pl_id,req.authToken);
 				emitWS('playlistsUpdated');
@@ -498,7 +499,7 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req,res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req,res) => {
 			//Validate form data
 			req.check({
 				'login': {
@@ -598,7 +599,7 @@ export function APIControllerAdmin(router) {
  *   "message": null
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			try {
 
 				const userdata = await user.findUserByName(req.params.username, {public:false});
@@ -634,7 +635,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {					
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {					
 			try {
 				await user.deleteUser(req.params.username);
 				emitWS('usersUpdated');
@@ -670,7 +671,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty playlist
 			try {
 				await engine.emptyPL(req.params.pl_id);
@@ -703,7 +704,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty whitelist
 			try {
 				await engine.emptyWL();
@@ -739,7 +740,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty blacklist criterias
 			try {
 				await engine.emptyBLC();
@@ -776,7 +777,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// set playlist to current
 			try {
 				await engine.setCurrentPL(req.params.pl_id);
@@ -814,7 +815,7 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Empty playlist
 			try {
 				await engine.setPublicPL(req.params.pl_id);
@@ -830,13 +831,12 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission admin
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -873,6 +873,7 @@ export function APIControllerAdmin(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -880,6 +881,9 @@ export function APIControllerAdmin(router) {
  *               "pseudo_add": "Administrateur",
  * 				 "requested": 20,
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -889,7 +893,6 @@ export function APIControllerAdmin(router) {
  *               "songwriter": null,
  *               "title": "Circuit",
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -907,12 +910,11 @@ export function APIControllerAdmin(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			const playlist_id = req.params.pl_id;
 			const filter = req.query.filter;
-			const lang = req.query.lang;
 			let size;
 			if (!req.query.size) {
 				size = 999999;
@@ -927,7 +929,7 @@ export function APIControllerAdmin(router) {
 			}
 			try {
 
-				const playlist = await engine.getPLContents(playlist_id,filter,lang,req.authToken,from,size);
+				const playlist = await engine.getPLContents(playlist_id,filter,req.lang,req.authToken,from,size);
 				res.json(OKMessage(playlist));
 				
 			} catch(err) {
@@ -973,7 +975,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No karaoke could be added, all are in destination playlist already (PLID : 2)"
  * }
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//add a kara to a playlist
 			const playlist_id = req.params.pl_id;
 			req.checkBody({
@@ -1054,7 +1056,7 @@ export function APIControllerAdmin(router) {
  *   "message": "Karaoke song 176 is already in playlist 2"
  * }
  */
-		.patch(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.patch(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//add karas from a playlist to another
 			req.checkBody({
 				'plc_id': {
@@ -1125,7 +1127,7 @@ export function APIControllerAdmin(router) {
  *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
  * }
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Delete kara from playlist
 			// Deletion is through playlist content's ID.
 			// There is actually no need for a playlist number to be used at this moment.
@@ -1163,13 +1165,12 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission admin
  *
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
  * @apiParam {Number} plc_id Playlist content ID.
- * @apiParam {String} lang Lang in ISO639-2B.
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -1202,6 +1203,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {String} data/pseudo_add Nickname of user who added/requested the song. this nickname can be changed (`username` cannot) hence why it is displayed here.
  * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
+ * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
  * @apiSuccess {String} data/singer Singer's name, if known.
  * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
@@ -1211,7 +1213,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
  * @apiSuccess {String} data/title Song's title
  * @apiSuccess {String} data/username Username who submitted this karaoke. Can be different from `pseudo_add`.
- * @apiSuccess {String} data/videofile Video's filename
+ * @apiSuccess {String} data/mediafile Media's filename
  * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
  * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
  * @apiSuccessExample Success-Response:
@@ -1242,6 +1244,7 @@ export function APIControllerAdmin(router) {
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
  * 			 "lastplayed_at": null,
+ *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "misc": null,
  *           "misc_i18n": null,
  *           "playlist_id": 2,
@@ -1251,6 +1254,9 @@ export function APIControllerAdmin(router) {
  *           "pseudo_add": "Axel",
  * 			 "requested": 20,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
+ *  		 "serie_i18n": {
+ * 				"fre":"Guerriers de la Dynastie"
+ *  			},
  *           "serie_altname": "C-Cube/CxCxC",
  *           "singer": null,
  *           "songorder": 1,
@@ -1261,7 +1267,6 @@ export function APIControllerAdmin(router) {
  *           "time_before_play": 0,
  *           "title": "Hana",
  * 			 "username": "axelterizaki",
- *           "videofile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "viewcount": 0,
  *           "year": ""
  *       }
@@ -1276,9 +1281,9 @@ export function APIControllerAdmin(router) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const kara = await engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken);
+				const kara = await engine.getPLCInfo(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 				
 			} catch(err) {
@@ -1316,7 +1321,7 @@ export function APIControllerAdmin(router) {
  *   "message": "PLCID unknown!"
  * }
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update playlist's karaoke song
 			//Params: position
 			req.checkBody({
@@ -1360,7 +1365,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Main
  * @apiPermission admin
  *
@@ -1396,11 +1401,14 @@ export function APIControllerAdmin(router) {
  * 		 "EngineFreeUpvotes": "1",
  *       "EngineFreeUpvotesRequiredPercentage": "33",
  *       "EngineFreeUpvotesRequiredMin": "4",
+ *       "EngineFreeAutoTime": "60",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
+ * 		 "EngineQuotaType": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
  *       "EngineSongsPerUser": "10000",
+ * 		 "EngineTimePerUser": "10000",
  *       "EngineCreatePreviews": "1",
  *       "PathAltname": "../times/series_altnames.csv",
  *       "PathBackgrounds": "app/backgrounds",
@@ -1412,8 +1420,8 @@ export function APIControllerAdmin(router) {
  *       "PathKaras": "../times/karas",
  *       "PathSubs": "../times/lyrics",
  *       "PathTemp": "app/temp",
- *       "PathVideos": "app/data/videos",
- *       "PathVideosHTTP": "",
+ *       "PathMedias": "app/data/medias",
+ *       "PathMediasHTTP": "",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
  *       "PlayerNoBar": "1",
@@ -1431,17 +1439,18 @@ export function APIControllerAdmin(router) {
  *       "mpvVideoOutput": "direct3d",
  *       "os": "win32",
  *       "osHost": "10.202.40.43",
- * 		 "WebappMode": "2"
+ * 		 "WebappMode": "2",
+ * 		 "WebappSongLanguageMode": "1"
  *   }
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			res.json(OKMessage(getConfig()));
 		})
 	/**
  * @api {put} /admin/settings Update settings
  * @apiName PutSettings
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiPermission admin
  * @apiGroup Main
  * @apiDescription **Note :** All settings must be sent at once in a single request.
@@ -1454,14 +1463,17 @@ export function APIControllerAdmin(router) {
  * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
  * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
  * @apiParam {Boolean} EngineDisplayNickname Enable/disable displaying the username who requested a song.
+ * @apiParam {Number} EngineFreeAutoTime Time in minutes before a song is automatically freed.
  * @apiParam {Boolean} EngineFreeUpvotes Enable/disable Free Songs By Upvotes feature
  * @apiParam {Number} EngineFreeUpvotesRequiredMin Minimum number of upvotes required to free a song
  * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
  * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Number} EngineQuotaType Type of quota for users when adding songs. `0` = no quota, `1` = limited by number of songs, `2` = limited by total song duration.
  * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
  * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
+ * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
  * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
@@ -1470,18 +1482,16 @@ export function APIControllerAdmin(router) {
  * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
-<<<<<<< HEAD:src/_controllers/api.js
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
  * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
-=======
+ * @apiParam {Number} WebappSongLanguageMode How to display series : `0` = according to the original name, `1` = according to song's language, or defaults to the `series=` metadata, `2` = according to admin's language or fallbacks to english then original, `3` = according to user language or fallbacks to english then original
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
->>>>>>> 167-mode-public-permettre-de-like-une-suggestion:src/_apiserver/api.js
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			//Update settings
 			// Convert body to strings
 			req.body = toString(req.body);
@@ -1532,6 +1542,11 @@ export function APIControllerAdmin(router) {
 					notEmpty: true,
 					isInt: true
 				},
+				'EngineFreeAutoTime': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true
+				},
 				'EngineFreeUpvotesRequiredPercent': {
 					in: 'body',
 					notEmpty: true,
@@ -1547,6 +1562,16 @@ export function APIControllerAdmin(router) {
 					notEmpty: true,
 					isInt: true,
 				},
+				'EngineTimePerUser': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'EngineQuotaType': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
 				'EngineJinglesInterval': {
 					in: 'body',
 					notEmpty: true,
@@ -1558,6 +1583,11 @@ export function APIControllerAdmin(router) {
 					isInt: true,
 				},
 				'WebappMode': {
+					in: 'body',
+					notEmpty: true,
+					isInt: true,
+				},
+				'WebappSongLanguageMode': {
 					in: 'body',
 					notEmpty: true,
 					isInt: true,
@@ -1635,6 +1665,7 @@ export function APIControllerAdmin(router) {
 				req.sanitize('EngineDisplayConnectionInfoHost').unescape();
 				req.sanitize('EngineAutoPlay').toInt();
 				req.sanitize('EngineFreeUpvotes').toInt();
+				req.sanitize('EngineFreeAutoTime').toInt();
 				req.sanitize('EngineRepeatPlaylist').toInt();
 				req.sanitize('EngineSmartInsert').toInt();
 				req.sanitize('EngineJinglesInterval').toInt();
@@ -1644,10 +1675,13 @@ export function APIControllerAdmin(router) {
 				req.sanitize('PlayerStayOnTop').toInt();
 				req.sanitize('PlayerScreen').toInt();
 				req.sanitize('EngineSongsPerUser').toInt();
+				req.sanitize('EngineTimePerUser').toInt();
+				req.sanitize('EngineQuotaType').toInt();
 				req.sanitize('EnginePrivateMode').toInt();
 				req.sanitize('PlayerPIP').toInt();
 				req.sanitize('PlayerPIPSize').toInt();
 				req.sanitize('WebappMode').toInt();
+				req.sanitize('WebappSongLanguageMode').toInt();
 				try {
 					const publicSettings = await engine.updateSettings(req.body);
 					emitWS('settingsUpdated',publicSettings);
@@ -1698,7 +1732,7 @@ export function APIControllerAdmin(router) {
  *   "code": "MESSAGE_SEND_ERROR"
  * }
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'duration': {
 					in: 'body',
@@ -1750,14 +1784,14 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/whitelist Get whitelist
  * @apiName GetWhitelist
- * @apiVersion 2.0.0
+ * @apiVersion 2.2.0
  * @apiGroup Whitelist
  * @apiPermission admin
  *
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
- * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
  * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
  * @apiSuccess {Number} data/infos/from Items listed are from this position
@@ -1788,6 +1822,9 @@ export function APIControllerAdmin(router) {
  *               "misc_i18n": "Concert,Non-anime",
  * 				 "requested": 20,
  *               "serie": null,
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								} 
  *               "serie_altname": null,
  *               "singer": "Dschinghis Khan",
  *               "songorder": 0,
@@ -1796,7 +1833,7 @@ export function APIControllerAdmin(router) {
  *               "songtype_i18n_short": "MV",
  *               "songwriter": "Ralph Siegel",
  *               "title": "Moskau",
- *               "videofile": "ALL - Dschinghis Khan - MV - Moskau.avi",
+ *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "viewcount": 0,
  *               "whitelist_id": 1,
  *               "year": "1980"
@@ -1817,8 +1854,7 @@ export function APIControllerAdmin(router) {
  *   "code": "WL_VIEW_ERROR"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const lang = req.query.lang;
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			const filter = req.query.filter;
 			let size;
 			if (!req.query.size) {
@@ -1833,7 +1869,7 @@ export function APIControllerAdmin(router) {
 				from = parseInt(req.query.from, 10);
 			}
 			try {
-				const karas = await engine.getWL(filter,lang,from,size);
+				const karas = await engine.getWL(filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 				
 			} catch(err) {
@@ -1875,7 +1911,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No karaoke could be added, all are in whitelist already"
  * }
  */
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'kara_id': {
 					in: 'body',
@@ -1926,7 +1962,7 @@ export function APIControllerAdmin(router) {
  * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
  *
  */
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Delete kara from whitelist
 			// Deletion is through whitelist ID.
 			req.checkBody({
@@ -1961,12 +1997,11 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/blacklist Get blacklist
  * @apiName GetBlacklist
- * @apiVersion 2.0.0
+ * @apiVersion 2.2.0
  * @apiGroup Blacklist
  * @apiPermission admin
  *
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
@@ -2001,6 +2036,9 @@ export function APIControllerAdmin(router) {
  * 				 "requested": 20
  *               "serie": "Capitaine Flam",
  *               "serie_altname": "Kyaputen Fyucha",
+ * 				 "serie_i18n": {
+ * 					"fre":"Guerriers de la Dynastie"
+ * 				 },
  *               "singer": "Richard Simon",
  *               "songorder": 0,
  *               "songtype": "TYPE_OP",
@@ -2008,7 +2046,7 @@ export function APIControllerAdmin(router) {
  *               "songtype_i18n_short": "OP",
  *               "songwriter": "Roger Dumas",
  *               "title": "",
- *               "videofile": "FR - Capitaine Flam - OP.avi",
+ *               "mediafile": "FR - Capitaine Flam - OP.avi",
  *               "viewcount": 0,
  *               "year": "1981"
  *           }
@@ -2028,8 +2066,7 @@ export function APIControllerAdmin(router) {
  *   "code": "BL_VIEW_ERROR"
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const lang = req.query.lang;
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			const filter = req.query.filter;
 			let size;
 			if (!req.query.size) {
@@ -2045,7 +2082,7 @@ export function APIControllerAdmin(router) {
 			}
 			if (from < 0) from = 0;	
 			try {
-				const karas = await engine.getBL(filter,lang,from,size);
+				const karas = await engine.getBL(filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -2087,7 +2124,7 @@ export function APIControllerAdmin(router) {
 *   "code": "BLC_VIEW_ERROR"
 * }
 */		
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Get list of blacklist criterias
 			try {
 				const blc = await engine.getBLC();
@@ -2136,7 +2173,7 @@ export function APIControllerAdmin(router) {
  *   }
  * }
  */		
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Add blacklist criteria
 			req.check({
 				'blcriteria_type': {
@@ -2202,7 +2239,7 @@ export function APIControllerAdmin(router) {
  *   "message": "BLCID 5 unknown"
  * }
  */		
-		.delete(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 				await engine.deleteBLC(req.params.blc_id);
 				emitWS('blacklistUpdated');
@@ -2246,7 +2283,7 @@ export function APIControllerAdmin(router) {
  *   "message": "BLCID 12309 unknown"
  * }
  */		
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update BLC
 			req.check({
 				'blcriteria_type': {
@@ -2308,7 +2345,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.checkBody('command')
 				.notEmpty()
 				.enum(['play',
@@ -2401,7 +2438,7 @@ export function APIControllerAdmin(router) {
  *   "message": "Playlist 5 unknown"
  * }
  */		
-		.get(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
 				const playlist = await engine.exportPL(req.params.pl_id);
@@ -2443,7 +2480,7 @@ export function APIControllerAdmin(router) {
  *   "message": "No header section"
  * }
  */		
-		.post(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
 			req.check({
 				'playlist': {
@@ -2507,7 +2544,7 @@ export function APIControllerAdmin(router) {
  * }
  */
 
-		.put(requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 				
 				await engine.shufflePL(req.params.pl_id);
@@ -2579,7 +2616,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {			
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {			
 			// Get list of playlists, only return the visible ones
 			try {
 				const playlists = await engine.getAllPLs(req.authToken);
@@ -2636,7 +2673,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get playlist, only if visible
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
@@ -2653,13 +2690,12 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -2696,6 +2732,7 @@ export function APIControllerPublic(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -2703,6 +2740,9 @@ export function APIControllerPublic(router) {
  *               "pseudo_add": "Administrateur",
  * 				 "requested": 20,
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ *					"fre":"Guerriers de la Dynastie"
+ * 				}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -2712,7 +2752,6 @@ export function APIControllerPublic(router) {
  *               "songwriter": null,
  *               "title": "Circuit",
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -2732,7 +2771,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get playlist contents, only if visible
 			//Access :pl_id by req.params.pl_id
 					
@@ -2751,7 +2790,7 @@ export function APIControllerPublic(router) {
 				from = parseInt(req.query.from, 10);
 			}
 			try {
-				const playlist = await engine.getPLContents(req.params.pl_id,filter,lang,req.authToken,from,size);
+				const playlist = await engine.getPLContents(req.params.pl_id,filter,req.lang,req.authToken,from,size);
 				if (playlist == null) res.statusCode = 404;
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -2765,7 +2804,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
@@ -2794,6 +2833,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
  * @apiSuccess {Number} data/lastplayed_at Time when the song was last played at in UNIX timestamp. `null` if never played before.
+ * @apiSuccess {String} data/mediafile Video's filename
  * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/misc_i18n Translated tag list
  * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
@@ -2802,6 +2842,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/pseudo_add Nickname of user who added this song
  * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
+ * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
  * @apiSuccess {String} data/singer Singer's name, if known.
  * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
@@ -2811,7 +2852,6 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
  * @apiSuccess {String} data/title Song's title
  * @apiSuccess {String} data/username Username who added that song
- * @apiSuccess {String} data/videofile Video's filename
  * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
  * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
  * @apiSuccessExample Success-Response:
@@ -2842,6 +2882,7 @@ export function APIControllerPublic(router) {
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
  * 			 "lastplayed_at": null,
+ *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "misc": null,
  *           "misc_i18n": null,
  *           "playlist_id": 2,
@@ -2851,6 +2892,9 @@ export function APIControllerPublic(router) {
  * 			 "requested": 20,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *           "serie_altname": "C-Cube/CxCxC",
+ * 			 "serie_i18n": {
+ * 				"fre":"Guerriers de la Dynastie"
+ *  			}
  *           "singer": null,
  *           "songorder": 1,
  *           "songtype": "TYPE_ED",
@@ -2860,20 +2904,14 @@ export function APIControllerPublic(router) {
  *           "time_before_play": 0,
  *           "title": "Hana",
  * 			 "username": "axelterizaki",
- *           "videofile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "viewcount": 0,
  *           "year": ""
  *       }
  *   ]
  * }
-<<<<<<< HEAD:src/_controllers/api.js
  * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
  * 
-=======
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
- *
->>>>>>> 167-mode-public-permettre-de-like-une-suggestion:src/_apiserver/api.js
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -2884,10 +2922,10 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 
-				const kara = await engine.getPLCInfo(req.params.plc_id,req.query.lang,req.authToken);
+				const kara = await engine.getPLCInfo(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 			} catch(err) {
 				logger.error(err.message);
@@ -2899,10 +2937,10 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/settings Get settings (public)
  * @apiName GetSettingsPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Main
  * @apiPermission public
- * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries or admin password information.
+ * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries and other internal settings.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -2920,14 +2958,17 @@ export function APIControllerPublic(router) {
  *       "EngineDisplayConnectionInfoMessage": "",
  *       "EngineDisplayConnectionInfoQRCode": "1",
  *       "EngineDisplayNickname": "1",
+ *       "EngineFreeAutoTime": "60",
  * 		 "EngineFreeUpvotes": "1",
  * 		 "EngineFreeUpvotesPercent": "33",
  * 		 "EngineFreeUpvotesMin": "4",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
+ *       "EngineQuotaType": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
  *       "EngineSongsPerUser": "10000",
+ *       "EngineTimePerUser": "10000",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
  *       "PlayerNoBar": "1",
@@ -2941,7 +2982,8 @@ export function APIControllerPublic(router) {
  *       "VersionName": "Finé Fiévreuse",
  *       "VersionNo": "v2.0 Release Candidate 1",
  *       "mpvVideoOutput": "direct3d",
- * 		 "WebappMode": "2"
+ * 		 "WebappMode": "2",
+ *       "WebappSongLanguageMode": "1"
  *   }
  * }
  */
@@ -2993,7 +3035,7 @@ export function APIControllerPublic(router) {
  *    }
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const stats = await engine.getKMStats();
 				const userData = await user.findUserByName(req.authToken.username);
@@ -3010,12 +3052,11 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Whitelist
  * @apiPermission public
  * @apiDescription If `EngineAllowViewWhitelist` is set to `0` in configuration, then returns an error message (see below)
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
@@ -3044,6 +3085,7 @@ export function APIControllerPublic(router) {
  *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
  *               "language": "ger",
  *               "language_i18n": "Allemand",
+ *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
  * 				 "requested": 20,
@@ -3056,7 +3098,6 @@ export function APIControllerPublic(router) {
  *               "songtype_i18n_short": "MV",
  *               "songwriter": "Ralph Siegel",
  *               "title": "Moskau",
- *               "videofile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "viewcount": 0,
  *               "whitelist_id": 1,
  *               "year": "1980"
@@ -3080,10 +3121,9 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Returns whitelist IF the settings allow public to see it
 			if (getConfig().EngineAllowViewWhitelist === 1) {
-				const lang = req.query.lang;
 				const filter = req.query.filter;
 				let size;
 				if (!req.query.size) {
@@ -3098,7 +3138,7 @@ export function APIControllerPublic(router) {
 					from = parseInt(req.query.from, 10);
 				}
 				try {
-					const karas = await	engine.getWL(filter,lang,from,size);
+					const karas = await	engine.getWL(filter,req.lang,from,size);
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -3115,12 +3155,11 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Blacklist
  * @apiPermission public
  * @apiDescription If `EngineAllowViewBlacklist` is set to `0` in configuration, then returns an error message (see below)
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
  * @apiSuccess {Object[]} data/content List of karaoke objects
@@ -3149,6 +3188,7 @@ export function APIControllerPublic(router) {
  *               "kid": "d9bb6a76-2b7d-469e-ba44-6acfc463202e",
  *               "language": "ger",
  *               "language_i18n": "Allemand",
+ *               "mediafile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "misc": "TAG_CONCERT,TAG_REAL",
  *               "misc_i18n": "Concert,Non-anime",
  * 				 "requested": 20,
@@ -3161,7 +3201,6 @@ export function APIControllerPublic(router) {
  *               "songtype_i18n_short": "MV",
  *               "songwriter": "Ralph Siegel",
  *               "title": "Moskau",
- *               "videofile": "ALL - Dschinghis Khan - MV - Moskau.avi",
  *               "viewcount": 0,
  *               "whitelist_id": 1,
  *               "year": "1980"
@@ -3185,7 +3224,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklisted karas IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklist === 1) {
 				const lang = req.query.lang;
@@ -3252,7 +3291,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */		
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklistCriterias === 1) {
 				try {
@@ -3317,7 +3356,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */		
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get player status
 			// What's playing, time in seconds, duration of song
 
@@ -3328,12 +3367,11 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Karaokes
  * @apiPermission public
  *
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -3367,10 +3405,14 @@ export function APIControllerPublic(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  * 				 "requested": 20
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -3379,7 +3421,6 @@ export function APIControllerPublic(router) {
  *               "songtype_i18n_short": "ED",
  *               "songwriter": null,
  *               "title": "Circuit",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -3399,11 +3440,10 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			const filter = req.query.filter;
-			const lang = req.query.lang;
 			let size;
 			if (!req.query.size) {
 				size = 999999;
@@ -3418,7 +3458,7 @@ export function APIControllerPublic(router) {
 			}
 			if (from < 0) from = 0;
 			try {
-				const karas = await engine.getKaras(filter,lang,from,size,req.authToken);
+				const karas = await engine.getKaras(filter,req.lang,from,size,req.authToken);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -3449,13 +3489,13 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara_id = await engine.getRandomKara(req.query.filter);
+				const kara_id = await engine.getRandomKara(req.query.filter, req.authToken);
 				if (!kara_id) {
 					res.statusCode = 500;
 					res.json(errMessage('GET_UNLUCKY'));
-				} else {
+				} else {					
 					res.json(OKMessage(kara_id));
 				}
 				
@@ -3469,7 +3509,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Karaokes
  * @apiPermission public
  *
@@ -3492,6 +3532,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
  * @apiSuccess {Number} data/lastplayed_at Last time the song has been played in UNIX timestamp. `null` if never played before
+ * @apiSuccess {String} data/mediafile Media's filename
  * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
  * @apiSuccess {String} data/misc_i18n Translated tag list
  * @apiSuccess {String} data/requested Number of times the song has been requested.
@@ -3504,7 +3545,6 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
  * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
  * @apiSuccess {String} data/title Song's title
- * @apiSuccess {String} data/videofile Video's filename
  * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
  * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
  * @apiSuccessExample Success-Response:
@@ -3530,6 +3570,7 @@ export function APIControllerPublic(router) {
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
  * 			 "lastplayed_at": null,
+ *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "misc": null,
  *           "misc_i18n": null,
  * 			 "requested": 20,
@@ -3543,7 +3584,6 @@ export function APIControllerPublic(router) {
  *           "songwriter": null,
  *           "time_before_play": 0,
  *           "title": "Hana",
- *           "videofile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
  *           "viewcount": 0,
  *           "year": ""
  *       }
@@ -3560,7 +3600,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const kara = await engine.getKaraInfo(req.params.kara_id,req.query.lang,req.authToken);
 				res.json(OKMessage(kara));
@@ -3573,7 +3613,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {post} /public/karas/:kara_id Add karaoke to current/public playlist
  * @apiName PostKaras
- * @apiVersion 2.1.0
+ * @apiVersion 2.1.2
  * @apiGroup Playlists
  * @apiPermission public
  * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
@@ -3604,7 +3644,8 @@ export function APIControllerPublic(router) {
  * }
 
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
-* @apiError PLAYLIST_MODE_ADD_SONG_ERROR Karaoke already present in playlist
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED All songs are already present in playlist
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR General error while adding song
 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 * @apiErrorExample Error-Response:
 * HTTP/1.1 500 Internal Server Error
@@ -3620,7 +3661,7 @@ export function APIControllerPublic(router) {
 * @apiErrorExample Error-Response:
 * HTTP/1.1 403 Forbidden
 */
-		.post(requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			try {
 				const data = await engine.addKaraToPL(null, req.params.kara_id, req.authToken.username, null);
@@ -3659,7 +3700,7 @@ export function APIControllerPublic(router) {
  *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
  * }
  */			
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const kara = await engine.getLyrics(req.params.kara_id);
 				res.json(OKMessage(kara));
@@ -3711,7 +3752,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
 			try {					
 				const playlist = await engine.getCurrentPLInfo(req.authToken);
@@ -3727,13 +3768,12 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -3770,6 +3810,7 @@ export function APIControllerPublic(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -3777,6 +3818,9 @@ export function APIControllerPublic(router) {
  *               "pseudo_add": "Administrateur",
  * 				 "requested": 20,
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -3786,7 +3830,6 @@ export function APIControllerPublic(router) {
  *               "songwriter": null,
  *               "title": "Circuit",*
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -3807,9 +3850,8 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
-			const lang = req.query.lang;
 			const filter = req.query.filter;
 			let from;
 			if (!req.query.from) {
@@ -3824,7 +3866,7 @@ export function APIControllerPublic(router) {
 				to = req.query.to;
 			}
 			try {	
-				const playlist = await engine.getCurrentPLContents(filter, lang, from, to, req.authToken);
+				const playlist = await engine.getCurrentPLContents(filter, req.lang, from, to, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3877,7 +3919,7 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
 			try {	
 				const playlist = await engine.getPublicPLInfo(req.authToken);
@@ -3893,13 +3935,12 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -3936,6 +3977,7 @@ export function APIControllerPublic(router) {
  *               "language": "chi",
  *               "language_i18n": "Chinois",
  * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
@@ -3943,6 +3985,9 @@ export function APIControllerPublic(router) {
  *               "pseudo_add": "Administrateur",
  * 				 "requested": 20
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -3952,7 +3997,6 @@ export function APIControllerPublic(router) {
  *               "songwriter": null,
  *               "title": "Circuit",
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -3973,9 +4017,8 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
-			const lang = req.query.lang;
 			const filter = req.query.filter;
 			let to;
 			if (!req.query.to) {
@@ -3990,7 +4033,7 @@ export function APIControllerPublic(router) {
 				from = req.query.from;
 			}
 			try {
-				const playlist = await engine.getPublicPLContents(filter, lang, from, to, req.authToken);
+				const playlist = await engine.getPublicPLContents(filter, req.lang, from, to, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -4025,7 +4068,7 @@ export function APIControllerPublic(router) {
 	 * HTTP/1.1 500 Internal Server Error
 	 */
 	
-		.post(requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Post an upvote
 			try {
 				const kara = await upvote.vote(req.params.plc_id,req.authToken.username,req.body.downvote);
@@ -4037,6 +4080,92 @@ export function APIControllerPublic(router) {
 				res.statusCode = 500;
 				res.json(errMessage(err.code,err.message));
 			}
+		});
+	router.route('/playlists/public/karas/:plc_id([0-9]+)')
+		/**
+	 * @api {delete} /public/playlists/public/karas/:plc_id Delete song from public playlist
+	 * @apiName DeletePublicSong
+	 * @apiVersion 2.2.0
+	 * @apiGroup Playlists
+	 * @apiPermission public
+	 *
+	 * @apiParam {Number} plc_id Target playlist content ID
+	 * @apiSuccess {String} args Name of playlist the song was deleted from
+ 	 * @apiSuccess {String} code Message to display
+ 	 *
+ 	 * @apiSuccessExample Success-Response:
+ 	 * HTTP/1.1 200 OK
+ 	 * {
+ 	 *   "args": "Liste de lecture publique",
+ 	 *   "code": "PL_SONG_DELETED",
+ 	 *   "data": null
+ 	 * }
+ 	 * @apiError PL_DELETE_SONG_ERROR Unable to delete the song from the selected playlist
+ 	 *
+ 	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 500 Internal Server Error
+ 	 * {
+ 	 *   "args": "Liste de lecture publique",
+ 	 *   "code": "PL_DELETE_SONG_ERROR",
+ 	 *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
+ 	 * }
+ 	 */
+	
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const data = await engine.deleteKara(req.params.plc_id,null,req.authToken);
+				emitWS('playlistContentsUpdated',data.pl_id);
+				emitWS('playlistInfoUpdated',data.pl_id);
+				res.statusCode = 200;
+				res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
+			}			
+		});
+	router.route('/playlists/current/karas/:plc_id([0-9]+)')
+		/**
+	 * @api {delete} /public/playlists/current/karas/:plc_id Delete song from current playlist
+	 * @apiName DeleteCurrentSong
+	 * @apiVersion 2.2.0
+	 * @apiGroup Playlists
+	 * @apiPermission public
+	 *
+	 * @apiParam {Number} plc_id Target playlist content ID
+	 * @apiSuccess {String} args Name of playlist the song was deleted from
+ 	 * @apiSuccess {String} code Message to display
+ 	 *
+ 	 * @apiSuccessExample Success-Response:
+ 	 * HTTP/1.1 200 OK
+ 	 * {
+ 	 *   "args": "Liste de lecture publique",
+ 	 *   "code": "PL_SONG_DELETED",
+ 	 *   "data": null
+ 	 * }
+ 	 * @apiError PL_DELETE_SONG_ERROR Unable to delete the song from the selected playlist
+ 	 *
+ 	 * @apiErrorExample Error-Response:
+ 	 * HTTP/1.1 500 Internal Server Error
+ 	 * {
+ 	 *   "args": "Liste de lecture publique",
+ 	 *   "code": "PL_DELETE_SONG_ERROR",
+ 	 *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
+ 	 * }
+ 	 */
+	
+		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const data = await engine.deleteKara(req.params.plc_id,null,req.authToken);
+				emitWS('playlistContentsUpdated',data.pl_id);
+				emitWS('playlistInfoUpdated',data.pl_id);
+				res.statusCode = 200;
+				res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
+			}			
 		});
 	router.route('/tags')
 	/**
@@ -4083,7 +4212,7 @@ export function APIControllerPublic(router) {
 	* @apiErrorExample Error-Response:
     * HTTP/1.1 403 Forbidden
 	*/
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const tags = await engine.getTags(req.query.lang);
 				res.json(OKMessage(tags));
@@ -4144,7 +4273,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const userdata = await user.findUserByName(req.params.username, {public:true});
 				res.json(OKMessage(userdata));
@@ -4197,7 +4326,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.put(upload.single('avatarfile'), requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
+		.put(upload.single('avatarfile'), getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			req.check({
 				'login': {
 					in: 'body',
@@ -4264,12 +4393,11 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/top50 View Top 50 songs
  * @apiName GetTop50
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Karas
  * @apiPermission public
  *
  * @apiParam {String} [filter] Filter list by this string. 
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  * 
@@ -4306,6 +4434,7 @@ export function APIControllerPublic(router) {
  *               "misc_i18n": "Jeu vidéo",
  * 				 "requested": 20
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -4332,11 +4461,10 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req, res) => {
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
 			const filter = req.query.filter;
-			const lang = req.query.lang;
 			let size;
 			if (!req.query.size) {
 				size = 999999;
@@ -4349,17 +4477,16 @@ export function APIControllerPublic(router) {
 			} else {
 				from = parseInt(req.query.from, 10);
 			}
-			if (from < 0) from = 0;					
-			engine.getTop50(filter,lang,from,size)
-				.then((karas) => {
-					res.json(OKMessage(karas));
-				})
-				.catch((err) => {
-					logger.error(err);
-					res.statusCode = 500;
-					res.json(errMessage('TOP50_LIST_ERROR',err));
-				});
+			if (from < 0) from = 0;
+			try {
+				const karas = await engine.getTop50(filter,req.lang,from,size,req.authToken);
+				res.json(OKMessage(karas));
+			} catch(err) {
+				res.statusCode = 500;
+				res.json(errMessage('TOP50_LIST_ERROR',err));
+			}				
 		});
+
 	router.route('/users/:username/requests')
 	/**
  * @api {get} public/users/:username/requests View user's most requested songs
@@ -4501,7 +4628,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const userData = await user.findUserByName(req.authToken.username, {public:false});
 				updateSongsLeft(userData.id);
@@ -4551,7 +4678,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.put(upload.single('avatarfile'), requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.put(upload.single('avatarfile'), getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			req.check({
 				//FIXME : keep email/url optional and make sure it works with the isURL and isEmail validators
 				'nickname': {
@@ -4610,12 +4737,11 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/favorites View own favorites
  * @apiName GetFavorites
- * @apiVersion 2.1.0
+ * @apiVersion 2.2.0
  * @apiGroup Favorites
  * @apiPermission own
  *
  * @apiParam {String} [filter] Filter list by this string.
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
  *
@@ -4650,12 +4776,16 @@ export function APIControllerPublic(router) {
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
  *               "language": "chi",
  *               "language_i18n": "Chinois",
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "misc": "TAG_VIDEOGAME",
  *               "misc_i18n": "Jeu vidéo",
  *               "playlistcontent_id": 4946,
  *               "pos": 1,
  *               "pseudo_add": "Administrateur",
  *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
  *               "serie_altname": "DW3/DW 3",
  *               "singer": null,
  *               "songorder": 0,
@@ -4665,7 +4795,6 @@ export function APIControllerPublic(router) {
  *               "songwriter": null,
  *               "title": "Circuit",
  * 				 "username": "admin",
- *               "videofile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
  *               "viewcount": 0,
  *               "year": ""
  *           },
@@ -4685,10 +4814,9 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			
 			const filter = req.query.filter;
-			const lang = req.query.lang;
 			let size;
 			if (!req.query.size) {
 				size = 999999;
@@ -4702,7 +4830,7 @@ export function APIControllerPublic(router) {
 				from = parseInt(req.query.from, 10);
 			}
 			try {
-				const karas = await favorites.getFavorites(req.authToken.username, filter, lang, from, size);
+				const karas = await favorites.getFavorites(req.authToken.username, filter, req.lang, from, size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -4746,7 +4874,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			req.checkBody({
 				'kara_id': {
 					in: 'body',
@@ -4807,7 +4935,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.delete(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.delete(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Delete kara from favorites
 			// Deletion is through kara ID.			
 			req.check({
@@ -4835,7 +4963,128 @@ export function APIControllerPublic(router) {
 			}
 			
 		});
-
+	router.route('/favorites/export')
+	/**
+ * @api {get} /favorites/export Export favorites
+ * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
+ * @apiName getFavoritesExport
+ * @apiVersion 2.2.0
+ * @apiGroup Favorites
+ * @apiPermission public 
+ * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "Header": {
+ *           "description": "Karaoke Mugen Playlist File",
+ *           "version": 2
+ *       },
+ *       "PlaylistContents": [
+ *           {
+ *               "flag_playing": 1,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b"
+ *           },
+ *           {
+ *               "kid": "6da96a7d-7159-4ea7-a5ee-1d78a6eb44dd"
+ *           },
+ *           {
+ *               "kid": "5af7ba4c-2325-451d-a24f-e7fd7c2d3ba8"
+ *           },
+ *           {
+ *               "kid": "e0206f48-0f51-44e3-bf9a-b651916d0c05"
+ *           }
+ *       ],
+ *       "PlaylistInformation": {
+ *           "created_at": 1508936812,
+ *           "flag_visible": 0,
+ *           "modified_at": 1508936821,
+ *           "name": "Test",
+ *           "time_left": 0
+ *       }
+ *   }
+ * }
+ * @apiError FAVORITES_EXPORT_ERROR Unable to export favorites
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "FAVORITES_EXPORT_ERROR" 
+ * }
+ */		
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
+			// Returns the playlist and its contents in an exportable format (to save on disk)
+			try {
+				const playlist = await favorites.exportFavorites(req.authToken);
+				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
+				res.json(OKMessage(playlist));
+			} catch(err) {
+				logger.error(err.message);
+				res.statusCode = 500;
+				res.json(errMessage('FAVORITES_EXPORT_ERROR',err.message,err.data));
+			}
+		});
+	router.route('/favorites/import')
+	/**
+ * @api {post} /favorites/import Import favorites
+ * @apiName postFavoritesImport
+ * @apiVersion 2.2.0
+ * @apiGroup Favorites
+ * @apiPermission public
+ *
+ * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "FAVORITES_IMPORTED",
+ *   "data": {
+ *       "message": "Favorites imported",
+ *       "unknownKaras": []
+ *   }
+ * }
+ * @apiError FAVORITES_IMPORT_ERROR Unable to import playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "FAVORITES_IMPORT_ERROR",
+ *   "message": "No header section"
+ * }
+ */		
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
+			// Imports a playlist and its contents in an importable format (posted as JSON data)
+			req.check({
+				'playlist': {
+					in: 'body',
+					notEmpty: true,
+					isJSON: true,
+				}
+			});
+			const result = await req.getValidationResult();
+			if (result.isEmpty()) {
+				try {	
+					const data = await favorites.importFavorites(JSON.parse(req.body.playlist),req.authToken);
+					const response = {
+						message: 'Favorites imported',
+						playlist_id: data.playlist_id
+					};
+					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;							
+					emitWS('playlistsUpdated');
+					res.json(OKMessage(response,'PL_IMPORTED',data.playlist_id));
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage('PL_IMPORT_ERROR',err));
+				}
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(result.mapped());
+			}
+			
+		});
 	router.route('/users')
 	/**
  * @api {get} /public/users List users
@@ -4893,7 +5142,7 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.get(requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 				const users = await	user.listUsers();
 				res.json(OKMessage(users));

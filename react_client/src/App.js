@@ -36,6 +36,8 @@ class App extends Component {
 							<Route path='/login' component={DismissMessages(import('./pages/Login'))}/>
 							<Route path='/config' component={AuthRequired(import('./pages/Config'))}/>
 							<Route path='/karas' component={AuthRequired(import('./pages/Karas'))}/>
+							<Route path='/karasHistory' component={AuthRequired(import('./pages/KarasHistory'))}/>
+							<Route path='/karasViewcounts' component={AuthRequired(import('./pages/KarasViewcounts'))}/>
 							<Route path='/db' component={AuthRequired(import('./pages/Database'))}/>
 							<Route path='/users/create' component={AuthRequired(import('./pages/Users/UserEdit'))}/>
 							<Route path='/users/:userId' component={AuthRequired(import('./pages/Users/UserEdit'))}/>

@@ -324,14 +324,14 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 		$('#karaInfo').click(function (e) {
-			if (status != undefined && status != '' && status != 'stop') {
+			if (status != undefined && status != '' && status != 'stop' && $(this).attr('length') != -1) {
 				//refreshPlayerInfos(goToPosition, e);
 				goToPosition(e);
 			}
 		});
 
 		$('#karaInfo').on('mousedown touchstart', function (e) {
-			if (status != undefined && status != '' && status != 'stop') {
+			if (status != undefined && status != '' && status != 'stop'  && $(this).attr('length') != -1) {
 				stopUpdate = true;
 				mouseDown = true;
 				$('#progressBarColor').removeClass('cssTransform')
@@ -406,6 +406,21 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				if (input.length == 1 && i != nameExclude && settingsNotUpdated.indexOf(i) === -1) {
 					if (input.attr('type') !== 'checkbox' || input.hasClass('hideInput')) {
 						input.val(val);
+						if (input.attr('name') === 'EngineQuotaType') {
+							var $time = $('[name="EngineTimePerUser"]').closest('.form-group');
+							var $songs = $('[name="EngineSongsPerUser"]').closest('.form-group');
+							var $free = $('[name="EngineFreeAutoTime"]').closest('.form-group');
+							$time.hide();
+							$songs.hide();
+							$free.hide();
+							if(val == 1) {
+								$songs.show();
+								$free.show();
+							} else if (val == 2) {
+								$time.show();
+								$free.show();
+							}
+						}
 					} else { // only checkbox here
 						val =  parseInt(val);
 						input.bootstrapSwitch('state', val, true);
@@ -477,24 +492,28 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		var futurTimeX = e.pageX - karaInfo.offset().left;
 		//var presentTimeX = $('#progressBarColor').width();
 		var futurTimeSec = songLength * futurTimeX / barInnerwidth;
-        
-		$('#progressBarColor').removeClass('cssTransform')
-			.css('transform', 'translateX(' + e.pageX + 'px)')
-			.addClass('');
+		
+		if(!isNaN(futurTimeSec) && futurTimeSec >= 0) {
+			$('#progressBarColor').removeClass('cssTransform')
+				.css('transform', 'translateX(' + e.pageX + 'px)')
+				.addClass('');
 
-		//var start_time = new Date().getTime();
-		$.ajax({
-			url: 'admin/player',
-			type: 'PUT',
-			data: { command: 'goTo', options: futurTimeSec},
-			complete : function() {
-				$('#progressBarColor').addClass('cssTransform'); 
-			}
-		})
-			.done(function () {
-				//var request_time = new Date().getTime() - start_time;
-				setStopUpdate(false);
-			});
+			//var start_time = new Date().getTime();
+			$.ajax({
+				url: 'admin/player',
+				type: 'PUT',
+				data: { command: 'goTo', options: futurTimeSec},
+				complete : function() {
+					$('#progressBarColor').addClass('cssTransform'); 
+				}
+			})
+				.done(function () {
+					//var request_time = new Date().getTime() - start_time;
+					setStopUpdate(false);
+				});
+		} else {
+			console.log('Err: problem calculating time for goTo command');
+		}
 	};
 
 	$('#flag1, #flag2').on('click', 'button', function () {
