@@ -1,5 +1,60 @@
 # Versions
 
+## v2.2 "Haruhi Hagiographique" -
+
+This version requires your attention on the following points :
+
+- `PathMedias` setting for storing media files replaces `PathVideos`
+- Videos are now stored in a `medias` folder, not `videos` anymore
+- .kara format is going to be version 3 from now on, which means older versions of Karaoke Mugen won't be able to import the [Karaoke Base](http://lab.shelter.moe/karaokemugen/karaokebase) beyond this point.
+
+### New Shiny Features
+
+- #302 As a regular user, you can now remove your own submissions from the current/public playlist, in case you added a song by mistake for instance.
+- #288 Alternative series names have been overhauled. We now have a database of series' names depending on language. Admins can select which way series should be displayed:
+  - As they are originally (use japanese titles for japanese shows, etc.)
+  - According to the song's language (use japanese titles for japanese songs, english titles for english songs, etc.)
+  - According to Karaoke Mugen's language (uses system locale to determine which language to use. Defaults back to english and then original name)
+  - According to the user's language (uses your browser's language to determine which language to use. Defaults back to english adn then original name)
+- #282 Support for audio-only karaokes
+  - You can create karaokes with mp3+ass files, for songs which do not have any video available anywhere on the Internets.
+  - Supported formats are mp3, m4a and ogg.
+  - Your file should have a cover art metadata. If it does it'll be used as background. If not KM's default background will be used.
+  - Enjoy your long versions of songs :)
+  - As a result KM's .kara format evolves to version 3. Version 2 can still be imported safely in KM 2.1 and below. Version 3 can only be imported in 2.2 and higher.
+  - `videos` folder now becomes the `medias` folder. To help with this.
+- #279 Song history can now be viewed in the control panel (administration). 
+  - This is a list of most viewed songs.
+- #273 You can import/export your favorites. 
+  - Useful when you go from one karaoke session to the other, carry your favorites on your phone anywhere and import them in the KM instance you're using!
+- #233 Song rankings can now be viewed in the control panel. This is a list of most requested songs (not necessarily viewed)
+- #109 Adding songs can now be limited to either number of songs or time.
+  - For example you can give users 5 minutes of karaoke each. 
+  - Adding songs longer than their time left is not allowed. 
+  - Just like with songs, time is given back once the song is freed or is being played on screen.
+- #79 Public vote mode can be enabled and offers a poll to users on their devices with 4 songs to choose from.
+  - Songs are taken from the public/suggestions playlist.
+  - Poll lasts 30 seconds and the winner song is added to the current playlist.
+  - If two or more songs are the highest in votes, a random one is chosen among them.
+  - Another poll is created.
+  - This is perfect if you want to have your users participate in the current playlist creation or if youw ant to just lean back and enjoy karaoke with friends without worrying about the playlist (create an AutoMix and make it a public playlist, then enable this mode)
+
+### Enhancements
+
+- #304 Search fields now includes who added the song in a playlist
+- #297 Small tweaks made to the welcome page
+- #291 Jingle information is now displayed in the UI's song bar when a jingle is playing
+- #290 ASS files are no longer stored in the database.
+  - This should make database generation much faster
+  - Modifying an ASS file (to test stuff while making karaokes) will have an immediate effect now.
+- #288 Search/filtering is now done in SQL, which greatly improves speeds
+- #285 Config file is now validated and ignored if there are mistakes anywhere
+
+### Fixes
+
+- #299 Better handling of how Karaoke Mugen is shut down regarding database access (should remove any SQLITE_BUSY errors)
+- #295 Forbidden messages won't be displayed anymore on first login
+
 ## v2.1.1 "Gabriel Grivoise" - 03/05/2018
 
 ### Fixes
