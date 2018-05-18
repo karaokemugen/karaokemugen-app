@@ -1,8 +1,6 @@
 import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
-import validate from 'validate.js';
-import {has as hasLang} from 'langs';
-import {integerValidator} from '../_common/utils/validators';
+import {check, initValidators} from '../_common/utils/validators';
 import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
 import {getConfig} from '../_common/utils/config';
@@ -37,27 +35,6 @@ export function getKara(karaData) {
 		mediaduration: karaData.mediaduration || 0,
 		version: karaData.version || 3
 	};		
-}
-
-function initValidators() {
-	if (!validate.validators.langValidator) {
-		validate.validators.langValidator = langValidator;
-	}
-	if (!validate.validators.integerValidator) {
-		validate.validators.integerValidator = integerValidator;
-	}
-}
-
-function langValidator(value) {
-	const langs = value.replace('"', '').split(',');
-	let result = null;
-	for (const lang of langs) {		
-		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
-			result = `Lang '${lang}' is invalid`;
-			break;
-		}
-	}
-	return result;
 }
 
 const karaConstraintsV3 = {
@@ -155,10 +132,10 @@ export function karaDataValidationErrors(karaData) {
 	case 0:
 	case 1:
 	case 2:
-		return validate(karaData, karaConstraintsV2);			
+		return check(karaData, karaConstraintsV2);			
 	default:
 	case 3:
-		return validate(karaData, karaConstraintsV3);
+		return check(karaData, karaConstraintsV3);
 	}		
 }
 
