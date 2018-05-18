@@ -14,6 +14,7 @@ function isJSON(value) {
 
 function numbersArrayValidator(value) {
 	if (value) {		
+		value = '' + value;
 		if (value.includes(',')) {
 			const array = value.split(',');
 			if (array.every(!isNaN)) return null;
