@@ -2,6 +2,7 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import validate from 'validate.js';
 import {has as hasLang} from 'langs';
+import {integerValidator} from '../_common/utils/validators';
 import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
 import {getConfig} from '../_common/utils/config';
@@ -55,14 +56,6 @@ function langValidator(value) {
 			result = `Lang '${lang}' is invalid`;
 			break;
 		}
-	}
-	return result;
-}
-
-function integerValidator(value) {
-	let result = null;	
-	if (value !== 'und' && value < 0) {
-		result = ` '${value}' is invalid`;
 	}
 	return result;
 }

@@ -13,7 +13,7 @@ import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
 import {emit} from './pubsub';
 import {configConstraints, defaults} from './default_settings.js';
-import validate from 'validate.js';
+import {check, unescape} from './validators';
 require('winston-daily-rotate-file');
 
 /** Object containing all config */
@@ -29,34 +29,28 @@ export function getConfig() {
 	return {...config};
 }
 
+export function sanitizeConfig(conf) {
+	for (const setting of Object.keys(conf)) {
+		if (/^\+?(0|[1-9]\d*)$/.test(conf[setting])) {
+			conf[setting] = parseInt(conf[setting], 10);
+		}
+		if (setting === 'EngineDisplayConnectionInfoMessage' ||
+		    setting === 'EngineDisplayConnectionInfoHost') {
+			conf[setting] = unescape(conf[setting].trim());
+		}
+	}
+	return conf;
+}
+
 export function profile(func) {
 	if (config.optProfiling) logger.profile(func);
 }
 
-function configValidationErrors(conf) {
-	initValidators();
-	return validate(conf, configConstraints);
-}
-
-function verifyConfig(conf) {
-	const validationErrors = configValidationErrors(conf);
+export function verifyConfig(conf) {
+	const validationErrors = check(conf, configConstraints);
 	if (validationErrors) {
 		throw `Config is not valid: ${JSON.stringify(validationErrors)}`;
 	}
-}
-
-function initValidators() {
-	if (!validate.validators.boolIntValidator) {
-		validate.validators.boolIntValidator = boolIntValidator;
-	}
-}
-
-function boolIntValidator(value) {
-	let result = null;	
-	if (+value !== 0 && +value !== 1) {
-		result = ` '${value}' is invalid`;
-	}
-	return result;
 }
 
 export async function mergeConfig(oldConfig, newConfig) {

@@ -8,7 +8,6 @@ import logger from 'winston';
 import i18n from 'i18n';
 import {getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
-import expressValidator from 'express-validator';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
@@ -20,11 +19,6 @@ let ws;
 export async function emitWS(type,data) {
 	//logger.debug('[WS] Sending message '+type+' : '+JSON.stringify(data));
 	ws.sockets.emit(type,data);
-}
-
-function numberTest(element) {
-	if (isNaN(element)) return false;
-	return true;
 }
 
 export async function initFrontend(port) {
@@ -58,36 +52,6 @@ export async function initFrontend(port) {
 	app.use(i18n.init);
 	app.use(urlencoded({ extended: true, limit: '50mb' }));
 	app.use(json());
-	// Calling express validator with custom validators, used for the player commands
-	// to check if they're from the allowed list.
-	// We use another custom validator to test for array of numbers
-	// used mainly with adding/removing lists of karaokes
-	app.use(expressValidator({
-		customValidators: {
-			enum: (input, options) => options.includes(input),
-			stringsArray: (input) => {
-				if (input) {
-					if (typeof input === 'string' && input.includes(',')) {
-						return input.split(',');
-					}
-					return input;
-				}
-				return false;
-			},
-			numbersArray: (input) => {
-				if (input) {
-					// Test if we get a single number or a list of comma separated numbers
-					if (typeof input === 'string' && input.includes(',')) {
-						let array = input.split(',');
-						return array.some(numberTest);
-					} 
-					return numberTest(input);
-				}
-				return false;
-			}
-		}
-	}));
-	
 	function routerAuth() {
 		const apiRouter = express.Router();
 		// Adding auth routes here.

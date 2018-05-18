@@ -1,5 +1,6 @@
 import logger from 'winston';
-import {getConfig} from '../_common/utils/config';
+import {sanitizeConfig, verifyConfig, getConfig} from '../_common/utils/config';
+import {check, unescape} from '../_common/utils/validators';
 import {resolve} from 'path';
 import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
@@ -12,16 +13,6 @@ const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
 const upvote = require('../_services/upvote');
 const user = require('../_services/user');
-
-function toString(o) {
-	Object.keys(o).forEach(k => {
-		if (typeof o[k] === 'object') {
-			return toString(o[k]);
-		}    
-		o[k] = '' + o[k];
-	});
-	return o;
-}
 
 function errMessage(code,message,args) {
 	return {
@@ -136,21 +127,11 @@ export function APIControllerAdmin(router) {
  */
 
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			req.check({
-				'users': {
-					in: 'body',
-					notEmpty: true,
-					stringsArray: true
-				},
-				'duration': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true
-				}
+			const validationErrors = check(req.body, {
+				users: {presence: {allowEmpty: false}},
+				duration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}}
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {
 				// No errors detected
 				try {
 					req.sanitize('duration').toInt();
@@ -168,7 +149,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;								
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 		});
 		
@@ -248,44 +229,16 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 500 Internal Server Error
  */
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			
-		// Add playlist
-			req.check({
-				'name': {
-					in: 'body',
-					notEmpty: true,
-				},
-				'flag_visible': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: {
-						errorMessage: 'Invalid visible flag (must be boolean)'
-					}
-				},
-				'flag_public': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: {
-						errorMessage: 'Invalid public flag (must be boolean)'
-					}
-				},
-				'flag_current': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: {
-						errorMessage: 'Invalid current flag (must be boolean)'
-					}
-				},
+			// Add playlist			
+			const validationErrors = check(req.body, {
+				name: {presence: {allowEmpty: false}},
+				flag_visible: {boolIntValidator: true},
+				flag_public: {boolIntValidator: true},
+				flag_current: {boolIntValidator: true}
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {
 				// No errors detected
-				req.sanitize('name').trim();
-				req.sanitize('name').unescape();
-				req.sanitize('flag_visible').toBoolean();
-				req.sanitize('flag_public').toBoolean();
-				req.sanitize('flag_current').toBoolean();
+				req.body.name = unescape(req.body.name.trim());
 						
 				//Now we add playlist
 				try {												
@@ -302,7 +255,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;								
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 				
 		});
@@ -391,27 +344,14 @@ export function APIControllerAdmin(router) {
  */
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Update playlist info
-			req.check({
-				'name': {
-					in: 'body',
-					notEmpty: true,
-				},
-				'flag_visible': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: {
-						errorMessage: 'Invalid visible flag (must be boolean)'
-					}
-				},
+			const validationErrors = check(req.body, {
+				name: {presence: {allowEmpty: false}},
+				flag_visible: {boolIntValidator: true},				
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {
 				// No errors detected
-				req.sanitize('name').trim();
-				req.sanitize('name').unescape();
-				req.sanitize('flag_visible').toBoolean();
-
+				req.body.name = unescape(req.body.name.trim());
+				
 				//Now we add playlist
 				try {
 					await engine.editPL(req.params.pl_id,req.body);
@@ -426,7 +366,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 		})
 
@@ -499,51 +439,32 @@ export function APIControllerAdmin(router) {
  * HTTP/1.1 403 Forbidden
  */
 
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, (req,res) => {
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			//Validate form data
-			req.check({
-				'login': {
-					in: 'body',
-					notEmpty: true,
-				},
-				'password': {
-					in: 'body',
-					notEmpty: true,
-				}
+			const validationErrors = check(req.body, {
+				login: {presence: {allowEmpty: false}},
+				password: {presence: {allowEmpty: false}},
+				role: {inclusion: ['user', 'admin']}				
 			});
-			req.checkBody('role')
-				.notEmpty()
-				.enum(['admin',
-					'user'					
-				]
-				);
-			req.getValidationResult()
-				.then((result) => {
-					if (result.isEmpty()) {
-						// No errors detected
-						req.sanitize('login').trim();
-						req.sanitize('login').unescape();
-						req.sanitize('password').trim();
-						req.sanitize('password').unescape();
-						req.sanitize('role').trim();
-						req.sanitize('role').unescape();
-						if (req.body.role === 'admin') req.body.flag_admin = 1;
-						user.createUser(req.body)
-							.then(() => {
-								res.json(OKMessage(true,'USER_CREATED'));
-							})
-							.catch((err) => {
-								res.statusCode = 500;
-								res.json(errMessage(err.code,err.message));
-							});
-					} else {
-						// Errors detected
-						// Sending BAD REQUEST HTTP code and error object.
-						res.statusCode = 400;								
-						res.json(result.mapped());
-					}
-				});
-
+			if (!validationErrors) {
+				// No errors detected
+				req.body.login = unescape(req.body.login.trim());
+				req.body.role = unescape(req.body.role);
+				req.body.password = unescape(req.body.password);
+				if (req.body.role === 'admin') req.body.flag_admin = 1;
+				try {
+					await user.createUser(req.body);
+					res.json(OKMessage(true,'USER_CREATED'));
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage(err.code,err.message));
+				}						
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;								
+				res.json(validationErrors);
+			}
 		});
 
 	router.route('/users/:username')
@@ -913,25 +834,14 @@ export function APIControllerAdmin(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
-			const playlist_id = req.params.pl_id;
-			const filter = req.query.filter;
-			let size;
-			if (!req.query.size) {
-				size = 999999;
-			} else {
-				size = parseInt(req.query.size, 10);
-			}
-			let from;
-			if (!req.query.from) {
-				from = 0;
-			} else {
-				from = parseInt(req.query.from, 10);
-			}
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
 			try {
 
-				const playlist = await engine.getPLContents(playlist_id,filter,req.lang,req.authToken,from,size);
+				const playlist = await engine.getPLContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
 				res.json(OKMessage(playlist));
-				
 			} catch(err) {
 				logger.error(err.message);
 				res.statusCode = 500;
@@ -976,47 +886,32 @@ export function APIControllerAdmin(router) {
  * }
  */
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			//add a kara to a playlist
-			const playlist_id = req.params.pl_id;
-			req.checkBody({
-				'kara_id': {
-					in: 'body',
-					notEmpty: true,
-					numbersArray: true,
-				},
-				'pos': {
-					in: 'body',
-					optional: true,
-					isInt: true,
-				}
+			//add a kara to a playlist						
+			const validationErrors = check(req.body, {
+				kara_id: {presence: true, numbersArrayValidator: true},
+				pos: {integerValidator: true}
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
-				req.sanitize('playlist_id').toInt();
-				if (req.body.pos) req.sanitize('pos').toInt();
+			if (!validationErrors) {				
+				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				try {
-
-						
-					const result = await engine.addKaraToPL(playlist_id, req.body.kara_id, req.authToken.username, req.body.pos);
-					emitWS('playlistInfoUpdated',playlist_id);
-					emitWS('playlistContentsUpdated',playlist_id);
+					const result = await engine.addKaraToPL(req.params.pl_id, req.body.kara_id, req.authToken.username, req.body.pos);
+					emitWS('playlistInfoUpdated',req.params.pl_id);
+					emitWS('playlistContentsUpdated',req.params.pl_id);
 					res.statusCode = 201;		
 					const args = {
 						playlist: result.playlist
 					};
 					res.json(OKMessage(null,'PL_SONG_ADDED',args));
-							
 				} catch(err) {
 					logger.error(err.message);
 					res.statusCode = 500;
-					res.json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));										
+					res.json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));
 				}
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 		})
 	/**
@@ -1058,24 +953,13 @@ export function APIControllerAdmin(router) {
  */
 		.patch(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//add karas from a playlist to another
-			req.checkBody({
-				'plc_id': {
-					in: 'body',
-					notEmpty: true,
-					numbersArray: true,
-				},
-				'pos': {
-					in: 'body',
-					optional: true,
-					isInt: true,
-				}
+			const validationErrors = check(req.body, {
+				plc_id: {presence: true, numbersArrayValidator: true},
+				pos: {integerValidator: true}
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
-				if (req.body.pos) req.sanitize('pos').toInt();
+			if (!validationErrors) {
+				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				try {
-							
 					const pl_id = await	engine.copyKaraToPL(req.body.plc_id,req.params.pl_id,req.body.pos);
 					emitWS('playlistContentsUpdated',pl_id);
 					res.statusCode = 201;
@@ -1093,7 +977,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 
 		})
@@ -1131,16 +1015,10 @@ export function APIControllerAdmin(router) {
 			// Delete kara from playlist
 			// Deletion is through playlist content's ID.
 			// There is actually no need for a playlist number to be used at this moment.
-			req.checkBody({
-				'plc_id': {
-					in: 'body',
-					notEmpty: true,
-					numbersArray: true,
-				}
+			const validationErrors = check(req.body, {
+				plc_id: {presence: true, numbersArrayValidator: true}				
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {
 				try {
 					const data = await engine.deleteKara(req.body.plc_id,req.params.pl_id);
 					emitWS('playlistContentsUpdated',data.pl_id);
@@ -1156,7 +1034,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 				
 		});
@@ -1324,29 +1202,17 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update playlist's karaoke song
 			//Params: position
-			req.checkBody({
-				'pos': {
-					in: 'body',
-					optional: true,
-					isInt: true,
-				},
-				'flag_playing': {
-					in: 'body',
-					optional: true,
-					isInt: true,
-				}
+			
+			const validationErrors = check(req.body, {
+				flag_playing: {boolIntValidator: true},
+				pos: {integerValidator: true}
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
-				if (req.body.pos) req.sanitize('pos').toInt();
-				if (req.body.flag_playing) req.sanitize('flag_playing').toInt();
+			if (!validationErrors) {
+				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
+				if (req.body.flag_playing) req.body.flag_playing = parseInt(req.body.flag_playing, 10);
 				try {
 					await engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,req.authToken);
-							
-					// pl_id is returned from this promise
 					res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
-							
 				} catch(err) {
 					logger.error(err);
 					res.statusCode = 500;
@@ -1356,7 +1222,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 				
 		});
@@ -1493,196 +1359,11 @@ export function APIControllerAdmin(router) {
  */
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			//Update settings
-			// Convert body to strings
-			req.body = toString(req.body);
-			req.checkBody({
-				'EngineAllowViewBlacklist': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'EngineAllowViewWhitelist': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'EngineAllowViewBlacklistCriterias': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'EngineDisplayConnectionInfo': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'EngineDisplayConnectionInfoHost': {
-					in: 'body',
-				},
-				'EngineDisplayConnectionInfoMessage': {
-					in: 'body',
-				},
-				'EngineDisplayConnectionInfoQRCode': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'EngineDisplayNickname': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'EngineFreeUpvotes': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true
-				},
-				'EngineFreeUpvotesRequiredMin': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true
-				},
-				'EngineFreeAutoTime': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true
-				},
-				'EngineFreeUpvotesRequiredPercent': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true
-				},
-				'EnginePrivateMode': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'EngineSongsPerUser': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'EngineTimePerUser': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'EngineQuotaType': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'EngineJinglesInterval': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'EngineRepeatPlaylist': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'WebappMode': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'WebappSongLanguageMode': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'EngineSmartInsert': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'EngineAutoPlay': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'PlayerFullscreen': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'PlayerNoBar': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'PlayerNoHud': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'PlayerScreen': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'PlayerStayOnTop': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'PlayerPIP': {
-					in: 'body',
-					notEmpty: true,
-					isBoolean: true,
-				},
-				'PlayerPIPSize': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				}
-			});
-			req.checkBody('PlayerPIPPositionX')
-				.notEmpty()
-				.enum(['Left',
-					'Center',
-					'Right'
-				]
-				);
-			req.checkBody('PlayerPIPPositionY')
-				.notEmpty()
-				.enum(['Top',
-					'Center',
-					'Bottom'
-				]
-				);
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
-				req.sanitize('EngineAllowViewWhitelist').toInt();
-				req.sanitize('EngineAllowViewBlacklist').toInt();
-				req.sanitize('EngineAllowViewBlacklistCriterias').toInt();
-				req.sanitize('EngineDisplayConnectionInfoQRCode').toInt();
-				req.sanitize('EngineDisplayConnectionInfo').toInt();
-				req.sanitize('EngineDisplayConnectionInfoMessage').trim();
-				req.sanitize('EngineDisplayConnectionInfoMessage').unescape();
-				req.sanitize('EngineDisplayConnectionInfoHost').trim();
-				req.sanitize('EngineDisplayConnectionInfoHost').unescape();
-				req.sanitize('EngineAutoPlay').toInt();
-				req.sanitize('EngineFreeUpvotes').toInt();
-				req.sanitize('EngineFreeAutoTime').toInt();
-				req.sanitize('EngineRepeatPlaylist').toInt();
-				req.sanitize('EngineSmartInsert').toInt();
-				req.sanitize('EngineJinglesInterval').toInt();
-				req.sanitize('PlayerFullscreen').toInt();
-				req.sanitize('PlayerNoBar').toInt();
-				req.sanitize('PlayerNoHud').toInt();
-				req.sanitize('PlayerStayOnTop').toInt();
-				req.sanitize('PlayerScreen').toInt();
-				req.sanitize('EngineSongsPerUser').toInt();
-				req.sanitize('EngineTimePerUser').toInt();
-				req.sanitize('EngineQuotaType').toInt();
-				req.sanitize('EnginePrivateMode').toInt();
-				req.sanitize('PlayerPIP').toInt();
-				req.sanitize('PlayerPIPSize').toInt();
-				req.sanitize('WebappMode').toInt();
-				req.sanitize('WebappSongLanguageMode').toInt();
+			// Convert body to strings			
+			try {
+				verifyConfig(req.body);
 				try {
+					req.body = sanitizeConfig(req.body);			
 					const publicSettings = await engine.updateSettings(req.body);
 					emitWS('settingsUpdated',publicSettings);
 					res.json(OKMessage(req.body,'SETTINGS_UPDATED'));				
@@ -1691,13 +1372,12 @@ export function APIControllerAdmin(router) {
 					res.statusCode = 500;
 					res.json(errMessage('SETTINGS_UPDATE_ERROR',err));
 				}
-			} else {
+			} catch(err) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
-			}
-			
+				res.json(err);
+			}			
 		});
 			
 	router.route('/player/message')
@@ -1732,37 +1412,23 @@ export function APIControllerAdmin(router) {
  *   "code": "MESSAGE_SEND_ERROR"
  * }
  */
-		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			req.check({
-				'duration': {
-					in: 'body',
-					isInt: true,
-					optional: true
-				},
-				'message': {
-					in: 'body',
-					notEmpty: true,
-				},
-				'destination': {
-					in: 'body',
-					optional: true
-				}
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {			
+			const validationErrors = check(req.body, {
+				duration: {integerValidator: true},
+				message: {presence: true},
+				destination: {inclusion: ['screen', 'users', 'all']}
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
-				req.sanitize('duration').toInt();
-				if(req.body.destination !== 'screen') {
+			if (!validationErrors) {
+				if (req.body.duration) req.body.duration = parseInt(req.body.duration, 10);
+				if (req.body.destination === 'users' || 
+				    req.body.destination === 'all') {
 					emitWS('adminMessage', req.body );
-					if (req.body.destination === 'users') {
-						res.statusCode = 200;
-						res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
-					}
+					res.statusCode = 200;
+					res.json(OKMessage(req.body,'MESSAGE_SENT',req.body));
 				}
-				if(req.body.destination !== 'users') {
+				if (req.body.destination === 'screen' || 
+				    req.body.destination === 'all') {
 					try {
-
-						
 						await engine.sendMessage(req.body.message,req.body.duration);
 						res.statusCode = 200;
 						res.json(OKMessage(req.body,'MESSAGE_SENT'));
@@ -1776,7 +1442,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}			
 		});
 
@@ -1855,23 +1521,13 @@ export function APIControllerAdmin(router) {
  * }
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const filter = req.query.filter;
-			let size;
-			if (!req.query.size) {
-				size = 999999;
-			} else {
-				size = parseInt(req.query.size, 10);
-			}
-			let from;
-			if (!req.query.from) {
-				from = 0;
-			} else {
-				from = parseInt(req.query.from, 10);
-			}
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
 			try {
-				const karas = await engine.getWL(filter,req.lang,from,size);
-				res.json(OKMessage(karas));
-				
+				const karas = await engine.getWL(req.body.filter,req.lang,from,size);
+				res.json(OKMessage(karas));				
 			} catch(err) {
 				logger.error(err);
 				res.statusCode = 500;
@@ -1912,15 +1568,10 @@ export function APIControllerAdmin(router) {
  * }
  */
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			req.check({
-				'kara_id': {
-					in: 'body',
-					notEmpty: true,
-					numbersArray: true,
-				},
+			const validationErrors = check(req.body, {
+				kara_id: {numbersArrayValidator: true}				
 			});
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {							
+			if (!validationErrors) {
 				try {
 					await engine.addKaraToWL(req.body.kara_id);
 					emitWS('whitelistUpdated');
@@ -1936,7 +1587,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 			
 		})
@@ -1965,15 +1616,10 @@ export function APIControllerAdmin(router) {
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Delete kara from whitelist
 			// Deletion is through whitelist ID.
-			req.checkBody({
-				'wlc_id': {
-					in: 'body',
-					notEmpty: true,
-					numbersArray: true,
-				}
+			const validationErrors = check(req.body, {
+				wlc_id: {numbersArrayValidator: true}				
 			});
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {
 				try {
 					await engine.deleteWLC(req.body.wlc_id);
 					emitWS('whitelistUpdated');
@@ -1988,7 +1634,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 			
 		});
@@ -2067,22 +1713,12 @@ export function APIControllerAdmin(router) {
  * }
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			const filter = req.query.filter;
-			let size;
-			if (!req.query.size) {
-				size = 999999;
-			} else {
-				size = parseInt(req.query.size, 10);
-			}
-			let from;
-			if (!req.query.from) {
-				from = 0;
-			} else {
-				from = parseInt(req.query.from, 10);
-			}
-			if (from < 0) from = 0;	
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
 			try {
-				const karas = await engine.getBL(filter,req.lang,from,size);
+				const karas = await engine.getBL(req.body.filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -2175,20 +1811,11 @@ export function APIControllerAdmin(router) {
  */		
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Add blacklist criteria
-			req.check({
-				'blcriteria_type': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'blcriteria_value': {
-					in: 'body',
-					notEmpty: true,
-				}
+			const validationErrors = check(req.body, {
+				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
+				blcriteria_value: {presence: true}
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {
 				try {
 					await engine.addBLC(req.body.blcriteria_type,req.body.blcriteria_value);
 					
@@ -2205,7 +1832,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 			
 		});
@@ -2285,22 +1912,12 @@ export function APIControllerAdmin(router) {
  */		
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Update BLC
-			req.check({
-				'blcriteria_type': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
-				'blcriteria_value': {
-					in: 'body',
-					notEmpty: true,
-				}
+			const validationErrors = check(req.body, {
+				blcriteria_type: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 1010}},
+				blcriteria_value: {presence: true}
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {
 				try {
-
 					await engine.editBLC(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value);
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
@@ -2313,7 +1930,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 			
 		});
@@ -2346,27 +1963,27 @@ export function APIControllerAdmin(router) {
  */
 
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			req.checkBody('command')
-				.notEmpty()
-				.enum(['play',
-					'pause',
-					'stopNow',
-					'stopAfter',
-					'skip',
-					'prev',
-					'toggleFullscreen',
-					'toggleAlwaysOnTop',
-					'seek',
-					'goTo',
-					'mute',
-					'unmute',
-					'setVolume',
-					'showSubs',
-					'hideSubs',
-				]
-				);
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			const commands = [
+				'play',
+				'pause',
+				'stopNow',
+				'stopAfter',
+				'skip',
+				'prev',
+				'toggleFullscreen',
+				'toggleAlwaysOnTop',
+				'seek',
+				'goTo',
+				'mute',
+				'unmute',
+				'setVolume',
+				'showSubs',
+				'hideSubs'
+			];
+			const validationErrors = check(req.body, {
+				command: {inclusion: commands}				
+			});
+			if (!validationErrors) {
 				try {
 					await engine.sendCommand(req.body.command,req.body.options);
 					res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
@@ -2379,12 +1996,9 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
-			
 		});
-
-
 	router.route('/playlists/:pl_id([0-9]+)/export')
 	/**
  * @api {get} /admin/playlists/:pl_id/export Export a playlist
@@ -2489,8 +2103,10 @@ export function APIControllerAdmin(router) {
 					isJSON: true,
 				}
 			});
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			const validationErrors = check(req.body, {
+				playlist: {isJSON: true}				
+			});
+			if (!validationErrors) {			
 				try {	
 					const data = await engine.importPL(JSON.parse(req.body.playlist),req.authToken.username);
 					const response = {
@@ -2508,7 +2124,7 @@ export function APIControllerAdmin(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 			
 		});
@@ -2774,23 +2390,12 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get playlist contents, only if visible
 			//Access :pl_id by req.params.pl_id
-					
-			const filter = req.query.filter;
-			const lang = req.query.lang;
-			let size;
-			if (!req.query.size) {
-				size = 999999;
-			} else {
-				size = parseInt(req.query.size, 10);
-			}
-			let from;
-			if (!req.query.from) {
-				from = 0;
-			} else {
-				from = parseInt(req.query.from, 10);
-			}
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
 			try {
-				const playlist = await engine.getPLContents(req.params.pl_id,filter,req.lang,req.authToken,from,size);
+				const playlist = await engine.getPLContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
 				if (playlist == null) res.statusCode = 404;
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -3124,21 +2729,12 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Returns whitelist IF the settings allow public to see it
 			if (getConfig().EngineAllowViewWhitelist === 1) {
-				const filter = req.query.filter;
-				let size;
-				if (!req.query.size) {
-					size = 999999;
-				} else {
-					size = parseInt(req.query.size, 10);
-				}
-				let from;
-				if (!req.query.from) {
-					from = 0;
-				} else {
-					from = parseInt(req.query.from, 10);
-				}
+				let size = req.query.size || 999999;
+				size = parseInt(size, 10);
+				let from = req.query.from || 0;
+				from = parseInt(from, 10);
 				try {
-					const karas = await	engine.getWL(filter,req.lang,from,size);
+					const karas = await	engine.getWL(req.query.filter,req.lang,from,size);
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -3227,22 +2823,12 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Get list of blacklisted karas IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklist === 1) {
-				const lang = req.query.lang;
-				const filter = req.query.filter;
-				let size;
-				if (!req.query.size) {
-					size = 999999;
-				} else {
-					size = parseInt(req.query.size, 10);
-				}
-				let from;
-				if (!req.query.from) {
-					from = 0;
-				} else {
-					from = parseInt(req.query.from, 10);
-				}
+				let size = req.query.size || 999999;
+				size = parseInt(size, 10);
+				let from = req.query.from || 0;
+				from = parseInt(from, 10);
 				try {
-					const karas = await engine.getBL(filter,lang,from,size);
+					const karas = await engine.getBL(req.query.filter,req.lang,from,size);
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -3443,22 +3029,13 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
-			const filter = req.query.filter;
-			let size;
-			if (!req.query.size) {
-				size = 999999;
-			} else {
-				size = parseInt(req.query.size, 10);
-			}
-			let from;
-			if (!req.query.from) {
-				from = 0;
-			} else {
-				from = parseInt(req.query.from, 10);
-			}
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
 			if (from < 0) from = 0;
 			try {
-				const karas = await engine.getKaras(filter,req.lang,from,size,req.authToken);
+				const karas = await engine.getKaras(req.query.filter,req.lang,from,size,req.authToken);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -3852,21 +3429,12 @@ export function APIControllerPublic(router) {
 
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
-			const filter = req.query.filter;
-			let from;
-			if (!req.query.from) {
-				from = 0;
-			} else {
-				from = req.query.from;
-			}
-			let to;
-			if (!req.query.to) {
-				to = 999999;
-			} else {
-				to = req.query.to;
-			}
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
 			try {	
-				const playlist = await engine.getCurrentPLContents(filter, req.lang, from, to, req.authToken);
+				const playlist = await engine.getCurrentPLContents(req.query.filter, req.lang, from, size, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -4019,21 +3587,12 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
-			const filter = req.query.filter;
-			let to;
-			if (!req.query.to) {
-				to = 999999;
-			} else {
-				to = req.query.to;
-			}
-			let from;
-			if (!req.query.from) {
-				from = 0;
-			} else {
-				from = req.query.from;
-			}
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
 			try {
-				const playlist = await engine.getPublicPLContents(filter, req.lang, from, to, req.authToken);
+				const playlist = await engine.getPublicPLContents(req.query.filter, req.lang, from, size, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -4323,50 +3882,18 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 500 Internal Server Error
  */
 		.put(upload.single('avatarfile'), getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
-			req.check({
-				'login': {
-					in: 'body',
-					notEmpty: true,
-				},
-				'nickname': {
-					in: 'body',
-					notEmpty: true,
-				},
-				'email': {
-					in: 'body',
-					optional: true
-				},
-				'url': {
-					in: 'body',
-					optional: true
-				},
-				'bio': {
-					in: 'body',
-					optional: true
-				},
-				'password': {
-					in: 'body',
-					optional: true
-				},
-				'admin': {
-					in: 'body',
-					optional: true
-				}
+			const validationErrors = check(req.body, {
+				login: {presence: true},
+				nickname: {presence: true}				
 			});
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {			
 				// No errors detected
-				req.sanitize('bio').trim();
-				req.sanitize('email').trim();
-				req.sanitize('url').trim();
-				req.sanitize('nickname').trim();
-				req.sanitize('login').trim();
-				req.sanitize('bio').unescape();
-				req.sanitize('email').unescape();
-				req.sanitize('url').unescape();
-				req.sanitize('nickname').unescape();
-				req.sanitize('login').unescape();
-				req.sanitize('admin').toInt();
+				if (req.body.bio) req.body.bio = unescape(req.body.bio.trim());
+				if (req.body.email) req.body.email = unescape(req.body.email.trim());
+				if (req.body.url) req.body.url = unescape(req.body.url.trim());
+				if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());
+				if (req.body.login) req.body.login = unescape(req.body.login.trim());
+				if (req.body.admin) req.body.admin = parseInt(req.body.admin, 10);
 				//Now we add user
 				let avatar;
 				if (req.file) avatar = req.file;
@@ -4382,7 +3909,7 @@ export function APIControllerPublic(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 		});
 	router.route('/top50')
@@ -4460,22 +3987,13 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// if the query has a &filter=xxx
 			// then the playlist returned gets filtered with the text.
-			const filter = req.query.filter;
-			let size;
-			if (!req.query.size) {
-				size = 999999;
-			} else {
-				size = parseInt(req.query.size, 10);
-			}
-			let from;
-			if (!req.query.from) {
-				from = 0;
-			} else {
-				from = parseInt(req.query.from, 10);
-			}
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
 			if (from < 0) from = 0;
 			try {
-				const karas = await engine.getTop50(filter,req.lang,from,size,req.authToken);
+				const karas = await engine.getTop50(req.body.filter,req.lang,from,size,req.authToken);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				res.statusCode = 500;
@@ -4675,41 +4193,16 @@ export function APIControllerPublic(router) {
  * HTTP/1.1 403 Forbidden
  */
 		.put(upload.single('avatarfile'), getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			req.check({
-				//FIXME : keep email/url optional and make sure it works with the isURL and isEmail validators
-				'nickname': {
-					in: 'body',
-					notEmpty: true,
-				},
-				'email': {
-					in: 'body',
-					optional: true
-				},
-				'url': {
-					in: 'body',
-					optional: true
-				},
-				'bio': {
-					in: 'body',
-					optional: true
-				},
-				'password': {
-					in: 'body',
-					optional: true
-				}
+			const validationErrors = check(req.body, {
+				nickname: {presence: true}				
 			});
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {			
 				// No errors detected
-				req.sanitize('bio').trim();
-				req.sanitize('email').trim();
-				req.sanitize('url').trim();
-				req.sanitize('nickname').trim();
-				req.sanitize('bio').unescape();
-				req.sanitize('email').unescape();
-				req.sanitize('url').unescape();
-				req.sanitize('nickname').unescape();
-				//Now we add user
+				if (req.body.bio) req.body.bio = unescape(req.body.bio.trim());
+				if (req.body.email) req.body.email = unescape(req.body.email.trim());
+				if (req.body.url) req.body.url = unescape(req.body.url.trim());
+				if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());				
+				//Now we edit user
 				let avatar;
 				if (req.file) avatar = req.file;
 				//Get username
@@ -4725,7 +4218,7 @@ export function APIControllerPublic(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 		});		
 
@@ -4812,21 +4305,12 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			
-			const filter = req.query.filter;
-			let size;
-			if (!req.query.size) {
-				size = 999999;
-			} else {
-				size = parseInt(req.query.size, 10);
-			}
-			let from;
-			if (!req.query.from) {
-				from = 0;
-			} else {
-				from = parseInt(req.query.from, 10);
-			}
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);
 			try {
-				const karas = await favorites.getFavorites(req.authToken.username, filter, req.lang, from, size);
+				const karas = await favorites.getFavorites(req.authToken.username, req.query.filter, req.lang, from, size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -4870,18 +4354,12 @@ export function APIControllerPublic(router) {
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
-			req.checkBody({
-				'kara_id': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				},
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {			
+			const validationErrors = check(req.body, {
+				kara_id: {integerValidator: true}				
 			});
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
-				// No errors detected
-				req.sanitize('kara_id').toInt();
+			if (!validationErrors) {			
+				req.body.kara_id = parseInt(req.body.kara_id, 10);
 				try {
 					const data = await favorites.addToFavorites(req.authToken.username,req.body.kara_id);
 					emitWS('favoritesUpdated',req.authToken.username);
@@ -4897,7 +4375,7 @@ export function APIControllerPublic(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 		})
 
@@ -4934,16 +4412,11 @@ export function APIControllerPublic(router) {
 		.delete(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Delete kara from favorites
 			// Deletion is through kara ID.			
-			req.check({
-				'kara_id': {
-					in: 'body',
-					notEmpty: true,
-					isInt: true,
-				}
+			const validationErrors = check(req.body, {
+				kara_id: {integerValidator: true}				
 			});
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
-				req.sanitize('kara_id').toInt();
+			if (!validationErrors) {			
+				req.body.kara_id = parseInt(req.body.kara_id, 10);			
 				try {					
 					const data = await favorites.deleteFavorite(req.authToken.username,req.body.kara_id);
 					emitWS('favoritesUpdated',req.authToken.username);
@@ -5058,8 +4531,10 @@ export function APIControllerPublic(router) {
 					isJSON: true,
 				}
 			});
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			const validationErrors = check(req.body, {
+				playlist: {isJSON: true}				
+			});
+			if (!validationErrors) {			
 				try {	
 					const data = await favorites.importFavorites(JSON.parse(req.body.playlist),req.authToken);
 					const response = {
@@ -5077,7 +4552,7 @@ export function APIControllerPublic(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 			
 		});
@@ -5185,24 +4660,13 @@ export function APIControllerPublic(router) {
 
 		.post(requireWebappLimitedNoAuth, async (req, res) => {
 			//Validate form data
-			req.check({
-				'login': {
-					in: 'body',
-					notEmpty: true,
-				},
-				'password': {
-					in: 'body',
-					notEmpty: true,
-				},
+			const validationErrors = check(req.body, {
+				login: {presence: true},
+				password: {presence: true}
 			});
-
-			const result = await req.getValidationResult();
-			if (result.isEmpty()) {
+			if (!validationErrors) {			
+				req.body.login = unescape(req.body.login.trim());
 				// No errors detected
-				req.sanitize('login').trim();
-				req.sanitize('login').unescape();
-				req.sanitize('password').trim();
-				req.sanitize('password').unescape();
 				try {						
 					await user.createUser({...req.body, flag_admin: 0});
 					res.json(OKMessage(true,'USER_CREATED'));
@@ -5214,7 +4678,7 @@ export function APIControllerPublic(router) {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;								
-				res.json(result.mapped());
+				res.json(validationErrors);
 			}
 		});	
 }
