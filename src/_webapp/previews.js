@@ -5,7 +5,7 @@ import {
 	asyncExists, asyncReadDir, asyncRemove, asyncStat
 } from '../_common/utils/files';
 import {
-	getConfig, resolvedPathPreviews, resolvedPathVideos
+	getConfig, resolvedPathPreviews, resolvedPathMedias
 } from '../_common/utils/config';
 import {createPreview} from '../_common/utils/ffmpeg';
 
@@ -40,7 +40,7 @@ async function extractPreviewFiles(previewDir) {
 export async function cleanUpPreviewsFolder(config) {
 	const conf = config || getConfig();		
 	logger.debug('[Previews] Cleaning up preview generation');
-	const videofiles = await extractVideoFiles(resolve(conf.appPath,conf.PathVideos));
+	const videofiles = await extractVideoFiles(resolve(conf.appPath,conf.PathMedias));
 	const previewfiles = await extractPreviewFiles(resolvedPathPreviews());		
 	// Read all preview files
 	// For each check if videofile exists
@@ -98,7 +98,7 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 	return previewFilesToCreate;
 }
 export async function isPreviewAvailable(videofile) {
-	const videofilename = resolvedPathVideos()+`/${videofile}`;
+	const videofilename = resolvedPathMedias()+`/${videofile}`;
 	let videoStats;
 	if (await asyncExists(videofilename)) {
 		videoStats = await asyncStat(videofilename);		
@@ -118,7 +118,7 @@ export async function createPreviews(config) {
 	try {
 		const conf = config || getConfig();		
 		logger.debug('[Previews] Starting preview generation');
-		const videoFiles = await extractVideoFiles(resolve(conf.appPath,conf.PathVideos));
+		const videoFiles = await extractVideoFiles(resolve(conf.appPath,conf.PathMedias));
 		const previewFiles = await extractPreviewFiles(resolvedPathPreviews());		
 		const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
 		for (const videoPreview of videoFilesToPreview) {

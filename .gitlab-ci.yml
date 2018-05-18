@@ -43,9 +43,12 @@ build:
     paths:
       - dist/
   script:
-    - yarn build    
+    - npm install -g modclean
+    - yarn build
+    - yarn install --production
     - cd node_modules
     - find -name *.node -delete
+    - modclean -r
   only:
     - master
     - next

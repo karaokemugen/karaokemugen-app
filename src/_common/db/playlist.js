@@ -70,13 +70,13 @@ export const updatePLCSetPos = `UPDATE playlist_content
 
 
 export const updatePlaylistDuration = `UPDATE playlist SET time_left = 
-    									(SELECT ifnull(SUM(karasdb.kara.videolength),0) AS duration
+    									(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
     									FROM karasdb.kara, playlist_content 
     									WHERE playlist_content.fk_id_kara = karasdb.kara.pk_id_kara  
     									AND playlist_content.fk_id_playlist = $playlist_id  
     									AND playlist_content.pos >= (select ifnull(pos,0) from playlist_content where flag_playing = 1 and playlist_content.fk_id_playlist = $playlist_id)),
     									length = 
-    									(SELECT ifnull(SUM(karasdb.kara.videolength),0) AS duration
+    									(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
     									FROM karasdb.kara, playlist_content 
     									WHERE playlist_content.fk_id_kara = 	karasdb.kara.pk_id_kara  
     								  	AND playlist_content.fk_id_playlist = $playlist_id
@@ -92,15 +92,22 @@ export const getPlaylistContentsKaraIDs = `SELECT pc.fk_id_kara AS kara_id,
 										ORDER BY pc.pos,pc.created_at DESC;
 										`;
 
-export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
+export const getPlaylistContents = (filterClauses, lang) => `SELECT ak.kara_id AS kara_id,
       									ak.kid AS kid,
       									ak.title AS title,
       									ak.NORM_title AS NORM_title,
       									ak.songorder AS songorder,
-      									ak.serie AS serie,
-      									ak.NORM_serie AS NORM_serie,
+      									COALESCE(
+									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
+									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
+									  ak.serie) AS serie,
+										COALESCE(
+									  (SELECT sl.NORM_name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.main}),
+									  (SELECT sl.NORM_name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
+									  ak.NORM_serie) AS NORM_serie,
       									ak.serie_altname AS serie_altname,
       									ak.NORM_serie_altname AS NORM_serie_altname,
+										ak.serie_i18n AS serie_i18n,
       									ak.singer AS singer,
       									ak.NORM_singer AS NORM_singer,
 	  									ak.songwriter AS songwriter,
@@ -121,9 +128,10 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
       									pc.pos AS pos,
       									pc.pk_id_plcontent AS playlistcontent_id,
       									pc.flag_playing AS flag_playing,      
-      									ak.videofile AS videofile,
-	  									ak.videolength AS duration,	  
+      									ak.mediafile AS mediafile,
+	  									ak.duration AS duration,	  
 	  									(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+										(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       									(CASE WHEN wl.fk_id_kara = ak.kara_id
 	     									THEN 1
         									ELSE 0
@@ -147,7 +155,8 @@ export const getPlaylistContents = `SELECT ak.kara_id AS kara_id,
 									LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 									LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
 									WHERE pc.fk_id_playlist = $playlist_id
-									ORDER BY pc.pos,pc.created_at DESC;
+									${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+									ORDER BY pc.pos,pc.created_at DESC
 									`;
 
 export const getPlaylistContentsMini = `SELECT ak.kara_id AS kara_id,
@@ -155,12 +164,13 @@ export const getPlaylistContentsMini = `SELECT ak.kara_id AS kara_id,
       												ak.title AS title,
       												ak.songorder AS songorder,
       												ak.serie AS serie,
+													ak.serie_i18n AS serie_i18n,
       												ak.songtype AS songtype,      
 	  												ak.singer AS singer,
       												ak.gain AS gain,
       												pc.pseudo_add AS pseudo_add,
 													pc.created_at AS created_at,
-      												ak.videofile AS videofile,
+      												ak.mediafile AS mediafile,
 	  												pc.pos AS pos,
 													pc.flag_playing AS flag_playing,
 													pc.pk_id_plcontent AS 			playlistcontent_id,
@@ -204,6 +214,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
       							ak.NORM_serie AS NORM_serie,
       							ak.serie_altname AS serie_altname,
       							ak.NORM_serie_altname AS NORM_serie_altname,
+								ak.serie_i18n AS serie_i18n,
       							ak.singer AS singer,
       							ak.NORM_singer AS NORM_singer,
 	  							ak.songwriter AS songwriter,
@@ -225,10 +236,11 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
       							pc.pk_id_plcontent AS playlistcontent_id,
 	    						pc.fk_id_playlist as playlist_id,      
       							pc.flag_playing AS flag_playing,	        
-      							ak.videofile AS videofile,
-	  							ak.videolength AS duration,
+      							ak.mediafile AS mediafile,
+	  							ak.duration AS duration,
 	  							ak.gain AS gain,
-								  (SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+	  							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+								(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
 								  EXISTS(
     								SELECT 1 FROM playlist_content pc
     								JOIN playlist p ON pc.fk_id_playlist = p.pk_id_playlist
@@ -245,7 +257,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 	      							THEN 1
         							ELSE 0
       							END) AS flag_blacklisted,
-	  							(SELECT ifnull(SUM(all_karas.videolength) - ak.videolength,0)
+	  							(SELECT ifnull(SUM(all_karas.duration) - ak.duration,0)
 								FROM karasdb.all_karas AS all_karas
     							INNER JOIN playlist_content ON all_karas.kara_id = playlist_content.fk_id_kara
     							WHERE playlist_content.fk_id_playlist = pc.fk_id_playlist
@@ -272,6 +284,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 export const getPLCInfoMini = `SELECT pc.fk_id_kara AS kara_id,
 							ak.title AS title,
 							ak.serie AS serie,
+							ak.serie_i18n AS serie_i18n,
 							pc.pseudo_add AS pseudo_add,
 							pc.NORM_pseudo_add AS NORM_pseudo_add,
 						  u.login AS username,
@@ -291,11 +304,12 @@ export const getPLCByKID = `SELECT ak.kara_id AS kara_id,
 								ak.title AS title,
 								ak.songorder AS songorder,
 								ak.serie AS serie,
+								ak.serie_i18n AS serie_i18n,
 								ak.songtype AS songtype,
 								ak.singer AS singer,
 								ak.gain AS gain,
 								pc.pseudo_add AS pseudo_add,
-								ak.videofile AS videofile,
+								ak.mediafile AS mediafile,
 								pc.pos AS pos,
 								pc.flag_playing AS flag_playing,
 								pc.pk_id_plcontent AS playlistcontent_id,
@@ -463,4 +477,11 @@ export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
 export const trimPlaylist = `DELETE FROM playlist_content
 							 WHERE fk_id_playlist = $playlist_id
 							 	AND pos > $pos;
+							`;
+
+export const countPlaylist = (filterClauses) => `SELECT COUNT(*) as count
+							FROM playlist_content, karasdb.all_karas AS ak							
+ 							WHERE playlist_content.fk_id_kara = ak.kara_id
+							AND playlist_content.fk_id_playlist = $playlist_id
+ 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 							`;

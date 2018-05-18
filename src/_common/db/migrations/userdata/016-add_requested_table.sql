@@ -1,0 +1,13 @@
+-- Up
+
+CREATE TABLE IF NOT EXISTS request (
+	pk_id_request INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+	fk_id_user	INTEGER NOT NULL REFERENCES user ON DELETE CASCADE,
+	fk_id_kara	INTEGER NOT NULL,
+	kid	TEXT NOT NULL,
+	requested_at TEXT DEFAULT(0) 	
+);
+
+-- Down
+
+DROP TABLE request;

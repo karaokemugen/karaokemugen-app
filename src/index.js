@@ -13,6 +13,9 @@ import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
 
+// Background image for this version
+const backgroundImage = 'HaruhiHagiographique.jpg';
+
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
 });
@@ -46,6 +49,8 @@ if (process.pkg) {
 } else {
 	appPath = join(__dirname,'../');
 }
+
+process.env['NODE_ENV'] = 'production'; // Default
 
 main()
 	.catch(err => {
@@ -82,7 +87,7 @@ async function main() {
 	);
 	logger.debug('[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
 	await copy(
-		join(__dirname, '/_player/assets/GabrielGenante.jpg'),
+		join(__dirname, `/_player/assets/${backgroundImage}`),
 		resolve(appPath, config.PathTemp, 'default.jpg'),
 		{ overwrite: true }
 	);
@@ -149,7 +154,7 @@ async function checkPaths(config) {
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
-	config.PathVideos.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.PathMedias.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathJingles.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathBackgrounds.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	checks.push(asyncCheckOrMkdir(appPath, config.PathDB));

@@ -12,7 +12,8 @@ import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
 import {emit} from './pubsub';
-import {defaults} from './default_settings.js';
+import {configConstraints, defaults} from './default_settings.js';
+import validate from 'validate.js';
 require('winston-daily-rotate-file');
 
 /** Object containing all config */
@@ -26,6 +27,36 @@ let savingSettings;
  */
 export function getConfig() {
 	return {...config};
+}
+
+export function profile(func) {
+	if (config.optProfiling) logger.profile(func);
+}
+
+function configValidationErrors(conf) {
+	initValidators();
+	return validate(conf, configConstraints);
+}
+
+function verifyConfig(conf) {
+	const validationErrors = configValidationErrors(conf);
+	if (validationErrors) {
+		throw `Config is not valid: ${JSON.stringify(validationErrors)}`;
+	}
+}
+
+function initValidators() {
+	if (!validate.validators.boolIntValidator) {
+		validate.validators.boolIntValidator = boolIntValidator;
+	}
+}
+
+function boolIntValidator(value) {
+	let result = null;	
+	if (+value !== 0 && +value !== 1) {
+		result = ` '${value}' is invalid`;
+	}
+	return result;
 }
 
 export async function mergeConfig(oldConfig, newConfig) {
@@ -83,9 +114,12 @@ export async function initConfig(appPath, argv) {
 	configWatcher.on('change', () => {
 		if (!savingSettings) {
 			const oldConf = getConfig();
-			logger.debug('[Config] config file has been changed from the outside world');
+			logger.info('[Config] Config file has been changed from the outside world, reloading it...');
 			loadConfig(resolve(appPath, configFile)).then(() => {
-				mergeConfig(oldConf, getConfig());
+				mergeConfig(oldConf, getConfig());				
+			}).catch(err => {
+				logger.error(`[Config] Error parsing new config file : ${err}`);
+				logger.warn('[Config] Config file has errors. It has been ignored');
 			});
 		}
 		
@@ -132,7 +166,16 @@ async function loadConfig(configFile) {
 	await asyncRequired(configFile);
 	const content = await asyncReadFile(configFile, 'utf-8');
 	const parsedContent = parse(content);
-	config = {...config, ...parsedContent};
+	const newConfig = {...config, ...parsedContent};
+	try {
+		verifyConfig(newConfig);
+		config = {...newConfig};
+		// Delete this when the 2.2 release gets rolled out
+		// Temporary fix to treat PathVideos as PathMedias
+		if (config.PathVideos) config.PathMedias = config.PathVideos;
+	} catch(err) {
+		throw err;
+	}
 }
 
 function configureLocale() {
@@ -221,9 +264,9 @@ export function resolvedPathSubs(overrideConfig) {
 	return conf.PathSubs.split('|').map(path => resolve(conf.appPath, path));
 }
 
-export function resolvedPathVideos(overrideConfig) {
+export function resolvedPathMedias(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
-	return conf.PathVideos.split('|').map(path => resolve(conf.appPath, path));
+	return conf.PathMedias.split('|').map(path => resolve(conf.appPath, path));
 }
 
 export function resolvedPathImport(overrideConfig) {

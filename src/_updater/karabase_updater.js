@@ -40,9 +40,9 @@ async function decompressBase() {
 	return archive;
 }
 
-async function listRemoteVideos() {
+async function listRemoteMedias() {
 	const ftp = new FTP.Client();
-	logger.info('[Updater] Fetching current video list');
+	logger.info('[Updater] Fetching current media list');
 	await ftpConnect(ftp);
 	const list = await ftp.list();	
 	await ftpClose(ftp);
@@ -61,7 +61,7 @@ async function compareBases() {
 	const archiveWOExt = basename(archive, '.zip');
 	const karasBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt,'karas');
 	const lyricsBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'lyrics');
-	const altnamesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series_altnames.csv');
+	const altnamesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series.json');
 	if (!await compareFiles(altnamesBasePath,altnamesMinePath)) {
 		copy(
 			altnamesBasePath,
@@ -98,14 +98,14 @@ async function compareBases() {
 	}	
 }
 
-async function compareVideos(localFiles, remoteFiles) {
+async function compareMedias(localFiles, remoteFiles) {
 	const conf = getConfig();
-	const pathVideos = conf.PathVideos.split('|');
+	const pathMedias = conf.PathMedias.split('|');
 	let removedFiles = [];
 	let addedFiles = [];
 	let updatedFiles = [];
-	const VideosPath = resolve(conf.appPath, pathVideos[0]);
-	logger.info('[Updater] Comparing your videos with the current ones');
+	const mediasPath = resolve(conf.appPath, pathMedias[0]);
+	logger.info('[Updater] Comparing your medias with the current ones');
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
 			if (localFile.name === remoteFile.name) {
@@ -132,7 +132,7 @@ async function compareVideos(localFiles, remoteFiles) {
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	const ftp = new FTP.Client();
 	await ftpConnect(ftp);
-	if (removedFiles.length > 0) await removeFiles(removedFiles, VideosPath);	
+	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);	
 	if (filesToDownload.length > 0) {
 		filesToDownload.sort((a,b) => {
 			return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
@@ -141,12 +141,12 @@ async function compareVideos(localFiles, remoteFiles) {
 		for (const file of filesToDownload) {
 			bytesToDownload = bytesToDownload + file.size;
 		}
-		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated videos (size : ${prettyBytes(bytesToDownload)})`);		
-		await downloadVideos(ftp, filesToDownload, VideosPath, bytesToDownload);
-		logger.info('[Updater] Done updating videos');
+		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);		
+		await downloadMedias(ftp, filesToDownload, mediasPath, bytesToDownload);
+		logger.info('[Updater] Done updating medias');
 		return true;
 	} else {
-		logger.info('[Updater] No new videos to download');
+		logger.info('[Updater] No new medias to download');
 		return false;
 	}
 }
@@ -161,7 +161,7 @@ async function ftpConnect(ftp) {
 	await ftp.useDefaultSettings();	
 }
 
-async function downloadVideos(ftp, files, VideosPath) {
+async function downloadMedias(ftp, files, mediasPath) {
 	const conf = getConfig();
 	const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}';
 	const bar1 = new _cliProgress.Bar({
@@ -173,7 +173,7 @@ async function downloadVideos(ftp, files, VideosPath) {
 		i++;
 		logger.info(`[Updater] (${i}/${files.length}) Downloading ${file.name} (${prettyBytes(file.size)})`);
 		bar1.start(Math.floor(file.size / 1000) / 1000, 0);	
-		const outputFile = resolve(conf.appPath, VideosPath, file.name);
+		const outputFile = resolve(conf.appPath, mediasPath, file.name);
 		ftp.trackProgress(info => {
 			bar1.update(Math.floor(info.bytes / 1000) / 1000);
 		});
@@ -184,21 +184,21 @@ async function downloadVideos(ftp, files, VideosPath) {
 }
 
 
-async function listLocalVideos() {
+async function listLocalMedias() {
 	const conf = getConfig();
-	const videoPaths = conf.PathVideos.split('|');
-	const videoPath = videoPaths[0];
-	const videoFiles = await asyncReadDir(resolve(conf.appPath, videoPath));	
-	let localVideos = [];
-	for (const file of videoFiles) {
-		const videoStats = await asyncStat(resolve(conf.appPath, videoPath, file));	
-		localVideos.push({
+	const mediaPaths = conf.PathMedias.split('|');
+	const mediaPath = mediaPaths[0];
+	const mediaFiles = await asyncReadDir(resolve(conf.appPath, mediaPath));	
+	let localMedias = [];
+	for (const file of mediaFiles) {
+		const mediaStats = await asyncStat(resolve(conf.appPath, mediaPath, file));	
+		localMedias.push({
 			name: file,
-			size: videoStats.size
+			size: mediaStats.size
 		});
 	}
-	logger.debug('[Updater] Listed local video files');
-	return localVideos;
+	logger.debug('[Updater] Listed local media files');
+	return localMedias;
 }
 
 async function removeFiles(files, dir) {
@@ -230,14 +230,14 @@ export async function runBaseUpdate() {
 	updateRunning = true;	
 	try {
 		await checkDirs();
-		const [remoteVideos, localVideos] = await Promise.all([
-			listRemoteVideos(),
-			listLocalVideos()
+		const [remoteMedias, localMedias] = await Promise.all([
+			listRemoteMedias(),
+			listLocalMedias()
 		]);		
 		await downloadBase();
 		const [updateBase, updateVideos] = await Promise.all([
 			compareBases(),
-			compareVideos(localVideos, remoteVideos)
+			compareMedias(localMedias, remoteMedias)
 		]);
 		updateRunning = false;
 		return !!(updateBase || updateVideos);

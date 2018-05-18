@@ -4,7 +4,7 @@
 
 /** Expressions régulières de validation. */
 export const uuidRegexp = '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
-export const videoFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg)$';
+export const mediaFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3)$';
 export const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
 export const subFileRegexp = '^.+\\.ass$';
 
@@ -13,7 +13,7 @@ export const defaultGuestNames = [
 	'Sakura du 93',
 	'Dark Kirito 64',
 	'Alex Teriyaki',
-	'Le Grandblue avec une chaussure noire',
+	'Le Granblue avec une chaussure noire',
 	'MC-kun',
 	'Beauf-kun',
 	'La Castafiore',
@@ -50,7 +50,22 @@ export const defaultGuestNames = [
 	'Idolmaster > Love Live',
 	'Love Live > Idolmaster',
 	'Les yeux noisette d\'Asuna',
-	'Lelouch'	
+	'Lelouch',
+	'Phantom Thieves',
+	'Random Isekai MC',
+	'Houonin Kyouma',
+	'Miyazaki (retired)',	
+	'Blue Accordéon',
+	'Yellow Baguette',
+	'Pink A La Mode',
+	'Red Fromage',
+	'Black Beaujolais',
+	'Silver Mousquetaire',
+	'Kyonko',
+	'My karaoke can\'t be this cute',
+	'No bully please',
+	'Le type avec un t-shirt blanc là-bas',
+	'David Goodenough'
 ];
 
 export const initializationCatchphrases = [
