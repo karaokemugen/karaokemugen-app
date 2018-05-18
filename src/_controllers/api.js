@@ -309,7 +309,7 @@ export function APIControllerAdmin(router) {
 				const playlist = await engine.getPLInfo(playlist_id, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch (err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 				
@@ -358,7 +358,7 @@ export function APIControllerAdmin(router) {
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));	
 				} catch(err) {
-					logger.error(err.message);
+					
 					res.statusCode = 500;
 					res.json(errMessage('PL_UPDATE_ERROR',err.message,err.data));
 				}
@@ -400,7 +400,7 @@ export function APIControllerAdmin(router) {
 				emitWS('playlistsUpdated');
 				res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 			}
@@ -599,7 +599,7 @@ export function APIControllerAdmin(router) {
 				emitWS('playlistContentsUpdated',req.params.pl_id);
 				res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_EMPTY_ERROR',err.message,err.data));
 				res.json(err);
@@ -706,7 +706,7 @@ export function APIControllerAdmin(router) {
 				res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
 				
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
 			}
@@ -743,7 +743,7 @@ export function APIControllerAdmin(router) {
 				emitWS('playlistInfoUpdated',req.params.pl_id);
 				res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
 			}
@@ -843,7 +843,7 @@ export function APIControllerAdmin(router) {
 				const playlist = await engine.getPLContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
 				res.json(OKMessage(playlist));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
 			}
@@ -903,7 +903,7 @@ export function APIControllerAdmin(router) {
 					};
 					res.json(OKMessage(null,'PL_SONG_ADDED',args));
 				} catch(err) {
-					logger.error(err.message);
+					
 					res.statusCode = 500;
 					res.json(errMessage('PL_ADD_SONG_ERROR',err.message,err.data));
 				}
@@ -969,7 +969,7 @@ export function APIControllerAdmin(router) {
 					};
 					res.json(OKMessage(null,'PL_SONG_MOVED',args));
 				} catch(err) {
-					logger.error(err.message);
+					
 					res.statusCode = 500;
 					res.json(errMessage('PL_MOVE_SONG_ERROR',err.message,err.data));
 				}
@@ -1026,7 +1026,7 @@ export function APIControllerAdmin(router) {
 					res.statusCode = 200;
 					res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
 				} catch(err) {
-					logger.error(err.message);
+					
 					res.statusCode = 500;
 					res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
 				}
@@ -1579,7 +1579,7 @@ export function APIControllerAdmin(router) {
 					res.statusCode = 201;
 					res.json(OKMessage(req.body,'WL_SONG_ADDED',req.body.kara_id));															
 				} catch(err) {
-					logger.error(err.message);
+					
 					res.statusCode = 500;
 					res.json(errMessage('WL_ADD_SONG_ERROR',err.message,err.data));
 				}
@@ -2059,7 +2059,7 @@ export function APIControllerAdmin(router) {
 				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
 				res.json(OKMessage(playlist));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
 			}
@@ -2167,7 +2167,7 @@ export function APIControllerAdmin(router) {
 				emitWS('playlistContentsUpdated',req.params.pl_id);
 				res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));							
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
 			}
@@ -2297,7 +2297,7 @@ export function APIControllerPublic(router) {
 				const playlist = await engine.getPLInfo(req.params.pl_id,req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 			}
@@ -2399,7 +2399,7 @@ export function APIControllerPublic(router) {
 				if (playlist == null) res.statusCode = 404;
 				res.json(OKMessage(playlist));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_VIEW_SONGS_ERROR',err.message,err.data));
 			}
@@ -2533,7 +2533,7 @@ export function APIControllerPublic(router) {
 				const kara = await engine.getPLCInfo(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
 			}
@@ -3282,7 +3282,7 @@ export function APIControllerPublic(router) {
 				const kara = await engine.getLyrics(req.params.kara_id);
 				res.json(OKMessage(kara));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
 			}
@@ -3678,7 +3678,7 @@ export function APIControllerPublic(router) {
 				res.statusCode = 200;
 				res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
 			}			
@@ -3721,7 +3721,7 @@ export function APIControllerPublic(router) {
 				res.statusCode = 200;
 				res.json(OKMessage(null,'PL_SONG_DELETED',data.pl_name));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
 			}			
@@ -4425,7 +4425,7 @@ export function APIControllerPublic(router) {
 					res.statusCode = 200;
 					res.json(OKMessage(null,'FAVORITE_DELETED',data));
 				} catch(err) {
-					logger.error(err.message);
+					
 					res.statusCode = 500;
 					res.json(errMessage('FAVORITE_DELETE_ERROR',err.message,err.data));
 				}
@@ -4489,7 +4489,7 @@ export function APIControllerPublic(router) {
 				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
 				res.json(OKMessage(playlist));
 			} catch(err) {
-				logger.error(err.message);
+				
 				res.statusCode = 500;
 				res.json(errMessage('FAVORITES_EXPORT_ERROR',err.message,err.data));
 			}
