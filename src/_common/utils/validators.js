@@ -2,8 +2,28 @@ import validate from 'validate.js';
 import testJSON from 'is-valid-json';
 import {has as hasLang} from 'langs';
 
+function integerValidator(value) {
+	if (value) {
+		if (!isNaN(value)) return null;
+		return ` '${value}' is invalid`;
+	}
+	return null;			
+}
+
+function langValidator(value) {
+	const langs = value.replace('"', '').split(',');
+	let result = null;
+	for (const lang of langs) {		
+		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
+			result = `Lang '${lang}' is invalid`;
+			break;
+		}
+	}
+	return result;
+}
+
 function boolIntValidator(value) {
-	if (+value !== 0 && +value !== 1) return ` '${value}' is invalid`;	
+	if (value && +value !== 0 && +value !== 1) return ` '${value}' is invalid`;	
 	return null;
 }
 
@@ -39,26 +59,6 @@ export function unescape(str) {
 }
 
 // Init
-
-function integerValidator(value) {
-	let result = null;	
-	if (value !== 'und' && value < 0) {
-		result = ` '${value}' is invalid`;
-	}
-	return result;
-}
-
-function langValidator(value) {
-	const langs = value.replace('"', '').split(',');
-	let result = null;
-	for (const lang of langs) {		
-		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
-			result = `Lang '${lang}' is invalid`;
-			break;
-		}
-	}
-	return result;
-}
 
 export function initValidators() {
 	if (!validate.validators.boolIntValidator) validate.validators.boolIntValidator = boolIntValidator;
