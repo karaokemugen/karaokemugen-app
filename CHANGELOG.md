@@ -55,6 +55,29 @@ This version requires your attention on the following points :
 - #299 Better handling of how Karaoke Mugen is shut down regarding database access (should remove any SQLITE_BUSY errors)
 - #295 Forbidden messages won't be displayed anymore on first login
 
+## v2.1.2 "Gabriel Gênante" - 16/05/2018
+
+### Information
+
+- Minimum required NodeJS version is now 8.4.0. This does not affect you if you use the packaged, binary versions of Karaoke Mugen
+
+### Fixes
+
+- #40 Lowered number of files processed simultaneously during generation. Linux users won't need to modify their max number of file descriptors with `ulimit`
+- Fixed favorites list not being displayed properly
+- A proper error message is displayed when trying to add a song already present in the playlist
+- #298 Jingles list is now properly created. You won't run out of jingles anymore!
+- #293 Song list sort order has been modified a little (music videos are now properly sorted)
+
+### Enhancements
+
+- #294 Karaoke Mugen now exits after karaoke base update is done.
+- #296 "Press key on exit" is only displayed if there's an error.
+
+### Features removed
+
+- #7 We pulled a Sony on you and removed the software updater. It wasn't working to begin with and needed separate development efforts. If someone's up for it...
+
 ## v2.1.1 "Gabriel Grivoise" - 03/05/2018
 
 ### Fixes
