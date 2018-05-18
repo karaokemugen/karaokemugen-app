@@ -203,10 +203,7 @@ export async function initFrontend(port) {
 	ws = require('socket.io').listen(server);
 	server.listen(port, () => {
 		logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);   		
-	});
-	setTimeout(() => {
-		emitWS('test','mytest');
-	},15000);
+	});	
 }
 		
 
