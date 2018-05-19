@@ -23,8 +23,6 @@ function localPassportStrategy() {
 
 	return new LocalStrategy(localOptions, function (username, password, done) {
 		const hash = hashPassword(password);
-		console.log(username); 
-		console.log(password);
 		findUserByName(username)
 			.then((userdata) => {
 				//User not found

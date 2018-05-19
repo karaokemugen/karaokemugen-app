@@ -303,8 +303,8 @@ export async function trimPlaylist(playlist_id,duration) {
 	const needsTrimming = pl.some((kara) => {
 		lastPos = kara.pos;
 		durationPL = durationPL + kara.duration;
-		if (durationPL > durationSecs) return true;
-		return false;
+		return durationPL > durationSecs;
+
 	});
 	if (needsTrimming) await plDB.trimPlaylist(playlist_id,lastPos);
 	await Promise.all([
@@ -387,19 +387,19 @@ export async function editPlaylist(playlist_id,name,flag_visible) {
 }				
 
 export async function createPlaylist(name,flag_visible,flag_current,flag_public,flag_favorites,username) {
-	if (flag_current && flag_public) throw 'A playlist cannot be current and public at the same time!';
-	if (flag_favorites && (flag_public || flag_public)) throw 'A playlist cannot be favorite and current/public at the same time!';	
-	if (flag_public) await unsetPublicAllPlaylists();
-	if (flag_current) await unsetCurrentAllPlaylists();	
+	if (+flag_current && +flag_public) throw 'A playlist cannot be current and public at the same time!';
+	if (+flag_favorites && (+flag_public || +flag_public)) throw 'A playlist cannot be favorite and current/public at the same time!';	
+	if (+flag_public) await unsetPublicAllPlaylists();
+	if (+flag_current) await unsetCurrentAllPlaylists();	
 	const pl = await plDB.createPlaylist({
 		name: name,
 		NORM_name: deburr(name),
 		created_at: now(),
 		modified_at: now(),
-		flag_visible: flag_visible,
-		flag_current: flag_current,
-		flag_public: flag_public,
-		flag_favorites: flag_favorites,
+		flag_visible: +flag_visible,
+		flag_current: +flag_current,
+		flag_public: +flag_public,
+		flag_favorites: +flag_favorites,
 		username: username
 	});
 	return pl.lastID;
@@ -996,8 +996,7 @@ export async function translateBlacklistCriterias(blcs, lang) {
 		if (blcList[i].type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
 			const kara = await karaDB.getKara(blcList[i].value);
-			const karaTranslated = translateKaraInfo(kara,lang);
-			blcList[i].value = karaTranslated;										
+			blcList[i].value = translateKaraInfo(kara, lang);
 		}
 		// No need to do anything, values have been modified if necessary			
 	}
@@ -1032,7 +1031,7 @@ export function translateTags(taglist,lang) {
 				taglist[index].name_i18n = i18n.__('UNDEFINED_LANGUAGE');
 			} else {
 				// We need to convert ISO639-2B to ISO639-1 to get its language
-				var langdata = langs.where('2B',tag.name);
+				const langdata = langs.where('2B', tag.name);
 				if (langdata === undefined) {
 					taglist[index].name_i18n = i18n.__('UNKNOWN_LANGUAGE');
 				} else {

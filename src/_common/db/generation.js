@@ -21,6 +21,8 @@ export const updateSeriesAltNames = `UPDATE serie SET altname = $serie_altnames 
 
 export const selectTags = 'SELECT pk_id_tag AS id_tag, tagtype, name FROM tag;';
 
+export const selectRequestKaras = 'SELECT fk_id_kara AS id_kara, kid FROM request;';
+
 export const selectKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
 
 export const selectPlaylistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM playlist_content;';

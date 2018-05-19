@@ -13,10 +13,10 @@ Options :
 --generate    Generates a new database then quits
 --validate    Validates/checks/updates .kara files without writing a database then quits
 --strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
+--profiling   Displays profiling information for some functions
 --test        Launches in test mode
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
---online      Launches in online mode (BETA)
 --noBrowser   Do not open a browser window upon launch
 --noMedia     (generation only) Do not try to fetch data from media files
 `;
@@ -32,6 +32,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.version) {
 		// Version number is already displayed so we exit here.
 		process.exit(0);
+	}
+	if (argv.profiling) {
+		logger.info('[Launcher] Profiling enabled');
+		setConfig({optProfiling: true});
 	}
 	if (argv.generate && !argv.validate) {
 		logger.info('[Launcher] Database generation requested');
@@ -61,10 +65,6 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');
 		setConfig({optBaseUpdate: true});
-	}
-	if (argv.online) {
-		logger.info('[Launcher] Online mode activated');
-		setConfig({optOnline: true});
 	}
 	if (argv.test) {
 		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');

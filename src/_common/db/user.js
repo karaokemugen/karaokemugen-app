@@ -46,11 +46,6 @@ export const getUserRequests = `SELECT ak.kara_id AS kara_id,
 							ORDER BY requested DESC, ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
 							`;
 
-export const testUserID = `SELECT pk_id_user
-								FROM user
-								WHERE pk_id_user = $id;
-						  `;
-
 export const reassignPlaylistToUser = 'UPDATE playlist SET fk_id_user = $id WHERE fk_id_user = $old_id;';
 
 export const reassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_id_user = $id WHERE fk_id_user = $old_id;';								

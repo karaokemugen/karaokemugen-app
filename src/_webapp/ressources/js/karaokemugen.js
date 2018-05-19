@@ -286,7 +286,7 @@ var settingsNotUpdated;
 			addKaraPublic(idKara);
 		});
 
-		$('body[scope="public"] .playlist-main').on('click', '.actionDiv > button[name="deleteKara"]', function() {
+		$('body[scope="public"] .playlist-main').on('click', 'button[name="deleteKara"]', function() {
 			var idPlaylistContent = $(this).closest('li').attr('idplaylistcontent');
 			deleteKaraPublic(idPlaylistContent);
 		});
@@ -1082,7 +1082,6 @@ var settingsNotUpdated;
 								if (kara.flag_upvoted === 1) {
 									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
 								}
-								console.log(dashboard.data('flag_public') == 1 ? "yes" : "no",(dashboard.data('flag_public') == 1 && scope !== 'admin' ? likeKara : ''));
 
 								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
 								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')

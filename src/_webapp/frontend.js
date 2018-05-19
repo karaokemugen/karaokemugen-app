@@ -8,7 +8,6 @@ import logger from 'winston';
 import i18n from 'i18n';
 import {getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
-import expressValidator from 'express-validator';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
@@ -22,11 +21,6 @@ export async function emitWS(type,data) {
 	ws.sockets.emit(type,data);
 }
 
-function numberTest(element) {
-	if (isNaN(element)) return false;
-	return true;
-}
-
 export async function initFrontend(port) {
 	const app = express();
 	app.engine('hbs', exphbs({
@@ -35,8 +29,8 @@ export async function initFrontend(port) {
 		
 		helpers: {
 			i18n: function() {
-				var args = Array.prototype.slice.call(arguments);
-				var options = args.pop();						
+				const args = Array.prototype.slice.call(arguments);
+				const options = args.pop();
 				return i18n.__.apply(options.data.root, args);	
 			},
 			if_eq: function(a, b, opts) {
@@ -58,36 +52,6 @@ export async function initFrontend(port) {
 	app.use(i18n.init);
 	app.use(urlencoded({ extended: true, limit: '50mb' }));
 	app.use(json());
-	// Calling express validator with custom validators, used for the player commands
-	// to check if they're from the allowed list.
-	// We use another custom validator to test for array of numbers
-	// used mainly with adding/removing lists of karaokes
-	app.use(expressValidator({
-		customValidators: {
-			enum: (input, options) => options.includes(input),
-			stringsArray: (input) => {
-				if (input) {
-					if (typeof input === 'string' && input.includes(',')) {
-						return input.split(',');
-					}
-					return input;
-				}
-				return false;
-			},
-			numbersArray: (input) => {
-				if (input) {
-					// Test if we get a single number or a list of comma separated numbers
-					if (typeof input === 'string' && input.includes(',')) {
-						let array = input.split(',');
-						return array.some(numberTest);
-					} 
-					return numberTest(input);
-				}
-				return false;
-			}
-		}
-	}));
-	
 	function routerAuth() {
 		const apiRouter = express.Router();
 		// Adding auth routes here.
@@ -139,9 +103,9 @@ export async function initFrontend(port) {
 	app.use('/welcome', routerWelcome);	
 
 	app.get('/', (req, res) => {
-		var config = getConfig();
-			
-		var view = 'public';
+		const config = getConfig();
+
+		let view = 'public';
 		if(config.WebappMode === '0') {
 			view = 'publicClosed';
 		} else if (config.WebappMode === '1') {
@@ -203,10 +167,7 @@ export async function initFrontend(port) {
 	ws = require('socket.io').listen(server);
 	server.listen(port, () => {
 		logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);   		
-	});
-	setTimeout(() => {
-		emitWS('test','mytest');
-	},15000);
+	});	
 }
 		
 

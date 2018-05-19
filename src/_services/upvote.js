@@ -16,8 +16,8 @@ export async function addUpvote(plc_id,username) {
 		const user = await findUserByName(username);
 		const userList = await getUpvotesByPLC(plc_id);
 		if (userList.some(u => {
-			if (u.user_id === user.id) return true;
-			return false;
+			return u.user_id === user.id;
+
 		})) throw {code: 'UPVOTE_ALREADY_DONE'};
 		await insertUpvote(plc_id,user.id);
 		const upvotes = plc.upvotes + 1;
@@ -56,14 +56,13 @@ export async function deleteUpvote(plc_id,username) {
 		if (!userIDs.includes(user.id)) throw {code: 'DOWNVOTE_ALREADY_DONE'};
 		await removeUpvote(plc_id,user.id);
 		const upvotes = plc.upvotes - 1;
-		const ret = {
+		// Karaokes are not 'un-freed' when downvoted.
+		return {
 			upvotes: upvotes,
 			song: `${plc.serie} - ${plc.title}`,
 			playlist_id: plc.playlist_id,
 			code: 'DOWNVOTE_DONE'
 		};
-		// Karaokes are not 'un-freed' when downvoted.
-		return ret;
 	} catch(err) {
 		if (!err.code) err.code = 'DOWNVOTE_FAILED';
 		throw err;

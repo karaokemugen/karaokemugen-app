@@ -540,21 +540,21 @@ describe('Managing blacklist', function() {
 describe('Managing playlists', function() {
 	var playlist = {
 		name:'new_playlist',
-		flag_visible:'true',
-		flag_public:'false',
-		flag_current:'false',
+		flag_visible:'1',
+		flag_public:'0',
+		flag_current:'1',
 	};
 	var playlist_current = {
 		name:'new_playlist',
-		flag_visible:'true',
-		flag_public:'false',
-		flag_current:'true'
+		flag_visible:'1',
+		flag_public:'0',
+		flag_current:'1'
 	};
 	var playlist_public = {
 		name:'new_playlist',
-		flag_visible:'true',
-		flag_public:'true',
-		flag_current:'false'
+		flag_visible:'1',
+		flag_public:'1',
+		flag_current:'0'
 	};
 	var new_playlist_id;
 	var new_playlist_current_id;
@@ -627,7 +627,7 @@ describe('Managing playlists', function() {
 	});
 	var edit_playlist = {
 		name:'new_playlist',
-		flag_visible: 'true',
+		flag_visible: '1',
 		pl_id:'new_playlist_id'
 	};
 	

@@ -125,8 +125,7 @@ export async function compareFiles(file1, file2) {
 		asyncReadFile(file1, 'utf-8'),
 		asyncReadFile(file2, 'utf-8')
 	]);
-	if (file1data === file2data) return true;
-	return false;
+	return file1data === file2data;
 }
 
 async function compareAllFiles(files, dir1, dir2) {

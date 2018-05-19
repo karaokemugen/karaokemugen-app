@@ -15,7 +15,6 @@ import {getKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
 
 let error = false;
-const karaDataLatestVersion = 3;
 
 
 export function karaFilenameInfos(karaFile) {
@@ -169,8 +168,7 @@ export async function extractVideoSubtitles(videoFile, kid) {
 async function findSubFile(videoFile, kara) {
 	const conf = getConfig();
 	if (kara.subfile === 'dummy.ass' && !conf.optNoMedia) {
-		const videoExt = extname(videoFile);
-		if (videoExt === '.mkv') {
+		if (extname(videoFile) === '.mkv') {
 			try {
 				return await extractVideoSubtitles(videoFile, kara.KID);
 			} catch (err) {

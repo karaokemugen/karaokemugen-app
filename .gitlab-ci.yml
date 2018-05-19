@@ -8,7 +8,6 @@ cache:
   - react_client/node_modules/
 
 before_script:
-  - apt-get update -qq && apt-get install -y -qq lftp zip ffmpeg
   - rm -f /usr/local/bin/yarn
   - rm -f /usr/local/bin/yarnpkg
   - npm install -g pkg@4.2.6 yarn apidoc
@@ -22,6 +21,7 @@ stages:
 test:
   stage: test
   script:
+    - apt-get update -qq && apt-get install -y -qq ffmpeg
     - yarn install --check-files --force
     - touch mpv
     - echo "BinPlayerLinux=mpv" >>config.ini
@@ -43,10 +43,12 @@ build:
     paths:
       - dist/
   script:
+    - npm install -g modclean
     - yarn build
     - yarn install --production
     - cd node_modules
     - find -name *.node -delete
+    - modclean -r
   only:
     - master
     - next
@@ -90,6 +92,7 @@ deploy_win:
   dependencies:
     - pkg_win
   script:
+    - apt-get update -qq && apt-get install -y -qq lftp zip  
     - mkdir build_win
     - cd build_win
     - wget http://mugen.karaokes.moe/downloads/dist_win.tar.gz
@@ -118,6 +121,7 @@ deploy_win:
 latest_tag:
   stage: deploy
   script:
+    - apt-get update -qq && apt-get install -y -qq lftp
     - echo $CI_COMMIT_REF_NAME >latest
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put latest"
   only: 
@@ -128,6 +132,7 @@ deploy_osx:
   dependencies:
     - pkg_osx
   script:
+    - apt-get update -qq && apt-get install -y -qq lftp zip  
     - mkdir build_mac
     - cd build_mac
     - wget http://mugen.karaokes.moe/downloads/dist_macos.tar.gz
@@ -156,6 +161,7 @@ deploy_osx:
 apidoc:
   stage: deploy
   script:    
+    - apt-get update -qq && apt-get install -y -qq lftp  
     - apidoc -i src -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd apidoc; mirror -Rnev --parallel=10"

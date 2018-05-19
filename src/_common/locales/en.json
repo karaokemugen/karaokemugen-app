@@ -223,15 +223,11 @@
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Force hostname or IP",
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
 	"ENGINEDISPLAYCONNECTIONINFO": "Show network information",
-<<<<<<< HEAD
 	"ENGINEREMOVEPUBLICONPLAY": "Remove songs from public playlist once played",
 	"ENGINESONGPOLL": "Public Poll",
 	"ENGINESONGPOLLCHOICES": "Number of songs users can choose from during public poll",
 	"ENGINESONGPOLLTIMEOUT": "Public poll duration (in seconds)",
     "MESSAGE": "Message",
-=======
-	"MESSAGE": "Message",
->>>>>>> next
 	"PLAYLIST_COMMANDS": "Playlist commands",
 	"PLAYLIST_SHUFFLE": "Shuffle playlist",
 	"PLAYLIST_EDIT": "Rename playlist",

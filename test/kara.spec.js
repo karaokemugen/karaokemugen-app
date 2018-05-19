@@ -49,11 +49,6 @@ describe('Kara validator', () => {
 		expect(karaDataValidationErrors(invalidKara)).to.have.property('lang');
 	});
 
-	it('Should not valid a kara with negative order', () => {
-		const invalidKara = { ...validKara, order: -1};
-		expect(karaDataValidationErrors(invalidKara)).to.have.property('order');
-	});
-
 	it('Should not valid a kara with real version', () => {
 		const invalidKara = { ...validKara, version: 2.1};
 		expect(karaDataValidationErrors(invalidKara)).to.have.property('version');

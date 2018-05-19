@@ -112,8 +112,8 @@ export async function initFavoritesSystem() {
 	]);	
 	for (const user of users) {		
 		const isFavoritePLExists = playlists.some(pl => {		
-			if (pl.username === user.login && pl.flag_favorites === 1 && user.type === 1) return true; 
-			return false;
+			return pl.username === user.login && pl.flag_favorites === 1 && user.type === 1;
+
 		});
 		if (!isFavoritePLExists && user.type === 1) await createPlaylist(`Faves : ${user.login}`,0,0,0,1,user.login);
 	}

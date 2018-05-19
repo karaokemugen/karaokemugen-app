@@ -3,7 +3,7 @@ import {on} from '../_common/utils/pubsub';
 import {getConfig} from '../_common/utils/config';
 import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, isACurrentPlaylist, isAPublicPlaylist, getPlaylistContents} from '../_services/playlist';
 import {sample, sampleSize} from 'lodash';
-import {emitWS} from '../_ws/websocket';
+import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
 import uuidV4 from 'uuid/v4';
 const sleep = promisify(setTimeout);
@@ -43,7 +43,7 @@ on('playerStatusChange', (player) => {
 export async function timerPoll() {
 	const internalUUID = pollUUID = uuidV4();
 	await sleep(getConfig().EngineSongPollTimeout * 1000);
-	if (internalUUID == pollUUID) endPoll();
+	if (internalUUID === pollUUID) endPoll();
 }
 
 export function endPoll() {
@@ -69,7 +69,7 @@ export async function getPollResults(lang) {
 	// We check if winner isn't the only one...
 	let winners = [];
 	for (const choice of poll) {
-		if (choice.votes == maxVotes) winners.push(choice);
+		if (+choice.votes === +maxVotes) winners.push(choice);
 	}
 	let winner = sample(winners);
 	winner = translateKaraInfo(winner,lang);
@@ -85,14 +85,14 @@ export async function getPollResults(lang) {
 
 export async function addPollVote(playlistcontent_id,token) { 
 	pollEnding = false;
-	if (poll.length == 0 || pollEnding) throw {
+	if (poll.length === 0 || pollEnding) throw {
 		code: 'POLL_NOT_ACTIVE'
 	};		
 	if (hasUserVoted(token.username)) throw {
 		code: 'POLL_USER_ALREADY_VOTED'
 	};
 	const choiceFound = poll.some((choice, index) => {
-		if (choice.playlistcontent_id == playlistcontent_id) {
+		if (+choice.playlistcontent_id === +playlistcontent_id) {
 			poll[index].votes++;
 			return true;
 		}
@@ -111,7 +111,7 @@ export async function addPollVote(playlistcontent_id,token) {
 
 export async function startPoll() {
 	const conf = getConfig();
-	console.log('Starting poll');
+	logger.info('[Poll] Starting a new poll');
 	poll = [];	
 	voters = [];
 	pollEnding = false;
@@ -141,15 +141,15 @@ function hasUserVoted(username) {
 }
 
 export async function getPoll(token, lang, from, size) {	
-	if (poll.length == 0) throw {
+	if (poll.length === 0) throw {
 		code: 'POLL_NOT_ACTIVE'
 	};	
 	poll = translateKaraInfo(poll,lang);
 	return {
 		infos: { 
 			count: poll.length,
-			from: parseInt(from),
-			to: parseInt(from)+parseInt(size)
+			from: parseInt(from,10),
+			to: parseInt(from,10)+parseInt(size,10)
 		},
 		poll: poll,
 		flag_uservoted: hasUserVoted(token.username)

@@ -87,15 +87,6 @@ export async function addViewcount(kara_id,kid,datetime) {
 	});
 }
 
-export async function addRequested(user_id,kara_id,kid,datetime) {
-	return await getUserDb().run(sql.addRequested, {
-		$user_id: user_id,
-		$kara_id: kara_id,
-		$kid: kid,
-		$modified_at: datetime
-	});
-}
-
 export async function addKaraToRequests(user_id,karaList,date_add) {
 	const karas = karaList.map((kara) => ({
 		$user_id: user_id,
