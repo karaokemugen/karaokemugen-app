@@ -1,7 +1,7 @@
 
 import {on} from '../_common/utils/pubsub';
 import {getConfig} from '../_common/utils/config';
-import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, isACurrentPlaylist, isAPublicPlaylist, getPlaylistContents} from '../_services/playlist';
+import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, isACurrentPlaylist, isAPublicPlaylist, getPlaylistContentsMini} from '../_services/playlist';
 import {sample, sampleSize} from 'lodash';
 import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
@@ -122,8 +122,8 @@ export async function startPoll() {
 	]);	
 	// Get a list of karaokes to add to the poll
 	const [pubpl, curpl] = await Promise.all([
-		getPlaylistContents(publicPlaylist_id),
-		getPlaylistContents(currentPlaylist_id)
+		getPlaylistContentsMini(publicPlaylist_id),
+		getPlaylistContentsMini(currentPlaylist_id)
 	]);
 	const availableKaras = isAllKarasInPlaylist(pubpl, curpl);
 	let pollChoices = conf.EngineSongPollChoices;
