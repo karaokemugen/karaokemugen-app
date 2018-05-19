@@ -6,6 +6,7 @@ import {sample, sampleSize} from 'lodash';
 import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
 import uuidV4 from 'uuid/v4';
+import logger from 'winston';
 const sleep = promisify(setTimeout);
 
 let state = {};
@@ -22,7 +23,7 @@ on('engineStatusChange', (newstate) => {
 });
 
 on('playerStatusChange', (player) => {
-	if (player.songType == 'song') {
+	if (player.songType === 'song') {
 		if (!playerPlaying) {
 			playerPlaying = true;
 			startPoll();
@@ -47,22 +48,24 @@ export async function timerPoll() {
 }
 
 export function endPoll() {
-	pollEnding = true;
-	console.log('Ending poll');
+	pollEnding = true;	
 	getPollResults().then(winner => {
+		logger.debug('[Poll] Ending poll with '+JSON.stringify(winner));
 		emitWS('songPollResult',winner);
 		stopPoll();
 	});
 }
 
 export function stopPoll() {
+	logger.debug('[Poll] Stopping poll');
 	poll = [];
 	voters = [];
 	pollEnding = false;
 	emitWS('songPollEnded');
 }
 
-export async function getPollResults(lang) {
+export async function getPollResults() {
+	logger.debug('[Poll] Getting poll results');
 	const maxVotes = Math.max.apply(Math,poll.map((choice) => {
 		return choice.votes;
 	}));
@@ -72,7 +75,7 @@ export async function getPollResults(lang) {
 		if (+choice.votes === +maxVotes) winners.push(choice);
 	}
 	let winner = sample(winners);
-	winner = translateKaraInfo(winner,lang);
+	winner = translateKaraInfo(winner);
 	const playlist_id = await isACurrentPlaylist();
 	await copyKaraToPlaylist([winner[0].playlistcontent_id],playlist_id);
 	emitWS('playlistInfoUpdated',playlist_id);
@@ -84,7 +87,6 @@ export async function getPollResults(lang) {
 }
 
 export async function addPollVote(playlistcontent_id,token) { 
-	pollEnding = false;
 	if (poll.length === 0 || pollEnding) throw {
 		code: 'POLL_NOT_ACTIVE'
 	};		
