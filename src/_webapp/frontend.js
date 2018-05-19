@@ -29,8 +29,8 @@ export async function initFrontend(port) {
 		
 		helpers: {
 			i18n: function() {
-				var args = Array.prototype.slice.call(arguments);
-				var options = args.pop();						
+				const args = Array.prototype.slice.call(arguments);
+				const options = args.pop();
 				return i18n.__.apply(options.data.root, args);	
 			},
 			if_eq: function(a, b, opts) {
@@ -103,9 +103,9 @@ export async function initFrontend(port) {
 	app.use('/welcome', routerWelcome);	
 
 	app.get('/', (req, res) => {
-		var config = getConfig();
-			
-		var view = 'public';
+		const config = getConfig();
+
+		let view = 'public';
 		if(config.WebappMode === '0') {
 			view = 'publicClosed';
 		} else if (config.WebappMode === '1') {

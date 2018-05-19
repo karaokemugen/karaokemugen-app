@@ -16,10 +16,6 @@ export async function checkNicknameExists(nickname,NORM_nickname) {
 	});
 }
 
-export async function checkUserIDExists(id) {
-	return await getUserDb().get(sql.testUserID, { $id: id });
-}
-
 export async function deleteUser(id) {
 	return await getUserDb().run(sql.deleteUser, { $id: id });
 }

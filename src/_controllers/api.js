@@ -31,24 +31,6 @@ function OKMessage(data,code,args) {
 }
 
 
-// Rules :
-// version of the API is decided in the path
-// Example : /v1/, /v2/, etc.
-// We output JSON only.
-
-// Validators & sanitizers :
-// https://github.com/chriso/validator.js
-
-// Reminder of HTTP codes:
-// 200 : OK
-// 201 : CREATED
-// 404 : NOT FOUND
-// 400 : BAD REQUEST
-// 500 : INTERNAL ERROR
-// 403 : FORBIDDEN
-// 503 : TEMPORARILY UNAVAILABLE
-
-// In case of error, return the correct code and object 'error'
 /**
  * @apiDefine admin Admin access only
  * Requires authorization token from admin user to use this API

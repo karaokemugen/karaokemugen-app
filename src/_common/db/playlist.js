@@ -359,25 +359,6 @@ export const getPlaylists = `SELECT p.pk_id_playlist AS playlist_id,
 							WHERE p.fk_id_user = u.pk_id_user  
  							`;
 
-export const getFavoritePlaylists = `
-							SELECT p.pk_id_playlist AS playlist_id, 
-									p.name AS name, 
-									p.num_karas AS num_karas, 
-									p.length AS length, 
-									p.time_left AS time_left, 
-									p.created_at AS created_at, 
-									p.modified_at AS modified_at, 
-									p.flag_visible AS flag_visible, 
-									p.flag_current AS flag_current, 
-									p.flag_public AS flag_public,
-									p.flag_favorites AS flag_favorites,
-									u.login AS username
- 							FROM playlist AS p, user AS u
-							WHERE p.fk_id_user = u.pk_id_user
-							  AND u.login = $username
-							  AND p.flag_favorites = 1
-							`;
-
 export const testCurrentPlaylist = `SELECT pk_id_playlist AS playlist_id
 								FROM playlist 
 								WHERE flag_current = 1;
@@ -477,11 +458,4 @@ export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
 export const trimPlaylist = `DELETE FROM playlist_content
 							 WHERE fk_id_playlist = $playlist_id
 							 	AND pos > $pos;
-							`;
-
-export const countPlaylist = (filterClauses) => `SELECT COUNT(*) as count
-							FROM playlist_content, karasdb.all_karas AS ak							
- 							WHERE playlist_content.fk_id_kara = ak.kara_id
-							AND playlist_content.fk_id_playlist = $playlist_id
- 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 							`;

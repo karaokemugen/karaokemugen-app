@@ -9,11 +9,6 @@ export const deleteUpvote = `DELETE FROM upvote
 						  AND fk_id_user = $user_id
 						  `;
 
-export const selectUpvoteByUser = `SELECT fk_id_plcontent AS plc_id 
-									FROM upvote 
-								   WHERE fk_id_user = $user_id;
-									`;
-
 export const selectUpvoteByPLC = `SELECT fk_id_user AS user_id
 									FROM upvote
 									WHERE fk_id_plcontent = $plc_id;

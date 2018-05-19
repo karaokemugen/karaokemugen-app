@@ -197,7 +197,6 @@ export async function initEngine() {
 
 export function exit(rc) {
 	logger.info('[Engine] Shutdown in progress');
-	const conf = getConfig();
 	//Exiting on Windows will require a keypress from the user to avoid the window immediately closing on an error.
 	//On other systems or if terminal is not a TTY we exit immediately.
 	// non-TTY terminals have no stdin support.
@@ -899,68 +898,50 @@ export async function sendCommand(command, options) {
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
 	if (internalState.commandInProgress) throw '[Engine] A command is already in progress';
 	internalState.commandInProgress = true;
-	switch (command) {
-	case 'play':
+	if (command === 'play') {
 		await playPlayer();
-		break;
-	case 'stopNow':
+	} else if (command === 'stopNow') {
 		await stopPlayer(true);
-		break;
-	case 'pause':
+	} else if (command === 'pause') {
 		await pausePlayer();
-		break;
-	case 'stopAfter':
+	} else if (command === 'stopAfter') {
 		stopPlayer();
-		await plc.next();		
-		break;
-	case 'skip':
+		await plc.next();
+	} else if (command === 'skip') {
 		await next();
-		break;
-	case 'prev':
+	} else if (command === 'prev') {
 		await prev();
-		break;
-	case 'toggleFullscreen':
+	} else if (command === 'toggleFullscreen') {
 		await toggleFullScreenPlayer();
-		break;
-	case 'toggleAlwaysOnTop':
+	} else if (command === 'toggleAlwaysOnTop') {
 		await toggleOnTopPlayer();
-		break;
-	case 'mute':
+	} else if (command === 'mute') {
 		await mutePlayer();
-		break;
-	case 'unmute':
+	} else if (command === 'unmute') {
 		await unmutePlayer();
-		break;
-	case 'showSubs':
+	} else if (command === 'showSubs') {
 		await showSubsPlayer();
-		break;
-	case 'hideSubs':
+	} else if (command === 'hideSubs') {
 		await hideSubsPlayer();
-		break;
-	case 'seek':
+	} else if (command === 'seek') {
 		if (!options || isNaN(options)) {
 			internalState.commandInProgress = false;
 			throw 'Command seek must have a numeric option value';
 		}
 		await seekPlayer(options);
-		break;
-	case 'goTo':
+	} else if (command === 'goTo') {
 		if (!options || isNaN(options)) {
 			internalState.commandInProgress = false;
 			throw 'Command goTo must have a numeric option value';
 		}
 		await goToPlayer(options);
-		break;
-	case 'setVolume':
+	} else if (command === 'setVolume') {
 		if (!options || isNaN(options)) {
-			internalState.commandInProgress = false;			
+			internalState.commandInProgress = false;
 			throw 'Command setVolume must have a numeric option value';
 		}
 		await setVolumePlayer(options);
-		break;
-	default:
-		// Unknown commands are not possible, they're filtered by API's validation.
-		break;
+	} else {// Unknown commands are not possible, they're filtered by API's validation.
 	}
 	internalState.commandInProgress = false;
 }

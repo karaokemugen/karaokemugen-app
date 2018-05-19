@@ -30,26 +30,9 @@ async function updateExpiredUsers() {
 	}	
 }
 
-export async function updateLastLoginID(id) {
-	// Update last login time for a user
-	return await db.updateUserLastLogin(id,now());
-}
-
 export async function updateLastLoginName(login) {
 	const currentUser = await findUserByName(login);
 	return await db.updateUserLastLogin(currentUser.id,now());
-}
-
-export async function validateUserName(login) {
-	// Returns true if login name is free to use.
-	if (!await findUserByName(login, {public :false})) return true;
-	return false;
-}
-
-export async function validateUserNickname(nickname) {
-	// Returns true if nickname is free to use.
-	if (!await db.getUserByNickname(nickname)) return true;
-	return false;
 }
 
 export async function getUserRequests(username) {
@@ -93,11 +76,10 @@ export async function editUser(username,user,avatar,role) {
 		return user;
 	} catch (err) {
 		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
-		const ret = {
+		throw {
 			message: err,
 			data: user.nickname
 		};
-		throw ret;
 	}
 }
 
@@ -259,9 +241,7 @@ export async function deleteUserById(id) {
 
 	try {
 		const user = await findUserByID(id);
-		if (!user) {
-			throw {code: 'USER_NOT_EXISTS'};
-		}
+		if (!user) throw {code: 'USER_NOT_EXISTS'};
 		if (user.login === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Human Instrumentality Project'};
 		const playlist_id = await findFavoritesPlaylist(user.login);
 		if (playlist_id) {
