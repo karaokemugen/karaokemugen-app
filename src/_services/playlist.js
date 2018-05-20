@@ -252,7 +252,7 @@ export async function getKaraLyrics(kara_id) {
 async function getASS(kara_id) {
 	const kara = await getKaraMini(kara_id);	
 	let ASS;	
-	if (kara.subfile !== 'dummy.ass') ASS = await karaDB.getASS(kara.subfile);
+	if (kara.subfile && kara.subfile !== 'dummy.ass') ASS = await karaDB.getASS(kara.subfile);
 	return ASS || false;
 }
 
