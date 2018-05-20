@@ -181,7 +181,7 @@ async function findSubFile(videoFile, kara) {
 		try {
 			if (kara.subfile !== 'dummy.ass') return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
 		} catch (err) {
-			logger.warn(`[Kara] Could not find subfile '${kara.subfile}'.`);
+			logger.warn(`[Kara] Could not find subfile '${kara.subfile}' (in ${JSON.stringify(resolvedPathSubs())}).`);
 			error = true;
 		}
 	}
