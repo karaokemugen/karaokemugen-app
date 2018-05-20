@@ -387,11 +387,11 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			var htmlString = '<div class="form-group ' + customClass + '"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
 													+ '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
 			if (e === 'PlayerPIP') {
-				$(htmlString).insertBefore('#pipSettings');
+				$(htmlString).addClass('groupSettingActivator').insertBefore('#pipSettings');
 			} else if (e === 'EngineDisplayConnectionInfo') {
-				$(htmlString).insertBefore('#connexionInfoSettings');
+				$(htmlString).addClass('groupSettingActivator').insertBefore('#connexionInfoSettings');
 			} else if (e === 'EngineFreeUpvotes') {
-				$(htmlString).insertBefore('#freeUpvotesSettings');
+				$(htmlString).addClass('groupSettingActivator').insertBefore('#freeUpvotesSettings');
 			} else {
 				htmlSettings += htmlString;
 			}
