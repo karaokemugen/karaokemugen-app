@@ -311,7 +311,7 @@ function setSongPoll(enabled) {
 	const oldState = state.engine.songPoll;
 	state.engine.songPoll = enabled;
 	emitEngineStatus();
-	if (!oldState && enabled) startPoll();
+	if (!oldState && enabled) startPoll(internalState.publicPlaylistID,internalState.currentPlaylistID);
 	if (oldState && !enabled) stopPoll();
 }
 
@@ -406,7 +406,8 @@ async function tryToReadKaraInPlaylist() {
 			state.engine.currentlyPlayingKara = kara.kara_id;
 			emitEngineStatus();
 			addViewcountKara(kara.kara_id,kara.kid);
-			updateUserQuotas(kara);			
+			updateUserQuotas(kara);
+			if (getConfig().EngineSongPoll) startPoll(internalState.publicPlaylistID,internalState.currentPlaylistID);
 		} catch(err) {
 			logger.error(`[Engine] Error during song playback : ${err}`);
 			emitEngineStatus();

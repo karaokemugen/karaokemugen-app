@@ -80,9 +80,11 @@ export async function getPollResults() {
 	await copyKaraToPlaylist([winner[0].playlistcontent_id],playlist_id);
 	emitWS('playlistInfoUpdated',playlist_id);
 	emitWS('playlistContentsUpdated',playlist_id);
+	const kara = `${winner[0].serie} - ${winner[0].songtype_i18n_short}${winner[0].songorder} - ${winner[0].title}`;
+	logger.info(`[Poll] Winner is "${kara}" with ${maxVotes} votes`);
 	return {
 		votes: maxVotes,
-		kara: `${winner[0].serie} - ${winner[0].songtype_i18n_short}${winner[0].songorder} - ${winner[0].title}`
+		kara: kara
 	};
 }
 
@@ -111,22 +113,26 @@ export async function addPollVote(playlistcontent_id,token) {
 	};
 }
 
-export async function startPoll() {
-	const conf = getConfig();
+export async function startPoll(publicPlaylist_id, currentPlaylist_id) {
+	const conf = getConfig();	
+	if (poll.length > 0) {
+		logger.info('[Poll] Unable to start poll, another one is already in progress')
+		return false;
+	}
 	logger.info('[Poll] Starting a new poll');
 	poll = [];	
 	voters = [];
 	pollEnding = false;
-	// Create new poll
-	const [publicPlaylist_id, currentPlaylist_id] = await Promise.all([		
-		isAPublicPlaylist(),
-		isACurrentPlaylist(),
-	]);	
+	// Create new poll	
 	// Get a list of karaokes to add to the poll
 	const [pubpl, curpl] = await Promise.all([
 		getPlaylistContentsMini(publicPlaylist_id),
 		getPlaylistContentsMini(currentPlaylist_id)
 	]);
+	if (pubpl.length === 0) {
+		logger.info('[Poll] Public playlist is empty, cannot select songs for poll');
+		return false;
+	}
 	const availableKaras = isAllKarasInPlaylist(pubpl, curpl);
 	let pollChoices = conf.EngineSongPollChoices;
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
