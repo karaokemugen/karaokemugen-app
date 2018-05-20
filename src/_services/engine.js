@@ -196,7 +196,7 @@ export async function initEngine() {
 	logger.info(`[Engine] Karaoke Mugen is ${ready}`);
 	console.log(`\n${sample(initializationCatchphrases)}\n`);
 	if (!conf.isTest) welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
-	profile('Init');
+	profile('Init');	
 }
 
 export function exit(rc) {
@@ -311,7 +311,7 @@ function setSongPoll(enabled) {
 	const oldState = state.engine.songPoll;
 	state.engine.songPoll = enabled;
 	emitEngineStatus();
-	if (!oldState && enabled && state.engine.status === 'play') startPoll();
+	if (!oldState && enabled) startPoll();
 	if (oldState && !enabled) stopPoll();
 }
 

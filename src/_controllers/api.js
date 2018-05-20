@@ -4850,14 +4850,13 @@ export function APIControllerPublic(router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			//Validate form data
 			const validationErrors = check(req.body, {
-				playlistcontent_id: {presence: true, numbersArrayValidator: true}				
+				playlistcontent_id: {presence: true, numbersArrayValidator: true}
 			});
 			if (!validationErrors) {			
 				// No errors detected
-				req.body.playlistcontent_id = parseInt(req.body.playlistcontent_id, 10);					
+				req.body.playlistcontent_id = parseInt(req.body.playlistcontent_id, 10);
 				try {
-
-					const ret = await poll.addPollVote(req.body.playlistcontent_id,req.body.AuthToken);
+					const ret = await poll.addPollVote(req.body.playlistcontent_id,req.authToken);
 					emitWS('songPollUpdated', ret.data);
 					res.json(OKMessage(null,ret.code,ret.data));
 				} catch(err) {

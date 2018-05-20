@@ -134,6 +134,7 @@ export async function startPoll() {
 	for (const index in poll) {
 		poll[index].votes = 0;
 	}
+	logger.debug('[Poll] New poll : '+JSON.stringify(poll));
 	emitWS('newSongPoll',poll);
 	timerPoll();
 }
