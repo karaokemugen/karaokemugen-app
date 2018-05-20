@@ -14,6 +14,7 @@ div > a {
 }
 .form-control {
 	background-color: #f3f3f3;
+    border-radius: 2px;
 }
 
 .btn-default {
@@ -226,7 +227,8 @@ select.form-control {
 	width: 100% !important;
 	background-color: #343434;
     color: white;
-    border-radius: 0;
+	border-radius: 0;
+    border-color: #fafafa70;
 }
 
 .list-group-item:focus {

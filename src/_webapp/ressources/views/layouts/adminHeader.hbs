@@ -31,7 +31,7 @@
         var query = {{{query}}};
         var webappMode = {{webappMode}};
         var settingsOnOffHighlight = {
-            "EngineSongPoll" : true
+            // add settings you want to highlight
         }
         var settingsOnOff = {
             'player' : 
@@ -47,11 +47,13 @@
                 , "EngineAllowViewWhitelist": "{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
                 , "EngineCreatePreviews": "{{i18n "ENGINECREATEPREVIEWS"}}"
                 },
-            'karaoke' :
-                { "EngineSongPoll": "{{i18n "ENGINESONGPOLL"}}"
-                , "EngineRepeatPlaylist": "{{i18n "ENGINEREPEATPLAYLIST"}}"
+            'karaokeAllMode' :
+                { "EngineRepeatPlaylist": "{{i18n "ENGINEREPEATPLAYLIST"}}"
                 , "EngineSmartInsert": "{{i18n "ENGINEENABLESMARTINSERT"}}"
                 , "EngineAutoPlay": "{{i18n "ENGINEAUTOPLAY"}}"
+                },
+            'karaokePublicMode' :
+                { "EngineSongPoll": "{{i18n "ENGINESONGPOLL"}}"
                 , "EngineFreeUpvotes": "{{i18n "ENGINEFREEUPVOTES"}}" 
                 }
             };

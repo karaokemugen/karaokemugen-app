@@ -465,5 +465,6 @@
 	"SERIE_NAME_MODE_SONG": "Song's language",
 	"SERIE_NAME_MODE_ADMIN": "Karaoke Mugen's language",
 	"SERIE_NAME_MODE_USER": "User's language",
+	"PUBLICMODESETTINGS" : "Public-only settings",
 	"_": "DO NOT MODIFY"
 }

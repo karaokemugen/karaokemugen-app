@@ -464,5 +464,6 @@
 	"SERIE_NAME_MODE_SONG": "Langue de la chanson",
 	"SERIE_NAME_MODE_ADMIN": "Langue de Karaoke Mugen",
 	"SERIE_NAME_MODE_USER": "Langue de l'utilisateur",
-	"_": "DO NOT MODIFY"	
+	"PUBLICMODESETTINGS" : "Options exclusives au mode public",
+	"_": "DO NOT MODIFY"
 }
