@@ -19,6 +19,9 @@
     background-color: #2d2d2f;
 	padding: 0;
 }
+#settings .form-group.settingsHighlight .bootstrap-switch-btn{
+	border: 2px solid #b8a047e6;
+}
 .settingsGroupPanel {
 	padding: 16px 0px;
 	background-color:transparent;

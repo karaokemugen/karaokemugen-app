@@ -30,6 +30,9 @@
     <script>
         var query = {{{query}}};
         var webappMode = {{webappMode}};
+        var settingsOnOffHighlight = {
+            "EngineSongPoll" : true
+        }
         var settingsOnOff = {
             'player' : 
                 { "PlayerPIP": "{{i18n "PLAYERPIP"}}"
@@ -45,7 +48,8 @@
                 , "EngineCreatePreviews": "{{i18n "ENGINECREATEPREVIEWS"}}"
                 },
             'karaoke' :
-                { "EngineRepeatPlaylist": "{{i18n "ENGINEREPEATPLAYLIST"}}"
+                { "EngineSongPoll": "{{i18n "ENGINESONGPOLL"}}"
+                , "EngineRepeatPlaylist": "{{i18n "ENGINEREPEATPLAYLIST"}}"
                 , "EngineSmartInsert": "{{i18n "ENGINEENABLESMARTINSERT"}}"
                 , "EngineAutoPlay": "{{i18n "ENGINEAUTOPLAY"}}"
                 , "EngineFreeUpvotes": "{{i18n "ENGINEFREEUPVOTES"}}" 
