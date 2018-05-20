@@ -242,6 +242,7 @@ export async function runBaseUpdate() {
 		updateRunning = false;
 		return !!(updateBase || updateVideos);
 	} catch (err) {
+		updateRunning = false;
 		throw err;
 	}
 }
