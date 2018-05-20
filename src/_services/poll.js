@@ -140,6 +140,7 @@ export async function startPoll(publicPlaylist_id, currentPlaylist_id) {
 	for (const index in poll) {
 		poll[index].votes = 0;
 	}
+	poll = translateKaraInfo(poll);
 	logger.debug('[Poll] New poll : '+JSON.stringify(poll));
 	emitWS('newSongPoll',poll);
 	timerPoll();
