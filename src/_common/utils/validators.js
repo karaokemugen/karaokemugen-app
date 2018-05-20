@@ -32,12 +32,16 @@ function isJSON(value) {
 	return ` '${value}' is invalid JSON`;	
 }
 
+function isNumber(value) {
+	return !isNaN(value);
+}
+
 function numbersArrayValidator(value) {
 	if (value) {		
 		value = '' + value;
 		if (value.includes(',')) {
 			const array = value.split(',');
-			if (array.every(!isNaN)) return null;
+			if (array.every(isNumber)) return null;
 			return ` '${value}' is invalid`;	
 		}
 		if (!isNaN(value)) return null;
