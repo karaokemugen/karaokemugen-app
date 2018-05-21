@@ -1094,7 +1094,7 @@ var settingsNotUpdated;
 								+	(scope !== 'admin' && kara.username == logInfos.username ?  deleteKaraHtml : '')
 								+	'</div>'
 								+   '<div class="contentDiv">'
-								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
+								+	'<div>' + buildKaraTitle(kara, {'search' : filter}) + '</div>'
 								+	'<div>' + badges + '</div>'
 								+   '</div>'
 								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
@@ -1610,24 +1610,40 @@ var settingsNotUpdated;
 	/**
     * Build kara title for users depending on the data
     * @param {Object} data - data from the kara
-    * @param {String} search - (optional) search made by the user
+    * @param {Object} options - (optional) [search, mode] search made by the user, special mode to render so far 'doubleline' is accepted
     * @return {String} the title
     */
-	buildKaraTitle = function(data, search) {
+	buildKaraTitle = function(data, options) {
+		if (typeof options == 'undefined') {
+			options = {};
+		}
+
 		if(data.language && data.language.indexOf('mul') > -1) {
 			data.language = 'mul';
 		} else if (!data.language) {
 			data.language = '';
 		}
-		var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
-			data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
-		var titleClean = Object.keys(titleArray).map(function (k) {
-			return titleArray[k] ? titleArray[k] : '';
-		});
-		var titleText = titleClean.join(' - ');
-
-		if(search) {
-			var search_regexp = new RegExp('(' + search + ')', 'gi');
+		var titleText = 'fillerTitle';
+		if (options.mode && options.mode === 'doubleline') {
+			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
+				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : '')], Boolean);
+			var titleClean = Object.keys(titleArray).map(function (k) {
+				return titleArray[k] ? titleArray[k] : '';
+			});
+			titleText = titleClean.join(' - ') + '<br/>' + data.title;
+			
+		} else {
+			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
+				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
+			var titleClean = Object.keys(titleArray).map(function (k) {
+				return titleArray[k] ? titleArray[k] : '';
+			});
+			titleText = titleClean.join(' - ');
+		}
+		
+	
+		if(options.search) {
+			var search_regexp = new RegExp('(' + options.search + ')', 'gi');
 			titleText = titleText.replace(search_regexp,'<h>$1</h>');
 		}
 		return titleText;
@@ -1754,6 +1770,38 @@ var settingsNotUpdated;
 			$('.karaCard > div').show();
 		}
 		return infoKaraTemp;
+	};
+
+	/*
+	*	Build the modal pool from a kara list
+	*	data  {Object} : list of karas going in the poll
+	*/
+	buildAndShowPoll = function(data) {
+		var karaNumber = data.length;
+		var $pollModal = $('#pollModal');
+		var randArray = Array.from(Array(15).keys());
+	
+		$('#nav-poll').empty();
+		$.each(data, function(index, kara) {
+			var randColor = '42';
+			var drawIndex = Math.floor(randArray.length * Math.random());
+			var drawn = randArray.splice(drawIndex, 1);
+			if(drawn) var randColor = drawn * 24;
+
+			var karaTitle = '';
+			if (isSmall) {
+				karaTitle = buildKaraTitle(kara, { 'mode' : 'doubleline'});
+			} else {
+				karaTitle = buildKaraTitle(kara);
+			}
+			$('#nav-poll').append('<div class="modal-message">'
+							+	'	<button class="btn btn-default tour poll" value="' + kara.playlistcontent_id + '"'
+							+	'	style="background-color:hsl(' + randColor + ', 20%, 26%)">'
+							+	karaTitle
+							+	'	</button>'
+							+	'</div>');
+		});		
+		$pollModal.modal('show');
 	};
 
 	/*
@@ -2077,6 +2125,10 @@ var settingsNotUpdated;
 		refreshPlayerInfos(data);
 	});
 
+	 
+	socket.on('newSongPoll', function(data){
+		buildAndShowPoll(data);
+	});
 	socket.on('settingsUpdated', function(){
 		settingsUpdating.done(function () {
 			settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
