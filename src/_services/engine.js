@@ -825,7 +825,10 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 				throw 'User quota reached';
 			}
 		}
-		await plc.addKaraToPlaylist(karas, requester, playlist_id, pos);
+
+		await plc.addKaraToPlaylist(karas, requester, playlist_id, pos, {
+			addByAdmin: addByAdmin
+		});
 		if (+conf.EngineAutoPlay === 1 &&
 			playlist_id === internalState.currentPlaylistID &&
 			state.engine.status === 'stop' ) {

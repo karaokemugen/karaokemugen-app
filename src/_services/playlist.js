@@ -531,74 +531,82 @@ export async function addKaraToPlaylist(karas, requester, playlist_id, pos, opts
 			created_at: date_add,				
 		});				
 	});
-	const [userMaxPosition,
-		numUsersInPlaylist,
-		playlistMaxPos] =
-	await Promise.all([
-		plDB.getMaxPosInPlaylistForPseudo(playlist_id, user.id),
-		plDB.countPlaylistUsers(playlist_id),
-		plDB.getMaxPosInPlaylist(playlist_id)
-	]);
-	if (!await isAllKaras(karas)) throw {code: 3, msg: 'One of the karaokes does not exist'};
-	const pl = await plDB.getPlaylistKaraIDs(playlist_id);	
-	karaList = isAllKarasInPlaylist(karaList,pl);
-	// Song requests by admins are ignored.
-	if (karaList.length === 0) throw {code: 4, msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`};
-	if (!opts.addByAdmin) addKaraToRequests(user.id,karaList);
-	// If pos is provided, we need to update all karas above that and add 
-	// karas.length to the position
-	// If pos is not provided, we need to get the maximum position in the PL
-	// And use that +1 to set our playlist position.
-	// If pos is -1, we must add it after the currently flag_playing karaoke.
-	const conf = getConfig();
-	const playingObject = getPlayingPos(pl);
-	const playingPos = playingObject ? playingObject.plc_id_pos : 0;
-	// Position management here :
-	if (conf.EngineSmartInsert === 1 && user.flag_admin === 0) {
-		if (userMaxPosition === null) {
-			// No songs yet from that user, they go first.
-			pos = -1;			
-		} else if (userMaxPosition < playingPos){
-			// No songs enqueued in the future, they go first.
-			pos = -1;			
-		} else {
-			// Everyone is in the queue, we will leave an empty spot for each user and place ourselves next.
-			pos = Math.min(playlistMaxPos.maxpos + 1, userMaxPosition.maxpos + numUsersInPlaylist);
+	try {
+		const [userMaxPosition,
+			numUsersInPlaylist,
+			playlistMaxPos] =
+			await Promise.all([
+				plDB.getMaxPosInPlaylistForPseudo(playlist_id, user.id),
+				plDB.countPlaylistUsers(playlist_id),
+				plDB.getMaxPosInPlaylist(playlist_id)
+			]);
+		if (!await isAllKaras(karas)) throw {code: 3, msg: 'One of the karaokes does not exist'};
+		const pl = await plDB.getPlaylistKaraIDs(playlist_id);
+		karaList = isAllKarasInPlaylist(karaList, pl);
+		// Song requests by admins are ignored.
+		if (karaList.length === 0) throw {
+			code: 4,
+			msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
+		};
+		if (!opts.addByAdmin) addKaraToRequests(user.id, karaList);
+		// If pos is provided, we need to update all karas above that and add
+		// karas.length to the position
+		// If pos is not provided, we need to get the maximum position in the PL
+		// And use that +1 to set our playlist position.
+		// If pos is -1, we must add it after the currently flag_playing karaoke.
+		const conf = getConfig();
+		const playingObject = getPlayingPos(pl);
+		const playingPos = playingObject ? playingObject.plc_id_pos : 0;
+		// Position management here :
+		if (conf.EngineSmartInsert === 1 && user.flag_admin === 0) {
+			if (userMaxPosition === null) {
+				// No songs yet from that user, they go first.
+				pos = -1;
+			} else if (userMaxPosition < playingPos) {
+				// No songs enqueued in the future, they go first.
+				pos = -1;
+			} else {
+				// Everyone is in the queue, we will leave an empty spot for each user and place ourselves next.
+				pos = Math.min(playlistMaxPos.maxpos + 1, userMaxPosition.maxpos + numUsersInPlaylist);
+			}
 		}
-	}
-	if (pos === -1) {
-		// Find out position of currently playing karaoke
-		// If no flag_playing is found, we'll add songs at the end of playlist.
-		pos = playingPos + 1;
-	}
-	if (pos) {
-		await plDB.shiftPosInPlaylist(playlist_id,pos,karas.length);
-		karaList.forEach((kara,index) => {
-			karaList[index].pos = pos+index;
+		if (pos === -1) {
+			// Find out position of currently playing karaoke
+			// If no flag_playing is found, we'll add songs at the end of playlist.
+			pos = playingPos + 1;
+		}
+		if (pos) {
+			await plDB.shiftPosInPlaylist(playlist_id, pos, karas.length);
+			karaList.forEach((kara, index) => {
+				karaList[index].pos = pos + index;
+			});
+		} else {
+			const startpos = playlistMaxPos.maxpos + 1.0;
+			karaList.forEach((kara, index) => {
+				karaList[index].pos = startpos + index;
+			});
+		}
+		await karaDB.addKaraToPlaylist(karaList);
+		updatePlaylistLastEditTime(playlist_id);
+		// Checking if a flag_playing is present inside the playlist.
+		// If not, we'll have to set the karaoke we just added as the currently playing one. updatePlaylistDuration is done by setPlaying already.
+		if (!await isPlaylistFlagPlaying(playlist_id)) {
+			const plcid = await getPLCIDByDate(playlist_id, date_add);
+			await setPlaying(plcid, playlist_id);
+		} else {
+			await updatePlaylistDuration(playlist_id);
+		}
+		await updatePlaylistKaraCount(playlist_id);
+		let karaAdded = [];
+		karaList.forEach(function (kara) {
+			karaAdded.push(kara.kara_id);
 		});
-	} else {		
-		const startpos = playlistMaxPos.maxpos + 1.0;
-		karaList.forEach((kara,index) => {
-			karaList[index].pos = startpos+index;
-		});
-	}		
-	await karaDB.addKaraToPlaylist(karaList);
-	updatePlaylistLastEditTime(playlist_id);
-	// Checking if a flag_playing is present inside the playlist.					
-	// If not, we'll have to set the karaoke we just added as the currently playing one. updatePlaylistDuration is done by setPlaying already.
-	if (!await isPlaylistFlagPlaying(playlist_id)) {
-		const plcid = await getPLCIDByDate(playlist_id,date_add);
-		await setPlaying(plcid,playlist_id);
-	} else {
-		await updatePlaylistDuration(playlist_id);				
+		updateSongsLeft(user.id, playlist_id);
+		return karaAdded;
+	} catch(err) {
+		if (typeof err === 'object') throw err;
+		throw {code: 5, msg: `General error : ${err}`};
 	}
-	await updatePlaylistKaraCount(playlist_id);
-	let karaAdded = [];
-	karaList.forEach(function(kara) {
-		karaAdded.push(kara.kara_id);
-	});
-	updateSongsLeft(user.id, playlist_id);
-	return karaAdded;
 }
 
 export async function getPLCInfo(plc_id) {
