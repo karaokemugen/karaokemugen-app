@@ -190,10 +190,11 @@
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-star"></i>
-                                        <button type="button"  title='{{i18n "FAVORITES_IMPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6 favImport" data-dismiss="modal">
+                                     <label for="favImport" type="button"  title='{{i18n "FAVORITES_IMPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
                                         <i class="glyphicon glyphicon-import"></i> {{i18n "IMPORT"}}
-                                    </button>
-                                    <button type="button"  title='{{i18n "FAVORITES_EXPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6 favExport" data-dismiss="modal">
+                                        <input id="favImport" class="import-file" type="file" accept=".kmplaylist" style="display: none;"/>
+                                    </label>
+                                    <button type="button"  title='{{i18n "FAVORITES_EXPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6 favExport">
                                         <i class="glyphicon glyphicon-export"></i> {{i18n "EXPORT"}}
                                     </button>
                                 </div>

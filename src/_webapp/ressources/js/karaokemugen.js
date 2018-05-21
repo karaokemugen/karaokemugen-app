@@ -767,7 +767,7 @@ var settingsNotUpdated;
 							});
 
 						});
-					}
+				}
 			}
 		});
 
@@ -809,6 +809,32 @@ var settingsNotUpdated;
 
 				});
 
+		});
+		$('.favImport > input').change(function() {
+			if ( ! window.FileReader ) return alert( 'FileReader API is not supported by your browser.' ); 
+			
+			var input = this;
+			if ( input.files && input.files[0] ) {
+				file = input.files[0]; 
+				fr = new FileReader();
+				fr.onload = function () {
+					var data = {};
+					data['playlist'] = fr['result'];
+					var name = JSON.parse(fr.result).PlaylistInformation.name;
+					ajx('POST', 'public/favorites/import', data, function(response) {
+					});
+				};
+				fr.readAsText( file );
+			} 
+		});
+		$('.favExport').click(function() {
+			ajx('GET', 'public/favorites/export', {}, function(data) {
+				var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data,null,4));
+				var dlAnchorElem = document.getElementById('downloadAnchorElem');
+				dlAnchorElem.setAttribute('href', dataStr);
+				dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', logInfos.username, new Date().toLocaleDateString().replace('\\','-')].join('_') + '.kmplaylist');
+				dlAnchorElem.click();
+			});		
 		});
 
 		/* profil stuff END */
@@ -1065,7 +1091,7 @@ var settingsNotUpdated;
 
 							var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
 							+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
-							+	(idPlaylist > 0 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
+							+	(idPlaylist > 0 || idPlaylist == -5 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
 							+	kara.pos + '" data-username="' + kara.username + '"' : '')
 							+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
 							+	(kara.flag_dejavu ? 'dejavu' : '' ) + ' '
@@ -1091,7 +1117,7 @@ var settingsNotUpdated;
 								+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
 								+	(scope === 'admin' ? playKara : '')
 								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
-								+	(scope !== 'admin' && kara.username == logInfos.username ?  deleteKaraHtml : '')
+								+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
 								+	'</div>'
 								+   '<div class="contentDiv">'
 								+	'<div>' + buildKaraTitle(kara, filter) + '</div>'
