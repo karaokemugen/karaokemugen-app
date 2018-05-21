@@ -27,8 +27,8 @@ export async function timerPoll() {
 }
 
 export function endPoll() {
-	pollEnding = true;	
-	getPollResults().then(winner => {
+	if (poll.length > 0) getPollResults().then(winner => {
+		pollEnding = true;
 		logger.debug('[Poll] Ending poll with '+JSON.stringify(winner));
 		emitWS('songPollResult',winner);
 		stopPoll();
