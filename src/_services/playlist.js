@@ -949,8 +949,7 @@ export function translateKaraInfo(karalist, lang) {
 		if (kara.serie) {
 			//Transform the i18n field we got from the database into an object.
 			let seriei18n;
-			if (!kara.serie_i18n) kara.serie_i18n = {};
-			if (testJSON(kara.serie_i18n)) {
+			if (kara.serie_i18n && kara.serie_i18n.length > 0 && testJSON(kara.serie_i18n)) {
 				seriei18n = JSON.parse(kara.serie_i18n);
 				karas[index].serie_i18n = {};						
 				const serieTrans = {};
