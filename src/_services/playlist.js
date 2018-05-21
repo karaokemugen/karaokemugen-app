@@ -959,7 +959,7 @@ export function translateKaraInfo(karalist, lang) {
 				});
 				karas[index].serie_i18n = Object.assign(serieTrans);					
 			} else {
-				karas[index].serie_i18n = kara.serie;
+				karas[index].serie_i18n = {eng: kara.serie};
 			}
 		}
 	});
