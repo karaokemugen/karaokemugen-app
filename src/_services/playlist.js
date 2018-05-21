@@ -1175,7 +1175,8 @@ export async function getCurrentSong() {
 	if (!isEmpty(kara.title)) kara.title = ' - '+kara.title;
 	// If series is empty, pick singer information instead
 	let series = kara.serie;
-	if (isEmpty(kara.serie)) series = kara.singer; 
+	if (isEmpty(kara.serie)) series = kara.singer;
+
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 	if (kara.songorder === 0) kara.songorder = '';
 	// Construct mpv message to display.

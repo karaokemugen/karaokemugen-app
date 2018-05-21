@@ -111,8 +111,9 @@ export async function trimPlaylist(id,pos) {
 	});
 }
 
-export async function getPlaylistContentsMini(id) {
-	return await getUserDb().all(sql.getPlaylistContentsMini, { $playlist_id: id });
+export async function getPlaylistContentsMini(id, lang) {
+	const query = sql.getPlaylistContentsMini(langSelector(lang));
+	return await getUserDb().all(query, { $playlist_id: id });
 }
 
 export async function getPlaylistContents(id, username, filter, lang) {
