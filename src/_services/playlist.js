@@ -893,7 +893,7 @@ export function translateKaraInfo(karalist, lang) {
 	// If the kara list provided is not an array (only a single karaoke)
 	// Put it into an array first
 	let karas;
-	if (karalist.constructor !== Array) {
+	if (!Array.isArray(karalist)) {
 		karas = [];
 		karas[0] = karalist;
 	} else {

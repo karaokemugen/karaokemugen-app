@@ -466,5 +466,6 @@
 	"SERIE_NAME_MODE_USER": "Langue de l'utilisateur",
 	"PUBLICMODESETTINGS": "Options exclusives au mode public",
 	"_": "DO NOT MODIFY",
-	"POLLTITLE": "À vous de voter !"
+	"POLLTITLE": "À vous de voter !",
+	"undefined_SHORT": "undefined_SHORT"
 }
