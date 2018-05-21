@@ -454,7 +454,7 @@
 
                                 <label for="avatar" title='{{i18n "AVATAR_IMPORT"}}' class="btn btn-default plGenericButton avatar" name="import">
                                     <img class="img-circle" name="avatar_file"
-                                     src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=100"
+                                      src="/avatars/blank.png"
                                      alt="User Pic">
                                     <input id="avatar" class="import-file" type="file" accept="image/*" style="display: none;"/>
                                 </label>
@@ -484,10 +484,11 @@
                                 </div>
                                  <div class="profileLine">
                                     <i class="glyphicon glyphicon-star"></i>
-                                     <button type="button"  title='{{i18n "FAVORITES_IMPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6" data-dismiss="modal">
+                                     <label for="favImport" type="button"  title='{{i18n "FAVORITES_IMPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6 favImport">
                                         <i class="glyphicon glyphicon-import"></i> {{i18n "IMPORT"}}
-                                    </button>
-                                    <button type="button"  title='{{i18n "FAVORITES_EXPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6" data-dismiss="modal">
+                                        <input id="favImport" class="import-file" type="file" accept=".kmplaylist" style="display: none;"/>
+                                    </label>
+                                    <button type="button"  title='{{i18n "FAVORITES_EXPORT"}}' class="btn btn-action btn-default col-xs-6 col-lg-6 favExport">
                                         <i class="glyphicon glyphicon-export"></i> {{i18n "EXPORT"}}
                                     </button>
                                 </div>
@@ -555,7 +556,6 @@
     </div>
 </div>
 
-<a id="downloadAnchorElem"></a>
 </div>
 <div class="overlay">
     <video id="video" src="" type="video/mp4" autoplay>
