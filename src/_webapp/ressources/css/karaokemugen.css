@@ -1075,6 +1075,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	height: 50px;
 	max-height: 10vh;
 }
+#pollModal .modal-message {
+	max-height: 20vh;
+}
 #loginModal .modal-message {
 	height: 100px;
 	max-height: 18vh;
@@ -1128,6 +1131,14 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	height: 100%;
 	width: 100%;
 	background-color: hsl(292, 45%, 28%);
+}
+#nav-poll.modal-body {
+	padding: 0;
+}
+.modal button.poll {
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,0.17), 0 1px 5px 0 rgba(0,0,0,0.15), 0 3px 1px -2px rgba(0,0,0,0.22);
+	border-color: hsla(0, 0%, 51%, 0.15);
+	overflow: hidden;
 }
 .modal button.guest {
 	height: 100%;
@@ -1415,7 +1426,12 @@ input[type="text"]:focus, input[type="password"]:focus {
 		border-radius: 0px;
 		box-shadow: 0 1px 10px hsla(133, 15%, 24%, 0.4);
 	}
-	
+	#pollModal .modal-message  {
+		height: 90px;
+	}
+	.modal button.poll {
+		height: 80px;
+	}
 }
 .introjs-tooltip.introBottom {
 	transform: translateY(240px);
