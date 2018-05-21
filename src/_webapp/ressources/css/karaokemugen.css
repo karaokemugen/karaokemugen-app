@@ -1078,6 +1078,12 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 #pollModal .modal-message {
 	max-height: 20vh;
 }
+#pollModal .timer {
+    background-color: hsla(0, 0%, 67%, 0.37);
+    width: 0%;
+    height: 39px;
+    position: absolute;
+}
 #loginModal .modal-message {
 	height: 100px;
 	max-height: 18vh;

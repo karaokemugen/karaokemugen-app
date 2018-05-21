@@ -1776,9 +1776,10 @@ var settingsNotUpdated;
 	*	Build the modal pool from a kara list
 	*	data  {Object} : list of karas going in the poll
 	*/
-	buildAndShowPoll = function(data) {
+	buildAndShowPoll = function(data, startTimer) {
 		var karaNumber = data.length;
 		var $pollModal = $('#pollModal');
+		var $timer = $('#pollModal .timer');
 		var randArray = Array.from(Array(15).keys());
 	
 		$('#nav-poll').empty();
@@ -1802,6 +1803,9 @@ var settingsNotUpdated;
 							+	'</div>');
 		});		
 		$pollModal.modal('show');
+			
+		$timer.width('100%').finish().animate({ width : '0%' }, settings.EngineSongPollTimeout*1000);
+
 	};
 
 	/*
@@ -2124,10 +2128,13 @@ var settingsNotUpdated;
 	socket.on('playerStatus', function(data){
 		refreshPlayerInfos(data);
 	});
-
-	 
 	socket.on('newSongPoll', function(data){
-		buildAndShowPoll(data);
+		buildAndShowPoll(data, true);
+		$('.showPoll').toggleClass('hidden');
+	});
+	socket.on('songPollEnded', function(data){
+		$('#pollModal').modal('hide');
+		$('.showPoll').toggleClass('hidden');
 	});
 	socket.on('settingsUpdated', function(){
 		settingsUpdating.done(function () {

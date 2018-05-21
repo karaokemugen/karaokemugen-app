@@ -392,6 +392,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				$(htmlString).addClass('groupSettingActivator').insertBefore('#connexionInfoSettings');
 			} else if (e === 'EngineFreeUpvotes') {
 				$(htmlString).addClass('groupSettingActivator').insertBefore('#freeUpvotesSettings');
+			} else if (e === 'EngineSongPoll') {
+				$(htmlString).addClass('groupSettingActivator').insertBefore('#songPollSettings');
 			} else {
 				htmlSettings += htmlString;
 			}
@@ -435,6 +437,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 							val ? $('#connexionInfoSettings').show('500') : $('#connexionInfoSettings').hide('500');
 						} else if (input.attr('name') === 'EngineFreeUpvotes') {
 							val ? $('#freeUpvotesSettings').show('500') : $('#freeUpvotesSettings').hide('500');
+						} else if (input.attr('name') === 'EngineSongPoll') {
+							val ? $('#songPollSettings').show('500') : $('#songPollSettings').hide('500');
 						}
 					}
 				}

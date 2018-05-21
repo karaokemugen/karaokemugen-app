@@ -32,7 +32,9 @@ $(document).ready(function () {
 	$('.showSettings').click(function(){
 		$('#settingsPublic').modal('show');
 	});
-
+	$('.showPoll').click(function(){
+		$('#pollModal').modal('show');
+	});
 	$('#pollModal').on('click', 'button.poll', (e) => {
 		var playlistcontent_id = $(e.target).val();
 		

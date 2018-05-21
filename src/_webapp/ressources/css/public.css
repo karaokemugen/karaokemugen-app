@@ -280,16 +280,26 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
 #panel1 .plFooter button[value="playing"] {
 	display: none;
 }
+
+.showPoll, .btn-floating.btn-large.showPoll {
+    background-color:#9c5600;
+}
 /* mobile */
 
-
-.fixed-action-btn.left {
+.fixed-action-btn.right {
     bottom: 12px;
     left: auto;
     right: 12px;
     position: absolute;
     padding-top: 15px;
     z-index: 9876;
+}
+.fixed-action-btn.right2 {
+    right: calc(12px + 60px + 12px);
+}
+.fixed-action-btn.right.top {
+    bottom: auto;
+    top: 12px;
 }
 
 .btn-floating.btn-large {
