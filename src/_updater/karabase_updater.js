@@ -1,7 +1,7 @@
 import download from 'download';
 import {basename, resolve} from 'path';
 import {getConfig} from '../_common/utils/config';
-import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
+import {asyncRemove, isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
 import decompress from 'decompress';
 import FTP from 'basic-ftp';
 import logger from 'winston';
@@ -94,6 +94,7 @@ async function compareBases() {
 			removeFiles(lyricsToUpdate.removedFiles, lyricsMinePath)
 		]);	
 		logger.info('[Updater] Done updating base files');
+		asyncRemove(resolve(conf.appPath, conf.PathTemp, 'newbase'));
 		return true;
 	}	
 }
