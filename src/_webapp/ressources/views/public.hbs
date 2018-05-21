@@ -30,6 +30,9 @@
             </ul>
         </div>
         <div class="pull-right btn-group switchParent">
+            <button class='btn btn-default showPoll hidden'>
+                <i class="glyphicon glyphicon-stats"></i>
+            </button>
             <span class="hidden">
                 <input title='{{i18n "SWITCH_SEARCH_VIEW"}}' type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-right" data-on-text="<i class='glyphicon glyphicon-menu-hamburger'></i>"
                     data-off-text="<i class='glyphicon glyphicon-search'></i>" data-size="large" />
@@ -116,7 +119,12 @@
 </div>
 <div class="toastMessageContainer">
 </div>
-<div class="fixed-action-btn left click-to-toggle" id="mobileActions">
+<div class="fixed-action-btn right right2 click-to-toggle" id="mobileActions">
+    <a class="btn-floating btn-large waves-effect z-depth-3 showPoll hidden">
+        <i class="glyphicon glyphicon-stats"></i>
+    </a>
+</div>
+<div class="fixed-action-btn right click-to-toggle" id="mobileActions">
     <a class="btn-floating btn-large waves-effect z-depth-3" id="menuMobile"  style="background-color:#123456" data-opened=false>
         <i class="glyphicon glyphicon-menu-hamburger"></i>
     </a>
@@ -163,6 +171,7 @@
                     <a data-toggle="tab" href="#nav-poll" role="tab" aria-controls="nav-poll" aria-selected="true" style="font-weight: bold;">
                     {{i18n "POLLTITLE"}}</a>
                 </li>
+                <span class="timer"></span>
             </ul>
             <div class="tab-content" id="nav-tabContent">
                 <div id="nav-poll" role="tabpanel" aria-labelledby="nav-poll-tab" class="modal-body tab-pane fade in active">
