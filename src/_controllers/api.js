@@ -2087,13 +2087,6 @@ export function APIControllerAdmin(router) {
  */		
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
-			req.check({
-				'playlist': {
-					in: 'body',
-					notEmpty: true,
-					isJSON: true,
-				}
-			});
 			const validationErrors = check(req.body, {
 				playlist: {isJSON: true}				
 			});
