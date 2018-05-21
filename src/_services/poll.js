@@ -14,31 +14,10 @@ let poll = [];
 let voters = [];
 let pollUUID;
 let pollEnding = false;
-let playerEnding = false;
-let playerPlaying = false;
 
 on('engineStatusChange', (newstate) => {
 	state.engine = newstate[0];
 	if (!state.engine.songPoll && poll.length > 0) stopPoll();
-});
-
-on('playerStatusChange', (player) => {
-	if (player.songType === 'song') {
-		if (!playerPlaying) {
-			playerPlaying = true;
-			startPoll();
-		}
-		if (player.position >= player.duration - 10) {
-			if (!playerEnding) {
-				playerEnding = true;
-				endPoll();
-			}
-		} else {
-			playerEnding = false;
-		}		
-	} else {
-		playerPlaying = false;
-	}
 });
 
 export async function timerPoll() {
