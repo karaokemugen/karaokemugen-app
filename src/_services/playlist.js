@@ -15,6 +15,7 @@ import {getLanguage} from 'iso-countries-languages';
 import {emitWS} from '../_webapp/frontend';
 import {emit} from '../_common/utils/pubsub';
 import {promisify} from 'util';
+import testJSON from 'is-valid-json';
 const sleep = promisify(setTimeout);
 const blcDB = require('../_dao/blacklist');
 const tagDB = require('../_dao/tag');
@@ -947,13 +948,19 @@ export function translateKaraInfo(karalist, lang) {
 		// We need to format the serie properly.
 		if (kara.serie) {
 			//Transform the i18n field we got from the database into an object.
-			const seriei18n = JSON.parse(kara.serie_i18n);
-			karas[index].serie_i18n = {};						
-			const serieTrans = {};
-			seriei18n.forEach((serieLang) => {
-				serieTrans[serieLang.lang] = serieLang.name;
-			});
-			karas[index].serie_i18n = Object.assign(serieTrans);					
+			let seriei18n;
+			if (!kara.serie_i18n) kara.serie_i18n = {};
+			if (testJSON(kara.serie_i18n)) {
+				seriei18n = JSON.parse(kara.serie_i18n);
+				karas[index].serie_i18n = {};						
+				const serieTrans = {};
+				seriei18n.forEach((serieLang) => {
+					serieTrans[serieLang.lang] = serieLang.name;
+				});
+				karas[index].serie_i18n = Object.assign(serieTrans);					
+			} else {
+				karas[index].serie_i18n = kara.serie;
+			}
 		}
 	});
 	return karas;

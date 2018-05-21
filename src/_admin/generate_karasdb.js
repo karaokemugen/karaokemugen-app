@@ -5,7 +5,7 @@ import deburr from 'lodash.deburr';
 import isEmpty from 'lodash.isempty';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
-import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncRemove} from '../_common/utils/files';
+import {asyncReadFile, asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncRemove} from '../_common/utils/files';
 import {getConfig, resolvedPathKaras} from '../_common/utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
@@ -19,6 +19,7 @@ import {karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import {join} from 'path';
 import parallel from 'async-await-parallel';
+import testJSON from 'is-valid-json';
 
 let error = false;
 
@@ -208,26 +209,32 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 	const altNameData = [];
 	const i18nData = [];
 	if (await asyncExists(altSeriesFile)) {
-		const altNamesFile = require(altSeriesFile);
-		for (const serie of altNamesFile.series) {
-			if (serie.aliases) altNameData.push({
-				$serie_altnames: serie.aliases.join(','),
-				$serie_altnamesnorm: deburr(serie.aliases.join(' ')),
-				$serie_name: serie.name				
-			});
-			if (serie.i18n) {
-				for (const lang of Object.keys(serie.i18n)) {
-					i18nData.push({
-						$lang: lang,
-						$serie: serie.i18n[lang],
-						$serienorm: deburr(serie.i18n[lang]),
-						$name: serie.name						
-					});
+		let altNamesFile = await asyncReadFile(altSeriesFile, 'utf-8');
+		if (testJSON(altNamesFile)) {
+			altNamesFile = JSON.parse(altNamesFile);
+			for (const serie of altNamesFile.series) {
+				if (serie.aliases) altNameData.push({
+					$serie_altnames: serie.aliases.join(','),
+					$serie_altnamesnorm: deburr(serie.aliases.join(' ')),
+					$serie_name: serie.name				
+				});
+				if (serie.i18n) {
+					for (const lang of Object.keys(serie.i18n)) {
+						i18nData.push({
+							$lang: lang,
+							$serie: serie.i18n[lang],
+							$serienorm: deburr(serie.i18n[lang]),
+							$name: serie.name						
+						});
+					}
 				}
-			}
-		}			
+			}			
+		} else {
+			logger.error('[Gen] Alternative series names file contains errors!');
+			error = true;	
+		}
 	} else {
-		logger.error('[Gen] No alternative series name file found!');
+		logger.error('[Gen] No alternative series names file found!');
 		error = true;
 	}
 
