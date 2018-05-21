@@ -14,6 +14,7 @@ import {exit} from '../_services/engine';
 import {getID3} from './id3tag';
 import mpv from 'node-mpv';
 import {promisify} from 'util';
+import endPoll from '../_services/poll';
 
 const sleep = promisify(setTimeout);
 let currentJinglesList = [];
@@ -301,6 +302,7 @@ async function startmpv() {
 						state.player.mediaType === 'song')						
 			displaySongInfo(state.player.currentSongInfos);
 		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.mediaType === 'song') displayInfo(8000);
+		if (Math.floor(position) === Math.floor(state.player.duration - 10) && state.player.mediaType === 'song') endPoll()
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	state.player.ready = true;	
