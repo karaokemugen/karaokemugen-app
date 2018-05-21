@@ -129,7 +129,7 @@ var swipeManager = new Hammer.Manager(elem[0],{
 	prevent_default: true
 });
 
-var swipe = new Hammer.Swipe({'threshold' : 7,  direction : Hammer.DIRECTION_HORIZONTAL });
+var swipe = new Hammer.Swipe({'threshold' : 1, velocity : .05,  direction : Hammer.DIRECTION_HORIZONTAL });
 
 swipeManager.add(swipe);
 
