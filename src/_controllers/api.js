@@ -4499,27 +4499,23 @@ export function APIControllerPublic(router) {
  */		
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
 			// Imports a playlist and its contents in an importable format (posted as JSON data)
-			req.check({
-				'playlist': {
-					in: 'body',
-					notEmpty: true,
-					isJSON: true,
-				}
-			});
 			const validationErrors = check(req.body, {
 				playlist: {isJSON: true}				
 			});
 			if (!validationErrors) {			
-				try {	
-					const data = await favorites.importFavorites(JSON.parse(req.body.playlist),req.authToken);
+				try {
+					const playlist = JSON.parse(req.body.playlist);
+					const data = await favorites.importFavorites(playlist,req.authToken);
 					const response = {
 						message: 'Favorites imported',
 						playlist_id: data.playlist_id
 					};
-					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;							
+					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;	
+					emitWS('playlistContentsUpdated',data.playlist_id);
 					emitWS('playlistsUpdated');
 					res.json(OKMessage(response,'PL_IMPORTED',data.playlist_id));
 				} catch(err) {
+					console.log(err); 
 					res.statusCode = 500;
 					res.json(errMessage('PL_IMPORT_ERROR',err));
 				}

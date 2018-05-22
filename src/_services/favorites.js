@@ -52,8 +52,8 @@ export async function exportFavorites(token) {
 }
 
 export async function importFavorites(favorites, token) {
-	const plInfo = await getFavoritesPlaylist(token.username);
-	return await importPlaylist(favorites.data, token.username, plInfo.playlist_id);
+	const plInfo = await getFavoritesPlaylist(token.username);	
+	return await importPlaylist(favorites, token.username, plInfo.playlist_id);
 }
 
 async function getAllFavorites(userList) {
