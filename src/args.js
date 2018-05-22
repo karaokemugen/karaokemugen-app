@@ -10,6 +10,7 @@ Options :
 --help        Displays this message
 --version     Displays version info
 --debug       Displays additional debug messages
+--sql         Traces SQL query at the debug log level
 --generate    Generates a new database then quits
 --validate    Validates/checks/updates .kara files without writing a database then quits
 --strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
@@ -27,7 +28,12 @@ export async function parseCommandLineArgs(argv) {
 		process.exit(0);
 	}
 	if (argv.debug) {
+		logger.info('[Launcher] Debug messages enabled on console');
 		process.env['NODE_ENV'] = 'development';
+	}
+	if (argv.sql) {
+		logger.info('[Launcher] SQL trace enabled');
+		setConfig({optSQL: true});
 	}
 	if (argv.version) {
 		// Version number is already displayed so we exit here.
