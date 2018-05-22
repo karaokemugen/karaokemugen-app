@@ -4513,11 +4513,11 @@ export function APIControllerPublic(router) {
 					if (data.karasUnknown) response.unknownKaras = data.karasUnknown;	
 					emitWS('playlistContentsUpdated',data.playlist_id);
 					emitWS('playlistsUpdated');
-					res.json(OKMessage(response,'PL_IMPORTED',data.playlist_id));
+					res.json(OKMessage(response,'FAV_IMPORTED',data.playlist_id));
 				} catch(err) {
 					console.log(err); 
 					res.statusCode = 500;
-					res.json(errMessage('PL_IMPORT_ERROR',err));
+					res.json(errMessage('FAV_IMPORT_ERROR',err));
 				}
 			} else {
 				// Errors detected
