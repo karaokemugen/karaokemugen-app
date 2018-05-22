@@ -1,7 +1,7 @@
 import download from 'download';
 import {basename, resolve} from 'path';
 import {getConfig} from '../_common/utils/config';
-import {asyncRemove, isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
+import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
 import decompress from 'decompress';
 import FTP from 'basic-ftp';
 import logger from 'winston';
