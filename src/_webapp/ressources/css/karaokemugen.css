@@ -976,7 +976,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .modal {
 	z-index: 10000;
 }
-
+#modalBox {
+	z-index: 10010;
+}
 .modal input[type="text"], .modal input[type="password"]:not([exclude="true"]) {
 	height: 50px;
 	max-height: 9vh;
