@@ -3154,7 +3154,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara = await engine.getKaraInfo(req.params.kara_id,req.query.lang,req.authToken);
+				const kara = await engine.getKaraInfo(req.params.kara_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 			} catch(err) {
 				logger.error(err);
@@ -3748,7 +3748,7 @@ export function APIControllerPublic(router) {
 	*/
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const tags = await engine.getTags(req.query.lang);
+				const tags = await engine.getTags(req.lang);
 				res.json(OKMessage(tags));
 			} catch(err) {
 				logger.error(err);

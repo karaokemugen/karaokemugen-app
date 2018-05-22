@@ -494,8 +494,8 @@ export async function getRandomKara(playlist_id, filter, username) {
 	return sample(allKarasNotInCurrentPlaylist);									
 }
 
-export async function getKara(kara_id, username) {
-	return await karaDB.getKara(kara_id, username);	
+export async function getKara(kara_id, username, lang) {
+	return await karaDB.getKara(kara_id, username, lang);	
 }
 
 export async function getKaraMini(kara_id) {

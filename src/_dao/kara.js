@@ -51,8 +51,9 @@ export async function getKaraViewcounts() {
 	return await getUserDb().all(sql.getKaraViewcounts);
 }
 
-export async function getKara(id, username) {
-	return await getUserDb().get(sql.getKara,
+export async function getKara(id, username, lang) {
+	const query = sql.getKara(langSelector(lang));
+	return await getUserDb().get(query,
 		{
 			$kara_id: id,
 			$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),

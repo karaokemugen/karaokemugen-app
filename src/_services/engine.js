@@ -553,7 +553,7 @@ export async function shufflePL(playlist_id) {
 }
 
 export async function getKaraInfo(kara_id, lang, token) {
-	const kara = await plc.getKara(kara_id, token.username);
+	const kara = await plc.getKara(kara_id, token.username, lang);
 	let output = plc.translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].mediafile);
 	if (previewfile) output[0].previewfile = previewfile;
