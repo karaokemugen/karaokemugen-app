@@ -387,6 +387,9 @@ var settingsNotUpdated;
 							$el.addClass('currentFav');
 						} else {
 							$el.removeClass('currentFav');
+							if($('#panel1 .plDashboard').data('playlist_id') == -5) {
+								fillPlaylist(1);
+							}
 						}
 					}
 				}).fail(function(response) {
@@ -916,12 +919,13 @@ var settingsNotUpdated;
 		'BLCTYPE_7',
 		'BLCTYPE_8'];
 
-	/* list of error code allowing a iinfo popup message on screen */
+	/* list of error code allowing an info popup message on screen */
 	showInfoMessage = [
 		'USER_CREATED',
 		'PL_SONG_ADDED',
 		'PL_SONG_DELETED',
-		'PLAYLIST_MODE_SONG_ADDED'];
+		'PLAYLIST_MODE_SONG_ADDED',
+		'FAV_IMPORTED'];
 
 	softErrorMessage = [
 		'PLAYLIST_MODE_ADD_SONG_ERROR'];

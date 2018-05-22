@@ -277,6 +277,8 @@
 	"PL_EXPORT_ERROR": "Erreur d'export de la liste de lecture %s",
 	"PL_IMPORT_ERROR": "Erreur d'import de la liste de lecture",
 	"PL_IMPORTED": "Liste de lecture %s importée",
+	"FAV_IMPORTED": "Favoris importés avec succès",
+	"FAV_IMPORT_ERROR": "Erreur lors de l'import des favoris",
 	"PL_SHUFFLE_ERROR": "Impossible de mélanger la liste de lecture %s",
 	"PL_SHUFFLED": "Liste de lecture mélangée",
 	"WL_VIEW_ERROR": "Impossible d'afficher la liste blanche",

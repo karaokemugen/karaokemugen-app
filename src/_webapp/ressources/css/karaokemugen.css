@@ -1024,8 +1024,8 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 }
 
 .favExport, .favImport {
-	
-    line-height: 2.1;
+    line-height: 2.42;
+	font-family: inherit;
 }
 .modal .profileData label {
     align-items: flex-start;
