@@ -119,7 +119,7 @@
     "read-chunk": "^2.1.0",
     "readline-sync": "^1.4.9",
     "socket.io": "^2.1.1",
-    "sqlite": "^2.9.2",
+    "sqlite": "2.9.1",
     "systeminformation": "^3.40.0",
     "unix-timestamp": "^0.2.0",
     "uuid": "^3.2.1",
