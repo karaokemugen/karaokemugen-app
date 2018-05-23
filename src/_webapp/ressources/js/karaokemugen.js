@@ -208,6 +208,8 @@ var settingsNotUpdated;
 			}
 		} else if (mugenToken) { 
 			logInfos = parseJwt(mugenToken);
+			logInfos.token = mugenToken;
+			initApp();
 			$('#wlcm_login > span').text(logInfos.username);
 			$('#wlcm_disconnect').show();
 		} else {
@@ -2106,146 +2108,148 @@ var settingsNotUpdated;
 		});
 	};
 
-	/* partie socket */
-	socket.on('playerStatus', function(data){
-		refreshPlayerInfos(data);
-	});
+	
+	if(!welcomeScreen) {
+		/* partie socket */
+		socket.on('playerStatus', function(data){
+			refreshPlayerInfos(data);
+		});
 
-	socket.on('settingsUpdated', function(){
-		settingsUpdating.done(function () {
-			settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
+		socket.on('settingsUpdated', function(){
+			settingsUpdating.done(function () {
+				settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
 
-			settingsUpdating.done(function (){
-				if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
-																	|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
-					playlistsUpdating.done(function() {
-						playlistsUpdating = refreshPlaylistSelects();
-					});
+				settingsUpdating.done(function (){
+					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
+																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+						playlistsUpdating.done(function() {
+							playlistsUpdating = refreshPlaylistSelects();
+						});
 
-					playlistsUpdating.done(function () {
-						refreshPlaylistDashboard(1);
-						refreshPlaylistDashboard(2);
+						playlistsUpdating.done(function () {
+							refreshPlaylistDashboard(1);
+							refreshPlaylistDashboard(2);
 
-					});
-				}
+						});
+					}
+				});
 			});
 		});
-	});
 
-	socket.on('playlistsUpdated', function(){
+		socket.on('playlistsUpdated', function(){
 
-		if(!(($('#selectPlaylist2').data('select2') && $('#selectPlaylist2').data('select2').isOpen())
-				|| ($('#selectPlaylist1').data('select2') && $('#selectPlaylist1').data('select2').isOpen()))) {
-			playlistsUpdating = refreshPlaylistSelects();
-		}
-	});
-
-	socket.on('playlistInfoUpdated', function(idPlaylist){
-		if (idPlaylist) {
-			if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
-																|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+			if(!(($('#selectPlaylist2').data('select2') && $('#selectPlaylist2').data('select2').isOpen())
+					|| ($('#selectPlaylist1').data('select2') && $('#selectPlaylist1').data('select2').isOpen()))) {
 				playlistsUpdating = refreshPlaylistSelects();
+			}
+		});
 
-				var side = sideOfPlaylist(idPlaylist); DEBUG && console.log('b' +side);
-				if (side) {
-					playlistsUpdating.done(function () {
-						refreshPlaylistDashboard(side);
-					});
+		socket.on('playlistInfoUpdated', function(idPlaylist){
+			if (idPlaylist) {
+				if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
+																	|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
+					playlistsUpdating = refreshPlaylistSelects();
+
+					var side = sideOfPlaylist(idPlaylist); DEBUG && console.log('b' +side);
+					if (side) {
+						playlistsUpdating.done(function () {
+							refreshPlaylistDashboard(side);
+						});
+					}
+
+				}
+			}
+		});
+
+		socket.on('playingUpdated', function(data){
+			var side = sideOfPlaylist(data.playlist_id);
+			DEBUG && console.log(side, data.playlist_id);
+
+			if(side) {
+				var playlist = $('#playlist' + side);
+				var container = playlist.parent();
+				var previousCurrentlyPlaying = playlist.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
+				var newCurrentlyPlaying = playlist.find('li[idplaylistcontent="' + data.plc_id + '"]');
+
+				if(previousCurrentlyPlaying.length > 0 && newCurrentlyPlaying.length > 0 && isVisible(previousCurrentlyPlaying, container)) {
+					var posKaraMarker = previousCurrentlyPlaying.offset().top;
+					var newPosKaraMarker = newCurrentlyPlaying.offset().top;
+					container.finish().animate({scrollTop: container.scrollTop() + newPosKaraMarker - posKaraMarker}, 1000, 'swing');
+				}
+				if(previousCurrentlyPlaying.length > 0) {
+					var prevCP = previousCurrentlyPlaying.get(0);
+					prevCP.removeAttribute('currentlyPlaying');
+					prevCP.setAttribute('dejavu', '');
+					// trick for IE/Edge not redrawing layout
+					var ul = previousCurrentlyPlaying.closest('ul');
+					ul.css('height',  ul.height());
+					ul.css('height', 'auto');
+				}
+				if(newCurrentlyPlaying.length > 0) {
+					newCurrentlyPlaying.attr('currentlyplaying', '');
 				}
 
+				refreshPlaylistDashboard(side, true);
 			}
-		}
-	});
+		});
 
-	socket.on('playingUpdated', function(data){
-		var side = sideOfPlaylist(data.playlist_id);
-		DEBUG && console.log(side, data.playlist_id);
-
-		if(side) {
-			var playlist = $('#playlist' + side);
-			var container = playlist.parent();
-			var previousCurrentlyPlaying = playlist.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
-			var newCurrentlyPlaying = playlist.find('li[idplaylistcontent="' + data.plc_id + '"]');
-
-			if(previousCurrentlyPlaying.length > 0 && newCurrentlyPlaying.length > 0 && isVisible(previousCurrentlyPlaying, container)) {
-				var posKaraMarker = previousCurrentlyPlaying.offset().top;
-				var newPosKaraMarker = newCurrentlyPlaying.offset().top;
-				container.finish().animate({scrollTop: container.scrollTop() + newPosKaraMarker - posKaraMarker}, 1000, 'swing');
+		socket.on('playlistContentsUpdated', function(idPlaylist){
+			var side = sideOfPlaylist(idPlaylist);
+			DEBUG && console.log(side, idPlaylist);
+			if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
+				playlistContentUpdating = fillPlaylist(side);
+				refreshPlaylistDashboard(side, true);
 			}
-			if(previousCurrentlyPlaying.length > 0) {
-				var prevCP = previousCurrentlyPlaying.get(0);
-				prevCP.removeAttribute('currentlyPlaying');
-				prevCP.setAttribute('dejavu', '');
-				// trick for IE/Edge not redrawing layout
-				var ul = previousCurrentlyPlaying.closest('ul');
-				ul.css('height',  ul.height());
-				ul.css('height', 'auto');
-			}
-			if(newCurrentlyPlaying.length > 0) {
-				newCurrentlyPlaying.attr('currentlyplaying', '');
-			}
+		});
 
-			refreshPlaylistDashboard(side, true);
-		}
-	});
+		socket.on('quotaAvailableUpdated', function(data){
+			if (logInfos.username === data.username) {
+				var quota = data.quotaLeft;
+			
+				var quotaString = '';
+				if(data.quotaType == 1) {
+					quotaString = data.quotaLeft;
+				} else if (data.quotaType == 2) {
+					quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
+				}
+				if (data.quotaLeft == -1) {
+					quotaString = '\u221e';
+				}
 
-	socket.on('playlistContentsUpdated', function(idPlaylist){
-		var side = sideOfPlaylist(idPlaylist);
-		DEBUG && console.log(side, idPlaylist);
-		if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
-			playlistContentUpdating = fillPlaylist(side);
-			refreshPlaylistDashboard(side, true);
-		}
-	});
-
-	socket.on('quotaAvailableUpdated', function(data){
-		if (logInfos.username === data.username) {
-			var quota = data.quotaLeft;
-		
-			var quotaString = '';
-			if(data.quotaType == 1) {
-				quotaString = data.quotaLeft;
-			} else if (data.quotaType == 2) {
-				quotaString = secondsTimeSpanToHMS(data.quotaLeft, 'ms');
+				$('#plQuota').text(i18n.__('QUOTA')+' '+quotaString);
+				DEBUG && console.log(data.username, data.quotaLeft, data.quotaType);
 			}
-			if (data.quotaLeft == -1) {
-				quotaString = '\u221e';
+		});
+
+		socket.on('blacklistUpdated', function(){
+			var idPlaylist = -2;
+			var side = sideOfPlaylist(idPlaylist);
+
+			if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
+				playlistContentUpdating = fillPlaylist(side);
 			}
 
-			$('#plQuota').text(i18n.__('QUOTA')+' '+quotaString);
-			DEBUG && console.log(data.username, data.quotaLeft, data.quotaType);
-		}
-	});
+			idPlaylist = -4;
+			side = sideOfPlaylist(idPlaylist);
+			if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
+				playlistContentUpdating = fillPlaylist(side);
+			}
 
-	socket.on('blacklistUpdated', function(){
-		var idPlaylist = -2;
-		var side = sideOfPlaylist(idPlaylist);
+		});
 
-		if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
-			playlistContentUpdating = fillPlaylist(side);
-		}
+		socket.on('whitelistUpdated', function(idPlaylist){
+			idPlaylist = -3;
+			var side = sideOfPlaylist(idPlaylist);
 
-		idPlaylist = -4;
-		side = sideOfPlaylist(idPlaylist);
-		if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
-			playlistContentUpdating = fillPlaylist(side);
-		}
+			if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
+				playlistContentUpdating = fillPlaylist(side);
+			}
+		});
 
-	});
-
-	socket.on('whitelistUpdated', function(idPlaylist){
-		idPlaylist = -3;
-		var side = sideOfPlaylist(idPlaylist);
-
-		if(side && $('#playlist' + side + '.lyricsKara:visible').length == 0) {
-			playlistContentUpdating = fillPlaylist(side);
-		}
-	});
-
-	socket.on('adminMessage', function(data){
-		if( scope === 'public') displayMessage('info', i18n.__('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration);
-	});
-
+		socket.on('adminMessage', function(data){
+			if( scope === 'public') displayMessage('info', i18n.__('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration);
+		});
+	}
 
 	var onevent = socket.onevent;
 	socket.onevent = function (packet) {
