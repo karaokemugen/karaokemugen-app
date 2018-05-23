@@ -13,9 +13,6 @@ import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
 
-// Background image for this version
-const backgroundImage = 'HaruhiHagiographique.jpg';
-
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
 });
@@ -87,7 +84,7 @@ async function main() {
 	);
 	logger.debug('[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
 	await copy(
-		join(__dirname, `/_player/assets/${backgroundImage}`),
+		join(__dirname, `/_player/assets/${config.VersionImage}`),
 		resolve(appPath, config.PathTemp, 'default.jpg'),
 		{ overwrite: true }
 	);
