@@ -5,8 +5,8 @@
 This version requires your attention on the following points :
 
 - `PathMedias` setting for storing media files replaces `PathVideos`
-- Videos are now stored in a `medias` folder, not `videos` anymore
-- .kara format is going to be version 3 from now on, which means older versions of Karaoke Mugen won't be able to import the [Karaoke Base](http://lab.shelter.moe/karaokemugen/karaokebase) beyond this point.
+- Videos will be stored in a `medias` folder, not `videos` anymore starting July 1st 2018
+- .kara format is going to be version 3 from now on, which means older versions of Karaoke Mugen won't be able to import the [Karaoke Base](http://lab.shelter.moe/karaokemugen/karaokebase) beyond July 1st 2018
 
 ### New Shiny Features
 
@@ -37,7 +37,7 @@ This version requires your attention on the following points :
   - Poll lasts 30 seconds and the winner song is added to the current playlist.
   - If two or more songs are the highest in votes, a random one is chosen among them.
   - Another poll is created.
-  - This is perfect if you want to have your users participate in the current playlist creation or if youw ant to just lean back and enjoy karaoke with friends without worrying about the playlist (create an AutoMix and make it a public playlist, then enable this mode)
+  - This is perfect if you want to have your users participate in the current playlist creation or if you want to just lean back and enjoy karaoke with friends without worrying about the playlist (create an AutoMix and make it a public playlist, then enable this mode)
 
 ### Enhancements
 
