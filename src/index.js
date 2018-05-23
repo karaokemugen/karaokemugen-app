@@ -95,7 +95,6 @@ async function main() {
 		resolve(appPath, config.PathAvatars, 'blank.png'),
 		{ overwrite: true }
 	);
-	
 
 	/**
 	 * Test if network ports are available
