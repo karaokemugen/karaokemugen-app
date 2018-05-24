@@ -202,8 +202,3 @@ async function restoreBackupFolder(pathKara, config) {
 		}
 	}
 }
-
-/**
- * Workaround for bug https://github.com/babel/babel/issues/5542
- * Delete this once the bug is resolved.
- */

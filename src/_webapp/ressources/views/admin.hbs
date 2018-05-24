@@ -353,57 +353,75 @@
                     </div>
                     <div id="nav-karaoke" role="tabpanel" aria-labelledby="nav-karaoke-tab" class="modal-body tab-pane fade">
                         
-                        <div class="form-group">
-                            <label for="EngineQuotaType" class="col-xs-4 control-label">{{i18n "QUOTA_TYPE"}}</label>
-                            <div class="col-xs-6">
-                                  <select type="number" class="form-control" name="EngineQuotaType">
+                        <div id="nav-karaokeAllMode">
+                            <div class="form-group">
+                                <label for="EngineQuotaType" class="col-xs-4 control-label">{{i18n "QUOTA_TYPE"}}</label>
+                                <div class="col-xs-6">
+                                    <select type="number" class="form-control" name="EngineQuotaType">
                                             <option value="0"> {{i18n "QUOTA_TYPE_0"}} </option>
                                             <option value="1"> {{i18n "QUOTA_TYPE_1"}} </option>
                                             <option value="2"> {{i18n "QUOTA_TYPE_2"}} </option>
                                     </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="EngineTimePerUser" class="col-xs-4 control-label">{{i18n "TIME_BY_USER"}}</label>
-                            <div class="col-xs-6">
-                                <input type="number" class="form-control" name="EngineTimePerUser" placeholder="1000">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="EngineSongsPerUser" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
-                            <div class="col-xs-6">
-                                <input type="number" class="form-control" name="EngineSongsPerUser" placeholder="1000">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="EngineFreeAutoTime" class="col-xs-4 control-label">{{i18n "FREE_AUTO_TIME"}}</label>
-                            <div class="col-xs-6">
-                                <input type="number" class="form-control" name="EngineFreeAutoTime" placeholder="1000">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="EngineJingleInterval" class="col-xs-4 control-label">{{i18n "ENGINEJINGLESINTERVAL"}}</label>
-                            <div class="col-xs-6">
-                                <input type="number" class="form-control" name="EngineJinglesInterval" placeholder="20">
-                            </div>
-                        </div>
-                            
-                        <div id="freeUpvotesSettings" class="well well-sm settingsGroupPanel">
-                            <div class="form-group">
-                                <label class="col-xs-4 control-label" for="EngineFreeUpvotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
-                                <div class="col-xs-6">
-                                    <input class="form-control" name="EngineFreeUpvotesRequiredMin">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="EngineFreeUpvotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
+                                <label for="EngineTimePerUser" class="col-xs-4 control-label">{{i18n "TIME_BY_USER"}}</label>
                                 <div class="col-xs-6">
-                                    <input class="form-control" name="EngineFreeUpvotesRequiredPercent">
+                                    <input type="number" class="form-control" name="EngineTimePerUser" placeholder="1000">
                                 </div>
                             </div>
-                        
-                        </div>    
-                    
+                            <div class="form-group">
+                                <label for="EngineSongsPerUser" class="col-xs-4 control-label">{{i18n "SONGS_BY_USER"}}</label>
+                                <div class="col-xs-6">
+                                    <input type="number" class="form-control" name="EngineSongsPerUser" placeholder="1000">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="EngineFreeAutoTime" class="col-xs-4 control-label">{{i18n "FREE_AUTO_TIME"}}</label>
+                                <div class="col-xs-6">
+                                    <input type="number" class="form-control" name="EngineFreeAutoTime" placeholder="1000">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="EngineJingleInterval" class="col-xs-4 control-label">{{i18n "ENGINEJINGLESINTERVAL"}}</label>
+                                <div class="col-xs-6">
+                                    <input type="number" class="form-control" name="EngineJinglesInterval" placeholder="20">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group settingsGroupPanel subCategoryGroupPanel">
+                            <div class="col-xs-12" style="text-align: center;">{{i18n "PUBLICMODESETTINGS"}}</div>
+                        </div>
+                        <div id="nav-karaokePublicMode">
+                            <div id="freeUpvotesSettings" class="well well-sm settingsGroupPanel">
+                                <div class="form-group">
+                                    <label class="col-xs-4 control-label" for="EngineFreeUpvotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
+                                    <div class="col-xs-6">
+                                        <input class="form-control" name="EngineFreeUpvotesRequiredMin">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="EngineFreeUpvotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
+                                    <div class="col-xs-6">
+                                        <input class="form-control" name="EngineFreeUpvotesRequiredPercent">
+                                    </div>
+                                </div>
+                            </div>   
+                            <div id="songPollSettings" class="well well-sm settingsGroupPanel">
+                                <div class="form-group">
+                                    <label class="col-xs-4 control-label" for="EngineSongPollChoices">{{i18n "ENGINESONGPOLLCHOICES"}}</label>
+                                    <div class="col-xs-6">
+                                        <input class="form-control" name="EngineSongPollChoices">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="EngineSongPollTimeout" class="col-xs-4 control-label">{{i18n "ENGINESONGPOLLTIMEOUT"}}</label>
+                                    <div class="col-xs-6">
+                                        <input class="form-control" name="EngineSongPollTimeout">
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
                         <input name="appFirstRun" class="hideInput hidden">
                     </div>
                 </div>            

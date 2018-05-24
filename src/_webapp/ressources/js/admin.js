@@ -380,14 +380,20 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	$.each(settingsOnOff, function (tab, settingsList) {
 		var htmlSettings = '';
 		$.each(settingsList, function (e, val) {
-			var htmlString = '<div class="form-group"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
+			var customClass = '';
+			if (settingsOnOffHighlight[e]) {
+				customClass = 'settingsHighlight';
+			}
+			var htmlString = '<div class="form-group ' + customClass + '"><label for="' + e + '" class="col-xs-4 control-label">' + val + '</label>'
 													+ '<div class="col-xs-6"> <input switch="onoff" type="checkbox" name="' + e + '"></div></div>';
 			if (e === 'PlayerPIP') {
-				$(htmlString).insertBefore('#pipSettings');
+				$(htmlString).addClass('groupSettingActivator').insertBefore('#pipSettings');
 			} else if (e === 'EngineDisplayConnectionInfo') {
-				$(htmlString).insertBefore('#connexionInfoSettings');
+				$(htmlString).addClass('groupSettingActivator').insertBefore('#connexionInfoSettings');
 			} else if (e === 'EngineFreeUpvotes') {
-				$(htmlString).insertBefore('#freeUpvotesSettings');
+				$(htmlString).addClass('groupSettingActivator').insertBefore('#freeUpvotesSettings');
+			} else if (e === 'EngineSongPoll') {
+				$(htmlString).addClass('groupSettingActivator').insertBefore('#songPollSettings');
 			} else {
 				htmlSettings += htmlString;
 			}
@@ -431,6 +437,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 							val ? $('#connexionInfoSettings').show('500') : $('#connexionInfoSettings').hide('500');
 						} else if (input.attr('name') === 'EngineFreeUpvotes') {
 							val ? $('#freeUpvotesSettings').show('500') : $('#freeUpvotesSettings').hide('500');
+						} else if (input.attr('name') === 'EngineSongPoll') {
+							val ? $('#songPollSettings').show('500') : $('#songPollSettings').hide('500');
 						}
 					}
 				}

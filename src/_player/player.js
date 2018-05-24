@@ -14,12 +14,14 @@ import {exit} from '../_services/engine';
 import {getID3} from './id3tag';
 import mpv from 'node-mpv';
 import {promisify} from 'util';
+import {endPoll} from '../_services/poll';
 
 const sleep = promisify(setTimeout);
 let currentJinglesList = [];
 let jinglesList = [];
 let displayingInfo = false;
 let player;
+let songNearEnd = false;
 let state = {};
 
 state.player = {
@@ -301,6 +303,12 @@ async function startmpv() {
 						state.player.mediaType === 'song')						
 			displaySongInfo(state.player.currentSongInfos);
 		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.mediaType === 'song') displayInfo(8000);
+		if (Math.floor(position) >= Math.floor(state.player.duration - 10) && state.player.mediaType === 'song' &&
+		getConfig().EngineSongPoll && 
+		!songNearEnd) {
+			songNearEnd = true;
+			endPoll();
+		}
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	state.player.ready = true;	
@@ -353,6 +361,7 @@ export async function play(mediadata) {
 		loadBackground('append');
 		state.player._playing = true;
 		emitPlayerState();
+		songNearEnd = false;
 	} catch(err) {
 		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
 	}	

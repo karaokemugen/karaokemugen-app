@@ -223,7 +223,11 @@
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Force hostname or IP",
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
 	"ENGINEDISPLAYCONNECTIONINFO": "Show network information",
-	"MESSAGE": "Message",
+	"ENGINEREMOVEPUBLICONPLAY": "Remove songs from public playlist once played",
+	"ENGINESONGPOLL": "Public Poll",
+	"ENGINESONGPOLLCHOICES": "Number of songs users can choose from during public poll",
+	"ENGINESONGPOLLTIMEOUT": "Public poll duration (in seconds)",
+    "MESSAGE": "Message",
 	"PLAYLIST_COMMANDS": "Playlist commands",
 	"PLAYLIST_SHUFFLE": "Shuffle playlist",
 	"PLAYLIST_EDIT": "Rename playlist",
@@ -340,6 +344,8 @@
 	"LYRICS_VIEW_ERROR": "Unable to display lyrics for %s",
 	"TAGS_LIST_ERROR": "Unable to display tag list",
 	"GUEST_LIST_ERROR": "Unable to list guest accounts",
+	"POLL_LIST_ERROR": "Unable to fetch current poll",
+	"POLL_NOT_ACTIVE": "No poll is currently running",
 	"USER_CREATED": "User created",
 	"USER_CREATE_ERROR": "Unable to create user",
 	"USER_ALREADY_EXISTS": "User name/nickname already exists!",
@@ -462,5 +468,7 @@
 	"SERIE_NAME_MODE_SONG": "Song's language",
 	"SERIE_NAME_MODE_ADMIN": "Karaoke Mugen's language",
 	"SERIE_NAME_MODE_USER": "User's language",
-	"_": "DO NOT MODIFY"
+	"PUBLICMODESETTINGS" : "Public-only settings",
+	"_": "DO NOT MODIFY",
+	"POLLTITLE": "Your time to vote!"
 }

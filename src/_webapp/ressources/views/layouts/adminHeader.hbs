@@ -31,6 +31,9 @@
     <script>
         var query = {{{query}}};
         var webappMode = {{webappMode}};
+        var settingsOnOffHighlight = {
+            // add settings you want to highlight
+        }
         var settingsOnOff = {
             'player' : 
                 { "PlayerPIP": "{{i18n "PLAYERPIP"}}"
@@ -45,10 +48,13 @@
                 , "EngineAllowViewWhitelist": "{{i18n "ENGINEALLOWVIEWWHITELIST"}}"
                 , "EngineCreatePreviews": "{{i18n "ENGINECREATEPREVIEWS"}}"
                 },
-            'karaoke' :
+            'karaokeAllMode' :
                 { "EngineRepeatPlaylist": "{{i18n "ENGINEREPEATPLAYLIST"}}"
                 , "EngineSmartInsert": "{{i18n "ENGINEENABLESMARTINSERT"}}"
                 , "EngineAutoPlay": "{{i18n "ENGINEAUTOPLAY"}}"
+                },
+            'karaokePublicMode' :
+                { "EngineSongPoll": "{{i18n "ENGINESONGPOLL"}}"
                 , "EngineFreeUpvotes": "{{i18n "ENGINEFREEUPVOTES"}}" 
                 }
             };

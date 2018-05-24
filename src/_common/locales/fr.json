@@ -240,6 +240,10 @@
 	"ENGINEDISPLAYCONNECTIONINFOHOST": "Infos host",
 	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
 	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les infos du réseau",
+	"ENGINEREMOVEPUBLICONPLAY": "Retirer une chanson de la liste publique une fois jouée",
+	"ENGINESONGPOLL": "Sondage public",
+	"ENGINESONGPOLLCHOICES": "Nombre de chansons proposées au sondage public",
+	"ENGINESONGPOLLTIMEOUT": "Durée du sondage public (en secondes)",
 	"ERROR": "Erreur",
 	"LOG_ERROR": "Identifiants invalides",
 	"LOG_SUCCESS": "Connecté en tant que %s",
@@ -342,6 +346,8 @@
 	"GOTO_PLAYING": "Aller au kara en cours de lecture",
 	"GOTO_BOTTOM": "Aller à la fin de la liste",
 	"GUEST_LIST_ERROR": "Impossible de lister les comptes invités",
+	"POLL_LIST_ERROR": "Impossible d'afficher le sondage actuel",
+	"POLL_NOT_ACTIVE": "Aucun sondage en cours",
 	"USER_CREATED": "Compte créé avec succès",
 	"USER_CREATE_ERROR": "Impossible de créer l'utilisateur",
 	"USER_ALREADY_EXISTS": "L'utilisateur/pseudo existe déjà !",
@@ -461,5 +467,8 @@
 	"SERIE_NAME_MODE_SONG": "Langue de la chanson",
 	"SERIE_NAME_MODE_ADMIN": "Langue de Karaoke Mugen",
 	"SERIE_NAME_MODE_USER": "Langue de l'utilisateur",
-	"_": "DO NOT MODIFY"	
+	"PUBLICMODESETTINGS": "Options exclusives au mode public",
+	"_": "DO NOT MODIFY",
+	"POLLTITLE": "À vous de voter !",
+	"undefined_SHORT": "undefined_SHORT"
 }

@@ -77,7 +77,7 @@ export async function transaction(items, sql) {
 		maxTimeout: 200
 	}).then(() => { 
 		return true;
-	}).catch((err) => { 
+	}).catch((err) => {
 		throw err;
 	});	
 }

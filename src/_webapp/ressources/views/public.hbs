@@ -30,6 +30,9 @@
             </ul>
         </div>
         <div class="pull-right btn-group switchParent">
+            <button class='btn btn-default showPoll hidden'>
+                <i class="glyphicon glyphicon-stats"></i>
+            </button>
             <span class="hidden">
                 <input title='{{i18n "SWITCH_SEARCH_VIEW"}}' type="checkbox" value="1" name="kara_panel" class="btn btn-default pull-right" data-on-text="<i class='glyphicon glyphicon-menu-hamburger'></i>"
                     data-off-text="<i class='glyphicon glyphicon-search'></i>" data-size="large" />
@@ -116,7 +119,12 @@
 </div>
 <div class="toastMessageContainer">
 </div>
-<div class="fixed-action-btn left click-to-toggle" id="mobileActions">
+<div class="fixed-action-btn right right2 click-to-toggle" id="mobileActions">
+    <a class="btn-floating btn-large waves-effect z-depth-3 showPoll hidden">
+        <i class="glyphicon glyphicon-stats"></i>
+    </a>
+</div>
+<div class="fixed-action-btn right click-to-toggle" id="mobileActions">
     <a class="btn-floating btn-large waves-effect z-depth-3" id="menuMobile"  style="background-color:#123456" data-opened=false>
         <i class="glyphicon glyphicon-menu-hamburger"></i>
     </a>
@@ -151,6 +159,24 @@
                 <button type="button" class="btn btn-action btn-default ok" data-dismiss="modal">
                     <i class="glyphicon glyphicon-ok"></i>
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modalPage fade" id="pollModal" role="dialog" tabindex="30">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active">
+                    <a data-toggle="tab" href="#nav-poll" role="tab" aria-controls="nav-poll" aria-selected="true" style="font-weight: bold;">
+                    {{i18n "POLLTITLE"}}</a>
+                </li>
+                <span class="timer"></span>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div id="nav-poll" role="tabpanel" aria-labelledby="nav-poll-tab" class="modal-body tab-pane fade in active">
+                    
+                </div>
             </div>
         </div>
     </div>
@@ -233,21 +259,21 @@
                                 <p name="login"></p>
                             </div>
                             <div class="col-md-9 col-lg-9 col-xs-12 col-sm-12 profileData">
-                                 <div class="profileLine">
+                                <div class="profileLine">
                                     <i class="glyphicon glyphicon-user"></i>
-                                    <input class="form-control" name="nickname" type="text"/>
+                                    <input class="form-control" name="nickname" type="text" placeholder="{{{ i18n "PROFILE_USERNAME" }}}"/>
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-envelope"></i>
-                                    <input class="form-control" name="email" type="text"/>
+                                    <input class="form-control" name="email" type="text" placeholder="{{{ i18n "PROFILE_MAIL" }}}"/>
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-link"></i>
-                                    <input class="form-control" name="url" type="text"/>
+                                    <input class="form-control" name="url" type="text" placeholder="{{{ i18n "PROFILE_URL" }}}"/>
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-leaf"></i>
-                                    <input class="form-control" name="bio" type="text"/>
+                                    <input class="form-control" name="bio" type="text" placeholder="{{{ i18n "PROFILE_BIO" }}}"/>
                                 </div>
                                 <div class="profileLine">
                                     <i class="glyphicon glyphicon-lock"></i>

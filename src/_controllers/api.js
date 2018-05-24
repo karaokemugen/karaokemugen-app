@@ -13,6 +13,7 @@ const engine = require ('../_services/engine');
 const favorites = require('../_services/favorites');
 const upvote = require('../_services/upvote');
 const user = require('../_services/user');
+const poll = require('../_services/poll');
 
 function errMessage(code,message,args) {
 	return {
@@ -1252,9 +1253,13 @@ export function APIControllerAdmin(router) {
  *       "EngineFreeAutoTime": "60",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
+ * 		 "EngineRemovePublicOnPlay": "1",
  * 		 "EngineQuotaType": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPoll": "0",
+ * 		 "EngineSongPollChoices": "4",
+ * 		 "EngineSongPollTimeout": "30",
  *       "EngineSongsPerUser": "10000",
  * 		 "EngineTimePerUser": "10000",
  *       "EngineCreatePreviews": "1",
@@ -1317,9 +1322,13 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} EngineFreeUpvotesRequiredPercent Minimum percent of upvotes / online users required to free a song
  * @apiParam {Number} EngineJinglesInterval Interval in number of songs between two jingles. 0 to disable entirely.
  * @apiParam {Boolean} EnginePrivateMode `false` = Public Karaoke mode, `true` = Private Karaoke Mode. See documentation.
+ * @apiParam {Boolean} EngineRemovePublicOnPlay Enable/disable auto removal of songs in public playlist if they've just been played 
  * @apiParam {Number} EngineQuotaType Type of quota for users when adding songs. `0` = no quota, `1` = limited by number of songs, `2` = limited by total song duration.
  * @apiParam {Boolean} EngineRepeatPlaylist Enable/disable auto repeat playlist when at end.
  * @apiParam {Boolean} EngineSmartInsert Enable/disable smart insert of songs in the playlist.
+ * @apiParam {Boolean} EngineSongPoll Enable/disable public song poll
+ * @apiParam {Number} EngineSongPollChoices Number of songs the public can choose from during a public poll
+ * @apiParam {Number} EngineSongPollTimeout Poll duration in seconds
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
  * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
@@ -2544,9 +2553,13 @@ export function APIControllerPublic(router) {
  * 		 "EngineFreeUpvotesMin": "4",
  *       "EngineJinglesInterval": "1",
  *       "EnginePrivateMode": "1",
+ * 		 "EngineRemovePublicOnPlay": "1",
  *       "EngineQuotaType": "1",
  *       "EngineRepeatPlaylist": "0",
  *       "EngineSmartInsert": "1",
+ * 		 "EngineSongPoll": "0",
+ * 		 "EngineSongPollChoices": "4",
+ * 		 "EngineSongPollTimeout": "30",
  *       "EngineSongsPerUser": "10000",
  *       "EngineTimePerUser": "10000",
  *       "PlayerBackground": "",
@@ -4651,5 +4664,208 @@ export function APIControllerPublic(router) {
 				res.statusCode = 400;								
 				res.json(validationErrors);
 			}
-		});	
+		});		
+	router.route('/songpoll')
+	/**
+ * @api {get} public/songpoll Get current poll status
+ * @apiName GetPoll
+ * @apiVersion 2.1.0
+ * @apiGroup Song Poll
+ * @apiPermission public
+ *
+ * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated 
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
+
+ * @apiSuccess {Array} data/poll Array of Playlistcontents objects (see `/public/playlist/current/karas` for sample)
+ * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
+ * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "flag_uservoted": false,
+ *       "infos": {
+ *           "count": 4,
+ *           "from": 0,
+ *           "to": 999999
+ *       },
+ *       "poll": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": "MADHOUSE",
+ *               "NORM_pseudo_add": "Administrator",
+ *               "NORM_serie": "Death Parade",
+ *               "NORM_serie_altname": null,
+ *               "NORM_singer": "NoisyCell",
+ *               "NORM_songwriter": "Ryosuke,Ryo",
+ *               "NORM_title": "Last Theater",
+ *               "author": null,
+ *               "created_at": 1520026875.38,
+ *               "creator": "MADHOUSE",
+ *               "duration": 71,
+ *               "flag_blacklisted": 0,
+ *               "flag_dejavu": 0,
+ *               "flag_playing": 0,
+ *               "flag_whitelisted": 0,
+ *               "gain": -8.62,
+ *               "kara_id": 1452,
+ *               "kid": "75b80966-ac1e-42db-bf2f-b97e0d84fe1d",
+ *               "language": "eng",
+ *               "language_i18n": "Anglais",
+ *               "lastplayed_at": null,
+ *               "misc": null,
+ *               "misc_i18n": null,
+ *               "playlistcontent_id": 19,
+ *               "pos": 14,
+ *               "pseudo_add": "Administrator",
+ *               "serie": "Death Parade",
+ *               "serie_altname": null,
+ *               "singer": "NoisyCell",
+ *               "songorder": 1,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": "Ryosuke,Ryo",
+ *               "title": "Last Theater",
+ *               "username": "admin",
+ *               "videofile": "ANG - Death Parade - ED1 - Last Theater.avi",
+ *               "viewcount": 0,
+ *               "votes": 0,
+ *               "year": "2015"
+ *           },
+ *           ...
+ *       ]
+ *   }
+ * }
+ * @apiError POLL_LIST_ERROR Unable to list current poll
+ * @apiError POLL_NOT_ACTIVE No poll is in progress
+ * @apiError POLL_ALREADY_VOTED This user has already voted
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "POLL_LIST_ERROR",
+ *   "message": null
+ * }
+ */
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+			let size = req.query.size || 999999;
+			size = parseInt(size, 10);
+			let from = req.query.from || 0;
+			from = parseInt(from, 10);			
+			try {
+				const pollResult = await poll.getPoll(req.body.authToken,req.lang,from,size);
+				res.json(OKMessage(pollResult));
+			} catch(err) {
+				res.statusCode = 500;
+				res.json(errMessage(err.code));
+			};
+		})
+	/**
+ * @api {post} public/songpoll Vote in a poll
+ * @apiName PostPoll
+ * @apiVersion 2.1.0
+ * @apiGroup Song Poll
+ * @apiPermission public
+ *
+ * @apiParam {Number} [playlistcontent_id] PLC ID to vote for
+ 
+ * @apiSuccess {Array} data/poll Array of Playlistcontents objects (see `/public/playlist/current/karas` for sample)
+ * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
+ * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "flag_uservoted": false,
+ *       "infos": {
+ *           "count": 4,
+ *           "from": 0,
+ *           "to": 999999
+ *       },
+ *       "poll": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": "MADHOUSE",
+ *               "NORM_pseudo_add": "Administrator",
+ *               "NORM_serie": "Death Parade",
+ *               "NORM_serie_altname": null,
+ *               "NORM_singer": "NoisyCell",
+ *               "NORM_songwriter": "Ryosuke,Ryo",
+ *               "NORM_title": "Last Theater",
+ *               "author": null,
+ *               "created_at": 1520026875.38,
+ *               "creator": "MADHOUSE",
+ *               "duration": 71,
+ *               "flag_blacklisted": 0,
+ *               "flag_dejavu": 0,
+ *               "flag_playing": 0,
+ *               "flag_whitelisted": 0,
+ *               "gain": -8.62,
+ *               "kara_id": 1452,
+ *               "kid": "75b80966-ac1e-42db-bf2f-b97e0d84fe1d",
+ *               "language": "eng",
+ *               "language_i18n": "Anglais",
+ *               "lastplayed_at": null,
+ *               "misc": null,
+ *               "misc_i18n": null,
+ *               "playlistcontent_id": 19,
+ *               "pos": 14,
+ *               "pseudo_add": "Administrator",
+ *               "serie": "Death Parade",
+ *               "serie_altname": null,
+ *               "singer": "NoisyCell",
+ *               "songorder": 1,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": "Ryosuke,Ryo",
+ *               "title": "Last Theater",
+ *               "username": "admin",
+ *               "videofile": "ANG - Death Parade - ED1 - Last Theater.avi",
+ *               "viewcount": 0,
+ *               "votes": 0,
+ *               "year": "2015"
+ *           },
+ *           ...
+ *       ]
+ *   }
+ * }
+ * @apiError POLL_LIST_ERROR Unable to list current poll
+ * @apiError POLL_NOT_ACTIVE No poll is in progress
+ * @apiError POLL_ALREADY_VOTED This user has already voted
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "POLL_LIST_ERROR",
+ *   "message": null
+ * }
+ */
+		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
+			//Validate form data
+			const validationErrors = check(req.body, {
+				playlistcontent_id: {presence: true, numbersArrayValidator: true}
+			});
+			if (!validationErrors) {			
+				// No errors detected
+				req.body.playlistcontent_id = parseInt(req.body.playlistcontent_id, 10);
+				try {
+					const ret = await poll.addPollVote(req.body.playlistcontent_id,req.authToken);
+					emitWS('songPollUpdated', ret.data);
+					res.json(OKMessage(null,ret.code,ret.data));
+				} catch(err) {
+					res.statusCode = 500;
+					res.json(errMessage(err.code,err.message));
+				}	
+							
+			} else {
+				// Errors detected
+				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;								
+				res.json(validationErrors);
+			}
+		});
+		
 }

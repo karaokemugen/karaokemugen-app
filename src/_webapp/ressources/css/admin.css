@@ -8,6 +8,10 @@
 #manage .bootstrap-switch-container > span {
 	line-height: 2.25;
 }
+#manage .groupSettingActivator .bootstrap-switch-handle-on.bootstrap-switch-primary {
+	background-color: hsla(214, 28%, 45%, 1);
+    color: #e9e9e9;
+}
 #manage, #manage > .panel  {
 	height: 100%;
 }
@@ -19,12 +23,19 @@
     background-color: #2d2d2f;
 	padding: 0;
 }
+#settings .form-group.settingsHighlight .bootstrap-switch-btn{
+	border: 2px solid #b8a047e6;
+}
 .settingsGroupPanel {
 	padding: 16px 0px;
-	background-color:transparent;
-	border: solid #585b65;
-	border-width: 2px 0px;
+    background-color: #304c725c;
+    border: solid #585b65;
+    border-width: 0px 0px;
 	padding: 16px 0px;
+}
+.subCategoryGroupPanel {
+    background-color: #41485e61;
+    border-width: 1px 0px;
 }
 .header > .btn-group.switchs {
 	height: calc(100% - 0px);

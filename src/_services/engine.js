@@ -10,6 +10,7 @@ import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {validateKaras} from '../_services/kara';
 import {displayInfo, playJingle, quitmpv, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
+import {startPoll, stopPoll} from '../_services/poll';
 import {now} from 'unix-timestamp';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import readlineSync from 'readline-sync';
@@ -31,7 +32,7 @@ let internalState = {
 	modePlaylistID: undefined,
 	playerNeedsRestart: false,
 	currentlyPlayingKara: null,
-	counterToJingle: 1
+	counterToJingle: 1,	
 };
 
 // Initial settings.
@@ -40,6 +41,9 @@ state.engine = {
 	private: true, // [bool(true|false)] // karaoke mode
 	fullscreen: false,
 	ontop: true,
+	playlist: null,
+	timeposition: 0,
+	songPoll: false,
 	frontendPort: null
 };
 
@@ -192,7 +196,7 @@ export async function initEngine() {
 	logger.info(`[Engine] Karaoke Mugen is ${ready}`);
 	console.log(`\n${sample(initializationCatchphrases)}\n`);
 	if (!conf.isTest) welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
-	profile('Init');
+	profile('Init');	
 }
 
 export function exit(rc) {
@@ -303,6 +307,14 @@ async function next() {
 	}
 }
 
+function setSongPoll(enabled) {
+	const oldState = state.engine.songPoll;
+	state.engine.songPoll = enabled;
+	emitEngineStatus();
+	if (!oldState && enabled) startPoll(internalState.publicPlaylistID,internalState.currentPlaylistID);
+	if (oldState && !enabled) stopPoll();
+}
+
 function setPrivate(privateMode) {
 	if (state.engine.private !== privateMode) {
 		if (privateMode) {
@@ -394,7 +406,8 @@ async function tryToReadKaraInPlaylist() {
 			state.engine.currentlyPlayingKara = kara.kara_id;
 			emitEngineStatus();
 			addViewcountKara(kara.kara_id,kara.kid);
-			updateUserQuotas(kara);			
+			updateUserQuotas(kara);
+			if (getConfig().EngineSongPoll) startPoll(internalState.publicPlaylistID,internalState.currentPlaylistID);
 		} catch(err) {
 			logger.error(`[Engine] Error during song playback : ${err}`);
 			emitEngineStatus();
@@ -667,6 +680,12 @@ export async function updateSettings(newConfig) {
 		}
 	}
 	emit('playerStatusChange', state.player);
+	if (newConfig.EngineSongPoll === 1) {
+		setSongPoll(true);
+	} else {
+		setSongPoll(false);
+	}	
+
 	return await mergeConfig(conf, newConfig);				
 }
 
