@@ -571,7 +571,7 @@ var settingsNotUpdated;
 
 		/* login stuff */
 
-		$('#profilModal,#loginModal,#modalBox').on('shown.bs.modal', function (e) {
+		$('#profilModal,#loginModal,#modalBox, #pollModal').on('shown.bs.modal', function (e) {
 			resizeModal();
 		});
 
@@ -1981,7 +1981,7 @@ var settingsNotUpdated;
 	});
 
 	resizeModal = function() {
-		$('#profilModal,#loginModal,#modalBox').each( (k, modal) => {
+		$('#profilModal,#loginModal,#modalBox, #pollModal').each( (k, modal) => {
 			var $modal = $(modal);
 			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
 						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
