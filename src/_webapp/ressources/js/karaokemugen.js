@@ -1927,8 +1927,7 @@ var settingsNotUpdated;
 		if(settingsUpdating) {
 			settingsUpdating.done( function() {
 				if(scope === 'public' && settings.EngineSongPoll) {
-					buildPollFromApi();
-					$('.showPoll').show();
+					$('.showPoll').toggleClass('hidden');
 				}
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
