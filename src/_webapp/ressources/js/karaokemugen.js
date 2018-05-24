@@ -1973,7 +1973,7 @@ var settingsNotUpdated;
 		resizeModal();
 
 		if(!isTouchScreen) {
-			$('#nav-profil,#nav-userlist').perfectScrollbar();
+			$('#nav-profil,#nav-userlist, #nav-poll').perfectScrollbar();
 			$('.playlistContainer, #manage > .panel').perfectScrollbar();
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
