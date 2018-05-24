@@ -54,6 +54,7 @@ This version requires your attention on the following points :
 
 - #299 Better handling of how Karaoke Mugen is shut down regarding database access (should remove any SQLITE_BUSY errors)
 - #295 Forbidden messages won't be displayed anymore on first login
+- #311 Autoplay/Repeat playlist now behave correctly
 
 ## v2.1.2 "Gabriel Gênante" - 16/05/2018
 
