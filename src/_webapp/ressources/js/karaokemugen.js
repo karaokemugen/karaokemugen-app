@@ -571,7 +571,7 @@ var settingsNotUpdated;
 
 		/* login stuff */
 
-		$('#profilModal,#loginModal,#modalBox').on('shown.bs.modal', function (e) {
+		$('#profilModal,#loginModal,#modalBox, #pollModal').on('shown.bs.modal', function (e) {
 			resizeModal();
 		});
 
@@ -1927,8 +1927,7 @@ var settingsNotUpdated;
 		if(settingsUpdating) {
 			settingsUpdating.done( function() {
 				if(scope === 'public' && settings.EngineSongPoll) {
-					buildPollFromApi();
-					$('.showPoll').show();
+					$('.showPoll').toggleClass('hidden');
 				}
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
@@ -1974,7 +1973,7 @@ var settingsNotUpdated;
 		resizeModal();
 
 		if(!isTouchScreen) {
-			$('#nav-profil,#nav-userlist').perfectScrollbar();
+			$('#nav-profil,#nav-userlist, #nav-poll').perfectScrollbar();
 			$('.playlistContainer, #manage > .panel').perfectScrollbar();
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
@@ -1982,7 +1981,7 @@ var settingsNotUpdated;
 	});
 
 	resizeModal = function() {
-		$('#profilModal,#loginModal,#modalBox').each( (k, modal) => {
+		$('#profilModal,#loginModal,#modalBox, #pollModal').each( (k, modal) => {
 			var $modal = $(modal);
 			var shrink =	parseFloat($modal.find('.modal-dialog').css('margin-top')) + parseFloat($modal.find('.modal-dialog').css('margin-bottom'))
 						+	$modal.find('.modal-header').outerHeight() + ($modal.find('.modal-footer').length > 0 ? $modal.find('.modal-footer').outerHeight() : 0);
