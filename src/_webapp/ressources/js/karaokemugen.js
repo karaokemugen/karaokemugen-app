@@ -9,6 +9,7 @@ var oldState;           // Object : last player state saved
 var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a flood of search
 var bcTags;             // Object : list of blacklist criterias tags
 var showInfoMessage;	// Object : list of info codes to show as a toast
+var hideErrorMessage;
 var softErrorMessage;
 var logInfos;			// Object : contains all login infos : role, token, username
 var pseudo;
@@ -164,8 +165,9 @@ var settingsNotUpdated;
 						code = i18n.__('UNKNOWN_ERROR');
 						errMessage = res.responseText;
 					}
-					//var code = softErrorMessage.indexOf(res.responseJSON.code) === -1 ? res.responseJSON.code + ' :' : '';
-					displayMessage('warning', code, errMessage);
+					if(hideErrorMessage.indexOf(res.responseJSON.code) === -1) {
+						displayMessage('warning', code, errMessage);
+					}
 				}
 			}
 		});
@@ -932,7 +934,7 @@ var settingsNotUpdated;
 		'PL_SONG_DELETED',
 		'PLAYLIST_MODE_SONG_ADDED',
 		'FAV_IMPORTED'];
-
+	hideErrorMessage = ['POLL_NOT_ACTIVE'];
 	softErrorMessage = [
 		'PLAYLIST_MODE_ADD_SONG_ERROR'];
 
@@ -1927,7 +1929,9 @@ var settingsNotUpdated;
 		if(settingsUpdating) {
 			settingsUpdating.done( function() {
 				if(scope === 'public' && settings.EngineSongPoll) {
-					$('.showPoll').toggleClass('hidden');
+					ajx('GET', 'public/songpoll', {}, function(data) {
+						$('.showPoll').toggleClass('hidden');
+					});		
 				}
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
