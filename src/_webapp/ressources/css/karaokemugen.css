@@ -461,6 +461,8 @@ button[name="infoKara"]:before {
 	position: absolute;
     right: 1px;
 	top: 4px;
+	height: 38px;
+	margin-top: -4px;
 	cursor: pointer;
 }
 .closeModal:hover {
