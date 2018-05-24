@@ -1847,7 +1847,7 @@ var settingsNotUpdated;
 	};
 	buildPollFromApi = function() {
 		ajx('GET', 'public/songpoll', {}, function(data) {
-			buildAndShowPoll(data, false);
+			buildAndShowPoll(data.poll, false);
 		});		
 	}
 
