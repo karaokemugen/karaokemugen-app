@@ -470,6 +470,5 @@
 	"PUBLICMODESETTINGS": "Options exclusives au mode public",
 	"_": "DO NOT MODIFY",
 	"POLLTITLE": "À vous de voter !",
-	"POLLENDED": "%s remporte le vote avec %s voix !",
-	"undefined_SHORT": "undefined_SHORT"
+	"POLLENDED": "%s remporte le vote avec %s voix !"	
 }
