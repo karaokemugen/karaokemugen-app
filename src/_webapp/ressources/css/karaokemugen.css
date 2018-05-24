@@ -464,6 +464,7 @@ button[name="infoKara"]:before {
 	height: 38px;
 	margin-top: -4px;
 	cursor: pointer;
+	z-index: 10007;
 }
 .closeModal:hover {
 	color: hsla(0, 0%, 90%, 0.98);
