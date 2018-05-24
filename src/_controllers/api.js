@@ -4755,7 +4755,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);			
 			try {
-				const pollResult = await poll.getPoll(req.body.authToken,req.lang,from,size);
+				const pollResult = await poll.getPoll(req.authToken,req.lang,from,size);
 				res.json(OKMessage(pollResult));
 			} catch(err) {
 				res.statusCode = 500;

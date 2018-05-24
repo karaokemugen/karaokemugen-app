@@ -1,7 +1,7 @@
 
 import {on} from '../_common/utils/pubsub';
 import {getConfig} from '../_common/utils/config';
-import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, isACurrentPlaylist, isAPublicPlaylist, getPlaylistContentsMini} from '../_services/playlist';
+import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, isACurrentPlaylist, getPlaylistContentsMini} from '../_services/playlist';
 import {sample, sampleSize} from 'lodash';
 import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
@@ -95,7 +95,7 @@ export async function addPollVote(playlistcontent_id,token) {
 export async function startPoll(publicPlaylist_id, currentPlaylist_id) {
 	const conf = getConfig();	
 	if (poll.length > 0) {
-		logger.info('[Poll] Unable to start poll, another one is already in progress')
+		logger.info('[Poll] Unable to start poll, another one is already in progress');
 		return false;
 	}
 	logger.info('[Poll] Starting a new poll');
@@ -133,7 +133,7 @@ export async function getPoll(token, lang, from, size) {
 	if (poll.length === 0) throw {
 		code: 'POLL_NOT_ACTIVE'
 	};	
-	poll = translateKaraInfo(poll,lang);
+	poll = translateKaraInfo(poll,lang);	
 	return {
 		infos: { 
 			count: poll.length,
