@@ -1,6 +1,6 @@
 # Versions
 
-## v2.2 "Haruhi Hagiographique" -
+## v2.2-rc1 "Haruhi Hargneuse" - 24/05/2018
 
 This version requires your attention on the following points :
 
