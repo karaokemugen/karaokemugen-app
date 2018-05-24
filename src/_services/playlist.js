@@ -1119,7 +1119,7 @@ export async function next() {
 		if (kara.flag_playing) readpos = index + 1;
 	});
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
-	if (readpos >= playlist.length && conf.EngineRepeatPlaylist === 0) {
+	if (readpos >= playlist.length && +conf.EngineRepeatPlaylist === 0) {
 		logger.debug('[PLC] End of playlist.');	
 		await setPlaying(null,playlist_id);
 		throw 'Current position is last song!';
