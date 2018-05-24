@@ -119,7 +119,7 @@ div > a {
 	font-weight: 600;
 }
 .btn-danger {
-	background-color: #973b3b;
+	background-color: hsla(0, 42%, 37%, 1);
 	border-color: transparent;
 }
 .btn-danger:hover {
@@ -943,7 +943,8 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	font-size: 15px;
 }
 .plInfos, .plBrowse {
-	background-color: hsla(107, 17%, 25%, 0.95);
+	/* background-color: hsla(107, 17%, 25%, 0.95); */
+	background-color: hsla(211, 47%, 30%, 0.90);
     float: right;
     padding: 2px;
     line-height: 25px;
