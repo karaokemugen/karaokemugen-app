@@ -470,5 +470,6 @@
 	"SERIE_NAME_MODE_USER": "User's language",
 	"PUBLICMODESETTINGS" : "Public-only settings",
 	"_": "DO NOT MODIFY",
-	"POLLTITLE": "Your time to vote!"
+	"POLLTITLE": "Your time to vote!",
+	"POLLENDED": "%s wins with %s votes!"
 }

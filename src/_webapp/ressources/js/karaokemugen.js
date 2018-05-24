@@ -2191,6 +2191,10 @@ var settingsNotUpdated;
 		socket.on('songPollEnded', function(data){
 			$('#pollModal').modal('hide');
 			$('.showPoll').toggleClass('hidden');
+			
+		});
+		socket.on('songPollResult', function(data){
+			displayMessage('success', '', i18n.__('POLLENDED', [data.kara.substring(0,100), data.votes]));
 		});
 		socket.on('settingsUpdated', function(){
 			settingsUpdating.done(function () {
