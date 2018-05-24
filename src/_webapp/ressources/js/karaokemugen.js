@@ -504,7 +504,7 @@ var settingsNotUpdated;
 				});
 			}
 		});
-
+		
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);

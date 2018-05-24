@@ -339,7 +339,7 @@ button[name="infoKara"]:before {
 #panel1 .actionDiv > button[name="transferKara"]:before {
 	content:"\e092";
 }
-.closeParent:before, .closePopupParent:before {
+.closeParent:before, .closePopupParent:before, .closeModal:before {
 	content:"\e014";
 }
 .fullLyrics:before {
@@ -454,7 +454,19 @@ button[name="infoKara"]:before {
 	text-transform: none;
  }
 
-.detailsKara .topRightButtons, .karaCard .details .topRightButtons, .lyricsKara button.closeParent  {
+.closeModal {
+    border: none;
+	background-color: transparent;
+	color: hsla(0, 0%, 86%, 0.87);
+	position: absolute;
+    right: 1px;
+	top: 4px;
+	cursor: pointer;
+}
+.closeModal:hover {
+	color: hsla(0, 0%, 90%, 0.98);
+}
+.detailsKara .topRightButtons, .karaCard .details .topRightButtons, .lyricsKara button.closeParent {
 	position: absolute;
 	top: 10px;
 	right: 10px;
