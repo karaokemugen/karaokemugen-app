@@ -7,6 +7,7 @@ import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
 import uuidV4 from 'uuid/v4';
 import logger from 'winston';
+import {timer} from '../_common/utils/timer';
 const sleep = promisify(setTimeout);
 
 let state = {};
@@ -14,6 +15,7 @@ let poll = [];
 let voters = [];
 let pollUUID;
 let pollEnding = false;
+let clock;
 
 on('engineStatusChange', (newstate) => {
 	state.engine = newstate[0];
@@ -22,6 +24,7 @@ on('engineStatusChange', (newstate) => {
 
 export async function timerPoll() {
 	const internalUUID = pollUUID = uuidV4();
+	clock = new timer(() => {}, getConfig().EngineSongPollTimeout * 1000);
 	await sleep(getConfig().EngineSongPollTimeout * 1000);
 	if (internalUUID === pollUUID) endPoll();
 }
@@ -141,6 +144,7 @@ export async function getPoll(token, lang, from, size) {
 			to: parseInt(from,10)+parseInt(size,10)
 		},
 		poll: poll,
+		timeLeft: clock.getTimeLeft(),
 		flag_uservoted: hasUserVoted(token.username)
 	};	
 }

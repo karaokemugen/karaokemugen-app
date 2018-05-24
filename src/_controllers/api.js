@@ -4673,13 +4673,13 @@ export function APIControllerPublic(router) {
  * @apiGroup Song Poll
  * @apiPermission public
  *
- * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated 
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
 
  * @apiSuccess {Array} data/poll Array of Playlistcontents objects (see `/public/playlist/current/karas` for sample)
  * @apiSuccess {Number} data/poll/votes Number of votes this song has earned
  * @apiSuccess {Boolean} data/flag_uservoted Has the user already voted for this poll?
+ * @apiSuccess {Number} data/timeLeft Miliseconds before vote ends
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
@@ -4735,7 +4735,8 @@ export function APIControllerPublic(router) {
  *               "year": "2015"
  *           },
  *           ...
- *       ]
+ *       ],
+ * 		 "timeLeft": 25498
  *   }
  * }
  * @apiError POLL_LIST_ERROR Unable to list current poll
