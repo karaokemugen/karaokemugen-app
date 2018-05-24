@@ -1811,8 +1811,9 @@ var settingsNotUpdated;
 	/*
 	*	Build the modal pool from a kara list
 	*	data  {Object} : list of karas going in the poll
+	*	show {Boolean} : if modal is shown once built
 	*/
-	buildAndShowPoll = function(data, startTimer) {
+	buildAndShowPoll = function(data, show) {
 		var karaNumber = data.length;
 		var $pollModal = $('#pollModal');
 		var $timer = $('#pollModal .timer');
@@ -1838,11 +1839,18 @@ var settingsNotUpdated;
 							+	'	</button>'
 							+	'</div>');
 		});		
-		$pollModal.modal('show');
-			
-		$timer.width('100%').finish().animate({ width : '0%' }, settings.EngineSongPollTimeout*1000);
+		if(show) {
+			$pollModal.modal('show');	
+			$timer.width('100%').finish().animate({ width : '0%' }, settings.EngineSongPollTimeout*1000);
+		}
 
 	};
+	buildPollFromApi = function() {
+		ajx('GET', 'public/songpoll', {}, function(data) {
+			buildAndShowPoll(data, false);
+		});		
+	}
+
 
 	/*
 	*	Manage memory of opened kara details
@@ -1905,6 +1913,7 @@ var settingsNotUpdated;
 			settingsUpdating = getSettings() ;
 		} else if (scope === 'public') {
 			settingsUpdating = getPublicSettings();
+			
 		} else {
 			$(window).trigger('resize');
 			$('.plSelect .select2').select2({ theme: 'bootstrap',
@@ -1917,6 +1926,10 @@ var settingsNotUpdated;
 
 		if(settingsUpdating) {
 			settingsUpdating.done( function() {
+				if(scope === 'public' && settings.EngineSongPoll) {
+					buildPollFromApi();
+					$('.showPoll').show();
+				}
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
 				playlistsUpdating.done(function () {
@@ -2176,8 +2189,8 @@ var settingsNotUpdated;
 		});
 		socket.on('settingsUpdated', function(){
 			settingsUpdating.done(function () {
-			settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
-			settingsUpdating.done(function (){
+				settingsUpdating = scope === 'admin' ? getSettings() : getPublicSettings();
+				settingsUpdating.done(function (){
 					if(!($('#selectPlaylist' + 1).data('select2') && $('#selectPlaylist' + 1).data('select2').isOpen()
 																		|| $('#selectPlaylist' + 2).data('select2') && $('#selectPlaylist' + 2).data('select2').isOpen() )) {
 						playlistsUpdating.done(function() {

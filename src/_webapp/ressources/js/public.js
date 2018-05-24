@@ -33,6 +33,7 @@ $(document).ready(function () {
 		$('#settingsPublic').modal('show');
 	});
 	$('.showPoll').click(function(){
+		buildPollFromApi();
 		$('#pollModal').modal('show');
 	});
 	$('#pollModal').on('click', 'button.poll', (e) => {
