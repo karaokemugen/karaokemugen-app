@@ -1815,7 +1815,7 @@ var settingsNotUpdated;
 	*	data  {Object} : list of karas going in the poll
 	*	show {Boolean} : if modal is shown once built
 	*/
-	buildAndShowPoll = function(data, show) {
+	buildAndShowPoll = function(data, show, timer) {
 		var karaNumber = data.length;
 		var $pollModal = $('#pollModal');
 		var $timer = $('#pollModal .timer');
@@ -1841,15 +1841,17 @@ var settingsNotUpdated;
 							+	'	</button>'
 							+	'</div>');
 		});		
+
 		if(show) {
-			$pollModal.modal('show');	
-			$timer.width('100%').finish().animate({ width : '0%' }, settings.EngineSongPollTimeout*1000);
+			$pollModal.modal('show');
 		}
+		if(!timer) timer = settings.EngineSongPollTimeout*1000;
+		$timer.finish().width('100%').animate({ width : '0%' }, timer, 'linear');
 
 	};
 	buildPollFromApi = function() {
 		ajx('GET', 'public/songpoll', {}, function(data) {
-			buildAndShowPoll(data.poll, false);
+			buildAndShowPoll(data.poll, false, data.timeLeft);
 		});		
 	}
 
