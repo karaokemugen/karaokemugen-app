@@ -465,6 +465,7 @@ button[name="infoKara"]:before {
 }
 .closeModal:hover {
 	color: hsla(0, 0%, 90%, 0.98);
+	background-color: transparent;
 }
 .detailsKara .topRightButtons, .karaCard .details .topRightButtons, .lyricsKara button.closeParent {
 	position: absolute;
