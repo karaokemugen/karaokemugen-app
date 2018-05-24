@@ -295,7 +295,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     z-index: 9876;
 }
 .fixed-action-btn.right2 {
-    right: calc(12px + 60px + 12px);
+    bottom: calc(12px + 60px + 12px);
 }
 .fixed-action-btn.right.top {
     bottom: auto;
@@ -356,7 +356,9 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
 .z-depth-3 {
     box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
 }
-
+.z-depth-2 {
+    box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3);
+}
 
 #switchInfoBar.showLyrics > i.infos {
     display: none;
@@ -441,6 +443,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     }
     .plFooter {
         font-size: 1.5rem;
+        width: calc(100% - 70px); /* leaving room for the menu button */
     }
     
     .plInfos { 
