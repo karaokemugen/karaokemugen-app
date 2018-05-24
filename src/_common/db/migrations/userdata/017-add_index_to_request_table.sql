@@ -6,4 +6,4 @@ CREATE INDEX index_request_fk_id_kara ON request (
 
 -- Down
 
-DELETE INDEX index_request_fk_id_kara;
+DROP INDEX index_request_fk_id_kara;
