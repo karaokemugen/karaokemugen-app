@@ -2,7 +2,8 @@
 import {on} from '../_common/utils/pubsub';
 import {getConfig} from '../_common/utils/config';
 import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, isACurrentPlaylist, getPlaylistContentsMini} from '../_services/playlist';
-import {sample, sampleSize} from 'lodash';
+import sample from 'lodash.sample';
+import sampleSize from 'lodash.samplesize'; 
 import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
 import uuidV4 from 'uuid/v4';
