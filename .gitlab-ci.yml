@@ -112,7 +112,7 @@ deploy_win:
     - cd ../updater_info
     - export RELFILE=`bash _ciPrepareInfoFiles.sh win32`
     - cd ..
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put build_win/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip ; put updater_info/$RELFILE"    
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip ; put updater_info/$RELFILE"    
   only:
     - master
     - next
@@ -123,7 +123,7 @@ latest_tag:
   script:
     - apt-get update -qq && apt-get install -y -qq lftp
     - echo $CI_COMMIT_REF_NAME >latest
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put latest"
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put latest"
   only: 
     - tags
 
@@ -152,7 +152,7 @@ deploy_osx:
     - cd ../updater_info
     - export RELFILE=`bash _ciPrepareInfoFiles.sh darwin`
     - cd ..
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip ; put updater_info/$RELFILE"    
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip ; put updater_info/$RELFILE"    
   only:
     - master
     - next
@@ -164,7 +164,7 @@ apidoc:
     - apt-get update -qq && apt-get install -y -qq lftp  
     - apidoc -i src -o apidoc -t apidoc_template
     - cd apidoc
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd apidoc; mirror -Rnev --parallel=10"
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/apidoc; mirror -Rnev --parallel=10"
   only:
     - master
     - tags
