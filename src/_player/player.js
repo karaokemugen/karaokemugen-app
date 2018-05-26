@@ -144,7 +144,6 @@ function configureURL() {
 }
 
 export async function initPlayerSystem(initialState) {
-	const conf = getConfig();
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
 	state.engine = initialState;
@@ -152,7 +151,7 @@ export async function initPlayerSystem(initialState) {
 	configureURL();
 	await buildQRCode(state.player.url);
 	logger.debug('[Player] QRCode generated');
-	if (!conf.isTest) await startmpv();
+	await startmpv();
 	emitPlayerState();
 	logger.debug('[Player] Player is READY');					
 }
@@ -321,9 +320,11 @@ export async function play(mediadata) {
 	state.player.playing = true;
 	//Search for media file in the different Pathmedias
 	const PathsMedias = conf.PathMedias.split('|');
+	const PathsSubs = conf.PathSubs.split('|');
 	let mediaFile;
+	let subFile;
 	try {
-		mediaFile = await resolveFileInDirs(mediadata.media,PathsMedias);
+		mediaFile = await resolveFileInDirs(mediadata.media,PathsMedias);		
 	} catch (err) {
 		logger.debug(`[Player] Error while resolving media path : ${err}`);
 		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
@@ -333,7 +334,13 @@ export async function play(mediadata) {
 		} else {
 			throw `No media source for ${mediadata.media} (tried in ${PathsMedias.toString()} and HTTP source)`;
 		}
-	}	
+	}
+	try {
+		subFile = await resolveFileInDirs(mediadata.subfile,PathsSubs);
+	} catch(err) {
+		logger.debug(`[Player] Error while resolving subs path : ${err}`);
+		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);		
+	}
 	logger.debug(`[Player] Audio gain adjustment : ${mediadata.gain}`);
 	logger.debug(`[Player] Loading media : ${mediaFile}`);		
 	try {
@@ -354,7 +361,11 @@ export async function play(mediadata) {
 		state.player.mediaType = 'song';
 		player.play();
 		state.player.playerstatus = 'play';
-		if (mediadata.subtitle) player.addSubtitles(`memory://${mediadata.subtitle}`);
+		if (subFile) try {
+			await player.addSubtitles(subFile);
+		} catch(err) {
+			logger.error(`[Player] Unable to load subtitles : ${err}`);
+		}
 		// Displaying infos about current song on screen.					
 		displaySongInfo(mediadata.infos);
 		state.player.currentSongInfos = mediadata.infos;

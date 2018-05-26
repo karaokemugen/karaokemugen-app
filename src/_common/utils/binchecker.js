@@ -12,10 +12,9 @@ export async function checkBinaries(config) {
 
 	const binariesPath = configuredBinariesForSystem(config);
 
-	let requiredBinariesChecks = [
-		asyncRequired(binariesPath.BinffmpegPath),
-		asyncRequired(binariesPath.BinmpvPath)
-	];
+	let requiredBinariesChecks = [];
+	requiredBinariesChecks.push(asyncRequired(binariesPath.BinffmpegPath));
+	if (!config.isTest && !config.isDemo) requiredBinariesChecks.push(asyncRequired(binariesPath.BinmpvPath));
 
 	try {
 		await Promise.all(requiredBinariesChecks);

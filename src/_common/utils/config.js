@@ -220,7 +220,7 @@ export async function backupConfig() {
 
 export async function updateConfig(newConfig) {
 	savingSettings = true;		
-	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','appPath','os','EngineDefaultLocale'];
+	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))

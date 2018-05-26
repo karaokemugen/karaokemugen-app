@@ -1,6 +1,7 @@
 import {backupConfig, getConfig} from '../_common/utils/config';
 import {run} from '../_admin/generate_karasdb';
 import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js';
+import {requireNotDemo} from './demo';
 import {getLang} from './lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
 import {getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
@@ -31,7 +32,7 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send('Error while regenerating karas: ' + err));
 	});
 
-	router.get('/users', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		listUsers()
 			.then(users => res.json(users))
 			.catch(err => res.status(500).send('Error while fetching users: ' + err));
@@ -56,26 +57,26 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send('Error while fetching karas: ' + err));
 	});
 
-	router.get('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/users/:userId', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		findUserByID(req.params.userId)
 			.then(user => res.json(user))
 			.catch(err => res.status(500).send('Error while fetching user: ' + err));
 
 	});
 
-	router.post('/users/create', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/users/create', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		createUser(req.body)
 			.then(res.send('OK'))
 			.catch(err => res.status(500).send('Error while creating user: ' + err));
 	});
 
-	router.put('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {		
+	router.put('/users/:userId', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {		
 		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role)
 			.then(() => res.status(200).send('User edited'))
 			.catch(err => res.status(500).send('Error editing user: ' + err));			
 	});
 
-	router.delete('/users/:userId', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.delete('/users/:userId', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		deleteUserById(req.params.userId)
 			.then(() => res.status(200).send('User deleted'))
 			.catch(err => res.status(500).send('Error deleting user: ' + err));
@@ -88,7 +89,7 @@ module.exports = function adminController(router) {
 
 	});
 
-	router.post('/karas/update', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.post('/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		runBaseUpdate()
 			.then(() => res.status(200).send('Karas successfully updated'))
 			.catch(err => res.status(500).send('Error while updating karas: ' + err));

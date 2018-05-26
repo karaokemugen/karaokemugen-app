@@ -16,6 +16,7 @@ Options :
 --strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
 --profiling   Displays profiling information for some functions
 --test        Launches in test mode
+--demo        Launches in demo mode
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
 --noBrowser   Do not open a browser window upon launch
@@ -75,6 +76,10 @@ export async function parseCommandLineArgs(argv) {
 	if (argv.test) {
 		logger.info('[Launcher] TEST MODE ENABLED. DO NOT DO THIS AT HOME.');
 		setConfig({isTest: true});
+	}
+	if (argv.demo) {
+		logger.info('[Launcher] Demo mode enabled');
+		setConfig({isDemo: true});
 	}
 	if (argv.noBrowser) setConfig({optNoBrowser: true});
 }

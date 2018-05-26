@@ -108,7 +108,7 @@ async function main() {
 	await openDatabases(config);
 
 	/** Start React static frontend */
-	startExpressReactServer(config.appAdminPort);
+	if (!config.isDemo) startExpressReactServer(config.appAdminPort);
 
 	/**
 	 * Calling engine.

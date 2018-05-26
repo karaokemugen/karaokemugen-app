@@ -166,7 +166,7 @@ export async function initEngine() {
 		createPreviews();
 	}
 	inits.push(plc.initPlaylistSystem());
-	inits.push(initPlayerSystem(state.engine));
+	if (!conf.isDemo && !conf.isTest) inits.push(initPlayerSystem(state.engine));
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
 	//Initialize engine
@@ -399,7 +399,7 @@ async function tryToReadKaraInPlaylist() {
 			logger.info(`[Engine] Playing ${serie}${title}`);
 			await play({
 				media: kara.mediafile,
-				subtitle: kara.subtitle,
+				subfile: kara.subfile, 				
 				gain: kara.gain,
 				infos: kara.infos
 			});

@@ -21,10 +21,11 @@ export async function welcomeToYoukousoKaraokeMugen(port) {
 	const conf = getConfig();
 	if (+conf.appFirstRun === 1) {
 		const adminPassword = generateAdminPassword();
-		opn('http://localhost:' + port + '/welcome?admpwd=' + adminPassword );
+		if (!conf.isDemo && !conf.isTest) opn(`http://localhost:${port}/welcome?admpwd=${adminPassword}`);
+		console.log('\nAdmin password is : '+adminPassword+'\nPlease keep it in a safe place, it will not be displayed ever again.\nTo reset admin password, set appFirstRun to 1 in config.ini\n');			
 	} else {
-		if (!conf.optNoBrowser) {
-			opn('http://localhost:' + port + '/welcome');
+		if (!conf.optNoBrowser && !conf.isDemo && !conf.isTest) {
+			opn(`http://localhost:${port}/welcome`);
 		}
 	}
 }
