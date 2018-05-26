@@ -47,7 +47,8 @@ build:
     - yarn build
     - yarn install --production
     - cd node_modules
-    - find -name *.node -delete    
+    - find -name *.node -delete
+    - modclean -r
   only:
     - master
     - next

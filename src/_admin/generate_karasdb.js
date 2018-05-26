@@ -23,6 +23,16 @@ import testJSON from 'is-valid-json';
 
 let error = false;
 
+async function emptyDatabase(db) {
+	await db.run('DELETE FROM kara_tag;');
+	await db.run('DELETE FROM kara_serie;');
+	await db.run('DELETE FROM tag;');
+	await db.run('DELETE FROM serie;');
+	await db.run('DELETE FROM kara;');
+	await db.run('DELETE FROM sqlite_sequence;');
+	await db.run('VACUUM;');
+}
+
 async function backupDir(directory) {
 	const backupDir = directory + '_backup';
 	if (await asyncExists(backupDir)) {
@@ -392,6 +402,7 @@ export async function run(config) {
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
+		await emptyDatabase(db);
 		//await backupKaraDirs(conf);
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
@@ -424,7 +435,7 @@ export async function run(config) {
 			runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames)
 		]);		
 		
-		await db.run('commit');
+		await db.run('commit');		
 		await db.close();
 		await checkUserdbIntegrity(null, conf);		
 		return error;
@@ -562,5 +573,5 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
 
-	logger.info('[Gen] Integrity checks complete! Please wait a little bit more...');	
+	logger.info('[Gen] Integrity checks complete, database generated');	
 }
