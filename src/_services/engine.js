@@ -54,7 +54,7 @@ on('playingUpdated', () => {
 });
 
 on('playerNeedsRestart', () => {
-	if (state.engine.status === 'stop' && !internalState.playerNeedsRestart) {
+	if (state.engine.status === 'stop' && !internalState.playerNeedsRestart && !getConfig().isDemo && !getConfig().isTest) {
 		internalState.playerNeedsRestart = true;
 		logger.info('[Engine] Player will restart in 5 seconds');
 		sleep(5000).then(() => {
@@ -918,7 +918,7 @@ export function sendMessage(message, duration) {
 
 export async function sendCommand(command, options) {
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
-	if (internalState.commandInProgress) throw '[Engine] A command is already in progress';
+	if (internalState.commandInProgress || getConfig().isDemo || getConfig().isTest) throw '[Engine] A command is already in progress';
 	internalState.commandInProgress = true;
 	if (command === 'play') {
 		await playPlayer();
