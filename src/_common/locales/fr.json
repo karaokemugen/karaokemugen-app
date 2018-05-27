@@ -470,5 +470,6 @@
 	"PUBLICMODESETTINGS": "Options exclusives au mode public",
 	"_": "DO NOT MODIFY",
 	"POLLTITLE": "À vous de voter !",
-	"POLLENDED": "%s remporte le vote avec %s voix !"	
+	"POLLENDED": "%s remporte le vote avec %s voix !",
+	"PLAYERMONITOR": "PLAYERMONITOR"
 }
