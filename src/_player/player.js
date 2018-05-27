@@ -387,7 +387,7 @@ export async function play(mediadata) {
 		}
 	}
 	try {
-		subFile = await resolveFileInDirs(mediadata.subfile,PathsSubs);
+		if (mediadata.subfile !== 'dummy.ass') subFile = await resolveFileInDirs(mediadata.subfile,PathsSubs);
 	} catch(err) {
 		logger.debug(`[Player] Error while resolving subs path : ${err}`);
 		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);		
