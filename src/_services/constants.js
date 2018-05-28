@@ -65,7 +65,29 @@ export const defaultGuestNames = [
 	'My karaoke can\'t be this cute',
 	'No bully please',
 	'Le type avec un t-shirt blanc là-bas',
-	'David Goodenough'
+	'David Goodenough',
+	'Kiss-Shot Acerola-Orion Heart-Under-Blade',
+	'BATMAN',
+	'Great Mighty Poo',
+	'Une simple rêveuse',
+	'Kamel Deux Bâches',
+	'Segata Sanshiro',
+	'Une maman avec une tresse sur l\'épaule',
+	'El Psy Kongroo',
+	'KuriGohan and Kamehameha',
+	'Gihren Zabi did nothing wrong',
+	'Tentacle-chan',
+	'Dike Spies',
+	'Sheryl > Ranka',
+	'Ranka > Sheryl',
+	'Urakawa Minori',
+	'Tomino "Big Bald" Yoshiyuki',
+	'Your waifu is shiiiiiiiiiit',
+	'My Waifu > Your Waifu',
+	'Hideaki Anno\'s depression',
+	'Mon Voisin Rototo',
+	'Kaaaaaneeeeedaaaaaaa',
+	'Teeeeetsuuuuoooooooooo'
 ];
 
 export const initializationCatchphrases = [
@@ -82,7 +104,13 @@ export const initializationCatchphrases = [
 	'"Take this microphone, mongrel, and let me judge if your voice is worth of joining that treasure of mine!" --Gilgamesh',
 	'"You are already singing." --Kenshiro',
 	'"Karaoke is not beautiful, and that is why it is beautiful." --Kino',
-	'"Hey, want to become a karaoke maker?" -- ／人◕ ‿‿ ◕人＼'
+	'"Hey, want to become a karaoke maker?" -- ／人◕ ‿‿ ◕人＼',
+	'"IT\'S JJ STYLE! -- King J.J."',
+	'"A microphone has no strength, unless the hand that holds it has courage -- Link"',
+	'"EXPLOSION!" -- Megumin',
+	'"I\'M A THE GREAT MAD SINGER, HOUHOUIN KYOMA !" -- Okabe Rintaro',
+	'"If you are not singing with you, sing with me who sings with you" - Kamina',
+	'"Do you remember the number of songs you have sung in your life?" - Dio Brando'
 ];
 
 export const karaTypes = Object.freeze({
