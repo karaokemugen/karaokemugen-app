@@ -4,7 +4,6 @@ import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/ut
 import {getConfig} from '../_common/utils/config';
 import {createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
-import sampleSize from 'lodash.samplesize';
 import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
@@ -260,18 +259,21 @@ export async function deleteUserById(id) {
 
 async function createDefaultGuests() {
 	const guests = await listGuests();
-	if (guests.length > 0) return 'No creation of guest account needed';			
-	// May be modified later.
-	let maxGuests = defaultGuestNames.length;
+	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';		
+	let guestsToCreate = [];
+	for (const guest of defaultGuestNames) {
+		if (!guests.find(g => g.login === guest)) guestsToCreate.push(guest);
+	}
+	let maxGuests = guestsToCreate.length;
 	if (getConfig().isTest) maxGuests = 3;
-	logger.debug(`[User] Creating ${maxGuests} default guest accounts`);
-	const guestsToCreate = sampleSize(defaultGuestNames, maxGuests);	
+	logger.debug(`[User] Creating ${maxGuests} new guest accounts`);
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await createUser({
 			login: guestsToCreate[i],
 			type: 2
 		});
 	}
+
 	logger.debug('[User] Default guest accounts created');
 }
 
