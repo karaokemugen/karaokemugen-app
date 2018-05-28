@@ -141,6 +141,8 @@
 	"TAG_SOUNDONLY_SHORT": "MP3",
 	"TAG_HARDMODE": "Difficile",
 	"TAG_HARDMODE_SHORT": "DUR",
+	"TAG_DUO": "Duo",
+	"TAG_DUO_SHORT": "DUO",
 	"REQUESTED_BY": "Demandé par",
 	"DAY": "jour(s)",
 	"HOUR": "heure(s)",
