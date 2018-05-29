@@ -126,30 +126,13 @@ async function loadBackground(mode) {
 	}
 }
 
-function configureURL() {
-	const conf = getConfig();	
-	if (!isEmpty(conf.EngineConnectionInfoHost)) {
-		state.player.url = `http://${conf.EngineConnectionInfoHost}`;
-	} else {
-		if (state.engine.url) {
-			state.player.url = state.engine.url;
-		} else {
-			if (state.engine.frontendPort === 80) {
-				state.player.url = `http://${conf.osHost}`;
-			} else {
-				state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
-			}			
-		}		
-	}	
-}
-
 export async function initPlayerSystem(initialState) {
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
 	state.engine = initialState;
-	buildJinglesList();
-	configureURL();
-	await buildQRCode(state.player.url);
+	buildJinglesList();	
+	const conf = getConfig();
+	await buildQRCode(conf.osURL);
 	logger.debug('[Player] QRCode generated');
 	await startmpv();
 	emitPlayerState();
@@ -492,11 +475,7 @@ export function displayInfo(duration) {
 	const conf = getConfig();
 	if (!duration) duration = 100000000;
 	let text = '';
-	if (conf.EngineDisplayConnectionInfo !== 0) {
-		text = __('GO_TO')+' '+state.player.url+' !';	
-		if (!isEmpty(conf.EngineDisplayConnectionInfoMessage)) text = conf.EngineDisplayConnectionInfoMessage + ' - ' + text;
-	}
-
+	if (conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;		
 	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://mugen.karaokes.moe`;
 	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {
