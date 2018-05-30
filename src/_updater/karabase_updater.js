@@ -9,6 +9,7 @@ import {copy} from 'fs-extra';
 import {createWriteStream} from 'fs';
 import prettyBytes from 'pretty-bytes';
 import _cliProgress from 'cli-progress';
+import promiseRetry from 'promise-retry';
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
 	host: 'mugen.karaokes.moe',
@@ -178,12 +179,29 @@ async function downloadMedias(ftp, files, mediasPath) {
 		ftp.trackProgress(info => {
 			bar1.update(Math.floor(info.bytes / 1000) / 1000);
 		});
-		await ftp.download(createWriteStream(outputFile), file.name);		
+		try {
+			await fileTransfer(ftp, outputFile, file.name);		
+		} catch(err) {
+			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
+		}		
 		ftp.trackProgress();
 		bar1.stop();
 	}
 }
 
+async function fileTransfer(ftp, output, input) {
+	await promiseRetry((retry) => {
+		return ftp.download(createWriteStream(output), input).catch(retry);				
+	}, {
+		retries: 10,
+		minTimeout: 5000,
+		maxTimeout: 10000
+	}).then(() => { 
+		return true;
+	}).catch((err) => {
+		throw err;
+	});	
+}
 
 async function listLocalMedias() {
 	const conf = getConfig();
