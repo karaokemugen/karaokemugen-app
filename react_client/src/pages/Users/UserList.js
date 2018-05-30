@@ -110,7 +110,7 @@ class UserList extends Component {
 		title: 'Last seen on',
 		dataIndex: 'last_login',
 		key: 'last_login',
-		render: (date) => (new Date(+date)).toLocaleString('fr-FR'),
+		render: (date) => (new Date(+date*1000)).toLocaleString('en'),
 		sorter: (a,b) => a.last_login - b.last_login
 	}, {
 		title: 'Logged in?',
