@@ -194,7 +194,7 @@ export function configureHost() {
 	const conf = getConfig();
 	let URLPort = `:${conf.appFrontendPort}`;
 	if (+conf.appFrontendPort === 80) URLPort = '';
-	if (+conf.OnlineMode === 1) return config = {...config, osURL: `http://${config.OnlineHost}`};
+	if (conf.OnlineMode) return config = {...config, osURL: `http://${config.OnlineHost}`};
 	if (conf.EngineDisplayConnectionInfoHost === '') return config = {...config, osURL: `http://${address()}${URLPort}`};
 	return config = {...config, osURL: `http://${conf.EngineDisplayConnectionInfoHost}${URLPort}`};
 }
