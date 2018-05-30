@@ -9,21 +9,20 @@ This is not meant to stay as is! Authentification is needed
 $file='liste.json';
 
 
-if(file_exists($fichier)) {
+if(file_exists($file)) {
 	$data=json_decode(file_get_contents($file), true);
 } else {
 	$data=[];
 }
-
 
 if (isset($_POST['localIP']) && isset($_POST['localPort']) && isset($_POST['IID'])) {
 	
 	$infos=[
 		'date'=>date(DATE_ATOM),
 		'remoteIP'=>$_SERVER['REMOTE_ADDR'],
-		'localIP'=>$_GET['localIP'],
-		'localPort'=>$_GET['localPort'],
-		'IID'=>$_GET['IID'],
+		'localIP'=>$_POST['localIP'],
+		'localPort'=>$_POST['localPort'],
+		'IID'=>$_POST['IID'],
 		];
 		
 	//Check if another record already exists
@@ -43,6 +42,7 @@ if (isset($_POST['localIP']) && isset($_POST['localPort']) && isset($_POST['IID'
 		} else {
 			header("HTTP/1.0 403 Forbidden");
 			echo 'Instance ID not recognized';
+			die();
 		}
 		
 	} else {
@@ -53,12 +53,13 @@ if (isset($_POST['localIP']) && isset($_POST['localPort']) && isset($_POST['IID'
 	}
 
 	//Writing file
+	//echo(json_encode($data,JSON_PRETTY_PRINT));
 	file_put_contents($file,json_encode($data,JSON_PRETTY_PRINT));
 
 } else {
 	
 	
-	$found=0;
+	$found=-1;
 	foreach($data as $key => $record) {
 		if($record['remoteIP']==$_SERVER['REMOTE_ADDR']) {
 			$found=$record;
