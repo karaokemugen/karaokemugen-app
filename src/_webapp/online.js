@@ -7,7 +7,7 @@ export async function publishURL() {
 	let localHost = conf.osHost;
 	if (!isEmpty(conf.EngineConnectionInfoHost)) localHost = conf.EngineConnectionInfoHost;
 	const options = {
-		url: `http://${conf.OnlineHost}:${conf.OnlinePort}/test/`,
+		url: `http://${conf.OnlineHost}:${conf.OnlinePort}`,
 		method: 'POST',
 		form: {
 			localIP: localHost,
