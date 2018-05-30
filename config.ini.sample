@@ -10,6 +10,10 @@ overwrite settings listed here.
 
 JwtSecret = "Change me"
 
+; Karaoke Mugen Instance ID: {string}
+; This is a UUID randomly generated during first launch
+appInstanceID = "Change me"
+
 ; Display nickname: {boolean}
 ; Display/hide nickname in the bottom left corner of the screen during first 8 seconds of playback.
 EngineDisplayNickname = 1
@@ -194,7 +198,7 @@ PathAvatars = "app/avatars"
 
 PathVideosHTTP = ""
 
-; Value: {string} "codec"
+; Value: {string}
 ; Video output driver for mpv .
 ; If you have blue or black window issues in Windows, set mpvVideoOutput to "direct3d", otherwise don't touch this .
 ; mpv should detect automatically which video output driver to use .
@@ -223,9 +227,9 @@ WebappSongLanguageMode = 1
 appFirstRun = 1
 
 ; Host and port to Karaoke Mugen online server.
-; Used when run in --slave mode
-OnlineHost = 'mugen.karaokes.moe'
-OnlinePort = 8800
+OnlineMode = 0
+OnlineHost = "kara.moe"
+OnlinePort = 80
 
 ; Ports for KM modules
 appFrontendPort = 1337
