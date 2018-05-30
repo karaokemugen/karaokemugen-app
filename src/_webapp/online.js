@@ -3,6 +3,7 @@ import {configureHost, getConfig} from '../_common/utils/config';
 import isEmpty from 'lodash.isempty';
 
 export async function publishURL() {
+	configureHost();
 	const conf = getConfig();
 	let localHost = conf.osHost;
 	if (!isEmpty(conf.EngineConnectionInfoHost)) localHost = conf.EngineConnectionInfoHost;
