@@ -1,4 +1,4 @@
-import req from 'require-promise-native';
+import req from 'request-promise-native';
 import {configureHost, getConfig} from '../_common/utils/config';
 import isEmpty from 'lodash.isempty';
 
@@ -7,9 +7,9 @@ export async function publishURL() {
 	let localHost = conf.osHost;
 	if (!isEmpty(conf.EngineConnectionInfoHost)) localHost = conf.EngineConnectionInfoHost;
 	const options = {
-		url: `http://${conf.OnlineHost}:${conf.OnlinePort}`,
+		url: `http://${conf.OnlineHost}:${conf.OnlinePort}/test/`,
 		method: 'POST',
-		body: {
+		form: {
 			localIP: localHost,
 			localPort: conf.appFrontendPort,
 			IID: conf.appInstanceID
