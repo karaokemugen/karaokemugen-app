@@ -1277,8 +1277,7 @@ export function APIControllerAdmin(router) {
  *       "PathMediasHTTP": "",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
- *       "PlayerNoBar": "1",
- *       "PlayerNoHud": "1",
+ *       "PlayerMonitor": "0",
  *       "PlayerPIP": "1",
  *       "PlayerPIPPositionX": "Left",
  *       "PlayerPIPPositionY": "Bottom",
@@ -1332,8 +1331,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
  * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
- * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
- * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
+ * @apiParam {Boolean} PlayerMonitor Enable/disable player's second screen (monitor)
  * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
  * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
  * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
@@ -2564,8 +2562,7 @@ export function APIControllerPublic(router) {
  *       "EngineTimePerUser": "10000",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
- *       "PlayerNoBar": "1",
- *       "PlayerNoHud": "1",
+ *       "PlayerMonitor": "0",
  *       "PlayerPIP": "1",
  *       "PlayerPIPPositionX": "Left",
  *       "PlayerPIPPositionY": "Bottom",

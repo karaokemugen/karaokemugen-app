@@ -139,6 +139,10 @@ PlayerBackground = ""
 ; {9}: No screen specified (let mpv decide)
 PlayerScreen = 0
 
+; Player Monitor: {boolean}
+; Enables/Disables the monitor window which replicates what's on the main screen.
+PlayerMonitor = 0
+
 ; Full screen: {boolean}
 ; Set player to full screen .
 PlayerFullscreen = 0

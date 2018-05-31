@@ -21,6 +21,8 @@ let currentJinglesList = [];
 let jinglesList = [];
 let displayingInfo = false;
 let player;
+let playerMonitor;
+let monitorEnabled = false;
 let songNearEnd = false;
 let state = {};
 
@@ -119,7 +121,11 @@ async function loadBackground(mode) {
 		videofilter = `lavfi-complex="movie=\\'${qrCode}\\'[logo]; [logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1] overlay=${posX}:${posY}[vo]"`;
 	} 
 	try {
-		await player.load(backgroundImageFile,mode,videofilter);
+		let loads = [
+			player.load(backgroundImageFile,mode,videofilter)
+		];
+		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile,mode,videofilter));
+		await Promise.all(loads);
 		if (mode === 'replace') displayInfo();
 	} catch(err) {
 		logger.error(`[Player] Unable to load background in ${mode} mode : ${JSON.stringify(err)}`);
@@ -156,6 +162,11 @@ function getmpvVersion(path) {
 
 async function startmpv() {
 	const conf = getConfig();
+	if (+conf.PlayerMonitor) { 
+		monitorEnabled = true;
+	} else {
+		monitorEnabled = false;
+	}
 	let mpvOptions = [
 		'--keep-open=yes',
 		'--fps=60',
@@ -218,7 +229,7 @@ async function startmpv() {
 	if (conf.os === 'darwin' && parseInt(mpvVersionSplit[1], 10) > 26) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
 	logger.debug(`[Player] mpv binary : ${conf.BinmpvPath}`);
-	let socket;
+	let socket;	
 	if (conf.os === 'win32') socket = '\\\\.\\pipe\\mpvsocket';
 	if (conf.os === 'darwin' || conf.os === 'linux') socket = '/tmp/km-node-mpvsocket';	
 	player = new mpv(
@@ -233,10 +244,47 @@ async function startmpv() {
 			debug: false,
 		},
 		mpvOptions
-	);	
+	);
+	if (monitorEnabled) {
+		mpvOptions = [
+			'--keep-open=yes',
+			'--fps=60',
+			'--osd-level=0',
+			'--sub-codepage=UTF-8-BROKEN',
+			'--ontop',
+			'--no-osc',
+			'--no-osd-bar',
+			'--geometry=1%:99%',
+			`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`
+		];
+		if (!isEmpty(conf.mpvVideoOutput)) {
+			mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
+		} else {
+			//Force direct3d for Windows users
+			if (conf.os === 'win32') mpvOptions.push('--vo=direct3d');
+		}
+		playerMonitor = new mpv(
+			{
+				ipc_command: '--input-ipc-server',
+				auto_restart: true,
+				audio_only: false,
+				binary: conf.BinmpvPath,
+				socket: socket+'2',
+				time_update: 1,
+				verbose: false,
+				debug: false,
+			},
+			mpvOptions
+		);
+	}
+	
 	// Starting up mpv
 	try {
-		await player.start();		
+		let promises = [
+			player.start()
+		];
+		if (monitorEnabled) promises.push(playerMonitor.start());
+		await Promise.all(promises);		
 	} catch(err) {
 		logger.error(`[Player] mpvAPI : ${err}`);
 		throw err;
@@ -253,6 +301,7 @@ async function startmpv() {
 			state.player._playing = false;
 			state.player.playerstatus = 'stop';
 			player.pause();
+			if (monitorEnabled) playerMonitor.pause();
 			state.player.mediaType = 'background';
 			emitPlayerEnd();
 		}
@@ -267,12 +316,14 @@ async function startmpv() {
 		logger.debug('[Player] Paused event triggered');
 		state.player.playing = false;
 		state.player.playerstatus = 'pause';
+		if (monitorEnabled) playerMonitor.pause();
 		emitPlayerState();		
 	});
 	player.on('resumed',() => {
 		logger.debug('[Player] Resumed event triggered');
 		state.player.playing = true;
 		state.player.playerstatus = 'play';
+		if (monitorEnabled) playerMonitor.play();
 		emitPlayerState();		
 	});
 	player.on('timeposition',(position) => {
@@ -319,7 +370,7 @@ export async function play(mediadata) {
 		}
 	}
 	try {
-		subFile = await resolveFileInDirs(mediadata.subfile,PathsSubs);
+		if (mediadata.subfile !== 'dummy.ass') subFile = await resolveFileInDirs(mediadata.subfile,PathsSubs);
 	} catch(err) {
 		logger.debug(`[Player] Error while resolving subs path : ${err}`);
 		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);		
@@ -340,12 +391,20 @@ export async function play(mediadata) {
 				options.push('vid=1');				
 			}
 		}
-		await player.load(mediaFile,'replace', options);
+		let loads = [player.load(mediaFile,'replace', options)];
+		if (monitorEnabled) loads.push(playerMonitor.load(mediaFile,'replace', options));
+		await Promise.all(loads);
 		state.player.mediaType = 'song';
 		player.play();
+		if (monitorEnabled) {
+			playerMonitor.play();
+			playerMonitor.mute();		
+		}
 		state.player.playerstatus = 'play';
 		if (subFile) try {
-			await player.addSubtitles(subFile);
+			let subs = [player.addSubtitles(subFile)];
+			if (monitorEnabled) subs.push(playerMonitor.addSubtitles(subFile));
+			Promise.all(subs);
 		} catch(err) {
 			logger.error(`[Player] Unable to load subtitles : ${err}`);
 		}
@@ -392,6 +451,7 @@ export function stop() {
 export function pause() {
 	logger.debug('[Player] Pause event triggered');
 	player.pause();
+	if (monitorEnabled) playerMonitor.pause();
 	state.playerstatus = 'pause';
 	return state;
 }
@@ -399,6 +459,7 @@ export function pause() {
 export function resume() {
 	logger.debug('[Player] Resume event triggered');
 	player.play();
+	if (monitorEnabled) playerMonitor.play();
 	state.player.playing = true;
 	state.player._playing = true;
 	state.player.playerstatus = 'play';
@@ -406,10 +467,12 @@ export function resume() {
 }
 
 export function seek(delta) {
+	if (monitorEnabled) playerMonitor.seek(delta);
 	return player.seek(delta);
 }
 
 export function goTo(pos) {
+	if (monitorEnabled) playerMonitor.goToPosition(pos);
 	return player.goToPosition(pos);
 }
 
@@ -429,12 +492,14 @@ export function setVolume(volume) {
 
 export function hideSubs() {
 	player.hideSubtitles();
+	if (monitorEnabled) playerMonitor.hideSubtitles();
 	state.player.showsubs = false;
 	return state;
 }
 
 export function showSubs() {
 	player.showSubtitles();
+	if (monitorEnabled) playerMonitor.showSubtitles();
 	state.player.showsubs = true;
 	return state;
 }
@@ -450,6 +515,7 @@ export async function message(message, duration) {
 		]
 	};
 	player.freeCommand(JSON.stringify(command));
+	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
 	if (state.player.playing === false) {
 		await sleep(duration);
 		displayInfo();		
@@ -467,6 +533,7 @@ export async function displaySongInfo(infos) {
 		]
 	};
 	player.freeCommand(JSON.stringify(command));
+	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
 	await sleep(8000);
 	displayingInfo = false;		
 }
@@ -487,6 +554,7 @@ export function displayInfo(duration) {
 		]
 	};
 	player.freeCommand(JSON.stringify(command));
+	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
 }
 
 export async function restartmpv() {
@@ -504,12 +572,12 @@ export async function quitmpv() {
 	player.quit();
 	// Destroy mpv instance.
 	player = null;
+	if (playerMonitor) {
+		playerMonitor.quit();
+		playerMonitor = null;
+	}	
 	state.player.ready = false;	
 	return true;
-}
-
-export async function skip() {
-
 }
 
 export async function playJingle() {
@@ -530,8 +598,13 @@ export async function playJingle() {
 		logger.debug('[Player] Playing jingle '+jingle.file);
 		if (!isEmpty(jingle)) {
 			try { 
-				await player.load(jingle.file,'replace',[`replaygain-fallback=${jingle.gain}`]);
-				player.play();						
+				let loads = [
+					player.load(jingle.file,'replace',[`replaygain-fallback=${jingle.gain}`])
+				];
+				if (monitorEnabled) loads.push(playerMonitor.load(jingle.file,'replace',[`replaygain-fallback=${jingle.gain}`]));
+				await Promise.all(loads);
+				player.play();
+				if (monitorEnabled) playerMonitor.play();
 				displayInfo();
 				state.player.playerstatus = 'play';
 				loadBackground('append');

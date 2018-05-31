@@ -239,9 +239,9 @@
 	"ENGINEAUTOPLAY": "Lecture automatique sur 1er ajout",
 	"ENGINEJINGLESINTERVAL": "Intervalle entre jingles (karas)",
 	"ENGINEDISPLAYCONNECTIONINFOQRCODE": "Afficher QR code",
-	"ENGINEDISPLAYCONNECTIONINFOHOST": "Infos host",
-	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message",
-	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les infos du réseau",
+	"ENGINEDISPLAYCONNECTIONINFOHOST": "Nom d'hôte (pour l'URL à afficher)",
+	"ENGINEDISPLAYCONNECTIONINFOMESSAGE": "Message à afficher avant l'URL",
+	"ENGINEDISPLAYCONNECTIONINFO": "Afficher les informations de connexion",
 	"ENGINEREMOVEPUBLICONPLAY": "Retirer une chanson de la liste publique une fois jouée",
 	"ENGINESONGPOLL": "Sondage public",
 	"ENGINESONGPOLLCHOICES": "Nombre de chansons proposées au sondage public",
@@ -472,5 +472,6 @@
 	"PUBLICMODESETTINGS": "Options exclusives au mode public",
 	"_": "DO NOT MODIFY",
 	"POLLTITLE": "À vous de voter !",
-	"POLLENDED": "%s remporte le vote avec %s voix !"	
+	"POLLENDED": "%s remporte le vote avec %s voix !",
+	"PLAYERMONITOR": "Seconde fenêtre (moniteur)"
 }
