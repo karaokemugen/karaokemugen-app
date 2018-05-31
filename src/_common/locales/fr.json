@@ -473,5 +473,6 @@
 	"_": "DO NOT MODIFY",
 	"POLLTITLE": "À vous de voter !",
 	"POLLENDED": "%s remporte le vote avec %s voix !",
-	"PLAYERMONITOR": "Seconde fenêtre (moniteur)"
+	"PLAYERMONITOR": "Seconde fenêtre (moniteur)",
+	"ONLINEMODE": "Url d'accès courte (nécessite internet)"
 }
