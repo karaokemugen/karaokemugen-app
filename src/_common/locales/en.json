@@ -472,5 +472,6 @@
 	"PUBLICMODESETTINGS" : "Public-only settings",
 	"_": "DO NOT MODIFY",
 	"POLLTITLE": "Your time to vote!",
-	"POLLENDED": "%s wins with %s votes!"
+	"POLLENDED": "%s wins with %s votes!",
+	"ONLINEMODE": "Short url (requires internet access)"
 }
