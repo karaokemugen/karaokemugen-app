@@ -2854,3 +2854,788 @@
  *    }
  * }
  */
+
+/**
+ * @api {post} /admin/shutdown Shutdown the entire application
+ * @apiDescription
+ * Shutdowns application completely. Kind of a self-destruct button.
+ * @apiName PostShutdown
+ * @apiGroup Main
+ * @apiVersion 2.0.0
+ *
+ * @apiPermission admin
+ * @apiSuccess {String} Shutdown in progress.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * "Shutdown in progress."
+ *
+ */
+
+	/**
+ * @api {post} /admin/playlists/ Create a playlist
+ * @apiName PostPlaylist
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiParam {String} name Name of playlist to create
+ * @apiParam {Boolean} flag_public Is the playlist to create public? This unsets `flag_public` on the previous playlist which had it.
+ * @apiParam {Boolean} flag_current Is the playlist to create current? This unsets `flag_current` on the previous playlist which had it.
+ * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
+ *
+ * @apiSuccess {String} args Name of playlist created
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of newly created playlist
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 Created
+ * {
+ *   "args": "lol",
+ *   "code": "PL_CREATED",
+ *   "data": 4
+ * }
+ * @apiError PL_CREATE_ERROR Unable to create a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+
+	/**
+ * @api {get} /admin/playlists/:pl_id Get playlist information
+ * @apiName GetPlaylist
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiVersion 2.0.0
+ *
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
+ * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
+ * @apiSuccess {Number} data/flag_public Is playlist the public one? Mutually exclusive with `flag_current`
+ * @apiSuccess {Number} data/flag_visible Is playlist visible to normal users?
+ * @apiSuccess {Number} data/length Duration of playlist in seconds
+ * @apiSuccess {Number} data/modified_at Playlist last edit date in UNIX timestamp
+ * @apiSuccess {String} data/name Name of playlist
+ * @apiSuccess {Number} data/num_karas Number of karaoke songs in the playlist
+ * @apiSuccess {Number} data/playlist_id Database's playlist ID
+ * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "created_at": 1508313440,
+ *       "flag_current": 1,
+ *       "flag_public": 0,
+ *       "flag_visible": 1,
+ *       "length": 0,
+ *       "modified_at": 1508408078,
+ *       "name": "Liste de lecture courante",
+ *       "num_karas": 6,
+ *       "playlist_id": 1,
+ *       "time_left": 0
+ *   }
+ *}
+ * @apiError PL_VIEW_ERROR Unable to fetch info from a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+	/**
+ * @api {put} /admin/playlists/:pl_id Update a playlist's information
+ * @apiName PutPlaylist
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} name Name of playlist to create
+ * @apiParam {Boolean} flag_visible Is the playlist to create visible to all users? If `false`, only admins can see it.
+ *
+ * @apiSuccess {String} args ID of playlist updated
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist updated
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 1,
+ *   "code": "PL_UPDATED",
+ *   "data": 1
+ * }
+ * @apiError PL_UPDATE_ERROR Unable to update a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+	/**
+ * @api {delete} /admin/playlists/:pl_id Delete a playlist
+ * @apiName DeletePlaylist
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiSuccess {String} args ID of playlist deleted
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist deleted
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 3,
+ *   "code": "PL_DELETED",
+ *   "data": 3
+ * }
+ * @apiError PL_DELETE_ERROR Unable to delete a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+	/**
+ * @api {put} /admin/playlists/:pl_id/empty Empty a playlist
+ * @apiName PutEmptyPlaylist
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiSuccess {String} args ID of playlist emptied
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist emptied
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 1,
+ *   "code": "PL_EMPTIED",
+ *   "data": 1
+ * }
+ * @apiError PL_EMPTY_ERROR Unable to empty a playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+/**
+ * @api {put} /admin/whitelist/empty Empty whitelist
+ * @apiName PutEmptyWhitelist
+ * @apiVersion 2.0.0
+ * @apiGroup Whitelist
+ * @apiPermission admin
+ *
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "WL_EMPTIED"
+ * }
+ * @apiError WL_EMPTY_ERROR Unable to empty the whitelist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+/**
+ * @api {put} /admin/blacklist/criterias/empty Empty list of blacklist criterias
+ * @apiName PutEmptyBlacklist
+ * @apiVersion 2.0.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ *
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data `null`
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "BLC_EMPTIED",
+ *   "data": null
+ * }
+ * @apiError BLC_EMPTY_ERROR Unable to empty list of blacklist criterias
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+/**
+ * @api {put} /admin/playlists/:pl_id/setCurrent Set playlist to current
+ * @apiName PutSetCurrentPlaylist
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiSuccess {String} args ID of playlist updated
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data `null`
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 1,
+ *   "code": "PL_SET_CURRENT",
+ *   "data": null
+ * }
+ * @apiError PL_SET_CURRENT_ERROR Unable to set this playlist to current. The playlist is a public one and can't be set to current at the same time. First set another playlist as public so this playlist has no flags anymore and can be set current.
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+/**
+ * @api {put} /admin/playlists/:pl_id/setPublic Set playlist to public
+ * @apiName PutSetPublicPlaylist
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiSuccess {String} args ID of playlist updated
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data `null`
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 1,
+ *   "code": "PL_SET_PUBLIC",
+ *   "data": null
+ * }
+ * @apiError PL_SET_PUBLIC_ERROR Unable to set this playlist to public. The playlist is a current one and can't be set to public at the same time. First set another playlist as current so this playlist has no flags anymore and can be set public.
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ */
+
+/**
+ * @api {patch} /admin/playlists/:pl_id/karas Copy karaokes to another playlist
+ * @apiName PatchPlaylistKaras
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {Number[]} plc_id List of `playlistcontent_id` separated by commas (`,`). Example : `1021,2209,44,872`
+ * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist
+ * @apiSuccess {String[]} args/plc_ids IDs of playlist contents copied
+ * @apiSuccess {String} args/playlist_id ID of destinaton playlist
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "playlist": 2,
+ *       "plc_ids": [
+ * 			"4946",
+ * 			"639"
+ * 		 ]
+ *   },
+ *   "code": "PL_SONG_MOVED",
+ *   "data": null
+ * }
+ * @apiError PL_MOVE_SONG_ERROR Unable to copy karaoke song to the destination playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "Liste de lecture publique",
+ *   "code": "PL_MOVE_SONG_ERROR",
+ *   "message": "Karaoke song 176 is already in playlist 2"
+ * }
+ */
+
+/**
+ * @api {delete} /admin/playlists/:pl_id/karas Delete karaokes from playlist
+ * @apiName DeletePlaylistKaras
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {Number[]} plc_id List of `plc_id` separated by commas (`,`). Example : `1021,2209,44,872`
+ * @apiSuccess {String} args Name of playlist the song was deleted from
+ * @apiSuccess {String} code Message to display
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "Liste de lecture publique",
+ *   "code": "PL_SONG_DELETED",
+ *   "data": null
+ * }
+ * @apiError PL_DELETE_SONG_ERROR Unable to delete the song from the selected playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "Liste de lecture publique",
+ *   "code": "PL_DELETE_SONG_ERROR",
+ *   "message": "[PLC] GetPLContentInfo : PLCID 4960 unknown"
+ * }
+ */
+
+/**
+ * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
+ * @apiName PutPlaylistKara
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
+ * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
+ * @apiParam {Number} [pos] Position in target playlist where to move the song to.
+ * @apiParam {Number} [flag_playing] If set to 1, the select song will become the currently playing song.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data PLCID modified
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "PL_CONTENT_MODIFIED",
+ *   "data": "4962"
+ * }
+ * @apiError PL_MODIFY_CONTENT_ERROR Unable to modify content's position or playing status
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_MODIFY_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ */
+
+/**
+ * @api {post} /admin/player/message Send a message to screen or users' devices
+ * @apiName PostPlayerMessage
+ * @apiVersion 2.0.0
+ * @apiGroup Player
+ * @apiPermission admin
+ *
+ * @apiParam {String} message Message to display
+ * @apiParam {Number} [duration=10000] Duration of message in miliseconds
+ * @apiParam {String="users","screen"} [destination="screen"] `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data Data sent to the API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "MESSAGE_SENT",
+ *   "data": {
+ *       "destination": "screen",
+ *       "duration": 10000,
+ *       "message": "yolo"
+ *   }
+ * }
+ * @apiError MESSAGE_SEND_ERROR Message couldn't be sent
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "MESSAGE_SEND_ERROR"
+ * }
+ */
+
+/**
+ * @api {post} /admin/whitelist Add song to whitelist
+ * @apiName PostWhitelist
+ * @apiVersion 2.0.0
+ * @apiGroup Whitelist
+ * @apiPermission admin
+ *
+ * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
+ * @apiSuccess {Number} args Arguments associated with message
+ * @apiSuccess {Number} code Message to display
+ * @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 Created
+ * {
+ *   "args": "2",
+ *   "code": "WL_SONG_ADDED",
+ *   "data": {
+ *       "kara_id": "2"
+ *   }
+ * }
+ * @apiError WL_ADD_SONG_ERROR Karaoke couldn't be added to whitelist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": [
+ *       "2"
+ *   ],
+ *   "code": "WL_ADD_SONG_ERROR",
+ *   "message": "No karaoke could be added, all are in whitelist already"
+ * }
+ */
+/**
+ * @api {delete} /admin/whitelist Delete whitelist item
+ * @apiName DeleteWhitelist
+ * @apiVersion 2.0.0
+ * @apiGroup Whitelist
+ * @apiPermission admin
+ *
+ * @apiParam {Number[]} wlc_id Whitelist content IDs to delete from whitelist, separated by commas
+ * @apiSuccess {Number} args Arguments associated with message
+ * @apiSuccess {Number} code Message to display
+ * @apiSuccess {Number[]} data List of Whitelist content IDs separated by commas
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "1",
+ *   "code": "WL_SONG_DELETED",
+ *   "data": "1"
+ * }
+ * @apiError WL_DELETE_SONG_ERROR Whitelist item could not be deleted.
+ *
+ */
+
+/**
+ * @api {get} /admin/blacklist/criterias Get list of blacklist criterias
+ * @apiName GetBlacklistCriterias
+ * @apiVersion 2.0.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ *
+ * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
+ * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
+ * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
+ * @apiSuccess {String} data/value_i18n Translated value to display on screen.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "blcriteria_id": 2,
+ *           "type": 6,
+ *           "value": "241",
+ *           "value_i18n": "Jean-Jacques Debout"
+ *       }
+ *   ]
+ * }
+ * 
+ * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_VIEW_ERROR"
+ * }
+ */	
+
+	/**
+ * @api {post} /admin/blacklist/criterias Add a blacklist criteria
+ * @apiName PostBlacklistCriterias
+ * @apiVersion 2.0.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ *
+ * @apiParam {Number} blcriteria_type Blacklist criteria type (refer to docs)
+ * @apiParam {String} blcriteria_value Blacklist criteria value. Depending on type, can be number or string.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 Created
+ * {
+ *   "args": {
+ *       "blcriteria_type": "1000",
+ *       "blcriteria_value": "lol"
+ *   },
+ *   "code": "BLC_ADDED",
+ *   "data": {
+ *       "blcriteria_type": "1000",
+ *       "blcriteria_value": "lol"
+ *   }
+ * }
+ * @apiError BLC_ADD_ERROR Blacklist criteria could not be added
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_ADD_ERROR",
+ *   "message": {
+ *       "code": "SQLITE_ERROR",
+ *       "errno": 1
+ *   }
+ * }
+ */		
+
+	/**
+ * @api {post} /admin/blacklist/criterias Add a blacklist criteria
+ * @apiName PostBlacklistCriterias
+ * @apiVersion 2.0.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ *
+ * @apiParam {Number} blcriteria_type Blacklist criteria type (refer to docs)
+ * @apiParam {String} blcriteria_value Blacklist criteria value. Depending on type, can be number or string.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 Created
+ * {
+ *   "args": {
+ *       "blcriteria_type": "1000",
+ *       "blcriteria_value": "lol"
+ *   },
+ *   "code": "BLC_ADDED",
+ *   "data": {
+ *       "blcriteria_type": "1000",
+ *       "blcriteria_value": "lol"
+ *   }
+ * }
+ * @apiError BLC_ADD_ERROR Blacklist criteria could not be added
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_ADD_ERROR",
+ *   "message": {
+ *       "code": "SQLITE_ERROR",
+ *       "errno": 1
+ *   }
+ * }
+ */	
+
+/**
+ * @api {delete} /admin/blacklist/criterias/:blc_id Delete a blacklist criteria
+ * @apiName DeleteBlacklistCriterias
+ * @apiVersion 2.0.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ *
+ * @apiParam {Number} blc_id Blacklist criteria's ID to delete
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "5",
+ *   "code": "BLC_DELETED",
+ *   "data": "5"
+ * }
+ * @apiError BLC_DELETE_ERROR Unable to delete Blacklist criteria
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_DELETE_ERROR",
+ *   "message": "BLCID 5 unknown"
+ * }
+ */	
+
+/**
+ * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
+ * @apiName PutBlacklistCriterias
+ * @apiVersion 2.0.0
+ * @apiGroup Blacklist
+ * @apiPermission admin
+ *
+ * @apiParam {Number} blc_id Blacklist criteria's ID to delete
+ * @apiParam {Number} blcriteria_type New blacklist criteria's type
+ * @apiParam {String} blcriteria_value New blacklist criteria's value
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "6",
+ *   "code": "BLC_UPDATED",
+ *   "data": {
+ *       "blcriteria_type": "8",
+ *       "blcriteria_value": "750"
+ *   }
+ * }
+ * @apiError BLC_UPDATE_ERROR Unable to update Blacklist criteria
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_UPDATE_ERROR",
+ *   "message": "BLCID 12309 unknown"
+ * }
+ */	
+
+/**
+ * @api {put} /admin/player Send commands to player
+ * @apiName PutPlayerCommando
+ * @apiVersion 2.0.0
+ * @apiGroup Player
+ * @apiPermission admin
+ *
+ * @apiParam {String=play,pause,stopNow,stopAfter,skip,prev,toggleFullscreen,toggleAlwaysOnTop,seek,goTo,mute,unmute,setVolume,showSubs,hideSubs} command Command to send to player
+ * @apiParam {String} [option] Parameter for the command being sent
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} args arguments for the message
+ * @apiSuccess {String} data Data returned from API
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": {
+ *       "command": "stopNow"
+ *   },
+ *   "code": "COMMAND_SENT",
+ *   "data": {
+ *       "command": "stopNow"
+ *   }
+ * }
+ */
+
+/**
+ * @api {get} /admin/playlists/:pl_id/export Export a playlist
+ * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
+ * @apiName getPlaylistExport
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiParam {Number} pl_id Playlist ID to export
+ * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "Header": {
+ *           "description": "Karaoke Mugen Playlist File",
+ *           "version": 2
+ *       },
+ *       "PlaylistContents": [
+ *           {
+ *               "flag_playing": 1,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b"
+ *           },
+ *           {
+ *               "kid": "6da96a7d-7159-4ea7-a5ee-1d78a6eb44dd"
+ *           },
+ *           {
+ *               "kid": "5af7ba4c-2325-451d-a24f-e7fd7c2d3ba8"
+ *           },
+ *           {
+ *               "kid": "e0206f48-0f51-44e3-bf9a-b651916d0c05"
+ *           }
+ *       ],
+ *       "PlaylistInformation": {
+ *           "created_at": 1508936812,
+ *           "flag_visible": 0,
+ *           "modified_at": 1508936821,
+ *           "name": "Test",
+ *           "time_left": 0
+ *       }
+ *   }
+ * }
+ * @apiError PL_EXPORT_ERROR Unable to export playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "5",
+ *   "code": "PL_EXPORT_ERROR",
+ *   "message": "Playlist 5 unknown"
+ * }
+ */	
+
+/**
+ * @api {post} /admin/playlists/import Import a playlist
+ * @apiName postPlaylistImport
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ *
+ * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": 4,
+ *   "code": "PL_IMPORTED",
+ *   "data": {
+ *       "message": "Playlist imported",
+ *       "playlist_id": 4,
+ *       "unknownKaras": []
+ *   }
+ * }
+ * @apiError PL_IMPORT_ERROR Unable to import playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_IMPORT_ERROR",
+ *   "message": "No header section"
+ * }
+ */	
+
+/**
+ * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
+ * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
+ * @apiName putPlaylistShuffle
+ * @apiVersion 2.0.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiParam {Number} pl_id Playlist ID to shuffle
+ * @apiSuccess {String} args ID of playlist shuffled
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist shuffled
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "5",
+ *   "code": "PL_SHUFFLED",
+ *   "data": "5"
+ * }
+ * @apiError PL_SHUFFLE_ERROR Unable to shuffle playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "10",
+ *   "code": "PL_SHUFFLE_ERROR",
+ *   "message": "Playlist 10 unknown"
+ * }
+ */
+
+/**
+ * @api {get} /public/stats Get statistics
+ * @apiName GetStats
+ * @apiVersion 2.0.0
+ * @apiGroup Main
+ * @apiPermission public
+ * @apiDescription Returns various stats on the current Karaoke Mugen instance
+ * @apiSuccess {Number} totalartists Total number of artists in database
+ * @apiSuccess {Number} totalcount Total number of karaokes in database
+ * @apiSuccess {Number} totalduration Sum of all karaoke durations in seconds.
+ * @apiSuccess {Number} totallanguages Total number of different languages in database
+ * @apiSuccess {Number} totalplaylists Total number of playlists in database
+ * @apiSuccess {Number} totalseries Total number of series in database
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *    "data": {
+ *        "totalartists": 542,
+ *        "totalcount": 4924,
+ *        "totalduration": 0,
+ *        "totallanguages": 16,
+ *        "totalplaylists": 5,
+ *        "totalseries": 2525
+ *    }
+ * }
+ */
