@@ -14,6 +14,8 @@ import {watch} from 'chokidar';
 import {emit} from './pubsub';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
+import {publishURL} from '../../_webapp/online';
+
 require('winston-daily-rotate-file');
 
 /** Object containing all config */
@@ -66,7 +68,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 		}
 	}
 
-
+	if (newConfig.OnlineMode) publishURL();
 	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings

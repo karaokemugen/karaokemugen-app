@@ -112,8 +112,8 @@ export async function initFrontend(port) {
 			view = 'publicLimited';
 		}
 		let url;
-		if (config.EngineConnectionInfoHost) {
-			url = config.EngineConnectionInfoHost;
+		if (config.EngineDisplayConnectionInfoHost) {
+			url = config.EngineDisplayConnectionInfoHost;
 		} else {
 			url = address();
 		}

@@ -675,17 +675,7 @@ export async function editPLC(plc_id, pos, flag_playing, token) {
 }
 
 export async function updateSettings(newConfig) {	
-	const conf = getConfig();
-	if (!isEmpty(newConfig.EngineConnectionInfoHost)) {
-		state.player.url = `http://${newConfig.EngineConnectionInfoHost}`;		
-	} else {
-		if (+state.engine.frontendPort !== 80) {
-			state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
-		} else {
-			state.player.url = `http://${conf.osHost}`;
-		}
-	}
-	emit('playerStatusChange', state.player);
+	const conf = getConfig();	
 	if (newConfig.EngineSongPoll === 1) {
 		setSongPoll(true);
 	} else {

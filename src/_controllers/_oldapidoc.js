@@ -424,8 +424,6 @@
  * HTTP/1.1 500 Internal Server Error
  */
 /**
-=======
->>>>>>> next
  * @api {get} public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.0.0
@@ -1073,7 +1071,6 @@
  * @apiSuccess {Number} data/infos/count Number of items in whitelist no matter which range was requested
  * @apiSuccess {Number} data/infos/from Items listed are from this position
  * @apiSuccess {Number} data/infos/size How many items listed.
-=======
 /**
  * @api {get} public/playlists/:pl_id Get playlist information (public)
  * @apiName GetPlaylistPublic
