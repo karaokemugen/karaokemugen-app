@@ -30,13 +30,14 @@ if (isset($_POST['localIP']) && isset($_POST['localPort']) && isset($_POST['IID'
 	foreach($data as $key => $record) {
 		if($record['remoteIP']==$infos['remoteIP']) {
 			$found=$key;
+			$dbData=$record;
 		}
 	}
 
 	//Inserting
 	if($found!=-1) {
 		
-		if ($record['IID']==$infos['IID']) {
+		if ($dbData['IID']==$infos['IID']) {
 			$data[$key]=$infos;
 			echo 'Update OK';
 		} else {
