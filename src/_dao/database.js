@@ -169,8 +169,12 @@ export async function initDBSystem() {
 			doGenerate = true;
 		}
 	} else {
-		const karaDbFileStats = await asyncStat(karaDbFile);
-		if (karaDbFileStats.size === 0) doGenerate = true;	
+		if (await asyncExists(karaDbFile)) {
+			const karaDbFileStats = await asyncStat(karaDbFile);
+			if (karaDbFileStats.size === 0) doGenerate = true;	
+		} else {
+			doGenerate = true;
+		}
 	}
 	if (karaDb) await closeKaraDatabase();
 	await openKaraDatabase();
