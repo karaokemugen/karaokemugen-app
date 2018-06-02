@@ -39,7 +39,7 @@ export function karaFilenameInfos(karaFile) {
 }
 
 function strictModeError(karaData, data) {	
-	logger.error(`[Gen] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,'\n')}`);
+	logger.error(`[Gen] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,2)}`);
 	error = true;
 }
 
