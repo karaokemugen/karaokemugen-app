@@ -1,6 +1,6 @@
 import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
-import {getConfig} from '../_common/utils/config';
+import {setConfig, getConfig} from '../_common/utils/config';
 import {join, resolve} from 'path';
 import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
 import promiseRetry from 'promise-retry';
@@ -158,6 +158,8 @@ export async function initDBSystem() {
 	let doGenerate = false;
 	const conf = getConfig();	
 	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
+	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
+	if (!await asyncExists(userDbFile)) setConfig({appFirstRun: 1});
 	if (conf.optGenerateDB) {
 		// Manual generation triggered.
 		// Delete any existing karas.sqlite3 file
@@ -173,7 +175,6 @@ export async function initDBSystem() {
 	if (karaDb) await closeKaraDatabase();
 	await openKaraDatabase();
 	await migrateKaraDb();
-	await closeUserDatabase();	
 	await openUserDatabase();
 	await migrateUserDb();	
 	if (doGenerate) await generateDatabase();
@@ -182,6 +183,7 @@ export async function initDBSystem() {
 	await getUserDb().run('PRAGMA TEMP_STORE=MEMORY');
 	await getUserDb().run('PRAGMA JOURNAL_MODE=WAL');
 	await getUserDb().run('PRAGMA SYNCHRONOUS=OFF');
+	await getUserDb().run('VACUUM');
 	//await getUserDb().run('PRAGMA LOCKING_MODE=EXCLUSIVE');
 
 	await compareDatabasesUUIDs();
