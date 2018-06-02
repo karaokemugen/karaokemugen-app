@@ -121,7 +121,7 @@ function prepareKaraInsertData(kara, index) {
 		$id_kara: index,
 		$kara_KID: kara.KID,
 		$kara_title: kara.title,
-		$titlenorm: deburr(kara.title),
+		$titlenorm: deburr(kara.title).replace('\'', '').replace(',', ''),
 		$kara_year: kara.year,
 		$kara_songorder: kara.order,
 		$kara_mediafile: kara.mediafile,
@@ -225,7 +225,7 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 			for (const serie of altNamesFile.series) {
 				if (serie.aliases) altNameData.push({
 					$serie_altnames: serie.aliases.join(','),
-					$serie_altnamesnorm: deburr(serie.aliases.join(' ')),
+					$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
 					$serie_name: serie.name				
 				});
 				if (serie.i18n) {
@@ -253,7 +253,7 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 					i18nData.push({
 						$lang: 'jpn',
 						$serie: serie,
-						$serienorm: deburr(serie),
+						$serienorm: deburr(serie).replace('\'', '').replace(',', ''),
 						$name: serie
 					});
 				}
@@ -386,7 +386,7 @@ function prepareAllTagsInsertData(allTags) {
 			$id_tag: index + 1,
 			$tagtype: tagType,
 			$tagname: tagName,
-			$tagnamenorm: deburr(tagNorm)
+			$tagnamenorm: deburr(tagNorm).replace('\'', '').replace(',', '')
 		});
 	});
 
