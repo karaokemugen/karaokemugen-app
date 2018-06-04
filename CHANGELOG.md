@@ -6,17 +6,24 @@ For a complete changelog of v2.2 changes, check out v2.2-rc1's changelog below.
 
 Changes from v2.2-rc1 to v2.2 :
 
-- #316 Failed FTP connections are retried several times before aborting
+### Bonus features
+
 - #314 Karaoke Mugen can optionally publish its public and local IP to `kara.moe` to allow people to type a shorter URL in order to access the instance from the local network. `kara.moe` will redirect to your local instance.
 - #312 A monitor window can be spawned for the player, allowing you, karaoke session operator, to see what the others see on the big screen where your main window is.
-- #313 Control panel's user list now displays dates correctly
 - Added new guest names and quotes
 - Karaoke Mugen will check during startup if all guests exist. If not, new guests will be added to the user list. So you won't miss on new updates!
 - Added the "Duo" tag for karaokes meant to be sung by two people.
 - Added a demo mode for online demonstrations (passwords can't be changed and mpv is not controllable)
 - .ass files are now read directly by mpv and not by Karaoke Mugen then passed to mpv anymore.
+
+### Fixes
+
+- #313 Control panel's user list now displays dates correctly
 - Better error handling for mpv thanks to node-mpv new features
 - Database generation from the control panel now works again
+- Removed useless code in initial database creation. The `appFirstRun` setting will be overriden to 1 if `userdata.sqlite3` is missing.
+- Searches containing quotes (') now return results
+- Blank series data is created if it exists in a .kara file but not in the `series.json` file. This allows you to search for that series even if it's not in the JSON file. NOTE : this throws an error in strict mode.
 
 ## v2.2-rc1 "Haruhi Hargneuse" - 24/05/2018
 
