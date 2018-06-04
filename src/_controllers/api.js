@@ -4638,7 +4638,7 @@ export function APIControllerPublic(router) {
  * @apiName PostUser
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission public
+ * @apiPermission NoAuth
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} login Login name for the user
  * @apiParam {String} password Password for the user

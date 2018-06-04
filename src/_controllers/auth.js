@@ -34,7 +34,7 @@ module.exports = function authController(router) {
  * @apiName AuthLogin
  * @apiVersion 2.1.0
  * @apiGroup Auth
- * @apiPermission public
+ * @apiPermission NoAuth
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
  * @apiHeader {String} charset Must be `UTF-8`
  * @apiParam {String} username Login name for the user
@@ -70,7 +70,7 @@ module.exports = function authController(router) {
  * @apiName AuthLoginGuest
  * @apiVersion 2.1.0
  * @apiGroup Auth
- * @apiPermission public
+ * @apiPermission NoAuth
  * @apiDescription
  * Logins as guest. Uses the fingerprint provided to tell if the user already has a reserved guest account or not. If not, logs in as a random guest account.
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
