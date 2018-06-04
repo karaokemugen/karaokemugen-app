@@ -80,6 +80,7 @@ on('engineStatusChange', (newstate) => {
 
 on('publicStatusChange', () => {
 	publicState = {
+		playing: state.player.playing,
 		private: state.engine.private,
 		status: state.engine.status,
 		onTop: state.engine.ontop,
