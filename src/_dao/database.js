@@ -160,8 +160,6 @@ export async function initDBSystem() {
 	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	if (!await asyncExists(userDbFile)) setConfig({appFirstRun: 1});
-	console.log(conf);
-
 	if (conf.optGenerateDB) {
 		// Manual generation triggered.
 		// Delete any existing karas.sqlite3 file
