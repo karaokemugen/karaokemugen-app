@@ -45,7 +45,7 @@ function OKMessage(data,code,args) {
  * This API does not require any privilegied role and can be used by anyone logged.
  */
 /**
- * @apiDefine noAuth No auth required
+ * @apiDefine NoAuth No auth required
  * Authorization header is not required.
  */
 export function APIControllerAdmin(router) {
@@ -3930,7 +3930,7 @@ export function APIControllerPublic(router) {
  * @api {get} /public/top50 View Top 50 songs
  * @apiName GetTop50
  * @apiVersion 2.2.0
- * @apiGroup Karas
+ * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} [filter] Filter list by this string. 
