@@ -1006,9 +1006,9 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-basic-ftp@^2.12.2:
-  version "2.12.2"
-  resolved "https://registry.yarnpkg.com/basic-ftp/-/basic-ftp-2.12.2.tgz#a2e105c14a774c632663805f6754398ceed79b0b"
+basic-ftp@^2.13.0:
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/basic-ftp/-/basic-ftp-2.13.0.tgz#134989ca9f61b2e0d6836aa0f4800a7dd5c849fc"
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.1"
@@ -1761,7 +1761,7 @@ doctrine@1.5.0:
     esutils "^2.0.2"
     isarray "^1.0.0"
 
-doctrine@^2.0.2, doctrine@^2.1.0:
+doctrine@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-2.1.0.tgz#5cd01fc101621b42c4cd7f5d1a66243716d3f39d"
   dependencies:
@@ -1946,11 +1946,11 @@ eslint-module-utils@^2.2.0:
     debug "^2.6.8"
     pkg-dir "^1.0.0"
 
-eslint-plugin-flowtype@2.46.3:
-  version "2.46.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-flowtype/-/eslint-plugin-flowtype-2.46.3.tgz#7e84131d87ef18b496b1810448593374860b4e8e"
+eslint-plugin-flowtype@2.49.3:
+  version "2.49.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-flowtype/-/eslint-plugin-flowtype-2.49.3.tgz#ccca6ee5ba2027eb3ed36bc2ec8c9a842feee841"
   dependencies:
-    lodash "^4.15.0"
+    lodash "^4.17.10"
 
 eslint-plugin-import@2.12.0:
   version "2.12.0"
@@ -1979,14 +1979,14 @@ eslint-plugin-jsx-a11y@6.0.3:
     emoji-regex "^6.1.0"
     jsx-ast-utils "^2.0.0"
 
-eslint-plugin-react@^7.7.0:
-  version "7.8.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.8.2.tgz#e95c9c47fece55d2303d1a67c9d01b930b88a51d"
+eslint-plugin-react@^7.9.1:
+  version "7.9.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.9.1.tgz#101aadd15e7c7b431ed025303ac7b421a8e3dc15"
   dependencies:
-    doctrine "^2.0.2"
-    has "^1.0.1"
+    doctrine "^2.1.0"
+    has "^1.0.2"
     jsx-ast-utils "^2.0.1"
-    prop-types "^15.6.0"
+    prop-types "^15.6.1"
 
 eslint-scope@^3.7.1, eslint-scope@~3.7.1:
   version "3.7.1"
@@ -2775,6 +2775,12 @@ has@^1.0.1:
   resolved "https://registry.yarnpkg.com/has/-/has-1.0.1.tgz#8461733f538b0837c9361e39a9ab9e9704dc2f28"
   dependencies:
     function-bind "^1.0.2"
+
+has@^1.0.2:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/has/-/has-1.0.3.tgz#722d7cbfc1f6aa8241f16dd814e011e1f41e8796"
+  dependencies:
+    function-bind "^1.1.1"
 
 hawk@3.1.3, hawk@~3.1.3:
   version "3.1.3"
@@ -3737,7 +3743,7 @@ lodash.zipobject@^2.4.1:
   dependencies:
     lodash.isarray "~2.4.1"
 
-lodash@^4.13.1, lodash@^4.15.0, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.3.0, lodash@~4.17.4:
+lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.3.0, lodash@~4.17.4:
   version "4.17.10"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.10.tgz#1b7793cf7259ea38fb3661d4d38b3260af8ae4e7"
 
@@ -4047,9 +4053,9 @@ node-fingerprint@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/node-fingerprint/-/node-fingerprint-0.0.2.tgz#31cbabeb71a67ae7dd5a7dc042e51c3c75868501"
 
-node-id3@^0.1.3:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/node-id3/-/node-id3-0.1.4.tgz#3856589371175cd8acc2fcb44291406273d1922c"
+node-id3@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/node-id3/-/node-id3-0.1.5.tgz#6ca7cd19a7a4bd5019dbea8092e74900de2ef24b"
   dependencies:
     iconv-lite "^0.4.15"
 
@@ -4545,7 +4551,7 @@ promise@^7.0.0, promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.6.0:
+prop-types@^15.6.1:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
@@ -5381,9 +5387,9 @@ supports-color@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
 
-systeminformation@^3.40.0:
-  version "3.41.3"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-3.41.3.tgz#b5c53d7e1ae116968dcf000b23335c58d2694a93"
+systeminformation@^3.42.0:
+  version "3.42.0"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-3.42.0.tgz#2b89617c5760adf35e6eb7c74edf4af4cd6502fb"
 
 table@4.0.2:
   version "4.0.2"
