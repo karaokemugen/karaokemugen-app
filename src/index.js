@@ -8,7 +8,6 @@ import logger from 'winston';
 import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
 import {startExpressReactServer} from './_webapp/react';
-import {openDatabases} from './_dao/database';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
