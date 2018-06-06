@@ -162,7 +162,7 @@ apidoc:
   stage: deploy
   script:    
     - apt-get update -qq && apt-get install -y -qq lftp  
-    - apidoc -i src -o apidoc -t apidoc_template
+    - apidoc -i src/_controllers -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/apidoc; mirror -Rnev --parallel=10"
   only:

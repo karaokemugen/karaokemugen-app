@@ -81,7 +81,7 @@ export const defaultGuestNames = [
 	'Sheryl > Ranka',
 	'Ranka > Sheryl',
 	'Urakawa Minori',
-	'Tomino "Big Bald" Yoshiyuki',
+	'Tomino "Big Bald Man" Yoshiyuki',
 	'Your waifu is shiiiiiiiiiit',
 	'My Waifu > Your Waifu',
 	'Hideaki Anno\'s depression',
@@ -110,7 +110,8 @@ export const initializationCatchphrases = [
 	'"EXPLOSION!" -- Megumin',
 	'"I\'M A THE GREAT MAD SINGER, HOUHOUIN KYOMA !" -- Okabe Rintaro',
 	'"If you are not singing with you, sing with me who sings with you" - Kamina',
-	'"Do you remember the number of songs you have sung in your life?" - Dio Brando'
+	'"Do you remember the number of songs you have sung in your life?" - Dio Brando',
+	'"Let\'s make a strawberry parfait from this karaoke!" - Hoshimiya Ichigo'
 ];
 
 export const karaTypes = Object.freeze({

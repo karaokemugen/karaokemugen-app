@@ -42,9 +42,12 @@ function OKMessage(data,code,args) {
  */
 /**
  * @apiDefine public Public access
- * This API does not require any authorization method and can be accessed from anyone.
+ * This API does not require any privilegied role and can be used by anyone logged.
  */
-
+/**
+ * @apiDefine NoAuth No auth required
+ * Authorization header is not required.
+ */
 export function APIControllerAdmin(router) {
 	// Admin routes
 	
@@ -54,8 +57,9 @@ export function APIControllerAdmin(router) {
  * Shutdowns application completely. Kind of a self-destruct button.
  * @apiName PostShutdown
  * @apiGroup Main
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  *
+ * @apiHeader authorization Auth token received from logging in
  * @apiPermission admin
  * @apiSuccess {String} Shutdown in progress.
  *
@@ -84,6 +88,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.1.0
  * @apiPermission admin
  *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} users Comma-separated list of usernames to pick favorites from
  * @apiParam {Number} duration Duration wished for the generatedplaylist in minutes
  * @apiSuccess {String} code Message to display
@@ -143,6 +148,7 @@ export function APIControllerAdmin(router) {
  * @apiGroup Playlists
  * @apiVersion 2.1.0
  * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
  *
  * @apiSuccess {Object[]} playlists Playlists information
  *
@@ -186,9 +192,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {post} /admin/playlists/ Create a playlist
  * @apiName PostPlaylist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
  *
  * @apiParam {String} name Name of playlist to create
  * @apiParam {Boolean} flag_public Is the playlist to create public? This unsets `flag_public` on the previous playlist which had it.
@@ -249,8 +256,9 @@ export function APIControllerAdmin(router) {
  * @apiName GetPlaylist
  * @apiGroup Playlists
  * @apiPermission admin
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
  * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
@@ -301,9 +309,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/playlists/:pl_id Update a playlist's information
  * @apiName PutPlaylist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
  *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} name Name of playlist to create
@@ -356,10 +365,11 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {delete} /admin/playlists/:pl_id Delete a playlist
  * @apiName DeletePlaylist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
+ * 
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {String} args ID of playlist deleted
  * @apiSuccess {String} code Message to display
@@ -395,6 +405,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
  *
  * @apiParam {String} login Login name for the user
  * @apiParam {String} password Password for the user
@@ -457,6 +468,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission Admin
+ * @apiHeader authorization Auth token received from logging in
  *
  * @apiparam {String} username Username to get data from
  * @apiSuccess {String} data/login User's login
@@ -521,7 +533,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} username User name to delete
  * @apiSuccess {String} args ID of user deleted
  * @apiSuccess {String} code Message to display
@@ -554,10 +566,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {String} args ID of playlist emptied
  * @apiSuccess {String} code Message to display
@@ -592,10 +604,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/whitelist/empty Empty whitelist
  * @apiName PutEmptyWhitelist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Whitelist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {String} code Message to display
  *
  * @apiSuccessExample Success-Response:
@@ -626,10 +638,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/blacklist/criterias/empty Empty list of blacklist criterias
  * @apiName PutEmptyBlacklist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Blacklist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data `null`
  *
@@ -660,10 +672,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/playlists/:pl_id/setCurrent Set playlist to current
  * @apiName PutSetCurrentPlaylist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {String} args ID of playlist updated
  * @apiSuccess {String} code Message to display
@@ -698,10 +710,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/playlists/:pl_id/setPublic Set playlist to public
  * @apiName PutSetPublicPlaylist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {String} args ID of playlist updated
  * @apiSuccess {String} code Message to display
@@ -738,7 +750,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
@@ -837,7 +849,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} kara_id List of `kara_id` separated by commas (`,`). Example : `1021,2209,44,872`
  * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
@@ -900,10 +912,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {patch} /admin/playlists/:pl_id/karas Copy karaokes to another playlist
  * @apiName PatchPlaylistKaras
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} plc_id List of `playlistcontent_id` separated by commas (`,`). Example : `1021,2209,44,872`
  * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist
@@ -968,10 +980,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {delete} /admin/playlists/:pl_id/karas Delete karaokes from playlist
  * @apiName DeletePlaylistKaras
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} plc_id List of `plc_id` separated by commas (`,`). Example : `1021,2209,44,872`
  * @apiSuccess {String} args Name of playlist the song was deleted from
@@ -1029,7 +1041,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
  * @apiParam {Number} plc_id Playlist content ID.
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
@@ -1156,10 +1168,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
  * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
  * @apiParam {Number} [pos] Position in target playlist where to move the song to.
@@ -1217,7 +1229,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.2.0
  * @apiGroup Main
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -1277,8 +1289,7 @@ export function APIControllerAdmin(router) {
  *       "PathMediasHTTP": "",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
- *       "PlayerNoBar": "1",
- *       "PlayerNoHud": "1",
+ *       "PlayerMonitor": "0",
  *       "PlayerPIP": "1",
  *       "PlayerPIPPositionX": "Left",
  *       "PlayerPIPPositionY": "Bottom",
@@ -1305,6 +1316,7 @@ export function APIControllerAdmin(router) {
  * @apiName PutSettings
  * @apiVersion 2.2.0
  * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
  * @apiGroup Main
  * @apiDescription **Note :** All settings must be sent at once in a single request.
  * @apiParam {Boolean} EngineAllowViewBlacklist Allow/disallow users to view blacklist contents from the guest interface
@@ -1332,8 +1344,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
  * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
- * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
- * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
+ * @apiParam {Boolean} PlayerMonitor Enable/disable player's second screen (monitor)
  * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
  * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
  * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
@@ -1375,10 +1386,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {post} /admin/player/message Send a message to screen or users' devices
  * @apiName PostPlayerMessage
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Player
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} message Message to display
  * @apiParam {Number} [duration=10000] Duration of message in miliseconds
  * @apiParam {String="users","screen"} [destination="screen"] `users` for user's devices, or `screen` for the screen on which the karaoke is running. Default is `screen`.
@@ -1444,7 +1455,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.2.0
  * @apiGroup Whitelist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
@@ -1528,10 +1539,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {post} /admin/whitelist Add song to whitelist
  * @apiName PostWhitelist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Whitelist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
@@ -1585,10 +1596,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {delete} /admin/whitelist Delete whitelist item
  * @apiName DeleteWhitelist
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Whitelist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number[]} wlc_id Whitelist content IDs to delete from whitelist, separated by commas
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
@@ -1637,7 +1648,7 @@ export function APIControllerAdmin(router) {
  * @apiVersion 2.2.0
  * @apiGroup Blacklist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
@@ -1721,10 +1732,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/blacklist/criterias Get list of blacklist criterias
  * @apiName GetBlacklistCriterias
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Blacklist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
  * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
  * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
@@ -1742,15 +1753,14 @@ export function APIControllerAdmin(router) {
  *       }
  *   ]
  * }
-
-* @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
-*
-* @apiErrorExample Error-Response:
-* HTTP/1.1 500 Internal Server Error
-* {
-*   "code": "BLC_VIEW_ERROR"
-* }
-*/		
+ * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "BLC_VIEW_ERROR"
+ * }
+ */		
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Get list of blacklist criterias
 			try {
@@ -1765,10 +1775,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {post} /admin/blacklist/criterias Add a blacklist criteria
  * @apiName PostBlacklistCriterias
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Blacklist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} blcriteria_type Blacklist criteria type (refer to docs)
  * @apiParam {String} blcriteria_value Blacklist criteria value. Depending on type, can be number or string.
  * @apiSuccess {String} code Message to display
@@ -1832,10 +1842,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {delete} /admin/blacklist/criterias/:blc_id Delete a blacklist criteria
  * @apiName DeleteBlacklistCriterias
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Blacklist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} blc_id Blacklist criteria's ID to delete
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} args arguments for the message
@@ -1871,10 +1881,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
  * @apiName PutBlacklistCriterias
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Blacklist
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} blc_id Blacklist criteria's ID to delete
  * @apiParam {Number} blcriteria_type New blacklist criteria's type
  * @apiParam {String} blcriteria_value New blacklist criteria's value
@@ -1930,10 +1940,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/player Send commands to player
  * @apiName PutPlayerCommando
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Player
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String=play,pause,stopNow,stopAfter,skip,prev,toggleFullscreen,toggleAlwaysOnTop,seek,goTo,mute,unmute,setVolume,showSubs,hideSubs} command Command to send to player
  * @apiParam {String} [option] Parameter for the command being sent
  * @apiSuccess {String} code Message to display
@@ -1995,9 +2005,10 @@ export function APIControllerAdmin(router) {
  * @api {get} /admin/playlists/:pl_id/export Export a playlist
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
  * @apiName getPlaylistExport
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID to export
  * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
  *
@@ -2059,10 +2070,10 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {post} /admin/playlists/import Import a playlist
  * @apiName postPlaylistImport
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
  *
  * @apiSuccessExample Success-Response:
@@ -2119,9 +2130,10 @@ export function APIControllerAdmin(router) {
  * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID to shuffle
  * @apiSuccess {String} args ID of playlist shuffled
  * @apiSuccess {String} code Message to display
@@ -2185,6 +2197,7 @@ export function APIControllerPublic(router) {
  * @apiGroup Playlists
  * @apiVersion 2.1.0
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiSuccess {Object[]} playlists Playlists information
  *
@@ -2233,6 +2246,7 @@ export function APIControllerPublic(router) {
  * @apiGroup Playlists
  * @apiPermission public
  * @apiVersion 2.1.0
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
@@ -2293,6 +2307,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
@@ -2396,6 +2411,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
  * @apiParam {Number} plc_id Playlist content ID.
@@ -2529,6 +2545,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Main
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription Contrary to `admin/settings` path, this one doesn't return things like paths, binaries and other internal settings.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
@@ -2564,8 +2581,7 @@ export function APIControllerPublic(router) {
  *       "EngineTimePerUser": "10000",
  *       "PlayerBackground": "",
  *       "PlayerFullscreen": "0",
- *       "PlayerNoBar": "1",
- *       "PlayerNoHud": "1",
+ *       "PlayerMonitor": "0",
  *       "PlayerPIP": "1",
  *       "PlayerPIPPositionX": "Left",
  *       "PlayerPIPPositionY": "Bottom",
@@ -2604,9 +2620,10 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/stats Get statistics
  * @apiName GetStats
- * @apiVersion 2.0.0
+ * @apiVersion 2.1.0
  * @apiGroup Main
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription Returns various stats on the current Karaoke Mugen instance
  * @apiSuccess {Number} totalartists Total number of artists in database
  * @apiSuccess {Number} totalcount Total number of karaokes in database
@@ -2648,6 +2665,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Whitelist
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription If `EngineAllowViewWhitelist` is set to `0` in configuration, then returns an error message (see below)
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
@@ -2742,6 +2760,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Blacklist
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription If `EngineAllowViewBlacklist` is set to `0` in configuration, then returns an error message (see below)
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
@@ -2836,7 +2855,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Blacklist
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
  * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
  * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
@@ -2889,6 +2908,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Player
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription Player info is updated very frequently. You can poll it to get precise information from player and engine altogether.
  * @apiSuccess {Number} data/currentlyPlaying Karaoke ID of song being played
  * @apiSuccess {Number} data/duration Current's song duration in seconds
@@ -2944,7 +2964,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Karaokes
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
@@ -3039,6 +3059,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Karaokes
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription This selects a random karaoke from the database. What you will do with it depends entirely on you.
  * @apiSuccess {Number} data Random Karaoke ID
  * @apiSuccessExample Success-Response:
@@ -3077,7 +3098,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Karaokes
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
@@ -3181,6 +3202,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.2
  * @apiGroup Playlists
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription Contrary to the admin route, this adds a single karaoke song to either current or public playlist depending on private/public mode selected by admin in configuration.
  * @apiParam {Number} kara_id Karaoke ID to add to current/public playlist
  * @apiSuccess {String} args/kara Karaoke title added
@@ -3248,6 +3270,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Karaokes
  * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} kara_id Karaoke ID to get lyrics from
  * @apiSuccess {String[]} data Array of strings making the song's lyrics
  * @apiSuccessExample Success-Response:
@@ -3282,6 +3305,7 @@ export function APIControllerPublic(router) {
  * @apiGroup Playlists
  * @apiPermission public
  * @apiVersion 2.1.0
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription This route allows to check basic information about the current playlist, no matter which ID it has (and without you having to know it)
  * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
  * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
@@ -3336,7 +3360,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
@@ -3438,6 +3462,7 @@ export function APIControllerPublic(router) {
  * @apiGroup Playlists
  * @apiPermission public
  * @apiVersion 2.1.0
+ * @apiHeader authorization Auth token received from logging in
  * @apiDescription This route allows to check basic information about the public playlist, no matter which ID it has (and without you having to know it)
  * @apiSuccess {Number} data/created_at Playlist creation date in UNIX timestamp
  * @apiSuccess {Number} data/flag_current Is playlist the current one? Mutually exclusive with `flag_public`
@@ -3494,7 +3519,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Playlists
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
@@ -3595,7 +3620,7 @@ export function APIControllerPublic(router) {
 	 * @apiVersion 2.1.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
-	 *
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} plc_id Target playlist content ID
 	 * @apiParam {String} [downvote] If anything is specified in this parameter, it'll be a downvote instead of upvote.
 	 * @apiSuccess {String} code Return code
@@ -3635,7 +3660,7 @@ export function APIControllerPublic(router) {
 	 * @apiVersion 2.2.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
-	 *
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} plc_id Target playlist content ID
 	 * @apiSuccess {String} args Name of playlist the song was deleted from
  	 * @apiSuccess {String} code Message to display
@@ -3678,7 +3703,7 @@ export function APIControllerPublic(router) {
 	 * @apiVersion 2.2.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
-	 *
+	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {Number} plc_id Target playlist content ID
 	 * @apiSuccess {String} args Name of playlist the song was deleted from
  	 * @apiSuccess {String} code Message to display
@@ -3721,7 +3746,7 @@ export function APIControllerPublic(router) {
 	* @apiVersion 2.1.0
 	* @apiGroup Karaokes
 	* @apiPermission public
-	*
+	* @apiHeader authorization Auth token received from logging in
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {String} data/name_i18n Translated name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
@@ -3776,7 +3801,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} username Username to check details for.
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
@@ -3836,7 +3861,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} username Username to edit
  * @apiParam {String} login New login for user
  * @apiParam {String} nickname New nickname for user
@@ -3905,9 +3930,9 @@ export function APIControllerPublic(router) {
  * @api {get} /public/top50 View Top 50 songs
  * @apiName GetTop50
  * @apiVersion 2.2.0
- * @apiGroup Karas
+ * @apiGroup Karaokes
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} [filter] Filter list by this string. 
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
@@ -3996,7 +4021,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} username Username to check details for.
  * @apiSuccess {Object} data Kara object
  * @apiSuccessExample Success-Response:
@@ -4083,7 +4108,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission own
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
  * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
@@ -4147,7 +4172,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission own
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} nickname New nickname for user
  * @apiParam {String} [password] New password. Can be empty (password won't be changed then)
  * @apiParam {String} [bio] User's bio info. Can be empty.
@@ -4217,7 +4242,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Favorites
  * @apiPermission own
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
@@ -4312,7 +4337,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Favorites
  * @apiPermission own
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} kara_id kara ID to add
  * @apiSuccess {Number} args/kara_id ID of kara added
  * @apiSuccess {Number} args/kara Name of kara added
@@ -4374,7 +4399,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Favorites
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} kara_id Kara ID to delete
  * @apiSuccess {String} code Message to display
  *
@@ -4429,7 +4454,7 @@ export function APIControllerPublic(router) {
  * @apiGroup Favorites
  * @apiPermission public 
  * @apiSuccess {String} data Playlist in an exported format. See docs for more info.
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
@@ -4489,7 +4514,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.2.0
  * @apiGroup Favorites
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {String} playlist Playlist in JSON form, following Karaoke Mugen's file format. See docs for more info.
  *
  * @apiSuccessExample Success-Response:
@@ -4547,7 +4572,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Users
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiSuccess {String} data/login User's login
  * @apiSuccess {String} data/nickname User's nickname
  * @apiSuccess {String} data/NORM_nickname User's normalized nickname (deburr'ed)
@@ -4613,8 +4638,8 @@ export function APIControllerPublic(router) {
  * @apiName PostUser
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission public
- *
+ * @apiPermission NoAuth
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} login Login name for the user
  * @apiParam {String} password Password for the user
  * @apiSuccess {String} code Message to display
@@ -4672,7 +4697,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Song Poll
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.* @apiSuccess {String} code Message to display
 
@@ -4769,7 +4794,7 @@ export function APIControllerPublic(router) {
  * @apiVersion 2.1.0
  * @apiGroup Song Poll
  * @apiPermission public
- *
+ * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} [playlistcontent_id] PLC ID to vote for
  
  * @apiSuccess {Array} data/poll Array of Playlistcontents objects (see `/public/playlist/current/karas` for sample)

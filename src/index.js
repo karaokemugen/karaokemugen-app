@@ -105,8 +105,7 @@ async function main() {
 	ports.forEach(port => verifyOpenPort(port));
 
 	await restoreKaraBackupFolders(config);
-	await openDatabases(config);
-
+	
 	/** Start React static frontend */
 	if (!config.isDemo) startExpressReactServer(config.appAdminPort);
 

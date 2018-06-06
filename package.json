@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "2.2.0rc1",
+  "version": "2.2.0",
   "description": "Karaoke playlist manager / player",
   "bin": {
     "karaokemugen": "./dist/index.js"
@@ -118,6 +118,8 @@
     "randomstring": "^1.1.5",
     "read-chunk": "^2.1.0",
     "readline-sync": "^1.4.9",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5",
     "socket.io": "^2.1.1",
     "sqlite": "2.9.1",
     "systeminformation": "^3.40.0",

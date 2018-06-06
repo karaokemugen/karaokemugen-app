@@ -73,7 +73,7 @@ class KaraList extends Component {
 		title: 'Seen on',
 		dataIndex: 'viewed_at',
 		key: 'viewed_at',		
-		render: (viewed_at) => (new Date(viewed_at*1000)).toLocaleString('fr-FR'),
+		render: (viewed_at) => (new Date(viewed_at*1000)).toLocaleString('en'),
 		defaultSortOrder: 'descend',
 		sorter: (a,b) => a.viewed_at - b.viewed_at
 	}];

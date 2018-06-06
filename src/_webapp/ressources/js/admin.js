@@ -426,6 +426,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 								$time.show();
 								$free.show();
 							}
+						} else if (input.attr('name') === 'PlayerPIPSize') {
+							refreshPipSizeSettingLabel(val);
 						}
 					} else { // only checkbox here
 						val =  parseInt(val);
@@ -454,6 +456,12 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 		return promise.promise();
 	};
+	refreshPipSizeSettingLabel = function(val) {		
+		$('label[for="PlayerPIPSize"]').text(i18n.__('VIDEO_SIZE') + " (" + val + "%)");
+	};
+	$('[name="PlayerPIPSize"]').on('input', function() {
+		refreshPipSizeSettingLabel($(this).val());
+	});
 
 	/* el is the html element containing the value being updated */
 	setSettings = function (el) {

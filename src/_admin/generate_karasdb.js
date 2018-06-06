@@ -121,7 +121,7 @@ function prepareKaraInsertData(kara, index) {
 		$id_kara: index,
 		$kara_KID: kara.KID,
 		$kara_title: kara.title,
-		$titlenorm: deburr(kara.title),
+		$titlenorm: deburr(kara.title).replace('\'', '').replace(',', ''),
 		$kara_year: kara.year,
 		$kara_songorder: kara.order,
 		$kara_mediafile: kara.mediafile,
@@ -214,7 +214,7 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	return data;
 }
 
-async function prepareAltSeriesInsertData(altSeriesFile) {
+async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 
 	const altNameData = [];
 	const i18nData = [];
@@ -225,7 +225,7 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 			for (const serie of altNamesFile.series) {
 				if (serie.aliases) altNameData.push({
 					$serie_altnames: serie.aliases.join(','),
-					$serie_altnamesnorm: deburr(serie.aliases.join(' ')),
+					$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
 					$serie_name: serie.name				
 				});
 				if (serie.i18n) {
@@ -238,7 +238,26 @@ async function prepareAltSeriesInsertData(altSeriesFile) {
 						});
 					}
 				}
-			}			
+			}
+			// Checking if some series present in .kara files are not present in the series file
+			for (const serie of mapSeries.keys()) {			
+				if (!altNamesFile.series.find(s => {
+					return s.name === serie;
+				})) {
+					// Print a warning and push some basic data so the series can be searchable at least
+					logger.warn(`[Gen] Series ${serie} is not in the series file`);
+					if (getConfig().optStrict) strictModeError(serie);
+					altNameData.push({
+						$serie_name: serie
+					});
+					i18nData.push({
+						$lang: 'jpn',
+						$serie: serie,
+						$serienorm: deburr(serie).replace('\'', '').replace(',', ''),
+						$name: serie
+					});
+				}
+			}
 		} else {
 			logger.error('[Gen] Alternative series names file contains errors!');
 			error = true;	
@@ -327,6 +346,11 @@ function getTypes(kara, allTags) {
 	return result;
 }
 
+function strictModeError(series) {	
+	logger.error(`[Gen] STRICT MODE ERROR : One series ${series} does not exist in the series file`);
+	error = true;
+}
+
 function getTagId(tagName, tags) {
 
 	const index = tags.indexOf(tagName) + 1;
@@ -362,7 +386,7 @@ function prepareAllTagsInsertData(allTags) {
 			$id_tag: index + 1,
 			$tagtype: tagType,
 			$tagname: tagName,
-			$tagnamenorm: deburr(tagNorm)
+			$tagnamenorm: deburr(tagNorm).replace('\'', '').replace(',', '')
 		});
 	});
 
@@ -416,7 +440,7 @@ export async function run(config) {
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-		const seriesAltNamesData = await prepareAltSeriesInsertData(series_altnamesfile);
+		const seriesAltNamesData = await prepareAltSeriesInsertData(series_altnamesfile, seriesMap);
 		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
 		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 		

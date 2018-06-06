@@ -5,6 +5,7 @@ import {initDBSystem, getStats, closeUserDatabase} from '../_dao/database';
 import {initFrontend, emitWS} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
 import {initFavoritesSystem} from '../_services/favorites';
+import {initOnlineSystem} from '../_webapp/online';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
@@ -161,12 +162,17 @@ export async function initEngine() {
 	//Database system is the foundation of every other system
 	await initDBSystem();
 	await initUserSystem();
+	if (conf.OnlineMode) try {
+		await initOnlineSystem();
+	} catch(err) {
+		logger.error(`[Online] Failed to init online system : ${err}`);
+	}
 	let inits = [];
 	if (conf.EngineCreatePreviews > 0) {
 		createPreviews();
 	}
 	inits.push(plc.initPlaylistSystem());
-	if (!conf.isDemo && !conf.isTest) inits.push(initPlayerSystem(state.engine));
+	if (!conf.isDemo && !conf.isTest) inits.push(initPlayerSystem(state.engine));	
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
 	//Initialize engine
@@ -669,17 +675,7 @@ export async function editPLC(plc_id, pos, flag_playing, token) {
 }
 
 export async function updateSettings(newConfig) {	
-	const conf = getConfig();
-	if (!isEmpty(newConfig.EngineConnectionInfoHost)) {
-		state.player.url = `http://${newConfig.EngineConnectionInfoHost}`;		
-	} else {
-		if (+state.engine.frontendPort !== 80) {
-			state.player.url = `http://${conf.osHost}:${state.engine.frontendPort}`;
-		} else {
-			state.player.url = `http://${conf.osHost}`;
-		}
-	}
-	emit('playerStatusChange', state.player);
+	const conf = getConfig();	
 	if (newConfig.EngineSongPoll === 1) {
 		setSongPoll(true);
 	} else {

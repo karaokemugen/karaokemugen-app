@@ -14,6 +14,8 @@ import {watch} from 'chokidar';
 import {emit} from './pubsub';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
+import {publishURL} from '../../_webapp/online';
+
 require('winston-daily-rotate-file');
 
 /** Object containing all config */
@@ -66,7 +68,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 		}
 	}
 
-
+	if (newConfig.OnlineMode) publishURL();
 	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings
@@ -102,7 +104,7 @@ export async function initConfig(appPath, argv) {
 	await loadConfigFiles(appPath);
 	configureHost();
 	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
-
+	if (config.appInstanceID === 'Change me') setConfig( {appInstanceID: uuidV4() });
 	//Configure watcher
 	const configWatcher = watch(resolve(appPath, configFile));
 	configWatcher.on('change', () => {
@@ -191,15 +193,13 @@ export async function configureBinaries(config) {
 }
 
 export function configureHost() {
-	if (config.EngineDisplayConnectionInfoHost.includes('.kara.moe')) {
-		config.EngineDisplayConnectionInfoHost = '';
-		setConfig({EngineDIsplayConnectionInfoHost: ''});
-	}
-	if (config.EngineDisplayConnectionInfoHost === '') {
-		config = {...config, osHost: address()};
-	} else {
-		config = {...config, osHost: config.EngineDisplayConnectionInfoHost};
-	}
+	const conf = getConfig();
+	let URLPort = `:${conf.appFrontendPort}`;
+	config = {...config, osHost: address()};
+	if (+conf.appFrontendPort === 80) URLPort = '';
+	if (conf.OnlineMode) return config = {...config, osURL: `http://${config.OnlineHost}`};
+	if (conf.EngineDisplayConnectionInfoHost === '') return config = {...config, osURL: `http://${address()}${URLPort}`};
+	return config = {...config, osURL: `http://${conf.EngineDisplayConnectionInfoHost}${URLPort}`};
 }
 
 export async function setConfig(configPart) {
