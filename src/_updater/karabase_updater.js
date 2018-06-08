@@ -131,6 +131,10 @@ async function compareMedias(localFiles, remoteFiles) {
 		});
 		if (!filePresent) removedFiles.push(localFile.name);
 	}
+	// Remove files to update to start over their download
+	for (const file of updatedFiles) {
+		await asyncUnlink(resolve(mediasPath, file.name));
+	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	const ftp = new FTP.Client();
 	await ftpConnect(ftp);
@@ -164,6 +168,7 @@ async function ftpConnect(ftp) {
 }
 
 async function downloadMedias(ftp, files, mediasPath) {
+	let ftpErrors = [];
 	const conf = getConfig();
 	const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}';
 	const bar1 = new _cliProgress.Bar({
@@ -183,10 +188,12 @@ async function downloadMedias(ftp, files, mediasPath) {
 			await fileTransfer(ftp, outputFile, file.name);		
 		} catch(err) {
 			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
+			ftpErrors.push(file.name);
 		}		
 		ftp.trackProgress();
 		bar1.stop();
 	}
+	if (ftpErrors.length > 0) throw `Error during medias downloads : ${ftpErrors.toString()}`;
 }
 
 async function fileTransfer(ftp, output, input) {
