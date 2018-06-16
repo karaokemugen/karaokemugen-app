@@ -1006,9 +1006,9 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
-basic-ftp@^2.13.0:
-  version "2.13.0"
-  resolved "https://registry.yarnpkg.com/basic-ftp/-/basic-ftp-2.13.0.tgz#134989ca9f61b2e0d6836aa0f4800a7dd5c849fc"
+basic-ftp@^2.13.1:
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/basic-ftp/-/basic-ftp-2.13.1.tgz#5719306d173b9a98398c3091c17a06ff1d56affe"
 
 bcrypt-pbkdf@^1.0.0:
   version "1.0.1"
@@ -2894,9 +2894,9 @@ ignorepatterns@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ignorepatterns/-/ignorepatterns-1.1.0.tgz#ac8f436f2239b5dfb66d5f0d3a904a87ac67cc5e"
 
-image-size@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.6.2.tgz#8ee316d4298b028b965091b673d5f1537adee5b4"
+image-size@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.6.3.tgz#e7e5c65bb534bd7cdcedd6cb5166272a85f75fb2"
 
 imurmurhash@^0.1.4:
   version "0.1.4"
@@ -4522,9 +4522,9 @@ preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
-pretty-bytes@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-5.0.0.tgz#6af1d7cc56c597a3b07db480797d6bfa78a3179e"
+pretty-bytes@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-5.1.0.tgz#6237ecfbdc6525beaef4de722cc60a58ae0e6c6d"
 
 private@^0.1.6, private@^0.1.8:
   version "0.1.8"
