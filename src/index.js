@@ -4,7 +4,7 @@ import {parseCommandLineArgs} from './args.js';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
-import {logger} from './_common/utils/logger';
+import logger from './_common/utils/logger';
 import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
 import {startExpressReactServer} from './_webapp/react';

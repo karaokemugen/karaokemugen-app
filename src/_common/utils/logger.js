@@ -2,9 +2,24 @@ import winston from 'winston';
 import dailyRotateFile from  'winston-daily-rotate-file';
 import {asyncCheckOrMkdir} from './files';
 import {resolve} from 'path';
-import {getConfig} from './config';
 
-export let logger;
+let logger;
+
+export function info(message) {
+	return logger.log('info',message);
+}
+
+export function error(message) {
+	return logger.log('error',message);
+}
+
+export function debug(message) {
+	return logger.log('debug',message);
+}
+
+export function profile(func) {
+	return logger.profile(func);
+}
 
 export async function configureLogger(appPath, debug) {
 	const tsFormat = () => (new Date()).toLocaleTimeString();

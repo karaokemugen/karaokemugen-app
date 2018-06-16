@@ -5,7 +5,7 @@ import {getConfig} from '../_common/utils/config';
 import {findUserByID, findUserByName} from '../_services/user';
 import {resolve} from 'path';
 import {now} from 'unix-timestamp';
-import {logger} from '../_common/utils/logger';
+import logger from '../_common/utils/logger';
 import deburr from 'lodash.deburr';
 import isEmpty from 'lodash.isempty';
 import sample from 'lodash.sample';

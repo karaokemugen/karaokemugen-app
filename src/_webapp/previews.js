@@ -1,4 +1,4 @@
-import {logger} from '../_common/utils/logger';
+import logger from '../_common/utils/logger';
 import {resolve, extname, basename} from 'path';
 
 import {

@@ -1,4 +1,4 @@
-import {logger} from '../_common/utils/logger';
+import logger from '../_common/utils/logger';
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_common/utils/files';

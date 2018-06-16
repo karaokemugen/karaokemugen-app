@@ -1,4 +1,4 @@
-import {logger} from 'winston/lib/winston';
+import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
 import {setConfig, getConfig} from '../_common/utils/config';
 import {join, resolve} from 'path';

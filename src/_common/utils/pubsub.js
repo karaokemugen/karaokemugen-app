@@ -1,7 +1,7 @@
 /** Event bus, using pub/sub methods. */
 
 import {EventEmitter} from 'events';
-//import {logger} from './logger';
+//import logger from './logger';
 
 const eventEmitter = new EventEmitter();
 

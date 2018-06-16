@@ -1,5 +1,5 @@
 import execa from 'execa';
-import {logger} from './logger';
+import logger from './logger';
 import {asyncRequired} from './files';
 import {getConfig} from './config';
 import {timeToSeconds} from './date';

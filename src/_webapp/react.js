@@ -1,4 +1,4 @@
-import {logger} from '../_common/utils/logger';
+import logger from '../_common/utils/logger';
 import express from 'express';
 import {resolve} from 'path';
 import bodyParser from 'body-parser';

@@ -2,7 +2,7 @@ import {getFavoritesPlaylist} from '../_dao/favorites';
 import {importPlaylist, exportPlaylist, getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini, getPlaylistContents} from '../_services/playlist';
 import {formatKaraList} from '../_services/engine';
 import {listUsers, checkUserNameExists} from '../_services/user';
-import {logger} from '../_common/utils/logger';
+import logger from '../_common/utils/logger';
 import {date} from '../_common/utils/date';
 
 export async function getFavorites(username, filter, lang, from, size) {

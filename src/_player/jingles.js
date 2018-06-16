@@ -3,7 +3,7 @@ import {emit} from '../_common/utils/pubsub';
 import {resolve} from 'path';
 import {resolvedPathJingles} from '../_common/utils/config';
 import {getMediaInfo} from '../_common/utils/ffmpeg';
-import {logger} from '../_common/utils/logger';
+import logger from '../_common/utils/logger';
 
 export let jinglesList = [];
 export let currentJinglesList = [];
