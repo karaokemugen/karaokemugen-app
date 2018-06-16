@@ -2,7 +2,7 @@ import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
 import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
-import logger from 'winston';
+import {logger} from './logger';
 import {mediaFileRegexp, imageFileRegexp} from '../../_services/constants';
 import fileType from 'file-type';
 import readChunk from 'read-chunk';

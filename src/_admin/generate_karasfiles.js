@@ -2,7 +2,7 @@
  * .kara files generation
  */
 
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 import {resolve} from 'path';
 import {resolvedPathImport, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias} from '../_common/utils/config';
 import {asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_common/utils/files';

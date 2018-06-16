@@ -5,9 +5,9 @@ import {parse, stringify} from 'ini';
 import osLocale from 'os-locale';
 import i18n from 'i18n';
 import {address} from 'ip';
-import logger from 'winston';
+import {logger, configureLogger} from './logger';
 import {copy} from 'fs-extra';
-import {asyncCheckOrMkdir, asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
+import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
@@ -15,8 +15,6 @@ import {emit} from './pubsub';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
 import {publishURL} from '../../_webapp/online';
-
-require('winston-daily-rotate-file');
 
 /** Object containing all config */
 let config = {};
@@ -96,7 +94,6 @@ export async function mergeConfig(oldConfig, newConfig) {
 export async function initConfig(appPath, argv) {
 	if (argv.config) configFile = argv.config;
 	configureLogger(appPath, !!argv.debug);
-
 	config = {...config, appPath: appPath};
 	config = {...config, os: process.platform};
 
@@ -122,30 +119,6 @@ export async function initConfig(appPath, argv) {
 	});
 
 	return getConfig();
-}
-
-async function configureLogger(appPath, debug) {
-	const tsFormat = () => (new Date()).toLocaleTimeString();
-	const consoleLogLevel = debug ? 'debug' : 'info';
-	const logDir = resolve(appPath, 'logs');
-	await asyncCheckOrMkdir(logDir);	
-	logger.configure({
-		transports: [
-			new (logger.transports.Console)({
-				timestamp: tsFormat,
-				level: consoleLogLevel,
-				colorize: true
-			}),
-			new (logger.transports.DailyRotateFile)({
-				timestap: tsFormat,
-				filename: resolve(appPath, 'logs', 'karaokemugen'),
-				datePattern: '.yyyy-MM-dd.log',
-				zippedArchive: true,
-				level: 'debug',
-				handleExceptions: true
-			})
-		]
-	});
 }
 
 async function loadConfigFiles(appPath) {

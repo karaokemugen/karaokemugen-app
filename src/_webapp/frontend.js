@@ -4,7 +4,7 @@ import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import {address} from 'ip';
 import {graphics} from 'systeminformation';
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 import i18n from 'i18n';
 import {getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';

@@ -7,7 +7,7 @@ import sampleSize from 'lodash.samplesize';
 import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
 import uuidV4 from 'uuid/v4';
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 import {timer} from '../_common/utils/timer';
 const sleep = promisify(setTimeout);
 

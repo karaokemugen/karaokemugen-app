@@ -5,7 +5,7 @@
 
 import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';

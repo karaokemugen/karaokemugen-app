@@ -19,7 +19,7 @@ import {promisify} from 'util';
 import isEmpty from 'lodash.isempty';
 import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 const plc = require('./playlist');
 const sleep = promisify(setTimeout);
 

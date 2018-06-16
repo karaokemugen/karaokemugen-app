@@ -1,4 +1,4 @@
-import logger from 'winston';
+import logger from '../_common/utils/logger';
 import {sanitizeConfig, verifyConfig, getConfig} from '../_common/utils/config';
 import {check, unescape} from '../_common/utils/validators';
 import {resolve} from 'path';

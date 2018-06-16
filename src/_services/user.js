@@ -7,7 +7,7 @@ import {createHash} from 'crypto';
 import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 import uuidV4 from 'uuid/v4';
 import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';

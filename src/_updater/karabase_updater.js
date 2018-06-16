@@ -4,7 +4,7 @@ import {getConfig} from '../_common/utils/config';
 import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
 import decompress from 'decompress';
 import FTP from 'basic-ftp';
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 import {copy} from 'fs-extra';
 import {createWriteStream} from 'fs';
 import prettyBytes from 'pretty-bytes';

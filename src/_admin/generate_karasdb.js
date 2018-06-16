@@ -1,4 +1,4 @@
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 import uuidV4 from 'uuid/v4';
 import {resolve} from 'path';
 import deburr from 'lodash.deburr';

@@ -1,4 +1,4 @@
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 import {resolve, extname, basename} from 'path';
 
 import {

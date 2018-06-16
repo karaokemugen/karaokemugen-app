@@ -2,7 +2,7 @@ import {insertUpvote,removeUpvote, getUpvotesByPLC} from '../_dao/upvote';
 import {freePLC, updateSongsLeft, isACurrentPlaylist, isAPublicPlaylist, getPLCInfoMini} from '../_services/playlist';
 import {listUsers, findUserByName} from '../_services/user';
 import {getConfig} from '../_common/utils/config';
-import logger from 'winston';
+import {logger} from '../_common/utils/logger';
 
 export async function vote(plc_id,username,downvote) {
 	if (downvote) return await deleteUpvote(plc_id,username);

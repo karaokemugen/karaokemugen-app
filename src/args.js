@@ -1,5 +1,5 @@
 import {setConfig} from './_common/utils/config';
-import logger from 'winston';
+import {logger} from 'winston';
 import {karaGenerationBatch} from './_admin/generate_karasfiles';
 
 const help = `Usage : 
