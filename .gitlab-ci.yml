@@ -108,8 +108,8 @@ deploy_win:
     - cd ../..
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.ini.sample .
-    - cd ..
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *    
+    - cd ..
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"   
   only:
     - master
@@ -145,9 +145,9 @@ deploy_osx:
     - rm -f archive.tar
     - cd ../..
     - cp -f ../bin/karaokemugen-app KaraokeMugen
-    - cp -f ../config.ini.sample .
-    - cd ..
+    - cp -f ../config.ini.sample .    
     - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
+    - cd ..
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"    
   only:
     - master
