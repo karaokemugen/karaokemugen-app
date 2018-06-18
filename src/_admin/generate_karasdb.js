@@ -20,6 +20,7 @@ import {serieRequired, verifyKaraData} from '../_services/kara';
 import {join} from 'path';
 import parallel from 'async-await-parallel';
 import testJSON from 'is-valid-json';
+import {emit} from '../_common/utils/pubsub';
 
 let error = false;
 
@@ -418,6 +419,7 @@ async function runSqlStatementOnData(stmtPromise, data) {
 
 export async function run(config) {
 	try {
+		emit('databaseBusy',true);
 		const conf = config || getConfig();
 
 		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
@@ -466,6 +468,8 @@ export async function run(config) {
 	} catch (err) {
 		logger.error(err);
 		return error;
+	} finally {
+		emit('databaseBusy',false);
 	}
 }
 
