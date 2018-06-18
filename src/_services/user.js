@@ -12,15 +12,24 @@ import uuidV4 from 'uuid/v4';
 import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
+import {on} from '../_common/utils/pubsub';
 
 const db = require('../_dao/user');
 const sleep = promisify(setTimeout);
 
+let databaseBusy = false;
+
+on('databaseBusy', status => {
+	databaseBusy = status;
+});
+
 async function updateExpiredUsers() {
 	// Unflag online accounts from database if they expired
 	try {
-		await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
-		await db.resetGuestsPassword();
+		if (!databaseBusy) {
+			await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
+			await db.resetGuestsPassword();
+		}
 		//Sleep for one minute.
 		await sleep(60000);
 	} catch(err) {
