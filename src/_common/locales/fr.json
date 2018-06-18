@@ -202,6 +202,7 @@
 	"ENGINEALLOWVIEWBLACKLIST": "Liste noire visible",
 	"ENGINEALLOWVIEWBLACKLISTCRITERIAS": "Critères de liste noire visibles",
 	"ENGINEALLOWVIEWWHITELIST": "Liste blanche visible",
+	"ENGINEALLOWDUPLICATES": "Permettre les doublons dans les playlists",
 	"ENGINECREATEPREVIEWS": "Activer la génération des aperçus vidéo",
 	"ENGINEDISPLAYNICKNAME": "Afficher les pseudos",
 	"WEBAPPMODE": "Mode de l'interface publique",

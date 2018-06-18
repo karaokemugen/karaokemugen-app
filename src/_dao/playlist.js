@@ -156,11 +156,12 @@ export async function getPLCInfoMini(id) {
 		});
 }
 
-export async function getPLCByKID(kid,playlist_id) {
-	return await getUserDb().get(sql.getPLCByKID,{
+export async function getPLCByKIDUserID(kid,user_id,playlist_id) {
+	return await getUserDb().get(sql.getPLCByKIDUserID,{
 		$kid: kid,
 		$playlist_id: playlist_id,
-		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
+		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
+		$user_id: user_id
 	});
 }
 
