@@ -839,6 +839,15 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED';
 				throw 'User quota reached';
 			}
+			// Check if karaoke is in blacklist
+			const blacklist = await plc.getBlacklistContents();
+			console.log(blacklist);
+			if (blacklist.some(blc => {				
+				return +blc.kara_id === +karas[0];
+			})) {
+				errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED';
+				throw 'Song is blacklisted';
+			}
 		}
 
 		await plc.addKaraToPlaylist(karas, requester, playlist_id, pos, {
