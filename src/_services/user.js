@@ -38,9 +38,16 @@ async function updateExpiredUsers() {
 	}	
 }
 
+let userLoginTimes = {};
+
 export async function updateLastLoginName(login) {
 	const currentUser = await findUserByName(login);
-	return await db.updateUserLastLogin(currentUser.id,now());
+	// To avoid flooding database UPDATEs, only update login time every minute for a user
+	if (!userLoginTimes[login]) userLoginTimes[login] = now();
+	if (userLoginTimes[login] < (now() - 60)) {
+		userLoginTimes[login] = now();
+		return await db.updateUserLastLogin(currentUser.id,now());
+	}	
 }
 
 export async function getUserRequests(username) {
