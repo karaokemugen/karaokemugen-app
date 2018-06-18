@@ -165,9 +165,9 @@ export async function initDBSystem() {
 		// Delete any existing karas.sqlite3 file
 		if(await asyncExists(karaDbFile)) {			
 			if (karaDb) await closeKaraDatabase();
-			await asyncUnlink(karaDbFile);
-			doGenerate = true;
+			await asyncUnlink(karaDbFile);			
 		}
+		doGenerate = true;
 	} else {
 		if (await asyncExists(karaDbFile)) {
 			const karaDbFileStats = await asyncStat(karaDbFile);

@@ -223,7 +223,8 @@ export function exit(rc) {
 	});
 }
 
-async function playPlayer() {	
+async function playPlayer() {
+	if (!state.player.ready) throw '[Player] Player is not ready yet!';	
 	if (state.engine.status === 'stop') {
 		// Switch to playing mode and ask which karaoke to play next
 		await tryToReadKaraInPlaylist();
