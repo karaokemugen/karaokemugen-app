@@ -842,7 +842,7 @@ export async function addKaraToPL(playlist_id, kara_id, requester, pos) {
 			}
 			// Check if karaoke is in blacklist
 			const blacklist = await plc.getBlacklistContents();
-			console.log(blacklist);
+			
 			if (blacklist.some(blc => {				
 				return +blc.kara_id === +karas[0];
 			})) {
