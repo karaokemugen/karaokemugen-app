@@ -11,7 +11,7 @@ import {
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
 import {getKara} from '../_services/kara';
-
+ 
 /**
  * Generating kara files in batch mode. The import folder is scanned for video files
  * which respect the KM naming convention. If such a file is found, the associated 
@@ -71,10 +71,12 @@ async function findSubFile(mediaPath, karaData) {
 		return assFile;
 	} else if (mediaPath.endsWith('.mkv') || mediaPath.endsWith('.mp4')) {
 		try {
-			return await extractVideoSubtitles(mediaPath, karaData.KID);
+			const extractFile = await extractVideoSubtitles(mediaPath, karaData.KID);
+			karaData.subfile = replaceExt(karaData.mediafile, '.ass');
+			return extractFile;
 		} catch (err) {
 			// Non-blocking.
-			logger.debug('[KaraGen] Could not extract subtitles from video file ' + mediaPath);
+			logger.info('[KaraGen] Could not extract subtitles from video file ' + mediaPath + ' : ' + err);
 		}
 	} else {
 		return '';
@@ -89,10 +91,10 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	await writeKara(karaPath, karaData);
 
 	// Moving media in the first media folder.
-	const mediaDest = resolve(resolvedPathMedias()[0], karaData.mediafile);
-	await asyncMove(mediaPath, mediaDest);
+	//const mediaDest = resolve(resolvedPathMedias()[0], karaData.mediafile);
+	//await asyncMove(mediaPath, mediaDest);
 
-	// Moving subfile in the first lyrics folder.
+	// Moving subfile in the first lyrics folder.	
 	if (subPath && karaData.subfile !== 'dummy.ass') {
 		const subDest = resolve(resolvedPathSubs()[0], karaData.subfile);
 		await asyncMove(subPath, subDest);

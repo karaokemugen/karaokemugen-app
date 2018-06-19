@@ -6,6 +6,7 @@ import {initFrontend, emitWS} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
 import {initFavoritesSystem} from '../_services/favorites';
 import {initOnlineSystem} from '../_webapp/online';
+import {karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
@@ -138,6 +139,13 @@ export async function initEngine() {
 	state.engine.fullscreen = conf.PlayerFullScreen > 0;
 	state.engine.ontop = conf.PlayerStayOnTop > 0;
 	state.engine.private = conf.EnginePrivateMode > 0;
+	if (conf.optKaragen) try {
+		await karaGenerationBatch();
+		exit(0);
+	} catch (err) {
+		logger.error(`[Engine] Karaoke import failed : ${err}`);
+		exit(1);
+	}
 	if (conf.optValidateKaras) try {
 		logger.info('[Engine] Starting validation process, please wait...');
 		await validateKaras();

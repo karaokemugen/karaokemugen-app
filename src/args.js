@@ -1,6 +1,5 @@
 import {setConfig} from './_common/utils/config';
 import logger from 'winston';
-import {karaGenerationBatch} from './_admin/generate_karasfiles';
 
 const help = `Usage : 
 
@@ -66,8 +65,7 @@ export async function parseCommandLineArgs(argv) {
 	}
 	if (argv.karagen) {
 		logger.info('[Launcher] .kara generation requested');
-		await karaGenerationBatch();
-		process.exit(0);
+		setConfig({optKaragen: true});		
 	}
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');
