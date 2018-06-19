@@ -256,13 +256,6 @@ export async function getKaraLyrics(kara_id) {
 	return 'Lyrics not available for this song';		
 }
 
-async function getASS(kara_id) {
-	const kara = await getKaraMini(kara_id);	
-	let ASS;	
-	if (kara.subfile && kara.subfile !== 'dummy.ass') ASS = await karaDB.getASS(kara.subfile);
-	return ASS || false;
-}
-
 export async function deleteBlacklistCriteria(blc_id) {
 	if (!await isBLCriteria(blc_id)) throw `BLC ID ${blc_id} unknown`;
 	await blcDB.deleteBlacklistCriteria(blc_id);
