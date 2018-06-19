@@ -166,9 +166,12 @@ async function loadConfig(configFile) {
 	try {
 		verifyConfig(newConfig);
 		config = {...newConfig};
-		// Delete this when the 2.2 release gets rolled out
+		// Delete this when the 2.3 release gets rolled out
 		// Temporary fix to treat PathVideos as PathMedias
-		if (config.PathVideos) config.PathMedias = config.PathVideos;
+		if (config.PathVideos) {		
+			config.PathMedias = config.PathVideos;
+			delete config.PathVideos;
+		}
 	} catch(err) {
 		throw err;
 	}
