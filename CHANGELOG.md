@@ -1,6 +1,35 @@
 # Versions
 
-## v2.2 "Haruhi Hagiographique" - 04/06/2018
+## v2.2.1 "Haruhi Hypnotisante" - 19/06/2018
+
+This version is also known as "Just Haruhi"
+
+### IMPORTANT
+
+In preparation for **July 1st 2018** when the videos folder will be renamed to "medias", your videos folder will be renamed automatically after this date if :
+
+- Your config has the default `app/data/videos`
+- That folder exists
+- The `medias` folder does not exist.
+
+If any of these conditions are not met, proceed as usual, your configuration and folder structure won't be modified.
+
+### Enhancements
+
+- `userdata.sqlite3` is backupped before running integrity checks so you can recover from a bad karaoke database generation that would have wiped out your playlists, favorites, and other data.
+- Added TAG_WII
+- Added TAG_SATURN
+- Config file change message is now debug only.
+
+### Fixes
+
+- The .kara generation tool has been fixed. Also, if a .kara's subfile has `dummy.ass` it won't trigger a subtitle extraction on its .mkv file anymore. Some .mkvs have hardsubs, yes.
+- Blacklisting series now work correctly.
+- When triggering the player's play method, make sure it is ready before.
+- #316 Base updater should handle connection timeouts better.
+- Fixed database generation when using `--generate` without any database existing.
+
+## v2.2.0 "Haruhi Hagiographique" - 04/06/2018
 
 For a complete changelog of v2.2 changes, check out v2.2-rc1's changelog below.
 
