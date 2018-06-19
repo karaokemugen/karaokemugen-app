@@ -22,8 +22,8 @@ export const generateBlacklist = `DELETE FROM blacklist;
     								UNION    
 								  SELECT k.pk_id_kara, k.kid, strftime('%s','now') ,'Blacklisted Series by name : ' ||  blc.value
 									FROM blacklist_criteria blc
-									INNER JOIN karasdb.kara k ON s.NORM_altname LIKE ('%' || blc.value || '%')
-									INNER JOIN karasdb.serie s ON s.pk_id_serie = ks.fk_id_serie
+									INNER JOIN karasdb.kara k ON sl.NORM_name LIKE ('%' || blc.value || '%')
+									INNER JOIN karasdb.serie_lang sl ON sl.fk_id_serie = ks.fk_id_serie
 									INNER JOIN karasdb.kara_serie ks ON ks.fk_id_kara = k.pk_id_kara
 								  	WHERE blc.type = 1000
 									AND   k.pk_id_kara NOT IN (select fk_id_kara from whitelist)
