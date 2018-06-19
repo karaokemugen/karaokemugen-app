@@ -484,6 +484,14 @@ export async function checkUserdbIntegrity(uuid, config) {
 	if (!uuid) uuid = uuidV4();
 	const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 	const karas_userdbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
+	//Backup userdb file before running integrity checks
+	await asyncCopy(
+		karas_userdbfile,
+		karas_userdbfile + '.backup',
+		{ overwrite: true }
+	);
+
+
 	logger.info('[Gen] Running user database integrity checks');
 
 	const [db, userdb] = await Promise.all([
