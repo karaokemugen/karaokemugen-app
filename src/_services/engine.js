@@ -668,11 +668,11 @@ export async function deleteWLC(wlc_ids) {
 	return await plc.deleteKaraFromWhitelist(karas);
 }
 
-export async function editPLC(plc_id, pos, flag_playing, token) {
+export async function editPLC(plc_id, params, token) {
 	const plcData = await plc.getPLCInfoMini(plc_id);
 	if (!plcData) throw 'PLC ID unknown';
 	if (!await testPlaylistVisible(plcData.playlist_id,token)) throw `Playlist ${plc.playlist_id} unknown`;
-	return await plc.editKaraFromPlaylist(plc_id, pos, flag_playing, token);
+	return await plc.editKaraFromPlaylist(plc_id, params, token);
 }
 
 export async function updateSettings(newConfig) {	

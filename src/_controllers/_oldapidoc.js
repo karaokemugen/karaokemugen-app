@@ -3639,3 +3639,33 @@
  *    }
  * }
  */
+
+	/**
+ * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
+ * @apiName PutPlaylistKara
+ * @apiVersion 2.1.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
+ * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
+ * @apiParam {Number} [pos] Position in target playlist where to move the song to.
+ * @apiParam {Number} [flag_playing] If set to 1, the selected song will become the currently playing song.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data PLCID modified
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "PL_CONTENT_MODIFIED",
+ *   "data": "4962"
+ * }
+ * @apiError PL_MODIFY_CONTENT_ERROR Unable to modify content's position or playing status
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_MODIFY_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ */

@@ -1168,14 +1168,15 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
- * @apiVersion 2.1.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
  * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
  * @apiParam {Number} [pos] Position in target playlist where to move the song to.
- * @apiParam {Number} [flag_playing] If set to 1, the select song will become the currently playing song.
+ * @apiParam {Number} [flag_playing] If set to 1, the selected song will become the currently playing song.
+ * @apiParam {Number} [flag_free] If set to 1, the selected song will be marked as free. Setting it to 0 has no effect.
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} data PLCID modified
  *
@@ -1200,13 +1201,18 @@ export function APIControllerAdmin(router) {
 			
 			const validationErrors = check(req.body, {
 				flag_playing: {boolIntValidator: true},
-				pos: {integerValidator: true}
+				pos: {integerValidator: true},
+				flag_free: {boolIntValidator: true}
 			});
 			if (!validationErrors) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				if (req.body.flag_playing) req.body.flag_playing = parseInt(req.body.flag_playing, 10);
 				try {
-					await engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,req.authToken);
+					await engine.editPLC(req.params.plc_id,{
+						pos: req.body.pos,
+						flag_playing: req.body.flag_playing,
+						flag_free: req.body.flag_free
+					},req.authToken);
 					res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
 				} catch(err) {
 					logger.error(err);
