@@ -105,7 +105,6 @@ export async function extractAssInfos(subFile, karaData) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
 		karaData.ass = karaData.ass.replace(/\r/g, '');
 		const subChecksum = checksum(karaData.ass);
-		// Disable checking the checksum for now
 		if (subChecksum !== karaData.subchecksum) {			
 			karaData.isKaraModified = true;
 			karaData.subchecksum = subChecksum;
@@ -114,6 +113,7 @@ export async function extractAssInfos(subFile, karaData) {
 	} else {
 		karaData.ass = '';
 	}
+	return karaData;
 }
 
 export async function extractMediaTechInfos(mediaFile, karaData) {
@@ -161,13 +161,18 @@ export async function parseKara(karaFile) {
 }
 
 export async function extractVideoSubtitles(videoFile, kid) {
-	const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kid}.ass`);
-	return await extractSubtitles(videoFile, extractFile);
+	const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kid}.ass`);	
+	try {
+		await extractSubtitles(videoFile, extractFile);
+		return extractFile;
+	} catch (err) {
+		throw err;
+	}
 }
 
 async function findSubFile(videoFile, kara) {
 	const conf = getConfig();
-	if (kara.subfile === 'dummy.ass' && !conf.optNoMedia) {
+	if (kara.subfile === '' && !conf.optNoMedia) {
 		if (extname(videoFile) === '.mkv') {
 			try {
 				return await extractVideoSubtitles(videoFile, kara.KID);
