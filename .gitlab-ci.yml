@@ -166,4 +166,3 @@ apidoc:
   only:
     - master
     - tags
-//baguette
