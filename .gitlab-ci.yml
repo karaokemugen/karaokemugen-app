@@ -131,12 +131,13 @@ deploy_osx:
   dependencies:
     - pkg_osx
   script:
-    - apt-get update -qq && apt-get install -y -qq lftp zip  
+    - apt-get update -qq && apt-get install -y -qq lftp
     - mkdir build_mac
     - cd build_mac
     - wget http://mugen.karaokes.moe/downloads/dist_macos.tar.gz
     - tar xvzf dist_macos.tar.gz
     - rm dist_macos.tar.gz
+    - chmod -R +x app/bin
     - mkdir -p app/jingles
     - cd app/jingles
     - wget https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar
@@ -148,9 +149,9 @@ deploy_osx:
     - cp -f ../bin/karaokemugen-app KaraokeMugen
     - cp -f ../config.ini.sample .
     - cp -Rf ../samples .
-    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip *
+    - tar cvz * >KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.tar.gz
     - cd ..
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.zip"    
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.tar.gz"    
   only:
     - master
     - next
