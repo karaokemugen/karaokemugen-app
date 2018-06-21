@@ -91,8 +91,8 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	await writeKara(karaPath, karaData);
 
 	// Moving media in the first media folder.
-	//const mediaDest = resolve(resolvedPathMedias()[0], karaData.mediafile);
-	//await asyncMove(mediaPath, mediaDest);
+	const mediaDest = resolve(resolvedPathMedias()[0], karaData.mediafile);
+	await asyncMove(mediaPath, mediaDest);
 
 	// Moving subfile in the first lyrics folder.	
 	if (subPath && karaData.subfile !== 'dummy.ass') {
