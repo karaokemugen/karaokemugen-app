@@ -12,15 +12,24 @@ import uuidV4 from 'uuid/v4';
 import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
+import {on} from '../_common/utils/pubsub';
 
 const db = require('../_dao/user');
 const sleep = promisify(setTimeout);
 
+let databaseBusy = false;
+
+on('databaseBusy', status => {
+	databaseBusy = status;
+});
+
 async function updateExpiredUsers() {
 	// Unflag online accounts from database if they expired
 	try {
-		await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
-		await db.resetGuestsPassword();
+		if (!databaseBusy) {
+			await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
+			await db.resetGuestsPassword();
+		}
 		//Sleep for one minute.
 		await sleep(60000);
 	} catch(err) {
@@ -29,9 +38,16 @@ async function updateExpiredUsers() {
 	}	
 }
 
+let userLoginTimes = {};
+
 export async function updateLastLoginName(login) {
 	const currentUser = await findUserByName(login);
-	return await db.updateUserLastLogin(currentUser.id,now());
+	// To avoid flooding database UPDATEs, only update login time every minute for a user
+	if (!userLoginTimes[login]) userLoginTimes[login] = now();
+	if (userLoginTimes[login] < (now() - 60)) {
+		userLoginTimes[login] = now();
+		return await db.updateUserLastLogin(currentUser.id,now());
+	}	
 }
 
 export async function getUserRequests(username) {

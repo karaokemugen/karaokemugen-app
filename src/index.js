@@ -8,7 +8,6 @@ import logger from 'winston';
 import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
 import {startExpressReactServer} from './_webapp/react';
-import {openDatabases} from './_dao/database';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
@@ -146,6 +145,7 @@ async function checkPaths(config) {
 			);
 		}
 	}	
+	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));

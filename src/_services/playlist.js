@@ -13,7 +13,7 @@ import shuffle from 'lodash.shuffle';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {emitWS} from '../_webapp/frontend';
-import {emit} from '../_common/utils/pubsub';
+import {emit,on} from '../_common/utils/pubsub';
 import {promisify} from 'util';
 import testJSON from 'is-valid-json';
 const sleep = promisify(setTimeout);
@@ -22,6 +22,12 @@ const tagDB = require('../_dao/tag');
 const wlDB = require('../_dao/whitelist');
 const karaDB = require('../_dao/kara');
 const plDB = require('../_dao/playlist');
+
+let databaseBusy = false;
+
+on('databaseBusy', status => {
+	databaseBusy = status;
+});
 
 
 function emitPlayingUpdated() {
@@ -248,13 +254,6 @@ export async function getKaraLyrics(kara_id) {
 	const ASS = await karaDB.getASS(kara.subfile);
 	if (ASS) return ASSToLyrics(ASS);
 	return 'Lyrics not available for this song';		
-}
-
-async function getASS(kara_id) {
-	const kara = await getKaraMini(kara_id);	
-	let ASS;	
-	if (kara.subfile && kara.subfile !== 'dummy.ass') ASS = await karaDB.getASS(kara.subfile);
-	return ASS || false;
 }
 
 export async function deleteBlacklistCriteria(blc_id) {
@@ -1225,7 +1224,7 @@ export async function buildDummyPlaylist(playlist_id) {
 async function updateFreeOrphanedSongs() {
 	// Flag songs as free if they are older than X minutes
 	try {
-		await karaDB.updateFreeOrphanedSongs(now() - (getConfig().EngineFreeAutoTime * 60));
+		if (!databaseBusy) await karaDB.updateFreeOrphanedSongs(now() - (getConfig().EngineFreeAutoTime * 60));
 		//Sleep for one minute.
 		await sleep(60000);
 	} catch(err) {

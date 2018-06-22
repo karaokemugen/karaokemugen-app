@@ -110,7 +110,7 @@ export async function initConfig(appPath, argv) {
 	configWatcher.on('change', () => {
 		if (!savingSettings) {
 			const oldConf = getConfig();
-			logger.info('[Config] Config file has been changed from the outside world, reloading it...');
+			logger.debug('[Config] Config file has been changed from the outside world, reloading it...');
 			loadConfig(resolve(appPath, configFile)).then(() => {
 				mergeConfig(oldConf, getConfig());				
 			}).catch(err => {
