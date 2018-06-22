@@ -1,7 +1,7 @@
 import {asyncCheckOrMkdir, asyncMkdirp, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
-import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
+import {setConfig, getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
-import {copy} from 'fs-extra';
+import {move, copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
 import logger from 'winston';
@@ -11,6 +11,7 @@ import {startExpressReactServer} from './_webapp/react';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
+import {now} from 'unix-timestamp';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
@@ -145,7 +146,22 @@ async function checkPaths(config) {
 			);
 		}
 	}	
+<<<<<<< HEAD
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
+=======
+
+	//Fix for PathMedias = app/data/videos 
+	//Delete this after 2.3. This is an awful hack.
+	//Only effective after July 1st 2018
+	if (now() > 1530396000 && config.PathMedias === 'app/data/videos') {
+		const oldPath = resolve(appPath, config.PathMedias);		
+		setConfig({ PathMedias: 'app/data/medias'});
+		config = getConfig();
+		const newPath = resolve(appPath, config.PathMedias);
+		if (await asyncExists(oldPath) && !await asyncExists(newPath)) await move(oldPath, newPath);
+	}	
+
+>>>>>>> master
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));

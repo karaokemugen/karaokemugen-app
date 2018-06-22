@@ -5,7 +5,7 @@ import deburr from 'lodash.deburr';
 import isEmpty from 'lodash.isempty';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
-import {asyncReadFile, asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncRemove} from '../_common/utils/files';
+import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncRemove} from '../_common/utils/files';
 import {getConfig, resolvedPathKaras} from '../_common/utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
@@ -19,8 +19,12 @@ import {karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import {join} from 'path';
 import parallel from 'async-await-parallel';
+<<<<<<< HEAD
 import testJSON from 'is-valid-json';
 import {emit} from '../_common/utils/pubsub';
+=======
+import {isSeriesKnown, readSeriesFile} from '../_dao/seriesfile';
+>>>>>>> master
 
 let error = false;
 
@@ -219,55 +223,41 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 
 	const altNameData = [];
 	const i18nData = [];
-	if (await asyncExists(altSeriesFile)) {
-		let altNamesFile = await asyncReadFile(altSeriesFile, 'utf-8');
-		if (testJSON(altNamesFile)) {
-			altNamesFile = JSON.parse(altNamesFile);
-			for (const serie of altNamesFile.series) {
-				if (serie.aliases) altNameData.push({
-					$serie_altnames: serie.aliases.join(','),
-					$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
-					$serie_name: serie.name				
+	const altNamesFile = await readSeriesFile(altSeriesFile);
+	for (const serie of altNamesFile.series) {
+		if (serie.aliases) altNameData.push({
+			$serie_altnames: serie.aliases.join(','),
+			$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
+			$serie_name: serie.name				
+		});
+		if (serie.i18n) {
+			for (const lang of Object.keys(serie.i18n)) {
+				i18nData.push({
+					$lang: lang,
+					$serie: serie.i18n[lang],
+					$serienorm: deburr(serie.i18n[lang]),
+					$name: serie.name						
 				});
-				if (serie.i18n) {
-					for (const lang of Object.keys(serie.i18n)) {
-						i18nData.push({
-							$lang: lang,
-							$serie: serie.i18n[lang],
-							$serienorm: deburr(serie.i18n[lang]),
-							$name: serie.name						
-						});
-					}
-				}
 			}
-			// Checking if some series present in .kara files are not present in the series file
-			for (const serie of mapSeries.keys()) {			
-				if (!altNamesFile.series.find(s => {
-					return s.name === serie;
-				})) {
-					// Print a warning and push some basic data so the series can be searchable at least
-					logger.warn(`[Gen] Series ${serie} is not in the series file`);
-					if (getConfig().optStrict) strictModeError(serie);
-					altNameData.push({
-						$serie_name: serie
-					});
-					i18nData.push({
-						$lang: 'jpn',
-						$serie: serie,
-						$serienorm: deburr(serie).replace('\'', '').replace(',', ''),
-						$name: serie
-					});
-				}
-			}
-		} else {
-			logger.error('[Gen] Alternative series names file contains errors!');
-			error = true;	
 		}
-	} else {
-		logger.error('[Gen] No alternative series names file found!');
-		error = true;
 	}
-
+	// Checking if some series present in .kara files are not present in the series file
+	for (const serie of mapSeries.keys()) {			
+		if (!isSeriesKnown(serie, altNamesFile)) {
+			// Print a warning and push some basic data so the series can be searchable at least
+			logger.warn(`[Gen] Series "${serie}" is not in the series file`);
+			if (getConfig().optStrict) strictModeError(serie);
+			altNameData.push({
+				$serie_name: serie
+			});
+			i18nData.push({
+				$lang: 'jpn',
+				$serie: serie,
+				$serienorm: deburr(serie).replace('\'', '').replace(',', ''),
+				$name: serie
+			});
+		}		
+	}
 	return {
 		altNameData: altNameData,
 		i18nData: i18nData
@@ -488,6 +478,14 @@ export async function checkUserdbIntegrity(uuid, config) {
 	if (!uuid) uuid = uuidV4();
 	const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 	const karas_userdbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
+	//Backup userdb file before running integrity checks
+	await asyncCopy(
+		karas_userdbfile,
+		karas_userdbfile + '.backup',
+		{ overwrite: true }
+	);
+
+
 	logger.info('[Gen] Running user database integrity checks');
 
 	const [db, userdb] = await Promise.all([
