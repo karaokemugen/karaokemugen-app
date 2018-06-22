@@ -146,9 +146,7 @@ async function checkPaths(config) {
 			);
 		}
 	}	
-<<<<<<< HEAD
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
-=======
 
 	//Fix for PathMedias = app/data/videos 
 	//Delete this after 2.3. This is an awful hack.
@@ -161,7 +159,6 @@ async function checkPaths(config) {
 		if (await asyncExists(oldPath) && !await asyncExists(newPath)) await move(oldPath, newPath);
 	}	
 
->>>>>>> master
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));

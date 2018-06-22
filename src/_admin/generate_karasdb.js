@@ -19,12 +19,8 @@ import {karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import {join} from 'path';
 import parallel from 'async-await-parallel';
-<<<<<<< HEAD
-import testJSON from 'is-valid-json';
 import {emit} from '../_common/utils/pubsub';
-=======
 import {isSeriesKnown, readSeriesFile} from '../_dao/seriesfile';
->>>>>>> master
 
 let error = false;
 
