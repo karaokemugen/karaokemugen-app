@@ -28,7 +28,7 @@ async function extractVideoFiles(videoDir) {
 	for (const video of dirListing) {
 		videoFiles.push({
 			file: video,
-			size: await asyncStat(video)
+			stat: await asyncStat(video)
 		});
 	}
 	return videoFiles;
@@ -48,15 +48,16 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 	for (const videofile of videofiles) {
 		let addPreview = true;
 		const previewfileWOExt = basename(videofile.file, extname(videofile.file));
-		const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videofile.size}.mp4`;
+		const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videofile.stat.size}.mp4`;
 		if (previewfiles.length > 0) {
 			for (const previewfile of previewfiles) {
+				console.log(previewfile);
 				const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);
 				const size = previewparts[2];
 				if (basename(previewparts[1]).toLowerCase() === (basename(videofile.file).toLowerCase().replace(/\.[^.]+$/, ''))) {
-					if (size !== videofile.size)  {
+					if (+size !== videofile.stat.size)  {
 					//If it's different, remove previewfile and create a new one
-						logger.debug(`[Previews] Preview ${previewfile} is different in size. V: ${videofile.size} P: ${size}`);
+						logger.debug(`[Previews] Preview ${previewfile} is different in size. V: ${videofile.stat.size} P: ${size}`);
 						asyncRemove(previewfile);						
 					} else {						
 						addPreview = false;
@@ -83,7 +84,7 @@ export async function isPreviewAvailable(videofile) {
 		return undefined;
 	}	
 	const previewfileWOExt = basename(videofilename, extname(videofilename));
-	const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.size}.mp4`;	
+	const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.stat.size}.mp4`;	
 	if (await asyncExists(previewfilename)) {
 		return basename(previewfilename);
 	} else {
