@@ -13,7 +13,7 @@
     "build": "yarn buildReact && rm -Rf dist && babel --source-maps --copy-files -d dist/ src/",
     "install": "cd react_client && yarn install",
     "setup": "yarn install && yarn buildReact",
-    "buildReact": "cd react_client && yarn build && rm -Rf ../src/_dashboard && mv -f build ../src/_dashboard",
+    "buildReact": "cd react_client && yarn build",
     "startReact": "cd react_client && yarn start"
   },
   "homepage": "https://mugen.karaokes.moe/en",
@@ -69,7 +69,7 @@
       "dist/_webapp/vendors/fonts/**",
       "dist/**/*.js",
       "dist/VERSION",
-      "dist/_dashboard/**",
+      "react_client/build/**",
       "node_modules/**/*"
     ]
   },
@@ -148,6 +148,6 @@
   },
   "false": {},
   "apidoc": {
-    "url": "http://localhost/api/v1"
+    "url": "http://localhost:1337/api/v1"
   }
 }

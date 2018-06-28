@@ -6,11 +6,13 @@ import {initFrontend, emitWS} from '../_webapp/frontend';
 import {initializationCatchphrases} from '../_services/constants';
 import {initFavoritesSystem} from '../_services/favorites';
 import {initOnlineSystem} from '../_webapp/online';
+import {initControlPanel} from '../_webapp/control_panel';
 import {karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {getAllTags} from '../_dao/tag';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {validateKaras} from '../_services/kara';
+
 import {displayInfo, playJingle, quitmpv, restartmpv, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, message, resume, initPlayerSystem} from '../_player/player';
 import {startPoll, stopPoll} from '../_services/poll';
 import {now} from 'unix-timestamp';
@@ -180,6 +182,7 @@ export async function initEngine() {
 		createPreviews();
 	}
 	inits.push(plc.initPlaylistSystem());
+	if (!conf.isDemo) inits.push(initControlPanel(conf.appAdminPort));	
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayerSystem(state.engine));	
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());

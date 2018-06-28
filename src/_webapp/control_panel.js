@@ -8,18 +8,13 @@ import adminController from '../_controllers/admin';
 import authController from '../_controllers/auth';
 import {configurePassport} from './passport_manager.js';
 
-module.exports = {
-	startExpressReactServer: startExpressReactServer
-};
-
-
 /**
- * Démarrage de l'application Express servant le frontend React, développé dans un sous-projet JS
- * séparé, dans le répertoire 'client'.
+ * Starting the express app for admin features, aka Control Panel
+ * It's made with React
  *
- * Servir cette application nécessite qu'elle soit préalablement construite.
+ * Serving this app requires it being built first
  */
-function startExpressReactServer(listenPort) {
+export async function initControlPanel(listenPort) {
 
 	const conf = getConfig();
 	const app = express();
@@ -31,7 +26,7 @@ function startExpressReactServer(listenPort) {
 	configurePassport();
 
 	// Serve static files from the React app
-	app.use(express.static(resolve(__dirname, '../_dashboard')));
+	app.use(express.static(resolve(__dirname, '../../react_client/build')));
 
 	// API router
 	app.use('/api', apiRouter());
@@ -39,21 +34,21 @@ function startExpressReactServer(listenPort) {
 	// The "catchall" handler: for any request that doesn't
 	// match one above, send back React's index.html file.
 	app.get('*', (req, res) => {
-		res.sendFile(resolve(__dirname, '../_dashboard/index.html'));
+		res.sendFile(resolve(__dirname, '../../react_client/build/index.html'));
 	});
 
 	const port = listenPort || 5000;
 	app.listen(port);
 
-	logger.debug(`[Dashboard] Dashboard listening on ${port}`);
+	logger.debug(`[Control Panel] Control Panel listening on ${port}`);
 }
 
 function apiRouter() {
 	const apiRouter = express.Router();
 
-	// Ajout des routes d'identification.
+	// Add auth routes
 	authController(apiRouter);
-	// Ajout des routes d'administration, nécessitant une identification.
+	// Add admin routes
 	adminController(apiRouter);
 
 	return apiRouter;
