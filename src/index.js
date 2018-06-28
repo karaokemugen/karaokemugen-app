@@ -7,7 +7,6 @@ import {createServer} from 'net';
 import logger from 'winston';
 import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
-import {startExpressReactServer} from './_webapp/react';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
@@ -106,11 +105,8 @@ async function main() {
 
 	await restoreKaraBackupFolders(config);
 	
-	/** Start React static frontend */
-	if (!config.isDemo) startExpressReactServer(config.appAdminPort);
-
 	/**
-	 * Calling engine.
+	 * Gentlemen, start your engines.
 	 */
 	initEngine();
 }

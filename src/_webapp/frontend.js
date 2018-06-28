@@ -125,6 +125,8 @@ export async function initFrontend(port) {
 		});
 	});
 	routerAdmin.get('/', (req, res) => {
+		const config = getConfig();
+
 		//Get list of monitors to allow users to select one for the player
 		graphics().then((data) => {
 			logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
@@ -141,7 +143,8 @@ export async function initFrontend(port) {
 				'clientAdress'	:	'http://'+address(),
 				'displays'		:	data.displays,
 				'query'			:	JSON.stringify(req.query),
-				'webappMode'	:	conf.WebappMode
+				'appFirstRun'	:	config.appFirstRun,
+				'webappMode'	:	config.WebappMode
 			});
 		});
 	});

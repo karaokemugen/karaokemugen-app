@@ -82,7 +82,7 @@ export async function isGitRepo(dir) {
 /**
  * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
  */
-export async function resolveFileInDirs(filename, dirs) {
+export async function resolveFileInDirs(filename, dirs) {	
 	for (const dir of dirs) {
 		const resolved = resolve(getConfig().appPath, dir, filename);		
 		if (await asyncExists(resolved)) {

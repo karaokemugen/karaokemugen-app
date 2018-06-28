@@ -10,7 +10,6 @@
   "ignore": [
     "node_modules",
     "src/_webapp/ressources",
-	"src/_webapp/vendors",
-	"src/_dashboard"
+	"src/_webapp/vendors"	
   ]
 }
