@@ -83,7 +83,7 @@ export async function isPreviewAvailable(videofile) {
 		return undefined;
 	}	
 	const previewfileWOExt = basename(videofilename, extname(videofilename));
-	const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videoStats.stat.size}.mp4`;	
+	const previewfilename = resolve(resolvedPathPreviews(),`${previewfileWOExt}.${videoStats.size}.mp4`);	
 	if (await asyncExists(previewfilename)) {
 		return basename(previewfilename);
 	} else {
