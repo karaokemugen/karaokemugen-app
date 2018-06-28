@@ -91,26 +91,26 @@ export async function isPreviewAvailable(videofile) {
 	}
 }
 export async function createPreviews(config) {
-	try {
-		const conf = config || getConfig();		
-		logger.debug('[Previews] Starting preview generation');
-		const videoFiles = await extractVideoFiles(resolve(conf.appPath,conf.PathMedias));
-		logger.debug('[Previews] Number of videos '+videoFiles.length);
-		const previewFiles = await extractPreviewFiles(resolvedPathPreviews());		
-		logger.debug('[Previews] Number of previews '+previewFiles.length);
-		const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
-		logger.debug('[Previews] Number of previews to generate '+videoFilesToPreview.length);
-		for (const videoPreview of videoFilesToPreview) {
-			await createPreview(videoPreview);
+	const conf = config || getConfig();		
+	logger.debug('[Previews] Starting preview generation');
+	const videoFiles = await extractVideoFiles(resolve(conf.appPath,conf.PathMedias));
+	logger.debug('[Previews] Number of videos '+videoFiles.length);
+	const previewFiles = await extractPreviewFiles(resolvedPathPreviews());		
+	logger.debug('[Previews] Number of previews '+previewFiles.length);
+	const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
+	logger.debug('[Previews] Number of previews to generate '+videoFilesToPreview.length);
+	for (const videoPreview of videoFilesToPreview) {
+		try { 
+			await createPreview(videoPreview);			
 			logger.debug(`[Previews] Generated preview for ${videoPreview.videofile}`);
+		} catch (err) {
+			logger.error(`[Previews] Generation error for ${videoPreview.videofile} : ${err}`);
 		}
-		
-		if (videoFilesToPreview.length > 0) {
-			logger.info(`[Previews] Finished generating ${videoFilesToPreview.length} previews`);
-		} else {
-			logger.debug('[Previews] No preview to generate');
-		}
-	} catch (err) {
-		logger.error(err);
 	}
+		
+	if (videoFilesToPreview.length > 0) {
+		logger.info(`[Previews] Finished generating ${videoFilesToPreview.length} previews`);
+	} else {
+		logger.debug('[Previews] No preview to generate');
+	}	
 }
