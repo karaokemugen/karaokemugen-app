@@ -12,6 +12,7 @@
         "react"
     ],
     "rules": {
+		"jsx-a11y/href-no-hash": [0],
         "brace-style": [
             "error",
             "1tbs"
