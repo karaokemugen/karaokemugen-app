@@ -49,7 +49,7 @@ export const defaults = {
 	BinffmpegOSX: 'app/bin/ffmpeg',
 	PathBin: 'app/bin',
 	PathKaras: 'app/data/karas',
-	PathMedias: 'app/data/videos',
+	PathMedias: 'app/data/medias',
 	PathSubs: 'app/data/lyrics',
 	PathDB: 'app/db',
 	PathDBKarasFile: 'karas.sqlite3',

@@ -190,7 +190,7 @@ var settingsNotUpdated;
 		var mugenToken = readCookie('mugenToken');
 
 		if(!welcomeScreen) {
-			if(query.admpwd && scope === 'admin') { // app first run admin;
+			if(query.admpwd && appFirstRun && scope === 'admin') { // app first run admin
 				login('admin', query.admpwd).done(() => {
 					startIntro('admin');
 					var privateMode = $('input[name="EnginePrivateMode"]');
