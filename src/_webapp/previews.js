@@ -51,7 +51,6 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 		const previewfilename = resolvedPathPreviews()+`/${previewfileWOExt}.${videofile.stat.size}.mp4`;
 		if (previewfiles.length > 0) {
 			for (const previewfile of previewfiles) {
-				console.log(previewfile);
 				const previewparts = previewfile.match(/^(.+)\.([0-9]+)\.([^.]+)$/);
 				const size = previewparts[2];
 				if (basename(previewparts[1]).toLowerCase() === (basename(videofile.file).toLowerCase().replace(/\.[^.]+$/, ''))) {
