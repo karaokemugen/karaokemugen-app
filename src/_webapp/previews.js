@@ -74,7 +74,7 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 	return previewFilesToCreate;
 }
 export async function isPreviewAvailable(videofile) {
-	const videofilename = resolveFileInDirs(videofile, resolvedPathMedias());
+	const videofilename = await resolveFileInDirs(videofile, resolvedPathMedias());
 	let videoStats;
 	if (await asyncExists(videofilename)) {
 		videoStats = await asyncStat(videofilename);		

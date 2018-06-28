@@ -478,5 +478,6 @@
 	"POLLTITLE": "À vous de voter !",
 	"POLLENDED": "%s remporte le vote avec %s voix !",
 	"PLAYERMONITOR": "Seconde fenêtre (moniteur)",
-	"ONLINEMODE": "Url d'accès courte (nécessite internet)"
+	"ONLINEMODE": "Url d'accès courte (nécessite internet)",
+	"TAG_CON": "TAG_CON"
 }
