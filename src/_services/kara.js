@@ -198,7 +198,7 @@ export function verifyKaraData(karaData) {
 
 /** Only MV or LIVE types don't have to have a series filled. */
 export function serieRequired(karaType) {	
-	return karaType !== karaTypes.MV && karaType !== karaTypes.LIVE;
+	return karaType !== karaTypes.MV.type && karaType !== karaTypes.LIVE.type;
 }
 
 export async function getKaraHistory() {
