@@ -140,15 +140,15 @@ export const tagTypes = Object.freeze({
 
 /** Map used for database generation */
 export const karaTypesMap = Object.freeze(new Map([
-	[karaTypes.OP, 'TYPE_OP,3'],
-	[karaTypes.ED, 'TYPE_ED,3'],
-	[karaTypes.IN, 'TYPE_INSERTSONG,3'],
-	[karaTypes.MV, 'TYPE_MUSIC,3'],
-	[karaTypes.PV, 'TYPE_PV,3'],
-	[karaTypes.CM, 'TYPE_CM,3'],
-	[karaTypes.OT, 'TYPE_OTHER,3'],
-	[karaTypes.AMV, 'TYPE_AMV,3'],
-	[karaTypes.LIVE, 'TYPE_LIVE,3'],
+	[karaTypes.OP.type, 'TYPE_OP,3'],
+	[karaTypes.ED.type, 'TYPE_ED,3'],
+	[karaTypes.IN.type, 'TYPE_INSERTSONG,3'],
+	[karaTypes.MV.type, 'TYPE_MUSIC,3'],
+	[karaTypes.PV.type, 'TYPE_PV,3'],
+	[karaTypes.CM.type, 'TYPE_CM,3'],
+	[karaTypes.OT.type, 'TYPE_OTHER,3'],
+	[karaTypes.AMV.type, 'TYPE_AMV,3'],
+	[karaTypes.LIVE.type, 'TYPE_LIVE,3'],
 ]));
 
 /** Extracting type from a string */

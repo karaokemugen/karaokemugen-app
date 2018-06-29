@@ -12,7 +12,7 @@ function integerValidator(value) {
 }
 
 function langValidator(value) {	
-	if (!Array.isArray(value)) value.replace('"', '').split(',');	
+	if (!Array.isArray(value)) value = value.replace('"', '').split(',');	
 	value.forEach((e,i) => value[i] = e.trim());
 	let result = null;
 	for (const lang of value) {		
@@ -25,7 +25,7 @@ function langValidator(value) {
 }
 
 function tagsValidator(value) {
-	if (!Array.isArray(value)) value.replace('"', '').split(',');	
+	if (!Array.isArray(value)) value = value.replace('"', '').split(',');	
 	value.forEach((e,i) => value[i] = e.trim());
 	let result = null;
 	for (const tag of value) {	
