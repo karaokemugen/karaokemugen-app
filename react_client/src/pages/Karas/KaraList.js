@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Button, Layout, Table} from 'antd';
-
-import {loading, errorMessage, warnMessage} from '../actions/navigation';
+import {Icon, Button, Layout, Table} from 'antd';
+import {Link} from 'react-router-dom';
+import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 
 class KaraList extends Component {
 
@@ -21,10 +21,10 @@ class KaraList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/karas/history')
+		axios.get('/api/karas')
 			.then(res => {
 				this.props.loading(false);
-				this.setState({karas: res.data});
+				this.setState({karas: res.data.content});
 			})
 			.catch(err => {
 				this.props.loading(false);
@@ -38,7 +38,7 @@ class KaraList extends Component {
 				<Table
 					dataSource={this.state.karas}
 					columns={this.columns}
-					rowKey='viewed_at'
+					rowKey='kara_id'
 				/>
 				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>				
 			</Layout.Content>
@@ -65,17 +65,11 @@ class KaraList extends Component {
 		dataIndex: 'title',
 		key: 'title'		
 	}, {
-		title: 'View count',
-		dataIndex: 'viewcount',
-		key: 'viewcount',
-		render: viewcount => viewcount,
-	}, {
-		title: 'Seen on',
-		dataIndex: 'viewed_at',
-		key: 'viewed_at',		
-		render: (viewed_at) => (new Date(viewed_at*1000)).toLocaleString('en'),
-		defaultSortOrder: 'descend',
-		sorter: (a,b) => a.viewed_at - b.viewed_at
+		title: 'Action',
+		key: 'action',
+		render: (text, record) => (<span>
+			<Link to={`/karas/${record.kara_id}`}><Icon type='edit'/></Link>			
+		</span>)
 	}];
 }
 
