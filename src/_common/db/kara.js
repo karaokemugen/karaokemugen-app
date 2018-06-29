@@ -178,12 +178,14 @@ export const getKara = (lang) => `SELECT ak.kara_id AS kara_id,
       						ak.author AS author,
       						ak.NORM_author AS NORM_author,
       						ak.misc AS misc,
-	  						(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
+							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
 							(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       						ak.mediafile AS mediafile,
 							ak.subfile AS subfile,
+	  						ak.karafile AS karafile,
 	  						ak.duration AS duration,
 	  						ak.gain AS gain,
+							ak.created_at AS created_at,
 							(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     						THEN 1
         						ELSE 0
@@ -250,3 +252,23 @@ export const updateFreeOrphanedSongs = `UPDATE playlist_content SET
 									flag_free = 1
 									WHERE created_at <= $expire_time;
 								`;
+
+export const updateKara = `UPDATE karasdb.kara SET 
+							title = $title,
+							NORM_title = $NORM_title,
+							year = $year,
+							songorder = $songorder,
+							mediafile = $mediafile,
+							subfile = $subfile,
+							duration = $duration,
+							gain = $gain,
+							modified_at = $modified_at,
+							karafile = $karafile
+						WHERE pk_id_kara = $kara_id
+`;
+
+export const insertKara = `INSERT INTO 
+							karasdb.kara(title, NORM_title, year, songorder, mediafile, subfile, duration, gain, modified_at, created_at, karafile, kid) 
+							VALUES($title, $NORM_title, $year, $songorder, $mediafile, $subfile, $duration, $gain, $modified_at, $created_at, $karafile, $kid);
+`;
+							
