@@ -120,10 +120,10 @@ export const karaTypes = Object.freeze({
 	IN: {type: 'IN', dbType: 'TYPE_INSERTSONG'},
 	MV: {type: 'MV', dbType: 'TYPE_MUSIC'},
 	PV: {type: 'PV', dbType: 'TYPE_PV'},
-	CM: {type: 'OP', dbType: 'TYPE_CM'},
-	OT: {type: 'OP', dbType: 'TYPE_OTHER'},
+	CM: {type: 'CM', dbType: 'TYPE_CM'},
+	OT: {type: 'OT', dbType: 'TYPE_OTHER'},
 	AMV: {type: 'AMV', dbType: 'TYPE_AMV'},
-	LIVE: {type: 'OP', dbType: 'TYPE_LIVE'}
+	LIVE: {type: 'LIVE', dbType: 'TYPE_LIVE'}
 });
 
 export const karaTypesArray = Object.freeze(Object.keys(karaTypes));
