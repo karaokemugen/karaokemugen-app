@@ -142,8 +142,7 @@ async function checkPaths(config) {
 			);
 		}
 	}	
-	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
-
+	
 	//Fix for PathMedias = app/data/videos 
 	//Delete this after 2.3. This is an awful hack.
 	//Only effective after July 1st 2018
