@@ -3639,3 +3639,48 @@
  *    }
  * }
  */
+
+ /**
+	* @api {get} /public/tags Get tag list
+	* @apiName GetTags
+	* @apiVersion 2.1.0
+	* @apiGroup Karaokes
+	* @apiPermission public
+	* @apiHeader authorization Auth token received from logging in
+	* @apiSuccess {String} data/name Name of tag
+	* @apiSuccess {String} data/name_i18n Translated name of tag
+	* @apiSuccess {Number} data/tag_id Tag ID number
+	* @apiSuccess {Number} data/type Tag type number
+	*
+	* @apiSuccessExample Success-Response:
+	* HTTP/1.1 200 OK
+	* {
+	*     "data": [
+	*        {
+	*          "name": "20th Century",
+	*          "name_i18n": "20th Century",
+	*          "tag_id": 371,
+	*          "type": 2
+	*        },
+	*        {
+	*		   "name": "TYPE_AMV",
+	*          "name_i18n": "Anime Music Video",
+	*          "tag_id": 15,
+	*          "type": 3
+	*        },
+	*        {
+	*          "name": "ita",
+	*          "name_i18n": "Italien",
+	*          "tag_id": 370,
+	*          "type": 5
+	*        }
+	*		 ...
+	*   ]
+	* }
+	* @apiError TAGS_LIST_ERROR Unable to get list of tags
+	* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	* @apiErrorExample Error-Response:
+	* HTTP/1.1 500 Internal Server Error
+	* @apiErrorExample Error-Response:
+    * HTTP/1.1 403 Forbidden
+	*/

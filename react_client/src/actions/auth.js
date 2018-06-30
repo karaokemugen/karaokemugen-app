@@ -16,6 +16,7 @@ export function login(username, password) {
 		)
 			.then(response => {
 				localStorage.setItem('kmToken', response.data.token);
+				localStorage.setItem('username', response.data.username);
 				axios.defaults.headers.common['authorization'] = response.data.token;
 				dispatch({
 					type: AUTH_USER,

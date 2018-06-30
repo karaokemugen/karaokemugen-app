@@ -115,36 +115,69 @@ export const initializationCatchphrases = [
 ];
 
 export const karaTypes = Object.freeze({
-	OP: 'OP',
-	ED: 'ED',
-	IN: 'IN',
-	MV: 'MV',
-	PV: 'PV',
-	CM: 'CM',
-	OT: 'OT',
-	AMV: 'AMV',
-	LIVE: 'LIVE'
+	OP: {type: 'OP', dbType: 'TYPE_OP'},
+	ED: {type: 'ED', dbType: 'TYPE_ED'},
+	IN: {type: 'IN', dbType: 'TYPE_INSERTSONG'},
+	MV: {type: 'MV', dbType: 'TYPE_MUSIC'},
+	PV: {type: 'PV', dbType: 'TYPE_PV'},
+	CM: {type: 'CM', dbType: 'TYPE_CM'},
+	OT: {type: 'OT', dbType: 'TYPE_OTHER'},
+	AMV: {type: 'AMV', dbType: 'TYPE_AMV'},
+	LIVE: {type: 'LIVE', dbType: 'TYPE_LIVE'}
 });
 
 export const karaTypesArray = Object.freeze(Object.keys(karaTypes));
 
+export const tagTypes = Object.freeze({
+	singer: 2,
+	songtype: 3,
+	creator: 4,
+	lang: 5,
+	author: 6,
+	misc: 7,
+	songwriter: 8
+});
+
 /** Map used for database generation */
 export const karaTypesMap = Object.freeze(new Map([
-	[karaTypes.OP, 'TYPE_OP,3'],
-	[karaTypes.ED, 'TYPE_ED,3'],
-	[karaTypes.IN, 'TYPE_INSERTSONG,3'],
-	[karaTypes.MV, 'TYPE_MUSIC,3'],
-	[karaTypes.PV, 'TYPE_PV,3'],
-	[karaTypes.CM, 'TYPE_CM,3'],
-	[karaTypes.OT, 'TYPE_OTHER,3'],
-	[karaTypes.AMV, 'TYPE_AMV,3'],
-	[karaTypes.LIVE, 'TYPE_LIVE,3'],
+	[karaTypes.OP.type, 'TYPE_OP,3'],
+	[karaTypes.ED.type, 'TYPE_ED,3'],
+	[karaTypes.IN.type, 'TYPE_INSERTSONG,3'],
+	[karaTypes.MV.type, 'TYPE_MUSIC,3'],
+	[karaTypes.PV.type, 'TYPE_PV,3'],
+	[karaTypes.CM.type, 'TYPE_CM,3'],
+	[karaTypes.OT.type, 'TYPE_OTHER,3'],
+	[karaTypes.AMV.type, 'TYPE_AMV,3'],
+	[karaTypes.LIVE.type, 'TYPE_LIVE,3'],
 ]));
 
 /** Extracting type from a string */
 export function getType(types) {
 	return types.split(/\s+/).find(t => karaTypesArray.includes(t));
 }
+
+// Map of the current language naming for Karaoke Mugen's Database. 
+// At some point, we're going to rename these all to fit ISO639-2B codes.
+export const specialLangMap = Object.freeze({
+	eng: 'ANG',
+	fre: 'FR',
+	ger: 'ALL',
+	jpn: 'JAP',
+	kor: 'COR',
+	swe: 'SUE',
+	und: 'FIC',
+	chi: 'CHI',
+	epo: 'EPO',
+	fin: 'FIN',
+	gle: 'GLE',
+	heb: 'HEB',
+	ita: 'ITA',
+	lat: 'LAT',
+	por: 'POR',
+	rus: 'RUS',
+	spa: 'ESP',
+	tel: 'TEL'
+});
 
 export const specialTags = Object.freeze({
 	GAME: 'GAME',
@@ -159,8 +192,52 @@ export const specialTags = Object.freeze({
 	REMIX: 'REMIX',
 	SPECIAL: 'SPECIAL',
 	VOCA: 'VOCA',
-	XBOX360: 'XBOX360'
+	XBOX360: 'XBOX360',	
 });
+
+export const tags = [
+	'SPECIAL',
+	'REMIX',
+	'VOICELESS',
+	'CONCERT',
+	'PARODY',
+	'HUMOR',
+	'R18',
+	'SPOIL',
+	'LONG',
+	'HARDMODE',
+	'DUO',
+	'REAL',
+	'ANIME',
+	'MOVIE',
+	'TVSHOW',
+	'OVA',
+	'ONA',
+	'VIDEOGAME',
+	'VN',
+	'MOBAGE',
+	'VOCALOID',
+	'TOKU',
+	'MECHA',
+	'MAGICALGIRL',
+	'SHOUJO',
+	'SHOUNEN',
+	'YURI',
+	'YAOI',
+	'PSX',
+	'PS2',
+	'PS3',
+	'PS4',
+	'PSV',
+	'PSP',
+	'XBOX360',
+	'GAMECUBE',
+	'DS',
+	'PC',
+	'SEGACD',
+	'SATURN',
+	'WII'
+];
 
 export const specialTagsArray = Object.freeze(Object.keys(specialTags));
 

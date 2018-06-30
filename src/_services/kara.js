@@ -1,11 +1,61 @@
 import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_common/utils/validators';
-import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
+import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
 import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
+import isEmpty from 'lodash.isempty';
 const karaDB = require('../_dao/kara');
+const tagDB = require('../_dao/tag');
+const serieDB = require('../_dao/series');
+
+async function updateSeries(kara) {
+	if (isEmpty(kara.series)) return true;
+	let lang = 'und';
+	if (!isEmpty(kara.lang)) lang = kara.lang.split(',')[0];
+	let series = [];
+	for (const s of kara.series.split(',')) {		
+		series.push(await serieDB.checkOrCreateSerie(s,lang));
+	}
+	await serieDB.updateKaraSeries(kara.kara_id,series);
+}
+
+async function updateTags(kara) {
+	// Create an array of tags to add for our kara
+	let tags = [];
+	if (!isEmpty(kara.singer)) kara.singer.split(',').forEach(t => tags.push({tag: t, type: tagTypes.singer}));
+	if (!isEmpty(kara.tags)) kara.tags.split(',').forEach(t => tags.push({tag: t, type: tagTypes.misc}));
+	if (!isEmpty(kara.songwriter)) kara.songwriter.split(',').forEach(t => tags.push({tag: t, type: tagTypes.songwriter}));
+	if (!isEmpty(kara.creator)) kara.creator.split(',').forEach(t => tags.push({tag: t, type: tagTypes.creator}));
+	if (!isEmpty(kara.author)) kara.author.split(',').forEach(t => tags.push({tag: t, type: tagTypes.author}));
+	if (!isEmpty(kara.lang)) kara.lang.split(',').forEach(t => tags.push({tag: t, type: tagTypes.lang}));
+	
+	//Songtype is a little specific.
+	tags.push({tag: karaTypes[kara.type].dbType, type: tagTypes.songtype});
+
+	if (tags.length === 0) return true;
+	for (const i in tags) {
+		tags[i].id = await tagDB.checkOrCreateTag(tags[i]);		
+	}
+	return await tagDB.updateKaraTags(kara.kara_id, tags);	
+}
+
+export async function createKaraInDB(kara) {
+	kara.kara_id = await karaDB.addKara(kara);	
+	await Promise.all([
+		updateTags(kara),
+		updateSeries(kara)
+	]);
+}
+
+export async function editKaraInDB(kara) {
+	await karaDB.updateKara(kara);
+	await Promise.all([
+		updateTags(kara),
+		updateSeries(kara)
+	]);
+}
 
 /**
  * Generate info to write in a .kara file from an object passed as argument by filtering out unnecessary fields and adding default values if needed.
@@ -148,7 +198,7 @@ export function verifyKaraData(karaData) {
 
 /** Only MV or LIVE types don't have to have a series filled. */
 export function serieRequired(karaType) {	
-	return karaType !== karaTypes.MV && karaType !== karaTypes.LIVE;
+	return karaType !== karaTypes.MV.type && karaType !== karaTypes.LIVE.type;
 }
 
 export async function getKaraHistory() {

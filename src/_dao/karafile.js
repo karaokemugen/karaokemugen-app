@@ -13,9 +13,18 @@ import {resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common
 import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
 import {getKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
+import {specialLangMap} from '../_services/constants';
 
 let error = false;
 
+
+function getLangFromFile(fileLang) {
+	return Object.keys(specialLangMap).find(key => specialLangMap[key] === fileLang) || 'und';
+}
+
+export function getFileLangFromKara(karaLang) {
+	return specialLangMap[karaLang] || karaLang.toUpperCase();	
+}
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
@@ -30,7 +39,7 @@ export function karaFilenameInfos(karaFile) {
 
 	// Let's return an object with our data correctly positionned.
 	return {
-		lang: infos[0],
+		lang: getLangFromFile(infos[0]),
 		serie: infos[1],
 		type: orderInfos[1],
 		order: orderInfos[2] ? +orderInfos[2] : 0,
@@ -47,7 +56,7 @@ export async function getDataFromKaraFile(karafile) {
 	const conf = getConfig();
 	const karaData = await parseKara(karafile);
 	
-	// Code to keep compatibility with v2 kara files. Remove this in a few months or so.
+	// Code to keep compatibility with v2 kara files.
 	karaData.mediafile = karaData.mediafile || karaData.videofile;
 	karaData.mediasize = karaData.mediasize || karaData.videosize;
 	karaData.mediagain = karaData.mediagain || karaData.videogain;
@@ -150,6 +159,8 @@ export async function writeKara(karafile, karaData) {
 	delete infosToWrite.mediasize;
 	delete infosToWrite.mediagain;
 	delete infosToWrite.mediafile;
+	
+	delete infosToWrite.karafile;
 	karaData.datemodif = infosToWrite.datemodif;
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }

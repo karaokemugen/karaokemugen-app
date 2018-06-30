@@ -3232,6 +3232,7 @@ export function APIControllerPublic(router) {
 
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED All songs are already present in playlist
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED Song is blacklisted and cannot be added
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR General error while adding song
 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 * @apiErrorExample Error-Response:
@@ -3743,10 +3744,12 @@ export function APIControllerPublic(router) {
 	/**
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
-	* @apiVersion 2.1.0
+	* @apiVersion 2.3.0
 	* @apiGroup Karaokes
 	* @apiPermission public
 	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {Number} type Type of tag to filter
+	* @apiParam {String} filter Tag name to filter results
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {String} data/name_i18n Translated name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
@@ -3786,7 +3789,7 @@ export function APIControllerPublic(router) {
 	*/
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const tags = await engine.getTags(req.lang);
+				const tags = await engine.getTags(req.lang,req.query.filter,req.query.type);
 				res.json(OKMessage(tags));
 			} catch(err) {
 				logger.error(err);

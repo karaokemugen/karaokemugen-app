@@ -17,8 +17,9 @@ import {
 } from '../_common/db/generation';
 import {karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
-import {join} from 'path';
+import {basename, join} from 'path';
 import parallel from 'async-await-parallel';
+import {emit} from '../_common/utils/pubsub';
 import {isSeriesKnown, readSeriesFile} from '../_dao/seriesfile';
 
 let error = false;
@@ -129,7 +130,8 @@ function prepareKaraInsertData(kara, index) {
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,		
 		$kara_gain: kara.mediagain,
-		$kara_duration: kara.mediaduration		
+		$kara_duration: kara.mediaduration,
+		$kara_karafile: basename(kara.karafile)
 	};
 }
 
@@ -181,7 +183,8 @@ function getAllSeries(karas) {
 function prepareSerieInsertData(serie, index) {
 	return {
 		$id_serie: index,
-		$serie: serie		
+		$serie: serie,
+		$NORM_serie: deburr(serie)
 	};
 }
 
@@ -404,6 +407,7 @@ async function runSqlStatementOnData(stmtPromise, data) {
 
 export async function run(config) {
 	try {
+		emit('databaseBusy',true);
 		const conf = config || getConfig();
 
 		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
@@ -452,6 +456,8 @@ export async function run(config) {
 	} catch (err) {
 		logger.error(err);
 		return error;
+	} finally {
+		emit('databaseBusy',false);
 	}
 }
 

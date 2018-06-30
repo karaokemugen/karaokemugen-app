@@ -17,6 +17,21 @@ const sql = require('../_common/db/database');
 let karaDb;
 let userDb;
 
+export function buildClausesSeries(filter, type) {
+	return deburr(filter)
+		.toLowerCase()
+		.replace('\'', '')
+		.replace(',', '')
+		.split(' ')
+		.filter(s => !('' === s))
+		.map(word => {
+			return `s.NORM_name LIKE '%${word}%' OR 
+			s.NORM_altname LIKE '%${word}%'			
+			`;
+		}			
+		);
+}
+
 export function buildClauses(filter,source) {	
 	return deburr(filter)
 		.toLowerCase()
@@ -72,7 +87,7 @@ export async function transaction(items, sql) {
 	await promiseRetry((retry) => {
 		return doTransaction(items, sql).catch(retry);					
 	}, {
-		retries: 10,
+		retries: 20,
 		minTimeout: 100,
 		maxTimeout: 200
 	}).then(() => { 

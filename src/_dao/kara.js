@@ -3,6 +3,7 @@ import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_common/utils/files';
+import deburr from 'lodash.deburr';
 
 const sql = require('../_common/db/kara');
 
@@ -10,6 +11,40 @@ export async function getSongCountForUser(playlist_id,user_id) {
 	return await getUserDb().get(sql.getSongCountPerUser, {
 		$playlist_id: playlist_id,
 		$user_id: user_id
+	});
+}
+
+export async function updateKara(kara) {
+	return await getUserDb().get(sql.updateKara, {
+		$karafile: kara.karafile,
+		$mediafile: kara.mediafile,
+		$subfile: kara.subfile,
+		$title: kara.title,
+		$NORM_title: deburr(kara.title),
+		$year: kara.year,
+		$songorder: kara.songorder,
+		$duration: kara.mediaduration,
+		$gain: kara.mediagain,
+		$modified_at: kara.datemodif,
+		$kara_id: kara.kara_id
+	});
+}
+
+export async function addKara(kara) {
+	return await getUserDb().get(sql.insertKara, {
+		$karafile: kara.karafile,
+		$mediafile: kara.mediafile,
+		$subfile: kara.subfile,
+		$title: kara.title,
+		$NORM_title: deburr(kara.title),
+		$year: kara.year,
+		$songorder: kara.songorder,
+		$duration: kara.mediaduration,
+		$gain: kara.mediagain,
+		$modified_at: kara.datemodif,
+		$kara_id: kara.kara_id,
+		$created_at: kara.dateadded,
+		$kid: kara.KID
 	});
 }
 
