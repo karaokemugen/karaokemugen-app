@@ -336,12 +336,14 @@ async function startmpv() {
 						state.player.mediaType === 'song')						
 			displaySongInfo(state.player.currentSongInfos);
 		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.mediaType === 'song') displayInfo(8000);
+		const conf = getConfig();
 		if (Math.floor(position) >= Math.floor(state.player.duration - 10) && state.player.mediaType === 'song' &&
-		getConfig().EngineSongPoll && 
+		conf.EngineSongPoll && 
 		!songNearEnd) {
 			songNearEnd = true;
 			endPoll();
 		}
+		if (monitorEnabled) playerMonitor.goToPosition(position);
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	state.player.ready = true;	
