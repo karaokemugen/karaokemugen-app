@@ -110,7 +110,7 @@ CREATE TABLE tmp (
 	modified_at	INTEGER NOT NULL
 );
 
-INSERT INTO tmp SELECT pk_id_kara,kid,title,NORM_title,year,songorder,mediafile,duration,gain,created_at,modified_at FROM kara;
+INSERT INTO tmp SELECT pk_id_kara,kid,title,NORM_title,year,songorder,mediafile,subfile,duration,gain,created_at,modified_at FROM kara;
 PRAGMA foreign_keys = "0";
 DROP TABLE kara;
 ALTER TABLE tmp RENAME TO kara;
