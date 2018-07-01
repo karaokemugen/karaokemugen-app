@@ -8,7 +8,7 @@ export const getSeries = (filterClauses, lang) => `SELECT s.pk_id_serie AS serie
 		s.name) 
 	AS i18n_name,
 	s.altname AS aliases,
-	(select json_group_object(lang,name) from serie_lang where fk_id_serie = s.pk_id_serie) as i18n 
+	(select json_group_object(lang,name) from serie_lang where fk_id_serie = s.pk_id_serie) as i18n_names
 	FROM serie s
 	WHERE 1 = 1
 	${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}

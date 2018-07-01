@@ -7,7 +7,9 @@ export async function getAllSeries(lang, filter) {
 	const filterClauses = filter ? buildClausesSeries(filter) : [];	
 	const query = sql.getSeries(filterClauses, langSelector(lang));
 
-	return await getUserDb().all(query);
+	let series = await getUserDb().all(query);
+	series.forEach((serie, i) => series[i].i18n_names = JSON.parse(serie.i18n_names))	
+	return series;
 }
 
 export async function checkOrCreateSerie(serie,lang) {	

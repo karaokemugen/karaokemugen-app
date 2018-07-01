@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Tooltip, Tag, Icon, Button, Layout, Table} from 'antd';
+import {Divider, Modal, Tooltip, Tag, Icon, Button, Layout, Table} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 
@@ -40,7 +40,19 @@ class SeriesList extends Component {
 					columns={this.columns}
 					rowKey='serie_id'
 				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>				
+				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
+				<Modal
+					title='Confirm series delete'
+					visible={this.state.deleteModal}
+					onOk={() => this.delete(this.state.serie.serie_id)}
+					onCancel={() => this.setState({deleteModal: false, serie: {}})}
+					okText='yes'
+					cancelText='no'
+				>
+					<p>Delete series <b>{this.state.serie.name}</b></p>
+					<p>This will delete it from the series.json file!</p>
+					<p>Are you sure?</p>
+				</Modal>				
 			</Layout.Content>
 		);
 	}
@@ -71,10 +83,33 @@ class SeriesList extends Component {
 			return tags;
 		}
 	}, {
+		title: 'International Names',
+		dataIndex: 'i18n_names',
+		key: 'i18n_names',	
+		render: i18n_names => {
+			let names = [];
+			Object.keys(i18n_names).forEach((lang) => {
+				const isLongTag = i18n_names[lang].length > 40;
+				const i18n_name = `[${lang.toUpperCase()}] ${i18n_names[lang]}`;
+				const tagElem = (
+					<Tag>
+						{isLongTag ? `${i18n_name.slice(0, 20)}...` : i18n_name}
+					</Tag>
+				);				
+				names.push(isLongTag ? (<Tooltip title={i18n_name[lang]} key={i18n_name[lang]}>{tagElem}</Tooltip>) : tagElem);
+				return true;
+			});			
+			return names;
+		}
+	}, {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/series/${record.serie_id}`}><Icon type='edit'/></Link>			
+			<Link to={`/series/${record.serie_id}`}><Icon type='edit'/></Link>
+			<Divider type="vertical"/>
+			<Button type='danger' icon='delete' onClick={
+				() => this.setState({deleteModal: true, series: record})
+			}/>
 		</span>)
 	}];
 }
