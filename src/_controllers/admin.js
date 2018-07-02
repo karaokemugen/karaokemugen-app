@@ -63,7 +63,10 @@ module.exports = function adminController(router) {
 	router.get('/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		getKaras(null, req.lang, 0, 99999999999999999, req.authToken)
 			.then(karas => res.json(karas))
-			.catch(err => res.status(500).send('Error while fetching karas: ' + err));
+			.catch(err => {
+				console.log(err);
+				res.status(500).send('Error while fetching karas: ' + err)
+			});
 	});
 
 	router.get('/tags', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
