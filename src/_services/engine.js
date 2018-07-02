@@ -9,7 +9,6 @@ import {initOnlineSystem} from '../_webapp/online';
 import {initControlPanel} from '../_webapp/control_panel';
 import {karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {getAllTags} from '../_dao/tag';
-import {getAllSeries} from '../_dao/series';
 import {addViewcount} from '../_dao/kara';
 import {emit,on} from '../_common/utils/pubsub';
 import {validateKaras} from '../_services/kara';
@@ -520,10 +519,6 @@ function filterTags(tags, filter, type) {
 	if (type) tags = tags.filter(tag => +tag.type === +type);
 	if (filter) tags = tags.filter(tag => tag.name.toUpperCase().includes(filter.toUpperCase()) || tag.name_i18n.toUpperCase().includes(filter.toUpperCase()));
 	return tags;
-}
-
-export async function getSeries(lang, filter) {
-	return await getAllSeries(lang, filter);
 }
 
 export async function getTags(lang, filter, type) {

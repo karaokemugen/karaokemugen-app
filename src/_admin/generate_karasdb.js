@@ -20,7 +20,7 @@ import {serieRequired, verifyKaraData} from '../_services/kara';
 import {basename, join} from 'path';
 import parallel from 'async-await-parallel';
 import {emit} from '../_common/utils/pubsub';
-import {isSeriesKnown, readSeriesFile} from '../_dao/seriesfile';
+import {findSeries, readSeriesFile} from '../_dao/seriesfile';
 
 let error = false;
 
@@ -241,7 +241,7 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 	}
 	// Checking if some series present in .kara files are not present in the series file
 	for (const serie of mapSeries.keys()) {			
-		if (!isSeriesKnown(serie, altNamesFile)) {
+		if (!findSeries(serie, altNamesFile)) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in the series file`);
 			if (getConfig().optStrict) strictModeError(serie);
