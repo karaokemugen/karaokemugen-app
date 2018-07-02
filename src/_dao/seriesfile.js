@@ -4,6 +4,11 @@ import logger from 'winston';
 import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 
+const header = {
+	version: 1,
+	description: 'Karaoke Mugen Series File'
+};
+
 export async function readSeriesFile() {
 	const conf = getConfig();
 	const seriesFile = resolve(conf.appPath, conf.PathAltname);
@@ -29,6 +34,7 @@ export async function writeSeriesFile(series) {
 	const conf = getConfig();
 	const seriesFile = resolve(conf.appPath, conf.PathAltname);
 	const seriesData = {
+		header: header,
 		series: series
 	};
 	 return await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
