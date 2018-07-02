@@ -73,7 +73,8 @@ class KMMenu extends Component {
 							<Menu.Item key='karaviewcounts'><Link to='/karas/viewcounts'>Most viewed</Link></Menu.Item>
 						</Menu.SubMenu>
 						<Menu.SubMenu title='Series'>
-							<Menu.Item key='seriesmanage'><Link to='/series'>List Series</Link></Menu.Item>
+							<Menu.Item key='seriesmanage'><Link to='/series'>List</Link></Menu.Item>
+							<Menu.Item key='seriesnew'><Link to='/series/new'>New</Link></Menu.Item>
 						</Menu.SubMenu>
 						<Menu.Item key='db'><Link to='/db'>Database</Link></Menu.Item>
 						<Menu.SubMenu title='Users'>

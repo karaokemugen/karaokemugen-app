@@ -41,6 +41,8 @@ class App extends Component {
 							<Route path='/karas/viewcounts' component={AuthRequired(import('./pages/Karas/Viewcounts'))}/>
 							<Route path='/karas/:kara_id' component={AuthRequired(import('./pages/Karas/KaraEdit'))}/>
 							<Route path='/karas' component={AuthRequired(import('./pages/Karas/KaraList'))}/>
+							<Route path='/series/:serie_id' component={AuthRequired(import('./pages/Series/SeriesEdit'))}/>
+							<Route path='/series/new' component={AuthRequired(import('./pages/Series/SeriesEdit'))}/>
 							<Route path='/series' component={AuthRequired(import('./pages/Series/SeriesList'))}/>
 							<Route path='/db' component={AuthRequired(import('./pages/Database'))}/>
 							<Route path='/users/create' component={AuthRequired(import('./pages/Users/UserEdit'))}/>

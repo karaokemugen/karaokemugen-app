@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Checkbox, message, Tooltip, Button, Form, Icon, Input, InputNumber, Select, Upload} from 'antd';
 import PropTypes from 'prop-types';
-import EditableTagGroup from './EditableTagGroup';
+import EditableTagGroup from '../Components/EditableTagGroup';
 
 class KaraForm extends Component {
 

@@ -47,3 +47,7 @@ export const insertKaraSeries = `INSERT INTO karasdb.kara_serie(fk_id_kara,fk_id
 export const insertSeriei18n = `INSERT INTO karasdb.serie_lang(fk_id_serie,lang, name, NORM_name) 
 							VALUES($id_serie,$lang,$name,$NORM_name);
 							`;
+
+export const deleteSeries = 'DELETE FROM serie WHERE pk_id_serie = $serie_id';
+
+export const deleteSeriesi18n = 'DELETE FROM serie_lang WHERE fk_id_serie = $serie_id';

@@ -10,7 +10,7 @@ import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
 import {resolve} from 'path';
 import multer from 'multer';
-import {deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
+import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
 import {getTags, getKaras, getKaraInfo} from '../_services/engine';
 
 module.exports = function adminController(router) {
@@ -95,6 +95,12 @@ module.exports = function adminController(router) {
 		editSerie(req.params.serieId,req.body)
 			.then((series) => res.json(series))
 			.catch(err => res.status(500).send('Error deleting series: ' + err));
+	});
+
+	router.post('/series', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		addSerie(req.body)
+			.then(() => res.status(200).send('Series added'))
+			.catch(err => res.status(500).send('Error adding series: ' + err));
 	});
 
 	router.get('/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {

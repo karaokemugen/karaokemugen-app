@@ -74,3 +74,10 @@ export async function selectSerie(serie_id, lang) {
 	series.i18n_names = JSON.parse(series.i18n_names);	
 	return series;
 }
+
+export async function removeSerie(serie_id) {
+	return await Promise.all([
+		getUserDb().run(sql.deleteSeries, {$serie_id: serie_id}),
+		getUserDb().run(sql.deleteSeriesi18n, {$serie_id: serie_id})
+	]);
+}

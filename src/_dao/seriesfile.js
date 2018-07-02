@@ -1,7 +1,6 @@
 import {asyncWriteFile, asyncExists, asyncReadFile} from '../_common/utils/files';
 import testJSON from 'is-valid-json';
 import logger from 'winston';
-import sortBy from 'lodash.sortby';
 import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 
@@ -26,20 +25,11 @@ export function findSeries(serie, seriesFile) {
 	});
 }
 
-export async function writeSeriesFile(seriesData) {
+export async function writeSeriesFile(series) {
 	const conf = getConfig();
-	const seriesFile = resolve(conf.appPath, conf.PathAltname);	
+	const seriesFile = resolve(conf.appPath, conf.PathAltname);
+	const seriesData = {
+		series: series
+	};
 	 return await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
-}
-
-export function deleteSeriesData(name, seriesData) {
-	seriesData.series = seriesData.series.filter(serie => serie.name !== name);
-	return seriesData;
-}
-
-export function addSeriesData(serie, seriesData) {
-	seriesData.series.push(serie);
-	const series = seriesData.series;
-	seriesData.series = sortBy(series, ['name']);
-	return seriesData;
 }
