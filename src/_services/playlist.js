@@ -907,7 +907,6 @@ export function translateKaraInfo(karalist, lang) {
 		karas = karalist;
 	}
 	karas.forEach((kara,index) => {
-		console.log(kara);
 		karas[index].songtype_i18n = i18n.__(kara.songtype);
 		karas[index].songtype_i18n_short = i18n.__(kara.songtype+'_SHORT');
 
