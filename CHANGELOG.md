@@ -1,5 +1,22 @@
 # Versions
 
+## v2.2.2 "Haruhi Héroique" - 02/07/2018
+
+### Fixes
+
+- #311 AutoPlay mode is now working again, for real.
+- #333 Preview generation has been fixed, and won't be canceled on the first video it cannot generate preview for.
+- #331 Admin tutorial now checks for `appFirstRun` in addition of `admpwd`
+- Media files are now moved from the import folder to the medias folder when doing a mass import.
+
+### Enhancements
+
+- #335 When using the second video monitor (second mpv), it wasn't synchronized with the first one when you used arrow keys to navigate in the first mpv video. Note that this could potentially lead to video lags on the second mpv window, but since it's just a monitor, we didn't think it would be much of an issue. Please give us feedback about this.
+- Default video directory is now `medias`
+- Samples have been updated with a `medias` folder.
+- Samples now include a `series.json` sample file
+- macOS releases are now in `.tar.gz` instead of `zip` to keep permissions intact.
+
 ## v2.2.1 "Haruhi Hypnotisante" - 19/06/2018
 
 This version is also known as "Just Haruhi"
