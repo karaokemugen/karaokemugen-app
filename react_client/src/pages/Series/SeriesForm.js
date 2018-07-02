@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import {message, Tooltip, Button, Form, Icon, Input} from 'antd';
+import {Select, Tooltip, Button, Form, Icon, Input} from 'antd';
 import PropTypes from 'prop-types';
 import EditableTagGroup from '../Components/EditableTagGroup';
-import i18nSeries from '../Components/i18nSeries';
 
 class SerieForm extends Component {
 
@@ -20,7 +19,7 @@ class SerieForm extends Component {
 			});
 		}
 	}
-	
+
 	componentDidMount() {
 		this.props.form.validateFields();
 	}
@@ -33,8 +32,15 @@ class SerieForm extends Component {
 			}
 		});
 	};
-	
-	
+
+	// i18n dynamic management
+	addLang = (lang) => {
+		if (!this.state.i18n.includes(lang)) {
+			const newI18n = this.state.i18n.concat([lang]);
+			this.setState({ i18n: newI18n});
+		}
+	};
+
 	render() {
 		const {getFieldDecorator} = this.props.form;
 		
@@ -87,23 +93,32 @@ class SerieForm extends Component {
 						onChange={ (tags) => this.props.form.setFieldsValue({ aliases: tags.join(',') }) }
 					/>)}
 				</Form.Item>
-				<Form.Item hasFeedback
-					label={(
-						<span>Names by language&nbsp;
-							<Tooltip title="There must be at least one name in any language (enter the original name by default)">
-								<Icon type="question-circle-o" />
-							</Tooltip>
-						</span>
-					)}
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
-				>
-					{getFieldDecorator('i18n', {
-						initialValue: this.state.i18n,						
-					})(<i18nSeries
-						onChange={ (tags) => this.props.form.setFieldsValue({ i18n: tags }) }
-					/>)}
-				</Form.Item>
+				<div>
+					Names by language&nbsp;
+					<Tooltip title="There must be at least one name in any language (enter the original name by default)">
+						<Icon type="question-circle-o" />
+					</Tooltip>
+				</div>
+				{ this.state.i18n.map(langKey => (
+					<Form.Item
+						hasFeedback
+						label={langKey}
+						labelCol={{ span: 3 }}
+						wrapperCol={{ span: 21, offset: 0 }}
+					>
+						{getFieldDecorator('lang_' + langKey)(
+							<Input
+								placeholder='Traduction'
+								label={langKey}
+							/>
+						)}
+					</Form.Item>
+				))}
+				<Select onChange={value => this.addLang(value)}>
+					<Select.Option value="fre">Français</Select.Option>
+					<Select.Option value="jpn">Japanese</Select.Option>
+					<Select.Option value="eng">English</Select.Option>
+				</Select>
 				<Form.Item>
 					<Button type='primary' htmlType='submit' className='series-form-button'>
 						Save series
