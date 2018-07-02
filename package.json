@@ -46,8 +46,9 @@
     "mirukyu <A13x7950@gmail.com>",
     "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)"
   ],
+  "engineStrict": true,
   "engines": {
-    "node": ">=8.4.0"
+    "node": ">=8.4.0 <10.0.0"
   },
   "license": "MIT",
   "private": true,
