@@ -17,6 +17,7 @@ import {writeSeriesFile, addSeries, isSeriesKnown, readSeriesFile} from '../_dao
 import {getConfig} from '../_common/utils/config';
 import sanitizeFilename from 'sanitize-filename';
 import deburr from 'lodash.deburr';
+import {now} from 'unix-timestamp';
 
 export async function editKara(kara_id,kara) {
 	let newKara;
@@ -109,7 +110,7 @@ export async function generateKara(kara, opts) {
 	let newKara;
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
-		
+		kara.dateadded = now();
 		//Trim spaces before and after elements.
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
 		kara.lang.forEach((e,i) => kara.lang[i] = e.trim());
