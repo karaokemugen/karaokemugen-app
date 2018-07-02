@@ -131,6 +131,8 @@
 	"TAG_PC_SHORT": "PC",
 	"TAG_DS": "DS",
 	"TAG_DS_SHORT": "NDS",
+	"TAG_3DS": "3DS",
+	"TAG_3DS_SHORT": "3DS",
 	"TAG_SEGACD": "Mega CD",
 	"TAG_SEGACD_SHORT": "SCD",
 	"TAG_WII": "Nintendo Wii",
