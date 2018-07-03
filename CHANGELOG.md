@@ -1,6 +1,6 @@
 # Versions
 
-## v2.2.2 "Haruhi Héroique" - 02/07/2018
+## v2.2.2 "Haruhi Hibernante" - 03/07/2018
 
 ### Fixes
 
@@ -11,6 +11,7 @@
 
 ### Enhancements
 
+- New tag for songs : TAG_3DS
 - #335 When using the second video monitor (second mpv), it wasn't synchronized with the first one when you used arrow keys to navigate in the first mpv video. Note that this could potentially lead to video lags on the second mpv window, but since it's just a monitor, we didn't think it would be much of an issue. Please give us feedback about this.
 - Default video directory is now `medias`
 - Samples have been updated with a `medias` folder.
