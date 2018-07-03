@@ -38,6 +38,11 @@ export const insertSerie = `INSERT INTO karasdb.serie(name, NORM_name, altname, 
 						VALUES($name, $NORM_name, $altname, $NORM_altname)
 						`;
 
+export const updateSerie = `UPDATE karasdb.serie 
+							SET name = $name, NORM_name = $NORM_name, altname = $altname, NORM_altname = $NORM_altname 
+							WHERE pk_id_serie = $serie_id;
+							`;
+
 export const deleteSeriesByKara = 'DELETE FROM karasdb.kara_serie WHERE fk_id_kara = $kara_id';
 
 export const insertKaraSeries = `INSERT INTO karasdb.kara_serie(fk_id_kara,fk_id_serie) 

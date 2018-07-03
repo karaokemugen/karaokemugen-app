@@ -1,5 +1,5 @@
 import {writeSeriesFile} from '../_dao/seriesfile';
-import {insertSeriei18n, removeSerie, editSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
+import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
 
 async function updateSeriesFile() {
 	const series = await getSeries();
@@ -43,9 +43,9 @@ export async function addSerie(serieObj) {
 	return newSerieID;
 }
 
-export async function editSeries(serie_id,serieObj) {
+export async function editSerie(serie_id,serieObj) {
 	if (!await getSerie(serie_id)) throw 'Series ID unknown';
 	if (await selectSerieByName(serieObj)) throw 'Series original name already exists';
-	await editSerie(serie_id, serieObj);
+	await updateSerie(serie_id, serieObj);
 	await updateSeriesFile();	
 }

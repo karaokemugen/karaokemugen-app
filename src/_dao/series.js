@@ -20,27 +20,41 @@ export async function selectSerieByName(name) {
 	return await getUserDb().get(sql.getSerieByName, {$name: name});
 }
 
-export async function insertSerie(seriesObj) {
+export async function insertSerie(serieObj) {
 	let aliases;
-	Array.isArray(seriesObj.aliases) ? aliases = seriesObj.aliases.join(',') : aliases = null;
+	Array.isArray(serieObj.aliases) ? aliases = serieObj.aliases.join(',') : aliases = null;
 	const res = await getUserDb().run(sql.insertSerie, {
-		$name: seriesObj.name,
-		$NORM_name: deburr(seriesObj.name),
+		$name: serieObj.name,
+		$NORM_name: deburr(serieObj.name),
 		$altname: aliases,
 		$NORM_altname: deburr(aliases)
 	});
 	return res.lastID;
 }
 
-export async function insertSeriei18n(seriesObj) {	
-	for (const lang of Object.keys(seriesObj.i18n)) {
+export async function insertSeriei18n(serieObj) {	
+	for (const lang of Object.keys(serieObj.i18n)) {
 		await getUserDb().run(sql.insertSeriei18n, {
-			$id_serie: seriesObj.serie_id,
+			$id_serie: serieObj.serie_id,
 			$lang: lang,
-			$name: seriesObj.i18n[lang],
-			$NORM_name: deburr(seriesObj.i18n[lang])
+			$name: serieObj.i18n[lang],
+			$NORM_name: deburr(serieObj.i18n[lang])
 		});	
 	}
+}
+
+export async function updateSerie(serie_id, serie) {
+	let aliases;
+	Array.isArray(serie.aliases) ? aliases = serie.aliases.join(',') : aliases = null;
+	await getUserDb().run(sql.updateSerie, {
+		$serie_id: serie_id,
+		$name: serie.name,
+		$NORM_name: deburr(serie.name),
+		$altname: aliases,
+		$NORM_altname: deburr(aliases)
+	});
+	await getUserDb().run(sql.deleteSeriesi18n, {$serie_id: serie_id});
+	return await insertSeriei18n(serie);
 }
 
 export async function checkOrCreateSerie(serie,lang) {	
