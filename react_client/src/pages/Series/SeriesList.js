@@ -33,6 +33,20 @@ class SeriesList extends Component {
 			});
 	}
 	
+	delete = (userId) => {
+		axios.delete(`/api/series/${userId}`)
+			.then(() => {
+				this.props.warnMessage('Series deleted.');
+				this.setState({deleteModal: false, serie: {}});
+				this.refresh();
+			})
+			.catch(err => {
+				this.props.errorMessage(`Error ${err.response.status} while deleting user: ${err.response.statusText}. ${err.response.data}`);
+				this.setState({deleteModal: false, serie: {}});
+			});
+	};
+
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
@@ -109,7 +123,7 @@ class SeriesList extends Component {
 			<Link to={`/series/${record.serie_id}`}><Icon type='edit'/></Link>
 			<Divider type="vertical"/>
 			<Button type='danger' icon='delete' onClick={
-				() => this.setState({deleteModal: true, series: record})
+				() => this.setState({deleteModal: true, serie: record})
 			}/>
 		</span>)
 	}];

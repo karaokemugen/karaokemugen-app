@@ -1,5 +1,5 @@
 import {writeSeriesFile} from '../_dao/seriesfile';
-import {insertSeriei18n, removeSeries, editSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
+import {insertSeriei18n, removeSerie, editSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
 
 async function updateSeriesFile() {
 	const series = await getSeries();
@@ -23,7 +23,7 @@ export async function getSerie(serie_id) {
 export async function deleteSerie(serie_id) {
 	//Not removing from database, a regeneration will do the trick.
 	if (!await getSerie(serie_id)) throw 'Series ID unknown';
-	await removeSeries(serie_id);
+	await removeSerie(serie_id);
 	await updateSeriesFile();
 }
 
