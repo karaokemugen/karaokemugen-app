@@ -62,7 +62,7 @@ module.exports = function adminController(router) {
 	});
 
 	router.get('/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKaras(null, req.lang, 0, 99999999999999999, req.authToken)
+		getKaras(req.query.filter, req.lang, 0, 99999999999999999, req.authToken)
 			.then(karas => res.json(karas))
 			.catch(err => {
 				console.log(err);
