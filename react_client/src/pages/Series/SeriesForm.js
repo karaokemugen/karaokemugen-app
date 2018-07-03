@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Tag, Select, Tooltip, Button, Form, Icon, Input} from 'antd';
+import {message, Tag, Select, Tooltip, Button, Form, Icon, Input} from 'antd';
 import PropTypes from 'prop-types';
 import EditableTagGroup from '../Components/EditableTagGroup';
 import langs from 'langs';
@@ -33,17 +33,21 @@ class SerieForm extends Component {
 
 	handleSubmit = (e) => {
 		e.preventDefault();
-		this.props.form.validateFields((err, values) => {
-			if (!err) {
-				const i18nField = {};
-				this.state.i18n.forEach((lang) => {
-					i18nField[lang] = values[`lang_${lang}`];
-					delete values[`lang_${lang}`];
-				});
-				values.i18n = i18nField;				
-				this.props.save(values);
-			}
-		});
+		if (this.state.i18n.length > 0) {
+			this.props.form.validateFields((err, values) => {
+				if (!err) {
+					const i18nField = {};
+					this.state.i18n.forEach((lang) => {
+						i18nField[lang] = values[`lang_${lang}`];
+						delete values[`lang_${lang}`];
+					});
+					values.i18n = i18nField;				
+					this.props.save(values);
+				}
+			});
+		} else {
+			message.error('A series must have at least one name by language');
+		}
 	};
 
 	// i18n dynamic management
