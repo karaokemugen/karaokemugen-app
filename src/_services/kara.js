@@ -6,6 +6,7 @@ import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from
 import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
 import isEmpty from 'lodash.isempty';
+import {getOrAddSerieID} from './series';
 const karaDB = require('../_dao/kara');
 const tagDB = require('../_dao/tag');
 const serieDB = require('../_dao/series');
@@ -15,8 +16,14 @@ async function updateSeries(kara) {
 	let lang = 'und';
 	if (!isEmpty(kara.lang)) lang = kara.lang.split(',')[0];
 	let series = [];
-	for (const s of kara.series.split(',')) {		
-		series.push(await serieDB.checkOrCreateSerie(s,lang));
+	for (const s of kara.series.split(',')) {
+		let langObj = {};
+		langObj[lang] = s;
+		let seriesObj = {
+			name: s
+		};
+		seriesObj.i18n = {...langObj};
+		series.push(await getOrAddSerieID(seriesObj));
 	}
 	await serieDB.updateKaraSeries(kara.kara_id,series);
 }

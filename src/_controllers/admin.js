@@ -10,7 +10,8 @@ import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
 import {resolve} from 'path';
 import multer from 'multer';
-import {getSeries, getTags, getKaras, getKaraInfo} from '../_services/engine';
+import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
+import {getTags, getKaras, getKaraInfo} from '../_services/engine';
 
 module.exports = function adminController(router) {
 	const conf = getConfig();
@@ -63,7 +64,10 @@ module.exports = function adminController(router) {
 	router.get('/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		getKaras(null, req.lang, 0, 99999999999999999, req.authToken)
 			.then(karas => res.json(karas))
-			.catch(err => res.status(500).send('Error while fetching karas: ' + err));
+			.catch(err => {
+				console.log(err);
+				res.status(500).send('Error while fetching karas: ' + err)
+			});
 	});
 
 	router.get('/tags', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
@@ -76,6 +80,31 @@ module.exports = function adminController(router) {
 		getSeries(req.lang, req.query.filter)
 			.then(series => res.json(series))
 			.catch(err => res.status(500).send('Error while fetching series: ' + err));
+	});
+
+	router.delete('/series/:serieId([0-9]+)', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		deleteSerie(req.params.serieId)
+			.then(() => res.status(200).send('Series deleted'))
+			.catch(err => res.status(500).send('Error deleting series: ' + err));
+	});
+
+	router.get('/series/:serieId([0-9]+)', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		getSerie(req.params.serieId)
+			.then((series) => res.json(series))
+			.catch(err => res.status(500).send('Error deleting series: ' + err));
+	});
+
+	router.put('/series/:serieId([0-9]+)', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		editSerie(req.params.serieId,req.body)
+			.then((series) => res.json(series))
+			.catch(err => res.status(500).send('Error editing series: ' + err));
+	});
+
+	router.post('/series', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		console.log(req.body);
+		addSerie(req.body)
+			.then(() => res.status(200).send('Series added'))
+			.catch(err => res.status(500).send('Error adding series: ' + err));		
 	});
 
 	router.get('/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
@@ -102,7 +131,7 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send('Error while fetching karas: ' + err));
 	});
 
-	router.get('/users/:userId', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.get('/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		findUserByID(req.params.userId)
 			.then(user => res.json(user))
 			.catch(err => res.status(500).send('Error while fetching user: ' + err));
@@ -115,13 +144,13 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send('Error while creating user: ' + err));
 	});
 
-	router.put('/users/:userId', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {		
+	router.put('/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {		
 		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role)
 			.then(() => res.status(200).send('User edited'))
 			.catch(err => res.status(500).send('Error editing user: ' + err));			
 	});
 
-	router.delete('/users/:userId', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
+	router.delete('/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		deleteUserById(req.params.userId)
 			.then(() => res.status(200).send('User deleted'))
 			.catch(err => res.status(500).send('Error deleting user: ' + err));

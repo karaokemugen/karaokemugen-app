@@ -591,8 +591,8 @@ export async function addKaraToPlaylist(karas, requester, playlist_id, pos, opts
 		// Checking if a flag_playing is present inside the playlist.
 		// If not, we'll have to set the karaoke we just added as the currently playing one. updatePlaylistDuration is done by setPlaying already.
 		if (!await isPlaylistFlagPlaying(playlist_id)) {
-			const plcid = await getPLCIDByDate(playlist_id, date_add);
-			await setPlaying(plcid, playlist_id);
+			const plc = await getPLCIDByDate(playlist_id, date_add);
+			await setPlaying(plc.playlistcontent_id, playlist_id);
 		} else {
 			await updatePlaylistDuration(playlist_id);
 		}

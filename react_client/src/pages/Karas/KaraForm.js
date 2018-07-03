@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Checkbox, message, Tooltip, Button, Form, Icon, Input, InputNumber, Select, Upload} from 'antd';
 import PropTypes from 'prop-types';
-import EditableTagGroup from './EditableTagGroup';
+import EditableTagGroup from '../Components/EditableTagGroup';
 
 class KaraForm extends Component {
 
@@ -142,6 +142,37 @@ class KaraForm extends Component {
 				onSubmit={this.handleSubmit}
 				className='kara-form'
 			>
+				<Form.Item hasFeedback
+					label="Media file"
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 21, offset: 0 }}
+				>
+					<Upload
+						action='/api/karas/importfile'
+						accept='video/*'
+						multiple={false}
+						onChange={this.onMediaUploadChange}
+						fileList={this.state.mediafileList}
+					>
+						<Button>
+							<Icon type="upload" />Media File
+						</Button>
+					</Upload></Form.Item>
+				<Form.Item 
+					label="Lyrics file"
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 21, offset: 0 }}
+				>
+					<Upload
+						action='/api/karas/importfile'
+						multiple={false}
+						onChange={this.onSubUploadChange}
+						fileList={this.state.subfileList}
+					>
+						<Button>
+							<Icon type="upload" />Subs File
+						</Button>
+					</Upload></Form.Item>
 				<Form.Item>
 					{getFieldDecorator('kid', {
 						initialValue: this.props.kara.kid
@@ -408,38 +439,7 @@ class KaraForm extends Component {
 						search={'tag'}
 						onChange={ (tags) => this.props.form.setFieldsValue({ tags: tags.join(',') }) }
 					/>)}
-				</Form.Item>
-				<Form.Item hasFeedback
-					label="Media file"
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
-				>
-					<Upload
-						action='/api/karas/importfile'
-						accept='video/*'
-						multiple={false}
-						onChange={this.onMediaUploadChange}
-						fileList={this.state.mediafileList}
-					>
-						<Button>
-							<Icon type="upload" />Media File
-						</Button>
-					</Upload></Form.Item>
-				<Form.Item 
-					label="Lyrics file"
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
-				>
-					<Upload
-						action='/api/karas/importfile'
-						multiple={false}
-						onChange={this.onSubUploadChange}
-						fileList={this.state.subfileList}
-					>
-						<Button>
-							<Icon type="upload" />Subs File
-						</Button>
-					</Upload></Form.Item>
+				</Form.Item>				
 				<Form.Item hasFeedback
 					label="Overwrite files"
 					labelCol={{ span: 3 }}

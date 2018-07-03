@@ -13,10 +13,10 @@ import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, getKara} from '../_services/kara';
 import {getFileLangFromKara} from '../_dao/karafile';
 import {check} from '../_common/utils/validators';
-import {writeSeriesFile, addSeries, isSeriesKnown, readSeriesFile} from '../_dao/seriesfile';
-import {getConfig} from '../_common/utils/config';
+import {addSerie} from '../_services/series';
 import sanitizeFilename from 'sanitize-filename';
 import deburr from 'lodash.deburr';
+import {now} from 'unix-timestamp';
 
 export async function editKara(kara_id,kara) {
 	let newKara;
@@ -109,7 +109,7 @@ export async function generateKara(kara, opts) {
 	let newKara;
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
-		
+		kara.dateadded = now();
 		//Trim spaces before and after elements.
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
 		kara.lang.forEach((e,i) => kara.lang[i] = e.trim());
@@ -180,7 +180,7 @@ async function importKara(mediaFile, subFile, data) {
 	try {
 		await extractAssInfos(subPath, karaData);
 		await extractMediaTechInfos(mediaPath, karaData);		
-		await findAndAddSeries(data);
+		await processSeries(data);
 		return await generateAndMoveFiles(mediaPath, subPath, karaData);
 	} catch(err) {
 		const error = `Error importing ${kara} : ${err}`;
@@ -189,22 +189,15 @@ async function importKara(mediaFile, subFile, data) {
 	}
 }
 
-async function findAndAddSeries(kara) {
-	const conf = getConfig();
-	const seriesFile = resolve(conf.appPath, conf.PathAltname);
-	let seriesData = await readSeriesFile(seriesFile);				
+async function processSeries(kara) {
 	for (const serie of kara.series) {
-		if (!isSeriesKnown(serie, seriesData)) {
-			logger.debug(`[KaraGen] Series "${serie}" unknown. Adding it to series file`);
-			const serieObj = {
-				name: serie,
-				i18n: {}
-			};
-			serieObj.i18n[kara.lang[0]] = serie;
-			seriesData = addSeries(serieObj, seriesData);				
-		}
-	}
-	await writeSeriesFile(seriesData, seriesFile);
+		const serieObj = {
+			name: serie,
+			i18n: {}
+		};
+		serieObj.i18n[kara.lang[0]] = serie;		
+		await addSerie(serieObj);
+	}	
 }
 
 function karaDataInfosFromFilename(mediaFile) {

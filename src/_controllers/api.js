@@ -1166,7 +1166,7 @@ export function APIControllerAdmin(router) {
 			}
 		})
 	/**
- * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
+ * @api {put} /admin/playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
  * @apiVersion 2.1.0
  * @apiGroup Playlists

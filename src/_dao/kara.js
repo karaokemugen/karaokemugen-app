@@ -31,7 +31,7 @@ export async function updateKara(kara) {
 }
 
 export async function addKara(kara) {
-	return await getUserDb().get(sql.insertKara, {
+	const res = await getUserDb().run(sql.insertKara, {
 		$karafile: kara.karafile,
 		$mediafile: kara.mediafile,
 		$subfile: kara.subfile,
@@ -46,6 +46,7 @@ export async function addKara(kara) {
 		$created_at: kara.dateadded,
 		$kid: kara.KID
 	});
+	return res.lastID;
 }
 
 export async function getSongTimeSpentForUser(playlist_id,user_id) {
