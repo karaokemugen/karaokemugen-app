@@ -50,7 +50,9 @@ class SerieEdit extends Component {
 		if (this.props.match && this.props.match.params.serie_id) {
 			axios.get(`/api/series/${this.props.match.params.serie_id}`)
 				.then(res => {
-					const serieData = {...res};
+					const serieData = {...res.data};
+					serieData.serie_id = this.props.match.params.serie_id;
+					console.log(serieData);
 					this.setState({serie: serieData, save: this.saveUpdate});
 					this.props.loading(false);
 				})

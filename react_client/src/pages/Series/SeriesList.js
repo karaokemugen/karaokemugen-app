@@ -11,7 +11,8 @@ class SeriesList extends Component {
 		super(props);
 		this.state = {
 			series: [],			
-			serie: {}
+			serie: {},
+			deleteModal: false
 		};
 	}
 
@@ -42,7 +43,7 @@ class SeriesList extends Component {
 				/>
 				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 				<Modal
-					title='Confirm series delete'
+					title='Confirm series deletion'
 					visible={this.state.deleteModal}
 					onOk={() => this.delete(this.state.serie.serie_id)}
 					onCancel={() => this.setState({deleteModal: false, serie: {}})}
@@ -69,7 +70,7 @@ class SeriesList extends Component {
 		render: aliases => {
 			let tags = [];
 			if (aliases) {				
-				aliases.split(',').forEach((alias) => {
+				aliases.forEach((alias) => {
 					const isLongTag = alias.length > 20;
 					const tagElem = (
 						<Tag>
@@ -84,8 +85,8 @@ class SeriesList extends Component {
 		}
 	}, {
 		title: 'International Names',
-		dataIndex: 'i18n_names',
-		key: 'i18n_names',	
+		dataIndex: 'i18n',
+		key: 'i18n',	
 		render: i18n_names => {
 			let names = [];
 			Object.keys(i18n_names).forEach((lang) => {

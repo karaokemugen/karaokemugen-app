@@ -13,7 +13,7 @@ import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, getKara} from '../_services/kara';
 import {getFileLangFromKara} from '../_dao/karafile';
 import {check} from '../_common/utils/validators';
-import {addSeries} from '../_services/series';
+import {addSerie} from '../_services/series';
 import sanitizeFilename from 'sanitize-filename';
 import deburr from 'lodash.deburr';
 
@@ -195,7 +195,7 @@ async function processSeries(kara) {
 			i18n: {}
 		};
 		serieObj.i18n[kara.lang[0]] = serie;		
-		await addSeries(serieObj);
+		await addSerie(serieObj);
 	}	
 }
 

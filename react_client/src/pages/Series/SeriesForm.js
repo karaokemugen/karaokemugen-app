@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Select, Tooltip, Button, Form, Icon, Input} from 'antd';
+import {Tag, Select, Tooltip, Button, Form, Icon, Input} from 'antd';
 import PropTypes from 'prop-types';
 import EditableTagGroup from '../Components/EditableTagGroup';
 import langs from 'langs';
@@ -10,24 +10,26 @@ class SerieForm extends Component {
 		super(props);		
 		this.state = {
 			i18n: [],
-			languages: []
+			languages: [],
+			selectVisible: false
 		};
 		langs.all().forEach(lang => this.state.languages.push({value: lang['2B'], text: lang.name}));
-		this.state.languages.push({value: 'mul', text: 'Multi-languages'});
 		this.state.languages.push({value: 'und', text: 'Undefined Language'});			
-	}
-
-	componentDidMount() {
 		if (this.props.serie.i18n) {
 			Object.keys(this.props.serie.i18n).forEach(lang => {
 				this.state.i18n.push(lang);
-				let langField = {};
-				langField[`lang_${lang}`] = this.props.serie.i18n[lang];
-				this.setFieldValue(langField);
+				this.state[`lang_${lang}`] = this.props.serie.i18n[lang];				
 			});
-		}
+		}		
+	}
+
+	componentDidMount() {		
 		this.props.form.validateFields();
 	}
+
+	showSelect = () => {
+		this.setState({ selectVisible: true }, () => this.select.focus());
+	};
 
 	handleSubmit = (e) => {
 		e.preventDefault();
@@ -50,6 +52,9 @@ class SerieForm extends Component {
 			const newI18n = this.state.i18n.concat([lang]);			
 			this.setState({ i18n: newI18n});
 		}
+		this.setState({
+			selectVisible: false
+		});
 	};
 
 	removeLang = (lang) => {
@@ -61,7 +66,7 @@ class SerieForm extends Component {
 
 	render() {
 		const {getFieldDecorator} = this.props.form;
-		
+		const { selectVisible } = this.state;
 		return (
 			<Form
 				onSubmit={this.handleSubmit}
@@ -89,6 +94,7 @@ class SerieForm extends Component {
 					wrapperCol={{ span: 21, offset: 0 }}
 				>
 					{getFieldDecorator('name', {
+						initialValue: this.props.serie.name,
 						rules: [{
 							required: true,
 							message: 'Please enter a name'
@@ -98,7 +104,7 @@ class SerieForm extends Component {
 						label='Series name'
 					/>)}
 				</Form.Item>
-				<Form.Item hasFeedback
+				<Form.Item
 					label={(
 						<span>Aliase(s)&nbsp;
 							<Tooltip title="Short names or alternative names a series could be searched. Example : DB for Dragon Ball, or FMA for Full Metal Alchemist, or AnoHana for that series which makes you cry everytime you watch it.">
@@ -125,11 +131,12 @@ class SerieForm extends Component {
 				{ this.state.i18n.map(langKey => (
 					<Form.Item
 						hasFeedback
-						label={langKey}
+						label={langs.where('2B', langKey).name}
 						labelCol={{ span: 3 }}
 						wrapperCol={{ span: 21, offset: 0 }}
 					>
 						{getFieldDecorator('lang_' + langKey, {
+							initialValue: this.state[`lang_${langKey}`],
 							rules: [{
 								required: true,
 								message: 'Please enter a translation'
@@ -149,10 +156,22 @@ class SerieForm extends Component {
 							/>
 						) : null}
 					</Form.Item>
-				))}				
-				<Select onChange={value => this.addLang(value)}>
-					{ this.state.languages.map(lang => (<Select.Option value={lang.value}>{lang.text}</Select.Option>)) }
-				</Select>
+				))}
+				{selectVisible && (			
+					<Select 
+						ref={select => this.select = select}
+						onChange={value => this.addLang(value)}>
+						{ this.state.languages.map(lang => (<Select.Option value={lang.value}>{lang.text}</Select.Option>)) }
+					</Select>
+				)}
+				{!selectVisible && (
+					<Tag
+						onClick={this.showSelect}
+						style={{ background: '#fff', borderStyle: 'dashed' }}
+					>
+						<Icon type="plus" /> Add
+					</Tag>
+				)}
 				<Form.Item>
 					<Button type='primary' htmlType='submit' className='series-form-button'>
 						Save series

@@ -8,7 +8,11 @@ export async function selectAllSeries(lang, filter) {
 	const query = sql.getSeries(filterClauses, langSelector(lang));
 
 	let series = await getUserDb().all(query);
-	series.forEach((serie, i) => series[i].i18n_names = JSON.parse(serie.i18n_names));
+	series.forEach((serie, i) => {
+		if (!series[i].aliases) series[i].aliases = [];
+		if (!Array.isArray(series[i].aliases)) series[i].aliases = series[i].aliases.split(',');
+		series[i].i18n = JSON.parse(serie.i18n);
+	});
 	return series;
 }
 
@@ -23,7 +27,7 @@ export async function insertSerie(seriesObj) {
 		$name: seriesObj.name,
 		$NORM_name: deburr(seriesObj.name),
 		$altname: aliases,
-		$NORM_altnames: deburr(aliases)
+		$NORM_altname: deburr(aliases)
 	});
 	return res.lastID;
 }
@@ -71,7 +75,9 @@ export async function updateKaraSeries(kara_id, series) {
 export async function selectSerie(serie_id, lang) {
 	const query = sql.getSerieByID(langSelector(lang));
 	let series = await getUserDb().get(query, {$serie_id: serie_id});
-	series.i18n_names = JSON.parse(series.i18n_names);	
+	series.i18n = JSON.parse(series.i18n);	
+	if (!series.aliases) series.aliases = [];
+	if (!Array.isArray(series.aliases)) series.aliases = series.aliases.split(',');
 	return series;
 }
 

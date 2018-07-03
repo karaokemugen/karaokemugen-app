@@ -94,13 +94,14 @@ module.exports = function adminController(router) {
 	router.put('/series/:serieId([0-9]+)', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		editSerie(req.params.serieId,req.body)
 			.then((series) => res.json(series))
-			.catch(err => res.status(500).send('Error deleting series: ' + err));
+			.catch(err => res.status(500).send('Error editing series: ' + err));
 	});
 
 	router.post('/series', requireAuth, requireValidUser, requireAdmin, (req, res) => {
+		console.log(req.body);
 		addSerie(req.body)
 			.then(() => res.status(200).send('Series added'))
-			.catch(err => res.status(500).send('Error adding series: ' + err));
+			.catch(err => res.status(500).send('Error adding series: ' + err));		
 	});
 
 	router.get('/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
