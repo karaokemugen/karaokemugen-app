@@ -2,25 +2,30 @@ import React, {Component} from 'react';
 import {Select, Tooltip, Button, Form, Icon, Input} from 'antd';
 import PropTypes from 'prop-types';
 import EditableTagGroup from '../Components/EditableTagGroup';
+import langs from 'langs';
 
 class SerieForm extends Component {
 
 	constructor(props) {
 		super(props);		
 		this.state = {
-			i18n: []
+			i18n: [],
+			languages: []
 		};
-		if (this.props.serie.i18n) {
-			Object.keys(this.props.serie.i18n).forEach(lang => {
-				this.state.i18n.push({
-					value: lang,
-					text: this.props.serie.i18n[lang]
-				});
-			});
-		}
+		langs.all().forEach(lang => this.state.languages.push({value: lang['2B'], text: lang.name}));
+		this.state.languages.push({value: 'mul', text: 'Multi-languages'});
+		this.state.languages.push({value: 'und', text: 'Undefined Language'});			
 	}
 
 	componentDidMount() {
+		if (this.props.serie.i18n) {
+			Object.keys(this.props.serie.i18n).forEach(lang => {
+				this.state.i18n.push(lang);
+				let langField = {};
+				langField[`lang_${lang}`] = this.props.serie.i18n[lang];
+				this.setFieldValue(langField);
+			});
+		}
 		this.props.form.validateFields();
 	}
 
@@ -28,6 +33,12 @@ class SerieForm extends Component {
 		e.preventDefault();
 		this.props.form.validateFields((err, values) => {
 			if (!err) {
+				const i18nField = {};
+				this.state.i18n.forEach((lang) => {
+					i18nField[lang] = values[`lang_${lang}`];
+					delete values[`lang_${lang}`];
+				});
+				values.i18n = i18nField;				
 				this.props.save(values);
 			}
 		});
@@ -36,10 +47,17 @@ class SerieForm extends Component {
 	// i18n dynamic management
 	addLang = (lang) => {
 		if (!this.state.i18n.includes(lang)) {
-			const newI18n = this.state.i18n.concat([lang]);
+			const newI18n = this.state.i18n.concat([lang]);			
 			this.setState({ i18n: newI18n});
 		}
 	};
+
+	removeLang = (lang) => {
+		if (this.state.i18n.includes(lang)) {
+			const newI18n = this.state.i18n.filter(e => e !== lang);
+			this.setState({ i18n: newI18n});			
+		}
+	}
 
 	render() {
 		const {getFieldDecorator} = this.props.form;
@@ -52,6 +70,11 @@ class SerieForm extends Component {
 				<Form.Item>
 					{getFieldDecorator('serie_id', {
 						initialValue: this.props.serie.serie_id
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('i18n', {
+						initialValue: this.props.serie.i18n
 					})(<Input type="hidden" />)}
 				</Form.Item>
 				<Form.Item hasFeedback
@@ -106,18 +129,29 @@ class SerieForm extends Component {
 						labelCol={{ span: 3 }}
 						wrapperCol={{ span: 21, offset: 0 }}
 					>
-						{getFieldDecorator('lang_' + langKey)(
+						{getFieldDecorator('lang_' + langKey, {
+							rules: [{
+								required: true,
+								message: 'Please enter a translation'
+							}],
+						})(
 							<Input
-								placeholder='Traduction'
-								label={langKey}
+								placeholder='Name in that language'
+								label={langKey}								
 							/>
 						)}
+						 {Object.keys(this.state.i18n).length > 1 ? (
+							<Icon
+								className="dynamic-delete-button"
+								type="minus-circle-o"
+								disabled={this.state.i18n.length === 1}
+								onClick={() => this.removeLang(langKey)}
+							/>
+						) : null}
 					</Form.Item>
-				))}
+				))}				
 				<Select onChange={value => this.addLang(value)}>
-					<Select.Option value="fre">Français</Select.Option>
-					<Select.Option value="jpn">Japanese</Select.Option>
-					<Select.Option value="eng">English</Select.Option>
+					{ this.state.languages.map(lang => (<Select.Option value={lang.value}>{lang.text}</Select.Option>)) }
 				</Select>
 				<Form.Item>
 					<Button type='primary' htmlType='submit' className='series-form-button'>
