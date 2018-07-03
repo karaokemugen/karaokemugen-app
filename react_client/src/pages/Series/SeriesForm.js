@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {message, Tag, Select, Tooltip, Button, Form, Icon, Input} from 'antd';
+import {Col, Row, message, Tag, Select, Tooltip, Button, Form, Icon, Input} from 'antd';
 import PropTypes from 'prop-types';
 import EditableTagGroup from '../Components/EditableTagGroup';
 import langs from 'langs';
@@ -133,11 +133,12 @@ class SerieForm extends Component {
 					</Tooltip>
 				</div>
 				{ this.state.i18n.map(langKey => (
+					<Row gutter={8}>
 					<Form.Item
 						hasFeedback
 						label={langs.where('2B', langKey).name}
 						labelCol={{ span: 3 }}
-						wrapperCol={{ span: 21, offset: 0 }}
+						wrapperCol={{ span: 16, offset: 0 }}
 					>
 						{getFieldDecorator('lang_' + langKey, {
 							initialValue: this.state[`lang_${langKey}`],
@@ -146,20 +147,27 @@ class SerieForm extends Component {
 								message: 'Please enter a translation'
 							}],
 						})(
+						<Col span={12}>
+					
 							<Input
 								placeholder='Name in that language'
 								label={langKey}								
-							/>
+							/></Col>
 						)}
+						
 						 {Object.keys(this.state.i18n).length > 1 ? (
+							<Col span={2}>	
+							<Tooltip title="Remove name">
 							<Icon
 								className="dynamic-delete-button"
 								type="minus-circle-o"
 								disabled={this.state.i18n.length === 1}
 								onClick={() => this.removeLang(langKey)}
-							/>
+							/></Tooltip></Col>
 						) : null}
+
 					</Form.Item>
+					</Row>
 				))}
 				{selectVisible && (			
 					<Select 
