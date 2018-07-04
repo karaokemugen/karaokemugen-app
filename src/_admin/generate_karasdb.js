@@ -2,7 +2,6 @@ import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {resolve} from 'path';
 import deburr from 'lodash.deburr';
-import isEmpty from 'lodash.isempty';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
 import {asyncCopy, asyncReadDir} from '../_common/utils/files';
@@ -117,7 +116,7 @@ function getSeries(kara) {
 	}
 
 	// At least one series is mandatory if kara is not LIVE/MV type
-	if (serieRequired(kara.type) && isEmpty(series)) {
+	if (serieRequired(kara.type) && !series) {
 		logger.error(`Karaoke series cannot be detected! (${JSON.stringify(kara)})`);
 		error = true;
 	}

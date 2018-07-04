@@ -99,8 +99,6 @@
     "jwt-simple": "^0.5.1",
     "langs": "^2.0.0",
     "lodash.deburr": "^4.1.0",
-    "lodash.isempty": "^4.4.0",
-    "lodash.remove": "^4.7.0",
     "lodash.sample": "^4.2.1",
     "lodash.samplesize": "^4.2.0",
     "lodash.shuffle": "^4.2.0",

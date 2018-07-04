@@ -19,7 +19,6 @@ import {now} from 'unix-timestamp';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
-import isEmpty from 'lodash.isempty';
 import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
 import logger from 'winston';
@@ -417,8 +416,8 @@ async function tryToReadKaraInPlaylist() {
 			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
 			let serie = kara.serie;
 			let title = kara.title;
-			if (isEmpty(serie)) serie = kara.singer;
-			if (isEmpty(title)) title = '';
+			if (!serie) serie = kara.singer;
+			if (!title) title = '';
 			logger.info(`[Engine] Playing ${serie}${title}`);
 			await play({
 				media: kara.mediafile,
