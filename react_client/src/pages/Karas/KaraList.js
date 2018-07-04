@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Icon, Button, Layout, Table} from 'antd';
+import {Icon, Layout, Table, Input} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 
@@ -9,6 +9,7 @@ class KaraList extends Component {
 
 	constructor(props) {
 		super(props);
+		this.filter = '';
 		this.state = {
 			karas: [],			
 			kara: {}
@@ -21,7 +22,7 @@ class KaraList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/karas')
+		axios.get('/api/karas', { params: { filter: this.filter }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data.content});
@@ -35,12 +36,23 @@ class KaraList extends Component {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Table
-					dataSource={this.state.karas}
-					columns={this.columns}
-					rowKey='kara_id'
-				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>				
+				<Layout>
+					<Layout.Header>
+						<Input.Search
+							placeholder="Search filter"
+							onChange={event => this.filter = event.target.value}
+							enterButton="Search"
+							onSearch={this.refresh.bind(this)}
+						/>
+					</Layout.Header>
+					<Layout.Content>
+						<Table
+							dataSource={this.state.karas}
+							columns={this.columns}
+							rowKey='kara_id'
+						/>
+					</Layout.Content>
+				</Layout>
 			</Layout.Content>
 		);
 	}
