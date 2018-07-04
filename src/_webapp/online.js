@@ -1,12 +1,11 @@
 import req from 'request-promise-native';
 import {configureHost, getConfig} from '../_common/utils/config';
-import isEmpty from 'lodash.isempty';
 
 export async function publishURL() {
 	configureHost();
 	const conf = getConfig();
 	let localHost = conf.osHost;
-	if (!isEmpty(conf.EngineDisplayConnectionInfoHost)) localHost = conf.EngineDisplayConnectionInfoHost;
+	if (conf.EngineDisplayConnectionInfoHost) localHost = conf.EngineDisplayConnectionInfoHost;
 	const options = {
 		url: `http://${conf.OnlineHost}:${conf.OnlinePort}`,
 		method: 'POST',
@@ -19,7 +18,7 @@ export async function publishURL() {
 	        'content-type': 'application/x-www-form-urlencoded'
     	}
 	};
-	try { 
+	try {
 		await req(options);
 		configureHost();
 	} catch(err) {

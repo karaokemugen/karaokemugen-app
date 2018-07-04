@@ -24,14 +24,13 @@ export async function emitWS(type,data) {
 export async function initFrontend(port) {
 	const app = express();
 	app.engine('hbs', exphbs({
-		layoutsDir: join(__dirname, 'ressources/views/layouts/'), 
+		layoutsDir: join(__dirname, 'ressources/views/layouts/'),
 		extname: '.hbs',
-		
 		helpers: {
 			i18n: function() {
 				const args = Array.prototype.slice.call(arguments);
 				const options = args.pop();
-				return i18n.__.apply(options.data.root, args);	
+				return i18n.__.apply(options.data.root, args);
 			},
 			if_eq: function(a, b, opts) {
 				if(a === b)
@@ -75,7 +74,7 @@ export async function initFrontend(port) {
 
 	app.use('/api/v1/auth', routerAuth());
 	app.use('/api/v1/public', routerAPIPublic());
-	app.use('/api/v1/admin', routerAPIAdmin());			
+	app.use('/api/v1/admin', routerAPIAdmin());
 	// Add headers
 	app.use(function (req, res, next) {
 		// Website you wish to allow to connect
@@ -99,8 +98,8 @@ export async function initFrontend(port) {
 	app.use('/previews',express.static(resolve(conf.appPath,conf.PathPreviews)));
 	//Path to user avatars
 	app.use('/avatars',express.static(resolve(conf.appPath,conf.PathAvatars)));
-	app.use('/admin', routerAdmin);	
-	app.use('/welcome', routerWelcome);	
+	app.use('/admin', routerAdmin);
+	app.use('/welcome', routerWelcome);
 
 	app.get('/', (req, res) => {
 		const config = getConfig();
@@ -119,7 +118,7 @@ export async function initFrontend(port) {
 		}
 
 		res.render(view, {'layout': 'publicHeader',
-			'clientAdress'	:	'http://'+url,
+			'clientAdress'	:	`http://${url}`,
 			'webappMode'	:	config.WebappMode,
 			'query'			:	JSON.stringify(req.query)
 		});
@@ -138,9 +137,9 @@ export async function initFrontend(port) {
 					data.displays[key] = {model : ''};
 				}
 			});
-					
+
 			res.render('admin', {'layout': 'adminHeader',
-				'clientAdress'	:	'http://'+address(),
+				'clientAdress'	:	`http://${address()}`,
 				'displays'		:	data.displays,
 				'query'			:	JSON.stringify(req.query),
 				'appFirstRun'	:	config.appFirstRun,
@@ -150,7 +149,7 @@ export async function initFrontend(port) {
 	});
 	routerWelcome.get('/', (req, res) => {
 		res.render('welcome', {
-			'clientAdress'	:	'http://'+address(),
+			'clientAdress'	:	`http://${address()}`,
 			'appAdminPort'	:	conf.appAdminPort,
 			'query'			:	JSON.stringify(req.query),
 		});
@@ -159,7 +158,7 @@ export async function initFrontend(port) {
 	app.use((req, res) => {
 		res.status(404);
 		// respond with html page
-		if (req.accepts('html')) {	
+		if (req.accepts('html')) {
 			res.render('404', {url: req.url});
 			return;
 		}
@@ -169,9 +168,8 @@ export async function initFrontend(port) {
 	const server = createServer(app);
 	ws = require('socket.io').listen(server);
 	server.listen(port, () => {
-		logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);   		
-	});	
+		logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);
+	});
 }
-		
 
-		
+
