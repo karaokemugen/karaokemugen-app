@@ -20,11 +20,11 @@ import {now} from 'unix-timestamp';
 
 export async function editKara(kara_id,kara) {
 	let newKara;
-	let kara_orig = {...kara};		
+	let kara_orig = {...kara};
 	try {
 		const mediaFile = resolve(resolvedPathMedias()[0],kara.mediafile);
 		const subFile = resolve(resolvedPathSubs()[0],kara.subfile);
-		const karaFile = resolve(resolvedPathKaras()[0],kara.karafile);		
+		const karaFile = resolve(resolvedPathKaras()[0],kara.karafile);
 		// Removing useless data
 		delete kara.kara_id;
 		delete kara.karafile;
@@ -35,41 +35,56 @@ export async function editKara(kara_id,kara) {
 			if (!await asyncExists(mediaFile)) throw `Mediafile ${mediaFile} does not exist! Check your base files or upload a new media`;
 			await asyncCopy(mediaFile, resolve(resolvedPathTemp(),kara.mediafile), {overwrite: true});
 		}
-		if (!kara.subfile_orig) {			
+		if (!kara.subfile_orig) {
 			kara.overwrite = true;
 			kara.subfile_orig = kara.subfile;
 			if (kara.subfile !== 'dummy.ass') {
-				if (!await asyncExists(subFile)) throw `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`;	
+				if (!await asyncExists(subFile)) throw `Subfile ${subFile} does not exist! Check your base files or upload a new subfile`;
 				await asyncCopy(subFile, resolve(resolvedPathTemp(),kara.subfile), {overwrite: true});
 			}
 		}
 		// Treat files
-		newKara = await generateKara(kara, {edit: true});
+		newKara = await generateKara(kara);
 		const newSubFile = resolve(resolvedPathSubs()[0],newKara.data.subfile);
 		const newMediaFile = resolve(resolvedPathMedias()[0],newKara.data.mediafile);
+
+		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file !== karaFile && await asyncExists(karaFile)) asyncUnlink(karaFile);
 		if (newSubFile !== subFile && subFile !== 'dummy.ass' && await asyncExists(subFile)) asyncUnlink(subFile);
-		if (newMediaFile !== mediaFile && await asyncExists(mediaFile)) asyncUnlink(mediaFile);		
-	} catch(err) {		
+		if (newMediaFile !== mediaFile && await asyncExists(mediaFile)) asyncUnlink(mediaFile);
+	} catch(err) {
 		logger.error(`[KaraGen] Error while editing kara : ${err}`);
 		throw err;
 	}
 	// Update in database
 	newKara.data.kara_id = kara_orig.kara_id;
-	newKara.data.karafile = basename(newKara.file);		
+	newKara.data.karafile = basename(newKara.file);
 	try {
 		await editKaraInDB(newKara.data);
 	} catch(err) {
-		const errMsg = `.kara file is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
+		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
 }
 
-export async function generateKara(kara, opts) {
+export async function createKara(kara) {
+	const newKara = await generateKara(kara);
+	try {
+		newKara.data.karafile = basename(newKara.file);
+		await createKaraInDB(newKara.data);
+	} catch(err) {
+		const errMsg = `.kara file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
+		logger.warn(`[KaraGen] ${errMsg}`);
+		throw errMsg;
+	}
+	return newKara;
+}
+
+async function generateKara(kara, opts) {
 	/*
 	kara = {
-		title = string 
+		title = string
 		series = string (elements separated by ,) (see series from series.json)
 		type = string (see karaTypes from constants)
 		year = number or empty
@@ -97,15 +112,17 @@ export async function generateKara(kara, opts) {
 		order: {integerValidator: true},
 		series: {presence: true},
 		title: {presence: true}
-	});	
+	});
+	// Copy files from temp directory to import, depending on the different cases.
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile;
 	if (kara.subfile) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
 	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
 	delete kara.subfile_orig;
-	delete kara.mediafile_orig;	
+	delete kara.mediafile_orig;
 	await asyncCopy(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
 	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncCopy(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
+
 	let newKara;
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
@@ -120,34 +137,26 @@ export async function generateKara(kara, opts) {
 		kara.author.forEach((e,i) => kara.author[i] = e.trim());
 
 		if (!kara.order) kara.order = '';
-		newKara = await importKara(newMediaFile, newSubFile, kara);				
+		newKara = await importKara(newMediaFile, newSubFile, kara);
 	} catch(err) {
 		logger.error(`[Karagen] Error during generation : ${err}`);
 		if (await asyncExists(newMediaFile)) await asyncUnlink(newMediaFile);
 		if (newSubFile) if (await asyncExists(newSubFile)) await asyncUnlink(newSubFile);
 		throw err;
-	}	
-	if (!opts.edit) try {
-		newKara.data.karafile = basename(newKara.file);			
-		await createKaraInDB(newKara.data);
-	} catch(err) {
-		const errMsg = `.kara file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
-		logger.warn(`[KaraGen] ${errMsg}`);
-		throw errMsg;
 	}
 	return newKara;
 }
 
 /**
  * Generating kara files in batch mode. The import folder is scanned for video files
- * which respect the KM naming convention. If such a file is found, the associated 
+ * which respect the KM naming convention. If such a file is found, the associated
  * karaoke file is created, and subtitle files are moved to their own directories.
  */
 
 export async function karaGenerationBatch() {
 	const importFiles = await asyncReadDir(resolvedPathImport());
 	const importPromises = filterMedias(importFiles).map(mediaFile => importKara(mediaFile));
-	try {	
+	try {
 		await Promise.all(importPromises);
 	} catch(err) {
 		throw err;
@@ -157,16 +166,16 @@ export async function karaGenerationBatch() {
 async function importKara(mediaFile, subFile, data) {
 	let kara = mediaFile;
 	if (data) {
-		const fileLang = getFileLangFromKara(data.lang[0]);		
+		const fileLang = getFileLangFromKara(data.lang[0]);
 		kara = sanitizeFilename(deburr(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`))
 			.replace('ô','ou')
 			.replace('û','uu')
 		;
-	} 
+	}
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
 
-	let karaData = getKara({ ...data, 
+	let karaData = getKara({ ...data,
 		mediafile: `${kara}${extname(mediaFile)}`,
 		subfile: `${kara}${extname(subFile)}`
 	});
@@ -175,11 +184,11 @@ async function importKara(mediaFile, subFile, data) {
 	if (!data) karaData = {mediafile: mediaFile, ...karaDataInfosFromFilename(mediaFile)};
 
 	const mediaPath = resolve(resolvedPathImport(), mediaFile);
-		
+
 	const subPath = await findSubFile(mediaPath, karaData, subFile);
 	try {
 		await extractAssInfos(subPath, karaData);
-		await extractMediaTechInfos(mediaPath, karaData);		
+		await extractMediaTechInfos(mediaPath, karaData);
 		await processSeries(data);
 		return await generateAndMoveFiles(mediaPath, subPath, karaData);
 	} catch(err) {
@@ -195,9 +204,9 @@ async function processSeries(kara) {
 			name: serie,
 			i18n: {}
 		};
-		serieObj.i18n[kara.lang[0]] = serie;		
+		serieObj.i18n[kara.lang[0]] = serie;
 		await addSerie(serieObj);
-	}	
+	}
 }
 
 function karaDataInfosFromFilename(mediaFile) {
@@ -247,7 +256,7 @@ async function findSubFile(mediaPath, karaData, subFile) {
 
 async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	// Generating kara file in the first kara folder
-	
+
 	const karaFilename = replaceExt(karaData.mediafile, '.kara');
 	const karaPath = resolve(resolvedPathKaras()[0], karaFilename);
 	karaData.series = karaData.series.join(',');
@@ -257,14 +266,14 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	karaData.tags = karaData.tags.join(',');
 	karaData.creator = karaData.creator.join(',');
 	karaData.author = karaData.author.join(',');
-	const mediaDest = resolve(resolvedPathMedias()[0], karaData.mediafile);		
+	const mediaDest = resolve(resolvedPathMedias()[0], karaData.mediafile);
 	let subDest;
-	if (subPath && karaData.subfile !== 'dummy.ass') subDest = resolve(resolvedPathSubs()[0], karaData.subfile);					
+	if (subPath && karaData.subfile !== 'dummy.ass') subDest = resolve(resolvedPathSubs()[0], karaData.subfile);
 	try {
 		// Moving media in the first media folder.
 		await asyncMove(mediaPath, mediaDest, { overwrite: karaData.overwrite });
-		// Moving subfile in the first lyrics folder.	
-		if (subDest) await asyncMove(subPath, subDest,{ overwrite: karaData.overwrite});		
+		// Moving subfile in the first lyrics folder.
+		if (subDest) await asyncMove(subPath, subDest,{ overwrite: karaData.overwrite});
 		delete karaData.overwrite;
 	} catch (err) {
 		throw `Error while moving files. Maybe destination files (${mediaDest} or ${subDest} already exist? (${err})`;

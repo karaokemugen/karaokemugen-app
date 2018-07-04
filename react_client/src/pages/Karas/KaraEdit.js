@@ -34,7 +34,7 @@ class KaraEdit extends Component {
 	}
 
 	saveNew = (kara) => {
-		axios.post('/api/karas/generate', kara)
+		axios.post('/api/karas', kara)
 			.then(() => {
 				this.props.infoMessage('Kara successfully created');
 				this.props.push('/karas');
