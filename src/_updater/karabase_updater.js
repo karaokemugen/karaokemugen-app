@@ -189,11 +189,13 @@ async function downloadMedias(ftp, files, mediasPath) {
 		} catch(err) {
 			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
 			ftpErrors.push(file.name);
+			await ftpClose(ftp);
+			await ftpConnect(ftp);
 		}		
 		ftp.trackProgress();
 		bar1.stop();
 	}
-	if (ftpErrors.length > 0) throw `Error during medias downloads : ${ftpErrors.toString()}`;
+	if (ftpErrors.length > 0) throw `Error during medias download : ${ftpErrors.toString()}`;
 }
 
 async function fileTransfer(ftp, output, input) {
@@ -201,8 +203,8 @@ async function fileTransfer(ftp, output, input) {
 		return ftp.download(createWriteStream(output), input).catch(retry);				
 	}, {
 		retries: 10,
-		minTimeout: 5000,
-		maxTimeout: 10000
+		minTimeout: 100,
+		maxTimeout: 500
 	}).then(() => { 
 		return true;
 	}).catch((err) => {
