@@ -2,7 +2,7 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_common/utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
-import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
+import {extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
 import {getConfig} from '../_common/utils/config';
 import logger from 'winston';
 import {getOrAddSerieID} from './series';
@@ -157,11 +157,9 @@ const karaConstraintsV2 = {
 export async function validateKaras() {
 	try {
 		const conf = getConfig();
-		await backupKaraDirs(conf);
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
 		verifyKIDsUnique(karas);
-		await deleteBackupDirs(conf);
 		if (karas.some((kara) => {
 			return kara.error;
 		})) throw 'One kara failed validation process';

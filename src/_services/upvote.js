@@ -17,7 +17,6 @@ export async function addUpvote(plc_id,username) {
 		const userList = await getUpvotesByPLC(plc_id);
 		if (userList.some(u => {
 			return u.user_id === user.id;
-
 		})) throw {code: 'UPVOTE_ALREADY_DONE'};
 		await insertUpvote(plc_id,user.id);
 		const upvotes = plc.upvotes + 1;
