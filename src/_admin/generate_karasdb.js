@@ -21,6 +21,7 @@ import {basename, join} from 'path';
 import parallel from 'async-await-parallel';
 import {emit} from '../_common/utils/pubsub';
 import {findSeries, readSeriesFile} from '../_dao/seriesfile';
+import {updateUUID} from '../_common/db/database.js';
 
 let error = false;
 
@@ -29,47 +30,10 @@ async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_serie;');
 	await db.run('DELETE FROM tag;');
 	await db.run('DELETE FROM serie;');
+	await db.run('DELETE FROM serie_lang;');
 	await db.run('DELETE FROM kara;');
 	await db.run('DELETE FROM sqlite_sequence;');
 	await db.run('VACUUM;');
-}
-
-async function backupDir(directory) {
-	const backupDir = directory + '_backup';
-	if (await asyncExists(backupDir)) {
-		logger.debug('[Gen] Removing backup dir ' + backupDir);
-		await asyncRemove(backupDir);
-	}
-	logger.debug('[Gen] Creating backup dir ' + backupDir);
-	await asyncMkdirp(backupDir);
-	await asyncCopy(
-		directory,
-		backupDir,
-		{
-			overwrite: true,
-			preserveTimestamps: true
-		}
-	);
-}
-
-export async function backupKaraDirs(config) {
-	const backupPromises = [];
-	for (const pathKara of config.PathKaras.split('|')) {
-		const resolvedPath = resolve(config.appPath, pathKara);
-		backupPromises.push(backupDir(resolvedPath));
-	}
-	await Promise.all(backupPromises);
-}
-
-export async function deleteBackupDirs(config) {
-	const deletePromises = [];
-	for (const pathKara of config.PathKaras.split('|')) {
-		const pathBackup = pathKara + '_backup';
-		if (await asyncExists(pathBackup)) {
-			deletePromises.push(asyncRemove(pathBackup));
-		}
-	}
-	await Promise.all(deletePromises);
 }
 
 async function extractKaraFiles(karaDir) {
@@ -92,7 +56,7 @@ export async function extractAllKaraFiles() {
 }
 
 export async function getAllKaras(karafiles) {
-	const karaPromises = [];	
+	const karaPromises = [];
 	for (const karafile of karafiles) {
 		karaPromises.push(() => readAndCompleteKarafile(karafile));
 	}
@@ -112,7 +76,7 @@ async function readAndCompleteKarafile(karafile) {
 		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete : ${err}`);
 		error = true;
 		return karaData;
-	}	
+	}
 	await writeKara(karafile, karaData);
 	return karaData;
 }
@@ -128,7 +92,7 @@ function prepareKaraInsertData(kara, index) {
 		$kara_mediafile: kara.mediafile,
 		$kara_subfile: kara.subfile,
 		$kara_dateadded: kara.dateadded,
-		$kara_datemodif: kara.datemodif,		
+		$kara_datemodif: kara.datemodif,
 		$kara_gain: kara.mediagain,
 		$kara_duration: kara.mediaduration,
 		$kara_karafile: basename(kara.karafile)
@@ -205,12 +169,12 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	const data = [];
 	let index = 1;
 	for (const serie of mapSeries.keys()) {
-		mapSeries.get(serie).forEach(karaIndex => {
+		for (const karaIndex in mapSeries.get(serie)) {
 			data.push({
 				$id_serie: index,
 				$id_kara: karaIndex
 			});
-		});
+		}
 		index++;
 	}
 
@@ -226,7 +190,7 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 		if (serie.aliases) altNameData.push({
 			$serie_altnames: serie.aliases.join(','),
 			$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
-			$serie_name: serie.name				
+			$serie_name: serie.name
 		});
 		if (serie.i18n) {
 			for (const lang of Object.keys(serie.i18n)) {
@@ -234,13 +198,13 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 					$lang: lang,
 					$serie: serie.i18n[lang],
 					$serienorm: deburr(serie.i18n[lang]),
-					$name: serie.name						
+					$name: serie.name
 				});
 			}
 		}
 	}
 	// Checking if some series present in .kara files are not present in the series file
-	for (const serie of mapSeries.keys()) {			
+	for (const serie of mapSeries.keys()) {
 		if (!findSeries(serie, altNamesFile)) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in the series file`);
@@ -254,7 +218,7 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 				$serienorm: deburr(serie).replace('\'', '').replace(',', ''),
 				$name: serie
 			});
-		}		
+		}
 	}
 	return {
 		altNameData: altNameData,
@@ -283,33 +247,16 @@ function getKaraTags(kara, allTags) {
 
 	const result = new Set();
 
-	if (kara.singer) {
-		kara.singer.split(',').forEach(singer => result.add(getTagId(singer.trim() + ',2', allTags)));
-	}
-
-	if (kara.author) {
-		kara.author.split(',').forEach(author => result.add(getTagId(author.trim() + ',6', allTags)));
-	}
-
-	if (kara.tags) {
-		kara.tags.split(',').forEach(tag => result.add(getTagId(tag.trim() + ',7', allTags)));
-	}
-
-	if (kara.creator) {
-		kara.creator.split(',').forEach(creator => result.add(getTagId(creator.trim() + ',4', allTags)));
-	}
-
-	if (kara.songwriter) {
-		kara.songwriter.split(',').forEach(songwriter => result.add(getTagId(songwriter.trim() + ',8', allTags)));
-	}
-
-	if (kara.lang) {
-		kara.lang.split(',').forEach(lang => {
-			if (lang === 'und' || lang === 'mul' || hasLang('2B', lang)) {
-				result.add(getTagId(lang.trim() + ',5', allTags));
-			}
-		});
-	}
+	if (kara.singer) kara.singer.split(',').forEach(singer => result.add(getTagId(singer.trim() + ',2', allTags)));
+	if (kara.author) kara.author.split(',').forEach(author => result.add(getTagId(author.trim() + ',6', allTags)));
+	if (kara.tags) kara.tags.split(',').forEach(tag => result.add(getTagId(tag.trim() + ',7', allTags)));
+	if (kara.creator) kara.creator.split(',').forEach(creator => result.add(getTagId(creator.trim() + ',4', allTags)));
+	if (kara.songwriter) kara.songwriter.split(',').forEach(songwriter => result.add(getTagId(songwriter.trim() + ',8', allTags)));
+	if (kara.lang) kara.lang.split(',').forEach(lang => {
+		if (lang === 'und' || lang === 'mul' || hasLang('2B', lang)) {
+			result.add(getTagId(lang.trim() + ',5', allTags));
+		}
+	});
 
 	getTypes(kara, allTags).forEach(type => result.add(type));
 
@@ -328,14 +275,14 @@ function getTypes(kara, allTags) {
 	});
 
 	if (result.size === 0) {
-		logger.warn('[Gen] Karaoke type cannot be detected : ' + kara.type + ' in kara : ' + JSON.stringify(kara));
-		error = true;		
+		logger.warn(`[Gen] Karaoke type cannot be detected (${kara.type}) in kara :  ${JSON.stringify(kara)}`);
+		error = true;
 	}
 
 	return result;
 }
 
-function strictModeError(series) {	
+function strictModeError(series) {
 	logger.error(`[Gen] STRICT MODE ERROR : One series ${series} does not exist in the series file`);
 	error = true;
 }
@@ -355,7 +302,7 @@ function getTagId(tagName, tags) {
 function prepareAllTagsInsertData(allTags) {
 	const data = [];
 	const translations = require(join(__dirname,'../_common/locales'));
-	
+
 	allTags.forEach((tag, index) => {
 		const tagParts = tag.split(',');
 		const tagName = tagParts[0];
@@ -363,14 +310,14 @@ function prepareAllTagsInsertData(allTags) {
 		let tagNorm;
 		if (+tagType === 7) {
 			const tagTranslations = [];
-			for (const [key, value] of Object.entries(translations)) {				
+			for (const [key, value] of Object.entries(translations)) {
 				// Key is the language, value is a i18n text
 				if (value[tagName]) tagTranslations.push(value[tagName]);
-			}			
-			tagNorm = tagTranslations.join(' ');			
+			}
+			tagNorm = tagTranslations.join(' ');
 		} else {
 			tagNorm = tagName;
-		}		
+		}
 		data.push({
 			$id_tag: index + 1,
 			$tagtype: tagType,
@@ -417,11 +364,8 @@ export async function run(config) {
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		await emptyDatabase(db);
-		//await backupKaraDirs(conf);
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
-		// Can be done in background
-		//deleteBackupDirs(conf);		
 		// Preparing data to insert
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas);
@@ -433,7 +377,7 @@ export async function run(config) {
 		const seriesAltNamesData = await prepareAltSeriesInsertData(series_altnamesfile, seriesMap);
 		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
 		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
-		
+
 		// Inserting data in a transaction
 
 		await db.run('begin transaction');
@@ -447,11 +391,11 @@ export async function run(config) {
 		await Promise.all([
 			runSqlStatementOnData(db.prepare(inserti18nSeries), sqlInserti18nSeries),
 			runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames)
-		]);		
-		
-		await db.run('commit');		
+		]);
+
+		await db.run('commit');
 		await db.close();
-		await checkUserdbIntegrity(null, conf);		
+		await checkUserdbIntegrity(null, conf);
 		return error;
 	} catch (err) {
 		logger.error(err);
@@ -473,6 +417,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	const conf = config || getConfig();
 
+	//If no uuid provided, we're making a new database
 	if (!uuid) uuid = uuidV4();
 	const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 	const karas_userdbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
@@ -490,7 +435,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		open(karas_dbfile, {Promise}),
 		open(karas_userdbfile, {Promise})
 	]);
-	
+
 	const [
 		allTags,
 		allKaras,
@@ -516,8 +461,8 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
 
-	// Listing existing KIDs	
-	const karaKIDs = allKaras.map(k => '\'' + k.kid + '\'').join(',');
+	// Listing existing KIDs
+	const karaKIDs = allKaras.map(k => `'${k.kid}'`).join(',');
 
 	// Deleting records which aren't in our KID list
 	await Promise.all([
@@ -562,7 +507,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 			sql += `UPDATE playlist_content SET fk_id_kara = ${karaIdByKid.get(plck.kid)} WHERE kid = '${plck.kid}';`;
 		}
 	});
-	
+
 	blcTags.forEach(function (blcTag) {
 		let tagFound = false;
 		allTags.forEach(function (tag) {
@@ -587,15 +532,13 @@ export async function checkUserdbIntegrity(uuid, config) {
 		await userdb.exec(sql);
 	}
 
-	const sqlDB = require('../_common/db/database.js');
-
 	await Promise.all([
-		userdb.run(sqlDB.updateUUID, { $uuid: uuid }),
-		db.run(sqlDB.updateUUID, { $uuid: uuid })
+		userdb.run(updateUUID, { $uuid: uuid }),
+		db.run(updateUUID, { $uuid: uuid })
 	]);
 
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
 
-	logger.info('[Gen] Integrity checks complete, database generated');	
+	logger.info('[Gen] Integrity checks complete, database generated');
 }
