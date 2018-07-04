@@ -5,7 +5,7 @@ import deburr from 'lodash.deburr';
 import isEmpty from 'lodash.isempty';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
-import {asyncCopy, asyncExists, asyncMkdirp, asyncReadDir, asyncRemove} from '../_common/utils/files';
+import {asyncCopy, asyncReadDir} from '../_common/utils/files';
 import {getConfig, resolvedPathKaras} from '../_common/utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
