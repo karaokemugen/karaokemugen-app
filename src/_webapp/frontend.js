@@ -4,7 +4,7 @@ import exphbs from 'express-handlebars';
 import cookieParser from 'cookie-parser';
 import {address} from 'ip';
 import {graphics} from 'systeminformation';
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 import i18n from 'i18n';
 import {getConfig} from '../_common/utils/config';
 import {urlencoded, json} from 'body-parser';
@@ -17,7 +17,7 @@ import {createServer} from 'http';
 let ws;
 
 export async function emitWS(type,data) {
-	//logger.debug('[WS] Sending message '+type+' : '+JSON.stringify(data));
+	//logger.debug( '[WS] Sending message '+type+' : '+JSON.stringify(data));
 	ws.sockets.emit(type,data);
 }
 
@@ -127,7 +127,7 @@ export async function initFrontend(port) {
 	routerAdmin.get('/', (req, res) => {
 		//Get list of monitors to allow users to select one for the player
 		graphics().then((data) => {
-			logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
+			logger.debug( '[Webapp] Displays detected : '+JSON.stringify(data.displays));
 			[0,1,2,3,4].forEach(function(key) {
 				if (data.displays[key] && data.displays[key].model) {
 					data.displays[key].model = data.displays[key].model.replace('�','e');
@@ -166,7 +166,7 @@ export async function initFrontend(port) {
 	const server = createServer(app);
 	ws = require('socket.io').listen(server);
 	server.listen(port, () => {
-		logger.debug(`[Webapp] Webapp is READY and listens on port ${port}`);   		
+		logger.debug( `[Webapp] Webapp is READY and listens on port ${port}`);
 	});	
 }
 		

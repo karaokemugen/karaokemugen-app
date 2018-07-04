@@ -1,4 +1,4 @@
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 import express from 'express';
 import {resolve} from 'path';
 import bodyParser from 'body-parser';
@@ -45,7 +45,7 @@ function startExpressReactServer(listenPort) {
 	const port = listenPort || 5000;
 	app.listen(port);
 
-	logger.debug(`[Dashboard] Dashboard listening on ${port}`);
+	logger.debug( `[Dashboard] Dashboard listening on ${port}`);
 }
 
 function apiRouter() {

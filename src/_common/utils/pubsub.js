@@ -6,11 +6,11 @@ import {EventEmitter} from 'events';
 const eventEmitter = new EventEmitter();
 
 export function emit(typeEvent, ...data) {
-	//logger.debug('Emitting event ' + typeEvent);
+	//logger.debug( 'Emitting event ' + typeEvent);
 	return eventEmitter.emit(typeEvent, data);
 }
 
 export function on(typeEvent, listenerFunc) {
-	//logger.debug('Subscribing to event ' + typeEvent);
+	//logger.debug( 'Subscribing to event ' + typeEvent);
 	return eventEmitter.on(typeEvent, listenerFunc);
 }

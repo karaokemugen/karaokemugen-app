@@ -1,4 +1,4 @@
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {resolve} from 'path';
 import deburr from 'lodash.deburr';
@@ -36,10 +36,10 @@ async function emptyDatabase(db) {
 async function backupDir(directory) {
 	const backupDir = directory + '_backup';
 	if (await asyncExists(backupDir)) {
-		logger.debug('[Gen] Removing backup dir ' + backupDir);
+		logger.debug( '[Gen] Removing backup dir ' + backupDir);
 		await asyncRemove(backupDir);
 	}
-	logger.debug('[Gen] Creating backup dir ' + backupDir);
+	logger.debug( '[Gen] Creating backup dir ' + backupDir);
 	await asyncMkdirp(backupDir);
 	await asyncCopy(
 		directory,
@@ -583,7 +583,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	});
 
 	if (sql) {
-		logger.debug('[Gen] UPDATE SQL : ' + sql);
+		logger.debug( '[Gen] UPDATE SQL : ' + sql);
 		await userdb.exec(sql);
 	}
 

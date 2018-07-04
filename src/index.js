@@ -4,7 +4,7 @@ import {parseCommandLineArgs} from './args.js';
 import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
-import logger from './_common/utils/logger';
+import logger from 'winston';
 import minimist from 'minimist';
 import {exit, initEngine} from './_services/engine';
 import {startExpressReactServer} from './_webapp/react';
@@ -63,10 +63,10 @@ async function main() {
 	console.log('================================================================');	
 	await parseCommandLineArgs(argv);
 	config = getConfig();
-	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
-	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
-	logger.debug(`[Launcher] Detected OS : ${config.os}`);
-	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
+	logger.debug( `[Launcher] SysPath detected : ${appPath}`);
+	logger.debug( `[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
+	logger.debug( `[Launcher] Detected OS : ${config.os}`);
+	logger.debug( '[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
 	// Checking binaries
 	await configureBinaries(config);
@@ -75,20 +75,20 @@ async function main() {
 	await checkPaths(config);
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	logger.debug('[Launcher] Copying input.conf to ' + resolve(appPath, config.PathTemp));
+	logger.debug( '[Launcher] Copying input.conf to ' + resolve(appPath, config.PathTemp));
 	await copy(
 		join(__dirname, '/_player/assets/input.conf'),
 		resolve(appPath, config.PathTemp, 'input.conf'),
 		{ overwrite: true }
 	);
-	logger.debug('[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
+	logger.debug( '[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
 	await copy(
 		join(__dirname, `/_player/assets/${config.VersionImage}`),
 		resolve(appPath, config.PathTemp, 'default.jpg'),
 		{ overwrite: true }
 	);
 	// Copy avatar blank.png if it doesn't exist to the avatar path
-	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
+	logger.debug( '[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
 	await copy(
 		join(__dirname, '/_webapp/ressources/img/blank.png'),
 		resolve(appPath, config.PathAvatars, 'blank.png'),
@@ -137,7 +137,7 @@ async function checkPaths(config) {
 	// If no karaoke is found, copy the samples directory if it exists
 	if (!await asyncExists(resolve(appPath, 'app/data'))) {
 		if (await asyncExists(resolve(appPath, 'samples'))) {
-			logger.debug('[Launcher] app/data is missing - copying samples inside');
+			logger.debug( '[Launcher] app/data is missing - copying samples inside');
 			await asyncMkdirp(resolve(appPath, 'app/data'));
 			await copy(
 				resolve(appPath, 'samples'),
@@ -159,7 +159,7 @@ async function checkPaths(config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.PathAvatars));
 
 	await Promise.all(checks);
-	logger.debug('[Launcher] Directory checks complete');
+	logger.debug( '[Launcher] Directory checks complete');
 }
 
 function verifyOpenPort(port) {

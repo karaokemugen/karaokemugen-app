@@ -2,7 +2,7 @@
  * .kara files generation
  */
 
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 import {resolve} from 'path';
 import {resolvedPathImport, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias} from '../_common/utils/config';
 import {asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_common/utils/files';
@@ -74,7 +74,7 @@ async function findSubFile(mediaPath, karaData) {
 			return await extractVideoSubtitles(mediaPath, karaData.KID);
 		} catch (err) {
 			// Non-blocking.
-			logger.debug('[KaraGen] Could not extract subtitles from video file ' + mediaPath);
+			logger.debug( '[KaraGen] Could not extract subtitles from video file ' + mediaPath);
 		}
 	} else {
 		return '';

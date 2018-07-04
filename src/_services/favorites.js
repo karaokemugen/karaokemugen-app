@@ -2,7 +2,7 @@ import {getFavoritesPlaylist} from '../_dao/favorites';
 import {importPlaylist, exportPlaylist, getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini, getPlaylistContents} from '../_services/playlist';
 import {formatKaraList} from '../_services/engine';
 import {listUsers, checkUserNameExists} from '../_services/user';
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 import {date} from '../_common/utils/date';
 
 export async function getFavorites(username, filter, lang, from, size) {
@@ -105,7 +105,7 @@ export async function createAutoMix(params, username) {
 
 export async function initFavoritesSystem() {
 	// Let's make sure all our users have a favorites playlist
-	logger.debug('[Favorites] Check if everyone has a favorites playlist');
+	logger.debug( '[Favorites] Check if everyone has a favorites playlist');
 	const [playlists, users] = await Promise.all([
 		await getPlaylists(false,'admin'),
 		await listUsers()

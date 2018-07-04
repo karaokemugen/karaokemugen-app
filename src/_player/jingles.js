@@ -3,7 +3,7 @@ import {emit} from '../_common/utils/pubsub';
 import {resolve} from 'path';
 import {resolvedPathJingles} from '../_common/utils/config';
 import {getMediaInfo} from '../_common/utils/ffmpeg';
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 
 export let jinglesList = [];
 export let currentJinglesList = [];
@@ -36,7 +36,7 @@ async function getAllVideoGains(jingleFiles) {
 				file: jinglefile,
 				gain: videodata.audiogain
 			});
-		logger.debug(`[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.audiogain} dB`);
+		logger.debug( `[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.audiogain} dB`);
 	}	
 	return jinglesList;
 }

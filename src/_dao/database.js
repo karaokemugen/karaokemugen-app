@@ -91,7 +91,7 @@ async function openKaraDatabase() {
 	const conf = getConfig();	
 	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);	
 	if (!karaDb) {
-		logger.debug('[DB] Opening kara database');
+		logger.debug( '[DB] Opening kara database');
 		karaDb = await open(karaDbFile, {verbose: true});		
 	} else {
 		throw 'Kara database already opened';
@@ -102,13 +102,13 @@ async function openUserDatabase() {
 	const conf = getConfig();	
 	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	if (!userDb) {
-		logger.debug('[DB] Opening user database');
+		logger.debug( '[DB] Opening user database');
 		userDb = await open(userDbFile, {verbose: true});
 		// Trace event. DO NOT UNCOMMENT
 		// unless you want to flood your console.
 		if (conf.optSQL) {
 			userDb.driver.on('trace', sql => {
-				logger.debug(sql.replace('\\t','').replace('\\n',''));
+				logger.debug( sql.replace('\\t','').replace('\\n',''));
 			});			
 		}		
 	} else {
@@ -191,7 +191,7 @@ export async function initDBSystem() {
 	//await getUserDb().run('PRAGMA LOCKING_MODE=EXCLUSIVE');
 
 	await compareDatabasesUUIDs();
-	logger.debug('[DBI] Database Interface is READY');
+	logger.debug( '[DBI] Database Interface is READY');
 	const stats = await getStats();
 	logger.info('Karaoke count   : ' + stats.totalcount);
 	logger.info('Total duration  : ' + duration(stats.totalduration));
@@ -257,7 +257,7 @@ async function generateDatabase() {
 	const conf = getConfig();
 
 	const failedKaras = await DBgenerator.run(conf);
-	logger.debug('[DBI] Karaoke database created');
+	logger.debug( '[DBI] Karaoke database created');
 	if (conf.optGenerateDB) {
 		if (failedKaras) {
 			logger.error('[DBI] Database generation completed with errors!');

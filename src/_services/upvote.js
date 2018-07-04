@@ -2,7 +2,7 @@ import {insertUpvote,removeUpvote, getUpvotesByPLC} from '../_dao/upvote';
 import {freePLC, updateSongsLeft, isACurrentPlaylist, isAPublicPlaylist, getPLCInfoMini} from '../_services/playlist';
 import {listUsers, findUserByName} from '../_services/user';
 import {getConfig} from '../_common/utils/config';
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 
 export async function vote(plc_id,username,downvote) {
 	if (downvote) return await deleteUpvote(plc_id,username);
@@ -78,6 +78,6 @@ async function tryToFreeKara(plc_id, upvotes, username, playlist_id) {
 		upvotes >= conf.EngineFreeUpvotesRequiredMin) {
 		await freePLC(plc_id);
 		updateSongsLeft(username, playlist_id);
-		logger.debug(`[Upvote] PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`);
+		logger.debug( `[Upvote] PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`);
 	}
 }

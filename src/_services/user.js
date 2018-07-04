@@ -7,7 +7,7 @@ import {createHash} from 'crypto';
 import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
@@ -71,7 +71,7 @@ export async function editUser(username,user,avatar,role) {
 			user.avatar_file = currentUser.avatar_file;
 		}
 		await db.editUser(user);
-		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);	
+		logger.debug( `[User] ${username} (${user.nickname}) profile updated`);
 		return user;
 	} catch (err) {
 		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
@@ -198,7 +198,7 @@ export async function createUser(user, opts) {
 		if (user.type === 1 && opts.createFavoritePlaylist) {
 			await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
 			logger.info(`[User] Created user ${user.login}`);		
-			logger.debug(`[User] User data : ${JSON.stringify(user)}`);		
+			logger.debug( `[User] User data : ${JSON.stringify(user)}`);
 		}
 		return true;
 	} catch (err) {
@@ -249,7 +249,7 @@ export async function deleteUserById(id) {
 		//Reassign karas and playlists owned by the user to the admin user
 		await db.reassignToUser(user.id,1);
 		await db.deleteUser(user.id);
-		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
+		logger.debug( `[User] Deleted user ${user.login} (id ${user.id})`);
 		return true;
 	} catch (err) {
 		logger.error(`[User] Unable to delete user ${id} : ${err}`);
@@ -266,7 +266,7 @@ async function createDefaultGuests() {
 	}
 	let maxGuests = guestsToCreate.length;
 	if (getConfig().isTest) maxGuests = 3;
-	logger.debug(`[User] Creating ${maxGuests} new guest accounts`);
+	logger.debug( `[User] Creating ${maxGuests} new guest accounts`);
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await createUser({
 			login: guestsToCreate[i],
@@ -274,7 +274,7 @@ async function createDefaultGuests() {
 		});
 	}
 
-	logger.debug('[User] Default guest accounts created');
+	logger.debug( '[User] Default guest accounts created');
 }
 
 export async function initUserSystem() {

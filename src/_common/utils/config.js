@@ -5,7 +5,8 @@ import {parse, stringify} from 'ini';
 import osLocale from 'os-locale';
 import i18n from 'i18n';
 import {address} from 'ip';
-import {logger, configureLogger} from './logger';
+import {configureLogger} from './logger';
+import logger from 'winston';
 import {copy} from 'fs-extra';
 import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
@@ -93,7 +94,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 /** Initializing configuration */
 export async function initConfig(appPath, argv) {
 	if (argv.config) configFile = argv.config;
-	configureLogger(appPath, !!argv.debug);
+	await configureLogger(appPath, !!argv.debug);
 	config = {...config, appPath: appPath};
 	config = {...config, os: process.platform};
 

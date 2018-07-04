@@ -1,5 +1,5 @@
 import execa from 'execa';
-import logger from './logger';
+import logger from 'winston';
 import {asyncRequired} from './files';
 import {getConfig} from './config';
 import {timeToSeconds} from './date';

@@ -1,4 +1,4 @@
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 import {resolve, extname, basename} from 'path';
 
 import {
@@ -39,7 +39,7 @@ async function extractPreviewFiles(previewDir) {
 
 export async function cleanUpPreviewsFolder(config) {
 	const conf = config || getConfig();		
-	logger.debug('[Previews] Cleaning up preview generation');
+	logger.debug( '[Previews] Cleaning up preview generation');
 	const videofiles = await extractVideoFiles(resolve(conf.appPath,conf.PathMedias));
 	const previewfiles = await extractPreviewFiles(resolvedPathPreviews());		
 	// Read all preview files
@@ -62,7 +62,7 @@ export async function cleanUpPreviewsFolder(config) {
 		}
 		if (deletePreview) { 
 			asyncRemove(previewfile);
-			logger.debug(`[Previews] Cleaned up ${previewfile}`);
+			logger.debug( `[Previews] Cleaned up ${previewfile}`);
 		}
 	}
 }
@@ -103,7 +103,7 @@ export async function isPreviewAvailable(videofile) {
 	if (await asyncExists(videofilename)) {
 		videoStats = await asyncStat(videofilename);		
 	} else {
-		logger.debug(`[Previews] Main videofile does not exist : ${videofilename}`);
+		logger.debug( `[Previews] Main videofile does not exist : ${videofilename}`);
 		return undefined;
 	}	
 	const previewfileWOExt = basename(videofilename, extname(videofilename));
@@ -117,19 +117,19 @@ export async function isPreviewAvailable(videofile) {
 export async function createPreviews(config) {
 	try {
 		const conf = config || getConfig();		
-		logger.debug('[Previews] Starting preview generation');
+		logger.debug( '[Previews] Starting preview generation');
 		const videoFiles = await extractVideoFiles(resolve(conf.appPath,conf.PathMedias));
 		const previewFiles = await extractPreviewFiles(resolvedPathPreviews());		
 		const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
 		for (const videoPreview of videoFilesToPreview) {
 			await createPreview(videoPreview);
-			logger.debug(`[Previews] Generated ${videoPreview.videofile}`);
+			logger.debug( `[Previews] Generated ${videoPreview.videofile}`);
 		}
 		
 		if (videoFilesToPreview.length > 0) {
 			logger.info(`[Previews] Finished generating ${videoFilesToPreview.length} previews`);
 		} else {
-			logger.debug('[Previews] No preview to generate');
+			logger.debug( '[Previews] No preview to generate');
 		}
 	} catch (err) {
 		logger.error(err);

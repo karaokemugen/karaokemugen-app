@@ -19,7 +19,7 @@ import {promisify} from 'util';
 import isEmpty from 'lodash.isempty';
 import sample from 'lodash.sample';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 const plc = require('./playlist');
 const sleep = promisify(setTimeout);
 
@@ -215,7 +215,7 @@ export function exit(rc) {
 	logger.info('[Engine] Player has shut down');
 
 	closeUserDatabase().then(() => {
-		logger.info('[Engine] Database closed');		
+		logger.info('[Engine] Database closed');
 		console.log('\nMata ne !\n');
 		if (process.platform !== 'win32' || !process.stdout.isTTY) process.exit(rc); 
 		if (rc !== 0) readlineSync.question('Press enter to exit', {hideEchoBack: true});
@@ -235,7 +235,7 @@ async function playPlayer() {
 }
 
 function sendMessageToPlayer(string, duration) {
-	logger.info(`[Engine] I have a message from another time... : ${string}`);	
+	logger.info(`[Engine] I have a message from another time... : ${string}`);
 	message(string, duration);
 }
 
@@ -363,14 +363,14 @@ async function playingUpdated() {
 }
 
 async function playerEnding() {
-	logger.debug('[Engine] Player Ending event triggered');
+	logger.debug( '[Engine] Player Ending event triggered');
 	if (internalState.playerNeedsRestart) {
 		logger.info('[Engine] Player restarts, please wait');
 		internalState.playerNeedsRestart = false;				
 		await restartPlayer();
 	}
 	const conf = getConfig();
-	logger.debug('[Jingles] Songs before next jingle : '+ (conf.EngineJinglesInterval - internalState.counterToJingle));
+	logger.debug( '[Jingles] Songs before next jingle : '+ (conf.EngineJinglesInterval - internalState.counterToJingle));
 	if (internalState.counterToJingle >= conf.EngineJinglesInterval) {
 		state.engine.currentlyPlayingKara = -1;
 		playJingle();
@@ -397,7 +397,7 @@ async function tryToReadKaraInPlaylist() {
 			const kara = await plc.getCurrentSong();
 			let karaForLogging = { ...kara };
 			karaForLogging.subtitle = '[Not logging ASS data]';
-			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
+			logger.debug( '[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
 			let serie = kara.serie;
 			let title = kara.title;
 			if (isEmpty(serie)) serie = kara.singer;
@@ -481,7 +481,7 @@ export async function getKaras(filter, lang, from, size, token) {
 }
 
 export async function getRandomKara(filter, token) {
-	logger.debug('[Engine] Requesting a random song');
+	logger.debug( '[Engine] Requesting a random song');
 	return await plc.getRandomKara(internalState.currentPlaylistID,filter,token.username);
 }
 
@@ -511,7 +511,7 @@ export async function getTags(lang) {
 export async function exportPL(playlist_id) {
 	const pl = await plc.getPlaylistInfo(playlist_id);		
 	try {
-		logger.debug(`[Engine] Exporting playlist ${pl.name}`);
+		logger.debug( `[Engine] Exporting playlist ${pl.name}`);
 		return await plc.exportPlaylist(playlist_id);
 	} catch(err) {
 		throw {
@@ -523,7 +523,7 @@ export async function exportPL(playlist_id) {
 
 export async function importPL(playlist,username) {
 	try {
-		logger.debug(`[Engine] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
+		logger.debug( `[Engine] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
 		return await plc.importPlaylist(playlist,username);
 	} catch(err) {
 		logger.error(err);
@@ -639,7 +639,7 @@ export async function deleteKara(plc_ids,playlist_id,token) {
 		karas = [plc_ids];
 	}
 	const plcData = await plc.getPLCInfoMini(karas[0]);
-	logger.info(`[Engine] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);	
+	logger.info(`[Engine] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);
 	try {
 		//If token is present, a user is trying to remove a karaoke
 		if (token) if (plcData.username !== token.username) throw 'You cannot delete a song you did not add';
@@ -876,7 +876,7 @@ export async function copyKaraToPL(plc_id, playlist_id, pos) {
 		plc.getPLCInfoMini(plcs[0]),
 		plc.getPlaylistInfo(playlist_id)
 	]);	
-	logger.info(`[Engine] Copying ${plcs.length} karaokes to playlist ${pl.name} : ${plcData.title}...`);	
+	logger.info(`[Engine] Copying ${plcs.length} karaokes to playlist ${pl.name} : ${plcData.title}...`);
 	try {
 		await plc.copyKaraToPlaylist(plcs, playlist_id, pos);
 		return playlist_id;

@@ -4,7 +4,7 @@ import {check, initValidators} from '../_common/utils/validators';
 import {karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import {deleteBackupDirs, backupKaraDirs, extractAllKaraFiles, getAllKaras} from '../_admin/generate_karasdb';
 import {getConfig} from '../_common/utils/config';
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 const karaDB = require('../_dao/kara');
 
 /**

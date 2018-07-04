@@ -5,7 +5,7 @@ import {getConfig} from '../_common/utils/config';
 import {findUserByID, findUserByName} from '../_services/user';
 import {resolve} from 'path';
 import {now} from 'unix-timestamp';
-import logger from '../_common/utils/logger';
+import logger from 'winston';
 import deburr from 'lodash.deburr';
 import isEmpty from 'lodash.isempty';
 import sample from 'lodash.sample';
@@ -82,7 +82,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 	} else {
 		quotaLeft = -1;
 	}
-	logger.debug(`[User] Updating quota left for ${user.login} : ${quotaLeft}`);
+	logger.debug( `[User] Updating quota left for ${user.login} : ${quotaLeft}`);
 	emitWS('quotaAvailableUpdated', {
 		username: user.login,
 		quotaLeft: quotaLeft,
@@ -1125,7 +1125,7 @@ export async function next() {
 	});
 	// Test if we're at the end of the playlist and if RepeatPlaylist is set.
 	if (readpos >= playlist.length && +conf.EngineRepeatPlaylist === 0) {
-		logger.debug('[PLC] End of playlist.');	
+		logger.debug( '[PLC] End of playlist.');
 		await setPlaying(null,playlist_id);
 		throw 'Current position is last song!';
 	} else {
