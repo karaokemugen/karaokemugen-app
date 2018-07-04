@@ -169,7 +169,7 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	const data = [];
 	let index = 1;
 	for (const serie of mapSeries.keys()) {
-		for (const karaIndex in mapSeries.get(serie)) {
+		for (const karaIndex of mapSeries.get(serie)) {
 			data.push({
 				$id_serie: index,
 				$id_kara: karaIndex
