@@ -23,15 +23,15 @@ function getLangFromFile(fileLang) {
 }
 
 export function getFileLangFromKara(karaLang) {
-	return specialLangMap[karaLang] || karaLang.toUpperCase();	
+	return specialLangMap[karaLang] || karaLang.toUpperCase();
 }
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
-	const infos = karaFileName.split(/\s+-\s+/); // LANGUAGE - SERIES - ORDER - TITLE
+	const infos = karaFileName.split(/\s+-\s+/); // LANGUAGE - SERIES - TYPE+ORDER - TITLE
 
 	if (infos.length < 3) {
-		throw 'Kara filename \'' + karaFileName + '\' does not respect naming convention';
+		throw `Kara filename "${karaFileName} does not respect naming convention`;
 	}
 	// Adding in 5th position the number extracted from the type field.
 	const orderInfos = infos[2].match(/^([a-zA-Z0-9 ]{2,30}?)(\d*)$/);
@@ -47,7 +47,8 @@ export function karaFilenameInfos(karaFile) {
 	};
 }
 
-function strictModeError(karaData, data) {	
+function strictModeError(karaData, data) {
+	delete karaData.ass;
 	logger.error(`[Gen] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,2)}`);
 	error = true;
 }
@@ -55,7 +56,7 @@ function strictModeError(karaData, data) {
 export async function getDataFromKaraFile(karafile) {
 	const conf = getConfig();
 	const karaData = await parseKara(karafile);
-	
+
 	// Code to keep compatibility with v2 kara files.
 	karaData.mediafile = karaData.mediafile || karaData.videofile;
 	karaData.mediasize = karaData.mediasize || karaData.videosize;
@@ -82,7 +83,7 @@ export async function getDataFromKaraFile(karafile) {
 	}
 	karaData.karafile = karafile;
 
-	let mediaFile;	
+	let mediaFile;
 
 	try {
 		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
@@ -98,12 +99,10 @@ export async function getDataFromKaraFile(karafile) {
 	if (mediaFile || getConfig().optNoMedia) {
 		const subFile = await findSubFile(mediaFile, karaData);
 		await extractAssInfos(subFile, karaData);
-		await extractMediaTechInfos(mediaFile, karaData);		
+		await extractMediaTechInfos(mediaFile, karaData);
 		if (karaData.error) error = true;
 	}
 
-	karaData.viewcount = 0;
-	
 	if (error) karaData.error = true;
 
 	return karaData;
@@ -114,7 +113,7 @@ export async function extractAssInfos(subFile, karaData) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
 		karaData.ass = karaData.ass.replace(/\r/g, '');
 		const subChecksum = checksum(karaData.ass);
-		if (subChecksum !== karaData.subchecksum) {			
+		if (subChecksum !== karaData.subchecksum) {
 			karaData.isKaraModified = true;
 			karaData.subchecksum = subChecksum;
 			if (getConfig().optStrict) strictModeError(karaData, 'subchecksum');
@@ -130,7 +129,7 @@ export async function extractMediaTechInfos(mediaFile, karaData) {
 	if (!conf.optNoMedia) {
 		const mediaStats = await asyncStat(mediaFile);
 		if (mediaStats.size !== +karaData.mediasize) {
-			karaData.isKaraModified = true;			
+			karaData.isKaraModified = true;
 			karaData.mediasize = mediaStats.size;
 
 			const mediaData = await getMediaInfo(mediaFile);
@@ -138,28 +137,17 @@ export async function extractMediaTechInfos(mediaFile, karaData) {
 
 			karaData.mediagain = mediaData.audiogain;
 			karaData.mediaduration = mediaData.duration;
-			if (conf.optStrict) strictModeError(karaData, 'mediasize/gain/duration');			
+			if (conf.optStrict) strictModeError(karaData, 'mediasize/gain/duration');
 		}
 	}
 }
 
 export async function writeKara(karafile, karaData) {
-	const infosToWrite = (getKara(karaData));	
-	if (karaData.isKaraModified === false) {		
+	const infosToWrite = (getKara(karaData));
+	if (karaData.isKaraModified === false) {
 		return;
-	}	
+	}
 	infosToWrite.datemodif = timestamp.now();
-	// Transforming medias -> videos for now
-	// Delete this when the .kara format update goes live
-	infosToWrite.videofile = infosToWrite.mediafile;
-	infosToWrite.videogain = infosToWrite.mediagain;
-	infosToWrite.videosize = infosToWrite.mediasize;
-	infosToWrite.videoduration = infosToWrite.mediaduration;
-	delete infosToWrite.mediaduration;
-	delete infosToWrite.mediasize;
-	delete infosToWrite.mediagain;
-	delete infosToWrite.mediafile;
-	
 	delete infosToWrite.karafile;
 	karaData.datemodif = infosToWrite.datemodif;
 	await asyncWriteFile(karafile, stringify(infosToWrite));
@@ -168,11 +156,11 @@ export async function writeKara(karafile, karaData) {
 export async function parseKara(karaFile) {
 	let data = await asyncReadFile(karaFile, 'utf-8');
 	data = data.replace(/\r/g, '');
-	return parseini(data);	
+	return parseini(data);
 }
 
 export async function extractVideoSubtitles(videoFile, kid) {
-	const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kid}.ass`);	
+	const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kid}.ass`);
 	try {
 		await extractSubtitles(videoFile, extractFile);
 		return extractFile;
@@ -190,7 +178,7 @@ async function findSubFile(videoFile, kara) {
 			} catch (err) {
 				// Not blocking.
 				logger.warn('[Kara] Could not extract subtitles from video file ' + videoFile);
-				error = true;	
+				error = true;
 			}
 		}
 	} else {

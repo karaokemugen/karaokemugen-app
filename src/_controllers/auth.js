@@ -11,9 +11,8 @@ const loginErr = {
 };
 
 async function checkLogin(username, password) {
-	const config = getConfig();	
-	if (!await checkUserNameExists(username)) throw false;
-	if (!await checkPassword(username, password)) throw false;
+	const config = getConfig();
+	if (!await checkUserNameExists(username) || !await checkPassword(username, password)) throw false;
 	const role = await getRole(username);
 	updateLastLoginName(username);
 	return {
@@ -51,11 +50,11 @@ module.exports = function authController(router) {
  *   "role": "admin"
  * }
  * @apiError 401 Unauthorized
- *  
+ *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 401 Unauthorized
  */
-		if (!req.body.password) req.body.password = '';		
+		if (!req.body.password) req.body.password = '';
 		try {
 			const token = await checkLogin(req.body.username, req.body.password);
 			res.send(token);
@@ -88,7 +87,7 @@ module.exports = function authController(router) {
  *   "role": "user"
  * }
  * @apiError 500 Internal Server Error
- *  
+ *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -98,9 +97,9 @@ module.exports = function authController(router) {
  */
 		if (!req.body.fingerprint || req.body.fingerprint === '') {
 			res.status(401).send(loginErr);
-		} else {			
+		} else {
 			try {
-				const guest = await findFingerprint(req.body.fingerprint);	
+				const guest = await findFingerprint(req.body.fingerprint);
 				if (guest) {
 					const token = await checkLogin(guest, req.body.fingerprint);
 					updateUserFingerprint(guest, req.body.fingerprint);
@@ -112,11 +111,11 @@ module.exports = function authController(router) {
 						data: {
 						}
 					});
-				}	
+				}
 			} catch (err) {
 				res.status(401).send(loginErr);
-			}		
-		}		
+			}
+		}
 	});
 
 	router.get('/checkauth', requireAuth, (req, res) => {
