@@ -11,8 +11,7 @@
     "plugins": [
         "react"
     ],
-    "rules": {
-		"jsx-a11y/href-no-hash": [0],
+    "rules": {		
         "brace-style": [
             "error",
             "1tbs"
