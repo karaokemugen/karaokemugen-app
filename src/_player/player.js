@@ -2,12 +2,10 @@ import logger from 'winston';
 import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_common/utils/files';
-import remove from 'lodash.remove';
 import sample from 'lodash.sample';
-import isEmpty from 'lodash.isempty';
 import {emit,on} from '../_common/utils/pubsub';
 import sizeOf from 'image-size';
-import {buildJinglesList} from './jingles';
+import {getSingleJingle, buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
 import {spawn} from 'child_process';
 import {exit} from '../_services/engine';
@@ -17,8 +15,7 @@ import {promisify} from 'util';
 import {endPoll} from '../_services/poll';
 
 const sleep = promisify(setTimeout);
-let currentJinglesList = [];
-let jinglesList = [];
+
 let displayingInfo = false;
 let player;
 let playerMonitor;
@@ -45,16 +42,11 @@ state.player = {
 };
 
 on('engineStatusChange', (newstate) => {
-	state.engine = newstate[0];	
+	state.engine = newstate[0];
 });
 
 on('playerStatusChange', (newstate) => {
-	state.player = newstate[0];	
-});
-
-on('jinglesReady', (list) => {
-	jinglesList = Array.prototype.concat(list[0]);	
-	currentJinglesList = Array.prototype.concat(jinglesList); 
+	state.player = newstate[0];
 });
 
 function emitPlayerState() {
@@ -84,32 +76,32 @@ async function extractBackgroundFiles(backgroundDir) {
 	return backgroundFiles;
 }
 
-async function loadBackground(mode) {	
+async function loadBackground(mode) {
 	const conf = getConfig();
 	if (!mode) mode = 'replace';
 	// Default background
 	let backgroundFiles = [];
 	const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
 	let backgroundImageFile = defaultImageFile;
-	if (!isEmpty(conf.PlayerBackground)) {
-		backgroundImageFile = resolve(conf.appPath,conf.PathBackgrounds,conf.PlayerBackground);	
+	if (conf.PlayerBackground) {
+		backgroundImageFile = resolve(conf.appPath,conf.PathBackgrounds,conf.PlayerBackground);
 		if (await asyncExists(backgroundImageFile)) {
 			// Background provided in config file doesn't exist, reverting to default one provided.
 			logger.warn(`[Player] Unable to find background file ${backgroundImageFile}, reverting to default one`);
 			backgroundFiles.push(defaultImageFile);
-		} 				
+		}
 	} else {
 		// PlayerBackground is empty, thus we search through all backgrounds paths and pick one at random
 		backgroundFiles = await extractAllBackgroundFiles();
 		// If backgroundFiles is empty, it means no file was found in the directories scanned.
 		// Reverting to original, supplied background :
-		if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);		
+		if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);
 	}
 	backgroundImageFile = sample(backgroundFiles);
 	logger.debug('[Player] Background : '+backgroundImageFile);
 	let videofilter = '';
-	if (conf.EngineDisplayConnectionInfoQRCode !== 0 && 
-		conf.EngineDisplayConnectionInfo !== 0) {			
+	if (conf.EngineDisplayConnectionInfoQRCode !== 0 &&
+		conf.EngineDisplayConnectionInfo !== 0) {
 		const dimensions = sizeOf(backgroundImageFile);
 		let QRCodeWidth;
 		let QRCodeHeight;
@@ -119,7 +111,7 @@ async function loadBackground(mode) {
 		const posY = Math.floor(dimensions.height*0.015);
 		const qrCode = resolve(conf.appPath,conf.PathTemp,'qrcode.png').replace(/\\/g,'/');
 		videofilter = `lavfi-complex="movie=\\'${qrCode}\\'[logo]; [logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1] overlay=${posX}:${posY}[vo]"`;
-	} 
+	}
 	try {
 		let loads = [
 			player.load(backgroundImageFile,mode,videofilter)
@@ -136,13 +128,13 @@ export async function initPlayerSystem(initialState) {
 	state.player.fullscreen = initialState.fullscreen;
 	state.player.stayontop = initialState.ontop;
 	state.engine = initialState;
-	buildJinglesList();	
+	buildJinglesList();
 	const conf = getConfig();
 	await buildQRCode(conf.osURL);
 	logger.debug('[Player] QRCode generated');
 	await startmpv();
 	emitPlayerState();
-	logger.debug('[Player] Player is READY');					
+	logger.debug('[Player] Player is READY');
 }
 
 function getmpvVersion(path) {
@@ -153,16 +145,16 @@ function getmpvVersion(path) {
 			output += data.toString();
 		});
 		proc.on('close', () => {
-			//FIXME : test if output.spit(' ')[1] is actually a valid version number
+			//FIXME : test if output.split(' ')[1] is actually a valid version number
 			// using the semver format.
-			resolve (output.split(' ')[1]);			
+			resolve (output.split(' ')[1]);
 		});
 	});
 }
 
 async function startmpv() {
 	const conf = getConfig();
-	if (+conf.PlayerMonitor) { 
+	if (+conf.PlayerMonitor) {
 		monitorEnabled = true;
 	} else {
 		monitorEnabled = false;
@@ -187,51 +179,54 @@ async function startmpv() {
 		if (conf.PlayerPIPPositionX === 'Right') positionX = 99;
 		if (conf.PlayerPIPPositionY === 'Top') positionY = 5;
 		if (conf.PlayerPIPPositionY === 'Center') positionY = 50;
-		if (conf.PlayerPIPPositionY === 'Bottom') positionY = 99;		
+		if (conf.PlayerPIPPositionY === 'Bottom') positionY = 99;
 		mpvOptions.push(`--geometry=${positionX}%:${positionY}%`);
 	}
-	if (!isEmpty(conf.mpvVideoOutput)) {
+	if (conf.mpvVideoOutput) {
 		mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
 	} else {
 		//Force direct3d for Windows users
+		//This is an issue with mpv's recent versions as direct3d bugs out some videos
+		//and backgrounds
+		//This is not a problem with the bundled 0.27 version, but is with 0.28
+		//FIXME : Remove this if a fixed mpv for windows is released and direct3d works great again
 		if (conf.os === 'win32') mpvOptions.push('--vo=direct3d');
 	}
-	if (!isEmpty(conf.PlayerScreen)) {
+	if (conf.PlayerScreen) {
 		mpvOptions.push(`--screen=${conf.PlayerScreen}`);
 		mpvOptions.push(`--fs-screen=${conf.PlayerScreen}`);
 	}
 	// Fullscreen is disabled if pipmode is set.
 	if (conf.PlayerFullscreen === 1 && !conf.PlayerPIP) {
 		mpvOptions.push('--fullscreen');
-		state.player.fullscreen = true;		
+		state.player.fullscreen = true;
 	}
 	if (conf.PlayerStayOnTop === 1) {
 		state.player.stayontop = true;
 		mpvOptions.push('--ontop');
 	}
 	if (conf.PlayerNoHud === 1) mpvOptions.push('--no-osc');
-	if (conf.PlayerNoBar === 1) mpvOptions.push('--no-osd-bar');			
-	//On all platforms, check if we're using mpv at least version 0.20 or abort saying the mpv provided is too old. 
+	if (conf.PlayerNoBar === 1) mpvOptions.push('--no-osd-bar');
+	//On all platforms, check if we're using mpv at least version 0.20 or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
 	const mpvVersion = await getmpvVersion(conf.BinmpvPath);
-	const mpvVersionSplit = mpvVersion.split('.');
-	logger.debug(`[Player] mpv version : ${mpvVersion}`);	
-	
+	logger.debug(`[Player] mpv version : ${mpvVersion}`);
+
 	//If we're on macOS, add --no-native-fs to get a real
 	// fullscreen experience on recent macOS versions.
-	if (parseInt(mpvVersionSplit[1], 10) < 25) {
+	if (parseInt(mpvVersion.split('.')[1], 10) < 25) {
 		// Version is too old. Abort.
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
 		logger.error(`[Player] mpv binary : ${conf.BinmpvPath}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
 		exit(1);
 	}
-	if (conf.os === 'darwin' && parseInt(mpvVersionSplit[1], 10) > 26) mpvOptions.push('--no-native-fs');
+	if (conf.os === 'darwin' && parseInt(mpvVersion.split('.')[1], 10) > 26) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
 	logger.debug(`[Player] mpv binary : ${conf.BinmpvPath}`);
-	let socket;	
+	let socket;
 	if (conf.os === 'win32') socket = '\\\\.\\pipe\\mpvsocket';
-	if (conf.os === 'darwin' || conf.os === 'linux') socket = '/tmp/km-node-mpvsocket';	
+	if (conf.os === 'darwin' || conf.os === 'linux') socket = '/tmp/km-node-mpvsocket';
 	player = new mpv(
 		{
 			ipc_command: '--input-ipc-server',
@@ -257,7 +252,7 @@ async function startmpv() {
 			'--geometry=1%:99%',
 			`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`
 		];
-		if (!isEmpty(conf.mpvVideoOutput)) {
+		if (conf.mpvVideoOutput) {
 			mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
 		} else {
 			//Force direct3d for Windows users
@@ -277,19 +272,19 @@ async function startmpv() {
 			mpvOptions
 		);
 	}
-	
+
 	// Starting up mpv
 	try {
 		let promises = [
 			player.start()
 		];
 		if (monitorEnabled) promises.push(playerMonitor.start());
-		await Promise.all(promises);		
+		await Promise.all(promises);
 	} catch(err) {
 		logger.error(`[Player] mpvAPI : ${err}`);
 		throw err;
 	}
-	await loadBackground();	
+	await loadBackground();
 	player.observeProperty('sub-text',13);
 	player.observeProperty('volume',14);
 	player.observeProperty('duration',15);
@@ -310,49 +305,52 @@ async function startmpv() {
 		state.player.subtext = status['sub-text'];
 		state.player.volume = status.volume;
 		state.player.fullscreen = status.fullscreen;
-		emitPlayerState();		
+		emitPlayerState();
 	});
 	player.on('paused',() => {
 		logger.debug('[Player] Paused event triggered');
 		state.player.playing = false;
 		state.player.playerstatus = 'pause';
 		if (monitorEnabled) playerMonitor.pause();
-		emitPlayerState();		
+		emitPlayerState();
 	});
 	player.on('resumed',() => {
 		logger.debug('[Player] Resumed event triggered');
 		state.player.playing = true;
 		state.player.playerstatus = 'play';
 		if (monitorEnabled) playerMonitor.play();
-		emitPlayerState();		
+		emitPlayerState();
 	});
 	player.on('timeposition',(position) => {
 		// Returns the position in seconds in the current song
-		state.player.timeposition = position;						
+		state.player.timeposition = position;
 		emitPlayerState();
 		// Display informations if timeposition is 8 seconds before end of song
-		if (position >= (state.player.duration - 8) && 
+		if (position >= (state.player.duration - 8) &&
 						!displayingInfo &&
-						state.player.mediaType === 'song')						
+						state.player.mediaType === 'song')
 			displaySongInfo(state.player.currentSongInfos);
+		// Display KM's banner if position reaches halfpoint in the song
 		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.mediaType === 'song') displayInfo(8000);
 		const conf = getConfig();
+		// Stop poll if position reaches 10 seconds before end of song
 		if (Math.floor(position) >= Math.floor(state.player.duration - 10) && state.player.mediaType === 'song' &&
-		conf.EngineSongPoll && 
+		conf.EngineSongPoll &&
 		!songNearEnd) {
 			songNearEnd = true;
 			endPoll();
 		}
+		// Synchronize monitor
 		if (monitorEnabled) playerMonitor.goToPosition(position);
 	});
 	logger.debug('[Player] mpv initialized successfully');
-	state.player.ready = true;	
+	state.player.ready = true;
 	return true;
 }
 
 export async function play(mediadata) {
 	const conf = getConfig();
-	logger.debug('[Player] Play event triggered');		
+	logger.debug('[Player] Play event triggered');
 	state.player.playing = true;
 	//Search for media file in the different Pathmedias
 	const PathsMedias = conf.PathMedias.split('|');
@@ -360,7 +358,7 @@ export async function play(mediadata) {
 	let mediaFile;
 	let subFile;
 	try {
-		mediaFile = await resolveFileInDirs(mediadata.media,PathsMedias);		
+		mediaFile = await resolveFileInDirs(mediadata.media,PathsMedias);
 	} catch (err) {
 		logger.debug(`[Player] Error while resolving media path : ${err}`);
 		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
@@ -375,14 +373,14 @@ export async function play(mediadata) {
 		if (mediadata.subfile !== 'dummy.ass') subFile = await resolveFileInDirs(mediadata.subfile,PathsSubs);
 	} catch(err) {
 		logger.debug(`[Player] Error while resolving subs path : ${err}`);
-		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);		
+		logger.warn(`[Player] Subs NOT FOUND : ${mediadata.subfile}`);
 	}
 	logger.debug(`[Player] Audio gain adjustment : ${mediadata.gain}`);
-	logger.debug(`[Player] Loading media : ${mediaFile}`);		
+	logger.debug(`[Player] Loading media : ${mediaFile}`);
 	try {
 		let options = [];
 		options.push(`replaygain-fallback=${mediadata.gain}`) ;
-			
+
 		if (mediaFile.endsWith('.mp3')) {
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
@@ -390,7 +388,7 @@ export async function play(mediadata) {
 				options.push(`external-file=${defaultImageFile.replace(/\\/g,'/')}`);
 				options.push('force-window=yes');
 				options.push('image-display-duration=inf');
-				options.push('vid=1');				
+				options.push('vid=1');
 			}
 		}
 		let loads = [player.load(mediaFile,'replace', options)];
@@ -400,17 +398,17 @@ export async function play(mediadata) {
 		player.play();
 		if (monitorEnabled) {
 			playerMonitor.play();
-			playerMonitor.mute();		
+			playerMonitor.mute();
 		}
 		state.player.playerstatus = 'play';
 		if (subFile) try {
 			let subs = [player.addSubtitles(subFile)];
 			if (monitorEnabled) subs.push(playerMonitor.addSubtitles(subFile));
-			Promise.all(subs);
+			await Promise.all(subs);
 		} catch(err) {
 			logger.error(`[Player] Unable to load subtitles : ${err}`);
 		}
-		// Displaying infos about current song on screen.					
+		// Displaying infos about current song on screen.
 		displaySongInfo(mediadata.infos);
 		state.player.currentSongInfos = mediadata.infos;
 		loadBackground('append');
@@ -419,7 +417,7 @@ export async function play(mediadata) {
 		songNearEnd = false;
 	} catch(err) {
 		logger.error(`[Player] Error loading media ${mediadata.media} : ${JSON.stringify(err)}`);
-	}	
+	}
 }
 
 export function setFullscreen(fsState) {
@@ -429,7 +427,7 @@ export function setFullscreen(fsState) {
 	} else {
 		player.leaveFullscreen();
 	}
-	return state;
+	return state.player.fullscreen;
 }
 
 export function toggleOnTop() {
@@ -520,7 +518,7 @@ export async function message(message, duration) {
 	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
 	if (state.player.playing === false) {
 		await sleep(duration);
-		displayInfo();		
+		displayInfo();
 	}
 }
 
@@ -537,14 +535,14 @@ export async function displaySongInfo(infos) {
 	player.freeCommand(JSON.stringify(command));
 	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
 	await sleep(8000);
-	displayingInfo = false;		
+	displayingInfo = false;
 }
 
 export function displayInfo(duration) {
 	const conf = getConfig();
 	if (!duration) duration = 100000000;
 	let text = '';
-	if (conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;		
+	if (conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;
 	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://mugen.karaokes.moe`;
 	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {
@@ -577,57 +575,39 @@ export async function quitmpv() {
 	if (playerMonitor) {
 		playerMonitor.quit();
 		playerMonitor = null;
-	}	
-	state.player.ready = false;	
+	}
+	state.player.ready = false;
 	return true;
 }
 
 export async function playJingle() {
 	state.player.playing = true;
 	state.player.mediaType = 'jingle';
-	if (currentJinglesList.length > 0) {
-		logger.info('[Player] Jingle time !');
-		const jingle = sample(currentJinglesList);
-		//Let's remove the jingle we just selected so it won't be picked again next time.
-		remove(currentJinglesList, (j) => {	
-			return j.file === jingle.file;
-		});
-		//If our current jingle files list is empty after the previous removal
-		//Fill it again with the original list.
-		if (currentJinglesList.length === 0) {
-			currentJinglesList = Array.prototype.concat(jinglesList);	
-		}
-		logger.debug('[Player] Playing jingle '+jingle.file);
-		if (!isEmpty(jingle)) {
-			try { 
-				let loads = [
-					player.load(jingle.file,'replace',[`replaygain-fallback=${jingle.gain}`])
-				];
-				if (monitorEnabled) loads.push(playerMonitor.load(jingle.file,'replace',[`replaygain-fallback=${jingle.gain}`]));
-				await Promise.all(loads);
-				player.play();
-				if (monitorEnabled) playerMonitor.play();
-				displayInfo();
-				state.player.playerstatus = 'play';
-				loadBackground('append');
-				state.player._playing = true;
-				emitPlayerState();
-			} catch(err) {
-				logger.error(`[Player] Unable to load jingle file ${jingle.file} with gain modifier ${jingle.gain} : ${JSON.stringify(err)}`);				
-			}			
-		} else {				
-			state.player.playerstatus = 'play';
-			loadBackground();
+	const jingle = getSingleJingle();
+	if (jingle) {
+		try {
+			logger.debug(`[Player] Playing jingle ${jingle.file}`);
+			let loads = [
+				player.load(jingle.file,'replace',[`replaygain-fallback=${jingle.gain}`])
+			];
+			if (monitorEnabled) loads.push(playerMonitor.load(jingle.file,'replace',[`replaygain-fallback=${jingle.gain}`]));
+			await Promise.all(loads);
+			player.play();
+			if (monitorEnabled) playerMonitor.play();
 			displayInfo();
-			state._playing = true;
+			state.player.playerstatus = 'play';
+			loadBackground('append');
+			state.player._playing = true;
 			emitPlayerState();
+		} catch(err) {
+			logger.error(`[Player] Unable to load jingle file ${jingle.file} : ${JSON.stringify(err)}`);
 		}
 	} else {
 		logger.debug('[Jingles] No jingle to play.');
 		state.player.playerstatus = 'play';
 		loadBackground();
 		displayInfo();
-		state.player._playing = true;
+		state._playing = true;
 		emitPlayerState();
 	}
 }

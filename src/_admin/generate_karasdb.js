@@ -185,8 +185,8 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 
 	const altNameData = [];
 	const i18nData = [];
-	const altNamesFile = await readSeriesFile(altSeriesFile);
-	for (const serie of altNamesFile.series) {
+	const seriesData = await readSeriesFile(altSeriesFile);
+	for (const serie of seriesData.series) {
 		if (serie.aliases) altNameData.push({
 			$serie_altnames: serie.aliases.join(','),
 			$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
@@ -205,7 +205,7 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 	}
 	// Checking if some series present in .kara files are not present in the series file
 	for (const serie of mapSeries.keys()) {
-		if (!findSeries(serie, altNamesFile)) {
+		if (!findSeries(serie, seriesData)) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in the series file`);
 			if (getConfig().optStrict) strictModeError(serie);
