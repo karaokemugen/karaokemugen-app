@@ -185,7 +185,7 @@ async function downloadMedias(ftp, files, mediasPath) {
 			bar1.update(Math.floor(info.bytes / 1000) / 1000);
 		});
 		try {
-			await fileTransfer(ftp, outputFile, file.name);		
+			await ftp.download(createWriteStream(outputFile), file.name);
 		} catch(err) {
 			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
 			ftpErrors.push(file.name);
@@ -196,20 +196,6 @@ async function downloadMedias(ftp, files, mediasPath) {
 		bar1.stop();
 	}
 	if (ftpErrors.length > 0) throw `Error during medias download : ${ftpErrors.toString()}`;
-}
-
-async function fileTransfer(ftp, output, input) {
-	await promiseRetry((retry) => {
-		return ftp.download(createWriteStream(output), input).catch(retry);				
-	}, {
-		retries: 10,
-		minTimeout: 100,
-		maxTimeout: 500
-	}).then(() => { 
-		return true;
-	}).catch((err) => {
-		throw err;
-	});	
 }
 
 async function listLocalMedias() {
@@ -250,23 +236,27 @@ async function checkDirs() {
 	const conf = getConfig();
 	const karaPaths = conf.PathKaras.split('|');
 	const karaPath = karaPaths[0];	
-	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) throw 'Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it.';		
+	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) {
+		logger.error('Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it.');		
+		return false;
+	}
+	return true;
 }
 
 export async function runBaseUpdate() {
 	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
 	updateRunning = true;	
 	try {
-		await checkDirs();
 		const [remoteMedias, localMedias] = await Promise.all([
 			listRemoteMedias(),
 			listLocalMedias()
-		]);		
-		await downloadBase();
-		const [updateBase, updateVideos] = await Promise.all([
-			compareBases(),
-			compareMedias(localMedias, remoteMedias)
-		]);
+		]);				
+		const updateVideos = await compareMedias(localMedias, remoteMedias);	
+		let updateBase;
+		if (!await checkDirs()) {
+			await downloadBase();
+			updateBase = await compareBases();
+		}	
 		updateRunning = false;
 		return !!(updateBase || updateVideos);
 	} catch (err) {
