@@ -193,7 +193,10 @@ export async function initEngine() {
 	if (currentPL_id) {
 		internalState.currentPlaylistID = currentPL_id;
 	} else {
-		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),1,1,0,0,'admin');
+		internalState.currentPlaylistID = await plc.createPlaylist(__('CURRENT_PLAYLIST'),{
+			visible: true,
+			current: true
+		},'admin');
 		logger.info('[Engine] Initial current playlist created');
 		if (!conf.isTest) {
 			inits.push(plc.buildDummyPlaylist(internalState.currentPlaylistID));
@@ -203,7 +206,10 @@ export async function initEngine() {
 	if (publicPL_id) {
 		internalState.publicPlaylistID = publicPL_id;
 	} else {
-		internalState.publicPlaylistID = await plc.createPlaylist(__('PUBLIC_PLAYLIST'),1,0,1,0,'admin');
+		internalState.publicPlaylistID = await plc.createPlaylist(__('PUBLIC_PLAYLIST'),{
+			visible: true,
+			public: true
+		},'admin');
 		logger.info('[Engine] Initial public playlist created');
 	}
 	updateModePlaylist();
@@ -658,12 +664,11 @@ export async function getAllPLs(token) {
 
 export async function createPL(playlist,username) {
 	return await plc.createPlaylist(
-		playlist.name,
-		playlist.flag_visible,
-		playlist.flag_current,
-		playlist.flag_public,
-		0,
-		username);
+		playlist.name,{
+			visible: playlist.flag_visible,
+			current: playlist.flag_current,
+			public: playlist.flag_public
+		}, username);
 }
 
 export async function getPLInfo(playlist_id, token) {

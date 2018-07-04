@@ -68,11 +68,10 @@ export async function importFavorites(favorites, token) {
 async function getAllFavorites(userList) {
 	const plcs = [];
 	const kara_ids = [];
-	let user;
-	for (user of userList) {
+	for (const user of userList) {
 		const res = await checkUserNameExists(user);
 		if (!res) {
-			logger.error(`[AutoMix] Username ${user} does not exist`);
+			logger.warn(`[AutoMix] Username ${user} does not exist`);
 		} else {
 			const plInfo = await getFavoritesPlaylist(user);
 			const pl = await getPlaylistContentsMini(plInfo.playlist_id);
@@ -100,7 +99,9 @@ export async function createAutoMix(params, username) {
 	}
 	const plcList = await getAllFavorites(users);
 	const autoMixPLName = `AutoMix ${date()}`;
-	const playlist_id = await createPlaylist(autoMixPLName,1,0,0,0,username);
+	const playlist_id = await createPlaylist(autoMixPLName,{
+		visible: true
+	},username);
 	// Copy karas from everyone listed
 	await copyKaraToPlaylist(plcList, playlist_id);
 	// Shuffle time.
@@ -124,9 +125,10 @@ export async function initFavoritesSystem() {
 	for (const user of users) {
 		const isFavoritePLExists = playlists.some(pl => {
 			return pl.username === user.login && pl.flag_favorites === 1 && user.type === 1;
-
 		});
-		if (!isFavoritePLExists && user.type === 1) await createPlaylist(`Faves : ${user.login}`,0,0,0,1,user.login);
+		if (!isFavoritePLExists && user.type === 1) await createPlaylist(`Faves : ${user.login}`,{
+			favorites: true
+		},user.login);
 	}
 }
 

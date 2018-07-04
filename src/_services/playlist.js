@@ -385,20 +385,20 @@ export async function editPlaylist(playlist_id,name,flag_visible) {
 	});
 }
 
-export async function createPlaylist(name,flag_visible,flag_current,flag_public,flag_favorites,username) {
-	if (+flag_current && +flag_public) throw 'A playlist cannot be current and public at the same time!';
-	if (+flag_favorites && (+flag_public || +flag_public)) throw 'A playlist cannot be favorite and current/public at the same time!';
-	if (+flag_public) await unsetPublicAllPlaylists();
-	if (+flag_current) await unsetCurrentAllPlaylists();
+export async function createPlaylist(name,opts,username) {
+	if (+opts.current && +opts.public) throw 'A playlist cannot be current and public at the same time!';
+	if (+opts.favorites && (+opts.public || +opts.public)) throw 'A playlist cannot be favorite and current/public at the same time!';
+	if (+opts.public) await unsetPublicAllPlaylists();
+	if (+opts.current) await unsetCurrentAllPlaylists();
 	const pl = await plDB.createPlaylist({
 		name: name,
 		NORM_name: deburr(name),
 		created_at: now(),
 		modified_at: now(),
-		flag_visible: +flag_visible,
-		flag_current: +flag_current,
-		flag_public: +flag_public,
-		flag_favorites: +flag_favorites,
+		flag_visible: opts.visible,
+		flag_current: opts.current,
+		flag_public: opts.public,
+		flag_favorites: opts.favorites,
 		username: username
 	});
 	return pl.lastID;
@@ -858,7 +858,9 @@ export async function importPlaylist(playlist, username, playlist_id) {
 	// Validations done. First creating playlist.
 	try {
 		if (!playlist_id) {
-			playlist_id = await createPlaylist(playlist.PlaylistInformation.name,playlist.PlaylistInformation.flag_visible,0,0,0,username);
+			playlist_id = await createPlaylist(playlist.PlaylistInformation.name, {
+				visible: playlist.PlaylistInformation.flag_visible
+			},username);
 		} else {
 			await emptyPlaylist(playlist_id);
 		}
