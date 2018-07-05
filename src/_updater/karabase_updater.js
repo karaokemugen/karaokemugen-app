@@ -35,9 +35,9 @@ async function decompressBase() {
 	const archive = archivePathList[0];	
 	if (await asyncExists(workPath)) await asyncRemove(workPath);
 	await asyncMkdirp(workPath);
-	logger.debug('[Updater] Decompressing base');
+	logger.debug( '[Updater] Decompressing base');
 	await decompress(resolve(archivePath, archive),workPath);
-	logger.debug('[Updater] Base decompressed');
+	logger.debug( '[Updater] Base decompressed');
 	return archive;
 }
 
@@ -71,7 +71,7 @@ async function compareBases() {
 		);
 		logger.info('[Updater] Updated alternate series name data');
 	}
-	logger.debug('[Updater] Comparing your base with the current one');
+	logger.debug( '[Updater] Comparing your base with the current one');
 	const [karasToUpdate, lyricsToUpdate] = await Promise.all([
 		compareDirs(karasMinePath, karasBasePath),
 		compareDirs(lyricsMinePath, lyricsBasePath)
@@ -85,7 +85,7 @@ async function compareBases() {
 		logger.info('[Updater] No update for your base');
 		return false;
 	} else {
-		logger.debug('[Updater] Updating base files');
+		logger.debug( '[Updater] Updating base files');
 		await Promise.all([
 			updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath,true),
 			updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath,true),
@@ -223,7 +223,7 @@ async function listLocalMedias() {
 			size: mediaStats.size
 		});
 	}
-	logger.debug('[Updater] Listed local media files');
+	logger.debug( '[Updater] Listed local media files');
 	return localMedias;
 }
 

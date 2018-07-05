@@ -528,7 +528,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	});
 
 	if (sql) {
-		logger.debug('[Gen] UPDATE SQL : ' + sql);
+		logger.debug( '[Gen] UPDATE SQL : ' + sql);
 		await userdb.exec(sql);
 	}
 

@@ -36,7 +36,7 @@ async function getAllVideoGains(jingleFiles) {
 				file: jinglefile,
 				gain: videodata.audiogain
 			});
-		logger.debug(`[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.audiogain} dB`);
+		logger.debug( `[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.audiogain} dB`);
 	}	
 	return jinglesList;
 }

@@ -15,13 +15,13 @@ import {getTags, getKaras, getKaraInfo} from '../_services/engine';
 
 module.exports = function adminController(router) {
 	const conf = getConfig();
-	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});		
+	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
 
 	router.get('/config', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		res.json(getConfig());
 	});
 
-	router.post('/config/backup', requireAuth, requireValidUser, requireAdmin, (req, res) => {		
+	router.post('/config/backup', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		backupConfig()
 			.then(() => res.status(200).send('Configuration file backuped to config.ini.backup'))
 			.catch(err => res.status(500).send('Error backuping config file: ' + err));
@@ -47,8 +47,8 @@ module.exports = function adminController(router) {
 			.then(() => res.status(200).send('Karas successfully generated'))
 			.catch(err => res.status(500).send('Error while generating karas: ' + err));
 	});
-	
-	router.post('/karas/importfile', upload.single('file'), (req, res) => {		
+
+	router.post('/karas/importfile', upload.single('file'), (req, res) => {
 		res.status(200).send(JSON.stringify(req.file));
 	});
 
@@ -66,7 +66,7 @@ module.exports = function adminController(router) {
 			.then(karas => res.json(karas))
 			.catch(err => {
 				console.log(err);
-				res.status(500).send('Error while fetching karas: ' + err)
+				res.status(500).send('Error while fetching karas: ' + err);
 			});
 	});
 
@@ -104,7 +104,7 @@ module.exports = function adminController(router) {
 		console.log(req.body);
 		addSerie(req.body)
 			.then(() => res.status(200).send('Series added'))
-			.catch(err => res.status(500).send('Error adding series: ' + err));		
+			.catch(err => res.status(500).send('Error adding series: ' + err));
 	});
 
 	router.get('/users', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
@@ -144,10 +144,10 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send('Error while creating user: ' + err));
 	});
 
-	router.put('/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {		
+	router.put('/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role)
 			.then(() => res.status(200).send('User edited'))
-			.catch(err => res.status(500).send('Error editing user: ' + err));			
+			.catch(err => res.status(500).send('Error editing user: ' + err));
 	});
 
 	router.delete('/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
