@@ -87,7 +87,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 	} else {
 		quotaLeft = -1;
 	}
-	logger.debug(`[User] Updating quota left for ${user.login} : ${quotaLeft}`);
+	logger.debug( `[User] Updating quota left for ${user.login} : ${quotaLeft}`);
 	emitWS('quotaAvailableUpdated', {
 		username: user.login,
 		quotaLeft: quotaLeft,

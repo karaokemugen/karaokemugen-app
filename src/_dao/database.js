@@ -115,7 +115,7 @@ async function openUserDatabase() {
 	const conf = getConfig();
 	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	if (!userDb) {
-		logger.debug('[DB] Opening user database');
+		logger.debug( '[DB] Opening user database');
 		userDb = await open(userDbFile, {verbose: true});
 		// Trace event.
 		if (conf.optSQL) {
@@ -203,7 +203,7 @@ export async function initDBSystem() {
 	//await getUserDb().run('PRAGMA LOCKING_MODE=EXCLUSIVE');
 
 	await compareDatabasesUUIDs();
-	logger.debug('[DBI] Database Interface is READY');
+	logger.debug( '[DBI] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Karaokes        : ${stats.totalcount}`);
 	logger.info(`Duration        : ${duration(stats.totalduration)}`);

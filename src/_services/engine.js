@@ -384,14 +384,14 @@ async function playingUpdated() {
 }
 
 async function playerEnding() {
-	logger.debug('[Engine] Player Ending event triggered');
+	logger.debug( '[Engine] Player Ending event triggered');
 	if (internalState.playerNeedsRestart) {
 		logger.info('[Engine] Player restarts, please wait');
 		internalState.playerNeedsRestart = false;
 		await restartPlayer();
 	}
 	const conf = getConfig();
-	logger.debug('[Jingles] Songs before next jingle : '+ (conf.EngineJinglesInterval - internalState.counterToJingle));
+	logger.debug( '[Jingles] Songs before next jingle : '+ (conf.EngineJinglesInterval - internalState.counterToJingle));
 	if (internalState.counterToJingle >= conf.EngineJinglesInterval) {
 		state.engine.currentlyPlayingKara = -1;
 		playJingle();
@@ -419,7 +419,7 @@ async function tryToReadKaraInPlaylist() {
 			const kara = await plc.getCurrentSong();
 			let karaForLogging = { ...kara };
 			karaForLogging.subtitle = '[Not logging ASS data]';
-			logger.debug('[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
+			logger.debug( '[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
 			let serie = kara.serie;
 			let title = kara.title;
 			if (!serie) serie = kara.singer;
@@ -512,7 +512,7 @@ export async function getKaras(filter, lang, from, size, token) {
 }
 
 export async function getRandomKara(filter, token) {
-	logger.debug('[Engine] Requesting a random song');
+	logger.debug( '[Engine] Requesting a random song');
 	return await plc.getRandomKara(internalState.currentPlaylistID,filter,token.username);
 }
 
@@ -558,7 +558,7 @@ export async function getTags(lang, filter, type) {
 export async function exportPL(playlist_id) {
 	const pl = await plc.getPlaylistInfo(playlist_id);
 	try {
-		logger.debug(`[Engine] Exporting playlist ${pl.name}`);
+		logger.debug( `[Engine] Exporting playlist ${pl.name}`);
 		return await plc.exportPlaylist(playlist_id);
 	} catch(err) {
 		throw {
@@ -570,7 +570,7 @@ export async function exportPL(playlist_id) {
 
 export async function importPL(playlist,username) {
 	try {
-		logger.debug(`[Engine] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
+		logger.debug( `[Engine] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
 		return await plc.importPlaylist(playlist,username);
 	} catch(err) {
 		logger.error(err);

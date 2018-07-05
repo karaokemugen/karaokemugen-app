@@ -264,7 +264,7 @@ export async function deleteUserById(id) {
 		//Reassign karas and playlists owned by the user to the admin user
 		await db.reassignToUser(user.id,1);
 		await db.deleteUser(user.id);
-		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
+		logger.debug( `[User] Deleted user ${user.login} (id ${user.id})`);
 		return true;
 	} catch (err) {
 		logger.error(`[User] Unable to delete user ${id} : ${err}`);
@@ -281,7 +281,7 @@ async function createDefaultGuests() {
 	}
 	let maxGuests = guestsToCreate.length;
 	if (getConfig().isTest) maxGuests = 3;
-	logger.debug(`[User] Creating ${maxGuests} new guest accounts`);
+	logger.debug( `[User] Creating ${maxGuests} new guest accounts`);
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await createUser({
 			login: guestsToCreate[i],
@@ -289,7 +289,7 @@ async function createDefaultGuests() {
 		});
 	}
 
-	logger.debug('[User] Default guest accounts created');
+	logger.debug( '[User] Default guest accounts created');
 }
 
 export async function initUserSystem() {

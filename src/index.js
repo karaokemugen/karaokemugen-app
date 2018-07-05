@@ -31,7 +31,7 @@ if (process.platform === 'win32' ) {
 	  input: process.stdin,
 	  output: process.stdout
 	});
-  
+
 	rl.on('SIGINT', () => {
 	  exit('SIGINT');
 	});
@@ -55,18 +55,18 @@ main()
 	});
 
 async function main() {
-	const argv = parseArgs();	
+	const argv = parseArgs();
 	let config = await initConfig(appPath, argv);
 	console.log(chalk.blue(logo));
 	console.log('Karaoke Player & Manager - http://mugen.karaokes.moe');
 	console.log(`Version ${chalk.bold.green(config.VersionNo)} (${chalk.bold.green(config.VersionName)})`);
-	console.log('================================================================');	
+	console.log('================================================================');
 	await parseCommandLineArgs(argv);
 	config = getConfig();
-	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
-	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
-	logger.debug(`[Launcher] Detected OS : ${config.os}`);
-	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
+	logger.debug( `[Launcher] SysPath detected : ${appPath}`);
+	logger.debug( `[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
+	logger.debug( `[Launcher] Detected OS : ${config.os}`);
+	logger.debug( '[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
 	// Checking binaries
 	await configureBinaries(config);
@@ -75,20 +75,20 @@ async function main() {
 	await checkPaths(config);
 
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
-	logger.debug('[Launcher] Copying input.conf to ' + resolve(appPath, config.PathTemp));
+	logger.debug( '[Launcher] Copying input.conf to ' + resolve(appPath, config.PathTemp));
 	await copy(
 		join(__dirname, '/_player/assets/input.conf'),
 		resolve(appPath, config.PathTemp, 'input.conf'),
 		{ overwrite: true }
 	);
-	logger.debug('[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
+	logger.debug( '[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
 	await copy(
 		join(__dirname, `/_player/assets/${config.VersionImage}`),
 		resolve(appPath, config.PathTemp, 'default.jpg'),
 		{ overwrite: true }
 	);
 	// Copy avatar blank.png if it doesn't exist to the avatar path
-	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
+	logger.debug( '[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
 	await copy(
 		join(__dirname, '/_webapp/ressources/img/blank.png'),
 		resolve(appPath, config.PathAvatars, 'blank.png'),
@@ -99,12 +99,12 @@ async function main() {
 	 * Test if network ports are available
 	 */
 	const ports = [config.appFrontendPort,
-		config.appAdminPort		
+		config.appAdminPort
 	];
 	ports.forEach(port => verifyOpenPort(port));
 
 	await restoreKaraBackupFolders(config);
-	
+
 	/**
 	 * Gentlemen, start your engines.
 	 */
@@ -112,7 +112,7 @@ async function main() {
 }
 
 /**
- * Checking if application paths exist. 
+ * Checking if application paths exist.
  * Workaround for bug https://github.com/babel/babel/issues/5542
  * Delete this once the bug is resolved.
  */
@@ -130,29 +130,29 @@ function parseArgs() {
 async function checkPaths(config) {
 
 	const appPath = config.appPath;
-	
+
 	// If no karaoke is found, copy the samples directory if it exists
 	if (!await asyncExists(resolve(appPath, 'app/data'))) {
 		if (await asyncExists(resolve(appPath, 'samples'))) {
-			logger.debug('[Launcher] app/data is missing - copying samples inside');
+			logger.debug( '[Launcher] app/data is missing - copying samples inside');
 			await asyncMkdirp(resolve(appPath, 'app/data'));
 			await copy(
 				resolve(appPath, 'samples'),
 				resolve(appPath, 'app/data')
 			);
 		}
-	}	
-	
-	//Fix for PathMedias = app/data/videos 
+	}
+
+	//Fix for PathMedias = app/data/videos
 	//Delete this after 2.3. This is an awful hack.
 	//Only effective after July 1st 2018
 	if (now() > 1530396000 && config.PathMedias === 'app/data/videos') {
-		const oldPath = resolve(appPath, config.PathMedias);		
+		const oldPath = resolve(appPath, config.PathMedias);
 		setConfig({ PathMedias: 'app/data/medias'});
 		config = getConfig();
 		const newPath = resolve(appPath, config.PathMedias);
 		if (await asyncExists(oldPath) && !await asyncExists(newPath)) await move(oldPath, newPath);
-	}	
+	}
 
 
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
@@ -170,7 +170,7 @@ async function checkPaths(config) {
 	checks.push(asyncCheckOrMkdir(appPath, config.PathAvatars));
 
 	await Promise.all(checks);
-	logger.debug('[Launcher] Directory checks complete');
+	logger.debug( '[Launcher] Directory checks complete');
 }
 
 function verifyOpenPort(port) {

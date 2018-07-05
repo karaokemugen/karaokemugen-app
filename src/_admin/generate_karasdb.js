@@ -168,7 +168,7 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	const data = [];
 	let index = 1;
 	for (const serie of mapSeries.keys()) {
-		for (const karaIndex in mapSeries.get(serie)) {
+		for (const karaIndex of mapSeries.get(serie)) {
 			data.push({
 				$id_serie: index,
 				$id_kara: karaIndex
@@ -527,7 +527,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	});
 
 	if (sql) {
-		logger.debug('[Gen] UPDATE SQL : ' + sql);
+		logger.debug( '[Gen] UPDATE SQL : ' + sql);
 		await userdb.exec(sql);
 	}
 

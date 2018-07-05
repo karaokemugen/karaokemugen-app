@@ -117,7 +117,7 @@ export async function createAutoMix(params, username) {
 
 export async function initFavoritesSystem() {
 	// Let's make sure all our users have a favorites playlist
-	logger.debug('[Favorites] Check if everyone has a favorites playlist');
+	logger.debug( '[Favorites] Check if everyone has a favorites playlist');
 	const [playlists, users] = await Promise.all([
 		await getPlaylists(false,'admin'),
 		await listUsers()
