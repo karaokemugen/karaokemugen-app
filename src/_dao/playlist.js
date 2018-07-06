@@ -20,10 +20,10 @@ export async function createPlaylist(pl) {
 		$NORM_name: pl.NORM_name,
 		$created_at: pl.created_at,
 		$modified_at: pl.modified_at,
-		$flag_visible: pl.flag_visible,
-		$flag_current: pl.flag_current,
-		$flag_public: pl.flag_public,
-		$flag_favorites: pl.flag_favorites,
+		$flag_visible: pl.flag_visible || false,
+		$flag_current: pl.flag_current || false,
+		$flag_public: pl.flag_public || false,
+		$flag_favorites: pl.flag_favorites || false,
 		$username: pl.username
 	});
 }

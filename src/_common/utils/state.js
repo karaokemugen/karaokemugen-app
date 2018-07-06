@@ -1,5 +1,7 @@
 import {emitWS} from '../../_webapp/frontend';
 import {emit} from './pubsub';
+import logger from 'winston';
+
 // Internal settings
 let state = {
 	currentPlaylistID: undefined,
@@ -18,6 +20,7 @@ let state = {
 	frontendPort: null,
 	player: {}
 };
+let previousState = {...state};
 
 export function getPublicState() {
 	return {
@@ -47,8 +50,16 @@ export function getState() {
 
 export function setState(part) {
 	state = {...state, ...part};
-	state.private ? state.modePlaylistID = state.currentPlaylistID : state.modePlaylistID = state.publicPlaylistID;
+	manageMode();
 	emit('stateUpdated', state);
 	emitState();
+	previousState = {...state};
 	return getState();
+}
+
+function manageMode() {
+	state.private ? state.modePlaylistID = state.currentPlaylistID : state.modePlaylistID = state.publicPlaylistID;
+	if (state.private !== previousState.private) {
+		state.private ? logger.info('[Engine] Karaoke mode switching to private') : logger.info('[Engine] Karaoke mode switching to public');
+	}
 }

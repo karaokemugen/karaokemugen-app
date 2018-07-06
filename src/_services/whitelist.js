@@ -9,13 +9,9 @@ import logger from 'winston';
 import {getKara} from './kara';
 
 export async function addKaraToWhitelist(kara_id) {
-	let karas;
-	if (typeof kara_id === 'string') {
-		karas = kara_id.split(',');
-	} else {
-		karas = [kara_id];
-	}
-	const kara = await getKara(parseInt(karas[0], 10));
+	let karas = [kara_id];
+	if (typeof kara_id === 'string') karas = kara_id.split(',');
+	const kara = await getKara(karas[0]);
 	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
 	try {
 		profile('addKaraToWL');

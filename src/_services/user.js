@@ -215,7 +215,7 @@ export async function createUser(user, opts) {
 	try {
 		await db.addUser(user);
 		if (user.type === 1 && opts.createFavoritePlaylist) {
-			await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
+			await createPlaylist(`Faves : ${user.login}`, {favorites: true} , user.login);
 			logger.info(`[User] Created user ${user.login}`);
 			logger.debug(`[User] User data : ${JSON.stringify(user)}`);
 		}

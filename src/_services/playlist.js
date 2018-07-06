@@ -446,13 +446,13 @@ export function isAllKarasInPlaylist(karas, karasToRemove) {
 	return karas.filter(k => !karasToRemove.map(ktr => ktr.kara_id).includes(k.kara_id));
 }
 
-export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos, opts) {
+export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 	let addByAdmin = true;
 	const conf = getConfig();
 	let errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR';
-	let karas;
 	const state = getState();
-	typeof kara_id === 'string' ? karas = kara_ids.split(',') : karas = [kara_ids];
+	let karas = [kara_ids];
+	if (typeof kara_ids === 'string') karas = kara_ids.split(',');
 	if (!playlist_id) {
 		addByAdmin = false;
 		playlist_id = state.currentPlaylistID;
@@ -462,10 +462,10 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos, o
 		getPlaylistInfo(playlist_id),
 		getKaraMini(parseInt(karas[0], 10))
 	]);
-	if (!pl) throw {code: 1, msg: `Playlist ${playlist_id} unknown`};
-	if (!await isAllKaras(karas)) throw {code: 3, msg: 'One of the karaokes does not exist'};
 	try {
 		profile('addKaraToPL');
+		if (!pl) throw {code: 1, msg: `Playlist ${playlist_id} unknown`};
+		if (!await isAllKaras(karas)) throw {code: 3, msg: 'One of the karaokes does not exist'};
 		logger.info(`[Engine] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
 
 		if (!addByAdmin) {
@@ -683,8 +683,8 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token,opts) {
 	if (!playlist_id) playlist_id = getState().modePlaylistID;
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
-	let karas;
-	typeof plcs === 'string' ? karas = plcs.split(',') : karas = [plcs];
+	let karas = [plcs];
+	if (typeof plcs === 'string') karas = plcs.split(',');
 	//If we get a single song, it's a user deleting it (most probably)
 	const plcData = await getPLCInfoMini(karas[0]);
 	logger.info(`[Engine] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);
@@ -692,7 +692,7 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token,opts) {
 		//If token is present, a user is trying to remove a karaoke
 		if (token && token.role !== 'admin') if (plcData.username !== token.username) throw 'You cannot delete a song you did not add';
 		// Removing karaoke here.
-		await removeKaraFromPlaylist(plcs,playlist_id);
+		await removeKaraFromPlaylist(karas,playlist_id);
 		await Promise.all([
 			updatePlaylistDuration(playlist_id),
 			updatePlaylistKaraCount(playlist_id),

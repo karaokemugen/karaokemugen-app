@@ -3,7 +3,7 @@ import {importPlaylist, exportPlaylist, getPlaylists, trimPlaylist, shufflePlayl
 import {listUsers, checkUserNameExists} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_common/utils/date';
-import {profile} from '../_common/utils/config';
+import {profile} from '../_common/utils/logger';
 
 export async function getFavorites(username, filter, lang, from, size) {
 	try {

@@ -1,14 +1,14 @@
 import {backupConfig, getConfig} from '../_common/utils/config';
 import {run as generateDatabase} from '../_admin/generate_karasdb';
 import {editKara, createKara, karaGenerationBatch} from '../_admin/generate_karasfiles';
-import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js';
+import {requireAuth, requireValidUser, requireAdmin} from './passport_manager';
 import {requireNotDemo} from './demo';
 import {getLang} from './lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
 import {getKaras, getKaraInfo, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
-import {getTags} from '../_services/tags';
+import {getTags} from '../_services/tag';
 import {runBaseUpdate} from '../_updater/karabase_updater';
-import {resetViewcounts} from '../_dao/kara.js';
+import {resetViewcounts} from '../_dao/kara';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';

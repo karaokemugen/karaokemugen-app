@@ -112,9 +112,10 @@ async function loadBackground(mode) {
 	}
 }
 
-export async function initPlayerSystem(initialState) {
-	playerState.fullscreen = initialState.fullscreen;
-	playerState.stayontop = initialState.ontop;
+export async function initPlayerSystem() {
+	const state = getState();
+	playerState.fullscreen = state.fullscreen;
+	playerState.stayontop = state.ontop;
 	buildJinglesList();
 	const conf = getConfig();
 	await buildQRCode(conf.osURL);

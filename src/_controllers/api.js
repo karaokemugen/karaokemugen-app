@@ -1,20 +1,24 @@
+//Middlewares
+import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
+import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
+import {getLang} from '../_controllers/lang';
+
+//Utils
+import {getPublicState, getState} from '../_common/utils/state';
 import logger from 'winston';
 import {sanitizeConfig, verifyConfig, getConfig} from '../_common/utils/config';
 import {check, unescape} from '../_common/utils/validators';
 import {resolve} from 'path';
 import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
-import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
-import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
-import {updateSongsLeft} from '../_services/user';
-import {getLang} from '../_controllers/lang';
-import {getRandomKara} from '../_services/kara';
-import {getPublicState, getState} from '../_common/utils/state';
+
+//KM Modules
 import {updateSettings, sendCommand, getKMStats, shutdown} from '../_services/engine';
+import {updateSongsLeft} from '../_services/user';
 import {message} from '../_player/player';
 import {addKaraToPlaylist, copyKaraToPlaylist, shufflePlaylist, getPlaylistContents, emptyPlaylist, setCurrentPlaylist, setPublicPlaylist, editPLC, editPlaylist, deleteKaraFromPlaylist, deletePlaylist, getPlaylistInfo, createPlaylist, getPlaylists, getKaraFromPlaylist, exportPlaylist, importPlaylist} from '../_services/playlist';
-import {getTags} from '../_services/tags';
-import {getKaraLyrics, getTop50, getKaras, getKaraInfo} from '../_services/karas';
+import {getTags} from '../_services/tag';
+import {getRandomKara, getKaraLyrics, getTop50, getKaras, getKara} from '../_services/kara';
 import {addKaraToWhitelist, emptyWhitelist, deleteWhitelistContent, getWhitelist} from '../_services/whitelist';
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
@@ -846,7 +850,7 @@ export function APIControllerAdmin(router) {
 			from = parseInt(from, 10);
 			try {
 
-				const playlist = await getPlaylistContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
+				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,from,size);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 
@@ -900,7 +904,7 @@ export function APIControllerAdmin(router) {
 			if (!validationErrors) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				try {
-					const result = await addKaraToPlaylist(req.params.pl_id, req.body.kara_id, req.authToken.username, req.body.pos);
+					const result = await addKaraToPlaylist(req.body.kara_id, req.authToken.username, req.params.pl_id, req.body.pos);
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					emitWS('playlistContentsUpdated',req.params.pl_id);
 					res.statusCode = 201;
@@ -1026,7 +1030,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id);
+					const data = await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id,req.authToken);
 					emitWS('playlistContentsUpdated',data.pl_id);
 					emitWS('playlistInfoUpdated',data.pl_id);
 					res.statusCode = 200;
@@ -2405,7 +2409,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const playlist = await getPlaylistContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
+				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,from,size);
 				if (playlist == null) res.statusCode = 404;
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -3200,7 +3204,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara = await getKaraInfo(req.params.kara_id,req.lang,req.authToken.username);
+				const kara = await getKara(req.params.kara_id,req.authToken.username,req.lang);
 				res.json(OKMessage(kara));
 			} catch(err) {
 				logger.error(err);
@@ -3264,7 +3268,7 @@ export function APIControllerPublic(router) {
 		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			try {
-				const data = await addKaraToPlaylist(null, req.params.kara_id, req.authToken.username, null);
+				const data = await addKaraToPlaylist(req.params.kara_id, req.authToken.username);
 				emitWS('playlistContentsUpdated',data.playlist_id);
 				emitWS('playlistInfoUpdated',data.playlist_id);
 				res.statusCode = 201;
@@ -3459,7 +3463,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const playlist = await getPlaylistContents(getState().currentPlaylistID, req.query.filter, req.lang, from, size, req.authToken);
+				const playlist = await getPlaylistContents(getState().currentPlaylistID, req.authToken, req.query.filter, req.lang, from, size);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3618,7 +3622,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const playlist = await getPlaylistContents(getState().publicPlaylistID, req.query.filter, req.lang, from, size, req.authToken);
+				const playlist = await getPlaylistContents(getState().publicPlaylistID, req.authToken, req.query.filter, req.lang, from, size);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);

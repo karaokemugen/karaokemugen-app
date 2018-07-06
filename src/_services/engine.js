@@ -1,6 +1,6 @@
 //Utils
-import {profile, setConfig, mergeConfig, getConfig} from '../_common/utils/config';
-import {on} from '../_common/utils/pubsub';
+import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
+import {profile} from '../_common/utils/logger';
 import readlineSync from 'readline-sync';
 import {promisify} from 'util';
 import sample from 'lodash.sample';
@@ -40,10 +40,6 @@ export async function playerNeedsRestart() {
 		setState({ playerNeedsRestart: true });
 	}
 };
-
-on('stateUpdated', state => {
-	state[0].private ? setPrivate(true) : setPrivate(false);
-});
 
 async function restartPlayer() {
 	try {
@@ -106,9 +102,8 @@ export async function initEngine() {
 		createPreviews();
 	}
 	inits.push(initPlaylistSystem());
-	const state = getState();
 	if (!conf.isDemo) inits.push(initControlPanel(conf.appAdminPort));
-	if (!conf.isDemo && !conf.isTest) inits.push(initPlayerSystem(state.engine));
+	if (!conf.isDemo && !conf.isTest) inits.push(initPlayerSystem());
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
 	//Initialize engine
@@ -259,18 +254,6 @@ function setSongPoll(enabled) {
 	setState({songPoll: enabled});
 	if (!oldState && enabled) startPoll(state.publicPlaylistID,state.currentPlaylistID);
 	if (oldState && !enabled) stopPoll();
-}
-
-function setPrivate(privateMode) {
-	const state = getState();
-	if (state.private !== privateMode) {
-		if (privateMode) {
-			logger.info('[Engine] Karaoke mode switching to private');
-		} else {
-			logger.info('[Engine] Karaoke mode switching to public');
-		}
-	}
-	setState({private: privateMode});
 }
 
 function toggleFullScreenPlayer() {
