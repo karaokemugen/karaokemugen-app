@@ -1,8 +1,9 @@
-import winston from 'winston';
+import logger from 'winston';
 import dailyRotateFile from  'winston-daily-rotate-file';
 import {asyncCheckOrMkdir} from './files';
 import {resolve} from 'path';
 import {time} from './date';
+import {getConfig} from './config';
 
 export async function configureLogger(appPath, debug) {
 	const tsFormat = () => (new Date()).toLocaleTimeString();
@@ -10,18 +11,18 @@ export async function configureLogger(appPath, debug) {
 	const logDir = resolve(appPath, 'logs');
 	await asyncCheckOrMkdir(logDir);
 
-	winston.add(
-		new winston.transports.Console({
+	logger.add(
+		new logger.transports.Console({
 			timestamp: tsFormat,
 			level: consoleLogLevel,
 			colorize: true,
-			format: winston.format.combine(
-				winston.format.colorize(),
-				winston.format.printf(info => `${time()} - ${info.level}: ${info.message}`)
+			format: logger.format.combine(
+				logger.format.colorize(),
+				logger.format.printf(info => `${time()} - ${info.level}: ${info.message}`)
 			)
 		})
 	);
-	winston.add(
+	logger.add(
 		new dailyRotateFile({
 			timestamp: tsFormat,
 			filename: 'karaokemugen%DATE%.log',
@@ -31,4 +32,8 @@ export async function configureLogger(appPath, debug) {
 			handleExceptions: true
 		})
 	);
+}
+
+export function profile(func) {
+	if (getConfig().optProfiling) logger.profile(func);
 }

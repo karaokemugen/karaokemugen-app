@@ -99,13 +99,13 @@ export async function getKara(id, username, lang) {
 
 export async function getASS(sub) {
 	const conf = getConfig();
-	const subfile = resolve(conf.appPath,conf.PathSubs,sub);	
+	const subfile = resolve(conf.appPath,conf.PathSubs,sub);
 	if (await asyncExists(subfile)) return await asyncReadFile(subfile, 'utf-8');
 	throw 'Subfile not found';
 }
 
 export async function isKara(id) {
-	return await getUserDb().get(sql.isKara, { $kara_id: id });	
+	return await getUserDb().get(sql.isKara, { $kara_id: id });
 }
 
 export async function isKaraInPlaylist(kara_id,playlist_id) {
@@ -124,11 +124,11 @@ export async function addViewcount(kara_id,kid,datetime) {
 	});
 }
 
-export async function addKaraToRequests(user_id,karaList,date_add) {
+export async function addKaraToRequests(user_id,karaList) {
 	const karas = karaList.map((kara) => ({
 		$user_id: user_id,
 		$kara_id: kara.kara_id,
-		$requested_at: date_add,		
+		$requested_at: now(),
 	}));
 	return await transaction(karas, sql.addRequested);
 }
@@ -146,7 +146,7 @@ export async function addKaraToPlaylist(karaList) {
 		$kara_id: kara.kara_id,
 		$created_at: kara.created_at,
 		$pos: kara.pos
-	}));	
+	}));
 	return await transaction(karas, sql.addKaraToPlaylist);
 }
 
@@ -159,14 +159,9 @@ export async function addKaraToWhitelist(karaList,date_added) {
 }
 
 export async function removeKaraFromPlaylist(karaList, playlist_id) {
-	// We're not using SQLite parameterization due to a limitation 
-	// keeping us from feeding a simple array/list to the statement.			
+	// We're not using SQLite parameterization due to a limitation
+	// keeping us from feeding a simple array/list to the statement.
 	const karas = karaList.join(',');
 	const sqlRemoveKaraFromPlaylist = sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas);
 	return await getUserDb().run(sqlRemoveKaraFromPlaylist, {$playlist_id: playlist_id});
-}
-
-export async function removeKaraFromWhitelist(wlcList) {
-	const wlcs = wlcList.map((wlc) => ({ $wlc_id: wlc.wlc_id }));
-	return await transaction(wlcs, sql.removeKaraFromWhitelist);
 }

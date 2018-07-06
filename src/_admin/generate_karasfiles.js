@@ -10,7 +10,7 @@ import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
-import {createKaraInDB, editKaraInDB, getKara} from '../_services/kara';
+import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {getFileLangFromKara} from '../_dao/karafile';
 import {check} from '../_common/utils/validators';
 import {addSerie} from '../_services/series';
@@ -175,7 +175,7 @@ async function importKara(mediaFile, subFile, data) {
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
 
-	let karaData = getKara({ ...data,
+	let karaData = formatKara({ ...data,
 		mediafile: `${kara}${extname(mediaFile)}`,
 		subfile: `${kara}${extname(subFile)}`
 	});

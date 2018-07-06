@@ -1,6 +1,5 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
 import {importPlaylist, exportPlaylist, getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini, getPlaylistContents} from '../_services/playlist';
-import {formatKaraList} from '../_services/engine';
 import {listUsers, checkUserNameExists} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_common/utils/date';
@@ -10,8 +9,7 @@ export async function getFavorites(username, filter, lang, from, size) {
 	try {
 		profile('getFavorites');
 		const plInfo = await getFavoritesPlaylist(username);
-		const pl = await getPlaylistContents(plInfo.playlist_id, { username: username }, filter, lang);
-		return formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+		return await getPlaylistContents(plInfo.playlist_id, { username: username }, filter, lang);
 	} catch(err) {
 		throw {
 			message: err,
@@ -49,8 +47,7 @@ export async function deleteFavorite(username, kara_id) {
 		return false;
 	});
 	if (!isKaraInPL) throw 'Karaoke ID is not present in this favorites list';
-	await deleteKaraFromPlaylist([plc_id], plInfo.playlist_id);
-	await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
+	await deleteKaraFromPlaylist([plc_id], plInfo.playlist_id, null, {sortBy: 'name'});
 	profile('deleteFavorites');
 	return plInfo;
 }

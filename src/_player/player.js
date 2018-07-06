@@ -3,16 +3,17 @@ import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_common/utils/files';
 import sample from 'lodash.sample';
-import {emit,on} from '../_common/utils/pubsub';
 import sizeOf from 'image-size';
 import {getSingleJingle, buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
 import {spawn} from 'child_process';
-import {exit} from '../_services/engine';
+import {playerEnding, exit} from '../_services/engine';
 import {getID3} from './id3tag';
 import mpv from 'node-mpv';
 import {promisify} from 'util';
 import {endPoll} from '../_services/poll';
+import {getState, setState} from '../_common/utils/state';
+
 
 const sleep = promisify(setTimeout);
 
@@ -21,9 +22,8 @@ let player;
 let playerMonitor;
 let monitorEnabled = false;
 let songNearEnd = false;
-let state = {};
 
-state.player = {
+let playerState = {
 	volume: 100,
 	playing: false,
 	playerstatus: 'stop',
@@ -41,20 +41,8 @@ state.player = {
 	url: null
 };
 
-on('engineStatusChange', (newstate) => {
-	state.engine = newstate[0];
-});
-
-on('playerStatusChange', (newstate) => {
-	state.player = newstate[0];
-});
-
 function emitPlayerState() {
-	emit('playerStatusChange',state.player);
-}
-
-function emitPlayerEnd() {
-	emit('playerEnd');
+	setState({player: playerState});
 }
 
 async function extractAllBackgroundFiles() {
@@ -125,9 +113,8 @@ async function loadBackground(mode) {
 }
 
 export async function initPlayerSystem(initialState) {
-	state.player.fullscreen = initialState.fullscreen;
-	state.player.stayontop = initialState.ontop;
-	state.engine = initialState;
+	playerState.fullscreen = initialState.fullscreen;
+	playerState.stayontop = initialState.ontop;
 	buildJinglesList();
 	const conf = getConfig();
 	await buildQRCode(conf.osURL);
@@ -166,7 +153,7 @@ async function startmpv() {
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
 		'--log-file='+resolve(conf.appPath,'/logs/mpv.log'),
-		'--volume='+state.player.volume,
+		'--volume='+playerState.volume,
 		'--input-conf='+resolve(conf.appPath,conf.PathTemp,'input.conf'),
 	];
 	if (conf.PlayerPIP) {
@@ -199,10 +186,10 @@ async function startmpv() {
 	// Fullscreen is disabled if pipmode is set.
 	if (conf.PlayerFullscreen === 1 && !conf.PlayerPIP) {
 		mpvOptions.push('--fullscreen');
-		state.player.fullscreen = true;
+		playerState.fullscreen = true;
 	}
 	if (conf.PlayerStayOnTop === 1) {
-		state.player.stayontop = true;
+		playerState.stayontop = true;
 		mpvOptions.push('--ontop');
 	}
 	if (conf.PlayerNoHud === 1) mpvOptions.push('--no-osc');
@@ -290,51 +277,51 @@ async function startmpv() {
 	player.observeProperty('duration',15);
 	player.on('statuschange',(status) => {
 		// If we're displaying an image, it means it's the pause inbetween songs
-		if (state.player._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
+		if (playerState._playing && status && status.filename && status.filename.match(/\.(png|jp.?g|gif)/i)) {
 			// immediate switch to Playing = False to avoid multiple trigger
-			state.player.playing = false;
-			state.player._playing = false;
-			state.player.playerstatus = 'stop';
+			playerState.playing = false;
+			playerState._playing = false;
+			playerState.playerstatus = 'stop';
 			player.pause();
 			if (monitorEnabled) playerMonitor.pause();
-			state.player.mediaType = 'background';
-			emitPlayerEnd();
+			playerState.mediaType = 'background';
+			playerEnding();
 		}
-		state.player.mutestatus = status.mute;
-		state.player.duration = status.duration;
-		state.player.subtext = status['sub-text'];
-		state.player.volume = status.volume;
-		state.player.fullscreen = status.fullscreen;
+		playerState.mutestatus = status.mute;
+		playerState.duration = status.duration;
+		playerState.subtext = status['sub-text'];
+		playerState.volume = status.volume;
+		playerState.fullscreen = status.fullscreen;
 		emitPlayerState();
 	});
 	player.on('paused',() => {
 		logger.debug( '[Player] Paused event triggered');
-		state.player.playing = false;
-		state.player.playerstatus = 'pause';
+		playerState.playing = false;
+		playerState.playerstatus = 'pause';
 		if (monitorEnabled) playerMonitor.pause();
 		emitPlayerState();
 	});
 	player.on('resumed',() => {
 		logger.debug( '[Player] Resumed event triggered');
-		state.player.playing = true;
-		state.player.playerstatus = 'play';
+		playerState.playing = true;
+		playerState.playerstatus = 'play';
 		if (monitorEnabled) playerMonitor.play();
 		emitPlayerState();
 	});
 	player.on('timeposition',(position) => {
 		// Returns the position in seconds in the current song
-		state.player.timeposition = position;
+		playerState.timeposition = position;
 		emitPlayerState();
 		// Display informations if timeposition is 8 seconds before end of song
-		if (position >= (state.player.duration - 8) &&
+		if (position >= (playerState.duration - 8) &&
 						!displayingInfo &&
-						state.player.mediaType === 'song')
-			displaySongInfo(state.player.currentSongInfos);
+						playerState.mediaType === 'song')
+			displaySongInfo(playerState.currentSongInfos);
 		// Display KM's banner if position reaches halfpoint in the song
-		if (Math.floor(position) === Math.floor(state.player.duration / 2) && !displayingInfo && state.player.mediaType === 'song') displayInfo(8000);
+		if (Math.floor(position) === Math.floor(playerState.duration / 2) && !displayingInfo && playerState.mediaType === 'song') displayInfo(8000);
 		const conf = getConfig();
 		// Stop poll if position reaches 10 seconds before end of song
-		if (Math.floor(position) >= Math.floor(state.player.duration - 10) && state.player.mediaType === 'song' &&
+		if (Math.floor(position) >= Math.floor(playerState.duration - 10) && playerState.mediaType === 'song' &&
 		conf.EngineSongPoll &&
 		!songNearEnd) {
 			songNearEnd = true;
@@ -344,14 +331,14 @@ async function startmpv() {
 		if (monitorEnabled) playerMonitor.goToPosition(position);
 	});
 	logger.debug('[Player] mpv initialized successfully');
-	state.player.ready = true;
+	playerState.ready = true;
 	return true;
 }
 
 export async function play(mediadata) {
 	const conf = getConfig();
 	logger.debug('[Player] Play event triggered');
-	state.player.playing = true;
+	playerState.playing = true;
 	//Search for media file in the different Pathmedias
 	const PathsMedias = conf.PathMedias.split('|');
 	const PathsSubs = conf.PathSubs.split('|');
@@ -394,13 +381,13 @@ export async function play(mediadata) {
 		let loads = [player.load(mediaFile,'replace', options)];
 		if (monitorEnabled) loads.push(playerMonitor.load(mediaFile,'replace', options));
 		await Promise.all(loads);
-		state.player.mediaType = 'song';
+		playerState.mediaType = 'song';
 		player.play();
 		if (monitorEnabled) {
 			playerMonitor.play();
 			playerMonitor.mute();
 		}
-		state.player.playerstatus = 'play';
+		playerState.playerstatus = 'play';
 		if (subFile) try {
 			let subs = [player.addSubtitles(subFile)];
 			if (monitorEnabled) subs.push(playerMonitor.addSubtitles(subFile));
@@ -410,9 +397,9 @@ export async function play(mediadata) {
 		}
 		// Displaying infos about current song on screen.
 		displaySongInfo(mediadata.infos);
-		state.player.currentSongInfos = mediadata.infos;
+		playerState.currentSongInfos = mediadata.infos;
 		loadBackground('append');
-		state.player._playing = true;
+		playerState._playing = true;
 		emitPlayerState();
 		songNearEnd = false;
 	} catch(err) {
@@ -421,49 +408,52 @@ export async function play(mediadata) {
 }
 
 export function setFullscreen(fsState) {
-	state.player.fullscreen = fsState;
+	playerState.fullscreen = fsState;
 	if(fsState) {
 		player.fullscreen();
 	} else {
 		player.leaveFullscreen();
 	}
-	return state.player.fullscreen;
+	return playerState.fullscreen;
 }
 
 export function toggleOnTop() {
-	state.player.stayontop = !state.player.stayontop;
+	playerState.stayontop = !playerState.stayontop;
 	player.command('keypress',['T']);
-	return state.player.stayontop;
+	return playerState.stayontop;
 }
 
 export function stop() {
 	// on stop do not trigger onEnd event
 	// => setting internal playing = false prevent this behavior
 	logger.debug( '[Player] Stop event triggered');
-	state.player.playing = false;
-	state.player.timeposition = 0;
-	state.player._playing = false;
-	state.player.playerstatus = 'stop';
+	playerState.playing = false;
+	playerState.timeposition = 0;
+	playerState._playing = false;
+	playerState.playerstatus = 'stop';
 	loadBackground();
-	return state;
+	setState({player: playerState});
+	return playerState;
 }
 
 export function pause() {
 	logger.debug( '[Player] Pause event triggered');
 	player.pause();
 	if (monitorEnabled) playerMonitor.pause();
-	state.playerstatus = 'pause';
-	return state;
+	playerState.status = 'pause';
+	setState({player: playerState});
+	return playerState;
 }
 
 export function resume() {
 	logger.debug( '[Player] Resume event triggered');
 	player.play();
 	if (monitorEnabled) playerMonitor.play();
-	state.player.playing = true;
-	state.player._playing = true;
-	state.player.playerstatus = 'play';
-	return state;
+	playerState.playing = true;
+	playerState._playing = true;
+	playerState.playerstatus = 'play';
+	setState({player: playerState});
+	return playerState;
 }
 
 export function seek(delta) {
@@ -485,26 +475,31 @@ export function unmute() {
 }
 
 export function setVolume(volume) {
-	state.player.volume = volume;
+	playerState.volume = volume;
 	player.volume(volume);
-	return state;
+	setState({player: playerState});
+	return playerState;
 }
 
 export function hideSubs() {
 	player.hideSubtitles();
 	if (monitorEnabled) playerMonitor.hideSubtitles();
-	state.player.showsubs = false;
-	return state;
+	playerState.showsubs = false;
+	setState({player: playerState});
+	return playerState;
 }
 
 export function showSubs() {
 	player.showSubtitles();
 	if (monitorEnabled) playerMonitor.showSubtitles();
-	state.player.showsubs = true;
-	return state;
+	playerState.showsubs = true;
+	setState({player: playerState});
+	return playerState;
 }
 
 export async function message(message, duration) {
+	logger.info(`[Player] I have a message from another time... : ${message}`);
+	if (!getState().player.ready) throw '[Player] Player is not ready yet!';
 	if (!duration) duration = 10000;
 	const command = {
 		command: [
@@ -516,7 +511,7 @@ export async function message(message, duration) {
 	};
 	player.freeCommand(JSON.stringify(command));
 	if (monitorEnabled) playerMonitor.freeCommand(JSON.stringify(command));
-	if (state.player.playing === false) {
+	if (playerState.playing === false) {
 		await sleep(duration);
 		displayInfo();
 	}
@@ -576,13 +571,13 @@ export async function quitmpv() {
 		playerMonitor.quit();
 		playerMonitor = null;
 	}
-	state.player.ready = false;
+	playerState.ready = false;
 	return true;
 }
 
 export async function playJingle() {
-	state.player.playing = true;
-	state.player.mediaType = 'jingle';
+	playerState.playing = true;
+	playerState.mediaType = 'jingle';
 	const jingle = getSingleJingle();
 	if (jingle) {
 		try {
@@ -595,19 +590,19 @@ export async function playJingle() {
 			player.play();
 			if (monitorEnabled) playerMonitor.play();
 			displayInfo();
-			state.player.playerstatus = 'play';
+			playerState.playerstatus = 'play';
 			loadBackground('append');
-			state.player._playing = true;
+			playerState._playing = true;
 			emitPlayerState();
 		} catch(err) {
 			logger.error(`[Player] Unable to load jingle file ${jingle.file} : ${JSON.stringify(err)}`);
 		}
 	} else {
 		logger.debug( '[Jingles] No jingle to play.');
-		state.player.playerstatus = 'play';
+		playerState.playerstatus = 'play';
 		loadBackground();
 		displayInfo();
-		state._playing = true;
+		playerState._playing = true;
 		emitPlayerState();
 	}
 }

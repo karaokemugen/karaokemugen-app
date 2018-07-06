@@ -6,9 +6,17 @@ import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
 import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
 import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
-import {updateSongsLeft} from '../_services/playlist';
+import {updateSongsLeft} from '../_services/user';
 import {getLang} from '../_controllers/lang';
-import {getAllPLs, createPL, getPLInfo, editPL, deletePL, emptyPL, emptyWL, emptyBLC, setCurrentPL, setPublicPL, getPLContents, addKaraToPL, copyKaraToPL, getPLCInfo, editPLC, updateSettings, sendMessage, getWL, addKaraToWL, deleteWLC, getBL, getBLC, addBLC, deleteBLC, editBLC, sendCommand, exportPL, importPL, shufflePL, getKMStats, getPlayerStatus, getKaras, getRandomKara, getKaraInfo, getLyrics, getCurrentPLInfo, getCurrentPLContents, getPublicPLInfo, getPublicPLContents, deleteKara, getTags, getTop50, shutdown} from '../_services/engine';
+import {getRandomKara} from '../_services/kara';
+import {getPublicState, getState} from '../_common/utils/state';
+import {updateSettings, sendCommand, getKMStats, shutdown} from '../_services/engine';
+import {message} from '../_player/player';
+import {addKaraToPlaylist, copyKaraToPlaylist, shufflePlaylist, getPlaylistContents, emptyPlaylist, setCurrentPlaylist, setPublicPlaylist, editPLC, editPlaylist, deleteKaraFromPlaylist, deletePlaylist, getPlaylistInfo, createPlaylist, getPlaylists, getKaraFromPlaylist, exportPlaylist, importPlaylist} from '../_services/playlist';
+import {getTags} from '../_services/tags';
+import {getKaraLyrics, getTop50, getKaras, getKaraInfo} from '../_services/karas';
+import {addKaraToWhitelist, emptyWhitelist, deleteWhitelistContent, getWhitelist} from '../_services/whitelist';
+import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
 import {createUser, findUserByName, deleteUser, editUser, getUserRequests, listUsers} from '../_services/user';
@@ -180,7 +188,7 @@ export function APIControllerAdmin(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Get list of playlists
 			try {
-				const playlists = await getAllPLs(req.authToken);
+				const playlists = await getPlaylists(req.authToken);
 				res.json(OKMessage(playlists));
 			} catch(err) {
 				logger.error(err);
@@ -231,7 +239,11 @@ export function APIControllerAdmin(router) {
 
 				//Now we add playlist
 				try {
-					const new_playlist = await createPL(req.body, req.authToken.username);
+					const new_playlist = await createPlaylist(req.body.name,{
+						visible: req.body.flag_visible,
+						current: req.body.flag_current,
+						public: req.body.flag_public
+					}, req.authToken.username);
 					emitWS('playlistsUpdated');
 					res.statusCode = 201;
 					res.json(OKMessage(new_playlist,'PL_CREATED',req.body.name));
@@ -296,7 +308,7 @@ export function APIControllerAdmin(router) {
 			// This get route gets infos from a playlist
 			try {
 				const playlist_id = req.params.pl_id;
-				const playlist = await getPLInfo(playlist_id, req.authToken);
+				const playlist = await getPlaylistInfo(playlist_id, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch (err) {
 
@@ -345,7 +357,7 @@ export function APIControllerAdmin(router) {
 
 				//Now we add playlist
 				try {
-					await editPL(req.params.pl_id,req.body);
+					await editPlaylist(req.params.pl_id,req.body);
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));
 				} catch(err) {
@@ -388,7 +400,7 @@ export function APIControllerAdmin(router) {
  */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				await deletePL(req.params.pl_id,req.authToken);
+				await deletePlaylist(req.params.pl_id,req.authToken);
 				emitWS('playlistsUpdated');
 				res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
 			} catch(err) {
@@ -589,7 +601,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty playlist
 			try {
-				await emptyPL(req.params.pl_id);
+				await emptyPlaylist(req.params.pl_id);
 				emitWS('playlistContentsUpdated',req.params.pl_id);
 				res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));
 			} catch(err) {
@@ -622,7 +634,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty whitelist
 			try {
-				await emptyWL();
+				await emptyWhitelist();
 				emitWS('blacklistUpdated');
 				emitWS('whitelistUpdated');
 				res.json(OKMessage(null,'WL_EMPTIED'));
@@ -658,7 +670,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty blacklist criterias
 			try {
-				await emptyBLC();
+				await emptyBlacklistCriterias();
 				emitWS('blacklistUpdated');
 				res.json(OKMessage(null,'BLC_EMPTIED'));
 			} catch(err) {
@@ -695,7 +707,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// set playlist to current
 			try {
-				await setCurrentPL(req.params.pl_id);
+				await setCurrentPlaylist(req.params.pl_id);
 				emitWS('playlistInfoUpdated',req.params.pl_id);
 				res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
 
@@ -733,7 +745,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Empty playlist
 			try {
-				await setPublicPL(req.params.pl_id);
+				await setPublicPlaylist(req.params.pl_id);
 				emitWS('playlistInfoUpdated',req.params.pl_id);
 				res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
 			} catch(err) {
@@ -834,7 +846,7 @@ export function APIControllerAdmin(router) {
 			from = parseInt(from, 10);
 			try {
 
-				const playlist = await getPLContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
+				const playlist = await getPlaylistContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 
@@ -888,7 +900,7 @@ export function APIControllerAdmin(router) {
 			if (!validationErrors) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				try {
-					const result = await addKaraToPL(req.params.pl_id, req.body.kara_id, req.authToken.username, req.body.pos);
+					const result = await addKaraToPlaylist(req.params.pl_id, req.body.kara_id, req.authToken.username, req.body.pos);
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					emitWS('playlistContentsUpdated',req.params.pl_id);
 					res.statusCode = 201;
@@ -954,7 +966,7 @@ export function APIControllerAdmin(router) {
 			if (!validationErrors) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				try {
-					const pl_id = await	copyKaraToPL(req.body.plc_id,req.params.pl_id,req.body.pos);
+					const pl_id = await	copyKaraToPlaylist(req.body.plc_id,req.params.pl_id,req.body.pos);
 					emitWS('playlistContentsUpdated',pl_id);
 					res.statusCode = 201;
 					const args = {
@@ -1014,7 +1026,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await deleteKara(req.body.plc_id,req.params.pl_id);
+					const data = await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id);
 					emitWS('playlistContentsUpdated',data.pl_id);
 					emitWS('playlistInfoUpdated',data.pl_id);
 					res.statusCode = 200;
@@ -1155,7 +1167,7 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const kara = await getPLCInfo(req.params.plc_id,req.lang,req.authToken);
+				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 
 			} catch(err) {
@@ -1430,7 +1442,7 @@ export function APIControllerAdmin(router) {
 				if (req.body.destination === 'screen' ||
 				    req.body.destination === 'all') {
 					try {
-						await sendMessage(req.body.message,req.body.duration);
+						await message(req.body.message,req.body.duration);
 						res.statusCode = 200;
 						res.json(OKMessage(req.body,'MESSAGE_SENT'));
 					} catch(err) {
@@ -1527,7 +1539,7 @@ export function APIControllerAdmin(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const karas = await getWL(req.body.filter,req.lang,from,size);
+				const karas = await getWhitelist(req.body.filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1574,7 +1586,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await addKaraToWL(req.body.kara_id);
+					await addKaraToWhitelist(req.body.kara_id);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.statusCode = 201;
@@ -1622,7 +1634,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await deleteWLC(req.body.wlc_id);
+					await deleteWhitelistContent(req.body.wlc_id);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));
@@ -1719,7 +1731,7 @@ export function APIControllerAdmin(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const karas = await getBL(req.body.filter,req.lang,from,size);
+				const karas = await getBlacklist(req.body.filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1763,7 +1775,7 @@ export function APIControllerAdmin(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Get list of blacklist criterias
 			try {
-				const blc = await getBLC();
+				const blc = await getBlacklistCriterias();
 				res.json(OKMessage(blc));
 			} catch(err) {
 				logger.error(err);
@@ -1817,7 +1829,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await addBLC(req.body.blcriteria_type,req.body.blcriteria_value);
+					await addBlacklistCriteria(req.body.blcriteria_type,req.body.blcriteria_value);
 
 					emitWS('blacklistUpdated');
 					res.statusCode = 201;
@@ -1868,7 +1880,7 @@ export function APIControllerAdmin(router) {
  */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				await deleteBLC(req.params.blc_id);
+				await deleteBlacklistCriteria(req.params.blc_id);
 				emitWS('blacklistUpdated');
 				res.json(OKMessage(req.params.blc_id,'BLC_DELETED',req.params.blc_id));
 			} catch(err) {
@@ -1918,7 +1930,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await editBLC(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value);
+					await editBlacklistCriteria(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value);
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
 				} catch(err) {
@@ -2056,7 +2068,7 @@ export function APIControllerAdmin(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
-				const playlist = await exportPL(req.params.pl_id);
+				const playlist = await exportPlaylist(req.params.pl_id);
 				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -2102,7 +2114,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await importPL(JSON.parse(req.body.playlist),req.authToken.username);
+					const data = await importPlaylist(JSON.parse(req.body.playlist),req.authToken.username);
 					const response = {
 						message: 'Playlist imported',
 						playlist_id: data.playlist_id
@@ -2158,7 +2170,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 
-				await shufflePL(req.params.pl_id);
+				await shufflePlaylist(req.params.pl_id);
 				emitWS('playlistContentsUpdated',req.params.pl_id);
 				res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));
 			} catch(err) {
@@ -2231,7 +2243,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get list of playlists, only return the visible ones
 			try {
-				const playlists = await getAllPLs(req.authToken);
+				const playlists = await getPlaylists(req.authToken);
 				res.json(OKMessage(playlists));
 			} catch(err) {
 				res.statusCode = 500;
@@ -2291,7 +2303,7 @@ export function APIControllerPublic(router) {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			try {
-				const playlist = await getPLInfo(req.params.pl_id,req.authToken);
+				const playlist = await getPlaylistInfo(req.params.pl_id,req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 
@@ -2393,7 +2405,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const playlist = await getPLContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
+				const playlist = await getPlaylistContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
 				if (playlist == null) res.statusCode = 404;
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -2529,7 +2541,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 
-				const kara = await getPLCInfo(req.params.plc_id,req.lang,req.authToken);
+				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 			} catch(err) {
 
@@ -2739,7 +2751,7 @@ export function APIControllerPublic(router) {
 				let from = req.query.from || 0;
 				from = parseInt(from, 10);
 				try {
-					const karas = await	getWL(req.query.filter,req.lang,from,size);
+					const karas = await	getWhitelist(req.query.filter,req.lang,from,size);
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -2834,7 +2846,7 @@ export function APIControllerPublic(router) {
 				let from = req.query.from || 0;
 				from = parseInt(from, 10);
 				try {
-					const karas = await getBL(req.query.filter,req.lang,from,size);
+					const karas = await getBlacklist(req.query.filter,req.lang,from,size);
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -2887,7 +2899,7 @@ export function APIControllerPublic(router) {
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklistCriterias === 1) {
 				try {
-					const blc = await getBLC();
+					const blc = await getBlacklist();
 					res.json(OKMessage(blc));
 				} catch(err) {
 					logger.error(err);
@@ -2954,7 +2966,8 @@ export function APIControllerPublic(router) {
 			// What's playing, time in seconds, duration of song
 
 			//return status of the player
-			res.json(OKMessage(getPlayerStatus()));
+
+			res.json(OKMessage(getPublicState()));
 		});
 	router.route('/karas')
 	/**
@@ -3187,7 +3200,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara = await getKaraInfo(req.params.kara_id,req.lang,req.authToken);
+				const kara = await getKaraInfo(req.params.kara_id,req.lang,req.authToken.username);
 				res.json(OKMessage(kara));
 			} catch(err) {
 				logger.error(err);
@@ -3251,7 +3264,7 @@ export function APIControllerPublic(router) {
 		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			try {
-				const data = await addKaraToPL(null, req.params.kara_id, req.authToken.username, null);
+				const data = await addKaraToPlaylist(null, req.params.kara_id, req.authToken.username, null);
 				emitWS('playlistContentsUpdated',data.playlist_id);
 				emitWS('playlistInfoUpdated',data.playlist_id);
 				res.statusCode = 201;
@@ -3290,7 +3303,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara = await getLyrics(req.params.kara_id);
+				const kara = await getKaraLyrics(req.params.kara_id);
 				res.json(OKMessage(kara));
 			} catch(err) {
 
@@ -3344,7 +3357,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
 			try {
-				const playlist = await getCurrentPLInfo(req.authToken);
+				const playlist = await getPlaylistInfo(getState().currentPlaylistID, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3446,7 +3459,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const playlist = await getCurrentPLContents(req.query.filter, req.lang, from, size, req.authToken);
+				const playlist = await getPlaylistContents(getState().currentPlaylistID, req.query.filter, req.lang, from, size, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3503,7 +3516,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
 			try {
-				const playlist = await getPublicPLInfo(req.authToken);
+				const playlist = await getPlaylistInfo(getState().publicPlaylistID,req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3605,7 +3618,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const playlist = await getPublicPLContents(req.query.filter, req.lang, from, size, req.authToken);
+				const playlist = await getPlaylistContents(getState().publicPlaylistID, req.query.filter, req.lang, from, size, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3685,7 +3698,7 @@ export function APIControllerPublic(router) {
 
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const data = await deleteKara(req.params.plc_id,null,req.authToken);
+				const data = await deleteKaraFromPlaylist(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
 				emitWS('playlistInfoUpdated',data.pl_id);
 				res.statusCode = 200;
@@ -3728,7 +3741,7 @@ export function APIControllerPublic(router) {
 
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const data = await deleteKara(req.params.plc_id,null,req.authToken);
+				const data = await deleteKaraFromPlaylist(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
 				emitWS('playlistInfoUpdated',data.pl_id);
 				res.statusCode = 200;

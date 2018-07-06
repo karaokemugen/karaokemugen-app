@@ -200,17 +200,16 @@ export async function initDBSystem() {
 	await getUserDb().run('PRAGMA JOURNAL_MODE=WAL');
 	await getUserDb().run('PRAGMA SYNCHRONOUS=OFF');
 	await getUserDb().run('VACUUM');
-	//await getUserDb().run('PRAGMA LOCKING_MODE=EXCLUSIVE');
 
 	await compareDatabasesUUIDs();
 	logger.debug( '[DBI] Database Interface is READY');
 	const stats = await getStats();
-	logger.info(`Karaokes        : ${stats.totalcount}`);
-	logger.info(`Duration        : ${duration(stats.totalduration)}`);
-	logger.info(`Series          : ${stats.totalseries}`);
-	logger.info(`Languages       : ${stats.totallanguages}`);
-	logger.info(`Artists         : ${stats.totalartists}`);
-	logger.info(`Playlists       : ${stats.totalplaylists}`);
+	logger.info(`Karaokes  : ${stats.totalcount}`);
+	logger.info(`Duration  : ${duration(stats.totalduration)}`);
+	logger.info(`Series    : ${stats.totalseries}`);
+	logger.info(`Languages : ${stats.totallanguages}`);
+	logger.info(`Artists   : ${stats.totalartists}`);
+	logger.info(`Playlists : ${stats.totalplaylists}`);
 	return true;
 }
 

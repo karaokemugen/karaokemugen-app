@@ -11,7 +11,7 @@ import {parse as parseini, stringify} from 'ini';
 import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
 import {resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common/utils/config';
 import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
-import {getKara} from '../_services/kara';
+import {formatKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
 import {specialLangMap} from '../_services/constants';
 
@@ -143,7 +143,7 @@ export async function extractMediaTechInfos(mediaFile, karaData) {
 }
 
 export async function writeKara(karafile, karaData) {
-	const infosToWrite = (getKara(karaData));
+	const infosToWrite = (formatKara(karaData));
 	if (karaData.isKaraModified === false) {
 		return;
 	}

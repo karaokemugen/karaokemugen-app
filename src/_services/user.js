@@ -1,8 +1,8 @@
-import {deletePlaylist} from '../_services/playlist';
+import {isACurrentPlaylist, isAPublicPlaylist, deletePlaylist} from '../_services/playlist';
 import {findFavoritesPlaylist} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
-import {createPlaylist} from '../_services/playlist';
+import {freePLCBeforePos, getPlaylistContentsMini, freePLC, createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
 import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
@@ -13,6 +13,10 @@ import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
 import {on} from '../_common/utils/pubsub';
+import {getSongCountForUser, getSongTimeSpentForUser} from '../_dao/kara';
+import {emitWS} from '../_webapp/frontend';
+import {profile} from '../_common/utils/logger';
+import {getState} from '../_common/utils/state';
 
 const db = require('../_dao/user');
 const sleep = promisify(setTimeout);
@@ -259,7 +263,7 @@ export async function deleteUserById(id) {
 		if (user.login === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Karaoke Instrumentality Project'};
 		const playlist_id = await findFavoritesPlaylist(user.login);
 		if (playlist_id) {
-			await deletePlaylist(playlist_id, {force: true});
+			await deletePlaylist(playlist_id);
 		}
 		//Reassign karas and playlists owned by the user to the admin user
 		await db.reassignToUser(user.id,1);
@@ -331,4 +335,66 @@ export async function initUserSystem() {
 	createDefaultGuests();
 }
 
+export async function updateSongsLeft(user_id,playlist_id) {
+	const conf = getConfig();
+	const user = await findUserByID(user_id);
+	let quotaLeft;
+	if (!playlist_id) {
+		if (conf.EnginePrivateMode === 1) {
+			playlist_id = await isACurrentPlaylist();
+		} else {
+			playlist_id = await isAPublicPlaylist();
+		}
+	}
+	if (user.flag_admin === 0 && +conf.EngineQuotaType > 0) {
+		switch(+conf.EngineQuotaType) {
+		default:
+		case 1:
+			const count = await getSongCountForUser(playlist_id,user_id);
+			quotaLeft = +conf.EngineSongsPerUser - count.count;
+			break;
+		case 2:
+			const time = await getSongTimeSpentForUser(playlist_id,user_id);
+			quotaLeft = +conf.EngineTimePerUser - time.timeSpent;
+		}
+	} else {
+		quotaLeft = -1;
+	}
+	logger.debug( `[User] Updating quota left for ${user.login} : ${quotaLeft}`);
+	emitWS('quotaAvailableUpdated', {
+		username: user.login,
+		quotaLeft: quotaLeft,
+		quotaType: +conf.EngineQuotaType
+	});
+}
 
+export async function updateUserQuotas(kara) {
+	//If karaokes are present in the public playlist, we're marking it free.
+	//First find which KIDs are to be freed. All those before the currently playing kara
+	// are to be set free.
+	const internalState = getState();
+	profile('updateUserQuotas');
+	await freePLCBeforePos(kara.pos, internalState.currentPlaylistID);
+	// For every KID we check if it exists and add the PLC to a list
+	const [publicPlaylist, currentPlaylist] = await Promise.all([
+		getPlaylistContentsMini(internalState.publicPlaylistID),
+		getPlaylistContentsMini(internalState.currentPlaylistID)
+	]);
+	let freeTasks = [];
+	let usersNeedingUpdate = [];
+	for (const currentSong of currentPlaylist) {
+		publicPlaylist.some(publicSong => {
+			if (publicSong.kid === currentSong.kid && currentSong.flag_free === 1) {
+				freeTasks.push(freePLC(publicSong.playlistcontent_id));
+				if (!usersNeedingUpdate.includes(publicSong.user_id)) usersNeedingUpdate.push(publicSong.user_id);
+				return true;
+			}
+			return false;
+		});
+	}
+	await Promise.all(freeTasks);
+	usersNeedingUpdate.forEach(user_id => {
+		updateSongsLeft(user_id,internalState.modePlaylistID);
+	});
+	profile('updateUserQuotas');
+}

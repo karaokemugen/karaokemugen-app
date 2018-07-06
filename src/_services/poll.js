@@ -10,16 +10,14 @@ import logger from 'winston';
 import {timer} from '../_common/utils/timer';
 const sleep = promisify(setTimeout);
 
-let state = {};
 let poll = [];
 let voters = [];
 let pollDate;
 let pollEnding = false;
 let clock;
 
-on('engineStatusChange', (newstate) => {
-	state.engine = newstate[0];
-	if (!state.engine.songPoll && poll.length > 0) stopPoll();
+on('stateUpdated', state => {
+	if (!state.songPoll && poll.length > 0) stopPoll();
 });
 
 export async function timerPoll() {

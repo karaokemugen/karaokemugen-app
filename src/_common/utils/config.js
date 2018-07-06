@@ -12,10 +12,11 @@ import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
-import {emit} from './pubsub';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
 import {publishURL} from '../../_webapp/online';
+import {playerNeedsRestart} from '../../_services/engine';
+import {setState} from './state';
 
 /** Object containing all config */
 let config = {};
@@ -43,10 +44,6 @@ export function sanitizeConfig(conf) {
 	return conf;
 }
 
-export function profile(func) {
-	if (config.optProfiling) logger.profile(func);
-}
-
 export function verifyConfig(conf) {
 	const validationErrors = check(conf, configConstraints);
 	if (validationErrors) {
@@ -61,7 +58,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 			setting !== 'PlayerFullscreen' &&
 			setting !== 'PlayerStayOnTop') {
 			if (oldConfig[setting] != newConfig[setting]) {
-				emit('playerNeedsRestart');
+				playerNeedsRestart();
 				logger.debug('[Config] Setting mpv to restart after next song');
 			}
 		}
@@ -71,7 +68,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings
-	emit('modeUpdated',conf.EnginePrivateMode);
+	setState({private: conf.EnginePrivateMode});
 
 	configureHost();
 

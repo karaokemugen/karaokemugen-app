@@ -3,10 +3,6 @@ import {getConfig} from '../_common/utils/config';
 import {now} from 'unix-timestamp';
 const sql = require('../_common/db/playlist');
 
-export async function countKarasInPlaylist(id) {
-	return await getUserDb().get(sql.countKarasInPlaylist, { $playlist_id: id });
-}
-
 export async function editPlaylist(pl) {
 	return await getUserDb().run(sql.editPlaylist, {
 		$playlist_id: pl.id,
@@ -51,17 +47,16 @@ export async function setPLCFreeBeforePos(pos, playlist_id) {
 	});
 }
 
-export async function updatePlaylistKaraCount(id,karaCount) {
+export async function updatePlaylistKaraCount(id) {
 	return await getUserDb().run(sql.updatePlaylistKaraCount, {
-		$playlist_id: id,
-		$kara_count: karaCount
+		$playlist_id: id
 	});
 }
 
-export async function updatePlaylistLastEditTime(id,timestamp) {
+export async function updatePlaylistLastEditTime(id) {
 	return await getUserDb().run(sql.updatePlaylistLastEditTime, {
 		$playlist_id: id,
-		$modified_at: timestamp
+		$modified_at: now()
 	});
 }
 
@@ -82,7 +77,7 @@ export async function shiftPosInPlaylist(id,pos,shift) {
 
 export async function getMaxPosInPlaylist(id) {
 	return await getUserDb().get(sql.getMaxPosInPlaylist, { $playlist_id: id });
-}	
+}
 
 export async function reorderPlaylist(playlist_id,playlist) {
 	let newpos = 0;
@@ -90,7 +85,7 @@ export async function reorderPlaylist(playlist_id,playlist) {
 		$pos: ++newpos,
 		$playlistcontent_id: kara.playlistcontent_id
 	}));
-	return await transaction(karaList,sql.updatePLCSetPos);	
+	return await transaction(karaList,sql.updatePLCSetPos);
 }
 
 export async function setPos(plc_id,pos) {
@@ -105,7 +100,7 @@ export async function updatePlaylistDuration(id) {
 }
 
 export async function trimPlaylist(id,pos) {
-	return await getUserDb().run(sql.trimPlaylist, { 
+	return await getUserDb().run(sql.trimPlaylist, {
 		$playlist_id: id,
 		$pos: pos
 	});
@@ -119,7 +114,7 @@ export async function getPlaylistContentsMini(id, lang) {
 export async function getPlaylistContents(id, username, filter, lang) {
 	const filterClauses = filter ? buildClauses(filter, 'playlist') : [];
 	const query = sql.getPlaylistContents(filterClauses, langSelector(lang));
-	return await getUserDb().all(query, { 
+	return await getUserDb().all(query, {
 		$playlist_id: id,
 		$username: username,
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
@@ -141,7 +136,7 @@ export async function getPlaylistKaraNames(id) {
 
 export async function getPLCInfo(id, forUser, username) {
 	const query = sql.getPLCInfo + (forUser ? ' AND p.flag_visible = 1' : '');
-	return await getUserDb().get(query,  
+	return await getUserDb().get(query,
 		{
 			$playlistcontent_id: id,
 			$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
@@ -150,9 +145,9 @@ export async function getPLCInfo(id, forUser, username) {
 }
 
 export async function getPLCInfoMini(id) {
-	return await getUserDb().get(sql.getPLCInfoMini,  
+	return await getUserDb().get(sql.getPLCInfoMini,
 		{
-			$playlistcontent_id: id			
+			$playlistcontent_id: id
 		});
 }
 
@@ -172,14 +167,14 @@ export async function getPlaylistInfo(id) {
 }
 
 export async function getPlaylists(forUser,username) {
-	let query = sql.getPlaylists;	
-	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';	
+	let query = sql.getPlaylists;
+	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';
 	if (forUser) {
 		//FIXME
 		//Temporarily disabled complex playlist query until we work how isPlaylist behaves and add user token everywhere.
 		//return await getUserDb().all(query + ' UNION ' + sql.getFavoritePlaylists + order,{$username: username});
 		return await getUserDb().all(query + ' AND p.flag_visible = 1 ' + order);
-	} else {		
+	} else {
 		return await getUserDb().all(query + order);
 	}
 }
@@ -203,10 +198,6 @@ export async function raisePosInPlaylist(pos,id) {
 export async function findPlaylist(id,forUser) {
 	const query = sql.testPlaylist + (forUser ? ' AND flag_visible = 1' : '');
 	return await getUserDb().get(query, { $playlist_id: id });
-}
-
-export async function findPlaylistFlagPlaying(id) {
-	return await getUserDb().get(sql.testPlaylistFlagPlaying, { $playlist_id: id });
 }
 
 export async function setCurrentPlaylist(id) {
@@ -245,8 +236,8 @@ export async function countPlaylistUsers(playlist_id){
 	return await getUserDb().run(sql.countPlaylistUsers, { $playlist_id: playlist_id });
 }
 
-export async function getMaxPosInPlaylistForPseudo(playlist_id,user_id){
-	return await getUserDb().run(sql.getMaxPosInPlaylistForPseudo,
+export async function getMaxPosInPlaylistForUser(playlist_id,user_id){
+	return await getUserDb().run(sql.getMaxPosInPlaylistForUser,
 		{
 			$playlist_id: playlist_id,
 			$user_id: user_id

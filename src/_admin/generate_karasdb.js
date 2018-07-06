@@ -54,7 +54,7 @@ export async function extractAllKaraFiles() {
 	return karaFiles;
 }
 
-export async function getAllKaras(karafiles) {
+export async function readAllKaras(karafiles) {
 	const karaPromises = [];
 	for (const karafile of karafiles) {
 		karaPromises.push(() => readAndCompleteKarafile(karafile));
@@ -364,7 +364,7 @@ export async function run(config) {
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		await emptyDatabase(db);
 		const karaFiles = await extractAllKaraFiles();
-		const karas = await getAllKaras(karaFiles);
+		const karas = await readAllKaras(karaFiles);
 		// Preparing data to insert
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas);
@@ -507,7 +507,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		}
 	});
 
-	blcTags.forEach(function (blcTag) {
+	blcTags.forEach(blcTag => {
 		let tagFound = false;
 		allTags.forEach(function (tag) {
 			if (tag.name === blcTag.tagname && tag.tagtype === blcTag.type) {

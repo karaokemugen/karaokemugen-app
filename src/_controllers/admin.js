@@ -5,13 +5,13 @@ import {requireAuth, requireValidUser, requireAdmin} from './passport_manager.js
 import {requireNotDemo} from './demo';
 import {getLang} from './lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
-import {getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
+import {getKaras, getKaraInfo, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
+import {getTags} from '../_services/tags';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara.js';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
-import {getTags, getKaras, getKaraInfo} from '../_services/engine';
 
 module.exports = function adminController(router) {
 	const conf = getConfig();
