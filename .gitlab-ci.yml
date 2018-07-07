@@ -10,7 +10,7 @@ cache:
 before_script:
   - rm -f /usr/local/bin/yarn
   - rm -f /usr/local/bin/yarnpkg
-  - npm install -g pkg@4.2.6 yarn apidoc
+  - npm install -g pkg yarn apidoc
 
 stages:
   - test
