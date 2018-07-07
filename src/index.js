@@ -2,7 +2,7 @@ import {asyncCheckOrMkdir, asyncMkdirp, asyncExists, asyncRemove, asyncRename, a
 import {setConfig, getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {writeFileSync, readFileSync} from 'fs';
-import {move} from 'fs-extra';
+import {move, copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
 import logger from 'winston';
