@@ -188,14 +188,13 @@ async function downloadMedias(ftp, files, mediasPath) {
 			await ftp.download(createWriteStream(outputFile), file.name);
 		} catch(err) {
 			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
-			ftpErrors.push(file.name);
-			await ftpClose(ftp);
-			await ftpConnect(ftp);
-		}
+			ftpErrors.push(file.name);			
+		} 
 		ftp.trackProgress();
-		bar1.stop();
+		bar1.stop();		
 	}
 	if (ftpErrors.length > 0) throw `Error during medias download : ${ftpErrors.toString()}`;
+	await ftpClose(ftp);			
 }
 
 async function listLocalMedias() {
