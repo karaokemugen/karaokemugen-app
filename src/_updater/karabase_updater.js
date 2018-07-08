@@ -5,12 +5,10 @@ import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFil
 import decompress from 'decompress';
 import logger from 'winston';
 import {copy} from 'fs-extra';
-import {createWriteStream} from 'fs';
 import prettyBytes from 'pretty-bytes';
-import _cliProgress from 'cli-progress';
 import webdav from 'webdav';
-import req from 'request';
-import progress from 'request-progress';
+import Downloader from '../_common/utils/downloader';
+
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
 	url: 'http://mugen.karaokes.moe/downloads/medias',
@@ -18,28 +16,6 @@ const shelter = {
 	password: 'musubi'
 };
 let updateRunning = false;
-
-function downloadFile(remoteFile, localFile, bar) {
-	return new Promise(
-		(resolve, reject) => {
-			const options = {
-				url: shelter.url,
-				method: 'GET',
-				auth: {
-					user: shelter.user,
-					pass: shelter.password
-				}				
-			};
-			let stream = createWriteStream(localFile);
-			progress(req(options))
-				.on('progress', state => {
-					if (bar) bar.update(Math.floor(state.size.transferred / 1000) / 1000);
-				})
-				.on('error', err => reject(err))
-				.on('end', () => resolve())
-				.pipe(stream);
-		});
-}
 
 async function downloadBase() {
 	const conf = getConfig();
@@ -182,27 +158,21 @@ async function compareMedias(localFiles, remoteFiles) {
 
 async function downloadMedias(files, mediasPath) {
 	const conf = getConfig();
-	const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}';
-	const bar1 = new _cliProgress.Bar({
-		format: barFormat,
-		stopOnComplete: true
-	}, _cliProgress.Presets.shades_classic);
-	let i = 0;
-	let fileErrors = [];
+	let list = [];
 	for (const file of files) {
-		i++;
-		logger.info(`[Updater] (${i}/${files.length}) Downloading ${file.name} (${prettyBytes(file.size)})`);
-		bar1.start(Math.floor(file.size / 1000) / 1000, 0);
-		const outputFile = resolve(conf.appPath, mediasPath, file.name);		
-		try {
-			await downloadFile(file.name, outputFile, bar1);
-		} catch(err) {
-			fileErrors.push(file.name);
-			console.log(err);
-			//logger.error(`[Updater] Error downloading ${file.name} : ${err}`);			
-		}
-		bar1.stop();
+		list.push({
+			filename: resolve(conf.appPath, mediasPath, file.name),
+			url: `${shelter.url}/${encodeURIComponent(file.name)}`
+		});
 	}
+	const mediaDownloads = new Downloader(list, {
+		auth: {
+			user: 'kmvideos',
+			password: 'musubi'
+		},
+		bar: true
+	});
+	const fileErrors = mediaDownloads.download();	
 	if (fileErrors.length > 0) throw `Error downloading these medias : ${fileErrors.toString()}`;
 }
 
