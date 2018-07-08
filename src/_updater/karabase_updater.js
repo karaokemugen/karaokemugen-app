@@ -3,20 +3,43 @@ import {basename, resolve} from 'path';
 import {getConfig} from '../_common/utils/config';
 import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
 import decompress from 'decompress';
-import FTP from 'basic-ftp';
 import logger from 'winston';
 import {copy} from 'fs-extra';
 import {createWriteStream} from 'fs';
 import prettyBytes from 'pretty-bytes';
 import _cliProgress from 'cli-progress';
-import promiseRetry from 'promise-retry';
+import webdav from 'webdav';
+import req from 'request';
+import progress from 'request-progress';
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
-	host: 'mugen.karaokes.moe',
+	url: 'http://mugen.karaokes.moe/downloads/medias',
 	user: 'kmvideos',
 	password: 'musubi'
 };
 let updateRunning = false;
+
+function downloadFile(remoteFile, localFile, bar) {
+	return new Promise(
+		(resolve, reject) => {
+			const options = {
+				url: shelter.url,
+				method: 'GET',
+				auth: {
+					user: shelter.user,
+					pass: shelter.password
+				}				
+			};
+			let stream = createWriteStream(localFile);
+			progress(req(options))
+				.on('progress', state => {
+					if (bar) bar.update(Math.floor(state.size.transferred / 1000) / 1000);
+				})
+				.on('error', err => reject(err))
+				.on('end', () => resolve())
+				.pipe(stream);
+		});
+}
 
 async function downloadBase() {
 	const conf = getConfig();
@@ -42,13 +65,15 @@ async function decompressBase() {
 }
 
 async function listRemoteMedias() {
-	const ftp = new FTP.Client();
 	logger.info('[Updater] Fetching current media list');
-	await ftpConnect(ftp);
-	const list = await ftp.list();
-	await ftpClose(ftp);
-	// Filter . and ..
-	return list.filter(file => file.name.length > 2);
+	let webdavClient = webdav(
+    	shelter.url,
+    	shelter.user,
+    	shelter.password
+	);
+	const contents = await webdavClient.getDirectoryContents('/');
+	webdavClient = null;
+	return contents;
 }
 
 async function compareBases() {
@@ -110,23 +135,23 @@ async function compareMedias(localFiles, remoteFiles) {
 	logger.info('[Updater] Comparing your medias with the current ones');
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
-			if (localFile.name === remoteFile.name) {
+			if (localFile.name === remoteFile.basename) {
 				if (localFile.size !== remoteFile.size) updatedFiles.push({
-					name: localFile.name,
-					size: localFile.size
+					name: remoteFile.basename,
+					size: remoteFile.size
 				});
 				return true;
 			}
 			return false;
 		});
 		if (!filePresent) addedFiles.push({
-			name: remoteFile.name,
+			name: remoteFile.basename,
 			size: remoteFile.size
 		});
 	}
 	for (const localFile of localFiles) {
 		const filePresent = remoteFiles.some(remoteFile => {
-			return localFile.name === remoteFile.name;
+			return localFile.name === remoteFile.basename;
 
 		});
 		if (!filePresent) removedFiles.push(localFile.name);
@@ -136,8 +161,6 @@ async function compareMedias(localFiles, remoteFiles) {
 		await asyncUnlink(resolve(mediasPath, file.name));
 	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
-	const ftp = new FTP.Client();
-	await ftpConnect(ftp);
 	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
 	if (filesToDownload.length > 0) {
 		filesToDownload.sort((a,b) => {
@@ -147,8 +170,8 @@ async function compareMedias(localFiles, remoteFiles) {
 		for (const file of filesToDownload) {
 			bytesToDownload = bytesToDownload + file.size;
 		}
-		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
-		await downloadMedias(ftp, filesToDownload, mediasPath, bytesToDownload);
+		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);				
+		await downloadMedias(filesToDownload, mediasPath, bytesToDownload);
 		logger.info('[Updater] Done updating medias');
 		return true;
 	} else {
@@ -157,18 +180,7 @@ async function compareMedias(localFiles, remoteFiles) {
 	}
 }
 
-async function ftpClose(ftp) {
-	return await ftp.close();
-}
-
-async function ftpConnect(ftp) {
-	await ftp.connect(shelter.host, 21);
-	await ftp.login(shelter.user, shelter.password);
-	await ftp.useDefaultSettings();
-}
-
-async function downloadMedias(ftp, files, mediasPath) {
-	let ftpErrors = [];
+async function downloadMedias(files, mediasPath) {
 	const conf = getConfig();
 	const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}';
 	const bar1 = new _cliProgress.Bar({
@@ -176,26 +188,22 @@ async function downloadMedias(ftp, files, mediasPath) {
 		stopOnComplete: true
 	}, _cliProgress.Presets.shades_classic);
 	let i = 0;
+	let fileErrors = [];
 	for (const file of files) {
 		i++;
 		logger.info(`[Updater] (${i}/${files.length}) Downloading ${file.name} (${prettyBytes(file.size)})`);
 		bar1.start(Math.floor(file.size / 1000) / 1000, 0);
-		const outputFile = resolve(conf.appPath, mediasPath, file.name);
-		ftp.trackProgress(info => {
-			bar1.update(Math.floor(info.bytes / 1000) / 1000);
-		});
+		const outputFile = resolve(conf.appPath, mediasPath, file.name);		
 		try {
-			await ftp.download(createWriteStream(outputFile), file.name);
+			await downloadFile(file.name, outputFile, bar1);
 		} catch(err) {
-			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
-			ftpErrors.push(file.name);
-			await ftpClose(ftp);
-			await ftpConnect(ftp);
+			fileErrors.push(file.name);
+			console.log(err);
+			//logger.error(`[Updater] Error downloading ${file.name} : ${err}`);			
 		}
-		ftp.trackProgress();
 		bar1.stop();
 	}
-	if (ftpErrors.length > 0) throw `Error during medias download : ${ftpErrors.toString()}`;
+	if (fileErrors.length > 0) throw `Error downloading these medias : ${fileErrors.toString()}`;
 }
 
 async function listLocalMedias() {
