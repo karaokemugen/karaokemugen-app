@@ -21,14 +21,15 @@ class Downloader {
 	}
   
 	// Fonction qui déclenche la chaîne de téléchargements.
-	download = () => {		
+	download = (onEnd) => {		
 	  if (this.pos >= this.list.length) {
 			console.log('Finished');
-			return this.fileErrors;
+			console.log('Finished!');
+			onEnd(this.fileErrors);
 	  } else {
 			const nextUrl = this.list[this.pos].url;
 			const nextFilename = this.list[this.pos].filename;			
-			logger.info(`[Download] (${this.pos}/${this.list.length}) Downloading ${nextFilename}`);		
+			logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${nextFilename}`);		
 			this.pos = this.pos + 1;
 			this.DoDownload(nextUrl, nextFilename, this.download , err => console.log(err));
 	  }

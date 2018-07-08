@@ -172,8 +172,10 @@ async function downloadMedias(files, mediasPath) {
 		},
 		bar: true
 	});
-	const fileErrors = mediaDownloads.download();	
-	if (fileErrors.length > 0) throw `Error downloading these medias : ${fileErrors.toString()}`;
+	mediaDownloads.download(fileErrors => {
+		if (fileErrors.length > 0) throw `Error downloading these medias : ${fileErrors.toString()}`;
+	});	
+	
 }
 
 async function listLocalMedias() {
