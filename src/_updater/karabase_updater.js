@@ -112,8 +112,8 @@ async function compareMedias(localFiles, remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
 			if (localFile.name === remoteFile.name) {
 				if (localFile.size !== remoteFile.size) updatedFiles.push({
-					name: localFile.name,
-					size: localFile.size
+					name: remoteFile.name,
+					size: remoteFile.size
 				});
 				return true;
 			}
@@ -187,7 +187,7 @@ async function downloadMedias(ftp, files, mediasPath) {
 		try {
 			await ftp.download(createWriteStream(outputFile), file.name);
 		} catch(err) {
-			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
+			logger.error(`[Updater] eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeError downloading ${file.name} : ${err}`);
 			ftpErrors.push(file.name);			
 		} 
 		ftp.trackProgress();
