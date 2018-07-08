@@ -187,7 +187,7 @@ async function downloadMedias(ftp, files, mediasPath) {
 		try {
 			await ftp.download(createWriteStream(outputFile), file.name);
 		} catch(err) {
-			logger.error(`[Updater] eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeError downloading ${file.name} : ${err}`);
+			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
 			ftpErrors.push(file.name);			
 		} 
 		ftp.trackProgress();
