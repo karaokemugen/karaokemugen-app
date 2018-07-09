@@ -6,14 +6,12 @@ import {time} from './date';
 import {getConfig} from './config';
 
 export async function configureLogger(appPath, debug) {
-	const tsFormat = () => (new Date()).toLocaleTimeString();
 	const consoleLogLevel = debug ? 'debug' : 'info';
 	const logDir = resolve(appPath, 'logs');
 	await asyncCheckOrMkdir(logDir);
 
 	logger.add(
 		new logger.transports.Console({
-			timestamp: tsFormat,
 			level: consoleLogLevel,
 			colorize: true,
 			format: logger.format.combine(
@@ -24,12 +22,14 @@ export async function configureLogger(appPath, debug) {
 	);
 	logger.add(
 		new dailyRotateFile({
-			timestamp: tsFormat,
-			filename: 'karaokemugen%DATE%.log',
+			filename: 'karaokemugen-%DATE%.log',
 			dirname: logDir,
 			zippedArchive: true,
 			level: 'debug',
-			handleExceptions: true
+			handleExceptions: true,
+			format: logger.format.combine(
+				logger.format.printf(info => `${time()} - ${info.level}: ${info.message}`)
+			)
 		})
 	);
 }
