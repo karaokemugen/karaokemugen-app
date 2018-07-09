@@ -116,11 +116,11 @@ export async function isKaraInPlaylist(kara_id,playlist_id) {
 	return !!res;
 }
 
-export async function addViewcount(kara_id,kid,datetime) {
+export async function addViewcount(kara_id,kid) {
 	return await getUserDb().run(sql.addViewcount, {
 		$kara_id: kara_id,
 		$kid: kid,
-		$modified_at: datetime
+		$modified_at: now()
 	});
 }
 

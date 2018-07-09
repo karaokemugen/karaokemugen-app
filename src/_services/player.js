@@ -54,7 +54,7 @@ async function getPlayingSong() {
 
 export async function playingUpdated() {
 	const state = getState();
-	if (state.status === 'play' && state.playing) {
+	if (state.status === 'play' && state.player.playing) {
 		await stopPlayer(true);
 		playPlayer();
 	}

@@ -58,7 +58,7 @@ import {
 
 //KM Modules
 import {updateSongsLeft, findUserByName} from './user';
-import {isAllKaras, formatKaraList, getRandomKara} from './kara';
+import {translateKaraInfo, isAllKaras, formatKaraList, getRandomKara} from './kara';
 import {playPlayer, playingUpdated} from './player';
 import {isPreviewAvailable} from '../_webapp/previews';
 import {getBlacklist} from './blacklist';
@@ -70,8 +70,7 @@ import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
 	isKaraInPlaylist as isKaraInPL,
 	getSongTimeSpentForUser,
 	getSongCountForUser,
-	addKaraToRequests,
-	translateKaraInfo
+	addKaraToRequests
 } from '../_dao/kara';
 
 
@@ -226,7 +225,7 @@ export async function setCurrentPlaylist(playlist_id) {
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', oldCurrentPlaylist_id);
 		setState({currentPlaylistID: playlist_id});
-		logger.info(`[Engine] Playlist ${pl.name} is now current`);
+		logger.info(`[Playlist] Playlist ${pl.name} is now current`);
 		return playlist_id;
 	} catch(err) {
 		throw {
@@ -262,7 +261,7 @@ export async function setPublicPlaylist(playlist_id) {
 		emitWS('playlistInfoUpdated', playlist_id);
 		emitWS('playlistInfoUpdated', oldPublicPlaylist_id);
 		setState({publicPlaylistID: playlist_id});
-		logger.info(`[Engine] Playlist ${pl.name} is now public`);
+		logger.info(`[Playlist] Playlist ${pl.name} is now public`);
 		return playlist_id;
 	} catch(err) {
 		throw {
@@ -282,7 +281,7 @@ export async function deletePlaylist(playlist_id, token) {
 	};
 	try {
 		profile('deletePlaylist');
-		logger.info(`[Engine] Deleting playlist ${pl.name}`);
+		logger.info(`[Playlist] Deleting playlist ${pl.name}`);
 		if (pl.flag_public) throw `Playlist ${playlist_id} is public. Unable to delete it`;
 		if (pl.flag_current) throw `Playlist ${playlist_id} is current. Unable to delete it`;
 		if ((!token) && pl.flag_favorites) throw `Playlist ${playlist_id} is a favorites list. Unable to delete it.`;
@@ -302,7 +301,7 @@ export async function emptyPlaylist(playlist_id) {
 	if (!pl) throw 'Playlist unknown';
 	try {
 		profile('emptyPL');
-		logger.info(`[Engine] Emptying playlist ${pl.name}`);
+		logger.info(`[Playlist] Emptying playlist ${pl.name}`);
 		await emptyPL(playlist_id);
 		await Promise.all([
 			updatePlaylistKaraCount(playlist_id),
@@ -323,7 +322,7 @@ export async function emptyPlaylist(playlist_id) {
 export async function editPlaylist(playlist_id,playlist) {
 	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	try {
-		logger.info(`[Engine] Editing playlist ${playlist_id} : ${JSON.stringify(playlist)}`);
+		logger.info(`[Playlist] Editing playlist ${playlist_id} : ${JSON.stringify(playlist)}`);
 		await editPL({
 			id: playlist_id,
 			name: playlist.name,
@@ -420,7 +419,8 @@ export async function getPlaylistContents(playlist_id,token,filter,lang,from,siz
 
 export async function getKaraFromPlaylist(plc_id,lang,token) {
 	profile('getPLCInfo');
-	let seenFromUser = false;
+	try {
+		let seenFromUser = false;
 	if (token.role === 'user') seenFromUser = true;
 	const kara = await getPLCInfo(plc_id, seenFromUser, token.username);
 	if (!kara) throw 'PLCID unknown';
@@ -429,6 +429,9 @@ export async function getKaraFromPlaylist(plc_id,lang,token) {
 	if (previewfile) output[0].previewfile = previewfile;
 	profile('getPLCInfo');
 	return output;
+	} catch(err) {
+		console.log(err);
+	}
 }
 
 export function isAllKarasInPlaylist(karas, karasToRemove) {
@@ -455,7 +458,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		profile('addKaraToPL');
 		if (!pl) throw {code: 1, msg: `Playlist ${playlist_id} unknown`};
 		if (!await isAllKaras(karas)) throw {code: 3, msg: 'One of the karaokes does not exist'};
-		logger.info(`[Engine] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
+		logger.info(`[Playlist] Adding ${karas.length} karaokes to playlist ${pl.name || 'unknown'} by ${requester} : ${kara.title || 'unknown'}...`);
 
 		if (!addByAdmin) {
 			// Check user quota first
@@ -565,7 +568,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			playlist_id: playlist_id
 		};
 	} catch(err) {
-		logger.error(`[Engine] Unable to add karaokes : ${err.msg}`);
+		logger.error(`[Playlist] Unable to add karaokes : ${err.msg}`);
 		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 		throw {
 			code: errorCode,
@@ -619,7 +622,7 @@ export async function copyKaraToPlaylist(plc_id,playlist_id,pos) {
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
 	//FIXME : Add a check for all PLCs if they exist
 	if (!plcData) throw `PLC ${plcData[0]} unknown`;
-	logger.info(`[Engine] Copying ${plcs.length} karaokes to playlist ${pl.name} : ${plcData.title}...`);
+	logger.info(`[Playlist] Copying ${plcs.length} karaokes to playlist ${pl.name} : ${plcData.title}...`);
 	try {
 		profile('copyKaraToPL');
 
@@ -676,7 +679,7 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token,opts) {
 	if (typeof plcs === 'string') karas = plcs.split(',');
 	//If we get a single song, it's a user deleting it (most probably)
 	const plcData = await getPLCInfoMini(karas[0]);
-	logger.info(`[Engine] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);
+	logger.info(`[Playlist] Deleting karaokes from playlist ${pl.name} : ${plcData.title}...`);
 	try {
 		//If token is present, a user is trying to remove a karaoke
 		if (token && token.role !== 'admin') if (plcData.username !== token.username) throw 'You cannot delete a song you did not add';
@@ -756,7 +759,7 @@ export async function exportPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
 	try {
-		logger.debug( `[Engine] Exporting playlist ${playlist_id}`);
+		logger.debug( `[Playlist] Exporting playlist ${playlist_id}`);
 		const plContents = await getPlaylistContentsMini(playlist_id);
 		const plInfo = await getPlaylistInfo(playlist_id);
 		let pl = {};
@@ -833,7 +836,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	try {
-		logger.debug( `[Engine] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
+		logger.debug( `[Playlist] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
 		let playingKara;
 		if (!testJSON(playlist)) throw 'Invalid JSON';
 		if (!playlist.Header) throw 'No Header section';
@@ -941,7 +944,7 @@ export async function shufflePlaylist(playlist_id) {
 		});
 		updatePlaylistLastEditTime(playlist_id);
 		await reorderPL(playlist_id,playlist);
-		logger.info(`[Engine] Playlist ${pl.name} shuffled`);
+		logger.info(`[Playlist] Playlist ${pl.name} shuffled`);
 		return pl.name;
 	} catch(err) {
 		throw {
