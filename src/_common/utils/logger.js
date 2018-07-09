@@ -43,5 +43,5 @@ export async function configureLogger(appPath, debug) {
 }
 
 export function profile(func) {
-	if (getConfig().optProfiling) logger.profile(func);
+	if (getConfig().optProfiling) logger.profile(`[Profiling] ${func}`);
 }
