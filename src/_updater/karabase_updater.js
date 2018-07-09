@@ -171,30 +171,63 @@ async function downloadMedias(ftp, files, mediasPath) {
 	let ftpErrors = [];
 	const conf = getConfig();
 	const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}';
-	const bar1 = new _cliProgress.Bar({
+	const bar = new _cliProgress.Bar({
 		format: barFormat,
 		stopOnComplete: true
 	}, _cliProgress.Presets.shades_classic);
 	let i = 0;
 	for (const file of files) {
+		let start = 0;
 		i++;
 		logger.info(`[Updater] (${i}/${files.length}) Downloading ${file.name} (${prettyBytes(file.size)})`);
-		bar1.start(Math.floor(file.size / 1000) / 1000, 0);
+		bar.start(Math.floor(file.size / 1000) / 1000, 0);
 		const outputFile = resolve(conf.appPath, mediasPath, file.name);
-		ftp.trackProgress(info => {
-			bar1.update(Math.floor(info.bytes / 1000) / 1000);
-		});
 		try {
-			await ftp.download(createWriteStream(outputFile), file.name);
+			await doFTPdownload(bar, ftp, createWriteStream(outputFile), file.name, start);
 		} catch(err) {
+			console.log('Full FTP error trace : ')
+			console.log(err);
 			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
-			ftpErrors.push(file.name);			
-		} 
+			ftpErrors.push(file.name);
+		}
 		ftp.trackProgress();
-		bar1.stop();		
+		bar.stop();
 	}
 	if (ftpErrors.length > 0) throw `Error during medias download : ${ftpErrors.toString()}`;
-	await ftpClose(ftp);			
+}
+
+async function doFTPDownload(bar, ftp, output, input) {
+	let start = 0;
+	await promiseRetry((retry) => {
+		return FTPdownload(bar, ftp, output, input, start).catch((err) => {
+			start = err.pos;
+			retry();
+		});
+	}, {
+		retries: 10,
+		minTimeout: 1000,
+		maxTimeout: 2000
+	}).then(() => {
+		return true;
+	}).catch((err) => {
+		throw err.error;
+	});
+}
+
+async function FTPdownload(bar, ftp, output, input, start) {
+	let pos = start;
+	ftp.trackProgress(info => {
+		pos = info.bytes - 1000000;
+		if (pos < 0) pos = 0;
+		bar.update(Math.floor(info.bytes / 1000) / 1000);
+	});
+	ftp.download(output, input, start).then(() => {
+		return true;
+	}).catch((err) => {
+		await ftpClose(ftp);
+		await ftpConnect(ftp);
+		throw { error: err, pos: pos || 0};
+	});
 }
 
 async function listLocalMedias() {
