@@ -2,7 +2,13 @@
 
 export const emptyWhitelist = 'DELETE FROM whitelist;';
 
-export const getWhitelistContents = (filterClauses, lang) => `SELECT wl.pk_id_whitelist AS whitelist_id, 
+export const addKaraToWhitelist = `INSERT INTO whitelist(fk_id_kara,kid,created_at)
+								SELECT $kara_id,kid,$created_at
+								FROM karasdb.kara
+								WHERE PK_id_kara = $kara_id;
+								`;
+
+export const getWhitelistContents = (filterClauses, lang) => `SELECT wl.pk_id_whitelist AS whitelist_id,
       									ak.kara_id AS kara_id,
       									ak.kid AS kid,
       									ak.title AS title,
@@ -22,12 +28,12 @@ export const getWhitelistContents = (filterClauses, lang) => `SELECT wl.pk_id_wh
       									ak.singer AS singer,
       									ak.songwriter AS songwriter,
 	  									ak.year AS year,
-      									ak.songtype AS songtype,      
+      									ak.songtype AS songtype,
       									ak.creator AS creator,
       									ak.language AS language,
       									ak.author AS author,
-      									ak.misc AS misc,    
-      									ak.duration AS duration,  
+      									ak.misc AS misc,
+      									ak.duration AS duration,
       									wl.created_at AS created_at,
       									ak.mediafile AS mediafile,
 										ak.NORM_serie_altname AS NORM_serie_altname,
@@ -36,9 +42,14 @@ export const getWhitelistContents = (filterClauses, lang) => `SELECT wl.pk_id_wh
 										ak.NORM_creator AS NORM_creator,
 										ak.NORM_author AS NORM_author,
 										ak.NORM_songwriter AS NORM_songwriter
- 									FROM karasdb.all_karas AS ak 
+ 									FROM karasdb.all_karas AS ak
 									INNER JOIN whitelist AS wl ON wl.fk_id_kara = ak.kara_id
 									WHERE 1 = 1
 									${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 									ORDER BY language, ak.serie IS NULL, serie COLLATE NOCASE, songtype DESC, songorder, singer COLLATE NOCASE, title COLLATE NOCASE
 									`;
+
+export const removeKaraFromWhitelist = `DELETE FROM whitelist
+									WHERE pk_id_whitelist = $wlc_id;
+									`;
+

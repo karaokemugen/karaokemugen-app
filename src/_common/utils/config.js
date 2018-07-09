@@ -12,10 +12,11 @@ import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
-import {emit} from './pubsub';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
 import {publishURL} from '../../_webapp/online';
+import {playerNeedsRestart} from '../../_services/player';
+import {setState} from './state';
 
 /** Object containing all config */
 let config = {};
@@ -43,10 +44,6 @@ export function sanitizeConfig(conf) {
 	return conf;
 }
 
-export function profile(func) {
-	if (config.optProfiling) logger.profile(func);
-}
-
 export function verifyConfig(conf) {
 	const validationErrors = check(conf, configConstraints);
 	if (validationErrors) {
@@ -61,7 +58,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 			setting !== 'PlayerFullscreen' &&
 			setting !== 'PlayerStayOnTop') {
 			if (oldConfig[setting] != newConfig[setting]) {
-				emit('playerNeedsRestart');
+				playerNeedsRestart();
 				logger.debug('[Config] Setting mpv to restart after next song');
 			}
 		}
@@ -71,8 +68,8 @@ export async function mergeConfig(oldConfig, newConfig) {
 	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings
-	emit('modeUpdated',conf.EnginePrivateMode);
-	
+	setState({private: conf.EnginePrivateMode});
+
 	configureHost();
 
 	// Determine which settings we send back. We get rid of all system and admin settings
@@ -110,13 +107,13 @@ export async function initConfig(appPath, argv) {
 			const oldConf = getConfig();
 			logger.debug('[Config] Config file has been changed from the outside world, reloading it...');
 			loadConfig(resolve(appPath, configFile)).then(() => {
-				mergeConfig(oldConf, getConfig());				
+				mergeConfig(oldConf, getConfig());
 			}).catch(err => {
 				logger.error(`[Config] Error parsing new config file : ${err}`);
 				logger.warn('[Config] Config file has errors. It has been ignored');
 			});
 		}
-		
+
 	});
 
 	return getConfig();
@@ -140,12 +137,6 @@ async function loadConfig(configFile) {
 	try {
 		verifyConfig(newConfig);
 		config = {...newConfig};
-		// Delete this when the 2.3 release gets rolled out
-		// Temporary fix to treat PathVideos as PathMedias
-		if (config.PathVideos) {		
-			config.PathMedias = config.PathVideos;
-			delete config.PathVideos;
-		}
 	} catch(err) {
 		throw err;
 	}
@@ -192,11 +183,11 @@ export async function backupConfig() {
 		resolve(config.appPath, 'config.ini'),
 		resolve(config.appPath, 'config.ini.backup'),
 		{ overwrite: true }
-	);	
+	);
 }
 
 export async function updateConfig(newConfig) {
-	savingSettings = true;		
+	savingSettings = true;
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {

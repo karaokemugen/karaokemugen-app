@@ -10,7 +10,7 @@ import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
-import {createKaraInDB, editKaraInDB, getKara} from '../_services/kara';
+import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {getFileLangFromKara} from '../_dao/karafile';
 import {check} from '../_common/utils/validators';
 import {addSerie} from '../_services/series';
@@ -44,9 +44,11 @@ export async function editKara(kara_id,kara) {
 			}
 		}
 		// Treat files
-		newKara = await generateKara(kara, {edit: true});
+		newKara = await generateKara(kara);
 		const newSubFile = resolve(resolvedPathSubs()[0],newKara.data.subfile);
 		const newMediaFile = resolve(resolvedPathMedias()[0],newKara.data.mediafile);
+
+		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file !== karaFile && await asyncExists(karaFile)) asyncUnlink(karaFile);
 		if (newSubFile !== subFile && subFile !== 'dummy.ass' && await asyncExists(subFile)) asyncUnlink(subFile);
 		if (newMediaFile !== mediaFile && await asyncExists(mediaFile)) asyncUnlink(mediaFile);
@@ -60,13 +62,26 @@ export async function editKara(kara_id,kara) {
 	try {
 		await editKaraInDB(newKara.data);
 	} catch(err) {
-		const errMsg = `.kara file is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
+		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
 }
 
-export async function generateKara(kara, opts) {
+export async function createKara(kara) {
+	const newKara = await generateKara(kara);
+	try {
+		newKara.data.karafile = basename(newKara.file);
+		await createKaraInDB(newKara.data);
+	} catch(err) {
+		const errMsg = `.kara file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
+		logger.warn(`[KaraGen] ${errMsg}`);
+		throw errMsg;
+	}
+	return newKara;
+}
+
+async function generateKara(kara, opts) {
 	/*
 	kara = {
 		title = string
@@ -98,6 +113,7 @@ export async function generateKara(kara, opts) {
 		series: {presence: true},
 		title: {presence: true}
 	});
+	// Copy files from temp directory to import, depending on the different cases.
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile;
 	if (kara.subfile) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
@@ -106,6 +122,7 @@ export async function generateKara(kara, opts) {
 	delete kara.mediafile_orig;
 	await asyncCopy(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
 	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncCopy(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
+
 	let newKara;
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
@@ -126,14 +143,6 @@ export async function generateKara(kara, opts) {
 		if (await asyncExists(newMediaFile)) await asyncUnlink(newMediaFile);
 		if (newSubFile) if (await asyncExists(newSubFile)) await asyncUnlink(newSubFile);
 		throw err;
-	}
-	if (!opts.edit) try {
-		newKara.data.karafile = basename(newKara.file);
-		await createKaraInDB(newKara.data);
-	} catch(err) {
-		const errMsg = `.kara file is OK, but unable to add karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
-		logger.warn(`[KaraGen] ${errMsg}`);
-		throw errMsg;
 	}
 	return newKara;
 }
@@ -166,7 +175,7 @@ async function importKara(mediaFile, subFile, data) {
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
 
-	let karaData = getKara({ ...data,
+	let karaData = formatKara({ ...data,
 		mediafile: `${kara}${extname(mediaFile)}`,
 		subfile: `${kara}${extname(subFile)}`
 	});

@@ -17,7 +17,7 @@ export function asyncExists(file) {
 export async function detectFileType(file) {
 	const buffer = await readChunk(file, 0, 4100);
 	const detected = fileType(buffer);
-	return detected.ext;	
+	return detected.ext;
 }
 
 /** Function used to read a file with a Promise */
@@ -63,13 +63,13 @@ export function asyncMove(...args) {
 
 /** Function used to verify if a required file exists. It throws an exception if not. */
 export async function asyncRequired(file) {
-	if (!await asyncExists(file)) throw 'File \'' + file + '\' does not exist';
+	if (!await asyncExists(file)) throw `File "${file}" does not exist`;
 }
 
 export async function asyncCheckOrMkdir(...dir) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
-		if (logger) logger.debug( '[Launcher] Creating folder ' + resolvedDir);
+		if (logger) logger.debug(`[Launcher] Creating folder ${resolvedDir}`);
 		return await asyncMkdirp(resolvedDir);
 	}
 }
@@ -82,14 +82,14 @@ export async function isGitRepo(dir) {
 /**
  * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
  */
-export async function resolveFileInDirs(filename, dirs) {	
+export async function resolveFileInDirs(filename, dirs) {
 	for (const dir of dirs) {
-		const resolved = resolve(getConfig().appPath, dir, filename);		
+		const resolved = resolve(getConfig().appPath, dir, filename);
 		if (await asyncExists(resolved)) {
 			return resolved;
 		}
 	}
-	throw 'File \'' + filename + '\' not found in any listed directory: ' + dirs;
+	throw `File "${filename}" not found in any listed directory: ${dirs}`;
 }
 
 export function filterMedias(files) {
@@ -119,7 +119,7 @@ export function checksum(str, algorithm, encoding) {
 		.digest(encoding || 'hex');
 }
 
-export async function compareFiles(file1, file2) {	
+export async function compareFiles(file1, file2) {
 	if (!await asyncExists(file1) || !await asyncExists(file2)) return false;
 	const [file1data, file2data] = await Promise.all([
 		asyncReadFile(file1, 'utf-8'),

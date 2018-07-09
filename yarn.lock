@@ -3685,10 +3685,6 @@ lodash.isboolean@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/lodash.isboolean/-/lodash.isboolean-3.0.3.tgz#6c2e171db2a257cd96802fd43b01b20d5f5870f6"
 
-lodash.isempty@^4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/lodash.isempty/-/lodash.isempty-4.4.0.tgz#6f86cbedd8be4ec987be9aaf33c9684db1b31e7e"
-
 lodash.isfunction@~2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/lodash.isfunction/-/lodash.isfunction-2.4.1.tgz#2cfd575c73e498ab57e319b77fa02adef13a94d1"
@@ -3762,10 +3758,6 @@ lodash.pluck@~2.4.1:
 lodash.property@~2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/lodash.property/-/lodash.property-2.4.1.tgz#4049c0549daf5a7102bc5e93eeaebb379deb132f"
-
-lodash.remove@^4.7.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/lodash.remove/-/lodash.remove-4.7.0.tgz#f31d31e7c39a0690d5074ec0d3627162334ee626"
 
 lodash.sample@^4.2.1:
   version "4.2.1"

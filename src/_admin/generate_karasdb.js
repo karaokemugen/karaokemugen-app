@@ -2,7 +2,6 @@ import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {resolve} from 'path';
 import deburr from 'lodash.deburr';
-import isEmpty from 'lodash.isempty';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
 import {asyncCopy, asyncReadDir} from '../_common/utils/files';
@@ -55,7 +54,7 @@ export async function extractAllKaraFiles() {
 	return karaFiles;
 }
 
-export async function getAllKaras(karafiles) {
+export async function readAllKaras(karafiles) {
 	const karaPromises = [];
 	for (const karafile of karafiles) {
 		karaPromises.push(() => readAndCompleteKarafile(karafile));
@@ -117,7 +116,7 @@ function getSeries(kara) {
 	}
 
 	// At least one series is mandatory if kara is not LIVE/MV type
-	if (serieRequired(kara.type) && isEmpty(series)) {
+	if (serieRequired(kara.type) && !series) {
 		logger.error(`Karaoke series cannot be detected! (${JSON.stringify(kara)})`);
 		error = true;
 	}
@@ -185,8 +184,8 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 
 	const altNameData = [];
 	const i18nData = [];
-	const altNamesFile = await readSeriesFile(altSeriesFile);
-	for (const serie of altNamesFile.series) {
+	const seriesData = await readSeriesFile(altSeriesFile);
+	for (const serie of seriesData.series) {
 		if (serie.aliases) altNameData.push({
 			$serie_altnames: serie.aliases.join(','),
 			$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
@@ -205,7 +204,7 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 	}
 	// Checking if some series present in .kara files are not present in the series file
 	for (const serie of mapSeries.keys()) {
-		if (!findSeries(serie, altNamesFile)) {
+		if (!findSeries(serie, seriesData)) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in the series file`);
 			if (getConfig().optStrict) strictModeError(serie);
@@ -365,7 +364,7 @@ export async function run(config) {
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		await emptyDatabase(db);
 		const karaFiles = await extractAllKaraFiles();
-		const karas = await getAllKaras(karaFiles);
+		const karas = await readAllKaras(karaFiles);
 		// Preparing data to insert
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas);
@@ -508,7 +507,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		}
 	});
 
-	blcTags.forEach(function (blcTag) {
+	blcTags.forEach(blcTag => {
 		let tagFound = false;
 		allTags.forEach(function (tag) {
 			if (tag.name === blcTag.tagname && tag.tagtype === blcTag.type) {

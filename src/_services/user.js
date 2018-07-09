@@ -1,8 +1,8 @@
-import {deletePlaylist} from '../_services/playlist';
+import {isACurrentPlaylist, isAPublicPlaylist, deletePlaylist} from '../_services/playlist';
 import {findFavoritesPlaylist} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
-import {createPlaylist} from '../_services/playlist';
+import {freePLCBeforePos, getPlaylistContentsMini, freePLC, createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
 import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
@@ -13,10 +13,14 @@ import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
 import {on} from '../_common/utils/pubsub';
+import {getSongCountForUser, getSongTimeSpentForUser} from '../_dao/kara';
+import {emitWS} from '../_webapp/frontend';
+import {profile} from '../_common/utils/logger';
+import {getState} from '../_common/utils/state';
 
 const db = require('../_dao/user');
 const sleep = promisify(setTimeout);
-
+let userLoginTimes = {};
 let databaseBusy = false;
 
 on('databaseBusy', status => {
@@ -31,14 +35,12 @@ async function updateExpiredUsers() {
 			await db.resetGuestsPassword();
 		}
 		//Sleep for one minute.
-		await sleep(60000);
 	} catch(err) {
-		await sleep(60000);
 		throw err;
-	}	
+	} finally {
+		await sleep(60000);
+	}
 }
-
-let userLoginTimes = {};
 
 export async function updateLastLoginName(login) {
 	const currentUser = await findUserByName(login);
@@ -47,7 +49,7 @@ export async function updateLastLoginName(login) {
 	if (userLoginTimes[login] < (now() - 60)) {
 		userLoginTimes[login] = now();
 		return await db.updateUserLastLogin(currentUser.id,now());
-	}	
+	}
 }
 
 export async function getUserRequests(username) {
@@ -72,22 +74,23 @@ export async function editUser(username,user,avatar,role) {
 		if (!user.email) user.email = null;
 		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
 		// Check if login already exists.
-		if (await db.checkNicknameExists(user.nickname, user.NORM_nickname) && currentUser.nickname !== user.nickname) throw 'Nickname already exists';
-		user.NORM_nickname = deburr(user.nickname);	
+		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
+		user.NORM_nickname = deburr(user.nickname);
+		// Modifying passwords is not allowed in demo mode
 		if (user.password && !getConfig().isDemo) {
 			user.password = hashPassword(user.password);
 			await db.updateUserPassword(user.id,user.password);
 		}
 		if (avatar) {
 			// If a new avatar was sent, it is contained in the avatar object
-			// Let's move it to the avatar user directory and update avatar info in 
+			// Let's move it to the avatar user directory and update avatar info in
 			// database
-			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);	
+			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}
 		await db.editUser(user);
-		logger.debug( `[User] ${username} (${user.nickname}) profile updated`);
+		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);
 		return user;
 	} catch (err) {
 		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
@@ -112,15 +115,15 @@ async function replaceAvatar(oldImageFile,avatar) {
 		const fileType = await detectFileType(avatar.path);
 		if (fileType !== 'jpg' &&
 				fileType !== 'gif' &&
-				fileType !== 'png') {			
-			throw 'Wrong avatar file type';			
+				fileType !== 'png') {
+			throw 'Wrong avatar file type';
 		}
 		// Construct the name of the new avatar file with its ID and filetype.
 		const newAvatarFile = uuidV4()+ '.' + fileType;
 		const newAvatarPath = resolve(conf.PathAvatars,newAvatarFile);
 		const oldAvatarPath = resolve(conf.PathAvatars,oldImageFile);
 		if (await asyncExists(oldAvatarPath) &&
-			oldImageFile !== 'blank.png') await asyncUnlink(oldAvatarPath);	
+			oldImageFile !== 'blank.png') await asyncUnlink(oldAvatarPath);
 		await asyncMove(avatar.path,newAvatarPath);
 		return newAvatarFile;
 	} catch (err) {
@@ -143,12 +146,12 @@ export async function findUserByName(username, opt) {
 			userdata.fingerprint = null;
 			userdata.email = null;
 		}
-		if (userdata.type === 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);		
+		if (userdata.type === 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);
 		return userdata;
 	}
-	return false;	
+	return false;
 }
- 
+
 export async function findUserByID(id) {
 	const userdata = await db.getUserByID(id);
 	if (userdata) {
@@ -162,7 +165,7 @@ export async function findUserByID(id) {
 
 export function hashPassword(password) {
 	const hash = createHash('sha256');
-	hash.update(password);		
+	hash.update(password);
 	return hash.digest('hex');
 }
 
@@ -179,7 +182,7 @@ export async function checkPassword(username,password) {
 }
 
 export async function findFingerprint(fingerprint) {
-	let guest = await db.findFingerprint(fingerprint);	
+	let guest = await db.findFingerprint(fingerprint);
 	if (guest) return guest.login;
 	guest = await db.getRandomGuest();
 	if (!guest) return false;
@@ -208,13 +211,13 @@ export async function createUser(user, opts) {
 	user.email = user.email || null;
 
 	await newUserIntegrityChecks(user);
-	if (user.password) user.password = hashPassword(user.password);	
+	if (user.password) user.password = hashPassword(user.password);
 	try {
 		await db.addUser(user);
 		if (user.type === 1 && opts.createFavoritePlaylist) {
-			await createPlaylist(`Faves : ${user.login}`, 0, 0, 0, 1, user.login);
-			logger.info(`[User] Created user ${user.login}`);		
-			logger.debug( `[User] User data : ${JSON.stringify(user)}`);
+			await createPlaylist(`Faves : ${user.login}`, {favorites: true} , user.login);
+			logger.info(`[User] Created user ${user.login}`);
+			logger.debug(`[User] User data : ${JSON.stringify(user)}`);
 		}
 		return true;
 	} catch (err) {
@@ -243,13 +246,13 @@ async function newUserIntegrityChecks(user) {
 
 
 export async function checkUserNameExists(username) {
-	return await db.checkUserNameExists(username);	
+	return await db.checkUserNameExists(username);
 }
 
-export async function deleteUser(username) {	
+export async function deleteUser(username) {
 	const user = await findUserByName(username);
 	if (!user) throw {code: 'USER_NOT_EXISTS'};
-	return await deleteUserById(user.id);	
+	return await deleteUserById(user.id);
 }
 
 export async function deleteUserById(id) {
@@ -257,10 +260,10 @@ export async function deleteUserById(id) {
 	try {
 		const user = await findUserByID(id);
 		if (!user) throw {code: 'USER_NOT_EXISTS'};
-		if (user.login === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Human Instrumentality Project'};
+		if (user.login === 'admin') throw {code: 'USER_DELETE_ADMIN_DAMEDESU', message: 'Admin user cannot be deleted as it is used for the Karaoke Instrumentality Project'};
 		const playlist_id = await findFavoritesPlaylist(user.login);
 		if (playlist_id) {
-			await deletePlaylist(playlist_id, {force: true});
+			await deletePlaylist(playlist_id);
 		}
 		//Reassign karas and playlists owned by the user to the admin user
 		await db.reassignToUser(user.id,1);
@@ -275,7 +278,7 @@ export async function deleteUserById(id) {
 
 async function createDefaultGuests() {
 	const guests = await listGuests();
-	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';		
+	if (guests.length >= defaultGuestNames.length) return 'No creation of guest account needed';
 	let guestsToCreate = [];
 	for (const guest of defaultGuestNames) {
 		if (!guests.find(g => g.login === guest)) guestsToCreate.push(guest);
@@ -332,4 +335,66 @@ export async function initUserSystem() {
 	createDefaultGuests();
 }
 
+export async function updateSongsLeft(user_id,playlist_id) {
+	const conf = getConfig();
+	const user = await findUserByID(user_id);
+	let quotaLeft;
+	if (!playlist_id) {
+		if (conf.EnginePrivateMode === 1) {
+			playlist_id = await isACurrentPlaylist();
+		} else {
+			playlist_id = await isAPublicPlaylist();
+		}
+	}
+	if (user.flag_admin === 0 && +conf.EngineQuotaType > 0) {
+		switch(+conf.EngineQuotaType) {
+		default:
+		case 1:
+			const count = await getSongCountForUser(playlist_id,user_id);
+			quotaLeft = +conf.EngineSongsPerUser - count.count;
+			break;
+		case 2:
+			const time = await getSongTimeSpentForUser(playlist_id,user_id);
+			quotaLeft = +conf.EngineTimePerUser - time.timeSpent;
+		}
+	} else {
+		quotaLeft = -1;
+	}
+	logger.debug( `[User] Updating quota left for ${user.login} : ${quotaLeft}`);
+	emitWS('quotaAvailableUpdated', {
+		username: user.login,
+		quotaLeft: quotaLeft,
+		quotaType: +conf.EngineQuotaType
+	});
+}
 
+export async function updateUserQuotas(kara) {
+	//If karaokes are present in the public playlist, we're marking it free.
+	//First find which KIDs are to be freed. All those before the currently playing kara
+	// are to be set free.
+	const internalState = getState();
+	profile('updateUserQuotas');
+	await freePLCBeforePos(kara.pos, internalState.currentPlaylistID);
+	// For every KID we check if it exists and add the PLC to a list
+	const [publicPlaylist, currentPlaylist] = await Promise.all([
+		getPlaylistContentsMini(internalState.publicPlaylistID),
+		getPlaylistContentsMini(internalState.currentPlaylistID)
+	]);
+	let freeTasks = [];
+	let usersNeedingUpdate = [];
+	for (const currentSong of currentPlaylist) {
+		publicPlaylist.some(publicSong => {
+			if (publicSong.kid === currentSong.kid && currentSong.flag_free === 1) {
+				freeTasks.push(freePLC(publicSong.playlistcontent_id));
+				if (!usersNeedingUpdate.includes(publicSong.user_id)) usersNeedingUpdate.push(publicSong.user_id);
+				return true;
+			}
+			return false;
+		});
+	}
+	await Promise.all(freeTasks);
+	usersNeedingUpdate.forEach(user_id => {
+		updateSongsLeft(user_id,internalState.modePlaylistID);
+	});
+	profile('updateUserQuotas');
+}

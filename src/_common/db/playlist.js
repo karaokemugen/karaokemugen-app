@@ -1,27 +1,23 @@
 // SQL for playlist management
 
-export const countKarasInPlaylist = `SELECT COUNT(playlist_content.fk_id_kara) AS karaCount 
-									FROM playlist_content 
-									WHERE fk_id_playlist = $playlist_id;`;
-
-export const updatePlaylistLastEditTime = `UPDATE playlist 
-										SET modified_at = $modified_at 
+export const updatePlaylistLastEditTime = `UPDATE playlist
+										SET modified_at = $modified_at
 										WHERE pk_id_playlist = $playlist_id;
 										`;
 
-export const emptyPlaylist = `DELETE FROM playlist_content 
+export const emptyPlaylist = `DELETE FROM playlist_content
 							WHERE fk_id_playlist = $playlist_id;
 							`;
 
-export const deletePlaylist = `DELETE FROM playlist 
+export const deletePlaylist = `DELETE FROM playlist
 							WHERE pk_id_playlist = $playlist_id;
 							`;
 
-export const editPlaylist = `UPDATE playlist 
+export const editPlaylist = `UPDATE playlist
 							SET name = $name,
 							NORM_name = $NORM_name,
 							modified_at = $modified_at,
-							flag_visible = $flag_visible 
+							flag_visible = $flag_visible
 						WHERE pk_id_playlist = $playlist_id;
 							`;
 
@@ -53,32 +49,34 @@ export const createPlaylist = `INSERT INTO playlist(
 								0);
 								`;
 
-export const updatePlaylistKaraCount = `UPDATE playlist 
-										SET num_karas = $kara_count 
+export const updatePlaylistKaraCount = `UPDATE playlist
+										SET num_karas = (SELECT COUNT(playlist_content.fk_id_kara)
+										FROM playlist_content
+										WHERE fk_id_playlist = $playlist_id)
 										WHERE pk_id_playlist = $playlist_id;
 										`;
 
-export const getPLCByDate = `SELECT pc.pk_id_plcontent AS playlistcontent_id 
+export const getPLCByDate = `SELECT pc.pk_id_plcontent AS playlistcontent_id
 							FROM playlist_content AS pc
-							WHERE pc.created_at = $date_added 
+							WHERE pc.created_at = $date_added
   							  AND pc.fk_id_playlist = $playlist_id
 							ORDER BY pc.pos;`;
 
-export const updatePLCSetPos = `UPDATE playlist_content 
-								SET pos = $pos 
+export const updatePLCSetPos = `UPDATE playlist_content
+								SET pos = $pos
 								WHERE pk_id_plcontent = $playlistcontent_id;`;
 
 
-export const updatePlaylistDuration = `UPDATE playlist SET time_left = 
+export const updatePlaylistDuration = `UPDATE playlist SET time_left =
     									(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
-    									FROM karasdb.kara, playlist_content 
-    									WHERE playlist_content.fk_id_kara = karasdb.kara.pk_id_kara  
-    									AND playlist_content.fk_id_playlist = $playlist_id  
+    									FROM karasdb.kara, playlist_content
+    									WHERE playlist_content.fk_id_kara = karasdb.kara.pk_id_kara
+    									AND playlist_content.fk_id_playlist = $playlist_id
     									AND playlist_content.pos >= (select ifnull(pos,0) from playlist_content where flag_playing = 1 and playlist_content.fk_id_playlist = $playlist_id)),
-    									length = 
+    									length =
     									(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
-    									FROM karasdb.kara, playlist_content 
-    									WHERE playlist_content.fk_id_kara = 	karasdb.kara.pk_id_kara  
+    									FROM karasdb.kara, playlist_content
+    									WHERE playlist_content.fk_id_kara = 	karasdb.kara.pk_id_kara
     								  	AND playlist_content.fk_id_playlist = $playlist_id
     								  	AND playlist_content.pos >= 0)
 									WHERE pk_id_playlist = $playlist_id;`;
@@ -113,7 +111,7 @@ export const getPlaylistContents = (filterClauses, lang) => `SELECT ak.kara_id A
 	  									ak.songwriter AS songwriter,
 	  									ak.NORM_songwriter AS NORM_songwriter,
 	  									ak.year AS year,
-      									ak.songtype AS songtype,      
+      									ak.songtype AS songtype,
       									ak.creator AS creator,
       									ak.NORM_creator AS NORM_creator,
       									ak.language AS language,
@@ -127,9 +125,9 @@ export const getPlaylistContents = (filterClauses, lang) => `SELECT ak.kara_id A
 										u.login AS username,
       									pc.pos AS pos,
       									pc.pk_id_plcontent AS playlistcontent_id,
-      									pc.flag_playing AS flag_playing,      
+      									pc.flag_playing AS flag_playing,
       									ak.mediafile AS mediafile,
-	  									ak.duration AS duration,	  
+	  									ak.duration AS duration,
 	  									(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
 										(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
       									(CASE WHEN wl.fk_id_kara = ak.kara_id
@@ -144,12 +142,12 @@ export const getPlaylistContents = (filterClauses, lang) => `SELECT ak.kara_id A
 	     									THEN 1
         									ELSE 0
 										  END) AS flag_dejavu,
-										  (SELECT COUNT(*) 
+										  (SELECT COUNT(*)
     								FROM upvote AS up
     								WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
 									EXISTS(SELECT fk_id_plcontent FROM upvote, user as u2 WHERE fk_id_plcontent  = pc.pk_id_plcontent AND fk_id_user = u2.pk_id_user AND u2.login = $username) AS flag_upvoted,
 										(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
-									FROM karasdb.all_karas AS ak 
+									FROM karasdb.all_karas AS ak
 									INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 									LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
 									LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
@@ -168,7 +166,7 @@ export const getPlaylistContentsMini = (lang) => `SELECT ak.kara_id AS kara_id,
 									  (SELECT sl.name FROM serie_lang sl, kara_serie ks WHERE sl.fk_id_serie = ks.fk_id_serie AND ks.fk_id_kara = kara_id AND sl.lang = ${lang.fallback}),
 									  ak.serie) AS serie,
 													ak.serie_i18n AS serie_i18n,
-      												ak.songtype AS songtype,      
+      												ak.songtype AS songtype,
 	  												ak.singer AS singer,
       												ak.gain AS gain,
       												pc.pseudo_add AS pseudo_add,
@@ -182,7 +180,7 @@ export const getPlaylistContentsMini = (lang) => `SELECT ak.kara_id AS kara_id,
 													pc.fk_id_user AS user_id,
 													pc.flag_free AS flag_free,
 													u.login AS username
-											FROM karasdb.all_karas AS ak 
+											FROM karasdb.all_karas AS ak
 											INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 											LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
 											WHERE pc.fk_id_playlist = $playlist_id
@@ -190,7 +188,7 @@ export const getPlaylistContentsMini = (lang) => `SELECT ak.kara_id AS kara_id,
 											`;
 
 export const getPlaylistPos = `SELECT pc.pos AS pos,
-      								pc.pk_id_plcontent AS playlistcontent_id    
+      								pc.pk_id_plcontent AS playlistcontent_id
 							FROM playlist_content AS pc
 							WHERE pc.fk_id_playlist = $playlist_id
 							ORDER BY pc.pos,pc.created_at DESC;
@@ -202,7 +200,7 @@ export const getPlaylistKaraNames = `SELECT pc.pos AS pos,
 	     									THEN ak.singer
         									ELSE ak.serie
       									END) || ak.songtype || ak.songorder || ak.title) AS karaname
-							FROM karasdb.all_karas AS ak 
+							FROM karasdb.all_karas AS ak
 							INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 							WHERE pc.fk_id_playlist = $playlist_id
 							ORDER BY karaname;
@@ -224,7 +222,7 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 	  							ak.songwriter AS songwriter,
 	  							ak.NORM_songwriter AS NORM_songwriter,
 	  							ak.year AS year,
-      							ak.songtype AS songtype,      
+      							ak.songtype AS songtype,
       							ak.creator AS creator,
       							ak.NORM_creator AS NORM_creator,
       							ak.language AS language,
@@ -238,8 +236,8 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 								u.login AS username,
       							pc.pos AS pos,
       							pc.pk_id_plcontent AS playlistcontent_id,
-	    						pc.fk_id_playlist as playlist_id,      
-      							pc.flag_playing AS flag_playing,	        
+	    						pc.fk_id_playlist as playlist_id,
+      							pc.flag_playing AS flag_playing,
       							ak.mediafile AS mediafile,
 	  							ak.duration AS duration,
 	  							ak.gain AS gain,
@@ -249,8 +247,8 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
     								SELECT 1 FROM playlist_content pc
     								JOIN playlist p ON pc.fk_id_playlist = p.pk_id_playlist
     								JOIN user u ON   u.pk_id_user = p.fk_id_user
-    									WHERE pc.fk_id_kara = ak.kara_id 
-										AND p.flag_favorites = 1 
+    									WHERE pc.fk_id_kara = ak.kara_id
+										AND p.flag_favorites = 1
 										AND u.login = $username
   								) AS flag_favorites,
       							(CASE WHEN wl.fk_id_kara = ak.kara_id
@@ -271,14 +269,14 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
 	     							THEN 1
         							ELSE 0
       							END) AS flag_dejavu,
-								(SELECT COUNT(*) 
+								(SELECT COUNT(*)
     								FROM upvote AS up
     								WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes,
 								EXISTS(SELECT fk_id_plcontent FROM upvote, user as u2 WHERE fk_id_plcontent  = pc.pk_id_plcontent AND fk_id_user = u2.pk_id_user AND u2.login = $username) AS flag_upvoted,
 								(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
 						FROM karasdb.all_karas AS ak
 						INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
-						LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user    	
+						LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
 						LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 						LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
 						LEFT OUTER JOIN playlist AS p ON pc.fk_id_playlist = p.pk_id_playlist
@@ -294,12 +292,12 @@ export const getPLCInfoMini = `SELECT pc.fk_id_kara AS kara_id,
 						  u.login AS username,
 							pc.pk_id_plcontent AS playlistcontent_id,
 						  pc.fk_id_playlist AS playlist_id,
-						  (SELECT COUNT(*) 
+						  (SELECT COUNT(*)
     								FROM upvote AS up
 									WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes
 				  FROM karasdb.all_karas AS ak
-				  INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id 
-				  LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user    	
+				  INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
+				  LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
 				  WHERE  pc.pk_id_plcontent = $playlistcontent_id
 					  `;
 
@@ -324,51 +322,51 @@ export const getPLCByKID = `SELECT ak.kara_id AS kara_id,
       							END) AS flag_dejavu,
 								(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
 							FROM karasdb.all_karas AS ak
-							INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id 
-							WHERE pc.fk_id_playlist = $playlist_id  
-								AND pc.kid = $kid 
+							INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
+							WHERE pc.fk_id_playlist = $playlist_id
+								AND pc.kid = $kid
 							ORDER BY pc.pos;
 						`;
 
-export const getPlaylistInfo = `SELECT p.pk_id_playlist AS playlist_id, 
-									p.name AS name, 
-									p.num_karas AS num_karas, 
-									p.length AS length, 
-									p.time_left AS time_left, 
-									p.created_at AS created_at, 
-									p.modified_at AS modified_at, 
-									p.flag_visible AS flag_visible, 
-									p.flag_current AS flag_current, 
+export const getPlaylistInfo = `SELECT p.pk_id_playlist AS playlist_id,
+									p.name AS name,
+									p.num_karas AS num_karas,
+									p.length AS length,
+									p.time_left AS time_left,
+									p.created_at AS created_at,
+									p.modified_at AS modified_at,
+									p.flag_visible AS flag_visible,
+									p.flag_current AS flag_current,
 									p.flag_public AS flag_public,
 									p.flag_favorites AS flag_favorites,
-									u.login AS username 
+									u.login AS username
 									FROM playlist AS p, user AS u
 									WHERE pk_id_playlist = $playlist_id
 									  AND u.pk_id_user = p.fk_id_user
 							`;
 
-export const getPlaylists = `SELECT p.pk_id_playlist AS playlist_id, 
-									p.name AS name, 
-									p.num_karas AS num_karas, 
-									p.length AS length, 
-									p.time_left AS time_left, 
-									p.created_at AS created_at, 
-									p.modified_at AS modified_at, 
-									p.flag_visible AS flag_visible, 
-									p.flag_current AS flag_current, 
+export const getPlaylists = `SELECT p.pk_id_playlist AS playlist_id,
+									p.name AS name,
+									p.num_karas AS num_karas,
+									p.length AS length,
+									p.time_left AS time_left,
+									p.created_at AS created_at,
+									p.modified_at AS modified_at,
+									p.flag_visible AS flag_visible,
+									p.flag_current AS flag_current,
 									p.flag_public AS flag_public,
 									p.flag_favorites AS flag_favorites,
 									u.login AS username
  							FROM playlist AS p, user AS u
-							WHERE p.fk_id_user = u.pk_id_user  
+							WHERE p.fk_id_user = u.pk_id_user
  							`;
 
 export const testCurrentPlaylist = `SELECT pk_id_playlist AS playlist_id
-								FROM playlist 
+								FROM playlist
 								WHERE flag_current = 1;
 								`;
 
-export const setPLCFree = `UPDATE playlist_content 
+export const setPLCFree = `UPDATE playlist_content
 							SET flag_free = 1
 							WHERE pk_id_plcontent = $plc_id;
 							`;
@@ -380,7 +378,7 @@ export const setPLCFreeBeforePos = `UPDATE playlist_content
 							`;
 
 export const testPublicPlaylist = `SELECT pk_id_playlist AS playlist_id
-								FROM playlist 
+								FROM playlist
 								WHERE flag_public = 1;
 								`;
 
@@ -390,8 +388,8 @@ export const shiftPosInPlaylist = `UPDATE playlist_content
    									AND pos >= $pos
 								`;
 
-export const getMaxPosInPlaylist = `SELECT MAX(pos) AS maxpos 
-								FROM playlist_content 
+export const getMaxPosInPlaylist = `SELECT MAX(pos) AS maxpos
+								FROM playlist_content
 								WHERE fk_id_playlist = $playlist_id;
 								`;
 
@@ -401,50 +399,44 @@ export const raisePosInPlaylist = `UPDATE playlist_content
    									AND pos = $pos
 								`;
 
-export const testPlaylist = `SELECT pk_id_playlist 
-								FROM playlist 
+export const testPlaylist = `SELECT pk_id_playlist
+								FROM playlist
 								WHERE pk_id_playlist = $playlist_id
 							`;
 
-export const testPlaylistFlagPlaying = `SELECT pk_id_plcontent 
-									FROM playlist_content 
-									WHERE fk_id_playlist = $playlist_id
-										AND flag_playing = 1
-									`;
-
-export const setCurrentPlaylist = `UPDATE playlist 
-									SET flag_current = 1 
+export const setCurrentPlaylist = `UPDATE playlist
+									SET flag_current = 1
 									WHERE pk_id_playlist = $playlist_id;				`;
 
-export const unsetCurrentPlaylist = `UPDATE playlist 
+export const unsetCurrentPlaylist = `UPDATE playlist
 									SET flag_current = 0;
 									`;
 
-export const setVisiblePlaylist = `UPDATE playlist 
-									SET flag_visible = 1 
+export const setVisiblePlaylist = `UPDATE playlist
+									SET flag_visible = 1
 									WHERE pk_id_playlist = $playlist_id;				`;
 
-export const unsetVisiblePlaylist = `UPDATE playlist 
+export const unsetVisiblePlaylist = `UPDATE playlist
 									SET flag_visible = 0
 									WHERE pk_id_playlist = $playlist_id;				`;
 
-export const unsetPublicPlaylist = `UPDATE playlist 
+export const unsetPublicPlaylist = `UPDATE playlist
 									SET flag_public = 0;									`;
 
 
-export const setPublicPlaylist = `UPDATE playlist 
-									SET flag_public = 1 
+export const setPublicPlaylist = `UPDATE playlist
+									SET flag_public = 1
 									WHERE pk_id_playlist = $playlist_id;
 									`;
 
-export const unsetPlaying = `UPDATE playlist_content 
-							SET flag_playing = 0 
+export const unsetPlaying = `UPDATE playlist_content
+							SET flag_playing = 0
 							WHERE fk_id_playlist = $playlist_id
 							 AND flag_playing = 1;
 							`;
 
-export const setPlaying = `UPDATE playlist_content 
-						SET flag_playing = 1 
+export const setPlaying = `UPDATE playlist_content
+						SET flag_playing = 1
 						WHERE pk_id_plcontent = $playlistcontent_id;
 						`;
 
@@ -453,7 +445,7 @@ export const countPlaylistUsers = `SELECT COUNT(DISTINCT fk_id_user) AS NumberOf
                             WHERE fk_id_playlist = $playlist_id;
 							`;
 
-export const getMaxPosInPlaylistForPseudo = `SELECT MAX(pos) AS maxpos
+export const getMaxPosInPlaylistForUser = `SELECT MAX(pos) AS maxpos
                                         FROM playlist_content
                                         WHERE fk_id_playlist = $playlist_id
                                             AND fk_id_user = $user_id;
