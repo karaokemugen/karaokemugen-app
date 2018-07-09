@@ -11,6 +11,7 @@ import {getAllKaras as getAllKarasDB,
 	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
 	getASS,
+	isKara as isKaraDB,
 	addKara,
 	updateKara,
 	getKaraHistory as getKaraHistoryDB,
@@ -27,6 +28,22 @@ import {resolve} from 'path';
 import testJSON from 'is-valid-json';
 import {profile} from '../_common/utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
+
+export async function isAllKaras(karas) {
+	let err;
+	for (const kara_id of karas) {
+		if (!await isKara(kara_id)) err = true;
+	}
+	if (err) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+async function isKara(kara_id) {
+	return await isKaraDB(kara_id);
+}
 
 export function translateKaraInfo(karalist, lang) {
 	const conf = getConfig();

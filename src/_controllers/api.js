@@ -13,13 +13,14 @@ import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
 
 //KM Modules
-import {updateSettings, sendCommand, getKMStats, shutdown} from '../_services/engine';
+import {updateSettings, getKMStats, shutdown} from '../_services/engine';
+import {sendCommand} from '../_services/player';
 import {updateSongsLeft} from '../_services/user';
 import {message} from '../_player/player';
 import {addKaraToPlaylist, copyKaraToPlaylist, shufflePlaylist, getPlaylistContents, emptyPlaylist, setCurrentPlaylist, setPublicPlaylist, editPLC, editPlaylist, deleteKaraFromPlaylist, deletePlaylist, getPlaylistInfo, createPlaylist, getPlaylists, getKaraFromPlaylist, exportPlaylist, importPlaylist} from '../_services/playlist';
 import {getTags} from '../_services/tag';
 import {getRandomKara, getKaraLyrics, getTop50, getKaras, getKara} from '../_services/kara';
-import {addKaraToWhitelist, emptyWhitelist, deleteWhitelistContent, getWhitelist} from '../_services/whitelist';
+import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelistContents} from '../_services/whitelist';
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
@@ -1543,7 +1544,7 @@ export function APIControllerAdmin(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const karas = await getWhitelist(req.body.filter,req.lang,from,size);
+				const karas = await getWhitelistContents(req.body.filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1638,12 +1639,11 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await deleteWhitelistContent(req.body.wlc_id);
+					await deleteKaraFromWhitelist(req.body.wlc_id);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));
 				} catch(err) {
-					logger.error(err);
 					res.statusCode = 500;
 					res.json(errMessage('WL_DELETE_SONG_ERROR',err));
 				}

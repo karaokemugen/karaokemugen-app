@@ -15,7 +15,7 @@ import {watch} from 'chokidar';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
 import {publishURL} from '../../_webapp/online';
-import {playerNeedsRestart} from '../../_services/engine';
+import {playerNeedsRestart} from '../../_services/player';
 import {setState} from './state';
 
 /** Object containing all config */

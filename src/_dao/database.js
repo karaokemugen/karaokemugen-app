@@ -85,7 +85,7 @@ export async function transaction(items, sql) {
 	await promiseRetry((retry) => {
 		return doTransaction(items, sql).catch(retry);
 	}, {
-		retries: 20,
+		retries: 50,
 		minTimeout: 100,
 		maxTimeout: 200
 	}).then(() => {

@@ -2,7 +2,6 @@ import {isAllKaras} from './kara';
 import {isAllKarasInPlaylist} from './playlist';
 import {removeKaraFromWhitelist, getWhitelistContents as getWLContents, emptyWhitelist as emptyWL, addKaraToWhitelist as addToWL} from '../_dao/whitelist';
 import {generateBlacklist} from './blacklist';
-import {now} from 'unix-timestamp';
 import {profile} from '../_common/utils/logger';
 import {formatKaraList} from './kara';
 import logger from 'winston';
@@ -12,14 +11,14 @@ export async function addKaraToWhitelist(kara_id) {
 	let karas = [kara_id];
 	if (typeof kara_id === 'string') karas = kara_id.split(',');
 	const kara = await getKara(karas[0]);
-	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara.title}...`);
+	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara[0].title}...`);
 	try {
 		profile('addKaraToWL');
-		const karasInWhitelist = await getWhitelistContents();
 		if (!await isAllKaras(karas)) throw 'One of the karaokes does not exist.';
-		const karaList = isAllKarasInPlaylist(karas,karasInWhitelist);
+		const karasInWhitelist = await getWhitelistContents();
+		const karaList = isAllKarasInPlaylist(karas,karasInWhitelist.content);
 		if (karaList.length === 0) throw 'No karaoke could be added, all are in whitelist already';
-		await addToWL(karaList,now());
+		await addToWL(karaList);
 		await generateBlacklist();
 		return karaList;
 	} catch(err) {
@@ -45,8 +44,8 @@ export async function getWhitelistContents(filter, lang, from, size) {
 }
 
 export async function deleteKaraFromWhitelist(wlcs) {
-	let karas;
-	typeof wlcs === 'string' ? karas = wlcs.split(',') : karas = [wlcs];
+	let karas = [wlcs];
+	if (typeof wlcs === 'string') karas = wlcs.split(',');
 	let karaList = [];
 	karas.forEach((wlc_id) => {
 		karaList.push({
@@ -59,6 +58,7 @@ export async function deleteKaraFromWhitelist(wlcs) {
 		await removeKaraFromWhitelist(karaList);
 		return await generateBlacklist();
 	} catch(err) {
+		console.log(err);
 		logger.err(`${err}`);
 		throw err;
 	} finally {

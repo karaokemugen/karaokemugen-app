@@ -1,7 +1,7 @@
+//Utils
 import {uuidRegexp} from './constants';
 import {getStats} from '../_dao/database';
 import {getConfig} from '../_common/utils/config';
-import {updateSongsLeft, findUserByName} from '../_services/user';
 import {now} from 'unix-timestamp';
 import logger from 'winston';
 import deburr from 'lodash.deburr';
@@ -10,10 +10,10 @@ import {emitWS} from '../_webapp/frontend';
 import {on} from '../_common/utils/pubsub';
 import {promisify} from 'util';
 import testJSON from 'is-valid-json';
-import {formatKaraList, getRandomKara} from './kara';
-import {playPlayer, playingUpdated} from './engine';
-import {isPreviewAvailable} from '../_webapp/previews';
 import {setState, getState} from '../_common/utils/state';
+import {profile} from '../_common/utils/logger';
+
+//DAO
 import {
 	countPlaylistUsers,
 	createPlaylist as createPL,
@@ -55,20 +55,25 @@ import {
 	unsetPlaying as unsetPlayingFlag,
 	unsetPublicPlaylist,
 } from '../_dao/playlist';
+
+//KM Modules
+import {updateSongsLeft, findUserByName} from './user';
+import {isAllKaras, formatKaraList, getRandomKara} from './kara';
+import {playPlayer, playingUpdated} from './player';
+import {isPreviewAvailable} from '../_webapp/previews';
 import {getBlacklist} from './blacklist';
 import {updateFreeOrphanedSongs as updateFreeOrphanedSongsDB,
 	getKaraByKID,
 	getKaraMini,
 	removeKaraFromPlaylist,
 	addKaraToPlaylist as addKaraToPL,
-	isKara as isKaraDB,
 	isKaraInPlaylist as isKaraInPL,
 	getSongTimeSpentForUser,
 	getSongCountForUser,
 	addKaraToRequests,
 	translateKaraInfo
 } from '../_dao/kara';
-import {profile} from '../_common/utils/logger';
+
 
 const sleep = promisify(setTimeout);
 let databaseBusy = false;
@@ -181,24 +186,8 @@ async function getPLCIDByDate (playlist_id,date_added) {
 	return await getPLCByDate(playlist_id,date_added);
 }
 
-async function isAllKaras(karas) {
-	let err;
-	for (const kara_id of karas) {
-		if (!await isKara(kara_id)) err = true;
-	}
-	if (err) {
-		return false;
-	} else {
-		return true;
-	}
-}
-
 export async function isPlaylist(playlist_id,seenFromUser) {
 	return await findPlaylist(playlist_id,seenFromUser);
-}
-
-async function isKara(kara_id) {
-	return await isKaraDB(kara_id);
 }
 
 async function isKaraInPlaylist(kara_id,playlist_id) {

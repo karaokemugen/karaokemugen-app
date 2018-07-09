@@ -150,14 +150,6 @@ export async function addKaraToPlaylist(karaList) {
 	return await transaction(karas, sql.addKaraToPlaylist);
 }
 
-export async function addKaraToWhitelist(karaList,date_added) {
-	const karas = karaList.map((kara) => ({
-		$kara_id: kara,
-		$created_at: date_added
-	}));
-	return await transaction(karas, sql.addKaraToWhitelist);
-}
-
 export async function removeKaraFromPlaylist(karaList, playlist_id) {
 	// We're not using SQLite parameterization due to a limitation
 	// keeping us from feeding a simple array/list to the statement.

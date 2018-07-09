@@ -8,6 +8,7 @@ import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
 import logger from 'winston';
 import {timer} from '../_common/utils/timer';
+import {getState, setState} from '../_common/utils/state';
 const sleep = promisify(setTimeout);
 
 let poll = [];
@@ -145,4 +146,12 @@ export async function getPoll(token, lang, from, size) {
 		timeLeft: clock.getTimeLeft(),
 		flag_uservoted: hasUserVoted(token.username)
 	};
+}
+
+export function setSongPoll(enabled) {
+	const state = getState();
+	const oldState = state.songPoll;
+	setState({songPoll: enabled});
+	if (!oldState && enabled) startPoll(state.publicPlaylistID,state.currentPlaylistID);
+	if (oldState && !enabled) stopPoll();
 }
