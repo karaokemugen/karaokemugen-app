@@ -1,6 +1,7 @@
 import {asyncCheckOrMkdir, asyncMkdirp, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
 import {setConfig, getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
+import {writeFileSync, readFileSync} from 'fs';
 import {move, copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
@@ -74,26 +75,30 @@ async function main() {
 	// Checking paths, create them if needed.
 	await checkPaths(config);
 
+
+	// Copying files from the app's sources to the app's working folder.
+	// This is an ugly hack : we could use fs.copy but due to a bug in pkg, 
+	// using a writeFile/readFile combination is making it work with recent versions
+	// of pkg, thus allowing us to build for Node 10
+	// See https://github.com/zeit/pkg/issues/420
+
 	// Copy the input.conf file to modify mpv's default behaviour, namely with mouse scroll wheel
 	logger.debug( '[Launcher] Copying input.conf to ' + resolve(appPath, config.PathTemp));
-	await copy(
-		join(__dirname, '/_player/assets/input.conf'),
-		resolve(appPath, config.PathTemp, 'input.conf'),
-		{ overwrite: true }
-	);
+	let fileBuffer = readFileSync(join(__dirname, '/_player/assets/input.conf'));
+	const tempInput = resolve(appPath, config.PathTemp, 'input.conf')
+	if (await asyncExists(tempInput)) await asyncUnlink(tempInput);
+	writeFileSync(tempInput, fileBuffer);
 	logger.debug( '[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
-	await copy(
-		join(__dirname, `/_player/assets/${config.VersionImage}`),
-		resolve(appPath, config.PathTemp, 'default.jpg'),
-		{ overwrite: true }
-	);
+	fileBuffer = readFileSync(join(__dirname, `/_player/assets/${config.VersionImage}`));
+	const tempBackground = resolve(appPath, config.PathTemp, 'default.jpg');
+	if (await asyncExists(tempBackground)) await asyncUnlink(tempBackground);
+	writeFileSync(tempBackground, fileBuffer);	
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug( '[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
-	await copy(
-		join(__dirname, '/_webapp/ressources/img/blank.png'),
-		resolve(appPath, config.PathAvatars, 'blank.png'),
-		{ overwrite: true }
-	);
+	fileBuffer = readFileSync(join(__dirname, '/_webapp/ressources/img/blank.png'));
+	const tempAvatar = resolve(appPath, config.PathAvatars, 'blank.png');
+	if (await asyncExists(tempAvatar)) await asyncUnlink(tempAvatar);
+	writeFileSync(tempAvatar, fileBuffer);		
 
 	/**
 	 * Test if network ports are available

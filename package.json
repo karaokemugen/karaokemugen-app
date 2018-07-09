@@ -60,18 +60,13 @@
       "dist/**/*.js"
     ],
     "assets": [
-      "dist/_common/db/*",
+      "dist/_common/db/migrations/**",
       "dist/_common/locales/*",
       "dist/_player/assets/*",
-      "dist/_webapp/ressources/views/**",
-      "dist/_webapp/ressources/css/*",
-      "dist/_webapp/ressources/img/*",
-      "dist/_webapp/vendors/css/*",
-      "dist/_webapp/vendors/fonts/**",
-      "dist/**/*.js",
+      "dist/_webapp/vendors/**",
+      "dist/_webapp/ressources/**",
       "dist/VERSION",
-      "react_client/build/**",
-      "node_modules/**/*"
+      "react_client/build/**"
     ]
   },
   "dependencies": {
