@@ -75,13 +75,13 @@ export async function playerEnding() {
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
 		});
-		playJingle();
+		await playJingle();
 	} else {
 		try {
 			setState({counterToJingle: state.counterToJingle++});
 			displayInfo();
 			if (state.status !== 'stop') {
-				await next();
+				await nextSong();
 				await getPlayingSong();
 			}
 		} catch(err) {
