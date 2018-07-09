@@ -183,9 +183,9 @@ async function downloadMedias(ftp, files, mediasPath) {
 		bar.start(Math.floor(file.size / 1000) / 1000, 0);
 		const outputFile = resolve(conf.appPath, mediasPath, file.name);
 		try {
-			await doFTPdownload(bar, ftp, createWriteStream(outputFile), file.name, start);
+			await doFTPDownload(bar, ftp, createWriteStream(outputFile), file.name, start);
 		} catch(err) {
-			console.log('Full FTP error trace : ')
+			console.log('Full FTP error trace : ');
 			console.log(err);
 			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
 			ftpErrors.push(file.name);
@@ -224,9 +224,12 @@ async function FTPdownload(bar, ftp, output, input, start) {
 	ftp.download(output, input, start).then(() => {
 		return true;
 	}).catch((err) => {
-		await ftpClose(ftp);
-		await ftpConnect(ftp);
-		throw { error: err, pos: pos || 0};
+		ftpClose(ftp).then(() => {
+			ftpConnect(ftp).then(() => {
+				throw { error: err, pos: pos || 0};
+			});
+		});
+
 	});
 }
 
