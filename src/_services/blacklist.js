@@ -109,7 +109,6 @@ export async function addBlacklistCriteria(blctype, blcvalue) {
 		if (+blctype === 1001) blcList = await BLCGetKID(blcList);
 		if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && blcvalues.some(isNaN)) {
 			let err = 'Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!';
-			logger.error('[PLC] '+err);
 			throw err;
 		} else {
 			await addBLC(blcList);

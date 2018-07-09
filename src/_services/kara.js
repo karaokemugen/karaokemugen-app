@@ -139,7 +139,7 @@ export async function getAllKaras(username, filter, lang) {
 }
 
 export async function getRandomKara(playlist_id, filter, username) {
-	logger.debug('[Engine] Requesting a random song');
+	logger.debug('[Kara] Requesting a random song');
 	// Get karaoke list
 	let karas = await getAllKaras(username, filter);
 	// Strip list to just kara IDs

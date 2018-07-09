@@ -26,7 +26,7 @@ async function getPlayingSong() {
 			let title = kara.title;
 			if (!serie) serie = kara.singer;
 			if (!title) title = '';
-			logger.info(`[Engine] Playing ${serie}${title}`);
+			logger.info(` [Player] Playing ${serie}${title}`);
 			await play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
@@ -38,7 +38,7 @@ async function getPlayingSong() {
 			updateUserQuotas(kara);
 			if (getConfig().EngineSongPoll) startPoll(state.publicPlaylistID,state.currentPlaylistID);
 		} catch(err) {
-			logger.error(`[Engine] Error during song playback : ${err}`);
+			logger.error(` [Player] Error during song playback : ${err}`);
 			state = getState();
 			if (state.status !== 'stop') {
 				logger.warn('[Player] Skipping playback for this kara');
@@ -62,9 +62,9 @@ export async function playingUpdated() {
 
 export async function playerEnding() {
 	const state = getState();
-	logger.debug( '[Engine] Player Ending event triggered');
+	logger.debug( ' [Player] Player Ending event triggered');
 	if (state.playerNeedsRestart) {
-		logger.info('[Engine] Player restarts, please wait');
+		logger.info(' [Player] Player restarts, please wait');
 		setState({playerNeedsRestart: false});
 		await restartPlayer();
 	}
@@ -86,33 +86,33 @@ export async function playerEnding() {
 			}
 		} catch(err) {
 			displayInfo();
-			logger.warn(`[Engine] Next song is not available : ${err}`);
+			logger.warn(` [Player] Next song is not available : ${err}`);
 			stopPlayer();
 		}
 	}
 }
 
 async function prev() {
-	logger.info('[Engine] Going to previous song');
+	logger.info(' [Player] Going to previous song');
 	stopPlayer(true);
 	try {
 		await previousSong();
 		playPlayer();
 	} catch(err) {
-		logger.warn(`[Engine] Previous song is not available : ${err}`);
+		logger.warn(` [Player] Previous song is not available : ${err}`);
 		// A failed previous means we restart the current song.
 		playPlayer();
 	}
 }
 
 async function next() {
-	logger.info('[Engine] Going to next song');
+	logger.info(' [Player] Going to next song');
 	stopPlayer(true);
 	try {
 		await nextSong();
 		playPlayer();
 	} catch(err) {
-		logger.warn(`[Engine] Next song is not available : ${err}`);
+		logger.warn(` [Player] Next song is not available : ${err}`);
 	}
 }
 
@@ -121,9 +121,9 @@ function toggleFullScreenPlayer() {
 	state = setState({fullscreen: !state.fullscreen});
 	setFullscreen(state.fullscreen);
 	if (state.fullscreen) {
-		logger.info('[Engine] Player going to full screen');
+		logger.info(' [Player] Player going to full screen');
 	} else {
-		logger.info('[Engine] Player going to windowed mode');
+		logger.info(' [Player] Player going to windowed mode');
 	}
 }
 
@@ -131,9 +131,9 @@ function toggleOnTopPlayer() {
 	let state = getState();
 	state = setState({ontop: toggleOnTop()});
 	if (state.engine.ontop) {
-		logger.info('[Engine] Player staying on top');
+		logger.info(' [Player] Player staying on top');
 	} else {
-		logger.info('[Engine] Player NOT staying on top');
+		logger.info(' [Player] Player NOT staying on top');
 	}
 }
 
@@ -154,27 +154,27 @@ async function playPlayer() {
 
 function stopPlayer(now) {
 	if (now) {
-		logger.info('[Engine] Karaoke stopping NOW');
+		logger.info(' [Player] Karaoke stopping NOW');
 		stop();
 	} else {
-		logger.info('[Engine] Karaoke stopping after current song');
+		logger.info(' [Player] Karaoke stopping after current song');
 	}
 	setState({status: 'stop'});
 }
 
 function pausePlayer() {
 	pause();
-	logger.info('[Engine] Karaoke paused');
+	logger.info(' [Player] Karaoke paused');
 	setState({status: 'pause'});
 }
 
 function mutePlayer() {
-	logger.info('[Engine] Player muted');
+	logger.info(' [Player] Player muted');
 	mute();
 }
 
 function unmutePlayer() {
-	logger.info('[Engine] Player unmuted');
+	logger.info(' [Player] Player unmuted');
 	unmute();
 }
 
@@ -191,12 +191,12 @@ function setVolumePlayer(volume) {
 }
 
 function showSubsPlayer() {
-	logger.info('[Engine] Showing lyrics on screen');
+	logger.info(' [Player] Showing lyrics on screen');
 	showSubs();
 }
 
 function hideSubsPlayer() {
-	logger.info('[Engine] Hiding lyrics on screen');
+	logger.info(' [Player] Hiding lyrics on screen');
 	hideSubs();
 }
 
@@ -205,7 +205,7 @@ export async function playerNeedsRestart() {
 	const state = getState();
 	if (state.status === 'stop' && !state.playerNeedsRestart && !getConfig().isDemo && !getConfig().isTest) {
 		setState({ playerNeedsRestart: true });
-		logger.info('[Engine] Player will restart in 5 seconds');
+		logger.info(' [Player] Player will restart in 5 seconds');
 		await sleep(5000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
@@ -218,7 +218,7 @@ async function restartPlayer() {
 	try {
 		profile('restartmpv');
 		await restartmpv();
-		logger.info('[Engine] Player restart complete');
+		logger.info(' [Player] Player restart complete');
 		profile('restartmpv');
 	} catch(err) {
 		throw err;
@@ -229,7 +229,7 @@ async function restartPlayer() {
 export async function sendCommand(command, options) {
 	const state = getState();
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
-	if (commandInProgress || getConfig().isDemo || getConfig().isTest) throw '[Engine] A command is already in progress';
+	if (commandInProgress || getConfig().isDemo || getConfig().isTest) throw ' [Player] A command is already in progress';
 	commandInProgress = true;
 	if (command === 'play') {
 		await playPlayer();
