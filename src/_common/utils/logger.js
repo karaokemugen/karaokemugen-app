@@ -16,7 +16,11 @@ export async function configureLogger(appPath, debug) {
 			colorize: true,
 			format: logger.format.combine(
 				logger.format.colorize(),
-				logger.format.printf(info => `${time()} - ${info.level}: ${info.message}`)
+				logger.format.printf(info => {
+					let duration = '';
+					if (info.durationMs) duration = `duration: ${info.durationMs} ms`;
+					return `${time()} - ${info.level}: ${info.message} ${duration}`;
+				})
 			)
 		})
 	);
@@ -28,7 +32,11 @@ export async function configureLogger(appPath, debug) {
 			level: 'debug',
 			handleExceptions: true,
 			format: logger.format.combine(
-				logger.format.printf(info => `${time()} - ${info.level}: ${info.message}`)
+				logger.format.printf(info => {
+					let duration = '';
+					if (info.durationMs) duration = `duration: ${info.durationMs} ms`;
+					return `${time()} - ${info.level}: ${info.message} ${duration}`;
+				})
 			)
 		})
 	);
