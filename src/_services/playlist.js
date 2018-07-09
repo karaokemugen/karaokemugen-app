@@ -421,14 +421,14 @@ export async function getKaraFromPlaylist(plc_id,lang,token) {
 	profile('getPLCInfo');
 	try {
 		let seenFromUser = false;
-	if (token.role === 'user') seenFromUser = true;
-	const kara = await getPLCInfo(plc_id, seenFromUser, token.username);
-	if (!kara) throw 'PLCID unknown';
-	let output = translateKaraInfo([kara], lang);
-	const previewfile = await isPreviewAvailable(output[0].mediafile);
-	if (previewfile) output[0].previewfile = previewfile;
-	profile('getPLCInfo');
-	return output;
+		if (token.role === 'user') seenFromUser = true;
+		const kara = await getPLCInfo(plc_id, seenFromUser, token.username);
+		if (!kara) throw 'PLCID unknown';
+		let output = translateKaraInfo([kara], lang);
+		const previewfile = await isPreviewAvailable(output[0].mediafile);
+		if (previewfile) output[0].previewfile = previewfile;
+		profile('getPLCInfo');
+		return output;
 	} catch(err) {
 		console.log(err);
 	}

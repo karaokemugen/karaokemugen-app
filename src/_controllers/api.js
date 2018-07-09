@@ -2755,7 +2755,7 @@ export function APIControllerPublic(router) {
 				let from = req.query.from || 0;
 				from = parseInt(from, 10);
 				try {
-					const karas = await	getWhitelist(req.query.filter,req.lang,from,size);
+					const karas = await	getWhitelistContents(req.query.filter,req.lang,from,size);
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
