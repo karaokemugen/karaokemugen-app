@@ -492,12 +492,12 @@ var settingsNotUpdated;
 		});
 
 		// generic close button
-		$('.playlist-main').on('click', '.closeParent', function () {
+		$('body').on('click', '.closeParent', function () {
 			var el = $(this);
-			var container = el.closest('.alert');
+			var container = el.closest('.alert,.shutdown-popup');
 			
 			var infoKaraButton = container.closest('li').find('[name="infoKara"]');
-
+ 
 			if(container.hasClass('detailsKara') && infoKaraButton.length > 0) {
 				infoKaraButton.click();
 			} else {
@@ -2326,6 +2326,12 @@ var settingsNotUpdated;
 			}
 		});
 
+		socket.on('disconnect', function(){
+			if(scope === 'admin' && $('.shutdown-popup').length == 0) $('body').prepend($('<div class="shutdown-popup">' + i18n.__('SHUTDOWN_POPUP') + closeButton + '</div>'));
+		});
+		socket.on('connect', function(){
+			if(scope === 'admin' && $('.shutdown-popup').length > 0) $('.shutdown-popup > .closeParent').click();
+		})
 		socket.on('adminMessage', function(data){
 			if( scope === 'public') displayMessage('info', i18n.__('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration);
 		});

@@ -168,6 +168,7 @@
 	"MODE": "Mode",
 	"VERSION": "Version",
 	"SHUTDOWN": "Arrêter Karaoke Mugen",
+	"SHUTDOWN_POPUP": "Karaoke Mugen s'est éteint",
 	"MUTE_UNMUTE": "Rendre muet (ou pas)",
 	"SHOW_HIDE_SUBS": "Montrer/cacher les paroles à l'écran",
 	"PRIVATE": "Privé",
