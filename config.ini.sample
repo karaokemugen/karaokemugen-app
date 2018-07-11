@@ -113,18 +113,21 @@ EngineJinglesInterval = 20
 ; On slower machines, this can seriously hog ressources.
 EngineCreatePreviews = 0
 
-; Song poll enabled/disabled
+; Song poll enabled/disabled {boolean}
 EngineSongPoll = 1
 
-; Public poll system settings
+; Public poll system settings {integer}
 ; Number of choices presented to the user
 EngineSongPollChoices = 4
 
-; How long the poll lasts (it'll be cut short when it hits the last 10 seconds of the current song)
+; How long the poll lasts (it'll be cut short when it hits the last 10 seconds of the current song) {integer}
 EngineSongPollTimeout = 30
 
-; Remove karaokes from public playlist once played ?
+; Remove karaokes from public playlist once played ? {boolean}
 EngineRemovePublicOnPlay = 1
+
+; Allow adding duplicate songs in playlists ? {boolean}
+EngineAllowDuplicates = 0
 
 ; Background: {"filename"}
 ; Set the player's background .

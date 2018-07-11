@@ -82,6 +82,7 @@ export const updatePlaylistDuration = `UPDATE playlist SET time_left =
 									WHERE pk_id_playlist = $playlist_id;`;
 
 export const getPlaylistContentsKaraIDs = `SELECT pc.fk_id_kara AS kara_id,
+										pc.fk_id_user AS user_id,
 										pc.pk_id_plcontent AS playlistcontent_id,
 										pc.flag_playing AS flag_playing,
 										pc.pos AS pos
@@ -302,7 +303,7 @@ export const getPLCInfoMini = `SELECT pc.fk_id_kara AS kara_id,
 					  `;
 
 
-export const getPLCByKID = `SELECT ak.kara_id AS kara_id,
+export const getPLCByKIDUserID = `SELECT ak.kara_id AS kara_id,
 								ak.title AS title,
 								ak.songorder AS songorder,
 								ak.serie AS serie,
@@ -325,6 +326,7 @@ export const getPLCByKID = `SELECT ak.kara_id AS kara_id,
 							INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 							WHERE pc.fk_id_playlist = $playlist_id
 								AND pc.kid = $kid
+								AND pc.fk_id_user = $user_id
 							ORDER BY pc.pos;
 						`;
 

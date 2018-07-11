@@ -33,7 +33,7 @@ import {
 	getPlaylistPos,
 	getPlaylists as getPLs,
 	getPLCByDate,
-	getPLCByKID,
+	getPLCByKIDAndUserID,
 	getPLCInfoMini as getPLCInfoMiniDB,
 	getPLCInfo as getPLCInfoDB,
 	raisePosInPlaylist,
@@ -434,8 +434,12 @@ export async function getKaraFromPlaylist(plc_id,lang,token) {
 	}
 }
 
+export async function getPLCByKIDUserID(kid,user_id,playlist_id) {
+	return await getPLCByKIDAndUserID(kid,user_id,playlist_id);
+}
+
 export function isAllKarasInPlaylist(karas, karasToRemove) {
-	return karas.filter(k => !karasToRemove.map(ktr => ktr.kara_id).includes(k.kara_id));
+	return karas.filter(k => !karasToRemove.map(ktr => ktr.unique_id).includes(k.unique_id));
 }
 
 export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
@@ -492,14 +496,50 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		});
 		const [userMaxPosition,
 			numUsersInPlaylist,
-			playlistMaxPos] =
+			playlistMaxPos,
+			playlistInfo] =
 			await Promise.all([
 				getMaxPosInPlaylistForUser(playlist_id, user.id),
 				countPlaylistUsers(playlist_id),
-				getMaxPosInPlaylist(playlist_id)
+				getMaxPosInPlaylist(playlist_id),
+				getPlaylistInfo(playlist_id)
 			]);
 		const plContents = await getPlaylistKaraIDs(playlist_id);
-		karaList = isAllKarasInPlaylist(karaList, plContents);
+		// Making a unique ID depending on if we're in the favorites or public playlist or something else.
+		// Unique ID here is to determine if a song is already present or not
+		if (conf.EngineAllowDuplicates) {
+			if (!playlistInfo.flag_public && !playlistInfo.flag_favorites) {
+				plContents.forEach(p => p.unique_id = `${p.kara_id}_${p.user_id}`);
+				karaList.forEach(k => k.unique_id = `${k.kara_id}_${user.id}`);
+			} else {
+				plContents.forEach(p => p.unique_id = `${p.kara_id}`);
+				karaList.forEach(k => k.unique_id = `${k.kara_id}`);
+			}
+		} else {
+			plContents.forEach(p => p.unique_id = `${p.kara_id}`);
+			karaList.forEach(k => k.unique_id = `${k.kara_id}`);
+		}
+		let removeDuplicates = false;
+		if (addByAdmin) {
+			if (+conf.EngineAllowDuplicates) {
+				// Adding duplicates is not allowed on public & favorites playlists
+				if (playlistInfo.flag_public || playlistInfo.flag_favorites) removeDuplicates = true;
+				// Don't remove duplicates if it's another playlist type. Admin can add a song multiple times in the current or any other playlist, even by the same user
+			} else {
+				// Option to allow is not set : removing duplicates from songs to add
+				removeDuplicates = true;
+			}
+		} else {
+			// Not an admin adding this. Removing duplicates
+			removeDuplicates = true;
+		}
+		if (removeDuplicates) {
+			karaList = isAllKarasInPlaylist(karaList, plContents);
+			if (karaList.length === 0) throw {
+				code: 4,
+				msg: `No karaoke could be added, all are in destination playlist already  PLID : ${playlist_id})`
+			};
+		}
 		// Song requests by admins are ignored.
 		if (karaList.length === 0) throw {
 			code: 4,
@@ -837,7 +877,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 	// Playlist can end up empty if no karaokes are found in database
 	try {
 		logger.debug( `[Playlist] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
-		let playingKara;
+		let playingKara = {};
 		if (!testJSON(playlist)) throw 'Invalid JSON';
 		if (!playlist.Header) throw 'No Header section';
 		if (playlist.Header.description !== 'Karaoke Mugen Playlist File') throw 'Not a .kmplaylist file';
@@ -858,7 +898,8 @@ export async function importPlaylist(playlist, username, playlist_id) {
 					if (kara.flag_playing !== 1) throw 'flag_playing must be 1 or not present!';
 					if (flag_playingDetected) throw 'Playlist contains more than one currently playing marker';
 					flag_playingDetected = true;
-					playingKara = kara.kid;
+					playingKara.kid = kara.kid;
+					playingKara.user = kara.username;
 				}
 				if (isNaN(kara.pos)) throw 'Position must be a number';
 				if (!kara.pseudo_add) throw 'All karaokes must have a nickname associated with them';
@@ -884,7 +925,10 @@ export async function importPlaylist(playlist, username, playlist_id) {
 			});
 			await addKaraToPL(playlist.PlaylistContents);
 			if (playingKara) {
-				const plcPlaying = await getPLCByKID(playingKara,playlist_id);
+				const user = findUserByName(playingKara.username);
+				playingKara.user_id = user.id;
+				user ? playingKara.user_id = user.id : playingKara.user_id = 1;
+				const plcPlaying = await getPLCByKIDUserID(playingKara.kid,playingKara.user_id,playlist_id);
 				await setPlaying(plcPlaying.playlistcontent_id,playlist_id);
 			}
 			return {
@@ -1064,7 +1108,7 @@ export async function getCurrentSong() {
 	//If karaoke is present in the public playlist, we're deleting it.
 	if (conf.EngineRemovePublicOnPlay) {
 		const playlist_id = await isAPublicPlaylist();
-		const plc = await getPLCByKID(kara.kid,playlist_id);
+		const plc = await getPLCByKIDUserID(kara.kid,kara.user_id,playlist_id);
 		if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id],playlist_id);
 	}
 	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
