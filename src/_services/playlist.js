@@ -608,7 +608,8 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			playlist_id: playlist_id
 		};
 	} catch(err) {
-		logger.error(`[Playlist] Unable to add karaokes : ${err.msg}`);
+		console.log(err);
+		logger.error(`[Playlist] Unable to add karaokes : ${err}`);
 		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 		throw {
 			code: errorCode,
@@ -1124,7 +1125,7 @@ export async function buildDummyPlaylist(playlist_id) {
 		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
 		for (let i = 1; i <= karaCount; i++) {
 			const kara_id = await getRandomKara(playlist_id);
-			await addKaraToPlaylist([kara_id],'admin',playlist_id);
+			await addKaraToPlaylist(kara_id,'admin');
 		}
 		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
 		return true;

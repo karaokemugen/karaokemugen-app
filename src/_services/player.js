@@ -138,7 +138,7 @@ function toggleOnTopPlayer() {
 }
 
 
-async function playPlayer() {
+export async function playPlayer() {
 	profile('Play');
 	const state = getState();
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
