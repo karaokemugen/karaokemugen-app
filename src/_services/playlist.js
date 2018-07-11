@@ -537,7 +537,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			karaList = isAllKarasInPlaylist(karaList, plContents);
 			if (karaList.length === 0) throw {
 				code: 4,
-				msg: `No karaoke could be added, all are in destination playlist already  (PLID : ${playlist_id})`
+				msg: `No karaoke could be added, all are in destination playlist already (PLID : ${playlist_id})`
 			};
 		}
 		// Song requests by admins are ignored.
