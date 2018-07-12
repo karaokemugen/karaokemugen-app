@@ -91,7 +91,7 @@ export async function extractAllKaraFiles() {
 }
 
 export async function getAllKaras(karafiles) {
-	const karaPromises = [];	
+	const karaPromises = [];
 	for (const karafile of karafiles) {
 		karaPromises.push(() => readAndCompleteKarafile(karafile));
 	}
@@ -111,7 +111,7 @@ async function readAndCompleteKarafile(karafile) {
 		logger.warn(`[Gen] Kara file ${karafile} is invalid/incomplete : ${err}`);
 		error = true;
 		return karaData;
-	}	
+	}
 	await writeKara(karafile, karaData);
 	return karaData;
 }
@@ -127,9 +127,9 @@ function prepareKaraInsertData(kara, index) {
 		$kara_mediafile: kara.mediafile,
 		$kara_subfile: kara.subfile,
 		$kara_dateadded: kara.dateadded,
-		$kara_datemodif: kara.datemodif,		
+		$kara_datemodif: kara.datemodif,
 		$kara_gain: kara.mediagain,
-		$kara_duration: kara.mediaduration		
+		$kara_duration: kara.mediaduration
 	};
 }
 
@@ -181,7 +181,7 @@ function getAllSeries(karas) {
 function prepareSerieInsertData(serie, index) {
 	return {
 		$id_serie: index,
-		$serie: serie		
+		$serie: serie
 	};
 }
 
@@ -223,21 +223,21 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 		if (serie.aliases) altNameData.push({
 			$serie_altnames: serie.aliases.join(','),
 			$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
-			$serie_name: serie.name				
+			$serie_name: serie.name
 		});
 		if (serie.i18n) {
 			for (const lang of Object.keys(serie.i18n)) {
 				i18nData.push({
 					$lang: lang,
 					$serie: serie.i18n[lang],
-					$serienorm: deburr(serie.i18n[lang]),
-					$name: serie.name						
+					$serienorm: deburr(serie.i18n[lang]).replace('\'', '').replace(',', ''),
+					$name: serie.name
 				});
 			}
 		}
 	}
 	// Checking if some series present in .kara files are not present in the series file
-	for (const serie of mapSeries.keys()) {			
+	for (const serie of mapSeries.keys()) {
 		if (!isSeriesKnown(serie, altNamesFile)) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in the series file`);
@@ -251,7 +251,7 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 				$serienorm: deburr(serie).replace('\'', '').replace(',', ''),
 				$name: serie
 			});
-		}		
+		}
 	}
 	return {
 		altNameData: altNameData,
@@ -326,13 +326,13 @@ function getTypes(kara, allTags) {
 
 	if (result.size === 0) {
 		logger.warn('[Gen] Karaoke type cannot be detected : ' + kara.type + ' in kara : ' + JSON.stringify(kara));
-		error = true;		
+		error = true;
 	}
 
 	return result;
 }
 
-function strictModeError(series) {	
+function strictModeError(series) {
 	logger.error(`[Gen] STRICT MODE ERROR : One series ${series} does not exist in the series file`);
 	error = true;
 }
@@ -352,7 +352,7 @@ function getTagId(tagName, tags) {
 function prepareAllTagsInsertData(allTags) {
 	const data = [];
 	const translations = require(join(__dirname,'../_common/locales'));
-	
+
 	allTags.forEach((tag, index) => {
 		const tagParts = tag.split(',');
 		const tagName = tagParts[0];
@@ -360,14 +360,14 @@ function prepareAllTagsInsertData(allTags) {
 		let tagNorm;
 		if (+tagType === 7) {
 			const tagTranslations = [];
-			for (const [key, value] of Object.entries(translations)) {				
+			for (const [key, value] of Object.entries(translations)) {
 				// Key is the language, value is a i18n text
 				if (value[tagName]) tagTranslations.push(value[tagName]);
-			}			
-			tagNorm = tagTranslations.join(' ');			
+			}
+			tagNorm = tagTranslations.join(' ');
 		} else {
 			tagNorm = tagName;
-		}		
+		}
 		data.push({
 			$id_tag: index + 1,
 			$tagtype: tagType,
@@ -417,7 +417,7 @@ export async function run(config) {
 		const karaFiles = await extractAllKaraFiles();
 		const karas = await getAllKaras(karaFiles);
 		// Can be done in background
-		//deleteBackupDirs(conf);		
+		//deleteBackupDirs(conf);
 		// Preparing data to insert
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas);
@@ -429,7 +429,7 @@ export async function run(config) {
 		const seriesAltNamesData = await prepareAltSeriesInsertData(series_altnamesfile, seriesMap);
 		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
 		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
-		
+
 		// Inserting data in a transaction
 
 		await db.run('begin transaction');
@@ -443,11 +443,11 @@ export async function run(config) {
 		await Promise.all([
 			runSqlStatementOnData(db.prepare(inserti18nSeries), sqlInserti18nSeries),
 			runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames)
-		]);		
-		
-		await db.run('commit');		
+		]);
+
+		await db.run('commit');
 		await db.close();
-		await checkUserdbIntegrity(null, conf);		
+		await checkUserdbIntegrity(null, conf);
 		return error;
 	} catch (err) {
 		logger.error(err);
@@ -484,7 +484,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		open(karas_dbfile, {Promise}),
 		open(karas_userdbfile, {Promise})
 	]);
-	
+
 	const [
 		allTags,
 		allKaras,
@@ -510,7 +510,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
 
-	// Listing existing KIDs	
+	// Listing existing KIDs
 	const karaKIDs = allKaras.map(k => '\'' + k.kid + '\'').join(',');
 
 	// Deleting records which aren't in our KID list
@@ -556,7 +556,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 			sql += `UPDATE playlist_content SET fk_id_kara = ${karaIdByKid.get(plck.kid)} WHERE kid = '${plck.kid}';`;
 		}
 	});
-	
+
 	blcTags.forEach(function (blcTag) {
 		let tagFound = false;
 		allTags.forEach(function (tag) {
@@ -591,5 +591,5 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
 
-	logger.info('[Gen] Integrity checks complete, database generated');	
+	logger.info('[Gen] Integrity checks complete, database generated');
 }
