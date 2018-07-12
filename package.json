@@ -147,6 +147,9 @@
     "mocha": "^5.2.0",
     "supertest": "^3.0.0"
   },
+  "resolutions": {
+    "eslint-scope": "3.7.1"
+  },
   "false": {},
   "apidoc": {
     "url": "http://localhost/api/v1"
