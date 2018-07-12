@@ -181,25 +181,9 @@ async function downloadMedias(ftp, files, mediasPath) {
 		i++;
 		logger.info(`[Updater] (${i}/${files.length}) Downloading ${file.name} (${prettyBytes(file.size)})`);
 		bar.start(Math.floor(file.size / 1000) / 1000, 0);
-		let pos = 0;
-		ftp.trackProgress(info => {
-			pos = info.bytes - 1000000;
-			if (pos < 0) pos = 0;
-			bar.update(Math.floor(info.bytes / 1000) / 1000);
-		});
 		const outputFile = resolve(conf.appPath, mediasPath, file.name);
 		try {
-			await ftp.download(createWriteStream(outputFile), file.name, start)//.then(() => {
-			//	return true;
-			//}).catch((err) => {
-			//	ftpClose(ftp).then(() => {
-			//		ftpConnect(ftp).then(() => {
-			//			throw { error: err, pos: pos || 0};
-			//		});
-			//	});
-			//
-			//});
-			//await doFTPDownload(bar, ftp, createWriteStream(outputFile), file.name, start);
+			await doFTPDownload(bar, ftp, createWriteStream(outputFile), file.name, start);
 		} catch(err) {
 			console.log('Full FTP error trace : ');
 			console.log(err);
@@ -233,7 +217,19 @@ async function doFTPDownload(bar, ftp, output, input) {
 
 async function FTPdownload(bar, ftp, output, input, start) {
 	let pos = start;
-
+	ftp.trackProgress(info => {
+		pos = info.bytes - 1000000;
+		if (pos < 0) pos = 0;
+		bar.update(Math.floor(info.bytes / 1000) / 1000);
+	});
+	try {
+		await ftp.download(output, input, start);
+		return true;
+	} catch(err) {
+		await ftpClose(ftp);
+		await ftpConnect(ftp);
+		throw { error: err, pos: pos || 0};
+	}
 }
 
 async function listLocalMedias() {
