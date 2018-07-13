@@ -146,7 +146,7 @@ async function compareMedias(localFiles, remoteFiles) {
 		for (const file of filesToDownload) {
 			bytesToDownload = bytesToDownload + file.size;
 		}
-		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);				
+		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
 		await downloadMedias(filesToDownload, mediasPath, bytesToDownload);
 		logger.info('[Updater] Done updating medias');
 		return true;
@@ -156,7 +156,7 @@ async function compareMedias(localFiles, remoteFiles) {
 	}
 }
 
-async function downloadMedias(files, mediasPath) {
+function downloadMedias(files, mediasPath) {
 	const conf = getConfig();
 	let list = [];
 	for (const file of files) {
@@ -172,10 +172,15 @@ async function downloadMedias(files, mediasPath) {
 		},
 		bar: true
 	});
-	mediaDownloads.download(fileErrors => {
-		if (fileErrors.length > 0) throw `Error downloading these medias : ${fileErrors.toString()}`;
-	});	
-	
+	return new Promise((resolve, reject) => {
+		mediaDownloads.download(fileErrors => {
+			if (fileErrors.length > 0) {
+				reject(`Error downloading these medias : ${fileErrors.toString()}`);
+			} else {
+				resolve();
+			}
+		});
+	});
 }
 
 async function listLocalMedias() {

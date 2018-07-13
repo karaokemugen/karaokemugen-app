@@ -3,10 +3,11 @@ import _cliProgress from 'cli-progress';
 import req from 'request';
 import progress from 'request-progress';
 import logger from 'winston';
+import {basename} from 'path';
 
 class Downloader {
 
-	constructor(list, opts) {		
+	constructor(list, opts) {
 	  this.list = list;
 	  this.pos = 0;
 	  this.opts = opts;
@@ -17,37 +18,37 @@ class Downloader {
 				format: barFormat,
 				stopOnComplete: true
 	  }, _cliProgress.Presets.shades_classic);
-		} 
+		}
 	}
-  
+
 	// Fonction qui déclenche la chaîne de téléchargements.
-	download = (onEnd) => {		
+	download = onEnd => {
 	  if (this.pos >= this.list.length) {
-			console.log('Finished');
-			console.log('Finished!');
 			onEnd(this.fileErrors);
 	  } else {
 			const nextUrl = this.list[this.pos].url;
-			const nextFilename = this.list[this.pos].filename;			
-			logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${nextFilename}`);		
+			const nextFilename = this.list[this.pos].filename;
+			logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${basename(nextFilename)}`);
 			this.pos = this.pos + 1;
 			this.DoDownload(nextUrl, nextFilename, this.download , err => console.log(err));
 	  }
 	}
-  
+
 	DoDownload = (url, filename, onSuccess, onError) => {
 		const options = {
 			url: url,
-			method: 'GET'	
+			method: 'GET'
 		};
 		if (this.opts.auth) options.auth = {
 			user: this.opts.auth.user,
 			pass: this.opts.auth.password
-		};		
+		};
 		let stream = createWriteStream(filename);
+		let size = 0;
 		progress(req(options))
 			.on('response', res => {
-				if (this.opts.bar) this.bar.start(Math.floor(res.headers['content-length'] / 1000) / 1000, 0);
+				size = res.headers['content-length'];
+				if (this.opts.bar) this.bar.start(Math.floor(size / 1000) / 1000, 0);
 			})
 			.on('progress', state => {
 				if (this.opts.bar) this.bar.update(Math.floor(state.size.transferred / 1000) / 1000);
@@ -59,12 +60,13 @@ class Downloader {
 				onError(err);
 			})
 			.on('end', () => {
-				if (this.opts.bar) this.bar.stop();
+				if (this.opts.bar) {
+					this.bar.update((Math.floor(size / 1000)) / 1000);
+					this.bar.stop();
+				}
 				onSuccess();
 			})
 			.pipe(stream);
-	
-		
 	}
 }
 
