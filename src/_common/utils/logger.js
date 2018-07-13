@@ -19,7 +19,10 @@ export async function configureLogger(appPath, debug) {
 				logger.format.printf(info => {
 					let duration = '';
 					if (info.durationMs) duration = `duration: ${info.durationMs} ms`;
-					return `${time()} - ${info.level}: ${info.message} ${duration}`;
+					//Padding if info.level is 4 characters long only
+					let level = `${info.level}:`;
+					if (info.level === 'info' || info.level === 'warn') level = `${info.level}: `;
+					return `${time()} - ${level} ${info.message} ${duration}`;
 				})
 			)
 		})

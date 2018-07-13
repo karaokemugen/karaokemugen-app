@@ -195,14 +195,14 @@ export async function initDBSystem() {
 	await migrateUserDb();
 	if (doGenerate) await generateDatabase();
 	await closeKaraDatabase();
-	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
+	await getUserDb().run(`ATTACH DATABASE "${karaDbFile}" as karasdb;`);
 	await getUserDb().run('PRAGMA TEMP_STORE=MEMORY');
 	await getUserDb().run('PRAGMA JOURNAL_MODE=WAL');
 	await getUserDb().run('PRAGMA SYNCHRONOUS=OFF');
 	await getUserDb().run('VACUUM');
 
 	await compareDatabasesUUIDs();
-	logger.debug( '[DBI] Database Interface is READY');
+	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
 	logger.info(`Karaokes  : ${stats.totalcount}`);
 	logger.info(`Duration  : ${duration(stats.totalduration)}`);
@@ -268,13 +268,13 @@ async function generateDatabase() {
 	const conf = getConfig();
 
 	const failedKaras = await generateDB(conf);
-	logger.debug('[DBI] Karaoke database created');
+	logger.debug('[DB] Karaoke database created');
 	if (conf.optGenerateDB) {
 		if (failedKaras) {
-			logger.error('[DBI] Database generation completed with errors!');
+			logger.error('[DB] Database generation completed with errors!');
 			exit(1);
 		} else {
-			logger.info('[DBI] Database generation completed successfully!');
+			logger.info('[DB] Database generation completed successfully!');
 			exit(0);
 		}
 	}

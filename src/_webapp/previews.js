@@ -48,7 +48,7 @@ export async function cleanUpPreviewsFolder(config) {
 	//FIXME : This function isn't called anymore
 	// Needs some fixing before being called again.
 	const conf = config || getConfig();
-	logger.debug( '[Previews] Cleaning up preview generation');
+	logger.debug('[Previews] Cleaning up preview generation');
 	const videofiles = await extractVideoFiles(resolve(conf.appPath,conf.PathMedias));
 	const previewfiles = await extractPreviewFiles(resolvedPathPreviews());
 	// Read all preview files
@@ -71,7 +71,7 @@ export async function cleanUpPreviewsFolder(config) {
 		}
 		if (deletePreview) {
 			asyncRemove(previewfile);
-			logger.debug( `[Previews] Cleaned up ${previewfile}`);
+			logger.debug(`[Previews] Cleaned up ${previewfile}`);
 		}
 	}
 }
@@ -112,7 +112,7 @@ export async function isPreviewAvailable(videofile) {
 	if (await asyncExists(videofilename)) {
 		videoStats = await asyncStat(videofilename);
 	} else {
-		logger.debug( `[Previews] Main videofile does not exist : ${videofilename}`);
+		logger.debug(`[Previews] Main videofile does not exist : ${videofilename}`);
 		return undefined;
 	}
 	const previewfileWOExt = basename(videofilename, extname(videofilename));

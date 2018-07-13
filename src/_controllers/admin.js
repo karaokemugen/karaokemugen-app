@@ -56,7 +56,6 @@ module.exports = function adminController(router) {
 		createKara(req.body)
 			.then(() => res.status(200).send('Kara successfully generated'))
 			.catch(err => {
-				console.log(err);
 				res.status(500).send(`Error while generating kara : ${err}`);
 			});
 	});
@@ -100,7 +99,6 @@ module.exports = function adminController(router) {
 	});
 
 	router.post('/series', requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		console.log(req.body);
 		addSerie(req.body)
 			.then(() => res.status(200).send('Series added'))
 			.catch(err => res.status(500).send(`Error adding series: ${err}`));

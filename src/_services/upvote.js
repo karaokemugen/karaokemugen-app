@@ -77,6 +77,6 @@ async function tryToFreeKara(plc_id, upvotes, username, playlist_id) {
 		upvotes >= conf.EngineFreeUpvotesRequiredMin) {
 		await freePLC(plc_id);
 		updateSongsLeft(username, playlist_id);
-		logger.debug( `[Upvote] PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`);
+		logger.debug(`[Upvote] PLC ${plc_id} got freed with ${upvotes} (${upvotePercent}%)`);
 	}
 }

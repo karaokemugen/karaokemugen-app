@@ -38,7 +38,7 @@ export function endPoll() {
 }
 
 export function stopPoll() {
-	logger.debug( '[Poll] Stopping poll');
+	logger.debug('[Poll] Stopping poll');
 	poll = [];
 	voters = [];
 	pollEnding = false;
@@ -46,7 +46,7 @@ export function stopPoll() {
 }
 
 export async function getPollResults() {
-	logger.debug( '[Poll] Getting poll results');
+	logger.debug('[Poll] Getting poll results');
 	const maxVotes = Math.max.apply(Math,poll.map((choice) => {
 		return choice.votes;
 	}));
@@ -122,7 +122,7 @@ export async function startPoll(publicPlaylist_id, currentPlaylist_id) {
 		poll[index].votes = 0;
 	}
 	poll = translateKaraInfo(poll);
-	logger.debug( '[Poll] New poll : '+JSON.stringify(poll));
+	logger.debug('[Poll] New poll : '+JSON.stringify(poll));
 	emitWS('newSongPoll',poll);
 	timerPoll();
 }

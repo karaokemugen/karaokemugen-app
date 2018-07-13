@@ -50,14 +50,14 @@ export async function initEngine() {
 	}
 	if (conf.optBaseUpdate) try {
 		if (await runBaseUpdate()) {
-			logger.info('[Updater] Done updating karaoke base');
+			logger.info('[Engine] Done updating karaoke base');
 			setConfig({optGenerateDB: true});
 		} else {
-			logger.info('[Updater] No updates found, exiting');
+			logger.info('[Engine] No updates found, exiting');
 			exit(0);
 		}
 	} catch (err) {
-		logger.error(`[Updater] Update failed : ${err}`);
+		logger.error(`[Engine] Update failed : ${err}`);
 		exit(1);
 	}
 	//Database system is the foundation of every other system
@@ -66,7 +66,7 @@ export async function initEngine() {
 	if (conf.OnlineMode) try {
 		await initOnlineSystem();
 	} catch(err) {
-		logger.error(`[Online] Failed to init online system : ${err}`);
+		logger.error(`[Engine] Failed to init online system : ${err}`);
 	}
 	let inits = [];
 	if (conf.EngineCreatePreviews) {
@@ -121,8 +121,10 @@ export function exit(rc) {
 	//On other systems or if terminal is not a TTY we exit immediately.
 	// non-TTY terminals have no stdin support.
 
-	if (getState().player.ready) quitmpv();
-	logger.info('[Engine] Player has shut down');
+	if (getState().player.ready) {
+		quitmpv();
+		logger.info('[Engine] Player has shut down');
+	}
 
 	closeUserDatabase().then(() => {
 		logger.info('[Engine] Database closed');
@@ -135,11 +137,7 @@ export function exit(rc) {
 
 export async function updateSettings(newConfig) {
 	const conf = getConfig();
-	if (newConfig.EngineSongPoll === 1) {
-		setSongPoll(true);
-	} else {
-		setSongPoll(false);
-	}
+	newConfig.EngineSongPoll === 1 ? setSongPoll(true) : setSongPoll(false);
 	return await mergeConfig(conf, newConfig);
 }
 
@@ -147,7 +145,6 @@ export function shutdown() {
 	logger.info('[Engine] Dropping the mic, shutting down!');
 	exit(0);
 }
-
 
 export async function getKMStats() {
 	return await getStats();

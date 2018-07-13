@@ -87,7 +87,7 @@ async function loadBackground(mode) {
 		if (backgroundFiles.length === 0) backgroundFiles.push(defaultImageFile);
 	}
 	backgroundImageFile = sample(backgroundFiles);
-	logger.debug( '[Player] Background : '+backgroundImageFile);
+	logger.debug('[Player] Background : '+backgroundImageFile);
 	let videofilter = '';
 	if (conf.EngineDisplayConnectionInfoQRCode !== 0 &&
 		conf.EngineDisplayConnectionInfo !== 0) {
@@ -120,7 +120,7 @@ export async function initPlayerSystem() {
 	buildJinglesList();
 	const conf = getConfig();
 	await buildQRCode(conf.osURL);
-	logger.debug( '[Player] QRCode generated');
+	logger.debug('[Player] QRCode generated');
 	await startmpv();
 	emitPlayerState();
 	logger.debug('[Player] Player is READY');
@@ -349,7 +349,7 @@ export async function play(mediadata) {
 	try {
 		mediaFile = await resolveFileInDirs(mediadata.media,PathsMedias);
 	} catch (err) {
-		logger.debug( `[Player] Error while resolving media path : ${err}`);
+		logger.debug(`[Player] Error while resolving media path : ${err}`);
 		logger.warn(`[Player] Media NOT FOUND : ${mediadata.media}`);
 		if (conf.PathMediasHTTP) {
 			mediaFile = `${conf.PathMediasHTTP}/${encodeURIComponent(mediadata.media)}`;
@@ -428,7 +428,7 @@ export function toggleOnTop() {
 export function stop() {
 	// on stop do not trigger onEnd event
 	// => setting internal playing = false prevent this behavior
-	logger.debug( '[Player] Stop event triggered');
+	logger.debug('[Player] Stop event triggered');
 	playerState.playing = false;
 	playerState.timeposition = 0;
 	playerState._playing = false;
@@ -439,7 +439,7 @@ export function stop() {
 }
 
 export function pause() {
-	logger.debug( '[Player] Pause event triggered');
+	logger.debug('[Player] Pause event triggered');
 	player.pause();
 	if (monitorEnabled) playerMonitor.pause();
 	playerState.status = 'pause';
@@ -448,7 +448,7 @@ export function pause() {
 }
 
 export function resume() {
-	logger.debug( '[Player] Resume event triggered');
+	logger.debug('[Player] Resume event triggered');
 	player.play();
 	if (monitorEnabled) playerMonitor.play();
 	playerState.playing = true;
@@ -500,8 +500,8 @@ export function showSubs() {
 }
 
 export async function message(message, duration) {
-	logger.info(`[Player] I have a message from another time... : ${message}`);
 	if (!getState().player.ready) throw '[Player] Player is not ready yet!';
+	logger.info(`[Player] I have a message from another time... : ${message}`);
 	if (!duration) duration = 10000;
 	const command = {
 		command: [
@@ -556,16 +556,16 @@ export function displayInfo(duration) {
 
 export async function restartmpv() {
 	await quitmpv();
-	logger.debug( '[Player] Stopped mpv (restarting)');
+	logger.debug('[Player] Stopped mpv (restarting)');
 	emitPlayerState();
 	await startmpv();
-	logger.debug( '[Player] restarted mpv');
+	logger.debug('[Player] restarted mpv');
 	emitPlayerState();
 	return true;
 }
 
 export async function quitmpv() {
-	logger.debug( '[Player] Quitting mpv');
+	logger.debug('[Player] Quitting mpv');
 	player.quit();
 	// Destroy mpv instance.
 	player = null;
@@ -600,7 +600,7 @@ export async function playJingle() {
 			logger.error(`[Player] Unable to load jingle file ${jingle.file} : ${JSON.stringify(err)}`);
 		}
 	} else {
-		logger.debug( '[Jingles] No jingle to play.');
+		logger.debug('[Jingles] No jingle to play.');
 		playerState.playerstatus = 'play';
 		loadBackground();
 		displayInfo();

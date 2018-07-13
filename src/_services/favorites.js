@@ -88,12 +88,7 @@ async function getAllFavorites(userList) {
 export async function createAutoMix(params, username) {
 	// Create Playlist.
 	profile('AutoMix');
-	let users;
-	if (typeof params.users === 'string') {
-		users = params.users.split(',');
-	} else {
-		users = [params.users];
-	}
+	let users = params.users.split(',');
 	const plcList = await getAllFavorites(users);
 	const autoMixPLName = `AutoMix ${date()}`;
 	const playlist_id = await createPlaylist(autoMixPLName,{
@@ -114,7 +109,7 @@ export async function createAutoMix(params, username) {
 
 export async function initFavoritesSystem() {
 	// Let's make sure all our users have a favorites playlist
-	logger.debug( '[Favorites] Check if everyone has a favorites playlist');
+	logger.debug('[Favorites] Check if everyone has a favorites playlist');
 	const [playlists, users] = await Promise.all([
 		await getPlaylists(false,'admin'),
 		await listUsers()

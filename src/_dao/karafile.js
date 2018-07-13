@@ -49,7 +49,7 @@ export function karaFilenameInfos(karaFile) {
 
 function strictModeError(karaData, data) {
 	delete karaData.ass;
-	logger.error(`[Gen] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,2)}`);
+	logger.error(`[Kara] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,2)}`);
 	error = true;
 }
 
@@ -177,7 +177,7 @@ async function findSubFile(videoFile, kara) {
 				return await extractVideoSubtitles(videoFile, kara.KID);
 			} catch (err) {
 				// Not blocking.
-				logger.warn('[Kara] Could not extract subtitles from video file ' + videoFile);
+				logger.warn(`[Kara] Could not extract subtitles from video file ${videoFile}`);
 				error = true;
 			}
 		}

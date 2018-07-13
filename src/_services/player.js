@@ -21,12 +21,12 @@ async function getPlayingSong() {
 			const kara = await getCurrentSong();
 			let karaForLogging = { ...kara };
 			karaForLogging.subtitle = '[Not logging ASS data]';
-			logger.debug( '[PLC] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
+			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
 			let serie = kara.serie;
 			let title = kara.title;
 			if (!serie) serie = kara.singer;
 			if (!title) title = '';
-			logger.info(` [Player] Playing ${serie}${title}`);
+			logger.info(`[Player] Playing ${serie}${title}`);
 			await play({
 				media: kara.mediafile,
 				subfile: kara.subfile,
@@ -38,7 +38,7 @@ async function getPlayingSong() {
 			updateUserQuotas(kara);
 			if (getConfig().EngineSongPoll) startPoll(state.publicPlaylistID,state.currentPlaylistID);
 		} catch(err) {
-			logger.error(` [Player] Error during song playback : ${err}`);
+			logger.error(`[Player] Error during song playback : ${err}`);
 			state = getState();
 			if (state.status !== 'stop') {
 				logger.warn('[Player] Skipping playback for this kara');
@@ -62,14 +62,14 @@ export async function playingUpdated() {
 
 export async function playerEnding() {
 	const state = getState();
-	logger.debug( ' [Player] Player Ending event triggered');
+	logger.debug('[Player] Player Ending event triggered');
 	if (state.playerNeedsRestart) {
-		logger.info(' [Player] Player restarts, please wait');
+		logger.info('[Player] Player restarts, please wait');
 		setState({playerNeedsRestart: false});
 		await restartPlayer();
 	}
 	const conf = getConfig();
-	logger.debug( '[Jingles] Songs before next jingle : '+ (conf.EngineJinglesInterval - state.counterToJingle));
+	logger.debug('[Jingles] Songs before next jingle : '+ (conf.EngineJinglesInterval - state.counterToJingle));
 	if (state.counterToJingle >= conf.EngineJinglesInterval) {
 		setState({
 			currentlyPlayingKara: -1,
@@ -86,33 +86,33 @@ export async function playerEnding() {
 			}
 		} catch(err) {
 			displayInfo();
-			logger.warn(` [Player] Next song is not available : ${err}`);
+			logger.warn(`[Player] Next song is not available : ${err}`);
 			stopPlayer();
 		}
 	}
 }
 
 async function prev() {
-	logger.info(' [Player] Going to previous song');
+	logger.info('[Player] Going to previous song');
 	stopPlayer(true);
 	try {
 		await previousSong();
 		playPlayer();
 	} catch(err) {
-		logger.warn(` [Player] Previous song is not available : ${err}`);
+		logger.warn(`[Player] Previous song is not available : ${err}`);
 		// A failed previous means we restart the current song.
 		playPlayer();
 	}
 }
 
 async function next() {
-	logger.info(' [Player] Going to next song');
+	logger.info('[Player] Going to next song');
 	stopPlayer(true);
 	try {
 		await nextSong();
 		playPlayer();
 	} catch(err) {
-		logger.warn(` [Player] Next song is not available : ${err}`);
+		logger.warn(`[Player] Next song is not available : ${err}`);
 	}
 }
 
@@ -121,9 +121,9 @@ function toggleFullScreenPlayer() {
 	state = setState({fullscreen: !state.fullscreen});
 	setFullscreen(state.fullscreen);
 	if (state.fullscreen) {
-		logger.info(' [Player] Player going to full screen');
+		logger.info('[Player] Player going to full screen');
 	} else {
-		logger.info(' [Player] Player going to windowed mode');
+		logger.info('[Player] Player going to windowed mode');
 	}
 }
 
@@ -131,9 +131,9 @@ function toggleOnTopPlayer() {
 	let state = getState();
 	state = setState({ontop: toggleOnTop()});
 	if (state.engine.ontop) {
-		logger.info(' [Player] Player staying on top');
+		logger.info('[Player] Player staying on top');
 	} else {
-		logger.info(' [Player] Player NOT staying on top');
+		logger.info('[Player] Player NOT staying on top');
 	}
 }
 
@@ -154,27 +154,27 @@ export async function playPlayer() {
 
 function stopPlayer(now) {
 	if (now) {
-		logger.info(' [Player] Karaoke stopping NOW');
+		logger.info('[Player] Karaoke stopping NOW');
 		stop();
 	} else {
-		logger.info(' [Player] Karaoke stopping after current song');
+		logger.info('[Player] Karaoke stopping after current song');
 	}
 	setState({status: 'stop'});
 }
 
 function pausePlayer() {
 	pause();
-	logger.info(' [Player] Karaoke paused');
+	logger.info('[Player] Karaoke paused');
 	setState({status: 'pause'});
 }
 
 function mutePlayer() {
-	logger.info(' [Player] Player muted');
+	logger.info('[Player] Player muted');
 	mute();
 }
 
 function unmutePlayer() {
-	logger.info(' [Player] Player unmuted');
+	logger.info('[Player] Player unmuted');
 	unmute();
 }
 
@@ -191,12 +191,12 @@ function setVolumePlayer(volume) {
 }
 
 function showSubsPlayer() {
-	logger.info(' [Player] Showing lyrics on screen');
+	logger.info('[Player] Showing lyrics on screen');
 	showSubs();
 }
 
 function hideSubsPlayer() {
-	logger.info(' [Player] Hiding lyrics on screen');
+	logger.info('[Player] Hiding lyrics on screen');
 	hideSubs();
 }
 
@@ -205,7 +205,7 @@ export async function playerNeedsRestart() {
 	const state = getState();
 	if (state.status === 'stop' && !state.playerNeedsRestart && !getConfig().isDemo && !getConfig().isTest) {
 		setState({ playerNeedsRestart: true });
-		logger.info(' [Player] Player will restart in 5 seconds');
+		logger.info('[Player] Player will restart in 5 seconds');
 		await sleep(5000);
 		await restartPlayer();
 		setState({ playerNeedsRestart: false });
@@ -218,7 +218,7 @@ async function restartPlayer() {
 	try {
 		profile('restartmpv');
 		await restartmpv();
-		logger.info(' [Player] Player restart complete');
+		logger.info('[Player] Player restart complete');
 		profile('restartmpv');
 	} catch(err) {
 		throw err;
