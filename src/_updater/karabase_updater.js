@@ -1,8 +1,7 @@
-import download from 'download';
 import {basename, resolve} from 'path';
 import {getConfig} from '../_common/utils/config';
 import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
-import decompress from 'decompress';
+import decomress from 'decompress';
 import logger from 'winston';
 import {copy} from 'fs-extra';
 import prettyBytes from 'pretty-bytes';
@@ -22,8 +21,18 @@ async function downloadBase() {
 	const dest = resolve(conf.appPath, conf.PathTemp, 'archive');
 	if (await asyncExists(dest)) await asyncRemove(dest);
 	logger.info('[Updater] Downloading current base (.kara and .ass files)...');
-	await download(baseURL, dest);
-	logger.info('[Updater] Current base downloaded');
+	const download = new Downloader(baseURL, dest);
+	download.start();
+	return new Promise((resolve, reject) => {
+		download.on('finish', () => {
+			logger.info('[Updater] Current base downloaded');
+			resolve();
+		});
+		download.on('error', err => {
+			reject(err);
+		});
+	});
+
 }
 
 async function decompressBase() {

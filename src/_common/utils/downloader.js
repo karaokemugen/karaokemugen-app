@@ -11,6 +11,7 @@ class Downloader {
 	  this.list = list;
 	  this.pos = 0;
 	  this.opts = opts;
+	  this.onEnd = null;
 	  this.fileErrors = [];
 	  if (opts.bar) {
 	  	const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}';
@@ -23,8 +24,9 @@ class Downloader {
 
 	// Fonction qui déclenche la chaîne de téléchargements.
 	download = onEnd => {
+	  if (onEnd) this.onEnd = onEnd;
 	  if (this.pos >= this.list.length) {
-			onEnd(this.fileErrors);
+			this.onEnd(this.fileErrors);
 	  } else {
 			const nextUrl = this.list[this.pos].url;
 			const nextFilename = this.list[this.pos].filename;
