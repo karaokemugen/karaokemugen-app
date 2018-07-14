@@ -945,7 +945,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 	}
 }
 
-export async function shufflePlaylist(playlist_id) {
+export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
@@ -953,6 +953,29 @@ export async function shufflePlaylist(playlist_id) {
 	try {
 		profile('shuffle');
 		let playlist = await getPlaylistContentsMini(playlist_id);
+
+		for(let i = 0; i < playlist.length ; i++){           // Debug boucle, delete before merge
+			console.log(playlist[i].pseudo_add);
+
+		}
+
+		var userShuffleBoolean;
+		//	if(smartShuffleBoolean){
+		let userTest = 0;
+		let userTestArray = [playlist[0].pseudo_add];
+		for(const playlistItem of playlist.pseudo_add){
+			if(!userTestArray.includes(playlistItem)){
+				userTestArray.push(playlistItem);
+				userTest++;
+			}
+		}
+		if(userTest > 5) {
+			userShuffleBoolean = true;
+		}
+		console.log(userTest);
+		console.log(userShuffleBoolean);
+		//	}
+
 		if (!pl.flag_current) {
 			playlist = shuffle(playlist);
 		} else {
