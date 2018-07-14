@@ -1,12 +1,13 @@
 import {basename, resolve} from 'path';
 import {getConfig} from '../_common/utils/config';
 import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
-import decomress from 'decompress';
+import decompress from 'decompress';
 import logger from 'winston';
 import {copy} from 'fs-extra';
 import prettyBytes from 'pretty-bytes';
 import webdav from 'webdav';
 import Downloader from '../_common/utils/downloader';
+import {Download} from 'easydownload';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
@@ -18,10 +19,10 @@ let updateRunning = false;
 
 async function downloadBase() {
 	const conf = getConfig();
-	const dest = resolve(conf.appPath, conf.PathTemp, 'archive');
+	const dest = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
 	if (await asyncExists(dest)) await asyncRemove(dest);
 	logger.info('[Updater] Downloading current base (.kara and .ass files)...');
-	const download = new Downloader(baseURL, dest);
+	const download = new Download(baseURL, dest);
 	download.start();
 	return new Promise((resolve, reject) => {
 		download.on('finish', () => {
@@ -32,21 +33,19 @@ async function downloadBase() {
 			reject(err);
 		});
 	});
-
 }
 
 async function decompressBase() {
 	const conf = getConfig();
 	const workPath = resolve(conf.appPath, conf.PathTemp, 'newbase');
-	const archivePath = resolve(conf.appPath, conf.PathTemp, 'archive');
-	const archivePathList = await asyncReadDir(archivePath);
-	const archive = archivePathList[0];
+	const archivePath = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
 	if (await asyncExists(workPath)) await asyncRemove(workPath);
 	await asyncMkdirp(workPath);
 	logger.debug('[Updater] Decompressing base');
-	await decompress(resolve(archivePath, archive),workPath);
+	await decompress(archivePath,workPath);
 	logger.debug('[Updater] Base decompressed');
-	return archive;
+	const workPathList = await asyncReadDir(workPath);
+	return workPathList[0];
 }
 
 async function listRemoteMedias() {
@@ -247,7 +246,7 @@ export async function runBaseUpdate() {
 		]);
 		const updateVideos = await compareMedias(localMedias, remoteMedias);
 		let updateBase;
-		if (!await checkDirs()) {
+		if (await checkDirs()) {
 			await downloadBase();
 			updateBase = await compareBases();
 		}
