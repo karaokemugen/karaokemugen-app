@@ -87,6 +87,7 @@ export async function extractAllKaraFiles() {
 	for (const resolvedPath of resolvedPathKaras()) {
 		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
 	}
+	if (karafiles.length === 0) throw 'No kara files found';
 	return karaFiles;
 }
 
@@ -450,7 +451,7 @@ export async function run(config) {
 		await checkUserdbIntegrity(null, conf);
 		return error;
 	} catch (err) {
-		logger.error(err);
+		logger.error(`[Gen] Generation error: ${err}`);
 		return error;
 	}
 }
