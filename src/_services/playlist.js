@@ -959,13 +959,13 @@ export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 
 		}
 
-		var userShuffleBoolean;
+		var userShuffleBoolean = false;
 		//	if(smartShuffleBoolean){
-		let userTest = 0;
+		let userTest = 1;
 		let userTestArray = [playlist[0].pseudo_add];
-		for(const playlistItem of playlist.pseudo_add){
-			if(!userTestArray.includes(playlistItem)){
-				userTestArray.push(playlistItem);
+		for(const playlistItem of playlist){
+			if(!userTestArray.includes(playlistItem.pseudo_add)){
+				userTestArray.push(playlistItem.pseudo_add);
 				userTest++;
 			}
 		}
@@ -973,6 +973,7 @@ export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 			userShuffleBoolean = true;
 		}
 		console.log(userTest);
+		console.log(userTestArray);
 		console.log(userShuffleBoolean);
 		//	}
 
