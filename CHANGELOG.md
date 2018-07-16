@@ -1,6 +1,6 @@
 # Versions
 
-## v2.2.3 "Haruhi Héroique" - 16/07/2018
+## v2.2.3 "Haruhi Hyperactive" - 16/07/2018
 
 ### Fixes
 
