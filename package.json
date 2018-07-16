@@ -1,10 +1,7 @@
 {
   "name": "karaokemugen-app",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Karaoke playlist manager / player",
-  "bin": {
-    "karaokemugen": "./dist/index.js"
-  },
   "main": "src/index.js",
   "scripts": {
     "start": "babel-node src/index.js --",
@@ -72,14 +69,14 @@
   "dependencies": {
     "ass-parser": "^0.2.0",
     "async-await-parallel": "^1.0.0",
-    "basic-ftp": "^2.13.2",
     "body-parser": "^1.18.2",
     "chalk": "^2.4.0",
     "chokidar": "^2.0.4",
     "cli-progress": "^2.0.0",
     "cookie-parser": "^1.4.3",
     "csv-string": "^3.1.3",
-    "download": "^7.1.0",
+    "decompress": "^4.2.0",
+    "easydownload": "^1.0.7",
     "execa": "^0.10.0",
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
@@ -113,6 +110,7 @@
     "read-chunk": "^2.1.0",
     "readline-sync": "^1.4.9",
     "request": "^2.87.0",
+    "request-progress": "^3.0.0",
     "request-promise-native": "^1.0.5",
     "sanitize-filename": "^1.6.1",
     "socket.io": "^2.1.1",
@@ -121,7 +119,8 @@
     "unix-timestamp": "^0.2.0",
     "uuid": "^3.3.2",
     "validate.js": "^0.12.0",
-    "winston": "^3.0.0",
+	"webdav": "^1.5.3",
+	"winston": "^3.0.0",
     "winston-daily-rotate-file": "^3.3.0"
   },
   "devDependencies": {
@@ -136,7 +135,7 @@
     "eslint-loader": "2.0.0",
     "eslint-plugin-flowtype": "2.50.0",
     "eslint-plugin-import": "2.13.0",
-    "eslint-plugin-jsx-a11y": "6.1.0",
+	"eslint-plugin-jsx-a11y": "6.1.1",
     "eslint-plugin-react": "^7.10.0",
     "mocha": "^5.2.0",
     "supertest": "^3.0.0"

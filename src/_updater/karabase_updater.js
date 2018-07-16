@@ -1,18 +1,17 @@
-import download from 'download';
 import {basename, resolve} from 'path';
 import {getConfig} from '../_common/utils/config';
 import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
 import decompress from 'decompress';
-import FTP from 'basic-ftp';
 import logger from 'winston';
 import {copy} from 'fs-extra';
-import {createWriteStream} from 'fs';
 import prettyBytes from 'pretty-bytes';
-import _cliProgress from 'cli-progress';
-import promiseRetry from 'promise-retry';
+import webdav from 'webdav';
+import Downloader from '../_common/utils/downloader';
+import {Download} from 'easydownload';
+
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
-	host: 'mugen.karaokes.moe',
+	url: 'http://mugen.karaokes.moe/downloads/medias',
 	user: 'kmvideos',
 	password: 'musubi'
 };
@@ -20,35 +19,45 @@ let updateRunning = false;
 
 async function downloadBase() {
 	const conf = getConfig();
-	const dest = resolve(conf.appPath, conf.PathTemp, 'archive');
+	const dest = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
 	if (await asyncExists(dest)) await asyncRemove(dest);
-	logger.info('[Updater] Downloading current base...');
-	await download(baseURL, dest);
-	logger.info('[Updater] Current base downloaded');
+	logger.info('[Updater] Downloading current base (.kara and .ass files)...');
+	const download = new Download(baseURL, dest);
+	download.start();
+	return new Promise((resolve, reject) => {
+		download.on('finish', () => {
+			logger.info('[Updater] Current base downloaded');
+			resolve();
+		});
+		download.on('error', err => {
+			reject(err);
+		});
+	});
 }
 
 async function decompressBase() {
 	const conf = getConfig();
 	const workPath = resolve(conf.appPath, conf.PathTemp, 'newbase');
-	const archivePath = resolve(conf.appPath, conf.PathTemp, 'archive');
-	const archivePathList = await asyncReadDir(archivePath);
-	const archive = archivePathList[0];
+	const archivePath = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
 	if (await asyncExists(workPath)) await asyncRemove(workPath);
 	await asyncMkdirp(workPath);
 	logger.debug('[Updater] Decompressing base');
-	await decompress(resolve(archivePath, archive),workPath);
+	await decompress(archivePath,workPath);
 	logger.debug('[Updater] Base decompressed');
-	return archive;
+	const workPathList = await asyncReadDir(workPath);
+	return workPathList[0];
 }
 
 async function listRemoteMedias() {
-	const ftp = new FTP.Client();
 	logger.info('[Updater] Fetching current media list');
-	await ftpConnect(ftp);
-	const list = await ftp.list();
-	await ftpClose(ftp);
-	// Filter . and ..
-	return list.filter(file => file.name.length > 2);
+	let webdavClient = webdav(
+    	shelter.url,
+    	shelter.user,
+    	shelter.password
+	);
+	const contents = await webdavClient.getDirectoryContents('/');
+	webdavClient = null;
+	return contents;
 }
 
 async function compareBases() {
@@ -69,7 +78,7 @@ async function compareBases() {
 			altnamesMinePath,
 			{overwrite: true}
 		);
-		logger.info('[Updater] Updated alternate series name data');
+		logger.info('[Updater] Updated series file');
 	}
 	logger.debug('[Updater] Comparing your base with the current one');
 	const [karasToUpdate, lyricsToUpdate] = await Promise.all([
@@ -110,23 +119,23 @@ async function compareMedias(localFiles, remoteFiles) {
 	logger.info('[Updater] Comparing your medias with the current ones');
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
-			if (localFile.name === remoteFile.name) {
+			if (localFile.name === remoteFile.basename) {
 				if (localFile.size !== remoteFile.size) updatedFiles.push({
-					name: localFile.name,
-					size: localFile.size
+					name: remoteFile.basename,
+					size: remoteFile.size
 				});
 				return true;
 			}
 			return false;
 		});
 		if (!filePresent) addedFiles.push({
-			name: remoteFile.name,
+			name: remoteFile.basename,
 			size: remoteFile.size
 		});
 	}
 	for (const localFile of localFiles) {
 		const filePresent = remoteFiles.some(remoteFile => {
-			return localFile.name === remoteFile.name;
+			return localFile.name === remoteFile.basename;
 
 		});
 		if (!filePresent) removedFiles.push(localFile.name);
@@ -136,8 +145,6 @@ async function compareMedias(localFiles, remoteFiles) {
 		await asyncUnlink(resolve(mediasPath, file.name));
 	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
-	const ftp = new FTP.Client();
-	await ftpConnect(ftp);
 	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
 	if (filesToDownload.length > 0) {
 		filesToDownload.sort((a,b) => {
@@ -148,7 +155,7 @@ async function compareMedias(localFiles, remoteFiles) {
 			bytesToDownload = bytesToDownload + file.size;
 		}
 		logger.info(`[Updater] Downloading ${filesToDownload.length} new/updated medias (size : ${prettyBytes(bytesToDownload)})`);
-		await downloadMedias(ftp, filesToDownload, mediasPath, bytesToDownload);
+		await downloadMedias(filesToDownload, mediasPath, bytesToDownload);
 		logger.info('[Updater] Done updating medias');
 		return true;
 	} else {
@@ -157,57 +164,66 @@ async function compareMedias(localFiles, remoteFiles) {
 	}
 }
 
-async function ftpClose(ftp) {
-	return await ftp.close();
-}
-
-async function ftpConnect(ftp) {
-	await ftp.connect(shelter.host, 21);
-	await ftp.login(shelter.user, shelter.password);
-	await ftp.useDefaultSettings();
-}
-
-async function downloadMedias(ftp, files, mediasPath) {
-	let ftpErrors = [];
+function downloadMedias(files, mediasPath) {
 	const conf = getConfig();
-	const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}';
-	const bar1 = new _cliProgress.Bar({
-		format: barFormat,
-		stopOnComplete: true
-	}, _cliProgress.Presets.shades_classic);
-	let i = 0;
+	let list = [];
 	for (const file of files) {
-		i++;
-		logger.info(`[Updater] (${i}/${files.length}) Downloading ${file.name} (${prettyBytes(file.size)})`);
-		bar1.start(Math.floor(file.size / 1000) / 1000, 0);
-		const outputFile = resolve(conf.appPath, mediasPath, file.name);
-		ftp.trackProgress(info => {
-			bar1.update(Math.floor(info.bytes / 1000) / 1000);
+		list.push({
+			filename: resolve(conf.appPath, mediasPath, file.name),
+			url: `${shelter.url}/${encodeURIComponent(file.name)}`
 		});
-		try {
-			await fileTransfer(ftp, outputFile, file.name);
-		} catch(err) {
-			logger.error(`[Updater] Error downloading ${file.name} : ${err}`);
-			ftpErrors.push(file.name);
-		}
-		ftp.trackProgress();
-		bar1.stop();
 	}
-	if (ftpErrors.length > 0) throw `Error during medias downloads : ${ftpErrors.toString()}`;
+	const mediaDownloads = new Downloader(list, {
+		auth: {
+			user: 'kmvideos',
+			password: 'musubi'
+		},
+		bar: true
+	});
+	return new Promise((resolve, reject) => {
+		mediaDownloads.download(fileErrors => {
+			if (fileErrors.length > 0) {
+				reject(`Error downloading these medias : ${fileErrors.toString()}`);
+			} else {
+				resolve();
+			}
+		});
+	});
 }
 
-async function fileTransfer(ftp, output, input) {
+async function doFTPDownload(bar, ftp, output, input) {
+	let start = 0;
 	await promiseRetry((retry) => {
-		return ftp.download(createWriteStream(output), input).catch(retry);
+		return FTPdownload(bar, ftp, output, input, start).catch((err) => {
+			start = err.pos;
+			retry();
+		});
 	}, {
 		retries: 10,
-		minTimeout: 5000,
-		maxTimeout: 10000
+		minTimeout: 1000,
+		maxTimeout: 2000
 	}).then(() => {
 		return true;
 	}).catch((err) => {
-		throw err;
+		throw err.error;
 	});
+}
+
+async function FTPdownload(bar, ftp, output, input, start) {
+	let pos = start;
+	ftp.trackProgress(info => {
+		pos = info.bytes - 1000000;
+		if (pos < 0) pos = 0;
+		bar.update(Math.floor(info.bytes / 1000) / 1000);
+	});
+	try {
+		await ftp.download(output, input, start);
+		return true;
+	} catch(err) {
+		await ftpClose(ftp);
+		await ftpConnect(ftp);
+		throw { error: err, pos: pos || 0};
+	}
 }
 
 async function listLocalMedias() {
@@ -248,23 +264,27 @@ async function checkDirs() {
 	const conf = getConfig();
 	const karaPaths = conf.PathKaras.split('|');
 	const karaPath = karaPaths[0];
-	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) throw 'Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it.';
+	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) {
+		logger.error('Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it.');
+		return false;
+	}
+	return true;
 }
 
 export async function runBaseUpdate() {
 	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
 	updateRunning = true;
 	try {
-		await checkDirs();
 		const [remoteMedias, localMedias] = await Promise.all([
 			listRemoteMedias(),
 			listLocalMedias()
 		]);
-		await downloadBase();
-		const [updateBase, updateVideos] = await Promise.all([
-			compareBases(),
-			compareMedias(localMedias, remoteMedias)
-		]);
+		const updateVideos = await compareMedias(localMedias, remoteMedias);
+		let updateBase;
+		if (await checkDirs()) {
+			await downloadBase();
+			updateBase = await compareBases();
+		}
 		updateRunning = false;
 		return !!(updateBase || updateVideos);
 	} catch (err) {

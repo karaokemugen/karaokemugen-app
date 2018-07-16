@@ -51,6 +51,7 @@ export async function extractAllKaraFiles() {
 	for (const resolvedPath of resolvedPathKaras()) {
 		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
 	}
+	if (karaFiles.length === 0) throw 'No kara files found';
 	return karaFiles;
 }
 
@@ -196,7 +197,7 @@ async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
 				i18nData.push({
 					$lang: lang,
 					$serie: serie.i18n[lang],
-					$serienorm: deburr(serie.i18n[lang]),
+					$serienorm: deburr(serie.i18n[lang]).replace('\'', '').replace(',', ''),
 					$name: serie.name
 				});
 			}
@@ -397,7 +398,7 @@ export async function run(config) {
 		await checkUserdbIntegrity(null, conf);
 		return error;
 	} catch (err) {
-		logger.error(err);
+		logger.error(`[Gen] Generation error: ${err}`);
 		return error;
 	} finally {
 		emit('databaseBusy',false);
