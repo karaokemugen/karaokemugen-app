@@ -1,5 +1,16 @@
 # Versions
 
+## v2.2.3 "Haruhi Héroique" - 16/07/2018
+
+### Fixes
+
+- #332 Fixes an issue some (many) people had with the in-app karaoke base updater, where downloads would get stalled and the app hanged. Writing a complete download system with retries and error handling is difficult, and the issue isn't showing for a lot of people.
+- Fixes a big issue with database (re)generation regarding series, which would causes mismatches between a series in the karaoke list and what's going to be played.
+- Karaoke Mugen shouldn't hang anymore when trying to generate a database without any kara files present
+- Quotes in series names are properly inserted in database now
+- FTP downloads for updater now has a retry system
+- Medias are now downloaded before subs
+
 ## v2.2.2 "Haruhi Hibernante" - 03/07/2018
 
 ### Fixes
@@ -95,14 +106,14 @@ This version requires your attention on the following points :
   - Enjoy your long versions of songs :)
   - As a result KM's .kara format evolves to version 3. Version 2 can still be imported safely in KM 2.1 and below. Version 3 can only be imported in 2.2 and higher.
   - `videos` folder now becomes the `medias` folder. To help with this.
-- #279 Song history can now be viewed in the control panel (administration). 
+- #279 Song history can now be viewed in the control panel (administration).
   - This is a list of most viewed songs.
-- #273 You can import/export your favorites. 
+- #273 You can import/export your favorites.
   - Useful when you go from one karaoke session to the other, carry your favorites on your phone anywhere and import them in the KM instance you're using!
 - #233 Song rankings can now be viewed in the control panel. This is a list of most requested songs (not necessarily viewed)
 - #109 Adding songs can now be limited to either number of songs or time.
-  - For example you can give users 5 minutes of karaoke each. 
-  - Adding songs longer than their time left is not allowed. 
+  - For example you can give users 5 minutes of karaoke each.
+  - Adding songs longer than their time left is not allowed.
   - Just like with songs, time is given back once the song is freed or is being played on screen.
 - #79 Public vote mode can be enabled and offers a poll to users on their devices with 4 songs to choose from.
   - Songs are taken from the public/suggestions playlist.
@@ -185,7 +196,7 @@ Changes sinces 2.1-rc1 :
 - Fixed song quotas per user not being updated properly
 - Fixed song copy from one playlist to another
 - Tweaked french translation a little
-- #276 Fixed private/public mode switches 
+- #276 Fixed private/public mode switches
 - Link to documentation is now correct in welcome screen
 
 ### Delayed
@@ -337,16 +348,16 @@ Dernière version (fort probablement) avant le passage à la 2.1.
   - Déposez des fonds d'écran dans le dossier `app/backgrounds` et Karaoke Mugen en prendra aléatoirement un pour l'afficher entre deux chansons.
 - #182 Dans l'affichage des playlists, le temps restant de celle-ci s'affiche désormais en bas à droite.
 - #172 Les fichiers de log sont maintenant nommés avec la date du jour.
-- #175 Les chemins spécifiés dans le fichier `config.ini` peuvent maintenant être multiples. 
+- #175 Les chemins spécifiés dans le fichier `config.ini` peuvent maintenant être multiples.
   - Karaoke Mugen ira chercher dans chaque dossier (karas, paroles, vidéos, fonds d'écran
 , jingles...) tous les fichiers s'y trouvant. Par exemple si vous avez trois dossiers de vidéos listés, Karaoke Mugen vérifiera la présence de vidéo dans chaque dossier avant d'abandonner.
   - Pour indiquer plusieurs dossiers, il faut séparer leurs chemins par des pipes `|`. `Alt Droit + 6` sur un clavier AZERTY. Exemple : `app/data/videos|D:/mesvideostest`
   - Les chemins seront traités dans l'ordre. Si une même vidéo (par exemple) existe dans deux dossiers, c'est celle du premier dossier listé qui sera prise en priorité
-- #174 Ajout d'un paramètre `EngineAutoPlay` (Lecture Automatique) qui lance la lecture automatiquement dés qu'un karaoké est ajouté, si celui est sur stop. 
+- #174 Ajout d'un paramètre `EngineAutoPlay` (Lecture Automatique) qui lance la lecture automatiquement dés qu'un karaoké est ajouté, si celui est sur stop.
   - Pour toujours plus de KARAOKE INFINI.
 - #174 Ajout d'un paramètre `EngineRepeatPlaylist` (Répéter la playlist courante)
-  - Cela permet de relancer celle-ci automatiquement lorsqu'on arrive au dernier morceau. 
-- #137 Nouvelle fonction Lire Ensuite. 
+  - Cela permet de relancer celle-ci automatiquement lorsqu'on arrive au dernier morceau.
+- #137 Nouvelle fonction Lire Ensuite.
   - Un clic droit sur le bouton d'ajout d'un kara permet de l'insérer pile après la chanson en cours !
 - #179 Boutons de navigation "retour en haut/en bas/kara en cours" ajoutés
 - #196 Personnalisation des infos affichées en bas de l'écran durant les pauses/jingles
@@ -356,7 +367,7 @@ Dernière version (fort probablement) avant le passage à la 2.1.
   - `EngineDisplayConnectionInfoMessage` : Ajoute un message avant celui avec l'URL. Par exemple pour indiquer un réseau Wifi auquel se connecter au préalable.
   - Les informations de connexion sont réaffichées à 50% de la chanson en cours pendant 8 secondes
 - #195 Les informations de la chanson sont maintenant affichées aussi à la fin de la chanson en cours
-- Il est désormais possible d'indiquer à Karaoke Mugen un chemin web (HTTP) pour récupérer les vidéos s'il ne les trouve pas dans vos dossiers. 
+- Il est désormais possible d'indiquer à Karaoke Mugen un chemin web (HTTP) pour récupérer les vidéos s'il ne les trouve pas dans vos dossiers.
   - Si vous êtes sur un réseau local ou que vos vidéos sont hébergées sur Internet, vous pouvez spécifier `PathVideosHTTP=http://monsiteweb.com/videos` pour que Karaoke Mugen streame les vidéos. Cela ne les télécharge pas définitivement sur votre disque dur !
 - #189 Des openings ou endings spécifiques peuvent être recherchés désormais.
 - La recherche prend en compte l'auteur du karaoké
@@ -364,11 +375,11 @@ Dernière version (fort probablement) avant le passage à la 2.1.
 - Les karas dans la liste publique/de suggestions sont supprimés dés qu'ils sont joués en courante.
 - #135 L'interface est traduite en anglais et français et se base sur la langue de votre navigateur. On a posé les bases pour une traduction en d'autres langues
 - #197 Bouton aller au début/en fin de playlist et aller au kara en cours de lecture
-- #204 Nouveau critère de blacklist (nom de la série) 
-- #92 Une limite de chansons par utilisateur a été mise en place. 
+- #204 Nouveau critère de blacklist (nom de la série)
+- #92 Une limite de chansons par utilisateur a été mise en place.
   - Une fois définie, la limite empêche les gens d'ajouter un karaoké s'ils ont déjà ajouté trop de chansons. Une fois les chansons de l'utilisateur passées, il peut en ajouter de nouvelles.
 
-### Corrections 
+### Corrections
 
 - #75 Utilisation d'un nouveau module d'accès à la base de données SQLite permettant de gérer les migrations et les promesses.
 - #191 Les pseudos contenant { } sont maintenant correctement affichés à l'écran

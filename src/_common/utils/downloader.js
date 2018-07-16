@@ -22,7 +22,7 @@ class Downloader {
 		}
 	}
 
-	// Fonction qui déclenche la chaîne de téléchargements.
+	// Triggers the download chain
 	download = onEnd => {
 	  if (onEnd) this.onEnd = onEnd;
 	  if (this.pos >= this.list.length) {
