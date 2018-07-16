@@ -1,4 +1,4 @@
-import {asyncCheckOrMkdir, asyncMkdirp, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
 import {setConfig, getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {move, copy} from 'fs-extra';
@@ -136,16 +136,22 @@ async function checkPaths(config) {
 	const appPath = config.appPath;
 
 	// If no karaoke is found, copy the samples directory if it exists
-
-	if (!await asyncExists(resolve(appPath, 'app/data'))) {
-		if (await asyncExists(resolve(appPath, 'samples'))) {
+	try {
+		await asyncReadDir(resolve(appPath, 'app/data'));
+	} catch(err) {
+		try {
+			await asyncReadDir(resolve(appPath, 'samples'));
 			logger.debug('[Launcher] app/data is missing - copying samples inside');
 			await copy(
 				resolve(appPath, 'samples'),
 				resolve(appPath, 'app/data')
 			);
+		} catch(err) {
+			logger.warn('[Launcher] No samples directory found, will not copy them.');
 		}
 	}
+
+
 
 	//Fix for PathMedias = app/data/videos
 	//Delete this after 2.3. This is an awful hack.

@@ -1,5 +1,5 @@
 import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
-import {remove, mkdirp, copy, move} from 'fs-extra';
+import {ensureDir, remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from 'winston';
@@ -17,7 +17,7 @@ export function asyncExists(file) {
 export async function detectFileType(file) {
 	const buffer = await readChunk(file, 0, 4100);
 	const detected = fileType(buffer);
-	return detected.ext;	
+	return detected.ext;
 }
 
 /** Function used to read a file with a Promise */
@@ -82,9 +82,9 @@ export async function isGitRepo(dir) {
 /**
  * Searching file in a list of folders. If the file is found, we return its complete path with resolve.
  */
-export async function resolveFileInDirs(filename, dirs) {	
+export async function resolveFileInDirs(filename, dirs) {
 	for (const dir of dirs) {
-		const resolved = resolve(getConfig().appPath, dir, filename);		
+		const resolved = resolve(getConfig().appPath, dir, filename);
 		if (await asyncExists(resolved)) {
 			return resolved;
 		}
@@ -119,7 +119,7 @@ export function checksum(str, algorithm, encoding) {
 		.digest(encoding || 'hex');
 }
 
-export async function compareFiles(file1, file2) {	
+export async function compareFiles(file1, file2) {
 	if (!await asyncExists(file1) || !await asyncExists(file2)) return false;
 	const [file1data, file2data] = await Promise.all([
 		asyncReadFile(file1, 'utf-8'),
