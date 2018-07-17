@@ -5,7 +5,7 @@ import {requireAuth, requireValidUser, requireAdmin} from './passport_manager';
 import {requireNotDemo} from './demo';
 import {getLang} from './lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
-import {getKaras, getKaraInfo, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
+import {getKaras, getKara, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
 import {getTags} from '../_services/tag';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara';
@@ -33,7 +33,7 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send(`Error while regenerating DB: ${err}`));
 	});
 	router.get('/karas/:kara_id([0-9]+)', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKaraInfo(req.params.kara_id,req.lang,req.authToken)
+		getKara(req.params.kara_id,req.lang,req.authToken)
 			.then(kara => res.json(kara))
 			.catch(err => res.status(500).send('Error while loading kara: ' + err));
 	});
