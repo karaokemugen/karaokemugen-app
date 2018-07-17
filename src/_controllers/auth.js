@@ -23,7 +23,7 @@ async function checkLogin(username, password) {
 }
 
 
-module.exports = function authController(router) {
+export default function authController(router) {
 
 	const requireAuth = passport.authenticate('jwt', { session: false });
 
@@ -121,7 +121,7 @@ module.exports = function authController(router) {
 	router.get('/checkauth', requireAuth, (req, res) => {
 		res.send(decodeJwtToken(req.get('authorization')));
 	});
-};
+}
 
 function createJwtToken(username, role, config) {
 	const conf = config || getConfig();

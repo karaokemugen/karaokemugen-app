@@ -13,7 +13,7 @@ import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
 
-module.exports = function adminController(router) {
+export default function adminController(router) {
 	const conf = getConfig();
 	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
 
@@ -164,9 +164,9 @@ module.exports = function adminController(router) {
 		runBaseUpdate()
 			.then(() => {
 				generateDatabase().then(() => {
-					res.status(200).send('Karas successfully updated')
+					res.status(200).send('Karas successfully updated');
 				}).catch(err => res.status(500).send(`Karas updated but generation failed horribly: ${err}`));
 			})
 			.catch(err => res.status(500).send(`Error while updating karas: ${err}`));
 	});
-};
+}
