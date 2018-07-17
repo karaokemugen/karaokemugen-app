@@ -191,41 +191,6 @@ function downloadMedias(files, mediasPath) {
 	});
 }
 
-async function doFTPDownload(bar, ftp, output, input) {
-	let start = 0;
-	await promiseRetry((retry) => {
-		return FTPdownload(bar, ftp, output, input, start).catch((err) => {
-			start = err.pos;
-			retry();
-		});
-	}, {
-		retries: 10,
-		minTimeout: 1000,
-		maxTimeout: 2000
-	}).then(() => {
-		return true;
-	}).catch((err) => {
-		throw err.error;
-	});
-}
-
-async function FTPdownload(bar, ftp, output, input, start) {
-	let pos = start;
-	ftp.trackProgress(info => {
-		pos = info.bytes - 1000000;
-		if (pos < 0) pos = 0;
-		bar.update(Math.floor(info.bytes / 1000) / 1000);
-	});
-	try {
-		await ftp.download(output, input, start);
-		return true;
-	} catch(err) {
-		await ftpClose(ftp);
-		await ftpConnect(ftp);
-		throw { error: err, pos: pos || 0};
-	}
-}
-
 async function listLocalMedias() {
 	const conf = getConfig();
 	const mediaPaths = conf.PathMedias.split('|');
