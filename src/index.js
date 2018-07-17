@@ -1,4 +1,4 @@
-import {asyncCheckOrMkdir, asyncMkdirp, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
 import {setConfig, getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {writeFileSync, readFileSync} from 'fs';
@@ -137,27 +137,33 @@ async function checkPaths(config) {
 	const appPath = config.appPath;
 
 	// If no karaoke is found, copy the samples directory if it exists
-	if (!await asyncExists(resolve(appPath, 'app/data')) && await asyncExists(resolve(appPath, 'samples'))) {
-		logger.debug('[Launcher] app/data is missing - copying samples inside');
-		await asyncMkdirp(resolve(appPath, 'app/data'));
-		await copy(
-			resolve(appPath, 'samples'),
-			resolve(appPath, 'app/data')
-		);
-
+	try {
+		await asyncReadDir(resolve(appPath, 'app/data'));
+	} catch(err) {
+		try {
+			await asyncReadDir(resolve(appPath, 'samples'));
+			logger.debug('[Launcher] app/data is missing - copying samples inside');
+			await copy(
+				resolve(appPath, 'samples'),
+				resolve(appPath, 'app/data')
+			);
+		} catch(err) {
+			logger.warn('[Launcher] No samples directory found, will not copy them.');
+		}
 	}
+
+
 
 	//Fix for PathMedias = app/data/videos
 	//Delete this after 2.3. This is an awful hack.
 	//Only effective after July 1st 2018
-	if (config.PathMedias === 'app/data/videos') {
+	if (now() > 1530396000 && config.PathMedias === 'app/data/videos') {
 		const oldPath = resolve(appPath, config.PathMedias);
 		setConfig({ PathMedias: 'app/data/medias'});
 		config = getConfig();
 		const newPath = resolve(appPath, config.PathMedias);
 		if (await asyncExists(oldPath) && !await asyncExists(newPath)) await move(oldPath, newPath);
 	}
-
 
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
 	let checks = [];
