@@ -162,7 +162,11 @@ module.exports = function adminController(router) {
 
 	router.post('/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		runBaseUpdate()
-			.then(() => res.status(200).send('Karas successfully updated'))
+			.then(() => {
+				generateDatabase().then(() => {
+					res.status(200).send('Karas successfully updated')
+				}).catch(err => res.status(500).send(`Karas updated but generation failed horribly: ${err}`));
+			})
 			.catch(err => res.status(500).send(`Error while updating karas: ${err}`));
 	});
 };
