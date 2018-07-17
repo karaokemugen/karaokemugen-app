@@ -33,7 +33,7 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send(`Error while regenerating DB: ${err}`));
 	});
 	router.get('/karas/:kara_id([0-9]+)', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKara(req.params.kara_id,req.lang,req.authToken)
+		getKara(req.params.kara_id,req.authToken,req.lang)
 			.then(kara => res.json(kara))
 			.catch(err => res.status(500).send('Error while loading kara: ' + err));
 	});
