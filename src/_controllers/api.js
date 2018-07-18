@@ -1258,13 +1258,13 @@ export function APIControllerAdmin(router) {
  *       "BinPlayerWindows": "app/bin/mpv.exe",
  *       "BinffmpegLinux": "/usr/bin/ffmpeg",
  *       "BinffmpegOSX": "app/bin/ffmpeg",
- *       "BinffmpegPath": "D:\\perso\\toyundamugen-app\\app\\bin\\ffmpeg.exe",
+ *       "BinffmpegPath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffmpeg.exe",
  *       "BinffmpegWindows": "app/bin/ffmpeg.exe",
  *       "BinffprobeLinux": "/usr/bin/ffprobe",
  *       "BinffprobeOSX": "app/bin/ffprobe",
- *       "BinffprobePath": "D:\\perso\\toyundamugen-app\\app\\bin\\ffprobe.exe
+ *       "BinffprobePath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffprobe.exe
  *       "BinffprobeWindows": "app/bin/ffprobe.exe",
- *       "BinmpvPath": "D:\\perso\\toyundamugen-app\\app\\bin\\mpv.exe",
+ *       "BinmpvPath": "D:\\perso\\karaokemugen-app\\app\\bin\\mpv.exe",
  *       "EngineAllowViewBlacklist": "1",
  *       "EngineAllowViewBlacklistCriterias": "1",
  *       "EngineAllowViewWhitelist": "1",
