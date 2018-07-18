@@ -16,7 +16,7 @@ import {check} from '../_common/utils/validators';
 import {addSerie} from '../_services/series';
 import sanitizeFilename from 'sanitize-filename';
 import deburr from 'lodash.deburr';
-import {now} from 'unix-timestamp';
+import timestamp from 'unix-timestamp';
 
 export async function editKara(kara_id,kara) {
 	let newKara;
@@ -126,7 +126,8 @@ async function generateKara(kara, opts) {
 	let newKara;
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
-		kara.dateadded = now();
+		timestamp.round = false;
+		kara.dateadded = timestamp.now();
 		//Trim spaces before and after elements.
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
 		kara.lang.forEach((e,i) => kara.lang[i] = e.trim());
