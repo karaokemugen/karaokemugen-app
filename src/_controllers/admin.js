@@ -75,7 +75,7 @@ export default function adminController(router) {
 	});
 
 	router.get('/series', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getSeries(req.query.filter, req.lang, req.query.filter)
+		getSeries(req.query.filter, req.lang)
 			.then(series => res.json(series))
 			.catch(err => res.status(500).send(`Error while fetching series: ${err}`));
 	});
