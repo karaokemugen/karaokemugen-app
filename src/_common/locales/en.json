@@ -1,6 +1,7 @@
 {
-	"404": "404",
-	"404_2": "404_2",
+	"404": "Lost on the local network?",
+	"404_2": "Do not panic, we can help you.",
+	"404_3": "you are here",
 	"DETAILS_ADDED": "Added ",
 	"DETAILS_ADDED_2": "the %s",
 	"DETAILS_ADDED_3": "by %s",
