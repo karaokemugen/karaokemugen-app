@@ -148,7 +148,7 @@ class KaraForm extends Component {
 				<Form.Item hasFeedback
 					label="Media file"
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
 						action='/api/karas/importfile'
@@ -164,7 +164,7 @@ class KaraForm extends Component {
 				<Form.Item
 					label="Lyrics file"
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
 						action='/api/karas/importfile'
@@ -176,46 +176,6 @@ class KaraForm extends Component {
 							<Icon type="upload" />Subs File
 						</Button>
 					</Upload></Form.Item>
-				<Form.Item>
-					{getFieldDecorator('kid', {
-						initialValue: this.props.kara.kid
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('karafile', {
-						initialValue: this.props.kara.karafile
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('kara_id', {
-						initialValue: this.props.kara.kara_id
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('dateadded', {
-						initialValue: this.props.kara.dateadded
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('mediafile', {
-						initialValue: this.props.kara.mediafile
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('mediafile_orig', {
-						initialValue: null
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('subfile_orig', {
-						initialValue: null
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('subfile', {
-						initialValue: this.props.kara.subfile
-					})(<Input type="hidden" />)}
-				</Form.Item>
 				<Form.Item hasFeedback
 					label={(
 						<span>Song title&nbsp;
@@ -225,7 +185,7 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 8, offset: 0 }}
 				>
 					{getFieldDecorator('title', {
 						initialValue: this.props.kara.title,
@@ -239,15 +199,6 @@ class KaraForm extends Component {
 						label='Song title'
 					/>)}
 				</Form.Item>
-				<Form.Item
-					label='Kara creation date'
-					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
-				>
-					{getFieldDecorator('dateadded', {
-						initialValue: this.props.kara.dateadded
-					})(<Input disabled={true} />)}
-				</Form.Item>
 				<Form.Item hasFeedback
 					label={(
 						<span>Serie(s)&nbsp;
@@ -257,7 +208,7 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 14, offset: 0 }}
 				>
 					{getFieldDecorator('series', {
 						initialValue: this.props.kara.series,
@@ -273,7 +224,7 @@ class KaraForm extends Component {
 				<Form.Item
 					label="Song type"
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 3, offset: 0 }}
 				>
 					{getFieldDecorator('type', {
 						rules: [{required: true}],
@@ -301,7 +252,7 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 1, offset: 0 }}
 				>
 					{getFieldDecorator('order', {
 						initialValue: this.props.kara.songorder
@@ -319,7 +270,7 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('lang', {
 						rules: [{required: true}],
@@ -338,7 +289,7 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 2, offset: 0 }}
 				>
 					{getFieldDecorator('year', {
 						initialValue: this.props.kara.year || 2010,
@@ -353,7 +304,7 @@ class KaraForm extends Component {
 				<Form.Item hasFeedback
 					label="Singer(s)"
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('singer', {
 						initialValue: this.state.singer,
@@ -376,7 +327,7 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('songwriter', {
 						initialValue: this.state.songwriter
@@ -395,7 +346,7 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('creator', {
 						initialValue: this.state.creator
@@ -414,7 +365,7 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('author', {
 						initialValue: this.state.author,
@@ -434,7 +385,7 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('tags', {
 						initialValue: this.state.tag
@@ -447,7 +398,7 @@ class KaraForm extends Component {
 				<Form.Item hasFeedback
 					label="Overwrite files"
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 7, offset: 0 }}
 				>
 					<Checkbox onChange={this.onChangeOverwrite}>WARNING : any existing media or subfile will be overwritten!</Checkbox>
 				</Form.Item>
@@ -456,11 +407,77 @@ class KaraForm extends Component {
 						initialValue: this.state.overwrite
 					})(<Input type="hidden" />)}
 				</Form.Item>
-				<Form.Item>
+				<Form.Item
+					label='Creation date'
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 8, offset: 0 }}
+				>
+					{getFieldDecorator('dateadded', {
+						initialValue: new Date(this.props.kara.dateadded * 1000)
+					})(<Input disabled={true} />)}
+				</Form.Item>
+				<Form.Item
+					label='Last updated date'
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 8, offset: 0 }}
+				>
+					{getFieldDecorator('datemodif', {
+						initialValue: new Date(this.props.kara.datemodif * 1000)
+					})(<Input disabled={true} />)}
+				</Form.Item>
+				<Form.Item
+					wrapperCol={{ span: 8, offset: 0 }}
+				>
 					<Button type='primary' htmlType='submit' className='login-form-button'>
 						Save and generate .kara file
 					</Button>
 				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('kid', {
+						initialValue: this.props.kara.kid
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('karafile', {
+						initialValue: this.props.kara.karafile
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('kara_id', {
+						initialValue: this.props.kara.kara_id
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('dateadded', {
+						initialValue: this.props.kara.dateadded
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('datemodif', {
+						initialValue: this.props.kara.datemodif
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('mediafile', {
+						initialValue: this.props.kara.mediafile
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('mediafile_orig', {
+						initialValue: null
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('subfile_orig', {
+						initialValue: null
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('subfile', {
+						initialValue: this.props.kara.subfile
+					})(<Input type="hidden" />)}
+				</Form.Item>
+
 			</Form>
 		);
 	}

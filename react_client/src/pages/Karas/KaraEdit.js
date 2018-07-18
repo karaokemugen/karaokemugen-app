@@ -80,6 +80,7 @@ class KaraEdit extends Component {
 						order: res.data[0].songorder,
 						type: res.data[0].songtype,
 						dateadded: res.data[0].created_at,
+						datemodif: res.data[0].modified_at,
 						kara_id: this.props.match.params.kara_id
 					};
 					this.setState({kara: karaData, save: this.saveUpdate});

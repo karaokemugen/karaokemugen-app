@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import deburr from 'lodash.deburr';
-import {AutoComplete, Icon, Tag, Tooltip} from 'antd';
+import {Button, Form, AutoComplete, Icon, Tag, Tooltip} from 'antd';
 import axios from 'axios/index';
 import langs from 'langs';
 
@@ -100,16 +100,23 @@ export default class EditableTagGroup extends React.Component {
 					return isLongTag ? <Tooltip title={tag} key={tag}>{tagElem}</Tooltip> : tagElem;
 				})}
 				{inputVisible && (
-					<AutoComplete
-						ref={input => this.input = input}
-						dataSource={this.state.DS}
-						onSearch={ this.search }
-						onChange={ val => this.currentVal = val }
-						onSelect={this.handleInputConfirm}
-						onBlur={ () => this.handleInputConfirm(this.currentVal) }
-						filterOption={(inputValue, option) => deburr(option.props.children.toUpperCase()).indexOf(deburr(inputValue).toUpperCase()) !== -1}
+					<Form.Item
+						wrapperCol={{ span: 10, offset: 0 }}
 					>
-					</AutoComplete>
+						<AutoComplete
+							ref={input => this.input = input}
+							dataSource={this.state.DS}
+							onSearch={ this.search }
+							onChange={ val => this.currentVal = val }
+							onSelect={this.handleInputConfirm}
+							filterOption={(inputValue, option) => deburr(option.props.children.toUpperCase()).indexOf(deburr(inputValue).toUpperCase()) !== -1}
+						>
+						</AutoComplete>
+						<Button type='primary' onClick={() => this.handleInputConfirm(this.currentVal)}
+							className='login-form-button'>
+						Add Tag
+						</Button>
+					</Form.Item>
 				)}
 				{!inputVisible && (
 					<Tag

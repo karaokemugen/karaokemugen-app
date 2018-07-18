@@ -793,6 +793,7 @@ export function APIControllerAdmin(router) {
  *               "NORM_title": "Circuit",
  *               "author": null,
  *               "created_at": 1508423806,
+ * 				 "modified_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
  *               "flag_blacklisted": 0,
@@ -1054,7 +1055,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -1069,7 +1070,9 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
  * @apiSuccess {String} data/NORM_title Normalized song title
  * @apiSuccess {String} data/author Karaoke author's name
- * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {Number} data/kara_created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's addition in the playlist
+ * @apiSuccess {Number} data/kara_modified_at UNIX timestamp of the karaoke's creation date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
@@ -1119,6 +1122,8 @@ export function APIControllerAdmin(router) {
  *           "NORM_songwriter": null,
  *           "NORM_title": "Hana",
  *           "author": null,
+ *           "kara_created_at": 1508427958,
+ *           "kara_modified_at": 1508427958,
  *           "created_at": 1508427958,
  *           "creator": null,
  *           "duration": 0,
@@ -2350,6 +2355,8 @@ export function APIControllerPublic(router) {
  *               "NORM_title": "Circuit",
  *               "author": null,
  *               "created_at": 1508423806,
+ *               "kara_created_at": 1508423806,
+ *               "kara_modified_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
  *               "flag_blacklisted": 0,
@@ -2423,7 +2430,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -2439,7 +2446,9 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
  * @apiSuccess {String} data/NORM_title Normalized song title
  * @apiSuccess {String} data/author Karaoke author's name
- * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's addition in the playlist
+ * @apiSuccess {Number} data/kara_modified_at UNIX timestamp of the karaoke's last modification date in the base
+ * @apiSuccess {Number} data/kara_created_at UNIX timestamp of the karaoke's creation date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
@@ -2489,6 +2498,8 @@ export function APIControllerPublic(router) {
  *           "NORM_title": "Hana",
  *           "author": null,
  *           "created_at": 1508427958,
+ *           "kara_created_at": 1508427958,
+ *           "kara_modified_at": 1508427958,
  *           "creator": null,
  *           "duration": 0,
  *           "flag_blacklisted": 0,
@@ -2977,7 +2988,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -3005,6 +3016,7 @@ export function APIControllerPublic(router) {
  *               "NORM_title": "Circuit",
  *               "author": null,
  *               "created_at": 1508423806,
+ *               "modified_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
  * 	             "flag_dejavu": 0,
@@ -3111,7 +3123,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -3125,6 +3137,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/NORM_title Normalized song title
  * @apiSuccess {String} data/author Karaoke author's name
  * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {Number} data/modified_at UNIX timestamp of the karaoke's last modification date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default `EngineMaxDejaVuTime` is at 60 minutes)
@@ -3163,6 +3176,7 @@ export function APIControllerPublic(router) {
  *           "NORM_title": "Hana",
  *           "author": null,
  *           "created_at": 1508427958,
+ *           "modified_at": 1508427958,
  *           "creator": null,
  *           "duration": 0,
  * 	         "flag_dejavu": 0,
@@ -3374,7 +3388,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -3404,6 +3418,8 @@ export function APIControllerPublic(router) {
  *               "NORM_title": "Circuit",
  *               "author": null,
  *               "created_at": 1508423806,
+ *               "kara_modified_at": 1508423806,
+ *               "kara_created_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
  *               "flag_blacklisted": 0,
@@ -3533,7 +3549,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -3563,6 +3579,8 @@ export function APIControllerPublic(router) {
  *               "NORM_title": "Circuit",
  *               "author": null,
  *               "created_at": 1508423806,
+ *               "kara_modified_at": 1508423806,
+ *               "kara_created_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
  *               "flag_blacklisted": 0,

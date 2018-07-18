@@ -4,9 +4,9 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
- * @apiParam {Number} plc_id Playlist content ID. 
+ * @apiParam {Number} plc_id Playlist content ID.
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -92,7 +92,7 @@
  *       }
  *   ]
  * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -108,7 +108,7 @@
  * @apiVersion 2.0.0
  * @apiGroup Main
  * @apiPermission admin
- * 
+ *
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -189,7 +189,7 @@
  * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
  * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
  * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
- * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message) 
+ * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message)
  * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
  * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
  * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
@@ -202,11 +202,11 @@
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
  * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
  * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
- * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen 
+ * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
  * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
- * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -314,7 +314,7 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} kara_id List of `kara_id` separated by commas (`,`). Example : `1021,2209,44,872`
  * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
@@ -353,14 +353,14 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -431,12 +431,12 @@
  * @apiPermission public
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -507,7 +507,7 @@
  * @apiPermission public
  * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
- * @apiParam {Number} plc_id Playlist content ID. 
+ * @apiParam {Number} plc_id Playlist content ID.
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -593,7 +593,7 @@
  *       }
  *   ]
  * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -609,13 +609,13 @@
  * @apiVersion 2.0.0
  * @apiGroup Karaokes
  * @apiPermission public
- * 
- * @apiParam {String} [filter] Filter list by this string. 
+ *
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -679,7 +679,7 @@
  * @apiVersion 2.0.0
  * @apiGroup Karaokes
  * @apiPermission public
- * 
+ *
  * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
@@ -750,7 +750,7 @@
  *       }
  *   ]
  * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -766,14 +766,14 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission public
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -843,14 +843,14 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission public
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -933,7 +933,7 @@
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -1053,7 +1053,7 @@
  * {
  *   "code": "WL_VIEW_FORBIDDEN"
  * }
- 
+
  */
 
 /**
@@ -1091,7 +1091,7 @@
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -1118,14 +1118,14 @@
  * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -1177,7 +1177,7 @@
  * }
  * @apiError BL_VIEW_ERROR Blacklist could not be viewed
  * @apiError BL_VIEW_FORBIDDEN Blacklist view is not allowed for users
- 
+
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -1190,7 +1190,7 @@
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission public
- * 
+ *
  * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
  * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
  * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
@@ -1217,7 +1217,7 @@
 * {
 *   "code": "BLC_VIEW_FORBIDDEN"
 * }
-*/	
+*/
 /**
  * @api {get} public/player Get player status
  * @apiName GetPlayer
@@ -1263,7 +1263,7 @@
  * {
  *   "code": "PLAYER_STATUS_ERROR"
  * }
- 
+
 
 /**
  * @api {get} /public/karas Get complete list of karaokes
@@ -1271,13 +1271,13 @@
  * @apiVersion 2.0.0
  * @apiGroup Karaokes
  * @apiPermission public
- * 
- * @apiParam {String} [filter] Filter list by this string. 
+ *
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -1379,7 +1379,7 @@
 * {
 *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
 * }
-*/			
+*/
 
 /**
  * @api {get} public/playlists/current Get current playlist information
@@ -1400,7 +1400,7 @@
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -1440,7 +1440,7 @@
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -1495,7 +1495,7 @@
  *       "timePosition": 0,
  *       "volume": 100
  *   }
- * } 
+ * }
  * @apiError PLAYER_STATUS_ERROR Error fetching player status (is the player running?)
  *
  * @apiErrorExample Error-Response:
@@ -1503,7 +1503,7 @@
  * {
  *   "code": "PLAYER_STATUS_ERROR"
  * }
- */		
+ */
 /**
  * @api {get} admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
@@ -1542,7 +1542,7 @@
 	* @apiVersion 2.0.0
 	* @apiGroup Karaokes
 	* @apiPermission public
-	* 
+	*
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {String} data/name_i18n Translated name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
@@ -1578,7 +1578,7 @@
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
 	*/
-	
+
 /**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
@@ -1900,9 +1900,9 @@
  *       }
  *   ]
  * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * 
+ *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -2770,7 +2770,7 @@
  * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
- * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
  * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
@@ -3323,7 +3323,7 @@
  *       }
  *   ]
  * }
- * 
+ *
  * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
  *
  * @apiErrorExample Error-Response:
@@ -3331,7 +3331,7 @@
  * {
  *   "code": "BLC_VIEW_ERROR"
  * }
- */	
+ */
 
 	/**
  * @api {post} /admin/blacklist/criterias Add a blacklist criteria
@@ -3370,7 +3370,7 @@
  *       "errno": 1
  *   }
  * }
- */		
+ */
 
 	/**
  * @api {post} /admin/blacklist/criterias Add a blacklist criteria
@@ -3409,7 +3409,7 @@
  *       "errno": 1
  *   }
  * }
- */	
+ */
 
 /**
  * @api {delete} /admin/blacklist/criterias/:blc_id Delete a blacklist criteria
@@ -3438,7 +3438,7 @@
  *   "code": "BLC_DELETE_ERROR",
  *   "message": "BLCID 5 unknown"
  * }
- */	
+ */
 
 /**
  * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
@@ -3472,7 +3472,7 @@
  *   "code": "BLC_UPDATE_ERROR",
  *   "message": "BLCID 12309 unknown"
  * }
- */	
+ */
 
 /**
  * @api {put} /admin/player Send commands to player
@@ -3551,7 +3551,7 @@
  *   "code": "PL_EXPORT_ERROR",
  *   "message": "Playlist 5 unknown"
  * }
- */	
+ */
 
 /**
  * @api {post} /admin/playlists/import Import a playlist
@@ -3581,7 +3581,7 @@
  *   "code": "PL_IMPORT_ERROR",
  *   "message": "No header section"
  * }
- */	
+ */
 
 /**
  * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
@@ -3684,3 +3684,673 @@
 	* @apiErrorExample Error-Response:
     * HTTP/1.1 403 Forbidden
 	*/
+
+	/**
+ * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
+ * @apiName GetPlaylistPLC
+ * @apiVersion 2.2.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
+ * @apiParam {Number} plc_id Playlist content ID.
+ * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
+ * @apiSuccess {String} data/NORM_creator Normalized creator's name
+ * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
+ * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
+ * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
+ * @apiSuccess {String} data/NORM_singer Normalized name of singer.
+ * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
+ * @apiSuccess {String} data/NORM_title Normalized song title
+ * @apiSuccess {String} data/author Karaoke author's name
+ * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {String} data/creator Show's creator name
+ * @apiSuccess {Number} data/duration Song duration in seconds
+ * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
+ * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
+ * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
+ * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+ * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
+ * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
+ * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
+ * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
+ * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
+ * @apiSuccess {Number} data/lastplayed_at When the song has been played last, in unix timestamp
+ * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
+ * @apiSuccess {String} data/misc_i18n Translated tag list
+ * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
+ * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
+ * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
+ * @apiSuccess {String} data/previewfile Filename of the preview file associated with the karaoke. Can be undefined if the preview hasn't been generated yet by the server.
+ * @apiSuccess {String} data/pseudo_add Nickname of user who added/requested the song. this nickname can be changed (`username` cannot) hence why it is displayed here.
+ * @apiSuccess {String} data/requested Number of times the song has been requested.
+ * @apiSuccess {String} data/serie Name of series/show the song belongs to
+ * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
+ * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
+ * @apiSuccess {String} data/singer Singer's name, if known.
+ * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
+ * @apiSuccess {String} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
+ * @apiSuccess {String} data/songtype_i18n Translated song's type (`Opening`, `Ending`, `Insert Song`...)
+ * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
+ * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
+ * @apiSuccess {String} data/title Song's title
+ * @apiSuccess {String} data/username Username who submitted this karaoke. Can be different from `pseudo_add`.
+ * @apiSuccess {String} data/mediafile Media's filename
+ * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
+ * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_author": null,
+ *           "NORM_creator": null,
+ *           "NORM_pseudo_add": "Axel",
+ *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
+ *           "NORM_serie_altname": "C-Cube/CxCxC",
+ *           "NORM_singer": null,
+ *           "NORM_songwriter": null,
+ *           "NORM_title": "Hana",
+ *           "author": null,
+ *           "created_at": 1508427958,
+ *           "creator": null,
+ *           "duration": 0,
+ *           "flag_blacklisted": 0,
+ *           "flag_playing": 0,
+ *           "flag_whitelisted": 0,
+ *           "flag_dejavu": 0,
+ * 			 "flag_favorites": 0,
+ *           "gain": 0,
+ *           "kara_id": 1007,
+ *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
+ *           "language": "jpn",
+ *           "language_i18n": "Japonais",
+ * 			 "lastplayed_at": null,
+ *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
+ *           "misc": null,
+ *           "misc_i18n": null,
+ *           "playlist_id": 2,
+ *           "playlistcontent_id": 4961,
+ *           "pos": 12,
+ *           "previewfile": "JAP - C3 ~ Cube X Cursed X Curious.1201230.mp4"
+ *           "pseudo_add": "Axel",
+ * 			 "requested": 20,
+ *           "serie": "C3 ~ Cube X Cursed X Curious",
+ *  		 "serie_i18n": {
+ * 				"fre":"Guerriers de la Dynastie"
+ *  			},
+ *           "serie_altname": "C-Cube/CxCxC",
+ *           "singer": null,
+ *           "songorder": 1,
+ *           "songtype": "TYPE_ED",
+ *           "songtype_i18n": "Ending",
+ *           "songtype_i18n_short": "ED",
+ *           "songwriter": null,
+ *           "time_before_play": 0,
+ *           "title": "Hana",
+ * 			 "username": "axelterizaki",
+ *           "viewcount": 0,
+ *           "year": ""
+ *       }
+ *   ]
+ * }
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_VIEW_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ */
+
+ 	/**
+ * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
+ * @apiName GetPlaylistKarasPublic
+ * @apiVersion 2.2.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ * 	             "flag_dejavu": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
+ *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ *					"fre":"Guerriers de la Dynastie"
+ * 				}
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ * 				 "username": "admin",
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError PL_VIEW_SONGS_ERROR Unable to fetch list of karaokes in a playlist
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+ 	/**
+ * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
+ * @apiName GetPlaylistPLCPublic
+ * @apiVersion 2.2.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
+ * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
+ * @apiParam {Number} plc_id Playlist content ID.
+ * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
+ * @apiSuccess {String} data/NORM_creator Normalized creator's name
+ * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
+ * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
+ * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
+ * @apiSuccess {String} data/NORM_singer Normalized name of singer.
+ * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
+ * @apiSuccess {String} data/NORM_title Normalized song title
+ * @apiSuccess {String} data/author Karaoke author's name
+ * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {String} data/creator Show's creator name
+ * @apiSuccess {Number} data/duration Song duration in seconds
+ * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+ * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
+ * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
+ * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default, `EngineMaxDejaVuTime` is at 60 minutes)
+ * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
+ * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
+ * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
+ * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
+ * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
+ * @apiSuccess {Number} data/lastplayed_at Time when the song was last played at in UNIX timestamp. `null` if never played before.
+ * @apiSuccess {String} data/mediafile Video's filename
+ * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
+ * @apiSuccess {String} data/misc_i18n Translated tag list
+ * @apiSuccess {Number} data/playlist_id ID of playlist this song belongs to
+ * @apiSuccess {Number} data/playlistcontent_ID PLC ID of this song.
+ * @apiSuccess {Number} data/pos Position in the playlist. First song has a position of `1`
+ * @apiSuccess {String} data/pseudo_add Nickname of user who added this song
+ * @apiSuccess {String} data/requested Number of times the song has been requested.
+ * @apiSuccess {String} data/serie Name of series/show the song belongs to
+ * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
+ * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
+ * @apiSuccess {String} data/singer Singer's name, if known.
+ * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
+ * @apiSuccess {String} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
+ * @apiSuccess {String} data/songtype_i18n Translated song's type (`Opening`, `Ending`, `Insert Song`...)
+ * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
+ * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
+ * @apiSuccess {String} data/title Song's title
+ * @apiSuccess {String} data/username Username who added that song
+ * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
+ * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_author": null,
+ *           "NORM_creator": null,
+ *           "NORM_pseudo_add": "Axel",
+ *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
+ *           "NORM_serie_altname": "C-Cube/CxCxC",
+ *           "NORM_singer": null,
+ *           "NORM_songwriter": null,
+ *           "NORM_title": "Hana",
+ *           "author": null,
+ *           "created_at": 1508427958,
+ *           "creator": null,
+ *           "duration": 0,
+ *           "flag_blacklisted": 0,
+ *           "flag_playing": 0,
+ * 			 "flag_favorites": 0,
+ *           "flag_whitelisted": 0,
+ * 	         "flag_dejavu": 0,
+ *           "gain": 0,
+ *           "kara_id": 1007,
+ *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
+ *           "language": "jpn",
+ *           "language_i18n": "Japonais",
+ * 			 "lastplayed_at": null,
+ *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
+ *           "misc": null,
+ *           "misc_i18n": null,
+ *           "playlist_id": 2,
+ *           "playlistcontent_id": 4961,
+ *           "pos": 12,
+ *           "pseudo_add": "Axel",
+ * 			 "requested": 20,
+ *           "serie": "C3 ~ Cube X Cursed X Curious",
+ *           "serie_altname": "C-Cube/CxCxC",
+ * 			 "serie_i18n": {
+ * 				"fre":"Guerriers de la Dynastie"
+ *  			}
+ *           "singer": null,
+ *           "songorder": 1,
+ *           "songtype": "TYPE_ED",
+ *           "songtype_i18n": "Ending",
+ *           "songtype_i18n_short": "ED",
+ *           "songwriter": null,
+ *           "time_before_play": 0,
+ *           "title": "Hana",
+ * 			 "username": "axelterizaki",
+ *           "viewcount": 0,
+ *           "year": ""
+ *       }
+ *   ]
+ * }
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_VIEW_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+ 	/**
+ * @api {get} /public/karas Get complete list of karaokes
+ * @apiName GetKaras
+ * @apiVersion 2.2.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ * 	             "flag_dejavu": 0,
+ * 				 "flag_favorites": 1,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ * 				 "requested": 20
+ *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError SONG_LIST_ERROR Unable to fetch list of karaokes
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+	/**
+ * @api {get} /public/karas/:kara_id Get song info from database
+ * @apiName GetKaraInfo
+ * @apiVersion 2.2.0
+ * @apiGroup Karaokes
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
+ * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
+ * @apiSuccess {String} data/NORM_creator Normalized creator's name
+ * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
+ * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
+ * @apiSuccess {String} data/NORM_singer Normalized name of singer.
+ * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
+ * @apiSuccess {String} data/NORM_title Normalized song title
+ * @apiSuccess {String} data/author Karaoke author's name
+ * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {String} data/creator Show's creator name
+ * @apiSuccess {Number} data/duration Song duration in seconds
+ * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default `EngineMaxDejaVuTime` is at 60 minutes)
+ * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+ * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
+ * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
+ * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
+ * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
+ * @apiSuccess {Number} data/lastplayed_at Last time the song has been played in UNIX timestamp. `null` if never played before
+ * @apiSuccess {String} data/mediafile Media's filename
+ * @apiSuccess {String} data/misc Internal tag list (`TAG_VIDEOGAME`, etc.)
+ * @apiSuccess {String} data/misc_i18n Translated tag list
+ * @apiSuccess {String} data/requested Number of times the song has been requested.
+ * @apiSuccess {String} data/serie Name of series/show the song belongs to
+ * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
+ * @apiSuccess {String} data/singer Singer's name, if known.
+ * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
+ * @apiSuccess {String} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
+ * @apiSuccess {String} data/songtype_i18n Translated song's type (`Opening`, `Ending`, `Insert Song`...)
+ * @apiSuccess {String} data/songtype_i18n_short Short translated version of the song's type (`OP`, `ED`, `IN`, ...)
+ * @apiSuccess {Number} data/time_before_play Estimated time remaining before the song is going to play (in seconds). `0` if the song is currently playing or if there is no song selected as currently playing in the playlist (thus making this estimate impossible)
+ * @apiSuccess {String} data/title Song's title
+ * @apiSuccess {Number} data/viewcount Counts how many times the song has been played
+ * @apiSuccess {String} data/year Song's creation year. Empty string is returned if no year is known.
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": [
+ *       {
+ *           "NORM_author": null,
+ *           "NORM_creator": null,
+ *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
+ *           "NORM_serie_altname": "C-Cube/CxCxC",
+ *           "NORM_singer": null,
+ *           "NORM_songwriter": null,
+ *           "NORM_title": "Hana",
+ *           "author": null,
+ *           "created_at": 1508427958,
+ *           "creator": null,
+ *           "duration": 0,
+ * 	         "flag_dejavu": 0,
+ * 		     "flag_favorites": 0,
+ *           "gain": 0,
+ *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
+ *           "language": "jpn",
+ *           "language_i18n": "Japonais",
+ * 			 "lastplayed_at": null,
+ *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
+ *           "misc": null,
+ *           "misc_i18n": null,
+ * 			 "requested": 20,
+ *           "serie": "C3 ~ Cube X Cursed X Curious",
+ *           "serie_altname": "C-Cube/CxCxC",
+ *           "singer": null,
+ *           "songorder": 1,
+ *           "songtype": "TYPE_ED",
+ *           "songtype_i18n": "Ending",
+ *           "songtype_i18n_short": "ED",
+ *           "songwriter": null,
+ *           "time_before_play": 0,
+ *           "title": "Hana",
+ *           "viewcount": 0,
+ *           "year": ""
+ *       }
+ *   ]
+ * }
+ * @apiError SONG_VIEW_ERROR Unable to list songs
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "SONG_VIEW_ERROR",
+ *   "message": null
+ * }
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+	/**
+ * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
+ * @apiName GetPlaylistKarasCurrent
+ * @apiVersion 2.2.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ * 	             "flag_dejavu": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20,
+ *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",*
+ * 				 "username": "admin",
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError PL_VIEW_SONGS_CURRENT_ERROR Unable to fetch list of karaokes of current playlist
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */
+
+ 	/**
+ * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
+ * @apiName GetPlaylistKarasPublic
+ * @apiVersion 2.2.0
+ * @apiGroup Playlists
+ * @apiPermission public
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Target playlist ID.
+ * @apiParam {String} [filter] Filter list by this string.
+ * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
+ * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
+ * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
+ * @apiSuccess {Number} data/infos/from Starting position of listing
+ * @apiSuccess {Number} data/infos/to End position of listing
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "data": {
+ *       "content": [
+ *           {
+ *               "NORM_author": null,
+ *               "NORM_creator": null,
+ *               "NORM_pseudo_add": "Administrateur",
+ *               "NORM_serie": "Dynasty Warriors 3",
+ *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_singer": null,
+ *               "NORM_songwriter": null,
+ *               "NORM_title": "Circuit",
+ *               "author": null,
+ *               "created_at": 1508423806,
+ *               "creator": null,
+ *               "duration": 0,
+ *               "flag_blacklisted": 0,
+ *               "flag_playing": 1,
+ *               "flag_whitelisted": 0,
+ * 	             "flag_dejavu": 0,
+ *               "gain": 0,
+ *               "kara_id": 176,
+ *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
+ *               "language": "chi",
+ *               "language_i18n": "Chinois",
+ * 				 "lastplayed_at": null,
+ *               "mediafile": "CHI - Dynasty Warriors 3 - GAME ED - Circuit.avi"
+ *               "misc": "TAG_VIDEOGAME",
+ *               "misc_i18n": "Jeu vidéo",
+ *               "playlistcontent_id": 4946,
+ *               "pos": 1,
+ *               "pseudo_add": "Administrateur",
+ * 				 "requested": 20
+ *               "serie": "Dynasty Warriors 3",
+ * 				 "serie_i18n": {
+ * 								"fre":"Guerriers de la Dynastie"
+ * 								}
+ *               "serie_altname": "DW3/DW 3",
+ *               "singer": null,
+ *               "songorder": 0,
+ *               "songtype": "TYPE_ED",
+ *               "songtype_i18n": "Ending",
+ *               "songtype_i18n_short": "ED",
+ *               "songwriter": null,
+ *               "title": "Circuit",
+ * 				 "username": "admin",
+ *               "viewcount": 0,
+ *               "year": ""
+ *           },
+ *           ...
+ *       ],
+ *       "infos": {
+ *           "count": 3,
+ * 			 "from": 0,
+ * 			 "to": 120
+ *       }
+ *   }
+ * }
+ * @apiError PL_VIEW_SONGS_PUBLIC_ERROR Unable to fetch list of karaokes of public playlist
+ * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 403 Forbidden
+ */

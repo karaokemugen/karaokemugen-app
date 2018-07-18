@@ -104,7 +104,9 @@ export const getAllKaras = (filterClauses, lang) => `SELECT ak.kara_id AS kara_i
 									WHERE pc.fk_id_kara = ak.kara_id
 										AND p.flag_favorites = 1
 										AND u.login = $username
-								) AS flag_favorites
+								) AS flag_favorites,
+								ak.created_at AS created_at,
+								ak.modified_at as modified_at
 							FROM karasdb.all_karas AS ak
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
  							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
@@ -180,6 +182,7 @@ export const getKara = (lang) => `SELECT ak.kara_id AS kara_id,
 	  						ak.duration AS duration,
 	  						ak.gain AS gain,
 							ak.created_at AS created_at,
+							ak.modified_at as modified_at,
 							(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)
 	     						THEN 1
         						ELSE 0
