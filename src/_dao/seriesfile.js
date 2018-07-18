@@ -37,5 +37,8 @@ export async function writeSeriesFile(series) {
 		header: header,
 		series: series
 	};
+	seriesData.series.forEach((s, i) => {
+		if (s.aliases.length === 0) delete seriesData.series[i].aliases;
+	});
 	return await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
 }
