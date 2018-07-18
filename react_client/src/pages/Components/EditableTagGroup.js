@@ -68,7 +68,7 @@ export default class EditableTagGroup extends React.Component {
 		let languages = [];
 		langs.all().forEach(lang => languages.push({value: lang['2B'], text: lang.name}));
 		languages.push({value: 'mul', text: 'Multi-languages'});
-		languages.push({value: 'und', text: 'Undefined Language'});			
+		languages.push({value: 'und', text: 'Undefined Language'});
 		this.setState({ DS: languages || [] });
 	}
 
@@ -80,15 +80,17 @@ export default class EditableTagGroup extends React.Component {
 
 	searchTags = (val) => {
 		this.getTags(val, this.props.tagType).then(tags => this.setState({ DS: tags.data.map(tag => {
-			return { value: tag.name, text: tag.name_i18n}; 
+			return { value: tag.name, text: tag.name_i18n};
 		}) || [] }));
 	};
 
 	render() {
 		const { value, inputVisible } = this.state;
+		console.log(this.state);
 		return (
 			<div>
 				{value.map((tag) => {
+					if (!tag) tag = '';
 					const isLongTag = tag.length > 20;
 					const tagElem = (
 						<Tag key={tag} closable='true' afterClose={() => this.handleClose(tag)}>

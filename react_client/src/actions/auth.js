@@ -33,6 +33,7 @@ export function checkAuth() {
 	return function(dispatch) {
 		axios.get('/api/checkauth')
 			.then(response => {
+				localStorage.setItem('username', response.data.username);
 				dispatch({
 					type: AUTH_USER,
 					username: response.data.username,

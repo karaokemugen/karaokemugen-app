@@ -27,36 +27,36 @@ class KaraForm extends Component {
 			songtype: 'OP',
 			lang: ['jpn']
 		};
-		if (this.props.kara.singer) this.state.singer = this.props.kara.singer.split(',');
-		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
-		if (this.props.kara.songwriter) this.state.songwriter = this.props.kara.songwriter.split(',');
-		if (this.props.kara.author) this.state.author = this.props.kara.author.split(',');
-		if (this.props.kara.lang) this.state.lang = this.props.kara.lang.split(',');
-		if (this.props.kara.creator) this.state.creator = this.props.kara.creator.split(',');
-		if (this.props.kara.type) this.state.songtype = this.props.kara.type.replace('TYPE_','');
-		if (this.props.kara.tag) this.state.tag = this.props.kara.tag.split(',');
-		if (this.props.kara.songtype) this.props.kara.songtype = this.props.kara.songtype.replace('TYPE_','');
-		if (this.props.kara.mediafile_old) {
-			this.state.overwrite = true;
-			this.state.mediafileList.push({
-				uid: -1,
-				name: this.props.kara.mediafile_old,
-				status: 'done'
-			});
-		}
-		if (this.props.kara.subfile_old) {
-			this.state.overwrite = true;
-			this.state.subfileList.push({
-				uid: -1,
-				name: this.props.kara.subfile_old,
-				status: 'done'
-			});
-		}
-
 	}
 
 	componentDidMount() {
-		this.onChangeType(this.state.songtype);
+		if (this.props.kara.singer) this.setState({singer: this.props.kara.singer.split(',')});
+		if (this.props.kara.series) this.setState({series: this.props.kara.series.split(',')});
+		if (this.props.kara.songwriter) this.setState({songwriter: this.props.kara.songwriter.split(',')});
+		if (this.props.kara.author) this.setState({author: this.props.kara.author.split(',')});
+		if (this.props.kara.lang) this.setState({lang: this.props.kara.lang.split(',')});
+		if (this.props.kara.creator) this.setState({creator: this.props.kara.creator.split(',')});
+		if (this.props.kara.type) this.setState({songtype: this.props.kara.type.replace('TYPE_','')});
+		if (this.props.kara.tag) this.setState({tag: this.props.kara.tag.split(',')});
+		if (this.props.kara.mediafile_old) {
+			this.setState({ overwrite: true });
+			this.setState({ mediafileList: [{
+				uid: -1,
+				name: this.props.kara.mediafile_old,
+				status: 'done'
+			}]
+			});
+		}
+		if (this.props.kara.subfile_old) {
+			this.setState({ overwrite: true });
+			this.setState({ subfileList: [{
+				uid: -1,
+				name: this.props.kara.subfile_old,
+				status: 'done'
+			}]
+			});
+		}
+		this.onChangeType(this.state.songtype || 'OP');
 		this.props.form.validateFields();
 	}
 
