@@ -1,4 +1,4 @@
-image: hiromis/ubuntu1604-node8-ffmpeg
+image: node:8-stretch
 
 cache:
   key: km
@@ -21,6 +21,7 @@ stages:
 test:
   stage: test
   script:
+    - apt-get update -qq && apt-get install -y -qq ffmpeg
     - yarn install --check-files --force
     - touch mpv
     - echo "BinPlayerLinux=mpv" >>config.ini
