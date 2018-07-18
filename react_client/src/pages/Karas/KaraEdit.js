@@ -60,6 +60,7 @@ class KaraEdit extends Component {
 		if (this.props.match && this.props.match.params.kara_id) {
 			axios.get(`/api/karas/${this.props.match.params.kara_id}`)
 				.then(res => {
+					console.log(res.data[0]);
 					const karaData = {
 						author: res.data[0].author,
 						creator: res.data[0].creator,
@@ -77,6 +78,7 @@ class KaraEdit extends Component {
 						title: res.data[0].title,
 						year: res.data[0].year,
 						order: res.data[0].songorder,
+						type: res.data[0].songtype,
 						dateadded: res.data[0].created_at,
 						kara_id: this.props.match.params.kara_id
 					};
