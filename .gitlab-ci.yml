@@ -1,4 +1,4 @@
-image: rickydunlop/nodejs-ffmpeg
+image: hiromis/ubuntu1604-node8-ffmpeg
 
 cache:
   key: km
