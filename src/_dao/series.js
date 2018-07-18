@@ -2,9 +2,9 @@ import {langSelector, buildClausesSeries, getUserDb} from './database';
 import deburr from 'lodash.deburr';
 const sql = require('../_common/db/series');
 
-export async function selectAllSeries(lang, filter) {
+export async function selectAllSeries(filter, lang) {
 
-	const filterClauses = filter ? buildClausesSeries(filter) : [];	
+	const filterClauses = filter ? buildClausesSeries(filter) : [];
 	const query = sql.getSeries(filterClauses, langSelector(lang));
 
 	let series = await getUserDb().all(query);
@@ -32,14 +32,14 @@ export async function insertSerie(serieObj) {
 	return res.lastID;
 }
 
-export async function insertSeriei18n(serieObj) {	
+export async function insertSeriei18n(serieObj) {
 	for (const lang of Object.keys(serieObj.i18n)) {
 		await getUserDb().run(sql.insertSeriei18n, {
 			$id_serie: serieObj.serie_id,
 			$lang: lang,
 			$name: serieObj.i18n[lang],
 			$NORM_name: deburr(serieObj.i18n[lang])
-		});	
+		});
 	}
 }
 
@@ -57,9 +57,9 @@ export async function updateSerie(serie_id, serie) {
 	return await insertSeriei18n(serie);
 }
 
-export async function checkOrCreateSerie(serie,lang) {	
+export async function checkOrCreateSerie(serie,lang) {
 	const serieDB = await getUserDb().get(sql.getSerieByName, {
-		$name: serie		
+		$name: serie
 	});
 	if (serieDB) return serieDB.serie_id;
 	//Series does not exist, create it.
@@ -83,13 +83,13 @@ export async function updateKaraSeries(kara_id, series) {
 			$kara_id: kara_id,
 			$serie_id: serie
 		});
-	}	
+	}
 }
 
 export async function selectSerie(serie_id, lang) {
 	const query = sql.getSerieByID(langSelector(lang));
 	let series = await getUserDb().get(query, {$serie_id: serie_id});
-	series.i18n = JSON.parse(series.i18n);	
+	series.i18n = JSON.parse(series.i18n);
 	if (!series.aliases) series.aliases = [];
 	if (!Array.isArray(series.aliases)) series.aliases = series.aliases.split(',');
 	return series;

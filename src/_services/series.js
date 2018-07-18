@@ -7,11 +7,11 @@ async function updateSeriesFile() {
 		delete series[i].i18n_name;
 		delete series[i].serie_id;
 	}
-	await writeSeriesFile(series);	
+	await writeSeriesFile(series);
 }
 
-export async function getSeries(lang, filter) {
-	return await selectAllSeries(lang, filter);
+export async function getSeries(filter, lang) {
+	return await selectAllSeries(filter, lang);
 }
 
 export async function getSerie(serie_id) {
@@ -28,7 +28,7 @@ export async function deleteSerie(serie_id) {
 }
 
 export async function getOrAddSerieID(serieObj) {
-	const series = await selectSerieByName(serieObj);		
+	const series = await selectSerieByName(serieObj);
 	if (series) return series.serie_id;
 	//Series does not exist, create it.
 	return await addSerie(serieObj);
@@ -47,5 +47,5 @@ export async function editSerie(serie_id,serieObj) {
 	if (!await getSerie(serie_id)) throw 'Series ID unknown';
 	if (await selectSerieByName(serieObj)) throw 'Series original name already exists';
 	await updateSerie(serie_id, serieObj);
-	await updateSeriesFile();	
+	await updateSeriesFile();
 }

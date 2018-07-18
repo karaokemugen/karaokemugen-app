@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Divider, Modal, Tooltip, Tag, Icon, Button, Layout, Table} from 'antd';
+import {Input, Divider, Modal, Tooltip, Tag, Icon, Button, Layout, Table} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 
@@ -9,8 +9,9 @@ class SeriesList extends Component {
 
 	constructor(props) {
 		super(props);
+		this.filter = '';
 		this.state = {
-			series: [],			
+			series: [],
 			serie: {},
 			deleteModal: false
 		};
@@ -22,7 +23,7 @@ class SeriesList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/series')
+		axios.get('/api/series',  { params: { filter: this.filter }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({series: res.data});
@@ -32,7 +33,7 @@ class SeriesList extends Component {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 			});
 	}
-	
+
 	delete = (userId) => {
 		axios.delete(`/api/series/${userId}`)
 			.then(() => {
@@ -50,24 +51,35 @@ class SeriesList extends Component {
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
-				<Table
-					dataSource={this.state.series}
-					columns={this.columns}
-					rowKey='serie_id'
-				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
-				<Modal
-					title='Confirm series deletion'
-					visible={this.state.deleteModal}
-					onOk={() => this.delete(this.state.serie.serie_id)}
-					onCancel={() => this.setState({deleteModal: false, serie: {}})}
-					okText='yes'
-					cancelText='no'
-				>
-					<p>Delete series <b>{this.state.serie.name}</b></p>
-					<p>This will delete it from the series.json file!</p>
-					<p>Are you sure?</p>
-				</Modal>				
+				<Layout>
+					<Layout.Header>
+						<Input.Search
+							placeholder="Search filter"
+							onChange={event => this.filter = event.target.value}
+							enterButton="Search"
+							onSearch={this.refresh.bind(this)}
+						/>
+					</Layout.Header>
+					<Layout.Content><Table
+						dataSource={this.state.series}
+						columns={this.columns}
+						rowKey='serie_id'
+					/>
+					<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
+					<Modal
+						title='Confirm series deletion'
+						visible={this.state.deleteModal}
+						onOk={() => this.delete(this.state.serie.serie_id)}
+						onCancel={() => this.setState({deleteModal: false, serie: {}})}
+						okText='yes'
+						cancelText='no'
+					>
+						<p>Delete series <b>{this.state.serie.name}</b></p>
+						<p>This will delete it from the series.json file!</p>
+						<p>Are you sure?</p>
+					</Modal>
+					</Layout.Content>
+				</Layout>
 			</Layout.Content>
 		);
 	}
@@ -80,17 +92,17 @@ class SeriesList extends Component {
 	}, {
 		title: 'Aliases',
 		dataIndex: 'aliases',
-		key: 'aliases',	
+		key: 'aliases',
 		render: aliases => {
 			let tags = [];
-			if (aliases) {				
+			if (aliases) {
 				aliases.forEach((alias) => {
 					const isLongTag = alias.length > 20;
 					const tagElem = (
 						<Tag>
 							{isLongTag ? `${alias.slice(0, 20)}...` : alias}
 						</Tag>
-					);				
+					);
 					tags.push(isLongTag ? (<Tooltip title={alias} key={alias}>{tagElem}</Tooltip>) : tagElem);
 					return true;
 				});
@@ -100,7 +112,7 @@ class SeriesList extends Component {
 	}, {
 		title: 'International Names',
 		dataIndex: 'i18n',
-		key: 'i18n',	
+		key: 'i18n',
 		render: i18n_names => {
 			let names = [];
 			Object.keys(i18n_names).forEach((lang) => {
@@ -110,10 +122,10 @@ class SeriesList extends Component {
 					<Tag>
 						{isLongTag ? `${i18n_name.slice(0, 20)}...` : i18n_name}
 					</Tag>
-				);				
+				);
 				names.push(isLongTag ? (<Tooltip title={i18n_name[lang]} key={i18n_name[lang]}>{tagElem}</Tooltip>) : tagElem);
 				return true;
-			});			
+			});
 			return names;
 		}
 	}, {
