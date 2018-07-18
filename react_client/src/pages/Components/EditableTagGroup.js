@@ -86,10 +86,11 @@ export default class EditableTagGroup extends React.Component {
 
 	render() {
 		const { value, inputVisible } = this.state;
-		console.log(this.state);
+		console.log(value);
 		return (
 			<div>
-				{value.map((tag) => {
+				{
+					value.map((tag) => {
 					if (!tag) tag = '';
 					const isLongTag = tag.length > 20;
 					const tagElem = (

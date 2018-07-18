@@ -483,5 +483,11 @@
 	"POLLTITLE": "À vous de voter !",
 	"POLLENDED": "%s remporte le vote avec %s voix !",
 	"PLAYERMONITOR": "Seconde fenêtre (moniteur)",
-	"ONLINEMODE": "Url d'accès courte (nécessite internet)"
+	"ONLINEMODE": "Url d'accès courte (nécessite internet)",
+	"TYPE_MUSIC": "TYPE_MUSIC",
+	"TYPE_MUSIC_SHORT": "TYPE_MUSIC_SHORT",
+	"TYPE_OTHER": "TYPE_OTHER",
+	"TYPE_OTHER_SHORT": "TYPE_OTHER_SHORT",
+	"TYPE_INSERTSONG": "TYPE_INSERTSONG",
+	"TYPE_INSERTSONG_SHORT": "TYPE_INSERTSONG_SHORT"
 }

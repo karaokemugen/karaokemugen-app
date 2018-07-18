@@ -27,35 +27,35 @@ class KaraForm extends Component {
 			songtype: 'OP',
 			lang: ['jpn']
 		};
-	}
-
-	componentDidMount() {
-		if (this.props.kara.singer) this.setState({singer: this.props.kara.singer.split(',')});
-		if (this.props.kara.series) this.setState({series: this.props.kara.series.split(',')});
-		if (this.props.kara.songwriter) this.setState({songwriter: this.props.kara.songwriter.split(',')});
-		if (this.props.kara.author) this.setState({author: this.props.kara.author.split(',')});
-		if (this.props.kara.lang) this.setState({lang: this.props.kara.lang.split(',')});
-		if (this.props.kara.creator) this.setState({creator: this.props.kara.creator.split(',')});
-		if (this.props.kara.type) this.setState({songtype: this.props.kara.type.replace('TYPE_','')});
-		if (this.props.kara.tag) this.setState({tag: this.props.kara.tag.split(',')});
+		if (this.props.kara.singer) this.state.singer = this.props.kara.singer.split(',');
+		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
+		console.log(this.state.series);
+		if (this.props.kara.songwriter) this.state.songwriter = this.props.kara.songwriter.split(',');
+		if (this.props.kara.author) this.state.author = this.props.kara.author.split(',');
+		if (this.props.kara.lang) this.state.lang = this.props.kara.lang.split(',');
+		if (this.props.kara.creator) this.state.creator = this.props.kara.creator.split(',');
+		if (this.props.kara.type) this.state.songtype =  this.props.kara.type.replace('TYPE_','');
+		if (this.props.kara.tag) this.state.tag = this.props.kara.tag.split(',');
 		if (this.props.kara.mediafile_old) {
-			this.setState({ overwrite: true });
-			this.setState({ mediafileList: [{
+			this.state.overwrite = true;
+			this.state.mediafileList = [{
 				uid: -1,
 				name: this.props.kara.mediafile_old,
 				status: 'done'
-			}]
-			});
+			}];
 		}
 		if (this.props.kara.subfile_old) {
-			this.setState({ overwrite: true });
-			this.setState({ subfileList: [{
+			this.state.overwrite = true;
+			this.state.subfileList = [{
 				uid: -1,
 				name: this.props.kara.subfile_old,
 				status: 'done'
-			}]
-			});
+			}];
 		}
+
+	}
+
+	componentDidMount() {
 		this.onChangeType(this.state.songtype || 'OP');
 		this.props.form.validateFields();
 	}
@@ -211,7 +211,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 14, offset: 0 }}
 				>
 					{getFieldDecorator('series', {
-						initialValue: this.props.kara.series,
+						initialValue: this.state.series,
 						rules: [{
 							required: this.state.seriesRequired,
 							message: 'Series is mandatory if song type is not MV or LIVE'
