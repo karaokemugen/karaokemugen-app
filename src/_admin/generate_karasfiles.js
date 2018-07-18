@@ -126,7 +126,7 @@ async function generateKara(kara, opts) {
 	let newKara;
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
-		timestamp.round = false;
+		timestamp.round = true;
 		kara.dateadded = timestamp.now();
 		//Trim spaces before and after elements.
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
