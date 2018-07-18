@@ -9,7 +9,6 @@ import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
-import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
 import {on} from '../_common/utils/pubsub';
@@ -19,7 +18,6 @@ import {profile} from '../_common/utils/logger';
 import {getState} from '../_common/utils/state';
 
 const db = require('../_dao/user');
-const sleep = promisify(setTimeout);
 let userLoginTimes = {};
 let databaseBusy = false;
 
@@ -34,11 +32,8 @@ async function updateExpiredUsers() {
 			await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
 			await db.resetGuestsPassword();
 		}
-		//Sleep for one minute.
 	} catch(err) {
-		throw err;
-	} finally {
-		await sleep(60000);
+		logger.error(`[Users] Expiring users failed (will try again in one minute) : ${err}`);
 	}
 }
 
@@ -299,6 +294,7 @@ async function createDefaultGuests() {
 export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
+	/*
 	Promise.resolve().then(function resolver() {
 		return updateExpiredUsers()
 			.then(resolver)
@@ -309,7 +305,8 @@ export async function initUserSystem() {
 	}).catch((err) => {
 		logger.error(`[User] Cleanup expiring user accounts system failed entirely. You need to restart Karaoke Mugen : ${err}`);
 	});
-
+	*/
+	setInterval(updateExpiredUsers, 60000);
 	// Check if a admin user exists just in case. If not create it with a random password.
 
 	if (!await findUserByName('admin')) await createUser({
