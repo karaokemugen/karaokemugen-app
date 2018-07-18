@@ -116,7 +116,7 @@ async function generateKara(kara, opts) {
 	// Copy files from temp directory to import, depending on the different cases.
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile;
-	if (kara.subfile) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
+	if (kara.subfile && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
 	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
