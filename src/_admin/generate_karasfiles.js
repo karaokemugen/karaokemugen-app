@@ -139,13 +139,14 @@ async function generateKara(kara, opts) {
 
 		if (!kara.order) kara.order = '';
 		newKara = await importKara(newMediaFile, newSubFile, kara);
+		return newKara;
 	} catch(err) {
+		console.log(err);
 		logger.error(`[Karagen] Error during generation : ${err}`);
 		if (await asyncExists(newMediaFile)) await asyncUnlink(newMediaFile);
 		if (newSubFile) if (await asyncExists(newSubFile)) await asyncUnlink(newSubFile);
 		throw err;
 	}
-	return newKara;
 }
 
 /**
@@ -175,10 +176,9 @@ async function importKara(mediaFile, subFile, data) {
 	}
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
-
 	let karaData = formatKara({ ...data,
 		mediafile: `${kara}${extname(mediaFile)}`,
-		subfile: `${kara}${extname(subFile)}`
+		subfile: `${kara}${extname(subFile || '.ass')}`
 	});
 	karaData.overwrite = data.overwrite;
 	if (subFile === 'dummy.ass') karaData.subfile = 'dummy.ass';
