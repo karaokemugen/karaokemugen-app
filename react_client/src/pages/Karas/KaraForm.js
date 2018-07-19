@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Checkbox, message, Tooltip, Button, Form, Icon, Input, InputNumber, Select, Upload} from 'antd';
 import PropTypes from 'prop-types';
 import EditableTagGroup from '../Components/EditableTagGroup';
+import timestamp from 'unix-timestamp';
 
 class KaraForm extends Component {
 
@@ -27,9 +28,12 @@ class KaraForm extends Component {
 			songtype: 'OP',
 			lang: ['jpn']
 		};
+		timestamp.round = true;
+		if (!this.props.kara.dateadded) this.props.kara.dateadded = timestamp.now();
+		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
 		if (this.props.kara.singer) this.state.singer = this.props.kara.singer.split(',');
 		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
-		console.log(this.state.series);
+
 		if (this.props.kara.songwriter) this.state.songwriter = this.props.kara.songwriter.split(',');
 		if (this.props.kara.author) this.state.author = this.props.kara.author.split(',');
 		if (this.props.kara.lang) this.state.lang = this.props.kara.lang.split(',');

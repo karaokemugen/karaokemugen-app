@@ -5,6 +5,9 @@ import axios from 'axios/index';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
 import {errorMessage, infoMessage, loading} from '../../actions/navigation';
+import timestamp from 'unix-timestamp';
+
+timestamp.round = true;
 
 const newKara = {
 	kid: null,
@@ -19,7 +22,7 @@ const newKara = {
 	creator: null,
 	author: null,
 	misc: null,
-	dateadded: new Date()
+	dateadded: timestamp.now()
 };
 
 class KaraEdit extends Component {
@@ -60,7 +63,6 @@ class KaraEdit extends Component {
 		if (this.props.match && this.props.match.params.kara_id) {
 			axios.get(`/api/karas/${this.props.match.params.kara_id}`)
 				.then(res => {
-					console.log(res.data[0]);
 					const karaData = {
 						author: res.data[0].author,
 						creator: res.data[0].creator,
