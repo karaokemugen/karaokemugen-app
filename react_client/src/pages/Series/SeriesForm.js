@@ -7,23 +7,23 @@ import langs from 'langs';
 class SerieForm extends Component {
 
 	constructor(props) {
-		super(props);		
+		super(props);
 		this.state = {
 			i18n: [],
 			languages: [],
 			selectVisible: false
 		};
 		langs.all().forEach(lang => this.state.languages.push({value: lang['2B'], text: lang.name}));
-		this.state.languages.push({value: 'und', text: 'Undefined Language'});			
+		this.state.languages.push({value: 'und', text: 'Undefined Language'});
 		if (this.props.serie.i18n) {
 			Object.keys(this.props.serie.i18n).forEach(lang => {
 				this.state.i18n.push(lang);
-				this.state[`lang_${lang}`] = this.props.serie.i18n[lang];				
+				this.state[`lang_${lang}`] = this.props.serie.i18n[lang];
 			});
-		}		
+		}
 	}
 
-	componentDidMount() {		
+	componentDidMount() {
 		this.props.form.validateFields();
 	}
 
@@ -41,7 +41,7 @@ class SerieForm extends Component {
 						i18nField[lang] = values[`lang_${lang}`];
 						delete values[`lang_${lang}`];
 					});
-					values.i18n = i18nField;				
+					values.i18n = i18nField;
 					this.props.save(values);
 				}
 			});
@@ -53,7 +53,7 @@ class SerieForm extends Component {
 	// i18n dynamic management
 	addLang = (lang) => {
 		if (!this.state.i18n.includes(lang)) {
-			const newI18n = this.state.i18n.concat([lang]);			
+			const newI18n = this.state.i18n.concat([lang]);
 			this.setState({ i18n: newI18n});
 		}
 		this.setState({
@@ -64,7 +64,7 @@ class SerieForm extends Component {
 	removeLang = (lang) => {
 		if (this.state.i18n.includes(lang)) {
 			const newI18n = this.state.i18n.filter(e => e !== lang);
-			this.setState({ i18n: newI18n});			
+			this.setState({ i18n: newI18n});
 		}
 	}
 
@@ -76,16 +76,6 @@ class SerieForm extends Component {
 				onSubmit={this.handleSubmit}
 				className='serie-form'
 			>
-				<Form.Item>
-					{getFieldDecorator('serie_id', {
-						initialValue: this.props.serie.serie_id
-					})(<Input type="hidden" />)}
-				</Form.Item>
-				<Form.Item>
-					{getFieldDecorator('i18n', {
-						initialValue: this.props.serie.i18n
-					})(<Input type="hidden" />)}
-				</Form.Item>
 				<Form.Item hasFeedback
 					label={(
 						<span>Original Name&nbsp;
@@ -95,7 +85,7 @@ class SerieForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 8, offset: 0 }}
 				>
 					{getFieldDecorator('name', {
 						initialValue: this.props.serie.name,
@@ -117,10 +107,10 @@ class SerieForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 21, offset: 0 }}
+					wrapperCol={{ span: 10, offset: 0 }}
 				>
 					{getFieldDecorator('aliases', {
-						initialValue: this.props.serie.aliases,						
+						initialValue: this.props.serie.aliases,
 					})(<EditableTagGroup
 						search={'aliases'}
 						onChange={ (tags) => this.props.form.setFieldsValue({ aliases: tags.join(',') }) }
@@ -134,64 +124,82 @@ class SerieForm extends Component {
 				</div>
 				{ this.state.i18n.map(langKey => (
 					<Row gutter={8}>
-					<Form.Item
-						hasFeedback
-						label={langs.where('2B', langKey).name}
-						labelCol={{ span: 3 }}
-						wrapperCol={{ span: 16, offset: 0 }}
-					>
-						{getFieldDecorator('lang_' + langKey, {
-							initialValue: this.state[`lang_${langKey}`],
-							rules: [{
-								required: true,
-								message: 'Please enter a translation'
-							}],
-						})(
-						<Col span={12}>
-					
-							<Input
-								placeholder='Name in that language'
-								label={langKey}								
-							/></Col>
-						)}
-						
-						 {Object.keys(this.state.i18n).length > 1 ? (
-							<Col span={2}>	
-							<Tooltip title="Remove name">
-							<Icon
-								className="dynamic-delete-button"
-								type="minus-circle-o"
-								disabled={this.state.i18n.length === 1}
-								onClick={() => this.removeLang(langKey)}
-							/></Tooltip></Col>
-						) : null}
+						<Form.Item
+							hasFeedback
+							label={langs.where('2B', langKey).name}
+							labelCol={{ span: 3 }}
+							wrapperCol={{ span: 16, offset: 0 }}
+						>
+							{getFieldDecorator('lang_' + langKey, {
+								initialValue: this.state[`lang_${langKey}`],
+								rules: [{
+									required: true,
+									message: 'Please enter a translation'
+								}],
+							})(
+								<Col span={12}>
 
-					</Form.Item>
+									<Input
+										placeholder='Name in that language'
+										label={langKey}
+									/></Col>
+							)}
+
+						 {Object.keys(this.state.i18n).length > 1 ? (
+								<Col span={2}>
+									<Tooltip title="Remove name">
+										<Icon
+											className="dynamic-delete-button"
+											type="minus-circle-o"
+											disabled={this.state.i18n.length === 1}
+											onClick={() => this.removeLang(langKey)}
+										/></Tooltip></Col>
+							) : null}
+
+						</Form.Item>
 					</Row>
 				))}
-				{selectVisible && (			
-					<Select 
-						ref={select => this.select = select}
-						onChange={value => this.addLang(value)}>
-						{ this.state.languages.map(lang => (<Select.Option value={lang.value}>{lang.text}</Select.Option>)) }
-					</Select>
+				{selectVisible && (
+					<Form.Item
+						label="Select a language"
+						labelCol={{ span: 3 }}
+						wrapperCol={{ span: 4, offset: 0 }}
+					>
+						<Select
+							ref={select => this.select = select}
+							onChange={value => this.addLang(value)}>
+							{ this.state.languages.map(lang => (<Select.Option value={lang.value}>{lang.text}</Select.Option>)) }
+						</Select>
+					</Form.Item>
 				)}
 				{!selectVisible && (
 					<Tag
 						onClick={this.showSelect}
-						style={{ background: '#fff', borderStyle: 'dashed' }}
+						style={{ borderStyle: 'dashed' }}
 					>
 						<Icon type="plus" /> Add
 					</Tag>
 				)}
-				<Form.Item>
+				<Form.Item
+					wrapperCol={{ span: 4, offset: 2 }}
+				>
 					<Button type='primary' htmlType='submit' className='series-form-button'>
 						Save series
 					</Button>
 				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('serie_id', {
+						initialValue: this.props.serie.serie_id
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('i18n', {
+						initialValue: this.props.serie.i18n
+					})(<Input type="hidden" />)}
+				</Form.Item>
 			</Form>
 		);
-	}	
+	}
 }
 
 SerieForm.propTypes = {

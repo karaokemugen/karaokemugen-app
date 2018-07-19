@@ -91,15 +91,15 @@ export default class EditableTagGroup extends React.Component {
 			<div>
 				{
 					value.map((tag) => {
-					if (!tag) tag = '';
-					const isLongTag = tag.length > 20;
-					const tagElem = (
-						<Tag key={tag} closable='true' afterClose={() => this.handleClose(tag)}>
-							{isLongTag ? `${tag.slice(0, 20)}...` : tag}
-						</Tag>
-					);
-					return isLongTag ? <Tooltip title={tag} key={tag}>{tagElem}</Tooltip> : tagElem;
-				})}
+						if (!tag) tag = '';
+						const isLongTag = tag.length > 20;
+						const tagElem = (
+							<Tag key={tag} closable='true' afterClose={() => this.handleClose(tag)}>
+								{isLongTag ? `${tag.slice(0, 20)}...` : tag}
+							</Tag>
+						);
+						return isLongTag ? <Tooltip title={tag} key={tag}>{tagElem}</Tooltip> : tagElem;
+					})}
 				{inputVisible && (
 					<Form.Item
 						wrapperCol={{ span: 10, offset: 0 }}
