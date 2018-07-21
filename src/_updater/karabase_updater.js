@@ -275,16 +275,16 @@ export async function runBaseUpdate() {
 	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
 	updateRunning = true;
 	try {
-		const [remoteMedias, localMedias] = await Promise.all([
-			listRemoteMedias(),
-			listLocalMedias()
-		]);
-		const updateVideos = await compareMedias(localMedias, remoteMedias);
 		let updateBase;
 		if (await checkDirs()) {
 			await downloadBase();
 			updateBase = await compareBases();
 		}
+		const [remoteMedias, localMedias] = await Promise.all([
+			listRemoteMedias(),
+			listLocalMedias()
+		]);
+		const updateVideos = await compareMedias(localMedias, remoteMedias);
 		updateRunning = false;
 		return !!(updateBase || updateVideos);
 	} catch (err) {

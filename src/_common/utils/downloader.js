@@ -1,7 +1,6 @@
 import {createWriteStream} from 'fs';
 import _cliProgress from 'cli-progress';
-import req from 'request';
-import progress from 'request-progress';
+import got from 'got';
 import logger from 'winston';
 import {basename} from 'path';
 
@@ -39,7 +38,9 @@ class Downloader {
 	DoDownload = (url, filename, onSuccess, onError) => {
 		const options = {
 			url: url,
-			method: 'GET'
+			method: 'GET',
+			timeout: 20000,
+			retry: 10
 		};
 		if (this.opts.auth) options.auth = {
 			user: this.opts.auth.user,
@@ -47,12 +48,12 @@ class Downloader {
 		};
 		let stream = createWriteStream(filename);
 		let size = 0;
-		progress(req(options))
+		got.stream(url)
 			.on('response', res => {
 				size = res.headers['content-length'];
 				if (this.opts.bar) this.bar.start(Math.floor(size / 1000) / 1000, 0);
 			})
-			.on('progress', state => {
+			.on('downloadProgress', state => {
 				if (this.opts.bar) this.bar.update(Math.floor(state.size.transferred / 1000) / 1000);
 			})
 			.on('error', err => {
