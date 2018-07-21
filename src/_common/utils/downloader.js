@@ -31,7 +31,11 @@ export default class Downloader {
 			const nextFilename = this.list[this.pos].filename;
 			logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${basename(nextFilename)}`);
 			this.pos = this.pos + 1;
-			this.DoDownload(nextUrl, nextFilename, this.download , err => console.log(err));
+			this.DoDownload(nextUrl, nextFilename, this.download , err => {
+				logger.error(`[Download] Error downloading ${basename(nextFilename)} : ${err}`);
+				this.fileErrors.push(basename(nextFilename));
+				this.download();
+			});
 	  }
 	}
 
@@ -61,10 +65,7 @@ export default class Downloader {
 			.on('error', err => {
 				if (this.opts.bar) {
 					this.bar.stop();
-					clearInterval(timer);
 				}
-				this.fileErrors.push(filename);
-				logger.error(`[Download] Error downloading ${filename} : ${err}`);
 				onError(err);
 			})
 			.on('end', () => {
