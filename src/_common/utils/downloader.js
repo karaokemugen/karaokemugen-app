@@ -3,6 +3,7 @@ import _cliProgress from 'cli-progress';
 import got from 'got';
 import logger from 'winston';
 import {basename} from 'path';
+import execa from 'execa';
 
 export default class Downloader {
 
@@ -40,8 +41,19 @@ export default class Downloader {
 	}
 
 	DoDownload = (url, filename, onSuccess, onError) => {
-
-		const options = {
+		let options = ['-q', '--show-progress', url, '-O', filename];
+		if (this.opts.auth) {
+			options.push(`--http-user=${this.opts.auth.user}`);
+			options.push(`--http-password=${this.opts.auth.pass}`);
+		}
+		execa('wget', options, {encoding: 'utf8'})
+			.then(() => {
+				onSuccess();
+			})
+			.catch((err) => {
+				onError(err);
+			});
+		/*const options = {
 			url: url,
 			method: 'GET',
 			timeout: 20000,
@@ -76,5 +88,6 @@ export default class Downloader {
 				onSuccess();
 			})
 			.pipe(stream);
+		*/
 	}
 }
