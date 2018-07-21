@@ -1,11 +1,10 @@
-import {createWriteStream} from 'fs';
 import _cliProgress from 'cli-progress';
 import logger from 'winston';
 import {basename} from 'path';
 import execa from 'execa';
 import prettyBytes from 'pretty-bytes';
 import {stat} from 'fs';
-import {request} from 'http';
+import {getConfig} from './config';
 
 export default class Downloader {
 
@@ -56,7 +55,7 @@ export default class Downloader {
 			options.push(`--http-user=${this.opts.auth.user}`);
 			options.push(`--http-password=${this.opts.auth.pass}`);
 		}
-		execa('wget', options, {encoding: 'utf8'})
+		execa(getConfig().BinwgetPath, options, {encoding: 'utf8'})
 			.then(() => {
 				if (this.opts.bar && size) {
 					this.bar.update((Math.floor(size / 1000)) / 1000);
