@@ -49,13 +49,10 @@ export default class Downloader {
 	}
 	DoDownload = (url, filename, size, onSuccess, onError) => {
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
-		let options = ['-q', '--show-progress', url, '-O', filename];
+		let options = [url, '-o', `"${filename.replace(/\\\\/g,'\\')}"`, '--retry','999','--retry-max-time','0','-C','-'];
 		let timer;
-		if (this.opts.auth) {
-			options.push(`--http-user=${this.opts.auth.user}`);
-			options.push(`--http-password=${this.opts.auth.pass}`);
-		}
-		execa(getConfig().BinwgetPath, options, {encoding: 'utf8'})
+		if (this.opts.auth) options.push(`-u ${this.opts.auth.user}:${this.opts.auth.pass}`);
+		execa(getConfig().BincurlPath, options, {windowsVerbatimArguments: true, encoding: 'utf8'})
 			.then(() => {
 				if (this.opts.bar && size) {
 					this.bar.update((Math.floor(size / 1000)) / 1000);
