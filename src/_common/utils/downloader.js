@@ -4,7 +4,7 @@ import got from 'got';
 import logger from 'winston';
 import {basename} from 'path';
 
-class Downloader {
+export default class Downloader {
 
 	constructor(list, opts) {
 	  this.list = list;
@@ -36,11 +36,12 @@ class Downloader {
 	}
 
 	DoDownload = (url, filename, onSuccess, onError) => {
+
 		const options = {
 			url: url,
 			method: 'GET',
 			timeout: 20000,
-			retry: 10
+			retry: 20
 		};
 		if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
 		let stream = createWriteStream(filename);
@@ -48,13 +49,20 @@ class Downloader {
 		got.stream(url, options)
 			.on('response', res => {
 				size = res.headers['content-length'];
-				if (this.opts.bar) this.bar.start(Math.floor(size / 1000) / 1000, 0);
+				if (this.opts.bar) {
+					this.bar.start(Math.floor(size / 1000) / 1000, 0);
+				}
 			})
 			.on('downloadProgress', state => {
-				if (this.opts.bar) this.bar.update(Math.floor(state.transferred / 1000) / 1000);
+				if (this.opts.bar) {
+					this.bar.update(Math.floor(state.transferred / 1000) / 1000);
+				}
 			})
 			.on('error', err => {
-				if (this.opts.bar) this.bar.stop();
+				if (this.opts.bar) {
+					this.bar.stop();
+					clearInterval(timer);
+				}
 				this.fileErrors.push(filename);
 				logger.error(`[Download] Error downloading ${filename} : ${err}`);
 				onError(err);
@@ -69,5 +77,3 @@ class Downloader {
 			.pipe(stream);
 	}
 }
-
-module.exports = Downloader;

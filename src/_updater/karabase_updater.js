@@ -22,6 +22,24 @@ async function downloadBase() {
 	const dest = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
 	if (await asyncExists(dest)) await asyncRemove(dest);
 	logger.info('[Updater] Downloading current base (.kara and .ass files)...');
+	const list = [];
+	list.push({
+		filename: dest,
+		url: baseURL
+	});
+	const baseDownload = new Downloader(list, {
+		bar: true
+	});
+	return new Promise((resolve, reject) => {
+		baseDownload.download(fileErrors => {
+			if (fileErrors.length > 0) {
+				reject(`Error downloading this file : ${fileErrors.toString()}`);
+			} else {
+				resolve();
+			}
+		});
+	});
+	/*
 	const download = new Download(baseURL, dest);
 	download.start();
 	return new Promise((resolve, reject) => {
@@ -33,6 +51,7 @@ async function downloadBase() {
 			reject(err);
 		});
 	});
+	*/
 }
 
 async function decompressBase() {
