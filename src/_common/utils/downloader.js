@@ -42,19 +42,16 @@ class Downloader {
 			timeout: 20000,
 			retry: 10
 		};
-		if (this.opts.auth) options.auth = {
-			user: this.opts.auth.user,
-			pass: this.opts.auth.password
-		};
+		if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
 		let stream = createWriteStream(filename);
 		let size = 0;
-		got.stream(url)
+		got.stream(url, options)
 			.on('response', res => {
 				size = res.headers['content-length'];
 				if (this.opts.bar) this.bar.start(Math.floor(size / 1000) / 1000, 0);
 			})
 			.on('downloadProgress', state => {
-				if (this.opts.bar) this.bar.update(Math.floor(state.size.transferred / 1000) / 1000);
+				if (this.opts.bar) this.bar.update(Math.floor(state.transferred / 1000) / 1000);
 			})
 			.on('error', err => {
 				if (this.opts.bar) this.bar.stop();

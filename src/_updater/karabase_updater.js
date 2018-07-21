@@ -41,9 +41,9 @@ async function decompressBase() {
 	const archivePath = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
 	if (await asyncExists(workPath)) await asyncRemove(workPath);
 	await asyncMkdirp(workPath);
-	logger.debug('[Updater] Decompressing base');
+	logger.info('[Updater] Decompressing base');
 	await decompress(archivePath,workPath);
-	logger.debug('[Updater] Base decompressed');
+	logger.info('[Updater] Base decompressed');
 	const workPathList = await asyncReadDir(workPath);
 	return workPathList[0];
 }
@@ -80,7 +80,7 @@ async function compareBases() {
 		);
 		logger.info('[Updater] Updated series file');
 	}
-	logger.debug('[Updater] Comparing your base with the current one');
+	logger.info('[Updater] Comparing your base with the current one');
 	const [karasToUpdate, lyricsToUpdate] = await Promise.all([
 		compareDirs(karasMinePath, karasBasePath),
 		compareDirs(lyricsMinePath, lyricsBasePath)
@@ -94,7 +94,7 @@ async function compareBases() {
 		logger.info('[Updater] No update for your base');
 		return false;
 	} else {
-		logger.debug('[Updater] Updating base files');
+		logger.info('[Updater] Updating base files');
 		await Promise.all([
 			updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath,true),
 			updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath,true),
@@ -176,7 +176,7 @@ function downloadMedias(files, mediasPath) {
 	const mediaDownloads = new Downloader(list, {
 		auth: {
 			user: 'kmvideos',
-			password: 'musubi'
+			pass: 'musubi'
 		},
 		bar: true
 	});
