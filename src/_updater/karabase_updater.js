@@ -7,6 +7,7 @@ import {copy} from 'fs-extra';
 import prettyBytes from 'pretty-bytes';
 import webdav from 'webdav';
 import Downloader from '../_common/utils/downloader';
+import got from 'got';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
@@ -22,6 +23,7 @@ async function downloadBase() {
 	if (await asyncExists(dest)) await asyncRemove(dest);
 	logger.info('[Updater] Downloading current base (.kara and .ass files)...');
 	const list = [];
+
 	list.push({
 		filename: dest,
 		url: baseURL
@@ -38,19 +40,6 @@ async function downloadBase() {
 			}
 		});
 	});
-	/*
-	const download = new Download(baseURL, dest);
-	download.start();
-	return new Promise((resolve, reject) => {
-		download.on('finish', () => {
-			logger.info('[Updater] Current base downloaded');
-			resolve();
-		});
-		download.on('error', err => {
-			reject(err);
-		});
-	});
-	*/
 }
 
 async function decompressBase() {
@@ -188,7 +177,8 @@ function downloadMedias(files, mediasPath) {
 	for (const file of files) {
 		list.push({
 			filename: resolve(conf.appPath, mediasPath, file.name),
-			url: `${shelter.url}/${encodeURIComponent(file.name)}`
+			url: `${shelter.url}/${encodeURIComponent(file.name)}`,
+			size: file.size
 		});
 	}
 	const mediaDownloads = new Downloader(list, {

@@ -1,9 +1,11 @@
 import {createWriteStream} from 'fs';
 import _cliProgress from 'cli-progress';
-import got from 'got';
 import logger from 'winston';
 import {basename} from 'path';
 import execa from 'execa';
+import prettyBytes from 'pretty-bytes';
+import {stat} from 'fs';
+import {request} from 'http';
 
 export default class Downloader {
 
@@ -30,9 +32,12 @@ export default class Downloader {
 	  } else {
 			const nextUrl = this.list[this.pos].url;
 			const nextFilename = this.list[this.pos].filename;
-			logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${basename(nextFilename)}`);
+			const nextSize = this.list[this.pos].size;
+			let prettySize = 'size unknown';
+			if (nextSize) prettySize = prettyBytes(nextSize);
+			logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${basename(nextFilename)} (${prettySize})`);
 			this.pos = this.pos + 1;
-			this.DoDownload(nextUrl, nextFilename, this.download , err => {
+			this.DoDownload(nextUrl, nextFilename, nextSize, this.download , err => {
 				logger.error(`[Download] Error downloading ${basename(nextFilename)} : ${err}`);
 				this.fileErrors.push(basename(nextFilename));
 				this.download();
@@ -40,54 +45,39 @@ export default class Downloader {
 	  }
 	}
 
-	DoDownload = (url, filename, onSuccess, onError) => {
+	fetchSize = (url, auth) => {
+
+	}
+	DoDownload = (url, filename, size, onSuccess, onError) => {
+		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
 		let options = ['-q', '--show-progress', url, '-O', filename];
+		let timer;
 		if (this.opts.auth) {
 			options.push(`--http-user=${this.opts.auth.user}`);
 			options.push(`--http-password=${this.opts.auth.pass}`);
 		}
 		execa('wget', options, {encoding: 'utf8'})
 			.then(() => {
-				onSuccess();
-			})
-			.catch((err) => {
-				onError(err);
-			});
-		/*const options = {
-			url: url,
-			method: 'GET',
-			timeout: 20000,
-			retry: 20
-		};
-		if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
-		let stream = createWriteStream(filename);
-		let size = 0;
-		got.stream(url, options)
-			.on('response', res => {
-				size = res.headers['content-length'];
-				if (this.opts.bar) {
-					this.bar.start(Math.floor(size / 1000) / 1000, 0);
-				}
-			})
-			.on('downloadProgress', state => {
-				if (this.opts.bar) {
-					this.bar.update(Math.floor(state.transferred / 1000) / 1000);
-				}
-			})
-			.on('error', err => {
-				if (this.opts.bar) {
-					this.bar.stop();
-				}
-				onError(err);
-			})
-			.on('end', () => {
-				if (this.opts.bar) {
+				if (this.opts.bar && size) {
 					this.bar.update((Math.floor(size / 1000)) / 1000);
 					this.bar.stop();
 				}
 				onSuccess();
+				clearInterval(timer);
 			})
-			.pipe(stream);
-		*/
+			.catch((err) => {
+				if (this.opts.bar) {
+					this.bar.stop();
+				}
+				onError(err);
+				clearInterval(timer);
+			});
+		timer = setInterval(() => {
+			if (this.opts.bar && size) {
+				stat(filename, (err, data) => {
+					if (!err) this.bar.update(Math.floor(data.size / 1000) / 1000);
+				});
+			}
+		}, 100);
 	}
 }

@@ -1,8 +1,8 @@
-// Karaoke Mugen default configuration file 
+// Karaoke Mugen default configuration file
 
 // this file is overwritten during updates, editing is ill-advised .
 // you can change the default settings by using config.ini to bypass the default value .
-export const defaults = { 
+export const defaults = {
 	JwtSecret: 'Change me',
 	EngineDisplayNickname: 1,
 	EngineDisplayConnectionInfo: 1,
@@ -25,7 +25,7 @@ export const defaults = {
 	EngineMaxDejaVuTime: 60,
 	EngineSmartInsert: 0,
 	EngineJinglesInterval: 20,
-	EngineCreatePreviews: 0,	
+	EngineCreatePreviews: 0,
 	EngineSongPoll: 0,
 	EngineSongPollChoices: 4,
 	EngineSongPollTimeout: 30,
@@ -47,6 +47,9 @@ export const defaults = {
 	BinffmpegWindows: 'app/bin/ffmpeg.exe',
 	BinffmpegLinux: '/usr/bin/ffmpeg',
 	BinffmpegOSX: 'app/bin/ffmpeg',
+	BinwgetWindows: 'app/bin/wget.exe',
+	BinwgetLinux: '/usr/bin/wget',
+	BinwgetOSX: '/usr/bin/wget',
 	PathBin: 'app/bin',
 	PathKaras: 'app/data/karas',
 	PathMedias: 'app/data/medias',

@@ -14,7 +14,10 @@ export async function checkBinaries(config) {
 
 	let requiredBinariesChecks = [];
 	requiredBinariesChecks.push(asyncRequired(binariesPath.BinffmpegPath));
-	if (!config.isTest && !config.isDemo) requiredBinariesChecks.push(asyncRequired(binariesPath.BinmpvPath));
+	if (!config.isTest && !config.isDemo) {
+		requiredBinariesChecks.push(asyncRequired(binariesPath.BinmpvPath));
+		requiredBinariesChecks.push(asyncRequired(binariesPath.BinwgetPath));
+	}
 
 	try {
 		await Promise.all(requiredBinariesChecks);
@@ -31,17 +34,20 @@ function configuredBinariesForSystem(config) {
 	case 'win32':
 		return {
 			BinffmpegPath: resolve(config.appPath, config.BinffmpegWindows),
-			BinmpvPath: resolve(config.appPath, config.BinPlayerWindows)
+			BinmpvPath: resolve(config.appPath, config.BinPlayerWindows),
+			BinwgetPath: resolve(config.appPath, config.BinwgetWindows)
 		};
 	case 'darwin':
 		return {
 			BinffmpegPath: resolve(config.appPath, config.BinffmpegOSX),
-			BinmpvPath: resolve(config.appPath, config.BinPlayerOSX)
+			BinmpvPath: resolve(config.appPath, config.BinPlayerOSX),
+			BinwgetPath: resolve(config.appPath, config.BinwgetOSX)
 		};
 	default:
 		return {
 			BinffmpegPath: resolve(config.appPath, config.BinffmpegLinux),
-			BinmpvPath: resolve(config.appPath, config.BinPlayerLinux)
+			BinmpvPath: resolve(config.appPath, config.BinPlayerLinux),
+			BinwgetPath: resolve(config.appPath, config.BinwgetLinux)
 		};
 	}
 }
@@ -51,6 +57,7 @@ function binMissing(binariesPath, err) {
 	logger.error('[BinCheck] Paths searched : ');
 	logger.error('[BinCheck] ffmpeg : ' + binariesPath.BinffmpegPath);
 	logger.error('[BinCheck] mpv : ' + binariesPath.BinmpvPath);
+	logger.error('[BinCheck] wget : ' + binariesPath.BinwgetPath);
 	logger.error('[BinCheck] Exiting...');
 	console.log('\n');
 	console.log('One or more binaries needed by Karaoke Mugen could not be found.');
@@ -58,4 +65,5 @@ function binMissing(binariesPath, err) {
 	console.log('Edit your config.ini and set Binffmpeg and BinPlayer variables correctly for your OS.');
 	console.log('You can download mpv for your OS from http://mpv.io/');
 	console.log('You can download ffmpeg for your OS from http://ffmpeg.org');
+	console.log('You can download wget for Linux from your distribution\'s repository or for Windows from https://eternallybored.org/misc/wget/');
 }
