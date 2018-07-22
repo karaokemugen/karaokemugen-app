@@ -47,7 +47,7 @@ function configuredBinariesForSystem(config) {
 		return {
 			BinffmpegPath: resolve(config.appPath, config.BinffmpegLinux),
 			BinmpvPath: resolve(config.appPath, config.BinPlayerLinux),
-			BincurlPath: resolve(config.appPath, config.BinwcurlLinux)
+			BincurlPath: resolve(config.appPath, config.BincurlLinux)
 		};
 	}
 }
