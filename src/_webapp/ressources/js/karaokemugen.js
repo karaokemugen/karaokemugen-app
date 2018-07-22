@@ -53,6 +53,7 @@ var showVideoButton;
 var makeFavButton;
 var dragHandleHtml;
 var playKaraHtml;
+var serieMoreInfoHtml;
 
 var listTypeBlc;
 var plData;
@@ -120,7 +121,7 @@ var settingsNotUpdated;
 		// Setup
 		$.ajaxSetup({
 			dataFilter: function(res) {
-
+								
 				res = JSON.parse(res);
 				var data = res.data;
 				if(data) { // if server response qualifies as the standard error structure
@@ -377,6 +378,9 @@ var settingsNotUpdated;
 				likeKara(!$(this).hasClass('currentLike'), $(this));
 			});
 
+			$('.playlist-main').on('click', '.moreInfo', function() {
+				moreInfo($(this));
+			});
 		}
 
 		makeFav = function(idKara, make, $el) {
@@ -408,6 +412,36 @@ var settingsNotUpdated;
 					$('.overlay').show();
 				}, 1);
 			}
+		};
+		moreInfo = function(el) {
+			var details = el.closest('.detailsKara');
+			var serie = details.data('serie');
+			var extraSearchInfo = "";
+			var searchLanguage = navigator.language;
+			if(details.data('language') == 'jpn') {
+				extraSearchInfo = 'anime ';
+			}
+			var searchUrl = "https://" + searchLanguage  +".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + extraSearchInfo + serie;
+
+
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+			  if (this.readyState == 4 && this.status == 200) {
+				var json = JSON.parse(this.response);
+				var results = json.query.search;
+
+				if(results.length > 0){
+					var pageId = results[0].pageid;
+					newWindows.location = "https://" + searchLanguage  +".wikipedia.org/?curid=" + pageId +"#Anime";
+				} else {
+					displayMessage('warning', '', i18n.__('NO_EXT_INFO', serie));
+				}
+			  }
+			};
+			var newWindows = window.open();
+			xhttp.open("GET", searchUrl , true);
+			xhttp.send();
+			
 		};
 
 		likeKara = function(like, $el) {
@@ -910,6 +944,7 @@ var settingsNotUpdated;
 	makeFavButton = '<button class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
+	serieMoreInfoHtml = '<button class="btn btn-default btn-xs moreInfo"><i class="glyphicon glyphicon-new-window"></i></button>';
 	buttonHtmlPublic = '';
 
 	listTypeBlc = [
@@ -964,7 +999,7 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav, .likeKara, [name="deleteKara"]');
+			var $this = $(e.target).closest('.moreInfo, .fullLyrics, .showVideo, .makeFav, .likeKara, [name="deleteKara"]');
 
 			if($this.length > 0) {
 				e.preventDefault();
@@ -986,6 +1021,8 @@ var settingsNotUpdated;
 					});
 				} else if($this.hasClass('showVideo')) {
 					showVideo($this);
+				} else if($this.hasClass('.moreInfo')) {
+					moreInfo($this);
 				} else if($this.hasClass('makeFav')) {
 					makeFav(idKara, !$this.hasClass('currentFav'), $this);
 				} else if($this.hasClass('likeKara')) {
@@ -1001,7 +1038,7 @@ var settingsNotUpdated;
 		manager2.on('tap click', function (e) {
 			e.gesture = e;
 			var target = $(e.gesture.target);
-			if(target.closest('.fullLyrics, .showVideo, .makeFav').length > 0
+			if(target.closest('.fullLyrics, .showVideo, .makeFav, .moreInfo').length > 0
 								|| target.closest('.actionDiv').length > 0
 								|| target.closest('.infoDiv').length > 0
 								|| target.closest('[name="checkboxKara"]').length > 0
@@ -1030,7 +1067,9 @@ var settingsNotUpdated;
 
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
-		options.url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/api/v1/' + options.url;
+		if (options.url.indexOf('http') === -1) {
+			options.url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/api/v1/' + options.url;
+		}
 	});
 
 	/**
@@ -1759,7 +1798,7 @@ var settingsNotUpdated;
 			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
 			, 'BLCTYPE_7':				data['misc_i18n']
-			, 'DETAILS_SERIE':		data['serie']
+			, 'DETAILS_SERIE':		data['serie'] + (data['serie'] ? " " + serieMoreInfoHtml : "")
 			, 'DETAILS_SERIE_ALT':	data['serie_altname']
 			, 'BLCTYPE_2':				data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
