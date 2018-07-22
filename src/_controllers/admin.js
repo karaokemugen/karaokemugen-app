@@ -5,7 +5,7 @@ import {requireAuth, requireValidUser, requireAdmin} from './passport_manager';
 import {requireNotDemo} from './demo';
 import {getLang} from './lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
-import {getKaras, getKaraInfo, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
+import {getKaras, getKara, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
 import {getTags} from '../_services/tag';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara';
@@ -13,7 +13,7 @@ import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
 
-module.exports = function adminController(router) {
+export default function adminController(router) {
 	const conf = getConfig();
 	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
 
@@ -33,7 +33,7 @@ module.exports = function adminController(router) {
 			.catch(err => res.status(500).send(`Error while regenerating DB: ${err}`));
 	});
 	router.get('/karas/:kara_id([0-9]+)', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getKaraInfo(req.params.kara_id,req.lang,req.authToken)
+		getKara(req.params.kara_id,req.authToken,req.lang)
 			.then(kara => res.json(kara))
 			.catch(err => res.status(500).send('Error while loading kara: ' + err));
 	});
@@ -56,7 +56,6 @@ module.exports = function adminController(router) {
 		createKara(req.body)
 			.then(() => res.status(200).send('Kara successfully generated'))
 			.catch(err => {
-				console.log(err);
 				res.status(500).send(`Error while generating kara : ${err}`);
 			});
 	});
@@ -76,7 +75,7 @@ module.exports = function adminController(router) {
 	});
 
 	router.get('/series', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getSeries(req.lang, req.query.filter)
+		getSeries(req.query.filter, req.lang)
 			.then(series => res.json(series))
 			.catch(err => res.status(500).send(`Error while fetching series: ${err}`));
 	});
@@ -100,7 +99,6 @@ module.exports = function adminController(router) {
 	});
 
 	router.post('/series', requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		console.log(req.body);
 		addSerie(req.body)
 			.then(() => res.status(200).send('Series added'))
 			.catch(err => res.status(500).send(`Error adding series: ${err}`));
@@ -164,7 +162,11 @@ module.exports = function adminController(router) {
 
 	router.post('/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		runBaseUpdate()
-			.then(() => res.status(200).send('Karas successfully updated'))
+			.then(() => {
+				generateDatabase().then(() => {
+					res.status(200).send('Karas successfully updated');
+				}).catch(err => res.status(500).send(`Karas updated but generation failed horribly: ${err}`));
+			})
 			.catch(err => res.status(500).send(`Error while updating karas: ${err}`));
 	});
-};
+}

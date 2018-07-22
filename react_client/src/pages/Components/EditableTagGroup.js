@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import deburr from 'lodash.deburr';
-import {AutoComplete, Icon, Tag, Tooltip} from 'antd';
+import {Button, Form, AutoComplete, Icon, Tag, Tooltip} from 'antd';
 import axios from 'axios/index';
 import langs from 'langs';
 
@@ -68,7 +68,7 @@ export default class EditableTagGroup extends React.Component {
 		let languages = [];
 		langs.all().forEach(lang => languages.push({value: lang['2B'], text: lang.name}));
 		languages.push({value: 'mul', text: 'Multi-languages'});
-		languages.push({value: 'und', text: 'Undefined Language'});			
+		languages.push({value: 'und', text: 'Undefined Language'});
 		this.setState({ DS: languages || [] });
 	}
 
@@ -80,34 +80,44 @@ export default class EditableTagGroup extends React.Component {
 
 	searchTags = (val) => {
 		this.getTags(val, this.props.tagType).then(tags => this.setState({ DS: tags.data.map(tag => {
-			return { value: tag.name, text: tag.name_i18n}; 
+			return { value: tag.name, text: tag.name_i18n};
 		}) || [] }));
 	};
 
 	render() {
 		const { value, inputVisible } = this.state;
+		console.log(value);
 		return (
 			<div>
-				{value.map((tag) => {
-					const isLongTag = tag.length > 20;
-					const tagElem = (
-						<Tag key={tag} closable='true' afterClose={() => this.handleClose(tag)}>
-							{isLongTag ? `${tag.slice(0, 20)}...` : tag}
-						</Tag>
-					);
-					return isLongTag ? <Tooltip title={tag} key={tag}>{tagElem}</Tooltip> : tagElem;
-				})}
+				{
+					value.map((tag) => {
+						if (!tag) tag = '';
+						const isLongTag = tag.length > 20;
+						const tagElem = (
+							<Tag key={tag} closable='true' afterClose={() => this.handleClose(tag)}>
+								{isLongTag ? `${tag.slice(0, 20)}...` : tag}
+							</Tag>
+						);
+						return isLongTag ? <Tooltip title={tag} key={tag}>{tagElem}</Tooltip> : tagElem;
+					})}
 				{inputVisible && (
-					<AutoComplete
-						ref={input => this.input = input}
-						dataSource={this.state.DS}
-						onSearch={ this.search }
-						onChange={ val => this.currentVal = val }
-						onSelect={this.handleInputConfirm}
-						onBlur={ () => this.handleInputConfirm(this.currentVal) }
-						filterOption={(inputValue, option) => deburr(option.props.children.toUpperCase()).indexOf(deburr(inputValue).toUpperCase()) !== -1}
+					<Form.Item
+						wrapperCol={{ span: 10, offset: 0 }}
 					>
-					</AutoComplete>
+						<AutoComplete
+							ref={input => this.input = input}
+							dataSource={this.state.DS}
+							onSearch={ this.search }
+							onChange={ val => this.currentVal = val }
+							onSelect={this.handleInputConfirm}
+							filterOption={(inputValue, option) => deburr(option.props.children.toUpperCase()).indexOf(deburr(inputValue).toUpperCase()) !== -1}
+						>
+						</AutoComplete>
+						<Button type='primary' onClick={() => this.handleInputConfirm(this.currentVal)}
+							className='login-form-button'>
+						Add Tag
+						</Button>
+					</Form.Item>
 				)}
 				{!inputVisible && (
 					<Tag

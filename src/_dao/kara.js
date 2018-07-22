@@ -38,7 +38,7 @@ export async function addKara(kara) {
 		$title: kara.title,
 		$NORM_title: deburr(kara.title),
 		$year: kara.year,
-		$songorder: kara.songorder,
+		$songorder: kara.songorder || '',
 		$duration: kara.mediaduration,
 		$gain: kara.mediagain,
 		$modified_at: kara.datemodif,
@@ -153,6 +153,7 @@ export async function addKaraToPlaylist(karaList) {
 export async function removeKaraFromPlaylist(karaList, playlist_id) {
 	// We're not using SQLite parameterization due to a limitation
 	// keeping us from feeding a simple array/list to the statement.
+	// FIXME: This probably needs some fixing to avoid injections.
 	const karas = karaList.join(',');
 	const sqlRemoveKaraFromPlaylist = sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas);
 	return await getUserDb().run(sqlRemoveKaraFromPlaylist, {$playlist_id: playlist_id});

@@ -9,7 +9,6 @@ import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
-import {promisify} from 'util';
 import {defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
 import {on} from '../_common/utils/pubsub';
@@ -19,7 +18,6 @@ import {profile} from '../_common/utils/logger';
 import {getState} from '../_common/utils/state';
 
 const db = require('../_dao/user');
-const sleep = promisify(setTimeout);
 let userLoginTimes = {};
 let databaseBusy = false;
 
@@ -34,11 +32,8 @@ async function updateExpiredUsers() {
 			await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
 			await db.resetGuestsPassword();
 		}
-		//Sleep for one minute.
 	} catch(err) {
-		throw err;
-	} finally {
-		await sleep(60000);
+		logger.error(`[Users] Expiring users failed (will try again in one minute) : ${err}`);
 	}
 }
 
@@ -268,7 +263,7 @@ export async function deleteUserById(id) {
 		//Reassign karas and playlists owned by the user to the admin user
 		await db.reassignToUser(user.id,1);
 		await db.deleteUser(user.id);
-		logger.debug( `[User] Deleted user ${user.login} (id ${user.id})`);
+		logger.debug(`[User] Deleted user ${user.login} (id ${user.id})`);
 		return true;
 	} catch (err) {
 		logger.error(`[User] Unable to delete user ${id} : ${err}`);
@@ -285,7 +280,7 @@ async function createDefaultGuests() {
 	}
 	let maxGuests = guestsToCreate.length;
 	if (getConfig().isTest) maxGuests = 3;
-	logger.debug( `[User] Creating ${maxGuests} new guest accounts`);
+	logger.debug(`[User] Creating ${maxGuests} new guest accounts`);
 	for (let i = 0; i < maxGuests; i++) {
 		if (!await findUserByName(guestsToCreate[i])) await createUser({
 			login: guestsToCreate[i],
@@ -293,12 +288,13 @@ async function createDefaultGuests() {
 		});
 	}
 
-	logger.debug( '[User] Default guest accounts created');
+	logger.debug('[User] Default guest accounts created');
 }
 
 export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
+	/*
 	Promise.resolve().then(function resolver() {
 		return updateExpiredUsers()
 			.then(resolver)
@@ -309,7 +305,8 @@ export async function initUserSystem() {
 	}).catch((err) => {
 		logger.error(`[User] Cleanup expiring user accounts system failed entirely. You need to restart Karaoke Mugen : ${err}`);
 	});
-
+	*/
+	setInterval(updateExpiredUsers, 60000);
 	// Check if a admin user exists just in case. If not create it with a random password.
 
 	if (!await findUserByName('admin')) await createUser({
@@ -360,7 +357,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 	} else {
 		quotaLeft = -1;
 	}
-	logger.debug( `[User] Updating quota left for ${user.login} : ${quotaLeft}`);
+	logger.debug(`[User] Updating quota left for ${user.login} : ${quotaLeft}`);
 	emitWS('quotaAvailableUpdated', {
 		username: user.login,
 		quotaLeft: quotaLeft,

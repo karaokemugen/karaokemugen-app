@@ -1,8 +1,8 @@
 /*
- * Référentiel de KM (tags, langs, types, etc.).
+ * Constants for KM (tags, langs, types, etc.).
  */
 
-/** Expressions régulières de validation. */
+/** Regexps for validation. */
 export const uuidRegexp = '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$';
 export const mediaFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3)$';
 export const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
@@ -54,7 +54,7 @@ export const defaultGuestNames = [
 	'Phantom Thieves',
 	'Random Isekai MC',
 	'Houonin Kyouma',
-	'Miyazaki (retired)',	
+	'Miyazaki (retired)',
 	'Blue Accordéon',
 	'Yellow Baguette',
 	'Pink A La Mode',
@@ -104,24 +104,24 @@ export const initializationCatchphrases = [
 	'"Take this microphone, mongrel, and let me judge if your voice is worth of joining that treasure of mine!" --Gilgamesh',
 	'"You are already singing." --Kenshiro',
 	'"Karaoke is not beautiful, and that is why it is beautiful." --Kino',
-	'"Hey, want to become a karaoke maker?" -- ／人◕ ‿‿ ◕人＼',
-	'"IT\'S JJ STYLE! -- King J.J."',
-	'"A microphone has no strength, unless the hand that holds it has courage -- Link"',
-	'"EXPLOSION!" -- Megumin',
-	'"I\'M A THE GREAT MAD SINGER, HOUHOUIN KYOMA !" -- Okabe Rintaro',
-	'"If you are not singing with you, sing with me who sings with you" - Kamina',
-	'"Do you remember the number of songs you have sung in your life?" - Dio Brando',
-	'"Let\'s make a strawberry parfait from this karaoke!" - Hoshimiya Ichigo'
+	'"Hey, want to become a karaoke maker?" --／人◕ ‿‿ ◕人＼',
+	'"IT\'S JJ STYLE! --King J.J."',
+	'"A microphone has no strength, unless the hand that holds it has courage --Link"',
+	'"EXPLOSION!" --Megumin',
+	'"I\'M A THE GREAT MAD SINGER, HOUHOUIN KYOMA !" --Okabe Rintaro',
+	'"If you are not singing with you, sing with me who sings with you" --Kamina',
+	'"Do you remember the number of songs you have sung in your life?" --Dio Brando',
+	'"Let\'s make a strawberry parfait from this karaoke!" --Hoshimiya Ichigo'
 ];
 
 export const karaTypes = Object.freeze({
 	OP: {type: 'OP', dbType: 'TYPE_OP'},
 	ED: {type: 'ED', dbType: 'TYPE_ED'},
-	IN: {type: 'IN', dbType: 'TYPE_INSERTSONG'},
-	MV: {type: 'MV', dbType: 'TYPE_MUSIC'},
+	IN: {type: 'IN', dbType: 'TYPE_IN'},
+	MV: {type: 'MV', dbType: 'TYPE_MV'},
 	PV: {type: 'PV', dbType: 'TYPE_PV'},
 	CM: {type: 'CM', dbType: 'TYPE_CM'},
-	OT: {type: 'OT', dbType: 'TYPE_OTHER'},
+	OT: {type: 'OT', dbType: 'TYPE_OT'},
 	AMV: {type: 'AMV', dbType: 'TYPE_AMV'},
 	LIVE: {type: 'LIVE', dbType: 'TYPE_LIVE'}
 });
@@ -142,11 +142,11 @@ export const tagTypes = Object.freeze({
 export const karaTypesMap = Object.freeze(new Map([
 	[karaTypes.OP.type, 'TYPE_OP,3'],
 	[karaTypes.ED.type, 'TYPE_ED,3'],
-	[karaTypes.IN.type, 'TYPE_INSERTSONG,3'],
-	[karaTypes.MV.type, 'TYPE_MUSIC,3'],
+	[karaTypes.IN.type, 'TYPE_IN,3'],
+	[karaTypes.MV.type, 'TYPE_MV,3'],
 	[karaTypes.PV.type, 'TYPE_PV,3'],
 	[karaTypes.CM.type, 'TYPE_CM,3'],
-	[karaTypes.OT.type, 'TYPE_OTHER,3'],
+	[karaTypes.OT.type, 'TYPE_OT,3'],
 	[karaTypes.AMV.type, 'TYPE_AMV,3'],
 	[karaTypes.LIVE.type, 'TYPE_LIVE,3'],
 ]));
@@ -156,7 +156,7 @@ export function getType(types) {
 	return types.split(/\s+/).find(t => karaTypesArray.includes(t));
 }
 
-// Map of the current language naming for Karaoke Mugen's Database. 
+// Map of the current language naming for Karaoke Mugen's Database.
 // At some point, we're going to rename these all to fit ISO639-2B codes.
 export const specialLangMap = Object.freeze({
 	eng: 'ANG',
@@ -192,7 +192,7 @@ export const specialTags = Object.freeze({
 	REMIX: 'REMIX',
 	SPECIAL: 'SPECIAL',
 	VOCA: 'VOCA',
-	XBOX360: 'XBOX360',	
+	XBOX360: 'XBOX360',
 });
 
 export const tags = [
@@ -233,6 +233,7 @@ export const tags = [
 	'XBOX360',
 	'GAMECUBE',
 	'DS',
+	'3DS',
 	'PC',
 	'SEGACD',
 	'SATURN',

@@ -16,7 +16,7 @@ import {check} from '../_common/utils/validators';
 import {addSerie} from '../_services/series';
 import sanitizeFilename from 'sanitize-filename';
 import deburr from 'lodash.deburr';
-import {now} from 'unix-timestamp';
+import timestamp from 'unix-timestamp';
 
 export async function editKara(kara_id,kara) {
 	let newKara;
@@ -116,7 +116,7 @@ async function generateKara(kara, opts) {
 	// Copy files from temp directory to import, depending on the different cases.
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile;
-	if (kara.subfile) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
+	if (kara.subfile && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
 	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
@@ -126,7 +126,8 @@ async function generateKara(kara, opts) {
 	let newKara;
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
-		kara.dateadded = now();
+		timestamp.round = true;
+		kara.dateadded = timestamp.now();
 		//Trim spaces before and after elements.
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
 		kara.lang.forEach((e,i) => kara.lang[i] = e.trim());
@@ -138,13 +139,14 @@ async function generateKara(kara, opts) {
 
 		if (!kara.order) kara.order = '';
 		newKara = await importKara(newMediaFile, newSubFile, kara);
+		return newKara;
 	} catch(err) {
+		console.log(err);
 		logger.error(`[Karagen] Error during generation : ${err}`);
 		if (await asyncExists(newMediaFile)) await asyncUnlink(newMediaFile);
 		if (newSubFile) if (await asyncExists(newSubFile)) await asyncUnlink(newSubFile);
 		throw err;
 	}
-	return newKara;
 }
 
 /**
@@ -174,10 +176,9 @@ async function importKara(mediaFile, subFile, data) {
 	}
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
-
 	let karaData = formatKara({ ...data,
 		mediafile: `${kara}${extname(mediaFile)}`,
-		subfile: `${kara}${extname(subFile)}`
+		subfile: `${kara}${extname(subFile || '.ass')}`
 	});
 	karaData.overwrite = data.overwrite;
 	if (subFile === 'dummy.ass') karaData.subfile = 'dummy.ass';

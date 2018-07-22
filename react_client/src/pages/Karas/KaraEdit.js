@@ -5,6 +5,9 @@ import axios from 'axios/index';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
 import {errorMessage, infoMessage, loading} from '../../actions/navigation';
+import timestamp from 'unix-timestamp';
+
+timestamp.round = true;
 
 const newKara = {
 	kid: null,
@@ -19,7 +22,7 @@ const newKara = {
 	creator: null,
 	author: null,
 	misc: null,
-	dateadded: new Date()
+	dateadded: timestamp.now()
 };
 
 class KaraEdit extends Component {
@@ -77,7 +80,9 @@ class KaraEdit extends Component {
 						title: res.data[0].title,
 						year: res.data[0].year,
 						order: res.data[0].songorder,
+						type: res.data[0].songtype,
 						dateadded: res.data[0].created_at,
+						datemodif: res.data[0].modified_at,
 						kara_id: this.props.match.params.kara_id
 					};
 					this.setState({kara: karaData, save: this.saveUpdate});

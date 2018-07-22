@@ -1,5 +1,5 @@
 import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
-import {remove, mkdirp, copy, move} from 'fs-extra';
+import {ensureDir, remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from './logger';
@@ -69,7 +69,7 @@ export async function asyncRequired(file) {
 export async function asyncCheckOrMkdir(...dir) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
-		if (logger) logger.debug(`[Launcher] Creating folder ${resolvedDir}`);
+		if (logger) logger.debug(`[File] Creating folder ${resolvedDir}`);
 		return await asyncMkdirp(resolvedDir);
 	}
 }

@@ -128,7 +128,7 @@ export async function initFrontend(port) {
 
 		//Get list of monitors to allow users to select one for the player
 		graphics().then((data) => {
-			logger.debug( '[Webapp] Displays detected : '+JSON.stringify(data.displays));
+			logger.debug('[Webapp] Displays detected : '+JSON.stringify(data.displays));
 			[0,1,2,3,4].forEach(function(key) {
 				if (data.displays[key] && data.displays[key].model) {
 					data.displays[key].model = data.displays[key].model.replace('�','e');

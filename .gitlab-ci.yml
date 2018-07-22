@@ -65,7 +65,7 @@ pkg_win:
       - bin/
   script:
     - mkdir -p bin
-    - pkg . -d --targets node8-win-x64 --out-path bin 
+    - pkg . -d --targets node8-win-x64 --out-path bin
   only:
     - master
     - next
@@ -81,7 +81,7 @@ pkg_osx:
       - bin/
   script:
     - mkdir -p bin
-    - pkg . -d --targets node8-macos-x64 --out-path bin 
+    - pkg . -d --targets node8-macos-x64 --out-path bin
   only:
     - master
     - next
@@ -92,7 +92,7 @@ deploy_win:
   dependencies:
     - pkg_win
   script:
-    - apt-get update -qq && apt-get install -y -qq lftp zip  
+    - apt-get update -qq && apt-get install -y -qq lftp zip
     - mkdir build_win
     - cd build_win
     - wget http://mugen.karaokes.moe/downloads/dist_win.tar.gz
@@ -103,15 +103,15 @@ deploy_win:
     - wget https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar
     - tar xvf archive.tar
     - mv -f jingles-master*/* .
-    - rm -Rf jingles-master*    
+    - rm -Rf jingles-master*
     - rm -f archive.tar
     - cd ../..
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.ini.sample .
     - cp -Rf ../samples .
-    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *    
+    - zip -r KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip *
     - cd ..
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"   
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_win/KaraokeMugen-$CI_COMMIT_REF_NAME-win64.zip"
   only:
     - master
     - next
@@ -123,7 +123,7 @@ latest_tag:
     - apt-get update -qq && apt-get install -y -qq lftp
     - echo $CI_COMMIT_REF_NAME >latest
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put latest"
-  only: 
+  only:
     - tags
 
 deploy_osx:
@@ -143,7 +143,7 @@ deploy_osx:
     - wget https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar
     - tar xvf archive.tar
     - mv -f jingles-master*/* .
-    - rm -Rf jingles-master*    
+    - rm -Rf jingles-master*
     - rm -f archive.tar
     - cd ../..
     - cp -f ../bin/karaokemugen-app KaraokeMugen
@@ -151,7 +151,7 @@ deploy_osx:
     - cp -Rf ../samples .
     - tar cvz * >KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.tar.gz
     - cd ..
-    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.tar.gz"    
+    - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put build_mac/KaraokeMugen-$CI_COMMIT_REF_NAME-macOS.tar.gz"
   only:
     - master
     - next
@@ -159,8 +159,8 @@ deploy_osx:
 
 apidoc:
   stage: deploy
-  script:    
-    - apt-get update -qq && apt-get install -y -qq lftp  
+  script:
+    - apt-get update -qq && apt-get install -y -qq lftp
     - apidoc -i src/_controllers -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/apidoc; mirror -Rnev --parallel=10"
