@@ -432,7 +432,7 @@ var settingsNotUpdated;
 
 				if(results.length > 0){
 					var pageId = results[0].pageid;
-					newWindows.location = "https://" + searchLanguage  +".wikipedia.org/?curid=" + pageId +"#Anime";
+					newWindows.location = "https://" + searchLanguage  +".wikipedia.org/?curid=" + pageId;
 				} else {
 					displayMessage('warning', '', i18n.__('NO_EXT_INFO', serie));
 				}
