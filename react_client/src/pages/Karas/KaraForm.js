@@ -39,7 +39,7 @@ class KaraForm extends Component {
 		if (this.props.kara.lang) this.state.lang = this.props.kara.lang.split(',');
 		if (this.props.kara.creator) this.state.creator = this.props.kara.creator.split(',');
 		if (this.props.kara.type) this.state.songtype =  this.props.kara.type.replace('TYPE_','');
-		if (this.props.kara.tag) this.state.tag = this.props.kara.tag.split(',');
+		if (this.props.kara.tags) this.state.tags = this.props.kara.tags.split(',');
 		if (this.props.kara.mediafile_old) {
 			this.state.overwrite = true;
 			this.state.mediafileList = [{
@@ -392,7 +392,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					{getFieldDecorator('tags', {
-						initialValue: this.state.tag
+						initialValue: this.state.tags
 					})(<EditableTagGroup
 						tagType={7}
 						search={'tag'}
