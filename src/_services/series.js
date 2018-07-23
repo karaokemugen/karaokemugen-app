@@ -31,7 +31,9 @@ export async function getOrAddSerieID(serieObj) {
 	const series = await selectSerieByName(serieObj.name);
 	if (series) return series.serie_id;
 	//Series does not exist, create it.
-	return await addSerie(serieObj);
+	const id = await addSerie(serieObj);
+	await updateSeriesFile();
+	return id;
 }
 
 export async function addSerie(serieObj) {
