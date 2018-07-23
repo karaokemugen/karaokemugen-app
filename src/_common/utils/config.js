@@ -68,7 +68,11 @@ export async function mergeConfig(oldConfig, newConfig) {
 	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings
+<<<<<<< HEAD
 	setState({private: conf.EnginePrivateMode});
+=======
+	emit('modeUpdated',conf.EnginePrivateMode);
+>>>>>>> master
 
 	configureHost();
 
@@ -119,6 +123,33 @@ export async function initConfig(appPath, argv) {
 	return getConfig();
 }
 
+<<<<<<< HEAD
+=======
+async function configureLogger(appPath, debug) {
+	const tsFormat = () => (new Date()).toLocaleTimeString();
+	const consoleLogLevel = debug ? 'debug' : 'info';
+	const logDir = resolve(appPath, 'logs');
+	await asyncCheckOrMkdir(logDir);
+	logger.configure({
+		transports: [
+			new (logger.transports.Console)({
+				timestamp: tsFormat,
+				level: consoleLogLevel,
+				colorize: true
+			}),
+			new (logger.transports.DailyRotateFile)({
+				timestap: tsFormat,
+				filename: resolve(appPath, 'logs', 'karaokemugen'),
+				datePattern: '.yyyy-MM-dd.log',
+				zippedArchive: true,
+				level: 'debug',
+				handleExceptions: true
+			})
+		]
+	});
+}
+
+>>>>>>> master
 async function loadConfigFiles(appPath) {
 	const overrideConfigFile = resolve(appPath, configFile);
 	const versionFile = resolve(__dirname, '../../VERSION');
@@ -137,6 +168,15 @@ async function loadConfig(configFile) {
 	try {
 		verifyConfig(newConfig);
 		config = {...newConfig};
+<<<<<<< HEAD
+=======
+		// Delete this when the 2.3 release gets rolled out
+		// Temporary fix to treat PathVideos as PathMedias
+		if (config.PathVideos) {
+			config.PathMedias = config.PathVideos;
+			delete config.PathVideos;
+		}
+>>>>>>> master
 	} catch(err) {
 		throw err;
 	}
@@ -188,7 +228,11 @@ export async function backupConfig() {
 
 export async function updateConfig(newConfig) {
 	savingSettings = true;
+<<<<<<< HEAD
 	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale'];
+=======
+	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','BincurlPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale'];
+>>>>>>> master
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))

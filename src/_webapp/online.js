@@ -1,4 +1,4 @@
-import req from 'request-promise-native';
+import got from 'got';
 import {configureHost, getConfig} from '../_common/utils/config';
 
 export async function publishURL() {
@@ -19,7 +19,7 @@ export async function publishURL() {
     	}
 	};
 	try {
-		await req(options);
+		await got(options.url, options);
 		configureHost();
 	} catch(err) {
 		throw `Failed publishing our URL to ${conf.OnlineHost} : ${err}`;
