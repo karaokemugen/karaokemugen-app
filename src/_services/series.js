@@ -45,7 +45,6 @@ export async function addSerie(serieObj) {
 
 export async function editSerie(serie_id,serieObj) {
 	if (!await getSerie(serie_id)) throw 'Series ID unknown';
-	if (await selectSerieByName(serieObj.name)) throw 'Series original name already exists';
 	await updateSerie(serie_id, serieObj);
 	await updateSeriesFile();
 }
