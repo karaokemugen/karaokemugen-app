@@ -1,4 +1,4 @@
-import req from 'request-promise-native';
+import got from 'got';
 import {configureHost, getConfig} from '../_common/utils/config';
 import isEmpty from 'lodash.isempty';
 
@@ -19,8 +19,8 @@ export async function publishURL() {
 	        'content-type': 'application/x-www-form-urlencoded'
     	}
 	};
-	try { 
-		await req(options);
+	try {
+		await got(options.url, options);
 		configureHost();
 	} catch(err) {
 		throw `Failed publishing our URL to ${conf.OnlineHost} : ${err}`;

@@ -7,7 +7,7 @@ import {copy} from 'fs-extra';
 import prettyBytes from 'pretty-bytes';
 import webdav from 'webdav';
 import Downloader from '../_common/utils/downloader';
-import {Download} from 'easydownload';
+import got from 'got';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
@@ -22,15 +22,22 @@ async function downloadBase() {
 	const dest = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
 	if (await asyncExists(dest)) await asyncRemove(dest);
 	logger.info('[Updater] Downloading current base (.kara and .ass files)...');
-	const download = new Download(baseURL, dest);
-	download.start();
+	const list = [];
+
+	list.push({
+		filename: dest,
+		url: baseURL
+	});
+	const baseDownload = new Downloader(list, {
+		bar: true
+	});
 	return new Promise((resolve, reject) => {
-		download.on('finish', () => {
-			logger.info('[Updater] Current base downloaded');
-			resolve();
-		});
-		download.on('error', err => {
-			reject(err);
+		baseDownload.download(fileErrors => {
+			if (fileErrors.length > 0) {
+				reject(`Error downloading this file : ${fileErrors.toString()}`);
+			} else {
+				resolve();
+			}
 		});
 	});
 }
@@ -41,9 +48,9 @@ async function decompressBase() {
 	const archivePath = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
 	if (await asyncExists(workPath)) await asyncRemove(workPath);
 	await asyncMkdirp(workPath);
-	logger.debug('[Updater] Decompressing base');
+	logger.info('[Updater] Decompressing base');
 	await decompress(archivePath,workPath);
-	logger.debug('[Updater] Base decompressed');
+	logger.info('[Updater] Base decompressed');
 	const workPathList = await asyncReadDir(workPath);
 	return workPathList[0];
 }
@@ -80,7 +87,7 @@ async function compareBases() {
 		);
 		logger.info('[Updater] Updated series file');
 	}
-	logger.debug('[Updater] Comparing your base with the current one');
+	logger.info('[Updater] Comparing your base with the current one');
 	const [karasToUpdate, lyricsToUpdate] = await Promise.all([
 		compareDirs(karasMinePath, karasBasePath),
 		compareDirs(lyricsMinePath, lyricsBasePath)
@@ -94,7 +101,7 @@ async function compareBases() {
 		logger.info('[Updater] No update for your base');
 		return false;
 	} else {
-		logger.debug('[Updater] Updating base files');
+		logger.info('[Updater] Updating base files');
 		await Promise.all([
 			updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath,true),
 			updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath,true),
@@ -170,13 +177,14 @@ function downloadMedias(files, mediasPath) {
 	for (const file of files) {
 		list.push({
 			filename: resolve(conf.appPath, mediasPath, file.name),
-			url: `${shelter.url}/${encodeURIComponent(file.name)}`
+			url: `${shelter.url}/${encodeURIComponent(file.name)}`,
+			size: file.size
 		});
 	}
 	const mediaDownloads = new Downloader(list, {
 		auth: {
 			user: 'kmvideos',
-			password: 'musubi'
+			pass: 'musubi'
 		},
 		bar: true
 	});
@@ -275,16 +283,16 @@ export async function runBaseUpdate() {
 	if (updateRunning) throw 'An update is already running, please wait for it to finish.';
 	updateRunning = true;
 	try {
-		const [remoteMedias, localMedias] = await Promise.all([
-			listRemoteMedias(),
-			listLocalMedias()
-		]);
-		const updateVideos = await compareMedias(localMedias, remoteMedias);
 		let updateBase;
 		if (await checkDirs()) {
 			await downloadBase();
 			updateBase = await compareBases();
 		}
+		const [remoteMedias, localMedias] = await Promise.all([
+			listRemoteMedias(),
+			listLocalMedias()
+		]);
+		const updateVideos = await compareMedias(localMedias, remoteMedias);
 		updateRunning = false;
 		return !!(updateBase || updateVideos);
 	} catch (err) {
