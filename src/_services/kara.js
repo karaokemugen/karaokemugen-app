@@ -251,6 +251,7 @@ export function formatKara(karaData) {
 		year: karaData.year || '',
 		singer: karaData.singer || '',
 		tags: karaData.tags || '',
+		groups: karaData.groups || '',
 		songwriter: karaData.songwriter || '',
 		creator: karaData.creator || '',
 		author: karaData.author || '',
