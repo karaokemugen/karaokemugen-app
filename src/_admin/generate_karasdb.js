@@ -1,6 +1,6 @@
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
-import {resolve} from 'path';
+import {basename, join, resolve} from 'path';
 import deburr from 'lodash.deburr';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
@@ -16,7 +16,6 @@ import {
 } from '../_common/db/generation';
 import {karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
-import {basename, join} from 'path';
 import parallel from 'async-await-parallel';
 import {emit} from '../_common/utils/pubsub';
 import {findSeries, readSeriesFile} from '../_dao/seriesfile';
