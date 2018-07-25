@@ -863,7 +863,7 @@ var settingsNotUpdated;
 	i18n = new I18n({
 		//these are the default values, you can omit
 		directory: '/locales',
-		locale: 'fr',
+		locale: navigator.languages[0],
 		extension: '.json'
 	});
 
