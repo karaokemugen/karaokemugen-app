@@ -357,6 +357,10 @@ button[name="infoKara"]:before {
     color: firebrick;
 }
 
+.moreInfo:before {
+	content:"\e086";
+}
+
 .likeKara:before {
 	content:"\e143";
 }
@@ -493,7 +497,7 @@ button.closeParent.bottom  {
 	bottom: 10px;
 	top: auto;
 }
-.list-group-item .fullLyrics.mobile, .list-group-item .makeFav.mobile, .list-group-item .showVideo.mobile {
+.list-group-item .fullLyrics.mobile, .list-group-item .makeFav.mobile, .list-group-item .showVideo.mobile, .moreInfo.mobile {
 	border-color: transparent;
 	background-color: hsla(0, 0%, 32%, 0.87);
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.10), 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.1);
@@ -1097,6 +1101,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .modalPage .modal-header {
 	padding: 0;
 	display: flex;
+}
+.modal-header a {
+	color: hsla(208, 55%, 77%, 1);
 }
 .modalPage .modal-message {
 	height: 50px;
