@@ -953,54 +953,29 @@ export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 	try {
 		profile('shuffle');
 		let playlist = await getPlaylistContentsMini(playlist_id);
-		console.log(playlist);
 
-		var userShuffleBoolean = false;
-		if (smartShuffleBoolean) {
-			let userTest = 1;
-			let userTestArray = [playlist[0].pseudo_add];
-
-			for (const playlistItem of playlist) {
-				if (!userTestArray.includes(playlistItem.pseudo_add)) {
-					userTestArray.push(playlistItem.pseudo_add);
-					userTest++;
-				}
-			}
-
-			if (userTest > 5) {
-				userShuffleBoolean = true;
-			}
-
-			playlist = shuffle(playlist);
-
-			if(playlist.length - 6 > 0 ){      // The algorithm will change if we are at the ends of the array
-
-				let user_iterator = 1;
-
-				if(userShuffleBoolean){
-					while (user_iterator - playlist.length > 0) {
-
-						if(playlist.length - user_iterator > 7){
-							let playlist_temp = playlist.slice(user_iterator, user_iterator + 7);
-							for(let i = 0 ; i < 5 ; i++){
-								if(playlist_temp[i] === playlist_temp[i+1]) {
-
-									let a = playlist_temp[i+1];
-									playlist[i+1+user_iterator] = playlist[i+4+user_iterator];
-									playlist[i+4+user_iterator] = a;
-								}
-
-							}
-						}
-						user_iterator+= 5;
-					}
-				}
-			}
-
-
-
+		for(let i = 0; i < playlist.length ; i++){           // Debug boucle, delete before merge
+			console.log(playlist[i].pseudo_add);
 
 		}
+
+		var userShuffleBoolean = false;
+		//	if(smartShuffleBoolean){
+		let userTest = 1;
+		let userTestArray = [playlist[0].pseudo_add];
+		for(const playlistItem of playlist){
+			if(!userTestArray.includes(playlistItem.pseudo_add)){
+				userTestArray.push(playlistItem.pseudo_add);
+				userTest++;
+			}
+		}
+		if(userTest > 5) {
+			userShuffleBoolean = true;
+		}
+		console.log(userTest);
+		console.log(userTestArray);
+		console.log(userShuffleBoolean);
+		//	}
 
 		if (!pl.flag_current) {
 			playlist = shuffle(playlist);
