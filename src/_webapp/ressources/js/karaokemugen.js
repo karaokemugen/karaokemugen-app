@@ -446,9 +446,9 @@ var settingsNotUpdated;
 					xhttp.send();
 				} else if (contentResult && contentResult.length > 0 && detailsUrl !== "") {
 					var extract = contentResult[0].extract;
-					extract = extract.replace(/\n/g, "<br /><br />");
-					extract = extract.replace(serie, "<b>" + serie + "</b>");
-					extract = extract.replace(anime, "<b>" + anime + "</b>");
+					extract = extract.replace(/\n/g, '<br /><br />');
+					extract = extract.replace(serie, '<b>' + serie + '</b>');
+					extract = extract.replace('anime', '<b>anime</b>');
 					displayModal('alert', '<a target="_blank" href="' + externalUrl + '">' + serie + ' ' + openExternalPageButton + '</a>', extract);
 				} else if (searchInfo && searchInfo.totalhits === 0 && searchInfo.suggestion) {
 					var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + searchInfo.suggestion;
