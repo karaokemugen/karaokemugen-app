@@ -1,8 +1,8 @@
 /** Requêtes SQL utilisées. */
 
-export const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, mediafile, subfile, created_at,
+export const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, mediafile, mediasize, subfile, created_at,
 	modified_at, gain, duration, karafile)
-	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_mediafile, $kara_subfile, $kara_dateadded,
+	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_mediafile, $kara_mediasize, $kara_subfile, $kara_dateadded,
 	$kara_datemodif, $kara_gain, $kara_duration, $kara_karafile);`;
 
 export const inserti18nSeries = 'INSERT INTO serie_lang(fk_id_serie, lang, name, NORM_name) VALUES((SELECT pk_id_serie FROM serie WHERE name = $name), $lang, $serie, $serienorm);';

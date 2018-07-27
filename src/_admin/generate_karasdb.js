@@ -89,6 +89,7 @@ function prepareKaraInsertData(kara, index) {
 		$kara_year: kara.year,
 		$kara_songorder: kara.order,
 		$kara_mediafile: kara.mediafile,
+		$kara_mediasize: kara.mediasize,
 		$kara_subfile: kara.subfile,
 		$kara_dateadded: kara.dateadded,
 		$kara_datemodif: kara.datemodif,
