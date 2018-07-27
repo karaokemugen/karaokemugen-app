@@ -169,11 +169,12 @@ async function importKara(mediaFile, subFile, data) {
 	let kara = mediaFile;
 	if (data) {
 		const fileLang = getFileLangFromKara(data.lang[0]);
-		kara = sanitizeFilename(deburr(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`))
+		kara = sanitizeFilename(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`)
 			.replace('ô','ou')
 			.replace('û','uu')
-			.replace( /([\x00-\xFF])/g, '' )
+			.replace( /[^\x00-\xFF]/g, '' )
 		;
+		kara = deburr(kara);
 	}
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
