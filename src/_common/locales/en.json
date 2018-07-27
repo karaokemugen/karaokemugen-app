@@ -237,7 +237,7 @@
 	"ENGINESONGPOLL": "Public Poll",
 	"ENGINESONGPOLLCHOICES": "Number of songs users can choose from during public poll",
 	"ENGINESONGPOLLTIMEOUT": "Public poll duration (in seconds)",
-    "MESSAGE": "Message",
+	"MESSAGE": "Message",
 	"PLAYLIST_COMMANDS": "Playlist commands",
 	"PLAYLIST_SHUFFLE": "Shuffle playlist",
 	"PLAYLIST_EDIT": "Rename playlist",
@@ -478,10 +478,13 @@
 	"SERIE_NAME_MODE_SONG": "Song's language",
 	"SERIE_NAME_MODE_ADMIN": "Karaoke Mugen's language",
 	"SERIE_NAME_MODE_USER": "User's language",
-	"PUBLICMODESETTINGS" : "Public-only settings",
+	"PUBLICMODESETTINGS": "Public-only settings",
 	"_": "DO NOT MODIFY",
 	"POLLTITLE": "Your time to vote!",
 	"POLLENDED": "%s wins with %s votes!",
 	"ONLINEMODE": "Short url (requires internet access)",
-	"NO_EXT_INFO": "Online search didn't succeed"
+	"NO_EXT_INFO": "Online search didn't succeed",
+	"TYPE_INSERTSONG": "TYPE_INSERTSONG",
+	"TYPE_MUSIC": "TYPE_MUSIC",
+	"TYPE_OTHER": "TYPE_OTHER"
 }

@@ -9,11 +9,12 @@ import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
-import {resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common/utils/config';
+import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common/utils/config';
 import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
 import {formatKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
 import {specialLangMap} from '../_services/constants';
+import {getAllKaras} from './kara';
 
 let error = false;
 
@@ -191,4 +192,45 @@ async function findSubFile(videoFile, kara) {
 	}
 	// Non-blocking case if file isn't found
 	return '';
+}
+
+export async function replaceSerieInKaras(oldSerie, newSerie) {
+	logger.info(`[Kara] Replacing serie ${oldSerie} by ${newSerie} in .kara files`);
+	const karas = await getAllKaras('admin');
+	let karasWithSerie = [];
+	for (const kara of karas) {
+		if (kara.serie_orig && kara.serie_orig.includes(oldSerie)) karasWithSerie.push(kara.karafile);
+	}
+	if (karasWithSerie.length > 0) logger.info(`[Kara] Replacing in ${karasWithSerie.length} files`);
+	for (const karaFile of karasWithSerie) {
+		logger.info(`[Kara] Replacing in ${karaFile}...`);
+		const karaPath = await resolveFileInDirs(karaFile, resolvedPathKaras());
+		const kara = await parseKara(karaPath);
+		let series = kara.series.split(',');
+		const index = series.indexOf(oldSerie);
+		if (index > -1)	series[index] = newSerie;
+		kara.series = series.join(',');
+		kara.isKaraModified = true;
+		await writeKara(karaPath, kara);
+	}
+}
+
+export async function removeSerieInKaras(serie) {
+	logger.info(`[Kara] Removing serie ${serie} in .kara files`);
+	const karas = await getAllKaras('admin');
+	let karasWithSerie = [];
+	for (const kara of karas) {
+		if (kara.serie_orig && kara.serie_orig.includes(serie)) karasWithSerie.push(kara.karafile);
+	}
+	if (karasWithSerie.length > 0) logger.info(`[Kara] Removing in ${karasWithSerie.length} files`);
+	for (const karaFile of karasWithSerie) {
+		logger.info(`[Kara] Removing in ${karaFile}...`);
+		const karaPath = await resolveFileInDirs(karaFile, resolvedPathKaras());
+		const kara = await parseKara(karaPath);
+		const series = kara.series.split(',');
+		const newSeries = series.filter(s => s !== serie);
+		kara.series = newSeries.join(',');
+		kara.isKaraModified = true;
+		await writeKara(karaPath, kara);
+	}
 }

@@ -75,6 +75,7 @@ export const getAllKaras = (filterClauses, lang) => `SELECT ak.kara_id AS kara_i
       							ak.serie_altname AS serie_altname,
       							ak.NORM_serie_altname AS NORM_serie_altname,
 								ak.serie_i18n AS serie_i18n,
+								ak.serie AS serie_orig,
       							ak.singer AS singer,
 								ak.NORM_singer AS NORM_singer,
 								ak.groups AS groups,
@@ -91,7 +92,8 @@ export const getAllKaras = (filterClauses, lang) => `SELECT ak.kara_id AS kara_i
       							ak.misc AS misc,
 								(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount,
 								(SELECT COUNT(pk_id_request) AS request FROM request WHERE fk_id_kara = ak.kara_id) AS requested,
-      							ak.mediafile AS mediafile,
+								ak.mediafile AS mediafile,
+								ak.karafile AS karafile,
       							ak.duration AS duration,
 								ak.gain AS gain,
 								(CASE WHEN $dejavu_time < (SELECT max(modified_at) FROM viewcount WHERE fk_id_kara = ak.kara_id)

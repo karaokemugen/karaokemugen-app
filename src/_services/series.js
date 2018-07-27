@@ -1,5 +1,6 @@
 import {writeSeriesFile} from '../_dao/seriesfile';
 import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
+import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 
 async function updateSeriesFile() {
 	const series = await getSeries();
@@ -22,7 +23,9 @@ export async function getSerie(serie_id) {
 
 export async function deleteSerie(serie_id) {
 	//Not removing from database, a regeneration will do the trick.
-	if (!await getSerie(serie_id)) throw 'Series ID unknown';
+	const serie = await getSerie(serie_id);
+	if (!serie) throw 'Series ID unknown';
+	await removeSerieInKaras(serie.name);
 	await removeSerie(serie_id);
 	await updateSeriesFile();
 }
@@ -46,7 +49,10 @@ export async function addSerie(serieObj) {
 }
 
 export async function editSerie(serie_id,serieObj) {
-	if (!await getSerie(serie_id)) throw 'Series ID unknown';
+	const oldSerie = await getSerie(serie_id);
+	if (!oldSerie) throw 'Series ID unknown';
+	await replaceSerieInKaras(oldSerie.name, serieObj.name);
 	await updateSerie(serie_id, serieObj);
 	await updateSeriesFile();
+
 }
