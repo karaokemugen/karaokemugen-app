@@ -172,6 +172,7 @@ async function importKara(mediaFile, subFile, data) {
 		kara = sanitizeFilename(deburr(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`))
 			.replace('ô','ou')
 			.replace('û','uu')
+			.replace( /([^\x00-\xFF]|\s)/g, '' )
 		;
 	}
 
