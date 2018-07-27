@@ -22,6 +22,7 @@ const newKara = {
 	creator: null,
 	author: null,
 	misc: null,
+	groups: null,
 	dateadded: timestamp.now()
 };
 
@@ -73,6 +74,7 @@ class KaraEdit extends Component {
 						tags: res.data[0].misc,
 						series: res.data[0].serie_orig,
 						singer: res.data[0].singer,
+						groups: res.data[0].groups,
 						songwriter: res.data[0].songwriter,
 						subfile: res.data[0].subfile,
 						subfile_old: res.data[0].subfile,

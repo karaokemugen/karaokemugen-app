@@ -3009,6 +3009,7 @@ export function APIControllerPublic(router) {
  *           {
  *               "NORM_author": null,
  *               "NORM_creator": null,
+ * 				 "NORM_groups": null,
  *               "NORM_serie": "Dynasty Warriors 3",
  *               "NORM_serie_altname": "DW3/DW 3",
  *               "NORM_singer": null,
@@ -3022,6 +3023,7 @@ export function APIControllerPublic(router) {
  * 	             "flag_dejavu": 0,
  * 				 "flag_favorites": 1,
  *               "gain": 0,
+ * 				 "groups": null,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
  *               "language": "chi",
@@ -3130,6 +3132,7 @@ export function APIControllerPublic(router) {
  * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
+ * @apiSuccess {String} data/NORM_groups Normalized groups names
  * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
  * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
  * @apiSuccess {String} data/NORM_singer Normalized name of singer.
@@ -3143,6 +3146,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default `EngineMaxDejaVuTime` is at 60 minutes)
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
+ * @apiSuccess {String} data/groups List of groups this karaoke song belongs to
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
@@ -3169,6 +3173,7 @@ export function APIControllerPublic(router) {
  *       {
  *           "NORM_author": null,
  *           "NORM_creator": null,
+ *           "NORM_groups": null,
  *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
  *           "NORM_serie_altname": "C-Cube/CxCxC",
  *           "NORM_singer": null,
@@ -3182,6 +3187,7 @@ export function APIControllerPublic(router) {
  * 	         "flag_dejavu": 0,
  * 		     "flag_favorites": 0,
  *           "gain": 0,
+ *           "groups": null,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
  *           "language": "jpn",
  *           "language_i18n": "Japonais",

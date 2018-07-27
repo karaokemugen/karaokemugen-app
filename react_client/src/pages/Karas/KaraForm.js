@@ -18,6 +18,7 @@ class KaraForm extends Component {
 			songwriterDS: [],
 			creatorDS: [],
 			authorDS: [],
+			groupsDS: [],
 			tagDS: [],
 			singer: [],
 			author: [localStorage.getItem('username')],
@@ -33,7 +34,7 @@ class KaraForm extends Component {
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
 		if (this.props.kara.singer) this.state.singer = this.props.kara.singer.split(',');
 		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
-
+		if (this.props.kara.groups) this.state.groups = this.props.kara.groups.split(',');
 		if (this.props.kara.songwriter) this.state.songwriter = this.props.kara.songwriter.split(',');
 		if (this.props.kara.author) this.state.author = this.props.kara.author.split(',');
 		if (this.props.kara.lang) this.state.lang = this.props.kara.lang.split(',');
@@ -397,6 +398,25 @@ class KaraForm extends Component {
 						tagType={7}
 						search={'tag'}
 						onChange={ (tags) => this.props.form.setFieldsValue({ tags: tags.join(',') }) }
+					/>)}
+				</Form.Item>
+				<Form.Item
+					label={(
+						<span>Group(s)&nbsp;
+							<Tooltip title="Download groups for this song">
+								<Icon type="question-circle-o" />
+							</Tooltip>
+						</span>
+					)}
+					labelCol={{ span: 3 }}
+					wrapperCol={{ span: 6, offset: 0 }}
+				>
+					{getFieldDecorator('groups', {
+						initialValue: this.state.groups
+					})(<EditableTagGroup
+						tagType={9}
+						search={'tag'}
+						onChange={ (tags) => this.props.form.setFieldsValue({ groups: tags.join(',') }) }
 					/>)}
 				</Form.Item>
 				<Form.Item hasFeedback
