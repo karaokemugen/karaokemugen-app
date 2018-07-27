@@ -53,7 +53,7 @@ var showVideoButton;
 var makeFavButton;
 var dragHandleHtml;
 var playKaraHtml;
-var serieMoreInfoHtml;
+var serieMoreInfoButton;
 
 var listTypeBlc;
 var plData;
@@ -414,31 +414,52 @@ var settingsNotUpdated;
 			}
 		};
 		moreInfo = function(el) {
+			var openExternalPageButton = '<i class="glyphicon glyphicon-new-window"></i>';
+			var externalUrl = '';
 			var details = el.closest('.detailsKara');
 			var serie = details.data('serie');
 			var extraSearchInfo = "";
-			var searchLanguage = navigator.language;
-			if(details.data('language') == 'jpn') {
+			var searchLanguage = navigator.languages[0];
+			if(!details.data('misc') || (
+				details.data('misc').indexOf('TAG_VIDEOGAME') === -1
+				&& details.data('misc').indexOf('TAG_MOVIE') === -1 
+				)) {
 				extraSearchInfo = 'anime ';
 			}
-			var searchUrl = "https://" + searchLanguage  +".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + extraSearchInfo + serie;
-
+			var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + extraSearchInfo + serie;
+			var detailsUrl = "";
 
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 			  if (this.readyState == 4 && this.status == 200) {
 				var json = JSON.parse(this.response);
 				var results = json.query.search;
+				var contentResult = json.query.pages;
+				var searchInfo = json.query.searchinfo;
 
-				if(results.length > 0){
+				if(results && results.length > 0 && detailsUrl === ""){
 					var pageId = results[0].pageid;
-					newWindows.location = "https://" + searchLanguage  +".wikipedia.org/?curid=" + pageId;
+					externalUrl= 'https://' + searchLanguage  + '.wikipedia.org/?curid=' + pageId;
+					//newWindows.location = externalUrl
+					detailsUrl = 'https://' + searchLanguage + '.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&prop=extracts&exintro=&explaintext=&pageids=' + pageId;
+					xhttp.open("GET", detailsUrl , true);
+					xhttp.send();
+				} else if (contentResult && contentResult.length > 0 && detailsUrl !== "") {
+					var extract = contentResult[0].extract;
+					extract = extract.replace(/\n/g, '<br /><br />');
+					extract = extract.replace(serie, '<b>' + serie + '</b>');
+					extract = extract.replace('anime', '<b>anime</b>');
+					displayModal('alert', '<a target="_blank" href="' + externalUrl + '">' + serie + ' ' + openExternalPageButton + '</a>', extract);
+				} else if (searchInfo && searchInfo.totalhits === 0 && searchInfo.suggestion) {
+					var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + searchInfo.suggestion;
+					xhttp.open("GET", searchUrl , true);
+					xhttp.send();
 				} else {
 					displayMessage('warning', '', i18n.__('NO_EXT_INFO', serie));
 				}
 			  }
 			};
-			var newWindows = window.open();
+			//var newWindows = window.open();
 			xhttp.open("GET", searchUrl , true);
 			xhttp.send();
 			
@@ -897,7 +918,7 @@ var settingsNotUpdated;
 	i18n = new I18n({
 		//these are the default values, you can omit
 		directory: '/locales',
-		locale: 'fr',
+		locale: navigator.languages[0],
 		extension: '.json'
 	});
 
@@ -944,7 +965,7 @@ var settingsNotUpdated;
 	makeFavButton = '<button class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
-	serieMoreInfoHtml = '<button class="btn btn-default btn-xs moreInfo"><i class="glyphicon glyphicon-new-window"></i></button>';
+	serieMoreInfoButton = '<button class="moreInfo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
 	buttonHtmlPublic = '';
 
 	listTypeBlc = [
@@ -1021,7 +1042,7 @@ var settingsNotUpdated;
 					});
 				} else if($this.hasClass('showVideo')) {
 					showVideo($this);
-				} else if($this.hasClass('.moreInfo')) {
+				} else if($this.hasClass('moreInfo')) {
 					moreInfo($this);
 				} else if($this.hasClass('makeFav')) {
 					makeFav(idKara, !$this.hasClass('currentFav'), $this);
@@ -1798,7 +1819,7 @@ var settingsNotUpdated;
 			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
 			, 'BLCTYPE_7':				data['misc_i18n']
-			, 'DETAILS_SERIE':		data['serie'] + (data['serie'] ? " " + serieMoreInfoHtml : "")
+			, 'DETAILS_SERIE':		data['serie']
 			, 'DETAILS_SERIE_ALT':	data['serie_altname']
 			, 'BLCTYPE_2':				data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
@@ -1822,6 +1843,7 @@ var settingsNotUpdated;
 				+ makeFavButtonAdapt
 				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
+				+ (data['serie'] ? " " + serieMoreInfoButton : '')
 				+ '</div>'
 				+ htmlTable
 				+ '</div>';
@@ -2005,6 +2027,7 @@ var settingsNotUpdated;
 		$.ajax({ url: 'public/tags', }).done(function (data) {
 			bcTags = data;
 		});
+
 	};
 
 	$(window).resize(function () {
@@ -2022,6 +2045,12 @@ var settingsNotUpdated;
 			$('.playlistContainer, #manage > .panel').perfectScrollbar();
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
+		}
+		
+		if(!isSmall) {
+			$('#modalBox').find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
+		} else {
+			$('#modalBox').find('.modal-dialog').addClass('modal-sm').removeClass('modal-md');
 		}
 	});
 

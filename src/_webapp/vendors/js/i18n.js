@@ -18,8 +18,10 @@ I18n.prototype = {
 	},
 
 	setLocale: function(locale){
-		if(!locale)
-			locale = $("html").attr("lang");
+		if(!locale) {
+			// locale = $("html").attr("lang");
+			locale = navigator.languages[0];
+		}
 
 		if(!locale)
 			locale = this.defaultLocale;
