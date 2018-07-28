@@ -75,7 +75,7 @@ class SeriesList extends Component {
 						cancelText='no'
 					>
 						<p>Delete series <b>{this.state.serie.name}</b></p>
-						<p>This will delete it from the series.json file!</p>
+						<p>This will delete it from the series.json file as well as in any .kara in your database!</p>
 						<p>Are you sure?</p>
 					</Modal>
 					</Layout.Content>

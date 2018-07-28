@@ -9,7 +9,7 @@ import {errorMessage, infoMessage, loading} from '../../actions/navigation';
 const newSerie = {
 	name: null,
 	aliases: [],
-	i18n: {}	
+	i18n: {}
 };
 
 class SerieEdit extends Component {
@@ -52,7 +52,6 @@ class SerieEdit extends Component {
 				.then(res => {
 					const serieData = {...res.data};
 					serieData.serie_id = this.props.match.params.serie_id;
-					console.log(serieData);
 					this.setState({serie: serieData, save: this.saveUpdate});
 					this.props.loading(false);
 				})
