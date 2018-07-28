@@ -22,7 +22,7 @@ export async function updateKara(kara) {
 		$title: kara.title,
 		$NORM_title: deburr(kara.title),
 		$year: kara.year,
-		$songorder: kara.order,
+		$songorder: kara.songorder || '',
 		$duration: kara.mediaduration,
 		$gain: kara.mediagain,
 		$modified_at: kara.datemodif,
