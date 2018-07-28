@@ -51,7 +51,7 @@ export async function addSerie(serieObj) {
 export async function editSerie(serie_id,serieObj) {
 	const oldSerie = await getSerie(serie_id);
 	if (!oldSerie) throw 'Series ID unknown';
-	await replaceSerieInKaras(oldSerie.name, serieObj.name);
+	if (oldSerie.name !== serieObj.name) await replaceSerieInKaras(oldSerie.name, serieObj.name);
 	await updateSerie(serie_id, serieObj);
 	await updateSeriesFile();
 
