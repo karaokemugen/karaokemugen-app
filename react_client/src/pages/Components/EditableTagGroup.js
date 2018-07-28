@@ -109,7 +109,6 @@ export default class EditableTagGroup extends React.Component {
 							dataSource={this.state.DS}
 							onSearch={ this.search }
 							onChange={ val => this.currentVal = val }
-							onSelect={this.handleInputConfirm}
 							filterOption={(inputValue, option) => deburr(option.props.children.toUpperCase()).indexOf(deburr(inputValue).toUpperCase()) !== -1}
 						>
 						</AutoComplete>
