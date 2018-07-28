@@ -42,6 +42,7 @@ build:
     expire_in: 1 day
     paths:
       - dist/
+      - react_client/build/
   script:
     - npm install -g modclean
     - yarn build
