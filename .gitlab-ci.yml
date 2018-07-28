@@ -1,4 +1,4 @@
-image: node:8-stretch
+image: axelterizaki/karaokemugen-ci
 
 cache:
   key: km
@@ -21,7 +21,6 @@ stages:
 test:
   stage: test
   script:
-    - apt-get update -qq && apt-get install -y -qq ffmpeg
     - yarn install --check-files --force
     - touch mpv
     - echo "BinPlayerLinux=mpv" >>config.ini
@@ -93,7 +92,6 @@ deploy_win:
   dependencies:
     - pkg_win
   script:
-    - apt-get update -qq && apt-get install -y -qq lftp zip
     - mkdir build_win
     - cd build_win
     - wget http://mugen.karaokes.moe/downloads/dist_win.tar.gz
@@ -121,7 +119,6 @@ deploy_win:
 latest_tag:
   stage: deploy
   script:
-    - apt-get update -qq && apt-get install -y -qq lftp
     - echo $CI_COMMIT_REF_NAME >latest
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put latest"
   only:
@@ -132,7 +129,6 @@ deploy_osx:
   dependencies:
     - pkg_osx
   script:
-    - apt-get update -qq && apt-get install -y -qq lftp
     - mkdir build_mac
     - cd build_mac
     - wget http://mugen.karaokes.moe/downloads/dist_macos.tar.gz
@@ -161,7 +157,6 @@ deploy_osx:
 apidoc:
   stage: deploy
   script:
-    - apt-get update -qq && apt-get install -y -qq lftp
     - apidoc -i src/_controllers -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/apidoc; mirror -Rnev --parallel=10"
