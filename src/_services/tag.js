@@ -21,7 +21,7 @@ export function translateTags(taglist,lang) {
 	const detectedLocale = langs.where('1',lang);
 	taglist.forEach((tag, index) => {
 		if (tag.type >= 2 && tag.type <= 999 && tag.type !== 5) {
-			if (tag.name.startsWith('TAG_') || tag.name.startsWith('TYPE_')) {
+			if (tag.name.startsWith('TAG_') || tag.name.startsWith('TYPE_') || tag.name === 'NO_TAG') {
 				taglist[index].name_i18n = i18n.__(tag.name);
 			} else {
 				taglist[index].name_i18n = tag.name;

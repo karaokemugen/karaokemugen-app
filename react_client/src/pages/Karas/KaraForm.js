@@ -32,15 +32,15 @@ class KaraForm extends Component {
 		timestamp.round = true;
 		if (!this.props.kara.dateadded) this.props.kara.dateadded = timestamp.now();
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
-		if (this.props.kara.singer) this.state.singer = this.props.kara.singer.split(',');
+		if (this.props.kara.singer && this.props.kara.singer !== 'NO_TAG') this.state.singer = this.props.kara.singer.split(',');
 		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
 		if (this.props.kara.groups) this.state.groups = this.props.kara.groups.split(',');
-		if (this.props.kara.songwriter) this.state.songwriter = this.props.kara.songwriter.split(',');
-		if (this.props.kara.author !== '' && this.props.kara.author) this.state.author = this.props.kara.author.split(',');
+		if (this.props.kara.songwriter && this.props.kara.songwriter !== 'NO_TAG') this.state.songwriter = this.props.kara.songwriter.split(',');
+		if (this.props.kara.author && this.props.kara.author !== 'NO_TAG') this.state.author = this.props.kara.author.split(',');
 		if (this.props.kara.lang) this.state.lang = this.props.kara.lang.split(',');
-		if (this.props.kara.creator) this.state.creator = this.props.kara.creator.split(',');
+		if (this.props.kara.creator && this.props.kara.creator !== 'NO_TAG') this.state.creator = this.props.kara.creator.split(',');
 		if (this.props.kara.type) this.state.songtype =  this.props.kara.type.replace('TYPE_','');
-		if (this.props.kara.tags) this.state.tags = this.props.kara.tags.split(',');
+		if (this.props.kara.tags && this.props.kara.tags !== 'NO_TAG') this.state.tags = this.props.kara.tags.split(',');
 		if (this.props.kara.mediafile_old) {
 			this.state.overwrite = true;
 			this.state.mediafileList = [{

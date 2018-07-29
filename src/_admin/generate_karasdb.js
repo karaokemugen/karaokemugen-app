@@ -247,11 +247,32 @@ function getKaraTags(kara, allTags) {
 
 	const result = new Set();
 
-	if (kara.singer) kara.singer.split(',').forEach(singer => result.add(getTagId(singer.trim() + ',2', allTags)));
-	if (kara.author) kara.author.split(',').forEach(author => result.add(getTagId(author.trim() + ',6', allTags)));
-	if (kara.tags) kara.tags.split(',').forEach(tag => result.add(getTagId(tag.trim() + ',7', allTags)));
-	if (kara.creator) kara.creator.split(',').forEach(creator => result.add(getTagId(creator.trim() + ',4', allTags)));
-	if (kara.songwriter) kara.songwriter.split(',').forEach(songwriter => result.add(getTagId(songwriter.trim() + ',8', allTags)));
+	if (kara.singer) {
+		kara.singer.split(',').forEach(singer => result.add(getTagId(singer.trim() + ',2', allTags)));
+	} else {
+		result.add(getTagId('NO_TAG,2', allTags));
+	}
+	if (kara.author) {
+		kara.author.split(',').forEach(author => result.add(getTagId(author.trim() + ',6', allTags)));
+	} else {
+		result.add(getTagId('NO_TAG,6', allTags));
+	}
+	if (kara.tags) {
+		kara.tags.split(',').forEach(tag => result.add(getTagId(tag.trim() + ',7', allTags)));
+	} else {
+		result.add(getTagId('NO_TAG,7', allTags));
+	}
+	if (kara.creator) {
+		kara.creator.split(',').forEach(creator => result.add(getTagId(creator.trim() + ',4', allTags)));
+	} else {
+		result.add(getTagId('NO_TAG,4', allTags));
+	}
+	if (kara.songwriter) {
+		kara.songwriter.split(',').forEach(songwriter => result.add(getTagId(songwriter.trim() + ',8', allTags)));
+	} else {
+		result.add(getTagId('NO_TAG,8', allTags));
+	}
+	if (kara.group) kara.group.split(',').forEach(group => result.add(getTagId(group.trim() + ',9', allTags)));
 	if (kara.lang) kara.lang.split(',').forEach(lang => {
 		if (lang === 'und' || lang === 'mul' || hasLang('2B', lang)) {
 			result.add(getTagId(lang.trim() + ',5', allTags));

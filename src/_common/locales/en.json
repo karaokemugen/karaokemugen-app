@@ -50,6 +50,7 @@
 	"TYPE_OT_SHORT": "OT",
 	"TYPE_PV": "Promotional Video",
 	"TYPE_PV_SHORT": "PV",
+	"NO_TAG": "No info",
 	"TAG_SPECIAL": "Special",
 	"TAG_SPECIAL_SHORT": "SPE",
 	"TAG_REMIX": "Remix",

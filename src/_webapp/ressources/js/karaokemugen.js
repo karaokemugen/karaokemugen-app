@@ -121,7 +121,7 @@ var settingsNotUpdated;
 		// Setup
 		$.ajaxSetup({
 			dataFilter: function(res) {
-								
+
 				res = JSON.parse(res);
 				var data = res.data;
 				if(data) { // if server response qualifies as the standard error structure
@@ -203,13 +203,13 @@ var settingsNotUpdated;
 				logInfos.token = mugenToken;
 				if(scope === 'admin' && logInfos.role !== 'admin') {
 					$('#loginModal').modal('show');
-				} else {			
+				} else {
 					initApp();
 				}
 			} else {
 				$('#loginModal').modal('show');
 			}
-		} else if (mugenToken) { 
+		} else if (mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
 			initApp();
@@ -422,7 +422,7 @@ var settingsNotUpdated;
 			var searchLanguage = navigator.languages[0];
 			if(!details.data('misc') || (
 				details.data('misc').indexOf('TAG_VIDEOGAME') === -1
-				&& details.data('misc').indexOf('TAG_MOVIE') === -1 
+				&& details.data('misc').indexOf('TAG_MOVIE') === -1
 				)) {
 				extraSearchInfo = 'anime ';
 			}
@@ -462,7 +462,7 @@ var settingsNotUpdated;
 			//var newWindows = window.open();
 			xhttp.open("GET", searchUrl , true);
 			xhttp.send();
-			
+
 		};
 
 		likeKara = function(like, $el) {
@@ -550,9 +550,9 @@ var settingsNotUpdated;
 		$('body').on('click', '.closeParent', function () {
 			var el = $(this);
 			var container = el.closest('.alert,.shutdown-popup');
-			
+
 			var infoKaraButton = container.closest('li').find('[name="infoKara"]');
- 
+
 			if(container.hasClass('detailsKara') && infoKaraButton.length > 0) {
 				infoKaraButton.click();
 			} else {
@@ -561,7 +561,7 @@ var settingsNotUpdated;
 				});
 			}
 		});
-		
+
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
@@ -677,11 +677,11 @@ var settingsNotUpdated;
 				$('#signupPassword').focus();
 			} else {
 				var data = { login: username, password: password};
-				
+
 				if(scope === 'admin') {
 					data.role =  $('#signupRole').val();
 				}
-				
+
 				$.ajax({
 					url: scope + '/users',
 					type: 'POST',
@@ -693,9 +693,9 @@ var settingsNotUpdated;
 
 						$('#loginModal').modal('hide');
 						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
-						
+
 						if(scope === 'public' || introManager &&  typeof introManager._currentStep !== 'undefined') login(username, password);
-					
+
 					}).fail(function(response) {
 						//displayMessage('info','', i18n.__('LOG_ERROR'));
 						$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
@@ -801,7 +801,7 @@ var settingsNotUpdated;
 					$input.focus();
 				} else {
 					var profileData = $('.profileData .profileLine > input[name]').serialize();
-					$.ajax({ 
+					$.ajax({
 						url: 'public/myaccount',
 						type: 'PUT',
 						data: profileData
@@ -873,11 +873,11 @@ var settingsNotUpdated;
 
 		});
 		$('.favImport > input').change(function() {
-			if ( ! window.FileReader ) return alert( 'FileReader API is not supported by your browser.' ); 
-			
+			if ( ! window.FileReader ) return alert( 'FileReader API is not supported by your browser.' );
+
 			var input = this;
 			if ( input.files && input.files[0] ) {
-				file = input.files[0]; 
+				file = input.files[0];
 				fr = new FileReader();
 				fr.onload = function () {
 					displayModal('confirm',i18n.__('CONFIRM_FAV_IMPORT'), '', function(confirm){
@@ -891,7 +891,7 @@ var settingsNotUpdated;
 					});
 				};
 				fr.readAsText( file );
-			} 
+			}
 		});
 		$('.favExport').click(function() {
 			ajx('GET', 'public/favorites/export', {}, function(data) {
@@ -900,7 +900,7 @@ var settingsNotUpdated;
 				dlAnchorElem.setAttribute('href', dataStr);
 				dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', logInfos.username, new Date().toLocaleDateString().replace('\\','-')].join('_') + '.kmplaylist');
 				dlAnchorElem.click();
-			});		
+			});
 		});
 
 		/* profil stuff END */
@@ -1172,7 +1172,9 @@ var settingsNotUpdated;
 							var badges = '';
 							if(kara.misc) {
 								kara.misc.split(',').forEach(function(tag) {
-									badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
+									if (tag !== 'NO_TAG') {
+										badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
+									}
 								});
 							}
 							if (mode === 'list') {
@@ -1450,10 +1452,10 @@ var settingsNotUpdated;
 		var deferred = $.Deferred();
 
 		var playlistList = {};
-		
+
 		var select1 = $('#selectPlaylist1'), select2 = $('#selectPlaylist2');
 		var val1 = select1.val(), val2 = select2.val();
-		
+
 		$.ajax({ url: scope + '/playlists', }).done(function (data) {
 			playlistList = data; // object containing all the playlists
 			var shiftCount = 0;
@@ -1558,8 +1560,8 @@ var settingsNotUpdated;
 				}).join(' ');
 				dashboard.removeAttr(attrListStr);
 			}
-		
-			
+
+
 			$.each(optionAttrList, function() {
 				dashboard.attr(this.name, this.value);
 			});
@@ -1659,7 +1661,7 @@ var settingsNotUpdated;
 						$('#karaInfo').attr('length', kara.duration);
 						$('#karaInfo > span').text( buildKaraTitle(kara) );
 						$('#karaInfo > span').data('text', buildKaraTitle(kara) );
-						
+
 						if(webappMode === 1) {
 							buildKaraDetails(kara, 'karaCard');
 						}
@@ -1729,7 +1731,7 @@ var settingsNotUpdated;
 				return titleArray[k] ? titleArray[k] : '';
 			});
 			titleText = titleClean.join(' - ') + '<br/>' + data.title;
-			
+
 		} else {
 			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
 				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
@@ -1738,8 +1740,8 @@ var settingsNotUpdated;
 			});
 			titleText = titleClean.join(' - ');
 		}
-		
-	
+
+
 		if(options.search) {
 			var search_regexp = new RegExp('(' + options.search + ')', 'gi');
 			titleText = titleText.replace(search_regexp,'<h>$1</h>');
@@ -1763,13 +1765,13 @@ var settingsNotUpdated;
 					detailsHtml = $(detailsHtml).hide();
 					liKara.find('.contentDiv').after(detailsHtml);
 					$(detailsHtml).data(data[0]);
-	
+
 					detailsHtml.fadeIn(animTime);
 					liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
 					saveDetailsKara(idPlaylist, idKara, 'add');
-	
+
 					liKara.removeClass('loading');
-	
+
 					if(introManager && introManager._currentStep) introManager.nextStep();
 				}).always(function (data) {
 					liKara.removeClass('loading');
@@ -1881,7 +1883,7 @@ var settingsNotUpdated;
 		var $pollModal = $('#pollModal');
 		var $timer = $('#pollModal .timer');
 		var randArray = Array.from(Array(15).keys());
-	
+
 		$('#nav-poll').empty();
 		$.each(data, function(index, kara) {
 			var randColor = '42';
@@ -1901,7 +1903,7 @@ var settingsNotUpdated;
 							+	karaTitle
 							+	'	</button>'
 							+	'</div>');
-		});		
+		});
 
 		if(show) {
 			$pollModal.modal('show');
@@ -1913,7 +1915,7 @@ var settingsNotUpdated;
 	buildPollFromApi = function() {
 		ajx('GET', 'public/songpoll', {}, function(data) {
 			buildAndShowPoll(data.poll, false, data.timeLeft);
-		});		
+		});
 	}
 
 
@@ -1978,7 +1980,7 @@ var settingsNotUpdated;
 			settingsUpdating = getSettings() ;
 		} else if (scope === 'public') {
 			settingsUpdating = getPublicSettings();
-			
+
 		} else {
 			$(window).trigger('resize');
 			$('.plSelect .select2').select2({ theme: 'bootstrap',
@@ -1994,7 +1996,7 @@ var settingsNotUpdated;
 				if(scope === 'public' && settings.EngineSongPoll) {
 					ajx('GET', 'public/songpoll', {}, function(data) {
 						$('.showPoll').toggleClass('hidden');
-					});		
+					});
 				}
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
@@ -2002,12 +2004,12 @@ var settingsNotUpdated;
 					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
 					refreshPlaylistDashboard(1);
 					refreshPlaylistDashboard(2);
-	
+
 					$(window).trigger('resize');
 				});
 			});
 		}
-		
+
 		if(logInfos.role != 'guest') {
 			$('.pseudoChange').show();
 			$('#searchParent').css('width','');
@@ -2016,7 +2018,7 @@ var settingsNotUpdated;
 			$('#searchParent').css('width','100%');
 		}
 
-		if(!introManager || !introManager._currentStep) initSwitchs(); 
+		if(!introManager || !introManager._currentStep) initSwitchs();
 
 		$('.bootstrap-switch').promise().then(function(){
 			$(this).each(function(){
@@ -2046,7 +2048,7 @@ var settingsNotUpdated;
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
 		}
-		
+
 		if(!isSmall) {
 			$('#modalBox').find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
 		} else {
@@ -2089,7 +2091,7 @@ var settingsNotUpdated;
 			}
 		});
 
-		
+
 		/* init selects & switchs */
 		if(scope === 'admin') {
 			$('[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event, state) {
@@ -2104,13 +2106,13 @@ var settingsNotUpdated;
 					}
 				}
 			});
-			
+
 			$('#settings input[type="checkbox"], input[name="EnginePrivateMode"]').on('switchChange.bootstrapSwitch', function () {
 				setSettings($(this));
 			});
 
 		}
-					
+
 		/* set the right value for switchs */
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			$(this).val($(this).is(':checked') ? '1' : '0');
@@ -2150,13 +2152,13 @@ var settingsNotUpdated;
 				logInfos = response;
 				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
 				initApp();
-				
+
 				if(introManager && typeof introManager._currentStep !== 'undefined') {
 					introManager.nextStep();
 				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
 					$('#helpModal').modal('show');
 				}
-				
+
 				if (welcomeScreen) {
 					logInfos = parseJwt(response.token);
 					$('#wlcm_login > span').text(logInfos.username);
@@ -2237,11 +2239,11 @@ var settingsNotUpdated;
 	};
 
 	deleteKaraPublic = function(idPlaylistContent) {
-		
+
 		$.ajax({ url: scope + '/playlists/' + playlistToAdd + '/karas/' + idPlaylistContent,
 			type: 'DELETE'
 		}).done(function() {
-	
+
 			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		});
 	};
@@ -2259,7 +2261,7 @@ var settingsNotUpdated;
 		socket.on('songPollEnded', function(data){
 			$('#pollModal').modal('hide');
 			$('.showPoll').toggleClass('hidden');
-			
+
 		});
 		socket.on('songPollResult', function(data){
 			displayMessage('success', '', i18n.__('POLLENDED', [data.kara.substring(0,100), data.votes]));
@@ -2353,7 +2355,7 @@ var settingsNotUpdated;
 		socket.on('quotaAvailableUpdated', function(data){
 			if (logInfos.username === data.username) {
 				var quota = data.quotaLeft;
-			
+
 				var quotaString = '';
 				if(data.quotaType == 1) {
 					quotaString = data.quotaLeft;
