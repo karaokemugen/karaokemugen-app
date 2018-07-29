@@ -36,7 +36,7 @@ class KaraForm extends Component {
 		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
 		if (this.props.kara.groups) this.state.groups = this.props.kara.groups.split(',');
 		if (this.props.kara.songwriter) this.state.songwriter = this.props.kara.songwriter.split(',');
-		if (this.props.kara.author) this.state.author = this.props.kara.author.split(',');
+		if (this.props.kara.author !== '' && this.props.kara.author) this.state.author = this.props.kara.author.split(',');
 		if (this.props.kara.lang) this.state.lang = this.props.kara.lang.split(',');
 		if (this.props.kara.creator) this.state.creator = this.props.kara.creator.split(',');
 		if (this.props.kara.type) this.state.songtype =  this.props.kara.type.replace('TYPE_','');
