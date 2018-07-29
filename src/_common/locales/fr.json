@@ -388,6 +388,8 @@
 	"PROFILE_URL": "Site web",
 	"PROFILE_BIO": "Biographie",
 	"PROFILE_PASSWORD": "Mot de passe",
+	"UPVOTE_NUMBER": "Soutients",
+	"UPVOTE_TOOLTIP": "Libérer ce kara",
 	"PROFILE_PASSWORDCONF": "Confirmer",
 	"UPVOTE_DONE": "Karaoke %s reçoit un soutien !",
 	"UPVOTE_ALREADY_DONE": "Vous soutenez déjà ce karaoké !",
