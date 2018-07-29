@@ -79,7 +79,7 @@ async function compareBases() {
 	const karasBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt,'karas');
 	const lyricsBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'lyrics');
 	const altnamesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series.json');
-	if (!await compareFiles(altnamesBasePath,altnamesMinePath)) {
+	if (!await asyncExists(altnamesMinePath) || !await compareFiles(altnamesBasePath,altnamesMinePath)) {
 		copy(
 			altnamesBasePath,
 			altnamesMinePath,
