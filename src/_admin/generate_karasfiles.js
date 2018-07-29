@@ -173,7 +173,7 @@ async function importKara(mediaFile, subFile, data) {
 			.replace('ô','ou')
 			.replace('û','uu')
 		;
-		kara = deburr(kara).replace( /[^\x00-\xFF]/g, '' ).replace(' [ ]+',' ');
+		kara = deburr(kara).replace( /[^\x00-\xFF]/g, '' ).replace(/ [ ]+/,' ');
 	}
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
