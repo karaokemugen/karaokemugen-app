@@ -902,6 +902,7 @@ var settingsNotUpdated;
 	checkboxKaraHtml = '<span name="checkboxKara"></span>';
 	infoKaraHtml = '<button name="infoKara" class="btn btn-sm btn-action"></button>';
 	likeKaraHtml = '<button class="likeKara btn btn-sm btn-action"></button>';
+	likeCountHtml = '<bdg class="likeCount" title="' + i18n.__('UPVOTE_TOOLTIP') + '">upvotes <i class="glyphicon glyphicon-heart"></i></bdg>',
 	closeButton = '<button class="closeParent btn btn-action"></button>';
 	closeButtonBottom = '<button class="closeParent bottom btn btn-action"></button>';
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
@@ -1110,10 +1111,14 @@ var settingsNotUpdated;
 							+	(kara.username == logInfos.username ? 'user' : '' );
 
 							var badges = '';
+							
 							if(kara.misc) {
 								kara.misc.split(',').forEach(function(tag) {
 									badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
 								});
+							}
+							if(kara.upvotes) {
+								badges += likeCountHtml.replace('upvotes', kara.upvotes);
 							}
 							if (mode === 'list') {
 								var likeKara = likeKaraHtml;
@@ -1750,7 +1755,8 @@ var settingsNotUpdated;
 			}
 		}
 		var details = {
-			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
+			  'UPVOTE_NUMBER' : data['upvotes']
+			, 'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
 			, 'BLCTYPE_6': 			data['author']

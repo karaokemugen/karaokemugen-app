@@ -365,7 +365,20 @@ button[name="infoKara"]:before {
 	content:"\e005";
     color: firebrick;
 }
-
+.likeCount:hover {
+	background-color: hsl(213, 20%, 28%);
+}
+.likeCount:active {
+	background-color: hsl(213, 20%, 10%);
+}
+.likeCount {
+	cursor: pointer;
+	color: #aaa;
+}
+.likeCount > i {
+    color: firebrick;
+    font-size: 88%;
+}
 .playKara:before {
 	content:"\e072";
 }
