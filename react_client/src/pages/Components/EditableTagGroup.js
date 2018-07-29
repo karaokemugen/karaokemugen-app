@@ -86,7 +86,7 @@ export default class EditableTagGroup extends React.Component {
 
 	render() {
 		const { value, inputVisible } = this.state;
-		console.log(value);
+
 		return (
 			<div>
 				{
