@@ -1817,19 +1817,19 @@ var settingsNotUpdated;
 			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
 			, 'BLCTYPE_6': 			data['author']
 			, 'DETAILS_VIEWS':		data['viewcount']
-			, 'BLCTYPE_4':				data['creator']
+			, 'BLCTYPE_4':			data['creator']
 			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
-			, 'BLCTYPE_7':				data['misc_i18n']
+			, 'BLCTYPE_7':			data['misc_i18n']
 			, 'DETAILS_SERIE':		data['serie']
 			, 'DETAILS_SERIE_ALT':	data['serie_altname']
-			, 'BLCTYPE_2':				data['singer']
+			, 'BLCTYPE_2':			data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
 			, 'DETAILS_YEAR':		data['year']
-			, 'BLCTYPE_8':				data['songwriter']
+			, 'BLCTYPE_8':			data['songwriter']
 		};
 		var htmlDetails = Object.keys(details).map(function (k) {
-			if(details[k]) {
+			if(details[k] && details[k] !== 'NO_TAG' && details[k] !== i18n.__('NO_TAG')) {
 				var detailsLine = details[k].toString().replace(/,/g, ', ');
 				return '<tr><td>' + i18n.__(k) + '</td><td>' + detailsLine + '</td><tr/>';
 			} else return '';
