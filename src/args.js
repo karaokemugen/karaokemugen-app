@@ -1,11 +1,11 @@
 import {setConfig} from './_common/utils/config';
 import logger from 'winston';
 
-const help = `Usage : 
+const help = `Usage :
 
 karaokemugen [options]
 
-Options : 
+Options :
 --help        Displays this message
 --version     Displays version info
 --debug       Displays additional debug messages
@@ -20,9 +20,10 @@ Options :
 --updateBase  Update karaoke base files (no generation)
 --noBrowser   Do not open a browser window upon launch
 --noMedia     (generation only) Do not try to fetch data from media files
+--modifyASS   (generation only) modify ASS files if they do not have PlayResX/Y (experimental!)
 `;
 
-export async function parseCommandLineArgs(argv) {	
+export async function parseCommandLineArgs(argv) {
 	if (argv.help) {
 		console.log(help);
 		process.exit(0);
@@ -65,7 +66,7 @@ export async function parseCommandLineArgs(argv) {
 	}
 	if (argv.karagen) {
 		logger.info('[Launcher] .kara generation requested');
-		setConfig({optKaragen: true});		
+		setConfig({optKaragen: true});
 	}
 	if (argv.updateBase) {
 		logger.info('[Launcher] Base update requested');

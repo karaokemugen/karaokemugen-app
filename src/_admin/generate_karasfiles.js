@@ -43,6 +43,7 @@ export async function editKara(kara_id,kara) {
 				await asyncCopy(subFile, resolve(resolvedPathTemp(),kara.subfile), {overwrite: true});
 			}
 		}
+		kara.KID = kara.kid;
 		// Treat files
 		newKara = await generateKara(kara);
 		const newSubFile = resolve(resolvedPathSubs()[0],newKara.data.subfile);
@@ -136,7 +137,6 @@ async function generateKara(kara, opts) {
 		kara.tags.forEach((e,i) => kara.tags[i] = e.trim());
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());
 		kara.author.forEach((e,i) => kara.author[i] = e.trim());
-
 		if (!kara.order) kara.order = '';
 		newKara = await importKara(newMediaFile, newSubFile, kara);
 		return newKara;
