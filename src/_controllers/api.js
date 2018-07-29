@@ -4936,5 +4936,4 @@ export function APIControllerPublic(router) {
 				res.json(validationErrors);
 			}
 		});
-
 }

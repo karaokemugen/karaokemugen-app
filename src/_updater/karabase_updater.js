@@ -238,7 +238,7 @@ async function checkDirs() {
 	const karaPaths = conf.PathKaras.split('|');
 	const karaPath = karaPaths[0];
 	if (await isGitRepo(resolve(conf.appPath, karaPath, '../'))) {
-		logger.error('Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it.');
+		logger.warn('[Updater] Your base folder is a git repository. We cannot update it, please run "git pull" to get updates or use your git client to do it. Media files are going to be updated though.');
 		return false;
 	}
 	return true;

@@ -10,7 +10,7 @@ class Database extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			updateModal: false,			
+			updateModal: false,
 		};
 	}
 
@@ -90,13 +90,17 @@ class Database extends Component {
 				<Modal
 					title='Confirm update'
 					visible={this.state.updateModal}
-					onOk={() => this.dbupdate.bind(this)}
+					onOk={() => {
+						this.dbupdate();
+						this.setState({updateModal: false});
+					}}
 					onCancel={() => this.setState({updateModal: false})}
-					okText='yes'
+					okText='yes, do it!'
 					cancelText='no'
 				>
 					<p>WARNING: Updating will delete <b>any file not in the official Karaoke Mugen repository</b>.</p>
 					<p>If you created karaokes but did not upload them, they will be deleted.</p>
+					<p>You can check progress in the Karaoke Mugen console window</p>
 					<p>Are you sure?</p>
 				</Modal>
 			</Layout.Content>
