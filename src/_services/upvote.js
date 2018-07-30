@@ -14,6 +14,7 @@ export async function addUpvote(plc_id,username) {
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {message: 'PLC ID unknown'};
 		const user = await findUserByName(username);
+		if (plc.user_id === user.id) throw {code: 'UPVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
 		if (userList.some(u => {
 			return u.user_id === user.id;
@@ -47,6 +48,7 @@ export async function deleteUpvote(plc_id,username) {
 		const plc = await getPLCInfoMini(plc_id);
 		if (!plc) throw {message: 'PLC ID unknown'};
 		const user = await findUserByName(username);
+		if (plc.user_id === user.id) throw {code: 'DOWNVOTE_NO_SELF'};
 		const userList = await getUpvotesByPLC(plc_id);
 		const userIDs = [];
 		userList.forEach(u => {

@@ -746,20 +746,26 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token,opts) {
 
 }
 
-export async function editPLC(plc_id,pos,flag_playing,token) {
+export async function editPLC(plc_id,params,token) {
 	profile('editPLC');
+	if (+params.flag_playing === 0) throw 'flag_playing cannot be unset! Set it to another karaoke to unset it on this one';
+	if (+params.flag_free === 0) throw 'flag_free cannot be unset!';
 	const plcData = await getPLCInfoMini(plc_id);
 	if (!plcData) throw 'PLC ID unknown';
 	if (!await testPlaylistVisible(plcData.playlist_id,token)) throw `Playlist ${plcData.playlist_id} unknown`;
 	const pl = await getPlaylistInfo(plcData.playlist_id);
 	if (pl.flag_favorites === 1) throw 'Karaokes in favorite playlists cannot be modified';
-	if (flag_playing) {
+	if (params.flag_playing) {
 		await setPlaying(plc_id,pl.playlist_id);
 		if (pl.flag_current) playingUpdated();
 	}
-	if (pos) {
-		await raisePosInPlaylist(pos,pl.playlist_id);
-		await setPos(plc_id,pos);
+	if (params.flag_free) {
+		await freePLC(plc_id);
+		updateSongsLeft(plcData.user_id,pl.playlist_id);
+	}
+	if (params.pos) {
+		await raisePosInPlaylist(params.pos,pl.playlist_id);
+		await setPos(plc_id,params.pos);
 		await reorderPlaylist(pl.playlist_id);
 	}
 	updatePlaylistLastEditTime(pl.playlist_id);

@@ -160,6 +160,25 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		});
 
 		
+		$('.playlist-main').on('click', '.likeCount,.likeFreeButton', function () {
+		
+			var li = $(this).closest('li');
+			var idPlaylistContent = li.attr('idplaylistcontent');
+
+			var side = $(this).closest('.panel').attr('side');
+			var idPlaylist = parseInt($('#selectPlaylist' + side).val());
+
+			var flag = $(this).hasClass('free') ? 0 : 1;
+			$.ajax({
+				type: 'PUT',
+				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlaylistContent,
+				data: { flag_free: flag }
+			}).done(function () {
+				
+			});
+		
+		});
+
 		// main actions on karas in the playlists
 		$('.playlist-main').on('click contextmenu', '.actionDiv > button:not(.clusterAction)', function (e) {
 			if(e.type === 'contextmenu') {

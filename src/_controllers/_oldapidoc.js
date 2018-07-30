@@ -1658,7 +1658,7 @@
  * }
  */
 
-	/**
+/**
  * @api {get} /admin/whitelist Get whitelist
  * @apiName GetWhitelist
  * @apiVersion 2.0.0
@@ -1728,7 +1728,7 @@
  * }
  */
 
-	/**
+/**
  * @api {get} /admin/blacklist Get blacklist
  * @apiName GetBlacklist
  * @apiVersion 2.0.0
@@ -1798,7 +1798,7 @@
  * }
  */
 
-	/**
+/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
  * @apiVersion 2.1.0
@@ -1913,7 +1913,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
  * @apiVersion 2.1.0
@@ -1985,7 +1985,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {get} /public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
  * @apiVersion 2.1.0
@@ -2057,7 +2057,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
  * @apiVersion 2.1.0
@@ -2130,7 +2130,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 2.1.0
@@ -2222,7 +2222,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
  * @apiVersion 2.1.0
@@ -2303,7 +2303,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.1.0
@@ -2385,7 +2385,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {get} /public/favorites View own favorites
  * @apiName GetFavorites
  * @apiVersion 2.1.0
@@ -2463,7 +2463,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
  * @apiVersion 2.1.0
@@ -2542,7 +2542,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  */
-	/**
+/**
  * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
  * @apiVersion 2.1.0
@@ -2656,7 +2656,7 @@
  *   "message": "PLCID unknown!"
  * }
  */
-	/**
+/**
  * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
  * @apiVersion 2.1.0
@@ -2738,7 +2738,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {put} /admin/settings Update settings
  * @apiName PutSettings
  * @apiVersion 2.1.0
@@ -2778,7 +2778,7 @@
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
-	/**
+/**
  * @api {get} /public/settings Get settings (public)
  * @apiName GetSettingsPublic
  * @apiVersion 2.1.0
@@ -2872,7 +2872,7 @@
  *
  */
 
-	/**
+/**
  * @api {post} /admin/playlists/ Create a playlist
  * @apiName PostPlaylist
  * @apiVersion 2.0.0
@@ -2902,7 +2902,7 @@
  */
 
 
-	/**
+/**
  * @api {get} /admin/playlists/:pl_id Get playlist information
  * @apiName GetPlaylist
  * @apiGroup Playlists
@@ -2943,7 +2943,7 @@
  * HTTP/1.1 500 Internal Server Error
  */
 
-	/**
+/**
  * @api {put} /admin/playlists/:pl_id Update a playlist's information
  * @apiName PutPlaylist
  * @apiVersion 2.0.0
@@ -2971,7 +2971,7 @@
  * HTTP/1.1 500 Internal Server Error
  */
 
-	/**
+/**
  * @api {delete} /admin/playlists/:pl_id Delete a playlist
  * @apiName DeletePlaylist
  * @apiVersion 2.0.0
@@ -2996,7 +2996,7 @@
  * HTTP/1.1 500 Internal Server Error
  */
 
-	/**
+/**
  * @api {put} /admin/playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
  * @apiVersion 2.0.0
@@ -3333,7 +3333,7 @@
  * }
  */
 
-	/**
+/**
  * @api {post} /admin/blacklist/criterias Add a blacklist criteria
  * @apiName PostBlacklistCriterias
  * @apiVersion 2.0.0
@@ -3372,7 +3372,7 @@
  * }
  */
 
-	/**
+/**
  * @api {post} /admin/blacklist/criterias Add a blacklist criteria
  * @apiName PostBlacklistCriterias
  * @apiVersion 2.0.0
@@ -3640,7 +3640,7 @@
  * }
  */
 
- /**
+/**
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
 	* @apiVersion 2.1.0
@@ -3685,7 +3685,64 @@
     * HTTP/1.1 403 Forbidden
 	*/
 
+/**
 	/**
+ * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
+ * @apiName PutPlaylistKara
+ * @apiVersion 2.1.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
+ * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
+ * @apiParam {Number} [pos] Position in target playlist where to move the song to.
+ * @apiParam {Number} [flag_playing] If set to 1, the selected song will become the currently playing song.
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {String} data PLCID modified
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "code": "PL_CONTENT_MODIFIED",
+ *   "data": "4962"
+ * }
+ * @apiError PL_MODIFY_CONTENT_ERROR Unable to modify content's position or playing status
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "code": "PL_MODIFY_CONTENT_ERROR",
+ *   "message": "PLCID unknown!"
+ * }
+ */
+
+/**
+	 * @api {post} /public/playlists/public/karas/:plc_id/vote Up/downvote a song in public playlist
+	 * @apiName PostVote
+	 * @apiVersion 2.1.0
+	 * @apiGroup Playlists
+	 * @apiPermission public
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {Number} plc_id Target playlist content ID
+	 * @apiParam {String} [downvote] If anything is specified in this parameter, it'll be a downvote instead of upvote.
+	 * @apiSuccess {String} code Return code
+	 * @apiSuccess {String} args Name of song being upvoted
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": 'UPVOTE_DONE',
+	 *   "args": 'Shoujo Kakumei Utena - Rinbu Revolution'
+	 * }
+	 * @apiError UPVOTE_FAILED Unable to upvote karaoke
+	 * @apiError DOWNVOTE_FAILED Unable to downvote karaoke
+	 * @apiError UPVOTE_ALREADY_DONE Karaoke has already been upvoted by this user
+	 * @apiError DOWNVOTE_ALREADY_DONE Karaoke has already been downvoted by this user
+	 *
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 */
+
+/**
  * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
  * @apiVersion 2.2.0
@@ -4011,6 +4068,7 @@
  * }
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
+<<<<<<< HEAD
  */
 
  	/**
@@ -4090,7 +4148,7 @@
  * HTTP/1.1 403 Forbidden
  */
 
-	/**
+/**
  * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
  * @apiVersion 2.2.0
@@ -4184,7 +4242,7 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
-	/**
+/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
  * @apiVersion 2.2.0

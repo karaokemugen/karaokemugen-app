@@ -1080,6 +1080,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+ * @apiSuccess {Number} data/flag_free Wether the song has been marked as free or not
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
@@ -1132,6 +1133,7 @@ export function APIControllerAdmin(router) {
  *           "flag_whitelisted": 0,
  *           "flag_dejavu": 0,
  * 			 "flag_favorites": 0,
+ *           "flag_free": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
@@ -1189,14 +1191,15 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
- * @apiVersion 2.1.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
  * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
  * @apiParam {Number} [pos] Position in target playlist where to move the song to.
- * @apiParam {Number} [flag_playing] If set to 1, the select song will become the currently playing song.
+ * @apiParam {Number} [flag_playing] If set to 1, the selected song will become the currently playing song.
+ * @apiParam {Number} [flag_free] If set to 1, the selected song will be marked as free. Setting it to 0 has no effect.
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} data PLCID modified
  *
@@ -1221,13 +1224,18 @@ export function APIControllerAdmin(router) {
 
 			const validationErrors = check(req.body, {
 				flag_playing: {boolIntValidator: true},
-				pos: {integerValidator: true}
+				pos: {integerValidator: true},
+				flag_free: {boolIntValidator: true}
 			});
 			if (!validationErrors) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				if (req.body.flag_playing) req.body.flag_playing = parseInt(req.body.flag_playing, 10);
 				try {
-					await editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,req.authToken);
+					await editPLC(req.params.plc_id,{
+						pos: req.body.pos,
+						flag_playing: req.body.flag_playing,
+						flag_free: req.body.flag_free
+					},req.authToken);
 					res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
 				} catch(err) {
 					logger.error(err);
@@ -2453,6 +2461,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+ * @apiSuccess {Number} data/flag_free Wether the song has been freed or not
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default, `EngineMaxDejaVuTime` is at 60 minutes)
@@ -2507,6 +2516,7 @@ export function APIControllerPublic(router) {
  * 			 "flag_favorites": 0,
  *           "flag_whitelisted": 0,
  * 	         "flag_dejavu": 0,
+ *           "flag_free": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
@@ -3658,7 +3668,7 @@ export function APIControllerPublic(router) {
 		/**
 	 * @api {post} /public/playlists/public/karas/:plc_id/vote Up/downvote a song in public playlist
 	 * @apiName PostVote
-	 * @apiVersion 2.1.0
+	 * @apiVersion 2.3.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -3676,7 +3686,8 @@ export function APIControllerPublic(router) {
 	 * @apiError DOWNVOTE_FAILED Unable to downvote karaoke
 	 * @apiError UPVOTE_ALREADY_DONE Karaoke has already been upvoted by this user
 	 * @apiError DOWNVOTE_ALREADY_DONE Karaoke has already been downvoted by this user
-	 *
+	 * @apiError UPVOTE_NO_SELF User can not upvote own karaoke
+	 * @apiError DOWNVOTE_NO_SELF User can not downvote own karaoke
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */

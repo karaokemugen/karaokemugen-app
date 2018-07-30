@@ -240,7 +240,8 @@ export const getPLCInfo = `SELECT ak.kara_id AS kara_id,
       							pc.pos AS pos,
       							pc.pk_id_plcontent AS playlistcontent_id,
 	    						pc.fk_id_playlist as playlist_id,
-      							pc.flag_playing AS flag_playing,
+								pc.flag_playing AS flag_playing,
+								pc.flag_free AS flag_free,
       							ak.mediafile AS mediafile,
 	  							ak.duration AS duration,
 	  							ak.gain AS gain,
@@ -295,6 +296,7 @@ export const getPLCInfoMini = `SELECT pc.fk_id_kara AS kara_id,
 						  u.login AS username,
 							pc.pk_id_plcontent AS playlistcontent_id,
 						  pc.fk_id_playlist AS playlist_id,
+						    pc.fk_id_user AS user_id,
 						  (SELECT COUNT(*)
     								FROM upvote AS up
 									WHERE up.fk_id_plcontent = pc.pk_id_plcontent) AS upvotes
