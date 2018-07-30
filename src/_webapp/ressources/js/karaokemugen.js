@@ -895,22 +895,23 @@ var settingsNotUpdated;
 	oldState = {};
 	oldSearchVal = '';
 
-	addKaraHtml = '<button name="addKara" class="btn btn-sm btn-action"></button>';
-	deleteKaraHtml = '<button name="deleteKara" class="btn btn-sm btn-action"></button>';
-	deleteCriteriaHtml = '<button name="deleteCriteria" class="btn btn-action deleteCriteria"></button>';
-	transferKaraHtml = '<button name="transferKara" class="btn btn-sm btn-action"></button>';
+	addKaraHtml = '<button title="' + i18n.__('TOOLTIP_ADDKARA') + '" name="addKara" class="btn btn-sm btn-action"></button>';
+	deleteKaraHtml = '<button title="' + i18n.__('TOOLTIP_DELETEKARA') + '" name="deleteKara" class="btn btn-sm btn-action"></button>';
+	deleteCriteriaHtml = '<button title="' + i18n.__('TOOLTIP_DELETECRITERIA') + '" name="deleteCriteria" class="btn btn-action deleteCriteria"></button>';
+	transferKaraHtml = '<button title="' + i18n.__('TOOLTIP_TRANSFERKARA') + '" name="transferKara" class="btn btn-sm btn-action"></button>';
 	checkboxKaraHtml = '<span name="checkboxKara"></span>';
-	infoKaraHtml = '<button name="infoKara" class="btn btn-sm btn-action"></button>';
+	infoKaraHtml = '<button title="' + i18n.__('TOOLTIP_SHOWINFO') + '" name="infoKara" class="btn btn-sm btn-action"></button>';
 	likeKaraHtml = '<button class="likeKara btn btn-sm btn-action"></button>';
-	likeCountHtml = '<bdg class="likeCount" title="' + i18n.__('UPVOTE_TOOLTIP') + '">upvotes <i class="glyphicon glyphicon-heart"></i></bdg>',
-	closeButton = '<button class="closeParent btn btn-action"></button>';
-	closeButtonBottom = '<button class="closeParent bottom btn btn-action"></button>';
+	likeCountHtml = '<bdg class="likeCount" title="' + i18n.__('TOOLTIP_UPVOTE') + '">upvotes <i class="glyphicon glyphicon-heart"></i></bdg>',
+	closeButton = '<button title="' + i18n.__('TOOLTIP_CLOSEPARENT') + '" class="closeParent btn btn-action"></button>';
+	closeButtonBottom = '<button title="' + i18n.__('TOOLTIP_CLOSEPARENT') + '" class="closeParent bottom btn btn-action"></button>';
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
-	showFullTextButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
-	showVideoButton = '<button class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
-	makeFavButton = '<button class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	showFullTextButton = '<button title="' + i18n.__('TOOLTIP_SHOWLYRICS') + '" class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	showVideoButton = '<button title="' + i18n.__('TOOLTIP_SHOWVIDEO') + '" class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	makeFavButton = '<button title="' + i18n.__('TOOLTIP_FAV') + '" class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	likeFreeButton = '<button title="' + i18n.__('TOOLTIP_UPVOTE') + '" class="likeFreeButton btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
-	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
+	playKaraHtml = '<button title="' + i18n.__('TOOLTIP_PLAYKARA') + '" class="btn btn-sm btn-action playKara"></btn>';
 	buttonHtmlPublic = '';
 
 	listTypeBlc = [
@@ -1783,12 +1784,16 @@ var settingsNotUpdated;
 		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButton.replace('makeFav','makeFav currentFav') : makeFavButton;
 
 		if (htmlMode == 'list') {
+			var isPublic = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_public');
+			var likeFreeButtonHtml = data['flag_free'] ? likeFreeButton.replace('likeFreeButton', 'likeFreeButton free btn-primary') : likeFreeButton;
+
 			infoKaraTemp = '<div class="detailsKara alert alert-info">'
 				+ '<div class="topRightButtons">'
 				+ (isTouchScreen ? '' : closeButton)
 				+ makeFavButtonAdapt
 				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
+				+ (isPublic ? likeFreeButtonHtml : '')
 				+ '</div>'
 				+ htmlTable
 				+ '</div>';

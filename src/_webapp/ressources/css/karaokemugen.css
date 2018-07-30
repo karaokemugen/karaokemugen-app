@@ -348,6 +348,9 @@ button[name="infoKara"]:before {
 .showVideo:before {
 	content:"\e009";
 }
+.likeFreeButton:before {
+	content:"\e102";
+}
 .makeFav:before {
 	content:"\e007";
 }
@@ -1415,7 +1418,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 .btn-danger:hover {
 	border-color: hsla(2, 22%, 67%, 1);
 }
-.btn-primary {
+.btn-primary, .playlist-main ul button.btn-primary {
 	border-color: hsla(208, 22%, 52%, 1);
 	background-color: #37679a;
 }
