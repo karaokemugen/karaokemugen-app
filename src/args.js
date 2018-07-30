@@ -20,7 +20,6 @@ Options :
 --updateBase  Update karaoke base files (no generation)
 --noBrowser   Do not open a browser window upon launch
 --noMedia     (generation only) Do not try to fetch data from media files
---modifyASS   (generation only) modify ASS files if they do not have PlayResX/Y (experimental!)
 `;
 
 export async function parseCommandLineArgs(argv) {
