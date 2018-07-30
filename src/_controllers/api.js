@@ -1038,7 +1038,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -1061,6 +1061,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+ * @apiSuccess {Number} data/flag_free Wether the song has been marked as free or not
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
@@ -1111,6 +1112,7 @@ export function APIControllerAdmin(router) {
  *           "flag_whitelisted": 0,
  *           "flag_dejavu": 0,
  * 			 "flag_favorites": 0,
+ *           "flag_free": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
@@ -2414,7 +2416,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -2435,6 +2437,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+ * @apiSuccess {Number} data/flag_free Wether the song has been freed or not
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default, `EngineMaxDejaVuTime` is at 60 minutes)
@@ -2487,6 +2490,7 @@ export function APIControllerPublic(router) {
  * 			 "flag_favorites": 0,
  *           "flag_whitelisted": 0,
  * 	         "flag_dejavu": 0,
+ *           "flag_free": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
