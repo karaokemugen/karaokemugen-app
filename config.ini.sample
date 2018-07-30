@@ -99,7 +99,7 @@ EngineRepeatPlaylist = 0
 ; and I know it's my time to come home!
 EngineMaxDejaVuTime = 60
 
-; Smart Insert: {boolean} 
+; Smart Insert: {boolean}
 ; SmartInsert : gives priority to people who have not enqueued a lot of songs .
 EngineSmartInsert = 0
 
@@ -131,7 +131,7 @@ EngineRemovePublicOnPlay = 1
 ; Specify the filename, it will be searched in the app/backgrounds folder .
 PlayerBackground = ""
 
-; Monitor choice: 0<={integer}<=9 
+; Monitor choice: 0<={integer}<=9
 ; Set the player to a different screen .
 ; {0}: Main screen
 ; {1}: Second screen
@@ -206,7 +206,7 @@ PathVideosHTTP = ""
 ; Video output driver for mpv .
 ; If you have blue or black window issues in Windows, set mpvVideoOutput to "direct3d", otherwise don't touch this .
 ; mpv should detect automatically which video output driver to use .
-mpvVideoOutput = "" 
+mpvVideoOutput = ""
 
 ; Value: {integer}
 ; Auth configuration .
@@ -231,7 +231,7 @@ WebappSongLanguageMode = 1
 appFirstRun = 1
 
 ; Host and port to Karaoke Mugen online server.
-OnlineMode = 1
+OnlineMode = 0
 OnlineHost = "kara.moe"
 OnlinePort = 80
 
