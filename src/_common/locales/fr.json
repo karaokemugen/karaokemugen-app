@@ -404,9 +404,11 @@
 	"UPVOTE_DONE": "Karaoke %s reçoit un soutien !",
 	"UPVOTE_ALREADY_DONE": "Vous soutenez déjà ce karaoké !",
 	"UPVOTE_FAILED": "Impossible de soutenir ce karaoké",
+	"UPVOTE_NO_SELF": "Impossible de soutenir votre propre karaoké !",
 	"DOWNVOTE_DONE": "Vous n'aimez plus %s :(",
 	"DOWNVOTE_ALREADY_DONE": "Vous avez déjà renié ce karaoké !",
 	"DOWNVOTE_FAILED": "Impossible de renier ce karaoké",
+	"DOWNVOTE_NO_SELF": "Impossible de renier votre propre karaoké !",
 	"START_FAV_MIX": "Créer un automix",
 	"WLCM_ABOUTUS": "L'équipe",
 	"WLCM_CONTACT": "Contactez-nous",
@@ -486,5 +488,14 @@
 	"POLLTITLE": "À vous de voter !",
 	"POLLENDED": "%s remporte le vote avec %s voix !",
 	"PLAYERMONITOR": "Seconde fenêtre (moniteur)",
-	"ONLINEMODE": "Url d'accès courte (nécessite internet)"
+	"ONLINEMODE": "Url d'accès courte (nécessite internet)",
+	"TYPE_IN": "TYPE_IN",
+	"TYPE_MV": "TYPE_MV",
+	"TYPE_OT": "TYPE_OT",
+	"TAG_3DS": "TAG_3DS",
+	"TAG_SATURN": "TAG_SATURN",
+	"TAG_WII": "TAG_WII",
+	"TYPE_MV_SHORT": "TYPE_MV_SHORT",
+	"TYPE_OT_SHORT": "TYPE_OT_SHORT",
+	"TYPE_IN_SHORT": "TYPE_IN_SHORT"
 }
