@@ -170,7 +170,7 @@
 	"MODE": "Mode",
 	"VERSION": "Version",
 	"SHUTDOWN": "Terminate Karaoke Mugen",
-	"SHUTDOWN_POPUP": "Karaoke Mugen has shut down",
+	"SHUTDOWN_POPUP": "Connection with Karaoke Mugen lost :(",
 	"MUTE_UNMUTE": "Mute/unmute",
 	"SHOW_HIDE_SUBS": "Hide/show lyrics on screen",
 	"PRIVATE": "Private",
