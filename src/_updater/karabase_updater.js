@@ -7,7 +7,6 @@ import {copy} from 'fs-extra';
 import prettyBytes from 'pretty-bytes';
 import webdav from 'webdav';
 import Downloader from '../_common/utils/downloader';
-import got from 'got';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {

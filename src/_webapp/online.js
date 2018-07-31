@@ -1,25 +1,18 @@
-import got from 'got';
 import {configureHost, getConfig} from '../_common/utils/config';
+import {stringify} from 'querystring';
+import {post} from 'axios';
 
 export async function publishURL() {
 	configureHost();
 	const conf = getConfig();
 	let localHost = conf.osHost;
 	if (conf.EngineDisplayConnectionInfoHost) localHost = conf.EngineDisplayConnectionInfoHost;
-	const options = {
-		url: `http://${conf.OnlineHost}:${conf.OnlinePort}`,
-		method: 'POST',
-		form: {
+	try {
+		await post(`http://${conf.OnlineHost}:${conf.OnlinePort}`, stringify({
 			localIP: localHost,
 			localPort: conf.appFrontendPort,
 			IID: conf.appInstanceID
-		},
-		headers: {
-	        'content-type': 'application/x-www-form-urlencoded'
-    	}
-	};
-	try {
-		await got(options.url, options);
+		}));
 		configureHost();
 	} catch(err) {
 		throw `Failed publishing our URL to ${conf.OnlineHost} : ${err}`;
