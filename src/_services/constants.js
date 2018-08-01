@@ -8,6 +8,7 @@ export const mediaFileRegexp = '^.+\\.(avi|mkv|mp4|webm|mov|wmv|mpg|ogg|m4a|mp3)
 export const imageFileRegexp = '^.+\\.(jpg|jpeg|png|gif)$';
 export const subFileRegexp = '^.+\\.ass$';
 
+
 export const defaultGuestNames = [
 	'Jean-Michel Normal',
 	'Sakura du 93',
@@ -237,7 +238,8 @@ export const tags = [
 	'PC',
 	'SEGACD',
 	'SATURN',
-	'WII'
+	'WII',
+	'SWITCH'
 ];
 
 export const specialTagsArray = Object.freeze(Object.keys(specialTags));
