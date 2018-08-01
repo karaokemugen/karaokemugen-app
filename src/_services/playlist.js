@@ -954,7 +954,6 @@ export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 		profile('shuffle');
 		let playlist = await getPlaylistContentsMini(playlist_id);
 
-		smartShuffleBoolean = true;
 		if (!pl.flag_current) {
 			if(!smartShuffleBoolean){
 				playlist = shuffle(playlist);
