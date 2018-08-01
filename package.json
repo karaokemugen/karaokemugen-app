@@ -114,6 +114,7 @@
     "readline-sync": "^1.4.9",
     "sanitize-filename": "^1.6.1",
     "socket.io": "^2.1.1",
+    "sql-injection": "^0.0.6",
     "sqlite": "2.9.1",
     "systeminformation": "^3.42.4",
     "unix-timestamp": "^0.2.0",

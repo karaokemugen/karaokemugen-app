@@ -13,6 +13,7 @@ import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
 import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
 import {createServer} from 'http';
+import sqlInjection from 'sql-injection';
 
 let ws;
 
@@ -51,6 +52,7 @@ export async function initFrontend(port) {
 	app.use(i18n.init);
 	app.use(urlencoded({ extended: true, limit: '50mb' }));
 	app.use(json());
+	app.use(sqlInjection);
 	function routerAuth() {
 		const apiRouter = express.Router();
 		// Adding auth routes here.
