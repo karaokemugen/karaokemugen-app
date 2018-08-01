@@ -8,7 +8,7 @@ export async function publishURL() {
 	let localHost = conf.osHost;
 	if (conf.EngineDisplayConnectionInfoHost) localHost = conf.EngineDisplayConnectionInfoHost;
 	try {
-		await post(`http://${conf.OnlineHost}:${conf.OnlinePort}`, stringify({
+		await post(`http://${conf.OnlineHost}:${conf.OnlinePort}/publish`, stringify({
 			localIP: localHost,
 			localPort: conf.appFrontendPort,
 			IID: conf.appInstanceID
