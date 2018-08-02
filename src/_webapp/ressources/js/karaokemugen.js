@@ -1855,8 +1855,8 @@ var settingsNotUpdated;
 				+ makeFavButtonAdapt
 				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
-				+ (data['serie'] ? " " + serieMoreInfoButton : '')
-				+ (isPublic ? likeFreeButtonHtml : '')
+				+ (data['serie'] ? ' ' + serieMoreInfoButton : '')
+				+ (isPublic && scope === 'admin' ? likeFreeButtonHtml : '')
 				+ '</div>'
 				+ htmlTable
 				+ '</div>';
