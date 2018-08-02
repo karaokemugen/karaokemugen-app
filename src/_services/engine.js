@@ -104,15 +104,20 @@ export async function initEngine() {
 		});
 		logger.info('[Engine] Initial public playlist created');
 	}
-	await Promise.all(inits);
+	try {
+		await Promise.all(inits);
+		//Easter egg
+		let ready = 'READY';
+		if (Math.floor(Math.random() * Math.floor(10)) >= 9) ready = 'LADY';
+		logger.info(`[Engine] Karaoke Mugen is ${ready}`);
+		console.log(`\n${sample(initializationCatchphrases)}\n`);
+		if (!conf.isTest) welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
+	} catch(err) {
+		logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
+	} finally {
+		profile('Init');
+	}
 
-	//Easter egg
-	let ready = 'READY';
-	if (Math.floor(Math.random() * Math.floor(10)) >= 9) ready = 'LADY';
-	logger.info(`[Engine] Karaoke Mugen is ${ready}`);
-	console.log(`\n${sample(initializationCatchphrases)}\n`);
-	if (!conf.isTest) welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
-	profile('Init');
 }
 
 export function exit(rc) {

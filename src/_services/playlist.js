@@ -1129,7 +1129,7 @@ export async function buildDummyPlaylist(playlist_id) {
 		logger.info(`[PLC] Dummy Plug : Adding ${karaCount} karas into current playlist`);
 		for (let i = 1; i <= karaCount; i++) {
 			const kara_id = await getRandomKara(playlist_id);
-			await addKaraToPlaylist(kara_id,'admin');
+			await addKaraToPlaylist(kara_id,'admin',getState().currentPlaylistID);
 		}
 		logger.info(`[PLC] Dummy Plug : Activation complete. The current playlist has now ${karaCount} sample songs in it.`);
 		return true;
