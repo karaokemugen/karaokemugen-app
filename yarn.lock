@@ -3919,6 +3919,12 @@ nice-try@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.4.tgz#d93962f6c52f2c1558c0fbda6d512819f1efe1c4"
 
+no-internet@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/no-internet/-/no-internet-1.4.3.tgz#ac4181fc6360c24e6e46bfd5bf7f6a4bc9daffc9"
+  dependencies:
+    set-interval "^2.0.1"
+
 node-eta@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/node-eta/-/node-eta-0.9.0.tgz#9fb0b099bcd2a021940e603c64254dc003d9a7a8"
@@ -4809,6 +4815,10 @@ set-blocking@^2.0.0, set-blocking@~2.0.0:
 set-immediate-shim@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/set-immediate-shim/-/set-immediate-shim-1.0.1.tgz#4b2b1b27eb808a9f8dcc481a58e5e56f599f3f61"
+
+set-interval@^2.0.1:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/set-interval/-/set-interval-2.0.3.tgz#c96916e70f38dde15b81e7431e07032a1f3eaba0"
 
 set-value@^0.4.3:
   version "0.4.3"
