@@ -12,6 +12,7 @@ import {resetViewcounts} from '../_dao/kara';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
+import {addDownloads} from '../_services/download';
 
 export default function adminController(router) {
 	const conf = getConfig();
@@ -228,6 +229,15 @@ export default function adminController(router) {
 			await runBaseUpdate();
 			await generateDatabase();
 			res.status(200).send('Karas successfully updated');
+		} catch(err) {
+			res.status(500).send(`Error while updating/generating karas: ${err}`);
+		}
+	});
+
+	router.post('/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const msg = await addDownloads(req.body.repository,req.body.downloads);
+			res.status(200).send(msg);
 		} catch(err) {
 			res.status(500).send(`Error while updating/generating karas: ${err}`);
 		}

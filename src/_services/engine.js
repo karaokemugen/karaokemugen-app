@@ -16,6 +16,7 @@ import {initFavoritesSystem} from './favorites';
 import {initOnlineSystem} from '../_webapp/online';
 import {initControlPanel} from '../_webapp/control_panel';
 import {initPlayer, quitmpv} from './player';
+import {initDownloadQueue} from './download';
 import {karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {validateKaras} from './kara';
 import {setSongPoll} from './poll';
@@ -77,6 +78,7 @@ export async function initEngine() {
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayer());
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
+	initDownloadQueue();
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await isACurrentPlaylist();
