@@ -142,7 +142,7 @@ function getAllSeries(karas, seriesData) {
 	});
 	for (const serie of seriesData.series) {
 		if (!map.has(serie.name)) {
-			map.set(serie, [0]);
+			map.set(serie.name, [0]);
 		}
 	}
 	return map;
@@ -174,7 +174,7 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	let index = 1;
 	for (const serie of mapSeries.keys()) {
 		for (const karaIndex of mapSeries.get(serie)) {
-			data.push({
+			if (karaIndex > 0) data.push({
 				$id_serie: index,
 				$id_kara: karaIndex
 			});
