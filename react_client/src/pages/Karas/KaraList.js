@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Pagination, Icon, Layout, Table, Input} from 'antd';
+import {Icon, Layout, Table, Input} from 'antd';
 import {Link} from 'react-router-dom';
 import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 
