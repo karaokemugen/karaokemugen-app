@@ -77,6 +77,7 @@ export const defaults = {
 	appFrontendPort: 1337,
 	appAdminPort: 1338,
 	appFirstRun: 1,
+	karaSuggestionMail: 'ziassan@haruhi.fr'
 };
 
 const horizontalPosArray = ['Left', 'Right', 'Center'];

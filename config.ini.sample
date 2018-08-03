@@ -245,3 +245,6 @@ OnlinePort = 80
 appFrontendPort = 1337
 appAdminPort = 1338
 
+; Mail for suggestions to be sent
+karaSuggestionMail = "ziassan@haruhi.fr"
+
