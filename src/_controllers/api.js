@@ -2145,11 +2145,12 @@ export function APIControllerAdmin(router) {
  * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
- * @apiVersion 2.1.0
+ * @apiVersion 2.1.3
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID to shuffle
+ * @apiParam {Number} smartShuffle Parameter to determine if we use, or not, an advanced algorithm to shuffle
  * @apiSuccess {String} args ID of playlist shuffled
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of playlist shuffled
@@ -2174,11 +2175,10 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 
-				await shufflePlaylist(req.params.pl_id);
+				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
 				emitWS('playlistContentsUpdated',req.params.pl_id);
 				res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));
 			} catch(err) {
-
 				res.statusCode = 500;
 				res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
 			}

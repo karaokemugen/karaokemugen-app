@@ -4,9 +4,9 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
- * @apiParam {Number} plc_id Playlist content ID. 
+ * @apiParam {Number} plc_id Playlist content ID.
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -92,7 +92,7 @@
  *       }
  *   ]
  * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -108,7 +108,7 @@
  * @apiVersion 2.0.0
  * @apiGroup Main
  * @apiPermission admin
- * 
+ *
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -189,7 +189,7 @@
  * @apiParam {Boolean} EngineAllowViewWhitelist Allow/disallow users to view whitelist contents from the guest interface
  * @apiParam {Boolean} EngineAllowViewBlacklistCriterias Allow/disallow users to view blacklist criterias list from the guest interface
  * @apiParam {Boolean} EngineAllowAutoPlay Enable/disable AutoPlay feature (starts playing once a song is added to current playlist)
- * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message) 
+ * @apiParam {Boolean} EngineDisplayConnectionInfo Show/hide connection info during jingles or pauses (the "Go to http://" message)
  * @apiParam {String} EngineDisplayConnectionInfoHost Force IP/Hostname displayed during jingles or pauses in case autodetection returns the wrong IP
  * @apiParam {String} EngineDisplayConnectionInfoMessage Add a small message before the text showing the URL to connect to
  * @apiParam {Boolean} EngineDisplayConnectionInfoQRCode Enable/disable QR Code during pauses inbetween two songs.
@@ -202,11 +202,11 @@
  * @apiParam {Boolean} PlayerNoBar `true` = Hide progress bar / `false` = Show progress bar
  * @apiParam {Boolean} PlayerNoHud `true` = Hide HUD / `false` = Show HUD
  * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
- * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen 
+ * @apiParam {String=Left,Center,Right} PlayerPIPPositionX Horizontal position of PIP screen
  * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
- * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
  *
  * @apiSuccessExample Success-Response:
@@ -314,7 +314,7 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
  * @apiParam {Number[]} kara_id List of `kara_id` separated by commas (`,`). Example : `1021,2209,44,872`
  * @apiParam {Number} [pos] Position in target playlist where to copy the karaoke to. If not specified, will place karaokes at the end of target playlist. `-1` adds karaokes after the currently playing song in target playlist.
@@ -353,14 +353,14 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -431,12 +431,12 @@
  * @apiPermission public
  * @apiDescription Contrary to the `/admin/playlists/` path, this one will not return playlists which have the `flag_visible` set to `0`.
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -507,7 +507,7 @@
  * @apiPermission public
  * @apiDescription Contrary to the `admin/playlists` path, this one won't return any karaoke info from a playlist the user has no access to.
  * @apiParam {Number} pl_id Target playlist ID. **Note :** Irrelevant since PLCIDs are unique in the table.
- * @apiParam {Number} plc_id Playlist content ID. 
+ * @apiParam {Number} plc_id Playlist content ID.
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
@@ -593,7 +593,7 @@
  *       }
  *   ]
  * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -609,13 +609,13 @@
  * @apiVersion 2.0.0
  * @apiGroup Karaokes
  * @apiPermission public
- * 
- * @apiParam {String} [filter] Filter list by this string. 
+ *
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -679,7 +679,7 @@
  * @apiVersion 2.0.0
  * @apiGroup Karaokes
  * @apiPermission public
- * 
+ *
  * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
@@ -750,7 +750,7 @@
  *       }
  *   ]
  * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
  *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -766,14 +766,14 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission public
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -843,14 +843,14 @@
  * @apiVersion 2.0.0
  * @apiGroup Playlists
  * @apiPermission public
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -933,7 +933,7 @@
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -1053,7 +1053,7 @@
  * {
  *   "code": "WL_VIEW_FORBIDDEN"
  * }
- 
+
  */
 
 /**
@@ -1091,7 +1091,7 @@
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -1118,14 +1118,14 @@
  * @apiVersion 2.1.0
  * @apiGroup Playlists
  * @apiPermission admin
- * 
+ *
  * @apiParam {Number} pl_id Target playlist ID.
- * @apiParam {String} [filter] Filter list by this string. 
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -1177,7 +1177,7 @@
  * }
  * @apiError BL_VIEW_ERROR Blacklist could not be viewed
  * @apiError BL_VIEW_FORBIDDEN Blacklist view is not allowed for users
- 
+
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -1190,7 +1190,7 @@
  * @apiVersion 2.0.0
  * @apiGroup Blacklist
  * @apiPermission public
- * 
+ *
  * @apiSuccess {Number} data/blcriteria_id Blacklist criteria's ID.
  * @apiSuccess {Number} data/type Blacklist criteria's type. Refer to dev documentation for more info on BLC types.
  * @apiSuccess {Number} data/value Value associated to balcklist criteria (what is being blacklisted)
@@ -1217,7 +1217,7 @@
 * {
 *   "code": "BLC_VIEW_FORBIDDEN"
 * }
-*/	
+*/
 /**
  * @api {get} public/player Get player status
  * @apiName GetPlayer
@@ -1263,7 +1263,7 @@
  * {
  *   "code": "PLAYER_STATUS_ERROR"
  * }
- 
+
 
 /**
  * @api {get} /public/karas Get complete list of karaokes
@@ -1271,13 +1271,13 @@
  * @apiVersion 2.0.0
  * @apiGroup Karaokes
  * @apiPermission public
- * 
- * @apiParam {String} [filter] Filter list by this string. 
+ *
+ * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {String} [lang] ISO639-2B code of client's language (to return translated text into the user's language) Defaults to engine's locale.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
- * 
- * @apiSuccess {Object[]} data/content/karas Array of `kara` objects 
+ *
+ * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
  * @apiSuccess {Number} data/infos/from Starting position of listing
  * @apiSuccess {Number} data/infos/to End position of listing
@@ -1379,7 +1379,7 @@
 * {
 *   "code": "PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED"
 * }
-*/			
+*/
 
 /**
  * @api {get} public/playlists/current Get current playlist information
@@ -1400,7 +1400,7 @@
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -1440,7 +1440,7 @@
  * @apiSuccess {Number} data/time_left Time left in seconds before playlist ends, relative to the currently playing song's position.
  *
  * @apiSuccessExample Success-Response:
- * HTTP/1.1 200 OK 
+ * HTTP/1.1 200 OK
  * {
  *   "data": {
  *       "created_at": 1508313440,
@@ -1495,7 +1495,7 @@
  *       "timePosition": 0,
  *       "volume": 100
  *   }
- * } 
+ * }
  * @apiError PLAYER_STATUS_ERROR Error fetching player status (is the player running?)
  *
  * @apiErrorExample Error-Response:
@@ -1503,7 +1503,7 @@
  * {
  *   "code": "PLAYER_STATUS_ERROR"
  * }
- */		
+ */
 /**
  * @api {get} admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
@@ -1542,7 +1542,7 @@
 	* @apiVersion 2.0.0
 	* @apiGroup Karaokes
 	* @apiPermission public
-	* 
+	*
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {String} data/name_i18n Translated name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
@@ -1578,7 +1578,7 @@
 	* @apiErrorExample Error-Response:
 	* HTTP/1.1 500 Internal Server Error
 	*/
-	
+
 /**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
@@ -1900,9 +1900,9 @@
  *       }
  *   ]
  * }
- * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information 
+ * @apiError PL_VIEW_CONTENT_ERROR Unable to fetch playlist's content information
  * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
- * 
+ *
  * @apiErrorExample Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
@@ -2770,7 +2770,7 @@
  * @apiParam {String=Top,Center,Bottom} PlayerPIPPositionY Vertical position of PIP screen
  * @apiParam {Number} PlayerPIPSize Size in percentage of the PIP screen
  * @apiParam {Number} PlayerScreen Screen number to display the videos on. If screen number is not available, main screen is used. `9` means autodetection.
- * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.  
+ * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
  * @apiParam {Number} WebappMode Webapp public mode : `0` = closed, no public action available, `1` = only show song information and playlists, no karaoke can be added by the user, `2` = default, open mode.
  * @apiParam {Boolean} PlayerStayOnTop Enable/disable stay on top of all windows.
  * @apiSuccess {Object} data Contains all configuration settings. See example or documentation for what each setting does.
@@ -3323,7 +3323,7 @@
  *       }
  *   ]
  * }
- * 
+ *
  * @apiError BLC_VIEW_ERROR Blacklist criterias could not be listed
  *
  * @apiErrorExample Error-Response:
@@ -3331,7 +3331,7 @@
  * {
  *   "code": "BLC_VIEW_ERROR"
  * }
- */	
+ */
 
 	/**
  * @api {post} /admin/blacklist/criterias Add a blacklist criteria
@@ -3370,7 +3370,7 @@
  *       "errno": 1
  *   }
  * }
- */		
+ */
 
 	/**
  * @api {post} /admin/blacklist/criterias Add a blacklist criteria
@@ -3409,7 +3409,7 @@
  *       "errno": 1
  *   }
  * }
- */	
+ */
 
 /**
  * @api {delete} /admin/blacklist/criterias/:blc_id Delete a blacklist criteria
@@ -3438,7 +3438,7 @@
  *   "code": "BLC_DELETE_ERROR",
  *   "message": "BLCID 5 unknown"
  * }
- */	
+ */
 
 /**
  * @api {put} /admin/blacklist/criterias/:blc_id Edit a blacklist criteria
@@ -3472,7 +3472,7 @@
  *   "code": "BLC_UPDATE_ERROR",
  *   "message": "BLCID 12309 unknown"
  * }
- */	
+ */
 
 /**
  * @api {put} /admin/player Send commands to player
@@ -3551,7 +3551,7 @@
  *   "code": "PL_EXPORT_ERROR",
  *   "message": "Playlist 5 unknown"
  * }
- */	
+ */
 
 /**
  * @api {post} /admin/playlists/import Import a playlist
@@ -3581,7 +3581,7 @@
  *   "code": "PL_IMPORT_ERROR",
  *   "message": "No header section"
  * }
- */	
+ */
 
 /**
  * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
@@ -3640,7 +3640,7 @@
  * }
  */
 
- /**
+/**
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
 	* @apiVersion 2.1.0
@@ -3684,3 +3684,33 @@
 	* @apiErrorExample Error-Response:
     * HTTP/1.1 403 Forbidden
 	*/
+
+/**
+ * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
+ * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
+ * @apiName putPlaylistShuffle
+ * @apiVersion 2.1.0
+ * @apiGroup Playlists
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number} pl_id Playlist ID to shuffle
+ * @apiSuccess {String} args ID of playlist shuffled
+ * @apiSuccess {String} code Message to display
+ * @apiSuccess {Number} data ID of playlist shuffled
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "args": "5",
+ *   "code": "PL_SHUFFLED",
+ *   "data": "5"
+ * }
+ * @apiError PL_SHUFFLE_ERROR Unable to shuffle playlist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": "10",
+ *   "code": "PL_SHUFFLE_ERROR",
+ *   "message": "Playlist 10 unknown"
+ * }
+ */
