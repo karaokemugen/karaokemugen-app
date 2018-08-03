@@ -77,7 +77,7 @@ export const defaults = {
 	appFrontendPort: 1337,
 	appAdminPort: 1338,
 	appFirstRun: 1,
-	karaSuggestionMail: 'ziassan@haruhi.fr'
+	karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org'
 };
 
 const horizontalPosArray = ['Left', 'Right', 'Center'];
@@ -125,5 +125,6 @@ export const configConstraints = {
 	WebappSongLanguageMode: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	appFrontendPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	appAdminPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	appFirstRun: {boolIntValidator: true}
+	appFirstRun: {boolIntValidator: true},
+	karaSuggestionMail: {email: true}
 };

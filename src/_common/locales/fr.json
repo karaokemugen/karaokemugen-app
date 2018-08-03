@@ -503,6 +503,6 @@
 	"ONLINEMODE": "Url d'accès courte (nécessite internet)",
 	"NO_EXT_INFO": "La recherche d'informations en ligne n'a pas abouti",
 	"KARA_SUGGESTION_MAIL": "Vous ne trouvez pas votre bonheur ? Cliquez ici pour en demander l'ajout !",
-	"KARA_SUGGESTION_SUBJECT": "Demande de Kara",
-	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais."
+	"KARA_SUGGESTION_SUBJECT": "Suggestion de kara : <titre de chanson ici!>",
+	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais.%0D%0A Cordialement, bisous."
 }

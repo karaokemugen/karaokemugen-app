@@ -505,6 +505,6 @@
 	"TYPE_MUSIC": "TYPE_MUSIC",
 	"TYPE_OTHER": "TYPE_OTHER",
 	"KARA_SUGGESTION_MAIL": "Can't find what you're looking for? Click here to ask this essential song to be added to the database!",
-	"KARA_SUGGESTION_SUBJECT": "Kara request ",
-	"KARA_SUGGESTION_BODY": "Hello,%0D%0A How can this awesome song be missing from your base? I expect you to correct this shame asap, thanks."
+	"KARA_SUGGESTION_SUBJECT": "New Song request : <song name here!>",
+	"KARA_SUGGESTION_BODY": "Hello,%0D%0A How can this awesome song be missing from your base? I expect you to correct this infamy asap, thanks."
 }
