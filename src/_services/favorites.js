@@ -111,7 +111,7 @@ export async function initFavoritesSystem() {
 	// Let's make sure all our users have a favorites playlist
 	logger.debug('[Favorites] Check if everyone has a favorites playlist');
 	const [playlists, users] = await Promise.all([
-		await getPlaylists(false,'admin'),
+		await getPlaylists({role: 'admin', username: 'admin'}),
 		await listUsers()
 	]);
 	for (const user of users) {
