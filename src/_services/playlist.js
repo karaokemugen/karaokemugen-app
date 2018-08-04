@@ -750,7 +750,7 @@ export async function editPLC(plc_id,params,token) {
 	if (+params.flag_free === 0) throw 'flag_free cannot be unset!';
 	const plcData = await getPLCInfoMini(plc_id);
 	if (!plcData) throw 'PLC ID unknown';
-	const pl = await getPlaylistInfo(plcData.playlist_idi);
+	const pl = await getPlaylistInfo(plcData.playlist_id);
 	if (!testPlaylistVisible(pl,token)) throw `Playlist ${plcData.playlist_id} unknown`;
 	if (pl.flag_favorites === 1) throw 'Karaokes in favorite playlists cannot be modified';
 	if (params.flag_playing) {
