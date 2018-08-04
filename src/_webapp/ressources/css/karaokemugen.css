@@ -270,6 +270,16 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 	background-color: rgba(93, 131, 119, 0.7);
 	text-align: center;
 	cursor: pointer;
+	
+    line-height: 130px;
+    font-size: 130%;
+	height: 130px;
+	
+	
+    padding: 5px;
+	overflow: hidden !important;
+	width: 100% !important;
+	margin-bottom: 100px;
 }
 
 .playlist-main .list-group-item.liType {

@@ -506,7 +506,8 @@
 	"TYPE_INSERTSONG": "TYPE_INSERTSONG",
 	"TYPE_MUSIC": "TYPE_MUSIC",
 	"TYPE_OTHER": "TYPE_OTHER",
-	"KARA_SUGGESTION_MAIL": "Can't find what you're looking for? Click here to ask this essential song to be added to the database!",
-	"KARA_SUGGESTION_SUBJECT": "New Song request : <song name here!>",
-	"KARA_SUGGESTION_BODY": "Hello,%0D%0A How can this awesome song be missing from your base? I expect you to correct this infamy asap, thanks."
+	"KARA_SUGGESTION_MAIL": "Can't find your heart's desire? Click here",
+	"KARA_SUGGESTION_SUBJECT": "New Song request: ",
+	"KARA_SUGGESTION_BODY": "Hello,%0D%0A How can this awesome song be missing from your base?%0D%0A I expect this infamy to be corrected asap, thanks.",
+	"KARA_SUGGESTION_NAME": "Name of the song"
 }
