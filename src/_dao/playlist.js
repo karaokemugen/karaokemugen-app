@@ -161,23 +161,16 @@ export async function getPLCByKIDAndUserID(kid,user_id,playlist_id) {
 }
 
 export async function getPlaylistInfo(id) {
-	const truc = await getUserDb().get(sql.getPlaylistInfo, {
+	return await getUserDb().get(sql.getPlaylistInfo, {
 		$playlist_id: id
 	});
-	return truc;
 }
 
 export async function getPlaylists(forUser,username) {
 	let query = sql.getPlaylists;
 	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';
-	if (forUser) {
-		//FIXME
-		//Temporarily disabled complex playlist query until we work how isPlaylist behaves and add user token everywhere.
-		//return await getUserDb().all(query + ' UNION ' + sql.getFavoritePlaylists + order,{$username: username});
-		return await getUserDb().all(query + ' AND p.flag_visible = 1 ' + order);
-	} else {
-		return await getUserDb().all(query + order);
-	}
+	if (forUser) return await getUserDb().all(query + ' AND p.flag_visible = 1 ' + order);
+	return await getUserDb().all(query + order);
 }
 
 export async function findCurrentPlaylist() {

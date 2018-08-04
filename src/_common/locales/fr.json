@@ -409,7 +409,7 @@
 	"TOOLTIP_FAV": "Ajouter aux favoris",
 	"TOOLTIP_SHOWLYRICS": "Afficher les paroles",
 	"TOOLTIP_SHOWVIDEO": "Afficher un aperçu vidéo",
-	"TOOLTIP_UPVOTE":"Libérer ce kara du quota de l'utilisateur",
+	"TOOLTIP_UPVOTE": "Libérer ce kara du quota de l'utilisateur",
 	"TOOLTIP_PLAYKARA": "Définir en tant que 'kara en cours'",
 	"UPVOTE_NUMBER": "Soutients",
 	"PROFILE_PASSWORDCONF": "Confirmer",
@@ -505,5 +505,6 @@
 	"KARA_SUGGESTION_MAIL": "Vous ne trouvez pas votre bonheur ? Cliquez ici",
 	"KARA_SUGGESTION_SUBJECT": "Suggestion de kara : ",
 	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais.%0D%0A Cordialement, bisous.",
-	"KARA_SUGGESTION_NAME": "Titre de la chanson"
+	"KARA_SUGGESTION_NAME": "Titre de la chanson",
+	"TAG_CONCERT": "TAG_CONCERT"
 }
