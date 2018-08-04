@@ -63,13 +63,13 @@ export async function initEngine() {
 	//Database system is the foundation of every other system
 	await initDBSystem();
 	await initUserSystem();
-	if (conf.OnlineMode) try {
+	if (+conf.OnlineMode) try {
 		await initOnlineSystem();
 	} catch(err) {
 		logger.error(`[Engine] Failed to init online system : ${err}`);
 	}
 	let inits = [];
-	if (conf.EngineCreatePreviews) {
+	if (+conf.EngineCreatePreviews) {
 		createPreviews();
 	}
 	inits.push(initPlaylistSystem());

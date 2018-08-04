@@ -15,7 +15,7 @@ export async function publishURL() {
 		}));
 		configureHost();
 	} catch(err) {
-		throw `Failed publishing our URL to ${conf.OnlineHost} : ${err}`;
+		throw `Failed publishing our IP to ${conf.OnlineHost} : ${err}`;
 	}
 }
 
