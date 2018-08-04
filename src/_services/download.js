@@ -6,6 +6,7 @@ import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from 'winston';
+import {asyncExists, asyncUnlink} from '../_common/utils/files';
 
 const queueOptions = {
 	id: 'uuid'
@@ -14,6 +15,7 @@ const queueOptions = {
 let q;
 
 function queueDownload(input, done) {
+	logger.info(`[Download] Processing queue item : ${input.name}`);
 	processDownload(input)
 		.then(() => {
 			done();
@@ -25,7 +27,10 @@ function queueDownload(input, done) {
 
 export async function initDownloadQueue() {
 	q = new Queue(queueDownload, queueOptions);
+	q.on('task_failed', (taskId, err, stats) => logger.error(`[Download] Task ${taskId} failed : ${err}`));
+	q.on('drain', () => logger.info('[Download] Ano ne! I finished all my downloads! GIVE ME MORE!'));
 	await initDownloads();
+	return;
 	const downloads = await selectDownloads();
 	try {
 		await internet();
@@ -39,21 +44,28 @@ async function processDownload(download) {
 	const conf = getConfig();
 	await setDownloadStatus(download.uuid, 'DL_RUNNING');
 	let list = [];
+	const localMedia = resolve(conf.appPath,conf.PathMedias.split('|')[0],download.urls.media.local);
+	const localLyrics = resolve(conf.appPath,conf.PathSubs.split('|')[0],download.urls.lyrics.local);
+	const localKara = resolve(conf.appPath,conf.PathKaras.split('|')[0],download.urls.kara.local);
 	list.push({
-		filename: resolve(conf.appPath,conf.PathMedias.split('|')[0],download.media.local),
-		url: download.media.remote
+		filename: localMedia,
+		url: download.urls.media.remote
 	});
 	list.push({
-		filename: resolve(conf.appPath,conf.PathSubs.split('|')[0],download.lyrics.local),
-		url: download.lyrics.remote
+		filename: localLyrics,
+		url: download.urls.lyrics.remote
 	});
 	list.push({
-		filename: resolve(conf.appPath,conf.PathKaras.split('|')[0],download.kara.local),
-		url: download.kara.remote
+		filename: localKara,
+		url: download.urls.kara.remote
 	});
 	const downloader = new Downloader(list, {
 		bar: true
 	});
+	// Delete files if they're already present
+	if (await asyncExists(localMedia)) await asyncUnlink(localMedia);
+	if (await asyncExists(localLyrics)) await asyncUnlink(localLyrics);
+	if (await asyncExists(localKara)) await asyncUnlink(localKara);
 	return new Promise((resolve, reject) => {
 		downloader.download(fileErrors => {
 			if (fileErrors.length > 0) {
@@ -62,7 +74,7 @@ async function processDownload(download) {
 						reject(`Error downloading this file : ${fileErrors.toString()}`);
 					}).catch((err) => {
 						reject(`Error downloading this file : ${fileErrors.toString()} - setting failed status failed too!`);
-				});
+					});
 			} else {
 				setDownloadStatus(download.uuid, 'DL_DONE')
 					.then(() => {
@@ -83,7 +95,7 @@ export function resumeQueue() {
 	return q.resume();
 }
 
-export async function addDownload(repo, downloads) {
+export async function addDownloads(repo, downloads) {
 	const dls = downloads.map(dl => {
 		return {
 			uuid: uuidV4(),
@@ -97,7 +109,7 @@ export async function addDownload(repo, downloads) {
 					local: dl.subfile
 				},
 				kara: {
-					remote: `http://${repo}/downloads/lyrics/${dl.karafile}`,
+					remote: `http://${repo}/downloads/karas/${dl.karafile}`,
 					local: dl.karafile
 				}
 			},
@@ -106,13 +118,13 @@ export async function addDownload(repo, downloads) {
 			status: 'DL_PLANNED'
 		};
 	});
-	await insertDownloads(downloads);
+	await insertDownloads(dls);
 	try {
 		await internet();
 		dls.forEach(dl => q.push(dl));
 		return `${dls.length} download(s) queued`;
 	} catch(err) {
-		return 'Download(s) queued but no internet connection available';
+		return `${dls.length} Download(s) queued but no internet connection available`;
 	}
 }
 

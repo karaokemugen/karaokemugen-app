@@ -5,6 +5,7 @@ import execa from 'execa';
 import prettyBytes from 'pretty-bytes';
 import {stat} from 'fs';
 import {getConfig} from './config';
+import {head} from 'axios';
 
 export default class Downloader {
 
@@ -31,16 +32,40 @@ export default class Downloader {
 	  } else {
 			const nextUrl = this.list[this.pos].url;
 			const nextFilename = this.list[this.pos].filename;
-			const nextSize = this.list[this.pos].size;
-			let prettySize = 'size unknown';
-			if (nextSize) prettySize = prettyBytes(nextSize);
-			logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${basename(nextFilename)} (${prettySize})`);
-			this.pos = this.pos + 1;
-			this.DoDownload(nextUrl, nextFilename, nextSize, this.download , err => {
-				logger.error(`[Download] Error downloading ${basename(nextFilename)} : ${err}`);
-				this.fileErrors.push(basename(nextFilename));
-				this.download();
+			let nextSize = this.list[this.pos].size;
+			const tryURL = new Promise((resolve, reject) => {
+				// Try to run a HEAD to get the size
+				let options = {};
+				if (this.opts.auth) options.auth = {
+					username: this.opts.auth.user,
+					password: this.opts.auth.pass
+				};
+				head(nextUrl, options)
+					.then(response => {
+						if (!nextSize) nextSize = response.headers['content-length'];
+						resolve(response);
+					})
+					.catch(err => {
+						reject(err);
+					});
 			});
+			let prettySize = 'size unknown';
+			tryURL.then(() => {
+				if (nextSize) prettySize = prettyBytes(+nextSize);
+				logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${basename(nextFilename)} (${prettySize})`);
+				this.pos = this.pos + 1;
+				this.DoDownload(nextUrl, nextFilename, nextSize, this.download , err => {
+					logger.error(`[Download] Error during download of ${basename(nextFilename)} : ${err}`);
+					this.fileErrors.push(basename(nextFilename));
+					this.download();
+				});
+			})
+				.catch((err) => {
+					logger.error(`[Download] (${this.pos+1}/${this.list.length}) Unable to start download of ${basename(nextFilename)} (${prettySize}) : ${err}`);
+					this.pos = this.pos + 1;
+					this.fileErrors.push(basename(nextFilename));
+					this.download();
+				});
 	  }
 	}
 
@@ -48,8 +73,9 @@ export default class Downloader {
 
 	}
 	DoDownload = (url, filename, size, onSuccess, onError) => {
+
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
-		let options = [url, '-o', `"${filename.replace(/\\\\/g,'\\')}"`, '--retry','999','--retry-max-time','0','-C','-'];
+		let options = [`"${url}"`, '-o', `"${filename.replace(/\\\\/g,'\\')}"`, '--retry','999','--retry-max-time','0','-C','-'];
 		let timer;
 		if (this.opts.auth) options.push(`-u ${this.opts.auth.user}:${this.opts.auth.pass}`);
 		logger.debug(`[Download] Running : curl ${options.join(' ')}`);

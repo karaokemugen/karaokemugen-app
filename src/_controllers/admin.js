@@ -239,7 +239,7 @@ export default function adminController(router) {
 			const msg = await addDownloads(req.body.repository,req.body.downloads);
 			res.status(200).send(msg);
 		} catch(err) {
-			res.status(500).send(`Error while updating/generating karas: ${err}`);
+			res.status(500).send(`Error while adding download: ${err}`);
 		}
 	});
 }

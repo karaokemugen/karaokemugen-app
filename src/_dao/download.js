@@ -1,7 +1,7 @@
 import {getUserDb, transaction} from './database';
 const sql = require('../_common/db/download');
 
-export async function insertDownload(downloads) {
+export async function insertDownloads(downloads) {
 	const dls = downloads.map((dl) => ({
 		$name: dl.name,
 		$status: 'DL_PLANNED',
@@ -30,7 +30,7 @@ export async function deleteDownload(id) {
 }
 
 export async function updateDownload(uuid, status) {
-	return await getUserDb().run(sql.updateDownload, {
+	return await getUserDb().run(sql.updateDownloadStatus, {
 		$uuid: uuid,
 		$status: status
 	});

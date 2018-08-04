@@ -8,7 +8,7 @@ export const updateRunningDownloads = 'UPDATE download SET status = \'DL_PLANNED
 
 export const deleteDoneFailedDownloads = 'DELETE FROM download WHERE status = \'DL_DONE\' OR status = \'DL_FAILED\'';
 
-export const addDownload = 'INSERT INTO download(name, urls, size, status, uuid) VALUES($name, $urls, $size, $status, $uuid)';
+export const insertDownload = 'INSERT INTO download(name, urls, size, status, uuid) VALUES($name, $urls, $size, $status, $uuid)';
 
 export const updateDownloadStatus = 'UPDATE download SET status = $status WHERE uuid = $uuid';
 
