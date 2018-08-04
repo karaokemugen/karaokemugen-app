@@ -143,6 +143,8 @@
 	"TAG_SWITCH_SHORT": "SWI",
 	"TAG_SATURN": "Sega Saturn",
 	"TAG_SATURN_SHORT": "SAT",
+	"TAG_DREAMCAST": "Sega Dreamcast",
+	"TAG_DREAMCAST_SHORT": "DC",
 	"TAG_MOBAGE": "Mobile Game",
 	"TAG_MOBAGE_SHORT": "MOB",
 	"TAG_VN": "Visual Novel",
@@ -502,7 +504,8 @@
 	"PLAYERMONITOR": "Seconde fenêtre (moniteur)",
 	"ONLINEMODE": "Url d'accès courte (nécessite internet)",
 	"NO_EXT_INFO": "La recherche d'informations en ligne n'a pas abouti",
-	"KARA_SUGGESTION_MAIL": "Vous ne trouvez pas votre bonheur ? Cliquez ici pour en demander l'ajout !",
-	"KARA_SUGGESTION_SUBJECT": "Suggestion de kara : <titre de chanson ici!>",
-	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais.%0D%0A Cordialement, bisous."
+	"KARA_SUGGESTION_MAIL": "Vous ne trouvez pas votre bonheur ? Cliquez ici",
+	"KARA_SUGGESTION_SUBJECT": "Suggestion de kara : ",
+	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais.%0D%0A Cordialement, bisous.",
+	"KARA_SUGGESTION_NAME": "Titre de la chanson"
 }
