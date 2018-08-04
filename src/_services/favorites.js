@@ -5,15 +5,15 @@ import logger from 'winston';
 import {date} from '../_common/utils/date';
 import {profile} from '../_common/utils/logger';
 
-export async function getFavorites(username, filter, lang, from, size) {
+export async function getFavorites(token, filter, lang, from, size) {
 	try {
 		profile('getFavorites');
-		const plInfo = await getFavoritesPlaylist(username);
-		return await getPlaylistContents(plInfo.playlist_id, { username: username }, filter, lang);
+		const plInfo = await getFavoritesPlaylist(token.username);
+		return await getPlaylistContents(plInfo.playlist_id, token, filter, lang, from, size);
 	} catch(err) {
 		throw {
 			message: err,
-			data: username
+			data: token.username
 		};
 	} finally {
 		profile('getFavorites');
@@ -24,7 +24,7 @@ export async function addToFavorites(username, kara_id) {
 	try {
 		profile('addToFavorites');
 		const plInfo = await getFavoritesPlaylist(username);
-		await addKaraToPlaylist([kara_id], username, plInfo.playlist_id);
+		await addKaraToPlaylist(kara_id, username, plInfo.playlist_id);
 		await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
 		return plInfo;
 	} catch(err) {
@@ -111,7 +111,7 @@ export async function initFavoritesSystem() {
 	// Let's make sure all our users have a favorites playlist
 	logger.debug('[Favorites] Check if everyone has a favorites playlist');
 	const [playlists, users] = await Promise.all([
-		await getPlaylists(false,'admin'),
+		await getPlaylists({role: 'admin', username: 'admin'}),
 		await listUsers()
 	]);
 	for (const user of users) {

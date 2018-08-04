@@ -8,14 +8,14 @@ export async function publishURL() {
 	let localHost = conf.osHost;
 	if (conf.EngineDisplayConnectionInfoHost) localHost = conf.EngineDisplayConnectionInfoHost;
 	try {
-		await post(`http://${conf.OnlineHost}:${conf.OnlinePort}`, stringify({
+		await post(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, stringify({
 			localIP: localHost,
 			localPort: conf.appFrontendPort,
 			IID: conf.appInstanceID
 		}));
 		configureHost();
 	} catch(err) {
-		throw `Failed publishing our URL to ${conf.OnlineHost} : ${err}`;
+		throw `Failed publishing our IP to ${conf.OnlineHost} : ${err}`;
 	}
 }
 

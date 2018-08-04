@@ -70,6 +70,7 @@
     ]
   },
   "dependencies": {
+    "@risingstack/protect": "^1.2.0",
     "ass-parser": "^0.2.0",
     "async-await-parallel": "^1.0.0",
     "axios": "^0.18.0",
@@ -110,7 +111,7 @@
     "passport-local": "^1.0.0",
     "pretty-bytes": "^5.1.0",
     "promise-retry": "^1.1.1",
-    "qrcode": "^1.2.0",
+    "qrcode": "^1.2.2",
     "randomstring": "^1.1.5",
     "read-chunk": "^2.1.0",
     "readline-sync": "^1.4.9",

@@ -11,7 +11,7 @@ class KaraList extends Component {
 		super(props);
 		this.filter = '';
 		this.state = {
-			karas: [],			
+			karas: [],
 			kara: {}
 		};
 	}
@@ -32,7 +32,7 @@ class KaraList extends Component {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 			});
 	}
-	
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
@@ -50,6 +50,17 @@ class KaraList extends Component {
 							dataSource={this.state.karas}
 							columns={this.columns}
 							rowKey='kara_id'
+							pagination={{defaultPageSize: 100,
+								pageSize: 100,
+								pageSizeOptions: ['10','25','50','100','500'],
+								showTotal: (total, range) => {
+									const to = range[1];
+									const from = range[0];
+									return `Showing ${from}-${to} of ${total} songs`;
+								},
+								total: this.state.karas.length,
+								showSizeChanger: true,
+								showQuickJumper: true}}
 						/>
 					</Layout.Content>
 				</Layout>
@@ -65,22 +76,22 @@ class KaraList extends Component {
 	}, {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
-		key: 'serie',	
+		key: 'serie',
 		render: (serie, record) => (serie || record.singer)
 	}, {
 		title: 'Type',
 		dataIndex: 'songtype',
-		key: 'songtype',		
+		key: 'songtype',
 		render: (songtype, record) => (songtype.replace('TYPE_','') + ' ' + record.songorder)
 	}, {
 		title: 'Title',
 		dataIndex: 'title',
-		key: 'title'		
+		key: 'title'
 	}, {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/karas/${record.kara_id}`}><Icon type='edit'/></Link>			
+			<Link to={`/karas/${record.kara_id}`}><Icon type='edit'/></Link>
 		</span>)
 	}];
 }

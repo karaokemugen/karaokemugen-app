@@ -405,11 +405,6 @@ export const raisePosInPlaylist = `UPDATE playlist_content
    									AND pos = $pos
 								`;
 
-export const testPlaylist = `SELECT pk_id_playlist
-								FROM playlist
-								WHERE pk_id_playlist = $playlist_id
-							`;
-
 export const setCurrentPlaylist = `UPDATE playlist
 									SET flag_current = 1
 									WHERE pk_id_playlist = $playlist_id;				`;

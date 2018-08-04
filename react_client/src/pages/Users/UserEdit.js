@@ -27,7 +27,7 @@ class UserEdit extends Component {
 	}
 
 	saveNew = (user) => {
-		axios.post('/api/users/create', user)
+		axios.post('/api/users', user)
 			.then(() => {
 				this.props.infoMessage('User successfully created');
 				this.props.push('/users');

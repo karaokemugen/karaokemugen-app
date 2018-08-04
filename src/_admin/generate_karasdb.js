@@ -128,7 +128,7 @@ function getSeries(kara) {
 /**
  * Returns a Map<String, Array>, linking a series to the karaoke indexes involved.
  */
-function getAllSeries(karas) {
+function getAllSeries(karas, seriesData) {
 	const map = new Map();
 	karas.forEach((kara, index) => {
 		const karaIndex = index + 1;
@@ -140,7 +140,11 @@ function getAllSeries(karas) {
 			}
 		});
 	});
-
+	for (const serie of seriesData.series) {
+		if (!map.has(serie.name)) {
+			map.set(serie.name, [0]);
+		}
+	}
 	return map;
 }
 
@@ -170,7 +174,7 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	let index = 1;
 	for (const serie of mapSeries.keys()) {
 		for (const karaIndex of mapSeries.get(serie)) {
-			data.push({
+			if (karaIndex > 0) data.push({
 				$id_serie: index,
 				$id_kara: karaIndex
 			});
@@ -181,11 +185,11 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	return data;
 }
 
-async function prepareAltSeriesInsertData(altSeriesFile, mapSeries) {
+async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 
 	const altNameData = [];
 	const i18nData = [];
-	const seriesData = await readSeriesFile(altSeriesFile);
+
 	for (const serie of seriesData.series) {
 		if (serie.aliases) altNameData.push({
 			$serie_altnames: serie.aliases.join(','),
@@ -389,13 +393,14 @@ export async function run(config) {
 		const karas = await readAllKaras(karaFiles);
 		// Preparing data to insert
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
-		const seriesMap = getAllSeries(karas);
+		const seriesData = await readSeriesFile(series_altnamesfile);
+		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-		const seriesAltNamesData = await prepareAltSeriesInsertData(series_altnamesfile, seriesMap);
+		const seriesAltNamesData = await prepareAltSeriesInsertData(seriesData, seriesMap);
 		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
 		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 

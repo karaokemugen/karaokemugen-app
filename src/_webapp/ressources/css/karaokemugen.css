@@ -266,6 +266,21 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 .playlist-main li.list-group-item[currentlyPlaying] {
 	background-color: #3a5064;
 }
+.playlist-main li.list-group-item.karaSuggestion {
+	background-color: rgba(93, 131, 119, 0.7);
+	text-align: center;
+	cursor: pointer;
+	
+    line-height: 130px;
+    font-size: 130%;
+	height: 130px;
+	
+	
+    padding: 5px;
+	overflow: hidden !important;
+	width: 100% !important;
+	margin-bottom: 100px;
+}
 
 .playlist-main .list-group-item.liType {
 	background-color: #607e97;

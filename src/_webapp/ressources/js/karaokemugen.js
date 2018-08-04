@@ -295,6 +295,17 @@ var settingsNotUpdated;
 			var idPlaylistContent = $(this).closest('li').attr('idplaylistcontent');
 			deleteKaraPublic(idPlaylistContent);
 		});
+			
+
+		$('.playlist-main').on('click','li.karaSuggestion', function() {
+			var search = $('#searchPlaylist1').val();
+			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
+				var adress = 'mailto:' + settings.karaSuggestionMail;
+				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
+				var body = i18n.__('KARA_SUGGESTION_BODY');
+				window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+			}, search);
+		});
 
 		// (de)select all karas button
 		$('.playlist-main').on('click', '.actionDiv > button.clusterAction', function() {
@@ -968,6 +979,7 @@ var settingsNotUpdated;
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
 	playKaraHtml = '<button title="' + i18n.__('TOOLTIP_PLAYKARA') + '" class="btn btn-sm btn-action playKara"></btn>';
 	serieMoreInfoButton = '<button class="moreInfo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	karaSuggestionHtml = '<li class="list-group-item karaSuggestion">' + i18n.__('KARA_SUGGESTION_MAIL') +	'</li>';
 	buttonHtmlPublic = '';
 
 	listTypeBlc = [
@@ -1209,6 +1221,16 @@ var settingsNotUpdated;
 						}
 					}
 					var count = response.infos ? response.infos.count : 0;
+
+
+					/* adding artificial last line */
+					if(idPlaylist === -1 && count === response.infos.from + data.length) {
+						// count++;
+						htmlContent +=	karaSuggestionHtml;
+					}
+
+
+
 					// creating filler space for dyanmic scrolling
 					var fillerTopH = Math.min(response.infos.from * 34, container.height()/1.5);
 					var fillerBottomH = Math.min((count - response.infos.from - pageSize) * 34, container.height()/1.5);
@@ -1855,8 +1877,8 @@ var settingsNotUpdated;
 				+ makeFavButtonAdapt
 				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
-				+ (data['serie'] ? " " + serieMoreInfoButton : '')
-				+ (isPublic ? likeFreeButtonHtml : '')
+				+ (data['serie'] ? ' ' + serieMoreInfoButton : '')
+				+ (isPublic && scope === 'admin' ? likeFreeButtonHtml : '')
 				+ '</div>'
 				+ htmlTable
 				+ '</div>';
