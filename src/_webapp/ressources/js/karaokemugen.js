@@ -298,10 +298,13 @@ var settingsNotUpdated;
 			
 
 		$('.playlist-main').on('click','li.karaSuggestion', function() {
-			var adress = 'mailto:' + settings.karaSuggestionMail;
-			var subject = i18n.__('KARA_SUGGESTION_SUBJECT');
-			var body = i18n.__('KARA_SUGGESTION_BODY');
-			window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+			var search = $('#searchPlaylist1').val();
+			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
+				var adress = 'mailto:' + settings.karaSuggestionMail;
+				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
+				var body = i18n.__('KARA_SUGGESTION_BODY');
+				window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+			}, search);
 		});
 
 		// (de)select all karas button
@@ -1222,7 +1225,7 @@ var settingsNotUpdated;
 
 					/* adding artificial last line */
 					if(idPlaylist === -1 && count === response.infos.from + data.length) {
-						count++;
+						// count++;
 						htmlContent +=	karaSuggestionHtml;
 					}
 
