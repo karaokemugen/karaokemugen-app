@@ -143,6 +143,8 @@
 	"TAG_SWITCH_SHORT": "SWI",
 	"TAG_SATURN": "Sega Saturn",
 	"TAG_SATURN_SHORT": "SAT",
+	"TAG_DREAMCAST": "Sega Dreamcast",
+	"TAG_DREAMCAST_SHORT": "DC",
 	"TAG_MOBAGE": "Mobile Game",
 	"TAG_MOBAGE_SHORT": "MOB",
 	"TAG_VN": "Visual Novel",
