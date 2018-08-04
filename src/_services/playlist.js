@@ -20,7 +20,6 @@ import {
 	editPlaylist as editPL,
 	emptyPlaylist as emptyPL,
 	findCurrentPlaylist,
-	findPlaylist,
 	findPublicPlaylist,
 	getMaxPosInPlaylist,
 	getMaxPosInPlaylistForUser,
@@ -183,10 +182,6 @@ async function getPLCIDByDate (playlist_id,date_added) {
 	return await getPLCByDate(playlist_id,date_added);
 }
 
-export async function isPlaylist(playlist_id,seenFromUser) {
-	return await findPlaylist(playlist_id,seenFromUser);
-}
-
 async function isKaraInPlaylist(kara_id,playlist_id) {
 	return await isKaraInPL(kara_id,playlist_id);
 }
@@ -318,7 +313,7 @@ export async function emptyPlaylist(playlist_id) {
 }
 
 export async function editPlaylist(playlist_id,playlist) {
-	if (!await isPlaylist(playlist_id)) throw `Playlist ${playlist_id} unknown`;
+	if (!await getPlaylistInfo(playlist_id)) throw `Playlist ${playlist_id} unknown`;
 	try {
 		logger.info(`[Playlist] Editing playlist ${playlist_id} : ${JSON.stringify(playlist)}`);
 		await editPL({
@@ -357,16 +352,19 @@ export async function createPlaylist(name,opts,username) {
 }
 
 export async function getPlaylistInfo(playlist_id, token) {
-	if (token && !await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
-	return await getPLInfo(playlist_id);
+	const pl = await getPLInfo(playlist_id);
+	if (token) {
+		if (testPlaylistVisible(pl, token)) return pl;
+		return false;
+	}
+	return pl;
 }
 
-async function testPlaylistVisible(playlist_id, token) {
-	let seenFromUser = false;
-	const user = await findUserByName(token.username);
-	if (token.role !== 'admin' && user.favoritesPlaylistID === playlist_id) seenFromUser = true;
-	if (!await isPlaylist(playlist_id,seenFromUser)) return false;
-	return true;
+function testPlaylistVisible(pl, token) {
+	return (token.role === 'admin' ||
+			pl.flag_visible ||
+			(pl.flag_favorites && pl.username === token.username)
+	);
 }
 
 export async function getPlaylists(token) {
@@ -393,7 +391,8 @@ export async function getPlaylistContentsMini(playlist_id) {
 export async function getPlaylistContents(playlist_id,token,filter,lang,from,size) {
 	try {
 		profile('getPLC');
-		if (!await testPlaylistVisible(playlist_id,token)) throw `Playlist ${playlist_id} unknown`;
+		const plInfo = await getPlaylistInfo(playlist_id, token);
+		if (!testPlaylistVisible(plInfo,token)) throw `Playlist ${playlist_id} unknown`;
 		const pl = await getPLContents(playlist_id,token.username,filter,lang);
 		if (from === -1) {
 			const pos = getPlayingPos(pl);
@@ -428,7 +427,7 @@ export async function getKaraFromPlaylist(plc_id,lang,token) {
 		profile('getPLCInfo');
 		return output;
 	} catch(err) {
-		console.log(err);
+		throw err;
 	}
 }
 
@@ -606,7 +605,6 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			playlist_id: playlist_id
 		};
 	} catch(err) {
-		console.log(err);
 		logger.error(`[Playlist] Unable to add karaokes : ${err}`);
 		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 		throw {
@@ -752,8 +750,8 @@ export async function editPLC(plc_id,params,token) {
 	if (+params.flag_free === 0) throw 'flag_free cannot be unset!';
 	const plcData = await getPLCInfoMini(plc_id);
 	if (!plcData) throw 'PLC ID unknown';
-	if (!await testPlaylistVisible(plcData.playlist_id,token)) throw `Playlist ${plcData.playlist_id} unknown`;
-	const pl = await getPlaylistInfo(plcData.playlist_id);
+	const pl = await getPlaylistInfo(plcData.playlist_idi);
+	if (!testPlaylistVisible(pl,token)) throw `Playlist ${plcData.playlist_id} unknown`;
 	if (pl.flag_favorites === 1) throw 'Karaokes in favorite playlists cannot be modified';
 	if (params.flag_playing) {
 		await setPlaying(plc_id,pl.playlist_id);
@@ -806,15 +804,14 @@ export async function exportPlaylist(playlist_id) {
 	try {
 		logger.debug( `[Playlist] Exporting playlist ${playlist_id}`);
 		const plContents = await getPlaylistContentsMini(playlist_id);
-		const plInfo = await getPlaylistInfo(playlist_id);
-		let pl = {};
-		plInfo.playlist_id = undefined;
-		plInfo.num_karas = undefined;
-		plInfo.flag_current = undefined;
-		plInfo.flag_public = undefined;
-		plInfo.flag_favorites = undefined;
-		plInfo.length = undefined;
-		plInfo.fk_id_user = undefined;
+		let playlist = {};
+		pl.playlist_id = undefined;
+		pl.num_karas = undefined;
+		pl.flag_current = undefined;
+		pl.flag_public = undefined;
+		pl.flag_favorites = undefined;
+		pl.length = undefined;
+		pl.fk_id_user = undefined;
 		let plcFiltered = [];
 		plContents.forEach((plc) => {
 			let plcObject = {};
@@ -829,13 +826,13 @@ export async function exportPlaylist(playlist_id) {
 			if (plc.flag_playing === 1) plcObject.flag_playing = 1;
 			plcFiltered.push(plcObject);
 		});
-		pl.Header = {
+		playlist.Header = {
 			version: 3,
 			description: 'Karaoke Mugen Playlist File',
 		};
-		pl.PlaylistInformation = plInfo;
-		pl.PlaylistContents = plcFiltered;
-		return pl;
+		playlist.PlaylistInformation = plInfo;
+		playlist.PlaylistContents = plcFiltered;
+		return playlist;
 	} catch(err) {
 		throw {
 			message: err,

@@ -4377,7 +4377,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const karas = await getFavorites(req.authToken.username, req.query.filter, req.lang, from, size);
+				const karas = await getFavorites(req.authToken, req.query.filter, req.lang, from, size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);

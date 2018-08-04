@@ -196,11 +196,6 @@ export async function raisePosInPlaylist(pos,id) {
 	});
 }
 
-export async function findPlaylist(id,forUser) {
-	const query = sql.testPlaylist + (forUser ? ' AND flag_visible = 1' : '');
-	return await getUserDb().get(query, { $playlist_id: id });
-}
-
 export async function setCurrentPlaylist(id) {
 	return await getUserDb().run(sql.setCurrentPlaylist, { $playlist_id: id });
 }
