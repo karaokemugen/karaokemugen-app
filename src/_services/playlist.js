@@ -830,7 +830,7 @@ export async function exportPlaylist(playlist_id) {
 			version: 3,
 			description: 'Karaoke Mugen Playlist File',
 		};
-		playlist.PlaylistInformation = plInfo;
+		playlist.PlaylistInformation = pl;
 		playlist.PlaylistContents = plcFiltered;
 		return playlist;
 	} catch(err) {
