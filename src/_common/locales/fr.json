@@ -232,6 +232,7 @@
 	"PLAYLIST_EDIT": "Renommer la liste de lecture",
 	"PLAYLIST_DELETE": "Supprimer la liste de lecture",
 	"PLAYLIST_SHUFFLE": "Mélanger la liste de lecture",
+	"PLAYLIST_SMART_SHUFFLE": "Mélanger adroitement la liste de lecture (meilleur expérience de groupe)",
 	"FAVORITES_IMPORT": "Importer vos favoris",
 	"FAVORITES_EXPORT": "Exporter vos favoris",
 	"IMPORT": "Importer",

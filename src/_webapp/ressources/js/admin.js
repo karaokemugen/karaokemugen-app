@@ -637,6 +637,11 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			url += '/shuffle';
 			type = 'PUT';
 			ajx(type, url, data);
+		} else if (name == 'smartShuffle') {
+			url += '/shuffle';
+			type = 'PUT';
+			data = {smartShuffle : 1}
+			ajx(type, url, data);
 		} else if (name == 'export') {
 			url += '/export';
 			type = 'GET';
