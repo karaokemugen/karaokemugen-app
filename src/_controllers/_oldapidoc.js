@@ -3685,7 +3685,6 @@
     * HTTP/1.1 403 Forbidden
 	*/
 
-/**
 	/**
  * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
@@ -4412,3 +4411,33 @@
  * @apiErrorExample Error-Response:
  * HTTP/1.1 403 Forbidden
  */
+
+/**
+* @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
+* @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
+* @apiName putPlaylistShuffle
+* @apiVersion 2.1.3
+* @apiGroup Playlists
+* @apiPermission admin
+* @apiHeader authorization Auth token received from logging in
+* @apiParam {Number} pl_id Playlist ID to shuffle
+* @apiSuccess {String} args ID of playlist shuffled
+* @apiSuccess {String} code Message to display
+* @apiSuccess {Number} data ID of playlist shuffled
+* @apiSuccessExample Success-Response:
+* HTTP/1.1 200 OK
+* {
+*   "args": "5",
+*   "code": "PL_SHUFFLED",
+*   "data": "5"
+* }
+* @apiError PL_SHUFFLE_ERROR Unable to shuffle playlist
+*
+* @apiErrorExample Error-Response:
+* HTTP/1.1 500 Internal Server Error
+* {
+*   "args": "10",
+*   "code": "PL_SHUFFLE_ERROR",
+*   "message": "Playlist 10 unknown"
+* }
+*/

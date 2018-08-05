@@ -182,7 +182,8 @@ export const getPlaylistContentsMini = (lang) => `SELECT ak.kara_id AS kara_id,
 													ak.kid AS kid,
 													pc.fk_id_user AS user_id,
 													pc.flag_free AS flag_free,
-													u.login AS username
+													u.login AS username,
+													ak.duration AS duration
 											FROM karasdb.all_karas AS ak
 											INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 											LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user

@@ -946,7 +946,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 	}
 }
 
-export async function shufflePlaylist(playlist_id) {
+export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
@@ -954,8 +954,14 @@ export async function shufflePlaylist(playlist_id) {
 	try {
 		profile('shuffle');
 		let playlist = await getPlaylistContentsMini(playlist_id);
+
 		if (!pl.flag_current) {
-			playlist = shuffle(playlist);
+			if(!smartShuffleBoolean){
+				playlist = shuffle(playlist);
+			}else{
+				playlist = smartShuffle(playlist);
+			}
+
 		} else {
 		// If it's current playlist, we'll make two arrays out of the playlist :
 		// - One before (and including) the current song being played (flag_playing = 1)
@@ -974,7 +980,11 @@ export async function shufflePlaylist(playlist_id) {
 					AfterPlaying.push(kara);
 				}
 			});
-			AfterPlaying = shuffle(AfterPlaying);
+			if (!smartShuffleBoolean) {
+				AfterPlaying = shuffle(AfterPlaying);
+			}else{
+				AfterPlaying = smartShuffle(AfterPlaying);
+			}
 			playlist = BeforePlaying.concat(AfterPlaying);
 			// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
 			if (!ReachedPlaying) {
@@ -1001,6 +1011,101 @@ export async function shufflePlaylist(playlist_id) {
 		profile('shuffle');
 	}
 }
+
+
+async function smartShuffle(playlist){ // Smart Shuffle begin
+	let userShuffleBoolean = false; // The boolean to add a shuffle condition if the number of user is high enough
+
+
+	let verificator = 0;
+	if (playlist.length - 6 > 0) {      // We do nothing if the playlist length is too low
+
+
+		let userTest = 1;
+		let userTestArray = [playlist[0].pseudo_add];
+
+		for (const playlistItem of playlist) {
+			if (!userTestArray.includes(playlistItem.pseudo_add)) {
+				userTestArray.push(playlistItem.pseudo_add);
+				userTest++;
+			}
+		}
+
+		if (userTest > 5) {
+			userShuffleBoolean = true;
+		}
+
+		let user_iterator = 0;
+
+		if (userShuffleBoolean) {
+			while (playlist.length - user_iterator > 0) {
+
+
+				if ((playlist.length - user_iterator) > 6) {
+					let playlist_temp = playlist.slice(user_iterator, user_iterator + 6);
+					for (let i = 0; i < 5; i++) {
+						if (playlist_temp[i].pseudo_add === playlist_temp[i + 1].pseudo_add) {
+							if (playlist[i + 4 + user_iterator]) {
+								let a = playlist_temp[i + 1];
+								playlist[i + 1 + user_iterator] = playlist[i + 4 + user_iterator];
+								playlist[i + 4 + user_iterator] = a;
+							} else {
+								let a = playlist_temp[i + 1];
+								playlist[i + 1 + user_iterator] = playlist[i - 5 + user_iterator];
+								playlist[i - 5 + user_iterator] = a;
+
+							}
+
+						}
+
+					}
+
+				}
+				user_iterator += 5;
+			}
+
+			let playlist_temp = playlist.slice(user_iterator - 1, playlist.length);
+
+			for (let i = user_iterator; i < playlist_temp.length - 1; i++) {
+
+				if (playlist_temp[i].pseudo_add === playlist_temp[i + 1].pseudo_add) verificator = i;
+
+			}
+
+			if (verificator !== 0) {
+
+				let a = playlist_temp[verificator + 1];
+				playlist[verificator + 1 + user_iterator] = playlist[2];
+				playlist[2] = a;
+
+			}
+
+		}
+
+		let duration_iterator = 0;
+
+		while (playlist.length - duration_iterator > 0) {
+
+			if (playlist.length - duration_iterator > 6) {
+				let playlist_temp = playlist.slice(duration_iterator, duration_iterator + 6);
+				for (let i = 0; i < 4; i++) {
+					if (playlist_temp[i].duration > 150 && playlist_temp[i + 1].duration > 150) {
+						if (playlist[i + 4 + duration_iterator]) {
+							let a = playlist_temp[i + 1];
+							playlist[i + 1 + duration_iterator] = playlist[i + 4 + duration_iterator];
+							playlist[i + 4 + duration_iterator] = a;
+						} else {
+							let a = playlist_temp[i + 1];
+							playlist[i + 1 + duration_iterator] = playlist[i - 5 + duration_iterator];
+							playlist[i - 5 + duration_iterator] = a;
+						}
+					}
+				}
+			}
+			duration_iterator += 6;
+		}
+	}
+} // Smart Shuffle end
 
 export async function previousSong() {
 	const playlist_id = await isACurrentPlaylist();
