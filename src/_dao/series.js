@@ -1,9 +1,11 @@
 import {langSelector, buildClausesSeries, getUserDb} from './database';
 import deburr from 'lodash.deburr';
+import injectionTest from 'is-sql-injection';
+
 const sql = require('../_common/db/series');
 
 export async function selectAllSeries(filter, lang) {
-
+	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClausesSeries(filter) : [];
 	const query = sql.getSeries(filterClauses, langSelector(lang));
 

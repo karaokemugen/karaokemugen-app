@@ -1,8 +1,10 @@
 import {transaction, langSelector, buildClauses, getUserDb} from './database';
 import {now} from 'unix-timestamp';
+import injectionTest from 'is-sql-injection';
 const sql = require('../_common/db/whitelist');
 
 export async function getWhitelistContents(filter, lang) {
+	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClauses(filter) : [];
 	const query = sql.getWhitelistContents(filterClauses, langSelector(lang));
 

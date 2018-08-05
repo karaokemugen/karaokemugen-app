@@ -4,6 +4,7 @@ import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_common/utils/files';
 import deburr from 'lodash.deburr';
+import injectionTest from 'is-sql-injection';
 
 const sql = require('../_common/db/kara');
 
@@ -57,7 +58,7 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 }
 
 export async function getAllKaras(username, filter, lang) {
-
+	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClauses(filter) : [];
 	const query = sql.getAllKaras(filterClauses, langSelector(lang));
 
