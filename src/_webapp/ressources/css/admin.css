@@ -316,7 +316,13 @@ span:not(.hideCommands) {
 	display: none;
 }
 
-
+button[name="smartShuffle"] > i {
+    font-weight: bold;
+	/* color: hsla(2, 22%, 52%, 1); */
+	/* color: hsla(211, 47%, 59%, 1); */
+	color: black;
+    text-shadow: -1px -1px 0 hsla(0, 0%, 100%, .85), 1px -1px 0 hsla(0, 0%, 100%, .85), -1px 1px 0 hsla(0, 0%, 100%, .85), 0.5px 0.5px 0 hsla(0, 0%, 100%, .85);
+}
 .panel-heading ::-webkit-input-placeholder {
 	font-size: 17px;
 	line-height: 34px;
