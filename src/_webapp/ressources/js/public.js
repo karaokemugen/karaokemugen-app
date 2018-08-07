@@ -93,7 +93,7 @@ $(document).ready(function () {
 			$('input[name="lyrics"]').prop('checked', false);
 		}
 		$('input[name="lyrics"]').trigger('switchChange.bootstrapSwitch');
-	});  
+	});
 });
 
 var datePlus10 = new Date();

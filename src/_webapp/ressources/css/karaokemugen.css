@@ -39,7 +39,8 @@ div > a {
 	font-size: 2rem;
 }
 .header div.headerInputs > .btn {
-	height: calc(100% - 0px);
+	height: calc(100% - 1px);
+	border: 0;
 }
 #manageButton .dropdown-menu {
 	z-index: 1000000;
@@ -1484,7 +1485,103 @@ input[type="text"]:focus, input[type="password"]:focus {
 	border-radius: 0;
 }
 
-@media (max-width: 1025px) {
+
+/* FILTER MENU CSS */
+
+.searchMenuContainer {
+    min-height: 0; 
+    margin-bottom:0;
+    border:0;
+    background-color: #1E2124;
+    z-index: 1444;
+}
+.searchMenu {
+    border: solid 0px hsla(0, 0%, 70%, 1);
+    border-width:  1px 0px;
+    width: 100%;
+    height: 100%;
+}
+.navbar-nav {
+    margin: 0px -15px;
+}
+.navbar-default .navbar-nav>.active>a.choice {
+    background-color: hsla(211, 33%, 38%, 1);
+    font-weight: bold;
+    color: #eee;
+}
+.navbar-nav>li>a {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+.navbar-default .navbar-nav>li>a.choice {
+    color: #eee;
+    font-size: 14px;
+}
+
+.navbar-default .navbar-nav>li > * {
+    display: flex;
+    line-height: 17px;
+    height: 34px;
+}
+.navbar-default .navbar-nav>li a>i {
+    margin-right: 10px;
+}
+.navbar-default .navbar-nav>li > .value {
+   width: calc(100% - 100px);
+   float: right;
+   border: 0;
+}
+.searchMenuButton[aria-expanded="true"] {
+    background-color: hsla(211, 33%, 38%, 1);
+    font-weight: bold;
+    color: #eee;
+}
+.searchMenu .navbar-nav>li, .searchMenu .navbar-nav {
+    float: none;
+}
+.select2-container {
+   width: 100% !important;
+}
+.select2-container--bootstrap .select2-selection--single {
+    padding-top: 7px;
+}
+.searchMenu .select2-container--bootstrap .select2-selection--single, .searchMenu.select2-dropdown {
+    background-color: hsla(210, 9%, 17%, 1);
+    /* border-width: 0px 0px 1px 0px; */
+    border: 0;
+}
+.searchMenu ::-webkit-input-placeholder {
+    font-size: 14px;
+    line-height: 14px;
+    height: 60px;
+}
+.searchMenu  ::-moz-placeholder {  /* Firefox 19+ */
+    font-size: 14px;
+    line-height: 14px;
+    height: 60px;
+}
+.searchMenu :-ms-input-placeholder {
+    font-size: 14px;
+    line-height: 14px;
+    height: 60px;
+}
+.tagsContainer {
+    width: calc(100% - 115px);
+}
+.tagsTypesContainer {
+    width: 115px;
+}
+
+@media (max-width: 1025px) {  
+    .tags.select2-container--open {
+        max-width: 100%;
+        right: 0 !important;
+        left: auto !important;
+	}
+	.tags.select2-container--open > .select2-dropdown {
+		width: 100% !important;
+	}
+
 	.playlistContainer[flipped]:after {
 		background: url(/ressources/img/nanami_g_980w.jpg) no-repeat;
 		background-size: 100%;
