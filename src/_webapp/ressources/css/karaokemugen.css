@@ -147,6 +147,9 @@ div > a {
     margin: 0px;
 	padding: 0px;
 	z-index: 0;
+	
+    display: flex;
+    flex-flow: column;
 }
 
 .panel-heading > div {
@@ -558,6 +561,7 @@ button.closeParent.bottom  {
     z-index: 1;
 	overflow: auto;
 	position: static;
+	height: 100%;
 	-webkit-overflow-scrolling: touch;
 }
 .playlistLoading {
@@ -1011,6 +1015,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
+
+    width: 100%;
+    flex: 0 0 auto;
 }
 .plDashboard .plSelect, .plDashboard .plSearch {
 	z-index:10;
@@ -1195,6 +1202,12 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     border-top: none;
     text-decoration: none;
     background-color: rgb(75, 75, 75);
+}
+.nav>li:not(.tagFilter) {
+	width: 50%;
+}
+.tagFilter {
+	width: 100%;
 }
 .modal .modal-message div {
 	padding: 0;
@@ -1496,6 +1509,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 	z-index: 1444;
 	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.24), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
 	
+	flex: 0 0 auto;
 }
 .searchMenu {
     border: solid 0px hsla(0, 0%, 70%, 1);
@@ -1539,7 +1553,11 @@ input[type="text"]:focus, input[type="password"]:focus {
     color: #eee;
 }
 .searchMenu .navbar-nav>li, .searchMenu .navbar-nav {
-    float: none;
+	float: none;
+}
+.searchMenu ul.navbar-nav {
+	display: flex;
+	flex-wrap: wrap;
 }
 .select2-container {
    width: 100% !important;

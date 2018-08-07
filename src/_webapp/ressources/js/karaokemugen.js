@@ -2237,8 +2237,8 @@ var settingsNotUpdated;
 		isSmall = $(window).width() < 1025;
 		var topHeight1 = $('#panel1 .panel-heading.container-fluid').outerHeight();
 		var topHeight2 = $('#panel2 .panel-heading.container-fluid').outerHeight();
-		$('#playlist1').parent().css('height', 'calc(100% - ' + (scope === 'public' ? 0 : topHeight1) + 'px ');
-		$('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
+		//$('#playlist1').parent().css('height', 'calc(100% - ' + (scope === 'public' ? 0 : topHeight1) + 'px ');
+		//$('#playlist2').parent().css('height', 'calc(100% - ' + topHeight2 + 'px  ');
 
 		resizeModal();
 
