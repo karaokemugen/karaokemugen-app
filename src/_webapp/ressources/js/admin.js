@@ -132,16 +132,16 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
-			if(bcTags) {
+			if(tags) {
 				var bcType = $(this).val();
-				var bcTagsFiltered = jQuery.grep(bcTags, function (obj) {
+				var tagsFiltered = jQuery.grep(tags, function (obj) {
 					return obj.type == bcType;
 				});
 	
 				var $bcValInput;
-				if (bcTagsFiltered.length > 0) {
+				if (tagsFiltered.length > 0) {
 					$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
-					$.each(bcTagsFiltered, function (i, o) {
+					$.each(tagsFiltered, function (i, o) {
 						var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
 						$bcValInput.append($option);
 					});
@@ -150,12 +150,12 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				}
 				$('#bcValContainer').empty().append($bcValInput);
 	
-				if (bcTagsFiltered.length > 0) {
+				if (tagsFiltered.length > 0) {
 					$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
 	
 				}
 			} else {
-				console.log("Err: bcTags empty");
+				console.log("Err: tags empty");
 			}
 		});
 

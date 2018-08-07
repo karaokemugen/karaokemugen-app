@@ -1,4 +1,4 @@
-import {langSelector, buildClauses, getUserDb, transaction} from './database';
+import {buildTypeClauses, langSelector, buildClauses, getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
@@ -13,6 +13,10 @@ export async function getSongCountForUser(playlist_id,user_id) {
 		$playlist_id: playlist_id,
 		$user_id: user_id
 	});
+}
+
+export async function getYears() {
+	return await getUserDb().all(sql.getYears);
 }
 
 export async function updateKara(kara) {
@@ -57,10 +61,15 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 	});
 }
 
-export async function getAllKaras(username, filter, lang) {
+export async function getAllKaras(username, filter, lang, mode, modeValue) {
 	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
+	if (injectionTest(modeValue)) throw `Possible SQL injection : ${modeValue}`;
 	const filterClauses = filter ? buildClauses(filter) : [];
-	const query = sql.getAllKaras(filterClauses, langSelector(lang));
+	const typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
+	let orderClauses = '';
+	if (mode === 'recent') orderClauses = 'ORDER BY created_at DESC ';
+	if (mode === 'popular') orderClauses = 'ORDER BY requested DESC ';
+	const query = sql.getAllKaras(filterClauses, langSelector(lang), orderClauses, typeClauses);
 
 	return await getUserDb().all(query, {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),

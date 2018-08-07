@@ -355,7 +355,12 @@ button[name="smartShuffle"] > i {
 .plDashboard[data-playlist_id="-1"] .flagsContainer {
 	display: none;	
 }
-
+.searchMenuButtonContainer {
+	display: none;
+}
+.plDashboard[data-playlist_id="-1"] .searchMenuButtonContainer {
+	display: block;
+}
 .plDashboard[data-playlist_id="-1"] .controlsContainer,
 .plDashboard[data-playlist_id="-2"] .controlsContainer,
 .plDashboard[data-playlist_id="-3"] .controlsContainer,

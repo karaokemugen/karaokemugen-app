@@ -288,3 +288,10 @@ async function migrateUserDb() {
 async function migrateKaraDb() {
 	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
 }
+
+export function buildTypeClauses(mode, value) {
+	if (mode === 'year') return ` AND year = ${value}`;
+	if (mode === 'tag') return ` AND kara_id IN (SELECT fk_id_kara FROM kara_tag WHERE fk_id_tag = ${value})`;
+	if (mode === 'serie') return ` AND kara_id IN (SELECT fk_id_kara FROM kara_serie WHERE fk_id_serie = ${value})`;
+	return '';
+}

@@ -51,11 +51,24 @@ function filterTags(tags, filter, type) {
 	return tags;
 }
 
-export async function getTags(lang, filter, type) {
+export async function formatTagList(tagList, lang, from, count) {
+	tagList = await translateTags(tagList, lang);
+	return {
+		infos: {
+			count: count,
+			from: from,
+			to: from + tagList.length
+		},
+		content: tagList
+	};
+}
+
+export async function getTags(lang, filter, type, from, size) {
 	profile('getTags');
 	let tags = await getAllTags();
 	tags = await translateTags(tags, lang);
-	const ret = filterTags(tags, filter, type);
+	tags = filterTags(tags, filter, type);
+	const ret = await formatTagList(tags.slice(from, from + size), lang, from, tags.length);
 	profile('getTags');
 	return ret;
 }
