@@ -22,6 +22,7 @@ import {setState} from './state';
 let config = {};
 let configFile = 'config.ini';
 let savingSettings;
+let configReady;
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
@@ -97,6 +98,7 @@ export async function initConfig(appPath, argv) {
 
 	await configureLocale();
 	await loadConfigFiles(appPath);
+	configReady = true;
 	configureHost();
 	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
 	if (config.appInstanceID === 'Change me') setConfig( {appInstanceID: uuidV4() });
@@ -173,7 +175,7 @@ export function configureHost() {
 
 export async function setConfig(configPart) {
 	config = {...config, ...configPart};
-	updateConfig(config);
+	if (configReady) updateConfig(config);
 	return getConfig();
 }
 
