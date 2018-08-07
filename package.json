@@ -103,7 +103,7 @@
     "node-id3": "^0.1.5",
     "node-mpv": "github:00SteinsGate00/Node-MPV#Node-MPV-2",
     "opn": "^5.3.0",
-    "os-locale": "^2.1.0",
+    "os-locale": "^3.0.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",

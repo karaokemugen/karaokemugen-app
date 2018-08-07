@@ -95,7 +95,7 @@ export async function initConfig(appPath, argv) {
 	config = {...config, appPath: appPath};
 	config = {...config, os: process.platform};
 
-	configureLocale();
+	await configureLocale();
 	await loadConfigFiles(appPath);
 	configureHost();
 	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
@@ -142,14 +142,15 @@ async function loadConfig(configFile) {
 	}
 }
 
-function configureLocale() {
+async function configureLocale() {
 	i18n.configure({
 		directory: resolve(__dirname, '../locales'),
 		defaultLocale: 'en',
 		cookie: 'locale',
 		register: global
 	});
-	const detectedLocale = osLocale.sync().substring(0, 2);
+	let detectedLocale = await osLocale();
+	detectedLocale = detectedLocale.substring(0, 2);
 	i18n.setLocale(detectedLocale);
 	config = {...config, EngineDefaultLocale: detectedLocale };
 }
