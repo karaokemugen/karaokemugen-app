@@ -19,13 +19,14 @@ import {updateSongsLeft} from '../_services/user';
 import {message} from '../_player/player';
 import {addKaraToPlaylist, copyKaraToPlaylist, shufflePlaylist, getPlaylistContents, emptyPlaylist, setCurrentPlaylist, setPublicPlaylist, editPLC, editPlaylist, deleteKaraFromPlaylist, deletePlaylist, getPlaylistInfo, createPlaylist, getPlaylists, getKaraFromPlaylist, exportPlaylist, importPlaylist} from '../_services/playlist';
 import {getTags} from '../_services/tag';
-import {getRandomKara, getKaraLyrics, getTop50, getKaras, getKara} from '../_services/kara';
+import {getYears, getRandomKara, getKaraLyrics, getTop50, getKaras, getKara} from '../_services/kara';
 import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelistContents} from '../_services/whitelist';
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
 import {createUser, findUserByName, deleteUser, editUser, getUserRequests, listUsers} from '../_services/user';
 import {getPoll, addPollVote} from '../_services/poll';
+import {getSeries} from '../_services/series';
 
 function errMessage(code,message,args) {
 	return {
@@ -3005,6 +3006,8 @@ export function APIControllerPublic(router) {
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiParam {String} [searchType] Can be `serie`, `year`, `popular`, `recent` or `tag`
+ * @apiParam {String} [searchValue] Value to search for. For `series` or `tag` it's an ID, for `year` it's a 4-digit year.
  *
  * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
@@ -3083,7 +3086,7 @@ export function APIControllerPublic(router) {
 			from = parseInt(from, 10);
 			if (from < 0) from = 0;
 			try {
-				const karas = await getKaras(req.query.filter,req.lang,from,size,req.authToken);
+				const karas = await getKaras(req.query.filter,req.lang,from,size,req.query.searchType, req.query.searchValue, req.authToken);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -3091,7 +3094,6 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('SONG_LIST_ERROR',err));
 			}
 		});
-
 	router.route('/karas/random')
 	/**
  * @api {get} /public/karas/random Get a random karaoke ID
@@ -3796,11 +3798,13 @@ export function APIControllerPublic(router) {
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
 	* @apiVersion 2.3.0
-	* @apiGroup Karaokes
+	* @apiGroup Tags
 	* @apiPermission public
 	* @apiHeader authorization Auth token received from logging in
-	* @apiParam {Number} type Type of tag to filter
-	* @apiParam {String} filter Tag name to filter results
+	* @apiParam {Number} [type] Type of tag to filter
+	* @apiParam {String} [filter] Tag name to filter results
+	* @apiParam {Number} [from] Where to start listing from
+	* @apiParam {Number} [size] How many records to get.
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {String} data/name_i18n Translated name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
@@ -3809,7 +3813,8 @@ export function APIControllerPublic(router) {
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
 	* {
-	*     "data": [
+	*     "data": {
+	*		content: [
 	*        {
 	*          "name": "20th Century",
 	*          "name_i18n": "20th Century",
@@ -3829,7 +3834,12 @@ export function APIControllerPublic(router) {
 	*          "type": 5
 	*        }
 	*		 ...
-	*   ]
+	*   	],
+	*       "infos": {
+ 	*           "count": 1000,
+ 	* 			"from": 0,
+ 	* 			"to": 120
+ 	*       }
 	* }
 	* @apiError TAGS_LIST_ERROR Unable to get list of tags
 	* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
@@ -3840,12 +3850,114 @@ export function APIControllerPublic(router) {
 	*/
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const tags = await getTags(req.lang,req.query.filter,req.query.type);
+				let size = req.query.size || 999999;
+				size = parseInt(size, 10);
+				let from = req.query.from || 0;
+				from = parseInt(from, 10);
+				const tags = await getTags(req.lang,req.query.filter,req.query.type, from, size);
 				res.json(OKMessage(tags));
 			} catch(err) {
 				logger.error(err);
 				res.statusCode = 500;
 				res.json(errMessage('TAGS_LIST_ERROR',err));
+			}
+		});
+	router.route('/years')
+		/**
+		* @api {get} /public/years Get year list
+		* @apiName GetYears
+		* @apiVersion 2.3.0
+		* @apiGroup Karas
+		* @apiPermission public
+		* @apiHeader authorization Auth token received from logging in
+		* @apiSuccess {String[]} data Array of years
+		* @apiSuccessExample Success-Response:
+		* HTTP/1.1 200 OK
+		* {
+		*     "data": [
+		*       {
+		*			"year": "1969"
+		*		},
+		*		 ...
+		*   ]
+		* }
+		* @apiError YEARS_LIST_ERROR Unable to get list of years
+		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 500 Internal Server Error
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 403 Forbidden
+		*/
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const years = await getYears();
+				res.json(OKMessage(years));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('YEARS_LIST_ERROR',err));
+			}
+		});
+	router.route('/series')
+		/**
+		* @api {get} /public/series Get series list
+		* @apiName GetSeries
+		* @apiVersion 2.3.0
+		* @apiGroup Karas
+		* @apiPermission public
+		* @apiHeader authorization Auth token received from logging in
+		* @apiParam {String} [filter] Text filter to search series for
+		* @apiParam {Number} [from] Where to start listing from
+		* @apiParam {Number} [size] How many records to get.
+		* @apiSuccess {Array} data Array of series
+		* @apiSuccess {Number} data/serie_id Serie ID in the database
+		* @apiSuccess {String} data/name Serie's original name
+		* @apiSuccess {String} data/i18n_name Serie's name according to language
+		* @apiSuccess {String[]} data/aliases Array of aliases
+		* @apiSuccess {Object} data/i18n JSON object for the series translations
+		* @apiSuccessExample Success-Response:
+		* HTTP/1.1 200 OK
+		* {
+		*     "data": {
+		*        "contents": [
+		*        {
+		*			"name": "Hataraku Saibô",
+		*			"i18n_name": "Les Brigades Immunitaires",
+		*			"aliases": ["LBI"],
+		*			"i18n": {
+		*				"jpn": "Hataraku Saibô",
+		*				"eng": "Cells at Work",
+		*				"fre": "Les Brigades Immunitaires"
+		*			},
+		*			"serie_id": 2093
+		*		},
+		*		...
+		*		],
+		*       "infos": {
+ 		*           "count": 1000,
+ 		* 			"from": 0,
+ 		* 			"to": 120
+ 		*       }
+		* }
+		* @apiError SERIES_LIST_ERROR Unable to get series list
+		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 500 Internal Server Error
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 403 Forbidden
+		*/
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				let size = req.query.size || 999999;
+				size = parseInt(size, 10);
+				let from = req.query.from || 0;
+				from = parseInt(from, 10);
+				const series = await getSeries(req.query.filter, req.lang, from, size);
+				res.json(OKMessage(series));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('YEARS_LIST_ERROR',err));
 			}
 		});
 	router.route('/users/:username')
@@ -4607,7 +4719,6 @@ export function APIControllerPublic(router) {
 					emitWS('playlistsUpdated');
 					res.json(OKMessage(response,'FAV_IMPORTED',data.playlist_id));
 				} catch(err) {
-					console.log(err);
 					res.statusCode = 500;
 					res.json(errMessage('FAV_IMPORT_ERROR',err));
 				}

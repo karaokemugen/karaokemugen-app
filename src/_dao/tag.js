@@ -11,7 +11,7 @@ export async function getAllTags() {
 	return await getUserDb().all(sql.getAllTags);
 }
 
-export async function checkOrCreateTag(tag) {	
+export async function checkOrCreateTag(tag) {
 	const tagDB = await getUserDb().get(sql.getTagByNameAndType, {
 		$name: tag.tag,
 		$type: tag.type
@@ -33,5 +33,5 @@ export async function updateKaraTags(kara_id, tags) {
 			$kara_id: kara_id,
 			$tag_id: tag.id
 		});
-	}	
+	}
 }

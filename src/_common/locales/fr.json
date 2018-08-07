@@ -461,7 +461,7 @@
 	"INTRO_PUBLIC_KARA_WIDE": "Pour afficher les informations détaillées d'un kara & différentes actions avancées, cliquez le boutton <i class='glyphicon glyphicon-info-sign'></i> à sa gauche",
 	"INTRO_PUBLIC_KARADETAILS": "Selon la configuration du Karaoké, les boutons vous permettent de <i class='glyphicon glyphicon-align-justify'></i> consulter les paroles, <i class='glyphicon glyphicon-star-empty'></i> mettre le karaoké en favoris ou <i class='glyphicon glyphicon-film'></i> visualiser un aperçu du karaoké.",
 	"INTRO_PUBLIC_FOOTER": "Votre position dans la liste est indiquée ici, ces flèches vous permettent d'en atteindre directement le début ou la fin. <br />Si <b>restant : x</b> s'affiche à droite, <b>x</b> indique votre nombre d'ajouts restants.",
-	"INTRO_PUBLIC_FAVORITES": "Enfin, vous pouvez remplacer la liste de recherche par votre liste de favoris on cliquant ce bouton.",
+	"INTRO_PUBLIC_FAVORITES": "Enfin, vous pouvez filtrer la liste de recherche, en affichant par exemple les chansons populaires ou vos favoris (compte nécessaire).",
 	"INTRO_PUBLIC_CHANGE_SCREEN": "Balayez rapidement l’écran vers la gauche pour accéder au reste de l’application.",
 	"INTRO_PUBLIC_PLAYLISTS": "L'écran de consultation vous permet d'accèder à différentes playlists. <br /> Selon le mode de karaoké, votre karaoké est ajouté directement à la <i class='glyphicon glyphicon-facetime-video'></i> liste en cours de lecture ou à une <i class='glyphicon glyphicon-globe'></i> liste de suggestions séparée de la liste en cours.<br /><br />Vous pouvez également « like » une suggestion qui vous intéresse, lui donnant ainsi plus d’importance. Une suggestion populaire ne comptera pas dans le quota de la personne l’ayant proposée.",
 	"INTRO_PUBLIC_CHANGE_SCREEN2": "Balayez rapidement l’écran vers la droite pour revenir à l’écran de recherche.",
@@ -503,9 +503,14 @@
 	"PLAYERMONITOR": "Seconde fenêtre (moniteur)",
 	"ONLINEMODE": "Url d'accès courte (nécessite internet)",
 	"NO_EXT_INFO": "La recherche d'informations en ligne n'a pas abouti",
+	"NO_TAG": "Pas d'information",
+	"FILTER": "Filtrer",
+	"VIEW_STANDARD": "Standard",
+	"VIEW_FAVORITES": "Favoris",
+	"VIEW_RECENT": "Récent",
+	"VIEW_POPULAR": "Populaire"
 	"KARA_SUGGESTION_MAIL": "Vous ne trouvez pas votre bonheur ? Cliquez ici",
 	"KARA_SUGGESTION_SUBJECT": "Suggestion de kara : ",
 	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais.%0D%0A Cordialement, bisous.",
-	"KARA_SUGGESTION_NAME": "Titre de la chanson",
-	"TAG_CONCERT": "TAG_CONCERT"
+	"KARA_SUGGESTION_NAME": "Titre de la chanson"
 }

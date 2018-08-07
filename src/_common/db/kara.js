@@ -59,7 +59,7 @@ export const getKaraViewcounts = `SELECT ak.title AS title,
 							`;
 
 
-export const getAllKaras = (filterClauses, lang) => `SELECT ak.kara_id AS kara_id,
+export const getAllKaras = (filterClauses, lang, orderClauses, typeClauses) => `SELECT ak.kara_id AS kara_id,
       							ak.kid AS kid,
       							ak.title AS title,
 								ak.NORM_title AS NORM_title,
@@ -113,8 +113,9 @@ export const getAllKaras = (filterClauses, lang) => `SELECT ak.kara_id AS kara_i
 								ak.modified_at as modified_at
 							FROM karasdb.all_karas AS ak
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
- 							${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-							ORDER BY language, ak.serie IS NULL, serie COLLATE NOCASE,  ak.songtype DESC, ak.songorder, singer COLLATE NOCASE, ak.title COLLATE NOCASE
+							 ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
+							 ${typeClauses}
+							 ${orderClauses}
 							`;
 
 export const getKaraByKID = `SELECT ak.kara_id AS kara_id,
@@ -271,3 +272,5 @@ export const insertKara = `INSERT INTO
 							karasdb.kara(title, NORM_title, year, songorder, mediafile, subfile, duration, gain, modified_at, created_at, karafile, kid)
 							VALUES($title, $NORM_title, $year, $songorder, $mediafile, $subfile, $duration, $gain, $modified_at, $created_at, $karafile, $kid);
 `;
+
+export const getYears = 'SELECT DISTINCT year FROM karasdb.all_karas ORDER BY year';

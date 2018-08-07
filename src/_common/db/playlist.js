@@ -157,7 +157,7 @@ export const getPlaylistContents = (filterClauses, lang) => `SELECT ak.kara_id A
 									LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
 									WHERE pc.fk_id_playlist = $playlist_id
 									${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-									ORDER BY pc.pos,pc.created_at DESC
+									ORDER BY pc.pos
 									`;
 
 export const getPlaylistContentsMini = (lang) => `SELECT ak.kara_id AS kara_id,
@@ -410,9 +410,7 @@ export const setCurrentPlaylist = `UPDATE playlist
 									SET flag_current = 1
 									WHERE pk_id_playlist = $playlist_id;				`;
 
-export const unsetCurrentPlaylist = `UPDATE playlist
-									SET flag_current = 0;
-									`;
+export const unsetCurrentPlaylist = 'UPDATE playlist SET flag_current = 0';
 
 export const setVisiblePlaylist = `UPDATE playlist
 									SET flag_visible = 1

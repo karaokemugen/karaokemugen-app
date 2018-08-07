@@ -8,6 +8,7 @@ import {getOrAddSerieID} from './series';
 import {ASSToLyrics} from '../_common/utils/ass';
 import {getPlaylistContentsMini} from './playlist';
 import {getAllKaras as getAllKarasDB,
+	getYears as getYearsDB,
 	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
 	getASS,
@@ -134,8 +135,8 @@ export function translateKaraInfo(karalist, lang) {
 	return karas;
 }
 
-export async function getAllKaras(username, filter, lang) {
-	return await getAllKarasDB(username, filter, lang);
+export async function getAllKaras(username, filter, lang, searchType, searchValue) {
+	return await getAllKarasDB(username, filter, lang, searchType, searchValue);
 }
 
 export async function getRandomKara(playlist_id, filter, username) {
@@ -403,10 +404,22 @@ export async function addViewcountKara(kara_id, kid) {
 	return ret;
 }
 
-export async function getKaras(filter, lang, from, size, token) {
+export async function getYears() {
+	const years = await getYearsDB();
+	return {
+		content: years,
+		infos: {
+			from: 0,
+			to: years.length,
+			count: years.length
+		}
+	};
+}
+
+export async function getKaras(filter, lang, from, size, searchType, searchValue, token) {
 	try {
 		profile('getKaras');
-		const pl = await getAllKaras(token.username, filter, lang);
+		const pl = await getAllKaras(token.username, filter, lang, searchType, searchValue);
 		const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
 		profile('getKaras');
 		return ret;

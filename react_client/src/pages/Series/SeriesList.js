@@ -26,7 +26,7 @@ class SeriesList extends Component {
 		axios.get('/api/series',  { params: { filter: this.filter }})
 			.then(res => {
 				this.props.loading(false);
-				this.setState({series: res.data});
+				this.setState({series: res.data.content});
 			})
 			.catch(err => {
 				this.props.loading(false);
@@ -34,8 +34,8 @@ class SeriesList extends Component {
 			});
 	}
 
-	delete = (userId) => {
-		axios.delete(`/api/series/${userId}`)
+	delete = (seriesId) => {
+		axios.delete(`/api/series/${seriesId}`)
 			.then(() => {
 				this.props.warnMessage('Series deleted.');
 				this.setState({deleteModal: false, serie: {}});

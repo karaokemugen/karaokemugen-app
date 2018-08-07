@@ -1,5 +1,6 @@
 import {writeSeriesFile} from '../_dao/seriesfile';
 import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
+import {profile} from '../_common/utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 
 async function updateSeriesFile() {
@@ -11,8 +12,23 @@ async function updateSeriesFile() {
 	await writeSeriesFile(series);
 }
 
-export async function getSeries(filter, lang) {
-	return await selectAllSeries(filter, lang);
+export async function getSeries(filter, lang, from, size) {
+	profile('getSeries');
+	const series = await selectAllSeries(filter, lang);
+	const ret = formatSeriesList(series.slice(from, from + size), from, series.length);
+	profile('getSeries');
+	return ret;
+}
+
+export function formatSeriesList(seriesList, from, count) {
+	return {
+		infos: {
+			count: count,
+			from: from,
+			to: from + seriesList.length
+		},
+		content: seriesList
+	};
 }
 
 export async function getSerie(serie_id) {
