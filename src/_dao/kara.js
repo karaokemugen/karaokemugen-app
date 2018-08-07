@@ -1,8 +1,10 @@
-import {langSelector, buildClauses, getUserDb, transaction} from './database';
+import {buildTypeClauses, langSelector, buildClauses, getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_common/utils/files';
+import deburr from 'lodash.deburr';
+import injectionTest from 'is-sql-injection';
 
 const sql = require('../_common/db/kara');
 
@@ -13,6 +15,45 @@ export async function getSongCountForUser(playlist_id,user_id) {
 	});
 }
 
+export async function getYears() {
+	return await getUserDb().all(sql.getYears);
+}
+
+export async function updateKara(kara) {
+	return await getUserDb().get(sql.updateKara, {
+		$karafile: kara.karafile,
+		$mediafile: kara.mediafile,
+		$subfile: kara.subfile,
+		$title: kara.title,
+		$NORM_title: deburr(kara.title),
+		$year: kara.year,
+		$songorder: kara.order || '',
+		$duration: kara.mediaduration,
+		$gain: kara.mediagain,
+		$modified_at: kara.datemodif,
+		$kara_id: kara.kara_id
+	});
+}
+
+export async function addKara(kara) {
+	const res = await getUserDb().run(sql.insertKara, {
+		$karafile: kara.karafile,
+		$mediafile: kara.mediafile,
+		$subfile: kara.subfile,
+		$title: kara.title,
+		$NORM_title: deburr(kara.title),
+		$year: kara.year,
+		$songorder: kara.order || '',
+		$duration: kara.mediaduration,
+		$gain: kara.mediagain,
+		$modified_at: kara.datemodif,
+		$kara_id: kara.kara_id,
+		$created_at: kara.dateadded,
+		$kid: kara.KID
+	});
+	return res.lastID;
+}
+
 export async function getSongTimeSpentForUser(playlist_id,user_id) {
 	return await getUserDb().get(sql.getTimeSpentPerUser, {
 		$playlist_id: playlist_id,
@@ -20,10 +61,15 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 	});
 }
 
-export async function getAllKaras(username, filter, lang) {
-
+export async function getAllKaras(username, filter, lang, mode, modeValue) {
+	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
+	if (injectionTest(modeValue)) throw `Possible SQL injection : ${modeValue}`;
 	const filterClauses = filter ? buildClauses(filter) : [];
-	const query = sql.getAllKaras(filterClauses, langSelector(lang));
+	const typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
+	let orderClauses = '';
+	if (mode === 'recent') orderClauses = 'ORDER BY created_at DESC ';
+	if (mode === 'popular') orderClauses = 'ORDER BY requested DESC ';
+	const query = sql.getAllKaras(filterClauses, langSelector(lang), orderClauses, typeClauses);
 
 	return await getUserDb().all(query, {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
@@ -63,13 +109,13 @@ export async function getKara(id, username, lang) {
 
 export async function getASS(sub) {
 	const conf = getConfig();
-	const subfile = resolve(conf.appPath,conf.PathSubs,sub);	
+	const subfile = resolve(conf.appPath,conf.PathSubs,sub);
 	if (await asyncExists(subfile)) return await asyncReadFile(subfile, 'utf-8');
 	throw 'Subfile not found';
 }
 
 export async function isKara(id) {
-	return await getUserDb().get(sql.isKara, { $kara_id: id });	
+	return await getUserDb().get(sql.isKara, { $kara_id: id });
 }
 
 export async function isKaraInPlaylist(kara_id,playlist_id) {
@@ -80,19 +126,19 @@ export async function isKaraInPlaylist(kara_id,playlist_id) {
 	return !!res;
 }
 
-export async function addViewcount(kara_id,kid,datetime) {
+export async function addViewcount(kara_id,kid) {
 	return await getUserDb().run(sql.addViewcount, {
 		$kara_id: kara_id,
 		$kid: kid,
-		$modified_at: datetime
+		$modified_at: now()
 	});
 }
 
-export async function addKaraToRequests(user_id,karaList,date_add) {
+export async function addKaraToRequests(user_id,karaList) {
 	const karas = karaList.map((kara) => ({
 		$user_id: user_id,
 		$kara_id: kara.kara_id,
-		$requested_at: date_add,		
+		$requested_at: now(),
 	}));
 	return await transaction(karas, sql.addRequested);
 }
@@ -110,27 +156,15 @@ export async function addKaraToPlaylist(karaList) {
 		$kara_id: kara.kara_id,
 		$created_at: kara.created_at,
 		$pos: kara.pos
-	}));	
+	}));
 	return await transaction(karas, sql.addKaraToPlaylist);
 }
 
-export async function addKaraToWhitelist(karaList,date_added) {
-	const karas = karaList.map((kara) => ({
-		$kara_id: kara,
-		$created_at: date_added
-	}));
-	return await transaction(karas, sql.addKaraToWhitelist);
-}
-
 export async function removeKaraFromPlaylist(karaList, playlist_id) {
-	// We're not using SQLite parameterization due to a limitation 
-	// keeping us from feeding a simple array/list to the statement.			
+	// We're not using SQLite parameterization due to a limitation
+	// keeping us from feeding a simple array/list to the statement.
+	// FIXME: This probably needs some fixing to avoid injections.
 	const karas = karaList.join(',');
 	const sqlRemoveKaraFromPlaylist = sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas);
 	return await getUserDb().run(sqlRemoveKaraFromPlaylist, {$playlist_id: playlist_id});
-}
-
-export async function removeKaraFromWhitelist(wlcList) {
-	const wlcs = wlcList.map((wlc) => ({ $wlc_id: wlc.wlc_id }));
-	return await transaction(wlcs, sql.removeKaraFromWhitelist);
 }

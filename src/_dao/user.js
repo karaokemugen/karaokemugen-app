@@ -10,9 +10,9 @@ export async function checkUserNameExists(username) {
 }
 
 export async function checkNicknameExists(nickname,NORM_nickname) {
-	return await getUserDb().get(sql.testNickname, { 
+	return await getUserDb().get(sql.testNickname, {
 		$nickname: nickname,
-		$NORM_nickname: NORM_nickname 
+		$NORM_nickname: NORM_nickname
 	});
 }
 
@@ -64,17 +64,17 @@ export async function editUser(user) {
 
 export async function reassignToUser(old_id,id) {
 	const updates = [
-		getUserDb().run(sql.reassignPlaylistToUser, { 
+		getUserDb().run(sql.reassignPlaylistToUser, {
 			$id: id,
 			$old_id: old_id
 		}),
-		getUserDb().run(sql.reassignPlaylistContentToUser, { 
+		getUserDb().run(sql.reassignPlaylistContentToUser, {
 			$id: id,
 			$old_id: old_id
 		})
 	];
 	return await Promise.all(updates);
-	
+
 }
 
 export async function updateExpiredUsers(expireTime) {
@@ -82,7 +82,7 @@ export async function updateExpiredUsers(expireTime) {
 }
 
 export async function updateUserFingerprint(username, fingerprint) {
-	return await getUserDb().run(sql.updateUserFingerprint, { 
+	return await getUserDb().run(sql.updateUserFingerprint, {
 		$username: username,
 		$fingerprint: fingerprint
 	});
@@ -113,4 +113,3 @@ export async function updateUserPassword(id,password) {
 		$password: password
 	});
 }
-	

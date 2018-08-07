@@ -66,10 +66,15 @@ class KMMenu extends Component {
 						<Menu.Item key='home'><Link to='/home'>Home</Link></Menu.Item>
 						<Menu.Item key='config'><Link to='/config'>Configuration</Link></Menu.Item>
 						<Menu.SubMenu title='Karas'>
-							<Menu.Item key='karamanage'><Link to='/karas'>Manage</Link></Menu.Item>
-							<Menu.Item key='karahistory'><Link to='/karasHistory'>History</Link></Menu.Item>
-							<Menu.Item key='kararanking'><Link to='/karasRanking'>Most requested</Link></Menu.Item>			
-							<Menu.Item key='karaviewcounts'><Link to='/karasViewcounts'>Most viewed</Link></Menu.Item>
+							<Menu.Item key='karamanage'><Link to='/karas'>List Karaokes</Link></Menu.Item>
+							<Menu.Item key='karaimport'><Link to='/karas/create'>New Karaoke</Link></Menu.Item>
+							<Menu.Item key='karahistory'><Link to='/karas/history'>History</Link></Menu.Item>
+							<Menu.Item key='kararanking'><Link to='/karas/ranking'>Most requested</Link></Menu.Item>			
+							<Menu.Item key='karaviewcounts'><Link to='/karas/viewcounts'>Most viewed</Link></Menu.Item>
+						</Menu.SubMenu>
+						<Menu.SubMenu title='Series'>
+							<Menu.Item key='seriesmanage'><Link to='/series'>List</Link></Menu.Item>
+							<Menu.Item key='seriesnew'><Link to='/series/new'>New</Link></Menu.Item>
 						</Menu.SubMenu>
 						<Menu.Item key='db'><Link to='/db'>Database</Link></Menu.Item>
 						<Menu.SubMenu title='Users'>

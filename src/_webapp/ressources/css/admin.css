@@ -316,7 +316,13 @@ span:not(.hideCommands) {
 	display: none;
 }
 
-
+button[name="smartShuffle"] > i {
+    font-weight: bold;
+	/* color: hsla(2, 22%, 52%, 1); */
+	/* color: hsla(211, 47%, 59%, 1); */
+	color: black;
+    text-shadow: -1px -1px 0 hsla(0, 0%, 100%, .85), 1px -1px 0 hsla(0, 0%, 100%, .85), -1px 1px 0 hsla(0, 0%, 100%, .85), 0.5px 0.5px 0 hsla(0, 0%, 100%, .85);
+}
 .panel-heading ::-webkit-input-placeholder {
 	font-size: 17px;
 	line-height: 34px;
@@ -349,7 +355,12 @@ span:not(.hideCommands) {
 .plDashboard[data-playlist_id="-1"] .flagsContainer {
 	display: none;	
 }
-
+.searchMenuButtonContainer {
+	display: none;
+}
+.plDashboard[data-playlist_id="-1"] .searchMenuButtonContainer {
+	display: block;
+}
 .plDashboard[data-playlist_id="-1"] .controlsContainer,
 .plDashboard[data-playlist_id="-2"] .controlsContainer,
 .plDashboard[data-playlist_id="-3"] .controlsContainer,
@@ -379,6 +390,26 @@ span:not(.hideCommands) {
 .toastMessageContainer {
 	__top: auto;
 	__bottom: 0;
+}
+
+.shutdown-popup {
+	position: fixed;
+    width: 100%;
+	height: 100%;
+	color: #eee;
+    background-color: hsla(0, 0%, 0%, 0.76);
+	z-index: 999999;
+	text-align: center;
+	line-height: 97vh;
+	font-weight: bold;
+    font-size: 3rem;
+    text-shadow: 3px 2px 4px #ffffff85;
+}
+
+.shutdown-popup > .closeParent {
+    position: absolute;
+    right: 5px;
+    top: 5px;
 }
 
 @media (max-width: 1520px) {	

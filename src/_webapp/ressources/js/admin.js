@@ -132,16 +132,16 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 			});
 		});
 		$('.playlist-main').on('change', '#bcType', function () {
-			if(bcTags) {
+			if(tags) {
 				var bcType = $(this).val();
-				var bcTagsFiltered = jQuery.grep(bcTags, function (obj) {
+				var tagsFiltered = jQuery.grep(tags, function (obj) {
 					return obj.type == bcType;
 				});
 	
 				var $bcValInput;
-				if (bcTagsFiltered.length > 0) {
+				if (tagsFiltered.length > 0) {
 					$bcValInput = $('<select id="bcVal" class="input-sm"></select>');
-					$.each(bcTagsFiltered, function (i, o) {
+					$.each(tagsFiltered, function (i, o) {
 						var $option = $('<option/>').attr('value', o.tag_id).text(o.name_i18n);
 						$bcValInput.append($option);
 					});
@@ -150,16 +150,36 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				}
 				$('#bcValContainer').empty().append($bcValInput);
 	
-				if (bcTagsFiltered.length > 0) {
+				if (tagsFiltered.length > 0) {
 					$('#bcVal').select2({ theme: 'bootstrap', dropdownAutoWidth: true, minimumResultsForSearch: 7 });
 	
 				}
 			} else {
-				console.log("Err: bcTags empty");
+				console.log("Err: tags empty");
 			}
 		});
 
 		
+		$('.playlist-main').on('click', '.likeCount,.likeFreeButton', function () {
+			var $this = $(this);
+			var li = $this.closest('li');
+			var idPlaylistContent = li.attr('idplaylistcontent');
+
+			var side = $this.closest('.panel').attr('side');
+			var idPlaylist = parseInt($('#selectPlaylist' + side).val());
+
+			// var flag = $this.hasClass('free') ? 0 : 1;
+			var flag = 1;
+			$.ajax({
+				type: 'PUT',
+				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlaylistContent,
+				data: { flag_free: flag }
+			}).done(function () {
+				$this.toggleClass('btn-primary free');
+			});
+		
+		});
+
 		// main actions on karas in the playlists
 		$('.playlist-main').on('click contextmenu', '.actionDiv > button:not(.clusterAction)', function (e) {
 			if(e.type === 'contextmenu') {
@@ -616,6 +636,11 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		if(name == 'shuffle') {
 			url += '/shuffle';
 			type = 'PUT';
+			ajx(type, url, data);
+		} else if (name == 'smartShuffle') {
+			url += '/shuffle';
+			type = 'PUT';
+			data = {smartShuffle : 1}
 			ajx(type, url, data);
 		} else if (name == 'export') {
 			url += '/export';

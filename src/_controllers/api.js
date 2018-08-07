@@ -1,19 +1,32 @@
+//Middlewares
+import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
+import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
+import {getLang} from '../_controllers/lang';
+
+//Utils
+import {getPublicState, getState} from '../_common/utils/state';
 import logger from 'winston';
 import {sanitizeConfig, verifyConfig, getConfig} from '../_common/utils/config';
 import {check, unescape} from '../_common/utils/validators';
 import {resolve} from 'path';
 import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
-import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
-import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
-import {updateSongsLeft} from '../_services/playlist';
-import {getLang} from '../_controllers/lang';
 
-const engine = require ('../_services/engine');
-const favorites = require('../_services/favorites');
-const upvote = require('../_services/upvote');
-const user = require('../_services/user');
-const poll = require('../_services/poll');
+//KM Modules
+import {updateSettings, getKMStats, shutdown} from '../_services/engine';
+import {sendCommand} from '../_services/player';
+import {updateSongsLeft} from '../_services/user';
+import {message} from '../_player/player';
+import {addKaraToPlaylist, copyKaraToPlaylist, shufflePlaylist, getPlaylistContents, emptyPlaylist, setCurrentPlaylist, setPublicPlaylist, editPLC, editPlaylist, deleteKaraFromPlaylist, deletePlaylist, getPlaylistInfo, createPlaylist, getPlaylists, getKaraFromPlaylist, exportPlaylist, importPlaylist} from '../_services/playlist';
+import {getTags} from '../_services/tag';
+import {getYears, getRandomKara, getKaraLyrics, getTop50, getKaras, getKara} from '../_services/kara';
+import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelistContents} from '../_services/whitelist';
+import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
+import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
+import {vote} from '../_services/upvote';
+import {createUser, findUserByName, deleteUser, editUser, getUserRequests, listUsers} from '../_services/user';
+import {getPoll, addPollVote} from '../_services/poll';
+import {getSeries} from '../_services/series';
 
 function errMessage(code,message,args) {
 	return {
@@ -72,7 +85,7 @@ export function APIControllerAdmin(router) {
 		.post(getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 			// Sends command to shutdown the app.
 			try {
-				await engine.shutdown();
+				await shutdown();
 				res.json('Shutdown in progress');
 			} catch(err) {
 				logger.error(err);
@@ -123,7 +136,7 @@ export function APIControllerAdmin(router) {
 				// No errors detected
 				try {
 					req.sanitize('duration').toInt();
-					const new_playlist = await favorites.createAutoMix(req.body, req.authToken.username);
+					const new_playlist = await createAutoMix(req.body, req.authToken.username);
 					emitWS('playlistsUpdated');
 					res.statusCode = 201;
 					res.json(OKMessage(new_playlist,'AUTOMIX_CREATED',null));
@@ -181,7 +194,7 @@ export function APIControllerAdmin(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Get list of playlists
 			try {
-				const playlists = await engine.getAllPLs(req.authToken);
+				const playlists = await getPlaylists(req.authToken);
 				res.json(OKMessage(playlists));
 			} catch(err) {
 				logger.error(err);
@@ -232,7 +245,11 @@ export function APIControllerAdmin(router) {
 
 				//Now we add playlist
 				try {
-					const new_playlist = await engine.createPL(req.body, req.authToken.username);
+					const new_playlist = await createPlaylist(req.body.name,{
+						visible: req.body.flag_visible,
+						current: req.body.flag_current,
+						public: req.body.flag_public
+					}, req.authToken.username);
 					emitWS('playlistsUpdated');
 					res.statusCode = 201;
 					res.json(OKMessage(new_playlist,'PL_CREATED',req.body.name));
@@ -297,7 +314,7 @@ export function APIControllerAdmin(router) {
 			// This get route gets infos from a playlist
 			try {
 				const playlist_id = req.params.pl_id;
-				const playlist = await engine.getPLInfo(playlist_id, req.authToken);
+				const playlist = await getPlaylistInfo(playlist_id, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch (err) {
 
@@ -346,7 +363,7 @@ export function APIControllerAdmin(router) {
 
 				//Now we add playlist
 				try {
-					await engine.editPL(req.params.pl_id,req.body);
+					await editPlaylist(req.params.pl_id,req.body);
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					res.json(OKMessage(req.params.pl_id,'PL_UPDATED',req.params.pl_id));
 				} catch(err) {
@@ -389,7 +406,7 @@ export function APIControllerAdmin(router) {
  */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				await engine.deletePL(req.params.pl_id,req.authToken);
+				await deletePlaylist(req.params.pl_id,req.authToken);
 				emitWS('playlistsUpdated');
 				res.json(OKMessage(req.params.pl_id,'PL_DELETED',req.params.pl_id));
 			} catch(err) {
@@ -447,7 +464,7 @@ export function APIControllerAdmin(router) {
 				req.body.password = unescape(req.body.password);
 				if (req.body.role === 'admin') req.body.flag_admin = 1;
 				try {
-					await user.createUser(req.body);
+					await createUser(req.body);
 					res.json(OKMessage(true,'USER_CREATED'));
 				} catch(err) {
 					res.statusCode = 500;
@@ -518,7 +535,7 @@ export function APIControllerAdmin(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req,res) => {
 			try {
 
-				const userdata = await user.findUserByName(req.params.username, {public:false});
+				const userdata = await findUserByName(req.params.username, {public:false});
 				res.json(OKMessage(userdata));
 
 			} catch(err) {
@@ -553,7 +570,7 @@ export function APIControllerAdmin(router) {
  */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				await user.deleteUser(req.params.username);
+				await deleteUser(req.params.username);
 				emitWS('usersUpdated');
 				res.json(OKMessage(req.params.user_id,'USER_DELETED',req.params.username));
 			} catch(err) {
@@ -590,7 +607,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty playlist
 			try {
-				await engine.emptyPL(req.params.pl_id);
+				await emptyPlaylist(req.params.pl_id);
 				emitWS('playlistContentsUpdated',req.params.pl_id);
 				res.json(OKMessage(req.params.pl_id,'PL_EMPTIED',req.params.pl_id));
 			} catch(err) {
@@ -623,7 +640,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty whitelist
 			try {
-				await engine.emptyWL();
+				await emptyWhitelist();
 				emitWS('blacklistUpdated');
 				emitWS('whitelistUpdated');
 				res.json(OKMessage(null,'WL_EMPTIED'));
@@ -659,7 +676,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 		// Empty blacklist criterias
 			try {
-				await engine.emptyBLC();
+				await emptyBlacklistCriterias();
 				emitWS('blacklistUpdated');
 				res.json(OKMessage(null,'BLC_EMPTIED'));
 			} catch(err) {
@@ -696,7 +713,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// set playlist to current
 			try {
-				await engine.setCurrentPL(req.params.pl_id);
+				await setCurrentPlaylist(req.params.pl_id);
 				emitWS('playlistInfoUpdated',req.params.pl_id);
 				res.json(OKMessage(null,'PL_SET_CURRENT',req.params.pl_id));
 
@@ -734,7 +751,7 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Empty playlist
 			try {
-				await engine.setPublicPL(req.params.pl_id);
+				await setPublicPlaylist(req.params.pl_id);
 				emitWS('playlistInfoUpdated',req.params.pl_id);
 				res.json(OKMessage(null,'PL_SET_PUBLIC',req.params.pl_id));
 			} catch(err) {
@@ -775,9 +792,10 @@ export function APIControllerAdmin(router) {
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1508423806,
- *               "creator": null,
+ * 				 "modified_at": 1508423806,
+ *               "creator": "NO_TAG",
  *               "duration": 0,
  *               "flag_blacklisted": 0,
  *               "flag_playing": 1,
@@ -835,7 +853,7 @@ export function APIControllerAdmin(router) {
 			from = parseInt(from, 10);
 			try {
 
-				const playlist = await engine.getPLContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
+				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,from,size);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 
@@ -889,7 +907,7 @@ export function APIControllerAdmin(router) {
 			if (!validationErrors) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				try {
-					const result = await engine.addKaraToPL(req.params.pl_id, req.body.kara_id, req.authToken.username, req.body.pos);
+					const result = await addKaraToPlaylist(req.body.kara_id, req.authToken.username, req.params.pl_id, req.body.pos);
 					emitWS('playlistInfoUpdated',req.params.pl_id);
 					emitWS('playlistContentsUpdated',req.params.pl_id);
 					res.statusCode = 201;
@@ -955,7 +973,7 @@ export function APIControllerAdmin(router) {
 			if (!validationErrors) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				try {
-					const pl_id = await	engine.copyKaraToPL(req.body.plc_id,req.params.pl_id,req.body.pos);
+					const pl_id = await	copyKaraToPlaylist(req.body.plc_id,req.params.pl_id,req.body.pos);
 					emitWS('playlistContentsUpdated',pl_id);
 					res.statusCode = 201;
 					const args = {
@@ -1015,7 +1033,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await engine.deleteKara(req.body.plc_id,req.params.pl_id);
+					const data = await deleteKaraFromPlaylist(req.body.plc_id,req.params.pl_id,req.authToken);
 					emitWS('playlistContentsUpdated',data.pl_id);
 					emitWS('playlistInfoUpdated',data.pl_id);
 					res.statusCode = 200;
@@ -1038,7 +1056,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
  * @apiName GetPlaylistPLC
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -1053,7 +1071,9 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
  * @apiSuccess {String} data/NORM_title Normalized song title
  * @apiSuccess {String} data/author Karaoke author's name
- * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {Number} data/kara_created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's addition in the playlist
+ * @apiSuccess {Number} data/kara_modified_at UNIX timestamp of the karaoke's creation date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
@@ -1061,6 +1081,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (`EngineMaxDejaVuTime` defaults to 60 minutes)
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+ * @apiSuccess {Number} data/flag_free Wether the song has been marked as free or not
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
  * @apiSuccess {Number} data/kara_id Karaoke's ID in the main database
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
@@ -1102,15 +1123,18 @@ export function APIControllerAdmin(router) {
  *           "NORM_singer": null,
  *           "NORM_songwriter": null,
  *           "NORM_title": "Hana",
- *           "author": null,
+ *           "author": "NO_TAG",
+ *           "kara_created_at": 1508427958,
+ *           "kara_modified_at": 1508427958,
  *           "created_at": 1508427958,
- *           "creator": null,
+ *           "creator": "NO_TAG",
  *           "duration": 0,
  *           "flag_blacklisted": 0,
  *           "flag_playing": 0,
  *           "flag_whitelisted": 0,
  *           "flag_dejavu": 0,
  * 			 "flag_favorites": 0,
+ *           "flag_free": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
@@ -1118,8 +1142,8 @@ export function APIControllerAdmin(router) {
  *           "language_i18n": "Japonais",
  * 			 "lastplayed_at": null,
  *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
- *           "misc": null,
- *           "misc_i18n": null,
+ *           "misc": "NO_TAG",
+ *           "misc_i18n": "No info",
  *           "playlist_id": 2,
  *           "playlistcontent_id": 4961,
  *           "pos": 12,
@@ -1131,12 +1155,12 @@ export function APIControllerAdmin(router) {
  * 				"fre":"Guerriers de la Dynastie"
  *  			},
  *           "serie_altname": "C-Cube/CxCxC",
- *           "singer": null,
+ *           "singer": "NO_TAG",
  *           "songorder": 1,
  *           "songtype": "TYPE_ED",
  *           "songtype_i18n": "Ending",
  *           "songtype_i18n_short": "ED",
- *           "songwriter": null,
+ *           "songwriter": "NO_TAG",
  *           "time_before_play": 0,
  *           "title": "Hana",
  * 			 "username": "axelterizaki",
@@ -1156,7 +1180,7 @@ export function APIControllerAdmin(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				const kara = await engine.getPLCInfo(req.params.plc_id,req.lang,req.authToken);
+				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 
 			} catch(err) {
@@ -1166,16 +1190,17 @@ export function APIControllerAdmin(router) {
 			}
 		})
 	/**
- * @api {put} /admin/playlists/:pl_id/karas/:plc_id Update song in a playlist
+ * @api {put} /admin/playlists/:pl_id([0-9]+)/karas/:plc_id Update song in a playlist
  * @apiName PutPlaylistKara
- * @apiVersion 2.1.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID. **Note :** Irrelevant since `plc_id` is unique already.
  * @apiParam {Number} plc_id `playlistcontent_id` of the song to update
  * @apiParam {Number} [pos] Position in target playlist where to move the song to.
- * @apiParam {Number} [flag_playing] If set to 1, the select song will become the currently playing song.
+ * @apiParam {Number} [flag_playing] If set to 1, the selected song will become the currently playing song.
+ * @apiParam {Number} [flag_free] If set to 1, the selected song will be marked as free. Setting it to 0 has no effect.
  * @apiSuccess {String} code Message to display
  * @apiSuccess {String} data PLCID modified
  *
@@ -1200,13 +1225,18 @@ export function APIControllerAdmin(router) {
 
 			const validationErrors = check(req.body, {
 				flag_playing: {boolIntValidator: true},
-				pos: {integerValidator: true}
+				pos: {integerValidator: true},
+				flag_free: {boolIntValidator: true}
 			});
 			if (!validationErrors) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				if (req.body.flag_playing) req.body.flag_playing = parseInt(req.body.flag_playing, 10);
 				try {
-					await engine.editPLC(req.params.plc_id,req.body.pos,req.body.flag_playing,req.authToken);
+					await editPLC(req.params.plc_id,{
+						pos: req.body.pos,
+						flag_playing: req.body.flag_playing,
+						flag_free: req.body.flag_free
+					},req.authToken);
 					res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
 				} catch(err) {
 					logger.error(err);
@@ -1242,13 +1272,13 @@ export function APIControllerAdmin(router) {
  *       "BinPlayerWindows": "app/bin/mpv.exe",
  *       "BinffmpegLinux": "/usr/bin/ffmpeg",
  *       "BinffmpegOSX": "app/bin/ffmpeg",
- *       "BinffmpegPath": "D:\\perso\\toyundamugen-app\\app\\bin\\ffmpeg.exe",
+ *       "BinffmpegPath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffmpeg.exe",
  *       "BinffmpegWindows": "app/bin/ffmpeg.exe",
  *       "BinffprobeLinux": "/usr/bin/ffprobe",
  *       "BinffprobeOSX": "app/bin/ffprobe",
- *       "BinffprobePath": "D:\\perso\\toyundamugen-app\\app\\bin\\ffprobe.exe
+ *       "BinffprobePath": "D:\\perso\\karaokemugen-app\\app\\bin\\ffprobe.exe
  *       "BinffprobeWindows": "app/bin/ffprobe.exe",
- *       "BinmpvPath": "D:\\perso\\toyundamugen-app\\app\\bin\\mpv.exe",
+ *       "BinmpvPath": "D:\\perso\\karaokemugen-app\\app\\bin\\mpv.exe",
  *       "EngineAllowViewBlacklist": "1",
  *       "EngineAllowViewBlacklistCriterias": "1",
  *       "EngineAllowViewWhitelist": "1",
@@ -1279,7 +1309,7 @@ export function APIControllerAdmin(router) {
  *       "PathBackgrounds": "app/backgrounds",
  *       "PathBin": "app/bin",
  *       "PathDB": "app/db",
- *       "PathDBKarasFile": "engine.sqlite3",
+ *       "PathDBKarasFile": "karas.sqlite3",
  *       "PathDBUserFile": "userdata.sqlite3",
  *       "PathJingles": "app/jingles",
  *       "PathKaras": "../times/karas",
@@ -1366,7 +1396,7 @@ export function APIControllerAdmin(router) {
 				verifyConfig(req.body);
 				try {
 					req.body = sanitizeConfig(req.body);
-					const publicSettings = await engine.updateSettings(req.body);
+					const publicSettings = await updateSettings(req.body);
 					emitWS('settingsUpdated',publicSettings);
 					res.json(OKMessage(req.body,'SETTINGS_UPDATED'));
 				} catch(err) {
@@ -1431,7 +1461,7 @@ export function APIControllerAdmin(router) {
 				if (req.body.destination === 'screen' ||
 				    req.body.destination === 'all') {
 					try {
-						await engine.sendMessage(req.body.message,req.body.duration);
+						await message(req.body.message,req.body.duration);
 						res.statusCode = 200;
 						res.json(OKMessage(req.body,'MESSAGE_SENT'));
 					} catch(err) {
@@ -1478,7 +1508,7 @@ export function APIControllerAdmin(router) {
  *               "NORM_singer": "Dschinghis Khan",
  *               "NORM_songwriter": "Ralph Siegel",
  *               "NORM_title": "Moskau",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1508921852,
  *               "creator": "Eurovision",
  *               "duration": 0,
@@ -1528,7 +1558,7 @@ export function APIControllerAdmin(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const karas = await engine.getWL(req.body.filter,req.lang,from,size);
+				const karas = await getWhitelistContents(req.body.filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1575,7 +1605,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await engine.addKaraToWL(req.body.kara_id);
+					await addKaraToWhitelist(req.body.kara_id);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.statusCode = 201;
@@ -1623,12 +1653,11 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await engine.deleteWLC(req.body.wlc_id);
+					await deleteKaraFromWhitelist(req.body.wlc_id);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body.wlc_id,'WL_SONG_DELETED',req.body.wlc_id));
 				} catch(err) {
-					logger.error(err);
 					res.statusCode = 500;
 					res.json(errMessage('WL_DELETE_SONG_ERROR',err));
 				}
@@ -1672,14 +1701,14 @@ export function APIControllerAdmin(router) {
  *               "NORM_title": "",
  *               "author": "Jean-Jacques Debout",
  *               "created_at": 1508924354,
- *               "creator": null,
+ *               "creator": "NO_TAG",
  *               "duration": 0,
  *               "kara_id": 217,
  *               "kid": "1b8bca21-4d26-41bd-90b7-2afba74381ee",
  *               "language": "fre",
  *               "language_i18n": "Français",
- *               "misc": null,
- *               "misc_i18n": null,
+ *               "misc": "NO_TAG",
+ *               "misc_i18n": "No info",
  *               "reason_add": "Blacklisted Tag : Jean-Jacques Debout (type 6)",
  * 				 "requested": 20
  *               "serie": "Capitaine Flam",
@@ -1720,7 +1749,7 @@ export function APIControllerAdmin(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const karas = await engine.getBL(req.body.filter,req.lang,from,size);
+				const karas = await getBlacklist(req.body.filter,req.lang,from,size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -1764,7 +1793,7 @@ export function APIControllerAdmin(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			//Get list of blacklist criterias
 			try {
-				const blc = await engine.getBLC();
+				const blc = await getBlacklistCriterias();
 				res.json(OKMessage(blc));
 			} catch(err) {
 				logger.error(err);
@@ -1818,7 +1847,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await engine.addBLC(req.body.blcriteria_type,req.body.blcriteria_value);
+					await addBlacklistCriteria(req.body.blcriteria_type,req.body.blcriteria_value);
 
 					emitWS('blacklistUpdated');
 					res.statusCode = 201;
@@ -1869,7 +1898,7 @@ export function APIControllerAdmin(router) {
  */
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
-				await engine.deleteBLC(req.params.blc_id);
+				await deleteBlacklistCriteria(req.params.blc_id);
 				emitWS('blacklistUpdated');
 				res.json(OKMessage(req.params.blc_id,'BLC_DELETED',req.params.blc_id));
 			} catch(err) {
@@ -1919,7 +1948,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await engine.editBLC(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value);
+					await editBlacklistCriteria(req.params.blc_id,req.body.blcriteria_type,req.body.blcriteria_value);
 					emitWS('blacklistUpdated');
 					res.json(OKMessage(req.body,'BLC_UPDATED',req.params.blc_id));
 				} catch(err) {
@@ -1986,7 +2015,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await engine.sendCommand(req.body.command,req.body.options);
+					await sendCommand(req.body.command,req.body.options);
 					res.json(OKMessage(req.body,'COMMAND_SENT',req.body));
 				} catch(err) {
 					logger.error(err);
@@ -2057,7 +2086,7 @@ export function APIControllerAdmin(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
-				const playlist = await engine.exportPL(req.params.pl_id);
+				const playlist = await exportPlaylist(req.params.pl_id);
 				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -2103,7 +2132,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					const data = await engine.importPL(JSON.parse(req.body.playlist),req.authToken.username);
+					const data = await importPlaylist(JSON.parse(req.body.playlist),req.authToken.username);
 					const response = {
 						message: 'Playlist imported',
 						playlist_id: data.playlist_id
@@ -2130,11 +2159,12 @@ export function APIControllerAdmin(router) {
  * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
- * @apiVersion 2.1.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID to shuffle
+ * @apiParam {Number} smartShuffle Parameter to determine if we use, or not, an advanced algorithm to shuffle
  * @apiSuccess {String} args ID of playlist shuffled
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of playlist shuffled
@@ -2159,11 +2189,10 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 
-				await engine.shufflePL(req.params.pl_id);
+				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
 				emitWS('playlistContentsUpdated',req.params.pl_id);
 				res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));
 			} catch(err) {
-
 				res.statusCode = 500;
 				res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
 			}
@@ -2232,7 +2261,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get list of playlists, only return the visible ones
 			try {
-				const playlists = await engine.getAllPLs(req.authToken);
+				const playlists = await getPlaylists(req.authToken);
 				res.json(OKMessage(playlists));
 			} catch(err) {
 				res.statusCode = 500;
@@ -2292,7 +2321,7 @@ export function APIControllerPublic(router) {
 			//Access :pl_id by req.params.pl_id
 			// This get route gets infos from a playlist
 			try {
-				const playlist = await engine.getPLInfo(req.params.pl_id,req.authToken);
+				const playlist = await getPlaylistInfo(req.params.pl_id,req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 
@@ -2333,8 +2362,10 @@ export function APIControllerPublic(router) {
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1508423806,
+ *               "kara_created_at": 1508423806,
+ *               "kara_modified_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
  *               "flag_blacklisted": 0,
@@ -2359,12 +2390,12 @@ export function APIControllerPublic(router) {
  *					"fre":"Guerriers de la Dynastie"
  * 				}
  *               "serie_altname": "DW3/DW 3",
- *               "singer": null,
+ *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
  *               "songtype_i18n": "Ending",
  *               "songtype_i18n_short": "ED",
- *               "songwriter": null,
+ *               "songwriter": "NO_TAG",
  *               "title": "Circuit",
  * 				 "username": "admin",
  *               "viewcount": 0,
@@ -2394,7 +2425,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const playlist = await engine.getPLContents(req.params.pl_id,req.query.filter,req.lang,req.authToken,from,size);
+				const playlist = await getPlaylistContents(req.params.pl_id,req.authToken, req.query.filter,req.lang,from,size);
 				if (playlist == null) res.statusCode = 404;
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -2408,7 +2439,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -2424,11 +2455,14 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
  * @apiSuccess {String} data/NORM_title Normalized song title
  * @apiSuccess {String} data/author Karaoke author's name
- * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's addition in the playlist
+ * @apiSuccess {Number} data/kara_modified_at UNIX timestamp of the karaoke's last modification date in the base
+ * @apiSuccess {Number} data/kara_created_at UNIX timestamp of the karaoke's creation date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_blacklisted Is the song in the blacklist ?
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
+ * @apiSuccess {Number} data/flag_free Wether the song has been freed or not
  * @apiSuccess {Number} data/flag_playing Is the song the one currently playing ?
  * @apiSuccess {Number} data/flag_whitelisted Is the song in the whitelist ?
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default, `EngineMaxDejaVuTime` is at 60 minutes)
@@ -2472,8 +2506,10 @@ export function APIControllerPublic(router) {
  *           "NORM_singer": null,
  *           "NORM_songwriter": null,
  *           "NORM_title": "Hana",
- *           "author": null,
+ *           "author": "NO_TAG",
  *           "created_at": 1508427958,
+ *           "kara_created_at": 1508427958,
+ *           "kara_modified_at": 1508427958,
  *           "creator": null,
  *           "duration": 0,
  *           "flag_blacklisted": 0,
@@ -2481,6 +2517,7 @@ export function APIControllerPublic(router) {
  * 			 "flag_favorites": 0,
  *           "flag_whitelisted": 0,
  * 	         "flag_dejavu": 0,
+ *           "flag_free": 0,
  *           "gain": 0,
  *           "kara_id": 1007,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
@@ -2488,8 +2525,8 @@ export function APIControllerPublic(router) {
  *           "language_i18n": "Japonais",
  * 			 "lastplayed_at": null,
  *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
- *           "misc": null,
- *           "misc_i18n": null,
+ *           "misc": "NO_TAG",
+ *           "misc_i18n": "No info",
  *           "playlist_id": 2,
  *           "playlistcontent_id": 4961,
  *           "pos": 12,
@@ -2500,12 +2537,12 @@ export function APIControllerPublic(router) {
  * 			 "serie_i18n": {
  * 				"fre":"Guerriers de la Dynastie"
  *  			}
- *           "singer": null,
+ *           "singer": "NO_TAG",
  *           "songorder": 1,
  *           "songtype": "TYPE_ED",
  *           "songtype_i18n": "Ending",
  *           "songtype_i18n_short": "ED",
- *           "songwriter": null,
+ *           "songwriter": "NO_TAG",
  *           "time_before_play": 0,
  *           "title": "Hana",
  * 			 "username": "axelterizaki",
@@ -2530,7 +2567,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
 
-				const kara = await engine.getPLCInfo(req.params.plc_id,req.lang,req.authToken);
+				const kara = await getKaraFromPlaylist(req.params.plc_id,req.lang,req.authToken);
 				res.json(OKMessage(kara));
 			} catch(err) {
 
@@ -2647,8 +2684,8 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const stats = await engine.getKMStats();
-				const userData = await user.findUserByName(req.authToken.username);
+				const stats = await getKMStats();
+				const userData = await findUserByName(req.authToken.username);
 				updateSongsLeft(userData.id);
 				res.json(OKMessage(stats));
 			} catch(err) {
@@ -2688,7 +2725,7 @@ export function APIControllerPublic(router) {
  *               "NORM_singer": "Dschinghis Khan",
  *               "NORM_songwriter": "Ralph Siegel",
  *               "NORM_title": "Moskau",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1508921852,
  *               "creator": "Eurovision",
  *               "duration": 0,
@@ -2740,7 +2777,7 @@ export function APIControllerPublic(router) {
 				let from = req.query.from || 0;
 				from = parseInt(from, 10);
 				try {
-					const karas = await	engine.getWL(req.query.filter,req.lang,from,size);
+					const karas = await	getWhitelistContents(req.query.filter,req.lang,from,size);
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -2783,7 +2820,7 @@ export function APIControllerPublic(router) {
  *               "NORM_singer": "Dschinghis Khan",
  *               "NORM_songwriter": "Ralph Siegel",
  *               "NORM_title": "Moskau",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1508921852,
  *               "creator": "Eurovision",
  *               "duration": 0,
@@ -2835,7 +2872,7 @@ export function APIControllerPublic(router) {
 				let from = req.query.from || 0;
 				from = parseInt(from, 10);
 				try {
-					const karas = await engine.getBL(req.query.filter,req.lang,from,size);
+					const karas = await getBlacklist(req.query.filter,req.lang,from,size);
 					res.json(OKMessage(karas));
 				} catch(err) {
 					logger.error(err);
@@ -2888,7 +2925,7 @@ export function APIControllerPublic(router) {
 			//Get list of blacklist criterias IF the settings allow public to see it
 			if (getConfig().EngineAllowViewBlacklistCriterias === 1) {
 				try {
-					const blc = await engine.getBLC();
+					const blc = await getBlacklist();
 					res.json(OKMessage(blc));
 				} catch(err) {
 					logger.error(err);
@@ -2955,19 +2992,22 @@ export function APIControllerPublic(router) {
 			// What's playing, time in seconds, duration of song
 
 			//return status of the player
-			res.json(OKMessage(engine.getPlayerStatus()));
+
+			res.json(OKMessage(getPublicState()));
 		});
 	router.route('/karas')
 	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiParam {String} [searchType] Can be `serie`, `year`, `popular`, `recent` or `tag`
+ * @apiParam {String} [searchValue] Value to search for. For `series` or `tag` it's an ID, for `year` it's a 4-digit year.
  *
  * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
@@ -2982,18 +3022,21 @@ export function APIControllerPublic(router) {
  *           {
  *               "NORM_author": null,
  *               "NORM_creator": null,
+ * 				 "NORM_groups": null,
  *               "NORM_serie": "Dynasty Warriors 3",
  *               "NORM_serie_altname": "DW3/DW 3",
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1508423806,
- *               "creator": null,
+ *               "modified_at": 1508423806,
+ *               "creator": "NO_TAG",
  *               "duration": 0,
  * 	             "flag_dejavu": 0,
  * 				 "flag_favorites": 1,
  *               "gain": 0,
+ * 				 "groups": null,
  *               "kara_id": 176,
  *               "kid": "b0de301c-5756-49fb-b019-85a99a66586b",
  *               "language": "chi",
@@ -3008,12 +3051,12 @@ export function APIControllerPublic(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": "DW3/DW 3",
- *               "singer": null,
+ *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
  *               "songtype_i18n": "Ending",
  *               "songtype_i18n_short": "ED",
- *               "songwriter": null,
+ *               "songwriter": "NO_TAG",
  *               "title": "Circuit",
  *               "viewcount": 0,
  *               "year": ""
@@ -3043,7 +3086,7 @@ export function APIControllerPublic(router) {
 			from = parseInt(from, 10);
 			if (from < 0) from = 0;
 			try {
-				const karas = await engine.getKaras(req.query.filter,req.lang,from,size,req.authToken);
+				const karas = await getKaras(req.query.filter,req.lang,from,size,req.query.searchType, req.query.searchValue, req.authToken);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -3051,7 +3094,6 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('SONG_LIST_ERROR',err));
 			}
 		});
-
 	router.route('/karas/random')
 	/**
  * @api {get} /public/karas/random Get a random karaoke ID
@@ -3077,7 +3119,7 @@ export function APIControllerPublic(router) {
 
 		.get(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara_id = await engine.getRandomKara(req.query.filter, req.authToken);
+				const kara_id = await getRandomKara(req.query.filter, req.authToken);
 				if (!kara_id) {
 					res.statusCode = 500;
 					res.json(errMessage('GET_UNLUCKY'));
@@ -3095,13 +3137,14 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} kara_id Karaoke ID you want to fetch information from
  * @apiSuccess {String} data/NORM_author Normalized karaoke's author name
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
+ * @apiSuccess {String} data/NORM_groups Normalized groups names
  * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
  * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
  * @apiSuccess {String} data/NORM_singer Normalized name of singer.
@@ -3109,11 +3152,13 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/NORM_title Normalized song title
  * @apiSuccess {String} data/author Karaoke author's name
  * @apiSuccess {Number} data/created_at UNIX timestamp of the karaoke's creation date in the base
+ * @apiSuccess {Number} data/modified_at UNIX timestamp of the karaoke's last modification date in the base
  * @apiSuccess {String} data/creator Show's creator name
  * @apiSuccess {Number} data/duration Song duration in seconds
  * @apiSuccess {Number} data/flag_dejavu Has the song been played in the last hour ? (by default `EngineMaxDejaVuTime` is at 60 minutes)
  * @apiSuccess {Number} data/flag_favorites 1 = the song is in your favorites, 0 = not.
  * @apiSuccess {Number} data/gain Calculated audio gain for the karaoke's video, in decibels (can be negative)
+ * @apiSuccess {String} data/groups List of groups this karaoke song belongs to
  * @apiSuccess {String} data/kid Karaoke's unique ID (survives accross database generations)
  * @apiSuccess {String} data/language Song's language in ISO639-2B format, separated by commas when a song has several languages
  * @apiSuccess {String} data/language_i18n Song's language translated in the client's native language
@@ -3140,34 +3185,37 @@ export function APIControllerPublic(router) {
  *       {
  *           "NORM_author": null,
  *           "NORM_creator": null,
+ *           "NORM_groups": null,
  *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
  *           "NORM_serie_altname": "C-Cube/CxCxC",
  *           "NORM_singer": null,
  *           "NORM_songwriter": null,
  *           "NORM_title": "Hana",
- *           "author": null,
+ *           "author": "NO_TAG",
  *           "created_at": 1508427958,
- *           "creator": null,
+ *           "modified_at": 1508427958,
+ *           "creator": "NO_TAG",
  *           "duration": 0,
  * 	         "flag_dejavu": 0,
  * 		     "flag_favorites": 0,
  *           "gain": 0,
+ *           "groups": null,
  *           "kid": "c05e24eb-206b-4ff5-88d4-74e8d5ad6f75",
  *           "language": "jpn",
  *           "language_i18n": "Japonais",
  * 			 "lastplayed_at": null,
  *           "mediafile": "JAP - C3 ~ Cube X Cursed X Curious - ED1 - Hana.avi",
- *           "misc": null,
- *           "misc_i18n": null,
+ *           "misc": "NO_TAG",
+ *           "misc_i18n": "No info",
  * 			 "requested": 20,
  *           "serie": "C3 ~ Cube X Cursed X Curious",
  *           "serie_altname": "C-Cube/CxCxC",
- *           "singer": null,
+ *           "singer": "NO_TAG",
  *           "songorder": 1,
  *           "songtype": "TYPE_ED",
  *           "songtype_i18n": "Ending",
  *           "songtype_i18n_short": "ED",
- *           "songwriter": null,
+ *           "songwriter": "NO_TAG",
  *           "time_before_play": 0,
  *           "title": "Hana",
  *           "viewcount": 0,
@@ -3188,7 +3236,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara = await engine.getKaraInfo(req.params.kara_id,req.lang,req.authToken);
+				const kara = await getKara(req.params.kara_id,req.authToken.username,req.lang);
 				res.json(OKMessage(kara));
 			} catch(err) {
 				logger.error(err);
@@ -3232,6 +3280,7 @@ export function APIControllerPublic(router) {
 
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_QUOTA_REACHED User asked for too many karaokes already.
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED All songs are already present in playlist
+* @apiError PLAYLIST_MODE_ADD_SONG_ERROR_BLACKLISTED Song is blacklisted and cannot be added
 * @apiError PLAYLIST_MODE_ADD_SONG_ERROR General error while adding song
 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
 * @apiErrorExample Error-Response:
@@ -3251,7 +3300,7 @@ export function APIControllerPublic(router) {
 		.post(getLang, requireAuth, requireWebappOpen, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Add Kara to the playlist currently used depending on mode
 			try {
-				const data = await engine.addKaraToPL(null, req.params.kara_id, req.authToken.username, null);
+				const data = await addKaraToPlaylist(req.params.kara_id, req.authToken.username);
 				emitWS('playlistContentsUpdated',data.playlist_id);
 				emitWS('playlistInfoUpdated',data.playlist_id);
 				res.statusCode = 201;
@@ -3290,7 +3339,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara = await engine.getLyrics(req.params.kara_id);
+				const kara = await getKaraLyrics(req.params.kara_id);
 				res.json(OKMessage(kara));
 			} catch(err) {
 
@@ -3344,7 +3393,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get current Playlist
 			try {
-				const playlist = await engine.getCurrentPLInfo(req.authToken);
+				const playlist = await getPlaylistInfo(getState().currentPlaylistID, req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3357,7 +3406,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -3385,8 +3434,10 @@ export function APIControllerPublic(router) {
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1508423806,
+ *               "kara_modified_at": 1508423806,
+ *               "kara_created_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
  *               "flag_blacklisted": 0,
@@ -3411,12 +3462,12 @@ export function APIControllerPublic(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": "DW3/DW 3",
- *               "singer": null,
+ *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
  *               "songtype_i18n": "Ending",
  *               "songtype_i18n_short": "ED",
- *               "songwriter": null,
+ *               "songwriter": "NO_TAG",
  *               "title": "Circuit",*
  * 				 "username": "admin",
  *               "viewcount": 0,
@@ -3446,7 +3497,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const playlist = await engine.getCurrentPLContents(req.query.filter, req.lang, from, size, req.authToken);
+				const playlist = await getPlaylistContents(getState().currentPlaylistID, req.authToken, req.query.filter, req.lang, from, size);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3503,7 +3554,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Get public Playlist
 			try {
-				const playlist = await engine.getPublicPLInfo(req.authToken);
+				const playlist = await getPlaylistInfo(getState().publicPlaylistID,req.authToken);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3516,7 +3567,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -3544,8 +3595,10 @@ export function APIControllerPublic(router) {
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1508423806,
+ *               "kara_modified_at": 1508423806,
+ *               "kara_created_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
  *               "flag_blacklisted": 0,
@@ -3570,12 +3623,12 @@ export function APIControllerPublic(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": "DW3/DW 3",
- *               "singer": null,
+ *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
  *               "songtype_i18n": "Ending",
  *               "songtype_i18n_short": "ED",
- *               "songwriter": null,
+ *               "songwriter": "NO_TAG",
  *               "title": "Circuit",
  * 				 "username": "admin",
  *               "viewcount": 0,
@@ -3605,7 +3658,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const playlist = await engine.getPublicPLContents(req.query.filter, req.lang, from, size, req.authToken);
+				const playlist = await getPlaylistContents(getState().publicPlaylistID, req.authToken, req.query.filter, req.lang, from, size);
 				res.json(OKMessage(playlist));
 			} catch(err) {
 				logger.error(err);
@@ -3617,7 +3670,7 @@ export function APIControllerPublic(router) {
 		/**
 	 * @api {post} /public/playlists/public/karas/:plc_id/vote Up/downvote a song in public playlist
 	 * @apiName PostVote
-	 * @apiVersion 2.1.0
+	 * @apiVersion 2.3.0
 	 * @apiGroup Playlists
 	 * @apiPermission public
 	 * @apiHeader authorization Auth token received from logging in
@@ -3635,7 +3688,8 @@ export function APIControllerPublic(router) {
 	 * @apiError DOWNVOTE_FAILED Unable to downvote karaoke
 	 * @apiError UPVOTE_ALREADY_DONE Karaoke has already been upvoted by this user
 	 * @apiError DOWNVOTE_ALREADY_DONE Karaoke has already been downvoted by this user
-	 *
+	 * @apiError UPVOTE_NO_SELF User can not upvote own karaoke
+	 * @apiError DOWNVOTE_NO_SELF User can not downvote own karaoke
 	 * @apiErrorExample Error-Response:
 	 * HTTP/1.1 500 Internal Server Error
 	 */
@@ -3643,7 +3697,7 @@ export function APIControllerPublic(router) {
 		.post(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			// Post an upvote
 			try {
-				const kara = await upvote.vote(req.params.plc_id,req.authToken.username,req.body.downvote);
+				const kara = await vote(req.params.plc_id,req.authToken.username,req.body.downvote);
 
 				emitWS('playlistContentsUpdated', kara.playlist_id);
 				res.json(OKMessage(null, kara.code, kara));
@@ -3685,7 +3739,7 @@ export function APIControllerPublic(router) {
 
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const data = await engine.deleteKara(req.params.plc_id,null,req.authToken);
+				const data = await deleteKaraFromPlaylist(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
 				emitWS('playlistInfoUpdated',data.pl_id);
 				res.statusCode = 200;
@@ -3728,7 +3782,7 @@ export function APIControllerPublic(router) {
 
 		.delete(getLang, requireAuth, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const data = await engine.deleteKara(req.params.plc_id,null,req.authToken);
+				const data = await deleteKaraFromPlaylist(req.params.plc_id,null,req.authToken);
 				emitWS('playlistContentsUpdated',data.pl_id);
 				emitWS('playlistInfoUpdated',data.pl_id);
 				res.statusCode = 200;
@@ -3743,10 +3797,14 @@ export function APIControllerPublic(router) {
 	/**
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
-	* @apiVersion 2.1.0
-	* @apiGroup Karaokes
+	* @apiVersion 2.3.0
+	* @apiGroup Tags
 	* @apiPermission public
 	* @apiHeader authorization Auth token received from logging in
+	* @apiParam {Number} [type] Type of tag to filter
+	* @apiParam {String} [filter] Tag name to filter results
+	* @apiParam {Number} [from] Where to start listing from
+	* @apiParam {Number} [size] How many records to get.
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {String} data/name_i18n Translated name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
@@ -3755,7 +3813,8 @@ export function APIControllerPublic(router) {
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
 	* {
-	*     "data": [
+	*     "data": {
+	*		content: [
 	*        {
 	*          "name": "20th Century",
 	*          "name_i18n": "20th Century",
@@ -3775,7 +3834,12 @@ export function APIControllerPublic(router) {
 	*          "type": 5
 	*        }
 	*		 ...
-	*   ]
+	*   	],
+	*       "infos": {
+ 	*           "count": 1000,
+ 	* 			"from": 0,
+ 	* 			"to": 120
+ 	*       }
 	* }
 	* @apiError TAGS_LIST_ERROR Unable to get list of tags
 	* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
@@ -3786,12 +3850,114 @@ export function APIControllerPublic(router) {
 	*/
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const tags = await engine.getTags(req.lang);
+				let size = req.query.size || 999999;
+				size = parseInt(size, 10);
+				let from = req.query.from || 0;
+				from = parseInt(from, 10);
+				const tags = await getTags(req.lang,req.query.filter,req.query.type, from, size);
 				res.json(OKMessage(tags));
 			} catch(err) {
 				logger.error(err);
 				res.statusCode = 500;
 				res.json(errMessage('TAGS_LIST_ERROR',err));
+			}
+		});
+	router.route('/years')
+		/**
+		* @api {get} /public/years Get year list
+		* @apiName GetYears
+		* @apiVersion 2.3.0
+		* @apiGroup Karas
+		* @apiPermission public
+		* @apiHeader authorization Auth token received from logging in
+		* @apiSuccess {String[]} data Array of years
+		* @apiSuccessExample Success-Response:
+		* HTTP/1.1 200 OK
+		* {
+		*     "data": [
+		*       {
+		*			"year": "1969"
+		*		},
+		*		 ...
+		*   ]
+		* }
+		* @apiError YEARS_LIST_ERROR Unable to get list of years
+		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 500 Internal Server Error
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 403 Forbidden
+		*/
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const years = await getYears();
+				res.json(OKMessage(years));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('YEARS_LIST_ERROR',err));
+			}
+		});
+	router.route('/series')
+		/**
+		* @api {get} /public/series Get series list
+		* @apiName GetSeries
+		* @apiVersion 2.3.0
+		* @apiGroup Karas
+		* @apiPermission public
+		* @apiHeader authorization Auth token received from logging in
+		* @apiParam {String} [filter] Text filter to search series for
+		* @apiParam {Number} [from] Where to start listing from
+		* @apiParam {Number} [size] How many records to get.
+		* @apiSuccess {Array} data Array of series
+		* @apiSuccess {Number} data/serie_id Serie ID in the database
+		* @apiSuccess {String} data/name Serie's original name
+		* @apiSuccess {String} data/i18n_name Serie's name according to language
+		* @apiSuccess {String[]} data/aliases Array of aliases
+		* @apiSuccess {Object} data/i18n JSON object for the series translations
+		* @apiSuccessExample Success-Response:
+		* HTTP/1.1 200 OK
+		* {
+		*     "data": {
+		*        "contents": [
+		*        {
+		*			"name": "Hataraku Saibô",
+		*			"i18n_name": "Les Brigades Immunitaires",
+		*			"aliases": ["LBI"],
+		*			"i18n": {
+		*				"jpn": "Hataraku Saibô",
+		*				"eng": "Cells at Work",
+		*				"fre": "Les Brigades Immunitaires"
+		*			},
+		*			"serie_id": 2093
+		*		},
+		*		...
+		*		],
+		*       "infos": {
+ 		*           "count": 1000,
+ 		* 			"from": 0,
+ 		* 			"to": 120
+ 		*       }
+		* }
+		* @apiError SERIES_LIST_ERROR Unable to get series list
+		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 500 Internal Server Error
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 403 Forbidden
+		*/
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				let size = req.query.size || 999999;
+				size = parseInt(size, 10);
+				let from = req.query.from || 0;
+				from = parseInt(from, 10);
+				const series = await getSeries(req.query.filter, req.lang, from, size);
+				res.json(OKMessage(series));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('YEARS_LIST_ERROR',err));
 			}
 		});
 	router.route('/users/:username')
@@ -3847,7 +4013,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const userdata = await user.findUserByName(req.params.username, {public:true});
+				const userdata = await findUserByName(req.params.username, {public:true});
 				res.json(OKMessage(userdata));
 			} catch(err) {
 				logger.error(err);
@@ -3911,7 +4077,7 @@ export function APIControllerPublic(router) {
 				let avatar;
 				if (req.file) avatar = req.file;
 				try {
-					const userdata = await user.editUser(req.params.username,req.body,avatar,req.authToken.role);
+					const userdata = await editUser(req.params.username,req.body,avatar,req.authToken.role);
 					emitWS('userUpdated',userdata.id);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
 				} catch(err) {
@@ -4006,7 +4172,7 @@ export function APIControllerPublic(router) {
 			from = parseInt(from, 10);
 			if (from < 0) from = 0;
 			try {
-				const karas = await engine.getTop50(req.body.filter,req.lang,from,size,req.authToken);
+				const karas = await getTop50(req.body.filter,req.lang,from,size,req.authToken);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				res.statusCode = 500;
@@ -4091,7 +4257,7 @@ export function APIControllerPublic(router) {
  * }
  */
 		.get(requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
-			user.getUserRequests(req.params.username)
+			getUserRequests(req.params.username)
 				.then((requestdata) => {
 					res.json(OKMessage(requestdata));
 				})
@@ -4157,7 +4323,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const userData = await user.findUserByName(req.authToken.username, {public:false});
+				const userData = await findUserByName(req.authToken.username, {public:false});
 				updateSongsLeft(userData.id);
 				res.json(OKMessage(userData));
 			} catch(err) {
@@ -4220,7 +4386,7 @@ export function APIControllerPublic(router) {
 				if (req.file) avatar = req.file;
 				//Get username
 				try {
-					const userdata = await user.editUser(req.authToken.username,req.body,avatar,req.authToken.role);
+					const userdata = await editUser(req.authToken.username,req.body,avatar,req.authToken.role);
 					emitWS('userUpdated',req.params.user_id);
 					res.json(OKMessage(userdata,'USER_UPDATED',userdata.nickname));
 				} catch(err) {
@@ -4266,7 +4432,7 @@ export function APIControllerPublic(router) {
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1508423806,
  *               "creator": null,
  *               "duration": 0,
@@ -4289,12 +4455,12 @@ export function APIControllerPublic(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": "DW3/DW 3",
- *               "singer": null,
+ *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
  *               "songtype_i18n": "Ending",
  *               "songtype_i18n_short": "ED",
- *               "songwriter": null,
+ *               "songwriter": "NO_TAG",
  *               "title": "Circuit",
  * 				 "username": "admin",
  *               "viewcount": 0,
@@ -4323,7 +4489,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const karas = await favorites.getFavorites(req.authToken.username, req.query.filter, req.lang, from, size);
+				const karas = await getFavorites(req.authToken, req.query.filter, req.lang, from, size);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -4374,7 +4540,7 @@ export function APIControllerPublic(router) {
 			if (!validationErrors) {
 				req.body.kara_id = parseInt(req.body.kara_id, 10);
 				try {
-					const data = await favorites.addToFavorites(req.authToken.username,req.body.kara_id);
+					const data = await addToFavorites(req.authToken.username,req.body.kara_id);
 					emitWS('favoritesUpdated',req.authToken.username);
 					emitWS('playlistInfoUpdated',data.playlist_id);
 					emitWS('playlistContentsUpdated',data.playlist_id);
@@ -4431,7 +4597,7 @@ export function APIControllerPublic(router) {
 			if (!validationErrors) {
 				req.body.kara_id = parseInt(req.body.kara_id, 10);
 				try {
-					const data = await favorites.deleteFavorite(req.authToken.username,req.body.kara_id);
+					const data = await deleteFavorite(req.authToken.username,req.body.kara_id);
 					emitWS('favoritesUpdated',req.authToken.username);
 					emitWS('playlistContentsUpdated',data.playlist_id);
 					emitWS('playlistInfoUpdated',data.playlist_id);
@@ -4498,7 +4664,7 @@ export function APIControllerPublic(router) {
 		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireWebappLimited, async (req, res) => {
 			// Returns the playlist and its contents in an exportable format (to save on disk)
 			try {
-				const playlist = await favorites.exportFavorites(req.authToken);
+				const playlist = await exportFavorites(req.authToken);
 				// Not sending JSON : we want to send a string containing our text, it's already in stringified JSON format.
 				res.json(OKMessage(playlist));
 			} catch(err) {
@@ -4543,7 +4709,7 @@ export function APIControllerPublic(router) {
 			if (!validationErrors) {
 				try {
 					const playlist = JSON.parse(req.body.playlist);
-					const data = await favorites.importFavorites(playlist,req.authToken);
+					const data = await importFavorites(playlist,req.authToken);
 					const response = {
 						message: 'Favorites imported',
 						playlist_id: data.playlist_id
@@ -4553,7 +4719,6 @@ export function APIControllerPublic(router) {
 					emitWS('playlistsUpdated');
 					res.json(OKMessage(response,'FAV_IMPORTED',data.playlist_id));
 				} catch(err) {
-					console.log(err);
 					res.statusCode = 500;
 					res.json(errMessage('FAV_IMPORT_ERROR',err));
 				}
@@ -4624,7 +4789,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const users = await	user.listUsers();
+				const users = await	listUsers();
 				res.json(OKMessage(users));
 			} catch(err) {
 				logger.error(err);
@@ -4677,7 +4842,7 @@ export function APIControllerPublic(router) {
 				req.body.login = unescape(req.body.login.trim());
 				// No errors detected
 				try {
-					await user.createUser({...req.body, flag_admin: 0});
+					await createUser({...req.body, flag_admin: 0});
 					res.json(OKMessage(true,'USER_CREATED'));
 				} catch(err) {
 					res.statusCode = 500;
@@ -4725,7 +4890,7 @@ export function APIControllerPublic(router) {
  *               "NORM_singer": "NoisyCell",
  *               "NORM_songwriter": "Ryosuke,Ryo",
  *               "NORM_title": "Last Theater",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1520026875.38,
  *               "creator": "MADHOUSE",
  *               "duration": 71,
@@ -4739,8 +4904,8 @@ export function APIControllerPublic(router) {
  *               "language": "eng",
  *               "language_i18n": "Anglais",
  *               "lastplayed_at": null,
- *               "misc": null,
- *               "misc_i18n": null,
+ *               "misc": "NO_TAG",
+ *               "misc_i18n": "No info",
  *               "playlistcontent_id": 19,
  *               "pos": 14,
  *               "pseudo_add": "Administrator",
@@ -4781,7 +4946,7 @@ export function APIControllerPublic(router) {
 			let from = req.query.from || 0;
 			from = parseInt(from, 10);
 			try {
-				const pollResult = await poll.getPoll(req.authToken,req.lang,from,size);
+				const pollResult = await getPoll(req.authToken,req.lang,from,size);
 				res.json(OKMessage(pollResult));
 			} catch(err) {
 				res.statusCode = 500;
@@ -4820,7 +4985,7 @@ export function APIControllerPublic(router) {
  *               "NORM_singer": "NoisyCell",
  *               "NORM_songwriter": "Ryosuke,Ryo",
  *               "NORM_title": "Last Theater",
- *               "author": null,
+ *               "author": "NO_TAG",
  *               "created_at": 1520026875.38,
  *               "creator": "MADHOUSE",
  *               "duration": 71,
@@ -4878,7 +5043,7 @@ export function APIControllerPublic(router) {
 				// No errors detected
 				req.body.playlistcontent_id = parseInt(req.body.playlistcontent_id, 10);
 				try {
-					const ret = await poll.addPollVote(req.body.playlistcontent_id,req.authToken);
+					const ret = await addPollVote(req.body.playlistcontent_id,req.authToken);
 					emitWS('songPollUpdated', ret.data);
 					res.json(OKMessage(null,ret.code,ret.data));
 				} catch(err) {
@@ -4893,5 +5058,4 @@ export function APIControllerPublic(router) {
 				res.json(validationErrors);
 			}
 		});
-
 }

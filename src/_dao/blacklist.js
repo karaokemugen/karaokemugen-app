@@ -1,4 +1,6 @@
 import {langSelector, buildClauses, getUserDb, transaction} from './database';
+import injectionTest from 'is-sql-injection';
+
 const sql = require('../_common/db/blacklist');
 
 export async function emptyBlacklistCriterias() {
@@ -6,7 +8,7 @@ export async function emptyBlacklistCriterias() {
 }
 
 export async function generateBlacklist() {
-	return await getUserDb().exec(sql.generateBlacklist);		
+	return await getUserDb().exec(sql.generateBlacklist);
 }
 
 export async function getBlacklistCriterias() {
@@ -18,6 +20,7 @@ export async function deleteBlacklistCriteria(blc_id) {
 }
 
 export async function getBlacklistContents(filter, lang) {
+	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClauses(filter) : [];
 	const query = sql.getBlacklistContents(filterClauses, langSelector(lang));
 

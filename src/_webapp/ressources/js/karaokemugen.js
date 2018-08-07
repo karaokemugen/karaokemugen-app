@@ -7,7 +7,8 @@ var refreshTime;        // Int (ms) : time unit between every call
 var stopUpdate;         // Boolean : allow to stop any automatic ajax update
 var oldState;           // Object : last player state saved
 var ajaxSearch, timer;  // 2 variables used to optimize the search, preventing a flood of search
-var bcTags;             // Object : list of blacklist criterias tags
+var tags;             // Object : list of blacklist criterias tags
+var forSelectTags;             // Object : list of blacklist criterias tags for select use
 var showInfoMessage;	// Object : list of info codes to show as a toast
 var hideErrorMessage;
 var softErrorMessage;
@@ -53,8 +54,10 @@ var showVideoButton;
 var makeFavButton;
 var dragHandleHtml;
 var playKaraHtml;
+var serieMoreInfoButton;
 
 var listTypeBlc;
+var tagsTypesList;
 var plData;
 var settingsNotUpdated;
 
@@ -108,6 +111,13 @@ var settingsNotUpdated;
 				html : '',
 				canTransferKara : true,
 				canAddKara : true,
+			},
+			'-6' : {
+				name : 'Kara list recent',
+				url : 'public/karas/recent',
+				html : addKaraHtml,
+				canTransferKara : false,
+				canAddKara : false,
 			}
 		};
 		// Background things
@@ -202,13 +212,13 @@ var settingsNotUpdated;
 				logInfos.token = mugenToken;
 				if(scope === 'admin' && logInfos.role !== 'admin') {
 					$('#loginModal').modal('show');
-				} else {			
+				} else {
 					initApp();
 				}
 			} else {
 				$('#loginModal').modal('show');
 			}
-		} else if (mugenToken) { 
+		} else if (mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
 			initApp();
@@ -294,6 +304,17 @@ var settingsNotUpdated;
 			var idPlaylistContent = $(this).closest('li').attr('idplaylistcontent');
 			deleteKaraPublic(idPlaylistContent);
 		});
+			
+
+		$('.playlist-main').on('click','li.karaSuggestion', function() {
+			var search = $('#searchPlaylist1').val();
+			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
+				var adress = 'mailto:' + settings.karaSuggestionMail;
+				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
+				var body = i18n.__('KARA_SUGGESTION_BODY');
+				window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+			}, search);
+		});
 
 		// (de)select all karas button
 		$('.playlist-main').on('click', '.actionDiv > button.clusterAction', function() {
@@ -377,8 +398,48 @@ var settingsNotUpdated;
 				likeKara(!$(this).hasClass('currentLike'), $(this));
 			});
 
+			$('.playlist-main').on('click', '.moreInfo', function() {
+				moreInfo($(this));
+			});
 		}
 
+		/* filter menu part */  
+		$('.tags').change(function() {
+			var tag_id =  $(this).val();
+			if(tag_id) {
+				var $searchMenu = $(this).closest('.searchMenu');
+				var $tag =  $searchMenu.find('li.tagFilter');
+				var tagType = $searchMenu.find('.tagsTypes').val();
+				var searchType = 'tag';
+	
+				$tag.attr('searchValue', tag_id);
+	
+				if(tagType === 'serie' || tagType === 'year') {
+					searchType = tagType;
+				}   
+	
+				$tag.attr('searchType', searchType);
+				$tag.find('.choice').click();
+			}
+		});
+		
+		$('.tagsTypes').change(function() {
+			$('.tags').val('').change();
+		});
+		$('.searchMenu .nav .choice').on('click', function(){
+			var $searchMenu = $(this).closest('.searchMenu');
+			var $li = $(this).parent();
+			if($li.length > 0) {
+				$searchMenu.find('.nav li').removeClass('active');
+				$li.addClass('active');
+				var val = $li.attr('val');
+				$selector = $searchMenu.closest('.panel').find('.plSelect > select');
+				if(val) $selector.val(val);
+				$selector.change();
+			}
+		});
+
+	/******** ********/
 		makeFav = function(idKara, make, $el) {
 			var type = make ? 'POST' : 'DELETE';
 			$.ajax({
@@ -408,6 +469,58 @@ var settingsNotUpdated;
 					$('.overlay').show();
 				}, 1);
 			}
+		};
+		moreInfo = function(el) {
+			var openExternalPageButton = '<i class="glyphicon glyphicon-new-window"></i>';
+			var externalUrl = '';
+			var details = el.closest('.detailsKara');
+			var serie = details.data('serie');
+			var extraSearchInfo = "";
+			var searchLanguage = navigator.languages[0];
+			searchLanguage = searchLanguage.substring(0, 2);
+			if(!details.data('misc') || (
+				details.data('misc').indexOf('TAG_VIDEOGAME') === -1
+				&& details.data('misc').indexOf('TAG_MOVIE') === -1
+				)) {
+				extraSearchInfo = 'anime ';
+			}
+			var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + extraSearchInfo + serie;
+			var detailsUrl = "";
+
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+			  if (this.readyState == 4 && this.status == 200) {
+				var json = JSON.parse(this.response);
+				var results = json.query.search;
+				var contentResult = json.query.pages;
+				var searchInfo = json.query.searchinfo;
+
+				if(results && results.length > 0 && detailsUrl === ""){
+					var pageId = results[0].pageid;
+					externalUrl= 'https://' + searchLanguage  + '.wikipedia.org/?curid=' + pageId;
+					//newWindows.location = externalUrl
+					detailsUrl = 'https://' + searchLanguage + '.wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&prop=extracts&exintro=&explaintext=&pageids=' + pageId;
+					xhttp.open("GET", detailsUrl , true);
+					xhttp.send();
+				} else if (contentResult && contentResult.length > 0 && detailsUrl !== "") {
+					var extract = contentResult[0].extract;
+					extract = extract.replace(/\n/g, '<br /><br />');
+					extract = extract.replace(serie, '<b>' + serie + '</b>');
+					extract = extract.replace('anime', '<b>anime</b>');
+					displayModal('alert', '<a target="_blank" href="' + externalUrl + '">' + serie + ' ' + openExternalPageButton + '</a>', extract);
+				} else if (searchInfo && searchInfo.totalhits === 0 && searchInfo.suggestion) {
+					var searchUrl = "https://" + searchLanguage  + ".wikipedia.org/w/api.php?origin=*&action=query&format=json&formatversion=2&list=search&utf8=&srsearch=" + searchInfo.suggestion;
+					xhttp.open("GET", searchUrl , true);
+					xhttp.send();
+				} else {
+					displayMessage('warning', '', i18n.__('NO_EXT_INFO', serie));
+				}
+			  }
+			};
+			//var newWindows = window.open();
+			xhttp.open("GET", searchUrl , true);
+			xhttp.send();
+
 		};
 
 		likeKara = function(like, $el) {
@@ -492,10 +605,10 @@ var settingsNotUpdated;
 		});
 
 		// generic close button
-		$('.playlist-main').on('click', '.closeParent', function () {
+		$('body').on('click', '.closeParent', function () {
 			var el = $(this);
-			var container = el.closest('.alert');
-			
+			var container = el.closest('.alert,.shutdown-popup');
+
 			var infoKaraButton = container.closest('li').find('[name="infoKara"]');
 
 			if(container.hasClass('detailsKara') && infoKaraButton.length > 0) {
@@ -506,7 +619,7 @@ var settingsNotUpdated;
 				});
 			}
 		});
-		
+
 		/* handling dynamic loading */
 		$('.playlistContainer').scroll(function() {
 			var container = $(this);
@@ -622,11 +735,11 @@ var settingsNotUpdated;
 				$('#signupPassword').focus();
 			} else {
 				var data = { login: username, password: password};
-				
+
 				if(scope === 'admin') {
 					data.role =  $('#signupRole').val();
 				}
-				
+
 				$.ajax({
 					url: scope + '/users',
 					type: 'POST',
@@ -638,9 +751,9 @@ var settingsNotUpdated;
 
 						$('#loginModal').modal('hide');
 						$('#signupPasswordConfirmation,#signupPassword').removeClass('redBorders');
-						
+
 						if(scope === 'public' || introManager &&  typeof introManager._currentStep !== 'undefined') login(username, password);
-					
+
 					}).fail(function(response) {
 						//displayMessage('info','', i18n.__('LOG_ERROR'));
 						$('#signupPasswordConfirmation,#signupPassword').val('').addClass('redBorders');
@@ -746,7 +859,7 @@ var settingsNotUpdated;
 					$input.focus();
 				} else {
 					var profileData = $('.profileData .profileLine > input[name]').serialize();
-					$.ajax({ 
+					$.ajax({
 						url: 'public/myaccount',
 						type: 'PUT',
 						data: profileData
@@ -818,11 +931,11 @@ var settingsNotUpdated;
 
 		});
 		$('.favImport > input').change(function() {
-			if ( ! window.FileReader ) return alert( 'FileReader API is not supported by your browser.' ); 
-			
+			if ( ! window.FileReader ) return alert( 'FileReader API is not supported by your browser.' );
+
 			var input = this;
 			if ( input.files && input.files[0] ) {
-				file = input.files[0]; 
+				file = input.files[0];
 				fr = new FileReader();
 				fr.onload = function () {
 					displayModal('confirm',i18n.__('CONFIRM_FAV_IMPORT'), '', function(confirm){
@@ -836,7 +949,7 @@ var settingsNotUpdated;
 					});
 				};
 				fr.readAsText( file );
-			} 
+			}
 		});
 		$('.favExport').click(function() {
 			ajx('GET', 'public/favorites/export', {}, function(data) {
@@ -845,14 +958,14 @@ var settingsNotUpdated;
 				dlAnchorElem.setAttribute('href', dataStr);
 				dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', logInfos.username, new Date().toLocaleDateString().replace('\\','-')].join('_') + '.kmplaylist');
 				dlAnchorElem.click();
-			});		
+			});
 		});
 
 		/* profil stuff END */
 		/* prevent the virtual keyboard popup when on touchscreen by not focusing the search input */
 		if(isTouchScreen) {
 			$('select').on('select2:open', function() {
-				$('.select2-search input').prop('focus', 0);
+				//$('.select2-search input').prop('focus', 0);
 			});
 			$('#progressBarColor').addClass('cssTransition');
 		}
@@ -863,7 +976,7 @@ var settingsNotUpdated;
 	i18n = new I18n({
 		//these are the default values, you can omit
 		directory: '/locales',
-		locale: navigator.languages[0],
+		locale: navigator.languages[0].substring(0, 2),
 		extension: '.json'
 	});
 
@@ -886,7 +999,7 @@ var settingsNotUpdated;
 	dragAndDrop = true;
 	stopUpdate = false;
 
-	pageSize = isTouchScreen ? 108 : 132;
+	pageSize = isTouchScreen ? 120 : 180;
 	if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
 
 	saveLastDetailsKara = [[]];
@@ -895,21 +1008,25 @@ var settingsNotUpdated;
 	oldState = {};
 	oldSearchVal = '';
 
-	addKaraHtml = '<button name="addKara" class="btn btn-sm btn-action"></button>';
-	deleteKaraHtml = '<button name="deleteKara" class="btn btn-sm btn-action"></button>';
-	deleteCriteriaHtml = '<button name="deleteCriteria" class="btn btn-action deleteCriteria"></button>';
-	transferKaraHtml = '<button name="transferKara" class="btn btn-sm btn-action"></button>';
+	addKaraHtml = '<button title="' + i18n.__('TOOLTIP_ADDKARA') + '" name="addKara" class="btn btn-sm btn-action"></button>';
+	deleteKaraHtml = '<button title="' + i18n.__('TOOLTIP_DELETEKARA') + '" name="deleteKara" class="btn btn-sm btn-action"></button>';
+	deleteCriteriaHtml = '<button title="' + i18n.__('TOOLTIP_DELETECRITERIA') + '" name="deleteCriteria" class="btn btn-action deleteCriteria"></button>';
+	transferKaraHtml = '<button title="' + i18n.__('TOOLTIP_TRANSFERKARA') + '" name="transferKara" class="btn btn-sm btn-action"></button>';
 	checkboxKaraHtml = '<span name="checkboxKara"></span>';
-	infoKaraHtml = '<button name="infoKara" class="btn btn-sm btn-action"></button>';
+	infoKaraHtml = '<button title="' + i18n.__('TOOLTIP_SHOWINFO') + '" name="infoKara" class="btn btn-sm btn-action"></button>';
 	likeKaraHtml = '<button class="likeKara btn btn-sm btn-action"></button>';
-	closeButton = '<button class="closeParent btn btn-action"></button>';
-	closeButtonBottom = '<button class="closeParent bottom btn btn-action"></button>';
+	likeCountHtml = '<bdg class="likeCount" title="' + i18n.__('TOOLTIP_UPVOTE') + '">upvotes <i class="glyphicon glyphicon-heart"></i></bdg>',
+	closeButton = '<button title="' + i18n.__('TOOLTIP_CLOSEPARENT') + '" class="closeParent btn btn-action"></button>';
+	closeButtonBottom = '<button title="' + i18n.__('TOOLTIP_CLOSEPARENT') + '" class="closeParent bottom btn btn-action"></button>';
 	closePopupButton = '<button class="closePopupParent btn btn-action"></button>';
-	showFullTextButton = '<button class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
-	showVideoButton = '<button class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
-	makeFavButton = '<button class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	showFullTextButton = '<button title="' + i18n.__('TOOLTIP_SHOWLYRICS') + '" class="fullLyrics ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	showVideoButton = '<button title="' + i18n.__('TOOLTIP_SHOWVIDEO') + '" class="showVideo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	makeFavButton = '<button title="' + i18n.__('TOOLTIP_FAV') + '" class="makeFav ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	likeFreeButton = '<button title="' + i18n.__('TOOLTIP_UPVOTE') + '" class="likeFreeButton btn btn-action"></button>';
 	dragHandleHtml =  '<span class="dragHandle"><i class="glyphicon glyphicon-option-vertical"></i></span>';
-	playKaraHtml = '<button class="btn btn-sm btn-action playKara"></btn>';
+	playKaraHtml = '<button title="' + i18n.__('TOOLTIP_PLAYKARA') + '" class="btn btn-sm btn-action playKara"></btn>';
+	serieMoreInfoButton = '<button class="moreInfo ' + (isTouchScreen ? 'mobile' : '') + ' btn btn-action"></button>';
+	karaSuggestionHtml = '<li class="list-group-item karaSuggestion">' + i18n.__('KARA_SUGGESTION_MAIL') +	'</li>';
 	buttonHtmlPublic = '';
 
 	listTypeBlc = [
@@ -925,6 +1042,17 @@ var settingsNotUpdated;
 		'BLCTYPE_5',
 		'BLCTYPE_6',
 		'BLCTYPE_7',
+		'BLCTYPE_8'];
+
+	tagsTypesList = [
+		'DETAILS_SERIE',
+		'BLCTYPE_3',
+		'BLCTYPE_7',
+		'BLCTYPE_2',
+		'BLCTYPE_4',
+		'BLCTYPE_5',
+		'BLCTYPE_6',
+		'DETAILS_YEAR',
 		'BLCTYPE_8'];
 
 	/* list of error code allowing an info popup message on screen */
@@ -964,9 +1092,9 @@ var settingsNotUpdated;
 		var tapper = new Hammer.Tap();
 		manager2.add(tapper);
 		manager2.on('tap', function (e) {
-			var $this = $(e.target).closest('.fullLyrics, .showVideo, .makeFav, .likeKara, [name="deleteKara"]');
+			var $this = $(e.target).closest('.moreInfo, .fullLyrics, .showVideo, .makeFav, .likeKara, [name="deleteKara"]');
 
-			if($this.length > 0) {
+			if($this.length > 0 && $this.closest('.playlistContainer').length > 0) {
 				e.preventDefault();
 
 				var liKara = $this.closest('li');
@@ -986,6 +1114,8 @@ var settingsNotUpdated;
 					});
 				} else if($this.hasClass('showVideo')) {
 					showVideo($this);
+				} else if($this.hasClass('moreInfo')) {
+					moreInfo($this);
 				} else if($this.hasClass('makeFav')) {
 					makeFav(idKara, !$this.hasClass('currentFav'), $this);
 				} else if($this.hasClass('likeKara')) {
@@ -1001,11 +1131,12 @@ var settingsNotUpdated;
 		manager2.on('tap click', function (e) {
 			e.gesture = e;
 			var target = $(e.gesture.target);
-			if(target.closest('.fullLyrics, .showVideo, .makeFav').length > 0
+			if(target.closest('.fullLyrics, .showVideo, .makeFav, .moreInfo').length > 0
 								|| target.closest('.actionDiv').length > 0
 								|| target.closest('.infoDiv').length > 0
 								|| target.closest('[name="checkboxKara"]').length > 0
-								|| target.closest('li').length == 0 ) {
+								|| target.closest('li').length == 0 
+								|| target.closest('.playlistContainer').length == 0) {
 				return false;
 			}
 			var $this = target.closest('li');
@@ -1030,7 +1161,9 @@ var settingsNotUpdated;
 
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
-		options.url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/api/v1/' + options.url;
+		if (options.url.indexOf('http') === -1) {
+			options.url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/api/v1/' + options.url;
+		}
 	});
 
 	/**
@@ -1060,6 +1193,7 @@ var settingsNotUpdated;
 		// setup variables depending on which playlist is selected : -1 = database kara list, -2 = blacklist, -3 = whitelist, -4 = blacklist criterias
 
 		var singlePlData = getPlData(idPlaylist);
+		
 		if(!singlePlData) return false;
 		url = singlePlData.url;
 		html = singlePlData.html;
@@ -1074,6 +1208,14 @@ var settingsNotUpdated;
 		canAddKara = scope === 'admin' ? canAddKara : $('#selectPlaylist' + side + ' > option:selected').data('flag_' + playlistToAdd) == '1';
 
 		urlFiltre = url + '?filter=' + filter + fromTo;
+
+
+		var $filter = $('#searchMenu' + side + ' li.active');
+		var searchType = $filter.attr('searchType');
+		var searchValue = $filter.attr('searchValue');
+		if(searchType) {
+			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchValue ? searchValue : '');
+		}
 
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
@@ -1110,10 +1252,16 @@ var settingsNotUpdated;
 							+	(kara.username == logInfos.username ? 'user' : '' );
 
 							var badges = '';
+
 							if(kara.misc) {
 								kara.misc.split(',').forEach(function(tag) {
-									badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
+									if (tag !== 'NO_TAG') {
+										badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
+									}
 								});
+							}
+							if(kara.upvotes) {
+								badges += likeCountHtml.replace('upvotes', kara.upvotes);
 							}
 							if (mode === 'list') {
 								var likeKara = likeKaraHtml;
@@ -1141,6 +1289,16 @@ var settingsNotUpdated;
 						}
 					}
 					var count = response.infos ? response.infos.count : 0;
+
+
+					/* adding artificial last line */
+					if(idPlaylist === -1 && count === response.infos.from + data.length) {
+						// count++;
+						htmlContent +=	karaSuggestionHtml;
+					}
+
+
+
 					// creating filler space for dyanmic scrolling
 					var fillerTopH = Math.min(response.infos.from * 34, container.height()/1.5);
 					var fillerBottomH = Math.min((count - response.infos.from - pageSize) * 34, container.height()/1.5);
@@ -1220,10 +1378,10 @@ var settingsNotUpdated;
 								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
 							}
 							// build the blacklist criteria line
-							var bcTagsFiltered = jQuery.grep(bcTags, function(obj) {
+							var tagsFiltered = jQuery.grep(tags, function(obj) {
 								return obj.tag_id == data[k].value;
 							});
-							var tagText = bcTagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  bcTagsFiltered[0].name_i18n : data[k].value;
+							var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
 							var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
 
 							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
@@ -1390,10 +1548,10 @@ var settingsNotUpdated;
 		var deferred = $.Deferred();
 
 		var playlistList = {};
-		
+
 		var select1 = $('#selectPlaylist1'), select2 = $('#selectPlaylist2');
 		var val1 = select1.val(), val2 = select2.val();
-		
+
 		$.ajax({ url: scope + '/playlists', }).done(function (data) {
 			playlistList = data; // object containing all the playlists
 			var shiftCount = 0;
@@ -1405,6 +1563,7 @@ var settingsNotUpdated;
 			if (scope === 'admin')                                                        playlistList.splice(shiftCount, 0, { 'playlist_id': -1, 'name': 'Karas', 'num_karas' : kmStats.totalcount });
 
 			var searchOptionListHtml = '<option value="-1" default data-playlist_id="-1"></option>';
+			searchOptionListHtml += '<option value="-6" data-playlist_id="-6"></option>';
 			searchOptionListHtml += '<option value="-5" data-playlist_id="-5" data-flag_favorites="1"></option>';
 			// building the options
 			var optionListHtml = '';
@@ -1443,7 +1602,7 @@ var settingsNotUpdated;
 					templateResult: formatPlaylist,
 					templateSelection : formatPlaylist,
 					tags: false,
-					minimumResultsForSearch: 3
+					minimumResultsForSearch: 10
 				});
 
 				if(!select2.val() && select2.length > 0) {
@@ -1498,8 +1657,8 @@ var settingsNotUpdated;
 				}).join(' ');
 				dashboard.removeAttr(attrListStr);
 			}
-		
-			
+
+
 			$.each(optionAttrList, function() {
 				dashboard.attr(this.name, this.value);
 			});
@@ -1599,7 +1758,7 @@ var settingsNotUpdated;
 						$('#karaInfo').attr('length', kara.duration);
 						$('#karaInfo > span').text( buildKaraTitle(kara) );
 						$('#karaInfo > span').data('text', buildKaraTitle(kara) );
-						
+
 						if(webappMode === 1) {
 							buildKaraDetails(kara, 'karaCard');
 						}
@@ -1669,7 +1828,7 @@ var settingsNotUpdated;
 				return titleArray[k] ? titleArray[k] : '';
 			});
 			titleText = titleClean.join(' - ') + '<br/>' + data.title;
-			
+
 		} else {
 			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
 				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
@@ -1678,8 +1837,8 @@ var settingsNotUpdated;
 			});
 			titleText = titleClean.join(' - ');
 		}
-		
-	
+
+
 		if(options.search) {
 			var search_regexp = new RegExp('(' + options.search + ')', 'gi');
 			titleText = titleText.replace(search_regexp,'<h>$1</h>');
@@ -1703,13 +1862,13 @@ var settingsNotUpdated;
 					detailsHtml = $(detailsHtml).hide();
 					liKara.find('.contentDiv').after(detailsHtml);
 					$(detailsHtml).data(data[0]);
-	
+
 					detailsHtml.fadeIn(animTime);
 					liKara.find('[name="infoKara"]').css('border-color', '#8aa9af');
 					saveDetailsKara(idPlaylist, idKara, 'add');
-	
+
 					liKara.removeClass('loading');
-	
+
 					if(introManager && introManager._currentStep) introManager.nextStep();
 				}).always(function (data) {
 					liKara.removeClass('loading');
@@ -1750,24 +1909,25 @@ var settingsNotUpdated;
 			}
 		}
 		var details = {
-			'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
+			  'UPVOTE_NUMBER' : data['upvotes']
+			, 'DETAILS_ADDED': 		(data['date_add'] ? i18n.__('DETAILS_ADDED_2', data['date_add']) : '') + (data['pseudo_add'] ? i18n.__('DETAILS_ADDED_3', data['pseudo_add']) : '')
 			, 'DETAILS_PLAYING_IN': data['time_before_play'] ? i18n.__('DETAILS_PLAYING_IN_2', ['<span class="time">' + beforePlayTime + '</span>', playTimeDate]) : ''
 			, 'DETAILS_LAST_PLAYED': lastPlayed ? lastPlayedStr : ''
 			, 'BLCTYPE_6': 			data['author']
 			, 'DETAILS_VIEWS':		data['viewcount']
-			, 'BLCTYPE_4':				data['creator']
+			, 'BLCTYPE_4':			data['creator']
 			, 'DETAILS_DURATION':	data['duration'] == 0 || isNaN(data['duration']) ? null : ~~(data['duration'] / 60) + ':' + (data['duration'] % 60 < 10 ? '0' : '') + data['duration'] % 60
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
-			, 'BLCTYPE_7':				data['misc_i18n']
+			, 'BLCTYPE_7':			data['misc_i18n']
 			, 'DETAILS_SERIE':		data['serie']
 			, 'DETAILS_SERIE_ALT':	data['serie_altname']
-			, 'BLCTYPE_2':				data['singer']
+			, 'BLCTYPE_2':			data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
 			, 'DETAILS_YEAR':		data['year']
-			, 'BLCTYPE_8':				data['songwriter']
+			, 'BLCTYPE_8':			data['songwriter']
 		};
 		var htmlDetails = Object.keys(details).map(function (k) {
-			if(details[k]) {
+			if(details[k] && details[k] !== 'NO_TAG' && details[k] !== i18n.__('NO_TAG')) {
 				var detailsLine = details[k].toString().replace(/,/g, ', ');
 				return '<tr><td>' + i18n.__(k) + '</td><td>' + detailsLine + '</td><tr/>';
 			} else return '';
@@ -1777,12 +1937,17 @@ var settingsNotUpdated;
 		var makeFavButtonAdapt = data['flag_favorites'] ? makeFavButton.replace('makeFav','makeFav currentFav') : makeFavButton;
 
 		if (htmlMode == 'list') {
+			var isPublic = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_public');
+			var likeFreeButtonHtml = data['flag_free'] ? likeFreeButton.replace('likeFreeButton', 'likeFreeButton free btn-primary') : likeFreeButton;
+
 			infoKaraTemp = '<div class="detailsKara alert alert-info">'
 				+ '<div class="topRightButtons">'
 				+ (isTouchScreen ? '' : closeButton)
 				+ makeFavButtonAdapt
 				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
+				+ (data['serie'] ? ' ' + serieMoreInfoButton : '')
+				+ (isPublic && scope === 'admin' ? likeFreeButtonHtml : '')
 				+ '</div>'
 				+ htmlTable
 				+ '</div>';
@@ -1820,7 +1985,7 @@ var settingsNotUpdated;
 		var $pollModal = $('#pollModal');
 		var $timer = $('#pollModal .timer');
 		var randArray = Array.from(Array(15).keys());
-	
+
 		$('#nav-poll').empty();
 		$.each(data, function(index, kara) {
 			var randColor = '42';
@@ -1840,7 +2005,7 @@ var settingsNotUpdated;
 							+	karaTitle
 							+	'	</button>'
 							+	'</div>');
-		});		
+		});
 
 		if(show) {
 			$pollModal.modal('show');
@@ -1852,7 +2017,7 @@ var settingsNotUpdated;
 	buildPollFromApi = function() {
 		ajx('GET', 'public/songpoll', {}, function(data) {
 			buildAndShowPoll(data.poll, false, data.timeLeft);
-		});		
+		});
 	}
 
 
@@ -1917,7 +2082,7 @@ var settingsNotUpdated;
 			settingsUpdating = getSettings() ;
 		} else if (scope === 'public') {
 			settingsUpdating = getPublicSettings();
-			
+
 		} else {
 			$(window).trigger('resize');
 			$('.plSelect .select2').select2({ theme: 'bootstrap',
@@ -1933,7 +2098,7 @@ var settingsNotUpdated;
 				if(scope === 'public' && settings.EngineSongPoll) {
 					ajx('GET', 'public/songpoll', {}, function(data) {
 						$('.showPoll').toggleClass('hidden');
-					});		
+					});
 				}
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
@@ -1941,12 +2106,12 @@ var settingsNotUpdated;
 					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
 					refreshPlaylistDashboard(1);
 					refreshPlaylistDashboard(2);
-	
+
 					$(window).trigger('resize');
 				});
 			});
 		}
-		
+
 		if(logInfos.role != 'guest') {
 			$('.pseudoChange').show();
 			$('#searchParent').css('width','');
@@ -1955,7 +2120,7 @@ var settingsNotUpdated;
 			$('#searchParent').css('width','100%');
 		}
 
-		if(!introManager || !introManager._currentStep) initSwitchs(); 
+		if(!introManager || !introManager._currentStep) initSwitchs();
 
 		$('.bootstrap-switch').promise().then(function(){
 			$(this).each(function(){
@@ -1964,8 +2129,107 @@ var settingsNotUpdated;
 		});
 
 		$.ajax({ url: 'public/tags', }).done(function (data) {
-			bcTags = data;
+			tags = data.content;
+			var serie, year;
+
+			var tagList = tagsTypesList.map(function(val, ind){
+				if(val === 'DETAILS_SERIE') {
+					return {id: 'serie', text: i18n.__(val)}
+				} else if (val === 'DETAILS_YEAR') {
+					return {id: 'year', text: i18n.__(val)}
+				} else {
+					return {id: val.replace('BLCTYPE_',''), text: i18n.__(val)}
+				}
+			});
+			
+			$('.tagsTypes').select2({ theme: 'bootstrap',
+				tags: false,
+				minimumResultsForSearch: 15,
+				data: tagList
+			});
+			$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
+		
+			forSelectTags = tags.map(function(val, ind){
+				return {id:val.tag_id, text: val.name_i18n, type: val.type};
+			});
+			
+			$.ajax({ url: 'public/series', }).done(function (data) {
+
+				var series = data.content;
+				series = series.map(function(val, ind){
+					return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
+				});
+				forSelectTags.push.apply(forSelectTags, series);
+
+				$.ajax({ url: 'public/years', }).done(function (data) {
+
+					var years = data.content;
+					years = years.map(function(val, ind){
+						return {id:val.year, text: val.year, type: 'year'};
+					});
+					forSelectTags.push.apply(forSelectTags, years);
+
+					$('.tags').select2({
+						theme: 'bootstrap tags',
+						placeholder: '',
+						dropdownAutoWidth: false,
+						minimumResultsForSearch: 20,
+						ajax: {
+							transport: function(params, success, failure) {
+								var page = params.data.page;
+								var pageSize = 120;
+								var type = $('.tagsTypes').val();
+
+								var items = forSelectTags.filter(function(item) {
+										return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
+									});
+								var totalLength = items.length;
+
+								if(page) {
+									items = items.slice((page - 1) * pageSize, page * pageSize);
+								}  else {
+									items = items.slice(0, pageSize);
+									page = 1;
+								}
+
+								var more = false;
+								if( page * pageSize + items.length < totalLength) {
+									more = true
+								}
+								var promise = new Promise(function(resolve, reject) {
+									resolve({results: items, pagination : { more : more} });
+								});
+								promise.then(success);
+								promise.catch(failure);
+							}
+						}
+					});
+					$('.tags').parent().find('.select2-container').addClass('value tags');
+				});
+			});
+		// ['serie', 'year'].forEach(function(dataType) {
+		// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
+		// 		data = data.content;
+				
+		// 		data = data.map(function(val, ind){
+		// 			var jsonLine;
+		// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
+		// 			if(dataType === 'year') jsonLine = {id:val.year, text: val.year};
+		// 			return jsonLine;
+		// 		}); 
+		// 		$('#' + dataType).select2({ theme: 'bootstrap',
+		// 			tags: false,
+		// 			minimumResultsForSearch: 3,
+		// 			data: data
+		// 		});
+		// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
+		// 	});
+	
+		// });
+	
 		});
+
+
 	};
 
 	$(window).resize(function () {
@@ -1983,6 +2247,12 @@ var settingsNotUpdated;
 			$('.playlistContainer, #manage > .panel').perfectScrollbar();
 			$('#playlist1').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight1 + 'px)');
 			$('#playlist2').parent().find('.ps__scrollbar-y-rail').css('transform', 'translateY(' + topHeight2 + 'px)');
+		}
+
+		if(!isSmall) {
+			$('#modalBox').find('.modal-dialog').removeClass('modal-sm').addClass('modal-md');
+		} else {
+			$('#modalBox').find('.modal-dialog').addClass('modal-sm').removeClass('modal-md');
 		}
 	});
 
@@ -2021,7 +2291,7 @@ var settingsNotUpdated;
 			}
 		});
 
-		
+
 		/* init selects & switchs */
 		if(scope === 'admin') {
 			$('[name="kara_panel"]').on('switchChange.bootstrapSwitch', function (event, state) {
@@ -2036,13 +2306,13 @@ var settingsNotUpdated;
 					}
 				}
 			});
-			
+
 			$('#settings input[type="checkbox"], input[name="EnginePrivateMode"]').on('switchChange.bootstrapSwitch', function () {
 				setSettings($(this));
 			});
 
 		}
-					
+
 		/* set the right value for switchs */
 		$('input[type="checkbox"],[switch="onoff"]').on('switchChange.bootstrapSwitch', function () {
 			$(this).val($(this).is(':checked') ? '1' : '0');
@@ -2082,13 +2352,13 @@ var settingsNotUpdated;
 				logInfos = response;
 				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
 				initApp();
-				
+
 				if(introManager && typeof introManager._currentStep !== 'undefined') {
 					introManager.nextStep();
 				} else if(isTouchScreen && !readCookie('mugenTouchscreenHelp')) {
 					$('#helpModal').modal('show');
 				}
-				
+
 				if (welcomeScreen) {
 					logInfos = parseJwt(response.token);
 					$('#wlcm_login > span').text(logInfos.username);
@@ -2169,11 +2439,11 @@ var settingsNotUpdated;
 	};
 
 	deleteKaraPublic = function(idPlaylistContent) {
-		
+
 		$.ajax({ url: scope + '/playlists/' + playlistToAdd + '/karas/' + idPlaylistContent,
 			type: 'DELETE'
 		}).done(function() {
-	
+
 			//displayMessage('success', '"' + (karaName ? karaName : 'kara') + '"', ' ajouté à la playlist <i>' + playlistToAddName + '</i>');
 		});
 	};
@@ -2191,7 +2461,7 @@ var settingsNotUpdated;
 		socket.on('songPollEnded', function(data){
 			$('#pollModal').modal('hide');
 			$('.showPoll').toggleClass('hidden');
-			
+
 		});
 		socket.on('songPollResult', function(data){
 			displayMessage('success', '', i18n.__('POLLENDED', [data.kara.substring(0,100), data.votes]));
@@ -2285,7 +2555,7 @@ var settingsNotUpdated;
 		socket.on('quotaAvailableUpdated', function(data){
 			if (logInfos.username === data.username) {
 				var quota = data.quotaLeft;
-			
+
 				var quotaString = '';
 				if(data.quotaType == 1) {
 					quotaString = data.quotaLeft;
@@ -2326,6 +2596,12 @@ var settingsNotUpdated;
 			}
 		});
 
+		socket.on('disconnect', function(){
+			if(scope === 'admin' && $('.shutdown-popup').length == 0) $('body').prepend($('<div class="shutdown-popup">' + i18n.__('SHUTDOWN_POPUP') + closeButton + '</div>'));
+		});
+		socket.on('connect', function(){
+			if(scope === 'admin' && $('.shutdown-popup').length > 0) $('.shutdown-popup > .closeParent').click();
+		})
 		socket.on('adminMessage', function(data){
 			if( scope === 'public') displayMessage('info', i18n.__('CL_INFORMATIVE_MESSAGE')  + ' <br/>', data.message, data.duration);
 		});

@@ -1,29 +1,21 @@
-import got from 'got';
 import {configureHost, getConfig} from '../_common/utils/config';
-import isEmpty from 'lodash.isempty';
+import {stringify} from 'querystring';
+import {post} from 'axios';
 
 export async function publishURL() {
 	configureHost();
 	const conf = getConfig();
 	let localHost = conf.osHost;
-	if (!isEmpty(conf.EngineDisplayConnectionInfoHost)) localHost = conf.EngineDisplayConnectionInfoHost;
-	const options = {
-		url: `http://${conf.OnlineHost}:${conf.OnlinePort}`,
-		method: 'POST',
-		form: {
+	if (conf.EngineDisplayConnectionInfoHost) localHost = conf.EngineDisplayConnectionInfoHost;
+	try {
+		await post(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, stringify({
 			localIP: localHost,
 			localPort: conf.appFrontendPort,
 			IID: conf.appInstanceID
-		},
-		headers: {
-	        'content-type': 'application/x-www-form-urlencoded'
-    	}
-	};
-	try {
-		await got(options.url, options);
+		}));
 		configureHost();
 	} catch(err) {
-		throw `Failed publishing our URL to ${conf.OnlineHost} : ${err}`;
+		throw `Failed publishing our IP to ${conf.OnlineHost} : ${err}`;
 	}
 }
 

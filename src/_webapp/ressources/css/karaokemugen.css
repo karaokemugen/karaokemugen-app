@@ -39,7 +39,8 @@ div > a {
 	font-size: 2rem;
 }
 .header div.headerInputs > .btn {
-	height: calc(100% - 0px);
+	height: calc(100% - 1px);
+	border: 0;
 }
 #manageButton .dropdown-menu {
 	z-index: 1000000;
@@ -266,6 +267,21 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 .playlist-main li.list-group-item[currentlyPlaying] {
 	background-color: #3a5064;
 }
+.playlist-main li.list-group-item.karaSuggestion {
+	background-color: rgba(93, 131, 119, 0.7);
+	text-align: center;
+	cursor: pointer;
+	
+    line-height: 130px;
+    font-size: 130%;
+	height: 130px;
+	
+	
+    padding: 5px;
+	overflow: hidden !important;
+	width: 100% !important;
+	margin-bottom: 100px;
+}
 
 .playlist-main .list-group-item.liType {
 	background-color: #607e97;
@@ -348,6 +364,9 @@ button[name="infoKara"]:before {
 .showVideo:before {
 	content:"\e009";
 }
+.likeFreeButton:before {
+	content:"\e102";
+}
 .makeFav:before {
 	content:"\e007";
 }
@@ -355,6 +374,10 @@ button[name="infoKara"]:before {
 .makeFav.currentFav:before {
 	content:"\e006";
     color: firebrick;
+}
+
+.moreInfo:before {
+	content:"\e086";
 }
 
 .likeKara:before {
@@ -365,7 +388,20 @@ button[name="infoKara"]:before {
 	content:"\e005";
     color: firebrick;
 }
-
+.likeCount:hover {
+	background-color: hsl(213, 20%, 28%);
+}
+.likeCount:active {
+	background-color: hsl(213, 20%, 10%);
+}
+.likeCount {
+	cursor: pointer;
+	color: #aaa;
+}
+.likeCount > i {
+    color: firebrick;
+    font-size: 88%;
+}
 .playKara:before {
 	content:"\e072";
 }
@@ -493,7 +529,7 @@ button.closeParent.bottom  {
 	bottom: 10px;
 	top: auto;
 }
-.list-group-item .fullLyrics.mobile, .list-group-item .makeFav.mobile, .list-group-item .showVideo.mobile {
+.list-group-item .fullLyrics.mobile, .list-group-item .makeFav.mobile, .list-group-item .showVideo.mobile, .moreInfo.mobile {
 	border-color: transparent;
 	background-color: hsla(0, 0%, 32%, 0.87);
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.10), 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.1);
@@ -1098,6 +1134,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	padding: 0;
 	display: flex;
 }
+.modal-header a {
+	color: hsla(208, 55%, 77%, 1);
+}
 .modalPage .modal-message {
 	height: 50px;
 	max-height: 10vh;
@@ -1402,7 +1441,7 @@ input[type="text"]:focus, input[type="password"]:focus {
 .btn-danger:hover {
 	border-color: hsla(2, 22%, 67%, 1);
 }
-.btn-primary {
+.btn-primary, .playlist-main ul button.btn-primary {
 	border-color: hsla(208, 22%, 52%, 1);
 	background-color: #37679a;
 }
@@ -1446,7 +1485,103 @@ input[type="text"]:focus, input[type="password"]:focus {
 	border-radius: 0;
 }
 
-@media (max-width: 1025px) {
+
+/* FILTER MENU CSS */
+
+.searchMenuContainer {
+    min-height: 0; 
+    margin-bottom:0;
+    border:0;
+    background-color: #1E2124;
+    z-index: 1444;
+}
+.searchMenu {
+    border: solid 0px hsla(0, 0%, 70%, 1);
+    border-width:  1px 0px;
+    width: 100%;
+    height: 100%;
+}
+.navbar-nav {
+    margin: 0px -15px;
+}
+.navbar-default .navbar-nav>.active>a.choice {
+    background-color: hsla(211, 33%, 38%, 1);
+    font-weight: bold;
+    color: #eee;
+}
+.navbar-nav>li>a {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+.navbar-default .navbar-nav>li>a.choice {
+    color: #eee;
+    font-size: 14px;
+}
+
+.navbar-default .navbar-nav>li > * {
+    display: flex;
+    line-height: 17px;
+    height: 34px;
+}
+.navbar-default .navbar-nav>li a>i {
+    margin-right: 10px;
+}
+.navbar-default .navbar-nav>li > .value {
+   width: calc(100% - 100px);
+   float: right;
+   border: 0;
+}
+.searchMenuButton[aria-expanded="true"] {
+    background-color: hsla(211, 33%, 38%, 1);
+    font-weight: bold;
+    color: #eee;
+}
+.searchMenu .navbar-nav>li, .searchMenu .navbar-nav {
+    float: none;
+}
+.select2-container {
+   width: 100% !important;
+}
+.select2-container--bootstrap .select2-selection--single {
+    padding-top: 7px;
+}
+.searchMenu .select2-container--bootstrap .select2-selection--single, .searchMenu.select2-dropdown {
+    background-color: hsla(210, 9%, 17%, 1);
+    /* border-width: 0px 0px 1px 0px; */
+    border: 0;
+}
+.searchMenu ::-webkit-input-placeholder {
+    font-size: 14px;
+    line-height: 14px;
+    height: 60px;
+}
+.searchMenu  ::-moz-placeholder {  /* Firefox 19+ */
+    font-size: 14px;
+    line-height: 14px;
+    height: 60px;
+}
+.searchMenu :-ms-input-placeholder {
+    font-size: 14px;
+    line-height: 14px;
+    height: 60px;
+}
+.tagsContainer {
+    width: calc(100% - 115px);
+}
+.tagsTypesContainer {
+    width: 115px;
+}
+
+@media (max-width: 1025px) {  
+    .tags.select2-container--open {
+        max-width: 100%;
+        right: 0 !important;
+        left: auto !important;
+	}
+	.tags.select2-container--open > .select2-dropdown {
+		width: 100% !important;
+	}
+
 	.playlistContainer[flipped]:after {
 		background: url(/ressources/img/nanami_g_980w.jpg) no-repeat;
 		background-size: 100%;

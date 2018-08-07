@@ -52,6 +52,7 @@ export default class Downloader {
 		let options = [url, '-o', `"${filename.replace(/\\\\/g,'\\')}"`, '--retry','999','--retry-max-time','0','-C','-'];
 		let timer;
 		if (this.opts.auth) options.push(`-u ${this.opts.auth.user}:${this.opts.auth.pass}`);
+		logger.debug(`[Download] Running : curl ${options.join(' ')}`);
 		execa(getConfig().BincurlPath, options, {windowsVerbatimArguments: true, encoding: 'utf8'})
 			.then(() => {
 				if (this.opts.bar && size) {

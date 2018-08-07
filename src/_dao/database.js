@@ -8,14 +8,27 @@ import {exit} from '../_services/engine';
 import {duration} from '../_common/utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
-
-
-const DBgenerator = require('../_admin/generate_karasdb.js');
+import {checkUserdbIntegrity, run as generateDB} from '../_admin/generate_karasdb';
 const sql = require('../_common/db/database');
 
 // Setting up databases
 let karaDb;
 let userDb;
+
+export function buildClausesSeries(filter, type) {
+	return deburr(filter)
+		.toLowerCase()
+		.replace('\'', '')
+		.replace(',', '')
+		.split(' ')
+		.filter(s => !('' === s))
+		.map(word => {
+			return `s.NORM_name LIKE '%${word}%' OR
+			s.NORM_altname LIKE '%${word}%'
+			`;
+		}
+		);
+}
 
 export function buildClauses(filter,source) {
 	return deburr(filter)
@@ -72,7 +85,7 @@ export async function transaction(items, sql) {
 	await promiseRetry((retry) => {
 		return doTransaction(items, sql).catch(retry);
 	}, {
-		retries: 10,
+		retries: 50,
 		minTimeout: 100,
 		maxTimeout: 200
 	}).then(() => {
@@ -102,13 +115,12 @@ async function openUserDatabase() {
 	const conf = getConfig();
 	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	if (!userDb) {
-		logger.debug('[DB] Opening user database');
+		logger.debug( '[DB] Opening user database');
 		userDb = await open(userDbFile, {verbose: true});
-		// Trace event. DO NOT UNCOMMENT
-		// unless you want to flood your console.
+		// Trace event.
 		if (conf.optSQL) {
 			userDb.driver.on('trace', sql => {
-				logger.debug(sql.replace('\\t','').replace('\\n',''));
+				logger.debug(sql.replace('\\t','').replace('\\n',' '));
 			});
 		}
 	} else {
@@ -183,22 +195,21 @@ export async function initDBSystem() {
 	await migrateUserDb();
 	if (doGenerate) await generateDatabase();
 	await closeKaraDatabase();
-	await getUserDb().run('ATTACH DATABASE "' + karaDbFile + '" as karasdb;');
+	await getUserDb().run(`ATTACH DATABASE "${karaDbFile}" as karasdb;`);
 	await getUserDb().run('PRAGMA TEMP_STORE=MEMORY');
 	await getUserDb().run('PRAGMA JOURNAL_MODE=WAL');
 	await getUserDb().run('PRAGMA SYNCHRONOUS=OFF');
 	await getUserDb().run('VACUUM');
-	//await getUserDb().run('PRAGMA LOCKING_MODE=EXCLUSIVE');
 
 	await compareDatabasesUUIDs();
-	logger.debug('[DBI] Database Interface is READY');
+	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
-	logger.info('Karaoke count   : ' + stats.totalcount);
-	logger.info('Total duration  : ' + duration(stats.totalduration));
-	logger.info('Series count    : ' + stats.totalseries);
-	logger.info('Languages count : ' + stats.totallanguages);
-	logger.info('Artists count   : ' + stats.totalartists);
-	logger.info('Playlists count : ' + stats.totalplaylists);
+	logger.info(`Karaokes  : ${stats.totalcount}`);
+	logger.info(`Duration  : ${duration(stats.totalduration)}`);
+	logger.info(`Series    : ${stats.totalseries}`);
+	logger.info(`Languages : ${stats.totallanguages}`);
+	logger.info(`Artists   : ${stats.totalartists}`);
+	logger.info(`Playlists : ${stats.totalplaylists}`);
 	return true;
 }
 
@@ -206,7 +217,7 @@ async function compareDatabasesUUIDs() {
 	const res = await getUserDb().get(sql.compareUUIDs);
 	if (res && res.karasdb_uuid !== res.userdb_uuid) {
 		//Databases are different, rewriting userdb's UUID with karasdb's UUID and running integrity checks.
-		await DBgenerator.checkUserdbIntegrity(res.karasdb_uuid);
+		await checkUserdbIntegrity(res.karasdb_uuid);
 	}
 	return true;
 }
@@ -256,14 +267,14 @@ export async function getStats() {
 async function generateDatabase() {
 	const conf = getConfig();
 
-	const failedKaras = await DBgenerator.run(conf);
-	logger.debug('[DBI] Karaoke database created');
+	const failedKaras = await generateDB(conf);
+	logger.debug('[DB] Karaoke database created');
 	if (conf.optGenerateDB) {
 		if (failedKaras) {
-			logger.error('[DBI] Database generation completed with errors!');
+			logger.error('[DB] Database generation completed with errors!');
 			exit(1);
 		} else {
-			logger.info('[DBI] Database generation completed successfully!');
+			logger.info('[DB] Database generation completed successfully!');
 			exit(0);
 		}
 	}
@@ -276,4 +287,11 @@ async function migrateUserDb() {
 
 async function migrateKaraDb() {
 	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
+}
+
+export function buildTypeClauses(mode, value) {
+	if (mode === 'year') return ` AND year = ${value}`;
+	if (mode === 'tag') return ` AND kara_id IN (SELECT fk_id_kara FROM kara_tag WHERE fk_id_tag = ${value})`;
+	if (mode === 'serie') return ` AND kara_id IN (SELECT fk_id_kara FROM kara_serie WHERE fk_id_serie = ${value})`;
+	return '';
 }

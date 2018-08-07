@@ -5,18 +5,18 @@ import {parse, stringify} from 'ini';
 import osLocale from 'os-locale';
 import i18n from 'i18n';
 import {address} from 'ip';
+import {configureLogger} from './logger';
 import logger from 'winston';
 import {copy} from 'fs-extra';
-import {asyncCheckOrMkdir, asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
+import {asyncWriteFile, asyncExists, asyncReadFile, asyncRequired} from './files';
 import {checkBinaries} from './binchecker.js';
 import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
-import {emit} from './pubsub';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
 import {publishURL} from '../../_webapp/online';
-
-require('winston-daily-rotate-file');
+import {playerNeedsRestart} from '../../_services/player';
+import {setState} from './state';
 
 /** Object containing all config */
 let config = {};
@@ -44,10 +44,6 @@ export function sanitizeConfig(conf) {
 	return conf;
 }
 
-export function profile(func) {
-	if (config.optProfiling) logger.profile(func);
-}
-
 export function verifyConfig(conf) {
 	const validationErrors = check(conf, configConstraints);
 	if (validationErrors) {
@@ -62,7 +58,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 			setting !== 'PlayerFullscreen' &&
 			setting !== 'PlayerStayOnTop') {
 			if (oldConfig[setting] != newConfig[setting]) {
-				emit('playerNeedsRestart');
+				playerNeedsRestart();
 				logger.debug('[Config] Setting mpv to restart after next song');
 			}
 		}
@@ -72,7 +68,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings
-	emit('modeUpdated',conf.EnginePrivateMode);
+	setState({private: conf.EnginePrivateMode});
 
 	configureHost();
 
@@ -95,12 +91,11 @@ export async function mergeConfig(oldConfig, newConfig) {
 /** Initializing configuration */
 export async function initConfig(appPath, argv) {
 	if (argv.config) configFile = argv.config;
-	configureLogger(appPath, !!argv.debug);
-
+	await configureLogger(appPath, !!argv.debug);
 	config = {...config, appPath: appPath};
 	config = {...config, os: process.platform};
 
-	configureLocale();
+	await configureLocale();
 	await loadConfigFiles(appPath);
 	configureHost();
 	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
@@ -124,30 +119,6 @@ export async function initConfig(appPath, argv) {
 	return getConfig();
 }
 
-async function configureLogger(appPath, debug) {
-	const tsFormat = () => (new Date()).toLocaleTimeString();
-	const consoleLogLevel = debug ? 'debug' : 'info';
-	const logDir = resolve(appPath, 'logs');
-	await asyncCheckOrMkdir(logDir);
-	logger.configure({
-		transports: [
-			new (logger.transports.Console)({
-				timestamp: tsFormat,
-				level: consoleLogLevel,
-				colorize: true
-			}),
-			new (logger.transports.DailyRotateFile)({
-				timestap: tsFormat,
-				filename: resolve(appPath, 'logs', 'karaokemugen'),
-				datePattern: '.yyyy-MM-dd.log',
-				zippedArchive: true,
-				level: 'debug',
-				handleExceptions: true
-			})
-		]
-	});
-}
-
 async function loadConfigFiles(appPath) {
 	const overrideConfigFile = resolve(appPath, configFile);
 	const versionFile = resolve(__dirname, '../../VERSION');
@@ -166,25 +137,20 @@ async function loadConfig(configFile) {
 	try {
 		verifyConfig(newConfig);
 		config = {...newConfig};
-		// Delete this when the 2.3 release gets rolled out
-		// Temporary fix to treat PathVideos as PathMedias
-		if (config.PathVideos) {
-			config.PathMedias = config.PathVideos;
-			delete config.PathVideos;
-		}
 	} catch(err) {
 		throw err;
 	}
 }
 
-function configureLocale() {
+async function configureLocale() {
 	i18n.configure({
 		directory: resolve(__dirname, '../locales'),
 		defaultLocale: 'en',
 		cookie: 'locale',
 		register: global
 	});
-	const detectedLocale = osLocale.sync().substring(0, 2);
+	let detectedLocale = await osLocale();
+	detectedLocale = detectedLocale.substring(0, 2);
 	i18n.setLocale(detectedLocale);
 	config = {...config, EngineDefaultLocale: detectedLocale };
 }

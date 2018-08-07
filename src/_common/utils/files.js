@@ -2,7 +2,7 @@ import {exists, readFile, readdir, rename, unlink, stat, writeFile} from 'fs';
 import {ensureDir, remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
-import logger from 'winston';
+import logger from './logger';
 import {mediaFileRegexp, imageFileRegexp} from '../../_services/constants';
 import fileType from 'file-type';
 import readChunk from 'read-chunk';
@@ -63,13 +63,13 @@ export function asyncMove(...args) {
 
 /** Function used to verify if a required file exists. It throws an exception if not. */
 export async function asyncRequired(file) {
-	if (!await asyncExists(file)) throw 'File \'' + file + '\' does not exist';
+	if (!await asyncExists(file)) throw `File "${file}" does not exist`;
 }
 
 export async function asyncCheckOrMkdir(...dir) {
 	const resolvedDir = resolve(...dir);
 	if (!await asyncExists(resolvedDir)) {
-		if (logger) logger.debug('[Launcher] Creating folder ' + resolvedDir);
+		if (logger) logger.debug(`[File] Creating folder ${resolvedDir}`);
 		return await asyncMkdirp(resolvedDir);
 	}
 }
@@ -89,7 +89,7 @@ export async function resolveFileInDirs(filename, dirs) {
 			return resolved;
 		}
 	}
-	throw 'File \'' + filename + '\' not found in any listed directory: ' + dirs;
+	throw `File "${filename}" not found in any listed directory: ${dirs}`;
 }
 
 export function filterMedias(files) {

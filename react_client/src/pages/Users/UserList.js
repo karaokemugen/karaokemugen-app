@@ -39,6 +39,7 @@ class UserList extends Component {
 			.then(() => {
 				this.props.warnMessage('User deleted.');
 				this.setState({deleteModal: false, user: {}});
+				this.refresh();
 			})
 			.catch(err => {
 				this.props.errorMessage(`Error ${err.response.status} while deleting user: ${err.response.statusText}. ${err.response.data}`);

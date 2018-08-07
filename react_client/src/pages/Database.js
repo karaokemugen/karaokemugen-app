@@ -1,11 +1,19 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Button, Layout} from 'antd';
+import {Modal, Button, Layout} from 'antd';
 
 import {loading, infoMessage, errorMessage} from '../actions/navigation';
 
 class Database extends Component {
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			updateModal: false,
+		};
+	}
+
 
 	dbregen() {
 		this.props.loading(true);
@@ -61,7 +69,10 @@ class Database extends Component {
 				<div>
 					<Button
 						type='primary'
-						onClick={this.dbupdate.bind(this)}
+						onClick={
+							() => this.setState({updateModal: true})
+						}
+						//onClick={this.dbupdate.bind(this)}
 						active={!this.props.loadingActive}
 					>
 						Update your karaoke base files from Shelter
@@ -76,6 +87,22 @@ class Database extends Component {
 						Reset song viewcounts
 					</Button>
 				</div>
+				<Modal
+					title='Confirm update'
+					visible={this.state.updateModal}
+					onOk={() => {
+						this.dbupdate();
+						this.setState({updateModal: false});
+					}}
+					onCancel={() => this.setState({updateModal: false})}
+					okText='yes, do it!'
+					cancelText='no'
+				>
+					<p>WARNING: Updating will delete <b>any file not in the official Karaoke Mugen repository</b>.</p>
+					<p>If you created karaokes but did not upload them, they will be deleted.</p>
+					<p>You can check progress in the Karaoke Mugen console window</p>
+					<p>Are you sure?</p>
+				</Modal>
 			</Layout.Content>
 		);
 	}

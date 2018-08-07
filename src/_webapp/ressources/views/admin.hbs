@@ -36,12 +36,12 @@
         <button title="{{i18n "STOP_AFTER"}}" action="command" id="stopAfter" name="stopAfter" class="btn btn-danger-low" style="width: 50px;">
 			<i class="glyphicon glyphicon-stop"></i><i class="glyphicon glyphicon-time secondaryIcon"></i></button>
         <button title="{{i18n "STOP_NOW"}}" action="command" id="stopNow" name="stopNow" class="btn btn-danger"> <i class="glyphicon glyphicon-stop"></i></button>
-        <button title="{{i18n "REWIND"}}" action="command" id="goTo" name="goTo" value="0" class="btn btn-dark"><i class="glyphicon glyphicon-step-backward"></i></button>
+        <button title="{{i18n "REWIND"}}" action="command" id="goTo" name="goTo" value="0" class="btn btn-dark"><i class="glyphicon glyphicon-fast-backward"></i></button>
     </div>
     <div class="btn-group centerBtns">
-        <button title="{{i18n "PREVIOUS_SONG"}}" action="command" id="prev" name="prev" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i></button>
+        <button title="{{i18n "REWIND"}}" action="command" id="prev" name="prev" class="btn btn-default"><i class="glyphicon glyphicon-chevron-left"></i></button>
         <button title="{{i18n "PLAY_PAUSE"}}" action="command" id="status" name="play" class="btn btn-primary"><i class="glyphicon glyphicon-play play"></i><i class="glyphicon glyphicon-pause pause"></i></button>
-        <button title="{{i18n "NEXT_SONG"}}" action="command" id="skip" name="skip" class="btn btn-default"><i class="glyphicon glyphicon-forward"></i></button>
+        <button title="{{i18n "NEXT_SONG"}}" action="command" id="skip" name="skip" class="btn btn-default"><i class="glyphicon glyphicon-chevron-right"></i></button>
         <button class="btn btn-default hidden"></button>
     </div>
 </div>
@@ -65,7 +65,16 @@
                         <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
                             <i class="glyphicon glyphicon-random"></i>
                         </button> 
+                        <button title='{{i18n "PLAYLIST_SMART_SHUFFLE"}}' class="btn btn-default" name="smartShuffle">
+                            <i class="glyphicon glyphicon-random"></i>
+                        </button> 
                     </div>
+                  
+                </div>
+                <div class="searchMenuButtonContainer btn-group plCommands">
+                    <button type="button" class="searchMenuButton collapsed btn btn-default" data-toggle="collapse" data-target="#searchMenu1" aria-expanded="false">
+                        <i class="glyphicon glyphicon-filter"></i>
+                    </button> 
                 </div>
                 <div class="plSearch">
                     <input type="text" class="form-control input-md" side="1" id="searchPlaylist1" placeholder="&#xe003;" onfocus="this.select();"/>
@@ -127,6 +136,29 @@
                     </div>
                 </div>
             </div>
+            <nav class="navbar navbar-default navbar-fixed searchMenuContainer">
+                <div class="searchMenu container collapse" id="searchMenu1">
+                    <ul class="nav navbar-nav">
+                         <li searchType="serie" class="tagFilter">
+                            <span class='value'>
+                                <span class="tagsTypesContainer">
+                                    <select type="text" class="tagsTypes form-control select2 value" placeholder="Search">
+                                    </select>
+                                </span>
+                                <span class="tagsContainer">
+                                    <select type="text" class="tags form-control select2 value" placeholder="Search">
+                                    </select>
+                                </span>
+                            </span>
+                            <a class="choice" href="#"><i class="glyphicon glyphicon-filter"></i> {{i18n "FILTER"}}</a>
+                        </li>
+                        <li class="active"><a class="choice" href="#"><i class="glyphicon glyphicon-sort-by-alphabet"></i> {{i18n "VIEW_STANDARD"}}</a></li>
+                        <li searchType="recent" ><a class="choice" href="#"><i class="glyphicon glyphicon-time"></i> {{i18n "VIEW_RECENT"}}</a></li>
+                        <li searchType="popular" ><a class="choice" href="#"><i class="glyphicon glyphicon-fire"></i> {{i18n "VIEW_POPULAR"}}</a></li>
+                
+                    </ul>             
+                </div>
+            </nav>
             <div class="playlistContainer">
                 <ul id="playlist1" side="1" class="list-group">
                     <li class="list-group-item"></li>
@@ -153,11 +185,20 @@
                 </div>
 
                 <div class="controlsContainer">
-                    <div class="btn-group plCommands controls">
+                    <div class="btn-group plCommands controls"> 
                         <button title='{{i18n "PLAYLIST_SHUFFLE"}}' class="btn btn-default" name="shuffle">
                             <i class="glyphicon glyphicon-random"></i>
+                        </button> 
+                        <button title='{{i18n "PLAYLIST_SMART_SHUFFLE"}}' class="btn btn-default" name="smartShuffle">
+                            <i class="glyphicon glyphicon-random"></i>
                         </button>    
+                      
                     </div>
+                </div>
+                <div class="searchMenuButtonContainer btn-group plCommands">
+                    <button type="button" class="searchMenuButton collapsed btn btn-default" data-toggle="collapse" data-target="#searchMenu2" aria-expanded="false">
+                        <i class="glyphicon glyphicon-filter"></i>
+                    </button> 
                 </div>
                 
                  <div class="plCommandsContainer actionDivContainer">
@@ -222,6 +263,29 @@
                 </div>
                
             </div>
+            <nav class="navbar navbar-default navbar-fixed searchMenuContainer">
+                <div class="searchMenu container collapse" id="searchMenu2">
+                    <ul class="nav navbar-nav">
+                         <li searchType="serie" class="tagFilter">
+                            <span class='value'>
+                                <span class="tagsTypesContainer">
+                                    <select type="text" class="tagsTypes form-control select2 value" placeholder="Search">
+                                    </select>
+                                </span>
+                                <span class="tagsContainer">
+                                    <select type="text" class="tags form-control select2 value" placeholder="Search">
+                                    </select>
+                                </span>
+                            </span>
+                            <a class="choice" href="#"><i class="glyphicon glyphicon-filter"></i> {{i18n "FILTER"}}</a>
+                        </li>
+                        <li class="active"><a class="choice" href="#"><i class="glyphicon glyphicon-sort-by-alphabet"></i> {{i18n "VIEW_STANDARD"}}</a></li>
+                        <li searchType="recent" ><a class="choice" href="#"><i class="glyphicon glyphicon-time"></i> {{i18n "VIEW_RECENT"}}</a></li>
+                        <li searchType="popular" ><a class="choice" href="#"><i class="glyphicon glyphicon-fire"></i> {{i18n "VIEW_POPULAR"}}</a></li>
+                
+                    </ul>             
+                </div>
+            </nav>
             <div class="playlistContainer">
                 <ul id="playlist2" side="2" class="list-group">
                     <li class="list-group-item"></li>

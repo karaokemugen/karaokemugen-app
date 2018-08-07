@@ -3,37 +3,35 @@ import {on} from '../_common/utils/pubsub';
 import {getConfig} from '../_common/utils/config';
 import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, isACurrentPlaylist, getPlaylistContentsMini} from '../_services/playlist';
 import sample from 'lodash.sample';
-import sampleSize from 'lodash.samplesize'; 
+import sampleSize from 'lodash.samplesize';
 import {emitWS} from '../_webapp/frontend';
 import {promisify} from 'util';
-import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {timer} from '../_common/utils/timer';
+import {getState, setState} from '../_common/utils/state';
 const sleep = promisify(setTimeout);
 
-let state = {};
 let poll = [];
 let voters = [];
-let pollUUID;
+let pollDate;
 let pollEnding = false;
 let clock;
 
-on('engineStatusChange', (newstate) => {
-	state.engine = newstate[0];
-	if (!state.engine.songPoll && poll.length > 0) stopPoll();
+on('stateUpdated', state => {
+	if (!state.songPoll && poll.length > 0) stopPoll();
 });
 
 export async function timerPoll() {
-	const internalUUID = pollUUID = uuidV4();
+	const internalDate = pollDate = new Date();
 	clock = new timer(() => {}, getConfig().EngineSongPollTimeout * 1000);
 	await sleep(getConfig().EngineSongPollTimeout * 1000);
-	if (internalUUID === pollUUID) endPoll();
+	if (internalDate === pollDate) endPoll();
 }
 
 export function endPoll() {
 	if (poll.length > 0) getPollResults().then(winner => {
 		pollEnding = true;
-		logger.debug('[Poll] Ending poll with '+JSON.stringify(winner));
+		logger.debug(`[Poll] Ending poll with ${JSON.stringify(winner)}`);
 		emitWS('songPollResult',winner);
 		stopPoll();
 	});
@@ -71,10 +69,10 @@ export async function getPollResults() {
 	};
 }
 
-export async function addPollVote(playlistcontent_id,token) { 
+export async function addPollVote(playlistcontent_id,token) {
 	if (poll.length === 0 || pollEnding) throw {
 		code: 'POLL_NOT_ACTIVE'
-	};		
+	};
 	if (hasUserVoted(token.username)) throw {
 		code: 'POLL_USER_ALREADY_VOTED'
 	};
@@ -89,7 +87,7 @@ export async function addPollVote(playlistcontent_id,token) {
 		code: 'POLL_VOTE_ERROR',
 		message: 'This song is not in the poll'
 	};
-	voters.push(token.username);	
+	voters.push(token.username);
 	return {
 		code: 'POLL_VOTED',
 		data: poll
@@ -97,16 +95,16 @@ export async function addPollVote(playlistcontent_id,token) {
 }
 
 export async function startPoll(publicPlaylist_id, currentPlaylist_id) {
-	const conf = getConfig();	
+	const conf = getConfig();
 	if (poll.length > 0) {
 		logger.info('[Poll] Unable to start poll, another one is already in progress');
 		return false;
 	}
 	logger.info('[Poll] Starting a new poll');
-	poll = [];	
+	poll = [];
 	voters = [];
 	pollEnding = false;
-	// Create new poll	
+	// Create new poll
 	// Get a list of karaokes to add to the poll
 	const [pubpl, curpl] = await Promise.all([
 		getPlaylistContentsMini(publicPlaylist_id),
@@ -130,16 +128,16 @@ export async function startPoll(publicPlaylist_id, currentPlaylist_id) {
 }
 
 function hasUserVoted(username) {
-	return voters.includes(username);	
+	return voters.includes(username);
 }
 
-export async function getPoll(token, lang, from, size) {	
+export async function getPoll(token, lang, from, size) {
 	if (poll.length === 0) throw {
 		code: 'POLL_NOT_ACTIVE'
-	};	
-	poll = translateKaraInfo(poll,lang);	
+	};
+	poll = translateKaraInfo(poll,lang);
 	return {
-		infos: { 
+		infos: {
 			count: poll.length,
 			from: parseInt(from,10),
 			to: parseInt(from,10)+parseInt(size,10)
@@ -147,5 +145,13 @@ export async function getPoll(token, lang, from, size) {
 		poll: poll,
 		timeLeft: clock.getTimeLeft(),
 		flag_uservoted: hasUserVoted(token.username)
-	};	
+	};
+}
+
+export function setSongPoll(enabled) {
+	const state = getState();
+	const oldState = state.songPoll;
+	setState({songPoll: enabled});
+	if (!oldState && enabled) startPoll(state.publicPlaylistID,state.currentPlaylistID);
+	if (oldState && !enabled) stopPoll();
 }

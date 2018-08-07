@@ -9,20 +9,30 @@ import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
 import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
-import {resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common/utils/config';
+import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common/utils/config';
 import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
-import {getKara} from '../_services/kara';
+import {formatKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
+import {specialLangMap} from '../_services/constants';
+import {getAllKaras} from './kara';
 
 let error = false;
 
 
+function getLangFromFile(fileLang) {
+	return Object.keys(specialLangMap).find(key => specialLangMap[key] === fileLang) || 'und';
+}
+
+export function getFileLangFromKara(karaLang) {
+	return specialLangMap[karaLang] || karaLang.toUpperCase();
+}
+
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
-	const infos = karaFileName.split(/\s+-\s+/); // LANGUAGE - SERIES - ORDER - TITLE
+	const infos = karaFileName.split(/\s+-\s+/); // LANGUAGE - SERIES - TYPE+ORDER - TITLE
 
 	if (infos.length < 3) {
-		throw 'Kara filename \'' + karaFileName + '\' does not respect naming convention';
+		throw `Kara filename "${karaFileName} does not respect naming convention`;
 	}
 	// Adding in 5th position the number extracted from the type field.
 	const orderInfos = infos[2].match(/^([a-zA-Z0-9 ]{2,30}?)(\d*)$/);
@@ -30,7 +40,7 @@ export function karaFilenameInfos(karaFile) {
 
 	// Let's return an object with our data correctly positionned.
 	return {
-		lang: infos[0],
+		lang: getLangFromFile(infos[0]),
 		serie: infos[1],
 		type: orderInfos[1],
 		order: orderInfos[2] ? +orderInfos[2] : 0,
@@ -38,16 +48,17 @@ export function karaFilenameInfos(karaFile) {
 	};
 }
 
-function strictModeError(karaData, data) {	
-	logger.error(`[Gen] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,2)}`);
+function strictModeError(karaData, data) {
+	delete karaData.ass;
+	logger.error(`[Kara] STRICT MODE ERROR : One kara's ${data} is going to be modified : ${JSON.stringify(karaData,null,2)}`);
 	error = true;
 }
 
 export async function getDataFromKaraFile(karafile) {
 	const conf = getConfig();
 	const karaData = await parseKara(karafile);
-	
-	// Code to keep compatibility with v2 kara files. Remove this in a few months or so.
+
+	// Code to keep compatibility with v2 kara files.
 	karaData.mediafile = karaData.mediafile || karaData.videofile;
 	karaData.mediasize = karaData.mediasize || karaData.videosize;
 	karaData.mediagain = karaData.mediagain || karaData.videogain;
@@ -73,7 +84,7 @@ export async function getDataFromKaraFile(karafile) {
 	}
 	karaData.karafile = karafile;
 
-	let mediaFile;	
+	let mediaFile;
 
 	try {
 		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
@@ -89,12 +100,10 @@ export async function getDataFromKaraFile(karafile) {
 	if (mediaFile || getConfig().optNoMedia) {
 		const subFile = await findSubFile(mediaFile, karaData);
 		await extractAssInfos(subFile, karaData);
-		await extractMediaTechInfos(mediaFile, karaData);		
+		await extractMediaTechInfos(mediaFile, karaData);
 		if (karaData.error) error = true;
 	}
 
-	karaData.viewcount = 0;
-	
 	if (error) karaData.error = true;
 
 	return karaData;
@@ -105,7 +114,7 @@ export async function extractAssInfos(subFile, karaData) {
 		karaData.ass = await asyncReadFile(subFile, {encoding: 'utf8'});
 		karaData.ass = karaData.ass.replace(/\r/g, '');
 		const subChecksum = checksum(karaData.ass);
-		if (subChecksum !== karaData.subchecksum) {			
+		if (subChecksum !== karaData.subchecksum) {
 			karaData.isKaraModified = true;
 			karaData.subchecksum = subChecksum;
 			if (getConfig().optStrict) strictModeError(karaData, 'subchecksum');
@@ -121,7 +130,7 @@ export async function extractMediaTechInfos(mediaFile, karaData) {
 	if (!conf.optNoMedia) {
 		const mediaStats = await asyncStat(mediaFile);
 		if (mediaStats.size !== +karaData.mediasize) {
-			karaData.isKaraModified = true;			
+			karaData.isKaraModified = true;
 			karaData.mediasize = mediaStats.size;
 
 			const mediaData = await getMediaInfo(mediaFile);
@@ -129,27 +138,18 @@ export async function extractMediaTechInfos(mediaFile, karaData) {
 
 			karaData.mediagain = mediaData.audiogain;
 			karaData.mediaduration = mediaData.duration;
-			if (conf.optStrict) strictModeError(karaData, 'mediasize/gain/duration');			
+			if (conf.optStrict) strictModeError(karaData, 'mediasize/gain/duration');
 		}
 	}
 }
 
 export async function writeKara(karafile, karaData) {
-	const infosToWrite = (getKara(karaData));	
-	if (karaData.isKaraModified === false) {		
+	const infosToWrite = (formatKara(karaData));
+	if (karaData.isKaraModified === false) {
 		return;
-	}	
+	}
 	infosToWrite.datemodif = timestamp.now();
-	// Transforming medias -> videos for now
-	// Delete this when the .kara format update goes live
-	infosToWrite.videofile = infosToWrite.mediafile;
-	infosToWrite.videogain = infosToWrite.mediagain;
-	infosToWrite.videosize = infosToWrite.mediasize;
-	infosToWrite.videoduration = infosToWrite.mediaduration;
-	delete infosToWrite.mediaduration;
-	delete infosToWrite.mediasize;
-	delete infosToWrite.mediagain;
-	delete infosToWrite.mediafile;
+	delete infosToWrite.karafile;
 	karaData.datemodif = infosToWrite.datemodif;
 	await asyncWriteFile(karafile, stringify(infosToWrite));
 }
@@ -157,11 +157,11 @@ export async function writeKara(karafile, karaData) {
 export async function parseKara(karaFile) {
 	let data = await asyncReadFile(karaFile, 'utf-8');
 	data = data.replace(/\r/g, '');
-	return parseini(data);	
+	return parseini(data);
 }
 
 export async function extractVideoSubtitles(videoFile, kid) {
-	const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kid}.ass`);	
+	const extractFile = resolve(resolvedPathTemp(), `kara_extract.${kid}.ass`);
 	try {
 		await extractSubtitles(videoFile, extractFile);
 		return extractFile;
@@ -178,8 +178,8 @@ async function findSubFile(videoFile, kara) {
 				return await extractVideoSubtitles(videoFile, kara.KID);
 			} catch (err) {
 				// Not blocking.
-				logger.warn('[Kara] Could not extract subtitles from video file ' + videoFile);
-				error = true;	
+				logger.warn(`[Kara] Could not extract subtitles from video file ${videoFile}`);
+				error = true;
 			}
 		}
 	} else {
@@ -192,4 +192,45 @@ async function findSubFile(videoFile, kara) {
 	}
 	// Non-blocking case if file isn't found
 	return '';
+}
+
+export async function replaceSerieInKaras(oldSerie, newSerie) {
+	logger.info(`[Kara] Replacing serie ${oldSerie} by ${newSerie} in .kara files`);
+	const karas = await getAllKaras('admin');
+	let karasWithSerie = [];
+	for (const kara of karas) {
+		if (kara.serie_orig && kara.serie_orig.includes(oldSerie)) karasWithSerie.push(kara.karafile);
+	}
+	if (karasWithSerie.length > 0) logger.info(`[Kara] Replacing in ${karasWithSerie.length} files`);
+	for (const karaFile of karasWithSerie) {
+		logger.info(`[Kara] Replacing in ${karaFile}...`);
+		const karaPath = await resolveFileInDirs(karaFile, resolvedPathKaras());
+		const kara = await parseKara(karaPath);
+		let series = kara.series.split(',');
+		const index = series.indexOf(oldSerie);
+		if (index > -1)	series[index] = newSerie;
+		kara.series = series.join(',');
+		kara.isKaraModified = true;
+		await writeKara(karaPath, kara);
+	}
+}
+
+export async function removeSerieInKaras(serie) {
+	logger.info(`[Kara] Removing serie ${serie} in .kara files`);
+	const karas = await getAllKaras('admin');
+	let karasWithSerie = [];
+	for (const kara of karas) {
+		if (kara.serie_orig && kara.serie_orig.includes(serie)) karasWithSerie.push(kara.karafile);
+	}
+	if (karasWithSerie.length > 0) logger.info(`[Kara] Removing in ${karasWithSerie.length} files`);
+	for (const karaFile of karasWithSerie) {
+		logger.info(`[Kara] Removing in ${karaFile}...`);
+		const karaPath = await resolveFileInDirs(karaFile, resolvedPathKaras());
+		const kara = await parseKara(karaPath);
+		const series = kara.series.split(',');
+		const newSeries = series.filter(s => s !== serie);
+		kara.series = newSeries.join(',');
+		kara.isKaraModified = true;
+		await writeKara(karaPath, kara);
+	}
 }

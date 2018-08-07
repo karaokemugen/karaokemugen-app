@@ -20,7 +20,7 @@ I18n.prototype = {
 	setLocale: function(locale){
 		if(!locale) {
 			// locale = $("html").attr("lang");
-			locale = navigator.languages[0];
+			locale = navigator.languages[0].substring(0, 2);
 		}
 
 		if(!locale)

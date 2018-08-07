@@ -3,7 +3,7 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {Button, Layout, Table} from 'antd';
 
-import {loading, errorMessage, warnMessage} from '../actions/navigation';
+import {loading, errorMessage, warnMessage} from '../../actions/navigation';
 
 class KaraList extends Component {
 

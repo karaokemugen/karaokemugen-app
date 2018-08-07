@@ -20,10 +20,8 @@
     line-height: 21px;
     width: 60px;
 }
+
 .header button.btn.favorites {
-    display: none;
-    height: calc(100% - 1px);
-    border: 0;
     order: 3;
 }
 .header button.btn.favorites.on {
@@ -388,7 +386,7 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
     .toastMessage {
         top: 3px;
     }
-    .fullLyrics, .showVideo, .makeFav {
+    .fullLyrics, .showVideo, .makeFav, .moreInfo {
         width: 46px;
         height: 46px;
         font-size: 18px;
@@ -433,6 +431,8 @@ body.touch:not(.mode1)  .list-group-item[valid="true"]:after {
         line-height:  3rem;
         height: 60px;
     }
+
+
 
     #progressBar {
         box-shadow: none;

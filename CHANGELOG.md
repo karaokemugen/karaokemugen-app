@@ -1,5 +1,36 @@
 # Versions
 
+## v2.3.0 "Ichika Idolâtrice" - 08/08/2018
+
+### New exciting features(tm)
+
+- #118 Karaoke Mugen can generate .kara files for you if you fill out a form in the control panel, making it much easier to create karaoke files for the Karaoke Mugen base.
+- #325 There is now a link to help users suggest a series they think should be in the Karaoke Mugen database
+- #340 In addition of the usual view and favorites view, users can get a new "Most recent songs" view with the last 200 songs added in the database (ordered by creation date)
+- #305 A smarter shuffle is available for those with big playlists.
+  - It should spread long and short songs to avoid too many long songs following each other
+  - Songs added by one user won't be following each other and will be spread through the playlist
+- #334 The series database can be managed from the control panel. This updates the `series.json` file
+- #324 Karaoke operators can now free songs manually
+- #153 A "more information" link has been added to songs' info panel. It allows you to get more information on a particular series or singer.
+- #152 You can add a song multiple times in the current playlist now (optional)
+
+### Enhancements
+
+- #336 The web interface will fade to black and display a message when Karaoke Mugen isn't running anymore
+- #330 Buttons have been normalized throughout the web interface
+- #322 Many optimizations have been made through the code, making it also simpler to read.
+- #321 The temp folder is cleaned at startup.
+- #320 Users' login time is not updated in real time anymore to avoid stressing out the database
+- The `userdata.sqlite3` file is backuped before a new generation is made.
+- #139 PIP Slider in web interface now has percentage values displayed
+
+### Fixes
+
+- #326 Songs cannot be added anymore if they are present in the blacklist
+- #317 Catching SQLITE_BUSY error messages from background jobs during database maintenance mode
+- Engine asks if player is ready before issuing any commands.
+
 ## v2.2.3 "Haruhi Hyperactive" - 16/07/2018
 
 ### Fixes

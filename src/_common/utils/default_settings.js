@@ -13,6 +13,7 @@ export const defaults = {
 	EngineAllowViewWhitelist: 1,
 	EngineAllowViewBlacklist: 1,
 	EngineAllowViewBlacklistCriterias: 1,
+	EngineAllowDuplicates: 0,
 	EngineSongsPerUser: 10000,
 	EngineTimePerUser: 240,
 	EngineQuotaType: 1,
@@ -76,6 +77,7 @@ export const defaults = {
 	appFrontendPort: 1337,
 	appAdminPort: 1338,
 	appFirstRun: 1,
+	karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org'
 };
 
 const horizontalPosArray = ['Left', 'Right', 'Center'];
@@ -89,6 +91,7 @@ export const configConstraints = {
 	EngineAllowViewWhitelist: {boolIntValidator: true},
 	EngineAllowViewBlacklist: {boolIntValidator: true},
 	EngineAllowViewBlacklistCriterias: {boolIntValidator: true},
+	EngineAllowDuplicates: {boolIntValidator: true},
 	EngineSongsPerUser: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	EngineTimePerUser: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	EngineQuotaType: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
@@ -122,5 +125,6 @@ export const configConstraints = {
 	WebappSongLanguageMode: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	appFrontendPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	appAdminPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	appFirstRun: {boolIntValidator: true}
+	appFirstRun: {boolIntValidator: true},
+	karaSuggestionMail: {email: true}
 };
