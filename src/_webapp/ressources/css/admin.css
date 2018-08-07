@@ -102,12 +102,12 @@ span[name="checkboxKara"][checked]:before, [name="selectAllKaras"][checked]:befo
 	content:"\e067";
 }
 
-.plDashboard:not(.advanced) + .playlistContainer span[name="checkboxKara"] { 
+.plDashboard:not(.advanced) + nav + .playlistContainer span[name="checkboxKara"] { 
 	display: none;
 }
 
-.plDashboard[data-playlist_id="-2"] + .playlistContainer span[name="checkboxKara"],
-.plDashboard[data-playlist_id="-4"] + .playlistContainer span[name="checkboxKara"] { 
+.plDashboard[data-playlist_id="-2"] + nav + .playlistContainer span[name="checkboxKara"],
+.plDashboard[data-playlist_id="-4"] + nav + .playlistContainer span[name="checkboxKara"] { 
 	display: none;
 }
 
