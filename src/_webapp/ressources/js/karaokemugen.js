@@ -628,7 +628,7 @@ var settingsNotUpdated;
 			} else {
 				var playlist = container.find('ul').first();
 				var side = playlist.attr('side');
-				var dashboard = container.prev('.plDashboard');
+				var dashboard = $('#panel' + side + ' > .plDashboard');
 				var idPlaylist = dashboard.find('select').val();
 				var from =  getPlaylistRange(idPlaylist).from;
 				var to = getPlaylistRange(idPlaylist).to;
@@ -637,7 +637,7 @@ var settingsNotUpdated;
 				var shift = 2 * parseInt((12*pageSize/20)/2);
 				var fillerBottom = playlist.find('.filler').last();
 				var fillerTop = playlist.find('.filler').first();
-
+				// console.log(container, playlist, dashboard, karaCount, nbKaraInPlaylist, shift, fillerBottom.length , fillerTop.length)
 				if (fillerTop.length > 0 && fillerBottom.length > 0) {
 					var scrollDown = container.offset().top + container.innerHeight() >= fillerBottom.offset().top && to < karaCount && nbKaraInPlaylist >= pageSize;
 					var scrollUp = fillerTop.offset().top + fillerTop.innerHeight() > container.offset().top + 10 && from > 0;
