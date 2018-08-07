@@ -88,7 +88,8 @@ export const defaultGuestNames = [
 	'Hideaki Anno\'s depression',
 	'Mon Voisin Rototo',
 	'Kaaaaaneeeeedaaaaaaa',
-	'Teeeeetsuuuuoooooooooo'
+	'Teeeeetsuuuuoooooooooo',
+	'ANO NE ANO NE!'
 ];
 
 export const initializationCatchphrases = [
@@ -136,7 +137,8 @@ export const tagTypes = Object.freeze({
 	lang: 5,
 	author: 6,
 	misc: 7,
-	songwriter: 8
+	songwriter: 8,
+	group: 9
 });
 
 /** Map used for database generation */
@@ -200,7 +202,6 @@ export const tags = [
 	'SPECIAL',
 	'REMIX',
 	'VOICELESS',
-	'CONCERT',
 	'PARODY',
 	'HUMOR',
 	'R18',
