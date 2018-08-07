@@ -1493,7 +1493,9 @@ input[type="text"]:focus, input[type="password"]:focus {
     margin-bottom:0;
     border:0;
     background-color: #1E2124;
-    z-index: 1444;
+	z-index: 1444;
+	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.24), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+	
 }
 .searchMenu {
     border: solid 0px hsla(0, 0%, 70%, 1);
