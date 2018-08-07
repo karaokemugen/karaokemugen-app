@@ -1,12 +1,13 @@
 # Versions
 
-## v2.3.0 "Ichika Idolâtrice" - 08/08/2018
+## v2.3.0-rc1 "Ichika Immergée" - 08/08/2018
 
 ### New exciting features(tm)
 
 - #118 Karaoke Mugen can generate .kara files for you if you fill out a form in the control panel, making it much easier to create karaoke files for the Karaoke Mugen base.
 - #325 There is now a link to help users suggest a series they think should be in the Karaoke Mugen database
 - #340 In addition of the usual view and favorites view, users can get a new "Most recent songs" view with the last 200 songs added in the database (ordered by creation date)
+- #120 Users can now navigate through the song list by tags (language, singer, etc.) year, and series.
 - #305 A smarter shuffle is available for those with big playlists.
   - It should spread long and short songs to avoid too many long songs following each other
   - Songs added by one user won't be following each other and will be spread through the playlist
