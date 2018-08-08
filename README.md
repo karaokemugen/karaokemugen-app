@@ -23,7 +23,7 @@ Karaoke Mugen works offline and does not require an Internet connection.
   * In private mode (default) songs added by users are directly played one after the other in the current playlist
   * In public mode, songs are added to a suggestion list. It's up to the admin to add songs from this list.
 * Export/import playlists
-* REST API so you can develop custom clients or web interfaces.
+* REST API so you can create custom clients or web interfaces.
 * And many other things! Check out the [feature list](http://mugen.karaokes.moe/en/features.html)
 
 ## How it works
@@ -33,13 +33,13 @@ Karaoke Mugen works offline and does not require an Internet connection.
 * Launch the app (see the launch section below). It will open a browser on the welcome screen. Follow the guided tour for admins.
 * Once your playlist is ready, invite some friends and direct them to the public interface with their device. Let them add songs. Once enough songs are added, hit play and have fun!
 
-In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's about 180Gb big once the videos have been downloaded.
+In the repository mentioned above, you'll find a karaoke songs database ready for use. Beware, it's about 190Gb big once the videos have been downloaded.
 
 For more information, check out the [documentation site!](http://mugen.karaokes.moe/docs/en/)
 
 ## Install
 
-If you don't want to install manually, prepared binaries are available [on the website](http://mugen.karaokes.moe/en/download.html) for Windows and macOS. For Linux, follow the following steps.
+If you don't want to install manually, binaries are available [on the website](http://mugen.karaokes.moe/en/download.html) for Windows and macOS. For Linux, follow the following steps.
 
 ### Download
 
@@ -52,6 +52,8 @@ If you don't have `yarn`, install it first :
 ```sh
 npm install -g yarn
 ```
+
+or via your Linux distribution's package manager.
 
 ### Dependencies
 
@@ -71,20 +73,23 @@ yarn start
 
 Generating a database ie required on first launch and is done automatically if the file `app/db/karas.sqlite3` is missing. You can trigger it manually later by connectiong to the admin panel from the welcome screen. Another way is to delete the `app/db/karas.sqlite3` and let the app regenerate it on startup or launch with the `--generate` command-line option.
 
-On first run, the app will make you create an admin user and follow a guided tour of the admin panel. You can trigger this tour/admin creation process again by adding `appFirstRun=1` to your config file.
+On first run, the app will make you create an admin user and follow a guided tour of the control panel. You can trigger this tour/admin creation process again by adding `appFirstRun=1` to your config file.
 
 ## System requirements
 
 The app is multi-platform and works on Linux/Windows/OSX.
 
-It requires nodeJS 8.4 or above and mpv/ffmpeg binaries (see below).
+It requires nodeJS 8.10 or above. It is not yet compatible with Node 10.
+
+It also requires mpv/ffmpeg/curl binaries (see below).
 
 ### Binaries
 
-mpv (video player) and ffmpeg (video processing) are required by Karaoke Mugen
+mpv (video player), ffmpeg (video processing) and curl (downloading karaoke updates) are required by Karaoke Mugen
 
 * mpv 0.25 or up for Windows/Linux, 0.27 or up required for macOS ([mpv's website](http://mpv.io))
 * ffmpeg 3 or later ([ffmpeg's website](http://www.ffmpeg.org))
+* curl ([curl's website](http://curl.haxx.se)) (curl is generally already in your linux distribution, or on macOS, you only need to download it if you're on Windows)
 
 #### Windows/macOS
 
