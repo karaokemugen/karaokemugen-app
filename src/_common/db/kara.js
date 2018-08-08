@@ -115,7 +115,7 @@ export const getAllKaras = (filterClauses, lang, orderClauses, typeClauses) => `
  							WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
 							 ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
 							 ${typeClauses}
-							 ${orderClauses}
+							 ORDER BY ${orderClauses} language, serie IS NULL, serie COLLATE NOCASE, songtype DESC, songorder, singer COLLATE NOCASE, title COLLATE NOCASE
 							`;
 
 export const getKaraByKID = `SELECT ak.kara_id AS kara_id,

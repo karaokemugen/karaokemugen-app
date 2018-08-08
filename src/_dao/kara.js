@@ -67,8 +67,8 @@ export async function getAllKaras(username, filter, lang, mode, modeValue) {
 	const filterClauses = filter ? buildClauses(filter) : [];
 	const typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
 	let orderClauses = '';
-	if (mode === 'recent') orderClauses = 'ORDER BY created_at DESC ';
-	if (mode === 'popular') orderClauses = 'ORDER BY requested DESC ';
+	if (mode === 'recent') orderClauses = 'created_at DESC, ';
+	if (mode === 'popular') orderClauses = 'requested DESC, ';
 	const query = sql.getAllKaras(filterClauses, langSelector(lang), orderClauses, typeClauses);
 
 	return await getUserDb().all(query, {
