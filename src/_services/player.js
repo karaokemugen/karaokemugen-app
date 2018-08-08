@@ -229,7 +229,7 @@ async function restartPlayer() {
 export async function sendCommand(command, options) {
 	const state = getState();
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
-	if (commandInProgress || getConfig().isDemo || getConfig().isTest) throw ' [Player] A command is already in progress';
+	if (commandInProgress || getConfig().isDemo || getConfig().isTest) throw '[Player] A command is already in progress';
 	commandInProgress = true;
 	if (command === 'play') {
 		await playPlayer();
@@ -239,7 +239,7 @@ export async function sendCommand(command, options) {
 		await pausePlayer();
 	} else if (command === 'stopAfter') {
 		stopPlayer();
-		await next();
+		await nextSong();
 	} else if (command === 'skip') {
 		await next();
 	} else if (command === 'prev') {
