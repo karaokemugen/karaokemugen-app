@@ -511,5 +511,6 @@
 	"KARA_SUGGESTION_MAIL": "Vous ne trouvez pas votre bonheur ? Cliquez ici",
 	"KARA_SUGGESTION_SUBJECT": "Suggestion de kara : ",
 	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais.%0D%0A Cordialement, bisous.",
-	"KARA_SUGGESTION_NAME": "Titre de la chanson"
+	"KARA_SUGGESTION_NAME": "Titre de la chanson",
+	"TAG_CONCERT": "TAG_CONCERT"
 }

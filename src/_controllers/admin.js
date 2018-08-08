@@ -69,13 +69,13 @@ export default function adminController(router) {
 	});
 
 	router.get('/tags', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getTags(req.lang, req.query.filter, req.query.type)
+		getTags(req.lang, req.query.filter, req.query.type, 0, 999999999)
 			.then(tags => res.json(tags))
 			.catch(err => res.status(500).send(`Error while fetching tags: ${err}`));
 	});
 
 	router.get('/series', getLang, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		getSeries(req.query.filter, req.lang)
+		getSeries(req.query.filter, req.lang, 0, 999999999999)
 			.then(series => res.json(series))
 			.catch(err => res.status(500).send(`Error while fetching series: ${err}`));
 	});
