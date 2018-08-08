@@ -8,10 +8,19 @@ import {addViewcountKara} from './kara';
 import {updateUserQuotas} from './user';
 import {startPoll} from './poll';
 import {previousSong, nextSong, getCurrentSong} from './playlist';
+import {now} from 'unix-timestamp';
 
 const sleep = promisify(setTimeout);
 
-let commandInProgress = false;
+let lastCommandTime = 0;
+
+setInterval(() => {
+	//Timeout for commandInProgress.
+	//Checking every second if it's been 10 seconds since since a command has been sent
+	if (lastCommandTime > 0) {
+		if ((now() - lastCommandTime) > 10 ) lastCommandTime = 0;
+	}
+}, 1000);
 
 async function getPlayingSong() {
 	let state = getState();
@@ -229,8 +238,9 @@ async function restartPlayer() {
 export async function sendCommand(command, options) {
 	const state = getState();
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
-	if (commandInProgress || getConfig().isDemo || getConfig().isTest) throw '[Player] A command is already in progress';
-	commandInProgress = true;
+	if (lastCommandTime > 0) throw '[Player] A command is already in progress';
+	if (getConfig().isDemo || getConfig().isTest) throw '[Player] Player is not useable in test or demo mode';
+	lastCommandTime = now();
 	if (command === 'play') {
 		await playPlayer();
 	} else if (command === 'stopNow') {
@@ -276,7 +286,7 @@ export async function sendCommand(command, options) {
 		await setVolumePlayer(options);
 	} else {// Unknown commands are not possible, they're filtered by API's validation.
 	}
-	commandInProgress = false;
+	lastCommandTime = 0;
 }
 
 export async function initPlayer() {

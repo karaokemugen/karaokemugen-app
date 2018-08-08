@@ -294,18 +294,6 @@ async function createDefaultGuests() {
 export async function initUserSystem() {
 	// Initializing user auth module
 	// Expired guest accounts will be cleared on launch and every minute via repeating action
-	/*
-	Promise.resolve().then(function resolver() {
-		return updateExpiredUsers()
-			.then(resolver)
-			.catch((err) => {
-				logger.error(`[User] Expiring user accounts failed : ${err}`);
-				resolver();
-			});
-	}).catch((err) => {
-		logger.error(`[User] Cleanup expiring user accounts system failed entirely. You need to restart Karaoke Mugen : ${err}`);
-	});
-	*/
 	setInterval(updateExpiredUsers, 60000);
 	// Check if a admin user exists just in case. If not create it with a random password.
 
