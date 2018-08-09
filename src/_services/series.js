@@ -4,7 +4,8 @@ import {profile} from '../_common/utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 
 async function updateSeriesFile() {
-	const series = await getSeries();
+	const data = await getSeries();
+	const series = data.content;
 	for (const i in series) {
 		delete series[i].i18n_name;
 		delete series[i].serie_id;
@@ -12,7 +13,7 @@ async function updateSeriesFile() {
 	await writeSeriesFile(series);
 }
 
-export async function getSeries(filter, lang, from, size) {
+export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
 	const series = await selectAllSeries(filter, lang);
 	const ret = formatSeriesList(series.slice(from, from + size), from, series.length);
