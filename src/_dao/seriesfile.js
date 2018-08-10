@@ -40,5 +40,9 @@ export async function writeSeriesFile(series) {
 	seriesData.series.forEach((s, i) => {
 		if (s.aliases.length === 0) delete seriesData.series[i].aliases;
 	});
+	// Sort data by series.name before writing it
+	seriesData.series.sort((a,b) => {
+		return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
+	});
 	return await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
 }
