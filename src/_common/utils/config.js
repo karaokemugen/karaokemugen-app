@@ -16,7 +16,7 @@ import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
 import {publishURL} from '../../_webapp/online';
 import {playerNeedsRestart} from '../../_services/player';
-import {setState} from './state';
+import {getState, setState} from './state';
 
 /** Object containing all config */
 let config = {};
@@ -65,7 +65,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 		}
 	}
 
-	if (newConfig.OnlineMode) publishURL();
+	if (newConfig.OnlineMode && getState().ready) publishURL();
 	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings

@@ -112,6 +112,7 @@ export async function initEngine() {
 		logger.info(`[Engine] Karaoke Mugen is ${ready}`);
 		console.log(`\n${sample(initializationCatchphrases)}\n`);
 		if (!conf.isTest) welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
+		setState({ ready: true });
 	} catch(err) {
 		logger.error(`[Engine] Karaoke Mugen IS NOT READY : ${JSON.stringify(err)}`);
 	} finally {

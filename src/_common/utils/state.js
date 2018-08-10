@@ -18,7 +18,8 @@ let state = {
 	timeposition: 0,
 	songPoll: false,
 	frontendPort: null,
-	player: {}
+	player: {},
+	ready: false
 };
 let previousState = {...state};
 
