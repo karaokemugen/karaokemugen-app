@@ -1203,9 +1203,6 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     text-decoration: none;
     background-color: rgb(75, 75, 75);
 }
-.nav>li:not(.tagFilter) {
-	width: 50%;
-}
 .tagFilter {
 	width: 100%;
 }
@@ -1517,32 +1514,36 @@ input[type="text"]:focus, input[type="password"]:focus {
     width: 100%;
     height: 100%;
 }
-.navbar-nav {
+
+.searchMenu .nav>li:not(.tagFilter) {
+	width: 50%;
+}
+.searchMenu .navbar-nav {
     margin: 0px -15px;
 }
-.navbar-default .navbar-nav>.active>a.choice {
+.searchMenuContainer.navbar-default .navbar-nav>.active>a.choice {
     background-color: hsla(211, 33%, 38%, 1);
     font-weight: bold;
     color: #eee;
 }
-.navbar-nav>li>a {
+.searchMenu .navbar-nav>li>a {
     padding-top: 9px;
     padding-bottom: 9px;
 }
-.navbar-default .navbar-nav>li>a.choice {
+.searchMenuContainer.navbar-default .navbar-nav>li>a.choice {
     color: #eee;
     font-size: 14px;
 }
 
-.navbar-default .navbar-nav>li > * {
+.searchMenuContainer.navbar-default .navbar-nav>li > * {
     display: flex;
     line-height: 17px;
     height: 34px;
 }
-.navbar-default .navbar-nav>li a>i {
+.searchMenuContainer.navbar-default .navbar-nav>li a>i {
     margin-right: 10px;
 }
-.navbar-default .navbar-nav>li > .value {
+.searchMenuContainer.navbar-default .navbar-nav>li > .value {
    width: calc(100% - 100px);
    float: right;
    border: 0;
