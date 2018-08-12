@@ -1533,8 +1533,8 @@ input[type="text"]:focus, input[type="password"]:focus {
   bottom: -500px;
   left: -500px;
   background-size: 250px 250px;
-opacity: .15;
-animation: noise .8s steps(5,end) infinite both;
+opacity: .17;
+animation: noise .45s steps(5,end) infinite both;
 }
 
 @keyframes noise {
@@ -1581,7 +1581,7 @@ animation: noise .8s steps(5,end) infinite both;
     position: fixed;
     width: 100%;
     height: 100%;
-    color: hsla(0, 0%, 87%, .8);
+    color: hsla(0, 0%, 87%, .93);
     background-color: hsla(0, 0%, 0%, 0.76);
     z-index: 999999;
     text-align: center;
