@@ -1,5 +1,25 @@
 # Versions
 
+## v2.3.0 "Ichika Idolâtrice" - 14/08/2018
+
+For a complete run-down on the new features, check out v2.3.0-rc1's changelog below.
+
+We will only cover changes from rc1 to finale here :
+
+### Enhancements
+
+- "Update from Shelter" button now returns a message immediately inviting you to check the console for progress
+- "Connection lost" message now displays a cool noise effect
+- Database is now more optimized and should make actions involving playlists faster
+
+### Fixes
+
+- #328 Progress bar during updates should scale properly to the window and not display "Infinity" anymore
+- Filter panel on karaoke list now displays properly on Safari iOS
+- Config file should not be overwritten anymore (hopefully)
+- Fixed updating series and displaying karaoke lists and tags in control panel
+- Fixed the "Stop after current song" button
+
 ## v2.3.0-rc1 "Ichika Immergée" - 08/08/2018
 
 ### New exciting features(tm)
