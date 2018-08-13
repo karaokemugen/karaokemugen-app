@@ -241,7 +241,7 @@ async function findSubFile(mediaPath, karaData, subFile) {
 		// If a subfile is found, adding it to karaData
 		karaData.subfile = replaceExt(karaData.mediafile, '.ass');
 		return assFile;
-	} else if (mediaPath.endsWith('.mkv') || mediaPath.endsWith('.mp4')) {
+	} else if (mediaPath.endsWith('.mkv')) {
 		try {
 			const extractFile = await extractVideoSubtitles(mediaPath, karaData.KID);
 			karaData.subfile = replaceExt(karaData.mediafile, '.ass');
@@ -251,7 +251,7 @@ async function findSubFile(mediaPath, karaData, subFile) {
 			logger.info('[KaraGen] Could not extract subtitles from video file ' + mediaPath + ' : ' + err);
 		}
 	} else {
-		return '';
+		return 'dummy.ass';
 	}
 }
 
