@@ -163,10 +163,15 @@ export default function adminController(router) {
 	router.post('/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		runBaseUpdate()
 			.then(() => {
+				logger.info('[Updater] User-triggered update successful');
 				generateDatabase().then(() => {
-					res.status(200).send('Karas successfully updated');
-				}).catch(err => res.status(500).send(`Karas updated but generation failed horribly: ${err}`));
+					logger.info('[Gen] User-triggered generation successful');
+				}).catch(err => {
+					logger.error(`[Gen] Generation failed : ${err}`);
+				});
+			}).catch(err => {
+				logger.error(`[Updater] Update failed : ${err}`);
 			})
-			.catch(err => res.status(500).send(`Error while updating karas: ${err}`));
+		res.status(200).send('Karas are being updated, check Karaoke Mugen\'s console to follow its progression');
 	});
 }
