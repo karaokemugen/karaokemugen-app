@@ -5,7 +5,6 @@ import injectionTest from 'is-sql-injection';
 const sql = require('../_common/db/series');
 
 export async function selectAllSeries(filter, lang) {
-	filter = sanitize(filter);
 	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClausesSeries(filter) : [];
 	const query = sql.getSeries(filterClauses, langSelector(lang));
