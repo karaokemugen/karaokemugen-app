@@ -114,7 +114,7 @@ export async function getPlaylistContentsMini(id, lang) {
 }
 
 export async function getPlaylistContents(id, username, filter, lang) {
-	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
+	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClauses(filter, 'playlist') : [];
 	const query = sql.getPlaylistContents(filterClauses, langSelector(lang));
 	return await getUserDb().all(query, {

@@ -62,8 +62,8 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 }
 
 export async function getAllKaras(username, filter, lang, mode, modeValue) {
-	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
-	if (injectionTest(modeValue)) throw `Possible SQL injection : ${modeValue}`;
+	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
+	//if (injectionTest(modeValue)) throw `Possible SQL injection : ${modeValue}`;
 	const filterClauses = filter ? buildClauses(filter) : [];
 	const typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
 	let orderClauses = '';

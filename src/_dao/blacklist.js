@@ -20,7 +20,7 @@ export async function deleteBlacklistCriteria(blc_id) {
 }
 
 export async function getBlacklistContents(filter, lang) {
-	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
+	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClauses(filter) : [];
 	const query = sql.getBlacklistContents(filterClauses, langSelector(lang));
 
