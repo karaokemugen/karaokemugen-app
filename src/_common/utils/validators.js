@@ -8,14 +8,14 @@ function integerValidator(value) {
 		if (!isNaN(value)) return null;
 		return ` '${value}' is invalid`;
 	}
-	return null;			
+	return null;
 }
 
-function langValidator(value) {	
-	if (!Array.isArray(value)) value = value.replace('"', '').split(',');	
+function langValidator(value) {
+	if (!Array.isArray(value)) value = value.replace('"', '').split(',');
 	value.forEach((e,i) => value[i] = e.trim());
 	let result = null;
-	for (const lang of value) {		
+	for (const lang of value) {
 		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
 			result = `'${lang}' is invalid`;
 			break;
@@ -25,10 +25,10 @@ function langValidator(value) {
 }
 
 function tagsValidator(value) {
-	if (!Array.isArray(value)) value = value.replace('"', '').split(',');	
+	if (!Array.isArray(value)) value = value.replace('"', '').split(',');
 	value.forEach((e,i) => value[i] = e.trim());
 	let result = null;
-	for (const tag of value) {	
+	for (const tag of value) {
 		if (!tag.startsWith('TAG_')) {
 			result = `list '${value}' is invalid`;
 			break;
@@ -37,19 +37,19 @@ function tagsValidator(value) {
 	return result;
 }
 
-function typeValidator(value) {	
-	if (!karaTypes[value]) return `${value} is invalid`;	
+function typeValidator(value) {
+	if (!karaTypes[value]) return `${value} is invalid`;
 	return null;
 }
 
 function boolIntValidator(value) {
-	if (value && +value !== 0 && +value !== 1) return ` '${value}' is invalid`;	
+	if (value && +value !== 0 && +value !== 1) return ` '${value}' is invalid`;
 	return null;
 }
 
 function isJSON(value) {
 	if (testJSON(value)) return null;
-	return ` '${value}' is invalid JSON`;	
+	return ` '${value}' is invalid JSON`;
 }
 
 function isNumber(value) {
@@ -57,15 +57,15 @@ function isNumber(value) {
 }
 
 function numbersArrayValidator(value) {
-	if (value) {		
+	if (value) {
 		value = '' + value;
 		if (value.includes(',')) {
 			const array = value.split(',');
 			if (array.every(isNumber)) return null;
-			return ` '${value}' is invalid`;	
+			return ` '${value}' is invalid`;
 		}
 		if (!isNaN(value)) return null;
-		return ` '${value}' is invalid`;	
+		return ` '${value}' is invalid`;
 	}
 	return ` '${value}' is invalid`;
 }
@@ -79,7 +79,13 @@ export function unescape(str) {
 		.replace(/&#x3A;/g, ':')
 		.replace(/&lt;/g, '<')
 		.replace(/&gt;/g, '>')
-		.replace(/&amp;/g, '&');
+		.replace(/&amp;/g, '&')
+		;
+}
+
+export function sanitize(str) {
+	return str
+		.replace(/'/g, '\\\'');
 }
 
 // Init

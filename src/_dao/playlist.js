@@ -2,6 +2,7 @@ import {langSelector, buildClauses, getUserDb, transaction} from './database';
 import {getConfig} from '../_common/utils/config';
 import {now} from 'unix-timestamp';
 import injectionTest from 'is-sql-injection';
+import {sanitize} from '../_common/utils/validators';
 
 const sql = require('../_common/db/playlist');
 
@@ -114,6 +115,7 @@ export async function getPlaylistContentsMini(id, lang) {
 }
 
 export async function getPlaylistContents(id, username, filter, lang) {
+	filter = sanitize(filter);
 	if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClauses(filter, 'playlist') : [];
 	const query = sql.getPlaylistContents(filterClauses, langSelector(lang));
