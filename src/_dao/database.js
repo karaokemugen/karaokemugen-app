@@ -204,12 +204,13 @@ export async function initDBSystem() {
 	await compareDatabasesUUIDs();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
-	logger.info(`Karaokes  : ${stats.totalcount}`);
-	logger.info(`Duration  : ${duration(stats.totalduration)}`);
-	logger.info(`Series    : ${stats.totalseries}`);
-	logger.info(`Languages : ${stats.totallanguages}`);
-	logger.info(`Artists   : ${stats.totalartists}`);
-	logger.info(`Playlists : ${stats.totalplaylists}`);
+	logger.info(`Songs        : ${stats.karas} (${duration(stats.duration)})`);
+	logger.info(`Series       : ${stats.series}`);
+	logger.info(`Languages    : ${stats.languages}`);
+	logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);
+	logger.info(`Kara Authors : ${stats.authors}`);
+	logger.info(`Playlists    : ${stats.playlists}`);
+	logger.info(`Songs played : ${stats.played}`);
 	return true;
 }
 
@@ -222,46 +223,8 @@ async function compareDatabasesUUIDs() {
 	return true;
 }
 
-async function getSeriesCount() {
-	const res = await getUserDb().get(sql.calculateSeriesCount);
-	return res.seriescount;
-}
-
-async function getPlaylistCount() {
-	const res = await getUserDb().get(sql.calculatePlaylistCount);
-	return res.plcount;
-}
-
-async function getArtistCount() {
-	const res = await getUserDb().get(sql.calculateArtistCount);
-	return res.artistcount;
-}
-
-async function getLanguageCount() {
-	const res = await getUserDb().get(sql.calculateLangCount);
-	return res.langcount;
-}
-
-async function getTotalDuration() {
-	const res = await getUserDb().get(sql.calculateDuration);
-	return res.totalduration;
-}
-
-async function getKaraCount() {
-	const res = await getUserDb().get(sql.calculateKaraCount);
-	return res.karacount;
-}
-
 export async function getStats() {
-
-	const [totalseries, totalcount, totalplaylists, totalartists, totallanguages, totalduration] =
-		await Promise.all([
-			getSeriesCount(), getKaraCount(), getPlaylistCount(), getArtistCount(), getLanguageCount(), getTotalDuration()
-		]);
-
-	return {
-		totalseries, totalcount, totalplaylists, totalartists, totallanguages, totalduration
-	};
+	return await getUserDb().get(sql.getStats);
 }
 
 async function generateDatabase() {
