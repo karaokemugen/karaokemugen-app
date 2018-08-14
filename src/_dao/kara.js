@@ -4,7 +4,6 @@ import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_common/utils/files';
 import deburr from 'lodash.deburr';
-import injectionTest from 'is-sql-injection';
 
 const sql = require('../_common/db/kara');
 
@@ -64,18 +63,20 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 export async function getAllKaras(username, filter, lang, mode, modeValue) {
 	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	//if (injectionTest(modeValue)) throw `Possible SQL injection : ${modeValue}`;
-	const filterClauses = filter ? buildClauses(filter) : [];
+	const filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
 	const typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
 	let orderClauses = '';
 	if (mode === 'recent') orderClauses = 'created_at DESC, ';
 	if (mode === 'popular') orderClauses = 'requested DESC, ';
-	const query = sql.getAllKaras(filterClauses, langSelector(lang), orderClauses, typeClauses);
-
-	return await getUserDb().all(query, {
+	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), orderClauses, typeClauses);
+	const params = {
 		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
-		$username: username
-	});
+		$username: username,
+		...filterClauses.params
+	};
+	return await getUserDb().all(query, params);
 }
+
 
 export async function updateFreeOrphanedSongs(expireTime) {
 	return await getUserDb().run(sql.updateFreeOrphanedSongs, { $expire_time: expireTime });

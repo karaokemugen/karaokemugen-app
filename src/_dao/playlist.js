@@ -1,7 +1,6 @@
 import {langSelector, buildClauses, getUserDb, transaction} from './database';
 import {getConfig} from '../_common/utils/config';
 import {now} from 'unix-timestamp';
-import injectionTest from 'is-sql-injection';
 
 const sql = require('../_common/db/playlist');
 
@@ -115,12 +114,13 @@ export async function getPlaylistContentsMini(id, lang) {
 
 export async function getPlaylistContents(id, username, filter, lang) {
 	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
-	const filterClauses = filter ? buildClauses(filter, 'playlist') : [];
-	const query = sql.getPlaylistContents(filterClauses, langSelector(lang));
+	const filterClauses = filter ? buildClauses(filter, 'playlist') : {sql: [], params: {}};
+	const query = sql.getPlaylistContents(filterClauses.sql, langSelector(lang));
 	return await getUserDb().all(query, {
 		$playlist_id: id,
 		$username: username,
-		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60)
+		$dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
+		...filterClauses.params
 	});
 }
 

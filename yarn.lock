@@ -3064,10 +3064,6 @@ is-resolvable@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/is-resolvable/-/is-resolvable-1.1.0.tgz#fb18f87ce1feb925169c9a407c19318a3206ed88"
 
-is-sql-injection@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/is-sql-injection/-/is-sql-injection-1.0.0.tgz#fddb085e0ece3d1caff5cbf2783d2400ddffbc66"
-
 is-stream@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/is-stream/-/is-stream-1.1.0.tgz#12d4a3dd4e68e0b79ceb8dbc84173ae80d91ca44"

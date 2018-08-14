@@ -15,43 +15,57 @@ const sql = require('../_common/db/database');
 let karaDb;
 let userDb;
 
-export function buildClausesSeries(filter, type) {
-	return deburr(filter)
-		.toLowerCase()
-		.replace('\'', '')
-		.replace(',', '')
-		.split(' ')
-		.filter(s => !('' === s))
-		.map(word => {
-			return `s.NORM_name LIKE '%${word}%' OR
-			s.NORM_altname LIKE '%${word}%'
-			`;
-		}
-		);
+export function buildClausesSeries(words) {
+	const params = paramWords(words);
+	let sql = [];
+	for (const i in words.split(' ').filter(s => !('' === s))) {
+		sql.push(`s.NORM_name LIKE $word${i} OR
+		s.NORM_altname LIKE $word${i}`);
+	}
+	return {
+		sql: sql,
+		params: params
+	};
 }
 
-export function buildClauses(filter,source) {
-	return deburr(filter)
+function paramWords(filter) {
+	let params = {};
+	const words = deburr(filter)
 		.toLowerCase()
 		.replace('\'', '')
 		.replace(',', '')
 		.split(' ')
 		.filter(s => !('' === s))
 		.map(word => {
-			let extraClauses = '';
-			if (source === 'playlist') extraClauses = `OR pc.NORM_pseudo_add LIKE '%${word}%'`;
-			return `ak.NORM_misc LIKE '%${word}%' OR
-			ak.NORM_title LIKE '%${word}%' OR
-			ak.NORM_author LIKE '%${word}%' OR
-			ak.NORM_serie LIKE '%${word}%' OR
-			ak.NORM_serie_altname LIKE '%${word}%' OR
-			ak.NORM_singer LIKE '%${word}%' OR
-			ak.NORM_songwriter LIKE '%${word}%' OR
-			ak.NORM_creator LIKE '%${word}%' OR
-			ak.language LIKE '%${word}%'
-			${extraClauses}`;
-		}
-		);
+			return `%${word}%`;
+		});
+	for (const i in words) {
+		params[`$word${i}`] = `%${words[i]}%`;
+	}
+	return params;
+}
+
+export function buildClauses(words,source) {
+	const params = paramWords(words);
+	let sql = [];
+	let extraClauses = '';
+	if (source === 'playlist') extraClauses = `OR pc.NORM_pseudo_add LIKE $word${i}`;
+	for (const i in words.split(' ').filter(s => !('' === s))) {
+		sql.push(`ak.NORM_misc LIKE $word${i} OR
+		ak.NORM_title LIKE $word${i} OR
+		ak.NORM_author LIKE $word${i} OR
+		ak.NORM_serie LIKE $word${i} OR
+		ak.NORM_serie_altname LIKE $word${i} OR
+		ak.NORM_singer LIKE $word${i} OR
+		ak.NORM_songwriter LIKE $word${i} OR
+		ak.NORM_creator LIKE $word${i} OR
+		ak.language LIKE $word${i}
+		${extraClauses}`);
+	}
+	return {
+		sql: sql,
+		params: params
+	};
 }
 
 export function langSelector(lang) {
