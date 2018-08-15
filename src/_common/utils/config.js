@@ -103,7 +103,7 @@ export async function initConfig(appPath, argv) {
 	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
 	if (config.appInstanceID === 'Change me') setConfig( {appInstanceID: uuidV4() });
 	//Configure watcher
-	const configWatcher = watch(resolve(appPath, configFile));
+	const configWatcher = watch(resolve(appPath, configFile), {useFsEvents: false});
 	configWatcher.on('change', () => {
 		if (!savingSettings) {
 			const oldConf = getConfig();
