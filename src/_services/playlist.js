@@ -1206,20 +1206,22 @@ export async function getCurrentSong() {
 	}
 	if (kara.title) kara.title = ` - ${kara.title}`;
 	// If series is empty, pick singer information instead
+
 	let series = kara.serie;
 	if (!kara.serie) series = kara.singer;
 
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-	if (!kara.songorder) kara.songorder = '';
+	if (!kara.songorder || kara.songorder === 0) kara.songorder = '';
 	// Construct mpv message to display.
 	//If karaoke is present in the public playlist, we're deleting it.
 	if (conf.EngineRemovePublicOnPlay) {
 		const playlist_id = await isAPublicPlaylist();
 		const plc = await getPLCByKIDUserID(kara.kid,kara.user_id,playlist_id);
-		if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id],playlist_id);
+		if (plc) await deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);
 	}
 	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 	return kara;
+
 }
 
 export async function buildDummyPlaylist(playlist_id) {

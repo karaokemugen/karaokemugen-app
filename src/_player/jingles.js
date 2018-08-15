@@ -5,8 +5,8 @@ import {getMediaInfo} from '../_common/utils/ffmpeg';
 import logger from 'winston';
 import sample from 'lodash.sample';
 
-export let allJingles = [];
-export let currentJingles = [];
+let allJingles = [];
+let currentJingles = [];
 
 async function extractAllJingleFiles() {
 	let jingleFiles = [];
@@ -44,14 +44,12 @@ async function getAllVideoGains(jingleFiles) {
 export async function buildJinglesList() {
 	const jingleFiles = await extractAllJingleFiles();
 	const list = await getAllVideoGains(jingleFiles);
+	currentJingles = currentJingles.concat(list);
+	allJingles = allJingles.concat(list);
 	return list;
 }
 
 export function getJingles() {
-	return currentJingles;
-}
-
-export function getAllJingles() {
 	return currentJingles;
 }
 
@@ -70,7 +68,7 @@ export function getSingleJingle() {
 		removeJingle(jingle.file);
 		//If our current jingle files list is empty after the previous removal
 		//Fill it again with the original list.
-		if (currentJingles.length === 0) currentJingles = Array.prototype.concat(allJingles);
+		if (currentJingles.length === 0) currentJingles = currentJingles.concat(allJingles);
 		return jingle;
 	}
 }
