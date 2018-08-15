@@ -504,7 +504,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		const plContents = await getPlaylistKaraIDs(playlist_id);
 		// Making a unique ID depending on if we're in the favorites or public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
-		if (conf.EngineAllowDuplicates) {
+		if (+conf.EngineAllowDuplicates) {
 			if (!playlistInfo.flag_public && !playlistInfo.flag_favorites) {
 				plContents.forEach(p => p.unique_id = `${p.kara_id}_${p.user_id}`);
 				karaList.forEach(k => k.unique_id = `${k.kara_id}_${user.id}`);
@@ -551,7 +551,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		const playingObject = getPlayingPos(plContents);
 		const playingPos = playingObject ? playingObject.plc_id_pos : 0;
 		// Position management here :
-		if (conf.EngineSmartInsert && !user.flag_admin) {
+		if (+conf.EngineSmartInsert && !user.flag_admin) {
 			if (userMaxPosition === null) {
 				// No songs yet from that user, they go first.
 				pos = -1;
@@ -1196,7 +1196,7 @@ export async function getCurrentSong() {
 	// Let's add details to our object so the player knows what to do with it.
 	kara.playlist_id = playlist.id;
 	let requester;
-	if (conf.EngineDisplayNickname) {
+	if (+conf.EngineDisplayNickname) {
 		// When a kara has been added by admin/import, do not display it on screen.
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.pseudo_add = kara.pseudo_add.replace(/[\{\}]/g,'');
@@ -1214,7 +1214,7 @@ export async function getCurrentSong() {
 	if (!kara.songorder || kara.songorder === 0) kara.songorder = '';
 	// Construct mpv message to display.
 	//If karaoke is present in the public playlist, we're deleting it.
-	if (conf.EngineRemovePublicOnPlay) {
+	if (+conf.EngineRemovePublicOnPlay) {
 		const playlist_id = await isAPublicPlaylist();
 		const plc = await getPLCByKIDUserID(kara.kid,kara.user_id,playlist_id);
 		if (plc) await deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);

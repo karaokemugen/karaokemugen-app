@@ -105,13 +105,13 @@ export async function initFrontend(port) {
 		const config = getConfig();
 
 		let view = 'public';
-		if(config.WebappMode === '0') {
+		if(+config.WebappMode === 0) {
 			view = 'publicClosed';
-		} else if (config.WebappMode === '1') {
+		} else if (+config.WebappMode === 1) {
 			view = 'publicLimited';
 		}
 		let url;
-		if (config.EngineDisplayConnectionInfoHost) {
+		if (+config.EngineDisplayConnectionInfoHost) {
 			url = config.EngineDisplayConnectionInfoHost;
 		} else {
 			url = address();

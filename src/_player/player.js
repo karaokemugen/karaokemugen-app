@@ -89,8 +89,8 @@ async function loadBackground(mode) {
 	backgroundImageFile = sample(backgroundFiles);
 	logger.debug('[Player] Background : '+backgroundImageFile);
 	let videofilter = '';
-	if (conf.EngineDisplayConnectionInfoQRCode !== 0 &&
-		conf.EngineDisplayConnectionInfo !== 0) {
+	if (+conf.EngineDisplayConnectionInfoQRCode &&
+		+conf.EngineDisplayConnectionInfo ) {
 		const dimensions = sizeOf(backgroundImageFile);
 		let QRCodeWidth;
 		let QRCodeHeight;
@@ -158,7 +158,7 @@ async function startmpv() {
 		'--volume='+playerState.volume,
 		'--input-conf='+resolve(conf.appPath,conf.PathTemp,'input.conf'),
 	];
-	if (conf.PlayerPIP) {
+	if (+conf.PlayerPIP) {
 		mpvOptions.push(`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`);
 		// By default, center.
 		let positionX = 50;
@@ -186,16 +186,16 @@ async function startmpv() {
 		mpvOptions.push(`--fs-screen=${conf.PlayerScreen}`);
 	}
 	// Fullscreen is disabled if pipmode is set.
-	if (conf.PlayerFullscreen === 1 && !conf.PlayerPIP) {
+	if (+conf.PlayerFullscreen && !+conf.PlayerPIP) {
 		mpvOptions.push('--fullscreen');
 		playerState.fullscreen = true;
 	}
-	if (conf.PlayerStayOnTop === 1) {
+	if (+conf.PlayerStayOnTop) {
 		playerState.stayontop = true;
 		mpvOptions.push('--ontop');
 	}
-	if (conf.PlayerNoHud === 1) mpvOptions.push('--no-osc');
-	if (conf.PlayerNoBar === 1) mpvOptions.push('--no-osd-bar');
+	if (+conf.PlayerNoHud) mpvOptions.push('--no-osc');
+	if (+conf.PlayerNoBar) mpvOptions.push('--no-osd-bar');
 	//On all platforms, check if we're using mpv at least version 0.20 or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
 	const mpvVersion = await getmpvVersion(conf.BinmpvPath);
@@ -324,7 +324,7 @@ async function startmpv() {
 		const conf = getConfig();
 		// Stop poll if position reaches 10 seconds before end of song
 		if (Math.floor(position) >= Math.floor(playerState.duration - 10) && playerState.mediaType === 'song' &&
-		conf.EngineSongPoll &&
+		+conf.EngineSongPoll &&
 		!songNearEnd) {
 			songNearEnd = true;
 			endPoll();
@@ -539,7 +539,7 @@ export function displayInfo(duration) {
 	const conf = getConfig();
 	if (!duration) duration = 100000000;
 	let text = '';
-	if (conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;
+	if (+conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;
 	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://mugen.karaokes.moe`;
 	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {

@@ -168,7 +168,7 @@ export function configureHost() {
 	let URLPort = `:${conf.appFrontendPort}`;
 	config = {...config, osHost: address()};
 	if (+conf.appFrontendPort === 80) URLPort = '';
-	if (conf.OnlineMode) return config = {...config, osURL: `http://${config.OnlineHost}`};
+	if (+conf.OnlineMode) return config = {...config, osURL: `http://${config.OnlineHost}`};
 	if (conf.EngineDisplayConnectionInfoHost === '') return config = {...config, osURL: `http://${address()}${URLPort}`};
 	return config = {...config, osURL: `http://${conf.EngineDisplayConnectionInfoHost}${URLPort}`};
 }

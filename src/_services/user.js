@@ -325,7 +325,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 	const user = await findUserByID(user_id);
 	let quotaLeft;
 	if (!playlist_id) {
-		if (conf.EnginePrivateMode === 1) {
+		if (+conf.EnginePrivateMode) {
 			playlist_id = await isACurrentPlaylist();
 		} else {
 			playlist_id = await isAPublicPlaylist();
