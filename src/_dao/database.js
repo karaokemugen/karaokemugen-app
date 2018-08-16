@@ -130,7 +130,7 @@ async function openUserDatabase() {
 	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	if (!userDb) {
 		logger.debug( '[DB] Opening user database');
-		userDb = await open(userDbFile, {verbose: true});
+		userDb = await open(userDbFile, {verbose: true, cached: true});
 		// Trace event.
 		if (conf.optSQL) {
 			userDb.driver.on('trace', sql => {
