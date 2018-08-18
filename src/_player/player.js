@@ -154,9 +154,10 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
-		'--log-file='+resolve(conf.appPath,'/logs/mpv.log'),
+		'--log-file='+resolve(conf.appPath,'mpv.log'),
 		'--volume='+playerState.volume,
 		'--input-conf='+resolve(conf.appPath,conf.PathTemp,'input.conf'),
+		'--autoload-files=no'
 	];
 	if (+conf.PlayerPIP) {
 		mpvOptions.push(`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`);
@@ -239,7 +240,8 @@ async function startmpv() {
 			'--no-osc',
 			'--no-osd-bar',
 			'--geometry=1%:99%',
-			`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`
+			`--autofit=${conf.PlayerPIPSize}%x${conf.PlayerPIPSize}%`,
+			'--autoload-files=no'
 		];
 		if (conf.mpvVideoOutput) {
 			mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
@@ -371,6 +373,7 @@ export async function play(mediadata) {
 		options.push(`replaygain-fallback=${mediadata.gain}`) ;
 
 		if (mediaFile.endsWith('.mp3')) {
+			//options.push('lavfi-complex=[aid1]asplit[ao][a];[a]showcqt[vo]');
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
 				const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
