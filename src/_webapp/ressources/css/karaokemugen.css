@@ -479,6 +479,7 @@ button[name="infoKara"]:before {
 .detailsKara tr > td:first-child, .karaCard .details tr > td:first-child {
 	font-weight: bold;
 	padding-right: 7px;
+	vertical-align: top;
 }
 
 .detailsKara .time, .karaCard .details .time {
