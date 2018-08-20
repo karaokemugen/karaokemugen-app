@@ -423,8 +423,10 @@ export async function getKaraFromPlaylist(plc_id,lang,token) {
 		if (!kara) throw 'PLCID unknown';
 		let output = translateKaraInfo([kara], lang);
 		try {
+			profile('previewCheck');
 			const previewfile = await isPreviewAvailable(output[0].mediafile);
 			if (previewfile) output[0].previewfile = previewfile;
+			profile('previewCheck');
 		} catch(err) {
 			logger.warn(`[Previews] Error detecting previews : ${err}`);
 		}

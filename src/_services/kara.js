@@ -420,7 +420,9 @@ export async function getKaras(filter, lang, from, size, searchType, searchValue
 	try {
 		profile('getKaras');
 		const pl = await getAllKaras(token.username, filter, lang, searchType, searchValue);
+		profile('formatList');
 		const ret = formatKaraList(pl.slice(from, from + size), lang, from, pl.length);
+		profile('formatList');
 		profile('getKaras');
 		return ret;
 	} catch(err) {
