@@ -28,5 +28,3 @@ updater/
 react_client/node_modules
 react_client/coverage
 react_client/build
-
-mpv\.log
