@@ -49,8 +49,8 @@ export function buildClauses(words,source) {
 	const params = paramWords(words);
 	let sql = [];
 	let extraClauses = '';
-	if (source === 'playlist') extraClauses = `OR pc.NORM_pseudo_add LIKE $word${i}`;
 	for (const i in words.split(' ').filter(s => !('' === s))) {
+		if (source === 'playlist') extraClauses = `OR pc.NORM_pseudo_add LIKE $word${i}`;
 		sql.push(`ak.NORM_misc LIKE $word${i} OR
 		ak.NORM_title LIKE $word${i} OR
 		ak.NORM_author LIKE $word${i} OR
