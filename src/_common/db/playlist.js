@@ -269,7 +269,7 @@ LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl
 LEFT OUTER JOIN playlist_content cur_user_fav ON cur_user_fav.fk_id_playlist = cur_user_pl_fav.fk_id_user AND cur_user_fav.fk_id_kara = pc.fk_id_kara
 LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.fk_id_playlist = pc.fk_id_playlist AND plc_current_playing.flag_playing = 1
 LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc.fk_id_playlist AND plc_before.pos BETWEEN IFNULL(plc_current_playing.pos, 0) AND pc.pos
-LEFT OUTER JOIN karasdb.all_karas AS plc_before_karas ON plc_before_karas.kara_id = plc_before.fk_id_kara
+LEFT OUTER JOIN karasdb.kara AS plc_before_karas ON plc_before_karas.pk_id_kara = plc_before.fk_id_kara
 WHERE  pc.pk_id_plcontent = $playlistcontent_id`;
 
 export const getPLCInfoMini = `SELECT pc.fk_id_kara AS kara_id,
