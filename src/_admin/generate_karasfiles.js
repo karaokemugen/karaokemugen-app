@@ -170,8 +170,8 @@ async function importKara(mediaFile, subFile, data) {
 	if (data) {
 		const fileLang = getFileLangFromKara(data.lang[0]);
 		kara = sanitizeFilename(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`)
-			.replace('ô','ou')
-			.replace('û','uu')
+			.replace(/ô/g,'ou')
+			.replace(/û/g,'uu')
 		;
 		kara = deburr(kara).replace( /[^\x00-\xFF]/g, '' ).replace(/ [ ]+/,' ');
 	}
