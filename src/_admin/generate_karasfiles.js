@@ -23,7 +23,8 @@ export async function editKara(kara_id,kara) {
 	let kara_orig = {...kara};
 	try {
 		const mediaFile = resolve(resolvedPathMedias()[0],kara.mediafile);
-		const subFile = resolve(resolvedPathSubs()[0],kara.subfile);
+		let subFile;
+		kara.subfile && kara.subfile !== 'dummy.ass' ? subFile = resolve(resolvedPathSubs()[0],kara.subfile) : subFile = kara.subfile;
 		const karaFile = resolve(resolvedPathKaras()[0],kara.karafile);
 		// Removing useless data
 		delete kara.kara_id;
@@ -51,7 +52,10 @@ export async function editKara(kara_id,kara) {
 
 		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file !== karaFile && await asyncExists(karaFile)) asyncUnlink(karaFile);
-		if (newSubFile !== subFile && subFile !== 'dummy.ass' && await asyncExists(subFile)) asyncUnlink(subFile);
+		if (newSubFile !== subFile && subFile !== 'dummy.ass')
+		{
+			if (await asyncExists(subFile)) asyncUnlink(subFile);
+		}
 		if (newMediaFile !== mediaFile && await asyncExists(mediaFile)) asyncUnlink(mediaFile);
 	} catch(err) {
 		logger.error(`[KaraGen] Error while editing kara : ${err}`);
@@ -141,7 +145,6 @@ async function generateKara(kara, opts) {
 		newKara = await importKara(newMediaFile, newSubFile, kara);
 		return newKara;
 	} catch(err) {
-		console.log(err);
 		logger.error(`[Karagen] Error during generation : ${err}`);
 		if (await asyncExists(newMediaFile)) await asyncUnlink(newMediaFile);
 		if (newSubFile) if (await asyncExists(newSubFile)) await asyncUnlink(newSubFile);
@@ -177,17 +180,18 @@ async function importKara(mediaFile, subFile, data) {
 	}
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
+	let karaSubFile;
+	subFile === 'dummy.ass' ? karaSubFile = subFile : karaSubFile = `${kara}${extname(subFile || '.ass')}`;
 	let karaData = formatKara({ ...data,
 		mediafile: `${kara}${extname(mediaFile)}`,
-		subfile: `${kara}${extname(subFile || '.ass')}`
+		subfile: karaSubFile
 	});
 	karaData.overwrite = data.overwrite;
-	if (subFile === 'dummy.ass') karaData.subfile = 'dummy.ass';
 	if (!data) karaData = {mediafile: mediaFile, ...karaDataInfosFromFilename(mediaFile)};
 
 	const mediaPath = resolve(resolvedPathImport(), mediaFile);
-
-	const subPath = await findSubFile(mediaPath, karaData, subFile);
+	let subPath;
+	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, karaData, subFile);
 	try {
 		await extractAssInfos(subPath, karaData);
 		await extractMediaTechInfos(mediaPath, karaData);
