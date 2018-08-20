@@ -233,6 +233,7 @@ export const tags = [
 	'PSV',
 	'PSP',
 	'XBOX360',
+	'XBOXONE',
 	'GAMECUBE',
 	'DS',
 	'3DS',
