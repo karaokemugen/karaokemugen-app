@@ -422,8 +422,12 @@ export async function getKaraFromPlaylist(plc_id,lang,token) {
 		const kara = await getPLCInfo(plc_id, seenFromUser, token.username);
 		if (!kara) throw 'PLCID unknown';
 		let output = translateKaraInfo([kara], lang);
-		const previewfile = await isPreviewAvailable(output[0].mediafile);
-		if (previewfile) output[0].previewfile = previewfile;
+		try {
+			const previewfile = await isPreviewAvailable(output[0].mediafile);
+			if (previewfile) output[0].previewfile = previewfile;
+		} catch(err) {
+			logger.warn(`[Previews] Error detecting previews : ${err}`);
+		}
 		profile('getPLCInfo');
 		return output;
 	} catch(err) {
