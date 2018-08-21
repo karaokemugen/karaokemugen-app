@@ -12,6 +12,7 @@ import {resetViewcounts} from '../_dao/kara';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
+import logger from 'winston';
 
 export default function adminController(router) {
 	const conf = getConfig();
