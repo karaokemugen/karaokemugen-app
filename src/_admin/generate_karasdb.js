@@ -64,7 +64,7 @@ export async function readAllKaras(karafiles) {
 	if (karas.some((kara) => {
 		return kara.error;
 	})) error = true;
-	return karas;
+	return karas.filter(kara => !kara.error);
 }
 
 async function readAndCompleteKarafile(karafile) {
