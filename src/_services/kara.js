@@ -250,12 +250,12 @@ export function formatKara(karaData) {
 		type: karaData.type || '',
 		order: karaData.order || '',
 		year: karaData.year || '',
-		singer: karaData.singer || '',
-		tags: karaData.tags || '',
-		groups: karaData.groups || '',
-		songwriter: karaData.songwriter || '',
-		creator: karaData.creator || '',
-		author: karaData.author || '',
+		singer: karaData.singer || 'NO_TAG',
+		tags: karaData.tags || 'NO_TAG',
+		groups: karaData.groups || 'NO_TAG',
+		songwriter: karaData.songwriter || 'No_TAG',
+		creator: karaData.creator || 'NO_TAG',
+		author: karaData.author || 'NO_TAG',
 		lang: karaData.lang || 'und',
 		KID: karaData.KID || uuidV4(),
 		dateadded: karaData.dateadded || timestamp.now(),
@@ -371,6 +371,8 @@ export function verifyKaraData(karaData) {
 	if (validationErrors) {
 		throw `Karaoke data is not valid: ${JSON.stringify(validationErrors)}`;
 	}
+	// Version 2 is considered deprecated, so let's throw an error.
+	if (karaData.version < 3) throw 'Karaoke version 2 or lower is deprecated';
 }
 
 /** Only MV or LIVE types don't have to have a series filled. */
