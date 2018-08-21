@@ -70,6 +70,7 @@ export const getAllKaras = (filterClauses, lang, orderClauses, typeClauses) => `
 							ak.NORM_serie_altname AS NORM_serie_altname,
 							ak.serie_i18n AS serie_i18n,
 							ak.serie AS serie_orig,
+							ak.NORM_serie AS NORM_serie_orig,
 							ak.singer AS singer,
 							ak.NORM_singer AS NORM_singer,
 							ak.groups AS groups,
