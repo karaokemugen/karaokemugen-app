@@ -25,6 +25,8 @@ export const getWhitelistContents = (filterClauses, lang) => `SELECT wl.pk_id_wh
 									  ak.NORM_serie) AS NORM_serie,
       									ak.serie_altname AS serie_altname,
 										ak.serie_i18n AS serie_i18n,
+										ak.NORM_serie AS NORM_serie_orig,
+										ak.serie AS serie_orig,
       									ak.singer AS singer,
       									ak.songwriter AS songwriter,
 	  									ak.year AS year,

@@ -59,6 +59,7 @@ export function buildClauses(words,source) {
 		ak.NORM_singer LIKE $word${i} OR
 		ak.NORM_songwriter LIKE $word${i} OR
 		ak.NORM_creator LIKE $word${i} OR
+		NORM_serie_orig LIKE $word${i} OR
 		ak.language LIKE $word${i}
 		${extraClauses}`);
 	}
