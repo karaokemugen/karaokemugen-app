@@ -172,7 +172,7 @@ export default function adminController(router) {
 				});
 			}).catch(err => {
 				logger.error(`[Updater] Update failed : ${err}`);
-			})
+			});
 		res.status(200).send('Karas are being updated, check Karaoke Mugen\'s console to follow its progression');
 	});
 }

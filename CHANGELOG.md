@@ -1,5 +1,34 @@
 # Versions
 
+## v2.3.1 "Ichika Insouciante" - 22/08/2018
+
+This is a bugfix release.
+
+**IMPORTANT : Karaoke files version 2 or lower are now deprecated. Please update your karaoke base.**
+
+### Improvements
+
+- Searches now take the original series' name into account too.
+- Karas in error are not added to the database anymore
+- Audio files are now accepted in the karaoke add form.
+- Various speedups in karaoke and playlist content list display thanks to @Jaerdoster's mad SQL skills
+- Added a XBOXONE tag for songs.
+- mpv does not try to autoload external files anymore, resulting in better performance if your media files are on a network storage.
+
+### Fixes
+
+- The karaoke base update button now works.
+- Editing a hardsubbed karaoke now works.
+- Filenames are better sanitized when editing/adding new karaokes
+- Searching in playlists now work again.
+- Fixed some possible SQL injections.
+- When a media is missing, getting karaoke details does not fail anymore
+- Fixed some english translations
+- Fixed jingles not playing at all
+- Fixed log spam on OSX about config file being changed
+- Fixed config file being accidentally overwritten with a new one
+- Songs are now correctly removed automatically from the public playlist once played.
+
 ## v2.3.0 "Ichika Idolâtrice" - 14/08/2018
 
 For a complete run-down on the new features, check out v2.3.0-rc1's changelog below.
