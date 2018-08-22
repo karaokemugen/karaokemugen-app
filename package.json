@@ -48,7 +48,7 @@
   ],
   "engineStrict": true,
   "engines": {
-    "node": ">=8.10.0 <10.0.0"
+    "node": ">=10.9.0"
   },
   "license": "MIT",
   "private": true,
@@ -114,7 +114,7 @@
     "readline-sync": "^1.4.9",
     "sanitize-filename": "^1.6.1",
     "socket.io": "^2.1.1",
-    "sqlite": "2.9.1",
+    "sqlite": "git://lab.shelter.moe/axelterizaki/node-sqlite.git",
     "systeminformation": "^3.42.9",
     "unix-timestamp": "^0.2.0",
     "uuid": "^3.3.2",
