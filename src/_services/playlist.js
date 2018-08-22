@@ -611,7 +611,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			playlist_id: playlist_id
 		};
 	} catch(err) {
-		logger.error(`[Playlist] Unable to add karaokes : ${err}`);
+		logger.error(`[Playlist] Unable to add karaokes : ${JSON.stringify(err)}`);
 		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 		throw {
 			code: errorCode,
