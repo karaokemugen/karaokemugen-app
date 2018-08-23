@@ -114,7 +114,7 @@
     "readline-sync": "^1.4.9",
     "sanitize-filename": "^1.6.1",
     "socket.io": "^2.1.1",
-    "sqlite": "git://lab.shelter.moe/axelterizaki/node-sqlite.git",
+    "sqlite": "^3.0.0",
     "systeminformation": "^3.42.9",
     "unix-timestamp": "^0.2.0",
     "uuid": "^3.3.2",

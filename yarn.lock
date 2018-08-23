@@ -4850,7 +4850,11 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
-sqlite3@4.0.2:
+sql-template-strings@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/sql-template-strings/-/sql-template-strings-2.2.2.tgz#3f11508a25addfce217a3042a9d300c3193b96ff"
+
+sqlite3@^4.0.0:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-4.0.2.tgz#1bbeb68b03ead5d499e42a3a1b140064791c5a64"
   dependencies:
@@ -4858,11 +4862,13 @@ sqlite3@4.0.2:
     node-pre-gyp "^0.10.3"
     request "^2.87.0"
 
-"sqlite@git://lab.shelter.moe/axelterizaki/node-sqlite.git":
-  version "2.9.2"
-  resolved "git://lab.shelter.moe/axelterizaki/node-sqlite.git#eff7d95d888466fa6a5d92c8a821250cc3f00b39"
+sqlite@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/sqlite/-/sqlite-3.0.0.tgz#94b70b6d1e837b1dff6881d393776ff609383c5c"
   dependencies:
-    sqlite3 "4.0.2"
+    sqlite3 "^4.0.0"
+  optionalDependencies:
+    sql-template-strings "^2.2.2"
 
 sshpk@^1.7.0:
   version "1.14.2"
