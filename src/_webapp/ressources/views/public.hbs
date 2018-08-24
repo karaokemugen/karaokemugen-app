@@ -1,10 +1,14 @@
+
 <div id="progressBar" class="underHeader" introStep="5" introLabel="progressbar">
     <div id="karaInfo" idKara="-1" ondragstart="return false" draggable="false"><span>{{i18n "KARA_PAUSED_WAITING"}}<span></div>
     <div id="progressBarColor" class="cssTransform"></div>
 </div>
 <div id="header" class="header"  introStep="7" introLabel="search">
     <div class="col-lg-8 col-md-7 col-msm-12  col-sm-12 col-xs-12 headerInputs">
-        <button class="btn btn-action btn-default favorites" introStep="15" introLabel="favorites" introRequiresUser="true"><i class="glyphicon glyphicon-star"></i></button>
+        <button type="button" class="searchMenuButton collapsed btn btn-sm btn-default" introStep="15" introLabel="favorites" data-toggle="collapse" data-target="#searchMenu1" aria-expanded="false">
+            <i class="glyphicon glyphicon-filter"></i>
+        </button>        
+        
         <div class="plSearch" id="searchParent" style="width: 100%;">
             <input type="text" class="form-control" id="searchPlaylist1" side="1" placeholder="&#xe003;" name="searchPlaylist"/>
         </div>
@@ -42,14 +46,53 @@
         </div>
     </div>
 </div>
-
+ 
 <div id="underHeader" class="underHeader container-fluid"  introStep="10" introLabel="kara">
     <div class="playlist-main row" id="playlist">
         <div class="panel col-lg-8 col-md-7 col-msm-12 col-sm-12 col-xs-12" id="panel1" side="1" introStep="9" introLabel="searchresult">
-             <div class="plDashboard" >
+                        
+            <nav class="navbar navbar-default  searchMenuContainer">
+                <div class="searchMenu container collapse" id="searchMenu1">
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    
+                    <ul class="nav navbar-nav">
+                         <li val="-1" searchType="serie" class="tagFilter">
+                            <span class='value'>
+                                <span class="tagsTypesContainer">
+                                    <select type="text" class="tagsTypes form-control select2 value" placeholder="Search">
+                                    </select>
+                                </span>
+                                <span class="tagsContainer">
+                                    <select type="text" class="tags form-control select2 value" placeholder="Search">
+                                    </select>
+                                </span>
+                            </span>
+                            <a class="choice" href="#"><i class="glyphicon glyphicon-filter"></i> {{i18n "FILTER"}}</a>
+                        </li>
+                        <li val="-1" class="active"><a class="choice" href="#"><i class="glyphicon glyphicon-sort-by-alphabet"></i> {{i18n "VIEW_STANDARD"}}</a></li>
+            
+                        <li val="-5"><a class="choice" href="#"><i class="glyphicon glyphicon-star"></i> {{i18n "VIEW_FAVORITES"}}</a></li>
+                        <li val="-1" searchType="recent" ><a class="choice" href="#"><i class="glyphicon glyphicon-time"></i> {{i18n "VIEW_RECENT"}}</a></li>
+                        <li val="-1" searchType="popular" ><a class="choice" href="#"><i class="glyphicon glyphicon-fire"></i> {{i18n "VIEW_POPULAR"}}</a></li>
+                        <!-- 
+                           <li>
+                            <span class='value'>
+                                <select type="text" id="series" class="form-control select2 value" placeholder="Search">
+                                </select>
+                            </span>
+                            <a class="choice" href="#">Series</a>
+                        </li>
+                         -->
+                     
+                       
+                    </ul>             
+                </div><!-- /.container-fluid -->
+            </nav>
+            <div class="plDashboard" >
                 <div class="plSelect">
                     <select id="selectPlaylist1" side="1" hidden >
-                        <option value="-1" default data-playlist_id="-1"></option>
+                        <option value="-1" default data-playlist_id="-1"></option>>
+                        <option value="-6" data-playlist_id="-6"></option>
                         <option value="-5" data-playlist_id="-5"></option>
                     </select>
                 </div>

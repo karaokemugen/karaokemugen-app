@@ -1,12 +1,62 @@
 # Versions
 
-## v2.3.0 "Ichika Idolâtrice" - 08/08/2018
+## v2.3.1 "Ichika Insouciante" - 22/08/2018
+
+This is a bugfix release.
+
+**IMPORTANT : Karaoke files version 2 or lower are now deprecated. Please update your karaoke base.**
+
+### Improvements
+
+- Searches now take the original series' name into account too.
+- Karas in error are not added to the database anymore
+- Audio files are now accepted in the karaoke add form.
+- Various speedups in karaoke and playlist content list display thanks to @Jaerdoster's mad SQL skills
+- Added a XBOXONE tag for songs.
+- mpv does not try to autoload external files anymore, resulting in better performance if your media files are on a network storage.
+
+### Fixes
+
+- The karaoke base update button now works.
+- Editing a hardsubbed karaoke now works.
+- Filenames are better sanitized when editing/adding new karaokes
+- Searching in playlists now work again.
+- Fixed some possible SQL injections.
+- When a media is missing, getting karaoke details does not fail anymore
+- Fixed some english translations
+- Fixed jingles not playing at all
+- Fixed log spam on OSX about config file being changed
+- Fixed config file being accidentally overwritten with a new one
+- Songs are now correctly removed automatically from the public playlist once played.
+
+## v2.3.0 "Ichika Idolâtrice" - 14/08/2018
+
+For a complete run-down on the new features, check out v2.3.0-rc1's changelog below.
+
+We will only cover changes from rc1 to finale here :
+
+### Enhancements
+
+- "Update from Shelter" button now returns a message immediately inviting you to check the console for progress
+- "Connection lost" message now displays a cool noise effect
+- Database is now more optimized and should make actions involving playlists faster
+
+### Fixes
+
+- #328 Progress bar during updates should scale properly to the window and not display "Infinity" anymore
+- Filter panel on karaoke list now displays properly on Safari iOS
+- Config file should not be overwritten anymore (hopefully)
+- Fixed updating series and displaying karaoke lists and tags in control panel
+- Fixed the "Stop after current song" button
+
+## v2.3.0-rc1 "Ichika Immergée" - 08/08/2018
 
 ### New exciting features(tm)
 
 - #118 Karaoke Mugen can generate .kara files for you if you fill out a form in the control panel, making it much easier to create karaoke files for the Karaoke Mugen base.
 - #325 There is now a link to help users suggest a series they think should be in the Karaoke Mugen database
 - #340 In addition of the usual view and favorites view, users can get a new "Most recent songs" view with the last 200 songs added in the database (ordered by creation date)
+- #120 Users can now navigate through the song list by tags (language, singer, etc.) year, and series.
 - #305 A smarter shuffle is available for those with big playlists.
   - It should spread long and short songs to avoid too many long songs following each other
   - Songs added by one user won't be following each other and will be spread through the playlist

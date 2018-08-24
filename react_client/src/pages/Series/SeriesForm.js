@@ -28,8 +28,6 @@ class SerieForm extends Component {
 	componentDidMount() {
 		// For some stupid reason the list of languages won't be filled up, even with initialValue.
 		// So we're filling the form here.
-		console.log('Fields');
-		console.log(this.props.form.getFieldsValue());
 		for (const lang of this.state.i18n) {
 			const obj = {};
 			obj[`lang_${lang}`] = this.props.serie.i18n[lang];

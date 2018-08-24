@@ -19,13 +19,14 @@ import {updateSongsLeft} from '../_services/user';
 import {message} from '../_player/player';
 import {addKaraToPlaylist, copyKaraToPlaylist, shufflePlaylist, getPlaylistContents, emptyPlaylist, setCurrentPlaylist, setPublicPlaylist, editPLC, editPlaylist, deleteKaraFromPlaylist, deletePlaylist, getPlaylistInfo, createPlaylist, getPlaylists, getKaraFromPlaylist, exportPlaylist, importPlaylist} from '../_services/playlist';
 import {getTags} from '../_services/tag';
-import {getRandomKara, getKaraLyrics, getTop50, getKaras, getKara} from '../_services/kara';
+import {getYears, getRandomKara, getKaraLyrics, getTop50, getKaras, getKara} from '../_services/kara';
 import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelistContents} from '../_services/whitelist';
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
 import {createUser, findUserByName, deleteUser, editUser, getUserRequests, listUsers} from '../_services/user';
 import {getPoll, addPollVote} from '../_services/poll';
+import {getSeries} from '../_services/series';
 
 function errMessage(code,message,args) {
 	return {
@@ -763,7 +764,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.1
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -788,6 +789,7 @@ export function APIControllerAdmin(router) {
  *               "NORM_pseudo_add": "Administrateur",
  *               "NORM_serie": "Dynasty Warriors 3",
  *               "NORM_serie_altname": "DW3/DW 3",
+ * 				 "NORM_serie_orig": "Dynasty Warriors",
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
@@ -818,6 +820,7 @@ export function APIControllerAdmin(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": "DW3/DW 3",
+ * 				 "serie_orig": "Dynasty Warriors 3"
  *               "singer": null,
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
@@ -1053,9 +1056,9 @@ export function APIControllerAdmin(router) {
 
 	router.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 	/**
- * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist
+ * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist item
  * @apiName GetPlaylistPLC
- * @apiVersion 2.3.0
+ * @apiVersion 2.3.1
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -1066,6 +1069,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
  * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
  * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
+ * @apiSuccess {String} data/NORM_serie_orig Normalized original name for the series
  * @apiSuccess {String} data/NORM_singer Normalized name of singer.
  * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
  * @apiSuccess {String} data/NORM_title Normalized song title
@@ -1098,6 +1102,7 @@ export function APIControllerAdmin(router) {
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
+ * @apiSuccess {String} data/serie_orig Original name for the series
  * @apiSuccess {String} data/singer Singer's name, if known.
  * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
  * @apiSuccess {String} data/songtype Song's type internal tag (`TYPE_OP`, `TYPE_ED`, `TYPE_IN` ...)
@@ -1119,6 +1124,7 @@ export function APIControllerAdmin(router) {
  *           "NORM_pseudo_add": "Axel",
  *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
  *           "NORM_serie_altname": "C-Cube/CxCxC",
+ *           "NORM_serie_orig": "C3 ~ Cube X Cursed X Curious",
  *           "NORM_singer": null,
  *           "NORM_songwriter": null,
  *           "NORM_title": "Hana",
@@ -1154,6 +1160,7 @@ export function APIControllerAdmin(router) {
  * 				"fre":"Guerriers de la Dynastie"
  *  			},
  *           "serie_altname": "C-Cube/CxCxC",
+ *           "serie_orig": "C3 ~Cube X Cursed X Curious",
  *           "singer": "NO_TAG",
  *           "songorder": 1,
  *           "songtype": "TYPE_ED",
@@ -1481,7 +1488,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/whitelist Get whitelist
  * @apiName GetWhitelist
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.1
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -1504,6 +1511,7 @@ export function APIControllerAdmin(router) {
  *               "NORM_creator": "Eurovision",
  *               "NORM_serie": null,
  *               "NORM_serie_altname": null,
+ * 				 "NORM_serie_orig": null,
  *               "NORM_singer": "Dschinghis Khan",
  *               "NORM_songwriter": "Ralph Siegel",
  *               "NORM_title": "Moskau",
@@ -1523,6 +1531,7 @@ export function APIControllerAdmin(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": null,
+ * 				 "serie_orig": null,
  *               "singer": "Dschinghis Khan",
  *               "songorder": 0,
  *               "songtype": "TYPE_MUSIC",
@@ -1673,7 +1682,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/blacklist Get blacklist
  * @apiName GetBlacklist
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.1
  * @apiGroup Blacklist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -1694,6 +1703,7 @@ export function APIControllerAdmin(router) {
  *               "NORM_author": "Jean-Jacques Debout",
  *               "NORM_creator": null,
  *               "NORM_serie": "Capitaine Flam",
+ *               "NORM_serie_orig": "Captain Future",
  *               "NORM_serie_altname": "Kyaputen Fyucha",
  *               "NORM_singer": "Richard Simon",
  *               "NORM_songwriter": "Roger Dumas",
@@ -1711,6 +1721,7 @@ export function APIControllerAdmin(router) {
  *               "reason_add": "Blacklisted Tag : Jean-Jacques Debout (type 6)",
  * 				 "requested": 20
  *               "serie": "Capitaine Flam",
+ * 				 "serie_orig": "Captain Future",
  *               "serie_altname": "Kyaputen Fyucha",
  * 				 "serie_i18n": {
  * 					"fre":"Guerriers de la Dynastie"
@@ -2158,11 +2169,12 @@ export function APIControllerAdmin(router) {
  * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
  * @apiName putPlaylistShuffle
- * @apiVersion 2.1.0
+ * @apiVersion 2.3.0
  * @apiGroup Playlists
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number} pl_id Playlist ID to shuffle
+ * @apiParam {Number} smartShuffle Parameter to determine if we use, or not, an advanced algorithm to shuffle
  * @apiSuccess {String} args ID of playlist shuffled
  * @apiSuccess {String} code Message to display
  * @apiSuccess {Number} data ID of playlist shuffled
@@ -2187,11 +2199,10 @@ export function APIControllerAdmin(router) {
 		.put(getLang, requireAuth, requireValidUser, updateUserLoginTime, requireAdmin, async (req, res) => {
 			try {
 
-				await shufflePlaylist(req.params.pl_id);
+				await shufflePlaylist(req.params.pl_id, req.body.smartShuffle);
 				emitWS('playlistContentsUpdated',req.params.pl_id);
 				res.json(OKMessage(req.params.pl_id,'PL_SHUFFLED',req.params.pl_id));
 			} catch(err) {
-
 				res.statusCode = 500;
 				res.json(errMessage('PL_SHUFFLE_ERROR',err.message,err.data));
 			}
@@ -2332,7 +2343,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.1
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -2358,6 +2369,7 @@ export function APIControllerPublic(router) {
  *               "NORM_pseudo_add": "Administrateur",
  *               "NORM_serie": "Dynasty Warriors 3",
  *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_serie_orig": "Dynasty Warriors 3",
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
@@ -2389,6 +2401,7 @@ export function APIControllerPublic(router) {
  *					"fre":"Guerriers de la Dynastie"
  * 				}
  *               "serie_altname": "DW3/DW 3",
+ *               "serie_orig": "Dynasty Warriors 3",
  *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
@@ -2438,7 +2451,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
- * @apiVersion 2.3.0
+ * @apiVersion 2.3.1
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -2449,6 +2462,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/NORM_creator Normalized creator's name
  * @apiSuccess {String} data/NORM_pseudo_add Normalized name of person who added the karaoke to the playlist
  * @apiSuccess {String} data/NORM_serie Normalized name of series the karaoke is from
+ * @apiSuccess {String} data/NORM_serie_orig Normalized name of series the karaoke is from
  * @apiSuccess {String} data/NORM_serie_altname Normalized names of alternative names to the series the karaoke is from. When there are more than one alternative name, they're separated by forward slashes (`/`)
  * @apiSuccess {String} data/NORM_singer Normalized name of singer.
  * @apiSuccess {String} data/NORM_songwriter Normalized name of songwriter.
@@ -2481,6 +2495,7 @@ export function APIControllerPublic(router) {
  * @apiSuccess {String} data/requested Number of times the song has been requested.
  * @apiSuccess {String} data/serie Name of series/show the song belongs to
  * @apiSuccess {Object} data/serie_i18n JSON object with series' names depending on their language.
+ * @apiSuccess {String} data/serie_orig Serie's original name
  * @apiSuccess {String} data/serie_altname Alternative name(s) of series/show this song belongs to. Names are separated by forward slashes (`/`)
  * @apiSuccess {String} data/singer Singer's name, if known.
  * @apiSuccess {Number} data/songorder Song's order, relative to it's type. Opening 1, Opening 2, Ending 1, Ending 2, etc.
@@ -2502,6 +2517,7 @@ export function APIControllerPublic(router) {
  *           "NORM_pseudo_add": "Axel",
  *           "NORM_serie": "C3 ~ Cube X Cursed X Curious",
  *           "NORM_serie_altname": "C-Cube/CxCxC",
+ * 			 "NORM_serie_orig": "C3 ~ Cube X Cursed X Curious"
  *           "NORM_singer": null,
  *           "NORM_songwriter": null,
  *           "NORM_title": "Hana",
@@ -2536,6 +2552,7 @@ export function APIControllerPublic(router) {
  * 			 "serie_i18n": {
  * 				"fre":"Guerriers de la Dynastie"
  *  			}
+ * 			 "serie_orig": "C3 ~ Cube X Cursed X Curious",
  *           "singer": "NO_TAG",
  *           "songorder": 1,
  *           "songtype": "TYPE_ED",
@@ -2998,13 +3015,15 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
- * @apiVersion 2.3.0
+ * @apiVersion 2.3.1
  * @apiGroup Karaokes
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} [filter] Filter list by this string.
  * @apiParam {Number} [from=0] Return only the results starting from this position. Useful for continuous scrolling. 0 if unspecified
  * @apiParam {Number} [size=999999] Return only x number of results. Useful for continuous scrolling. 999999 if unspecified.
+ * @apiParam {String} [searchType] Can be `serie`, `year`, `popular`, `recent` or `tag`
+ * @apiParam {String} [searchValue] Value to search for. For `series` or `tag` it's an ID, for `year` it's a 4-digit year.
  *
  * @apiSuccess {Object[]} data/content/karas Array of `kara` objects
  * @apiSuccess {Number} data/infos/count Number of karaokes in playlist
@@ -3022,6 +3041,7 @@ export function APIControllerPublic(router) {
  * 				 "NORM_groups": null,
  *               "NORM_serie": "Dynasty Warriors 3",
  *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_serie_orig": "Dynasty Warriors 3",
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
@@ -3048,6 +3068,7 @@ export function APIControllerPublic(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": "DW3/DW 3",
+ *               "serie_orig": "Dynasty Warriors 3",
  *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
@@ -3083,7 +3104,7 @@ export function APIControllerPublic(router) {
 			from = parseInt(from, 10);
 			if (from < 0) from = 0;
 			try {
-				const karas = await getKaras(req.query.filter,req.lang,from,size,req.authToken);
+				const karas = await getKaras(req.query.filter,req.lang,from,size,req.query.searchType, req.query.searchValue, req.authToken);
 				res.json(OKMessage(karas));
 			} catch(err) {
 				logger.error(err);
@@ -3091,7 +3112,6 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('SONG_LIST_ERROR',err));
 			}
 		});
-
 	router.route('/karas/random')
 	/**
  * @api {get} /public/karas/random Get a random karaoke ID
@@ -3404,7 +3424,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
- * @apiVersion 2.3.0
+ * @apiVersion 2.3.1
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -3429,6 +3449,7 @@ export function APIControllerPublic(router) {
  *               "NORM_pseudo_add": "Administrateur",
  *               "NORM_serie": "Dynasty Warriors 3",
  *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_serie_orig": "Dynasty Warriors 3",
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
@@ -3460,6 +3481,7 @@ export function APIControllerPublic(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": "DW3/DW 3",
+ *               "serie_orig": "Dynasty Warriors 3",
  *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
@@ -3565,7 +3587,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
- * @apiVersion 2.3.0
+ * @apiVersion 2.3.1
  * @apiGroup Playlists
  * @apiPermission public
  * @apiHeader authorization Auth token received from logging in
@@ -3590,6 +3612,7 @@ export function APIControllerPublic(router) {
  *               "NORM_pseudo_add": "Administrateur",
  *               "NORM_serie": "Dynasty Warriors 3",
  *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_serie_orig": "Dynasty Warriors 3",
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
@@ -3621,6 +3644,7 @@ export function APIControllerPublic(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": "DW3/DW 3",
+ *               "serie_orig": "Dynasty Warriors 3",
  *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
@@ -3796,11 +3820,13 @@ export function APIControllerPublic(router) {
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
 	* @apiVersion 2.3.0
-	* @apiGroup Karaokes
+	* @apiGroup Tags
 	* @apiPermission public
 	* @apiHeader authorization Auth token received from logging in
-	* @apiParam {Number} type Type of tag to filter
-	* @apiParam {String} filter Tag name to filter results
+	* @apiParam {Number} [type] Type of tag to filter
+	* @apiParam {String} [filter] Tag name to filter results
+	* @apiParam {Number} [from] Where to start listing from
+	* @apiParam {Number} [size] How many records to get.
 	* @apiSuccess {String} data/name Name of tag
 	* @apiSuccess {String} data/name_i18n Translated name of tag
 	* @apiSuccess {Number} data/tag_id Tag ID number
@@ -3809,7 +3835,8 @@ export function APIControllerPublic(router) {
 	* @apiSuccessExample Success-Response:
 	* HTTP/1.1 200 OK
 	* {
-	*     "data": [
+	*     "data": {
+	*		content: [
 	*        {
 	*          "name": "20th Century",
 	*          "name_i18n": "20th Century",
@@ -3829,7 +3856,12 @@ export function APIControllerPublic(router) {
 	*          "type": 5
 	*        }
 	*		 ...
-	*   ]
+	*   	],
+	*       "infos": {
+ 	*           "count": 1000,
+ 	* 			"from": 0,
+ 	* 			"to": 120
+ 	*       }
 	* }
 	* @apiError TAGS_LIST_ERROR Unable to get list of tags
 	* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
@@ -3840,12 +3872,114 @@ export function APIControllerPublic(router) {
 	*/
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const tags = await getTags(req.lang,req.query.filter,req.query.type);
+				let size = req.query.size || 999999;
+				size = parseInt(size, 10);
+				let from = req.query.from || 0;
+				from = parseInt(from, 10);
+				const tags = await getTags(req.lang,req.query.filter,req.query.type, from, size);
 				res.json(OKMessage(tags));
 			} catch(err) {
 				logger.error(err);
 				res.statusCode = 500;
 				res.json(errMessage('TAGS_LIST_ERROR',err));
+			}
+		});
+	router.route('/years')
+		/**
+		* @api {get} /public/years Get year list
+		* @apiName GetYears
+		* @apiVersion 2.3.0
+		* @apiGroup Karas
+		* @apiPermission public
+		* @apiHeader authorization Auth token received from logging in
+		* @apiSuccess {String[]} data Array of years
+		* @apiSuccessExample Success-Response:
+		* HTTP/1.1 200 OK
+		* {
+		*     "data": [
+		*       {
+		*			"year": "1969"
+		*		},
+		*		 ...
+		*   ]
+		* }
+		* @apiError YEARS_LIST_ERROR Unable to get list of years
+		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 500 Internal Server Error
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 403 Forbidden
+		*/
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				const years = await getYears();
+				res.json(OKMessage(years));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('YEARS_LIST_ERROR',err));
+			}
+		});
+	router.route('/series')
+		/**
+		* @api {get} /public/series Get series list
+		* @apiName GetSeries
+		* @apiVersion 2.3.0
+		* @apiGroup Karas
+		* @apiPermission public
+		* @apiHeader authorization Auth token received from logging in
+		* @apiParam {String} [filter] Text filter to search series for
+		* @apiParam {Number} [from] Where to start listing from
+		* @apiParam {Number} [size] How many records to get.
+		* @apiSuccess {Array} data Array of series
+		* @apiSuccess {Number} data/serie_id Serie ID in the database
+		* @apiSuccess {String} data/name Serie's original name
+		* @apiSuccess {String} data/i18n_name Serie's name according to language
+		* @apiSuccess {String[]} data/aliases Array of aliases
+		* @apiSuccess {Object} data/i18n JSON object for the series translations
+		* @apiSuccessExample Success-Response:
+		* HTTP/1.1 200 OK
+		* {
+		*     "data": {
+		*        "contents": [
+		*        {
+		*			"name": "Hataraku Saibô",
+		*			"i18n_name": "Les Brigades Immunitaires",
+		*			"aliases": ["LBI"],
+		*			"i18n": {
+		*				"jpn": "Hataraku Saibô",
+		*				"eng": "Cells at Work",
+		*				"fre": "Les Brigades Immunitaires"
+		*			},
+		*			"serie_id": 2093
+		*		},
+		*		...
+		*		],
+		*       "infos": {
+ 		*           "count": 1000,
+ 		* 			"from": 0,
+ 		* 			"to": 120
+ 		*       }
+		* }
+		* @apiError SERIES_LIST_ERROR Unable to get series list
+		* @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 500 Internal Server Error
+		* @apiErrorExample Error-Response:
+		* HTTP/1.1 403 Forbidden
+		*/
+		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			try {
+				let size = req.query.size || 999999;
+				size = parseInt(size, 10);
+				let from = req.query.from || 0;
+				from = parseInt(from, 10);
+				const series = await getSeries(req.query.filter, req.lang, from, size);
+				res.json(OKMessage(series));
+			} catch(err) {
+				logger.error(err);
+				res.statusCode = 500;
+				res.json(errMessage('YEARS_LIST_ERROR',err));
 			}
 		});
 	router.route('/users/:username')
@@ -4293,7 +4427,7 @@ export function APIControllerPublic(router) {
 	/**
  * @api {get} /public/favorites View own favorites
  * @apiName GetFavorites
- * @apiVersion 2.2.0
+ * @apiVersion 2.3.1
  * @apiGroup Favorites
  * @apiPermission own
  * @apiHeader authorization Auth token received from logging in
@@ -4317,6 +4451,7 @@ export function APIControllerPublic(router) {
  *               "NORM_pseudo_add": "Administrateur",
  *               "NORM_serie": "Dynasty Warriors 3",
  *               "NORM_serie_altname": "DW3/DW 3",
+ *               "NORM_serie_orig": "Dynasty Warriors 3",
  *               "NORM_singer": null,
  *               "NORM_songwriter": null,
  *               "NORM_title": "Circuit",
@@ -4343,6 +4478,7 @@ export function APIControllerPublic(router) {
  * 								"fre":"Guerriers de la Dynastie"
  * 								}
  *               "serie_altname": "DW3/DW 3",
+ *               "serie_orig": "Dynasty Warriors 3",
  *               "singer": "NO_TAG",
  *               "songorder": 0,
  *               "songtype": "TYPE_ED",
@@ -4607,7 +4743,6 @@ export function APIControllerPublic(router) {
 					emitWS('playlistsUpdated');
 					res.json(OKMessage(response,'FAV_IMPORTED',data.playlist_id));
 				} catch(err) {
-					console.log(err);
 					res.statusCode = 500;
 					res.json(errMessage('FAV_IMPORT_ERROR',err));
 				}

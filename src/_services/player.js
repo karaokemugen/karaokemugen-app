@@ -61,7 +61,8 @@ export async function playingUpdated() {
 }
 
 export async function playerEnding() {
-	const state = getState();
+	let state = getState();
+	let counter = state.counterToJingle;
 	logger.debug('[Player] Player Ending event triggered');
 	if (state.playerNeedsRestart) {
 		logger.info('[Player] Player restarts, please wait');
@@ -69,8 +70,8 @@ export async function playerEnding() {
 		await restartPlayer();
 	}
 	const conf = getConfig();
-	logger.debug('[Jingles] Songs before next jingle : '+ (conf.EngineJinglesInterval - state.counterToJingle));
-	if (state.counterToJingle >= conf.EngineJinglesInterval) {
+	logger.debug(`[Jingles] Songs before next jingle: ${conf.EngineJinglesInterval - counter}`);
+	if (counter >= conf.EngineJinglesInterval) {
 		setState({
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
@@ -78,7 +79,8 @@ export async function playerEnding() {
 		await playJingle();
 	} else {
 		try {
-			setState({counterToJingle: state.counterToJingle++});
+			counter++;
+			setState({counterToJingle: counter});
 			displayInfo();
 			if (state.status !== 'stop') {
 				await nextSong();
@@ -229,7 +231,7 @@ async function restartPlayer() {
 export async function sendCommand(command, options) {
 	const state = getState();
 	if (!state.player.ready) throw '[Player] Player is not ready yet!';
-	if (commandInProgress || getConfig().isDemo || getConfig().isTest) throw ' [Player] A command is already in progress';
+	if (commandInProgress || getConfig().isDemo || getConfig().isTest) throw '[Player] A command is already in progress';
 	commandInProgress = true;
 	if (command === 'play') {
 		await playPlayer();
@@ -239,7 +241,7 @@ export async function sendCommand(command, options) {
 		await pausePlayer();
 	} else if (command === 'stopAfter') {
 		stopPlayer();
-		await next();
+		await nextSong();
 	} else if (command === 'skip') {
 		await next();
 	} else if (command === 'prev') {

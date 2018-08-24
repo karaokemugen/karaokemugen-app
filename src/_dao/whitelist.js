@@ -3,10 +3,11 @@ import {now} from 'unix-timestamp';
 const sql = require('../_common/db/whitelist');
 
 export async function getWhitelistContents(filter, lang) {
-	const filterClauses = filter ? buildClauses(filter) : [];
-	const query = sql.getWhitelistContents(filterClauses, langSelector(lang));
+	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
+	const filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
+	const query = sql.getWhitelistContents(filterClauses.sql, langSelector(lang));
 
-	return await getUserDb().all(query);
+	return await getUserDb().all(query, filterClauses.params);
 }
 
 export async function emptyWhitelist() {

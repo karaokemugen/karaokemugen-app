@@ -16,12 +16,13 @@ import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
 import {publishURL} from '../../_webapp/online';
 import {playerNeedsRestart} from '../../_services/player';
-import {setState} from './state';
+import {getState, setState} from './state';
 
 /** Object containing all config */
 let config = {};
 let configFile = 'config.ini';
 let savingSettings;
+let configReady;
 
 /**
  * We return a copy of the configuration data so the original one can't be modified
@@ -64,7 +65,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 		}
 	}
 
-	if (newConfig.OnlineMode) publishURL();
+	if (newConfig.OnlineMode && getState().ready) publishURL();
 	setConfig(newConfig);
 	const conf = getConfig();
 	// Toggling and updating settings
@@ -95,13 +96,14 @@ export async function initConfig(appPath, argv) {
 	config = {...config, appPath: appPath};
 	config = {...config, os: process.platform};
 
-	configureLocale();
+	await configureLocale();
 	await loadConfigFiles(appPath);
+	configReady = true;
 	configureHost();
 	if (config.JwtSecret === 'Change me') setConfig( {JwtSecret: uuidV4() });
 	if (config.appInstanceID === 'Change me') setConfig( {appInstanceID: uuidV4() });
 	//Configure watcher
-	const configWatcher = watch(resolve(appPath, configFile));
+	const configWatcher = watch(resolve(appPath, configFile), {useFsEvents: false});
 	configWatcher.on('change', () => {
 		if (!savingSettings) {
 			const oldConf = getConfig();
@@ -142,14 +144,15 @@ async function loadConfig(configFile) {
 	}
 }
 
-function configureLocale() {
+async function configureLocale() {
 	i18n.configure({
 		directory: resolve(__dirname, '../locales'),
 		defaultLocale: 'en',
 		cookie: 'locale',
 		register: global
 	});
-	const detectedLocale = osLocale.sync().substring(0, 2);
+	let detectedLocale = await osLocale();
+	detectedLocale = detectedLocale.substring(0, 2);
 	i18n.setLocale(detectedLocale);
 	config = {...config, EngineDefaultLocale: detectedLocale };
 }
@@ -165,14 +168,14 @@ export function configureHost() {
 	let URLPort = `:${conf.appFrontendPort}`;
 	config = {...config, osHost: address()};
 	if (+conf.appFrontendPort === 80) URLPort = '';
-	if (conf.OnlineMode) return config = {...config, osURL: `http://${config.OnlineHost}`};
+	if (+conf.OnlineMode) return config = {...config, osURL: `http://${config.OnlineHost}`};
 	if (conf.EngineDisplayConnectionInfoHost === '') return config = {...config, osURL: `http://${address()}${URLPort}`};
 	return config = {...config, osURL: `http://${conf.EngineDisplayConnectionInfoHost}${URLPort}`};
 }
 
 export async function setConfig(configPart) {
 	config = {...config, ...configPart};
-	updateConfig(config);
+	if (configReady) updateConfig(config);
 	return getConfig();
 }
 

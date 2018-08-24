@@ -15,43 +15,58 @@ const sql = require('../_common/db/database');
 let karaDb;
 let userDb;
 
-export function buildClausesSeries(filter, type) {
-	return deburr(filter)
-		.toLowerCase()
-		.replace('\'', '')
-		.replace(',', '')
-		.split(' ')
-		.filter(s => !('' === s))
-		.map(word => {
-			return `s.NORM_name LIKE '%${word}%' OR
-			s.NORM_altname LIKE '%${word}%'
-			`;
-		}
-		);
+export function buildClausesSeries(words) {
+	const params = paramWords(words);
+	let sql = [];
+	for (const i in words.split(' ').filter(s => !('' === s))) {
+		sql.push(`s.NORM_name LIKE $word${i} OR
+		s.NORM_altname LIKE $word${i}`);
+	}
+	return {
+		sql: sql,
+		params: params
+	};
 }
 
-export function buildClauses(filter,source) {
-	return deburr(filter)
+function paramWords(filter) {
+	let params = {};
+	const words = deburr(filter)
 		.toLowerCase()
 		.replace('\'', '')
 		.replace(',', '')
 		.split(' ')
 		.filter(s => !('' === s))
 		.map(word => {
-			let extraClauses = '';
-			if (source === 'playlist') extraClauses = `OR pc.NORM_pseudo_add LIKE '%${word}%'`;
-			return `ak.NORM_misc LIKE '%${word}%' OR
-			ak.NORM_title LIKE '%${word}%' OR
-			ak.NORM_author LIKE '%${word}%' OR
-			ak.NORM_serie LIKE '%${word}%' OR
-			ak.NORM_serie_altname LIKE '%${word}%' OR
-			ak.NORM_singer LIKE '%${word}%' OR
-			ak.NORM_songwriter LIKE '%${word}%' OR
-			ak.NORM_creator LIKE '%${word}%' OR
-			ak.language LIKE '%${word}%'
-			${extraClauses}`;
-		}
-		);
+			return `%${word}%`;
+		});
+	for (const i in words) {
+		params[`$word${i}`] = `%${words[i]}%`;
+	}
+	return params;
+}
+
+export function buildClauses(words,source) {
+	const params = paramWords(words);
+	let sql = [];
+	let extraClauses = '';
+	for (const i in words.split(' ').filter(s => !('' === s))) {
+		if (source === 'playlist') extraClauses = `OR pc.NORM_pseudo_add LIKE $word${i}`;
+		sql.push(`ak.NORM_misc LIKE $word${i} OR
+		ak.NORM_title LIKE $word${i} OR
+		ak.NORM_author LIKE $word${i} OR
+		ak.NORM_serie LIKE $word${i} OR
+		ak.NORM_serie_altname LIKE $word${i} OR
+		ak.NORM_singer LIKE $word${i} OR
+		ak.NORM_songwriter LIKE $word${i} OR
+		ak.NORM_creator LIKE $word${i} OR
+		NORM_serie_orig LIKE $word${i} OR
+		ak.language LIKE $word${i}
+		${extraClauses}`);
+	}
+	return {
+		sql: sql,
+		params: params
+	};
 }
 
 export function langSelector(lang) {
@@ -116,7 +131,7 @@ async function openUserDatabase() {
 	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
 	if (!userDb) {
 		logger.debug( '[DB] Opening user database');
-		userDb = await open(userDbFile, {verbose: true});
+		userDb = await open(userDbFile, {verbose: true, cached: true});
 		// Trace event.
 		if (conf.optSQL) {
 			userDb.driver.on('trace', sql => {
@@ -204,12 +219,13 @@ export async function initDBSystem() {
 	await compareDatabasesUUIDs();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
-	logger.info(`Karaokes  : ${stats.totalcount}`);
-	logger.info(`Duration  : ${duration(stats.totalduration)}`);
-	logger.info(`Series    : ${stats.totalseries}`);
-	logger.info(`Languages : ${stats.totallanguages}`);
-	logger.info(`Artists   : ${stats.totalartists}`);
-	logger.info(`Playlists : ${stats.totalplaylists}`);
+	logger.info(`Songs        : ${stats.karas} (${duration(stats.duration)})`);
+	logger.info(`Series       : ${stats.series}`);
+	logger.info(`Languages    : ${stats.languages}`);
+	logger.info(`Artists      : ${stats.singers} singers, ${stats.songwriters} songwriters, ${stats.creators} creators`);
+	logger.info(`Kara Authors : ${stats.authors}`);
+	logger.info(`Playlists    : ${stats.playlists}`);
+	logger.info(`Songs played : ${stats.played}`);
 	return true;
 }
 
@@ -222,46 +238,8 @@ async function compareDatabasesUUIDs() {
 	return true;
 }
 
-async function getSeriesCount() {
-	const res = await getUserDb().get(sql.calculateSeriesCount);
-	return res.seriescount;
-}
-
-async function getPlaylistCount() {
-	const res = await getUserDb().get(sql.calculatePlaylistCount);
-	return res.plcount;
-}
-
-async function getArtistCount() {
-	const res = await getUserDb().get(sql.calculateArtistCount);
-	return res.artistcount;
-}
-
-async function getLanguageCount() {
-	const res = await getUserDb().get(sql.calculateLangCount);
-	return res.langcount;
-}
-
-async function getTotalDuration() {
-	const res = await getUserDb().get(sql.calculateDuration);
-	return res.totalduration;
-}
-
-async function getKaraCount() {
-	const res = await getUserDb().get(sql.calculateKaraCount);
-	return res.karacount;
-}
-
 export async function getStats() {
-
-	const [totalseries, totalcount, totalplaylists, totalartists, totallanguages, totalduration] =
-		await Promise.all([
-			getSeriesCount(), getKaraCount(), getPlaylistCount(), getArtistCount(), getLanguageCount(), getTotalDuration()
-		]);
-
-	return {
-		totalseries, totalcount, totalplaylists, totalartists, totallanguages, totalduration
-	};
+	return await getUserDb().get(sql.getStats);
 }
 
 async function generateDatabase() {
@@ -287,4 +265,11 @@ async function migrateUserDb() {
 
 async function migrateKaraDb() {
 	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
+}
+
+export function buildTypeClauses(mode, value) {
+	if (mode === 'year') return ` AND year = ${value}`;
+	if (mode === 'tag') return ` AND kara_id IN (SELECT fk_id_kara FROM kara_tag WHERE fk_id_tag = ${value})`;
+	if (mode === 'serie') return ` AND kara_id IN (SELECT fk_id_kara FROM kara_serie WHERE fk_id_serie = ${value})`;
+	return '';
 }

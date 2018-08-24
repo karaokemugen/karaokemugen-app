@@ -39,7 +39,8 @@ div > a {
 	font-size: 2rem;
 }
 .header div.headerInputs > .btn {
-	height: calc(100% - 0px);
+	height: calc(100% - 1px);
+	border: 0;
 }
 #manageButton .dropdown-menu {
 	z-index: 1000000;
@@ -146,6 +147,9 @@ div > a {
     margin: 0px;
 	padding: 0px;
 	z-index: 0;
+	
+    display: flex;
+    flex-flow: column;
 }
 
 .panel-heading > div {
@@ -475,6 +479,7 @@ button[name="infoKara"]:before {
 .detailsKara tr > td:first-child, .karaCard .details tr > td:first-child {
 	font-weight: bold;
 	padding-right: 7px;
+	vertical-align: top;
 }
 
 .detailsKara .time, .karaCard .details .time {
@@ -557,6 +562,7 @@ button.closeParent.bottom  {
     z-index: 1;
 	overflow: auto;
 	position: static;
+	height: 100%;
 	-webkit-overflow-scrolling: touch;
 }
 .playlistLoading {
@@ -1010,6 +1016,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
+
+    width: 100%;
+    flex: 0 0 auto;
 }
 .plDashboard .plSelect, .plDashboard .plSearch {
 	z-index:10;
@@ -1194,6 +1203,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
     border-top: none;
     text-decoration: none;
     background-color: rgb(75, 75, 75);
+}
+.tagFilter {
+	width: 100%;
 }
 .modal .modal-message div {
 	padding: 0;
@@ -1484,7 +1496,214 @@ input[type="text"]:focus, input[type="password"]:focus {
 	border-radius: 0;
 }
 
-@media (max-width: 1025px) {
+/* shutdown popup css */
+
+.shutdown-popup-text {
+  position: relative;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+}
+
+.noise-wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  overflow: hidden;
+  z-index: 10;
+  
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 0%,rgba(0,0,0,0.75) 100%);
+  }
+}
+
+.noise {
+  position: absolute;
+  top: -500px;
+  right: -500px;
+  bottom: -500px;
+  left: -500px;
+  background-size: 250px 250px;
+opacity: .17;
+animation: noise .45s steps(5,end) infinite both;
+}
+
+@keyframes noise {
+  0% {
+    transform: translateX(0px,0px); }
+  10% {
+    transform: translate(-100px, 100px);
+  }
+  20% {
+    transform: translate(150px, -100px);
+  }
+  30% {
+    transform: translate(-100px,100px);
+  }
+  40% {
+    transform: translate(100px, -150px);
+  }
+  50% {
+    transform: translate(-100px, 200px);
+  }
+  60% {
+    transform: translate(-200px, -100px);
+  }
+  70% {
+    transform: translateY(50px, 100px);
+  }
+  80% {
+    transform: translate(100px, -150px);
+  }
+  90% {
+    transform: translate(0px, 200px);
+  }
+  100% {
+    transform: translate(-100px, 100px);
+  }
+}
+
+.shutdown-popup {
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 7px;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    color: hsla(0, 0%, 87%, .93);
+    background-color: hsla(0, 0%, 0%, 0.76);
+    z-index: 999999;
+    text-align: center;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 19px hsla(0, 0%, 90%, 0.42);
+}
+
+.shutdown-popup > .closeParent {
+    position: absolute;
+    right: 5px;
+	top: 5px;
+	z-index: 42;
+}
+
+/* FILTER MENU CSS */
+
+.searchMenuContainer {
+    min-height: 0; 
+    margin-bottom:0;
+    border:0;
+    background-color: #1E2124;
+	z-index: 1444;
+	box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.24), 0 1px 18px 0 rgba(0, 0, 0, 0.22), 0 3px 5px -1px rgba(0, 0, 0, 0.3);
+	
+	flex: 0 0 auto;
+}
+.searchMenu {
+    border: solid 0px hsla(0, 0%, 70%, 1);
+    border-width:  1px 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.searchMenu .nav>li:not(.tagFilter) {
+	width: 50%;
+}
+.searchMenu .navbar-nav {
+    margin: 0px -15px;
+}
+.searchMenuContainer.navbar-default .navbar-nav>.active>a.choice {
+    background-color: hsla(211, 33%, 38%, 1);
+    font-weight: bold;
+    color: #eee;
+}
+.searchMenu .navbar-nav>li>a {
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+.searchMenuContainer.navbar-default .navbar-nav>li>a.choice {
+    color: #eee;
+    font-size: 14px;
+}
+
+.searchMenuContainer.navbar-default .navbar-nav>li > * {
+    display: flex;
+    line-height: 17px;
+    height: 34px;
+}
+.searchMenuContainer.navbar-default .navbar-nav>li a>i {
+    margin-right: 10px;
+}
+.searchMenuContainer.navbar-default .navbar-nav>li > .value {
+   width: calc(100% - 100px);
+   float: right;
+   border: 0;
+}
+.searchMenuButton[aria-expanded="true"] {
+    background-color: hsla(211, 33%, 38%, 1);
+    font-weight: bold;
+    color: #eee;
+}
+.searchMenu .navbar-nav>li, .searchMenu .navbar-nav {
+	float: none;
+}
+.searchMenu ul.navbar-nav {
+	display: flex;
+	flex-wrap: wrap;
+}
+.select2-container {
+   width: 100% !important;
+}
+.select2-container--bootstrap .select2-selection--single {
+    padding-top: 7px;
+}
+.searchMenu .select2-container--bootstrap .select2-selection--single, .searchMenu.select2-dropdown {
+    background-color: hsla(210, 9%, 17%, 1);
+    /* border-width: 0px 0px 1px 0px; */
+    border: 0;
+}
+.searchMenu ::-webkit-input-placeholder {
+    font-size: 14px;
+    line-height: 14px;
+    height: 60px;
+}
+.searchMenu  ::-moz-placeholder {  /* Firefox 19+ */
+    font-size: 14px;
+    line-height: 14px;
+    height: 60px;
+}
+.searchMenu :-ms-input-placeholder {
+    font-size: 14px;
+    line-height: 14px;
+    height: 60px;
+}
+.tagsContainer {
+    width: calc(100% - 115px);
+}
+.tagsTypesContainer {
+    width: 115px;
+}
+
+@media (max-width: 1025px) {  
+    .tags.select2-container--open {
+        max-width: 100%;
+        right: 0 !important;
+        left: auto !important;
+	}
+	.tags.select2-container--open > .select2-dropdown {
+		width: 100% !important;
+	}
+
 	.playlistContainer[flipped]:after {
 		background: url(/ressources/img/nanami_g_980w.jpg) no-repeat;
 		background-size: 100%;

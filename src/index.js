@@ -1,4 +1,4 @@
-import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncRename, asyncUnlink} from './_common/utils/files';
+import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_common/utils/files';
 import {setConfig, getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {writeFileSync, readFileSync} from 'fs';
@@ -11,7 +11,6 @@ import {exit, initEngine} from './_services/engine';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
-import {now} from 'unix-timestamp';
 
 process.on('uncaughtException', function (exception) {
 	console.log(exception);
@@ -108,8 +107,6 @@ async function main() {
 	];
 	ports.forEach(port => verifyOpenPort(port));
 
-	await restoreKaraBackupFolders(config);
-
 	/**
 	 * Gentlemen, start your engines.
 	 */
@@ -157,7 +154,7 @@ async function checkPaths(config) {
 	//Fix for PathMedias = app/data/videos
 	//Delete this after 2.3. This is an awful hack.
 	//Only effective after July 1st 2018
-	if (now() > 1530396000 && config.PathMedias === 'app/data/videos') {
+	if (config.PathMedias === 'app/data/videos') {
 		const oldPath = resolve(appPath, config.PathMedias);
 		setConfig({ PathMedias: 'app/data/medias'});
 		config = getConfig();
@@ -195,29 +192,4 @@ function verifyOpenPort(port) {
 	});
 	server.once('listening', () => server.close());
 	server.listen(port);
-}
-
-/**
- * Check if backup folder for karaokes exists. If it does, it means previous generation aborted.
- * Backup folder is restored.
- */
-async function restoreKaraBackupFolders(config) {
-	const restores = [];
-	config.PathKaras.split('|').forEach(pathKara => restores.push(restoreBackupFolder(pathKara, config)));
-	await Promise.all(restores);
-}
-
-async function restoreBackupFolder(pathKara, config) {
-	const karasDbFile = resolve(appPath, config.PathDB, config.PathDBKarasFile);
-	const karasDir = resolve(appPath, pathKara);
-	const karasDirBackup = karasDir+'_backup';
-	if (await asyncExists(karasDirBackup)) {
-		logger.info(`[Launcher] Backup folder ${karasDirBackup} exists, replacing karaokes folder with it.`);
-		await asyncRemove(karasDir);
-		await asyncRename(karasDirBackup, karasDir);
-		if (await asyncExists(karasDbFile)) {
-			logger.info('[Launcher] Clearing karas database : generation will occur shortly');
-			await asyncUnlink(karasDbFile);
-		}
-	}
 }

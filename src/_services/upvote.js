@@ -28,9 +28,9 @@ export async function addUpvote(plc_id,username) {
 			code: 'UPVOTE_DONE'
 		};
 		const conf = getConfig();
-		if (!conf.EngineFreeUpvotes) return ret;
+		if (!+conf.EngineFreeUpvotes) return ret;
 		let modePlaylist_id;
-		if (conf.EnginePrivateMode) {
+		if (+conf.EnginePrivateMode) {
 			modePlaylist_id = await isACurrentPlaylist();
 		} else {
 			modePlaylist_id = await isAPublicPlaylist();

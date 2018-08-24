@@ -1,6 +1,6 @@
 {
   "name": "karaokemugen-app",
-  "version": "2.2.3",
+  "version": "2.3.1",
   "description": "Karaoke playlist manager / player",
   "bin": {
     "karaokemugen": "./dist/index.js"
@@ -46,9 +46,9 @@
     "mirukyu <A13x7950@gmail.com>",
     "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)"
   ],
-  "engineStrict": true,
+  "engineStrict": false,
   "engines": {
-    "node": ">=8.10.0 <10.0.0"
+    "node": ">=8.9.0"
   },
   "license": "MIT",
   "private": true,
@@ -70,7 +70,6 @@
     ]
   },
   "dependencies": {
-    "@risingstack/protect": "^1.2.0",
     "ass-parser": "^0.2.0",
     "async-await-parallel": "^1.0.0",
     "axios": "^0.18.0",
@@ -78,14 +77,14 @@
     "body-parser": "^1.18.2",
     "chalk": "^2.4.0",
     "chokidar": "^2.0.4",
-    "cli-progress": "^2.0.0",
+    "cli-progress": "^2.1.0",
     "cookie-parser": "^1.4.3",
     "csv-string": "^3.1.3",
     "decompress": "^4.2.0",
-    "execa": "^0.10.0",
+    "execa": "^0.11.0",
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
-    "file-type": "^8.1.0",
+    "file-type": "^9.0.0",
     "fs-extra": "^7.0.0",
     "i18n": "^0.8.3",
     "image-size": "^0.6.3",
@@ -105,7 +104,7 @@
     "node-id3": "^0.1.5",
     "node-mpv": "github:00SteinsGate00/Node-MPV#Node-MPV-2",
     "opn": "^5.3.0",
-    "os-locale": "^2.1.0",
+    "os-locale": "^3.0.0",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -117,29 +116,28 @@
     "readline-sync": "^1.4.9",
     "sanitize-filename": "^1.6.1",
     "socket.io": "^2.1.1",
-    "sqlite": "2.9.1",
-    "systeminformation": "^3.42.4",
+    "sqlite": "^3.0.0",
+    "systeminformation": "^3.42.9",
     "unix-timestamp": "^0.2.0",
     "uuid": "^3.3.2",
     "validate.js": "^0.12.0",
     "webdav": "^1.5.3",
     "winston": "^3.0.0",
-    "winston-daily-rotate-file": "^3.3.0"
+    "winston-daily-rotate-file": "^3.3.2"
   },
   "devDependencies": {
-    "apidoc": "^0.17.6",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.6",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.2",
-    "eslint": "^5.1.0",
+    "eslint": "^5.4.0",
     "eslint-config-react-app": "^2.1.0",
     "eslint-loader": "2.1.0",
     "eslint-plugin-flowtype": "2.50.0",
-    "eslint-plugin-import": "2.13.0",
+    "eslint-plugin-import": "2.14.0",
     "eslint-plugin-jsx-a11y": "6.1.1",
-    "eslint-plugin-react": "^7.10.0",
+    "eslint-plugin-react": "^7.11.1",
     "mocha": "^5.2.0",
     "supertest": "^3.0.0"
   },

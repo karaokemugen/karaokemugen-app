@@ -90,7 +90,7 @@ export async function getDataFromKaraFile(karafile) {
 		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
 	} catch (err) {
 		logger.warn('[Kara] Media file not found : ' + karaData.mediafile);
-		error = true;
+		if (conf.optStrict) error = true;
 		if (!karaData.mediagain) karaData.mediagain = 0;
 		if (!karaData.mediasize) karaData.mediasize = 0;
 		if (!karaData.mediaduration) karaData.mediaduration = 0;

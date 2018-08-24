@@ -74,12 +74,12 @@ export default class EditableTagGroup extends React.Component {
 
 	searchSeries = (val) => {
 		this.getSeries(val).then(series => {
-			this.setState({ DS: series.data.map(serie => serie.name) || [] });
+			this.setState({ DS: series.data.content.map(serie => serie.name) || [] });
 		});
 	};
 
 	searchTags = (val) => {
-		this.getTags(val, this.props.tagType).then(tags => this.setState({ DS: tags.data.map(tag => {
+		this.getTags(val, this.props.tagType).then(tags => this.setState({ DS: tags.data.content.map(tag => {
 			return { value: tag.name, text: tag.name_i18n};
 		}) || [] }));
 	};

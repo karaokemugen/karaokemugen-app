@@ -13,7 +13,6 @@ import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
 import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
 import {createServer} from 'http';
-import protect from '@risingstack/protect';
 
 let ws;
 
@@ -52,10 +51,6 @@ export async function initFrontend(port) {
 	app.use(i18n.init);
 	app.use(urlencoded({ extended: true, limit: '50mb' }));
 	app.use(json());
-	app.use(protect.express.sqlInjection({
-		body: true,
-		loggerFunction: logger.error
-	}));
 	function routerAuth() {
 		const apiRouter = express.Router();
 		// Adding auth routes here.
@@ -110,13 +105,13 @@ export async function initFrontend(port) {
 		const config = getConfig();
 
 		let view = 'public';
-		if(config.WebappMode === '0') {
+		if(+config.WebappMode === 0) {
 			view = 'publicClosed';
-		} else if (config.WebappMode === '1') {
+		} else if (+config.WebappMode === 1) {
 			view = 'publicLimited';
 		}
 		let url;
-		if (config.EngineDisplayConnectionInfoHost) {
+		if (+config.EngineDisplayConnectionInfoHost) {
 			url = config.EngineDisplayConnectionInfoHost;
 		} else {
 			url = address();

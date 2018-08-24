@@ -13,6 +13,7 @@ import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
 import {addDownloads} from '../_services/download';
+import logger from 'winston';
 
 export default function adminController(router) {
 	const conf = getConfig();
@@ -65,6 +66,32 @@ export default function adminController(router) {
 			res.status(500).send(`Error while generating karas: ${err}`);
 		}
 	});
+	router.get('/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const karas = await getKaras(req.query.filter, req.lang, 0, 99999999999999999, null, null, req.authToken)
+			res.json(karas);
+		} catch(err) {
+			res.status(500).send(`Error while fetching karas: ${err}`);
+		}
+	});
+
+	router.get('/tags', getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const tags = await getTags(req.lang, req.query.filter, req.query.type, 0, 999999999)
+			res.json(tags);
+		} catch(err) {
+			res.status(500).send(`Error while fetching tags: ${err}`);
+		}
+	});
+
+	router.get('/series', getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const series = await getSeries(req.query.filter, req.lang, 0, 999999999999)
+			res.json(series);
+		} catch(err) {
+			res.status(500).send(`Error while fetching series: ${err}`);
+		}
+	});
 
 	router.post('/karas/importfile', upload.single('file'), (req, res) => {
 		res.status(200).send(JSON.stringify(req.file));
@@ -76,33 +103,6 @@ export default function adminController(router) {
 			res.status(200).send('Kara successfully generated');
 		} catch(err) {
 			res.status(500).send(`Error while generating kara : ${err}`);
-		}
-	});
-
-	router.get('/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
-		try {
-			const karas = await getKaras(req.query.filter, req.lang, 0, 99999999999999999, req.authToken);
-			res.status(200).json(karas);
-		} catch(err) {
-			res.status(500).send(`Error while fetching karas: ${err}`);
-		}
-	});
-
-	router.get('/tags', getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
-		try {
-			const tags = await getTags(req.lang, req.query.filter, req.query.type);
-			res.status(200).json(tags);
-		} catch(err) {
-			res.status(500).send(`Error while fetching tags: ${err}`);
-		}
-	});
-
-	router.get('/series', getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
-		try {
-			const series = await getSeries(req.query.filter, req.lang);
-			res.status(200).json(series);
-		} catch(err) {
-			res.status(500).send(`Error while fetching series: ${err}`);
 		}
 	});
 
@@ -240,6 +240,17 @@ export default function adminController(router) {
 			res.status(200).send(msg);
 		} catch(err) {
 			res.status(500).send(`Error while adding download: ${err}`);
+		}
+	});
+	router.post('/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			res.status(200).send('Karas are being updated, check Karaoke Mugen\'s console to follow its progression');
+			await runBaseUpdate();
+			logger.info('[Updater] User-triggered update successful');
+			await generateDatabase();
+			logger.info('[Gen] User-triggered generation successful');
+		} catch(err) {
+			logger.error(`[Updater] Generation/update failed : ${err}`);
 		}
 	});
 }

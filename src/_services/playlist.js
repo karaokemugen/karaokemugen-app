@@ -422,8 +422,14 @@ export async function getKaraFromPlaylist(plc_id,lang,token) {
 		const kara = await getPLCInfo(plc_id, seenFromUser, token.username);
 		if (!kara) throw 'PLCID unknown';
 		let output = translateKaraInfo([kara], lang);
-		const previewfile = await isPreviewAvailable(output[0].mediafile);
-		if (previewfile) output[0].previewfile = previewfile;
+		try {
+			profile('previewCheck');
+			const previewfile = await isPreviewAvailable(output[0].mediafile);
+			if (previewfile) output[0].previewfile = previewfile;
+			profile('previewCheck');
+		} catch(err) {
+			logger.warn(`[Previews] Error detecting previews : ${err}`);
+		}
 		profile('getPLCInfo');
 		return output;
 	} catch(err) {
@@ -504,7 +510,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		const plContents = await getPlaylistKaraIDs(playlist_id);
 		// Making a unique ID depending on if we're in the favorites or public playlist or something else.
 		// Unique ID here is to determine if a song is already present or not
-		if (conf.EngineAllowDuplicates) {
+		if (+conf.EngineAllowDuplicates) {
 			if (!playlistInfo.flag_public && !playlistInfo.flag_favorites) {
 				plContents.forEach(p => p.unique_id = `${p.kara_id}_${p.user_id}`);
 				karaList.forEach(k => k.unique_id = `${k.kara_id}_${user.id}`);
@@ -551,7 +557,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		const playingObject = getPlayingPos(plContents);
 		const playingPos = playingObject ? playingObject.plc_id_pos : 0;
 		// Position management here :
-		if (conf.EngineSmartInsert && !user.flag_admin) {
+		if (+conf.EngineSmartInsert && !user.flag_admin) {
 			if (userMaxPosition === null) {
 				// No songs yet from that user, they go first.
 				pos = -1;
@@ -605,7 +611,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			playlist_id: playlist_id
 		};
 	} catch(err) {
-		logger.error(`[Playlist] Unable to add karaokes : ${err}`);
+		logger.error(`[Playlist] Unable to add karaokes : ${JSON.stringify(err)}`);
 		if (err.code === 4) errorCode = 'PLAYLIST_MODE_ADD_SONG_ERROR_ALREADY_ADDED';
 		throw {
 			code: errorCode,
@@ -830,7 +836,7 @@ export async function exportPlaylist(playlist_id) {
 			version: 3,
 			description: 'Karaoke Mugen Playlist File',
 		};
-		playlist.PlaylistInformation = plInfo;
+		playlist.PlaylistInformation = pl;
 		playlist.PlaylistContents = plcFiltered;
 		return playlist;
 	} catch(err) {
@@ -946,7 +952,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 	}
 }
 
-export async function shufflePlaylist(playlist_id) {
+export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw `Playlist ${playlist_id} unknown`;
 	// We check if the playlist to shuffle is the current one. If it is, we will only shuffle
@@ -954,8 +960,14 @@ export async function shufflePlaylist(playlist_id) {
 	try {
 		profile('shuffle');
 		let playlist = await getPlaylistContentsMini(playlist_id);
+
 		if (!pl.flag_current) {
-			playlist = shuffle(playlist);
+			if(!smartShuffleBoolean){
+				playlist = shuffle(playlist);
+			}else{
+				playlist = smartShuffle(playlist);
+			}
+
 		} else {
 		// If it's current playlist, we'll make two arrays out of the playlist :
 		// - One before (and including) the current song being played (flag_playing = 1)
@@ -974,7 +986,11 @@ export async function shufflePlaylist(playlist_id) {
 					AfterPlaying.push(kara);
 				}
 			});
-			AfterPlaying = shuffle(AfterPlaying);
+			if (!smartShuffleBoolean) {
+				AfterPlaying = shuffle(AfterPlaying);
+			}else{
+				AfterPlaying = smartShuffle(AfterPlaying);
+			}
 			playlist = BeforePlaying.concat(AfterPlaying);
 			// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
 			if (!ReachedPlaying) {
@@ -1001,6 +1017,101 @@ export async function shufflePlaylist(playlist_id) {
 		profile('shuffle');
 	}
 }
+
+
+async function smartShuffle(playlist){ // Smart Shuffle begin
+	let userShuffleBoolean = false; // The boolean to add a shuffle condition if the number of user is high enough
+
+
+	let verificator = 0;
+	if (playlist.length - 6 > 0) {      // We do nothing if the playlist length is too low
+
+
+		let userTest = 1;
+		let userTestArray = [playlist[0].pseudo_add];
+
+		for (const playlistItem of playlist) {
+			if (!userTestArray.includes(playlistItem.pseudo_add)) {
+				userTestArray.push(playlistItem.pseudo_add);
+				userTest++;
+			}
+		}
+
+		if (userTest > 5) {
+			userShuffleBoolean = true;
+		}
+
+		let user_iterator = 0;
+
+		if (userShuffleBoolean) {
+			while (playlist.length - user_iterator > 0) {
+
+
+				if ((playlist.length - user_iterator) > 6) {
+					let playlist_temp = playlist.slice(user_iterator, user_iterator + 6);
+					for (let i = 0; i < 5; i++) {
+						if (playlist_temp[i].pseudo_add === playlist_temp[i + 1].pseudo_add) {
+							if (playlist[i + 4 + user_iterator]) {
+								let a = playlist_temp[i + 1];
+								playlist[i + 1 + user_iterator] = playlist[i + 4 + user_iterator];
+								playlist[i + 4 + user_iterator] = a;
+							} else {
+								let a = playlist_temp[i + 1];
+								playlist[i + 1 + user_iterator] = playlist[i - 5 + user_iterator];
+								playlist[i - 5 + user_iterator] = a;
+
+							}
+
+						}
+
+					}
+
+				}
+				user_iterator += 5;
+			}
+
+			let playlist_temp = playlist.slice(user_iterator - 1, playlist.length);
+
+			for (let i = user_iterator; i < playlist_temp.length - 1; i++) {
+
+				if (playlist_temp[i].pseudo_add === playlist_temp[i + 1].pseudo_add) verificator = i;
+
+			}
+
+			if (verificator !== 0) {
+
+				let a = playlist_temp[verificator + 1];
+				playlist[verificator + 1 + user_iterator] = playlist[2];
+				playlist[2] = a;
+
+			}
+
+		}
+
+		let duration_iterator = 0;
+
+		while (playlist.length - duration_iterator > 0) {
+
+			if (playlist.length - duration_iterator > 6) {
+				let playlist_temp = playlist.slice(duration_iterator, duration_iterator + 6);
+				for (let i = 0; i < 4; i++) {
+					if (playlist_temp[i].duration > 150 && playlist_temp[i + 1].duration > 150) {
+						if (playlist[i + 4 + duration_iterator]) {
+							let a = playlist_temp[i + 1];
+							playlist[i + 1 + duration_iterator] = playlist[i + 4 + duration_iterator];
+							playlist[i + 4 + duration_iterator] = a;
+						} else {
+							let a = playlist_temp[i + 1];
+							playlist[i + 1 + duration_iterator] = playlist[i - 5 + duration_iterator];
+							playlist[i - 5 + duration_iterator] = a;
+						}
+					}
+				}
+			}
+			duration_iterator += 6;
+		}
+	}
+} // Smart Shuffle end
 
 export async function previousSong() {
 	const playlist_id = await isACurrentPlaylist();
@@ -1091,7 +1202,7 @@ export async function getCurrentSong() {
 	// Let's add details to our object so the player knows what to do with it.
 	kara.playlist_id = playlist.id;
 	let requester;
-	if (conf.EngineDisplayNickname) {
+	if (+conf.EngineDisplayNickname) {
 		// When a kara has been added by admin/import, do not display it on screen.
 		// Escaping {} because it'll be interpreted as ASS tags below.
 		kara.pseudo_add = kara.pseudo_add.replace(/[\{\}]/g,'');
@@ -1101,25 +1212,27 @@ export async function getCurrentSong() {
 	}
 	if (kara.title) kara.title = ` - ${kara.title}`;
 	// If series is empty, pick singer information instead
+
 	let series = kara.serie;
 	if (!kara.serie) series = kara.singer;
 
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
-	if (!kara.songorder) kara.songorder = '';
+	if (!kara.songorder || kara.songorder === 0) kara.songorder = '';
 	// Construct mpv message to display.
 	//If karaoke is present in the public playlist, we're deleting it.
-	if (conf.EngineRemovePublicOnPlay) {
+	if (+conf.EngineRemovePublicOnPlay) {
 		const playlist_id = await isAPublicPlaylist();
 		const plc = await getPLCByKIDUserID(kara.kid,kara.user_id,playlist_id);
-		if (plc) await deleteKaraFromPlaylist([plc.playlistcontent_id],playlist_id);
+		if (plc) await deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);
 	}
 	kara.infos = '{\\bord0.7}{\\fscx70}{\\fscy70}{\\b1}'+series+'{\\b0}\\N{\\i1}'+__(kara.songtype+'_SHORT')+kara.songorder+kara.title+'{\\i0}\\N{\\fscx50}{\\fscy50}'+requester;
 	return kara;
+
 }
 
 export async function buildDummyPlaylist(playlist_id) {
 	const stats = await getStats();
-	let karaCount = stats.totalcount;
+	let karaCount = stats.karas;
 	// Limiting to 5 sample karas to add if there's more.
 	if (karaCount > 5) karaCount = 5;
 	if (karaCount > 0) {

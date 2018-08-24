@@ -64,7 +64,7 @@ export async function readAllKaras(karafiles) {
 	if (karas.some((kara) => {
 		return kara.error;
 	})) error = true;
-	return karas;
+	return karas.filter(kara => !kara.error);
 }
 
 async function readAndCompleteKarafile(karafile) {
@@ -393,7 +393,13 @@ export async function run(config) {
 		const karas = await readAllKaras(karaFiles);
 		// Preparing data to insert
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
-		const seriesData = await readSeriesFile(series_altnamesfile);
+		let seriesData;
+		try {
+			seriesData = await readSeriesFile(series_altnamesfile);
+		} catch(err) {
+			error = true;
+			throw err;
+		}
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
