@@ -68,7 +68,7 @@ export default function adminController(router) {
 	});
 	router.get('/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			const karas = await getKaras(req.query.filter, req.lang, 0, 99999999999999999, null, null, req.authToken)
+			const karas = await getKaras(req.query.filter, req.lang, 0, 99999999999999999, null, null, req.authToken);
 			res.json(karas);
 		} catch(err) {
 			res.status(500).send(`Error while fetching karas: ${err}`);
@@ -77,7 +77,7 @@ export default function adminController(router) {
 
 	router.get('/tags', getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			const tags = await getTags(req.lang, req.query.filter, req.query.type, 0, 999999999)
+			const tags = await getTags(req.lang, req.query.filter, req.query.type, 0, 999999999);
 			res.json(tags);
 		} catch(err) {
 			res.status(500).send(`Error while fetching tags: ${err}`);
@@ -86,7 +86,7 @@ export default function adminController(router) {
 
 	router.get('/series', getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			const series = await getSeries(req.query.filter, req.lang, 0, 999999999999)
+			const series = await getSeries(req.query.filter, req.lang, 0, 999999999999);
 			res.json(series);
 		} catch(err) {
 			res.status(500).send(`Error while fetching series: ${err}`);
