@@ -1,4 +1,4 @@
-import {emptyDownload, selectDownload, selectDownloads, updateDownload, deleteDownload, insertDownloads, initDownloads} from '../_dao/download';
+import {emptyDownload, selectDownload, selectDownloads, updateDownload, deleteDownload, insertDownloads, selectPendingDownloads, initDownloads} from '../_dao/download';
 import Downloader from '../_common/utils/downloader';
 import Queue from 'better-queue';
 import uuidV4 from 'uuid/v4';
@@ -9,7 +9,14 @@ import logger from 'winston';
 import {asyncExists, asyncUnlink} from '../_common/utils/files';
 
 const queueOptions = {
-	id: 'uuid'
+	id: 'uuid',
+	precondition: cb => {
+		internet
+			.then(cb(null, true))
+			.catch(cb(null, false));
+	},
+	preconditionRetryTimeout: 10*1000,
+	cancelIfRunning: true
 };
 
 let q;
@@ -25,18 +32,32 @@ function queueDownload(input, done) {
 		});
 }
 
-export async function initDownloadQueue() {
+export async function initDownloader() {
+	initQueue();
+	await initDownloads();
+	//Returning early for now, we don't relaunch pending downloads on startup
+	//await startDownloads();
+	return;
+}
+
+function initQueue() {
 	q = new Queue(queueDownload, queueOptions);
 	q.on('task_failed', (taskId, err, stats) => logger.error(`[Download] Task ${taskId} failed : ${err}`));
 	q.on('drain', () => logger.info('[Download] Ano ne! I finished all my downloads! GIVE ME MORE!'));
-	await initDownloads();
-	return;
-	const downloads = await selectDownloads();
-	try {
-		await internet();
-		downloads.forEach(dl => q.push(dl));
-	} catch(err) {
-		if (downloads.length > 0) logger.warn('[Downloader] There are planned downloads, but your computer seems offline');
+}
+
+export async function startDownloads() {
+	if (q.length && q.length > 0) {
+		resumeQueue();
+	} else {
+		const downloads = await selectPendingDownloads();
+		try {
+			await internet();
+			downloads.forEach(dl => q.push(dl));
+			logger.info('[Downloader] Download queue starting up');
+		} catch(err) {
+			if (downloads.length > 0) logger.warn('[Downloader] There are planned downloads, but your computer seems offline');
+		}
 	}
 }
 
@@ -140,16 +161,22 @@ export async function setDownloadStatus(uuid, status) {
 	return await updateDownload(uuid, status);
 }
 
+export async function retryDownload(uuid) {
+	const dl = await selectDownload(uuid);
+	if (!dl) throw 'Download ID unknown';
+	q.push(dl);
+	return await setDownloadStatus(uuid, 'DL_PLANNED');
+}
+
 export async function removeDownload(uuid) {
 	const dl = await selectDownload(uuid);
 	if (!dl) throw 'Download ID unknown';
-	dl.urls = JSON.parse(dl.urls);
 	q.cancel(uuid);
 	return await deleteDownload(uuid);
 }
 
 export async function wipeDownloads() {
 	q.destroy();
-	q = new Queue(queueDownload, queueOptions);
+	initQueue();
 	return await emptyDownload();
 }

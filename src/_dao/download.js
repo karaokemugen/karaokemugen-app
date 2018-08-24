@@ -16,6 +16,10 @@ export async function selectDownloads() {
 	return await getUserDb().all(sql.selectDownloads);
 }
 
+export async function selectPendingDownloads() {
+	return await getUserDb().all(sql.selectPendingDownloads);
+}
+
 export async function initDownloads() {
 	await getUserDb().run(sql.updateRunningDownloads);
 	await getUserDb().run(sql.deleteDoneFailedDownloads);

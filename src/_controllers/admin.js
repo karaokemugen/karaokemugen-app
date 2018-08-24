@@ -12,7 +12,7 @@ import {resetViewcounts} from '../_dao/kara';
 import {resolve} from 'path';
 import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
-import {addDownloads} from '../_services/download';
+import {getDownloads, removeDownload, retryDownload, pauseQueue, startDownloads, addDownloads, wipeDownloads} from '../_services/download';
 import logger from 'winston';
 
 export default function adminController(router) {
@@ -240,6 +240,54 @@ export default function adminController(router) {
 			res.status(200).send(msg);
 		} catch(err) {
 			res.status(500).send(`Error while adding download: ${err}`);
+		}
+	});
+	router.get('/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const downloads = await getDownloads();
+			res.json(downloads);
+		} catch(err) {
+			res.status(500).send(`Error getting downloads: ${err}`);
+		}
+	});
+	router.delete('/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await wipeDownloads();
+			res.status(200).send('Download queue emptied completely');
+		} catch(err) {
+			res.status(500).send(`Error wiping downloads: ${err}`);
+		}
+	});
+	router.delete('/downloads/:uuid', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await removeDownload(req.params.uuid);
+			res.status(200).send('Download removed');
+		} catch(err) {
+			res.status(500).send(`Error removing download: ${err}`);
+		}
+	});
+	router.put('/downloads/:uuid/retry', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await retryDownload(req.params.uuid);
+			res.status(200).send('Download back into queue');
+		} catch(err) {
+			res.status(500).send(`Error retrying download: ${err}`);
+		}
+	});
+	router.post('/downloads/pause', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await pauseQueue();
+			res.status(200).send('Downloads paused');
+		} catch(err) {
+			res.status(500).send(`Error pausing downloads: ${err}`);
+		}
+	});
+	router.post('/downloads/start', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await startDownloads();
+			res.status(200).send('Downloads starting');
+		} catch(err) {
+			res.status(500).send(`Error starting downloads: ${err}`);
 		}
 	});
 	router.post('/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
