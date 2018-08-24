@@ -164,8 +164,10 @@ export async function setDownloadStatus(uuid, status) {
 export async function retryDownload(uuid) {
 	const dl = await selectDownload(uuid);
 	if (!dl) throw 'Download ID unknown';
+	if (dl.status === 'DL_RUNNING') throw 'Download is already running!';
+	if (dl.status === 'DL_PLANNED') throw 'Download is already planned!';
+	await setDownloadStatus(uuid, 'DL_PLANNED');
 	q.push(dl);
-	return await setDownloadStatus(uuid, 'DL_PLANNED');
 }
 
 export async function removeDownload(uuid) {

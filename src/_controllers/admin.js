@@ -274,7 +274,7 @@ export default function adminController(router) {
 			res.status(500).send(`Error retrying download: ${err}`);
 		}
 	});
-	router.post('/downloads/pause', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	router.put('/downloads/pause', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			await pauseQueue();
 			res.status(200).send('Downloads paused');
@@ -282,7 +282,7 @@ export default function adminController(router) {
 			res.status(500).send(`Error pausing downloads: ${err}`);
 		}
 	});
-	router.post('/downloads/start', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+	router.put('/downloads/start', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			await startDownloads();
 			res.status(200).send('Downloads starting');
