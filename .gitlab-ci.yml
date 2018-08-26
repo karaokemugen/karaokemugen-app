@@ -125,7 +125,6 @@ deploy_osx:
     - mkdir build_mac
     - cd build_mac
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_macos.tar.gz | tar xvz
-    - rm dist_macos.tar.gz
     - chmod -R +x app/bin
     - mkdir -p app/jingles
     - cd app/jingles
