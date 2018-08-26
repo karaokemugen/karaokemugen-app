@@ -7,10 +7,6 @@ cache:
   - bin/
   - react_client/node_modules/
 
-before_script:
-  - rm -f /usr/local/bin/yarn
-  - rm -f /usr/local/bin/yarnpkg
-
 stages:
   - test
   - build
