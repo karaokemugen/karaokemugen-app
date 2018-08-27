@@ -7,11 +7,6 @@ cache:
   - bin/
   - react_client/node_modules/
 
-before_script:
-  - rm -f /usr/local/bin/yarn
-  - rm -f /usr/local/bin/yarnpkg
-  - npm install -g pkg yarn apidoc
-
 stages:
   - test
   - build
@@ -65,6 +60,7 @@ pkg_win:
       - bin/
   script:
     - mkdir -p bin
+    - npm install -g pkg
     - pkg . -d --targets node8-win-x64 --out-path bin
   only:
     - master
@@ -81,6 +77,7 @@ pkg_osx:
       - bin/
   script:
     - mkdir -p bin
+    - npm install -g pkg
     - pkg . -d --targets node8-macos-x64 --out-path bin
   only:
     - master
@@ -94,16 +91,12 @@ deploy_win:
   script:
     - mkdir build_win
     - cd build_win
-    - wget http://mugen.karaokes.moe/downloads/dist_win.tar.gz
-    - tar xvzf dist_win.tar.gz
-    - rm dist_win.tar.gz
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win.tar.gz | tar xvz
     - mkdir -p app/jingles
     - cd app/jingles
-    - wget https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar
-    - tar xvf archive.tar
+    - wget -qO- https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar | tar xv
     - mv -f jingles-master*/* .
     - rm -Rf jingles-master*
-    - rm -f archive.tar
     - cd ../..
     - cp -f ../bin/karaokemugen-app.exe KaraokeMugen.exe
     - cp -f ../config.ini.sample .
@@ -131,14 +124,11 @@ deploy_osx:
   script:
     - mkdir build_mac
     - cd build_mac
-    - wget http://mugen.karaokes.moe/downloads/dist_macos.tar.gz
-    - tar xvzf dist_macos.tar.gz
-    - rm dist_macos.tar.gz
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_macos.tar.gz | tar xvz
     - chmod -R +x app/bin
     - mkdir -p app/jingles
     - cd app/jingles
-    - wget https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar
-    - tar xvf archive.tar
+    - wget -qO- https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar | tar xv
     - mv -f jingles-master*/* .
     - rm -Rf jingles-master*
     - rm -f archive.tar
@@ -157,6 +147,7 @@ deploy_osx:
 apidoc:
   stage: deploy
   script:
+    - npm install -g apidoc
     - apidoc -i src/_controllers -o apidoc -t apidoc_template
     - cd apidoc
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/apidoc; mirror -Rnev --parallel=10"
