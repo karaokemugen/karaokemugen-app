@@ -431,7 +431,7 @@ export async function run(config) {
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
-		const seriesAltNamesData = await prepareAltSeriesInsertData(seriesData, seriesMap)
+		const seriesAltNamesData = await prepareAltSeriesInsertData(seriesData, seriesMap);
 		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
 		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 		const tags = getAllKaraTags(karas);
