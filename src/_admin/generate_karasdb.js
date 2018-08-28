@@ -2,10 +2,11 @@ import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {basename, join, resolve} from 'path';
 import deburr from 'lodash.deburr';
+import {profile} from '../_common/utils/logger';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
-import {asyncCopy, asyncReadDir} from '../_common/utils/files';
-import {getConfig, resolvedPathKaras} from '../_common/utils/config';
+import {asyncReadFile, checksum, asyncCopy, asyncReadDir} from '../_common/utils/files';
+import {getConfig, resolvedPathKaras, setConfig} from '../_common/utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
@@ -496,14 +497,13 @@ export async function checkUserdbIntegrity(uuid, config) {
 	// Listing existing KIDs
 	const karaKIDs = allKaras.map(k => `'${k.kid}'`).join(',');
 
-	// Deleting records which aren't in our KID list
+	// Setting kara IDs to 0 when KIDs are absent
 	await Promise.all([
-		userdb.run(`DELETE FROM whitelist WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM blacklist_criteria WHERE uniquevalue NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM blacklist WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM viewcount WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM request WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM playlist_content WHERE kid NOT IN (${karaKIDs});`)
+		userdb.run(`UPDATE whitelist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`UPDATE blacklist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`UPDATE viewcount SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`UPDATE request SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
 	]);
 	const karaIdByKid = new Map();
 	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
@@ -573,4 +573,22 @@ export async function checkUserdbIntegrity(uuid, config) {
 	await userdb.run('COMMIT');
 
 	logger.info('[Gen] Integrity checks complete, database generated');
+}
+
+export async function compareKarasChecksum() {
+	profile('compareChecksum');
+	const conf = getConfig();
+	const karaFiles = await extractAllKaraFiles();
+	let karaData = '';
+	for (const karaFile of karaFiles) {
+		karaData += await asyncReadFile(karaFile, 'utf-8');
+	}
+	karaData += await asyncReadFile(resolve(conf.appPath, conf.PathAltName));
+	const karaDataSum = checksum(karaData);
+	profile('compareChecksum');
+	if (karaDataSum !== conf.appKaraDataChecksum) {
+		setConfig({appKaraDataChecksum: karaDataSum});
+		return false;
+	}
+	return true;
 }
