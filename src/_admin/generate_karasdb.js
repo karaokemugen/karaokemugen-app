@@ -21,18 +21,28 @@ import parallel from 'async-await-parallel';
 import {emit} from '../_common/utils/pubsub';
 import {findSeries, readSeriesFile} from '../_dao/seriesfile';
 import {updateUUID} from '../_common/db/database.js';
+import cliProgress from 'cli-progress';
 
 let error = false;
+let bar;
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
+	bar.increment();
 	await db.run('DELETE FROM kara_serie;');
+	bar.increment();
 	await db.run('DELETE FROM tag;');
+	bar.increment();
 	await db.run('DELETE FROM serie;');
+	bar.increment();
 	await db.run('DELETE FROM serie_lang;');
+	bar.increment();
 	await db.run('DELETE FROM kara;');
+	bar.increment();
 	await db.run('DELETE FROM sqlite_sequence;');
+	bar.increment();
 	await db.run('VACUUM;');
+	bar.increment();
 }
 
 async function extractKaraFiles(karaDir) {
@@ -78,6 +88,7 @@ async function readAndCompleteKarafile(karafile) {
 		return karaData;
 	}
 	await writeKara(karafile, karaData);
+	bar.increment();
 	return karaData;
 }
 
@@ -375,6 +386,7 @@ async function runSqlStatementOnData(stmtPromise, data) {
 	const sqlPromises = data.map(sqlData => stmt.run(sqlData));
 	await Promise.all(sqlPromises);
 	await stmt.finalize();
+	bar.increment();
 }
 
 
@@ -382,18 +394,20 @@ export async function run(config) {
 	try {
 		emit('databaseBusy',true);
 		const conf = config || getConfig();
-
+		let barFormat = 'Reading .karas...      {bar} {percentage}% - ETA {eta_formatted}';
+		bar = new cliProgress.Bar({
+			format: barFormat,
+			stopOnComplete: true
+	  	}, cliProgress.Presets.shades_classic);
 		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 		const series_altnamesfile = resolve(conf.appPath, conf.PathAltname);
 
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
-		await emptyDatabase(db);
 		const karaFiles = await extractAllKaraFiles();
+		bar.start(karaFiles.length + 1, 0);
 		const karas = await readAllKaras(karaFiles);
-		// Preparing data to insert
-		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		let seriesData;
 		try {
 			seriesData = await readSeriesFile(series_altnamesfile);
@@ -401,15 +415,28 @@ export async function run(config) {
 			error = true;
 			throw err;
 		}
+		bar.increment();
+		// Preparing data to insert
+		bar.stop();
+		logger.info('[Gen] Data files processed, creating database');
+		barFormat = 'Generating database... {bar} {percentage}% - ETA {eta_formatted}';
+		bar = new cliProgress.Bar({
+			format: barFormat,
+			stopOnComplete: true
+		  }, cliProgress.Presets.shades_classic);
+		bar.start(20, 0);
+		await emptyDatabase(db);
+		bar.increment();
+		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
+		const seriesAltNamesData = await prepareAltSeriesInsertData(seriesData, seriesMap)
+		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
+		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
-		const seriesAltNamesData = await prepareAltSeriesInsertData(seriesData, seriesMap);
-		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
-		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 
 		// Inserting data in a transaction
 
@@ -427,8 +454,10 @@ export async function run(config) {
 		]);
 
 		await db.run('commit');
+		bar.increment();
 		await db.close();
 		await checkUserdbIntegrity(null, conf);
+		bar.stop();
 		return error;
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
@@ -460,9 +489,10 @@ export async function checkUserdbIntegrity(uuid, config) {
 		karas_userdbfile + '.backup',
 		{ overwrite: true }
 	);
+	bar.increment();
 
 
-	logger.info('[Gen] Running user database integrity checks');
+	logger.debug('[Gen] Running user database integrity checks');
 
 	const [db, userdb] = await Promise.all([
 		open(karas_dbfile, {Promise}),
@@ -491,6 +521,8 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectPlaylistKaras)
 	]);
 
+	bar.increment();
+
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
 
@@ -505,6 +537,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`UPDATE request SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
 	]);
+	bar.increment();
 	const karaIdByKid = new Map();
 	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 	let sql = '';
@@ -571,8 +604,8 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
-
-	logger.info('[Gen] Integrity checks complete, database generated');
+	bar.increment();
+	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 
 export async function compareKarasChecksum() {
