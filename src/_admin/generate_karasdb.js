@@ -583,7 +583,7 @@ export async function compareKarasChecksum() {
 	for (const karaFile of karaFiles) {
 		karaData += await asyncReadFile(karaFile, 'utf-8');
 	}
-	karaData += await asyncReadFile(resolve(conf.appPath, conf.PathAltName));
+	karaData += await asyncReadFile(resolve(conf.appPath, conf.PathAltname));
 	const karaDataSum = checksum(karaData);
 	profile('compareChecksum');
 	if (karaDataSum !== conf.appKaraDataChecksum) {
