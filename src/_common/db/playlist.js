@@ -50,9 +50,10 @@ export const createPlaylist = `INSERT INTO playlist(
 								`;
 
 export const updatePlaylistKaraCount = `UPDATE playlist
-										SET num_karas = (SELECT COUNT(playlist_content.fk_id_kara)
+										SET num_karas = (SELECT COUNT(fk_id_kara)
 										FROM playlist_content
-										WHERE fk_id_playlist = $playlist_id)
+										WHERE fk_id_playlist = $playlist_id
+											AND fk_id_kara != 0)
 										WHERE pk_id_playlist = $playlist_id;
 										`;
 
@@ -68,18 +69,19 @@ export const updatePLCSetPos = `UPDATE playlist_content
 
 
 export const updatePlaylistDuration = `UPDATE playlist SET time_left =
-    									(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
-    									FROM karasdb.kara, playlist_content
-    									WHERE playlist_content.fk_id_kara = karasdb.kara.pk_id_kara
-    									AND playlist_content.fk_id_playlist = $playlist_id
-    									AND playlist_content.pos >= (select ifnull(pos,0) from playlist_content where flag_playing = 1 and playlist_content.fk_id_playlist = $playlist_id)),
-    									length =
-    									(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
-    									FROM karasdb.kara, playlist_content
-    									WHERE playlist_content.fk_id_kara = 	karasdb.kara.pk_id_kara
-    								  	AND playlist_content.fk_id_playlist = $playlist_id
-    								  	AND playlist_content.pos >= 0)
-									WHERE pk_id_playlist = $playlist_id;`;
+(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
+FROM karasdb.kara, playlist_content
+WHERE playlist_content.fk_id_kara = karasdb.kara.pk_id_kara
+AND playlist_content.fk_id_playlist = $playlist_id
+AND playlist_content.pos >= (select ifnull(pos,0) from playlist_content where flag_playing = 1 and playlist_content.fk_id_playlist = $playlist_id)),
+length =
+(SELECT ifnull(SUM(karasdb.kara.duration),0) AS duration
+FROM karasdb.kara, playlist_content
+WHERE playlist_content.fk_id_kara = 	karasdb.kara.pk_id_kara
+  AND playlist_content.fk_id_playlist = $playlist_id
+  AND playlist_content.pos >= 0)
+WHERE pk_id_playlist = $playlist_id;
+`;
 
 export const getPlaylistContentsKaraIDs = `SELECT pc.fk_id_kara AS kara_id,
 										pc.fk_id_user AS user_id,

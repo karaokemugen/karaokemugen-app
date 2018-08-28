@@ -234,6 +234,7 @@ export const getSongCountPerUser = `SELECT COUNT(1) AS count
 									WHERE pc.fk_id_user = $user_id
 									  AND pc.fk_id_playlist = $playlist_id
 									  AND pc.flag_free = 0
+									  AND pc.fk_id_kara != 0
 									`;
 
 export const getTimeSpentPerUser = `SELECT SUM(ak.duration) AS timeSpent
@@ -242,6 +243,7 @@ export const getTimeSpentPerUser = `SELECT SUM(ak.duration) AS timeSpent
 									WHERE pc.fk_id_user = $user_id
 									  AND pc.fk_id_playlist = $playlist_id
 									  AND pc.flag_free = 0
+									  AND pc.fk_id_kara != 0
 									`;
 
 
