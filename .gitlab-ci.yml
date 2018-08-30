@@ -6,8 +6,6 @@ cache:
   - node_modules/
   - bin/
   - react_client/node_modules/
-  - build/
-  - react_client/build/
 
 stages:
   - test
@@ -34,6 +32,11 @@ test:
 
 build:
   stage: build
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - dist/
+      - react_client/build/
   script:
     - npm install -g modclean
     - yarn build
@@ -50,6 +53,11 @@ pkg_win:
   stage: package
   dependencies:
     - build
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME-win"
+    expire_in: 1 day
+    paths:
+      - bin/
   script:
     - mkdir -p bin
     - npm install -g pkg
@@ -63,6 +71,10 @@ pkg_osx:
   stage: package
   dependencies:
     - build
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - bin/
   script:
     - mkdir -p bin
     - npm install -g pkg
