@@ -17,6 +17,8 @@ test:
   stage: test
   script:
     - rm -Rf /tmpfs/*
+    - rm -Rf react_client/node_modules
+    - rm -Rf node_modules
     - cp -Rfvp * /tmpfs
     - cd /tmpfs
     - yarn install --check-files --force
