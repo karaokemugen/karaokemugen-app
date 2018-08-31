@@ -1,11 +1,5 @@
 image: axelterizaki/karaokemugen-ci:node-10
 
-stages:
-  - test
-  - build
-  - package
-  - deploy
-
 cache:
   key: km
   paths:
@@ -13,17 +7,20 @@ cache:
   - bin/
   - react_client/node_modules/
 
+stages:
+  - test
+  - build
+  - package
+  - deploy
+
 test:
   stage: test
   script:
-    - rm -Rf /tmpfs/*
-    - cp -Rfvp * /tmpfs
-    - cd /tmpfs
     - yarn install --check-files --force
     - touch mpv
     - echo "BinPlayerLinux=mpv" >>config.ini
-    - mkdir -p app/data
-    - cp -R samples/* app/data/
+    - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
+    - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
     - export LANG=en_US
     - node --version
     - yarn start --debug --test &disown
@@ -41,7 +38,6 @@ build:
       - dist/
       - react_client/build/
   script:
-    - cd /tmpfs
     - npm install -g modclean
     - yarn build
     - yarn install --production
@@ -63,7 +59,6 @@ pkg_win:
     paths:
       - bin/
   script:
-    - cd /tmpfs
     - mkdir -p bin
     - npm install -g pkg
     - pkg . -d --targets node8-win-x64 --out-path bin
@@ -74,14 +69,13 @@ pkg_win:
 
 pkg_osx:
   stage: package
+  dependencies:
+    - build
   artifacts:
     expire_in: 1 day
     paths:
       - bin/
-  dependencies:
-    - build
   script:
-    - cd /tmpfs
     - mkdir -p bin
     - npm install -g pkg
     - pkg . -d --targets node8-macos-x64 --out-path bin
@@ -95,7 +89,6 @@ deploy_win:
   dependencies:
     - pkg_win
   script:
-    - cd /tmpfs
     - mkdir build_win
     - cd build_win
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_win.tar.gz | tar xvz
@@ -119,7 +112,6 @@ deploy_win:
 latest_tag:
   stage: deploy
   script:
-    - cd /tmpfs
     - echo $CI_COMMIT_REF_NAME >latest
     - lftp -c "set ftp:ssl-allow no; open -u $USERNAME,$PASSWORD $HOST; cd site/downloads; put latest"
   only:
@@ -130,7 +122,6 @@ deploy_osx:
   dependencies:
     - pkg_osx
   script:
-    - cd /tmpfs
     - mkdir build_mac
     - cd build_mac
     - wget -qO- http://mugen.karaokes.moe/downloads/dist_macos.tar.gz | tar xvz
@@ -156,7 +147,6 @@ deploy_osx:
 apidoc:
   stage: deploy
   script:
-    - cd /tmpfs
     - npm install -g apidoc
     - apidoc -i src/_controllers -o apidoc -t apidoc_template
     - cd apidoc
