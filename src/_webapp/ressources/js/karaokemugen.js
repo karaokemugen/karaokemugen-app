@@ -59,6 +59,8 @@ var serieMoreInfoButton;
 var listTypeBlc;
 var tagsTypesList;
 var plData;
+var tagsGroups;
+var flattenedTagsGroups;
 var settingsNotUpdated;
 
 (function (yourcode) {
@@ -68,6 +70,14 @@ var settingsNotUpdated;
 
 		initSwitchs();
 
+		tagsGroups = {
+			'TAGCAT_FAMI':['TAG_ANIME','TAG_REAL','TAG_VIDEOGAME'],
+			'TAGCAT_SUPP':['TAG_3DS','TAG_DREAMCAST','TAG_DS','TAG_GAMECUBE','TAG_PC','TAG_PS2','TAG_PS3','TAG_PS4','TAG_PSP','TAG_PSV','TAG_PSX','TAG_SATURN','TAG_SEGACD','TAG_SWITCH','TAG_WII','TAG_WII','TAG_XBOX360'],
+			'TAGCAT_CLAS':['TAG_IDOL','TAG_MAGICALGIRL','TAG_MECHA','TAG_SHOUJO','TAG_SHOUNEN','TAG_YAOI','TAG_YURI'],
+			'TAGCAT_ORIG':['TAG_MOBAGE','TAG_MOVIE','TAG_ONA','TAG_OVA','TAG_TOKU','TAG_TVSHOW','TAG_VN','TAG_VOCALOID'],
+			'TAGCAT_TYPE':['TAG_DUO','TAG_HARDMODE','TAG_HUMOR','TAG_LONG','TAG_PARODY','TAG_R18','TAG_REMIX','TAG_SPECIAL','TAG_SPOIL','TAG_VOICELESS'],
+			}
+		flattenedTagsGroups = [].concat.apply([], Object.values(tagsGroups));
 		// Once page is loaded
 		plData = {
 			'0' : {
@@ -1254,7 +1264,11 @@ var settingsNotUpdated;
 							var badges = '';
 
 							if(kara.misc) {
-								kara.misc.split(',').forEach(function(tag) {
+								var tagArray = kara.misc.split(',');
+								tagArray.sort(function(a, b){  
+									return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
+								  });
+								tagArray.forEach(function(tag) {
 									if (tag !== 'NO_TAG') {
 										badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
 									}
