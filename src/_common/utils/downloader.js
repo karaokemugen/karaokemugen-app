@@ -1,10 +1,11 @@
 import _cliProgress from 'cli-progress';
 import logger from 'winston';
 import {basename} from 'path';
-import execa from 'execa';
+import got from 'got';
 import prettyBytes from 'pretty-bytes';
-import {stat} from 'fs';
-import {getConfig} from './config';
+import {createWriteStream} from 'fs';
+import { getConfig } from './config';
+
 
 export default class Downloader {
 
@@ -34,8 +35,8 @@ export default class Downloader {
 			const nextSize = this.list[this.pos].size;
 			let prettySize = 'size unknown';
 			if (nextSize) prettySize = prettyBytes(nextSize);
-			logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${basename(nextFilename)} (${prettySize})`);
 			this.pos = this.pos + 1;
+			logger.info(`[Download] (${this.pos}/${this.list.length}) Downloading ${basename(nextFilename)} (${prettySize})`);
 			this.DoDownload(nextUrl, nextFilename, nextSize, this.download , err => {
 				logger.error(`[Download] Error downloading ${basename(nextFilename)} : ${err}`);
 				this.fileErrors.push(basename(nextFilename));
@@ -44,37 +45,48 @@ export default class Downloader {
 	  }
 	}
 
-	fetchSize = (url, auth) => {
-
-	}
 	DoDownload = (url, filename, size, onSuccess, onError) => {
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
-		let options = [url, '-o', `"${filename.replace(/\\\\/g,'\\')}"`, '--retry','999','--retry-max-time','0','-C','-'];
-		let timer;
-		if (this.opts.auth) options.push(`-u ${this.opts.auth.user}:${this.opts.auth.pass}`);
-		logger.debug(`[Download] Running : curl ${options.join(' ')}`);
-		execa(getConfig().BincurlPath, options, {windowsVerbatimArguments: true, encoding: 'utf8'})
-			.then(() => {
-				if (this.opts.bar && size) {
-					this.bar.update((Math.floor(size / 1000)) / 1000);
-					this.bar.stop();
+		const HttpAgent = require('agentkeepalive');
+		const {HttpsAgent} = HttpAgent;
+		const options = {
+			method: 'GET',
+			retry: 20,
+			agent: {
+				http: new HttpAgent(),
+				https: new HttpsAgent()
+			},
+			headers: {
+				'user-agent': `KaraokeMugen/${getConfig().VersionNo}`
+			}
+		};
+		let stream = createWriteStream(filename);
+		if (this.opts.auth) options.auth = `${this.opts.auth.user}:${this.opts.auth.pass}`;
+		got.stream(url, options)
+			.on('response', res => {
+				size = res.headers['content-length'];
+				if (this.opts.bar) {
+					this.bar.start(Math.floor(size / 1000) / 1000, 0);
 				}
-				onSuccess();
-				clearInterval(timer);
 			})
-			.catch((err) => {
+			.on('downloadProgress', state => {
+				if (this.opts.bar) {
+					this.bar.update(Math.floor(state.transferred / 1000) / 1000);
+				}
+			})
+			.on('error', err => {
 				if (this.opts.bar) {
 					this.bar.stop();
 				}
 				onError(err);
-				clearInterval(timer);
-			});
-		timer = setInterval(() => {
-			if (this.opts.bar && size) {
-				stat(filename, (err, data) => {
-					if (!err) this.bar.update(Math.floor(data.size / 1000) / 1000);
-				});
-			}
-		}, 100);
+			})
+			.on('end', () => {
+				if (this.opts.bar) {
+					this.bar.update((Math.floor(size / 1000)) / 1000);
+					this.bar.stop();
+				}
+				onSuccess();
+			})
+			.pipe(stream);
 	}
 }

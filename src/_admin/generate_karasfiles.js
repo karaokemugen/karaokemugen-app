@@ -52,8 +52,7 @@ export async function editKara(kara_id,kara) {
 
 		//Removing previous files if they're different from the new ones (name changed, etc.)
 		if (newKara.file !== karaFile && await asyncExists(karaFile)) asyncUnlink(karaFile);
-		if (newSubFile !== subFile && subFile !== 'dummy.ass')
-		{
+		if (newSubFile !== subFile && subFile !== 'dummy.ass') {
 			if (await asyncExists(subFile)) asyncUnlink(subFile);
 		}
 		if (newMediaFile !== mediaFile && await asyncExists(mediaFile)) asyncUnlink(mediaFile);
