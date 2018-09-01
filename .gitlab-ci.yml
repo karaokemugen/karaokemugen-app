@@ -61,7 +61,7 @@ pkg_win:
   script:
     - mkdir -p bin
     - npm install -g pkg
-    - pkg . -d --targets node8-win-x64 --out-path bin
+    - pkg . -d --targets node10-win-x64 --out-path bin
   only:
     - master
     - next
@@ -78,7 +78,7 @@ pkg_osx:
   script:
     - mkdir -p bin
     - npm install -g pkg
-    - pkg . -d --targets node8-macos-x64 --out-path bin
+    - pkg . -d --targets node10-macos-x64 --out-path bin
   only:
     - master
     - next
