@@ -55,6 +55,7 @@ export function buildClauses(words,source) {
 		ak.NORM_title LIKE $word${i} OR
 		ak.NORM_author LIKE $word${i} OR
 		ak.NORM_serie LIKE $word${i} OR
+		ak.NORM_serie_i18n LIKE $word${i} OR
 		ak.NORM_serie_altname LIKE $word${i} OR
 		ak.NORM_singer LIKE $word${i} OR
 		ak.NORM_songwriter LIKE $word${i} OR
