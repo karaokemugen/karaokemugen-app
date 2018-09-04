@@ -613,9 +613,18 @@ export async function compareKarasChecksum() {
 	const conf = getConfig();
 	const karaFiles = await extractAllKaraFiles();
 	let karaData = '';
+	let barFormat = 'Reading .karas...      {bar} {percentage}% - ETA {eta_formatted}';
+	bar = new cliProgress.Bar({
+		format: barFormat,
+		stopOnComplete: true
+	}, cliProgress.Presets.shades_classic);
+	bar.start(karaFiles.length,0);
 	for (const karaFile of karaFiles) {
 		karaData += await asyncReadFile(karaFile, 'utf-8');
+		bar.increment();
 	}
+	bar.stop();
+	bar = false;
 	try {
 		karaData += await asyncReadFile(resolve(conf.appPath, conf.PathAltname));
 	} catch(err) {
