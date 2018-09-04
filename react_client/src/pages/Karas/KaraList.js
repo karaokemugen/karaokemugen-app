@@ -9,7 +9,6 @@ class KaraList extends Component {
 
 	constructor(props) {
 		super(props);
-		this.filter =
 		this.state = {
 			karas: [],
 			kara: {},
