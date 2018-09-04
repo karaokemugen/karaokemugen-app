@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "antd": "^3.7.3",
+    "antd": "^3.9.1",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
@@ -13,12 +13,12 @@
     "lodash.deburr": "^4.1.0",
     "prop-types": "^15.6.2",
     "qs": "^6.5.1",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.3.1",
     "react-router-redux": "^5.0.0-alpha.8",
-    "react-scripts": "1.1.4",
+    "react-scripts": "1.1.5",
     "redux": "^4.0.0"
   },
   "scripts": {
