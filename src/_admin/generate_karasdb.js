@@ -61,7 +61,6 @@ export async function extractAllKaraFiles() {
 	for (const resolvedPath of resolvedPathKaras()) {
 		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
 	}
-	if (karaFiles.length === 0) throw 'No kara files found';
 	return karaFiles;
 }
 
@@ -406,6 +405,7 @@ export async function run(config) {
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		const karaFiles = await extractAllKaraFiles();
+		if (karaFiles.length === 0) throw 'No kara files found';
 		bar.start(karaFiles.length + 1, 0);
 		const karas = await readAllKaras(karaFiles);
 		let seriesData;
@@ -616,7 +616,11 @@ export async function compareKarasChecksum() {
 	for (const karaFile of karaFiles) {
 		karaData += await asyncReadFile(karaFile, 'utf-8');
 	}
-	karaData += await asyncReadFile(resolve(conf.appPath, conf.PathAltname));
+	try {
+		karaData += await asyncReadFile(resolve(conf.appPath, conf.PathAltname));
+	} catch(err) {
+		//Nothing to do if this fails.
+	}
 	const karaDataSum = checksum(karaData);
 	profile('compareChecksum');
 	if (karaDataSum !== conf.appKaraDataChecksum) {

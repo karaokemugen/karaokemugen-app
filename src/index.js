@@ -136,6 +136,8 @@ async function checkPaths(config) {
 	// If no karaoke is found, copy the samples directory if it exists
 	try {
 		await asyncReadDir(resolve(appPath, 'app/data'));
+		const karas = await asyncReadDir(resolve(appPath, 'app/data/karas'));
+		if (karas.length === 0) throw 'No kara files';
 	} catch(err) {
 		try {
 			await asyncReadDir(resolve(appPath, 'samples'));
@@ -147,19 +149,6 @@ async function checkPaths(config) {
 		} catch(err) {
 			logger.warn('[Launcher] No samples directory found, will not copy them.');
 		}
-	}
-
-
-
-	//Fix for PathMedias = app/data/videos
-	//Delete this after 2.3. This is an awful hack.
-	//Only effective after July 1st 2018
-	if (config.PathMedias === 'app/data/videos') {
-		const oldPath = resolve(appPath, config.PathMedias);
-		setConfig({ PathMedias: 'app/data/medias'});
-		config = getConfig();
-		const newPath = resolve(appPath, config.PathMedias);
-		if (await asyncExists(oldPath) && !await asyncExists(newPath)) await move(oldPath, newPath);
 	}
 
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
