@@ -44,8 +44,8 @@
     "Benoît Courtine <benoit.courtine@gmail.com>",
     "Lua <deformer.lua@gmail.com>",
     "mirukyu <A13x7950@gmail.com>",
-	"Kmeuh <clemalbo@cegetel.net> (@Kmeuh)",
-	"Bibah <thebibah14@gmail.com> (@TheBibah14)"
+    "Kmeuh <clemalbo@cegetel.net> (@Kmeuh)",
+    "Bibah <thebibah14@gmail.com> (@TheBibah14)"
   ],
   "engineStrict": false,
   "engines": {
@@ -109,6 +109,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pretty-bytes": "^5.1.0",
+    "pretty-error": "^2.1.1",
     "promise-retry": "^1.1.1",
     "qrcode": "^1.2.2",
     "randomstring": "^1.1.5",
