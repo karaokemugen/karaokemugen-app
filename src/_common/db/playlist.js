@@ -109,6 +109,7 @@ export const getPlaylistContents = (filterClauses, lang) => `SELECT ak.kara_id A
       									ak.serie_altname AS serie_altname,
       									ak.NORM_serie_altname AS NORM_serie_altname,
 										ak.serie_i18n AS serie_i18n,
+										ak.NORM_serie_i18n AS NORM_serie_i18n,
 										ak.NORM_serie AS NORM_serie_orig,
 										ak.serie AS serie_orig,
       									ak.singer AS singer,

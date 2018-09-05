@@ -91,7 +91,7 @@ deploy_win:
   script:
     - mkdir build_win
     - cd build_win
-    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win.tar.gz | tar xvz
+    - wget -qO- http://mugen.karaokes.moe/downloads/dist_win_node10.tar.gz | tar xvz
     - mkdir -p app/jingles
     - cd app/jingles
     - wget -qO- https://lab.shelter.moe/karaokemugen/jingles/repository/master/archive.tar | tar xv
