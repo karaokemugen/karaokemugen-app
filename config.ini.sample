@@ -181,9 +181,6 @@ BinPlayerLinux = "/usr/bin/mpv"
 BinffmpegWindows = "app/bin/ffmpeg.exe"
 BinffmpegLinux = "/usr/bin/ffmpeg"
 BinffmpegOSX = "app/bin/ffmpeg"
-BincurlOSX = "/usr/bin/curl"
-BincurlLinux = "/usr/bin/curl"
-BincurlWindows = "app/bin/curl.exe"
 
 ; Paths - don't touch these unless you know what you're doing .
 PathBin = "app/bin"
