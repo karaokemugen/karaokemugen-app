@@ -1952,6 +1952,7 @@ var settingsNotUpdated;
 
 		if (htmlMode == 'list') {
 			var isPublic = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_public');
+			var isCurrent = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_current');
 			var likeFreeButtonHtml = data['flag_free'] ? likeFreeButton.replace('likeFreeButton', 'likeFreeButton free btn-primary') : likeFreeButton;
 
 			infoKaraTemp = '<div class="detailsKara alert alert-info">'
@@ -1961,7 +1962,7 @@ var settingsNotUpdated;
 				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
 				+ (data['serie'] ? ' ' + serieMoreInfoButton : '')
-				+ (isPublic && scope === 'admin' ? likeFreeButtonHtml : '')
+				+ (scope === 'admin' && (isCurrent || isPublic) ? likeFreeButtonHtml : '')
 				+ '</div>'
 				+ htmlTable
 				+ '</div>';
