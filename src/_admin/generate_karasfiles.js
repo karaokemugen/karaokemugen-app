@@ -17,6 +17,7 @@ import {getOrAddSerieID} from '../_services/series';
 import sanitizeFilename from 'sanitize-filename';
 import deburr from 'lodash.deburr';
 import timestamp from 'unix-timestamp';
+import { compareKarasChecksum } from './generate_karasdb';
 
 export async function editKara(kara_id,kara) {
 	let newKara;
@@ -70,6 +71,7 @@ export async function editKara(kara_id,kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
+	compareKarasChecksum();
 }
 
 export async function createKara(kara) {
@@ -82,6 +84,7 @@ export async function createKara(kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
+	compareKarasChecksum();
 	return newKara;
 }
 
