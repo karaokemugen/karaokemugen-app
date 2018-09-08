@@ -291,7 +291,9 @@ var settingsNotUpdated;
 
 					$('#playlist' + side).empty();
 					$('#searchPlaylist' + side).val('');
-
+					if (oldVal == -1) {
+						$('#searchMenu' + side).collapse('hide');
+					}
 					playlistContentUpdating = fillPlaylist(side);
 					refreshPlaylistDashboard(side);
 				}
