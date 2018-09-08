@@ -271,14 +271,13 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 	background-color: #3a5064;
 }
 .playlist-main li.list-group-item.karaSuggestion {
-	background-color: rgba(93, 131, 119, 0.7);
+	background-color: rgba(93, 131, 119, 0.55);
 	text-align: center;
 	cursor: pointer;
-	
-    line-height: 130px;
-    font-size: 130%;
-	height: 130px;
-	
+
+	line-height: 55px;
+    font-size: 120%;
+	height: 64px;
 	
     padding: 5px;
 	overflow: hidden !important;
