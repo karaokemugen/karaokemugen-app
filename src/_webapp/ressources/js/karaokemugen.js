@@ -1827,7 +1827,7 @@ var settingsNotUpdated;
     * @return {String} the title
     */
 	buildKaraTitle = function(data, options) {
-		if (typeof options == 'undefined') {
+		if(typeof options == 'undefined') {
 			options = {};
 		}
 
@@ -1837,22 +1837,23 @@ var settingsNotUpdated;
 			data.language = '';
 		}
 		var titleText = 'fillerTitle';
-		if (options.mode && options.mode === 'doubleline') {
-			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
-				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : '')], Boolean);
-			var titleClean = Object.keys(titleArray).map(function (k) {
-				return titleArray[k] ? titleArray[k] : '';
-			});
-			titleText = titleClean.join(' - ') + '<br/>' + data.title;
-
-		} else {
-			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
-				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
-			var titleClean = Object.keys(titleArray).map(function (k) {
-				return titleArray[k] ? titleArray[k] : '';
-			});
-			titleText = titleClean.join(' - ');
+		
+		var limit = isSmall ? 35 : 50;
+		var serieText =  data.serie ? data.serie : data.singer.replace(/,/g, ', ');
+		serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
+		var titleArray = [data.language.toUpperCase(), serieText, data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : '')];
+		var titleClean = titleArray.map(function (e, k) {
+			return titleArray[k] ? titleArray[k] : '';
+		});
+		
+		var separator = '';
+		if(data.title) {
+			separator = ' - ';
+			if (options.mode && options.mode === 'doubleline') {
+				separator = '<br/>';
+			} 
 		}
+		titleText = titleClean.join(' - ') + separator + data.title;
 
 
 		if(options.search) {
@@ -1936,7 +1937,7 @@ var settingsNotUpdated;
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
 			, 'BLCTYPE_7':			data['misc_i18n']
 			, 'DETAILS_SERIE':		data['serie']
-			, 'DETAILS_SERIE_ALT':	data['serie_altname']
+			//	, 'DETAILS_SERIE_ALT':	data['serie_altname']
 			, 'BLCTYPE_2':			data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
 			, 'DETAILS_YEAR':		data['year']
