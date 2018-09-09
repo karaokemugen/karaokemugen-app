@@ -284,7 +284,6 @@ body:not(.touch) .playlist-main .list-group-item:hover {
 	width: 100% !important;
 	margin-bottom: 100px;
 }
-
 .playlist-main .list-group-item.liType {
 	background-color: #607e97;
 	padding-left: 20px;
@@ -478,8 +477,12 @@ button[name="infoKara"]:before {
 .detailsKara tr > td:first-child, .karaCard .details tr > td:first-child {
 	font-weight: bold;
 	padding-right: 7px;
+	white-space: nowrap;
+}
+.detailsKara tr, .karaCard .details tr {
 	vertical-align: top;
 }
+
 
 .detailsKara .time, .karaCard .details .time {
 	color: #DDC5EA;
