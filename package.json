@@ -74,7 +74,6 @@
     "agentkeepalive": "^3.5.1",
     "ass-parser": "^0.2.0",
     "async-await-parallel": "^1.0.0",
-    "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "chalk": "^2.4.0",
     "chokidar": "^2.0.4",
