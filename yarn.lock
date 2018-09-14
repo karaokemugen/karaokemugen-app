@@ -3962,9 +3962,9 @@ node-fingerprint@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/node-fingerprint/-/node-fingerprint-0.0.2.tgz#31cbabeb71a67ae7dd5a7dc042e51c3c75868501"
 
-node-id3@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/node-id3/-/node-id3-0.1.5.tgz#6ca7cd19a7a4bd5019dbea8092e74900de2ef24b"
+node-id3@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/node-id3/-/node-id3-0.1.6.tgz#5ae6b0deab02ca752cb35c57ddc561989c179d1d"
   dependencies:
     iconv-lite "^0.4.15"
 
@@ -4326,6 +4326,10 @@ path-key@^2.0.0, path-key@^2.0.1:
 path-parse@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.5.tgz#3c1adf871ea9cd6c9431b6ea2bd74a0ff055c4c1"
+
+path-posix@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/path-posix/-/path-posix-1.0.0.tgz#06b26113f56beab042545a23bfa88003ccac260f"
 
 path-to-regexp@0.1.7:
   version "0.1.7"
@@ -5231,9 +5235,9 @@ symbol-observable@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
 
-systeminformation@^3.45.5:
-  version "3.45.5"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-3.45.5.tgz#3f9c8150b9cd44e1cc4c15507bce32546fcbe125"
+systeminformation@^3.45.6:
+  version "3.45.6"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-3.45.6.tgz#26647977838b036f31e30a9c22ef235164457350"
 
 table@^4.0.3:
   version "4.0.3"
@@ -5564,12 +5568,13 @@ watchr@~2.4.13:
     taskgroup "^4.2.0"
     typechecker "^2.0.8"
 
-webdav@^1.5.3:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/webdav/-/webdav-1.5.3.tgz#d30b3e12c248858583cfbe6b8c508867d0d76c0a"
+webdav@^1.5.5:
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/webdav/-/webdav-1.5.5.tgz#19c5b0aa8f0ed4bdfeb45afe0219e6d16dc4de19"
   dependencies:
     merge "~1.2.0"
     node-fetch "~2.0.0"
+    path-posix "~1.0.0"
     url-join "~4.0.0"
     url-parse "~1.2.0"
     xml2js "~0.4.17"
