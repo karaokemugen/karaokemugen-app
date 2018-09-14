@@ -393,7 +393,7 @@ async function runSqlStatementOnData(stmtPromise, data) {
 export async function run(config) {
 	try {
 		emit('databaseBusy',true);
-		if (generating) throw 'A database generation is already in progress'
+		if (generating) throw 'A database generation is already in progress';
 		generating = true;
 		const conf = config || getConfig();
 		let barFormat = 'Reading .karas...      {bar} {percentage}% - ETA {eta_formatted}';
