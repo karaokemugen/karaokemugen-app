@@ -9,11 +9,13 @@ class KaraList extends Component {
 
 	constructor(props) {
 		super(props);
-		this.filter = '';
 		this.state = {
 			karas: [],
-			kara: {}
+			kara: {},
+			currentPage: localStorage.getItem('karaPage') || 1,
+			filter: localStorage.getItem('karaFilter') || ''
 		};
+
 	}
 
 	componentDidMount() {
@@ -22,7 +24,7 @@ class KaraList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/karas', { params: { filter: this.filter }})
+		axios.get('/api/karas', { params: { filter: this.state.filter }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data.content});
@@ -33,14 +35,24 @@ class KaraList extends Component {
 			});
 	}
 
+	changePage(page) {
+		this.setState({currentPage: page});
+		localStorage.setItem('karaPage',page);
+	}
+
+	changeFilter(event) {
+		this.setState({filter: event.target.value});
+		localStorage.setItem('karaFilter',this.state.filter);
+	}
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
 				<Layout>
 					<Layout.Header>
 						<Input.Search
-							placeholder="Search filter"
-							onChange={event => this.filter = event.target.value}
+							placeholder={ this.state.filter || 'Search filter' }
+							onChange={event => this.changeFilter(event)}
 							enterButton="Search"
 							onSearch={this.refresh.bind(this)}
 						/>
@@ -50,7 +62,9 @@ class KaraList extends Component {
 							dataSource={this.state.karas}
 							columns={this.columns}
 							rowKey='kara_id'
-							pagination={{defaultPageSize: 100,
+							pagination={{
+								current: this.state.currentPage,
+								defaultPageSize: 100,
 								pageSize: 100,
 								pageSizeOptions: ['10','25','50','100','500'],
 								showTotal: (total, range) => {
@@ -60,7 +74,9 @@ class KaraList extends Component {
 								},
 								total: this.state.karas.length,
 								showSizeChanger: true,
-								showQuickJumper: true}}
+								showQuickJumper: true,
+								onChange: page => this.changePage(page)
+							}}
 						/>
 					</Layout.Content>
 				</Layout>

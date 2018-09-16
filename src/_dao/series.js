@@ -1,7 +1,20 @@
-import {langSelector, buildClausesSeries, getUserDb} from './database';
+import {langSelector, paramWords, getUserDb} from './database';
 import deburr from 'lodash.deburr';
 
 const sql = require('../_common/db/series');
+
+export function buildClausesSeries(words) {
+	const params = paramWords(words);
+	let sql = [];
+	for (const i in words.split(' ').filter(s => !('' === s))) {
+		sql.push(`s.NORM_name LIKE $word${i} OR
+		s.NORM_altname LIKE $word${i}`);
+	}
+	return {
+		sql: sql,
+		params: params
+	};
+}
 
 export async function selectAllSeries(filter, lang) {
 	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;

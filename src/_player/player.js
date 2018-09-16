@@ -102,6 +102,7 @@ async function loadBackground(mode) {
 		videofilter = `lavfi-complex="movie=\\'${qrCode}\\'[logo]; [logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1] overlay=${posX}:${posY}[vo]"`;
 	}
 	try {
+		logger.debug(`[Player] videofilter : ${videofilter}`);
 		let loads = [
 			player.load(backgroundImageFile,mode,videofilter)
 		];

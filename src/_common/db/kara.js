@@ -69,6 +69,7 @@ export const getAllKaras = (filterClauses, lang, orderClauses, typeClauses) => `
 							ak.serie_altname AS serie_altname,
 							ak.NORM_serie_altname AS NORM_serie_altname,
 							ak.serie_i18n AS serie_i18n,
+							ak.NORM_serie_i18n AS NORM_serie_i18n,
 							ak.serie AS serie_orig,
 							ak.NORM_serie AS NORM_serie_orig,
 							ak.singer AS singer,
@@ -234,6 +235,7 @@ export const getSongCountPerUser = `SELECT COUNT(1) AS count
 									WHERE pc.fk_id_user = $user_id
 									  AND pc.fk_id_playlist = $playlist_id
 									  AND pc.flag_free = 0
+									  AND pc.fk_id_kara != 0
 									`;
 
 export const getTimeSpentPerUser = `SELECT SUM(ak.duration) AS timeSpent
@@ -242,6 +244,7 @@ export const getTimeSpentPerUser = `SELECT SUM(ak.duration) AS timeSpent
 									WHERE pc.fk_id_user = $user_id
 									  AND pc.fk_id_playlist = $playlist_id
 									  AND pc.flag_free = 0
+									  AND pc.fk_id_kara != 0
 									`;
 
 

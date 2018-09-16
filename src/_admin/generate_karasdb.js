@@ -2,10 +2,11 @@ import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {basename, join, resolve} from 'path';
 import deburr from 'lodash.deburr';
+import {profile} from '../_common/utils/logger';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
-import {asyncCopy, asyncReadDir} from '../_common/utils/files';
-import {getConfig, resolvedPathKaras} from '../_common/utils/config';
+import {asyncReadFile, checksum, asyncCopy, asyncReadDir} from '../_common/utils/files';
+import {getConfig, resolvedPathKaras, setConfig} from '../_common/utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
@@ -20,18 +21,29 @@ import parallel from 'async-await-parallel';
 import {emit} from '../_common/utils/pubsub';
 import {findSeries, readSeriesFile} from '../_dao/seriesfile';
 import {updateUUID} from '../_common/db/database.js';
+import cliProgress from 'cli-progress';
 
 let error = false;
+let generating = false;
+let bar;
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
+	bar.increment();
 	await db.run('DELETE FROM kara_serie;');
+	bar.increment();
 	await db.run('DELETE FROM tag;');
+	bar.increment();
 	await db.run('DELETE FROM serie;');
+	bar.increment();
 	await db.run('DELETE FROM serie_lang;');
+	bar.increment();
 	await db.run('DELETE FROM kara;');
+	bar.increment();
 	await db.run('DELETE FROM sqlite_sequence;');
+	bar.increment();
 	await db.run('VACUUM;');
+	bar.increment();
 }
 
 async function extractKaraFiles(karaDir) {
@@ -50,7 +62,6 @@ export async function extractAllKaraFiles() {
 	for (const resolvedPath of resolvedPathKaras()) {
 		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
 	}
-	if (karaFiles.length === 0) throw 'No kara files found';
 	return karaFiles;
 }
 
@@ -77,6 +88,7 @@ async function readAndCompleteKarafile(karafile) {
 		return karaData;
 	}
 	await writeKara(karafile, karaData);
+	bar.increment();
 	return karaData;
 }
 
@@ -374,25 +386,31 @@ async function runSqlStatementOnData(stmtPromise, data) {
 	const sqlPromises = data.map(sqlData => stmt.run(sqlData));
 	await Promise.all(sqlPromises);
 	await stmt.finalize();
+	bar.increment();
 }
 
 
 export async function run(config) {
 	try {
 		emit('databaseBusy',true);
+		if (generating) throw 'A database generation is already in progress';
+		generating = true;
 		const conf = config || getConfig();
-
+		let barFormat = 'Reading .karas...      {bar} {percentage}% - ETA {eta_formatted}';
+		bar = new cliProgress.Bar({
+			format: barFormat,
+			stopOnComplete: true
+	  	}, cliProgress.Presets.shades_classic);
 		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 		const series_altnamesfile = resolve(conf.appPath, conf.PathAltname);
 
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
-		await emptyDatabase(db);
 		const karaFiles = await extractAllKaraFiles();
+		if (karaFiles.length === 0) throw 'No kara files found';
+		bar.start(karaFiles.length + 1, 0);
 		const karas = await readAllKaras(karaFiles);
-		// Preparing data to insert
-		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		let seriesData;
 		try {
 			seriesData = await readSeriesFile(series_altnamesfile);
@@ -400,15 +418,28 @@ export async function run(config) {
 			error = true;
 			throw err;
 		}
+		bar.increment();
+		// Preparing data to insert
+		bar.stop();
+		logger.info('[Gen] Data files processed, creating database');
+		barFormat = 'Generating database... {bar} {percentage}% - ETA {eta_formatted}';
+		bar = new cliProgress.Bar({
+			format: barFormat,
+			stopOnComplete: true
+		  }, cliProgress.Presets.shades_classic);
+		bar.start(20, 0);
+		await emptyDatabase(db);
+		bar.increment();
+		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
-		const tags = getAllKaraTags(karas);
-		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
-		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
 		const seriesAltNamesData = await prepareAltSeriesInsertData(seriesData, seriesMap);
 		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
 		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
+		const tags = getAllKaraTags(karas);
+		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
+		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
 
 		// Inserting data in a transaction
 
@@ -426,14 +457,17 @@ export async function run(config) {
 		]);
 
 		await db.run('commit');
+		bar.increment();
 		await db.close();
 		await checkUserdbIntegrity(null, conf);
+		bar.stop();
 		return error;
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
 		return error;
 	} finally {
 		emit('databaseBusy',false);
+		generating = false;
 	}
 }
 
@@ -459,9 +493,10 @@ export async function checkUserdbIntegrity(uuid, config) {
 		karas_userdbfile + '.backup',
 		{ overwrite: true }
 	);
+	bar.increment();
 
 
-	logger.info('[Gen] Running user database integrity checks');
+	logger.debug('[Gen] Running user database integrity checks');
 
 	const [db, userdb] = await Promise.all([
 		open(karas_dbfile, {Promise}),
@@ -490,21 +525,23 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectPlaylistKaras)
 	]);
 
+	bar.increment();
+
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
 
 	// Listing existing KIDs
 	const karaKIDs = allKaras.map(k => `'${k.kid}'`).join(',');
 
-	// Deleting records which aren't in our KID list
+	// Setting kara IDs to 0 when KIDs are absent
 	await Promise.all([
-		userdb.run(`DELETE FROM whitelist WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM blacklist_criteria WHERE uniquevalue NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM blacklist WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM viewcount WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM request WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`DELETE FROM playlist_content WHERE kid NOT IN (${karaKIDs});`)
+		userdb.run(`UPDATE whitelist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`UPDATE blacklist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`UPDATE viewcount SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`UPDATE request SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		userdb.run(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
 	]);
+	bar.increment();
 	const karaIdByKid = new Map();
 	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 	let sql = '';
@@ -571,6 +608,37 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
+	bar.increment();
+	logger.debug('[Gen] Integrity checks complete, database generated');
+}
 
-	logger.info('[Gen] Integrity checks complete, database generated');
+export async function compareKarasChecksum() {
+	profile('compareChecksum');
+	const conf = getConfig();
+	const karaFiles = await extractAllKaraFiles();
+	let karaData = '';
+	let barFormat = 'Checking .karas...     {bar} {percentage}% - ETA {eta_formatted}';
+	bar = new cliProgress.Bar({
+		format: barFormat,
+		stopOnComplete: true
+	}, cliProgress.Presets.shades_classic);
+	bar.start(karaFiles.length,0);
+	for (const karaFile of karaFiles) {
+		karaData += await asyncReadFile(karaFile, 'utf-8');
+		bar.increment();
+	}
+	bar.stop();
+	bar = false;
+	try {
+		karaData += await asyncReadFile(resolve(conf.appPath, conf.PathAltname));
+	} catch(err) {
+		//Nothing to do if this fails.
+	}
+	const karaDataSum = checksum(karaData);
+	profile('compareChecksum');
+	if (karaDataSum !== conf.appKaraDataChecksum) {
+		setConfig({appKaraDataChecksum: karaDataSum});
+		return false;
+	}
+	return true;
 }

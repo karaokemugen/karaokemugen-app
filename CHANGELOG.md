@@ -1,5 +1,14 @@
 # Versions
 
+## v2.3.2 "Ichika Imperturbable" - 03/09/2018
+
+This is a bugfix release.
+
+### Fixes
+
+- Fix searching through series original names
+- Fix kara/media/sub files not being renamed properly when edited
+
 ## v2.3.1 "Ichika Insouciante" - 22/08/2018
 
 This is a bugfix release.

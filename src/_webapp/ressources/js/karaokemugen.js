@@ -59,6 +59,8 @@ var serieMoreInfoButton;
 var listTypeBlc;
 var tagsTypesList;
 var plData;
+var tagsGroups;
+var flattenedTagsGroups;
 var settingsNotUpdated;
 
 (function (yourcode) {
@@ -68,6 +70,14 @@ var settingsNotUpdated;
 
 		initSwitchs();
 
+		tagsGroups = {
+			'TAGCAT_FAMI':['TAG_ANIME','TAG_REAL','TAG_VIDEOGAME'],
+			'TAGCAT_SUPP':['TAG_3DS','TAG_DREAMCAST','TAG_DS','TAG_GAMECUBE','TAG_PC','TAG_PS2','TAG_PS3','TAG_PS4','TAG_PSP','TAG_PSV','TAG_PSX','TAG_SATURN','TAG_SEGACD','TAG_SWITCH','TAG_WII','TAG_WII','TAG_XBOX360'],
+			'TAGCAT_CLAS':['TAG_IDOL','TAG_MAGICALGIRL','TAG_MECHA','TAG_SHOUJO','TAG_SHOUNEN','TAG_YAOI','TAG_YURI'],
+			'TAGCAT_ORIG':['TAG_MOBAGE','TAG_MOVIE','TAG_ONA','TAG_OVA','TAG_TOKU','TAG_TVSHOW','TAG_VN','TAG_VOCALOID'],
+			'TAGCAT_TYPE':['TAG_DUO','TAG_HARDMODE','TAG_HUMOR','TAG_LONG','TAG_PARODY','TAG_R18','TAG_REMIX','TAG_SPECIAL','TAG_SPOIL','TAG_VOICELESS'],
+			}
+		flattenedTagsGroups = [].concat.apply([], Object.values(tagsGroups));
 		// Once page is loaded
 		plData = {
 			'0' : {
@@ -200,7 +210,7 @@ var settingsNotUpdated;
 		var mugenToken = readCookie('mugenToken');
 
 		if(!welcomeScreen) {
-			if(query.admpwd && appFirstRun && scope === 'admin') { // app first run admin
+			if(query.admpwd && scope === 'admin' && appFirstRun) { // app first run admin
 				login('admin', query.admpwd).done(() => {
 					startIntro('admin');
 					var privateMode = $('input[name="EnginePrivateMode"]');
@@ -281,7 +291,9 @@ var settingsNotUpdated;
 
 					$('#playlist' + side).empty();
 					$('#searchPlaylist' + side).val('');
-
+					if (oldVal == -1) {
+						$('#searchMenu' + side).collapse('hide');
+					}
 					playlistContentUpdating = fillPlaylist(side);
 					refreshPlaylistDashboard(side);
 				}
@@ -1254,7 +1266,11 @@ var settingsNotUpdated;
 							var badges = '';
 
 							if(kara.misc) {
-								kara.misc.split(',').forEach(function(tag) {
+								var tagArray = kara.misc.split(',');
+								tagArray.sort(function(a, b){  
+									return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
+								  });
+								tagArray.forEach(function(tag) {
 									if (tag !== 'NO_TAG') {
 										badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
 									}
@@ -1811,7 +1827,7 @@ var settingsNotUpdated;
     * @return {String} the title
     */
 	buildKaraTitle = function(data, options) {
-		if (typeof options == 'undefined') {
+		if(typeof options == 'undefined') {
 			options = {};
 		}
 
@@ -1821,22 +1837,23 @@ var settingsNotUpdated;
 			data.language = '';
 		}
 		var titleText = 'fillerTitle';
-		if (options.mode && options.mode === 'doubleline') {
-			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
-				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : '')], Boolean);
-			var titleClean = Object.keys(titleArray).map(function (k) {
-				return titleArray[k] ? titleArray[k] : '';
-			});
-			titleText = titleClean.join(' - ') + '<br/>' + data.title;
-
-		} else {
-			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
-				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
-			var titleClean = Object.keys(titleArray).map(function (k) {
-				return titleArray[k] ? titleArray[k] : '';
-			});
-			titleText = titleClean.join(' - ');
+		
+		var limit = isSmall ? 35 : 50;
+		var serieText =  data.serie ? data.serie : data.singer.replace(/,/g, ', ');
+		serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
+		var titleArray = [data.language.toUpperCase(), serieText, data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : '')];
+		var titleClean = titleArray.map(function (e, k) {
+			return titleArray[k] ? titleArray[k] : '';
+		});
+		
+		var separator = '';
+		if(data.title) {
+			separator = ' - ';
+			if (options.mode && options.mode === 'doubleline') {
+				separator = '<br/>';
+			} 
 		}
+		titleText = titleClean.join(' - ') + separator + data.title;
 
 
 		if(options.search) {
@@ -1920,7 +1937,7 @@ var settingsNotUpdated;
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
 			, 'BLCTYPE_7':			data['misc_i18n']
 			, 'DETAILS_SERIE':		data['serie']
-			, 'DETAILS_SERIE_ALT':	data['serie_altname']
+			//	, 'DETAILS_SERIE_ALT':	data['serie_altname']
 			, 'BLCTYPE_2':			data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
 			, 'DETAILS_YEAR':		data['year']
@@ -1938,6 +1955,7 @@ var settingsNotUpdated;
 
 		if (htmlMode == 'list') {
 			var isPublic = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_public');
+			var isCurrent = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_current');
 			var likeFreeButtonHtml = data['flag_free'] ? likeFreeButton.replace('likeFreeButton', 'likeFreeButton free btn-primary') : likeFreeButton;
 
 			infoKaraTemp = '<div class="detailsKara alert alert-info">'
@@ -1947,7 +1965,7 @@ var settingsNotUpdated;
 				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
 				+ (data['serie'] ? ' ' + serieMoreInfoButton : '')
-				+ (isPublic && scope === 'admin' ? likeFreeButtonHtml : '')
+				+ (scope === 'admin' && (isCurrent || isPublic) ? likeFreeButtonHtml : '')
 				+ '</div>'
 				+ htmlTable
 				+ '</div>';

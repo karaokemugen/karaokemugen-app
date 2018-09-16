@@ -431,8 +431,8 @@
 	"WLCM_MSG": "Depuis cet écran vous accédez aux différentes parties de l'application.",
 	"WLCM_MSG2": "Amusez-vous bien !",
 	"WLCM_GETSTARTED": "Démarrer didacticiel",
-	"WLCM_KARAMANAGER": "GESTION DU KARA",
-	"WLCM_ADMINISTRATION": "ADMINISTRATION",
+	"WLCM_KARAMANAGER": "GESTION DU KARAOKE",
+	"WLCM_ADMINISTRATION": "SYSTÈME",
 	"WLCM_UPDATE": "METTRE À JOUR",
 	"WLCM_SITE": "Site web",
 	"WLCM_PUBLIC": "INTERFACE PUBLIQUE",
@@ -513,7 +513,5 @@
 	"KARA_SUGGESTION_MAIL": "Vous ne trouvez pas votre bonheur ? Cliquez ici",
 	"KARA_SUGGESTION_SUBJECT": "Suggestion de kara : ",
 	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais.%0D%0A Cordialement, bisous.",
-	"KARA_SUGGESTION_NAME": "Titre de la chanson",
-	"TAG_CONCERT": "TAG_CONCERT",
-	"TAG PSP": "TAG PSP"
+	"KARA_SUGGESTION_NAME": "Titre de la chanson"
 }

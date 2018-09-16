@@ -8,27 +8,14 @@ import {exit} from '../_services/engine';
 import {duration} from '../_common/utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
-import {checkUserdbIntegrity, run as generateDB} from '../_admin/generate_karasdb';
+import {compareKarasChecksum, checkUserdbIntegrity, run as generateDB} from '../_admin/generate_karasdb';
 const sql = require('../_common/db/database');
 
 // Setting up databases
 let karaDb;
 let userDb;
 
-export function buildClausesSeries(words) {
-	const params = paramWords(words);
-	let sql = [];
-	for (const i in words.split(' ').filter(s => !('' === s))) {
-		sql.push(`s.NORM_name LIKE $word${i} OR
-		s.NORM_altname LIKE $word${i}`);
-	}
-	return {
-		sql: sql,
-		params: params
-	};
-}
-
-function paramWords(filter) {
+export function paramWords(filter) {
 	let params = {};
 	const words = deburr(filter)
 		.toLowerCase()
@@ -55,6 +42,7 @@ export function buildClauses(words,source) {
 		ak.NORM_title LIKE $word${i} OR
 		ak.NORM_author LIKE $word${i} OR
 		ak.NORM_serie LIKE $word${i} OR
+		ak.NORM_serie_i18n LIKE $word${i} OR
 		ak.NORM_serie_altname LIKE $word${i} OR
 		ak.NORM_singer LIKE $word${i} OR
 		ak.NORM_songwriter LIKE $word${i} OR
@@ -108,11 +96,6 @@ export async function transaction(items, sql) {
 	}).catch((err) => {
 		throw err;
 	});
-}
-
-export function openDatabases(config) {
-	const conf = config || getConfig();
-	return Promise.all([openKaraDatabase(conf), openUserDatabase(conf)]);
 }
 
 async function openKaraDatabase() {
@@ -182,10 +165,11 @@ export function getUserDb() {
 }
 
 export async function initDBSystem() {
-	let doGenerate = false;
+	let doGenerate;
 	const conf = getConfig();
 	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
+	//If userdata is missing, assume it's the first time we're running.
 	if (!await asyncExists(userDbFile)) setConfig({appFirstRun: 1});
 	if (conf.optGenerateDB) {
 		// Manual generation triggered.
@@ -208,6 +192,12 @@ export async function initDBSystem() {
 	await migrateKaraDb();
 	await openUserDatabase();
 	await migrateUserDb();
+	// Compare Karas checksums
+	logger.info('[DB] Checking kara files...');
+	if (!await compareKarasChecksum()) {
+		logger.info('[DB] Kara files have changed, database generation triggered');
+		doGenerate = true;
+	}
 	if (doGenerate) await generateDatabase();
 	await closeKaraDatabase();
 	await getUserDb().run(`ATTACH DATABASE "${karaDbFile}" as karasdb;`);
