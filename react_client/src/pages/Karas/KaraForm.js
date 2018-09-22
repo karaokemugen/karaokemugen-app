@@ -21,7 +21,7 @@ class KaraForm extends Component {
 			groupsDS: [],
 			tagDS: [],
 			singer: [],
-			author: [localStorage.getItem('username')],
+			author: localStorage.getItem('username') !== 'admin' ? [localStorage.getItem('username')] : [],
 			tags: ['TAG_ANIME', 'TAG_TVSHOW'],
 			series: [],
 			creator: [],
