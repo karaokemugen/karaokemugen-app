@@ -11,7 +11,7 @@
     "debug": "babel-node $NODE_DEBUG_OPTION src/index.js -- --debug",
     "test": "mocha --require babel-register --timeout 20000",
     "build": "yarn buildReact && rm -Rf dist && babel --source-maps --copy-files -d dist/ src/",
-    "instiall": "cd react_client && yarn install",
+    "install": "cd react_client && yarn install",
     "setup": "yarn install && yarn buildReact",
     "buildReact": "cd react_client && yarn build",
     "startReact": "cd react_client && yarn start"
