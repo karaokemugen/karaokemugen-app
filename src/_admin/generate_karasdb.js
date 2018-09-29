@@ -487,7 +487,7 @@ export async function run(config) {
 		return error;
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
-		return error;
+		throw err;
 	} finally {
 		emit('databaseBusy',false);
 		generating = false;
