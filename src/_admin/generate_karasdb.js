@@ -116,6 +116,27 @@ function prepareAllKarasInsertData(karas) {
 	return karas.map((kara, index) => prepareKaraInsertData(kara, index + 1));
 }
 
+function checkDuplicateKIDs(karas) {
+	let searchKaras = [];
+	let errors = [];
+	for (const kara of karas) {
+		// Find out if ou kara exists in our list, if not push it.
+		const search = searchKaras.find(k => {
+			return k.KID === kara.KID;
+		});
+		if (search) {
+			// One KID is duplicated, we're going to throw an error.
+			errors.push({
+				KID: kara.KID, 
+				kara1: kara.karafile,
+				kara2: search.karafile
+			});
+		}
+		searchKaras.push({ KID: kara.KID, karafile: kara.karafile });
+	}
+	if (errors.length > 0) throw `One or several KIDs are duplicated in your database : ${JSON.stringify(errors,null,2)}. Please fix this by removing the duplicated karaoke(s) and retry generating your database.`;
+}
+
 function getSeries(kara) {
 	const series = new Set();
 
@@ -411,6 +432,8 @@ export async function run(config) {
 		if (karaFiles.length === 0) throw 'No kara files found';
 		bar.start(karaFiles.length + 1, 0);
 		const karas = await readAllKaras(karaFiles);
+		// Check if we don't have two identical KIDs
+		checkDuplicateKIDs(karas);
 		let seriesData;
 		try {
 			seriesData = await readSeriesFile(series_altnamesfile);
