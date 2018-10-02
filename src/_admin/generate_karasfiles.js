@@ -11,7 +11,6 @@ import {
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
-import {getFileLangFromKara} from '../_dao/karafile';
 import {check} from '../_common/utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import sanitizeFilename from 'sanitize-filename';
@@ -173,7 +172,7 @@ export async function karaGenerationBatch() {
 async function importKara(mediaFile, subFile, data) {
 	let kara = mediaFile;
 	if (data) {
-		const fileLang = getFileLangFromKara(data.lang[0]);
+		const fileLang = data.lang[0].toUpperCase();
 		kara = sanitizeFilename(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`)
 			.replace(/ô/g,'ou')
 			.replace(/Ô/g,'Ou')
