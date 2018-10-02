@@ -18,15 +18,6 @@ import {getAllKaras} from './kara';
 
 let error = false;
 
-
-function getLangFromFile(fileLang) {
-	return Object.keys(specialLangMap).find(key => specialLangMap[key] === fileLang) || 'und';
-}
-
-export function getFileLangFromKara(karaLang) {
-	return specialLangMap[karaLang] || karaLang.toUpperCase();
-}
-
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
 	const infos = karaFileName.split(/\s+-\s+/); // LANGUAGE - SERIES - TYPE+ORDER - TITLE
@@ -40,7 +31,7 @@ export function karaFilenameInfos(karaFile) {
 
 	// Let's return an object with our data correctly positionned.
 	return {
-		lang: getLangFromFile(infos[0]),
+		lang: infos[0].toLowerCase(),
 		serie: infos[1],
 		type: orderInfos[1],
 		order: orderInfos[2] ? +orderInfos[2] : 0,
