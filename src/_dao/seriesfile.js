@@ -37,8 +37,10 @@ export async function writeSeriesFile(series) {
 		header: header,
 		series: series
 	};
+	//Remove useless data
 	seriesData.series.forEach((s, i) => {
 		if (s.aliases.length === 0) delete seriesData.series[i].aliases;
+		delete seriesData.series[i].NORM_i18n_name
 	});
 	// Sort data by series.name before writing it
 	seriesData.series.sort((a,b) => {
