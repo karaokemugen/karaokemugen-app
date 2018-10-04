@@ -47,7 +47,7 @@ export async function deleteFavorite(username, kara_id) {
 		return false;
 	});
 	if (!isKaraInPL) throw 'Karaoke ID is not present in this favorites list';
-	await deleteKaraFromPlaylist([plc_id], plInfo.playlist_id, null, {sortBy: 'name'});
+	await deleteKaraFromPlaylist(plc_id, plInfo.playlist_id, null, {sortBy: 'name'});
 	profile('deleteFavorites');
 	return plInfo;
 }
