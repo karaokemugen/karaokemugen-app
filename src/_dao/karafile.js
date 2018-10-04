@@ -13,7 +13,6 @@ import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedia
 import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
 import {formatKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
-import {specialLangMap} from '../_services/constants';
 import {getAllKaras} from './kara';
 
 let error = false;
