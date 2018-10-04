@@ -8,8 +8,8 @@ export function buildClausesSeries(words) {
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
 		sql.push(`s.NORM_name LIKE $word${i} OR
-		s.NORM_altname LIKE $word${i} OR 
-		s.NORM_i18n_name LIKE $word${i}`);
+		s.NORM_altname LIKE $word${i} OR
+		NORM_i18n_name LIKE $word${i}`);
 	}
 	return {
 		sql: sql,
