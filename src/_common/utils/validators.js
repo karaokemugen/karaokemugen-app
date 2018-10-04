@@ -8,14 +8,14 @@ function integerValidator(value) {
 		if (!isNaN(value)) return null;
 		return ` '${value}' is invalid`;
 	}
-	return null;			
+	return null;
 }
 
-function langValidator(value) {	
-	if (!Array.isArray(value)) value = value.replace('"', '').split(',');	
+function langValidator(value) {
+	if (!Array.isArray(value)) value = value.replace('"', '').split(',');
 	value.forEach((e,i) => value[i] = e.trim());
 	let result = null;
-	for (const lang of value) {		
+	for (const lang of value) {
 		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
 			result = `'${lang}' is invalid`;
 			break;
@@ -25,10 +25,10 @@ function langValidator(value) {
 }
 
 function tagsValidator(value) {
-	if (!Array.isArray(value)) value = value.replace('"', '').split(',');	
+	if (!Array.isArray(value)) value = value.replace('"', '').split(',');
 	value.forEach((e,i) => value[i] = e.trim());
 	let result = null;
-	for (const tag of value) {	
+	for (const tag of value) {
 		if (!tag.startsWith('TAG_')) {
 			result = `list '${value}' is invalid`;
 			break;
@@ -37,19 +37,35 @@ function tagsValidator(value) {
 	return result;
 }
 
-function typeValidator(value) {	
-	if (!karaTypes[value]) return `${value} is invalid`;	
+function seriesi18nValidator(value) {
+	if (typeof value !== 'object') return `i18n data (${value}) is not an object`;
+	for (const lang of Object.keys(value)) {
+		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
+			return `i18n data invalid : '${lang}' is invalid`;
+		}
+	}
+	return null;
+}
+
+function typeValidator(value) {
+	if (!karaTypes[value]) return `${value} is invalid`;
 	return null;
 }
 
 function boolIntValidator(value) {
-	if (value && +value !== 0 && +value !== 1) return ` '${value}' is invalid`;	
+	if (value && +value !== 0 && +value !== 1) return ` '${value}' is invalid`;
+	return null;
+}
+
+function seriesAliasesValidator(value) {
+	if (!value) return null;
+	if (!Array.isArray(value)) return ` '${value}' is invalid (not an array)`;
 	return null;
 }
 
 function isJSON(value) {
 	if (testJSON(value)) return null;
-	return ` '${value}' is invalid JSON`;	
+	return ` '${value}' is invalid JSON`;
 }
 
 function isNumber(value) {
@@ -57,15 +73,15 @@ function isNumber(value) {
 }
 
 function numbersArrayValidator(value) {
-	if (value) {		
+	if (value) {
 		value = '' + value;
 		if (value.includes(',')) {
 			const array = value.split(',');
 			if (array.every(isNumber)) return null;
-			return ` '${value}' is invalid`;	
+			return ` '${value}' is invalid`;
 		}
 		if (!isNaN(value)) return null;
-		return ` '${value}' is invalid`;	
+		return ` '${value}' is invalid`;
 	}
 	return ` '${value}' is invalid`;
 }
@@ -88,10 +104,12 @@ export function initValidators() {
 	if (!validate.validators.boolIntValidator) validate.validators.boolIntValidator = boolIntValidator;
 	if (!validate.validators.numbersArrayValidator) validate.validators.numbersArrayValidator = numbersArrayValidator;
 	if (!validate.validators.integerValidator) validate.validators.integerValidator = integerValidator;
+	if (!validate.validators.seriesAliasesValidator) validate.validators.seriesAliasesValidator = seriesAliasesValidator;
 	if (!validate.validators.isJSON) validate.validators.isJSON = isJSON;
 	if (!validate.validators.langValidator) validate.validators.langValidator = langValidator;
 	if (!validate.validators.tagsValidator) validate.validators.tagsValidator = tagsValidator;
 	if (!validate.validators.typeValidator) validate.validators.typeValidator = typeValidator;
+	if (!validate.validators.seriesi18nValidator) validate.validators.seriesi18nValidator = seriesi18nValidator;
 }
 
 export function check(obj, constraints) {

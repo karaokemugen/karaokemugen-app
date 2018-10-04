@@ -14,7 +14,7 @@ function sanitizeFile(file) {
 		'θ': '0',
 		'Ø': '0',
 		'○': 'O',
-		'×': 'X',
+		'×': 'x',
 		'Φ': 'O',
 		'±': '+',
 		'∀': 'A'
@@ -31,8 +31,13 @@ function sanitizeFile(file) {
 		.replace(/;/g,' ')
 		.replace(/\[/g,' ')
 		.replace(/\]/g,' ')
-		.replace(/[△:\/☆★+×†↑½♪＊*∞♥❤♡⇄♬]/g, ' ')
+		.replace(/[△:\/☆★†↑½♪＊*∞♥❤♡⇄♬]/g, ' ')
 		.replace(/…/,'...')
+		.replace(/\+/,' Plus ')
+		.replace(/\?\?/,' question_mark 2')
+		.replace(/\?/,' question_mark ')
+		.replace(/^\./,'')
+		.replace(/♭/,' Flat ')
 		.replace(replaceRegExp, input => {
 			return replaceMap[input];
 		})
