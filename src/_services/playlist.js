@@ -994,17 +994,15 @@ export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 			playlist = BeforePlaying.concat(AfterPlaying);
 			// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
 			if (!ReachedPlaying) {
-				playlist = shuffle(playlist);
+				if(!smartShuffleBoolean)
+					playlist = shuffle(playlist);
+				else
+					playlist = smartShuffle(playlist);
 			}
 		}
-		let newpos = 0;
-		let arraypos = 0;
-		playlist.forEach(() => {
-			newpos++;
-			playlist[arraypos].pos = newpos;
-			arraypos++;
-		});
+
 		updatePlaylistLastEditTime(playlist_id);
+
 		await reorderPL(playlist_id,playlist);
 		logger.info(`[Playlist] Playlist ${pl.name} shuffled`);
 		return pl.name;
@@ -1018,14 +1016,11 @@ export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 	}
 }
 
-
-async function smartShuffle(playlist){ // Smart Shuffle begin
+function smartShuffle(playlist){ // Smart Shuffle begin
 	let userShuffleBoolean = false; // The boolean to add a shuffle condition if the number of user is high enough
 	playlist = shuffle(playlist);
-
 	let verificator = 0;
 	if (playlist.length - 6 > 0) {      // We do nothing if the playlist length is too low
-
 
 		let userTest = 1;
 		let userTestArray = [playlist[0].pseudo_add];
@@ -1040,13 +1035,9 @@ async function smartShuffle(playlist){ // Smart Shuffle begin
 		if (userTest > 5) {
 			userShuffleBoolean = true;
 		}
-
 		let user_iterator = 0;
-
 		if (userShuffleBoolean) {
 			while (playlist.length - user_iterator > 0) {
-
-
 				if ((playlist.length - user_iterator) > 6) {
 					let playlist_temp = playlist.slice(user_iterator, user_iterator + 6);
 					for (let i = 0; i < 5; i++) {
@@ -1059,35 +1050,24 @@ async function smartShuffle(playlist){ // Smart Shuffle begin
 								let a = playlist_temp[i + 1];
 								playlist[i + 1 + user_iterator] = playlist[i - 5 + user_iterator];
 								playlist[i - 5 + user_iterator] = a;
-
 							}
-
 						}
-
 					}
-
 				}
 				user_iterator += 5;
 			}
-
 			let playlist_temp = playlist.slice(user_iterator - 1, playlist.length);
 
 			for (let i = user_iterator; i < playlist_temp.length - 1; i++) {
-
 				if (playlist_temp[i].pseudo_add === playlist_temp[i + 1].pseudo_add) verificator = i;
-
 			}
 
 			if (verificator !== 0) {
-
 				let a = playlist_temp[verificator + 1];
 				playlist[verificator + 1 + user_iterator] = playlist[2];
 				playlist[2] = a;
-
 			}
-
 		}
-
 		let duration_iterator = 0;
 
 		while (playlist.length - duration_iterator > 0) {
@@ -1111,6 +1091,8 @@ async function smartShuffle(playlist){ // Smart Shuffle begin
 			duration_iterator += 6;
 		}
 	}
+
+	return playlist;
 } // Smart Shuffle end
 
 export async function previousSong() {
