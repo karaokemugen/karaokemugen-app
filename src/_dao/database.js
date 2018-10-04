@@ -192,13 +192,16 @@ export async function initDBSystem() {
 	await migrateKaraDb();
 	await openUserDatabase();
 	await migrateUserDb();
-	// Compare Karas checksums
-	logger.info('[DB] Checking kara files...');
-	if (!await compareKarasChecksum()) {
-		logger.info('[DB] Kara files have changed, database generation triggered');
-		doGenerate = true;
+	// Compare Karas checksums if generation hasn't been requested already
+	if (doGenerate) {
+		await generateDatabase();
+	} else {
+		logger.info('[DB] Checking kara files...');
+		if (!await compareKarasChecksum()) {
+			logger.info('[DB] Kara files have changed, database generation triggered');
+			await generateDatabase();
+		}
 	}
-	if (doGenerate) await generateDatabase();
 	await closeKaraDatabase();
 	await getUserDb().run(`ATTACH DATABASE "${karaDbFile}" as karasdb;`);
 	await getUserDb().run('PRAGMA TEMP_STORE=MEMORY');
@@ -236,13 +239,13 @@ async function generateDatabase() {
 	const conf = getConfig();
 	try {
 		await generateDB(conf);
-		logger.info('[DB] Database generation completed successfully!');			
+		logger.info('[DB] Database generation completed successfully!');
 		if (conf.optGenerateDB) exit(0);
 	} catch(err) {
 		logger.error('[DB] Database generation completed with errors!');
 		if (conf.optGenerateDB) exit(1);
 	}
-	return true;	
+	return true;
 }
 
 async function migrateUserDb() {
