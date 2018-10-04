@@ -1021,7 +1021,7 @@ export async function shufflePlaylist(playlist_id, smartShuffleBoolean) {
 
 async function smartShuffle(playlist){ // Smart Shuffle begin
 	let userShuffleBoolean = false; // The boolean to add a shuffle condition if the number of user is high enough
-
+	playlist = shuffle(playlist);
 
 	let verificator = 0;
 	if (playlist.length - 6 > 0) {      // We do nothing if the playlist length is too low
