@@ -18,7 +18,6 @@ export function buildClausesSeries(words) {
 }
 
 export async function selectAllSeries(filter, lang) {
-	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClausesSeries(filter) : {sql: [], params: {}};const query = sql.getSeries(filterClauses.sql, langSelector(lang));
 
 	let series = await getUserDb().all(query, filterClauses.params);

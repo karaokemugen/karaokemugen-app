@@ -1,4 +1,4 @@
-import {asyncWriteFile, asyncReadFile, resolveFileInDirs, } from '../_common/utils/files';
+import {asyncUnlink, sanitizeFile, asyncWriteFile, asyncReadFile, resolveFileInDirs, } from '../_common/utils/files';
 import testJSON from 'is-valid-json';
 import {resolvedPathSeries, getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
@@ -50,19 +50,24 @@ export function findSeries(serie, seriesData) {
 
 export async function writeSeriesFile(series) {
 	const conf = getConfig();
-	const seriesFile = resolve(conf.appPath, conf.PathAltname);
+	const seriesFile = resolve(conf.appPath, conf.PathSeries.split('|')[0], `${sanitizeFile(series.name)}.series.json`);
 	const seriesData = {
 		header: header,
 		series: series
 	};
 	//Remove useless data
-	seriesData.series.forEach((s, i) => {
-		if (s.aliases.length === 0) delete seriesData.series[i].aliases;
-		delete seriesData.series[i].NORM_i18n_name;
-	});
-	// Sort data by series.name before writing it
-	seriesData.series.sort((a,b) => {
-		return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
-	});
+	if (series.aliases.length === 0) delete seriesData.series.aliases;
+	delete seriesData.series.NORM_i18n_name;
+	delete seriesData.series.serie_id;
+	delete seriesData.series.i18n_name;
 	return await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
+}
+
+export async function removeSeriesFile(name) {
+	try {
+		const filename = await resolveFileInDirs(`${sanitizeFile(name)}.series.json`, resolvedPathSeries());
+		await asyncUnlink(filename);
+	} catch(err) {
+		throw `Could not remove series file ${name} : ${err}`;
+	}
 }
