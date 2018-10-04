@@ -56,6 +56,7 @@ export const defaults = {
 	PathDBKarasFile: 'karas.sqlite3',
 	PathDBUserFile: 'userdata.sqlite3',
 	PathAltname: 'app/data/series.json',
+	PathSeries: 'app/data/series',
 	PathBackgrounds: 'app/backgrounds',
 	PathJingles: 'app/jingles',
 	PathTemp: 'app/temp',
