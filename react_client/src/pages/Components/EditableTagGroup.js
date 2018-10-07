@@ -69,6 +69,7 @@ export default class EditableTagGroup extends React.Component {
 		langs.all().forEach(lang => languages.push({value: lang['2B'], text: lang.name}));
 		languages.push({value: 'mul', text: 'Multi-languages'});
 		languages.push({value: 'und', text: 'Undefined Language'});
+		languages.push({value: 'zxx', text: 'No Linguistic Content'});
 		this.setState({ DS: languages || [] });
 	}
 

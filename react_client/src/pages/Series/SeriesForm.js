@@ -14,7 +14,6 @@ class SerieForm extends Component {
 			selectVisible: false
 		};
 		langs.all().forEach(lang => this.state.languages.push({value: lang['2B'], text: lang.name}));
-		this.state.languages.push({value: 'und', text: 'Undefined Language'});
 		if (this.props.serie.i18n) {
 			Object.keys(this.props.serie.i18n).forEach(lang => {
 				this.state.i18n.push(lang);

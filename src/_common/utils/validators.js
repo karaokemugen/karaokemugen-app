@@ -16,7 +16,7 @@ function langValidator(value) {
 	value.forEach((e,i) => value[i] = e.trim());
 	let result = null;
 	for (const lang of value) {		
-		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
+		if (!(lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang))) {
 			result = `'${lang}' is invalid`;
 			break;
 		}
