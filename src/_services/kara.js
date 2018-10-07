@@ -91,6 +91,9 @@ export function translateKaraInfo(karalist, lang) {
 				case 'mul':
 					languages.push(i18n.__('MULTI_LANGUAGE'));
 					break;
+				case 'zxx':
+					languages.push(i18n.__('NO_LANGUAGE'));
+					break;
 				default:
 					// We need to convert ISO639-2B to ISO639-1 to get its language
 					langdata = langs.where('2B',karalang);

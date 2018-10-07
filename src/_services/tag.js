@@ -31,6 +31,8 @@ export function translateTags(taglist,lang) {
 		if (tag.type === 5) {
 			if (tag.name === 'und') {
 				taglist[index].name_i18n = i18n.__('UNDEFINED_LANGUAGE');
+			} else if (tag.name === 'zxx') {
+				taglist[index].name_i18n = i18n.__('NO_LANGUAGE');
 			} else {
 				// We need to convert ISO639-2B to ISO639-1 to get its language
 				const langdata = langs.where('2B', tag.name);
