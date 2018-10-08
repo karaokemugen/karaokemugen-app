@@ -56,7 +56,7 @@ export async function writeSeriesFile(series) {
 		series: series
 	};
 	//Remove useless data
-	if (series.aliases.length === 0) delete seriesData.series.aliases;
+	if (series.aliases && series.aliases.length === 0) delete seriesData.series.aliases;
 	delete seriesData.series.NORM_i18n_name;
 	delete seriesData.series.serie_id;
 	delete seriesData.series.i18n_name;
