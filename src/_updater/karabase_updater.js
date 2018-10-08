@@ -1,6 +1,6 @@
 import {basename, resolve} from 'path';
 import {getConfig} from '../_common/utils/config';
-import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, compareFiles, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
+import {isGitRepo, asyncUnlink, asyncReadDir, asyncStat, compareDirs, asyncMkdirp, asyncExists, asyncRemove} from '../_common/utils/files';
 import decompress from 'decompress';
 import logger from 'winston';
 import {copy} from 'fs-extra';
@@ -70,33 +70,30 @@ async function compareBases() {
 	const conf = getConfig();
 	const pathSubs = conf.PathSubs.split('|');
 	const pathKaras = conf.PathKaras.split('|');
-	const altnamesMinePath = resolve(conf.appPath, conf.PathAltname);
+	const pathSeries = conf.PathSeries.split('|');
+	const seriesMinePath = resolve(conf.appPath, pathSeries[0]);
 	const lyricsMinePath = resolve(conf.appPath, pathSubs[0]);
 	const karasMinePath = resolve(conf.appPath, pathKaras[0]);
 	const archive = await decompressBase();
 	const archiveWOExt = basename(archive, '.zip');
 	const karasBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt,'karas');
 	const lyricsBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'lyrics');
-	const altnamesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series.json');
-	if (!await asyncExists(altnamesMinePath) || !await compareFiles(altnamesBasePath,altnamesMinePath)) {
-		copy(
-			altnamesBasePath,
-			altnamesMinePath,
-			{overwrite: true}
-		);
-		logger.info('[Updater] Updated series file');
-	}
+	const seriesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series');
 	logger.info('[Updater] Comparing your base with the current one');
-	const [karasToUpdate, lyricsToUpdate] = await Promise.all([
+	const [karasToUpdate, lyricsToUpdate, seriesToUpdate] = await Promise.all([
 		compareDirs(karasMinePath, karasBasePath),
-		compareDirs(lyricsMinePath, lyricsBasePath)
+		compareDirs(lyricsMinePath, lyricsBasePath),
+		compareDirs(seriesMinePath, seriesBasePath)
 	]);
 	if (lyricsToUpdate.newFiles.length === 0 &&
 		lyricsToUpdate.updatedFiles.length === 0 &&
 		lyricsToUpdate.removedFiles.length === 0 &&
 		karasToUpdate.newFiles.length === 0 &&
 		karasToUpdate.removedFiles.length === 0 &&
-		karasToUpdate.updatedFiles.length === 0) {
+		karasToUpdate.updatedFiles.length === 0 &&
+		seriesToUpdate.newFiles.length === 0 &&
+		seriesToUpdate.removedFiles.length === 0 &&
+		seriesToUpdate.updatedFiles.length === 0) {
 		logger.info('[Updater] No update for your base');
 		return false;
 	} else {
@@ -105,9 +102,12 @@ async function compareBases() {
 			updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath,true),
 			updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath,true),
 			updateFiles(lyricsToUpdate.updatedFiles, lyricsBasePath, lyricsMinePath),
+			updateFiles(seriesToUpdate.newFiles, seriesBasePath, lyricsMinePath,true),
+			updateFiles(seriesToUpdate.updatedFiles, seriesBasePath, lyricsMinePath),
 			updateFiles(karasToUpdate.updatedFiles, karasBasePath, karasMinePath),
 			removeFiles(karasToUpdate.removedFiles, karasMinePath),
-			removeFiles(lyricsToUpdate.removedFiles, lyricsMinePath)
+			removeFiles(lyricsToUpdate.removedFiles, lyricsMinePath),
+			removeFiles(seriesToUpdate.removedFiles, seriesMinePath)
 		]);
 		logger.info('[Updater] Done updating base files');
 		asyncRemove(resolve(conf.appPath, conf.PathTemp, 'newbase'));

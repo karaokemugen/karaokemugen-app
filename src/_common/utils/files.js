@@ -171,7 +171,7 @@ export function checksum(str, algorithm, encoding) {
 		.digest(encoding || 'hex');
 }
 
-export async function compareFiles(file1, file2) {
+async function compareFiles(file1, file2) {
 	if (!await asyncExists(file1) || !await asyncExists(file2)) return false;
 	const [file1data, file2data] = await Promise.all([
 		asyncReadFile(file1, 'utf-8'),
