@@ -8,8 +8,8 @@ export function buildClausesSeries(words) {
 	let sql = [];
 	for (const i in words.split(' ').filter(s => !('' === s))) {
 		sql.push(`s.NORM_name LIKE $word${i} OR
-		s.NORM_altname LIKE $word${i} OR 
-		s.NORM_i18n_name LIKE $word${i}`);
+		s.NORM_altname LIKE $word${i} OR
+		NORM_i18n_name LIKE $word${i}`);
 	}
 	return {
 		sql: sql,
@@ -18,7 +18,6 @@ export function buildClausesSeries(words) {
 }
 
 export async function selectAllSeries(filter, lang) {
-	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
 	const filterClauses = filter ? buildClausesSeries(filter) : {sql: [], params: {}};const query = sql.getSeries(filterClauses.sql, langSelector(lang));
 
 	let series = await getUserDb().all(query, filterClauses.params);

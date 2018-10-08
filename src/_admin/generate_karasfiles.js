@@ -5,7 +5,7 @@
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
 import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias} from '../_common/utils/config';
-import {asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_common/utils/files';
+import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_common/utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
@@ -13,8 +13,6 @@ import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {check} from '../_common/utils/validators';
 import {getOrAddSerieID} from '../_services/series';
-import sanitizeFilename from 'sanitize-filename';
-import deburr from 'lodash.deburr';
 import timestamp from 'unix-timestamp';
 import { compareKarasChecksum } from './generate_karasdb';
 
@@ -173,12 +171,7 @@ async function importKara(mediaFile, subFile, data) {
 	let kara = mediaFile;
 	if (data) {
 		const fileLang = data.lang[0].toUpperCase();
-		kara = sanitizeFilename(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`)
-			.replace(/ô/g,'ou')
-			.replace(/Ô/g,'Ou')
-			.replace(/û/g,'uu')
-		;
-		kara = deburr(kara).replace( /[^\x00-\xFF]/g, '' ).replace(/ [ ]+/,' ');
+		kara = sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`);
 	}
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);

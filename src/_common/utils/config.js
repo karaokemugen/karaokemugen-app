@@ -214,6 +214,11 @@ export function resolvedPathKaras(overrideConfig) {
 	return conf.PathKaras.split('|').map(path => resolve(conf.appPath, path));
 }
 
+export function resolvedPathSeries(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathSeries.split('|').map(path => resolve(conf.appPath, path));
+}
+
 export function resolvedPathJingles(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
 	return conf.PathJingles.split('|').map(path => resolve(conf.appPath, path));
