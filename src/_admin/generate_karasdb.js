@@ -673,7 +673,8 @@ export async function compareKarasChecksum() {
 	profile('compareChecksum');
 	const conf = getConfig();
 	const karaFiles = await extractAllKaraFiles();
-	let karaData = '';
+	const seriesFiles = await extractAllSeriesFiles();
+	let KMData = '';
 	let barFormat = 'Checking .karas...     {bar} {percentage}% - ETA {eta_formatted}';
 	bar = new cliProgress.Bar({
 		format: barFormat,
@@ -681,17 +682,23 @@ export async function compareKarasChecksum() {
 	}, cliProgress.Presets.shades_classic);
 	bar.start(karaFiles.length,0);
 	for (const karaFile of karaFiles) {
-		karaData += await asyncReadFile(karaFile, 'utf-8');
+		KMData += await asyncReadFile(karaFile, 'utf-8');
+		bar.increment();
+	}
+	bar.stop();
+	barFormat = 'Checking series...     {bar} {percentage}% - ETA {eta_formatted}';
+	bar = new cliProgress.Bar({
+		format: barFormat,
+		stopOnComplete: true
+	}, cliProgress.Presets.shades_classic);
+	bar.start(seriesFiles.length,0);
+	for (const seriesFile of seriesFiles) {
+		KMData += await asyncReadFile(seriesFile, 'utf-8');
 		bar.increment();
 	}
 	bar.stop();
 	bar = false;
-	try {
-		karaData += await asyncReadFile(resolve(conf.appPath, conf.PathAltname));
-	} catch(err) {
-		//Nothing to do if this fails.
-	}
-	const karaDataSum = checksum(karaData);
+	const karaDataSum = checksum(KMData);
 	profile('compareChecksum');
 	if (karaDataSum !== conf.appKaraDataChecksum) {
 		setConfig({appKaraDataChecksum: karaDataSum});
