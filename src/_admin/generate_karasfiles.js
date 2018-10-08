@@ -120,7 +120,7 @@ async function generateKara(kara, opts) {
 	// Copy files from temp directory to import, depending on the different cases.
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile;
-	if (kara.subfile && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
+	if (kara.subfile && kara.subfile !== 'dummy.ass' && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
 	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
@@ -188,7 +188,7 @@ async function importKara(mediaFile, subFile, data) {
 	let subPath;
 	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, karaData, subFile);
 	try {
-		await extractAssInfos(subPath, karaData);
+		if (subPath !== 'dummy.ass') await extractAssInfos(subPath, karaData);
 		await extractMediaTechInfos(mediaPath, karaData);
 		await processSeries(data);
 		return await generateAndMoveFiles(mediaPath, subPath, karaData);
@@ -260,6 +260,7 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 
 	const karaFilename = replaceExt(karaData.mediafile, '.kara');
 	const karaPath = resolve(resolvedPathKaras()[0], karaFilename);
+	if (subPath === 'dummy.ass') karaData.subfile = 'dummy.ass';
 	karaData.series = karaData.series.join(',');
 	karaData.lang = karaData.lang.join(',');
 	karaData.singer = karaData.singer.join(',');
@@ -274,7 +275,7 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 		// Moving media in the first media folder.
 		await asyncMove(mediaPath, mediaDest, { overwrite: karaData.overwrite });
 		// Moving subfile in the first lyrics folder.
-		if (subDest) await asyncMove(subPath, subDest,{ overwrite: karaData.overwrite});
+		if (subDest) await asyncMove(subPath, subDest, { overwrite: karaData.overwrite });
 		delete karaData.overwrite;
 	} catch (err) {
 		throw `Error while moving files. Maybe destination files (${mediaDest} or ${subDest} already exist? (${err})`;
