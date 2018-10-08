@@ -461,6 +461,14 @@ async function runSqlStatementOnData(stmtPromise, data) {
 	bar.increment();
 }
 
+function createBar(message, length) {
+	const barFormat = `${message} {bar} {percentage}% - ETA {eta_formatted}`;
+	bar = new cliProgress.Bar({
+		format: barFormat,
+		stopOnComplete: true
+		  }, cliProgress.Presets.shades_classic);
+	bar.start(length, 0);
+}
 
 export async function run(config) {
 	try {
@@ -468,44 +476,31 @@ export async function run(config) {
 		if (generating) throw 'A database generation is already in progress';
 		generating = true;
 		const conf = config || getConfig();
-		let barFormat = 'Reading .karas files  {bar} {percentage}% - ETA {eta_formatted}';
-		bar = new cliProgress.Bar({
-			format: barFormat,
-			stopOnComplete: true
-	  	}, cliProgress.Presets.shades_classic);
+
 		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		const karaFiles = await extractAllKaraFiles();
 		if (karaFiles.length === 0) throw 'No kara files found';
-		bar.start(karaFiles.length + 1, 0);
+		createBar('Reading .kara files  ', karaFiles.length + 1);
 		const karas = await readAllKaras(karaFiles);
 		// Check if we don't have two identical KIDs
 		checkDuplicateKIDs(karas);
 		bar.increment();
 		// Series data
 		bar.stop();
-		barFormat = 'Reading .series files {bar} {percentage}% - ETA {eta_formatted}';
-		bar = new cliProgress.Bar({
-			format: barFormat,
-			stopOnComplete: true
-		  }, cliProgress.Presets.shades_classic);
+
 		const seriesFiles = await extractAllSeriesFiles();
-		bar.start(seriesFiles.length, 0);
 		if (seriesFiles.length === 0) throw 'No series files found';
+		createBar('Reading .series files ', seriesFiles.length);
 		const seriesData = await readAllSeries(seriesFiles);
 		checkDuplicateSeries(seriesData);
 
 		// Preparing data to insert
 		bar.stop();
 		logger.info('[Gen] Data files processed, creating database');
-		barFormat = 'Generating database    {bar} {percentage}% - ETA {eta_formatted}';
-		bar = new cliProgress.Bar({
-			format: barFormat,
-			stopOnComplete: true
-		  }, cliProgress.Presets.shades_classic);
-		bar.start(20, 0);
+		createBar('Generating database   ', 20);
 		await emptyDatabase(db);
 		bar.increment();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
