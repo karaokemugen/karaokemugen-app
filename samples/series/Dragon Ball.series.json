@@ -1,0 +1,15 @@
+{
+  "header": {
+    "version": 2,
+    "description": "Karaoke Mugen Series File"
+  },
+  "series": {
+    "aliases": [
+      "DB"
+    ],
+    "name": "Dragon Ball",
+    "i18n": {
+      "jpn": "Dragon Ball"
+    }
+  }
+}
