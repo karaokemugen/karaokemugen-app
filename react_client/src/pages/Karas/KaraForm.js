@@ -389,12 +389,13 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 6, offset: 0 }}
+					wrapperCol={{ span: 10, offset: 0 }}
 				>
 					{getFieldDecorator('tags', {
 						initialValue: this.state.tags
 					})(<EditableTagGroup
 						tagType={7}
+						checkboxes={true}
 						search={'tag'}
 						onChange={ (tags) => this.props.form.setFieldsValue({ tags: tags.join(',') }) }
 					/>)}
