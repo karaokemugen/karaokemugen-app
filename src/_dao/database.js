@@ -196,9 +196,9 @@ export async function initDBSystem() {
 	if (doGenerate) {
 		await generateDatabase();
 	} else {
-		logger.info('[DB] Checking kara files...');
+		logger.info('[DB] Checking data files...');
 		if (!await compareKarasChecksum()) {
-			logger.info('[DB] Kara files have changed, database generation triggered');
+			logger.info('[DB] Data files have changed, database generation triggered');
 			await generateDatabase();
 		}
 	}
