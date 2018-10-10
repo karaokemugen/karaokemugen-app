@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {Modal, Button, Layout} from 'antd';
+import {Progress, Modal, Button, Layout} from 'antd';
+import openSocket from 'socket.io-client';
 
 import {loading, infoMessage, errorMessage} from '../actions/navigation';
 
@@ -11,7 +12,23 @@ class Database extends Component {
 		super(props);
 		this.state = {
 			updateModal: false,
+			progress: {
+				text: undefined,
+				value: 0,
+				total: 100
+			}
 		};
+		const socket = openSocket('http://localhost:1337');
+		socket.on('generationProgress', data => {
+			if (!data.text) data.text = this.state.progress.text;
+			this.setState({
+				progress: {
+					text: data.text,
+					value: data.value,
+					total: data.total
+				}
+			});
+		});
 	}
 
 
@@ -103,6 +120,9 @@ class Database extends Component {
 					<p>You can check progress in the Karaoke Mugen console window</p>
 					<p>Are you sure?</p>
 				</Modal>
+				Progress Bar : <br/>
+				Text : {this.state.progress.text}<br/>
+				<Progress percent={Math.floor((this.state.progress.value / this.state.progress.total) * 100)} />
 			</Layout.Content>
 		);
 	}
