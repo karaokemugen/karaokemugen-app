@@ -1,12 +1,12 @@
 import validate from 'validate.js';
 import testJSON from 'is-valid-json';
 import {has as hasLang} from 'langs';
-import {karaTypes} from '../../_services/constants';
+import {karaTypes, tags} from '../../_services/constants';
 
 function integerValidator(value) {
 	if (value) {
 		if (!isNaN(value)) return null;
-		return ` '${value}' is invalid`;
+		return ` '${value}' is invalid (not an integer)`;
 	}
 	return null;
 }
@@ -17,7 +17,7 @@ function langValidator(value) {
 	let result = null;
 	for (const lang of value) {
 		if (!(lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang))) {
-			result = `'${lang}' is invalid`;
+			result = `'${lang}' is invalid ISO639-2B code`;
 			break;
 		}
 	}
@@ -29,8 +29,8 @@ function tagsValidator(value) {
 	value.forEach((e,i) => value[i] = e.trim());
 	let result = null;
 	for (const tag of value) {
-		if (!tag.startsWith('TAG_')) {
-			result = `list '${value}' is invalid`;
+		if (!tags.includes(tag.replace(/TAG_/,''))) {
+			result = `list '${value}' is invalid (not a known tag)`;
 			break;
 		}
 	}
@@ -41,19 +41,19 @@ function seriesi18nValidator(value) {
 	if (typeof value !== 'object') return `i18n data (${value}) is not an object`;
 	for (const lang of Object.keys(value)) {
 		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
-			return `i18n data invalid : '${lang}' is invalid`;
+			return `i18n data invalid : '${lang}' is an invalid ISO639-2B code`;
 		}
 	}
 	return null;
 }
 
 function typeValidator(value) {
-	if (!karaTypes[value]) return `${value} is invalid`;
+	if (!karaTypes[value]) return `${value} is an invalid song type`;
 	return null;
 }
 
 function boolIntValidator(value) {
-	if (value && +value !== 0 && +value !== 1) return ` '${value}' is invalid`;
+	if (value && +value !== 0 && +value !== 1) return ` '${value}' is invalid (must be 0 or 1)`;
 	return null;
 }
 
@@ -78,12 +78,12 @@ function numbersArrayValidator(value) {
 		if (value.includes(',')) {
 			const array = value.split(',');
 			if (array.every(isNumber)) return null;
-			return ` '${value}' is invalid`;
+			return ` '${value}' is invalid (not an array of numbers)`;
 		}
 		if (!isNaN(value)) return null;
-		return ` '${value}' is invalid`;
+		return ` '${value}' is invalid (not a number)`;
 	}
-	return ` '${value}' is invalid`;
+	return ` '${value}' is invalid (empty)`;
 }
 
 // Sanitizers

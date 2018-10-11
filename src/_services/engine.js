@@ -1,5 +1,5 @@
 //Utils
-import {setConfig, mergeConfig, getConfig} from '../_common/utils/config';
+import {setConfig, getConfig} from '../_common/utils/config';
 import {profile} from '../_common/utils/logger';
 import readlineSync from 'readline-sync';
 import sample from 'lodash.sample';
@@ -18,7 +18,6 @@ import {initControlPanel} from '../_webapp/control_panel';
 import {initPlayer, quitmpv} from './player';
 import {karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {validateKaras} from './kara';
-import {setSongPoll} from './poll';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
 import {initPlaylistSystem, createPlaylist, buildDummyPlaylist, isACurrentPlaylist, isAPublicPlaylist} from './playlist';
@@ -139,12 +138,6 @@ export function exit(rc) {
 		if (rc !== 0) readlineSync.question('Press enter to exit', {hideEchoBack: true});
 		process.exit(rc);
 	});
-}
-
-export async function updateSettings(newConfig) {
-	const conf = getConfig();
-	newConfig.EngineSongPoll === 1 ? setSongPoll(true) : setSongPoll(false);
-	return await mergeConfig(conf, newConfig);
 }
 
 export function shutdown() {
