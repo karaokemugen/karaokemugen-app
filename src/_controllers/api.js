@@ -6,14 +6,14 @@ import {getLang} from '../_controllers/lang';
 //Utils
 import {getPublicState, getState} from '../_common/utils/state';
 import logger from 'winston';
-import {sanitizeConfig, verifyConfig, getConfig} from '../_common/utils/config';
+import {sanitizeConfig, mergeConfig, verifyConfig, getConfig} from '../_common/utils/config';
 import {check, unescape} from '../_common/utils/validators';
 import {resolve} from 'path';
 import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
 
 //KM Modules
-import {updateSettings, getKMStats, shutdown} from '../_services/engine';
+import {getKMStats, shutdown} from '../_services/engine';
 import {sendCommand} from '../_services/player';
 import {updateSongsLeft} from '../_services/user';
 import {message} from '../_player/player';
@@ -1402,7 +1402,7 @@ export function APIControllerAdmin(router) {
 				verifyConfig(req.body);
 				try {
 					req.body = sanitizeConfig(req.body);
-					const publicSettings = await updateSettings(req.body);
+					const publicSettings = await mergeConfig(req.body);
 					emitWS('settingsUpdated',publicSettings);
 					res.json(OKMessage(req.body,'SETTINGS_UPDATED'));
 				} catch(err) {
