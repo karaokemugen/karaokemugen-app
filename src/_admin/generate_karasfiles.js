@@ -68,7 +68,7 @@ export async function editKara(kara_id,kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum({silent: true});
+	compareKarasChecksum();
 }
 
 export async function createKara(kara) {
