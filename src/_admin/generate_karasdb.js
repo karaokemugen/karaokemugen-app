@@ -493,7 +493,7 @@ export async function run(config) {
 
 		const seriesFiles = await extractAllSeriesFiles();
 		if (seriesFiles.length === 0) throw 'No series files found';
-		createBar('Reading .series files ', seriesFiles.length);
+		createBar('Reading .series files', seriesFiles.length);
 		const seriesData = await readAllSeries(seriesFiles);
 		checkDuplicateSeries(seriesData);
 
@@ -702,7 +702,7 @@ export async function compareKarasChecksum() {
 		bar.increment();
 	}
 	bar.stop();
-	barFormat = 'Checking series...     {bar} {percentage}% - ETA {eta_formatted}';
+	barFormat = 'Checking .series...    {bar} {percentage}% - ETA {eta_formatted}';
 	bar = new cliProgress.Bar({
 		format: barFormat,
 		stopOnComplete: true

@@ -27,12 +27,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": {
-    "/api/*": {
-      "target": "http://localhost:1338",
-      "secure": false
-    }
-  },
+  "proxy": "http://localhost:1338",
   "browserslist": [
     ">0.2%",
     "not dead",
