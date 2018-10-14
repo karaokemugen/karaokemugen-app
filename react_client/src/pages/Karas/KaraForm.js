@@ -26,6 +26,7 @@ class KaraForm extends Component {
 			series: [],
 			creator: [],
 			songwriter: [],
+			groups: [],
 			songtype: 'OP',
 			lang: ['jpn']
 		};

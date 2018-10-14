@@ -133,7 +133,6 @@ async function generateKara(kara, opts) {
 		timestamp.round = true;
 		if (!kara.dateadded) kara.dateadded = timestamp.now();
 		//Trim spaces before and after elements.
-		console.log(kara);
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
 		kara.lang.forEach((e,i) => kara.lang[i] = e.trim());
 		kara.singer.forEach((e,i) => kara.singer[i] = e.trim());
