@@ -178,7 +178,7 @@ export const specialTags = Object.freeze({
 export const tags = [
 	'SPECIAL',
 	'REMIX',
-	'VOICELESS',
+	'SOUNDONLY',
 	'PARODY',
 	'HUMOR',
 	'R18',
