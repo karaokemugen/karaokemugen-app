@@ -136,7 +136,7 @@ async function generateKara(kara, opts) {
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
 		kara.lang.forEach((e,i) => kara.lang[i] = e.trim());
 		kara.singer.forEach((e,i) => kara.singer[i] = e.trim());
-		kara.group.forEach((e,i) => kara.singer[i] = e.trim());
+		kara.groups.forEach((e,i) => kara.singer[i] = e.trim());
 		kara.songwriter.forEach((e,i) => kara.songwriter[i] = e.trim());
 		kara.tags.forEach((e,i) => kara.tags[i] = e.trim());
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());
@@ -263,7 +263,7 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	const karaPath = resolve(resolvedPathKaras()[0], karaFilename);
 	if (subPath === 'dummy.ass') karaData.subfile = 'dummy.ass';
 	karaData.series = karaData.series.join(',');
-	karaData.group = karaData.group.join(',');
+	karaData.groups = karaData.groups.join(',');
 	karaData.lang = karaData.lang.join(',');
 	karaData.singer = karaData.singer.join(',');
 	karaData.songwriter = karaData.songwriter.join(',');
