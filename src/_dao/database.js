@@ -193,15 +193,12 @@ export async function initDBSystem() {
 	await openUserDatabase();
 	await migrateUserDb();
 	// Compare Karas checksums if generation hasn't been requested already
-	if (doGenerate) {
-		await generateDatabase();
-	} else {
-		logger.info('[DB] Checking data files...');
-		if (!await compareKarasChecksum()) {
-			logger.info('[DB] Data files have changed, database generation triggered');
-			await generateDatabase();
-		}
+	logger.info('[DB] Checking kara files...');
+	if (!await compareKarasChecksum()) {
+		logger.info('[DB] Kara files have changed, database generation triggered');
+		doGenerate = true;
 	}
+	if (doGenerate) await generateDatabase();
 	await closeKaraDatabase();
 	await getUserDb().run(`ATTACH DATABASE "${karaDbFile}" as karasdb;`);
 	await getUserDb().run('PRAGMA TEMP_STORE=MEMORY');
