@@ -685,7 +685,8 @@ export async function checkUserdbIntegrity(uuid, config) {
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 
-export async function compareKarasChecksum() {
+export async function compareKarasChecksum(opts) {
+	if (!opts) opts = {};
 	profile('compareChecksum');
 	const conf = getConfig();
 	const karaFiles = await extractAllKaraFiles();
@@ -696,23 +697,23 @@ export async function compareKarasChecksum() {
 		format: barFormat,
 		stopOnComplete: true
 	}, cliProgress.Presets.shades_classic);
-	bar.start(karaFiles.length,0);
+	if (opts.silent) bar.start(karaFiles.length,0);
 	for (const karaFile of karaFiles) {
 		KMData += await asyncReadFile(karaFile, 'utf-8');
-		bar.increment();
+		if (opts.silent) bar.increment();
 	}
-	bar.stop();
+	if (opts.silent) bar.stop();
 	barFormat = 'Checking .series...    {bar} {percentage}% - ETA {eta_formatted}';
 	bar = new cliProgress.Bar({
 		format: barFormat,
 		stopOnComplete: true
 	}, cliProgress.Presets.shades_classic);
-	bar.start(seriesFiles.length,0);
+	if (opts.silent) bar.start(seriesFiles.length,0);
 	for (const seriesFile of seriesFiles) {
 		KMData += await asyncReadFile(seriesFile, 'utf-8');
-		bar.increment();
+		if (opts.silent) bar.increment();
 	}
-	bar.stop();
+	if (opts.silent) bar.stop();
 	bar = false;
 	const karaDataSum = checksum(KMData);
 	profile('compareChecksum');
