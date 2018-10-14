@@ -566,7 +566,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		karas_userdbfile + '.backup',
 		{ overwrite: true }
 	);
-	bar.increment();
+	if (bar) bar.increment();
 
 
 	logger.debug('[Gen] Running user database integrity checks');
@@ -598,7 +598,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectPlaylistKaras)
 	]);
 
-	bar.increment();
+	if (bar) bar.increment();
 
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
@@ -614,7 +614,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`UPDATE request SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
 	]);
-	bar.increment();
+	if (bar) bar.increment();
 	const karaIdByKid = new Map();
 	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 	let sql = '';
@@ -681,7 +681,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
-	bar.increment();
+	if (bar) bar.increment();
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 
