@@ -1,17 +1,7 @@
-import {writeSeriesFile} from '../_dao/seriesfile';
+import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
 import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
 import {profile} from '../_common/utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
-
-async function updateSeriesFile() {
-	const data = await getSeries();
-	const series = data.content;
-	for (const i in series) {
-		delete series[i].i18n_name;
-		delete series[i].serie_id;
-	}
-	await writeSeriesFile(series);
-}
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -42,9 +32,9 @@ export async function deleteSerie(serie_id) {
 	//Not removing from database, a regeneration will do the trick.
 	const serie = await getSerie(serie_id);
 	if (!serie) throw 'Series ID unknown';
+	await removeSeriesFile(serie.name);
 	await removeSerieInKaras(serie.name);
 	await removeSerie(serie_id);
-	await updateSeriesFile();
 }
 
 export async function getOrAddSerieID(serieObj) {
@@ -52,7 +42,6 @@ export async function getOrAddSerieID(serieObj) {
 	if (series) return series.serie_id;
 	//Series does not exist, create it.
 	const id = await addSerie(serieObj);
-	await updateSeriesFile();
 	return id;
 }
 
@@ -60,8 +49,10 @@ export async function addSerie(serieObj) {
 	if (await selectSerieByName(serieObj.name)) throw 'Series original name already exists';
 	const newSerieID = await insertSerie(serieObj);
 	serieObj.serie_id = newSerieID;
-	await insertSeriei18n(serieObj);
-	await updateSeriesFile();
+	await Promise.all([
+		insertSeriei18n(serieObj),
+		writeSeriesFile(serieObj)
+	]);
 	return newSerieID;
 }
 
@@ -69,7 +60,8 @@ export async function editSerie(serie_id,serieObj) {
 	const oldSerie = await getSerie(serie_id);
 	if (!oldSerie) throw 'Series ID unknown';
 	if (oldSerie.name !== serieObj.name) await replaceSerieInKaras(oldSerie.name, serieObj.name);
-	await updateSerie(serie_id, serieObj);
-	await updateSeriesFile();
-
+	return Promise.all([
+		updateSerie(serie_id, serieObj),
+		writeSeriesFile(serieObj)
+	]);
 }

@@ -6,7 +6,7 @@ import {profile} from '../_common/utils/logger';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
 import {asyncReadFile, checksum, asyncCopy, asyncReadDir} from '../_common/utils/files';
-import {getConfig, resolvedPathKaras, setConfig} from '../_common/utils/config';
+import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_common/utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
@@ -19,7 +19,7 @@ import {karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {emit} from '../_common/utils/pubsub';
-import {findSeries, readSeriesFile} from '../_dao/seriesfile';
+import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {updateUUID} from '../_common/db/database.js';
 import cliProgress from 'cli-progress';
 
@@ -57,12 +57,45 @@ async function extractKaraFiles(karaDir) {
 	return karaFiles;
 }
 
+async function extractSeriesFiles(seriesDir) {
+	const seriesFiles = [];
+	const dirListing = await asyncReadDir(seriesDir);
+	for (const file of dirListing) {
+		if (file.endsWith('.series.json') && !file.startsWith('.')) {
+			seriesFiles.push(resolve(seriesDir, file));
+		}
+	}
+	return seriesFiles;
+}
+
 export async function extractAllKaraFiles() {
 	let karaFiles = [];
 	for (const resolvedPath of resolvedPathKaras()) {
 		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
 	}
 	return karaFiles;
+}
+
+export async function extractAllSeriesFiles() {
+	let seriesFiles = [];
+	for (const resolvedPath of resolvedPathSeries()) {
+		seriesFiles = seriesFiles.concat(await extractSeriesFiles(resolvedPath));
+	}
+	return seriesFiles;
+}
+
+export async function readAllSeries(seriesFiles) {
+	const seriesPromises = [];
+	for (const seriesFile of seriesFiles) {
+		seriesPromises.push(() => processSerieFile(seriesFile));
+	}
+	return await parallel(seriesPromises, 16);
+}
+
+async function processSerieFile(seriesFile) {
+	const data = await getDataFromSeriesFile(seriesFile);
+	bar.increment();
+	return data;
 }
 
 export async function readAllKaras(karafiles) {
@@ -116,9 +149,49 @@ function prepareAllKarasInsertData(karas) {
 	return karas.map((kara, index) => prepareKaraInsertData(kara, index + 1));
 }
 
+function checkDuplicateKIDs(karas) {
+	let searchKaras = [];
+	let errors = [];
+	for (const kara of karas) {
+		// Find out if our kara exists in our list, if not push it.
+		const search = searchKaras.find(k => {
+			return k.KID === kara.KID;
+		});
+		if (search) {
+			// One KID is duplicated, we're going to throw an error.
+			errors.push({
+				KID: kara.KID,
+				kara1: kara.karafile,
+				kara2: search.karafile
+			});
+		}
+		searchKaras.push({ KID: kara.KID, karafile: kara.karafile });
+	}
+	if (errors.length > 0) throw `One or several KIDs are duplicated in your database : ${JSON.stringify(errors,null,2)}. Please fix this by removing the duplicated karaoke(s) and retry generating your database.`;
+}
+
+function checkDuplicateSeries(series) {
+	let searchSeries = [];
+	let errors = [];
+	for (const serie of series) {
+		// Find out if our series exists in our list, if not push it.
+		const search = searchSeries.find(s => {
+			return s.name === serie.name;
+		});
+		if (search) {
+			// One KID is duplicated, we're going to throw an error.
+			errors.push({
+				name: serie.name
+			});
+		}
+		searchSeries.push({ name: serie.name });
+	}
+	if (errors.length > 0) throw `One or several series are duplicated in your database : ${JSON.stringify(errors,null,2)}. Please fix this by removing the duplicated series file(s) and retry generating your database.`;
+}
+
+
 function getSeries(kara) {
 	const series = new Set();
-
 	// Extracted series names from kara files
 	if (kara.series && kara.series.trim()) {
 		kara.series.split(',').forEach(serie => {
@@ -127,7 +200,6 @@ function getSeries(kara) {
 			}
 		});
 	}
-
 	// At least one series is mandatory if kara is not LIVE/MV type
 	if (serieRequired(kara.type) && !series) {
 		logger.error(`Karaoke series cannot be detected! (${JSON.stringify(kara)})`);
@@ -152,7 +224,7 @@ function getAllSeries(karas, seriesData) {
 			}
 		});
 	});
-	for (const serie of seriesData.series) {
+	for (const serie of seriesData) {
 		if (!map.has(serie.name)) {
 			map.set(serie.name, [0]);
 		}
@@ -202,7 +274,7 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 	const altNameData = [];
 	const i18nData = [];
 
-	for (const serie of seriesData.series) {
+	for (const serie of seriesData) {
 		if (serie.aliases) altNameData.push({
 			$serie_altnames: serie.aliases.join(','),
 			$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
@@ -290,7 +362,7 @@ function getKaraTags(kara, allTags) {
 	}
 	if (kara.group) kara.group.split(',').forEach(group => result.add(getTagId(group.trim() + ',9', allTags)));
 	if (kara.lang) kara.lang.split(',').forEach(lang => {
-		if (lang === 'und' || lang === 'mul' || hasLang('2B', lang)) {
+		if (lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang)) {
 			result.add(getTagId(lang.trim() + ',5', allTags));
 		}
 	});
@@ -389,6 +461,14 @@ async function runSqlStatementOnData(stmtPromise, data) {
 	bar.increment();
 }
 
+function createBar(message, length) {
+	const barFormat = `${message} {bar} {percentage}% - ETA {eta_formatted}`;
+	bar = new cliProgress.Bar({
+		format: barFormat,
+		stopOnComplete: true
+		  }, cliProgress.Presets.shades_classic);
+	bar.start(length, 0);
+}
 
 export async function run(config) {
 	try {
@@ -396,38 +476,31 @@ export async function run(config) {
 		if (generating) throw 'A database generation is already in progress';
 		generating = true;
 		const conf = config || getConfig();
-		let barFormat = 'Reading .karas...      {bar} {percentage}% - ETA {eta_formatted}';
-		bar = new cliProgress.Bar({
-			format: barFormat,
-			stopOnComplete: true
-	  	}, cliProgress.Presets.shades_classic);
-		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
-		const series_altnamesfile = resolve(conf.appPath, conf.PathAltname);
 
+		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 		logger.info('[Gen] Starting database generation');
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		const karaFiles = await extractAllKaraFiles();
 		if (karaFiles.length === 0) throw 'No kara files found';
-		bar.start(karaFiles.length + 1, 0);
+		createBar('Reading .kara files  ', karaFiles.length + 1);
 		const karas = await readAllKaras(karaFiles);
-		let seriesData;
-		try {
-			seriesData = await readSeriesFile(series_altnamesfile);
-		} catch(err) {
-			error = true;
-			throw err;
-		}
+		// Check if we don't have two identical KIDs
+		checkDuplicateKIDs(karas);
 		bar.increment();
+		// Series data
+		bar.stop();
+
+		const seriesFiles = await extractAllSeriesFiles();
+		if (seriesFiles.length === 0) throw 'No series files found';
+		createBar('Reading .series files', seriesFiles.length);
+		const seriesData = await readAllSeries(seriesFiles);
+		checkDuplicateSeries(seriesData);
+
 		// Preparing data to insert
 		bar.stop();
 		logger.info('[Gen] Data files processed, creating database');
-		barFormat = 'Generating database... {bar} {percentage}% - ETA {eta_formatted}';
-		bar = new cliProgress.Bar({
-			format: barFormat,
-			stopOnComplete: true
-		  }, cliProgress.Presets.shades_classic);
-		bar.start(20, 0);
+		createBar('Generating database   ', 20);
 		await emptyDatabase(db);
 		bar.increment();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
@@ -464,7 +537,7 @@ export async function run(config) {
 		return error;
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
-		return error;
+		throw err;
 	} finally {
 		emit('databaseBusy',false);
 		generating = false;
@@ -493,7 +566,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		karas_userdbfile + '.backup',
 		{ overwrite: true }
 	);
-	bar.increment();
+	if (bar) bar.increment();
 
 
 	logger.debug('[Gen] Running user database integrity checks');
@@ -525,7 +598,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectPlaylistKaras)
 	]);
 
-	bar.increment();
+	if (bar) bar.increment();
 
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
@@ -541,7 +614,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`UPDATE request SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
 	]);
-	bar.increment();
+	if (bar) bar.increment();
 	const karaIdByKid = new Map();
 	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 	let sql = '';
@@ -608,7 +681,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
-	bar.increment();
+	if (bar) bar.increment();
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 
@@ -616,7 +689,8 @@ export async function compareKarasChecksum() {
 	profile('compareChecksum');
 	const conf = getConfig();
 	const karaFiles = await extractAllKaraFiles();
-	let karaData = '';
+	const seriesFiles = await extractAllSeriesFiles();
+	let KMData = '';
 	let barFormat = 'Checking .karas...     {bar} {percentage}% - ETA {eta_formatted}';
 	bar = new cliProgress.Bar({
 		format: barFormat,
@@ -624,17 +698,23 @@ export async function compareKarasChecksum() {
 	}, cliProgress.Presets.shades_classic);
 	bar.start(karaFiles.length,0);
 	for (const karaFile of karaFiles) {
-		karaData += await asyncReadFile(karaFile, 'utf-8');
+		KMData += await asyncReadFile(karaFile, 'utf-8');
+		bar.increment();
+	}
+	bar.stop();
+	barFormat = 'Checking .series...    {bar} {percentage}% - ETA {eta_formatted}';
+	bar = new cliProgress.Bar({
+		format: barFormat,
+		stopOnComplete: true
+	}, cliProgress.Presets.shades_classic);
+	bar.start(seriesFiles.length,0);
+	for (const seriesFile of seriesFiles) {
+		KMData += await asyncReadFile(seriesFile, 'utf-8');
 		bar.increment();
 	}
 	bar.stop();
 	bar = false;
-	try {
-		karaData += await asyncReadFile(resolve(conf.appPath, conf.PathAltname));
-	} catch(err) {
-		//Nothing to do if this fails.
-	}
-	const karaDataSum = checksum(karaData);
+	const karaDataSum = checksum(KMData);
 	profile('compareChecksum');
 	if (karaDataSum !== conf.appKaraDataChecksum) {
 		setConfig({appKaraDataChecksum: karaDataSum});

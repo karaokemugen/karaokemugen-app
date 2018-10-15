@@ -9,11 +9,11 @@ export async function publishURL() {
 	if (conf.EngineDisplayConnectionInfoHost) localHost = conf.EngineDisplayConnectionInfoHost;
 	try {
 		await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, {
-			body: {
+			body: JSON.stringify({
 				localIP: localHost,
 				localPort: conf.appFrontendPort,
 				IID: conf.appInstanceID
-			}
+			})
 		});
 		configureHost();
 	} catch(err) {

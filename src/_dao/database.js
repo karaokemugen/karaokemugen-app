@@ -192,7 +192,7 @@ export async function initDBSystem() {
 	await migrateKaraDb();
 	await openUserDatabase();
 	await migrateUserDb();
-	// Compare Karas checksums
+	// Compare Karas checksums if generation hasn't been requested already
 	logger.info('[DB] Checking kara files...');
 	if (!await compareKarasChecksum()) {
 		logger.info('[DB] Kara files have changed, database generation triggered');
@@ -234,17 +234,13 @@ export async function getStats() {
 
 async function generateDatabase() {
 	const conf = getConfig();
-
-	const failedKaras = await generateDB(conf);
-	logger.debug('[DB] Karaoke database created');
-	if (conf.optGenerateDB) {
-		if (failedKaras) {
-			logger.error('[DB] Database generation completed with errors!');
-			exit(1);
-		} else {
-			logger.info('[DB] Database generation completed successfully!');
-			exit(0);
-		}
+	try {
+		await generateDB(conf);
+		logger.info('[DB] Database generation completed successfully!');
+		if (conf.optGenerateDB) exit(0);
+	} catch(err) {
+		logger.error('[DB] Database generation completed with errors!');
+		if (conf.optGenerateDB) exit(1);
 	}
 	return true;
 }

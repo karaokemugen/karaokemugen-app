@@ -1735,3 +1735,10 @@ animation: noise .45s steps(5,end) infinite both;
 .left {
 	float: left;
 }
+
+.klogo {
+	background-image: url(/ressources/img/Klogo.png) !important;
+    background-size: 67%;
+    background-repeat: no-repeat;
+    background-position: center;
+}

@@ -5,17 +5,14 @@
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
 import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias} from '../_common/utils/config';
-import {asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_common/utils/files';
+import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_common/utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
-import {getFileLangFromKara} from '../_dao/karafile';
 import {check} from '../_common/utils/validators';
 import {getOrAddSerieID} from '../_services/series';
-import sanitizeFilename from 'sanitize-filename';
-import deburr from 'lodash.deburr';
 import timestamp from 'unix-timestamp';
 import { compareKarasChecksum } from './generate_karasdb';
 
@@ -123,7 +120,7 @@ async function generateKara(kara, opts) {
 	// Copy files from temp directory to import, depending on the different cases.
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile;
-	if (kara.subfile && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
+	if (kara.subfile && kara.subfile !== 'dummy.ass' && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
 	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
@@ -139,6 +136,7 @@ async function generateKara(kara, opts) {
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
 		kara.lang.forEach((e,i) => kara.lang[i] = e.trim());
 		kara.singer.forEach((e,i) => kara.singer[i] = e.trim());
+		kara.groups.forEach((e,i) => kara.group[i] = e.trim());
 		kara.songwriter.forEach((e,i) => kara.songwriter[i] = e.trim());
 		kara.tags.forEach((e,i) => kara.tags[i] = e.trim());
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());
@@ -173,12 +171,8 @@ export async function karaGenerationBatch() {
 async function importKara(mediaFile, subFile, data) {
 	let kara = mediaFile;
 	if (data) {
-		const fileLang = getFileLangFromKara(data.lang[0]);
-		kara = sanitizeFilename(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`)
-			.replace(/ô/g,'ou')
-			.replace(/û/g,'uu')
-		;
-		kara = deburr(kara).replace( /[^\x00-\xFF]/g, '' ).replace(/ [ ]+/,' ');
+		const fileLang = data.lang[0].toUpperCase();
+		kara = sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`);
 	}
 
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
@@ -195,7 +189,7 @@ async function importKara(mediaFile, subFile, data) {
 	let subPath;
 	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, karaData, subFile);
 	try {
-		await extractAssInfos(subPath, karaData);
+		if (subPath !== 'dummy.ass') await extractAssInfos(subPath, karaData);
 		await extractMediaTechInfos(mediaPath, karaData);
 		await processSeries(data);
 		return await generateAndMoveFiles(mediaPath, subPath, karaData);
@@ -267,7 +261,9 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 
 	const karaFilename = replaceExt(karaData.mediafile, '.kara');
 	const karaPath = resolve(resolvedPathKaras()[0], karaFilename);
+	if (subPath === 'dummy.ass') karaData.subfile = 'dummy.ass';
 	karaData.series = karaData.series.join(',');
+	karaData.groups = karaData.groups.join(',');
 	karaData.lang = karaData.lang.join(',');
 	karaData.singer = karaData.singer.join(',');
 	karaData.songwriter = karaData.songwriter.join(',');
@@ -281,7 +277,7 @@ async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 		// Moving media in the first media folder.
 		await asyncMove(mediaPath, mediaDest, { overwrite: karaData.overwrite });
 		// Moving subfile in the first lyrics folder.
-		if (subDest) await asyncMove(subPath, subDest,{ overwrite: karaData.overwrite});
+		if (subDest) await asyncMove(subPath, subDest, { overwrite: karaData.overwrite });
 		delete karaData.overwrite;
 	} catch (err) {
 		throw `Error while moving files. Maybe destination files (${mediaDest} or ${subDest} already exist? (${err})`;

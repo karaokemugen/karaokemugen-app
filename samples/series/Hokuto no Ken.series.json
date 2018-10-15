@@ -1,0 +1,14 @@
+{
+  "header": {
+    "version": 2,
+    "description": "Karaoke Mugen Series File"
+  },
+  "series": {
+    "name": "Hokuto no Ken",
+    "i18n": {
+      "jpn": "Hokuto no Ken",
+      "eng": "Fist of the North Star",
+      "fre": "Ken le Survivant"
+    }
+  }
+}

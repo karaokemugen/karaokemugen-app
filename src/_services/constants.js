@@ -159,29 +159,6 @@ export function getType(types) {
 	return types.split(/\s+/).find(t => karaTypesArray.includes(t));
 }
 
-// Map of the current language naming for Karaoke Mugen's Database.
-// At some point, we're going to rename these all to fit ISO639-2B codes.
-export const specialLangMap = Object.freeze({
-	eng: 'ANG',
-	fre: 'FR',
-	ger: 'ALL',
-	jpn: 'JAP',
-	kor: 'COR',
-	swe: 'SUE',
-	und: 'FIC',
-	chi: 'CHI',
-	epo: 'EPO',
-	fin: 'FIN',
-	gle: 'GLE',
-	heb: 'HEB',
-	ita: 'ITA',
-	lat: 'LAT',
-	por: 'POR',
-	rus: 'RUS',
-	spa: 'ESP',
-	tel: 'TEL'
-});
-
 export const specialTags = Object.freeze({
 	GAME: 'GAME',
 	GC: 'GC',
@@ -201,7 +178,7 @@ export const specialTags = Object.freeze({
 export const tags = [
 	'SPECIAL',
 	'REMIX',
-	'VOICELESS',
+	'SOUNDONLY',
 	'PARODY',
 	'HUMOR',
 	'R18',

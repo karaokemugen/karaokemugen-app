@@ -137,7 +137,9 @@ a:active {
 }
 .logo-1, .logo-2 {
     display: inline !important;
-    transform: scaleX(-1);
+    transform: translateY(-18px) translateX(-38px);
+    filter: hue-rotate(427deg) saturate(0) brightness(156%);
+    __transform: scaleX(-1);
 
 }
 .animated .logo-1 {

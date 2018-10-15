@@ -155,6 +155,7 @@ async function checkPaths(config) {
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.PathSeries.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathMedias.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathJingles.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));

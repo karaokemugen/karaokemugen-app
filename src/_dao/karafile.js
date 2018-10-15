@@ -13,19 +13,9 @@ import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedia
 import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
 import {formatKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
-import {specialLangMap} from '../_services/constants';
 import {getAllKaras} from './kara';
 
 let error = false;
-
-
-function getLangFromFile(fileLang) {
-	return Object.keys(specialLangMap).find(key => specialLangMap[key] === fileLang) || 'und';
-}
-
-export function getFileLangFromKara(karaLang) {
-	return specialLangMap[karaLang] || karaLang.toUpperCase();
-}
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
@@ -40,7 +30,7 @@ export function karaFilenameInfos(karaFile) {
 
 	// Let's return an object with our data correctly positionned.
 	return {
-		lang: getLangFromFile(infos[0]),
+		lang: infos[0].toLowerCase(),
 		serie: infos[1],
 		type: orderInfos[1],
 		order: orderInfos[2] ? +orderInfos[2] : 0,
