@@ -235,16 +235,6 @@ export default function adminController(router) {
 		}
 	});
 
-	router.post('/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
-		try {
-			await runBaseUpdate();
-			await generateDatabase();
-			res.status(200).send('Karas successfully updated');
-		} catch(err) {
-			res.status(500).send(`Error while updating/generating karas: ${err}`);
-		}
-	});
-
 	router.post('/downloads', requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			const msg = await addDownloads(req.body.repository,req.body.downloads);
