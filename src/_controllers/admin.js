@@ -68,7 +68,7 @@ export default function adminController(router) {
 	});
 	router.get('/karas', getLang, requireNotDemo, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
-			const karas = await getKaras(req.query.filter, req.lang, 0, 99999999999999999, null, null, req.authToken);
+			const karas = await getKaras(req.query.filter, req.lang, 0, 99999999999999999, req.query.searchType, req.query.searchValue, req.authToken);
 			res.json(karas);
 		} catch(err) {
 			res.status(500).send(`Error while fetching karas: ${err}`);
