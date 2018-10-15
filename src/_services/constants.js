@@ -179,6 +179,7 @@ export const tags = [
 	'SPECIAL',
 	'REMIX',
 	'SOUNDONLY',
+	'IDOL',
 	'PARODY',
 	'HUMOR',
 	'R18',
