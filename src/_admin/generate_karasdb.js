@@ -105,12 +105,11 @@ export async function readAllKaras(karafiles) {
 		karaPromises.push(() => readAndCompleteKarafile(karafile));
 	}
 	const karas = await parallel(karaPromises, 16);
-	logger.debug(`[Gen] Kara files processed : ${karas.length}`);
 	// Errors are non-blocking
 	if (karas.some((kara) => {
 		return kara.error;
 	})) error = true;
-	if (error) logger.debug('[Gen] Error while processing files!');
+
 	return karas.filter(kara => !kara.error);
 }
 
@@ -125,7 +124,6 @@ async function readAndCompleteKarafile(karafile) {
 	}
 	await writeKara(karafile, karaData);
 	bar.increment();
-	if (karaData.error) console.log(karaData);
 	return karaData;
 }
 
@@ -535,7 +533,6 @@ export async function run(config) {
 		await emptyDatabase(db);
 		bar.increment();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
-		logger.debug(`[Gen] Number of SQLs for kara : ${sqlInsertKaras.length}`);
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
@@ -566,7 +563,7 @@ export async function run(config) {
 		await db.close();
 		await checkUserdbIntegrity(null, conf);
 		bar.stop();
-		return error;
+		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
 		throw err;
