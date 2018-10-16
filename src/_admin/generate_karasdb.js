@@ -125,6 +125,7 @@ async function readAndCompleteKarafile(karafile) {
 	}
 	await writeKara(karafile, karaData);
 	bar.increment();
+	if (karaData.error) console.log(karaData);
 	return karaData;
 }
 
