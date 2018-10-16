@@ -508,7 +508,7 @@ export async function run(config) {
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		const karaFiles = await extractAllKaraFiles();
-		logger.debug(`[Gen] Number of .karas found : ${karafiles.length}`);
+		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
 		if (karaFiles.length === 0) throw 'No kara files found';
 		createBar('Reading .kara files  ', karaFiles.length + 1);
 		const karas = await readAllKaras(karaFiles);
