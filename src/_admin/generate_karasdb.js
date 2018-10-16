@@ -15,13 +15,14 @@ import {
 	selectWhitelistKaras,
 	updateSeriesAltNames
 } from '../_common/db/generation';
-import {karaTypesMap} from '../_services/constants';
+import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {emit} from '../_common/utils/pubsub';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {updateUUID} from '../_common/db/database.js';
 import cliProgress from 'cli-progress';
+
 
 let error = false;
 let generating = false;
@@ -384,7 +385,7 @@ function getTypes(kara, allTags) {
 	});
 
 	if (result.size === 0) {
-		logger.warn(`[Gen] Karaoke type cannot be detected (${kara.type}) in kara :  ${JSON.stringify(kara)}`);
+		logger.warn(`[Gen] Karaoke type cannot be detected (${kara.type}) in kara :  ${JSON.stringify(kara, null, 2)}`);
 		error = true;
 	}
 
@@ -411,6 +412,7 @@ function getTagId(tagName, tags) {
 function prepareAllTagsInsertData(allTags) {
 	const data = [];
 	const translations = require(join(__dirname,'../_common/locales'));
+	let lastIndex;
 
 	allTags.forEach((tag, index) => {
 		const tagParts = tag.split(',');
@@ -433,8 +435,32 @@ function prepareAllTagsInsertData(allTags) {
 			$tagname: tagName,
 			$tagnamenorm: deburr(tagNorm).replace('\'', '').replace(',', '')
 		});
+		lastIndex = index + 1;
 	});
-
+	// We browse through tag data to add the default tags if they don't exist.
+	for (const tag of karaTags) {
+		if (!data.find(t => t.$tagname === `TAG_${tag}`)) {
+			data.push({
+				$id_tag: lastIndex + 1,
+				$tagtype: 7,
+				$tagname: `TAG_${tag}`,
+				$tagnamenorm: `TAG_${tag}`
+			});
+			lastIndex++;
+		}
+	}
+	// We do it as well for types
+	for (const type of karaTypesMap) {
+		if (!data.find(t => t.$tagname === `TYPE_${type[0]}`)) {
+			data.push({
+				$id_tag: lastIndex + 1,
+				$tagtype: 3,
+				$tagname: `TYPE_${type[0]}`,
+				$tagnamenorm: `TYPE_${type[0]}`
+			});
+			lastIndex++;
+		}
+	}
 	return data;
 }
 
@@ -500,7 +526,7 @@ export async function run(config) {
 		// Preparing data to insert
 		bar.stop();
 		logger.info('[Gen] Data files processed, creating database');
-		createBar('Generating database   ', 20);
+		createBar('Generating database  ', 20);
 		await emptyDatabase(db);
 		bar.increment();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
@@ -691,7 +717,7 @@ export async function compareKarasChecksum() {
 	const karaFiles = await extractAllKaraFiles();
 	const seriesFiles = await extractAllSeriesFiles();
 	let KMData = '';
-	let barFormat = 'Checking .karas...     {bar} {percentage}% - ETA {eta_formatted}';
+	let barFormat = 'Checking .karas...    {bar} {percentage}% - ETA {eta_formatted}';
 	bar = new cliProgress.Bar({
 		format: barFormat,
 		stopOnComplete: true
@@ -702,7 +728,7 @@ export async function compareKarasChecksum() {
 		bar.increment();
 	}
 	bar.stop();
-	barFormat = 'Checking .series...    {bar} {percentage}% - ETA {eta_formatted}';
+	barFormat = 'Checking .series...   {bar} {percentage}% - ETA {eta_formatted}';
 	bar = new cliProgress.Bar({
 		format: barFormat,
 		stopOnComplete: true
