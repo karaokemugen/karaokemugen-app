@@ -105,10 +105,12 @@ export async function readAllKaras(karafiles) {
 		karaPromises.push(() => readAndCompleteKarafile(karafile));
 	}
 	const karas = await parallel(karaPromises, 16);
+	logger.debug(`[Gen] Kara files processed : ${karas.length}`);
 	// Errors are non-blocking
 	if (karas.some((kara) => {
 		return kara.error;
 	})) error = true;
+	if (error) logger.debug('[Gen] Error while processing files!');
 	return karas.filter(kara => !kara.error);
 }
 
