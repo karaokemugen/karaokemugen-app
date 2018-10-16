@@ -508,9 +508,11 @@ export async function run(config) {
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		const karaFiles = await extractAllKaraFiles();
+		logger.debug(`[Gen] Number of .karas found : ${karafiles.length}`);
 		if (karaFiles.length === 0) throw 'No kara files found';
 		createBar('Reading .kara files  ', karaFiles.length + 1);
 		const karas = await readAllKaras(karaFiles);
+		logger.debug(`[Gen] Number of karas read : ${karas.length}`);
 		// Check if we don't have two identical KIDs
 		checkDuplicateKIDs(karas);
 		bar.increment();
@@ -530,6 +532,7 @@ export async function run(config) {
 		await emptyDatabase(db);
 		bar.increment();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
+		logger.debug(`[Gen] Number of SQLs for kara : ${sqlInsertKaras.length}`);
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
