@@ -207,8 +207,15 @@ export const getKara = (lang) => `SELECT ak.kara_id AS kara_id,
 						WHERE ak.kara_id = $kara_id
   						`;
 
+export const deleteKara = `DELETE FROM karasdb.kara WHERE pk_id_kara = $kara_id;
+DELETE FROM karasdb.kara_serie WHERE fk_id_kara = $kara_id;
+DELETE FROM karasdb.kara_tag WHERE fk_id_kara = $kara_id;
+`;
+
 export const getKaraMini = `SELECT ak.title AS title,
-      						ak.subfile AS subfile,
+							  ak.subfile AS subfile,
+							  ak.karafile AS karafile,
+							  ak.mediafile AS mediafile,
 							ak.duration AS duration
  						FROM karasdb.all_karas AS ak
 						WHERE ak.kara_id = $kara_id

@@ -84,6 +84,10 @@ export async function getKaraMini(id) {
 	return await getUserDb().get(sql.getKaraMini, { $kara_id: id });
 }
 
+export async function deleteKara(id) {
+	return await getUserDb().exec(sql.removeKara, { $kara_id: id});
+}
+
 export async function getKaraByKID(kid) {
 	return await getUserDb().get(sql.getKaraByKID, { $kid: kid });
 }

@@ -11,6 +11,7 @@ import {getAllKaras as getAllKarasDB,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
+	deleteKara as deleteKaraDB,
 	getASS,
 	isKara as isKaraDB,
 	addKara,
@@ -29,6 +30,7 @@ import {resolve} from 'path';
 import testJSON from 'is-valid-json';
 import {profile} from '../_common/utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
+import { asyncUnlink, resolveFileInDirs } from '../_common/utils/files';
 
 export async function isAllKaras(karas) {
 	let err;
@@ -161,6 +163,18 @@ export async function getRandomKara(playlist_id, filter, username) {
 		return pl.indexOf(el) < 0;
 	});
 	return sample(allKarasNotInCurrentPlaylist);
+}
+
+export async function deleteKara(kara_id) {
+	const kara = await getKaraMini(kara_id);
+	await deleteKaraDB(kara_id);
+	const conf = getConfig();
+	const PathsMedias = conf.PathMedias.split('|');
+	const PathsSubs = conf.PathSubs.split('|');
+	const PathsKaras = conf.PathKaras.split('|');
+	await asyncUnlink(resolveFileInDirs(kara.mediafile, PathsMedias));
+	await asyncUnlink(resolveFileInDirs(kara.karafile, PathsKaras));
+	if (kara.subfile !== 'dummy.ass') await asyncUnlink(resolveFileInDirs(kara.subfile, PathsSubs));
 }
 
 export async function getKara(kara_id, username, lang) {

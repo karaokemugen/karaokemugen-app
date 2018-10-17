@@ -24,4 +24,4 @@ export const getStats = `SELECT
 (SELECT COUNT(pk_id_playlist) FROM playlist WHERE flag_favorites = 0) AS playlists,
 (SELECT COUNT(pk_id_serie) FROM karasdb.serie) AS series,
 (SELECT SUM(duration) FROM karasdb.kara) AS duration;
-`
+`;

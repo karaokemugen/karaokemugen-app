@@ -6,7 +6,7 @@ import {requireAuth, requireValidUser, requireAdmin} from './passport_manager';
 import {requireNotDemo} from './demo';
 import {getLang} from './lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
-import {getKaras, getKara, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
+import {deleteKara, getKaras, getKara, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
 import {getTags} from '../_services/tag';
 import {runBaseUpdate} from '../_updater/karabase_updater';
 import {resetViewcounts} from '../_dao/kara';
@@ -69,6 +69,16 @@ export default function adminController(router) {
 			res.status(500).send(`Error while editing kara: ${err}`);
 		}
 	});
+
+	router.delete('/karas/:kara_id([0-9]+)', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await deleteKara(req.params.kara_id);
+			res.status(200).send('Kara successfully removed');
+		} catch(err) {
+			res.status(500).send(`Error while removed kara: ${err}`);
+		}
+	});
+
 	router.post('/karas/generate-all', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 		try {
 			await karaGenerationBatch();
