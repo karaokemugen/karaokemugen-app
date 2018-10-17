@@ -1,7 +1,7 @@
 import {asyncUnlink, sanitizeFile, asyncWriteFile, asyncReadFile, resolveFileInDirs, } from '../_common/utils/files';
 import testJSON from 'is-valid-json';
 import {resolvedPathSeries, getConfig} from '../_common/utils/config';
-import {resolve} from 'path';
+import {basename, resolve} from 'path';
 import { check, initValidators } from '../_common/utils/validators';
 
 const header = {
@@ -34,6 +34,7 @@ export async function getDataFromSeriesFile(file) {
 	if (validationErrors) {
 		throw `Series data is not valid: ${JSON.stringify(validationErrors)}`;
 	}
+	seriesData.series.seriefile = basename(file);
 	return seriesData.series;
 }
 
@@ -60,6 +61,7 @@ export async function writeSeriesFile(series) {
 	delete seriesData.series.NORM_i18n_name;
 	delete seriesData.series.serie_id;
 	delete seriesData.series.i18n_name;
+	delete seriesData.series.seriefile;
 	return await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
 }
 

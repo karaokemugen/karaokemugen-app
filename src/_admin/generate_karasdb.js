@@ -271,15 +271,25 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 
 async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 
-	const altNameData = [];
+	const data = [];
 	const i18nData = [];
 
 	for (const serie of seriesData) {
-		if (serie.aliases) altNameData.push({
-			$serie_altnames: serie.aliases.join(','),
-			$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
-			$serie_name: serie.name
-		});
+		if (serie.aliases) {
+			data.push({
+				$serie_altnames: serie.aliases.join(','),
+				$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
+				$serie_name: serie.name,
+				$serie_file: serie.seriefile
+			});
+		} else {
+			data.push({
+				$serie_altnames: null,
+				$serie_altnamesnorm: null,
+				$serie_name: serie.name,
+				$serie_file: serie.seriefile
+			});
+		}
 		if (serie.i18n) {
 			for (const lang of Object.keys(serie.i18n)) {
 				i18nData.push({
@@ -297,7 +307,7 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
 			if (getConfig().optStrict) strictModeError(serie);
-			altNameData.push({
+			data.push({
 				$serie_name: serie
 			});
 			i18nData.push({
@@ -309,7 +319,7 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 		}
 	}
 	return {
-		altNameData: altNameData,
+		data: data,
 		i18nData: i18nData
 	};
 }
@@ -508,7 +518,7 @@ export async function run(config) {
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
 		const seriesAltNamesData = await prepareAltSeriesInsertData(seriesData, seriesMap);
-		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
+		const sqlUpdateSeries = seriesAltNamesData.data;
 		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
@@ -526,7 +536,7 @@ export async function run(config) {
 		]);
 		await Promise.all([
 			runSqlStatementOnData(db.prepare(inserti18nSeries), sqlInserti18nSeries),
-			runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames)
+			runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeries)
 		]);
 
 		await db.run('commit');

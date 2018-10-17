@@ -90,6 +90,7 @@ export const getAllKaras = (filterClauses, lang, orderClauses, typeClauses) => `
 							COUNT(rq.pk_id_request) AS requested,
 							ak.mediafile AS mediafile,
 							ak.karafile AS karafile,
+							ak.seriefiles AS seriefiles,
 							ak.duration AS duration,
 							ak.gain AS gain,
 							(CASE WHEN $dejavu_time < max(vc.modified_at)

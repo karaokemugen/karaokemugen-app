@@ -1,5 +1,6 @@
 import {langSelector, paramWords, getUserDb} from './database';
 import deburr from 'lodash.deburr';
+import { sanitizeFile } from '../_common/utils/files';
 
 const sql = require('../_common/db/series');
 
@@ -40,7 +41,8 @@ export async function insertSerie(serieObj) {
 		$name: serieObj.name,
 		$NORM_name: deburr(serieObj.name),
 		$altname: aliases,
-		$NORM_altname: deburr(aliases)
+		$NORM_altname: deburr(aliases),
+		$seriefile: `${sanitizeFile(serieObj.name)}.series.json`
 	});
 	return res.lastID;
 }
@@ -64,7 +66,8 @@ export async function updateSerie(serie_id, serie) {
 		$name: serie.name,
 		$NORM_name: deburr(serie.name),
 		$altname: aliases,
-		$NORM_altname: deburr(aliases)
+		$NORM_altname: deburr(aliases),
+		$seriefile: `${sanitizeFile(serie.name)}.series.json`
 	});
 	await getUserDb().run(sql.deleteSeriesi18n, {$serie_id: serie_id});
 	return await insertSeriei18n(serie);
