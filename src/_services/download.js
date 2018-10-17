@@ -43,7 +43,7 @@ export async function initDownloader() {
 function initQueue() {
 	q = new Queue(queueDownload, queueOptions);
 	q.on('task_failed', (taskId, err, stats) => logger.error(`[Download] Task ${taskId} failed : ${err}`));
-	q.on('drain', () => logger.info('[Download] Ano ne! I finished all my downloads! GIVE ME MORE!'));
+	q.on('drain', () => logger.info('[Download] Ano ne, ano ne! I finished all my downloads!'));
 }
 
 export async function startDownloads() {
@@ -68,6 +68,8 @@ async function processDownload(download) {
 	const localMedia = resolve(conf.appPath,conf.PathMedias.split('|')[0],download.urls.media.local);
 	const localLyrics = resolve(conf.appPath,conf.PathSubs.split('|')[0],download.urls.lyrics.local);
 	const localKara = resolve(conf.appPath,conf.PathKaras.split('|')[0],download.urls.kara.local);
+	let localSerie;
+	if (download.urls.serie) localSerie = resolve(conf.appPath,conf.PathSeries.split('|')[0],download.urls.serie.local);
 	list.push({
 		filename: localMedia,
 		url: download.urls.media.remote
@@ -80,6 +82,10 @@ async function processDownload(download) {
 		filename: localKara,
 		url: download.urls.kara.remote
 	});
+	if (download.urls.serie) list.push({
+		filename: localKara,
+		url: download.urls.serie.remote
+	});
 	const downloader = new Downloader(list, {
 		bar: true
 	});
@@ -87,6 +93,7 @@ async function processDownload(download) {
 	if (await asyncExists(localMedia)) await asyncUnlink(localMedia);
 	if (await asyncExists(localLyrics)) await asyncUnlink(localLyrics);
 	if (await asyncExists(localKara)) await asyncUnlink(localKara);
+	if (localSerie && await asyncExists(localSerie)) await asyncUnlink(localKara);
 	return new Promise((resolve, reject) => {
 		downloader.download(fileErrors => {
 			if (fileErrors.length > 0) {
@@ -118,6 +125,11 @@ export function resumeQueue() {
 
 export async function addDownloads(repo, downloads) {
 	const dls = downloads.map(dl => {
+		let serie;
+		if (dl.seriefile) serie = {
+			remote: `http://${repo}/downloads/series/${dl.seriefile}`,
+			local: dl.seriefile
+		};
 		return {
 			uuid: uuidV4(),
 			urls: {
@@ -132,7 +144,8 @@ export async function addDownloads(repo, downloads) {
 				kara: {
 					remote: `http://${repo}/downloads/karas/${dl.karafile}`,
 					local: dl.karafile
-				}
+				},
+				serie: serie
 			},
 			name: dl.name,
 			size: dl.size,

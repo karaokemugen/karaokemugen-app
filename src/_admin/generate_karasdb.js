@@ -295,7 +295,7 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 	for (const serie of mapSeries.keys()) {
 		if (!findSeries(serie, seriesData)) {
 			// Print a warning and push some basic data so the series can be searchable at least
-			logger.warn(`[Gen] Series "${serie}" is not in the series file`);
+			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
 			if (getConfig().optStrict) strictModeError(serie);
 			altNameData.push({
 				$serie_name: serie
