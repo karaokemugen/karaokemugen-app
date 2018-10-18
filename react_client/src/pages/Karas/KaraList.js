@@ -28,6 +28,7 @@ class KaraList extends Component {
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data.content});
+				console.log(this.state);
 			})
 			.catch(err => {
 				this.props.loading(false);

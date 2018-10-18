@@ -35,6 +35,7 @@ class App extends Component {
 							<Route path='/home' component={Home}/>
 							<Route path='/login' component={DismissMessages(import('./pages/Login'))}/>
 							<Route path='/config' component={AuthRequired(import('./pages/Config'))}/>
+							<Route path='/karas/manage' component={AuthRequired(import('./pages/Karas/ManageKaras'))}/>
 							<Route path='/karas/create' component={AuthRequired(import('./pages/Karas/KaraEdit'))}/>
 							<Route path='/karas/history' component={AuthRequired(import('./pages/Karas/History'))}/>
 							<Route path='/karas/ranking' component={AuthRequired(import('./pages/Karas/Ranking'))}/>
