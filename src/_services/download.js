@@ -192,6 +192,7 @@ export async function retryDownload(uuid) {
 export async function removeDownload(uuid) {
 	const dl = await selectDownload(uuid);
 	if (!dl) throw 'Download ID unknown';
+	if (dl.status === 'DL_RUNNING') throw 'Running downloads cannot be cancelled';
 	q.cancel(uuid);
 	return await deleteDownload(uuid);
 }
