@@ -1,5 +1,7 @@
 # Karaoke Mugen
 
+![logo](src/_webapp/ressources/img/Logo-final-fond-transparent.png)
+
 ![presentation](img/presentation.png)
 
 Master branch : [![pipeline status](https://lab.shelter.moe/karaokemugen/karaokemugen-app/badges/master/pipeline.svg)](https://lab.shelter.moe/karaokemugen/karaokemugen-app/commits/master) -
@@ -83,17 +85,16 @@ On first run, the app will make you create an admin user and follow a guided tou
 
 The app is multi-platform and works on Linux/Windows/OSX.
 
-It requires nodeJS 8.10 or above. It is not yet compatible with Node 10.
+It requires nodeJS 10.9 or above.
 
-It also requires mpv/ffmpeg/curl binaries (see below).
+It also requires mpv and ffmpeg binaries (see below).
 
 ### Binaries
 
-mpv (video player), ffmpeg (video processing) and curl (downloading karaoke updates) are required by Karaoke Mugen
+mpv (video player) and ffmpeg (video processing) are required by Karaoke Mugen
 
 * mpv 0.25 or up for Windows/Linux, 0.27 or up required for macOS ([mpv's website](http://mpv.io))
 * ffmpeg 3 or later ([ffmpeg's website](http://www.ffmpeg.org))
-* curl ([curl's website](http://curl.haxx.se)) (curl is generally already in your linux distribution, or on macOS, you only need to download it if you're on Windows)
 
 #### Windows/macOS
 
