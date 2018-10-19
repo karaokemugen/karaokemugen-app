@@ -255,12 +255,14 @@ var settingsNotUpdated;
 				$(this).blur();
 			}
 		});
+
 		// When user selects a playlist
 		$('#selectPlaylist1, #selectPlaylist2').change(function (e) {
 			var $this = $(this);
 			var val = $this.val();
 			var oldVal = $this.closest('.plDashboard').data('playlist_id');
 			if(!val) {
+				// if somehow we end up with no playlist selected (playlist was made private etc.) we handle this case and try to get a new default playlist
 				settingsUpdating.done( function(){
 					var newSelection = sideOfPlaylist('-1') ? '-2'  : '-1';
 					if(scope == 'public' && newSelection == '-2') {
@@ -273,7 +275,7 @@ var settingsNotUpdated;
 					return false;
 				});
 
-			} else {
+			} else {	// usual case
 				var side = $this.attr('side');
 				var isNew = $this.find('[data-select2-tag="true"][value="' + val + '"]');
 
@@ -656,9 +658,9 @@ var settingsNotUpdated;
 					DEBUG && console.log(container.offset().top,container.innerHeight() , fillerBottom.offset().top ,to < karaCount , nbKaraInPlaylist >= pageSize);
 					DEBUG && console.log(scrollUpdating, (!scrollUpdating || scrollUpdating.state() == 'resolved') , scrollDown, scrollUp);
 
+					localStorage.setItem('scroll' + side, container.scrollTop());
+
 					if (  (!scrollUpdating || scrollUpdating.state() == 'resolved')  && (scrollDown || scrollUp)) {
-
-
 						container.attr('flagScroll', true);
 
 						if(scrollDown) {
@@ -1195,6 +1197,9 @@ var settingsNotUpdated;
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
 		var url, html, canTransferKara, canAddKara, dragHandle, playKara;
+
+		localStorage.setItem('search' + side, filter);
+		localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
 
 		var range = getPlaylistRange(idPlaylist);
 		from = range.from;
@@ -2084,6 +2089,16 @@ var settingsNotUpdated;
 	// Some html & stats init
 	initApp = function() {
 
+		var locPlaylistRange = localStorage.getItem('playlistRange');
+		var locSearchPlaylist1 = localStorage.getItem('search1');
+		var locSearchPlaylist2 = localStorage.getItem('search2');
+		var locScroll1 = localStorage.getItem('scroll1');
+		var locScroll2 = localStorage.getItem('scroll2');
+
+		if(locPlaylistRange) playlistRange = JSON.parse(locPlaylistRange);
+		if(locSearchPlaylist1) $('#searchPlaylist1').val(locSearchPlaylist1);
+		if(locSearchPlaylist2) $('#searchPlaylist2').val(locSearchPlaylist2);
+
 		setupAjax();
 
 		showedLoginAfter401 = false;
@@ -2124,7 +2139,11 @@ var settingsNotUpdated;
 					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
 					refreshPlaylistDashboard(1);
 					refreshPlaylistDashboard(2);
-
+					playlistContentUpdating.done(() => {
+						console.log(locScroll1, locScroll2);
+						if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
+						if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
+					});
 					$(window).trigger('resize');
 				});
 			});
@@ -2401,7 +2420,6 @@ var settingsNotUpdated;
 	non = function (side) {
 		return 3 - parseInt(side);
 	};
-
 
 	getPlaylistRange = function(idPl) {
 		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();
