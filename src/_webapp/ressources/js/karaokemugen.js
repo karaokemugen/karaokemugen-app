@@ -1197,8 +1197,8 @@ var settingsNotUpdated;
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
 		var url, html, canTransferKara, canAddKara, dragHandle, playKara;
-
-		localStorage.setItem('search' + side, filter);
+		
+		localStorage.setItem('search' + side, filter ? filter : '');
 		localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
 
 		var range = getPlaylistRange(idPlaylist);
@@ -2096,8 +2096,8 @@ var settingsNotUpdated;
 		var locScroll2 = localStorage.getItem('scroll2');
 
 		if(locPlaylistRange) playlistRange = JSON.parse(locPlaylistRange);
-		if(locSearchPlaylist1) $('#searchPlaylist1').val(locSearchPlaylist1);
-		if(locSearchPlaylist2) $('#searchPlaylist2').val(locSearchPlaylist2);
+		if(locSearchPlaylist1 && locSearchPlaylist1 != 'undefined') $('#searchPlaylist1').val(locSearchPlaylist1);
+		if(locSearchPlaylist2 && locSearchPlaylist2 != 'undefined') $('#searchPlaylist2').val(locSearchPlaylist2);
 
 		setupAjax();
 
