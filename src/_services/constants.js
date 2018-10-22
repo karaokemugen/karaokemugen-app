@@ -92,7 +92,12 @@ export const defaultGuestNames = [
 	'ANO NE ANO NE!',
 	'Lina Inverse',
 	'DIO BRANDO',
-	'Goblin Slayer-kun'
+	'Goblin Slayer-kun',
+	'Asuka > Rei',
+	'Rei > Asuka',
+	'Rin > Saber',
+	'Yamakan',
+	'Giga Drill Breaker'
 ];
 
 export const initializationCatchphrases = [
