@@ -58,11 +58,12 @@ export async function addSerie(serieObj) {
 export async function editSerie(serie_id,serieObj) {
 	const oldSerie = await getSerie(serie_id);
 	if (!oldSerie) throw 'Series ID unknown';
-	if (oldSerie.name !== serieObj.name) await replaceSerieInKaras(oldSerie.name, serieObj.name);
-	let promises = [
+	if (oldSerie.name !== serieObj.name) {
+		await replaceSerieInKaras(oldSerie.name, serieObj.name);
+		await removeSeriesFile(oldSerie.name);
+	}
+	return Promise.all([
 		updateSerie(serie_id, serieObj),
 		writeSeriesFile(serieObj)
-	];
-	if (oldSerie.name !== serieObj.name) promises.push(removeSeriesFile(oldSerie.name));
-	return Promise.all(promises);
+	]);
 }
