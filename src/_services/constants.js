@@ -89,7 +89,10 @@ export const defaultGuestNames = [
 	'Mon Voisin Rototo',
 	'Kaaaaaneeeeedaaaaaaa',
 	'Teeeeetsuuuuoooooooooo',
-	'ANO NE ANO NE!'
+	'ANO NE ANO NE!',
+	'Lina Inverse',
+	'DIO BRANDO',
+	'Goblin Slayer-kun'
 ];
 
 export const initializationCatchphrases = [
@@ -113,7 +116,20 @@ export const initializationCatchphrases = [
 	'"I\'M A THE GREAT MAD SINGER, HOUHOUIN KYOMA !" --Okabe Rintaro',
 	'"If you are not singing with you, sing with me who sings with you" --Kamina',
 	'"Do you remember the number of songs you have sung in your life?" --Dio Brando',
-	'"Let\'s make a strawberry parfait from this karaoke!" --Hoshimiya Ichigo'
+	'"Let\'s make a strawberry parfait from this karaoke!" --Hoshimiya Ichigo',
+	'"Karaoke... has changed" --Solid "Old" Snake',
+	'"Operation Start!" --Yurippe',
+	'"ALL HAIL KARAOKE MUGEN!" --Lelouch',
+	'"It\'s over 9000!" --Someone in 2020 about the Karaoke Mugen database',
+	'"This karaoke is corrupt!" --Il Palazzo-sama',
+	'"Karaoke Mugen, launching!" --Amuro Ray',
+	'"I am the man who makes the unsingable singable." --Mu la Fraga',
+	'"Karaoke Mugen Standby, Ready" --Raising Heart',
+	'"Not singing would tarnish the reputation of the Seto mermen!" --Sun Seto',
+	'"I must not run away from karaoke" --Shinji Ikari',
+	'"Karaoke is top priority!" --Mizuho Kazami',
+	'"Darkness beyond twilight.	Crimson beyond blood that flows. Buried in the flow of time. In thy great name, I pledge myself to darkness. Let all the fools who stand in our way be destroyed, by the power you and I possess...	DRAGON SLAVE!" --Lina Inverse (after someone requested the song "Otome no Inori")',
+	'"My microphone is the one that will pierce the heavens!" --Kamina'
 ];
 
 export const karaTypes = Object.freeze({
