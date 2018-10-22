@@ -15,7 +15,6 @@
 - Update progress when generating database from the control panel is now displayed on the control panel itself (#357)
 - Generation's progress is now displayed in the console.
 - Public interface is reloaded when the webapp mode (open, restricted or closed) changes.
-- Configuration is now stored in YAML (#355)
 - TAG_VOICELESS has been removed in favor of the language code ZXX which is "No linguistic content" (#366)
 - Special language names (FR, JAP, ANG...) in files is abandonned in favor of ISO639-2B codes. This is for better consistency. (#365)
 - The `series.json` file is not used anymore. Instead, series data is read from the new `series/` folder with its `.series.json` files (#364)
@@ -36,6 +35,7 @@
 - Fixed adding series without aliases
 - Fixed Smart Shuffle
 - Fixed deleting favorites
+- Fixed editing series not updating i18n data
 
 ## v2.3.2 "Ichika Imperturbable" - 03/09/2018
 
