@@ -48,9 +48,8 @@ export async function getOrAddSerieID(serieObj) {
 export async function addSerie(serieObj) {
 	if (await selectSerieByName(serieObj.name)) throw 'Series original name already exists';
 	const newSerieID = await insertSerie(serieObj);
-	serieObj.serie_id = newSerieID;
 	await Promise.all([
-		insertSeriei18n(serieObj),
+		insertSeriei18n(newSerieID, serieObj),
 		writeSeriesFile(serieObj)
 	]);
 	return newSerieID;
@@ -60,8 +59,10 @@ export async function editSerie(serie_id,serieObj) {
 	const oldSerie = await getSerie(serie_id);
 	if (!oldSerie) throw 'Series ID unknown';
 	if (oldSerie.name !== serieObj.name) await replaceSerieInKaras(oldSerie.name, serieObj.name);
-	return Promise.all([
+	let promises = [
 		updateSerie(serie_id, serieObj),
 		writeSeriesFile(serieObj)
-	]);
+	];
+	if (oldSerie.name !== serieObj.name) promises.push(removeSeriesFile(oldSerie.name));
+	return Promise.all(promises);
 }
