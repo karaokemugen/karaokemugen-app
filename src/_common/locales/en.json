@@ -512,7 +512,6 @@
 	"KARA_SUGGESTION_SUBJECT": "New Song request: ",
 	"KARA_SUGGESTION_BODY": "Hello,%0D%0A How can this awesome song be missing from your base?%0D%0A I expect this infamy to be corrected asap, thanks.",
 	"KARA_SUGGESTION_NAME": "Name of the song",
-	"TAG_VOICELESS": "TAG_VOICELESS",
 	"BASE_UPDATE": "Database update",
 	"APP_UPDATE": "New version"
 }
