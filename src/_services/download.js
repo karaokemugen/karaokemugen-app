@@ -68,8 +68,7 @@ async function processDownload(download) {
 	const localMedia = resolve(conf.appPath,conf.PathMedias.split('|')[0],download.urls.media.local);
 	const localLyrics = resolve(conf.appPath,conf.PathSubs.split('|')[0],download.urls.lyrics.local);
 	const localKara = resolve(conf.appPath,conf.PathKaras.split('|')[0],download.urls.kara.local);
-	let localSerie;
-	if (download.urls.serie) localSerie = resolve(conf.appPath,conf.PathSeries.split('|')[0],download.urls.serie.local);
+	const localSeriesPath = resolve(conf.appPath,conf.PathSeries.split('|')[0]);
 	list.push({
 		filename: localMedia,
 		url: download.urls.media.remote
@@ -82,10 +81,12 @@ async function processDownload(download) {
 		filename: localKara,
 		url: download.urls.kara.remote
 	});
-	if (download.urls.serie) list.push({
-		filename: localKara,
-		url: download.urls.serie.remote
-	});
+	for (const seriefile of download.urls.serie) {
+		list.push({
+			filename: resolve(localSeriesPath, seriefile.local),
+			url: seriefile.remote
+		});
+	}
 	const downloader = new Downloader(list, {
 		bar: true
 	});
@@ -93,7 +94,10 @@ async function processDownload(download) {
 	if (await asyncExists(localMedia)) await asyncUnlink(localMedia);
 	if (await asyncExists(localLyrics)) await asyncUnlink(localLyrics);
 	if (await asyncExists(localKara)) await asyncUnlink(localKara);
-	if (localSerie && await asyncExists(localSerie)) await asyncUnlink(localKara);
+	for (const seriefile of download.urls.serie) {
+		if (await asyncExists(resolve(localSeriesPath, seriefile.local))) await asyncUnlink(resolve(localSeriesPath, seriefile.local));
+	}
+	// Launch downloads
 	return new Promise((resolve, reject) => {
 		downloader.download(fileErrors => {
 			if (fileErrors.length > 0) {
@@ -101,7 +105,7 @@ async function processDownload(download) {
 					.then(() => {
 						reject(`Error downloading this file : ${fileErrors.toString()}`);
 					}).catch((err) => {
-						reject(`Error downloading this file : ${fileErrors.toString()} - setting failed status failed too!`);
+						reject(`Error downloading this file : ${fileErrors.toString()} - setting failed status failed too! (${err})`);
 					});
 			} else {
 				setDownloadStatus(download.uuid, 'DL_DONE')
@@ -125,11 +129,13 @@ export function resumeQueue() {
 
 export async function addDownloads(repo, downloads) {
 	const dls = downloads.map(dl => {
-		let serie;
-		if (dl.seriefile) serie = {
-			remote: `http://${repo}/downloads/series/${dl.seriefile}`,
-			local: dl.seriefile
-		};
+		let seriefiles = [];
+		for (const serie of dl.seriefiles) {
+			seriefiles.push({
+				remote: `http://${repo}/downloads/series/${serie}`,
+				local: serie
+			});
+		}
 		return {
 			uuid: uuidV4(),
 			urls: {
@@ -145,7 +151,7 @@ export async function addDownloads(repo, downloads) {
 					remote: `http://${repo}/downloads/karas/${dl.karafile}`,
 					local: dl.karafile
 				},
-				serie: serie
+				serie: seriefiles
 			},
 			name: dl.name,
 			size: dl.size,
@@ -186,6 +192,7 @@ export async function retryDownload(uuid) {
 export async function removeDownload(uuid) {
 	const dl = await selectDownload(uuid);
 	if (!dl) throw 'Download ID unknown';
+	if (dl.status === 'DL_RUNNING') throw 'Running downloads cannot be cancelled';
 	q.cancel(uuid);
 	return await deleteDownload(uuid);
 }
