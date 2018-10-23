@@ -4890,8 +4890,12 @@ export function APIControllerPublic(router) {
 	 * @apiSuccess {Array} Array Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if
 	 */
 	 .get(getLang, async (req, res) => {
-		 	const result = await getFeeds(req.lang);
-			res.json(result);
+			try {
+				const result = await getFeeds(req.lang);
+				res.json(result);
+			} catch(err) {
+				res.status(500).send(err);
+			}
 		});
 	router.route('/songpoll')
 	/**
