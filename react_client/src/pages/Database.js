@@ -12,11 +12,23 @@ class Database extends Component {
 		super(props);
 		this.state = {
 			updateModal: false,
-			progress: {
+			generationProgress: {
 				text: undefined,
 				value: 0,
 				total: 100,
 				percentage: 0, // Added percentage for reference, rather than computing again with Math.floor
+			},
+			downloadProgress: {
+				text: undefined,
+				value: 0,
+				total: 100,
+				percentage: 0
+			},
+			updateProgress: {
+				text: undefined,
+				value: 0,
+				total: 100,
+				percentage: 0
 			}
 		};
 	}
@@ -24,12 +36,40 @@ class Database extends Component {
 	componentDidMount() {
 		const socket = openSocket('http://localhost:1337');
 		socket.on('generationProgress', (data) => {
-			if (!data.text) data.text = this.state.progress.text;
+			if (!data.text) data.text = this.state.generationProgress.text;
 			const percentage = Math.floor((data.value / data.total) * 100);
-			if (percentage !== this.state.progress.percentage) {
+			if (percentage !== this.state.generationProgress.percentage) {
 				this.setState({
-					progress: {
-						text: data.text,
+					generationProgress: {
+						text: `Task : ${data.text}`,
+						value: data.value,
+						total: data.total,
+						percentage
+					}
+				});
+			}
+		});
+		socket.on('downloadProgress', (data) => {
+			if (!data.text) data.text = this.state.downloadProgress.text;
+			const percentage = Math.floor((data.value / data.total) * 100);
+			if (percentage !== this.state.downloadProgress.percentage) {
+				this.setState({
+					downloadProgress: {
+						text: `${data.text}`,
+						value: data.value,
+						total: data.total,
+						percentage
+					}
+				});
+			}
+		});
+		socket.on('updateProgress', (data) => {
+			if (!data.text) data.text = this.state.updateProgress.text;
+			const percentage = Math.floor((data.value / data.total) * 100);
+			if (percentage !== this.state.updateProgress.percentage) {
+				this.setState({
+					updateProgress: {
+						text: `${data.text}`,
 						value: data.value,
 						total: data.total,
 						percentage
@@ -128,9 +168,11 @@ class Database extends Component {
 					<p>You can check progress in the Karaoke Mugen console window</p>
 					<p>Are you sure?</p>
 				</Modal>
-				Progress Bar : <br/>
-				Text : {this.state.progress.text}<br/>
-				<Progress percent={this.state.progress.percentage} />
+				{ this.state.generationProgress.text && (
+					<h1>Progress</h1>
+				)}
+				{this.state.generationProgress.text}<br/>
+				<Progress percent={this.state.generationProgress.percentage} />
 			</Layout.Content>
 		);
 	}

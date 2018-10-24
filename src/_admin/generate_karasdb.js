@@ -537,7 +537,7 @@ export async function run(config) {
 		const karaFiles = await extractAllKaraFiles();
 		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
 		if (karaFiles.length === 0) throw 'No kara files found';
-		createBar('Reading .kara files   ', karaFiles.length + 1);
+		createBar('Reading .kara files  ', karaFiles.length + 1);
 		const karas = await readAllKaras(karaFiles);
 		logger.debug(`[Gen] Number of karas read : ${karas.length}`);
 		// Check if we don't have two identical KIDs
@@ -589,6 +589,11 @@ export async function run(config) {
 		await db.close();
 		await checkUserdbIntegrity(null, conf);
 		stopBar();
+		emitWS('generationProgress', {
+			value: 100,
+			total: 100,
+			text: 'Generation done'
+		});
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
