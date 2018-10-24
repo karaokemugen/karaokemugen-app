@@ -7,6 +7,11 @@ import langs from 'langs';
 
 export default class EditableTagGroup extends React.Component {
 
+	constructor(props) {
+		super(props);
+		if (this.props.checkboxes) this.search();
+	}
+
 	state = {
 		value: this.props.value || [],
 		inputVisible: false,
@@ -82,7 +87,7 @@ export default class EditableTagGroup extends React.Component {
 	searchTags = (val) => {
 		this.getTags(val, this.props.tagType).then(tags => {
 			let result = tags.data.content.map(tag => {
-				return { value: tag.name, text: tag.name_i18n }
+				return { value: tag.name, text: tag.name_i18n };
 			}) || [];
 			result = this.sortByProp(result, 'text');
 			this.setState({ DS: result });
@@ -102,7 +107,6 @@ export default class EditableTagGroup extends React.Component {
 	render() {
 		const { value, inputVisible } = this.state;
 		if (this.props.checkboxes) {
-			this.search();
 			return (
 				<div>
 

@@ -48,12 +48,7 @@ export async function getDataFromKaraFile(karafile) {
 	const conf = getConfig();
 	const karaData = await parseKara(karafile);
 
-	// Code to keep compatibility with v2 kara files.
-	karaData.mediafile = karaData.mediafile || karaData.videofile;
-	karaData.mediasize = karaData.mediasize || karaData.videosize;
-	karaData.mediagain = karaData.mediagain || karaData.videogain;
-	karaData.mediaduration = karaData.mediaduration || karaData.videoduration;
-
+	karaData.error = false;
 	karaData.isKaraModified = false;
 
 	if (!karaData.KID) {
@@ -79,8 +74,8 @@ export async function getDataFromKaraFile(karafile) {
 	try {
 		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
 	} catch (err) {
-		//logger.warn('[Kara] Media file not found : ' + karaData.mediafile);
-		if (conf.optStrict) error = true;
+		logger.debug('[Kara] Media file not found : ' + karaData.mediafile);
+		if (conf.optStrict) strictModeError(karaData, 'mediafile');
 		if (!karaData.mediagain) karaData.mediagain = 0;
 		if (!karaData.mediasize) karaData.mediasize = 0;
 		if (!karaData.mediaduration) karaData.mediaduration = 0;
@@ -91,7 +86,6 @@ export async function getDataFromKaraFile(karafile) {
 		const subFile = await findSubFile(mediaFile, karaData);
 		await extractAssInfos(subFile, karaData);
 		await extractMediaTechInfos(mediaFile, karaData);
-		if (karaData.error) error = true;
 	}
 
 	if (error) karaData.error = true;
@@ -124,7 +118,7 @@ export async function extractMediaTechInfos(mediaFile, karaData) {
 			karaData.mediasize = mediaStats.size;
 
 			const mediaData = await getMediaInfo(mediaFile);
-			if (mediaData.error) error = true;
+			if (mediaData.error && conf.optStrict) strictModeError(karaData, 'ffmpeg return code');
 
 			karaData.mediagain = mediaData.audiogain;
 			karaData.mediaduration = mediaData.duration;
@@ -169,7 +163,7 @@ async function findSubFile(videoFile, kara) {
 			} catch (err) {
 				// Not blocking.
 				logger.warn(`[Kara] Could not extract subtitles from video file ${videoFile}`);
-				error = true;
+				if (conf.optStrict) strictModeError(kara, 'extracting subtitles');
 			}
 		}
 	} else {
@@ -177,7 +171,7 @@ async function findSubFile(videoFile, kara) {
 			if (kara.subfile !== 'dummy.ass') return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
 		} catch (err) {
 			logger.warn(`[Kara] Could not find subfile '${kara.subfile}' (in ${JSON.stringify(resolvedPathSubs())}).`);
-			error = true;
+			if (conf.optStrict) strictModeError(kara, 'subfile');
 		}
 	}
 	// Non-blocking case if file isn't found

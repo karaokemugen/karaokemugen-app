@@ -175,9 +175,10 @@ class SerieForm extends Component {
 						wrapperCol={{ span: 4, offset: 0 }}
 					>
 						<Select
+							showSearch
 							ref={select => this.select = select}
 							onChange={value => this.addLang(value)}>
-							{ this.state.languages.map(lang => (<Select.Option value={lang.value}>{lang.text}</Select.Option>)) }
+							{ this.state.languages.map(lang => (<Select.Option value={lang.value}>"{lang.text} ({lang.value.toUpperCase()})"</Select.Option>)) }
 						</Select>
 					</Form.Item>
 				)}

@@ -15,7 +15,7 @@ import {
 	selectWhitelistKaras,
 	updateSeriesAltNames
 } from '../_common/db/generation';
-import {karaTypesMap} from '../_services/constants';
+import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {emit} from '../_common/utils/pubsub';
@@ -23,6 +23,7 @@ import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {updateUUID} from '../_common/db/database.js';
 import cliProgress from 'cli-progress';
 import {emitWS} from '../_webapp/frontend';
+
 
 let error = false;
 let generating = false;
@@ -135,6 +136,7 @@ export async function readAllKaras(karafiles) {
 	if (karas.some((kara) => {
 		return kara.error;
 	})) error = true;
+
 	return karas.filter(kara => !kara.error);
 }
 
@@ -411,7 +413,7 @@ function getTypes(kara, allTags) {
 	});
 
 	if (result.size === 0) {
-		logger.warn(`[Gen] Karaoke type cannot be detected (${kara.type}) in kara :  ${JSON.stringify(kara)}`);
+		logger.warn(`[Gen] Karaoke type cannot be detected (${kara.type}) in kara :  ${JSON.stringify(kara, null, 2)}`);
 		error = true;
 	}
 
@@ -438,6 +440,7 @@ function getTagId(tagName, tags) {
 function prepareAllTagsInsertData(allTags) {
 	const data = [];
 	const translations = require(join(__dirname,'../_common/locales'));
+	let lastIndex;
 
 	allTags.forEach((tag, index) => {
 		const tagParts = tag.split(',');
@@ -460,8 +463,32 @@ function prepareAllTagsInsertData(allTags) {
 			$tagname: tagName,
 			$tagnamenorm: deburr(tagNorm).replace('\'', '').replace(',', '')
 		});
+		lastIndex = index + 1;
 	});
-
+	// We browse through tag data to add the default tags if they don't exist.
+	for (const tag of karaTags) {
+		if (!data.find(t => t.$tagname === `TAG_${tag}`)) {
+			data.push({
+				$id_tag: lastIndex + 1,
+				$tagtype: 7,
+				$tagname: `TAG_${tag}`,
+				$tagnamenorm: `TAG_${tag}`
+			});
+			lastIndex++;
+		}
+	}
+	// We do it as well for types
+	for (const type of karaTypesMap) {
+		if (!data.find(t => t.$tagname === `TYPE_${type[0]}`)) {
+			data.push({
+				$id_tag: lastIndex + 1,
+				$tagtype: 3,
+				$tagname: `TYPE_${type[0]}`,
+				$tagnamenorm: `TYPE_${type[0]}`
+			});
+			lastIndex++;
+		}
+	}
 	return data;
 }
 
@@ -508,9 +535,11 @@ export async function run(config) {
 		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		const karaFiles = await extractAllKaraFiles();
+		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
 		if (karaFiles.length === 0) throw 'No kara files found';
 		createBar('Reading .kara files   ', karaFiles.length + 1);
 		const karas = await readAllKaras(karaFiles);
+		logger.debug(`[Gen] Number of karas read : ${karas.length}`);
 		// Check if we don't have two identical KIDs
 		checkDuplicateKIDs(karas);
 		incrBar();
@@ -519,14 +548,14 @@ export async function run(config) {
 
 		const seriesFiles = await extractAllSeriesFiles();
 		if (seriesFiles.length === 0) throw 'No series files found';
-		createBar('Reading .series files ', seriesFiles.length);
+		createBar('Reading .series files', seriesFiles.length);
 		const seriesData = await readAllSeries(seriesFiles);
 		checkDuplicateSeries(seriesData);
 
 		// Preparing data to insert
 		stopBar();
 		logger.info('[Gen] Data files processed, creating database');
-		createBar('Generating database   ', 20);
+		createBar('Generating database  ', 20);
 		await emptyDatabase(db);
 		incrBar();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
@@ -560,7 +589,7 @@ export async function run(config) {
 		await db.close();
 		await checkUserdbIntegrity(null, conf);
 		stopBar();
-		return error;
+		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
 		throw err;
@@ -592,7 +621,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		karas_userdbfile + '.backup',
 		{ overwrite: true }
 	);
-	incrBar();
+	if (bar) incrBar();
 
 
 	logger.debug('[Gen] Running user database integrity checks');
@@ -624,7 +653,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectPlaylistKaras)
 	]);
 
-	incrBar();
+	if (bar) incrBar();
 
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
@@ -640,7 +669,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`UPDATE request SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
 	]);
-	incrBar();
+	if (bar) incrBar();
 	const karaIdByKid = new Map();
 	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 	let sql = '';
@@ -707,7 +736,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
-	incrBar();
+	if (bar) incrBar();
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 

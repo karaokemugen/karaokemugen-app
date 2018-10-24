@@ -1,5 +1,4 @@
 import {configureHost, getConfig} from '../_common/utils/config';
-import {stringify} from 'querystring';
 import got from 'got';
 
 export async function publishURL() {
