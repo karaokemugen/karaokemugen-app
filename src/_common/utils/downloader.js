@@ -5,6 +5,7 @@ import got from 'got';
 import prettyBytes from 'pretty-bytes';
 import {createWriteStream} from 'fs';
 import { getConfig } from './config';
+import { emitWS } from '../../_webapp/frontend';
 
 
 export default class Downloader {
@@ -37,6 +38,11 @@ export default class Downloader {
 			if (nextSize) prettySize = prettyBytes(nextSize);
 			this.pos = this.pos + 1;
 			logger.info(`[Download] (${this.pos}/${this.list.length}) Downloading ${basename(nextFilename)} (${prettySize})`);
+			emitWS('downloadBatchProgress', {
+				text: `Downloading file ${this.pos} of ${this.list.length}`,
+				value: this.pos,
+				total: this.list.length
+			});
 			this.DoDownload(nextUrl, nextFilename, nextSize, this.download , err => {
 				logger.error(`[Download] Error downloading ${basename(nextFilename)} : ${err}`);
 				this.fileErrors.push(basename(nextFilename));
@@ -73,6 +79,11 @@ export default class Downloader {
 				if (this.opts.bar) {
 					this.bar.update(Math.floor(state.transferred / 1000) / 1000);
 				}
+				emitWS('downloadProgress', {
+					text: `Current file ${basename(filename)}`,
+					value: state.transferred,
+					total: size
+				});
 			})
 			.on('error', err => {
 				if (this.opts.bar) {

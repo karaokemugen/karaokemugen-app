@@ -24,7 +24,7 @@ class Database extends Component {
 				total: 100,
 				percentage: 0
 			},
-			updateProgress: {
+			downloadBatchProgress: {
 				text: undefined,
 				value: 0,
 				total: 100,
@@ -63,12 +63,12 @@ class Database extends Component {
 				});
 			}
 		});
-		socket.on('updateProgress', (data) => {
+		socket.on('downloadBatchProgress', (data) => {
 			if (!data.text) data.text = this.state.updateProgress.text;
 			const percentage = Math.floor((data.value / data.total) * 100);
 			if (percentage !== this.state.updateProgress.percentage) {
 				this.setState({
-					updateProgress: {
+					downloadBatchProgress: {
 						text: `${data.text}`,
 						value: data.value,
 						total: data.total,
@@ -173,6 +173,10 @@ class Database extends Component {
 				)}
 				{this.state.generationProgress.text}<br/>
 				<Progress percent={this.state.generationProgress.percentage} />
+				{this.state.downloadProgress.text}<br/>
+				<Progress percent={this.state.downloadProgress.percentage} />
+				{this.state.downloadBatchProgress.text}<br/>
+				<Progress percent={this.state.downloadBatchProgress.percentage} />
 			</Layout.Content>
 		);
 	}
