@@ -23,7 +23,6 @@ import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {updateUUID} from '../_common/db/database.js';
 import cliProgress from 'cli-progress';
 import {emitWS} from '../_webapp/frontend';
-import onChange from 'on-change';
 
 let error = false;
 let generating = false;
