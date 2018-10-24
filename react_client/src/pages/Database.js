@@ -15,24 +15,32 @@ class Database extends Component {
 			progress: {
 				text: undefined,
 				value: 0,
-				total: 100
+				total: 100,
+				percentage: 0, // Added percentage for reference, rather than computing again with Math.floor
 			}
 		};
+	}
+
+	componentDidMount() {
 		const socket = openSocket('http://localhost:1337');
-		socket.on('generationProgress', data => {
+		socket.on('generationProgress', (data) => {
 			if (!data.text) data.text = this.state.progress.text;
-			this.setState({
-				progress: {
-					text: data.text,
-					value: data.value,
-					total: data.total
-				}
-			});
+			const percentage = Math.floor((data.value / data.total) * 100);
+			if (percentage !== this.state.progress.percentage) {
+				this.setState({
+					progress: {
+						text: data.text,
+						value: data.value,
+						total: data.total,
+						percentage
+					}
+				});
+			}
 		});
 	}
 
 
-	dbregen() {
+	dbregen = () => {
 		this.props.loading(true);
 		axios.post('/api/db/regenerate')
 			.then(res => {
@@ -77,7 +85,7 @@ class Database extends Component {
 				<div>
 					<Button
 						type='primary'
-						onClick={this.dbregen.bind(this)}
+						onClick={this.dbregen}
 						active={!this.props.loadingActive}
 					>
 						Regenerate your database (wow wow)
@@ -122,7 +130,7 @@ class Database extends Component {
 				</Modal>
 				Progress Bar : <br/>
 				Text : {this.state.progress.text}<br/>
-				<Progress percent={Math.floor((this.state.progress.value / this.state.progress.total) * 100)} />
+				<Progress percent={this.state.progress.percentage} />
 			</Layout.Content>
 		);
 	}
