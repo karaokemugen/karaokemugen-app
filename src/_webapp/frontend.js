@@ -16,9 +16,9 @@ import {createServer} from 'http';
 
 let ws;
 
-export async function emitWS(type,data) {
+export function emitWS(type,data) {
 	//logger.debug( '[WS] Sending message '+type+' : '+JSON.stringify(data));
-	ws.sockets.emit(type,data);
+	if (ws) ws.sockets.emit(type,data);
 }
 
 export async function initFrontend(port) {
