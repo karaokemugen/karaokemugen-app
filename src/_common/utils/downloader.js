@@ -80,7 +80,7 @@ export default class Downloader {
 					this.bar.update(Math.floor(state.transferred / 1000) / 1000);
 				}
 				emitWS('downloadProgress', {
-					text: `Current file ${basename(filename)}`,
+					text: `Downloading : ${basename(filename)}`,
 					value: state.transferred,
 					total: size
 				});

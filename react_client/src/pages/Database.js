@@ -64,9 +64,9 @@ class Database extends Component {
 			}
 		});
 		socket.on('downloadBatchProgress', (data) => {
-			if (!data.text) data.text = this.state.updateProgress.text;
+			if (!data.text) data.text = this.state.downloadBatchProgress.text;
 			const percentage = Math.floor((data.value / data.total) * 100);
-			if (percentage !== this.state.updateProgress.percentage) {
+			if (data.text !== this.state.downloadBatchProgress.text || percentage !== this.state.downloadBatchProgress.percentage) {
 				this.setState({
 					downloadBatchProgress: {
 						text: `${data.text}`,
@@ -160,19 +160,18 @@ class Database extends Component {
 						this.setState({updateModal: false});
 					}}
 					onCancel={() => this.setState({updateModal: false})}
-					okText='yes, do it!'
-					cancelText='no'
+					okText='Yes, do it!'
+					cancelText='No'
 				>
 					<p>WARNING: Updating will delete <b>any file not in the official Karaoke Mugen repository</b>.</p>
 					<p>If you created karaokes but did not upload them, they will be deleted.</p>
 					<p>You can check progress in the Karaoke Mugen console window</p>
 					<p>Are you sure?</p>
 				</Modal>
-				{ this.state.generationProgress.text && (
-					<h1>Progress</h1>
-				)}
+				<h1>Progress</h1>
+				<h2>Generation</h2>
 				{this.state.generationProgress.text}<br/>
-				<Progress percent={this.state.generationProgress.percentage} />
+				<h2>Base update</h2>
 				{this.state.downloadProgress.text}<br/>
 				<Progress percent={this.state.downloadProgress.percentage} />
 				{this.state.downloadBatchProgress.text}<br/>

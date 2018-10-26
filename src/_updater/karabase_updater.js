@@ -7,6 +7,7 @@ import {copy} from 'fs-extra';
 import prettyBytes from 'pretty-bytes';
 import webdav from 'webdav';
 import Downloader from '../_common/utils/downloader';
+import {emitWS} from '../_webapp/frontend';
 
 const baseURL = 'https://lab.shelter.moe/karaokemugen/karaokebase/repository/master/archive.zip';
 const shelter = {
@@ -45,17 +46,43 @@ async function decompressBase() {
 	const conf = getConfig();
 	const workPath = resolve(conf.appPath, conf.PathTemp, 'newbase');
 	const archivePath = resolve(conf.appPath, conf.PathTemp, 'archive.zip');
+	emitWS('downloadProgress', {
+		text: 'Decompressing .kara, .ass and .series files',
+		value: 0,
+		total: 100
+	});
+	emitWS('downloadBatchProgress', {
+		text: 'Updating...',
+		value: 1,
+		total: 5
+	});
+
 	if (await asyncExists(workPath)) await asyncRemove(workPath);
 	await asyncMkdirp(workPath);
 	logger.info('[Updater] Decompressing base');
 	await decompress(archivePath,workPath);
 	logger.info('[Updater] Base decompressed');
+	emitWS('downloadProgress', {
+		text: 'Decompressing .kara, .ass and .series files',
+		value: 100,
+		total: 100
+	});
 	const workPathList = await asyncReadDir(workPath);
 	return workPathList[0];
 }
 
 async function listRemoteMedias() {
 	logger.info('[Updater] Fetching current media list');
+	emitWS('downloadProgress', {
+		text: 'Listing media files to download',
+		value: 0,
+		total: 100
+	});
+	emitWS('downloadBatchProgress', {
+		text: 'Updating...',
+		value: 3,
+		total: 5
+	});
 	let webdavClient = webdav(
     	shelter.url,
     	shelter.user,
@@ -80,6 +107,16 @@ async function compareBases() {
 	const lyricsBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'lyrics');
 	const seriesBasePath = resolve(conf.appPath, conf.PathTemp, 'newbase', archiveWOExt, 'series');
 	logger.info('[Updater] Comparing your base with the current one');
+	emitWS('downloadProgress', {
+		text: 'Comparing your base with Karaoke Mugen\'s latest files',
+		value: 0,
+		total: 100
+	});
+	emitWS('downloadBatchProgress', {
+		text: 'Updating...',
+		value: 2,
+		total: 5
+	});
 	const [karasToUpdate, lyricsToUpdate, seriesToUpdate] = await Promise.all([
 		compareDirs(karasMinePath, karasBasePath),
 		compareDirs(lyricsMinePath, lyricsBasePath),
@@ -95,6 +132,11 @@ async function compareBases() {
 		seriesToUpdate.removedFiles.length === 0 &&
 		seriesToUpdate.updatedFiles.length === 0) {
 		logger.info('[Updater] No update for your base');
+		emitWS('downloadProgress', {
+			text: 'Comparing your base with Karaoke Mugen\'s latest files',
+			value: 100,
+			total: 100
+		});
 		return false;
 	} else {
 		logger.info('[Updater] Updating base files');
@@ -102,14 +144,19 @@ async function compareBases() {
 			updateFiles(lyricsToUpdate.newFiles, lyricsBasePath, lyricsMinePath,true),
 			updateFiles(karasToUpdate.newFiles, karasBasePath, karasMinePath,true),
 			updateFiles(lyricsToUpdate.updatedFiles, lyricsBasePath, lyricsMinePath),
-			updateFiles(seriesToUpdate.newFiles, seriesBasePath, lyricsMinePath,true),
-			updateFiles(seriesToUpdate.updatedFiles, seriesBasePath, lyricsMinePath),
+			updateFiles(seriesToUpdate.newFiles, seriesBasePath, seriesMinePath,true),
+			updateFiles(seriesToUpdate.updatedFiles, seriesBasePath, seriesMinePath),
 			updateFiles(karasToUpdate.updatedFiles, karasBasePath, karasMinePath),
 			removeFiles(karasToUpdate.removedFiles, karasMinePath),
 			removeFiles(lyricsToUpdate.removedFiles, lyricsMinePath),
 			removeFiles(seriesToUpdate.removedFiles, seriesMinePath)
 		]);
 		logger.info('[Updater] Done updating base files');
+		emitWS('downloadProgress', {
+			text: 'Comparing your base with Karaoke Mugen\'s latest files',
+			value: 100,
+			total: 100
+		});
 		asyncRemove(resolve(conf.appPath, conf.PathTemp, 'newbase'));
 		return true;
 	}
@@ -123,6 +170,16 @@ async function compareMedias(localFiles, remoteFiles) {
 	let updatedFiles = [];
 	const mediasPath = resolve(conf.appPath, pathMedias[0]);
 	logger.info('[Updater] Comparing your medias with the current ones');
+	emitWS('downloadProgress', {
+		text: 'Comparing your media files with Karaoke Mugen\'s latest files',
+		value: 0,
+		total: 100
+	});
+	emitWS('downloadBatchProgress', {
+		text: 'Updating...',
+		value: 4,
+		total: 5
+	});
 	for (const remoteFile of remoteFiles) {
 		const filePresent = localFiles.some(localFile => {
 			if (localFile.name === remoteFile.basename) {
@@ -152,6 +209,11 @@ async function compareMedias(localFiles, remoteFiles) {
 	}
 	const filesToDownload = addedFiles.concat(updatedFiles);
 	if (removedFiles.length > 0) await removeFiles(removedFiles, mediasPath);
+	emitWS('downloadProgress', {
+		text: 'Comparing your base with Karaoke Mugen\'s latest files',
+		value: 100,
+		total: 100
+	});
 	if (filesToDownload.length > 0) {
 		filesToDownload.sort((a,b) => {
 			return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
@@ -257,9 +319,30 @@ export async function runBaseUpdate() {
 			listLocalMedias()
 		]);
 		const updateVideos = await compareMedias(localMedias, remoteMedias);
+
 		updateRunning = false;
+		emitWS('downloadProgress', {
+			text: 'Done',
+			value: 100,
+			total: 100
+		});
+		emitWS('downloadBatchProgress', {
+			text: 'Update done!',
+			value: 100,
+			total: 100
+		});
 		return !!(updateBase || updateVideos);
 	} catch (err) {
+		emitWS('downloadProgress', {
+			text: 'Done',
+			value: 100,
+			total: 100
+		});
+		emitWS('downloadBatchProgress', {
+			text: 'Update failed!',
+			value: 100,
+			total: 100
+		});
 		updateRunning = false;
 		throw err;
 	}
