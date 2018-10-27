@@ -6,12 +6,12 @@ import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from 'winston';
-import {asyncExists, asyncUnlink} from '../_common/utils/files';
+import {asyncMove} from '../_common/utils/files';
 
 const queueOptions = {
 	id: 'uuid',
 	precondition: cb => {
-		internet
+		internet()
 			.then(cb(null, true))
 			.catch(cb(null, false));
 	},
@@ -69,34 +69,43 @@ async function processDownload(download) {
 	const localLyrics = resolve(conf.appPath,conf.PathSubs.split('|')[0],download.urls.lyrics.local);
 	const localKara = resolve(conf.appPath,conf.PathKaras.split('|')[0],download.urls.kara.local);
 	const localSeriesPath = resolve(conf.appPath,conf.PathSeries.split('|')[0]);
+	const tempMedia = resolve(conf.appPath,conf.PathTemp,download.urls.media.local);
+	const tempLyrics = resolve(conf.appPath,conf.PathTemp,download.urls.lyrics.local);
+	const tempKara = resolve(conf.appPath,conf.PathTemp,download.urls.kara.local);
+	const tempSeriesPath = resolve(conf.appPath,conf.PathTemp);
 	list.push({
-		filename: localMedia,
+		filename: tempMedia,
 		url: download.urls.media.remote
 	});
-	list.push({
-		filename: localLyrics,
+	if (download.urls.lyrics.local !== 'dummy.ass') list.push({
+		filename: tempLyrics,
 		url: download.urls.lyrics.remote
 	});
 	list.push({
-		filename: localKara,
-		url: download.urls.kara.remote
+		filename: tempKara,
+		url: download.urls.kara.remote,
 	});
-	for (const seriefile of download.urls.serie) {
+	for (const serie of download.urls.serie) {
 		list.push({
-			filename: resolve(localSeriesPath, seriefile.local),
-			url: seriefile.remote
+			filename: resolve(tempSeriesPath, serie.local),
+			url: serie.remote,
 		});
 	}
+	await downloadFiles(download, list);
+	// Delete files if they're already present
+	await asyncMove(tempMedia, localMedia, {overwrite: true});
+	if (download.urls.lyrics.local !== 'dummy.ass') await asyncMove(tempLyrics, localLyrics, {overwrite: true});
+	await asyncMove(tempKara, localKara, {overwrite: true});
+	for (const seriefile of download.urls.serie) {
+		await asyncMove(resolve(tempSeriesPath, seriefile.local), resolve(localSeriesPath, seriefile.local), {overwrite: true});
+	}
+	logger.info(`[Download] Finished downloading item ${download.name}`);
+}
+
+async function downloadFiles(download, list) {
 	const downloader = new Downloader(list, {
 		bar: true
 	});
-	// Delete files if they're already present
-	if (await asyncExists(localMedia)) await asyncUnlink(localMedia);
-	if (await asyncExists(localLyrics)) await asyncUnlink(localLyrics);
-	if (await asyncExists(localKara)) await asyncUnlink(localKara);
-	for (const seriefile of download.urls.serie) {
-		if (await asyncExists(resolve(localSeriesPath, seriefile.local))) await asyncUnlink(resolve(localSeriesPath, seriefile.local));
-	}
 	// Launch downloads
 	return new Promise((resolve, reject) => {
 		downloader.download(fileErrors => {
