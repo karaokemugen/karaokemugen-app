@@ -1,6 +1,6 @@
 # Versions
 
-## v2.4.0 "Juri Judicieuse" - xx/10/2018
+## v2.4.0 "Juri Judicieuse" - 06/10/2018
 
 ### New features
 
@@ -12,11 +12,11 @@
 ### Improvements
 
 - Songs can now be freed from the current playlist
-- Update progress when generating database from the control panel is now displayed on the control panel itself (#357)
+- Progress when generating database or updating base files from the control panel is now displayed on the control panel itself (#348)
 - Generation's progress is now displayed in the console.
-- Public interface is reloaded when the webapp mode (open, restricted or closed) changes.
+- Public interface is reloaded when the webapp mode (open, restricted or closed) changes. (#357)
 - TAG_VOICELESS has been removed in favor of the language code ZXX which is "No linguistic content" (#366)
-- Special language names (FR, JAP, ANG...) in files is abandonned in favor of ISO639-2B codes. This is for better consistency. (#365)
+- Special language names (FR, JAP, ANG...) in files is now obsolete in favor of ISO639-2B codes. This is for better consistency. (#365)
 - The `series.json` file is not used anymore. Instead, series data is read from the new `series/` folder with its `.series.json` files (#364)
 - Series' international names are now searchable in control panel (#362)
 - When two KIDs are in conflict in your karaoke base, Karaoke Mugen will now tell you which ones are causing the conflict (#361)
@@ -24,7 +24,7 @@
 - Icons and names have been changed for consistency on the welcome screen (#356)
 - Your data files are now checked on startup to decide if a generation is needed or not. (#354)
 - Series are displayed in a more concise way in case of AMVs. (#350)
-- Karaoke and series lists in control panel are now properly paginated. Page position and searches are remembered when coming back to the list (#342)
+- Karaoke and series lists in control panel are now properly paginated. Page position and searches are remembered when coming back to the list after editing/creating a karaoke (#342)
 - When creating/editing a language, a text box allows to search for a language code.
 
 ### Fixes
@@ -36,6 +36,7 @@
 - Fixed Smart Shuffle
 - Fixed deleting favorites
 - Fixed editing series not updating i18n data
+- Fixed search field in control panel not registering the last character typed
 
 ## v2.3.2 "Ichika Imperturbable" - 03/09/2018
 
