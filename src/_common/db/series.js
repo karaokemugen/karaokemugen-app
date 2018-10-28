@@ -17,6 +17,13 @@ export const getSeries = (filterClauses, lang) => `SELECT s.pk_id_serie AS serie
 	ORDER BY i18n_name;
 	`;
 
+export const getSeriesKaraByKaraID = `SELECT ks1.fk_id_serie AS serie_id,
+(SELECT GROUP_CONCAT(ks.fk_id_kara, ',')
+  FROM kara_serie ks
+  WHERE ks.fk_id_serie = ks1.fk_id_serie) AS kara_ids
+FROM kara_serie ks1
+WHERE ks1.fk_id_kara = $kara_id`;
+
 export const getSerieByID = (lang) => `SELECT s.pk_id_serie AS serie_id,
 	s.name AS name,
 	COALESCE(

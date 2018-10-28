@@ -755,24 +755,24 @@ export async function checkUserdbIntegrity(uuid, config) {
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 
-export async function compareKarasChecksum() {
+export async function compareKarasChecksum(opts = {silent: false}) {
 	profile('compareChecksum');
 	const conf = getConfig();
 	const karaFiles = await extractAllKaraFiles();
 	const seriesFiles = await extractAllSeriesFiles();
 	let KMData = '';
-	createBar('Checking .karas...    ', karaFiles.length);
+	if (!opts.silent) createBar('Checking .karas...    ', karaFiles.length);
 	for (const karaFile of karaFiles) {
 		KMData += await asyncReadFile(karaFile, 'utf-8');
-		incrBar();
+		if (!opts.silent) incrBar();
 	}
-	stopBar();
-	createBar('Checking series...    ', karaFiles.length);
+	if (!opts.silent) stopBar();
+	if (!opts.silent) createBar('Checking series...    ', karaFiles.length);
 	for (const seriesFile of seriesFiles) {
 		KMData += await asyncReadFile(seriesFile, 'utf-8');
-		incrBar();
+		if (!opts.silent) incrBar();
 	}
-	stopBar();
+	if (!opts.silent) stopBar();
 	const karaDataSum = checksum(KMData);
 	profile('compareChecksum');
 	if (karaDataSum !== conf.appKaraDataChecksum) {

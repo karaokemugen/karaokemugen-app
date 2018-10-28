@@ -2,9 +2,9 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_common/utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
-import {extractAllKaraFiles, readAllKaras} from '../_admin/generate_karasdb';
+import {extractAllKaraFiles, readAllKaras, compareKarasChecksum} from '../_admin/generate_karasdb';
 import logger from 'winston';
-import {getOrAddSerieID} from './series';
+import {findSeriesKaraByKaraID, getOrAddSerieID, deleteSerie} from './series';
 import {ASSToLyrics} from '../_common/utils/ass';
 import {getPlaylistContentsMini} from './playlist';
 import {getAllKaras as getAllKarasDB,
@@ -168,6 +168,13 @@ export async function getRandomKara(playlist_id, filter, username) {
 export async function deleteKara(kara_id) {
 	const kara = await getKaraMini(kara_id);
 	if (!kara) throw `Unknown kara ID ${kara_id}`;
+	// Find out which series this karaoke is from, and delete them if no more karaoke depends on them
+	const serieKaraIDs = await findSeriesKaraByKaraID(kara_id);
+	// If kara_ids contains only one entry, it means the series won't have any more kara attached to it, so it's safe to remove it.
+	for (const serieKara of serieKaraIDs) {
+		if (serieKara.kara_ids.split(',').length <= 1) await deleteSerie(serieKara.serie_id);
+	}
+	// Remove files
 	const conf = getConfig();
 	const PathsMedias = conf.PathMedias.split('|');
 	const PathsSubs = conf.PathSubs.split('|');
@@ -187,7 +194,9 @@ export async function deleteKara(kara_id) {
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
 	}
-	return await deleteKaraDB(kara_id);
+	compareKarasChecksum({silent: true});
+	// Remove kara from database
+	await deleteKaraDB(kara_id);
 }
 
 export async function getKara(kara_id, username, lang) {
@@ -256,6 +265,7 @@ export async function createKaraInDB(kara) {
 		updateTags(kara),
 		updateSeries(kara)
 	]);
+	compareKarasChecksum({silent: true});
 }
 
 export async function editKaraInDB(kara) {
@@ -264,6 +274,7 @@ export async function editKaraInDB(kara) {
 		updateTags(kara),
 		updateSeries(kara)
 	]);
+	compareKarasChecksum({silent: true});
 }
 
 /**

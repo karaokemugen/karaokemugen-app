@@ -1,7 +1,8 @@
 import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
-import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
+import {selectSeriesKaraByKaraID, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
 import {profile} from '../_common/utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
+import { compareKarasChecksum } from '../_admin/generate_karasdb';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -9,6 +10,10 @@ export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	const ret = formatSeriesList(series.slice(from, from + size), from, series.length);
 	profile('getSeries');
 	return ret;
+}
+
+export async function findSeriesKaraByKaraID(kara_id) {
+	return await selectSeriesKaraByKaraID(kara_id);
 }
 
 export function formatSeriesList(seriesList, from, count) {
@@ -29,12 +34,12 @@ export async function getSerie(serie_id) {
 }
 
 export async function deleteSerie(serie_id) {
-	//Not removing from database, a regeneration will do the trick.
 	const serie = await getSerie(serie_id);
 	if (!serie) throw 'Series ID unknown';
 	await removeSeriesFile(serie.name);
 	await removeSerieInKaras(serie.name);
 	await removeSerie(serie_id);
+	compareKarasChecksum({silent: true});
 }
 
 export async function getOrAddSerieID(serieObj) {
@@ -52,18 +57,17 @@ export async function addSerie(serieObj) {
 		insertSeriei18n(newSerieID, serieObj),
 		writeSeriesFile(serieObj)
 	]);
+	compareKarasChecksum({silent: true});
 	return newSerieID;
 }
 
 export async function editSerie(serie_id,serieObj) {
 	const oldSerie = await getSerie(serie_id);
 	if (!oldSerie) throw 'Series ID unknown';
-	if (oldSerie.name !== serieObj.name) {
-		await replaceSerieInKaras(oldSerie.name, serieObj.name);
-		await removeSeriesFile(oldSerie.name);
-	}
-	return Promise.all([
+	if (oldSerie.name !== serieObj.name) await replaceSerieInKaras(oldSerie.name, serieObj.name);
+	await Promise.all([
 		updateSerie(serie_id, serieObj),
 		writeSeriesFile(serieObj)
 	]);
+	compareKarasChecksum({silent: true});
 }

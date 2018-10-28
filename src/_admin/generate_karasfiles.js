@@ -14,7 +14,6 @@ import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {check} from '../_common/utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import timestamp from 'unix-timestamp';
-import { compareKarasChecksum } from './generate_karasdb';
 
 export async function editKara(kara_id,kara) {
 	let newKara;
@@ -68,7 +67,6 @@ export async function editKara(kara_id,kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum();
 }
 
 export async function createKara(kara) {
@@ -81,7 +79,6 @@ export async function createKara(kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum();
 	return newKara;
 }
 
