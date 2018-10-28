@@ -47,10 +47,10 @@ export async function insertSerie(serieObj) {
 	return res.lastID;
 }
 
-export async function insertSeriei18n(serieObj) {
+export async function insertSeriei18n(serie_id, serieObj) {
 	for (const lang of Object.keys(serieObj.i18n)) {
 		await getUserDb().run(sql.insertSeriei18n, {
-			$id_serie: serieObj.serie_id,
+			$id_serie: serie_id,
 			$lang: lang,
 			$name: serieObj.i18n[lang],
 			$NORM_name: deburr(serieObj.i18n[lang])
@@ -61,6 +61,7 @@ export async function insertSeriei18n(serieObj) {
 export async function updateSerie(serie_id, serie) {
 	let aliases;
 	Array.isArray(serie.aliases) ? aliases = serie.aliases.join(',') : aliases = null;
+	console.log(serie);
 	await getUserDb().run(sql.updateSerie, {
 		$serie_id: serie_id,
 		$name: serie.name,
@@ -70,7 +71,7 @@ export async function updateSerie(serie_id, serie) {
 		$seriefile: `${sanitizeFile(serie.name)}.series.json`
 	});
 	await getUserDb().run(sql.deleteSeriesi18n, {$serie_id: serie_id});
-	return await insertSeriei18n(serie);
+	return await insertSeriei18n(serie_id, serie);
 }
 
 export async function checkOrCreateSerie(serie,lang) {

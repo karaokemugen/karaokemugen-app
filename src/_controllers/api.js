@@ -13,6 +13,7 @@ import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';
 
 //KM Modules
+import {getFeeds} from '../_webapp/proxy_feeds';
 import {getKMStats, shutdown} from '../_services/engine';
 import {sendCommand} from '../_services/player';
 import {updateSongsLeft} from '../_services/user';
@@ -416,7 +417,7 @@ export function APIControllerAdmin(router) {
 			}
 		});
 	router.route('/users')
-		/**
+	/**
  * @api {post} /admin/users Create new user (as admin)
  * @apiName PostUserAdmin
  * @apiVersion 2.1.0
@@ -3689,7 +3690,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 	router.route('/playlists/public/karas/:plc_id([0-9]+)/vote')
-		/**
+	/**
 	 * @api {post} /public/playlists/public/karas/:plc_id/vote Up/downvote a song in public playlist
 	 * @apiName PostVote
 	 * @apiVersion 2.3.0
@@ -3730,7 +3731,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 	router.route('/playlists/public/karas/:plc_id([0-9]+)')
-		/**
+	/**
 	 * @api {delete} /public/playlists/public/karas/:plc_id Delete song from public playlist
 	 * @apiName DeletePublicSong
 	 * @apiVersion 2.2.0
@@ -3773,7 +3774,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 	router.route('/playlists/current/karas/:plc_id([0-9]+)')
-		/**
+	/**
 	 * @api {delete} /public/playlists/current/karas/:plc_id Delete song from current playlist
 	 * @apiName DeleteCurrentSong
 	 * @apiVersion 2.2.0
@@ -4877,6 +4878,23 @@ export function APIControllerPublic(router) {
 				// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
 				res.json(validationErrors);
+			}
+		});
+	router.route('/newsfeed')
+		/**
+	 * @api {get} public/newsfeed Get latest KM news
+	 * @apiName GetNews
+	 * @apiVersion 2.4.0
+	 * @apiGroup Misc
+	 * @apiPermission public
+	 * @apiSuccess {Array} Array Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if
+	 */
+	 .get(getLang, async (req, res) => {
+			try {
+				const result = await getFeeds(req.lang);
+				res.json(result);
+			} catch(err) {
+				res.status(500).send(err);
 			}
 		});
 	router.route('/songpoll')

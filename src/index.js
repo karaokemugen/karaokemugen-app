@@ -57,7 +57,7 @@ async function main() {
 	const argv = parseArgs();
 	let config = await initConfig(appPath, argv);
 	console.log(chalk.blue(logo));
-	console.log('Karaoke Player & Manager - http://mugen.karaokes.moe');
+	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(config.VersionNo)} (${chalk.bold.green(config.VersionName)})`);
 	console.log('================================================================');
 	await parseCommandLineArgs(argv);
