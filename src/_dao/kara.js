@@ -85,7 +85,11 @@ export async function getKaraMini(id) {
 }
 
 export async function deleteKara(id) {
-	return await getUserDb().exec(sql.removeKara, { $kara_id: id});
+	return await Promise.all([
+		getUserDb().run(sql.deleteKara, { $kara_id: id}),
+		getUserDb().run(sql.deleteKaraSerie, { $kara_id: id}),
+		getUserDb().run(sql.deleteKaraTag, { $kara_id: id})
+	]);
 }
 
 export async function getKaraByKID(kid) {

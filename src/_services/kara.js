@@ -167,14 +167,27 @@ export async function getRandomKara(playlist_id, filter, username) {
 
 export async function deleteKara(kara_id) {
 	const kara = await getKaraMini(kara_id);
-	await deleteKaraDB(kara_id);
+	if (!kara) throw `Unknown kara ID ${kara_id}`;
 	const conf = getConfig();
 	const PathsMedias = conf.PathMedias.split('|');
 	const PathsSubs = conf.PathSubs.split('|');
 	const PathsKaras = conf.PathKaras.split('|');
-	await asyncUnlink(resolveFileInDirs(kara.mediafile, PathsMedias));
-	await asyncUnlink(resolveFileInDirs(kara.karafile, PathsKaras));
-	if (kara.subfile !== 'dummy.ass') await asyncUnlink(resolveFileInDirs(kara.subfile, PathsSubs));
+	try {
+		await asyncUnlink(await resolveFileInDirs(kara.mediafile, PathsMedias));
+	} catch(err) {
+		logger.warn(`[Kara] Non fatal : Removing mediafile ${kara.mediafile} failed : ${err}`);
+	}
+	try {
+		await asyncUnlink(await resolveFileInDirs(kara.karafile, PathsKaras));
+	} catch(err) {
+		logger.warn(`[Kara] Non fatal : Removing karafile ${kara.karafile} failed : ${err}`);
+	}
+	if (kara.subfile !== 'dummy.ass') try {
+		await asyncUnlink(await resolveFileInDirs(kara.subfile, PathsSubs));
+	} catch(err) {
+		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
+	}
+	return await deleteKaraDB(kara_id);
 }
 
 export async function getKara(kara_id, username, lang) {
