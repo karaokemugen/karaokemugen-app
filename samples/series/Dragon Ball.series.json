@@ -1,6 +1,6 @@
 {
   "header": {
-    "version": 2,
+    "version": 3,
     "description": "Karaoke Mugen Series File"
   },
   "series": {
@@ -10,6 +10,7 @@
     "name": "Dragon Ball",
     "i18n": {
       "jpn": "Dragon Ball"
-    }
+    },
+    "sid": "4987f7bf-3867-4ccc-a47c-4c27f756a28b"
   }
 }
