@@ -4,7 +4,9 @@ import {profile} from '../_common/utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import { compareKarasChecksum } from '../_admin/generate_karasdb';
 import uuidV4 from 'uuid/v4';
-import { sanitizeFile } from '../_common/utils/files';
+import { sanitizeFile, asyncUnlink, resolveFileInDirs } from '../_common/utils/files';
+import {basename} from 'path';
+import {getConfig} from '../_common/utils/config';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -58,9 +60,11 @@ export async function getOrAddSerieID(serieObj) {
 
 export async function integrateSeriesFile(file) {
 	const seriesFileData = await getDataFromSeriesFile(file);
+	seriesFileData.seriefile = basename(file);
 	const seriesDBData = await findSeriesBySID(seriesFileData.sid);
 	if (seriesDBData) {
 		await editSerie(seriesDBData.serie_id, seriesFileData);
+		if (seriesDBData.seriefile !== seriesFileData.seriefile) await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().PathSeries.split('|')));
 	} else {
 		await addSerie(seriesFileData);
 	}

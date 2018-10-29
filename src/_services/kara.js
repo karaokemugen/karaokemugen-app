@@ -27,12 +27,13 @@ import sample from 'lodash.sample';
 import {getConfig} from '../_common/utils/config';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {resolve} from 'path';
+import {basename, resolve} from 'path';
 import testJSON from 'is-valid-json';
 import {profile} from '../_common/utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 import { asyncUnlink, resolveFileInDirs } from '../_common/utils/files';
 import { getDataFromKaraFile } from '../_dao/karafile';
+
 
 export async function isAllKaras(karas) {
 	let err;
@@ -263,10 +264,14 @@ async function updateTags(kara) {
 
 export async function integrateKaraFile(file) {
 	const karaData = getDataFromKaraFile(file);
+	karaData.karafile = basename(file);
 	const karaDB = getKaraByKID(karaData.KID);
 	if (karaDB) {
 		karaData.kara_id = karaDB.kara_id;
 		await editKaraInDB(karaData);
+		if (karaDB.karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB.karafile, getConfig().PathKaras.split('|')));
+		if (karaDB.mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB.mediafile, getConfig().PathMedias.split('|')));
+		if (karaDB.subfile !== 'dummy.ass' && karaDB.subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB.subfile, getConfig().PathSubs.split('|')));
 	} else {
 		await createKaraInDB(karaData);
 	}
