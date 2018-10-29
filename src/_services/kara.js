@@ -2,7 +2,7 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_common/utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
-import {extractAllKaraFiles, readAllKaras, compareKarasChecksum} from '../_admin/generate_karasdb';
+import {compareKarasChecksum} from '../_admin/generate_karasdb';
 import logger from 'winston';
 import {findSeriesKaraByKaraID, getOrAddSerieID, deleteSerie} from './series';
 import {ASSToLyrics} from '../_common/utils/ass';
@@ -337,31 +337,6 @@ const karaConstraintsV3 = {
 	mediaduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	version: {numericality: {onlyInteger: true, equality: 3}}
 };
-
-export async function validateKaras() {
-	try {
-		const karaFiles = await extractAllKaraFiles();
-		const karas = await readAllKaras(karaFiles);
-		verifyKIDsUnique(karas);
-		if (karas.some((kara) => {
-			return kara.error;
-		})) throw 'One kara failed validation process';
-	} catch(err) {
-		throw err;
-	}
-}
-
-function verifyKIDsUnique(karas) {
-	const KIDs = [];
-	karas.forEach((kara) => {
-		if (!KIDs.includes(kara.KID)) {
-			KIDs.push(kara.KID);
-		} else {
-			logger.error(`[Kara] KID ${kara.KID} is not unique : duplicate found in karaoke ${kara.lang} - ${kara.series} - ${kara.type}${kara.order} - ${kara.title}`);
-			throw `Duplicate KID found : ${kara.KID}`;
-		}
-	});
-}
 
 export function karaDataValidationErrors(karaData) {
 	initValidators();
