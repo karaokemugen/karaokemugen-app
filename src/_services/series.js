@@ -2,6 +2,8 @@ import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
 import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
 import {profile} from '../_common/utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
+import uuidV4 from 'uuid/v4';
+import { sanitizeFile } from '../_common/utils/files';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -47,6 +49,8 @@ export async function getOrAddSerieID(serieObj) {
 
 export async function addSerie(serieObj) {
 	if (await selectSerieByName(serieObj.name)) throw 'Series original name already exists';
+	serieObj.sid = uuidV4();
+	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	const newSerieID = await insertSerie(serieObj);
 	await Promise.all([
 		insertSeriei18n(newSerieID, serieObj),
@@ -62,6 +66,7 @@ export async function editSerie(serie_id,serieObj) {
 		await replaceSerieInKaras(oldSerie.name, serieObj.name);
 		await removeSeriesFile(oldSerie.name);
 	}
+	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	return Promise.all([
 		updateSerie(serie_id, serieObj),
 		writeSeriesFile(serieObj)

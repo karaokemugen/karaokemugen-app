@@ -40,7 +40,9 @@ export async function insertSerie(serieObj) {
 		$name: serieObj.name,
 		$NORM_name: deburr(serieObj.name),
 		$altname: aliases,
-		$NORM_altname: deburr(aliases)
+		$NORM_altname: deburr(aliases),
+		$sid: serieObj.sid,
+		$seriefile: serieObj.seriefile
 	});
 	return res.lastID;
 }
@@ -59,35 +61,16 @@ export async function insertSeriei18n(serie_id, serieObj) {
 export async function updateSerie(serie_id, serie) {
 	let aliases;
 	Array.isArray(serie.aliases) ? aliases = serie.aliases.join(',') : aliases = null;
-	console.log(serie);
 	await getUserDb().run(sql.updateSerie, {
 		$serie_id: serie_id,
 		$name: serie.name,
 		$NORM_name: deburr(serie.name),
 		$altname: aliases,
-		$NORM_altname: deburr(aliases)
+		$NORM_altname: deburr(aliases),
+		$seriefile: serie.seriefile
 	});
 	await getUserDb().run(sql.deleteSeriesi18n, {$serie_id: serie_id});
 	return await insertSeriei18n(serie_id, serie);
-}
-
-export async function checkOrCreateSerie(serie,lang) {
-	const serieDB = await getUserDb().get(sql.getSerieByName, {
-		$name: serie
-	});
-	if (serieDB) return serieDB.serie_id;
-	//Series does not exist, create it.
-	const res = await getUserDb().run(sql.insertSerie, {
-		$name: serie,
-		$NORM_name: deburr(serie)
-	});
-	await getUserDb().run(sql.insertSeriei18nDefault, {
-		$id_serie: res.lastID,
-		$lang: lang,
-		$name: serie,
-		$NORM_name: deburr(serie)
-	});
-	return res.lastID;
 }
 
 export async function updateKaraSeries(kara_id, series) {

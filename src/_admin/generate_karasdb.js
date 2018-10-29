@@ -13,7 +13,7 @@ import {
 	selectBLCTags, selectKaras, selectPlaylistKaras,
 	selectTags, selectViewcountKaras, selectRequestKaras,
 	selectWhitelistKaras,
-	updateSeriesAltNames
+	updateSeries
 } from '../_common/db/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
@@ -122,6 +122,7 @@ export async function readAllSeries(seriesFiles) {
 
 async function processSerieFile(seriesFile) {
 	const data = await getDataFromSeriesFile(seriesFile);
+	data.seriefile = basename(seriesFile);
 	incrBar();
 	return data;
 }
@@ -208,7 +209,7 @@ function checkDuplicateSeries(series) {
 			return s.name === serie.name;
 		});
 		if (search) {
-			// One KID is duplicated, we're going to throw an error.
+			// One series is duplicated, we're going to throw an error.
 			errors.push({
 				name: serie.name
 			});
@@ -218,6 +219,26 @@ function checkDuplicateSeries(series) {
 	if (errors.length > 0) throw `One or several series are duplicated in your database : ${JSON.stringify(errors,null,2)}. Please fix this by removing the duplicated series file(s) and retry generating your database.`;
 }
 
+function checkDuplicateSIDs(series) {
+	let searchSeries = [];
+	let errors = [];
+	for (const serie of series) {
+		// Find out if our kara exists in our list, if not push it.
+		const search = searchSeries.find(s => {
+			return s.sid === serie.sid;
+		});
+		if (search) {
+			// One SID is duplicated, we're going to throw an error.
+			errors.push({
+				sid: serie.sid,
+				serie1: serie.seriefile,
+				serie2: search.seriefile
+			});
+		}
+		searchSeries.push({ sid: serie.sid, karafile: serie.seriefile });
+	}
+	if (errors.length > 0) throw `One or several SIDs are duplicated in your database : ${JSON.stringify(errors,null,2)}. Please fix this by removing the duplicated serie(s) and retry generating your database.`;
+}
 
 function getSeries(kara) {
 	const series = new Set();
@@ -262,10 +283,12 @@ function getAllSeries(karas, seriesData) {
 }
 
 function prepareSerieInsertData(serie, index) {
+	//UUID is generated anyway, will be updated through series files later
 	return {
 		$id_serie: index,
 		$serie: serie,
-		$NORM_serie: deburr(serie)
+		$NORM_serie: deburr(serie),
+		$sid: uuidV4()
 	};
 }
 
@@ -300,15 +323,27 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 
 async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 
-	const altNameData = [];
+	const data = [];
 	const i18nData = [];
 
 	for (const serie of seriesData) {
-		if (serie.aliases) altNameData.push({
-			$serie_altnames: serie.aliases.join(','),
-			$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
-			$serie_name: serie.name
-		});
+		if (serie.aliases) {
+			data.push({
+				$serie_altnames: serie.aliases.join(','),
+				$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
+				$serie_name: serie.name,
+				$serie_file: serie.seriefile,
+				$sid: serie.sid
+			});
+		} else {
+			data.push({
+				$serie_altnames: null,
+				$serie_altnamesnorm: null,
+				$serie_name: serie.name,
+				$serie_file: serie.seriefile,
+				$sid: serie.sid
+			});
+		}
 		if (serie.i18n) {
 			for (const lang of Object.keys(serie.i18n)) {
 				i18nData.push({
@@ -324,9 +359,9 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 	for (const serie of mapSeries.keys()) {
 		if (!findSeries(serie, seriesData)) {
 			// Print a warning and push some basic data so the series can be searchable at least
-			logger.warn(`[Gen] Series "${serie}" is not in the series file`);
+			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
 			if (getConfig().optStrict) strictModeError(serie);
-			altNameData.push({
+			data.push({
 				$serie_name: serie
 			});
 			i18nData.push({
@@ -338,7 +373,7 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 		}
 	}
 	return {
-		altNameData: altNameData,
+		data: data,
 		i18nData: i18nData
 	};
 }
@@ -551,7 +586,7 @@ export async function run(config) {
 		createBar('Reading .series files', seriesFiles.length);
 		const seriesData = await readAllSeries(seriesFiles);
 		checkDuplicateSeries(seriesData);
-
+		checkDuplicateSIDs(seriesData);
 		// Preparing data to insert
 		stopBar();
 		logger.info('[Gen] Data files processed, creating database');
@@ -563,7 +598,7 @@ export async function run(config) {
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
 		const sqlInsertKarasSeries = prepareAllKarasSeriesInsertData(seriesMap);
 		const seriesAltNamesData = await prepareAltSeriesInsertData(seriesData, seriesMap);
-		const sqlUpdateSeriesAltNames = seriesAltNamesData.altNameData;
+		const sqlUpdateSeries = seriesAltNamesData.data;
 		const sqlInserti18nSeries = seriesAltNamesData.i18nData;
 		const tags = getAllKaraTags(karas);
 		const sqlInsertTags = prepareAllTagsInsertData(tags.allTags);
@@ -581,7 +616,7 @@ export async function run(config) {
 		]);
 		await Promise.all([
 			runSqlStatementOnData(db.prepare(inserti18nSeries), sqlInserti18nSeries),
-			runSqlStatementOnData(db.prepare(updateSeriesAltNames), sqlUpdateSeriesAltNames)
+			runSqlStatementOnData(db.prepare(updateSeries), sqlUpdateSeries)
 		]);
 
 		await db.run('commit');
@@ -745,24 +780,24 @@ export async function checkUserdbIntegrity(uuid, config) {
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 
-export async function compareKarasChecksum() {
+export async function compareKarasChecksum(opts = {silent: false}) {
 	profile('compareChecksum');
 	const conf = getConfig();
 	const karaFiles = await extractAllKaraFiles();
 	const seriesFiles = await extractAllSeriesFiles();
 	let KMData = '';
-	createBar('Checking .karas...    ', karaFiles.length);
+	if (!opts.silent) createBar('Checking .karas...   ', karaFiles.length);
 	for (const karaFile of karaFiles) {
 		KMData += await asyncReadFile(karaFile, 'utf-8');
-		incrBar();
+		if (!opts.silent) incrBar();
 	}
-	stopBar();
-	createBar('Checking series...    ', karaFiles.length);
+	if (!opts.silent) stopBar();
+	if (!opts.silent) createBar('Checking series...   ', karaFiles.length);
 	for (const seriesFile of seriesFiles) {
 		KMData += await asyncReadFile(seriesFile, 'utf-8');
-		incrBar();
+		if (!opts.silent) incrBar();
 	}
-	stopBar();
+	if (!opts.silent) stopBar();
 	const karaDataSum = checksum(KMData);
 	profile('compareChecksum');
 	if (karaDataSum !== conf.appKaraDataChecksum) {
