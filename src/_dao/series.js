@@ -29,6 +29,10 @@ export async function selectAllSeries(filter, lang) {
 	return series;
 }
 
+export async function selectSeriesBySID(sid) {
+	return await getUserDb().get(sql.getSerieBySID, {$sid: sid});
+}
+
 export async function selectSeriesKaraByKaraID(id) {
 	return await getUserDb().all(sql.getSeriesKaraByKaraID, {$kara_id: id});
 }

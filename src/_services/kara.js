@@ -18,7 +18,8 @@ import {getAllKaras as getAllKarasDB,
 	updateKara,
 	getKaraHistory as getKaraHistoryDB,
 	getKaraViewcounts as getKaraViewcountsDB,
-	addViewcount
+	addViewcount,
+	getKaraByKID
 } from '../_dao/kara';
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
@@ -31,6 +32,7 @@ import testJSON from 'is-valid-json';
 import {profile} from '../_common/utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 import { asyncUnlink, resolveFileInDirs } from '../_common/utils/files';
+import { getDataFromKaraFile } from '../_dao/karafile';
 
 export async function isAllKaras(karas) {
 	let err;
@@ -259,22 +261,31 @@ async function updateTags(kara) {
 	return await updateKaraTags(kara.kara_id, tags);
 }
 
+export async function integrateKaraFile(file) {
+	const karaData = getDataFromKaraFile(file);
+	const karaDB = getKaraByKID(karaData.KID);
+	if (karaDB) {
+		karaData.kara_id = karaDB.kara_id;
+		await editKaraInDB(karaData);
+	} else {
+		await createKaraInDB(karaData);
+	}
+}
+
 export async function createKaraInDB(kara) {
 	kara.kara_id = await addKara(kara);
 	await Promise.all([
 		updateTags(kara),
 		updateSeries(kara)
 	]);
-	compareKarasChecksum({silent: true});
 }
 
 export async function editKaraInDB(kara) {
-	await updateKara(kara);
 	await Promise.all([
 		updateTags(kara),
-		updateSeries(kara)
+		updateSeries(kara),
+		updateKara(kara)
 	]);
-	compareKarasChecksum({silent: true});
 }
 
 /**

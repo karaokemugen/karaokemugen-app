@@ -14,6 +14,7 @@ import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {check} from '../_common/utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import timestamp from 'unix-timestamp';
+import { compareKarasChecksum } from './generate_karasdb';
 
 export async function editKara(kara_id,kara) {
 	let newKara;
@@ -62,6 +63,7 @@ export async function editKara(kara_id,kara) {
 	newKara.data.karafile = basename(newKara.file);
 	try {
 		await editKaraInDB(newKara.data);
+		compareKarasChecksum({silent: true});
 	} catch(err) {
 		const errMsg = `${newKara.data.karafile} file generation is OK, but unable to edit karaoke in live database. Please regenerate database entirely if you wish to see your modifications : ${err}`;
 		logger.warn(`[KaraGen] ${errMsg}`);
@@ -140,6 +142,7 @@ async function generateKara(kara, opts) {
 		kara.author.forEach((e,i) => kara.author[i] = e.trim());
 		if (!kara.order) kara.order = '';
 		newKara = await importKara(newMediaFile, newSubFile, kara);
+		compareKarasChecksum({silent: true});
 		return newKara;
 	} catch(err) {
 		logger.error(`[Karagen] Error during generation : ${err}`);

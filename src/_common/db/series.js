@@ -40,6 +40,14 @@ export const getSerieByID = (lang) => `SELECT s.pk_id_serie AS serie_id,
 	WHERE serie_id = $serie_id
 	`;
 
+export const getSerieBySID = `SELECT s.pk_id_serie AS serie_id,
+	s.name AS name,
+	s.altname AS aliases,
+	s.seriefile AS seriefile,
+	(select json_group_object(lang,name) from serie_lang where fk_id_serie = s.pk_id_serie) as i18n
+	FROM serie s
+	WHERE s.sid = $sid
+	`;
 
 export const getSerieByName = `SELECT pk_id_serie AS serie_id
 						FROM karasdb.serie
