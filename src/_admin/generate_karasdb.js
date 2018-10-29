@@ -792,7 +792,7 @@ export async function compareKarasChecksum(opts = {silent: false}) {
 		if (!opts.silent) incrBar();
 	}
 	if (!opts.silent) stopBar();
-	if (!opts.silent) createBar('Checking series...   ', karaFiles.length);
+	if (!opts.silent) createBar('Checking series...   ', seriesFiles.length);
 	for (const seriesFile of seriesFiles) {
 		KMData += await asyncReadFile(seriesFile, 'utf-8');
 		if (!opts.silent) incrBar();
