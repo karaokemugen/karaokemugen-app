@@ -3,6 +3,8 @@ import {selectSeriesKaraByKaraID, insertSeriei18n, removeSerie, updateSerie, ins
 import {profile} from '../_common/utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import { compareKarasChecksum } from '../_admin/generate_karasdb';
+import uuidV4 from 'uuid/v4';
+import { sanitizeFile } from '../_common/utils/files';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -52,6 +54,8 @@ export async function getOrAddSerieID(serieObj) {
 
 export async function addSerie(serieObj) {
 	if (await selectSerieByName(serieObj.name)) throw 'Series original name already exists';
+	serieObj.sid = uuidV4();
+	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	const newSerieID = await insertSerie(serieObj);
 	await Promise.all([
 		insertSeriei18n(newSerieID, serieObj),
@@ -65,6 +69,7 @@ export async function editSerie(serie_id,serieObj) {
 	const oldSerie = await getSerie(serie_id);
 	if (!oldSerie) throw 'Series ID unknown';
 	if (oldSerie.name !== serieObj.name) await replaceSerieInKaras(oldSerie.name, serieObj.name);
+	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	await Promise.all([
 		updateSerie(serie_id, serieObj),
 		writeSeriesFile(serieObj)

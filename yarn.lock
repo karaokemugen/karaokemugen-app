@@ -1344,9 +1344,9 @@ can-promise@^0.0.1:
     window-or-global "^1.0.1"
 
 caniuse-lite@^1.0.30000844:
-  version "1.0.30000899"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000899.tgz#6febdbbc388a7982f620ee0e3d09aab0c061389e"
-  integrity sha512-enC3zKfUCJxxwvUIsBkbHd54CtJw1KtIWvrK0JZxWD/fEN2knHaai45lndJ4xXAkyRAPyk60J3yagkKDWhfeMA==
+  version "1.0.30000900"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000900.tgz#015cfe37897a3386a3075a914498800c29afe77e"
+  integrity sha512-xDVs8pBFr6bzq9pXUkLKpGQQnzsF/l6/yX38UnCkTcUcwC0rDl1NGZGildcJVTU+uGBxfsyniK/ZWagPNn1Oqw==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -2262,10 +2262,10 @@ eslint-module-utils@^2.2.0:
     debug "^2.6.8"
     pkg-dir "^1.0.0"
 
-eslint-plugin-flowtype@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-flowtype/-/eslint-plugin-flowtype-3.0.0.tgz#4b72588d8a5a5c836439752fe52e8e0f4b9954df"
-  integrity sha512-84utjHfQeykSyNuhO885pp18yGKYuK2S03EFbhl/BpXR9jk0TABnDP/KhUAqDjjkB43mxK2WZjJesrhnncvR9Q==
+eslint-plugin-flowtype@3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-flowtype/-/eslint-plugin-flowtype-3.1.4.tgz#c6c9c514b8c01579e6621b51d83549d5db802cac"
+  integrity sha512-vTWZcbE1NZaSEJwD2hXFFwDi2TidNLANf2jfsl+Mb43x2g/1TZmf/VVexljNrbbRw46lF6+Hexq10hF6OFZVEQ==
   dependencies:
     lodash "^4.17.10"
 
@@ -2336,7 +2336,7 @@ eslint-visitor-keys@^1.0.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
   integrity sha512-qzm/XxIbxm/FHyH341ZrbnMUpe+5Bocte9xkmFMzPMjRaZMcXww+MpBptFvtU+79L362nqiLhekCxCxDPaUMBQ==
 
-eslint@^5.7.0:
+eslint@^5.8.0:
   version "5.8.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.8.0.tgz#91fbf24f6e0471e8fdf681a4d9dd1b2c9f28309b"
   integrity sha512-Zok6Bru3y2JprqTNm14mgQ15YQu/SMDkWdnmHfFg770DIUlmMFd/gqqzCHekxzjHZJxXv3tmTpH0C1icaYJsRQ==
@@ -2669,7 +2669,7 @@ file-stream-rotator@^0.4.1:
   dependencies:
     moment "^2.11.2"
 
-file-type@^10.1.0:
+file-type@^10.2.0:
   version "10.2.0"
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-10.2.0.tgz#91177ceb904963e2be53add360b213c2dc273f64"
   integrity sha512-eqX81S1PWdLDPW39yyB214TVVOsUQjSmPcyUjeVH6ksH+94Y2YA/ItiIwa53rJiSofJZLK6lGsuCE3rwt0vp4w==
@@ -6439,7 +6439,7 @@ winston-compat@^0.1.4:
     logform "^1.6.0"
     triple-beam "^1.2.0"
 
-winston-daily-rotate-file@^3.3.3:
+winston-daily-rotate-file@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/winston-daily-rotate-file/-/winston-daily-rotate-file-3.4.0.tgz#6f087d3982e92f9051a2e5005acfcf8368cb3e0b"
   integrity sha512-I7nDKxyj651cBRxVO1XNlmCgJb9lfJ2dgU7knru44MD5cRriJT89z4eJuGwMtn/Rd0eRYFFB4LReDvxNUuaKjw==

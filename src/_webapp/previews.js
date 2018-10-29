@@ -115,7 +115,6 @@ export async function isPreviewAvailable(videofile) {
 		return basename(previewfilename);
 	} catch(err) {
 		//This is not a fatal error.
-		logger.warn(`[Previews] Error checking if preview available : ${err}`);
 		return undefined;
 	}
 }

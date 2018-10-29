@@ -10,7 +10,8 @@ export const getSeries = (filterClauses, lang) => `SELECT s.pk_id_serie AS serie
 	s.altname AS aliases,
 	s.seriefile AS seriefile,
 	(select json_group_object(lang,name) from serie_lang where fk_id_serie = s.pk_id_serie) as i18n,
-	(select group_concat(NORM_name) from serie_lang where fk_id_serie = s.pk_id_serie) as NORM_i18n_name
+	(select group_concat(NORM_name) from serie_lang where fk_id_serie = s.pk_id_serie) as NORM_i18n_name,
+	sid AS SID
 	FROM serie s
 	WHERE 1 = 1
 	${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
@@ -33,7 +34,8 @@ export const getSerieByID = (lang) => `SELECT s.pk_id_serie AS serie_id,
 	AS i18n_name,
 	s.altname AS aliases,
 	s.seriefile AS seriefile,
-	(select json_group_object(lang,name) from serie_lang where fk_id_serie = s.pk_id_serie) as i18n
+	(select json_group_object(lang,name) from serie_lang where fk_id_serie = s.pk_id_serie) as i18n,
+	sid AS SID
 	FROM serie s
 	WHERE serie_id = $serie_id
 	`;
@@ -44,8 +46,8 @@ export const getSerieByName = `SELECT pk_id_serie AS serie_id
 						WHERE name = $name
 						`;
 
-export const insertSerie = `INSERT INTO karasdb.serie(name, NORM_name, altname, NORM_altname, seriefile)
-						VALUES($name, $NORM_name, $altname, $NORM_altname, $seriefile)
+export const insertSerie = `INSERT INTO karasdb.serie(name, NORM_name, altname, NORM_altname, sid, seriefile)
+						VALUES($name, $NORM_name, $altname, $NORM_altname, $sid, $seriefile)
 						`;
 
 export const updateSerie = `UPDATE karasdb.serie
