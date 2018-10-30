@@ -38,10 +38,10 @@ class Database extends Component {
 		socket.on('generationProgress', (data) => {
 			if (!data.text) data.text = this.state.generationProgress.text;
 			const percentage = Math.floor((data.value / data.total) * 100);
-			if (percentage !== this.state.generationProgress.percentage) {
+			if (data.text !== this.state.generationProgress.text || percentage !== this.state.generationProgress.percentage) {
 				this.setState({
 					generationProgress: {
-						text: `Task : ${data.text}`,
+						text: data.text,
 						value: data.value,
 						total: data.total,
 						percentage
@@ -52,10 +52,10 @@ class Database extends Component {
 		socket.on('downloadProgress', (data) => {
 			if (!data.text) data.text = this.state.downloadProgress.text;
 			const percentage = Math.floor((data.value / data.total) * 100);
-			if (percentage !== this.state.downloadProgress.percentage) {
+			if (data.text !== this.state.downloadProgress.text || percentage !== this.state.downloadProgress.percentage) {
 				this.setState({
 					downloadProgress: {
-						text: `${data.text}`,
+						text: data.text,
 						value: data.value,
 						total: data.total,
 						percentage
@@ -69,7 +69,7 @@ class Database extends Component {
 			if (data.text !== this.state.downloadBatchProgress.text || percentage !== this.state.downloadBatchProgress.percentage) {
 				this.setState({
 					downloadBatchProgress: {
-						text: `${data.text}`,
+						text: data.text,
 						value: data.value,
 						total: data.total,
 						percentage
@@ -171,6 +171,7 @@ class Database extends Component {
 				<h1>Progress</h1>
 				<h2>Generation</h2>
 				{this.state.generationProgress.text}<br/>
+				<Progress percent={this.state.generationProgress.percentage} />
 				<h2>Base update</h2>
 				{this.state.downloadProgress.text}<br/>
 				<Progress percent={this.state.downloadProgress.percentage} />

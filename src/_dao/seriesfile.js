@@ -3,15 +3,17 @@ import testJSON from 'is-valid-json';
 import {resolvedPathSeries, getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import { check, initValidators } from '../_common/utils/validators';
+import {uuidRegexp} from '../_services/constants';
 
 const header = {
-	version: 2,
+	version: 3,
 	description: 'Karaoke Mugen Series File'
 };
 
-const seriesConstraintsV2 = {
+const seriesConstraintsV3 = {
 	name: {presence: {allowEmpty: false}},
 	aliases: {seriesAliasesValidator: true},
+	sid: {presence: true, format: uuidRegexp},
 	i18n: {seriesi18nValidator: true}
 };
 
@@ -39,7 +41,7 @@ export async function getDataFromSeriesFile(file) {
 
 export function seriesDataValidationErrors(seriesData) {
 	initValidators();
-	return check(seriesData, seriesConstraintsV2);
+	return check(seriesData, seriesConstraintsV3);
 }
 
 export function findSeries(serie, seriesData) {

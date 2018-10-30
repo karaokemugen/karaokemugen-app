@@ -20,8 +20,6 @@ class SerieForm extends Component {
 				this.state[`lang_${lang}`] = this.props.serie.i18n[lang];
 			});
 		}
-		console.log(this.state);
-		console.log(this.props.serie);
 	}
 
 	componentDidMount() {
@@ -205,6 +203,11 @@ class SerieForm extends Component {
 				<Form.Item>
 					{getFieldDecorator('i18n', {
 						initialValue: this.props.serie.i18n
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('kid', {
+						initialValue: this.props.serie.sid
 					})(<Input type="hidden" />)}
 				</Form.Item>
 			</Form>

@@ -1,6 +1,6 @@
 # Versions
 
-## v2.4.0 "Juri Judicieuse" - 06/10/2018
+## v2.4.0 "Juri Judicieuse" - 06/11/2018
 
 ### New features
 
