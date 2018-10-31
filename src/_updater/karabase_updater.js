@@ -199,7 +199,6 @@ async function compareMedias(localFiles, remoteFiles) {
 	for (const localFile of localFiles) {
 		const filePresent = remoteFiles.some(remoteFile => {
 			return localFile.name === remoteFile.basename;
-
 		});
 		if (!filePresent) removedFiles.push(localFile.name);
 	}
