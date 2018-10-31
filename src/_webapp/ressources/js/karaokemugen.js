@@ -185,7 +185,7 @@ var settingsNotUpdated;
 						code = i18n.__('UNKNOWN_ERROR');
 						errMessage = res.responseText;
 					}
-					if(hideErrorMessage.indexOf(res.responseJSON.code) === -1) {
+					if(!res.responseJSON || hideErrorMessage.indexOf(res.responseJSON.code) === -1) {
 						displayMessage('warning', code, errMessage);
 					}
 				}
@@ -231,7 +231,7 @@ var settingsNotUpdated;
 		} else if (mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			initApp();
+			if(!welcomeScreen) initApp();
 			$('#wlcm_login > span').text(logInfos.username);
 			$('#wlcm_disconnect').show();
 		} else {
