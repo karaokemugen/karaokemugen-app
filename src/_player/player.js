@@ -99,12 +99,12 @@ async function loadBackground(mode) {
 		const posX = Math.floor(dimensions.width*0.015);
 		const posY = Math.floor(dimensions.height*0.015);
 		const qrCode = resolve(conf.appPath,conf.PathTemp,'qrcode.png').replace(/\\/g,'/');
-		videofilter = `lavfi-complex="movie=\\'${qrCode}\\'[logo]; [logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1] overlay=${posX}:${posY}[vo]"`;
+		videofilter = `lavfi-complex=movie=\\'${qrCode}\\'[logo];[logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1]overlay=${posX}:${posY}[vo]`;
 	}
 	try {
 		logger.debug(`[Player] videofilter : ${videofilter}`);
 		let loads = [
-			player.load(backgroundImageFile,mode,videofilter)
+			player.load(backgroundImageFile,mode,[videofilter])
 		];
 		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile,mode,videofilter));
 		await Promise.all(loads);
@@ -226,8 +226,8 @@ async function startmpv() {
 			binary: conf.BinmpvPath,
 			socket: socket,
 			time_update: 1,
-			verbose: false,
-			debug: false,
+			verbose: true,
+			debug: true,
 		},
 		mpvOptions
 	);
