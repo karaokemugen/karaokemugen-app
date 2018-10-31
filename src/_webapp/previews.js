@@ -45,8 +45,6 @@ async function extractPreviewFiles(previewDir) {
 
 
 export async function cleanUpPreviewsFolder(config) {
-	//FIXME : This function isn't called anymore
-	// Needs some fixing before being called again.
 	const conf = config || getConfig();
 	logger.debug('[Previews] Cleaning up preview generation');
 	const videofiles = await extractVideoFiles(resolve(conf.appPath,conf.PathMedias));
