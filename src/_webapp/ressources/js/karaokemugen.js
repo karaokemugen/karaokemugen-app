@@ -1732,7 +1732,9 @@ var settingsNotUpdated;
 
 		var range = getPlaylistRange(idPlaylist);
 
-		var max = range.from + $('#playlist' + side + ' > li[idkara]').length;
+		var max;
+		if (idPlaylist == -1) max = dashboard.attr('karacount');
+		else max = range.from + $('#playlist' + side + ' > li[idkara]').length;
 
 		var plInfos = '';
 		if(idPlaylist) {
