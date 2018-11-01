@@ -102,7 +102,7 @@
     "minimist": "^1.2.0",
     "multer": "^1.4.1",
     "node-id3": "^0.1.7",
-    "node-mpv": "github:00SteinsGate00/Node-MPV#Node-MPV-2",
+    "node-mpv": "github:AxelTerizaki/Node-MPV#Node-MPV-2",
     "opn": "^5.4.0",
     "os-locale": "^3.0.1",
     "passport": "^0.4.0",

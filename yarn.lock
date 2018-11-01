@@ -4581,9 +4581,9 @@ node-id3@^0.1.7:
   dependencies:
     iconv-lite "^0.4.15"
 
-"node-mpv@github:00SteinsGate00/Node-MPV#Node-MPV-2":
+"node-mpv@github:AxelTerizaki/Node-MPV#Node-MPV-2":
   version "1.1.2"
-  resolved "https://codeload.github.com/00SteinsGate00/Node-MPV/tar.gz/95907f5d3c27fbf0c56c57f59bd9f04da27e24a9"
+  resolved "https://codeload.github.com/AxelTerizaki/Node-MPV/tar.gz/53504b9e7c035232857bdbcf7cc0b2fe06d38bf0"
   dependencies:
     cuid "^2.1.1"
 
