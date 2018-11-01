@@ -57,6 +57,7 @@ var dragHandleHtml;
 var playKaraHtml;
 var serieMoreInfoButton;
 
+var karas;
 var listTypeBlc;
 var tagsTypesList;
 var plData;
@@ -994,7 +995,6 @@ var settingsNotUpdated;
 		locale: navigator.languages[0].substring(0, 2),
 		extension: '.json'
 	});
-
 	socket = io();
 
 	isTouchScreen =  'ontouchstart' in document.documentElement || query.TOUCHSCREEN != undefined;
@@ -1207,22 +1207,7 @@ var settingsNotUpdated;
 		var range = getPlaylistRange(idPlaylist);
 		from = range.from;
 		to = range.to;
-		
-		if(false && idPlaylist == -1 && playlistContent.length > 2) { // TODO cleaner way of checking if data is already there please
-				
-				filterUp = filter.toUpperCase();
-				newHtml = '';
-				playlist.find('li').each((k, e) => {
-					console.log($(e).find('.contentDiv').text().toUpperCase());
-					if ($(e).find('.contentDiv').text().toUpperCase().indexOf(filterUp) > -1) {
-						newHtml += e.outerHTML;
-						console.log(e, e.outerHTML);
-					} 
-				});
-				console.log(newHtml);
-				clusterize[0].update(newHtml)
-			return true;
-		}
+	
 		fromTo += '&from=' + from + '&size=' + pageSize;
 
 		// setup variables depending on which playlist is selected : -1 = database kara list, -2 = blacklist, -3 = whitelist, -4 = blacklist criterias
@@ -1256,286 +1241,307 @@ var settingsNotUpdated;
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
 		//var start = window.performance.now();
 		var async = !(isTouchScreen && isChrome && scrollingType);
-		ajaxSearch[url] = $.ajax({  url: urlFiltre,
-			type: 'GET', async: async,
-			dataType: 'json' })
-			.done(function (response) {
-				//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
-				//var end = window.performance.now();
-				//alert(end - start);
-				var htmlContent = '', data;
 
-				if(idPlaylist != -4) {	// general case
-					data = response.content;
-					if(response.infos) {
-						dashboard.attr('karacount', response.infos.count );
-						setPlaylistRange(idPlaylist, response.infos.from,  response.infos.to);
-					}
+		var fetchingData = $.Deferred();
+		var response;
+		if(idPlaylist == -1) {
+			if(filter) {
+				var content = karas.content.filter(kara => textSearch(kara, filter));
+				response = { infos : {count: content.length, from: 0, to: content.length}, content: content };
+			} else {
+				response = karas;
+			}
 
-					for (var key in data) {
-						// build the kara line
-						if (data.hasOwnProperty(key)) {
-							var kara = data[key];
-							if (kara.language === null) kara.language = '';
+			fetchingData.resolve();
+		} else {
+			ajaxSearch[url] = $.ajax({  url: urlFiltre,
+				type: 'GET', async: async,
+				dataType: 'json' })
+				.done(function (res) {
+					response = res;
+					fetchingData.resolve();
+				});
+		}
+		
+		fetchingData.done(() => {
+		
+			//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
+			//var end = window.performance.now();
+			//alert(end - start);
+			var data, rows = [];
 
-							var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
-							+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
-							+	(idPlaylist > 0 || idPlaylist == -5 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
-							+	kara.pos + '" data-username="' + kara.username + '"' : '')
-							+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
-							+	(kara.flag_dejavu ? 'dejavu' : '' ) + ' '
-							+	(kara.username == logInfos.username ? 'user' : '' );
+			if(idPlaylist != -4) {	// general case
+				data = response.content;
+				if(response.infos) {
+					dashboard.attr('karacount', response.infos.count );
+					setPlaylistRange(idPlaylist, response.infos.from,  response.infos.to);
+				}
 
-							var badges = '';
+				for (var key in data) {
+					// build the kara line
+					if (data.hasOwnProperty(key)) {
+						var kara = data[key];
+						var htmlLine = '';
 
-							if(kara.misc) {
-								var tagArray = kara.misc.split(',');
-								tagArray.sort(function(a, b){  
-									return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
-								  });
-								tagArray.forEach(function(tag) {
-									if (tag !== 'NO_TAG') {
-										badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
-									}
+						if (kara.language === null) kara.language = '';
+
+						var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
+						+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
+						+	(idPlaylist > 0 || idPlaylist == -5 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
+						+	kara.pos + '" data-username="' + kara.username + '"' : '')
+						+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
+						+	(kara.flag_dejavu ? 'dejavu' : '' ) + ' '
+						+	(kara.username == logInfos.username ? 'user' : '' );
+
+						var badges = '';
+
+						if(kara.misc) {
+							var tagArray = kara.misc.split(',');
+							tagArray.sort(function(a, b){  
+								return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
 								});
-							}
-							if(kara.upvotes) {
-								badges += likeCountHtml.replace('upvotes', kara.upvotes);
-							}
-							if (mode === 'list') {
-								var likeKara = likeKaraHtml;
-								if (kara.flag_upvoted === 1) {
-									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
+							tagArray.forEach(function(tag) {
+								if (tag !== 'NO_TAG') {
+									badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
 								}
-
-								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
-								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
-								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
-								+   (scope == 'admin' ? checkboxKaraHtml : '')
-								+   '<div class="infoDiv">'
-								+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
-								+	(scope === 'admin' ? playKara : '')
-								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
-								+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
-								+	'</div>'
-								+   '<div class="contentDiv">'
-								+	'<div>' + buildKaraTitle(kara, {'search' : filter}) + '</div>'
-								+	'<div>' + badges + '</div>'
-								+   '</div>'
-								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
-								+   '</li>';
+							});
+						}
+						if(kara.upvotes) {
+							badges += likeCountHtml.replace('upvotes', kara.upvotes);
+						}
+						if (mode === 'list') {
+							var likeKara = likeKaraHtml;
+							if (kara.flag_upvoted === 1) {
+								likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
 							}
+
+							htmlLine += '<li class="list-group-item" ' + karaDataAttributes + '>'
+							//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
+							+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
+							+   (scope == 'admin' ? checkboxKaraHtml : '')
+							+   '<div class="infoDiv">'
+							+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
+							+	(scope === 'admin' ? playKara : '')
+							+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
+							+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
+							+	'</div>'
+							+   '<div class="contentDiv">'
+							+	'<div>' + buildKaraTitle(kara, {'search' : filter}) + '</div>'
+							+	'<div>' + badges + '</div>'
+							+   '</div>'
+							+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
+							+   '</li>';
+							rows.push(htmlLine);
 						}
 					}
-					var count = response.infos ? response.infos.count : 0;
+				}
+				var count = response.infos ? response.infos.count : 0;
 
 
-					/* adding artificial last line */
-					if(idPlaylist === -1 && count === response.infos.from + data.length) {
-						// count++;
-						htmlContent +=	karaSuggestionHtml;
-					}
+				/* adding artificial last line */
+				if(idPlaylist === -1 && count === response.infos.from + data.length) {
+					// count++;
+					rows.push(karaSuggestionHtml);
+				}
 
 
-
+				if(idPlaylist !== -1) {
 					// creating filler space for dyanmic scrolling
 					var fillerTopH = Math.min(response.infos.from * 34, container.height()/1.5);
 					var fillerBottomH = Math.min((count - response.infos.from - pageSize) * 34, container.height()/1.5);
-
+	
 					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px"><div class="loader"><div></div></div></li>';
 					var fillerBottom = '<li class="list-group-item filler" style="height:' + fillerBottomH + 'px"><div class="loader"><div></div></div></li>';
-
-					htmlContent =	fillerTop
-								+	htmlContent
-								+	fillerBottom;
-
-
-					if(scrollingType) {
-						container.css('overflow-y','hidden');
-						if(scrollingType === 'reposition') {
-							var karaMarker = scrolling === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
-							var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
-						}
+	
+					rows.unshift(fillerTop);
+					rows.push(fillerBottom);
+				}
+				if(scrollingType) {
+					container.css('overflow-y','hidden');
+					if(scrollingType === 'reposition') {
+						var karaMarker = scrolling === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
+						var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
 					}
+				}
 
-					window.requestAnimationFrame( function() {
+				window.requestAnimationFrame( function() {
+				
+					// document.getElementById('playlist' + side).innerHTML = htmlContent;
 					
-						document.getElementById('playlist' + side).innerHTML = htmlContent;
-						
-						deferred.resolve();
-						refreshContentInfos(side);
-						//window.requestAnimationFrame( function() {
-						var y = container.scrollTop();
-						if(scrollingType) {
-
-							container.css('overflow-y','auto');
-							if(scrollingType === 'reposition') {
-								var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
-								var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
-								y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
-							} else if (scrollingType === 'goTo') {
-								if(scrolling === 'top') {
-									y = 0 + fillerTopH;
-								} else if (scrolling === 'bottom') {
-									y = playlist.height() + 0;
-								} else if (scrolling === 'playing') {
-									var currentlyPlaying = container.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
-									if(currentlyPlaying.length > 0) y = currentlyPlaying.offset().top - currentlyPlaying.parent().offset().top;
-								}
-							}
-							container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix
-						}
-						container.scrollTop(
-							Math.min(playlist.height() - fillerBottomH - container.height(),
-								Math.max(fillerTopH, y)));
-						container.attr('flagScroll', false);
-						//});
-						
-						// if(clusterize[side - 1]) clusterize[side - 1].refresh();
-							
-					});
-					
-				} else {
-					data = response;
-					/* Blacklist criterias build */
-					var blacklistCriteriasHtml = $('<div/>');
-					var regenSelect2 = false;
-					if (scope === 'admin') {
-						if ($('#blacklistCriteriasInputs').length > 0) {
-							$('#blacklistCriteriasInputs').detach().appendTo(blacklistCriteriasHtml);
-						} else {
-							regenSelect2 = true;
-							blacklistCriteriasHtml = $('<div><span id="blacklistCriteriasInputs" class="list-group-item" style="padding:10px">'
-							+	'<select id="bcType" class="input-sm" style="color:black"/> '
-							+	'<span id="bcValContainer" style="color:black"></span> '
-							+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
-							+	'</span></div>');
-							$.each(listTypeBlc, function(k, v){
-								if(v !== 'BLCTYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('BLCTYPE_',''), text: i18n.__(v)}));
-							});
-						}
-					}
-
-					for (var k in data) {
-						if (data.hasOwnProperty(k)) {
-							if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
-								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
-							}
-							// build the blacklist criteria line
-							var tagsFiltered = jQuery.grep(tags, function(obj) {
-								return obj.tag_id == data[k].value;
-							});
-							var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
-							var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
-
-							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
-								'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
-							+	'<div class="actionDiv">' + html + '</div>'
-							+	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
-							+	'<div class="contentDiv">' + textContent + '</div>'
-							+	'</li>');
-						}
-					}
-					//htmlContent = blacklistCriteriasHtml.html();
-					$('#playlist' + side).empty().append(blacklistCriteriasHtml);
-					if (regenSelect2) $('#bcType').select2({ theme: 'bootstrap', dropdownAutoWidth : true, minimumResultsForSearch: -1 });
-					$('#bcType').change();
+					clusterize[side - 1].update(rows);
 					deferred.resolve();
-				}
+					refreshContentInfos(side);
+					//window.requestAnimationFrame( function() {
+					var y = container.scrollTop();
+					if(scrollingType) {
 
-
-
-				// depending on the playlist we're in, notify if the other playlist can add & transfer to us
-				$('#panel' + non(side)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
-
-				//var time = console.timeEnd('html'); DEBUG && console.log(data.length);
-
-				// drag & drop part
-				// TODO revoir pour bien définir le drag&drop selon les droits
-				if (dragAndDrop && scope === 'public' && mode != 'mobile' && !isTouchScreen) {
-					/*
-					var draggableLi =  isTouchScreen  ? $('#playlist' + 1 + ' > li .dragHandle') : $('#playlist' + 1 + ' > li');
-					var dropZone = $('#playlist' + non(1)).parent();
-					if(draggableLi.draggable('instance') != undefined) {
-						if($('#panel' + 1).attr('canaddkara') == 'true')  {
-							draggableLi.draggable('enable');
-							dropZone.droppable('enable');
-						} else {
-							draggableLi.draggable('disable');
-							dropZone.droppable('disable');
-						}
-					} else if( $('#panel' + 1).attr('canaddkara') == 'true') {
-						draggableLi.draggable({
-							cursorAt: { top: 20, right: 15 },
-							helper:  function(){
-								var li = $(this).closest('li');
-								return $('<div class="list-group-item dragged"></div>')
-									.append(li.find('.dragHandle').clone(),li.find('.contentDiv').clone());
-							},
-							appendTo: dropZone,
-							zIndex: 9999,
-							delay: 0,
-							distance: 0
-						});
-						dropZone.droppable({
-							classes: {
-								'ui-droppable-hover': 'highlight-hover',
-								'ui-droppable-active': 'highlight-active'
-							},
-							drop : function(e, ui){
-								$(ui.draggable).closest('li').find('.actionDiv > [name=addKara]').click();
+						container.css('overflow-y','auto');
+						if(scrollingType === 'reposition') {
+							var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
+							var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
+							y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
+						} else if (scrollingType === 'goTo') {
+							if(scrolling === 'top') {
+								y = 0 + fillerTopH;
+							} else if (scrolling === 'bottom') {
+								y = playlist.height() + 0;
+							} else if (scrolling === 'playing') {
+								var currentlyPlaying = container.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
+								if(currentlyPlaying.length > 0) y = currentlyPlaying.offset().top - currentlyPlaying.parent().offset().top;
 							}
+						}
+						container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix
+					}
+					container.scrollTop(
+						Math.min(playlist.height() - fillerBottomH - container.height(),
+							Math.max(fillerTopH, y)));
+					container.attr('flagScroll', false);
+				
+					if(clusterize[side - 1]) clusterize[side - 1].refresh(true);
+						
+				});
+				
+			} else {
+				data = response;
+				/* Blacklist criterias build */
+				var blacklistCriteriasHtml = $('<div/>');
+				var regenSelect2 = false;
+				if (scope === 'admin') {
+					if ($('#blacklistCriteriasInputs').length > 0) {
+						$('#blacklistCriteriasInputs').detach().appendTo(blacklistCriteriasHtml);
+					} else {
+						regenSelect2 = true;
+						blacklistCriteriasHtml = $('<div><span id="blacklistCriteriasInputs" class="list-group-item" style="padding:10px">'
+						+	'<select id="bcType" class="input-sm" style="color:black"/> '
+						+	'<span id="bcValContainer" style="color:black"></span> '
+						+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
+						+	'</span></div>');
+						$.each(listTypeBlc, function(k, v){
+							if(v !== 'BLCTYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('BLCTYPE_',''), text: i18n.__(v)}));
 						});
 					}
-					*/
-				} else if(dragAndDrop && scope === 'admin') {
-					var sortableUl = $('#playlist' + side);
-					if(idPlaylist > 0) {
-						if(sortableUl.hasClass('ui-sortable')) {
-							sortableUl.sortable('enable');
-						} else {
-							sortableUl.sortable({
-								appendTo: sortableUl,
-								handle : isTouchScreen ? '.actionDiv' : false,
-								cancel : '',
-								update: function(event, ui) {
-									changeKaraPos(ui.item);
-								},
-								distance: 10,
-								delay: 10,
-								// connectWith: sortableUl2,
-								axis : 'y'
-							});
-						}
-					} else if(sortableUl.hasClass('ui-sortable')) {
-						sortableUl.sortable('disable');
-					}
-					/*
-                if ($('#selectPlaylist' + non(side)).val() > 0) {
-                    var sortableUl2 = $("#playlist" + non(side));
-                    sortableUl2.sortable({
-                        appendTo: sortableUl2,
-                        helper : isTouchScreen ? ".dragHandle" : false,
-                        update: function(event, ui) { changeKaraPos(ui.item) },
-                       // connectWith: sortableUl,
-                       axis : "y"
-                    });
-                }
-                    */
-					/*
-                helper: function(event, ui){
-                    var li = $(ui);
-                    li.find('.detailsKara, .lyricsKara').remove();
-                    li.css('height', 'auto');
-                    return li.clone()},
-                    start: function(e, ui){
-                        ui.placeholder.height(ui.item.height());
-                    },
-                    */
-
 				}
 
-			});
+				for (var k in data) {
+					if (data.hasOwnProperty(k)) {
+						if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
+							blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
+						}
+						// build the blacklist criteria line
+						var tagsFiltered = jQuery.grep(tags, function(obj) {
+							return obj.tag_id == data[k].value;
+						});
+						var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
+						var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
+
+						blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
+							'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
+						+	'<div class="actionDiv">' + html + '</div>'
+						+	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
+						+	'<div class="contentDiv">' + textContent + '</div>'
+						+	'</li>');
+					}
+				}
+				//htmlContent = blacklistCriteriasHtml.html();
+				$('#playlist' + side).empty().append(blacklistCriteriasHtml);
+				if (regenSelect2) $('#bcType').select2({ theme: 'bootstrap', dropdownAutoWidth : true, minimumResultsForSearch: -1 });
+				$('#bcType').change();
+				deferred.resolve();
+			}
+
+
+
+			// depending on the playlist we're in, notify if the other playlist can add & transfer to us
+			$('#panel' + non(side)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
+
+			//var time = console.timeEnd('html'); DEBUG && console.log(data.length);
+
+			// drag & drop part
+			// TODO revoir pour bien définir le drag&drop selon les droits
+			if (dragAndDrop && scope === 'public' && mode != 'mobile' && !isTouchScreen) {
+				/*
+				var draggableLi =  isTouchScreen  ? $('#playlist' + 1 + ' > li .dragHandle') : $('#playlist' + 1 + ' > li');
+				var dropZone = $('#playlist' + non(1)).parent();
+				if(draggableLi.draggable('instance') != undefined) {
+					if($('#panel' + 1).attr('canaddkara') == 'true')  {
+						draggableLi.draggable('enable');
+						dropZone.droppable('enable');
+					} else {
+						draggableLi.draggable('disable');
+						dropZone.droppable('disable');
+					}
+				} else if( $('#panel' + 1).attr('canaddkara') == 'true') {
+					draggableLi.draggable({
+						cursorAt: { top: 20, right: 15 },
+						helper:  function(){
+							var li = $(this).closest('li');
+							return $('<div class="list-group-item dragged"></div>')
+								.append(li.find('.dragHandle').clone(),li.find('.contentDiv').clone());
+						},
+						appendTo: dropZone,
+						zIndex: 9999,
+						delay: 0,
+						distance: 0
+					});
+					dropZone.droppable({
+						classes: {
+							'ui-droppable-hover': 'highlight-hover',
+							'ui-droppable-active': 'highlight-active'
+						},
+						drop : function(e, ui){
+							$(ui.draggable).closest('li').find('.actionDiv > [name=addKara]').click();
+						}
+					});
+				}
+				*/
+			} else if(dragAndDrop && scope === 'admin') {
+				var sortableUl = $('#playlist' + side);
+				if(idPlaylist > 0) {
+					if(sortableUl.hasClass('ui-sortable')) {
+						sortableUl.sortable('enable');
+					} else {
+						sortableUl.sortable({
+							appendTo: sortableUl,
+							handle : isTouchScreen ? '.actionDiv' : false,
+							cancel : '',
+							update: function(event, ui) {
+								changeKaraPos(ui.item);
+							},
+							distance: 10,
+							delay: 10,
+							// connectWith: sortableUl2,
+							axis : 'y'
+						});
+					}
+				} else if(sortableUl.hasClass('ui-sortable')) {
+					sortableUl.sortable('disable');
+				}
+				/*
+			if ($('#selectPlaylist' + non(side)).val() > 0) {
+				var sortableUl2 = $("#playlist" + non(side));
+				sortableUl2.sortable({
+					appendTo: sortableUl2,
+					helper : isTouchScreen ? ".dragHandle" : false,
+					update: function(event, ui) { changeKaraPos(ui.item) },
+					// connectWith: sortableUl,
+					axis : "y"
+				});
+			}
+				*/
+				/*
+			helper: function(event, ui){
+				var li = $(ui);
+				li.find('.detailsKara, .lyricsKara').remove();
+				li.css('height', 'auto');
+				return li.clone()},
+				start: function(e, ui){
+					ui.placeholder.height(ui.item.height());
+				},
+				*/
+
+			}
+
+		});
 
 		return deferred.promise();
 	};
@@ -2159,31 +2165,42 @@ var settingsNotUpdated;
 				}
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
+
+				console.log($('#playlist1 > li').length);
+
+				clusterize = [
+					new Clusterize({
+						scrollId: 'playlist1Container',
+						contentId: 'playlist1',
+						rows_in_block: 75,
+						rows: []
+					})
+				,
+					new Clusterize({
+						scrollId: 'playlist2Container',
+						contentId: 'playlist2',
+						rows_in_block: 75,
+						rows: []
+					})
+				];
+
 				playlistsUpdating.done(function () {
 				
-					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
+					ajx('GET', 'public/karas', {}, function(data) {
+						karas = data;
+						playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
 
-					refreshPlaylistDashboard(1);
-					refreshPlaylistDashboard(2);
-					playlistContentUpdating.done(() => {
-						clusterize = [
-							new Clusterize({
-								scrollId: 'playlist1Container',
-								contentId: 'playlist1',
-								rows_in_block: 75
-							})
-						,
-							new Clusterize({
-								scrollId: 'playlist2Container',
-								contentId: 'playlist2',
-								rows_in_block: 75
-							})
-						];
-						console.log(locScroll1, locScroll2);
-						if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
-						if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
+						refreshPlaylistDashboard(1);
+						refreshPlaylistDashboard(2);
+						playlistContentUpdating.done(() => {
+					
+							console.log(locScroll1, locScroll2);
+							if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
+							if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
+						});
+						$(window).trigger('resize');
 					});
-					$(window).trigger('resize');
+					
 				});
 			});
 		}
