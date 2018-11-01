@@ -31,6 +31,7 @@ var socket;
 var settings;
 var kmStats;
 var i18n;
+var clusterize;
 var introManager;
 
 /* promises */
@@ -1006,6 +1007,7 @@ var settingsNotUpdated;
 	pathAvatar = '/avatars/';
 	pathVideo = '/previews/';
 
+	clusterize = [];
 
 	DEBUG =  query.DEBUG != undefined;
 	SOCKETDEBUG =  query.SOCKETDEBUG != undefined;
@@ -1013,7 +1015,7 @@ var settingsNotUpdated;
 	dragAndDrop = true;
 	stopUpdate = false;
 
-	pageSize = isTouchScreen ? 120 : 180;
+	pageSize = isTouchScreen ? 200 : 400;
 	if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
 
 	saveLastDetailsKara = [[]];
@@ -1193,6 +1195,7 @@ var settingsNotUpdated;
 		var dashboard = $('#panel' + side + ' .plDashboard');
 		var container = $('#panel' + side + ' .playlistContainer');
 		var playlist = $('#playlist' + side);
+		var playlistContent = playlist.find('li.list-group-item');
 		var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
@@ -1204,7 +1207,22 @@ var settingsNotUpdated;
 		var range = getPlaylistRange(idPlaylist);
 		from = range.from;
 		to = range.to;
-
+		
+		if(false && idPlaylist == -1 && playlistContent.length > 2) { // TODO cleaner way of checking if data is already there please
+				
+				filterUp = filter.toUpperCase();
+				newHtml = '';
+				playlist.find('li').each((k, e) => {
+					console.log($(e).find('.contentDiv').text().toUpperCase());
+					if ($(e).find('.contentDiv').text().toUpperCase().indexOf(filterUp) > -1) {
+						newHtml += e.outerHTML;
+						console.log(e, e.outerHTML);
+					} 
+				});
+				console.log(newHtml);
+				clusterize[0].update(newHtml)
+			return true;
+		}
 		fromTo += '&from=' + from + '&size=' + pageSize;
 
 		// setup variables depending on which playlist is selected : -1 = database kara list, -2 = blacklist, -3 = whitelist, -4 = blacklist criterias
@@ -1224,7 +1242,7 @@ var settingsNotUpdated;
 		// public users can add kara to one list, current or public
 		canAddKara = scope === 'admin' ? canAddKara : $('#selectPlaylist' + side + ' > option:selected').data('flag_' + playlistToAdd) == '1';
 
-		urlFiltre = url + '?filter=' + filter + fromTo;
+		urlFiltre = url + (idPlaylist != -1 ? '?filter=' + filter + fromTo : '');
 
 
 		var $filter = $('#searchMenu' + side + ' li.active');
@@ -1341,7 +1359,9 @@ var settingsNotUpdated;
 					}
 
 					window.requestAnimationFrame( function() {
+					
 						document.getElementById('playlist' + side).innerHTML = htmlContent;
+						
 						deferred.resolve();
 						refreshContentInfos(side);
 						//window.requestAnimationFrame( function() {
@@ -1370,8 +1390,11 @@ var settingsNotUpdated;
 								Math.max(fillerTopH, y)));
 						container.attr('flagScroll', false);
 						//});
+						
+						// if(clusterize[side - 1]) clusterize[side - 1].refresh();
+							
 					});
-
+					
 				} else {
 					data = response;
 					/* Blacklist criterias build */
@@ -1511,6 +1534,7 @@ var settingsNotUpdated;
                     */
 
 				}
+
 			});
 
 		return deferred.promise();
@@ -2136,10 +2160,25 @@ var settingsNotUpdated;
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
 				playlistsUpdating.done(function () {
+				
 					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
+
 					refreshPlaylistDashboard(1);
 					refreshPlaylistDashboard(2);
 					playlistContentUpdating.done(() => {
+						clusterize = [
+							new Clusterize({
+								scrollId: 'playlist1Container',
+								contentId: 'playlist1',
+								rows_in_block: 75
+							})
+						,
+							new Clusterize({
+								scrollId: 'playlist2Container',
+								contentId: 'playlist2',
+								rows_in_block: 75
+							})
+						];
 						console.log(locScroll1, locScroll2);
 						if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
 						if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
@@ -2302,6 +2341,7 @@ var settingsNotUpdated;
 		});
 
 	};
+
 	/**
     * Init bootstrapSwitchs
     */
