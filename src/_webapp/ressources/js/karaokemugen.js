@@ -2174,14 +2174,16 @@ var settingsNotUpdated;
 					new Clusterize({
 						scrollId: 'playlist1Container',
 						contentId: 'playlist1',
-						rows_in_block: 75,
+						rows_in_block: isTouchScreen? 35 : 70,
+						blocks_in_cluster: isTouchScreen? 4 : 5,
 						rows: []
 					})
 				,
 					new Clusterize({
 						scrollId: 'playlist2Container',
 						contentId: 'playlist2',
-						rows_in_block: 75,
+						rows_in_block: isTouchScreen? 15 : 70,
+						blocks_in_cluster: isTouchScreen? 10 : 5,
 						rows: []
 					})
 				];
