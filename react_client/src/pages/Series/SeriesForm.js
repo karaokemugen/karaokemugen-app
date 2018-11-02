@@ -206,7 +206,7 @@ class SerieForm extends Component {
 					})(<Input type="hidden" />)}
 				</Form.Item>
 				<Form.Item>
-					{getFieldDecorator('kid', {
+					{getFieldDecorator('sid', {
 						initialValue: this.props.serie.sid
 					})(<Input type="hidden" />)}
 				</Form.Item>
