@@ -205,9 +205,9 @@ export async function initDBSystem() {
 		getUserDb().run(`ATTACH DATABASE "${karaDbFile}" AS karasdb;`),
 		getUserDb().run('PRAGMA TEMP_STORE=MEMORY'),
 		getUserDb().run('PRAGMA JOURNAL_MODE=WAL'),
-		getUserDb().run('PRAGMA SYNCHRONOUS=OFF'),
-		getUserDb().run('VACUUM')
+		getUserDb().run('PRAGMA SYNCHRONOUS=OFF')
 	]);
+	await getUserDb().run('VACUUM');
 	await compareDatabasesUUIDs();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();

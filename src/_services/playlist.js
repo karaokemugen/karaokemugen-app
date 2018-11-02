@@ -727,6 +727,7 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token,opts) {
 			pl_name: pl.name
 		};
 	} catch(err) {
+		console.log(err);
 		throw {
 			message: err,
 			data: pl.name
