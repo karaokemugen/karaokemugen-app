@@ -727,7 +727,6 @@ export async function deleteKaraFromPlaylist(plcs,playlist_id,token,opts) {
 			pl_name: pl.name
 		};
 	} catch(err) {
-		console.log(err);
 		throw {
 			message: err,
 			data: pl.name
@@ -973,7 +972,7 @@ export async function shufflePlaylist(playlist_id, isSmartShuffle) {
 
 		updatePlaylistLastEditTime(playlist_id);
 
-		await reorderPL(playlist_id,playlist);
+		await reorderPL(playlist);
 		logger.info(`[Playlist] Playlist ${pl.name} shuffled`);
 		return pl.name;
 	} catch(err) {
