@@ -176,7 +176,9 @@ export const editUser = `UPDATE user SET
 							avatar_file = $avatar_file,
 							bio = $bio,
 							email = $email,
-							url = $url
+							url = $url,
+							flag_admin = $flag_admin,
+							type = $type
 						WHERE
 							pk_id_user = $id
 						   `;

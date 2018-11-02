@@ -54,7 +54,9 @@ export async function editUser(user) {
 		$login: user.login,
 		$bio: user.bio,
 		$url: user.url,
-		$email: user.email
+		$email: user.email,
+		$flag_admin: user.flag_admin,
+		$type: user.type
 	});
 }
 
