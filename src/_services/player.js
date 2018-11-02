@@ -14,8 +14,7 @@ const sleep = promisify(setTimeout);
 let commandInProgress = false;
 
 async function getPlayingSong() {
-	let state = getState();
-	if (!state.player.playing) {
+	if (!getState().player.playing) {
 		profile('tryToReadKaraInPlaylist');
 		try {
 			const kara = await getCurrentSong();
@@ -36,11 +35,10 @@ async function getPlayingSong() {
 			setState({currentlyPlayingKara: kara.kara_id});
 			addViewcountKara(kara.kara_id,kara.kid);
 			updateUserQuotas(kara);
-			if (getConfig().EngineSongPoll) startPoll(state.publicPlaylistID,state.currentPlaylistID);
+			if (+getConfig().EngineSongPoll) startPoll();
 		} catch(err) {
 			logger.error(`[Player] Error during song playback : ${err}`);
-			state = getState();
-			if (state.status !== 'stop') {
+			if (getState().status !== 'stop') {
 				logger.warn('[Player] Skipping playback for this kara');
 				next();
 			} else {
@@ -230,8 +228,9 @@ async function restartPlayer() {
 
 export async function sendCommand(command, options) {
 	const state = getState();
-	if (!state.player.ready) throw '[Player] Player is not ready yet!';
-	if (commandInProgress || getConfig().isDemo || getConfig().isTest) throw '[Player] A command is already in progress';
+	if (!state.player.ready) throw 'Player is not ready yet!';
+	if (commandInProgress) throw 'A command is already in progress';
+	if (getConfig().isDemo || getConfig().isTest) throw 'Player management is disabled in demo or test modes';
 	commandInProgress = true;
 	if (command === 'play') {
 		await playPlayer();

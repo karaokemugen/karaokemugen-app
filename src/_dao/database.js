@@ -80,6 +80,7 @@ async function doTransaction(items, sql) {
 		}
 		return await getUserDb().run('commit');
 	} catch(err) {
+		getUserDb().run('rollback');
 		throw err;
 	}
 }
@@ -195,17 +196,18 @@ export async function initDBSystem() {
 	// Compare Karas checksums if generation hasn't been requested already
 	logger.info('[DB] Checking kara files...');
 	if (!await compareKarasChecksum()) {
-		logger.info('[DB] Kara files have changed, database generation triggered');
+		logger.info('[DB] Kara files have changed: database generation triggered');
 		doGenerate = true;
 	}
 	if (doGenerate) await generateDatabase();
 	await closeKaraDatabase();
-	await getUserDb().run(`ATTACH DATABASE "${karaDbFile}" as karasdb;`);
-	await getUserDb().run('PRAGMA TEMP_STORE=MEMORY');
-	await getUserDb().run('PRAGMA JOURNAL_MODE=WAL');
-	await getUserDb().run('PRAGMA SYNCHRONOUS=OFF');
-	await getUserDb().run('VACUUM');
-
+	await Promise.all([
+		getUserDb().run(`ATTACH DATABASE "${karaDbFile}" AS karasdb;`),
+		getUserDb().run('PRAGMA TEMP_STORE=MEMORY'),
+		getUserDb().run('PRAGMA JOURNAL_MODE=WAL'),
+		getUserDb().run('PRAGMA SYNCHRONOUS=OFF'),
+		getUserDb().run('VACUUM')
+	]);
 	await compareDatabasesUUIDs();
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();

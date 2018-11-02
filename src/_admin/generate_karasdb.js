@@ -484,7 +484,7 @@ function prepareAllTagsInsertData(allTags) {
 		let tagNorm;
 		if (+tagType === 7) {
 			const tagTranslations = [];
-			for (const [key, value] of Object.entries(translations)) {
+			for (const value of Object.values(translations)) {
 				// Key is the language, value is a i18n text
 				if (value[tagName]) tagTranslations.push(value[tagName]);
 			}

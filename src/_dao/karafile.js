@@ -179,11 +179,11 @@ async function findSubFile(videoFile, kara) {
 }
 
 export async function replaceSerieInKaras(oldSerie, newSerie) {
-	logger.info(`[Kara] Replacing serie ${oldSerie} by ${newSerie} in .kara files`);
+	logger.info(`[Kara] Replacing serie "${oldSerie}" by "${newSerie}" in .kara files`);
 	const karas = await getAllKaras('admin');
 	let karasWithSerie = [];
 	for (const kara of karas) {
-		if (kara.serie_orig && kara.serie_orig.includes(oldSerie)) karasWithSerie.push(kara.karafile);
+		if (kara.serie_orig && kara.serie_orig.split(',').includes(oldSerie)) karasWithSerie.push(kara.karafile);
 	}
 	if (karasWithSerie.length > 0) logger.info(`[Kara] Replacing in ${karasWithSerie.length} files`);
 	for (const karaFile of karasWithSerie) {
@@ -204,7 +204,7 @@ export async function removeSerieInKaras(serie) {
 	const karas = await getAllKaras('admin');
 	let karasWithSerie = [];
 	for (const kara of karas) {
-		if (kara.serie_orig && kara.serie_orig.includes(serie)) karasWithSerie.push(kara.karafile);
+		if (kara.serie_orig && kara.serie_orig.split(',').includes(serie)) karasWithSerie.push(kara.karafile);
 	}
 	if (karasWithSerie.length > 0) logger.info(`[Kara] Removing in ${karasWithSerie.length} files`);
 	for (const karaFile of karasWithSerie) {

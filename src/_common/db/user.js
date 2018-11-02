@@ -1,10 +1,5 @@
 // SQL queries for user manipulation
 
-export const testUserName = `SELECT pk_id_user
-								FROM user
-								WHERE login = $login;
-							`;
-
 export const testNickname = `SELECT pk_id_user
 								FROM user
 								WHERE nickname = $nickname
@@ -21,7 +16,7 @@ export const getUserRequests = `SELECT ak.kara_id AS kara_id,
       							ak.NORM_serie_altname AS NORM_serie_altname,
       							ak.singer AS singer,
       							ak.NORM_singer AS NORM_singer,
-      							ak.songtype AS songtype,      
+      							ak.songtype AS songtype,
       							ak.creator AS creator,
 	  							ak.songwriter AS songwriter,
 	  							ak.NORM_songwriter AS NORM_songwriter,
@@ -41,21 +36,21 @@ export const getUserRequests = `SELECT ak.kara_id AS kara_id,
         							ELSE 0
       							END) AS flag_dejavu,
 								(SELECT max(vc.modified_at) FROM viewcount AS vc WHERE vc.fk_id_kara = ak.kara_id) AS lastplayed_at
-							FROM karasdb.all_karas AS ak							
+							FROM karasdb.all_karas AS ak
  							WHERE ak.kara_id IN (SELECT r.fk_id_kara FROM request AS r LEFT OUTER JOIN user AS u ON u.pk_id_user = r.fk_id_user WHERE u.login = $username)
 							ORDER BY requested DESC, ak.language, ak.serie IS NULL, ak.serie, ak.songtype, ak.songorder, ak.title
 							`;
 
 export const reassignPlaylistToUser = 'UPDATE playlist SET fk_id_user = $id WHERE fk_id_user = $old_id;';
 
-export const reassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_id_user = $id WHERE fk_id_user = $old_id;';								
+export const reassignPlaylistContentToUser = 'UPDATE playlist_content SET fk_id_user = $id WHERE fk_id_user = $old_id;';
 
 export const selectUserByID = `SELECT u.pk_id_user AS id,
     							u.type AS type,
 								u.login AS login,
 								u.password AS password,
 								u.nickname AS nickname,
-								u.NORM_nickname AS norm_nickname,			
+								u.NORM_nickname AS norm_nickname,
 								u.avatar_file AS avatar_file,
 								u.bio AS bio,
 								u.url AS url,
@@ -67,13 +62,13 @@ export const selectUserByID = `SELECT u.pk_id_user AS id,
  							FROM user AS u
 							WHERE u.pk_id_user = $id
 							`;
-							
+
 export const selectUserByName = `SELECT u.pk_id_user AS id,
     							u.type AS type,
 								u.login AS login,
 								u.password AS password,
 								u.nickname AS nickname,
-								u.NORM_nickname AS norm_nickname,			
+								u.NORM_nickname AS norm_nickname,
 								u.avatar_file AS avatar_file,
 								u.bio AS bio,
 								u.url AS url,
@@ -83,10 +78,10 @@ export const selectUserByName = `SELECT u.pk_id_user AS id,
 								u.flag_online AS flag_online,
 								u.flag_admin AS flag_admin
  							FROM user AS u
-							WHERE u.login = $username							  
+							WHERE u.login = $username
 							`;
 
-export const selectRandomGuestName = `SELECT pk_id_user AS id, login 
+export const selectRandomGuestName = `SELECT pk_id_user AS id, login
 										FROM user
 										WHERE type = 2
 											AND flag_online = 0
@@ -131,7 +126,7 @@ export const createUser = `INSERT INTO user(
 							last_login,
 							bio,
 							url,
-							email) 
+							email)
 						VALUES (
 							$type,
 							$login,
@@ -146,10 +141,10 @@ export const createUser = `INSERT INTO user(
 							$email);
 						   `;
 
-export const updateExpiredUsers = `UPDATE user SET 
+export const updateExpiredUsers = `UPDATE user SET
 									last_login = 0,
 									fingerprint = null,
-									flag_online = 0									
+									flag_online = 0
 									WHERE last_login <= $expire_time;
 								`;
 
@@ -164,17 +159,17 @@ export const updateUserFingerprint = `UPDATE user SET
 									WHERE login = $username;
 								`;
 
-export const findFingerprint = `SELECT login 
-								FROM user 
+export const findFingerprint = `SELECT login
+								FROM user
 								WHERE fingerprint = $fingerprint;
 							`;
 
-export const resetGuestsPassword = `UPDATE user SET 
+export const resetGuestsPassword = `UPDATE user SET
 									password = null
 								WHERE flag_online = 0
 								  AND type = 2`;
 
-export const editUser = `UPDATE user SET 
+export const editUser = `UPDATE user SET
 							login = $login,
 							nickname = $nickname,
 							NORM_nickname = $NORM_nickname,
@@ -182,12 +177,12 @@ export const editUser = `UPDATE user SET
 							bio = $bio,
 							email = $email,
 							url = $url
-						WHERE 
+						WHERE
 							pk_id_user = $id
 						   `;
 
-export const editUserPassword = `UPDATE user SET 
-							password = $password							
-						WHERE 
+export const editUserPassword = `UPDATE user SET
+							password = $password
+						WHERE
 							pk_id_user = $id
 						   `;
