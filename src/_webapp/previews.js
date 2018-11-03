@@ -60,13 +60,11 @@ export async function cleanUpPreviewsFolder(config) {
 		const size = previewparts[2];
 		const previewfileWOExt = basename(previewparts[1]);
 		for (const videofile of videofiles) {
-			const videofileWOExt = basename(videofile, extname(videofile));
-			if (previewfileWOExt === videofileWOExt) {
+			const videofileWOExt = basename(videofile.file, extname(videofile.file));
+			if (previewfileWOExt.toLowerCase() === videofileWOExt.toLowerCase()) {
 				deletePreview = false;
-				const videoStats = await asyncStat(videofile);
-				if (videoStats.size !== size) {
-					deletePreview = true;
-				}
+				const videoStats = await asyncStat(videofile.file);
+				if (videoStats.size !== +size) deletePreview = true;
 			}
 		}
 		if (deletePreview) {
@@ -117,10 +115,10 @@ export async function isPreviewAvailable(videofile) {
 		return basename(previewfilename);
 	} catch(err) {
 		//This is not a fatal error.
-		logger.warn(`[Previews] Error checking if preview available : ${err}`);
 		return undefined;
 	}
 }
+
 export async function createPreviews(config) {
 	const conf = config || getConfig();
 	logger.debug('[Previews] Starting preview generation');
@@ -128,6 +126,7 @@ export async function createPreviews(config) {
 	logger.debug('[Previews] Number of videos '+videoFiles.length);
 	const previewFiles = await extractPreviewFiles(resolvedPathPreviews());
 	logger.debug('[Previews] Number of previews '+previewFiles.length);
+	await cleanUpPreviewsFolder(conf);
 	const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
 	logger.debug('[Previews] Number of previews to generate '+videoFilesToPreview.length);
 	for (const videoPreview of videoFilesToPreview) {

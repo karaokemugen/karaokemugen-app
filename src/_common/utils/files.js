@@ -54,7 +54,7 @@ export function sanitizeFile(file) {
 	// Also, remove useless spaces.
 	file = deburr(file)
 		.replace(/[^\x00-\xFF]/g, ' ' )
-		.replace(/ [ ]+/,' ')
+		.replace(/ [ ]+/g,' ')
 	;
 	// One last go using sanitizeFilename just in case.
 	file = sanitizeFilename(file);

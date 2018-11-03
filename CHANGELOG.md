@@ -1,5 +1,43 @@
 # Versions
 
+## v2.4.0 "Juri Judicieuse" - 06/11/2018
+
+### New features
+
+- Configuration can be edited by hand from control panel. Not all configuration items are editable. (#338)
+- Karaoke Mugen is now fully compatible (and even requires) Node 10 (#307)
+- The welcome screen now displays what's new on the karaoke base and site's RSS feeds (#343)
+- Our new logo, designed by @Sedeto, has been added to the welcome screen!
+
+### Improvements
+
+- Songs can now be freed from the current playlist
+- Progress when generating database or updating base files from the control panel is now displayed on the control panel itself (#348)
+- Generation's progress is now displayed in the console.
+- Public interface is reloaded when the webapp mode (open, restricted or closed) changes. (#357)
+- TAG_VOICELESS has been removed in favor of the language code ZXX which is "No linguistic content" (#366)
+- Special language names (FR, JAP, ANG...) in files is now obsolete in favor of ISO639-2B codes. This is for better consistency. (#365)
+- The `series.json` file is not used anymore. Instead, series data is read from the new `series/` folder with its `.series.json` files (#364)
+- Series' international names are now searchable in control panel (#362)
+- When two KIDs are in conflict in your karaoke base, Karaoke Mugen will now tell you which ones are causing the conflict (#361)
+- In the karaoke submission form, tags have been replaced by checkboxes for misc tags. (#359)
+- Icons and names have been changed for consistency on the welcome screen (#356)
+- Your data files are now checked on startup to decide if a generation is needed or not. (#354)
+- Series are displayed in a more concise way in case of AMVs. (#350)
+- Karaoke and series lists in control panel are now properly paginated. Page position and searches are remembered when coming back to the list after editing/creating a karaoke (#342)
+- When creating/editing a language, a text box allows to search for a language code.
+
+### Fixes
+
+- Download problems when updating your base files should be fixed now. Really. (#332)
+- Download groups weren't saved properly in .kara files when saving one from the kara submission form (#367)
+- Fixed hardsub video submission with the control panel's form
+- Fixed adding series without aliases
+- Fixed Smart Shuffle
+- Fixed deleting favorites
+- Fixed editing series not updating i18n data
+- Fixed search field in control panel not registering the last character typed
+
 ## v2.3.2 "Ichika Imperturbable" - 03/09/2018
 
 This is a bugfix release.

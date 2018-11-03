@@ -7,6 +7,8 @@ import {resolve} from 'path';
 import internet from 'internet-available';
 import logger from 'winston';
 import {asyncMove} from '../_common/utils/files';
+import { integrateSeriesFile } from './series';
+import { integrateKaraFile } from './kara';
 
 const queueOptions = {
 	id: 'uuid',
@@ -69,6 +71,12 @@ async function processDownload(download) {
 	const localLyrics = resolve(conf.appPath,conf.PathSubs.split('|')[0],download.urls.lyrics.local);
 	const localKara = resolve(conf.appPath,conf.PathKaras.split('|')[0],download.urls.kara.local);
 	const localSeriesPath = resolve(conf.appPath,conf.PathSeries.split('|')[0]);
+
+	let bundle = {
+		kara: localKara,
+		series: []
+	};
+
 	const tempMedia = resolve(conf.appPath,conf.PathTemp,download.urls.media.local);
 	const tempLyrics = resolve(conf.appPath,conf.PathTemp,download.urls.lyrics.local);
 	const tempKara = resolve(conf.appPath,conf.PathTemp,download.urls.kara.local);
@@ -90,6 +98,7 @@ async function processDownload(download) {
 			filename: resolve(tempSeriesPath, serie.local),
 			url: serie.remote,
 		});
+		bundle.series.push(resolve(localSeriesPath, serie.local));
 	}
 	await downloadFiles(download, list);
 	// Delete files if they're already present
@@ -99,7 +108,14 @@ async function processDownload(download) {
 	for (const seriefile of download.urls.serie) {
 		await asyncMove(resolve(tempSeriesPath, seriefile.local), resolve(localSeriesPath, seriefile.local), {overwrite: true});
 	}
-	logger.info(`[Download] Finished downloading item ${download.name}`);
+	logger.info(`[Download] Finished downloading item "${download.name}"`);
+	// Now adding our newly downloaded kara
+	for (const serie of bundle.series) {
+		await integrateSeriesFile(serie);
+	}
+	await integrateKaraFile(bundle.kara);
+	logger.info(`[Download] Song "${download.name}" added to database`);
+
 }
 
 async function downloadFiles(download, list) {
@@ -201,7 +217,7 @@ export async function retryDownload(uuid) {
 export async function removeDownload(uuid) {
 	const dl = await selectDownload(uuid);
 	if (!dl) throw 'Download ID unknown';
-	if (dl.status === 'DL_RUNNING') throw 'Running downloads cannot be cancelled';
+	if (dl.status !== 'DL_PLANNED') throw 'Only planned downloads can be cancelled';
 	q.cancel(uuid);
 	return await deleteDownload(uuid);
 }

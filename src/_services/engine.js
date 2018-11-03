@@ -18,7 +18,6 @@ import {initControlPanel} from '../_webapp/control_panel';
 import {initPlayer, quitmpv} from './player';
 import {initDownloader} from './download';
 import {karaGenerationBatch} from '../_admin/generate_karasfiles';
-import {validateKaras} from './kara';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
 import {initPlaylistSystem, createPlaylist, buildDummyPlaylist, isACurrentPlaylist, isAPublicPlaylist} from './playlist';
@@ -37,15 +36,6 @@ export async function initEngine() {
 		exit(0);
 	} catch (err) {
 		logger.error(`[Engine] Karaoke import failed : ${err}`);
-		exit(1);
-	}
-	if (conf.optValidateKaras) try {
-		logger.info('[Engine] Starting validation process, please wait...');
-		await validateKaras();
-		logger.info('[Engine] Validation completed successfully. Yayifications!');
-		exit(0);
-	} catch (err) {
-		logger.error(`[Engine] Validation failed : ${err}`);
 		exit(1);
 	}
 	if (conf.optBaseUpdate) try {

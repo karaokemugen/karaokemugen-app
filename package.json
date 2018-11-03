@@ -49,7 +49,7 @@
   ],
   "engineStrict": false,
   "engines": {
-    "node": ">=10.9.0"
+    "node": ">=10.9.0 <11.0.0"
   },
   "license": "MIT",
   "private": true,
@@ -71,7 +71,7 @@
     ]
   },
   "dependencies": {
-    "agentkeepalive": "^3.5.1",
+    "agentkeepalive": "^4.0.0",
     "ass-parser": "^0.2.0",
     "async-await-parallel": "^1.0.0",
     "better-queue": "^3.8.10",
@@ -84,7 +84,7 @@
     "execa": "^1.0.0",
     "express": "^4.16.4",
     "express-handlebars": "^3.0.0",
-    "file-type": "^10.0.0",
+    "file-type": "^10.2.0",
     "fs-extra": "^7.0.0",
     "got": "^9.2.2",
     "i18n": "^0.8.3",
@@ -101,7 +101,7 @@
     "lodash.samplesize": "^4.2.0",
     "lodash.shuffle": "^4.2.0",
     "minimist": "^1.2.0",
-    "multer": "^1.4.0",
+    "multer": "^1.4.1",
     "node-id3": "^0.1.7",
     "node-mpv": "github:00SteinsGate00/Node-MPV#Node-MPV-2",
     "opn": "^5.4.0",
@@ -119,13 +119,14 @@
     "sanitize-filename": "^1.6.1",
     "socket.io": "^2.1.1",
     "sqlite": "^3.0.0",
-    "systeminformation": "^3.45.7",
+    "systeminformation": "^3.45.9",
     "unix-timestamp": "^0.2.0",
     "uuid": "^3.3.2",
     "validate.js": "^0.12.0",
     "webdav": "^1.6.1",
     "winston": "^3.1.0",
-    "winston-daily-rotate-file": "^3.3.3"
+    "winston-daily-rotate-file": "^3.4.0",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -133,10 +134,10 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.2.0",
-    "eslint": "^5.6.1",
-    "eslint-config-react-app": "^3.0.3",
+    "eslint": "^5.8.0",
+    "eslint-config-react-app": "^3.0.4",
     "eslint-loader": "2.1.1",
-    "eslint-plugin-flowtype": "2.50.3",
+    "eslint-plugin-flowtype": "3.1.4",
     "eslint-plugin-import": "2.14.0",
     "eslint-plugin-jsx-a11y": "6.1.2",
     "eslint-plugin-react": "^7.11.1",

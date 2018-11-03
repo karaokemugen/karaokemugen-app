@@ -1,7 +1,12 @@
-import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
-import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
+import {removeSeriesFile, writeSeriesFile, getDataFromSeriesFile} from '../_dao/seriesfile';
+import {selectSeriesBySID, selectSeriesKaraByKaraID, insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
 import {profile} from '../_common/utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
+import { compareKarasChecksum } from '../_admin/generate_karasdb';
+import uuidV4 from 'uuid/v4';
+import { sanitizeFile, asyncUnlink, resolveFileInDirs } from '../_common/utils/files';
+import {basename} from 'path';
+import {getConfig} from '../_common/utils/config';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');
@@ -9,6 +14,14 @@ export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	const ret = formatSeriesList(series.slice(from, from + size), from, series.length);
 	profile('getSeries');
 	return ret;
+}
+
+export async function findSeriesKaraByKaraID(kara_id) {
+	return await selectSeriesKaraByKaraID(kara_id);
+}
+
+export async function findSeriesBySID(sid) {
+	return await selectSeriesBySID(sid);
 }
 
 export function formatSeriesList(seriesList, from, count) {
@@ -29,12 +42,12 @@ export async function getSerie(serie_id) {
 }
 
 export async function deleteSerie(serie_id) {
-	//Not removing from database, a regeneration will do the trick.
 	const serie = await getSerie(serie_id);
 	if (!serie) throw 'Series ID unknown';
 	await removeSeriesFile(serie.name);
 	await removeSerieInKaras(serie.name);
 	await removeSerie(serie_id);
+	compareKarasChecksum({silent: true});
 }
 
 export async function getOrAddSerieID(serieObj) {
@@ -45,14 +58,28 @@ export async function getOrAddSerieID(serieObj) {
 	return id;
 }
 
+export async function integrateSeriesFile(file) {
+	const seriesFileData = await getDataFromSeriesFile(file);
+	seriesFileData.seriefile = basename(file);
+	const seriesDBData = await findSeriesBySID(seriesFileData.sid);
+	if (seriesDBData) {
+		await editSerie(seriesDBData.serie_id, seriesFileData);
+		if (seriesDBData.seriefile !== seriesFileData.seriefile) await asyncUnlink(await resolveFileInDirs(seriesDBData.seriefile, getConfig().PathSeries.split('|')));
+	} else {
+		await addSerie(seriesFileData);
+	}
+}
+
 export async function addSerie(serieObj) {
 	if (await selectSerieByName(serieObj.name)) throw 'Series original name already exists';
+	if (!serieObj.sid) serieObj.sid = uuidV4();
+	if (!serieObj.seriefile) serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
 	const newSerieID = await insertSerie(serieObj);
-	serieObj.serie_id = newSerieID;
 	await Promise.all([
-		insertSeriei18n(serieObj),
+		insertSeriei18n(newSerieID, serieObj),
 		writeSeriesFile(serieObj)
 	]);
+	compareKarasChecksum({silent: true});
 	return newSerieID;
 }
 
@@ -60,8 +87,10 @@ export async function editSerie(serie_id,serieObj) {
 	const oldSerie = await getSerie(serie_id);
 	if (!oldSerie) throw 'Series ID unknown';
 	if (oldSerie.name !== serieObj.name) await replaceSerieInKaras(oldSerie.name, serieObj.name);
-	return Promise.all([
+	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
+	await Promise.all([
 		updateSerie(serie_id, serieObj),
 		writeSeriesFile(serieObj)
 	]);
+	compareKarasChecksum({silent: true});
 }

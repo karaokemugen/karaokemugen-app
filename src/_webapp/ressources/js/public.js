@@ -94,6 +94,7 @@ $(document).ready(function () {
 		}
 		$('input[name="lyrics"]').trigger('switchChange.bootstrapSwitch');
 	});
+
 });
 
 var datePlus10 = new Date();
@@ -108,6 +109,10 @@ panel1Default = -1;
 getPublicSettings = function() {
 	var promise = $.Deferred();
 	$.ajax({ url: 'public/settings' }).done(function (data) {
+		if(typeof settings.WebappMode !=="undefined" && data.WebappMode !== settings.WebappMode) {	// webapp mode changed, reload app and all
+			window.location.reload();
+		}
+
 		playlistToAdd = data['EnginePrivateMode'] == 1 ? 'current' : 'public';
 
 		$.ajax({ url: 'public/playlists/' + playlistToAdd, }).done(function (data) {

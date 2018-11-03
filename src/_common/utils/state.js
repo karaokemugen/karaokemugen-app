@@ -11,7 +11,7 @@ let state = {
 	currentlyPlayingKara: null,
 	counterToJingle: 1,
 	status: 'stop', // [stop,play,pause] // general engine status
-	private: true, // [bool(true|false)] // karaoke mode
+	private: 1, // [int(1|0)] // karaoke mode
 	fullscreen: false,
 	ontop: true,
 	playlist: null,
@@ -60,7 +60,7 @@ export function setState(part) {
 
 function manageMode() {
 	state.private ? state.modePlaylistID = state.currentPlaylistID : state.modePlaylistID = state.publicPlaylistID;
-	if (state.private !== previousState.private) {
-		state.private ? logger.info('[Engine] Karaoke mode switching to private') : logger.info('[Engine] Karaoke mode switching to public');
+	if (+state.private !== +previousState.private) {
+		+state.private === 1 ? logger.info('[Engine] Karaoke mode switching to private') : logger.info('[Engine] Karaoke mode switching to public');
 	}
 }

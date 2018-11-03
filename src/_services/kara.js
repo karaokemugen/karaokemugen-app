@@ -2,9 +2,9 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_common/utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
-import {extractAllKaraFiles, readAllKaras} from '../_admin/generate_karasdb';
+import {compareKarasChecksum} from '../_admin/generate_karasdb';
 import logger from 'winston';
-import {getOrAddSerieID} from './series';
+import {findSeriesKaraByKaraID, getOrAddSerieID, deleteSerie} from './series';
 import {ASSToLyrics} from '../_common/utils/ass';
 import {getPlaylistContentsMini} from './playlist';
 import {getAllKaras as getAllKarasDB,
@@ -18,7 +18,8 @@ import {getAllKaras as getAllKarasDB,
 	updateKara,
 	getKaraHistory as getKaraHistoryDB,
 	getKaraViewcounts as getKaraViewcountsDB,
-	addViewcount
+	addViewcount,
+	getKaraByKID
 } from '../_dao/kara';
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
@@ -26,11 +27,13 @@ import sample from 'lodash.sample';
 import {getConfig} from '../_common/utils/config';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
-import {resolve} from 'path';
+import {basename, resolve} from 'path';
 import testJSON from 'is-valid-json';
 import {profile} from '../_common/utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 import { asyncUnlink, resolveFileInDirs } from '../_common/utils/files';
+import { getDataFromKaraFile } from '../_dao/karafile';
+
 
 export async function isAllKaras(karas) {
 	let err;
@@ -168,6 +171,13 @@ export async function getRandomKara(playlist_id, filter, username) {
 export async function deleteKara(kara_id) {
 	const kara = await getKaraMini(kara_id);
 	if (!kara) throw `Unknown kara ID ${kara_id}`;
+	// Find out which series this karaoke is from, and delete them if no more karaoke depends on them
+	const serieKaraIDs = await findSeriesKaraByKaraID(kara_id);
+	// If kara_ids contains only one entry, it means the series won't have any more kara attached to it, so it's safe to remove it.
+	for (const serieKara of serieKaraIDs) {
+		if (serieKara.kara_ids.split(',').length <= 1) await deleteSerie(serieKara.serie_id);
+	}
+	// Remove files
 	const conf = getConfig();
 	const PathsMedias = conf.PathMedias.split('|');
 	const PathsSubs = conf.PathSubs.split('|');
@@ -187,7 +197,9 @@ export async function deleteKara(kara_id) {
 	} catch(err) {
 		logger.warn(`[Kara] Non fatal : Removing subfile ${kara.subfile} failed : ${err}`);
 	}
-	return await deleteKaraDB(kara_id);
+	compareKarasChecksum({silent: true});
+	// Remove kara from database
+	await deleteKaraDB(kara_id);
 }
 
 export async function getKara(kara_id, username, lang) {
@@ -250,6 +262,21 @@ async function updateTags(kara) {
 	return await updateKaraTags(kara.kara_id, tags);
 }
 
+export async function integrateKaraFile(file) {
+	const karaData = getDataFromKaraFile(file);
+	karaData.karafile = basename(file);
+	const karaDB = getKaraByKID(karaData.KID);
+	if (karaDB) {
+		karaData.kara_id = karaDB.kara_id;
+		await editKaraInDB(karaData);
+		if (karaDB.karafile !== karaData.karafile) await asyncUnlink(await resolveFileInDirs(karaDB.karafile, getConfig().PathKaras.split('|')));
+		if (karaDB.mediafile !== karaData.mediafile) await asyncUnlink(await resolveFileInDirs(karaDB.mediafile, getConfig().PathMedias.split('|')));
+		if (karaDB.subfile !== 'dummy.ass' && karaDB.subfile !== karaData.subfile) await asyncUnlink(await resolveFileInDirs(karaDB.subfile, getConfig().PathSubs.split('|')));
+	} else {
+		await createKaraInDB(karaData);
+	}
+}
+
 export async function createKaraInDB(kara) {
 	kara.kara_id = await addKara(kara);
 	await Promise.all([
@@ -259,10 +286,10 @@ export async function createKaraInDB(kara) {
 }
 
 export async function editKaraInDB(kara) {
-	await updateKara(kara);
 	await Promise.all([
 		updateTags(kara),
-		updateSeries(kara)
+		updateSeries(kara),
+		updateKara(kara)
 	]);
 }
 
@@ -326,31 +353,6 @@ const karaConstraintsV3 = {
 	mediaduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	version: {numericality: {onlyInteger: true, equality: 3}}
 };
-
-export async function validateKaras() {
-	try {
-		const karaFiles = await extractAllKaraFiles();
-		const karas = await readAllKaras(karaFiles);
-		verifyKIDsUnique(karas);
-		if (karas.some((kara) => {
-			return kara.error;
-		})) throw 'One kara failed validation process';
-	} catch(err) {
-		throw err;
-	}
-}
-
-function verifyKIDsUnique(karas) {
-	const KIDs = [];
-	karas.forEach((kara) => {
-		if (!KIDs.includes(kara.KID)) {
-			KIDs.push(kara.KID);
-		} else {
-			logger.error(`[Kara] KID ${kara.KID} is not unique : duplicate found in karaoke ${kara.lang} - ${kara.series} - ${kara.type}${kara.order} - ${kara.title}`);
-			throw `Duplicate KID found : ${kara.KID}`;
-		}
-	});
-}
 
 export function karaDataValidationErrors(karaData) {
 	initValidators();

@@ -431,7 +431,7 @@
 	"WLCM_WELCOME": "WELCOME",
 	"WLCM_MSG": "From this screen you can get to various areas of the application",
 	"WLCM_MSG2": "Have fun!",
-	"WLCM_GETSTARTED": "Start Tutorial",
+	"WLCM_GETSTARTED": "START TUTORIAL",
 	"WLCM_KARAMANAGER": "MANAGE KARAOKE",
 	"WLCM_ADMINISTRATION": "SYSTEM",
 	"WLCM_HELP": "Online help",
@@ -511,5 +511,7 @@
 	"KARA_SUGGESTION_MAIL": "Can't find your heart's desire? Click here",
 	"KARA_SUGGESTION_SUBJECT": "New Song request: ",
 	"KARA_SUGGESTION_BODY": "Hello,%0D%0A How can this awesome song be missing from your base?%0D%0A I expect this infamy to be corrected asap, thanks.",
-	"KARA_SUGGESTION_NAME": "Name of the song"
+	"KARA_SUGGESTION_NAME": "Name of the song",
+	"BASE_UPDATE": "Database update",
+	"APP_UPDATE": "New version"
 }
