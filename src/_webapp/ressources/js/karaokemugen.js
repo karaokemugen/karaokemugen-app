@@ -2168,13 +2168,11 @@ var settingsNotUpdated;
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
 
-				console.log($('#playlist1 > li').length);
-
 				clusterize = [
 					new Clusterize({
 						scrollId: 'playlist1Container',
 						contentId: 'playlist1',
-						rows_in_block: isTouchScreen? 35 : 70,
+						rows_in_block: isTouchScreen? 40 : 70,
 						blocks_in_cluster: isTouchScreen? 4 : 5,
 						rows: []
 					})
@@ -2182,8 +2180,8 @@ var settingsNotUpdated;
 					new Clusterize({
 						scrollId: 'playlist2Container',
 						contentId: 'playlist2',
-						rows_in_block: isTouchScreen? 15 : 70,
-						blocks_in_cluster: isTouchScreen? 10 : 5,
+						rows_in_block: isTouchScreen? 40 : 70,
+						blocks_in_cluster: isTouchScreen? 4 : 5,
 						rows: []
 					})
 				];
@@ -2198,7 +2196,7 @@ var settingsNotUpdated;
 						refreshPlaylistDashboard(2);
 						playlistContentUpdating.done(() => {
 					
-							console.log(locScroll1, locScroll2);
+							// console.log(locScroll1, locScroll2);
 							if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
 							if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
 						});
