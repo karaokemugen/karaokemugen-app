@@ -455,3 +455,56 @@ startIntro = function(mode, stepLabel){
 	});
 	buttons.attr('class', 'btn btn-default' + (isTouchScreen ? ' btn-sm' : ' btn-xs' ));
 }
+
+
+function textSearch(kara, searchText){
+	searchText = deburr(searchText);
+	searchText = searchText.toLowerCase();
+
+	var searchOK = [];
+	var searchWords = searchText.split(' ');
+
+	var searchWordID = 0;
+	searchWords.forEach(function(searchWord) {
+		searchOK[searchWordID] = false;					
+		if (kara.NORM_title) {
+			if (kara.NORM_title.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+		}
+		if (kara.NORM_author) {
+			if (kara.NORM_author.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+		}
+		if (kara.NORM_serie) {
+			if (kara.NORM_serie.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+		}
+		if (kara.NORM_serie_altname) {
+			if (kara.NORM_serie_altname.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+		}
+		if (kara.NORM_singer) {
+			if (kara.NORM_singer.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+		}
+		if (kara.NORM_creator) {
+			if (kara.NORM_creator.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+		}					
+		if (kara.songtype_i18n_short) {
+			if (kara.songtype_i18n_short.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+			//Allows searches for "OP1", "OP2", and such to work.
+			var songorder = kara.songorder;
+			if (songorder === 0) songorder = '';
+			if ((kara.songtype_i18n_short.toLowerCase()+songorder).includes(searchWord)) searchOK[searchWordID] = true;
+		}
+		
+		if (kara.misc_i18n) {
+			if (kara.misc_i18n.toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;
+		}
+		if (kara.language_i18n) {						
+			if (deburr(kara.language_i18n).toLowerCase().includes(searchWord)) searchOK[searchWordID] = true;						
+		}
+
+		searchWordID++;
+	});
+	if (searchOK.indexOf(false) > -1 ) {
+		return false;
+	} else {
+		return true;
+	}
+}
