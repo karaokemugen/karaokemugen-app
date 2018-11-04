@@ -62,6 +62,7 @@ export async function writeSeriesFile(series) {
 	delete seriesData.series.NORM_i18n_name;
 	delete seriesData.series.serie_id;
 	delete seriesData.series.i18n_name;
+	delete seriesData.series.seriefile;
 	return await asyncWriteFile(seriesFile, JSON.stringify(seriesData, null, 2), {encoding: 'utf8'});
 }
 
