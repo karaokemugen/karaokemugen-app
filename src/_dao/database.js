@@ -80,7 +80,6 @@ async function doTransaction(items, sql) {
 		}
 		return await getUserDb().run('commit');
 	} catch(err) {
-		getUserDb().run('rollback');
 		throw err;
 	}
 }
