@@ -6,9 +6,8 @@ import {getAllTags} from '../_dao/tag';
 import {profile} from '../_common/utils/logger';
 
 export function translateTags(taglist,lang) {
-	const conf = getConfig();
 	// If lang is not provided, assume we're using node's system locale
-	if (!lang) lang = conf.EngineDefaultLocale;
+	if (!lang) lang = getConfig().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
 	if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
 	// Instanciate a translation object for our needs with the correct language.

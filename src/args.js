@@ -13,8 +13,8 @@ Options :
 --generate    Generates a new database then quits
 --strict      Generation/validation only. Strict mode, returns an error if the .kara had to be modified.
 --profiling   Displays profiling information for some functions
---test        Launches in test mode
---demo        Launches in demo mode
+--test        Launches in test mode (for running unit tests)
+--demo        Launches in demo mode (no admin panel, no password changes)
 --config file Specify a config file to use (default is config.ini)
 --updateBase  Update karaoke base files (no generation)
 --noBrowser   Do not open a browser window upon launch
