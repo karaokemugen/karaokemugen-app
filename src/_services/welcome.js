@@ -13,10 +13,7 @@ function generateAdminPassword() {
 			flag_admin: 1
 		},
 		null,
-		{
-			username: 'admin',
-			role: 'admin'
-		});
+		'admin');
 	return adminPassword;
 }
 
