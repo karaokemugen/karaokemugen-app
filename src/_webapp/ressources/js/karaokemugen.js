@@ -1190,7 +1190,7 @@ var settingsNotUpdated;
      */
 	// TODO if list is updated from another source (socket ?) keep the size of the playlist
 	fillPlaylist = function (side, scrollingType, scrolling) {
-		DEBUG && console.log(side);
+		DEBUG && console.log('side : ' + side);
 		var deferred = $.Deferred();
 		var dashboard = $('#panel' + side + ' .plDashboard');
 		var container = $('#panel' + side + ' .playlistContainer');
@@ -1199,7 +1199,7 @@ var settingsNotUpdated;
 		var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
-		var url, html, canTransferKara, canAddKara, dragHandle, playKara;
+		var url, urlFiltre, html, canTransferKara, canAddKara, dragHandle, playKara;
 		
 		localStorage.setItem('search' + side, filter ? filter : '');
 		localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
@@ -1245,14 +1245,29 @@ var settingsNotUpdated;
 		var fetchingData = $.Deferred();
 		var response;
 		if(idPlaylist == -1) {
-			if(filter) {
-				var content = karas.content.filter(kara => textSearch(kara, filter));
-				response = { infos : {count: content.length, from: 0, to: content.length}, content: content };
+			var gettingKaras = $.Deferred();
+			if(!karas) {
+				$.ajax({  url: 'public/karas',
+					type: 'GET', async: true,
+					dataType: 'json' })
+					.done(function(data) {
+						karas = data;
+						gettingKaras.resolve();
+					});
 			} else {
-				response = karas;
+				gettingKaras.resolve();
 			}
-
-			fetchingData.resolve();
+			
+			gettingKaras.done(() => {
+				if(filter) {
+					var content = karas.content.filter(kara => textSearch(kara, filter));
+					response = { infos : {count: content.length, from: 0, to: content.length}, content: content };
+				} else {
+					response = karas;
+				}
+	
+				fetchingData.resolve();
+			});
 		} else {
 			ajaxSearch[url] = $.ajax({  url: urlFiltre,
 				type: 'GET', async: async,
@@ -2188,21 +2203,18 @@ var settingsNotUpdated;
 
 				playlistsUpdating.done(function () {
 				
-					ajx('GET', 'public/karas', {}, function(data) {
-						karas = data;
-						playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
+			
+					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
 
-						refreshPlaylistDashboard(1);
-						refreshPlaylistDashboard(2);
-						playlistContentUpdating.done(() => {
-					
-							// console.log(locScroll1, locScroll2);
-							if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
-							if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
-						});
-						$(window).trigger('resize');
+					refreshPlaylistDashboard(1);
+					refreshPlaylistDashboard(2);
+					playlistContentUpdating.done(() => {
+				
+						// console.log(locScroll1, locScroll2);
+						if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
+						if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
 					});
-					
+					$(window).trigger('resize');
 				});
 			});
 		}
