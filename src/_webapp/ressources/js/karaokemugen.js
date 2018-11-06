@@ -60,7 +60,6 @@ var serieMoreInfoButton;
 var karas;
 var listTypeBlc;
 var tagsTypesList;
-var tagsTypesToKaraProp;
 var plData;
 var tagsGroups;
 var flattenedTagsGroups;
@@ -1059,8 +1058,7 @@ var settingsNotUpdated;
 		'BLCTYPE_5',
 		'BLCTYPE_6',
 		'BLCTYPE_7',
-		'BLCTYPE_8'
-		];
+		'BLCTYPE_8'];
 
 	tagsTypesList = [
 		'DETAILS_SERIE',
@@ -1071,20 +1069,8 @@ var settingsNotUpdated;
 		'BLCTYPE_5',
 		'BLCTYPE_6',
 		'DETAILS_YEAR',
-		'BLCTYPE_8'
-		];
+		'BLCTYPE_8'];
 
-	tagsTypesToKaraProp = {
-		'serie'	: 'serie_orig',
-		'year'	: 'year',
-		'2'		: 'singer',
-		'3'		: 'songtype',
-		'4'		: 'creator',
-		'5'		: 'language',
-		'6'		: 'author',
-		'7'		: 'misc' ,
-		'8'		: 'songwriter'
-	};
 	/* list of error code allowing an info popup message on screen */
 	showInfoMessage = [
 		'USER_CREATED',
@@ -1243,16 +1229,22 @@ var settingsNotUpdated;
 
 		urlFiltre = url + (idPlaylist != -1 ? '?filter=' + filter + fromTo : '');
 
-		/* filters part */
+
 		var $filter = $('#searchMenu' + side + ' li.active');
 		var searchType = $filter.attr('searchType');
 		var searchValue = $filter.attr('searchValue');
-	
+		if(searchType) {
+			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchValue ? searchValue : '');
+		}
+
+		// ask for the kara list from given playlist
+		if (ajaxSearch[url]) ajaxSearch[url].abort();
+		//var start = window.performance.now();
+		var async = !(isTouchScreen && isChrome && scrollingType);
+
 		var fetchingData = $.Deferred();
 		var response;
-
 		if(idPlaylist == -1) {
-
 			var gettingKaras = $.Deferred();
 			if(!karas) {
 				$.ajax({  url: 'public/karas',
@@ -1267,41 +1259,16 @@ var settingsNotUpdated;
 			}
 			
 			gettingKaras.done(() => {
-				response = karas;
-
-				var content = response.content;
-				
-				if(searchType) {
-					if (searchType == 'recent') {
-						content = content.sort((a,b) => a.created_at > b.created_at);
-					} else if (searchType == 'popular') {
-						content = content.sort((a,b) => a.requested > b.requested);
-					} else if (searchType == 'tag' || searchType == 'serie' || searchType == 'year') {
-						var tag = $filter.find('select.tags').select2('data')[0]
-						var prop = tagsTypesToKaraProp[tag.type];
-						content = content.filter(kara => kara[prop] == tag.name);
-					}
-				}
 				if(filter) {
-					content = content.filter(kara => textSearch(kara, filter));
+					var content = karas.content.filter(kara => textSearch(kara, filter));
 					response = { infos : {count: content.length, from: 0, to: content.length}, content: content };
-				} 
+				} else {
+					response = karas;
+				}
 	
-				response = { infos : {count: content.length, from: 0, to: content.length}, content: content };
 				fetchingData.resolve();
 			});
 		} else {
-
-			if(searchType) {
-				urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchValue ? searchValue : '');
-			}
-	
-			// ask for the kara list from given playlist
-			if (ajaxSearch[url]) ajaxSearch[url].abort();
-			//var start = window.performance.now();
-			var async = !(isTouchScreen && isChrome && scrollingType);
-
-			
 			ajaxSearch[url] = $.ajax({  url: urlFiltre,
 				type: 'GET', async: async,
 				dataType: 'json' })
@@ -2290,14 +2257,14 @@ var settingsNotUpdated;
 			$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
 
 			forSelectTags = tags.map(function(val, ind){
-				return {id:val.tag_id, text: val.name_i18n, name: val.name, type: val.type};
+				return {id:val.tag_id, text: val.name_i18n, type: val.type};
 			});
 
 			$.ajax({ url: 'public/series', }).done(function (data) {
 
 				var series = data.content;
 				series = series.map(function(val, ind){
-					return {id:val.serie_id, text: val.i18n_name, name: val.name, type: 'serie'};
+					return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
 				});
 				forSelectTags.push.apply(forSelectTags, series);
 
@@ -2305,7 +2272,7 @@ var settingsNotUpdated;
 
 					var years = data.content;
 					years = years.map(function(val, ind){
-						return {id:val.year, text: val.year, name: val.year, type: 'year'};
+						return {id:val.year, text: val.year, type: 'year'};
 					});
 					forSelectTags.push.apply(forSelectTags, years);
 
@@ -2321,8 +2288,8 @@ var settingsNotUpdated;
 								var type = $('.tagsTypes').val();
 
 								var items = forSelectTags.filter(function(item) {
-									return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
-								});
+										return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
+									});
 								var totalLength = items.length;
 
 								if(page) {
