@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import openSocket from 'socket.io-client';
 import { Tabs, List } from 'antd';
 import {
 	filterLocalKaras,
@@ -25,6 +26,16 @@ class ManageKaras extends Component {
 		this.props.filterLocalKaras(this.state.filter);
 		this.props.filterOnlineKaras();
 		this.props.toggleWatchDownloadQueue();
+
+		const downloadSocket = openSocket('http://localhost:1337');
+		downloadSocket.on('downloadProgress', data => {
+			console.log('downloadProgress', data);
+		});
+		downloadSocket.on('downloadBatchProgress', data => {
+			console.log('downloadBatchProgress', data => {
+				console.log('downloadBatchProgress', data);
+			});
+		});
 	}
 
 	componentDidUpdate() {
@@ -68,8 +79,6 @@ class ManageKaras extends Component {
 		);
 		const renderDownloadQueue = item => {
 			const kara= onlineKaras.find(k => k.name === item.name) || {};
-			console.log(item);
-			console.log(kara);
 			return (
 				<ListItem key={''}>
 					<ListItem.Meta title={''} />
