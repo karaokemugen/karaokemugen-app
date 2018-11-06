@@ -35,7 +35,7 @@ export const defaultGuestNames = [
 	'Char Aznable',
 	'Kira "Jesus" Yamato',
 	'Mahoro',
-	'Fanboy des CLAMP',
+	'CLAMP Fanboy',
 	'Laughing Man',
 	'Anime was a mistake',
 	'La Police des Doujins',
@@ -65,7 +65,7 @@ export const defaultGuestNames = [
 	'Kyonko',
 	'My karaoke can\'t be this cute',
 	'No bully please',
-	'Le type avec un t-shirt blanc là-bas',
+	'The guy with a white t-shirt over there',
 	'David Goodenough',
 	'Kiss-Shot Acerola-Orion Heart-Under-Blade',
 	'BATMAN',
@@ -73,7 +73,7 @@ export const defaultGuestNames = [
 	'Une simple rêveuse',
 	'Kamel Deux Bâches',
 	'Segata Sanshiro',
-	'Une maman avec une tresse sur l\'épaule',
+	'A mother with a braid on her shoulder',
 	'El Psy Kongroo',
 	'KuriGohan and Kamehameha',
 	'Gihren Zabi did nothing wrong',
@@ -96,6 +96,7 @@ export const defaultGuestNames = [
 	'Asuka > Rei',
 	'Rei > Asuka',
 	'Rin > Saber',
+	'Saber > Rin',
 	'Yamakan',
 	'Giga Drill Breaker'
 ];
@@ -123,7 +124,7 @@ export const initializationCatchphrases = [
 	'"Do you remember the number of songs you have sung in your life?" --Dio Brando',
 	'"Let\'s make a strawberry parfait from this karaoke!" --Hoshimiya Ichigo',
 	'"Karaoke... has changed" --Solid "Old" Snake',
-	'"Operation Start!" --Yurippe',
+	'"Karaoke Start!" --Yurippe',
 	'"ALL HAIL KARAOKE MUGEN!" --Lelouch',
 	'"It\'s over 9000!" --Someone in 2020 about the Karaoke Mugen database',
 	'"This karaoke is corrupt!" --Il Palazzo-sama',
@@ -133,7 +134,7 @@ export const initializationCatchphrases = [
 	'"Not singing would tarnish the reputation of the Seto mermen!" --Sun Seto',
 	'"I must not run away from karaoke" --Shinji Ikari',
 	'"Karaoke is top priority!" --Mizuho Kazami',
-	'"Darkness beyond twilight.	Crimson beyond blood that flows. Buried in the flow of time. In thy great name, I pledge myself to darkness. Let all the fools who stand in our way be destroyed, by the power you and I possess...	DRAGON SLAVE!" --Lina Inverse (after someone requested the song "Otome no Inori")',
+	'"Darkness beyond twilight. Crimson beyond blood that flows. Buried in the flow of time. In thy great name, I pledge myself to darkness. Let all the fools who stand in our way be destroyed, by the power you and I possess... DRAGON SLAVE!" --Lina Inverse (after someone requested the song "Otome no Inori")',
 	'"My microphone is the one that will pierce the heavens!" --Kamina'
 ];
 
@@ -179,22 +180,6 @@ export const karaTypesMap = Object.freeze(new Map([
 export function getType(types) {
 	return types.split(/\s+/).find(t => karaTypesArray.includes(t));
 }
-
-export const specialTags = Object.freeze({
-	GAME: 'GAME',
-	GC: 'GC',
-	MOVIE: 'MOVIE',
-	OAV: 'OAV',
-	PS3: 'PS3',
-	PS2: 'PS2',
-	PSV: 'PSV',
-	PSX: 'PSX',
-	R18: 'R18',
-	REMIX: 'REMIX',
-	SPECIAL: 'SPECIAL',
-	VOCA: 'VOCA',
-	XBOX360: 'XBOX360',
-});
 
 export const tags = [
 	'SPECIAL',
@@ -244,25 +229,3 @@ export const tags = [
 	'WII',
 	'SWITCH'
 ];
-
-export const specialTagsArray = Object.freeze(Object.keys(specialTags));
-
-export const specialTagsMap = Object.freeze(new Map([
-	[specialTags.GAME, 'TAG_VIDEOGAME,7'],
-	[specialTags.GC, 'TAG_GAMECUBE,7'],
-	[specialTags.MOVIE, 'TAG_MOVIE,7'],
-	[specialTags.OAV, 'TAG_OVA,7'],
-	[specialTags.PS3, 'TAG_PS3,7'],
-	[specialTags.PS2, 'TAG_PS2,7'],
-	[specialTags.PSV, 'TAG_PSV,7'],
-	[specialTags.PSX, 'TAG_PSX,7'],
-	[specialTags.R18, 'TAG_R18,7'],
-	[specialTags.REMIX, 'TAG_REMIX,7'],
-	[specialTags.SPECIAL, 'TAG_SPECIAL,7'],
-	[specialTags.VOCA, 'TAG_VOCALOID,7'],
-	[specialTags.XBOX360, 'TAG_XBOX360,7']
-]));
-
-export function getSpecialTags(tags) {
-	return tags.split(/\s+/).filter(t => specialTagsArray.includes(t));
-}

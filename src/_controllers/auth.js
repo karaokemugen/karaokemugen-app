@@ -1,7 +1,7 @@
 import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
-import {findUserByName, updateUserFingerprint, findFingerprint, checkPassword, updateLastLoginName, checkUserNameExists} from '../_services/user';
+import {findUserByName, updateUserFingerprint, findFingerprint, checkPassword, updateLastLoginName} from '../_services/user';
 
 const loginErr = {
 	code: 'LOG_ERROR',
@@ -12,7 +12,7 @@ const loginErr = {
 
 async function checkLogin(username, password) {
 	const config = getConfig();
-	if (!await checkUserNameExists(username) || !await checkPassword(username, password)) throw false;
+	if (!await findUserByName(username) || !await checkPassword(username, password)) throw false;
 	const role = await getRole(username);
 	updateLastLoginName(username);
 	return {

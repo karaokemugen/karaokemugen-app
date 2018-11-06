@@ -1,10 +1,5 @@
 // SQL queries for user manipulation
 
-export const testUserName = `SELECT pk_id_user
-								FROM user
-								WHERE login = $login;
-							`;
-
 export const testNickname = `SELECT pk_id_user
 								FROM user
 								WHERE nickname = $nickname
@@ -181,7 +176,9 @@ export const editUser = `UPDATE user SET
 							avatar_file = $avatar_file,
 							bio = $bio,
 							email = $email,
-							url = $url
+							url = $url,
+							flag_admin = $flag_admin,
+							type = $type
 						WHERE
 							pk_id_user = $id
 						   `;

@@ -174,7 +174,6 @@ async function importKara(mediaFile, subFile, data) {
 		const fileLang = data.lang[0].toUpperCase();
 		kara = sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`);
 	}
-
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
 	let karaSubFile;
 	subFile === 'dummy.ass' ? karaSubFile = subFile : karaSubFile = `${kara}${extname(subFile || '.ass')}`;

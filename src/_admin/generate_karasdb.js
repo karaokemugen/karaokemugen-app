@@ -484,7 +484,7 @@ function prepareAllTagsInsertData(allTags) {
 		let tagNorm;
 		if (+tagType === 7) {
 			const tagTranslations = [];
-			for (const [key, value] of Object.entries(translations)) {
+			for (const value of Object.values(translations)) {
 				// Key is the language, value is a i18n text
 				if (value[tagName]) tagTranslations.push(value[tagName]);
 			}
@@ -551,9 +551,8 @@ async function runSqlStatementOnData(stmtPromise, data) {
 }
 
 function createBar(message, length) {
-	const barFormat = `${message} {bar} {percentage}% - ETA {eta_formatted}`;
 	initBar({
-		format: barFormat,
+		format: `${message} {bar} {percentage}% - ETA {eta_formatted}`,
 		stopOnComplete: true
 		  }, cliProgress.Presets.shades_classic, length, 0);
 }
@@ -567,7 +566,6 @@ export async function run(config) {
 
 		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 		logger.info('[Gen] Starting database generation');
-		logger.info('[Gen] GENERATING DATABASE CAN TAKE A WHILE, PLEASE WAIT.');
 		const db = await open(karas_dbfile, {verbose: true, Promise});
 		const karaFiles = await extractAllKaraFiles();
 		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
@@ -624,11 +622,6 @@ export async function run(config) {
 		await db.close();
 		await checkUserdbIntegrity(null, conf);
 		stopBar();
-		emitWS('generationProgress', {
-			value: 100,
-			total: 100,
-			text: 'Generation done'
-		});
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
@@ -792,7 +785,7 @@ export async function compareKarasChecksum(opts = {silent: false}) {
 		if (!opts.silent) incrBar();
 	}
 	if (!opts.silent) stopBar();
-	if (!opts.silent) createBar('Checking series...   ', karaFiles.length);
+	if (!opts.silent) createBar('Checking series...   ', seriesFiles.length);
 	for (const seriesFile of seriesFiles) {
 		KMData += await asyncReadFile(seriesFile, 'utf-8');
 		if (!opts.silent) incrBar();

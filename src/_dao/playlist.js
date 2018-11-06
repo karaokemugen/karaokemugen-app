@@ -80,7 +80,7 @@ export async function getMaxPosInPlaylist(id) {
 	return await getUserDb().get(sql.getMaxPosInPlaylist, { $playlist_id: id });
 }
 
-export async function reorderPlaylist(playlist_id,playlist) {
+export async function reorderPlaylist(playlist) {
 	let newpos = 0;
 	const karaList = playlist.map((kara) => ({
 		$pos: ++newpos,
@@ -169,7 +169,7 @@ export async function getPlaylistInfo(id) {
 	});
 }
 
-export async function getPlaylists(forUser,username) {
+export async function getPlaylists(forUser) {
 	let query = sql.getPlaylists;
 	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';
 	if (forUser) return await getUserDb().all(query + ' AND p.flag_visible = 1 ' + order);

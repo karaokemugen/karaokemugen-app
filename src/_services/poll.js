@@ -1,7 +1,7 @@
 
 import {on} from '../_common/utils/pubsub';
 import {getConfig} from '../_common/utils/config';
-import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, isACurrentPlaylist, getPlaylistContentsMini} from '../_services/playlist';
+import {copyKaraToPlaylist, translateKaraInfo, isAllKarasInPlaylist, getPlaylistContentsMini} from '../_services/playlist';
 import sample from 'lodash.sample';
 import sampleSize from 'lodash.samplesize';
 import {emitWS} from '../_webapp/frontend';
@@ -57,7 +57,7 @@ export async function getPollResults() {
 	}
 	let winner = sample(winners);
 	winner = translateKaraInfo(winner);
-	const playlist_id = await isACurrentPlaylist();
+	const playlist_id = getState().currentPlaylistID;
 	await copyKaraToPlaylist([winner[0].playlistcontent_id],playlist_id);
 	emitWS('playlistInfoUpdated',playlist_id);
 	emitWS('playlistContentsUpdated',playlist_id);
@@ -94,7 +94,7 @@ export async function addPollVote(playlistcontent_id,token) {
 	};
 }
 
-export async function startPoll(publicPlaylist_id, currentPlaylist_id) {
+export async function startPoll() {
 	const conf = getConfig();
 	if (poll.length > 0) {
 		logger.info('[Poll] Unable to start poll, another one is already in progress');
@@ -107,8 +107,8 @@ export async function startPoll(publicPlaylist_id, currentPlaylist_id) {
 	// Create new poll
 	// Get a list of karaokes to add to the poll
 	const [pubpl, curpl] = await Promise.all([
-		getPlaylistContentsMini(publicPlaylist_id),
-		getPlaylistContentsMini(currentPlaylist_id)
+		getPlaylistContentsMini(getState().publicPlaylistID),
+		getPlaylistContentsMini(getState().currentPlaylistID)
 	]);
 	if (pubpl.length === 0) {
 		logger.info('[Poll] Public playlist is empty, cannot select songs for poll');
@@ -118,6 +118,7 @@ export async function startPoll(publicPlaylist_id, currentPlaylist_id) {
 	let pollChoices = conf.EngineSongPollChoices;
 	if (availableKaras.length < pollChoices) pollChoices = availableKaras.length;
 	poll = sampleSize(availableKaras,pollChoices);
+	//Init votes to 0 for each poll item
 	for (const index in poll) {
 		poll[index].votes = 0;
 	}

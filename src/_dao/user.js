@@ -5,10 +5,6 @@ export async function getUserByName(username) {
 	return await getUserDb().get(sql.selectUserByName, { $username: username });
 }
 
-export async function checkUserNameExists(username) {
-	return await getUserDb().get(sql.testUserName, { $login: username });
-}
-
 export async function checkNicknameExists(nickname,NORM_nickname) {
 	return await getUserDb().get(sql.testNickname, {
 		$nickname: nickname,
@@ -58,7 +54,9 @@ export async function editUser(user) {
 		$login: user.login,
 		$bio: user.bio,
 		$url: user.url,
-		$email: user.email
+		$email: user.email,
+		$flag_admin: user.flag_admin,
+		$type: user.type
 	});
 }
 
