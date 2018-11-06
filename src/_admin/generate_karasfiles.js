@@ -106,7 +106,7 @@ async function generateKara(kara, opts) {
 	}
 	*/
 	if (!opts) opts = {};
-	if ((kara.type !== 'MV' || kara.type !== 'LIVE') && kara.series.length < 1) throw 'Series cannot be empty if type is not MV or LIVE';
+	if ((kara.type !== 'MV' && kara.type !== 'LIVE') && kara.series.length < 1) throw 'Series cannot be empty if type is not MV or LIVE';
 	if (!kara.mediafile) throw 'No media file uploaded';
 	const validationErrors = check(kara, {
 		year: {integerValidator: true},
