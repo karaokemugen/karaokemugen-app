@@ -4887,7 +4887,7 @@ export function APIControllerPublic(router) {
 	 * @apiVersion 2.4.0
 	 * @apiGroup Misc
 	 * @apiPermission public
-	 * @apiSuccess {Array} Array Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if
+	 * @apiSuccess {Array} Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if RSS feed could not be obtained.
 	 */
 	 .get(getLang, async (req, res) => {
 			try {
