@@ -4,6 +4,14 @@ export const KARAS_FILTER_LOCAL = 'KARAS_FILTER_LOCAL';
 export const KARAS_FILTER_ONLINE = 'KARAS_FILTER_ONLINE';
 export const KARAS_LOAD_ONLINE = 'KARAS_LOAD_RECENT_ONLINE';
 
+export const KARAS_LOAD_DOWNLOAD_QUEUE = 'KARAS_LOAD_DOWNLOAD_QUEUE';
+
+export const KARAS_SET_IS_SEARCHING = 'KARAS_SET_IS_SEARCHING';
+
+// Might not be the best actions
+export const KARAS_TOGGLE_WATCH_DOWNLOAD = 'KARAS_TOGGLE_WATCH_DOWNLOAD';
+export const KARAS_ADD_TO_DOWNLOAD_QUEUE = 'KARAS_ADD_TO_DOWNLOAD_QUEUE';
+
 // Runs a filter against the karas, {} || null will get all karas
 export function filterLocalKaras(filter) {
 	return {
@@ -21,7 +29,7 @@ export function loadLocalKaras(localKaras) {
 }
 
 // Fetch recent karas from kara.moe. Defaults to recent if no filter is applied (for now)
-export function filterOnlineKaras(filter = 'RECENT') {
+export function filterOnlineKaras(filter) {
 	return {
 		type: KARAS_FILTER_ONLINE,
 		payload: filter
@@ -33,5 +41,25 @@ export function loadOnlineKaras(onlineKaras) {
 	return {
 		type: KARAS_LOAD_ONLINE,
 		payload: onlineKaras
+	};
+}
+
+export function toggleWatchDownloadQueue() {
+	return {
+		type: KARAS_TOGGLE_WATCH_DOWNLOAD
+	};
+}
+
+export function setIsSearching(isSearching) {
+	return {
+		type: KARAS_SET_IS_SEARCHING,
+		payload: isSearching
+	};
+}
+
+export function downloadSong(kid) {
+	return {
+		type: KARAS_ADD_TO_DOWNLOAD_QUEUE,
+		payload: kid
 	};
 }
