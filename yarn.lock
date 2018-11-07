@@ -6035,10 +6035,10 @@ symbol-observable@^1.2.0:
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
   integrity sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==
 
-systeminformation@^3.46.0:
-  version "3.46.0"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-3.46.0.tgz#f822f53069c0a57a849bea38b49467b09b0e6e61"
-  integrity sha512-1ZmR+Pt2DFDzV+gDsEe2exFyJBlJ5jcHMNQ5d9Byc2JXWWWjOs1nwKOW7MGKZXMlwrblWt9rbma8rIQo+h1ZxA==
+systeminformation@^3.47.0:
+  version "3.47.0"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-3.47.0.tgz#a336a45ae57410983dc0830ff990d52d6ce84c13"
+  integrity sha512-l8UgNGr2dZgzc4CPTpzMLjq4zyPRWUZ8G4f1rM/DsKnqQqKFthhoEdkwOkuG2If7kw96lHvdA4ORUNFPfZ+DaQ==
 
 table@^5.0.2:
   version "5.1.0"
@@ -6476,10 +6476,10 @@ winston-compat@^0.1.4:
     logform "^1.6.0"
     triple-beam "^1.2.0"
 
-winston-daily-rotate-file@^3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/winston-daily-rotate-file/-/winston-daily-rotate-file-3.4.1.tgz#e7d90b8964c2d6babf284d747bab43d3fc4210b6"
-  integrity sha512-1OzcNY0AmfNFGQJIF4Q4Z024NwQSzog4H0vDnrg9Q2pHtTRvbDbhL/OFYEFa5ZQ0He7Wcq+kY2kMazVeqYctDA==
+winston-daily-rotate-file@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/winston-daily-rotate-file/-/winston-daily-rotate-file-3.5.0.tgz#f1d3420e1ecfc52c30ed0718926246fcb0ced30b"
+  integrity sha512-6zYxOGFkZcK+m7Fyrjn3Kmx5ac+To1TtOI1EdgBmHKdSIpZrvV7lVWln8FmyFzAftoXMoGxf3yIatLGMoREQSw==
   dependencies:
     file-stream-rotator "^0.4.1"
     object-hash "^1.3.0"
