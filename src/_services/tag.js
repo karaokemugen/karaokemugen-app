@@ -6,9 +6,8 @@ import {getAllTags} from '../_dao/tag';
 import {profile} from '../_common/utils/logger';
 
 export function translateTags(taglist,lang) {
-	const conf = getConfig();
 	// If lang is not provided, assume we're using node's system locale
-	if (!lang) lang = conf.EngineDefaultLocale;
+	if (!lang) lang = getConfig().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
 	if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
 	// Instanciate a translation object for our needs with the correct language.
@@ -31,6 +30,8 @@ export function translateTags(taglist,lang) {
 		if (tag.type === 5) {
 			if (tag.name === 'und') {
 				taglist[index].name_i18n = i18n.__('UNDEFINED_LANGUAGE');
+			} else if (tag.name === 'zxx') {
+				taglist[index].name_i18n = i18n.__('NO_LANGUAGE');
 			} else {
 				// We need to convert ISO639-2B to ISO639-1 to get its language
 				const langdata = langs.where('2B', tag.name);

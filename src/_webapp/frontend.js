@@ -13,12 +13,14 @@ import {configurePassport} from '../_webapp/passport_manager';
 import authController from '../_controllers/auth';
 import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
 import {createServer} from 'http';
+import { initializationCatchphrases } from '../_services/constants';
+import sample from 'lodash.sample';
 
 let ws;
 
-export async function emitWS(type,data) {
+export function emitWS(type,data) {
 	//logger.debug( '[WS] Sending message '+type+' : '+JSON.stringify(data));
-	ws.sockets.emit(type,data);
+	if (ws) ws.sockets.emit(type,data);
 }
 
 export async function initFrontend(port) {

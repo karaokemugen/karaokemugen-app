@@ -31,15 +31,11 @@ import {profile} from '../_common/utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 
 export async function isAllKaras(karas) {
-	let err;
+	let allKarasOK = true;
 	for (const kara_id of karas) {
-		if (!await isKara(kara_id)) err = true;
+		if (!await isKara(kara_id)) allKarasOK = false;
 	}
-	if (err) {
-		return false;
-	} else {
-		return true;
-	}
+	return allKarasOK;
 }
 
 async function isKara(kara_id) {
@@ -47,9 +43,8 @@ async function isKara(kara_id) {
 }
 
 export function translateKaraInfo(karalist, lang) {
-	const conf = getConfig();
 	// If lang is not provided, assume we're using node's system locale
-	if (!lang) lang = conf.EngineDefaultLocale;
+	if (!lang) lang = getConfig().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
 	if (!langs.has('1',lang)) throw `Unknown language : ${lang}`;
 	// Instanciate a translation object for our needs with the correct language.
@@ -73,7 +68,6 @@ export function translateKaraInfo(karalist, lang) {
 	karas.forEach((kara,index) => {
 		karas[index].songtype_i18n = i18n.__(kara.songtype);
 		karas[index].songtype_i18n_short = i18n.__(kara.songtype+'_SHORT');
-
 		if (kara.language != null) {
 			const karalangs = kara.language.split(',');
 			let languages = [];
@@ -90,6 +84,9 @@ export function translateKaraInfo(karalist, lang) {
 					break;
 				case 'mul':
 					languages.push(i18n.__('MULTI_LANGUAGE'));
+					break;
+				case 'zxx':
+					languages.push(i18n.__('NO_LANGUAGE'));
 					break;
 				default:
 					// We need to convert ISO639-2B to ISO639-1 to get its language
@@ -142,13 +139,14 @@ export async function getAllKaras(username, filter, lang, searchType, searchValu
 export async function getRandomKara(playlist_id, filter, username) {
 	logger.debug('[Kara] Requesting a random song');
 	// Get karaoke list
-	let karas = await getAllKaras(username, filter);
+	let [karas, pl] = await Promise.all([
+		getAllKaras(username, filter),
+		getPlaylistContentsMini(playlist_id)
+	]);
 	// Strip list to just kara IDs
 	karas.forEach((elem,index) => {
 		karas[index] = elem.kara_id;
 	});
-	//Now, get current playlist's contents.
-	const pl = await getPlaylistContentsMini(playlist_id);
 	//Strip playlist to just kara IDs
 	pl.forEach((elem,index) => {
 		pl[index] = elem.kara_id;
@@ -209,6 +207,7 @@ async function updateTags(kara) {
 	if (kara.creator) kara.creator.split(',').forEach(t => tags.push({tag: t, type: tagTypes.creator}));
 	if (kara.author) kara.author.split(',').forEach(t => tags.push({tag: t, type: tagTypes.author}));
 	if (kara.lang) kara.lang.split(',').forEach(t => tags.push({tag: t, type: tagTypes.lang}));
+	if (kara.groups) kara.groups.split(',').forEach(t => tags.push({tag: t, type: tagTypes.group}));
 
 	//Songtype is a little specific.
 	tags.push({tag: karaTypes[kara.type].dbType, type: tagTypes.songtype});
@@ -297,37 +296,6 @@ const karaConstraintsV3 = {
 	version: {numericality: {onlyInteger: true, equality: 3}}
 };
 
-const karaConstraintsV2 = {
-	videofile: {
-		presence: {allowEmpty: false},
-		format: mediaFileRegexp
-	},
-	subfile: {
-		presence: {allowEmpty: false},
-		format: subFileRegexp
-	},
-	title: {presence: {allowEmpty: true}},
-	type: {presence: true, inclusion: karaTypesArray},
-	series: function(value, attributes) {
-		if (!serieRequired(attributes['type'])) {
-			return { presence: {allowEmpty: true} };
-		} else {
-			return { presence: {allowEmpty: false} };
-		}
-	},
-	lang: {langValidator: true},
-	order: {integerValidator: true},
-	year: {integerValidator: true},
-	KID: {presence: true, format: uuidRegexp},
-	dateadded: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	datemodif: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	videosize: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	videogain: {numericality: true},
-	videoduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	version: {numericality: {onlyInteger: true, lowerThanOrEqualTo: 2}}
-};
-
-
 export async function validateKaras() {
 	try {
 		const karaFiles = await extractAllKaraFiles();
@@ -355,24 +323,16 @@ function verifyKIDsUnique(karas) {
 
 export function karaDataValidationErrors(karaData) {
 	initValidators();
-	switch (karaData.version) {
-	case 0:
-	case 1:
-	case 2:
-		return check(karaData, karaConstraintsV2);
-	default:
-	case 3:
-		return check(karaData, karaConstraintsV3);
-	}
+	return check(karaData, karaConstraintsV3);
 }
 
 export function verifyKaraData(karaData) {
+	// Version 2 is considered deprecated, so let's throw an error.
+	if (karaData.version < 3) throw 'Karaoke version 2 or lower is deprecated';
 	const validationErrors = karaDataValidationErrors(karaData);
 	if (validationErrors) {
 		throw `Karaoke data is not valid: ${JSON.stringify(validationErrors)}`;
 	}
-	// Version 2 is considered deprecated, so let's throw an error.
-	if (karaData.version < 3) throw 'Karaoke version 2 or lower is deprecated';
 }
 
 /** Only MV or LIVE types don't have to have a series filled. */

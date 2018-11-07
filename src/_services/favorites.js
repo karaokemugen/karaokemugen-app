@@ -1,6 +1,6 @@
 import {getFavoritesPlaylist} from '../_dao/favorites';
 import {importPlaylist, exportPlaylist, getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini, getPlaylistContents} from '../_services/playlist';
-import {listUsers, checkUserNameExists} from '../_services/user';
+import {listUsers, findUserByName} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_common/utils/date';
 import {profile} from '../_common/utils/logger';
@@ -47,7 +47,7 @@ export async function deleteFavorite(username, kara_id) {
 		return false;
 	});
 	if (!isKaraInPL) throw 'Karaoke ID is not present in this favorites list';
-	await deleteKaraFromPlaylist([plc_id], plInfo.playlist_id, null, {sortBy: 'name'});
+	await deleteKaraFromPlaylist(plc_id, plInfo.playlist_id, null, {sortBy: 'name'});
 	profile('deleteFavorites');
 	return plInfo;
 }
@@ -66,8 +66,7 @@ async function getAllFavorites(userList) {
 	const plcs = [];
 	const kara_ids = [];
 	for (const user of userList) {
-		const res = await checkUserNameExists(user);
-		if (!res) {
+		if (!await findUserByName(user)) {
 			logger.warn(`[AutoMix] Username ${user} does not exist`);
 		} else {
 			const plInfo = await getFavoritesPlaylist(user);

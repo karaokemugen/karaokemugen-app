@@ -101,30 +101,38 @@ a:active {
 
 
 #center-area {
-    padding:8% 0;
+    padding: 0;
     background: rgba(0, 0, 0, 0) linear-gradient(135deg, hsla(205, 39%, 20%, 1) 0%, hsla(151, 17%, 40%, 1) 100%) repeat scroll 0 0
 }
-
-#center-area .block {
-  padding-top: 100px;
+#center-area > .container,
+#center-area > .container > .row {
+    height: 100%;
+    padding: 5px;
 }
-#center-area .block h1 {
+.logoDiv {
+    padding-top: 80px;
+    margin-bottom: 20px;
+}
+#center-area .block {
+  padding-top: 5px;
+}
+#center-area .block h1.wow {
   margin-bottom: 35px;
-  margin-top: 40px;
+  margin-top: 5px;
   text-transform: uppercase;
   font-size: 40px;
   letter-spacing: 6px;
   position: relative;
 }
-#center-area .block h1:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -12px;
-  background: #fff;
-  height: 3px;
-  width: 110px;
-
+#center-area h1.wow:before {
+    content: "";
+    position: absolute;
+    left: -6px;
+    bottom: -12px;
+    background: #ffffffad;
+    height: 2px;
+    width: 51%;
+    transform: translateX(50%);
 }
 
 .navbar-default {
@@ -132,13 +140,29 @@ a:active {
 }
 
 /* #center-area  */
+
+#center-area .menu .tutorialText {
+    display: none;
+}
+#center-area .tutorial .normalText {
+    display: none;
+}
+#center-area .tutorial .tutorialText {
+    display: block;
+}
+.tutorial {
+    border: 3px solid  #d83838a8;
+}
 .animated .logo-2 {
     display: block!important;
 }
 .logo-1, .logo-2 {
-    display: inline !important;
-    transform: scaleX(-1);
-
+    position: relative;    
+    margin-bottom: 5px;
+    margin-left: 3px;
+    transform: translateX(-50%);
+    left: 50%;
+    filter: hue-rotate(427deg) saturate(0) brightness(156%);
 }
 .animated .logo-1 {
     display: none!important;
@@ -199,21 +223,44 @@ a:active {
 }
 #center-area .block {
 }
-#center-area .block p {
-    color: #fff;
-    font-size: 21.5px; 
-    font-weight: 300;
-    line-height: 30px;
+#center-area a {
+	color: hsla(208, 91%, 79%, 1);
+}
+#center-area li.new .new-header > a {
+    float: right;
+}
+#center-area li.new .new-header{
+    position: relative;
+    margin-bottom: 14px;
+}
+#center-area li.new .new-header:after {
+    content: "";
+    position: absolute;
+    left: -50%;
+    bottom: -9px;
+    background: #ffffff60;
+    height: 2px;
+    width: 200%;
+}
+#center-area li.new[type="mast"] .new-header:after {
+    background: #ffffff60;
+}
+#center-area li.new[type="app"] .new-header:after {
+    background: #ffbd79bd;
+}
+#center-area li.new[type="base"] .new-header:after {
+    background: #d46cb9ad;
 }
 
-#center-area .block .counter {
+#center-area .block,
+#center-area .counter.wow {
     background: rgba(255, 255, 255, 0.2);
-    padding:18px;
-    
+    margin: 5px;
+    padding:13px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2)
 }
 
-#center-area .block .counter h2 {
+#center-area .block h2 {
     color: #fff;
     font-size: 30px;
     font-weight: 300;
@@ -221,55 +268,104 @@ a:active {
     padding-bottom: 19px;
     text-align: center;
 }
-#center-area .block .counter ul li {
+#center-area > .container > .row,
+.news ul {
+    display: flex;
+    flex-direction: column;
+}
+.new h1 {
+    font-size: 25px;
+}
+#center-area > .container > .row > div{
+  flex: 0 0 auto;
+}
+#center-area > .container > .row > div:last-child {
+    flex-shrink: 1;
+    overflow: auto;
+}
+
+ul.news li.new {
+    flex: 0 1 auto;
+    width: 100%;
+    text-align: left;
+    font-size: 110%;
+    margin-bottom: 5px;
+    background-color: hsla(0, 12%, 24%, 0.4) !important;
+    max-height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+li.new.overflowed:before {
+    content:'';
+    width:100%;
+    height:100%;    
+    position:absolute;
+    left:0;
+    top:0;
+    background:linear-gradient(transparent 150px, hsl(165, 4%, 37%));
+}
+li.new.open:before {
+    display: none;
+}
+ul.news li.new.open {
+   max-height: none;
+}
+#welcome_dashboard {
+    display: flex;
+}
+#center-area .menu > ul  > li {
+    text-align: center;
+    padding: 25px 28px 20px;
+}
+#center-area .block.wow > ul > li,
+#center-area .news li.new {
     background-color: rgba(255, 255, 255, 0.3);
     color: #fff;
     display: inline-block;
     line-height: 25px;
-    padding: 25px 28px 20px;
-    text-align: center;
-    width: 49%;
+    padding: 10px 15px 10px;
+    flex-grow: 1;
+    flex-basis: 0;
     margin-bottom: 3px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
     cursor: pointer;
 }
-#center-area .block .counter ul li:nth-child(1) {
+#center-area .menu ul li:nth-child(1) {
     background-color: hsla(234, 44%, 67%, 0.2)
 }
-#center-area .block .counter ul li:nth-child(2) {
+#center-area .menu ul li:nth-child(2) {
     background-color: hsla(140, 47%, 67%, 0.2);
 }
-#center-area .block .counter ul li:nth-child(3) {
+#center-area .menu ul li:nth-child(3) {
     background-color: hsla(60, 50%, 58%, 0.2)
 }
-#center-area .block .counter ul li:last-child {
+#center-area .menu ul li:last-child {
     background-color: hsla(0, 12%, 54%, 0.4)
 }
 
-
-#center-area .block .counter ul li:nth-child(1):hover {
+#center-area .menu ul li:nth-child(1):hover {
     background-color: hsla(234, 44%, 47%, 0.2)
 }
-#center-area .block .counter ul li:nth-child(2):hover {
+#center-area .menu ul li:nth-child(2):hover {
     background-color: hsla(140, 47%, 47%, 0.2);
 }
-#center-area .block .counter ul li:nth-child(3):hover {
+#center-area .menu ul li:nth-child(3):hover {
     background-color: hsla(60, 50%, 38%, 0.2)
 }
-#center-area .block .counter ul li:nth-child(4):hover {
+#center-area .menu ul li:nth-child(4):hover {
     background-color: hsla(0, 22%, 34%, 0.4)
 }
 
-#center-area .block .counter ul li:active {
+#center-area ul li:active {
     background-color: rgba(255, 255, 255, 0.12);
 }
 
-#center-area .block .counter ul li span {
+#center-area ul li span {
     display: block;
     font-size: 16px;
     font-weight: 300;
 }
-#center-area .block .counter ul li .digit {
+#center-area ul li .digit {
     display: inline-block;
     font-size: 50px;
     font-weight: 300;

@@ -68,6 +68,7 @@ export async function editUser(username,user,avatar,role) {
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
 		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
+		if (user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
 		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
 		user.NORM_nickname = deburr(user.nickname);
@@ -233,15 +234,10 @@ async function newUserIntegrityChecks(user) {
 	}
 
 	// Check if login already exists.
-	if (await db.checkUserNameExists(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
+	if (await db.getUserByName(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
 		logger.error('[User] User/nickname ' + user.login + ' already exists, cannot create it');
 		throw ({ code: 'USER_ALREADY_EXISTS', data: {username: user.login}});
 	}
-}
-
-
-export async function checkUserNameExists(username) {
-	return await db.checkUserNameExists(username);
 }
 
 export async function deleteUser(username) {
@@ -287,7 +283,6 @@ async function createDefaultGuests() {
 			type: 2
 		});
 	}
-
 	logger.debug('[User] Default guest accounts created');
 }
 

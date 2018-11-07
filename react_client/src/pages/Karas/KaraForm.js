@@ -21,11 +21,12 @@ class KaraForm extends Component {
 			groupsDS: [],
 			tagDS: [],
 			singer: [],
-			author: [localStorage.getItem('username')],
+			author: localStorage.getItem('username') !== 'admin' ? [localStorage.getItem('username')] : [],
 			tags: ['TAG_ANIME', 'TAG_TVSHOW'],
 			series: [],
 			creator: [],
 			songwriter: [],
+			groups: [],
 			songtype: 'OP',
 			lang: ['jpn']
 		};
@@ -389,12 +390,13 @@ class KaraForm extends Component {
 						</span>
 					)}
 					labelCol={{ span: 3 }}
-					wrapperCol={{ span: 6, offset: 0 }}
+					wrapperCol={{ span: 10, offset: 0 }}
 				>
 					{getFieldDecorator('tags', {
 						initialValue: this.state.tags
 					})(<EditableTagGroup
 						tagType={7}
+						checkboxes={true}
 						search={'tag'}
 						onChange={ (tags) => this.props.form.setFieldsValue({ tags: tags.join(',') }) }
 					/>)}

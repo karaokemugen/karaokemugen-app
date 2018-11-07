@@ -16,7 +16,8 @@ import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
 import {publishURL} from '../../_webapp/online';
 import {playerNeedsRestart} from '../../_services/player';
-import {getState, setState} from './state';
+import {setState, getState} from './state';
+import {setSongPoll} from '../../_services/poll';
 
 /** Object containing all config */
 let config = {};
@@ -30,6 +31,20 @@ let configReady;
  */
 export function getConfig() {
 	return {...config};
+}
+
+export async function editSetting(key, value) {
+	try {
+		let newConfig = {...getConfig()};
+		newConfig[key] = value;
+		if (!Object.keys(defaults).includes(key)) throw `${key} is not editable`;
+		verifyConfig(newConfig);
+		newConfig = sanitizeConfig(newConfig);
+		const publicSettings = await mergeConfig(newConfig);
+		return publicSettings;
+	} catch(err) {
+		throw err;
+	}
 }
 
 export function sanitizeConfig(conf) {
@@ -52,7 +67,8 @@ export function verifyConfig(conf) {
 	}
 }
 
-export async function mergeConfig(oldConfig, newConfig) {
+export async function mergeConfig(newConfig) {
+	const oldConfig = getConfig();
 	// Determine if mpv needs to be restarted
 	for (const setting in newConfig) {
 		if (setting.startsWith('Player') &&
@@ -68,6 +84,7 @@ export async function mergeConfig(oldConfig, newConfig) {
 	if (newConfig.OnlineMode && getState().ready) publishURL();
 	setConfig(newConfig);
 	const conf = getConfig();
+	conf.EngineSongPoll === 1 ? setSongPoll(true) : setSongPoll(false);
 	// Toggling and updating settings
 	setState({private: conf.EnginePrivateMode});
 
@@ -191,7 +208,7 @@ export async function backupConfig() {
 
 export async function updateConfig(newConfig) {
 	savingSettings = true;
-	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','BincurlPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale'];
+	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))
@@ -212,6 +229,11 @@ export async function updateConfig(newConfig) {
 export function resolvedPathKaras(overrideConfig) {
 	const conf = overrideConfig ? overrideConfig : config;
 	return conf.PathKaras.split('|').map(path => resolve(conf.appPath, path));
+}
+
+export function resolvedPathSeries(overrideConfig) {
+	const conf = overrideConfig ? overrideConfig : config;
+	return conf.PathSeries.split('|').map(path => resolve(conf.appPath, path));
 }
 
 export function resolvedPathJingles(overrideConfig) {

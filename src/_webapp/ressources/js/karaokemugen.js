@@ -59,6 +59,8 @@ var serieMoreInfoButton;
 var listTypeBlc;
 var tagsTypesList;
 var plData;
+var tagsGroups;
+var flattenedTagsGroups;
 var settingsNotUpdated;
 
 (function (yourcode) {
@@ -68,6 +70,14 @@ var settingsNotUpdated;
 
 		initSwitchs();
 
+		tagsGroups = {
+			'TAGCAT_FAMI':['TAG_ANIME','TAG_REAL','TAG_VIDEOGAME'],
+			'TAGCAT_SUPP':['TAG_3DS','TAG_DREAMCAST','TAG_DS','TAG_GAMECUBE','TAG_PC','TAG_PS2','TAG_PS3','TAG_PS4','TAG_PSP','TAG_PSV','TAG_PSX','TAG_SATURN','TAG_SEGACD','TAG_SWITCH','TAG_WII','TAG_WII','TAG_XBOX360'],
+			'TAGCAT_CLAS':['TAG_IDOL','TAG_MAGICALGIRL','TAG_MECHA','TAG_SHOUJO','TAG_SHOUNEN','TAG_YAOI','TAG_YURI'],
+			'TAGCAT_ORIG':['TAG_MOBAGE','TAG_MOVIE','TAG_ONA','TAG_OVA','TAG_TOKU','TAG_TVSHOW','TAG_VN','TAG_VOCALOID'],
+			'TAGCAT_TYPE':['TAG_DUO','TAG_HARDMODE','TAG_HUMOR','TAG_LONG','TAG_PARODY','TAG_R18','TAG_REMIX','TAG_SPECIAL','TAG_SPOIL'],
+			}
+		flattenedTagsGroups = [].concat.apply([], Object.values(tagsGroups));
 		// Once page is loaded
 		plData = {
 			'0' : {
@@ -175,7 +185,7 @@ var settingsNotUpdated;
 						code = i18n.__('UNKNOWN_ERROR');
 						errMessage = res.responseText;
 					}
-					if(hideErrorMessage.indexOf(res.responseJSON.code) === -1) {
+					if(!res.responseJSON || hideErrorMessage.indexOf(res.responseJSON.code) === -1) {
 						displayMessage('warning', code, errMessage);
 					}
 				}
@@ -221,7 +231,7 @@ var settingsNotUpdated;
 		} else if (mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			initApp();
+			if(!welcomeScreen) initApp();
 			$('#wlcm_login > span').text(logInfos.username);
 			$('#wlcm_disconnect').show();
 		} else {
@@ -245,12 +255,14 @@ var settingsNotUpdated;
 				$(this).blur();
 			}
 		});
+
 		// When user selects a playlist
 		$('#selectPlaylist1, #selectPlaylist2').change(function (e) {
 			var $this = $(this);
 			var val = $this.val();
 			var oldVal = $this.closest('.plDashboard').data('playlist_id');
 			if(!val) {
+				// if somehow we end up with no playlist selected (playlist was made private etc.) we handle this case and try to get a new default playlist
 				settingsUpdating.done( function(){
 					var newSelection = sideOfPlaylist('-1') ? '-2'  : '-1';
 					if(scope == 'public' && newSelection == '-2') {
@@ -263,7 +275,7 @@ var settingsNotUpdated;
 					return false;
 				});
 
-			} else {
+			} else {	// usual case
 				var side = $this.attr('side');
 				var isNew = $this.find('[data-select2-tag="true"][value="' + val + '"]');
 
@@ -281,7 +293,9 @@ var settingsNotUpdated;
 
 					$('#playlist' + side).empty();
 					$('#searchPlaylist' + side).val('');
-
+					if (oldVal == -1) {
+						$('#searchMenu' + side).collapse('hide');
+					}
 					playlistContentUpdating = fillPlaylist(side);
 					refreshPlaylistDashboard(side);
 				}
@@ -644,9 +658,9 @@ var settingsNotUpdated;
 					DEBUG && console.log(container.offset().top,container.innerHeight() , fillerBottom.offset().top ,to < karaCount , nbKaraInPlaylist >= pageSize);
 					DEBUG && console.log(scrollUpdating, (!scrollUpdating || scrollUpdating.state() == 'resolved') , scrollDown, scrollUp);
 
+					localStorage.setItem('scroll' + side, container.scrollTop());
+
 					if (  (!scrollUpdating || scrollUpdating.state() == 'resolved')  && (scrollDown || scrollUp)) {
-
-
 						container.attr('flagScroll', true);
 
 						if(scrollDown) {
@@ -1183,6 +1197,9 @@ var settingsNotUpdated;
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
 		var url, html, canTransferKara, canAddKara, dragHandle, playKara;
+		
+		localStorage.setItem('search' + side, filter ? filter : '');
+		localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
 
 		var range = getPlaylistRange(idPlaylist);
 		from = range.from;
@@ -1254,7 +1271,11 @@ var settingsNotUpdated;
 							var badges = '';
 
 							if(kara.misc) {
-								kara.misc.split(',').forEach(function(tag) {
+								var tagArray = kara.misc.split(',');
+								tagArray.sort(function(a, b){  
+									return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
+								  });
+								tagArray.forEach(function(tag) {
 									if (tag !== 'NO_TAG') {
 										badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
 									}
@@ -1811,7 +1832,7 @@ var settingsNotUpdated;
     * @return {String} the title
     */
 	buildKaraTitle = function(data, options) {
-		if (typeof options == 'undefined') {
+		if(typeof options == 'undefined') {
 			options = {};
 		}
 
@@ -1821,22 +1842,23 @@ var settingsNotUpdated;
 			data.language = '';
 		}
 		var titleText = 'fillerTitle';
-		if (options.mode && options.mode === 'doubleline') {
-			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
-				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : '')], Boolean);
-			var titleClean = Object.keys(titleArray).map(function (k) {
-				return titleArray[k] ? titleArray[k] : '';
-			});
-			titleText = titleClean.join(' - ') + '<br/>' + data.title;
-
-		} else {
-			var titleArray = $.grep([data.language.toUpperCase(), data.serie ? data.serie : data.singer.replace(/,/g, ', '),
-				data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : ''), data.title], Boolean);
-			var titleClean = Object.keys(titleArray).map(function (k) {
-				return titleArray[k] ? titleArray[k] : '';
-			});
-			titleText = titleClean.join(' - ');
+		
+		var limit = isSmall ? 35 : 50;
+		var serieText =  data.serie ? data.serie : data.singer.replace(/,/g, ', ');
+		serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
+		var titleArray = [data.language.toUpperCase(), serieText, data.songtype_i18n_short + (data.songorder > 0 ? ' ' + data.songorder : '')];
+		var titleClean = titleArray.map(function (e, k) {
+			return titleArray[k] ? titleArray[k] : '';
+		});
+		
+		var separator = '';
+		if(data.title) {
+			separator = ' - ';
+			if (options.mode && options.mode === 'doubleline') {
+				separator = '<br/>';
+			} 
 		}
+		titleText = titleClean.join(' - ') + separator + data.title;
 
 
 		if(options.search) {
@@ -1920,7 +1942,7 @@ var settingsNotUpdated;
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
 			, 'BLCTYPE_7':			data['misc_i18n']
 			, 'DETAILS_SERIE':		data['serie']
-			, 'DETAILS_SERIE_ALT':	data['serie_altname']
+			//	, 'DETAILS_SERIE_ALT':	data['serie_altname']
 			, 'BLCTYPE_2':			data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
 			, 'DETAILS_YEAR':		data['year']
@@ -1938,6 +1960,7 @@ var settingsNotUpdated;
 
 		if (htmlMode == 'list') {
 			var isPublic = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_public');
+			var isCurrent = $('li[idplaylistcontent="' + data['playlistcontent_id'] + '"]').closest('.panel').find('.plDashboard').data('flag_current');
 			var likeFreeButtonHtml = data['flag_free'] ? likeFreeButton.replace('likeFreeButton', 'likeFreeButton free btn-primary') : likeFreeButton;
 
 			infoKaraTemp = '<div class="detailsKara alert alert-info">'
@@ -1947,7 +1970,7 @@ var settingsNotUpdated;
 				+ showFullTextButton
 				+ (data['previewfile'] ? showVideoButton : '')
 				+ (data['serie'] ? ' ' + serieMoreInfoButton : '')
-				+ (isPublic && scope === 'admin' ? likeFreeButtonHtml : '')
+				+ (scope === 'admin' && (isCurrent || isPublic) ? likeFreeButtonHtml : '')
 				+ '</div>'
 				+ htmlTable
 				+ '</div>';
@@ -2066,6 +2089,16 @@ var settingsNotUpdated;
 	// Some html & stats init
 	initApp = function() {
 
+		var locPlaylistRange = localStorage.getItem('playlistRange');
+		var locSearchPlaylist1 = localStorage.getItem('search1');
+		var locSearchPlaylist2 = localStorage.getItem('search2');
+		var locScroll1 = localStorage.getItem('scroll1');
+		var locScroll2 = localStorage.getItem('scroll2');
+
+		if(locPlaylistRange) playlistRange = JSON.parse(locPlaylistRange);
+		if(locSearchPlaylist1 && locSearchPlaylist1 != 'undefined') $('#searchPlaylist1').val(locSearchPlaylist1);
+		if(locSearchPlaylist2 && locSearchPlaylist2 != 'undefined') $('#searchPlaylist2').val(locSearchPlaylist2);
+
 		setupAjax();
 
 		showedLoginAfter401 = false;
@@ -2106,7 +2139,11 @@ var settingsNotUpdated;
 					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
 					refreshPlaylistDashboard(1);
 					refreshPlaylistDashboard(2);
-
+					playlistContentUpdating.done(() => {
+						console.log(locScroll1, locScroll2);
+						if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
+						if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
+					});
 					$(window).trigger('resize');
 				});
 			});
@@ -2383,7 +2420,6 @@ var settingsNotUpdated;
 	non = function (side) {
 		return 3 - parseInt(side);
 	};
-
 
 	getPlaylistRange = function(idPl) {
 		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();

@@ -13,19 +13,9 @@ import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedia
 import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
 import {formatKara} from '../_services/kara';
 import {getConfig} from '../_common/utils/config';
-import {specialLangMap} from '../_services/constants';
 import {getAllKaras} from './kara';
 
 let error = false;
-
-
-function getLangFromFile(fileLang) {
-	return Object.keys(specialLangMap).find(key => specialLangMap[key] === fileLang) || 'und';
-}
-
-export function getFileLangFromKara(karaLang) {
-	return specialLangMap[karaLang] || karaLang.toUpperCase();
-}
 
 export function karaFilenameInfos(karaFile) {
 	const karaFileName = parse(karaFile).name;
@@ -40,7 +30,7 @@ export function karaFilenameInfos(karaFile) {
 
 	// Let's return an object with our data correctly positionned.
 	return {
-		lang: getLangFromFile(infos[0]),
+		lang: infos[0].toLowerCase(),
 		serie: infos[1],
 		type: orderInfos[1],
 		order: orderInfos[2] ? +orderInfos[2] : 0,
@@ -58,12 +48,7 @@ export async function getDataFromKaraFile(karafile) {
 	const conf = getConfig();
 	const karaData = await parseKara(karafile);
 
-	// Code to keep compatibility with v2 kara files.
-	karaData.mediafile = karaData.mediafile || karaData.videofile;
-	karaData.mediasize = karaData.mediasize || karaData.videosize;
-	karaData.mediagain = karaData.mediagain || karaData.videogain;
-	karaData.mediaduration = karaData.mediaduration || karaData.videoduration;
-
+	karaData.error = false;
 	karaData.isKaraModified = false;
 
 	if (!karaData.KID) {
@@ -89,8 +74,8 @@ export async function getDataFromKaraFile(karafile) {
 	try {
 		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
 	} catch (err) {
-		logger.warn('[Kara] Media file not found : ' + karaData.mediafile);
-		if (conf.optStrict) error = true;
+		logger.debug('[Kara] Media file not found : ' + karaData.mediafile);
+		if (conf.optStrict) strictModeError(karaData, 'mediafile');
 		if (!karaData.mediagain) karaData.mediagain = 0;
 		if (!karaData.mediasize) karaData.mediasize = 0;
 		if (!karaData.mediaduration) karaData.mediaduration = 0;
@@ -101,7 +86,6 @@ export async function getDataFromKaraFile(karafile) {
 		const subFile = await findSubFile(mediaFile, karaData);
 		await extractAssInfos(subFile, karaData);
 		await extractMediaTechInfos(mediaFile, karaData);
-		if (karaData.error) error = true;
 	}
 
 	if (error) karaData.error = true;
@@ -134,7 +118,7 @@ export async function extractMediaTechInfos(mediaFile, karaData) {
 			karaData.mediasize = mediaStats.size;
 
 			const mediaData = await getMediaInfo(mediaFile);
-			if (mediaData.error) error = true;
+			if (mediaData.error && conf.optStrict) strictModeError(karaData, 'ffmpeg return code');
 
 			karaData.mediagain = mediaData.audiogain;
 			karaData.mediaduration = mediaData.duration;
@@ -179,7 +163,7 @@ async function findSubFile(videoFile, kara) {
 			} catch (err) {
 				// Not blocking.
 				logger.warn(`[Kara] Could not extract subtitles from video file ${videoFile}`);
-				error = true;
+				if (conf.optStrict) strictModeError(kara, 'extracting subtitles');
 			}
 		}
 	} else {
@@ -187,7 +171,7 @@ async function findSubFile(videoFile, kara) {
 			if (kara.subfile !== 'dummy.ass') return await resolveFileInDirs(kara.subfile, resolvedPathSubs());
 		} catch (err) {
 			logger.warn(`[Kara] Could not find subfile '${kara.subfile}' (in ${JSON.stringify(resolvedPathSubs())}).`);
-			error = true;
+			if (conf.optStrict) strictModeError(kara, 'subfile');
 		}
 	}
 	// Non-blocking case if file isn't found
@@ -195,11 +179,11 @@ async function findSubFile(videoFile, kara) {
 }
 
 export async function replaceSerieInKaras(oldSerie, newSerie) {
-	logger.info(`[Kara] Replacing serie ${oldSerie} by ${newSerie} in .kara files`);
+	logger.info(`[Kara] Replacing serie "${oldSerie}" by "${newSerie}" in .kara files`);
 	const karas = await getAllKaras('admin');
 	let karasWithSerie = [];
 	for (const kara of karas) {
-		if (kara.serie_orig && kara.serie_orig.includes(oldSerie)) karasWithSerie.push(kara.karafile);
+		if (kara.serie_orig && kara.serie_orig.split(',').includes(oldSerie)) karasWithSerie.push(kara.karafile);
 	}
 	if (karasWithSerie.length > 0) logger.info(`[Kara] Replacing in ${karasWithSerie.length} files`);
 	for (const karaFile of karasWithSerie) {
@@ -220,7 +204,7 @@ export async function removeSerieInKaras(serie) {
 	const karas = await getAllKaras('admin');
 	let karasWithSerie = [];
 	for (const kara of karas) {
-		if (kara.serie_orig && kara.serie_orig.includes(serie)) karasWithSerie.push(kara.karafile);
+		if (kara.serie_orig && kara.serie_orig.split(',').includes(serie)) karasWithSerie.push(kara.karafile);
 	}
 	if (karasWithSerie.length > 0) logger.info(`[Kara] Removing in ${karasWithSerie.length} files`);
 	for (const karaFile of karasWithSerie) {

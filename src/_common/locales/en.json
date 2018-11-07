@@ -55,8 +55,6 @@
 	"TAG_SPECIAL_SHORT": "SPE",
 	"TAG_REMIX": "Remix",
 	"TAG_REMIX_SHORT": "RMX",
-	"TAG_VOICELESS": "No vocals",
-	"TAG_VOICELESS_SHORT": "NOV",
 	"TAG_PARODY": "Parody",
 	"TAG_PARODY_SHORT": "PAR",
 	"TAG_HUMOR": "Humor",
@@ -163,6 +161,7 @@
 	"CURRENT_PLAYLIST": "Current playlist",
 	"PUBLIC_PLAYLIST": "Public playlist",
 	"UNDEFINED_LANGUAGE": "Undefined",
+	"NO_LANGUAGE": "No linguistic content",
 	"UNKNOWN_LANGUAGE": "Unknown",
 	"MULTI_LANGUAGE": "Multi-language",
 	"GO_TO": "Go to",
@@ -432,9 +431,9 @@
 	"WLCM_WELCOME": "WELCOME",
 	"WLCM_MSG": "From this screen you can get to various areas of the application",
 	"WLCM_MSG2": "Have fun!",
-	"WLCM_GETSTARTED": "Start Tutorial",
+	"WLCM_GETSTARTED": "START TUTORIAL",
 	"WLCM_KARAMANAGER": "MANAGE KARAOKE",
-	"WLCM_ADMINISTRATION": "ADMINISTRATION",
+	"WLCM_ADMINISTRATION": "SYSTEM",
 	"WLCM_HELP": "Online help",
 	"WLCM_UPDATE": "UPDATE",
 	"WLCM_SITE": "Website",
@@ -512,5 +511,7 @@
 	"KARA_SUGGESTION_MAIL": "Can't find your heart's desire? Click here",
 	"KARA_SUGGESTION_SUBJECT": "New Song request: ",
 	"KARA_SUGGESTION_BODY": "Hello,%0D%0A How can this awesome song be missing from your base?%0D%0A I expect this infamy to be corrected asap, thanks.",
-	"KARA_SUGGESTION_NAME": "Name of the song"
+	"KARA_SUGGESTION_NAME": "Name of the song",
+	"BASE_UPDATE": "Database update",
+	"APP_UPDATE": "New version"
 }

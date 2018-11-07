@@ -14,15 +14,12 @@ class SerieForm extends Component {
 			selectVisible: false
 		};
 		langs.all().forEach(lang => this.state.languages.push({value: lang['2B'], text: lang.name}));
-		this.state.languages.push({value: 'und', text: 'Undefined Language'});
 		if (this.props.serie.i18n) {
 			Object.keys(this.props.serie.i18n).forEach(lang => {
 				this.state.i18n.push(lang);
 				this.state[`lang_${lang}`] = this.props.serie.i18n[lang];
 			});
 		}
-		console.log(this.state);
-		console.log(this.props.serie);
 	}
 
 	componentDidMount() {
@@ -176,9 +173,10 @@ class SerieForm extends Component {
 						wrapperCol={{ span: 4, offset: 0 }}
 					>
 						<Select
+							showSearch
 							ref={select => this.select = select}
 							onChange={value => this.addLang(value)}>
-							{ this.state.languages.map(lang => (<Select.Option value={lang.value}>{lang.text}</Select.Option>)) }
+							{ this.state.languages.map(lang => (<Select.Option value={lang.value}>"{lang.text} ({lang.value.toUpperCase()})"</Select.Option>)) }
 						</Select>
 					</Form.Item>
 				)}
@@ -205,6 +203,11 @@ class SerieForm extends Component {
 				<Form.Item>
 					{getFieldDecorator('i18n', {
 						initialValue: this.props.serie.i18n
+					})(<Input type="hidden" />)}
+				</Form.Item>
+				<Form.Item>
+					{getFieldDecorator('sid', {
+						initialValue: this.props.serie.sid
 					})(<Input type="hidden" />)}
 				</Form.Item>
 			</Form>

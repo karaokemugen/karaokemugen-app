@@ -61,8 +61,6 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 }
 
 export async function getAllKaras(username, filter, lang, mode, modeValue) {
-	//if (injectionTest(filter)) throw `Possible SQL injection : ${filter}`;
-	//if (injectionTest(modeValue)) throw `Possible SQL injection : ${modeValue}`;
 	const filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
 	const typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
 	let orderClauses = '';
@@ -164,8 +162,10 @@ export async function addKaraToPlaylist(karaList) {
 export async function removeKaraFromPlaylist(karaList, playlist_id) {
 	// We're not using SQLite parameterization due to a limitation
 	// keeping us from feeding a simple array/list to the statement.
-	// FIXME: This probably needs some fixing to avoid injections.
+	// Coercing data received into numbers. You never know.
+	for (const i in karaList) {
+		karaList[i] = +karaList[i];
+	}
 	const karas = karaList.join(',');
-	const sqlRemoveKaraFromPlaylist = sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas);
-	return await getUserDb().run(sqlRemoveKaraFromPlaylist, {$playlist_id: playlist_id});
+	return await getUserDb().run(sql.removeKaraFromPlaylist.replace(/\$playlistcontent_id/,karas), {$playlist_id: playlist_id});
 }

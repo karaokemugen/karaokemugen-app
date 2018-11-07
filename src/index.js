@@ -1,8 +1,8 @@
 import {asyncCheckOrMkdir, asyncReadDir, asyncExists, asyncRemove, asyncUnlink} from './_common/utils/files';
-import {setConfig, getConfig, initConfig, configureBinaries} from './_common/utils/config';
+import {getConfig, initConfig, configureBinaries} from './_common/utils/config';
 import {parseCommandLineArgs} from './args.js';
 import {writeFileSync, readFileSync} from 'fs';
-import {move, copy} from 'fs-extra';
+import {copy} from 'fs-extra';
 import {join, resolve} from 'path';
 import {createServer} from 'net';
 import logger from 'winston';
@@ -11,13 +11,16 @@ import {exit, initEngine} from './_services/engine';
 import {logo} from './logo';
 import chalk from 'chalk';
 import {createInterface} from 'readline';
+import PrettyError from 'pretty-error';
+
+const pe = new PrettyError();
 
 process.on('uncaughtException', function (exception) {
-	console.log(exception);
+	console.log(pe.render(exception));
 });
 
 process.on('unhandledRejection', (reason, p) => {
-	console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+	console.log('Unhandled Rejection at:', p);
 });
 
 process.on('SIGINT', () => {
@@ -40,11 +43,7 @@ if (process.platform === 'win32' ) {
 // Main app begins here.
 
 let appPath;
-if (process.pkg) {
-	appPath = join(process.execPath,'../');
-} else {
-	appPath = join(__dirname,'../');
-}
+process.pkg ? appPath = join(process.execPath,'../') : appPath = join(__dirname,'../');
 
 process.env['NODE_ENV'] = 'production'; // Default
 
@@ -58,14 +57,14 @@ async function main() {
 	const argv = parseArgs();
 	let config = await initConfig(appPath, argv);
 	console.log(chalk.blue(logo));
-	console.log('Karaoke Player & Manager - http://mugen.karaokes.moe');
+	console.log('Karaoke Player & Manager - http://karaokes.moe');
 	console.log(`Version ${chalk.bold.green(config.VersionNo)} (${chalk.bold.green(config.VersionName)})`);
 	console.log('================================================================');
 	await parseCommandLineArgs(argv);
 	config = getConfig();
-	logger.debug(`[Launcher] SysPath detected : ${appPath}`);
-	logger.debug(`[Launcher] Locale detected : ${config.EngineDefaultLocale}`);
-	logger.debug(`[Launcher] Detected OS : ${config.os}`);
+	logger.debug(`[Launcher] SysPath : ${appPath}`);
+	logger.debug(`[Launcher] Locale : ${config.EngineDefaultLocale}`);
+	logger.debug(`[Launcher] OS : ${config.os}`);
 	logger.debug('[Launcher] Loaded configuration : ' + JSON.stringify(config, null, '\n'));
 
 	// Checking binaries
@@ -73,7 +72,6 @@ async function main() {
 
 	// Checking paths, create them if needed.
 	await checkPaths(config);
-
 
 	// Copying files from the app's sources to the app's working folder.
 	// This is an ugly hack : we could use fs.copy but due to a bug in pkg,
@@ -87,11 +85,13 @@ async function main() {
 	const tempInput = resolve(appPath, config.PathTemp, 'input.conf');
 	if (await asyncExists(tempInput)) await asyncUnlink(tempInput);
 	writeFileSync(tempInput, fileBuffer);
+
 	logger.debug('[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
 	fileBuffer = readFileSync(join(__dirname, `/_player/assets/${config.VersionImage}`));
 	const tempBackground = resolve(appPath, config.PathTemp, 'default.jpg');
 	if (await asyncExists(tempBackground)) await asyncUnlink(tempBackground);
 	writeFileSync(tempBackground, fileBuffer);
+
 	// Copy avatar blank.png if it doesn't exist to the avatar path
 	logger.debug('[Launcher] Copying blank.png to ' + resolve(appPath, config.PathAvatars));
 	fileBuffer = readFileSync(join(__dirname, '/_webapp/ressources/img/blank.png'));
@@ -102,7 +102,8 @@ async function main() {
 	/**
 	 * Test if network ports are available
 	 */
-	const ports = [config.appFrontendPort,
+	const ports = [
+		config.appFrontendPort,
 		config.appAdminPort
 	];
 	ports.forEach(port => verifyOpenPort(port));
@@ -136,10 +137,13 @@ async function checkPaths(config) {
 	// If no karaoke is found, copy the samples directory if it exists
 	try {
 		await asyncReadDir(resolve(appPath, 'app/data'));
+		// Check inside karas folder too.
+		const karas = await asyncReadDir(resolve(appPath, 'app/data/karas'));
+		if (karas.length === 0) throw 'No kara files';
 	} catch(err) {
 		try {
 			await asyncReadDir(resolve(appPath, 'samples'));
-			logger.debug('[Launcher] app/data is missing - copying samples inside');
+			logger.debug('[Launcher] Kara files are missing - copying samples');
 			await copy(
 				resolve(appPath, 'samples'),
 				resolve(appPath, 'app/data')
@@ -149,22 +153,10 @@ async function checkPaths(config) {
 		}
 	}
 
-
-
-	//Fix for PathMedias = app/data/videos
-	//Delete this after 2.3. This is an awful hack.
-	//Only effective after July 1st 2018
-	if (config.PathMedias === 'app/data/videos') {
-		const oldPath = resolve(appPath, config.PathMedias);
-		setConfig({ PathMedias: 'app/data/medias'});
-		config = getConfig();
-		const newPath = resolve(appPath, config.PathMedias);
-		if (await asyncExists(oldPath) && !await asyncExists(newPath)) await move(oldPath, newPath);
-	}
-
 	if (await asyncExists(resolve(appPath, config.PathTemp))) await asyncRemove(resolve(appPath, config.PathTemp));
 	let checks = [];
 	config.PathKaras.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
+	config.PathSeries.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathSubs.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathMedias.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
 	config.PathJingles.split('|').forEach(dir => checks.push(asyncCheckOrMkdir(appPath, dir)));
@@ -185,7 +177,7 @@ function verifyOpenPort(port) {
 	server.once('error', err => {
 		if (err.code === 'EADDRINUSE') {
 			logger.error(`[Launcher] Port ${port} is already in use.`);
-			logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node")');
+			logger.error('[Launcher] If another Karaoke Mugen instance is running, please kill it (process name is "node" or "KaraokeMugen")');
 			logger.error('[Launcher] Then restart the app.');
 			process.exit(1);
 		}

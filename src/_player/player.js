@@ -99,11 +99,12 @@ async function loadBackground(mode) {
 		const posX = Math.floor(dimensions.width*0.015);
 		const posY = Math.floor(dimensions.height*0.015);
 		const qrCode = resolve(conf.appPath,conf.PathTemp,'qrcode.png').replace(/\\/g,'/');
-		videofilter = `lavfi-complex="movie=\\'${qrCode}\\'[logo]; [logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1] overlay=${posX}:${posY}[vo]"`;
+		videofilter = `lavfi-complex=movie=\\'${qrCode}\\'[logo];[logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1]overlay=${posX}:${posY}[vo]`;
 	}
 	try {
+		logger.debug(`[Player] videofilter : ${videofilter}`);
 		let loads = [
-			player.load(backgroundImageFile,mode,videofilter)
+			player.load(backgroundImageFile,mode,[videofilter])
 		];
 		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile,mode,videofilter));
 		await Promise.all(loads);
@@ -543,7 +544,7 @@ export function displayInfo(duration) {
 	if (!duration) duration = 100000000;
 	let text = '';
 	if (+conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;
-	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://mugen.karaokes.moe`;
+	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://karaokes.moe`;
 	const message = '{\\fscx80}{\\fscy80}'+text+'\\N{\\fscx70}{\\fscy70}{\\i1}'+version+'{\\i0}';
 	const command = {
 		command: [

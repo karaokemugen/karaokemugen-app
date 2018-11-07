@@ -1,4 +1,5 @@
-import {backupConfig, getConfig} from '../_common/utils/config';
+import {editSetting, backupConfig, getConfig} from '../_common/utils/config';
+import {emitWS} from '../_webapp/frontend';
 import {run as generateDatabase} from '../_admin/generate_karasdb';
 import {editKara, createKara, karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {requireAuth, requireValidUser, requireAdmin} from './passport_manager';
@@ -20,6 +21,16 @@ export default function adminController(router) {
 
 	router.get('/config', requireAuth, requireValidUser, requireAdmin, (req, res) => {
 		res.json(getConfig());
+	});
+
+	router.put('/config', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			const publicSettings = editSetting(req.body.setting, req.body.value);
+			emitWS('settingsUpdated',publicSettings);
+			res.status(200).send('Config updated');
+		} catch(err) {
+			res.status(500).send(`Error saving config : ${err}`);
+		}
 	});
 
 	router.post('/config/backup', requireAuth, requireValidUser, requireAdmin, (req, res) => {

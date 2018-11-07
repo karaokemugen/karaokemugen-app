@@ -45,8 +45,6 @@ async function extractPreviewFiles(previewDir) {
 
 
 export async function cleanUpPreviewsFolder(config) {
-	//FIXME : This function isn't called anymore
-	// Needs some fixing before being called again.
 	const conf = config || getConfig();
 	logger.debug('[Previews] Cleaning up preview generation');
 	const videofiles = await extractVideoFiles(resolve(conf.appPath,conf.PathMedias));
@@ -60,13 +58,11 @@ export async function cleanUpPreviewsFolder(config) {
 		const size = previewparts[2];
 		const previewfileWOExt = basename(previewparts[1]);
 		for (const videofile of videofiles) {
-			const videofileWOExt = basename(videofile, extname(videofile));
-			if (previewfileWOExt === videofileWOExt) {
+			const videofileWOExt = basename(videofile.file, extname(videofile.file));
+			if (previewfileWOExt.toLowerCase() === videofileWOExt.toLowerCase()) {
 				deletePreview = false;
-				const videoStats = await asyncStat(videofile);
-				if (videoStats.size !== size) {
-					deletePreview = true;
-				}
+				const videoStats = await asyncStat(videofile.file);
+				if (videoStats.size !== +size) deletePreview = true;
 			}
 		}
 		if (deletePreview) {
@@ -107,22 +103,20 @@ async function compareVideosPreviews(videofiles,previewfiles) {
 	return previewFilesToCreate;
 }
 export async function isPreviewAvailable(videofile) {
-	const videofilename = await resolveFileInDirs(videofile, resolvedPathMedias());
-	let videoStats;
-	if (await asyncExists(videofilename)) {
+	try {
+		const videofilename = await resolveFileInDirs(videofile, resolvedPathMedias());
+		let videoStats;
 		videoStats = await asyncStat(videofilename);
-	} else {
-		logger.debug(`[Previews] Main videofile does not exist : ${videofilename}`);
-		return undefined;
-	}
-	const previewfileWOExt = basename(videofilename, extname(videofilename));
-	const previewfilename = resolve(resolvedPathPreviews(),`${previewfileWOExt}.${videoStats.size}.mp4`);
-	if (await asyncExists(previewfilename)) {
+		const previewfileWOExt = basename(videofilename, extname(videofilename));
+		const previewfilename = resolve(resolvedPathPreviews(),`${previewfileWOExt}.${videoStats.size}.mp4`);
+		await asyncExists(previewfilename);
 		return basename(previewfilename);
-	} else {
+	} catch(err) {
+		//This is not a fatal error.
 		return undefined;
 	}
 }
+
 export async function createPreviews(config) {
 	const conf = config || getConfig();
 	logger.debug('[Previews] Starting preview generation');
@@ -130,6 +124,7 @@ export async function createPreviews(config) {
 	logger.debug('[Previews] Number of videos '+videoFiles.length);
 	const previewFiles = await extractPreviewFiles(resolvedPathPreviews());
 	logger.debug('[Previews] Number of previews '+previewFiles.length);
+	await cleanUpPreviewsFolder(conf);
 	const videoFilesToPreview = await compareVideosPreviews(videoFiles,previewFiles);
 	logger.debug('[Previews] Number of previews to generate '+videoFilesToPreview.length);
 	for (const videoPreview of videoFilesToPreview) {

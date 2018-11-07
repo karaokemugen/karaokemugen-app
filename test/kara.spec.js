@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {karaDataValidationErrors} from '../src/_services/kara';
 
 const validKara = {
-	videofile: 'video.mp4',
+	mediafile: 'video.mp4',
 	subfile: 'dummy.ass',
 	title: 'title',
 	series: 'series',
@@ -18,10 +18,10 @@ const validKara = {
 	KID: '6ac74940-b90c-4aea-b038-ae261eccf4b6',
 	dateadded: 1509041312,
 	datemodif: 1509041321,
-	videosize: 0,
-	videogain: 0,
-	videoduration: 0,
-	version: 1
+	mediasize: 0,
+	mediagain: 0,
+	mediaduration: 0,
+	version: 3
 };
 
 describe('Kara validator', () => {
@@ -55,7 +55,7 @@ describe('Kara validator', () => {
 	});
 
 	it('Should valid a kara with real videogain', () => {
-		const invalidKara = { ...validKara, videogain: -7.75};
+		const invalidKara = { ...validKara, mediagain: -7.75};
 		expect(karaDataValidationErrors(invalidKara)).to.be.undefined;
 	});
 

@@ -1,6 +1,5 @@
 import {configureHost, getConfig} from '../_common/utils/config';
-import {stringify} from 'querystring';
-import {post} from 'axios';
+import got from 'got';
 
 export async function publishURL() {
 	configureHost();
@@ -8,11 +7,13 @@ export async function publishURL() {
 	let localHost = conf.osHost;
 	if (conf.EngineDisplayConnectionInfoHost) localHost = conf.EngineDisplayConnectionInfoHost;
 	try {
-		await post(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, stringify({
-			localIP: localHost,
-			localPort: conf.appFrontendPort,
-			IID: conf.appInstanceID
-		}));
+		await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, {
+			body: JSON.stringify({
+				localIP: localHost,
+				localPort: conf.appFrontendPort,
+				IID: conf.appInstanceID
+			})
+		});
 		configureHost();
 	} catch(err) {
 		throw `Failed publishing our IP to ${conf.OnlineHost} : ${err}`;

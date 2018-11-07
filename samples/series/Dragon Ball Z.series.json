@@ -1,0 +1,16 @@
+{
+  "header": {
+    "version": 3,
+    "description": "Karaoke Mugen Series File"
+  },
+  "series": {
+    "aliases": [
+      "DBZ"
+    ],
+    "name": "Dragon Ball Z",
+    "i18n": {
+      "jpn": "Dragon Ball Z"
+    },
+    "sid": "dd06c976-b2da-4340-8d92-fabe61305c60"
+  }
+}
