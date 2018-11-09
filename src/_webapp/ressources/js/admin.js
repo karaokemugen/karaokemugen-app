@@ -491,7 +491,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			$('#settings').promise().then(function () {
 				settingsArray = {};
-				formArray = $('#settings').serializeArray()
+				numberArray = $('#settings [type="number"]').map(function () {
+					return { name: this.name, value: this.value ? this.value : '0' }; 
+				}).get();
+				formArray = numberArray.concat($('#settings [type!="number"]').serializeArray())
 					.concat($('#settings input[type=checkbox]:not(:checked)')
 						.map(function () {
 							return { name: this.name, value: '0' }; 
