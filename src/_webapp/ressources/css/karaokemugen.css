@@ -565,7 +565,6 @@ button.closeParent.bottom  {
 	overflow: auto;
 	position: static;
 	height: 100%;
-	max-height: none;
 	-webkit-overflow-scrolling: touch;
 }
 .playlistLoading {
@@ -937,7 +936,6 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	background-color: #ccc;
 	width: 7px;
 	opacity: 1;
-	min-height: 25px;
 }
 .ps>.ps__scrollbar-y-rail:hover>.ps__scrollbar-y,
 .ps>.ps__scrollbar-y-rail:active>.ps__scrollbar-y {
