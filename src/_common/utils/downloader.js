@@ -33,7 +33,6 @@ export default class Downloader {
 	  } else {
 			const nextUrl = this.list[this.pos].url;
 			const nextFilename = this.list[this.pos].filename;
-			let nextSize = 'size unknown';
 			const tryURL = new Promise((resolve, reject) => {
 				// Try to run a HEAD to get the size
 				let options = {
@@ -45,16 +44,15 @@ export default class Downloader {
 				};
 				got(nextUrl, options)
 					.then(response => {
-						if (!nextSize) nextSize = response.headers['content-length'];
-						resolve(response);
+						resolve(response.headers['content-length']);
 					})
 					.catch(err => {
 						reject(err);
 					});
 			});
 			let prettySize = 'size unknown';
-			tryURL.then(() => {
-				if (nextSize) prettySize = prettyBytes(+nextSize);
+			tryURL.then(size => {
+				if (!isNaN(size)) prettySize = prettyBytes(+size);
 				logger.info(`[Download] (${this.pos+1}/${this.list.length}) Downloading ${basename(nextFilename)} (${prettySize})`);
 				emitWS('downloadBatchProgress', {
 					text: `Downloading file ${this.pos} of ${this.list.length}`,
@@ -62,7 +60,7 @@ export default class Downloader {
 					total: this.list.length
 				});
 				this.pos = this.pos + 1;
-				this.DoDownload(nextUrl, nextFilename, nextSize, this.download , err => {
+				this.DoDownload(nextUrl, nextFilename, size, this.download , err => {
 					logger.error(`[Download] Error during download of ${basename(nextFilename)} : ${err}`);
 					this.fileErrors.push(basename(nextFilename));
 					this.download();
