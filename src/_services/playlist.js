@@ -755,6 +755,7 @@ export async function editPLC(plc_id,params,token) {
 		updateSongsLeft(plcData.user_id,pl.playlist_id);
 	}
 	if (params.pos) {
+		console.log(params.pos);
 		await raisePosInPlaylist(params.pos,pl.playlist_id);
 		await setPos(plc_id,params.pos);
 		await reorderPlaylist(pl.playlist_id);
