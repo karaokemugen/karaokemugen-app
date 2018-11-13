@@ -172,12 +172,6 @@ export async function initDBSystem() {
 	//If userdata is missing, assume it's the first time we're running.
 	if (!await asyncExists(userDbFile)) setConfig({appFirstRun: 1});
 	if (conf.optGenerateDB) {
-		// Manual generation triggered.
-		// Delete any existing karas.sqlite3 file
-		if(await asyncExists(karaDbFile)) {
-			if (karaDb) await closeKaraDatabase();
-			await asyncUnlink(karaDbFile);
-		}
 		doGenerate = true;
 	} else {
 		if (await asyncExists(karaDbFile)) {
