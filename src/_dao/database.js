@@ -187,7 +187,7 @@ export async function initDBSystem() {
 	await openUserDatabase();
 	await migrateUserDb();
 	// Compare Karas checksums if generation hasn't been requested already
-	logger.info('[DB] Checking kara files...');
+	logger.info('[DB] Checking data files...');
 	if (!await compareKarasChecksum()) {
 		logger.info('[DB] Kara files have changed: database generation triggered');
 		doGenerate = true;
