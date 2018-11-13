@@ -171,8 +171,33 @@ export async function karaGenerationBatch() {
 async function importKara(mediaFile, subFile, data) {
 	let kara = mediaFile;
 	if (data) {
+		const extraTags = [];
+		if (data.tags.includes('TAG_PS3')) extraTags.push('PS3');
+		if (data.tags.includes('TAG_PS2')) extraTags.push('PS2');
+		if (data.tags.includes('TAG_PS4')) extraTags.push('PS4');
+		if (data.tags.includes('TAG_PSX')) extraTags.push('PSX');
+		if (data.tags.includes('TAG_SPECIAL')) extraTags.push('SPECIAL');
+		if (data.tags.includes('TAG_REMIX')) extraTags.push('REMIX');
+		if (data.tags.includes('TAG_OVA')) extraTags.push('OVA');
+		if (data.tags.includes('TAG_ONA')) extraTags.push('ONA');
+		if (data.tags.includes('TAG_MOVIE')) extraTags.push('MOVIE');
+		if (data.tags.includes('TAG_PS4')) extraTags.push('PS4');
+		if (data.tags.includes('TAG_PSV')) extraTags.push('PSV');
+		if (data.tags.includes('TAG_PSP')) extraTags.push('PSP');
+		if (data.tags.includes('TAG_XBOX360')) extraTags.push('XBOX360');
+		if (data.tags.includes('TAG_GAMECUBE')) extraTags.push('GAMECUBE');
+		if (data.tags.includes('TAG_DS')) extraTags.push('DS');
+		if (data.tags.includes('TAG_3DS')) extraTags.push('3DS');
+		if (data.tags.includes('TAG_PC')) extraTags.push('PC');
+		if (data.tags.includes('TAG_SEGACD')) extraTags.push('SEGACD');
+		if (data.tags.includes('TAG_SATURN')) extraTags.push('SATURN');
+		if (data.tags.includes('TAG_WII')) extraTags.push('WII');
+		if (data.tags.includes('TAG_SWITCH')) extraTags.push('SWITCH');
+		if (data.tags.includes('TAG_VIDEOGAME')) extraTags.push('GAME');
+		let extraType = '';
+		if (extraTags.length > 0) extraType = extraTags.join(' ') + ' ';
 		const fileLang = data.lang[0].toUpperCase();
-		kara = sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`);
+		kara = sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${extraType}${getType(data.type)}${data.order} - ${data.title}`);
 	}
 	logger.info('[KaraGen] Generating kara file for media ' + kara);
 	let karaSubFile;
