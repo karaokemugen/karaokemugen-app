@@ -15,8 +15,9 @@ import {check} from '../_common/utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import timestamp from 'unix-timestamp';
 import { compareKarasChecksum } from './generate_karasdb';
+import { getAllKaras } from '../_dao/kara';
 
-export async function editKara(kara_id,kara) {
+export async function editKara(kara_id,kara,opts = {compareChecksum: true}) {
 	let newKara;
 	let kara_orig = {...kara};
 	try {
@@ -68,7 +69,7 @@ export async function editKara(kara_id,kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum();
+	if (opts.compareChecksum) compareKarasChecksum();
 }
 
 export async function createKara(kara) {
@@ -199,7 +200,7 @@ async function importKara(mediaFile, subFile, data) {
 		const fileLang = data.lang[0].toUpperCase();
 		kara = sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${extraType}${getType(data.type)}${data.order} - ${data.title}`);
 	}
-	logger.info('[KaraGen] Generating kara file for media ' + kara);
+	logger.info('[KaraGen] Generating kara file for ' + kara);
 	let karaSubFile;
 	subFile === 'dummy.ass' ? karaSubFile = subFile : karaSubFile = `${kara}${extname(subFile || '.ass')}`;
 	let karaData = formatKara({ ...data,
@@ -279,6 +280,47 @@ async function findSubFile(mediaPath, karaData, subFile) {
 	}
 }
 
+export async function renameAllKaras() {
+	const karas = await getAllKaras('admin');
+	for (const kara of karas) {
+		let k = {};
+		logger.info(`[KaraRename] Processing ${kara.karafile}`);
+		kara.author === 'NO_TAG' || !kara.author ? k.author = [] : k.author = kara.author.split(',');
+		k.author.forEach((e,i) => k.author[i] = e.trim());
+		k.kid = kara.kid;
+		k.kara_id = kara.kara_id;
+		k.lang = kara.language.split(',');
+		k.lang.forEach((e,i) => k.lang[i] = e.trim());
+		k.mediafile = kara.mediafile;
+		k.subfile = kara.subfile;
+		k.karafile = kara.karafile;
+		kara.misc === 'NO_TAG' || !kara.misc ? k.tags = [] : k.tags = kara.misc.split(',');
+		k.tags.forEach((e,i) => k.tags[i] = e.trim());
+		kara.groups === 'NO_TAG' || !kara.groups ? k.groups = [] : k.groups = kara.groups.split(',');
+		k.groups.forEach((e,i) => k.groups[i] = e.trim());
+		if (kara.serie_orig) {
+			k.series = kara.serie_orig.split(',');
+			k.series.forEach((e,i) => k.series[i] = e.trim());
+		} else {
+			k.series = [];
+		}
+		k.order = kara.songorder;
+		k.type = kara.songtype.replace(/TYPE_/,'');
+		kara.songwriter === 'NO_TAG' || !kara.songwriter ? k.songwriter = [] : k.songwriter = kara.songwriter.split(',');
+		k.songwriter.forEach((e,i) => k.songwriter[i] = e.trim());
+		kara.singer === 'NO_TAG' || !kara.singer ? k.singer = [] : k.singer = kara.singer.split(',');
+		k.singer.forEach((e,i) => k.singer[i] = e.trim());
+		kara.creator === 'NO_TAG' || !kara.creator ? k.creator = [] : k.creator = kara.creator.split(',');
+		k.creator.forEach((e,i) => k.creator[i] = e.trim());
+		k.title = kara.title;
+		k.year = kara.year;
+		k.overwrite = true;
+		k.dateadded = kara.created_at;
+		k.datemodif = kara.modified_at;
+		await editKara(k.kara_id, k, {compareChecksum: false});
+	}
+	compareKarasChecksum();
+}
 
 async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	// Generating kara file in the first kara folder
