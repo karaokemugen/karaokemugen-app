@@ -68,7 +68,7 @@ export async function editKara(kara_id,kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum();
+	compareKarasChecksum({silent: true});
 }
 
 export async function createKara(kara) {
@@ -81,7 +81,7 @@ export async function createKara(kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum();
+	compareKarasChecksum({silent: true});
 	return newKara;
 }
 
@@ -136,7 +136,7 @@ async function generateKara(kara, opts) {
 		kara.series.forEach((e,i) => kara.series[i] = e.trim());
 		kara.lang.forEach((e,i) => kara.lang[i] = e.trim());
 		kara.singer.forEach((e,i) => kara.singer[i] = e.trim());
-		kara.groups.forEach((e,i) => kara.group[i] = e.trim());
+		kara.groups.forEach((e,i) => kara.groups[i] = e.trim());
 		kara.songwriter.forEach((e,i) => kara.songwriter[i] = e.trim());
 		kara.tags.forEach((e,i) => kara.tags[i] = e.trim());
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());

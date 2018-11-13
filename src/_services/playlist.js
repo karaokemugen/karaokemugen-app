@@ -967,7 +967,12 @@ export async function shufflePlaylist(playlist_id, isSmartShuffle) {
 			isSmartShuffle ? AfterPlaying = smartShuffle(AfterPlaying) : AfterPlaying = shuffle(AfterPlaying);
 			playlist = BeforePlaying.concat(AfterPlaying);
 			// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
-			if (!ReachedPlaying) isSmartShuffle ? playlist = smartShuffle(playlist) :  playlist = shuffle(playlist);
+			if (!ReachedPlaying) {
+				if(!isSmartShuffle)
+					playlist = shuffle(playlist);
+				else
+					playlist = smartShuffle(playlist);
+			}
 		}
 
 		updatePlaylistLastEditTime(playlist_id);
