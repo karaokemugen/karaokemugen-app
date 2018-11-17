@@ -1942,6 +1942,7 @@ var settingsNotUpdated;
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
 			, 'BLCTYPE_7':			data['misc_i18n']
 			, 'DETAILS_SERIE':		data['serie']
+			, 'DETAILS_SERIE_ORIG':		data['serie_orig']
 			//	, 'DETAILS_SERIE_ALT':	data['serie_altname']
 			, 'BLCTYPE_2':			data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
