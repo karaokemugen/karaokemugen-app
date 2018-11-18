@@ -4,8 +4,7 @@ import got from 'got';
 export async function publishURL() {
 	configureHost();
 	const conf = getConfig();
-	let localHost = conf.osHost;
-	if (conf.EngineDisplayConnectionInfoHost) localHost = conf.EngineDisplayConnectionInfoHost;
+	const localHost = conf.EngineDisplayConnectionInfoHost || conf.osHost;
 	try {
 		await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, {
 			body: JSON.stringify({
