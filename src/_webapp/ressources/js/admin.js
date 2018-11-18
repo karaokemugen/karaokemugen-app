@@ -756,7 +756,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		} else {
 			var idPlc = parseInt(liKara.attr('idplaylistcontent'));
 			var idPlaylist = parseInt($('#selectPlaylist' + side).val());
-
+			liKara.parent().addClass('disabled');
+			
 			$.ajax({
 				type: 'PUT',
 				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
@@ -765,6 +766,8 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 				DEBUG && console.log('Kara plc_id ' + posFromPrev + ' pos changed');
 			}).fail(function () {
 				fillPlaylist(side);
+			}).always(() => {
+				liKara.parent().removeClass('disabled');
 			});
 			scrollToKara(side, idKara, .55); 
 		}
