@@ -761,7 +761,9 @@ export async function editPLC(plc_id,params,token) {
 	}
 	updatePlaylistLastEditTime(pl.playlist_id);
 	profile('editPLC');
-	return pl.playlist_id;
+	return {
+		pl_id: pl.playlist_id
+	};
 }
 
 function sortByPos(a, b) {
