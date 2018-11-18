@@ -16,6 +16,7 @@ import {initFavoritesSystem} from './favorites';
 import {initOnlineSystem} from '../_webapp/online';
 import {initControlPanel} from '../_webapp/control_panel';
 import {initPlayer, quitmpv} from './player';
+import {initStats, sendPayload} from './stats';
 import {karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {validateKaras} from './kara';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
@@ -76,6 +77,8 @@ export async function initEngine() {
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayer());
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
+	if (+conf.OnlineStats === 1) inits.push(initStats());
+	sendPayload();
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await isACurrentPlaylist();
