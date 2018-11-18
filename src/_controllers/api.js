@@ -1239,11 +1239,13 @@ export function APIControllerAdmin(router) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				if (req.body.flag_playing) req.body.flag_playing = parseInt(req.body.flag_playing, 10);
 				try {
-					await editPLC(req.params.plc_id,{
+					const data = await editPLC(req.params.plc_id,{
 						pos: req.body.pos,
 						flag_playing: req.body.flag_playing,
 						flag_free: req.body.flag_free
 					},req.authToken);
+					emitWS('playlistContentsUpdated',data.pl_id);
+					emitWS('playlistInfoUpdated',data.pl_id);
 					res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
 				} catch(err) {
 					logger.error(err);
