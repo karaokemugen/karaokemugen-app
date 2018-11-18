@@ -53,7 +53,9 @@ function typeValidator(value) {
 }
 
 function boolIntValidator(value) {
-	if (value && +value !== 0 && +value !== 1) return ` '${value}' is invalid (must be 0 or 1)`;
+	const err = ` '${value}' is invalid (must be -1, 0 or 1)`;
+	if (!value) return err;
+	if (value && +value < -1 && +value > 1) return err;
 	return null;
 }
 

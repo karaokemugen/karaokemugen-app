@@ -71,7 +71,7 @@ export const defaults = {
 	OnlineMode: 0,
 	OnlineHost: 'kara.moe',
 	OnlinePort: 80,
-	OnlineStats: 0,
+	OnlineStats: -1,
 	appInstanceID: 'Change me',
 	appFrontendPort: 1337,
 	appAdminPort: 1338,
