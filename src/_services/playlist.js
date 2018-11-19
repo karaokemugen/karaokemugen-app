@@ -569,7 +569,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		} else {
 			const startpos = playlistMaxPos.maxpos + 1.0;
 			for (const i in karaList) {
-				karaList[i].pos = startpos + i;
+				karaList[i].pos = startpos + +i;
 			}
 		}
 		await addKaraToPL(karaList);
