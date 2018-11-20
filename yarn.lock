@@ -2339,10 +2339,10 @@ eslint-visitor-keys@^1.0.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#3f3180fb2e291017716acb4c9d6d5b5c34a6a81d"
   integrity sha512-qzm/XxIbxm/FHyH341ZrbnMUpe+5Bocte9xkmFMzPMjRaZMcXww+MpBptFvtU+79L362nqiLhekCxCxDPaUMBQ==
 
-eslint@^5.8.0:
-  version "5.8.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.8.0.tgz#91fbf24f6e0471e8fdf681a4d9dd1b2c9f28309b"
-  integrity sha512-Zok6Bru3y2JprqTNm14mgQ15YQu/SMDkWdnmHfFg770DIUlmMFd/gqqzCHekxzjHZJxXv3tmTpH0C1icaYJsRQ==
+eslint@^5.9.0:
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-5.9.0.tgz#b234b6d15ef84b5849c6de2af43195a2d59d408e"
+  integrity sha512-g4KWpPdqN0nth+goDNICNXGfJF7nNnepthp46CAlJoJtC5K/cLu3NgCM3AHu1CkJ5Hzt9V0Y0PBAO6Ay/gGb+w==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     ajv "^6.5.3"
@@ -6035,10 +6035,10 @@ symbol-observable@^1.2.0:
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
   integrity sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==
 
-systeminformation@^3.48.4:
-  version "3.48.4"
-  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-3.48.4.tgz#de07971e6dedf4cc24d50ddfe0f77000e0c7cdfc"
-  integrity sha512-Pqsa1l1fdWDQ28nQBzy0KUSQBiVSt+Dg4sDqS6C1UuaFAtDvPTWP9IynVDc1wIPnp5xzK9m+nAhCL1rIdra6Gw==
+systeminformation@^3.49.2:
+  version "3.49.2"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-3.49.2.tgz#ca7f0c8937838ac7806ab82a37768d52c028dae3"
+  integrity sha512-UOaD56BNznIEIxDUrVECcj1lmCUJ5DI7la4jwBLJG8o+KafSRjwSlG91XYC+lhftgcQEmDy6e+f67dSgpAPtBw==
 
 table@^5.0.2:
   version "5.1.0"
