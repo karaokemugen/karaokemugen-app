@@ -392,6 +392,12 @@ button[name="smartShuffle"] > i {
 	__bottom: 0;
 }
 
+.disabled {
+	pointer-events: none;
+	cursor: not-allowed;
+    opacity: 0.66;
+}
+
 @media (max-width: 1520px) {	
 	.plDashboard .plSelect {
 	flex-basis : 50%;

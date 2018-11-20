@@ -569,7 +569,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		} else {
 			const startpos = playlistMaxPos.maxpos + 1.0;
 			for (const i in karaList) {
-				karaList[i].pos = startpos + i;
+				karaList[i].pos = startpos + +i;
 			}
 		}
 		await addKaraToPL(karaList);
@@ -761,7 +761,9 @@ export async function editPLC(plc_id,params,token) {
 	}
 	updatePlaylistLastEditTime(pl.playlist_id);
 	profile('editPLC');
-	return pl.playlist_id;
+	return {
+		pl_id: pl.playlist_id
+	};
 }
 
 function sortByPos(a, b) {
