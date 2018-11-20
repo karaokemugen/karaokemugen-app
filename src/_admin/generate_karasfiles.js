@@ -175,7 +175,6 @@ async function importKara(mediaFile, subFile, data) {
 		const extraTags = [];
 		if (data.tags.includes('TAG_PS3')) extraTags.push('PS3');
 		if (data.tags.includes('TAG_PS2')) extraTags.push('PS2');
-		if (data.tags.includes('TAG_PS4')) extraTags.push('PS4');
 		if (data.tags.includes('TAG_PSX')) extraTags.push('PSX');
 		if (data.tags.includes('TAG_SPECIAL')) extraTags.push('SPECIAL');
 		if (data.tags.includes('TAG_REMIX')) extraTags.push('REMIX');
