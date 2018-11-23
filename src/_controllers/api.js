@@ -136,7 +136,6 @@ export function APIControllerAdmin(router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					req.sanitize('duration').toInt();
 					const new_playlist = await createAutoMix(req.body, req.authToken.username);
 					emitWS('playlistsUpdated');
 					res.statusCode = 201;
