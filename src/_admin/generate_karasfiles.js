@@ -4,8 +4,8 @@
 
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
-import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias} from '../_common/utils/config';
-import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_common/utils/files';
+import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias, getConfig} from '../_common/utils/config';
+import {sanitizeFile, asyncReadFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt, asyncWriteFile} from '../_common/utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
@@ -16,6 +16,7 @@ import {getOrAddSerieID} from '../_services/series';
 import timestamp from 'unix-timestamp';
 import { compareKarasChecksum } from './generate_karasdb';
 import { getAllKaras } from '../_dao/kara';
+import ini from 'ini';
 
 export async function editKara(kara_id,kara,opts = {compareChecksum: true}) {
 	let newKara;
@@ -118,15 +119,15 @@ async function generateKara(kara, opts) {
 		series: {presence: true},
 		title: {presence: true}
 	});
-	// Copy files from temp directory to import, depending on the different cases.
+	// Move files from temp directory to import, depending on the different cases.
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile;
 	if (kara.subfile && kara.subfile !== 'dummy.ass' && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
 	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
-	await asyncCopy(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
-	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncCopy(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
+	await asyncMove(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
+	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncMove(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
 
 	let newKara;
 	try {
@@ -169,8 +170,7 @@ export async function karaGenerationBatch() {
 	}
 }
 
-async function importKara(mediaFile, subFile, data) {
-	let kara = mediaFile;
+function defineFilename(data) {
 	if (data) {
 		const extraTags = [];
 		if (data.tags.includes('TAG_PS3')) extraTags.push('PS3');
@@ -197,8 +197,12 @@ async function importKara(mediaFile, subFile, data) {
 		let extraType = '';
 		if (extraTags.length > 0) extraType = extraTags.join(' ') + ' ';
 		const fileLang = data.lang[0].toUpperCase();
-		kara = sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${extraType}${getType(data.type)}${data.order} - ${data.title}`);
+		return sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${extraType}${getType(data.type)}${data.order} - ${data.title}`);
 	}
+}
+
+async function importKara(mediaFile, subFile, data) {
+	const kara = defineFilename(data);
 	logger.info('[KaraGen] Generating kara file for ' + kara);
 	let karaSubFile;
 	subFile === 'dummy.ass' ? karaSubFile = subFile : karaSubFile = `${kara}${extname(subFile || '.ass')}`;
@@ -281,22 +285,19 @@ async function findSubFile(mediaPath, karaData, subFile) {
 
 export async function renameAllKaras() {
 	const karas = await getAllKaras('admin');
+	let karasRenames = [];
+	let lyricsRenames = [];
+	const conf = getConfig();
+	try {
+
+
 	for (const kara of karas) {
-		let k = {};
 		logger.info(`[KaraRename] Processing ${kara.karafile}`);
-		kara.author === 'NO_TAG' || !kara.author ? k.author = [] : k.author = kara.author.split(',');
-		k.author.forEach((e,i) => k.author[i] = e.trim());
-		k.kid = kara.kid;
-		k.kara_id = kara.kara_id;
+		let k = {}
 		k.lang = kara.language.split(',');
 		k.lang.forEach((e,i) => k.lang[i] = e.trim());
-		k.mediafile = kara.mediafile;
-		k.subfile = kara.subfile;
-		k.karafile = kara.karafile;
 		kara.misc === 'NO_TAG' || !kara.misc ? k.tags = [] : k.tags = kara.misc.split(',');
 		k.tags.forEach((e,i) => k.tags[i] = e.trim());
-		kara.groups === 'NO_TAG' || !kara.groups ? k.groups = [] : k.groups = kara.groups.split(',');
-		k.groups.forEach((e,i) => k.groups[i] = e.trim());
 		if (kara.serie_orig) {
 			k.series = kara.serie_orig.split(',');
 			k.series.forEach((e,i) => k.series[i] = e.trim());
@@ -305,20 +306,38 @@ export async function renameAllKaras() {
 		}
 		k.order = kara.songorder;
 		k.type = kara.songtype.replace(/TYPE_/,'');
-		kara.songwriter === 'NO_TAG' || !kara.songwriter ? k.songwriter = [] : k.songwriter = kara.songwriter.split(',');
-		k.songwriter.forEach((e,i) => k.songwriter[i] = e.trim());
 		kara.singer === 'NO_TAG' || !kara.singer ? k.singer = [] : k.singer = kara.singer.split(',');
 		k.singer.forEach((e,i) => k.singer[i] = e.trim());
-		kara.creator === 'NO_TAG' || !kara.creator ? k.creator = [] : k.creator = kara.creator.split(',');
-		k.creator.forEach((e,i) => k.creator[i] = e.trim());
 		k.title = kara.title;
-		k.year = kara.year;
-		k.overwrite = true;
-		k.dateadded = kara.created_at;
-		k.datemodif = kara.modified_at;
-		await editKara(k.kara_id, k, {compareChecksum: false});
+		if (`${defineFilename(k)}.kara` !== kara.karafile) {
+			let karaText = await asyncReadFile(resolve(conf.appPath, conf.PathKaras,kara.karafile),'utf-8');
+			karaText = karaText.replace(/\r/g, '');
+			let karaData = ini.parse(karaText);
+			karasRenames.push(`git mv "karas/${kara.karafile}" "karas/${defineFilename(k)}.kara"`);
+			karaData.mediafile = `${defineFilename(k)}${extname(karaData.mediafile)}`;
+			if (karaData.subfile !== 'dummy.ass') {
+				karaData.subfile = `${defineFilename(k)}.ass`;
+				lyricsRenames.push(`git mv "lyrics/${kara.subfile}" "lyrics/${karaData.subfile}"`);
+			}
+			/*
+			asyncMove(
+				resolve(conf.appPath,conf.PathMedias,kara.mediafile),
+				resolve(conf.appPath,conf.PathMedias,`${defineFilename(k)}${extname(kara.mediafile)}`)
+			);
+			asyncWriteFile(resolve(conf.appPath,conf.PathKaras,kara.karafile),ini.stringify(karaData),'utf-8');
+			*/
+
+		} else {
+			logger.info('[KaraRename] Kara already named correctly, skipping.');
+		}
 	}
-	compareKarasChecksum();
+	}catch(err) {
+		console.log(err);
+		process.exit(1);
+	}
+
+	asyncWriteFile('gitkaras.sh',karasRenames.join('\r\n'),'utf-8');
+	asyncWriteFile('gitlyrics.sh',lyricsRenames.join('\r\n'),'utf-8');
 }
 
 async function generateAndMoveFiles(mediaPath, subPath, karaData) {
