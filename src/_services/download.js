@@ -153,7 +153,11 @@ export function resumeQueue() {
 }
 
 export async function addDownloads(repo, downloads) {
-	const dls = downloads.map(dl => {
+	const currentDls = await getDownloads();
+	let dls = downloads.map(dl => {
+		for (const currentDl of currentDls) {
+			if (dl.name === currentDl.name && (currentDl.status === 'DL_RUNNING' || currentDl.status === 'DL_PLANNED')) return null;
+		}
 		let seriefiles = [];
 		for (const serie of dl.seriefiles) {
 			seriefiles.push({
@@ -183,6 +187,11 @@ export async function addDownloads(repo, downloads) {
 			status: 'DL_PLANNED'
 		};
 	});
+	//Remove downloads with null entry (they are already present and could not be added)
+	dls = dls.filter((dl) => {
+		return dl !== null;
+	});
+	if (dls.length === 0) throw 'No downloads added, all are already in queue or running';
 	await insertDownloads(dls);
 	try {
 		await internet();
