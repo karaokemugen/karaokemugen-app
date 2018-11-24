@@ -83,20 +83,24 @@ async function processDownload(download) {
 	const tempSeriesPath = resolve(conf.appPath,conf.PathTemp);
 	list.push({
 		filename: tempMedia,
-		url: download.urls.media.remote
+		url: download.urls.media.remote,
+		id: download.name
 	});
 	if (download.urls.lyrics.local !== 'dummy.ass') list.push({
 		filename: tempLyrics,
-		url: download.urls.lyrics.remote
+		url: download.urls.lyrics.remote,
+		id: download.name
 	});
 	list.push({
 		filename: tempKara,
 		url: download.urls.kara.remote,
+		id: download.name
 	});
 	for (const serie of download.urls.serie) {
 		list.push({
 			filename: resolve(tempSeriesPath, serie.local),
 			url: serie.remote,
+			id: download.name
 		});
 		bundle.series.push(resolve(localSeriesPath, serie.local));
 	}

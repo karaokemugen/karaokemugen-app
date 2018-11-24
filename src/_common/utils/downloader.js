@@ -33,6 +33,7 @@ export default class Downloader {
 	  } else {
 			const nextUrl = this.list[this.pos].url;
 			const nextFilename = this.list[this.pos].filename;
+			const id = this.list[this.pos].id;
 			const tryURL = new Promise((resolve, reject) => {
 				// Try to run a HEAD to get the size
 				let options = {
@@ -57,10 +58,11 @@ export default class Downloader {
 				emitWS('downloadBatchProgress', {
 					text: `Downloading file ${this.pos} of ${this.list.length}`,
 					value: this.pos,
-					total: this.list.length
+					total: this.list.length,
+					id: id
 				});
 				this.pos = this.pos + 1;
-				this.DoDownload(nextUrl, nextFilename, size, this.download , err => {
+				this.DoDownload(nextUrl, nextFilename, size, id, this.download, err => {
 					logger.error(`[Download] Error during download of ${basename(nextFilename)} : ${err}`);
 					this.fileErrors.push(basename(nextFilename));
 					this.download();
@@ -75,7 +77,7 @@ export default class Downloader {
 	  }
 	}
 
-	DoDownload = (url, filename, size, onSuccess, onError) => {
+	DoDownload = (url, filename, size, id, onSuccess, onError) => {
 
 		if (this.opts.bar && size) this.bar.start(Math.floor(size / 1000) / 1000, 0);
 		const HttpAgent = require('agentkeepalive');
@@ -107,7 +109,8 @@ export default class Downloader {
 				emitWS('downloadProgress', {
 					text: `Downloading : ${basename(filename)}`,
 					value: state.transferred,
-					total: size
+					total: size,
+					id: id
 				});
 			})
 			.on('error', err => {
