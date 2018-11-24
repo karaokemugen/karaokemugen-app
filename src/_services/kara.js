@@ -259,9 +259,9 @@ async function updateTags(kara) {
 }
 
 export async function integrateKaraFile(file) {
-	const karaData = getDataFromKaraFile(file);
+	const karaData = await getDataFromKaraFile(file);
 	karaData.karafile = basename(file);
-	const karaDB = getKaraByKID(karaData.KID);
+	const karaDB = await getKaraByKID(karaData.KID);
 	if (karaDB) {
 		karaData.kara_id = karaDB.kara_id;
 		await editKaraInDB(karaData);
