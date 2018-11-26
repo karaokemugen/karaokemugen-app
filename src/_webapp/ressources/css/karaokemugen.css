@@ -9,8 +9,12 @@ body {
 	height: 100%;
 	margin: 0;
 }
-div > a {
+div > a, h5 > a, a.btn-link {
 	color: hsla(208, 91%, 79%, 1);
+}
+.btn-link:hover {
+	cursor: pointer;
+	color: hsla(208, 81%, 69%, 1);
 }
 .form-control {
 	background-color: #f3f3f3;
@@ -1175,6 +1179,9 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 .modal.modalPage .modal-body div.text {
 	text-align: left;
 	line-height: 2.6em;
+}
+#onlineStatsModal .modal-body div.text {
+	line-height: initial;
 }
 #loginModal .modal-body button, #loginModal .modal-body input {
 	width: 100%;

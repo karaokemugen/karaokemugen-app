@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 var panel1Default;      // Int : default id of the playlist of the 1st panel (-1 means kara list)
 var status;             // String : status of the player
 var mode;               // String : way the kara list is constructed, atm "list" supported
@@ -209,34 +210,35 @@ var settingsNotUpdated;
 
 		var mugenToken = readCookie('mugenToken');
 
-		if(!welcomeScreen) {
-			if(query.admpwd && scope === 'admin' && appFirstRun) { // app first run admin
-				login('admin', query.admpwd).done(() => {
+		if(welcomeScreen) { 
+			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
+			$('#wlcm_disconnect').hide();
+		}
+
+		if(query.admpwd && scope === 'admin' && appFirstRun) { // app first run admin
+			login('admin', query.admpwd).done(() => {
+				if(!welcomeScreen) {
 					startIntro('admin');
 					var privateMode = $('input[name="EnginePrivateMode"]');
 					privateMode.val(1);
 					setSettings(privateMode);
-				});
-			} else if(mugenToken) {
-				logInfos = parseJwt(mugenToken);
-				logInfos.token = mugenToken;
-				if(scope === 'admin' && logInfos.role !== 'admin') {
-					$('#loginModal').modal('show');
 				} else {
+					$('#wlcm_login > span').text(logInfos.username);
+					$('#wlcm_disconnect').show();
 					initApp();
 				}
-			} else {
-				$('#loginModal').modal('show');
-			}
-		} else if (mugenToken) {
+			});
+		} else if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			if(!welcomeScreen) initApp();
-			$('#wlcm_login > span').text(logInfos.username);
-			$('#wlcm_disconnect').show();
+			if(scope === 'admin' && logInfos.role !== 'admin') {
+				$('#loginModal').modal('show');
+			} else {
+				initApp();
+			}
 		} else {
-			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
-			$('#wlcm_disconnect').hide();
+			$('#loginModal').modal('show');
+		
 		}
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
@@ -1999,6 +2001,79 @@ var settingsNotUpdated;
 		return infoKaraTemp;
 	};
 
+	
+	checkOnlineStats = function(settings) {
+	
+		if(settings.OnlineStats == -1) {
+			if($('#onlineStatsModal').length < 1) {
+				var top =		'<div class="modal modalPage fade" id="onlineStatsModal" role="dialog">'+
+				'    <div class="modal-dialog modal-md">'+
+				'        <div class="modal-content">';
+
+				var bottom =	'            </div>'+
+								'        </div>'+
+								'    </div>'+
+								'</div>';
+				var content =	'<ul class="nav nav-tabs nav-justified modal-header">'+
+								'<li class="modal-title stats"><a data-toggle="tab" href="#nav-stats" role="tab" aria-controls="nav-stats" aria-selected="true" aria-expanded="true">'+
+									i18n.__('ONLINE_STATS.TITLE') +'</a>'+
+								'</li></ul>'+
+								'<div class="tab-content" id="nav-stats-tab">'+
+								'   <div id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab" class="modal-body tab-pane fade active in">'+
+								'       <div class="modal-message text">'+
+								'       	<p>' + i18n.__('ONLINE_STATS.INTRO') + '</p>'+									
+								'       </div>'+
+								'<div class="accordion text" id="accordionDetails">'+
+								'  <div class="card">'+
+								'    <div class="card-header" id="headingOne">'+
+								'      <h5 class="mb-0">'+
+								'        <a class="btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">'+
+											i18n.__('ONLINE_STATS.DETAILS.TITLE')+
+								'        </a>'+
+								'      </h5>'+
+								'    </div>'+
+								'    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionDetails">'+
+								'      <div class="card-body">'+
+								
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.1') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.2') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.3') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.4') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.5') +  '</br></br>'+
+							
+								'       <p>' + i18n.__('ONLINE_STATS.DETAILS.OUTRO') + '</p>'+
+								'      </div>'+
+								'    </div>'+
+								'  </div>'+
+								'  </div>'+
+								'        <div class="modal-message text">'+
+								'       	<p>' + i18n.__('ONLINE_STATS.CHANGE') + '</p>'+
+								'       	<p>' + i18n.__('ONLINE_STATS.QUESTION') + '</p>'+
+								'       </div>'+
+								'   	<div></div>'+
+								'   	<div>'+
+								'		   <button type="button" value="1" class="onlineStatsBtn btn btn-default btn-primary col-xs-6">'+
+												i18n.__('YES')+
+								' 			</button>'+
+								'  			<button type="button" value="0" class="onlineStatsBtn btn btn-default col-xs-6">'+
+													i18n.__('NO')+
+								'   		</button>'+
+								'		</div>'+
+								'	</div>'+
+								'</div>';
+				$('body').append($(top + content + bottom));
+			
+				$('#onlineStatsModal .onlineStatsBtn').click((e) => {
+					settings.OnlineStats = '' + $(e.target).attr('value');
+					ajx('PUT', 'admin/settings', settings, function(data) {
+						$('#onlineStatsModal').modal('hide');
+					});
+				});
+			}
+			$('#onlineStatsModal').modal('show');
+		}
+	};
+			
 	/*
 	*	Build the modal pool from a kara list
 	*	data  {Object} : list of karas going in the poll
