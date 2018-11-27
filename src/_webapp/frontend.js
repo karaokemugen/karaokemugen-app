@@ -151,6 +151,7 @@ export async function initFrontend(port) {
 	});
 	routerWelcome.get('/', (req, res) => {
 		res.render('welcome', {
+			'catchphrases'	:	sample(initializationCatchphrases),
 			'clientAdress'	:	`http://${address()}`,
 			'appAdminPort'	:	conf.appAdminPort,
 			'query'			:	JSON.stringify(req.query),
