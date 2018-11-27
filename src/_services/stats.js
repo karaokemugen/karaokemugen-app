@@ -27,7 +27,7 @@ export async function sendPayload() {
 			throw `This instance is not connected to the internets : ${err}`;
 		}
 		const payload = await buildPayload();
-		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)} bytes)`);
+		logger.info(`[Stats] Sending payload (${prettyBytes(JSON.stringify(payload).length)})`);
 		logger.debug(`[Stats] Payload being sent : ${JSON.stringify(payload,null,2)}`);
 		const conf = getConfig();
 		await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/stats`,{
