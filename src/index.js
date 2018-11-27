@@ -86,7 +86,7 @@ async function main() {
 	if (await asyncExists(tempInput)) await asyncUnlink(tempInput);
 	writeFileSync(tempInput, fileBuffer);
 
-	logger.debug('[Launcher] Copying default background to to ' + resolve(appPath, config.PathTemp));
+	logger.debug('[Launcher] Copying default background to ' + resolve(appPath, config.PathTemp));
 	fileBuffer = readFileSync(join(__dirname, `/_player/assets/${config.VersionImage}`));
 	const tempBackground = resolve(appPath, config.PathTemp, 'default.jpg');
 	if (await asyncExists(tempBackground)) await asyncUnlink(tempBackground);
