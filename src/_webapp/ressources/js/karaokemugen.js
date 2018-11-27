@@ -234,6 +234,8 @@ var settingsNotUpdated;
 			if(scope === 'admin' && logInfos.role !== 'admin') {
 				$('#loginModal').modal('show');
 			} else {
+				$('#wlcm_login > span').text(logInfos.username);
+				$('#wlcm_disconnect').show();
 				initApp();
 			}
 		} else {
@@ -2224,125 +2226,127 @@ var settingsNotUpdated;
 				});
 			});
 		}
-
-		if(logInfos.role != 'guest') {
-			$('.pseudoChange').show();
-			$('#searchParent').css('width','');
-		} else {
-			$('.pseudoChange').hide();
-			$('#searchParent').css('width','100%');
-		}
-
-		if(!introManager || !introManager._currentStep) initSwitchs();
-
-		$('.bootstrap-switch').promise().then(function(){
-			$(this).each(function(){
-				$(this).attr('title', $(this).find('input').attr('title'));
-			});
-		});
-
-		$.ajax({ url: 'public/tags', }).done(function (data) {
-			tags = data.content;
-			var serie, year;
-
-			var tagList = tagsTypesList.map(function(val, ind){
-				if(val === 'DETAILS_SERIE') {
-					return {id: 'serie', text: i18n.__(val)}
-				} else if (val === 'DETAILS_YEAR') {
-					return {id: 'year', text: i18n.__(val)}
-				} else {
-					return {id: val.replace('BLCTYPE_',''), text: i18n.__(val)}
-				}
-			});
-
-			$('.tagsTypes').select2({ theme: 'bootstrap',
-				tags: false,
-				minimumResultsForSearch: 15,
-				data: tagList
-			});
-			$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
-
-			forSelectTags = tags.map(function(val, ind){
-				return {id:val.tag_id, text: val.name_i18n, type: val.type};
-			});
-
-			$.ajax({ url: 'public/series', }).done(function (data) {
-
-				var series = data.content;
-				series = series.map(function(val, ind){
-					return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
+		if(!welcomeScreen) {
+			if(logInfos.role != 'guest') {
+				$('.pseudoChange').show();
+				$('#searchParent').css('width','');
+			} else {
+				$('.pseudoChange').hide();
+				$('#searchParent').css('width','100%');
+			}
+	
+			if(!introManager || !introManager._currentStep) initSwitchs();
+	
+			$('.bootstrap-switch').promise().then(function(){
+				$(this).each(function(){
+					$(this).attr('title', $(this).find('input').attr('title'));
 				});
-				forSelectTags.push.apply(forSelectTags, series);
-
-				$.ajax({ url: 'public/years', }).done(function (data) {
-
-					var years = data.content;
-					years = years.map(function(val, ind){
-						return {id:val.year, text: val.year, type: 'year'};
+			});
+	
+			$.ajax({ url: 'public/tags', }).done(function (data) {
+				tags = data.content;
+				var serie, year;
+	
+				var tagList = tagsTypesList.map(function(val, ind){
+					if(val === 'DETAILS_SERIE') {
+						return {id: 'serie', text: i18n.__(val)}
+					} else if (val === 'DETAILS_YEAR') {
+						return {id: 'year', text: i18n.__(val)}
+					} else {
+						return {id: val.replace('BLCTYPE_',''), text: i18n.__(val)}
+					}
+				});
+	
+				$('.tagsTypes').select2({ theme: 'bootstrap',
+					tags: false,
+					minimumResultsForSearch: 15,
+					data: tagList
+				});
+				$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
+	
+				forSelectTags = tags.map(function(val, ind){
+					return {id:val.tag_id, text: val.name_i18n, type: val.type};
+				});
+	
+				$.ajax({ url: 'public/series', }).done(function (data) {
+	
+					var series = data.content;
+					series = series.map(function(val, ind){
+						return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
 					});
-					forSelectTags.push.apply(forSelectTags, years);
-
-					$('.tags').select2({
-						theme: 'bootstrap tags',
-						placeholder: '',
-						dropdownAutoWidth: false,
-						minimumResultsForSearch: 20,
-						ajax: {
-							transport: function(params, success, failure) {
-								var page = params.data.page;
-								var pageSize = 120;
-								var type = $('.tagsTypes').val();
-
-								var items = forSelectTags.filter(function(item) {
-										return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
+					forSelectTags.push.apply(forSelectTags, series);
+	
+					$.ajax({ url: 'public/years', }).done(function (data) {
+	
+						var years = data.content;
+						years = years.map(function(val, ind){
+							return {id:val.year, text: val.year, type: 'year'};
+						});
+						forSelectTags.push.apply(forSelectTags, years);
+	
+						$('.tags').select2({
+							theme: 'bootstrap tags',
+							placeholder: '',
+							dropdownAutoWidth: false,
+							minimumResultsForSearch: 20,
+							ajax: {
+								transport: function(params, success, failure) {
+									var page = params.data.page;
+									var pageSize = 120;
+									var type = $('.tagsTypes').val();
+	
+									var items = forSelectTags.filter(function(item) {
+											return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
+										});
+									var totalLength = items.length;
+	
+									if(page) {
+										items = items.slice((page - 1) * pageSize, page * pageSize);
+									}  else {
+										items = items.slice(0, pageSize);
+										page = 1;
+									}
+	
+									var more = false;
+									if( page * pageSize + items.length < totalLength) {
+										more = true
+									}
+									var promise = new Promise(function(resolve, reject) {
+										resolve({results: items, pagination : { more : more} });
 									});
-								var totalLength = items.length;
-
-								if(page) {
-									items = items.slice((page - 1) * pageSize, page * pageSize);
-								}  else {
-									items = items.slice(0, pageSize);
-									page = 1;
+									promise.then(success);
+									promise.catch(failure);
 								}
-
-								var more = false;
-								if( page * pageSize + items.length < totalLength) {
-									more = true
-								}
-								var promise = new Promise(function(resolve, reject) {
-									resolve({results: items, pagination : { more : more} });
-								});
-								promise.then(success);
-								promise.catch(failure);
 							}
-						}
+						});
+						$('.tags').parent().find('.select2-container').addClass('value tags');
 					});
-					$('.tags').parent().find('.select2-container').addClass('value tags');
 				});
+			// ['serie', 'year'].forEach(function(dataType) {
+			// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
+			// 		data = data.content;
+	
+			// 		data = data.map(function(val, ind){
+			// 			var jsonLine;
+			// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
+			// 			if(dataType === 'year') jsonLine = {id:val.year, text: val.year};
+			// 			return jsonLine;
+			// 		});
+			// 		$('#' + dataType).select2({ theme: 'bootstrap',
+			// 			tags: false,
+			// 			minimumResultsForSearch: 3,
+			// 			data: data
+			// 		});
+			// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
+			// 	});
+	
+			// });
+	
 			});
-		// ['serie', 'year'].forEach(function(dataType) {
-		// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
-		// 		data = data.content;
-
-		// 		data = data.map(function(val, ind){
-		// 			var jsonLine;
-		// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
-		// 			if(dataType === 'year') jsonLine = {id:val.year, text: val.year};
-		// 			return jsonLine;
-		// 		});
-		// 		$('#' + dataType).select2({ theme: 'bootstrap',
-		// 			tags: false,
-		// 			minimumResultsForSearch: 3,
-		// 			data: data
-		// 		});
-		// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
-		// 	});
-
-		// });
-
-		});
-
-
+	
+	
+		}
+		
 	};
 
 	$(window).resize(function () {
