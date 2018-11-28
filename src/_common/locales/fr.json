@@ -1,4 +1,5 @@
-{
+{	"YES": "Oui",
+	"NO": "Non",
 	"404": "Perdu sur le réseau local ?",
 	"404_2": "Pas de panique, on va vous aider",
 	"404_3": "vous êtes ici",
@@ -13,6 +14,7 @@
 	"DETAILS_DURATION": "Durée",
 	"DETAILS_LANGUAGE": "Langue",
 	"DETAILS_SERIE": "Série",
+	"DETAILS_SERIE_ORIG": "Série (orig)",
 	"DETAILS_SERIE_ALT": "Autres noms",
 	"DETAILS_LASTPLAYED": "Déjà vu",
 	"DETAILS_TYPE": "Type",
@@ -503,6 +505,7 @@
 	"POLLENDED": "%s remporte le vote avec %s voix !",
 	"PLAYERMONITOR": "Seconde fenêtre (moniteur)",
 	"ONLINEMODE": "Url d'accès courte (nécessite internet)",
+	"ONLINESTATS": "Envoi des statistiques d'utilisation à Karaoke Mugen Online",
 	"NO_EXT_INFO": "La recherche d'informations en ligne n'a pas abouti",
 	"FILTER": "Filtrer",
 	"VIEW_STANDARD": "Standard",
@@ -514,5 +517,21 @@
 	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais.%0D%0A Cordialement, bisous.",
 	"KARA_SUGGESTION_NAME": "Titre de la chanson",
 	"BASE_UPDATE": "Nouvelles de la base",
-	"APP_UPDATE": "Nouvelle version de l'application"
+	"APP_UPDATE": "Nouvelle version de l'application",
+	"ONLINE_STATS": {
+		"TITLE": "Statistiques",
+		"INTRO": "Karaoke Mugen peut envoyer des informations anonymisées sur votre instance à Karaoke Mugen Server afin d'établir des statistiques d'utilisation.",
+		"DETAILS" : {
+			"TITLE": "Détails des informations envoyées",
+			"1": "Quels karaokés sont en favori (mais pas par qui)",
+			"2": "Quels karaokés ont été joués",
+			"3": "Quels karaokés ont été demandés (mais pas par qui)",
+			"4": "Des informations sur la machine (CPU, RAM disponible, nom et version de l'OS...)",
+			"5": "Votre configuration de l'application (sans aucun élément secret, type mot de passe)",
+			"OUTRO": "Cet envoi a lieu à chaque démarrage puis à chaque heure d'utilisation. Vous pouvez consulter les informations envoyées dans le fichier log de Karaoke Mugen."
+
+		},
+		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
+		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?"		
+	}
 }

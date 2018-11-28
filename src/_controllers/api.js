@@ -1264,7 +1264,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
- * @apiVersion 2.2.0
+ * @apiVersion 2.4.1
  * @apiGroup Main
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -1313,6 +1313,7 @@ export function APIControllerAdmin(router) {
  *       "EngineSongsPerUser": "10000",
  * 		 "EngineTimePerUser": "10000",
  *       "EngineCreatePreviews": "1",
+ * 		 "OnlineStats": "0",
  *       "PathAltname": "../times/series_altnames.csv",
  *       "PathBackgrounds": "app/backgrounds",
  *       "PathBin": "app/bin",
@@ -1352,7 +1353,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/settings Update settings
  * @apiName PutSettings
- * @apiVersion 2.2.0
+ * @apiVersion 2.4.1
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiGroup Main
@@ -1381,6 +1382,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} EngineSongPollTimeout Poll duration in seconds
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
  * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
+ * @apiParam {Boolean} OnlineStats Enable/Disable stats upload to Karaoke Mugen Online
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
  * @apiParam {Boolean} PlayerMonitor Enable/disable player's second screen (monitor)
  * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
@@ -4888,7 +4890,7 @@ export function APIControllerPublic(router) {
 	 * @apiVersion 2.4.0
 	 * @apiGroup Misc
 	 * @apiPermission public
-	 * @apiSuccess {Array} Array Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if
+	 * @apiSuccess {Array} Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if RSS feed could not be obtained.
 	 */
 	 .get(getLang, async (req, res) => {
 			try {

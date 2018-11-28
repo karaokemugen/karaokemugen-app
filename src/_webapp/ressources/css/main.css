@@ -113,6 +113,9 @@ a:active {
     padding-top: 80px;
     margin-bottom: 20px;
 }
+.catchPhrase {
+    font-size: 16px;
+}
 #center-area .block {
   padding-top: 5px;
 }

@@ -1,6 +1,7 @@
 import {emitWS} from '../../_webapp/frontend';
 import {emit} from './pubsub';
 import logger from 'winston';
+import {now} from 'unix-timestamp';
 
 // Internal settings
 let state = {
@@ -19,7 +20,8 @@ let state = {
 	songPoll: false,
 	frontendPort: null,
 	player: {},
-	ready: false
+	ready: false,
+	sessionStart: now()
 };
 let previousState = {...state};
 

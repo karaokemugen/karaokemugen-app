@@ -4,8 +4,8 @@
 
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
-import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias} from '../_common/utils/config';
-import {sanitizeFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt} from '../_common/utils/files';
+import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias, getConfig} from '../_common/utils/config';
+import {sanitizeFile, asyncReadFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt, asyncWriteFile} from '../_common/utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
@@ -15,8 +15,10 @@ import {check} from '../_common/utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import timestamp from 'unix-timestamp';
 import { compareKarasChecksum } from './generate_karasdb';
+import { getAllKaras } from '../_dao/kara';
+import ini from 'ini';
 
-export async function editKara(kara_id,kara) {
+export async function editKara(kara_id,kara,opts = {compareChecksum: true}) {
 	let newKara;
 	let kara_orig = {...kara};
 	try {
@@ -68,7 +70,7 @@ export async function editKara(kara_id,kara) {
 		logger.warn(`[KaraGen] ${errMsg}`);
 		throw errMsg;
 	}
-	compareKarasChecksum({silent: true});
+	if (opts.compareChecksum) compareKarasChecksum({silent: true});
 }
 
 export async function createKara(kara) {
@@ -117,15 +119,15 @@ async function generateKara(kara, opts) {
 		series: {presence: true},
 		title: {presence: true}
 	});
-	// Copy files from temp directory to import, depending on the different cases.
+	// Move files from temp directory to import, depending on the different cases.
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile;
 	if (kara.subfile && kara.subfile !== 'dummy.ass' && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
 	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
-	await asyncCopy(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
-	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncCopy(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
+	await asyncMove(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
+	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncMove(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
 
 	let newKara;
 	try {
@@ -168,13 +170,40 @@ export async function karaGenerationBatch() {
 	}
 }
 
-async function importKara(mediaFile, subFile, data) {
-	let kara = mediaFile;
+function defineFilename(data) {
 	if (data) {
+		const extraTags = [];
+		if (data.tags.includes('TAG_PS3')) extraTags.push('PS3');
+		if (data.tags.includes('TAG_PS2')) extraTags.push('PS2');
+		if (data.tags.includes('TAG_PSX')) extraTags.push('PSX');
+		if (data.tags.includes('TAG_SPECIAL')) extraTags.push('SPECIAL');
+		if (data.tags.includes('TAG_REMIX')) extraTags.push('REMIX');
+		if (data.tags.includes('TAG_OVA')) extraTags.push('OVA');
+		if (data.tags.includes('TAG_ONA')) extraTags.push('ONA');
+		if (data.tags.includes('TAG_MOVIE')) extraTags.push('MOVIE');
+		if (data.tags.includes('TAG_PS4')) extraTags.push('PS4');
+		if (data.tags.includes('TAG_PSV')) extraTags.push('PSV');
+		if (data.tags.includes('TAG_PSP')) extraTags.push('PSP');
+		if (data.tags.includes('TAG_XBOX360')) extraTags.push('XBOX360');
+		if (data.tags.includes('TAG_GAMECUBE')) extraTags.push('GAMECUBE');
+		if (data.tags.includes('TAG_DS')) extraTags.push('DS');
+		if (data.tags.includes('TAG_3DS')) extraTags.push('3DS');
+		if (data.tags.includes('TAG_PC')) extraTags.push('PC');
+		if (data.tags.includes('TAG_SEGACD')) extraTags.push('SEGACD');
+		if (data.tags.includes('TAG_SATURN')) extraTags.push('SATURN');
+		if (data.tags.includes('TAG_WII')) extraTags.push('WII');
+		if (data.tags.includes('TAG_SWITCH')) extraTags.push('SWITCH');
+		if (data.tags.includes('TAG_VIDEOGAME')) extraTags.push('GAME');
+		let extraType = '';
+		if (extraTags.length > 0) extraType = extraTags.join(' ') + ' ';
 		const fileLang = data.lang[0].toUpperCase();
-		kara = sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${getType(data.type)}${data.order} - ${data.title}`);
+		return sanitizeFile(`${fileLang} - ${data.series[0] || data.singer} - ${extraType}${getType(data.type)}${data.order} - ${data.title}`);
 	}
-	logger.info('[KaraGen] Generating kara file for media ' + kara);
+}
+
+async function importKara(mediaFile, subFile, data) {
+	const kara = defineFilename(data);
+	logger.info('[KaraGen] Generating kara file for ' + kara);
 	let karaSubFile;
 	subFile === 'dummy.ass' ? karaSubFile = subFile : karaSubFile = `${kara}${extname(subFile || '.ass')}`;
 	let karaData = formatKara({ ...data,
@@ -254,6 +283,58 @@ async function findSubFile(mediaPath, karaData, subFile) {
 	}
 }
 
+export async function renameAllKaras() {
+	const karas = await getAllKaras('admin');
+	let karasRenames = [];
+	let lyricsRenames = [];
+	const conf = getConfig();
+	try {
+		for (const kara of karas) {
+			logger.info(`[KaraRename] Processing ${kara.karafile}`);
+			let k = {};
+			k.lang = kara.language.split(',');
+			k.lang.forEach((e,i) => k.lang[i] = e.trim());
+			kara.misc === 'NO_TAG' || !kara.misc ? k.tags = [] : k.tags = kara.misc.split(',');
+			k.tags.forEach((e,i) => k.tags[i] = e.trim());
+			if (kara.serie_orig) {
+				k.series = kara.serie_orig.split(',');
+				k.series.forEach((e,i) => k.series[i] = e.trim());
+			} else {
+				k.series = [];
+			}
+			k.order = kara.songorder;
+			k.type = kara.songtype.replace(/TYPE_/,'');
+			kara.singer === 'NO_TAG' || !kara.singer ? k.singer = [] : k.singer = kara.singer.split(',');
+			k.singer.forEach((e,i) => k.singer[i] = e.trim());
+			k.title = kara.title;
+			if (`${defineFilename(k)}.kara` !== kara.karafile) {
+				logger.info(`[KaraRename] Renaming to ${defineFilename(k)}`);
+				let karaText = await asyncReadFile(resolve(conf.appPath, conf.PathKaras,kara.karafile),'utf-8');
+				karaText = karaText.replace(/\r/g, '');
+				let karaData = ini.parse(karaText);
+				karasRenames.push(`git mv "karas/${kara.karafile}" "karas/${defineFilename(k)}.kara"`);
+				karaData.mediafile = `${defineFilename(k)}${extname(karaData.mediafile)}`;
+				if (karaData.subfile !== 'dummy.ass') {
+					karaData.subfile = `${defineFilename(k)}.ass`;
+					lyricsRenames.push(`git mv "lyrics/${kara.subfile}" "lyrics/${karaData.subfile}"`);
+				}
+				asyncMove(
+					resolve(conf.appPath,conf.PathMedias,kara.mediafile),
+					resolve(conf.appPath,conf.PathMedias,`${defineFilename(k)}${extname(kara.mediafile)}`)
+				);
+				asyncWriteFile(resolve(conf.appPath,conf.PathKaras,kara.karafile),ini.stringify(karaData),'utf-8');
+
+			} else {
+				logger.info('[KaraRename] Kara already named correctly, skipping.');
+			}
+		}
+	}catch(err) {
+		logger.error(`[KaraRename] Process aborted : ${err}`);
+	}
+	asyncWriteFile('gitkaras.sh',karasRenames.join('\r\n'),'utf-8');
+	asyncWriteFile('gitlyrics.sh',lyricsRenames.join('\r\n'),'utf-8');
+	logger.info('[KaraRename] Renaming complete. Please update your karaoke base from Shelter now');
+}
 
 async function generateAndMoveFiles(mediaPath, subPath, karaData) {
 	// Generating kara file in the first kara folder

@@ -319,13 +319,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 	const conf = getConfig();
 	const user = await findUserByID(user_id);
 	let quotaLeft;
-	if (!playlist_id) {
-		if (+conf.EnginePrivateMode) {
-			playlist_id = await isACurrentPlaylist();
-		} else {
-			playlist_id = await isAPublicPlaylist();
-		}
-	}
+	if (!playlist_id) playlist_id = getState().modePlaylistID;
 	if (user.flag_admin === 0 && +conf.EngineQuotaType > 0) {
 		switch(+conf.EngineQuotaType) {
 		default:
