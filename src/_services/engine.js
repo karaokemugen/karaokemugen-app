@@ -76,7 +76,6 @@ export async function initEngine() {
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
 	if (+conf.OnlineStats === 1) inits.push(initStats());
-	sendPayload();
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await isACurrentPlaylist();
