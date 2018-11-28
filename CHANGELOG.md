@@ -1,5 +1,20 @@
 # Versions
 
+## v2.4.1 "Juri Joviale" - 28/11/2018
+
+### New features
+
+- Stats are now uploaded periodically to Karaoke Mugen Server (if the instance admin agrees) (#377)
+- A media renaming procedure is available in the system panel / database tab to allow people to rename all their media files and avoid redownloading them all. (#376)
+- Initialization catchphrases(tm) are now displayed on the welcome screen (#375)
+
+### Fixes
+
+- Drag & Dropping songs within a playlist sometimes didn't work as expected. Song positions are now fixed (#375)
+- Fixed automix creation
+- Monitor window isn't synced anymore with the main player, as this would cause weird behaviors on many videos when the monitor tries to play catch up.
+- Weird error messages about invalid configuration won't appear anymore (#373)
+
 ## v2.4.0 "Juri Judicieuse" - 06/11/2018
 
 ### New features
