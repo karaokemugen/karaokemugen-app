@@ -426,6 +426,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		var promise = $.Deferred();
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
 			settings = data;
+			
+			checkOnlineStats(settings);
+
 			$.each(data, function (i, val) {
 				var input = $('[name="' + i + '"]');
 				// DEBUG && console.log(i, val);

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 var panel1Default;      // Int : default id of the playlist of the 1st panel (-1 means kara list)
 var status;             // String : status of the player
 var mode;               // String : way the kara list is constructed, atm "list" supported
@@ -209,34 +210,37 @@ var settingsNotUpdated;
 
 		var mugenToken = readCookie('mugenToken');
 
-		if(!welcomeScreen) {
-			if(query.admpwd && scope === 'admin' && appFirstRun) { // app first run admin
-				login('admin', query.admpwd).done(() => {
+		if(welcomeScreen) { 
+			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
+			$('#wlcm_disconnect').hide();
+		}
+
+		if(query.admpwd && scope === 'admin' && appFirstRun) { // app first run admin
+			login('admin', query.admpwd).done(() => {
+				if(!welcomeScreen) {
 					startIntro('admin');
 					var privateMode = $('input[name="EnginePrivateMode"]');
 					privateMode.val(1);
 					setSettings(privateMode);
-				});
-			} else if(mugenToken) {
-				logInfos = parseJwt(mugenToken);
-				logInfos.token = mugenToken;
-				if(scope === 'admin' && logInfos.role !== 'admin') {
-					$('#loginModal').modal('show');
 				} else {
+					$('#wlcm_login > span').text(logInfos.username);
+					$('#wlcm_disconnect').show();
 					initApp();
 				}
-			} else {
-				$('#loginModal').modal('show');
-			}
-		} else if (mugenToken) {
+			});
+		} else if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			if(!welcomeScreen) initApp();
-			$('#wlcm_login > span').text(logInfos.username);
-			$('#wlcm_disconnect').show();
+			if(scope === 'admin' && logInfos.role !== 'admin') {
+				$('#loginModal').modal('show');
+			} else {
+				$('#wlcm_login > span').text(logInfos.username);
+				$('#wlcm_disconnect').show();
+				initApp();
+			}
 		} else {
-			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
-			$('#wlcm_disconnect').hide();
+			$('#loginModal').modal('show');
+		
 		}
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
@@ -1999,6 +2003,79 @@ var settingsNotUpdated;
 		return infoKaraTemp;
 	};
 
+	
+	checkOnlineStats = function(settings) {
+	
+		if(settings.OnlineStats == -1) {
+			if($('#onlineStatsModal').length < 1) {
+				var top =		'<div class="modal modalPage fade" id="onlineStatsModal" role="dialog">'+
+				'    <div class="modal-dialog modal-md">'+
+				'        <div class="modal-content">';
+
+				var bottom =	'            </div>'+
+								'        </div>'+
+								'    </div>'+
+								'</div>';
+				var content =	'<ul class="nav nav-tabs nav-justified modal-header">'+
+								'<li class="modal-title stats"><a data-toggle="tab" href="#nav-stats" role="tab" aria-controls="nav-stats" aria-selected="true" aria-expanded="true">'+
+									i18n.__('ONLINE_STATS.TITLE') +'</a>'+
+								'</li></ul>'+
+								'<div class="tab-content" id="nav-stats-tab">'+
+								'   <div id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab" class="modal-body tab-pane fade active in">'+
+								'       <div class="modal-message text">'+
+								'       	<p>' + i18n.__('ONLINE_STATS.INTRO') + '</p>'+									
+								'       </div>'+
+								'<div class="accordion text" id="accordionDetails">'+
+								'  <div class="card">'+
+								'    <div class="card-header" id="headingOne">'+
+								'      <h5 class="mb-0">'+
+								'        <a class="btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">'+
+											i18n.__('ONLINE_STATS.DETAILS.TITLE')+
+								'        </a>'+
+								'      </h5>'+
+								'    </div>'+
+								'    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionDetails">'+
+								'      <div class="card-body">'+
+								
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.1') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.2') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.3') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.4') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.5') +  '</br></br>'+
+							
+								'       <p>' + i18n.__('ONLINE_STATS.DETAILS.OUTRO') + '</p>'+
+								'      </div>'+
+								'    </div>'+
+								'  </div>'+
+								'  </div>'+
+								'        <div class="modal-message text">'+
+								'       	<p>' + i18n.__('ONLINE_STATS.CHANGE') + '</p>'+
+								'       	<p>' + i18n.__('ONLINE_STATS.QUESTION') + '</p>'+
+								'       </div>'+
+								'   	<div></div>'+
+								'   	<div>'+
+								'		   <button type="button" value="1" class="onlineStatsBtn btn btn-default btn-primary col-xs-6">'+
+												i18n.__('YES')+
+								' 			</button>'+
+								'  			<button type="button" value="0" class="onlineStatsBtn btn btn-default col-xs-6">'+
+													i18n.__('NO')+
+								'   		</button>'+
+								'		</div>'+
+								'	</div>'+
+								'</div>';
+				$('body').append($(top + content + bottom));
+			
+				$('#onlineStatsModal .onlineStatsBtn').click((e) => {
+					settings.OnlineStats = '' + $(e.target).attr('value');
+					ajx('PUT', 'admin/settings', settings, function(data) {
+						$('#onlineStatsModal').modal('hide');
+					});
+				});
+			}
+			$('#onlineStatsModal').modal('show');
+		}
+	};
+			
 	/*
 	*	Build the modal pool from a kara list
 	*	data  {Object} : list of karas going in the poll
@@ -2149,125 +2226,127 @@ var settingsNotUpdated;
 				});
 			});
 		}
-
-		if(logInfos.role != 'guest') {
-			$('.pseudoChange').show();
-			$('#searchParent').css('width','');
-		} else {
-			$('.pseudoChange').hide();
-			$('#searchParent').css('width','100%');
-		}
-
-		if(!introManager || !introManager._currentStep) initSwitchs();
-
-		$('.bootstrap-switch').promise().then(function(){
-			$(this).each(function(){
-				$(this).attr('title', $(this).find('input').attr('title'));
-			});
-		});
-
-		$.ajax({ url: 'public/tags', }).done(function (data) {
-			tags = data.content;
-			var serie, year;
-
-			var tagList = tagsTypesList.map(function(val, ind){
-				if(val === 'DETAILS_SERIE') {
-					return {id: 'serie', text: i18n.__(val)}
-				} else if (val === 'DETAILS_YEAR') {
-					return {id: 'year', text: i18n.__(val)}
-				} else {
-					return {id: val.replace('BLCTYPE_',''), text: i18n.__(val)}
-				}
-			});
-
-			$('.tagsTypes').select2({ theme: 'bootstrap',
-				tags: false,
-				minimumResultsForSearch: 15,
-				data: tagList
-			});
-			$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
-
-			forSelectTags = tags.map(function(val, ind){
-				return {id:val.tag_id, text: val.name_i18n, type: val.type};
-			});
-
-			$.ajax({ url: 'public/series', }).done(function (data) {
-
-				var series = data.content;
-				series = series.map(function(val, ind){
-					return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
+		if(!welcomeScreen) {
+			if(logInfos.role != 'guest') {
+				$('.pseudoChange').show();
+				$('#searchParent').css('width','');
+			} else {
+				$('.pseudoChange').hide();
+				$('#searchParent').css('width','100%');
+			}
+	
+			if(!introManager || !introManager._currentStep) initSwitchs();
+	
+			$('.bootstrap-switch').promise().then(function(){
+				$(this).each(function(){
+					$(this).attr('title', $(this).find('input').attr('title'));
 				});
-				forSelectTags.push.apply(forSelectTags, series);
-
-				$.ajax({ url: 'public/years', }).done(function (data) {
-
-					var years = data.content;
-					years = years.map(function(val, ind){
-						return {id:val.year, text: val.year, type: 'year'};
+			});
+	
+			$.ajax({ url: 'public/tags', }).done(function (data) {
+				tags = data.content;
+				var serie, year;
+	
+				var tagList = tagsTypesList.map(function(val, ind){
+					if(val === 'DETAILS_SERIE') {
+						return {id: 'serie', text: i18n.__(val)}
+					} else if (val === 'DETAILS_YEAR') {
+						return {id: 'year', text: i18n.__(val)}
+					} else {
+						return {id: val.replace('BLCTYPE_',''), text: i18n.__(val)}
+					}
+				});
+	
+				$('.tagsTypes').select2({ theme: 'bootstrap',
+					tags: false,
+					minimumResultsForSearch: 15,
+					data: tagList
+				});
+				$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
+	
+				forSelectTags = tags.map(function(val, ind){
+					return {id:val.tag_id, text: val.name_i18n, type: val.type};
+				});
+	
+				$.ajax({ url: 'public/series', }).done(function (data) {
+	
+					var series = data.content;
+					series = series.map(function(val, ind){
+						return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
 					});
-					forSelectTags.push.apply(forSelectTags, years);
-
-					$('.tags').select2({
-						theme: 'bootstrap tags',
-						placeholder: '',
-						dropdownAutoWidth: false,
-						minimumResultsForSearch: 20,
-						ajax: {
-							transport: function(params, success, failure) {
-								var page = params.data.page;
-								var pageSize = 120;
-								var type = $('.tagsTypes').val();
-
-								var items = forSelectTags.filter(function(item) {
-										return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
+					forSelectTags.push.apply(forSelectTags, series);
+	
+					$.ajax({ url: 'public/years', }).done(function (data) {
+	
+						var years = data.content;
+						years = years.map(function(val, ind){
+							return {id:val.year, text: val.year, type: 'year'};
+						});
+						forSelectTags.push.apply(forSelectTags, years);
+	
+						$('.tags').select2({
+							theme: 'bootstrap tags',
+							placeholder: '',
+							dropdownAutoWidth: false,
+							minimumResultsForSearch: 20,
+							ajax: {
+								transport: function(params, success, failure) {
+									var page = params.data.page;
+									var pageSize = 120;
+									var type = $('.tagsTypes').val();
+	
+									var items = forSelectTags.filter(function(item) {
+											return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
+										});
+									var totalLength = items.length;
+	
+									if(page) {
+										items = items.slice((page - 1) * pageSize, page * pageSize);
+									}  else {
+										items = items.slice(0, pageSize);
+										page = 1;
+									}
+	
+									var more = false;
+									if( page * pageSize + items.length < totalLength) {
+										more = true
+									}
+									var promise = new Promise(function(resolve, reject) {
+										resolve({results: items, pagination : { more : more} });
 									});
-								var totalLength = items.length;
-
-								if(page) {
-									items = items.slice((page - 1) * pageSize, page * pageSize);
-								}  else {
-									items = items.slice(0, pageSize);
-									page = 1;
+									promise.then(success);
+									promise.catch(failure);
 								}
-
-								var more = false;
-								if( page * pageSize + items.length < totalLength) {
-									more = true
-								}
-								var promise = new Promise(function(resolve, reject) {
-									resolve({results: items, pagination : { more : more} });
-								});
-								promise.then(success);
-								promise.catch(failure);
 							}
-						}
+						});
+						$('.tags').parent().find('.select2-container').addClass('value tags');
 					});
-					$('.tags').parent().find('.select2-container').addClass('value tags');
 				});
+			// ['serie', 'year'].forEach(function(dataType) {
+			// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
+			// 		data = data.content;
+	
+			// 		data = data.map(function(val, ind){
+			// 			var jsonLine;
+			// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
+			// 			if(dataType === 'year') jsonLine = {id:val.year, text: val.year};
+			// 			return jsonLine;
+			// 		});
+			// 		$('#' + dataType).select2({ theme: 'bootstrap',
+			// 			tags: false,
+			// 			minimumResultsForSearch: 3,
+			// 			data: data
+			// 		});
+			// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
+			// 	});
+	
+			// });
+	
 			});
-		// ['serie', 'year'].forEach(function(dataType) {
-		// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
-		// 		data = data.content;
-
-		// 		data = data.map(function(val, ind){
-		// 			var jsonLine;
-		// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
-		// 			if(dataType === 'year') jsonLine = {id:val.year, text: val.year};
-		// 			return jsonLine;
-		// 		});
-		// 		$('#' + dataType).select2({ theme: 'bootstrap',
-		// 			tags: false,
-		// 			minimumResultsForSearch: 3,
-		// 			data: data
-		// 		});
-		// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
-		// 	});
-
-		// });
-
-		});
-
-
+	
+	
+		}
+		
 	};
 
 	$(window).resize(function () {
