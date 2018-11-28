@@ -289,55 +289,51 @@ export async function renameAllKaras() {
 	let lyricsRenames = [];
 	const conf = getConfig();
 	try {
-
-
-	for (const kara of karas) {
-		logger.info(`[KaraRename] Processing ${kara.karafile}`);
-		let k = {}
-		k.lang = kara.language.split(',');
-		k.lang.forEach((e,i) => k.lang[i] = e.trim());
-		kara.misc === 'NO_TAG' || !kara.misc ? k.tags = [] : k.tags = kara.misc.split(',');
-		k.tags.forEach((e,i) => k.tags[i] = e.trim());
-		if (kara.serie_orig) {
-			k.series = kara.serie_orig.split(',');
-			k.series.forEach((e,i) => k.series[i] = e.trim());
-		} else {
-			k.series = [];
-		}
-		k.order = kara.songorder;
-		k.type = kara.songtype.replace(/TYPE_/,'');
-		kara.singer === 'NO_TAG' || !kara.singer ? k.singer = [] : k.singer = kara.singer.split(',');
-		k.singer.forEach((e,i) => k.singer[i] = e.trim());
-		k.title = kara.title;
-		if (`${defineFilename(k)}.kara` !== kara.karafile) {
-			let karaText = await asyncReadFile(resolve(conf.appPath, conf.PathKaras,kara.karafile),'utf-8');
-			karaText = karaText.replace(/\r/g, '');
-			let karaData = ini.parse(karaText);
-			karasRenames.push(`git mv "karas/${kara.karafile}" "karas/${defineFilename(k)}.kara"`);
-			karaData.mediafile = `${defineFilename(k)}${extname(karaData.mediafile)}`;
-			if (karaData.subfile !== 'dummy.ass') {
-				karaData.subfile = `${defineFilename(k)}.ass`;
-				lyricsRenames.push(`git mv "lyrics/${kara.subfile}" "lyrics/${karaData.subfile}"`);
+		for (const kara of karas) {
+			logger.info(`[KaraRename] Processing ${kara.karafile}`);
+			let k = {};
+			k.lang = kara.language.split(',');
+			k.lang.forEach((e,i) => k.lang[i] = e.trim());
+			kara.misc === 'NO_TAG' || !kara.misc ? k.tags = [] : k.tags = kara.misc.split(',');
+			k.tags.forEach((e,i) => k.tags[i] = e.trim());
+			if (kara.serie_orig) {
+				k.series = kara.serie_orig.split(',');
+				k.series.forEach((e,i) => k.series[i] = e.trim());
+			} else {
+				k.series = [];
 			}
-			/*
-			asyncMove(
-				resolve(conf.appPath,conf.PathMedias,kara.mediafile),
-				resolve(conf.appPath,conf.PathMedias,`${defineFilename(k)}${extname(kara.mediafile)}`)
-			);
-			asyncWriteFile(resolve(conf.appPath,conf.PathKaras,kara.karafile),ini.stringify(karaData),'utf-8');
-			*/
+			k.order = kara.songorder;
+			k.type = kara.songtype.replace(/TYPE_/,'');
+			kara.singer === 'NO_TAG' || !kara.singer ? k.singer = [] : k.singer = kara.singer.split(',');
+			k.singer.forEach((e,i) => k.singer[i] = e.trim());
+			k.title = kara.title;
+			if (`${defineFilename(k)}.kara` !== kara.karafile) {
+				logger.info(`[KaraRename] Renaming to ${defineFilename(k)}`);
+				let karaText = await asyncReadFile(resolve(conf.appPath, conf.PathKaras,kara.karafile),'utf-8');
+				karaText = karaText.replace(/\r/g, '');
+				let karaData = ini.parse(karaText);
+				karasRenames.push(`git mv "karas/${kara.karafile}" "karas/${defineFilename(k)}.kara"`);
+				karaData.mediafile = `${defineFilename(k)}${extname(karaData.mediafile)}`;
+				if (karaData.subfile !== 'dummy.ass') {
+					karaData.subfile = `${defineFilename(k)}.ass`;
+					lyricsRenames.push(`git mv "lyrics/${kara.subfile}" "lyrics/${karaData.subfile}"`);
+				}
+				asyncMove(
+					resolve(conf.appPath,conf.PathMedias,kara.mediafile),
+					resolve(conf.appPath,conf.PathMedias,`${defineFilename(k)}${extname(kara.mediafile)}`)
+				);
+				asyncWriteFile(resolve(conf.appPath,conf.PathKaras,kara.karafile),ini.stringify(karaData),'utf-8');
 
-		} else {
-			logger.info('[KaraRename] Kara already named correctly, skipping.');
+			} else {
+				logger.info('[KaraRename] Kara already named correctly, skipping.');
+			}
 		}
-	}
 	}catch(err) {
-		console.log(err);
-		process.exit(1);
+		logger.error(`[KaraRename] Process aborted : ${err}`);
 	}
-
 	asyncWriteFile('gitkaras.sh',karasRenames.join('\r\n'),'utf-8');
 	asyncWriteFile('gitlyrics.sh',lyricsRenames.join('\r\n'),'utf-8');
+	logger.info('[KaraRename] Renaming complete. Please update your karaoke base from Shelter now');
 }
 
 async function generateAndMoveFiles(mediaPath, subPath, karaData) {
