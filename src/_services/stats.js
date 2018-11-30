@@ -55,6 +55,7 @@ async function buildInstanceStats() {
 	delete conf.JwtSecret;
 	delete conf.osHost;
 	delete conf.osURL;
+	delete conf.appPath;
 	const [cpu, mem, gfx, os, disks] = await Promise.all([
 		si.cpu(),
 		si.mem(),
