@@ -72,7 +72,7 @@
   },
   "dependencies": {
     "agentkeepalive": "^4.0.0",
-    "ass-parser": "^0.2.0",
+    "ass-compiler": "^0.0.10",
     "async-await-parallel": "^1.0.0",
     "body-parser": "^1.18.2",
     "chalk": "^2.4.0",

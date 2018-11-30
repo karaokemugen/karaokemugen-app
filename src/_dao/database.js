@@ -2,7 +2,7 @@ import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
 import {setConfig, getConfig} from '../_common/utils/config';
 import {join, resolve} from 'path';
-import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
+import {asyncStat, asyncExists} from '../_common/utils/files';
 import promiseRetry from 'promise-retry';
 import {exit} from '../_services/engine';
 import {duration} from '../_common/utils/date';
