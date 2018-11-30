@@ -1,7 +1,7 @@
 import {editSetting, backupConfig, getConfig} from '../_common/utils/config';
 import {emitWS} from '../_webapp/frontend';
 import {run as generateDatabase} from '../_admin/generate_karasdb';
-import {editKara, createKara, karaGenerationBatch} from '../_admin/generate_karasfiles';
+import {renameAllKaras, editKara, createKara, karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {requireAuth, requireValidUser, requireAdmin} from './passport_manager';
 import {requireNotDemo} from './demo';
 import {getLang} from './lang';
@@ -170,6 +170,15 @@ export default function adminController(router) {
 			.then(() => res.status(200).send('Viewcounts successfully reset'))
 			.catch(err => res.status(500).send(`Error resetting viewcounts: ${err}`));
 
+	});
+
+	router.post('/db/renamekaras', requireAuth, requireValidUser, requireAdmin, async (req, res) => {
+		try {
+			await renameAllKaras();
+			res.status(200).send('Karas successfully renamed');
+		} catch(err) {
+			res.status(500).send(`Error renaming karas: ${err}`);
+		}
 	});
 
 	router.post('/karas/update', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {

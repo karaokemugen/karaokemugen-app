@@ -179,7 +179,7 @@ class KaraForm extends Component {
 						fileList={this.state.subfileList}
 					>
 						<Button>
-							<Icon type="upload" />Subs File
+							<Icon type="upload" />Lyrics File
 						</Button>
 					</Upload></Form.Item>
 				<Form.Item hasFeedback

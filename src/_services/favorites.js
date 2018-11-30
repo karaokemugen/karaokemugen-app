@@ -98,7 +98,7 @@ export async function createAutoMix(params, username) {
 	// Shuffle time.
 	await shufflePlaylist(playlist_id);
 	// Cut playlist after duration
-	await trimPlaylist(playlist_id, params.duration);
+	await trimPlaylist(playlist_id, +params.duration);
 	profile('AutoMix');
 	return {
 		playlist_id: playlist_id,

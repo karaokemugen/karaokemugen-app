@@ -744,6 +744,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	});
 
 	changeKaraPos = function (e) {
+		console.log('changeKaraPos() got called');
 		var liKara = e.closest('li');
 		var idKara = liKara.attr('idKara');
 		var side = liKara.closest('ul').attr('side');
@@ -753,21 +754,29 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		posFromNext = isNaN(posFromNext) ? posFromPrev : posFromNext;
 
 		if (posFromPrev != posFromNext || isNaN(posFromPrev) && isNaN(posFromNext)) {
+			console.log('Positions in the list are fucked up');
 			displayMessage('warning', 'Err:',  i18n.__('CL_WRONG_KARA_ORDER'));
 			fillPlaylist(side);
 			return false;
 		} else {
+			console.log('Preparing for the PUT...');
 			var idPlc = parseInt(liKara.attr('idplaylistcontent'));
 			var idPlaylist = parseInt($('#selectPlaylist' + side).val());
-
+			liKara.parent().addClass('disabled');
+			
+			console.log('Sending the PUT right now');
 			$.ajax({
 				type: 'PUT',
 				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
 				data: { pos : posFromPrev }
 			}).done(function () {
+				console.log('NICE');
 				DEBUG && console.log('Kara plc_id ' + posFromPrev + ' pos changed');
 			}).fail(function () {
+				console.log('FAIL');
 				fillPlaylist(side);
+			}).always(() => {
+				liKara.parent().removeClass('disabled');
 			});
 			scrollToKara(side, idKara, .55); 
 		}

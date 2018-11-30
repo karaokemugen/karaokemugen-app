@@ -186,7 +186,6 @@ export const tags = [
 	'REMIX',
 	'SOUNDONLY',
 	'IDOL',
-	'SPACE',
 	'DREAMCAST',
 	'PARODY',
 	'HUMOR',

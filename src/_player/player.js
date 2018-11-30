@@ -332,8 +332,6 @@ async function startmpv() {
 			songNearEnd = true;
 			endPoll();
 		}
-		// Synchronize monitor
-		if (monitorEnabled) playerMonitor.goToPosition(position);
 	});
 	logger.debug('[Player] mpv initialized successfully');
 	playerState.ready = true;
