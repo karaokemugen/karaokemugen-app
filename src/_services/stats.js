@@ -11,6 +11,7 @@ let intervalID;
 export async function initStats() {
 	logger.debug('[Stats] Starting stats upload');
 	if (!intervalID) intervalID = setInterval(sendPayload, 3600000);
+	sendPayload();
 }
 
 export async function stopStats() {
