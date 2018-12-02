@@ -296,8 +296,8 @@ var settingsNotUpdated;
 					createCookie('mugenPlVal' + side, val, 365);
 
 					$('#playlist' + side).empty();
-					$('#searchPlaylist' + side).val('');
-					if (oldVal == -1) {
+                    $('#searchPlaylist' + side).val('');
+					if (val != -1 && val != -5) {
 						$('#searchMenu' + side).collapse('hide');
 					}
 					playlistContentUpdating = fillPlaylist(side);
@@ -426,7 +426,7 @@ var settingsNotUpdated;
 			var tag_id =  $(this).val();
 			if(tag_id) {
 				var $searchMenu = $(this).closest('.searchMenu');
-				var $tag =  $searchMenu.find('li.tagFilter');
+				var $tag = $searchMenu.find('li.tagFilter');
 				var tagType = $searchMenu.find('.tagsTypes').val();
 				var searchType = 'tag';
 
@@ -437,7 +437,7 @@ var settingsNotUpdated;
 				}
 
 				$tag.attr('searchType', searchType);
-				$tag.find('.choice').click();
+                $tag.find('.choice').click();
 			}
 		});
 
@@ -453,11 +453,12 @@ var settingsNotUpdated;
 				var val = $li.attr('val');
 				$selector = $searchMenu.closest('.panel').find('.plSelect > select');
 				if(val) $selector.val(val);
-				$selector.change();
+                $selector.change();
 			}
 		});
 
-	/******** ********/
+    /*****************/
+    
 		makeFav = function(idKara, make, $el) {
 			var type = make ? 'POST' : 'DELETE';
 			$.ajax({
@@ -1201,15 +1202,22 @@ var settingsNotUpdated;
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
 		var url, html, canTransferKara, canAddKara, dragHandle, playKara;
-		
+        
+		var $filter = $('#searchMenu' + side + ' li.active');
+		var searchType = $filter.attr('searchType');
+        var searchValue = $filter.attr('searchValue');
+        
+        /* getting all the info we need about range */
 		localStorage.setItem('search' + side, filter ? filter : '');
-		localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
+        localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
 
-		var range = getPlaylistRange(idPlaylist);
+        var range = getPlaylistRange(idPlaylist);
+        
 		from = range.from;
 		to = range.to;
 
 		fromTo += '&from=' + from + '&size=' + pageSize;
+        /*********************************************/
 
 		// setup variables depending on which playlist is selected : -1 = database kara list, -2 = blacklist, -3 = whitelist, -4 = blacklist criterias
 
@@ -1230,13 +1238,10 @@ var settingsNotUpdated;
 
 		urlFiltre = url + '?filter=' + filter + fromTo;
 
-
-		var $filter = $('#searchMenu' + side + ' li.active');
-		var searchType = $filter.attr('searchType');
-		var searchValue = $filter.attr('searchValue');
 		if(searchType) {
 			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchValue ? searchValue : '');
 		}
+
 
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
@@ -2502,16 +2507,28 @@ var settingsNotUpdated;
 	};
 
 	getPlaylistRange = function(idPl) {
-		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();
-
+		
+        var side = sideOfPlaylist(idPl);
+        var search = $('#searchPlaylist' + side).val();
+		var $filter = $('#searchMenu' + side + ' li.active');
+		var searchType = $filter.attr('searchType');
+		var searchValue = $filter.attr('searchValue');
+        var key = [search, searchType, searchValue].join('_');
+        
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
-		return playlistRange[idPl][search] ? playlistRange[idPl][search] : { from : 0, to : pageSize };
+		return playlistRange[idPl][key] ? playlistRange[idPl][key] : { from : 0, to : pageSize };
 	};
 
 	setPlaylistRange = function(idPl, from, to) {
-		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();
+        var side = sideOfPlaylist(idPl);
+        var search = $('#searchPlaylist' + side).val();
+		var $filter = $('#searchMenu' + side + ' li.active');
+		var searchType = $filter.attr('searchType');
+		var searchValue = $filter.attr('searchValue');
+        var key = [search, searchType, searchValue].join('_');
+
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
-		playlistRange[idPl][search] = { from : from, to : to };
+		playlistRange[idPl][key] = { from : from, to : to };
 	};
 
 	getPlData = function(idPl) {
