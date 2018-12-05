@@ -4098,7 +4098,7 @@ export function APIControllerPublic(router) {
 				if (req.body.url) req.body.url = unescape(req.body.url.trim());
 				if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());
 				if (req.body.login) req.body.login = unescape(req.body.login.trim());
-				if (req.body.admin) req.body.admin = parseInt(req.body.admin, 10);
+				req.body.admin = +req.body.admin;
 				//Now we add user
 				let avatar;
 				if (req.file) avatar = req.file;
@@ -4889,7 +4889,7 @@ export function APIControllerPublic(router) {
 	 * @apiName GetNews
 	 * @apiVersion 2.4.0
 	 * @apiGroup Misc
-	 * @apiPermission public
+	 * @apiPermission NoAuth
 	 * @apiSuccess {Array} Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if RSS feed could not be obtained.
 	 */
 	 .get(getLang, async (req, res) => {

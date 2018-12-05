@@ -12,8 +12,10 @@ const loginErr = {
 
 async function checkLogin(username, password) {
 	const config = getConfig();
-	if (!await findUserByName(username) || !await checkPassword(username, password)) throw false;
-	const role = await getRole(username);
+	const user = await findUserByName(username);
+	if (!user) throw false;
+	if (checkPassword(user, password)) throw false;
+	const role = getRole(user);
 	updateLastLoginName(username);
 	return {
 		token: createJwtToken(username, role, config),
