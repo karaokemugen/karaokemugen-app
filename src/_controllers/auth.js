@@ -14,7 +14,7 @@ async function checkLogin(username, password) {
 	const config = getConfig();
 	const user = await findUserByName(username);
 	if (!user) throw false;
-	if (checkPassword(user, password)) throw false;
+	if (!await checkPassword(user, password)) throw false;
 	const role = getRole(user);
 	updateLastLoginName(username);
 	return {
@@ -139,8 +139,7 @@ function decodeJwtToken(token, config) {
 	return decode(token, conf.JwtSecret);
 }
 
-async function getRole(username) {
-	const user = await findUserByName(username);
+function getRole(user) {
 	if (+user.type === 2) return 'guest';
 	if (+user.flag_admin === 1) return 'admin';
 	return 'user';

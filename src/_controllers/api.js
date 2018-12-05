@@ -4052,7 +4052,7 @@ export function APIControllerPublic(router) {
  * @apiName EditUser
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission public
+ * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} username Username to edit
  * @apiParam {String} login New login for user

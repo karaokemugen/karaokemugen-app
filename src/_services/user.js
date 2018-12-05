@@ -165,13 +165,12 @@ export function hashPassword(password) {
 	return hash.digest('hex');
 }
 
-export async function checkPassword(username,password) {
+export async function checkPassword(user,password) {
 	const hashedPassword = hashPassword(password);
-	const user = await findUserByName(username, {public:false});
 	// Access is granted only if passwords match OR user type is 2 (guest) and its password in database is empty.
 	if (user.password === hashedPassword || (user.type === 2 && !user.password)) {
 		// If password was empty for a guest, we set it to the password given on login.
-		if (user.type === 2 && !user.password) await db.updateUserPassword(username,hashedPassword);
+		if (user.type === 2 && !user.password) await db.updateUserPassword(user.login,hashedPassword);
 		return true;
 	}
 	return false;
