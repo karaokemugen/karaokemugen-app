@@ -318,17 +318,22 @@ export async function renameAllKaras() {
 					karaData.subfile = `${defineFilename(k)}.ass`;
 					lyricsRenames.push(`git mv "lyrics/${kara.subfile}" "lyrics/${karaData.subfile}"`);
 				}
-				asyncMove(
-					resolve(conf.appPath,conf.PathMedias,kara.mediafile),
-					resolve(conf.appPath,conf.PathMedias,`${defineFilename(k)}${extname(kara.mediafile)}`)
-				);
+				try {
+					asyncMove(
+						resolve(conf.appPath,conf.PathMedias,kara.mediafile),
+						resolve(conf.appPath,conf.PathMedias,`${defineFilename(k)}${extname(kara.mediafile)}`)
+					);
+				} catch(err) {
+					logger.warn(`[KaraRename] Unable to rename video : ${err}`);
+				}
+
 				asyncWriteFile(resolve(conf.appPath,conf.PathKaras,kara.karafile),ini.stringify(karaData),'utf-8');
 
 			} else {
 				logger.info('[KaraRename] Kara already named correctly, skipping.');
 			}
 		}
-	}catch(err) {
+	} catch(err) {
 		logger.error(`[KaraRename] Process aborted : ${err}`);
 	}
 	asyncWriteFile('gitkaras.sh',karasRenames.join('\r\n'),'utf-8');
