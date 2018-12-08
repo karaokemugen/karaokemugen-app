@@ -1,110 +1,51 @@
-import { delay } from 'redux-saga';
+import { delay, eventChannel } from 'redux-saga';
 import pick from 'lodash/pick';
 import equal from 'fast-deep-equal';
-import { put, takeLatest, takeEvery, select, call } from 'redux-saga/effects';
 import {
-	KARAS_FILTER_LOCAL,
-	loadLocalKaras,
+	put,
+	takeLatest,
+	takeEvery,
+	select,
+	call,
+	fork,
+	take
+} from 'redux-saga/effects';
+import openSocket from 'socket.io-client';
+import {
 	KARAS_FILTER_ONLINE,
 	loadOnlineKaras,
-	KARAS_TOGGLE_WATCH_DOWNLOAD,
 	setIsSearching,
-	KARAS_ADD_TO_DOWNLOAD_QUEUE,
-	KARAS_LOAD_DOWNLOAD_QUEUE
+	KARAS_DOWNLOAD_ADD_TO_QUEUE,
+	KARAS_LOAD_DOWNLOAD_QUEUE,
+	KARAS_DOWNLOAD_PROGRESS_UPDATE
 } from '../actions/karas';
-import axios from 'axios';
+import { getDownloadQueue, postToDownloadQueue } from '../api/local';
+import { getRecentKaras, getKarasBySearchString } from '../api/online';
+import { fetchLocalKara, fetchDownloadQueue } from '../reducers/karas';
 
-/****************************** API Calls *************************************/
-
-/**
- * I'll be naming api requests with the first word being the http method.
- * ex. getSomeThing || postSomething || ...etc
- */
-
-/**
- * LOCAL
- */
-
-// GET karas with/without filter.
-async function getLocalKaras() {
-	try {
-		const res = await axios.get('/api/karas');
-		return res.data.content;
-	} catch (e) {
-		console.log('Error from downloadManager.js:getLocalKaras()');
-		throw e;
-	}
+function downloadQueueChannel() {
+	return eventChannel(emit => {
+		const iv = setInterval(async () => {
+			const res = await getDownloadQueue();
+			emit(res);
+		}, 1000);
+		return () => clearInterval(iv);
+	});
 }
 
-// GET karas download queue
-async function getDownloadQueue() {
-	try {
-		const res = await axios.get('/api/downloads');
-		return res.data;
-	} catch (e) {
-		console.log('Error from downloadManager.js:getDownloadQueue');
-		throw e;
-	}
-}
-
-// POST (add) items to download queue
-async function postToDownloadQueue(repo = 'kara.moe', downloads) {
-	// Left of here
-	try {
-		const dl = {
-			repository: repo,
-			downloads
+function downloadProgressChannel() {
+	return eventChannel(emit => {
+		const downloadSocket = openSocket('http://localhost:1337');
+		downloadSocket.on('downloadProgress', data => {
+			emit(data);
+		});
+		downloadSocket.on('downloadBatchProgress', data => {});
+		return () => {
+			downloadSocket.close();
 		};
-		console.log(dl);
-		await axios.post('/api/downloads', dl);
-	} catch (e) {
-		console.log(e);
-		console.log('Error from downloadManager.js:postToDownloadQueue');
-		throw e;
-	}
+	});
 }
-
-/**
- * ONLINE
- */
-
-// GET recent karas from kara.moe
-async function getRecentKaras() {
-	try {
-		const res = await axios.get('http://kara.moe/api/karas/recent');
-		return res.data.content;
-	} catch (e) {
-		console.log(e.response);
-		console.log(
-			`Error from downloadManager.js:getRecentKaras() - ${e.response.status}`
-		);
-		throw e;
-	}
-}
-
-async function getKarasBySearchString(searchString) {
-	try {
-		const res = await axios.get(
-			`http://kara.moe/api/karas?filter=${searchString}`
-		);
-		return res.data.content;
-	} catch (e) {
-		console.log(e.response);
-		console.log(
-			`Error from downloadManager.js:getKarasBySearchString() - ${
-				e.response.status
-			}`
-		);
-		throw e;
-	}
-}
-
 /***************************** Subroutines ************************************/
-function* filterLocalKaras(action) {
-	// TODO: Pass in the filter object
-	const localKaras = yield getLocalKaras();
-	yield put(loadLocalKaras(localKaras));
-}
 
 // Runs a get request to kara.moe's recent songs then loads it into the store
 function* filterOnlineKaras(action) {
@@ -120,7 +61,7 @@ function* filterOnlineKaras(action) {
 			onlineKaras = yield getRecentKaras(); // TODO Not yet the cleanest implementation
 		}
 	} else {
-		onlineKaras = yield [];
+		onlineKaras = [];
 	}
 
 	onlineKaras.forEach(k => {
@@ -131,20 +72,59 @@ function* filterOnlineKaras(action) {
 	yield put(loadOnlineKaras(onlineKaras));
 }
 
-function* toggledKarasWatchDownload(action) {
-	// TODO: Should use/separte a redux selector
-	const isWatching = yield select(state => state.karas.isWatchingDownloadQueue);
-	while (isWatching) {
-		yield delay(1000);
-		const queue = yield select(state => state.karas.downloadQueue);
-		const latestQueue = yield call(getDownloadQueue);
-		if (!equal(queue, latestQueue)) {
-			console.log('Updated download queue');
+function* watchDownloadQueue() {
+	// TODO: Should use/separate a redux selector
+	const channel = yield call(downloadQueueChannel);
+	while (true) {
+		const latestQueue = yield take(channel);
+		for (let dlItem of latestQueue) {
+			const kara = yield select(fetchLocalKara, dlItem.name);
+			if (kara) {
+				dlItem.title = kara.title;
+			} else {
+				dlItem.title = dlItem.name;
+			}
+		}
+		const currentQueue = yield select(state => state.karas.downloadQueue);
+		const latestPkIds = latestQueue.map(i => i.pk_id_download);
+		const currentPkIds = currentQueue.map(i => i.pk_id_download);
+		const areAllDone = !latestQueue.some(i => i.status !== 'DL_DONE');
+		const sameItems = equal(latestPkIds, currentPkIds);
+		if (!sameItems || (sameItems && areAllDone)) {
 			yield put({
 				type: KARAS_LOAD_DOWNLOAD_QUEUE,
 				payload: latestQueue
 			});
 		}
+	}
+}
+
+function* watchDownloadProgressUpdates() {
+	const channel = yield call(downloadProgressChannel);
+	while (true) {
+		yield delay(500);
+		const downloadProgress = yield take(channel);
+		const { value, total: t } = downloadProgress;
+		const total = parseInt(t);
+		// For now using this to determine whether to show progress in redux
+		// if (total > 30000) {
+		const downloadQueue = yield select(fetchDownloadQueue);
+		const updatedDownloadQueue = [...downloadQueue];
+		const indexOfUpdate = updatedDownloadQueue.findIndex(
+			dlItem => dlItem.name === downloadProgress.id
+		);
+		updatedDownloadQueue[indexOfUpdate] = {
+			...updatedDownloadQueue[indexOfUpdate],
+			progress: {
+				total,
+				current: value
+			}
+		};
+		yield put({
+			type: KARAS_DOWNLOAD_PROGRESS_UPDATE,
+			payload: updatedDownloadQueue
+		});
+		// }
 	}
 }
 
@@ -156,16 +136,22 @@ function* addToDownloadQueue(action) {
 		'mediafile',
 		'subfile',
 		'karafile',
-		'seriefiles',
-		'name'
+		'seriefiles'
 	]);
 	downloadObject.size = kara.mediasize;
+	downloadObject.name = kara.kid;
 	yield call(postToDownloadQueue, 'kara.moe', [downloadObject]);
+
+	// const latestQueue = yield call(getDownloadQueue);
+	// yield put({
+	// 	type: KARAS_LOAD_DOWNLOAD_QUEUE,
+	// 	payload: latestQueue
+	// });
 }
 
 export default function* downloadManager() {
-	yield takeLatest(KARAS_FILTER_LOCAL, filterLocalKaras);
+	yield fork(watchDownloadQueue);
+	yield fork(watchDownloadProgressUpdates);
 	yield takeLatest(KARAS_FILTER_ONLINE, filterOnlineKaras);
-	yield takeLatest(KARAS_TOGGLE_WATCH_DOWNLOAD, toggledKarasWatchDownload);
-	yield takeEvery(KARAS_ADD_TO_DOWNLOAD_QUEUE, addToDownloadQueue);
+	yield takeEvery(KARAS_DOWNLOAD_ADD_TO_QUEUE, addToDownloadQueue);
 }

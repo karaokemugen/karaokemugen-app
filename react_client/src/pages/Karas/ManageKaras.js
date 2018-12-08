@@ -1,90 +1,39 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import openSocket from 'socket.io-client';
-import { Tabs, List } from 'antd';
-import {
-	filterLocalKaras,
-	filterOnlineKaras,
-	toggleWatchDownloadQueue,
-	downloadSong
-} from '../../actions/karas';
+import { Tabs, List, Button, Badge } from 'antd';
+import { filterLocalKaras, deleteKara as dk } from '../../actions/karas';
+import DownloadKaras from './ManageKaras/DownloadKaras';
+import DownloadQueueKaras from './ManageKaras/DownloadQueueKaras';
 
 const TabPane = Tabs.TabPane;
 const ListItem = List.Item;
 
 class ManageKaras extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			filter: {
-				searchString: ''
-			}
-		};
-	}
-
-	componentDidMount() {
-		this.props.filterLocalKaras(this.state.filter);
-		this.props.filterOnlineKaras();
-		this.props.toggleWatchDownloadQueue();
-
-		const downloadSocket = openSocket('http://localhost:1337');
-		downloadSocket.on('downloadProgress', data => {
-			console.log('downloadProgress', data);
-		});
-		downloadSocket.on('downloadBatchProgress', data => {
-			console.log('downloadBatchProgress', data => {
-				console.log('downloadBatchProgress', data);
-			});
-		});
-	}
+	componentDidMount() {}
 
 	componentDidUpdate() {
 		// Set a timer to check updates again?
 	}
 
-	searchChange = e => {
-		const newState = {
-			...this.state,
-			filter: {
-				searchString: e.target.value
-			}
-		};
-		this.setState(newState, () => {
-			this.props.filterOnlineKaras(this.state.filter);
-		});
-	};
-
-	downloadSong = kid => {
-		this.props.downloadSong(kid);
+	deleteSong = kid => {
+		const { deleteKara } = this.props;
+		deleteKara(kid);
 	};
 
 	render() {
-		const { localKaras, onlineKaras, downloadQueue } = this.props;
+		const { localKaras, downloadQueueCount } = this.props;
 		const renderLocalKaras = ({ kid, title }) => (
-			<ListItem key={kid} actions={[<button type="button">Delete</button>]}>
-				<ListItem.Meta title={title} />
-			</ListItem>
-		);
-		const renderOnlineKaras = ({ kid, title }) => (
 			<ListItem
 				key={kid}
 				actions={[
-					<button type="button" onClick={() => this.downloadSong(kid)}>
-						Download
-					</button>
+					<Button type="danger" onClick={() => this.deleteSong(kid)}>
+						Delete
+					</Button>
 				]}
 			>
 				<ListItem.Meta title={title} />
 			</ListItem>
 		);
-		const renderDownloadQueue = item => {
-			const kara= onlineKaras.find(k => k.name === item.name) || {};
-			return (
-				<ListItem key={''}>
-					<ListItem.Meta title={''} />
-				</ListItem>
-			);
-		};
 
 		return (
 			<div style={{ height: '100%', overflow: 'auto' }}>
@@ -93,23 +42,21 @@ class ManageKaras extends Component {
 						<List dataSource={localKaras} renderItem={renderLocalKaras} />
 					</TabPane>
 					<TabPane tab="Get more karas" key="2">
-						<input
-							type="text"
-							onChange={this.searchChange}
-							value={this.state.filter.searchString}
-						/>
-						<List
-							dataSource={onlineKaras}
-							renderItem={renderOnlineKaras}
-							loading={this.props.isSearching}
-						/>
+						<DownloadKaras />
 					</TabPane>
-					<TabPane tab="Download Queue" key="3">
-						<List
-							dataSource={downloadQueue}
-							renderItem={renderDownloadQueue}
-							loading={this.props.isSearching}
-						/>
+					<TabPane
+						tab={
+							<span>
+								Download Queue{' '}
+								<Badge
+									count={downloadQueueCount}
+									style={{ backgroundColor: '#40a9ff' }}
+								/>
+							</span>
+						}
+						key="3"
+					>
+						<DownloadQueueKaras />
 					</TabPane>
 				</Tabs>
 			</div>
@@ -122,16 +69,14 @@ const mapStateToProps = state => {
 	return {
 		localKaras: karas.localKaras,
 		onlineKaras: karas.onlineKaras,
-		downloadQueue: karas.downloadQueue,
-		isSearching: karas.isSearching
+		isSearching: karas.isSearching,
+		downloadQueueCount: karas.downloadQueue.length
 	};
 };
 
 const mapDispatchToProps = {
 	filterLocalKaras,
-	filterOnlineKaras,
-	toggleWatchDownloadQueue,
-	downloadSong
+	deleteKara: dk
 };
 
 export default connect(

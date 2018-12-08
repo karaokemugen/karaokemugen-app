@@ -1,5 +1,6 @@
 export const KARAS_LOAD_LOCAL = 'KARAS_LOAD_LOCAL';
 export const KARAS_FILTER_LOCAL = 'KARAS_FILTER_LOCAL';
+export const KARAS_DELETE_KARA = 'KARAS_DELETE_KARA';
 
 export const KARAS_FILTER_ONLINE = 'KARAS_FILTER_ONLINE';
 export const KARAS_LOAD_ONLINE = 'KARAS_LOAD_RECENT_ONLINE';
@@ -8,9 +9,8 @@ export const KARAS_LOAD_DOWNLOAD_QUEUE = 'KARAS_LOAD_DOWNLOAD_QUEUE';
 
 export const KARAS_SET_IS_SEARCHING = 'KARAS_SET_IS_SEARCHING';
 
-// Might not be the best actions
-export const KARAS_TOGGLE_WATCH_DOWNLOAD = 'KARAS_TOGGLE_WATCH_DOWNLOAD';
-export const KARAS_ADD_TO_DOWNLOAD_QUEUE = 'KARAS_ADD_TO_DOWNLOAD_QUEUE';
+export const KARAS_DOWNLOAD_ADD_TO_QUEUE = 'KARAS_DOWNLOAD_ADD_TO_QUEUE';
+export const KARAS_DOWNLOAD_PROGRESS_UPDATE = 'KARAS_DOWNLOAD_PROGRESS_UPDATE';
 
 // Runs a filter against the karas, {} || null will get all karas
 export function filterLocalKaras(filter) {
@@ -25,6 +25,13 @@ export function loadLocalKaras(localKaras) {
 	return {
 		type: KARAS_LOAD_LOCAL,
 		payload: localKaras
+	};
+}
+
+export function deleteKara(kid) {
+	return {
+		type: KARAS_DELETE_KARA,
+		payload: kid
 	};
 }
 
@@ -44,12 +51,6 @@ export function loadOnlineKaras(onlineKaras) {
 	};
 }
 
-export function toggleWatchDownloadQueue() {
-	return {
-		type: KARAS_TOGGLE_WATCH_DOWNLOAD
-	};
-}
-
 export function setIsSearching(isSearching) {
 	return {
 		type: KARAS_SET_IS_SEARCHING,
@@ -59,7 +60,7 @@ export function setIsSearching(isSearching) {
 
 export function downloadSong(kid) {
 	return {
-		type: KARAS_ADD_TO_DOWNLOAD_QUEUE,
+		type: KARAS_DOWNLOAD_ADD_TO_QUEUE,
 		payload: kid
 	};
 }
