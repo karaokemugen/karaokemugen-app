@@ -69,7 +69,7 @@ export async function playerEnding() {
 	}
 	const conf = getConfig();
 	logger.debug(`[Jingles] Songs before next jingle: ${conf.EngineJinglesInterval - counter}`);
-	if (counter >= conf.EngineJinglesInterval) {
+	if (counter >= conf.EngineJinglesInterval && conf.EngineJinglesInterval > 0) {
 		setState({
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
