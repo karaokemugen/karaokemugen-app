@@ -918,7 +918,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 				playlist.PlaylistContents[index].playlist_id = playlist_id;
 			});
 			await addKaraToPL(playlist.PlaylistContents);
-			if (playingKara) {
+			if (playingKara.kid) {
 				const user = await findUserByName(playingKara.user);
 				playingKara.user_id = user.id;
 				user ? playingKara.user_id = user.id : playingKara.user_id = 1;
