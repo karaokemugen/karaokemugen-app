@@ -84,6 +84,7 @@
     "express": "^4.16.4",
     "express-handlebars": "^3.0.0",
     "file-type": "^10.6.0",
+    "form-data": "^2.3.3",
     "fs-extra": "^7.0.1",
     "got": "^9.3.2",
     "i18n": "^0.8.3",

@@ -6,7 +6,9 @@ export const exportRequests = 'SELECT kid, session_started_at, requested_at FROM
 
 export const exportFavorites = `
 SELECT pc.kid
-FROM playlist_content pc, playlist p
+FROM playlist_content pc, playlist p, user u
 WHERE pc.fk_id_playlist = p.pk_id_playlist
-AND p.flag_favorites = 1;
+AND p.flag_favorites = 1
+AND pc.fk_id_user = u.pk_id_user
+AND u.login NOT LIKE '%@%';
 `;

@@ -1,6 +1,6 @@
 import {deletePlaylist} from '../_services/playlist';
 import {findFavoritesPlaylist} from '../_services/favorites';
-import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
+import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC, createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
@@ -16,6 +16,10 @@ import {getSongCountForUser, getSongTimeSpentForUser} from '../_dao/kara';
 import {emitWS} from '../_webapp/frontend';
 import {profile} from '../_common/utils/logger';
 import {getState} from '../_common/utils/state';
+import got from 'got';
+import { getRemoteToken } from '../_dao/user';
+import formData from 'form-data';
+import {createReadStream} from 'fs';
 
 const db = require('../_dao/user');
 let userLoginTimes = {};
@@ -52,7 +56,38 @@ export async function getUserRequests(username) {
 	return await db.getUserRequests(username);
 }
 
-export async function editUser(username,user,avatar,role) {
+function editRemoteUser(user, avatar) {
+	// Fetch remote token
+	const remoteToken = getRemoteToken(user.login);
+	const instance = user.login.split('@')[1];
+	const login = user.login.split('@')[0];
+	const form = new formData();
+	const conf = getConfig();
+
+	if (avatar) form.append('avatarfile', createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file)));
+	form.append('nickname', user.nickname);
+	form.append('bio', user.bio);
+	form.append('email', user.email);
+	form.append('url', user.url);
+	if (user.password) form.append('password', user.password);
+	try {
+		got(`http://${instance}/api/users/${login}`, {
+			method: 'PUT',
+			body: form,
+			form: true,
+			headers: {
+				authorization: remoteToken.token
+			}
+		});
+	} catch(err) {
+		console.log(err);
+		throw `Remote update failed : ${err}`;
+	}
+}
+
+export async function editUser(username,user,avatar,role, opts = {
+	editRemote: true
+}) {
 	try {
 		let currentUser;
 		if (user.id) {
@@ -64,9 +99,11 @@ export async function editUser(username,user,avatar,role) {
 		if (currentUser.type === 2 && role !== 'admin') throw 'Guests are not allowed to edit their profiles';
 		user.id = currentUser.id;
 		user.login = username;
+		if (!user.type) user.type = currentUser.type;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
+		if (!user.flag_admin) user.flag_admin = 0;
 		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
 		if (user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
@@ -81,14 +118,18 @@ export async function editUser(username,user,avatar,role) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in
 			// database
+			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
 			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);
+			if (opts.editRemote) user.newAvatar = true;
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}
 		await db.editUser(user);
 		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);
+		if (user.login.includes('@') && opts.editRemote) await editRemoteUser(user, avatar);
 		return user;
 	} catch (err) {
+		console.log(err);
 		logger.error(`[User] Failed to update ${username}'s profile : ${err}`);
 		throw {
 			message: err,
@@ -115,7 +156,7 @@ async function replaceAvatar(oldImageFile,avatar) {
 			throw 'Wrong avatar file type';
 		}
 		// Construct the name of the new avatar file with its ID and filetype.
-		const newAvatarFile = uuidV4()+ '.' + fileType;
+		const newAvatarFile = `${uuidV4()}.${fileType}`;
 		const newAvatarPath = resolve(conf.PathAvatars,newAvatarFile);
 		const oldAvatarPath = resolve(conf.PathAvatars,oldImageFile);
 		if (await asyncExists(oldAvatarPath) &&
@@ -123,8 +164,7 @@ async function replaceAvatar(oldImageFile,avatar) {
 		await asyncMove(avatar.path,newAvatarPath);
 		return newAvatarFile;
 	} catch (err) {
-		logger.error(`[User] Unable to replace avatar ${oldImageFile} with ${avatar.path} : ${err}`);
-		throw err;
+		throw `Unable to replace avatar ${oldImageFile} with ${avatar.path} : ${err}`;
 	}
 }
 
@@ -189,10 +229,65 @@ export async function updateUserFingerprint(username, fingerprint) {
 	return await db.updateUserFingerprint(username, fingerprint);
 }
 
+export async function remoteLogin(username, password) {
+	const instance = username.split('@')[1];
+	try {
+		const res = await got(`http://${instance}/api/auth/login`, {
+			body: {
+				username: username.split('@')[0],
+				password: password
+			},
+			form: true
+		});
+		return JSON.parse(res.body);
+	} catch(err) {
+		throw err;
+	}
+}
+
+async function createRemoteUser(user) {
+	const instance = user.login.split('@')[1];
+	const login = user.login.split('@')[0];
+	try {
+		await getRemoteUser(user.login);
+		throw `User already exists on ${instance} or incorrect password`;
+	} catch(err) {
+		// User unknown, we're good to create it
+	}
+	try {
+		await got(`http://${instance}/api/users`, {
+			body: {
+				login: login,
+				password: user.password
+			},
+			form: true
+		});
+	} catch(err) {
+		throw err;
+	}
+};
+
+export async function getRemoteUser(username, token) {
+	const instance = username.split('@')[1];
+	const login = username.split('@')[0];
+	try {
+		const res = await got(`http://${instance}/api/users/${login}`, {
+			headers: {
+				authorization: token
+			},
+			json: true
+		});
+		return res.body;
+	} catch(err) {
+		throw err;
+	}
+}
+
 export async function createUser(user, opts) {
 
 	if (!opts) opts = {
-		createFavoritePlaylist: true
+		createFavoritePlaylist: true,
+		createRemote: true
 	};
 	user.type = user.type || 1;
 	user.nickname = user.nickname || user.login;
@@ -206,6 +301,7 @@ export async function createUser(user, opts) {
 	user.email = user.email || null;
 
 	await newUserIntegrityChecks(user);
+	if (user.login.includes('@') && opts.createRemote) await createRemoteUser(user);
 	if (user.password) user.password = hashPassword(user.password);
 	try {
 		await db.addUser(user);
@@ -306,6 +402,22 @@ export async function initUserSystem() {
 	}
 
 	createDefaultGuests();
+	cleanupAvatars();
+}
+
+async function cleanupAvatars() {
+	// This is done because updating avatars generate a new name for the file. So unused avatar files are now cleaned up.
+	const users = await listUsers();
+	const avatars = [];
+	for (const user of users) {
+		if (!avatars.includes(user.avatar_file)) avatars.push(user.avatar_file);
+	}
+	const conf = getConfig();
+	const avatarFiles = await asyncReadDir(resolve(conf.appPath, conf.PathAvatars));
+	for (const file of avatarFiles) {
+		if (!avatars.includes(file) && file !== 'blank.png') asyncUnlink(resolve(conf.appPath, conf.PathAvatars, file));
+	}
+	return true;
 }
 
 export async function updateSongsLeft(user_id,playlist_id) {

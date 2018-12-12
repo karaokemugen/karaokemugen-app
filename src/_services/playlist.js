@@ -843,7 +843,7 @@ async function checkImportedKIDs(playlist) {
 			playlist[kara].kara_id = karaFromDB.kara_id;
 			karasToImport.push(playlist[kara]);
 		} else {
-			logger.warn(`[PLC] importPlaylist : KID ${kara.kid} unknown`);
+			logger.warn(`[PLC] importPlaylist : KID ${playlist[kara].kid} unknown`);
 			karasUnknown.push(kara.kid);
 		}
 	}

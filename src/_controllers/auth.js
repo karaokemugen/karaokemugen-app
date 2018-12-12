@@ -2,6 +2,15 @@ import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
 import {getConfig} from '../_common/utils/config';
 import {findUserByName, updateUserFingerprint, findFingerprint, checkPassword, updateLastLoginName} from '../_services/user';
+import got from 'got';
+import { getRemoteUser, remoteLogin, createUser, editUser } from '../_services/user';
+import { writeStreamToFile } from '../_common/utils/files';
+import {resolve} from 'path';
+import { importFavorites } from '../_services/favorites';
+import { now } from 'unix-timestamp';
+import { upsertRemoteToken } from '../_dao/user';
+import logger from 'winston';
+
 
 const loginErr = {
 	code: 'LOG_ERROR',
@@ -11,14 +20,99 @@ const loginErr = {
 };
 
 async function checkLogin(username, password) {
-	const config = getConfig();
-	const user = await findUserByName(username);
-	if (!user) throw false;
-	if (!await checkPassword(user, password)) throw false;
+	const conf = getConfig();
+	let user;
+	if (username.includes('@')) {
+		// If username has a @, check its instance for existence
+		const login = username.split('@')[0];
+		const instance = username.split('@')[1];
+		const remoteUserID = await remoteLogin(username, password);
+		const remoteUser = await getRemoteUser(username, remoteUserID.token);
+		const fullUsername = `${login}@${instance}`;
+		// Check if user exists. If it does not, create it.
+		user = await findUserByName(fullUsername);
+		if (!user) {
+			await createUser({
+				login: fullUsername,
+				password: password
+			}, {
+				createRemote: false
+			});
+		}
+		// Update user with new data
+		let avatar_file = null;
+		if (remoteUser.avatar_file !== 'blank.png') {
+			const res = await got(`http://${instance}/avatars/${remoteUser.avatar_file}`, {
+				stream: true
+			});
+			const avatarFullPath = resolve(conf.appPath, conf.PathTemp, remoteUser.avatar_file);
+			await writeStreamToFile(res, avatarFullPath);
+			avatar_file = {
+				path: avatarFullPath
+			};
+		}
+		await editUser(fullUsername,{
+			bio: remoteUser.bio,
+			url: remoteUser.url,
+			email: remoteUser.email,
+			nickname: remoteUser.nickname,
+			password: password
+		},
+		avatar_file,
+		'user',
+		{
+			editRemote: false
+		});
+		upsertRemoteToken(fullUsername, remoteUserID.token);
+		// Download and add all favorites
+		try {
+			const res = await got(`http://${instance}/api/favorites`, {
+				headers: {
+					authorization: remoteUserID.token
+				},
+				json: true
+			});
+			const favorites = res.body;
+			const favoritesPlaylist = {
+				Header: {
+					version: 3,
+					description: 'Karaoke Mugen Playlist File'
+				},
+				PlaylistInformation: {
+					name: `Faves : ${fullUsername}`,
+					time_left: 0,
+					created_at: now(),
+					modified_at: now(),
+					flag_visible: 1
+				},
+				PlaylistContents: []
+			};
+			let index = 1;
+			for (const favorite of favorites) {
+				favoritesPlaylist.PlaylistContents.push({
+					kid: favorite.kid,
+					pseudo_add: remoteUser.nickname,
+					created_at: now(),
+					pos: index,
+					username: fullUsername
+				});
+				index++;
+			}
+			await importFavorites(favoritesPlaylist, {username: fullUsername});
+		} catch(err) {
+			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${err}`);
+			throw false;
+		}
+	} else {
+		// User is a local user
+		const user = await findUserByName(username);
+		if (!user) throw false;
+		if (!await checkPassword(user, password)) throw false;
+	}
 	const role = getRole(user);
 	updateLastLoginName(username);
 	return {
-		token: createJwtToken(username, role, config),
+		token: createJwtToken(username, role, conf),
 		username: username,
 		role: role
 	};

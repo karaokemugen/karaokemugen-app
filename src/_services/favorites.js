@@ -4,6 +4,9 @@ import {listUsers, findUserByName} from '../_services/user';
 import logger from 'winston';
 import {date} from '../_common/utils/date';
 import {profile} from '../_common/utils/logger';
+import { getRemoteToken } from '../_dao/user';
+import got from 'got';
+import { getKaraMini } from '../_dao/kara';
 
 export async function getFavorites(token, filter, lang, from, size) {
 	try {
@@ -26,11 +29,32 @@ export async function addToFavorites(username, kara_id) {
 		const plInfo = await getFavoritesPlaylist(username);
 		await addKaraToPlaylist(kara_id, username, plInfo.playlist_id);
 		await reorderPlaylist(plInfo.playlist_id, { sortBy: 'name'});
+		if (username.includes('@')) manageFavoriteInInstance('POST', username, kara_id);
 		return plInfo;
 	} catch(err) {
 		throw {message: err};
 	} finally {
 		profile('addToFavorites');
+	}
+}
+
+async function manageFavoriteInInstance(action, username, kara_id) {
+	const instance = username.split('@')[1];
+	const remoteToken = getRemoteToken(username);
+	const kara = await getKaraMini(kara_id);
+	try {
+		await got(`http://${instance}:1350/api/favorites`, {
+			method: action,
+			body: {
+				kid: kara.kid
+			},
+			headers: {
+				authorization: remoteToken.token
+			},
+			form: true
+		});
+	} catch(err) {
+		logger.error(`[RemoteFavorites] Unable to ${action} favorite ${kara.kid} on ${username}'s online account : ${err}`);
 	}
 }
 
@@ -49,6 +73,7 @@ export async function deleteFavorite(username, kara_id) {
 	if (!isKaraInPL) throw 'Karaoke ID is not present in this favorites list';
 	await deleteKaraFromPlaylist(plc_id, plInfo.playlist_id, null, {sortBy: 'name'});
 	profile('deleteFavorites');
+	if (username.includes('@')) manageFavoriteInInstance('DELETE', username, kara_id);
 	return plInfo;
 }
 
