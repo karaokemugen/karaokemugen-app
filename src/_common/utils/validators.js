@@ -3,47 +3,40 @@ import testJSON from 'is-valid-json';
 import {has as hasLang} from 'langs';
 import {karaTypes, tags} from '../../_services/constants';
 
+// Validators
+
 function integerValidator(value) {
-	if (value) {
-		if (!isNaN(value)) return null;
-		return ` '${value}' is invalid (not an integer)`;
-	}
-	return null;
+	if(!value || !isNaN(value)) return null;
+
+	return ` '${value}' is invalid (not an integer)`;
 }
 
 function langValidator(value) {
-	if (!Array.isArray(value)) value = value.replace('"', '').split(',');
-	value.forEach((e,i) => value[i] = e.trim());
-	let result = null;
-	for (const lang of value) {
-		if (!(lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang))) {
-			result = `'${lang}' is invalid ISO639-2B code`;
-			break;
-		}
-	}
-	return result;
+	if (!Array.isArray(value)) value = value.replace(/"/g, '').split(',');
+	value = value.map((value) => value.trim());
+	
+	const firstInvalidLang = value.find((lang) => !(lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang)));
+	if (firstInvalidLang) return `'${firstInvalidLang}' is invalid ISO639-2B code`;
+
+	return null;
 }
 
 function tagsValidator(value) {
-	if (!Array.isArray(value)) value = value.replace('"', '').split(',');
-	value.forEach((e,i) => value[i] = e.trim());
-	let result = null;
-	for (const tag of value) {
-		if (!tags.includes(tag.replace(/TAG_/,''))) {
-			result = `list '${value}' is invalid (not a known tag)`;
-			break;
-		}
-	}
-	return result;
+	if (!Array.isArray(value)) value = value.replace(/"/g, '').split(',');
+	value = value.map((value) => value.trim());
+
+	const firstInvalidTag = value.find((tag) => !tags.includes(tag.replace(/TAG_/,'')));
+	if (firstInvalidTag) return `list '${firstInvalidTag}' is invalid (not a known tag)`;
+
+	return null;
 }
 
 function seriesi18nValidator(value) {
 	if (typeof value !== 'object') return `i18n data (${value}) is not an object`;
-	for (const lang of Object.keys(value)) {
-		if (!(lang === 'und' || lang === 'mul' || hasLang('2B', lang))) {
-			return `i18n data invalid : '${lang}' is an invalid ISO639-2B code`;
-		}
-	}
+
+	const firstInvalidLang = Object.keys(value).find((lang) => !(lang === 'und' || lang === 'mul' || hasLang('2B', lang)));
+	if(firstInvalidLang) return `i18n data invalid : '${firstInvalidLang}' is an invalid ISO639-2B code`;
+
 	return null;
 }
 
@@ -54,13 +47,16 @@ function typeValidator(value) {
 
 function boolIntValidator(value) {
 	const err = ` '${value}' is invalid (must be -1, 0 or 1)`;
-	if (value && +value !== -1 && +value !== 1 && +value !== 0) return err;
+	if (value && ![-1, 0, 1].includes(+value)) return err;
+
 	return null;
 }
 
 function seriesAliasesValidator(value) {
 	if (!value) return null;
+
 	if (!Array.isArray(value)) return ` '${value}' is invalid (not an array)`;
+
 	return null;
 }
 
@@ -74,18 +70,34 @@ function isNumber(value) {
 }
 
 function numbersArrayValidator(value) {
-	if (value) {
-		value = '' + value;
-		if (value.includes(',')) {
-			const array = value.split(',');
-			if (array.every(isNumber)) return null;
-			return ` '${value}' is invalid (not an array of numbers)`;
-		}
-		if (!isNaN(value)) return null;
-		return ` '${value}' is invalid (not a number)`;
+	if(!value) return ` '${value}' is invalid (empty)`;
+
+	value = toString(value);
+	if (value.includes(',')) {
+		const array = value.split(',');
+		if (array.every(isNumber)) return null;
+		return ` '${value}' is invalid (not an array of numbers)`;
 	}
-	return ` '${value}' is invalid (empty)`;
+
+	if (!isNaN(value)) return null;
+
+	return ` '${value}' is invalid (not a number)`;
 }
+
+// Validators list
+
+const validatorsList = {
+	boolIntValidator,
+	numbersArrayValidator,
+	integerValidator,
+	seriesAliasesValidator,
+	isJSON,
+	langValidator,
+	tagsValidator,
+	typeValidator,
+	seriesi18nValidator
+};
+
 
 // Sanitizers
 
@@ -102,15 +114,10 @@ export function unescape(str) {
 // Init
 
 export function initValidators() {
-	if (!validate.validators.boolIntValidator) validate.validators.boolIntValidator = boolIntValidator;
-	if (!validate.validators.numbersArrayValidator) validate.validators.numbersArrayValidator = numbersArrayValidator;
-	if (!validate.validators.integerValidator) validate.validators.integerValidator = integerValidator;
-	if (!validate.validators.seriesAliasesValidator) validate.validators.seriesAliasesValidator = seriesAliasesValidator;
-	if (!validate.validators.isJSON) validate.validators.isJSON = isJSON;
-	if (!validate.validators.langValidator) validate.validators.langValidator = langValidator;
-	if (!validate.validators.tagsValidator) validate.validators.tagsValidator = tagsValidator;
-	if (!validate.validators.typeValidator) validate.validators.typeValidator = typeValidator;
-	if (!validate.validators.seriesi18nValidator) validate.validators.seriesi18nValidator = seriesi18nValidator;
+
+	Object.keys(validatorsList)
+		.filter((validatorName) => !validate.validators[validatorName])
+		.forEach((validatorName) => validate.validators[validatorName] = validatorsList[validatorName]);
 }
 
 export function check(obj, constraints) {
