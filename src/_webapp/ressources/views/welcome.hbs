@@ -167,52 +167,62 @@
 			</div>
 		</div>
 	</div>
-	<div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
-		<div class="modal-dialog modal-sm">
-			<div class="modal-content">
-				<ul class="nav nav-tabs nav-justified modal-header">
-					<li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">Login admin</a></li>
-					<li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {{i18n "NEW_ACCOUNT"}}</a></li>
-					<button class="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
-				</ul>
-				<div class="tab-content" id="nav-tabContent">
-					<div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
-					
-						<div class="modal-message">
-								<input type="text" class="form-control" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
-								<input type="password" class="form-control" id="password" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
-						</div>
-						<div></div>
-						<div>
-							<button type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
-								<i class="glyphicon glyphicon-ok"></i>
-							</button>
-						</div>
-					</div>
-					<div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
-						<div class="">
-								<input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
-								<input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
-								<input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
-								<br/>
-								<select class="form-control" id="signupRole" name="modalRole">
-									<!-- <option value="guest">{{i18n "GUEST"}}</option> -->
-									<option value="user" selected>{{i18n "USER"}}</option>
-									<option value="admin">{{i18n "ADMIN"}}</option>
-								</select>
-						</div>
-						<div>
-							<button id="signup" type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
-									{{i18n "SIGN_UP"}}
-							</button>
-						</div>
-					</div>
-				</div>
-			
-			</div>
-		</div>
-	</div>
-
+<div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "LOGIN"}}</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {{i18n "NEW_ACCOUNT"}}</a></li>
+                <button class="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
+                    <div class="tour hidden">
+                     {{i18n "FIRST_PUBLIC_RUN_WELCOME"}}
+                    </div>
+                    <div class="modal-message tour">
+                        <button class="btn btn-default tour">
+                             {{i18n "FOLLOW_TOUR"}}
+                        </button>
+                    </div>
+                    <div class="tour">
+                     {{i18n "OR"}}
+                    </div>
+                    <div class="modal-message">
+                        <button class="btn btn-default guest">
+                             {{i18n "GUEST_CONTINUE"}}
+                        </button>
+                    </div>
+                    <div class="loginRelated">
+                     {{i18n "OR"}}
+                    </div>
+                    <div class="modal-message loginRelated">
+                            <input type="text" class="form-control" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="password" class="form-control" id="password" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
+                    </div>
+                    <div class="loginRelated"></div>
+                    <div class="loginRelated">
+                        <button type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                            <i class="glyphicon glyphicon-ok"></i>
+                        </button>
+                    </div>
+                </div>
+                <div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
+                    <div class="">
+                            <input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
+                            <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
+                    </div>
+                    <div>
+                        <button id="signup" type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                             {{i18n "SIGN_UP"}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 	<div class="toastMessageContainer"></div>
         <!-- Js -->
 		<script>
