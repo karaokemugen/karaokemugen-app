@@ -70,8 +70,13 @@ const testTimeToSeconds = () => it('Testing time()', () => {
 		);
 });
 
+const testDuration = () => it('Testing duration()', () => {
+	throw new Error('NotImplemented');
+});
+
 export default () => {
 	testDate();
 	testTime();
 	testTimeToSeconds();
+	testDuration();
 };
