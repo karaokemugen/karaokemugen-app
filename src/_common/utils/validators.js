@@ -98,7 +98,6 @@ const validatorsList = {
 	seriesi18nValidator
 };
 
-
 // Sanitizers
 
 export function unescape(str) {
@@ -114,7 +113,6 @@ export function unescape(str) {
 // Init
 
 export function initValidators() {
-
 	Object.keys(validatorsList)
 		.filter((validatorName) => !validate.validators[validatorName])
 		.forEach((validatorName) => validate.validators[validatorName] = validatorsList[validatorName]);
