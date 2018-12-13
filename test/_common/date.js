@@ -28,7 +28,6 @@ const testDate = () => it('Testing date()', () => {
 		.forEach((testData) => expect(testData[0], `The ${testData[1]} value is not valid`).to.be.within(1, testData[2]));
 });
 
-
 export default () => {
 	testDate();
 };
