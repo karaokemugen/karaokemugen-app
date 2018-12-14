@@ -10,14 +10,14 @@
         <!-- CSS -->
 
         <link rel="stylesheet" href="/vendors/css/bootstrap.min.css">
-    	<link rel="stylesheet" href="/vendors/css/perfect-scrollbar.min.css"> 
+    	<link rel="stylesheet" href="/vendors/css/perfect-scrollbar.min.css">
         <link rel="stylesheet" href="/ressources/css/main.css">
   	  	<link rel="stylesheet" href="/ressources/css/karaokemugen.css">
     </head>
 
     <body id="body">
 
-	    <!-- 
+	    <!--
 	    Header start
 	    ==================== -->
 	    <div class="navbar-default navbar-fixed-top" id="navigation">
@@ -55,10 +55,10 @@
 							</h1>
 	                </div>
 					<div class="col-md-12 text-center catchPhrase" >
-						{{{ catchphrases }}} 
+						{{{ catchphrases }}}
 					</div>
 	                <div class="col-md-12 block wow menu zoomIn">
-					
+
 							<ul id="welcome_dashboard">
 								<li class="manage">
 									<div class="dash days_dash">
@@ -93,18 +93,18 @@
 									</div>
 								</li>
 							</ul>
-						
+
 	                </div>
 					<div class="col-md-12 wow block zoomIn perfectScrollbar">
 						<ul class="news">
-						
+
 						</ul>
-				
+
 					</div>
 	            </div><!-- .row close -->
 	        </div><!-- .container close -->
 	    </section><!-- header close -->
-			
+
 	<div class="modal modalPage fade" id="profilModal" role="dialog" type="prompt" tabindex="21">
 		<div class="modal-dialog modal-md">
 			<div class="modal-content">
@@ -158,7 +158,7 @@
 							</div>
 						</div>
 						<div class="modal-footer">
-							
+
 						</div>
 
 					</div>
@@ -226,7 +226,7 @@
 	<div class="toastMessageContainer"></div>
         <!-- Js -->
 		<script>
-		
+
 	        var query = {{{query}}};
 			var scope = 'admin';
 			welcomeScreen = true;
@@ -234,9 +234,9 @@
 		</script>
         <script src="/vendors/js/jquery-3.2.1.min.js"></script>
         <script src="/vendors/js/select2.min.js"></script>
-        <script src="/vendors/js/bootstrap.min.js"></script> 
-		<script src="/vendors/js/i18n.js"></script>  
-			
+        <script src="/vendors/js/bootstrap.min.js"></script>
+		<script src="/vendors/js/i18n.js"></script>
+
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/vendors/js/assignIE.js"></script>
 		<script src="/vendors/js/bootstrap-switch.min.js"></script>
@@ -245,7 +245,7 @@
 		<script src="/vendors/js/hammer.min.js"></script>
 		<script src="/vendors/js/hammer-time.min.js"></script>
 		<script src="/vendors/js/velocity.min.js"></script>
-		<script src="/vendors/js/perfect-scrollbar.jquery.min.js"></script> 
+		<script src="/vendors/js/perfect-scrollbar.jquery.min.js"></script>
 		<script src="/vendors/js/intro.js"></script>
 		<script src="/vendors/js/sprintf.min.js"></script>
 		<script src="/ressources/js/karaokemugen.js"></script>
@@ -261,7 +261,7 @@
 						var mast = data[2];
 						var news = [];
 						if(base.body && appli.body) {
-						news = 
+						news =
 							[
 								{
 									html : base.body.feed.entry[0].content[0]['_'],
@@ -305,7 +305,7 @@
 										+	'<p class="new-header"><b>' + e.title + '</b>'
 										+	'<a href="' + e.link + '" target="_blank">' + e.dateStr + '</a></p>'
 										+	'<p>' + e.html + '</p>'
-										+	'</li>');			
+										+	'</li>');
 						});
 						$('.new').each((k, e) => {
 							if($(e).prop('scrollHeight') > $(e).outerHeight()) {
@@ -337,7 +337,7 @@
             switch(index) {
                 case 0: window.open('/admin' + window.location.search,'_blank');
                 break;
-                case 1: window.open(window.location.protocol + '//' + window.location.hostname + ':' + {{appAdminPort}},'_blank');
+                case 1: window.open('/system','_blank');
                 break;
                 case 4: window.open('http://mugen.karaokes.moe/docs/', '_blank');
                 break;
@@ -346,7 +346,7 @@
             }
 
         });
-		
+
 		$('.news').on('click', '.new', function (e) {
 			var $target = $(e.target);
 			if(!$target.is('a')) {

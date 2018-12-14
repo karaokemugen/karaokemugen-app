@@ -156,7 +156,6 @@ export async function initFrontend(port) {
 		res.render('welcome', {
 			'catchphrases'	:	sample(initializationCatchphrases),
 			'clientAdress'	:	`http://${address()}`,
-			'appAdminPort'	:	conf.appAdminPort,
 			'query'			:	JSON.stringify(req.query),
 		});
 	});
