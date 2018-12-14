@@ -156,6 +156,8 @@
 	"TAG_HARDMODE_SHORT": "HRD",
 	"TAG_DUO": "Duo",
 	"TAG_DUO_SHORT": "DUO",
+	"TAG_CREDITLESS": "Creditless",
+	"TAG_CREDITLESS_SHORT": "CRE",
 	"REQUESTED_BY": "Requested by",
 	"DAY": "day(s)",
 	"HOUR": "hour(s)",

@@ -155,6 +155,8 @@
 	"TAG_HARDMODE_SHORT": "DUR",
 	"TAG_DUO": "Duo",
 	"TAG_DUO_SHORT": "DUO",
+	"TAG_CREDITLESS": "Creditless",
+	"TAG_CREDITLESS_SHORT": "CRE",
 	"REQUESTED_BY": "Demandé par",
 	"DAY": "jour(s)",
 	"HOUR": "heure(s)",
@@ -532,6 +534,6 @@
 
 		},
 		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
-		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?"		
+		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?"
 	}
 }
