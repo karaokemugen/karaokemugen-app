@@ -29,7 +29,7 @@ export default function authController(router) {
 
 	const requireAuth = passport.authenticate('jwt', { session: false });
 
-	router.post('/login', async (req, res) => {
+	router.post('/auth/login', async (req, res) => {
 		/**
  * @api {post} /auth/login Login / Sign in
  * @apiName AuthLogin
@@ -65,7 +65,7 @@ export default function authController(router) {
 		}
 	});
 
-	router.post('/login/guest', async (req, res) => {
+	router.post('/auth/login/guest', async (req, res) => {
 		/**
  * @api {post} /auth/login/guest Login / Sign in (as guest)
  * @apiName AuthLoginGuest
@@ -120,7 +120,7 @@ export default function authController(router) {
 		}
 	});
 
-	router.get('/checkauth', requireAuth, (req, res) => {
+	router.get('/auth/checkauth', requireAuth, (req, res) => {
 		res.send(decodeJwtToken(req.get('authorization')));
 	});
 }

@@ -83,7 +83,7 @@ class Database extends Component {
 
 	dbregen = () => {
 		this.props.loading(true);
-		axios.post('/api/db/regenerate')
+		axios.post('/api/system/db/regenerate')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);
@@ -96,7 +96,7 @@ class Database extends Component {
 
 	dbupdate() {
 		this.props.loading(true);
-		axios.post('/api/karas/update')
+		axios.post('/api/system/karas/update')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);
@@ -109,7 +109,7 @@ class Database extends Component {
 
 	dbresetviewcounts() {
 		this.props.loading(true);
-		axios.post('/api/db/resetviewcounts')
+		axios.post('/api/system/db/resetviewcounts')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);
@@ -122,7 +122,7 @@ class Database extends Component {
 
 	dbrenameallkaras() {
 		this.props.loading(true);
-		axios.post('/api/db/renamekaras')
+		axios.post('/api/system/db/renamekaras')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);

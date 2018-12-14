@@ -24,7 +24,7 @@ class KaraList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/karas', { params: { filter: this.state.filter }})
+		axios.get('/api/system/karas', { params: { filter: this.state.filter }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data.content});

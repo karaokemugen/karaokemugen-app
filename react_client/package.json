@@ -2,6 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/system",
   "dependencies": {
     "antd": "^3.11.2",
     "axios": "^0.18.0",
