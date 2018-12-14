@@ -18,10 +18,10 @@ function toString(o) {
 		if (typeof o[k] === 'object') {
 			return toString(o[k]);
 		}
-    
+
 		o[k] = '' + o[k];
 	});
-  
+
 	return o;
 }
 
@@ -37,7 +37,7 @@ describe('Test public API', function() {
 			password: 'ilyenapas'
 		};
 		return request
-			.post('/api/v1/public/users')
+			.post('/api/public/users')
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
@@ -53,7 +53,7 @@ describe('Test public API', function() {
 			password: passwordAdmin
 		};
 		return request
-			.post('/api/v1/auth/login')
+			.post('/api/auth/login')
 			.set('Accept', 'application/json')
 			.send(data)
 			.expect(200)
@@ -66,7 +66,7 @@ describe('Test public API', function() {
 
 	it('get user informations', function() {
 		return request
-			.get('/api/v1/public/users/')
+			.get('/api/public/users/')
 			.set('Authorization', token)
 			.set('Accept', 'application/json')
 			.expect(200)
@@ -82,19 +82,19 @@ describe('Test public API', function() {
 
 	it('delete a user', function() {
 		return request
-			.delete('/api/v1/admin/users/BakaToTest')
+			.delete('/api/admin/users/BakaToTest')
 			.set('Accept', 'application/json')
-			.set('Authorization', token)	
+			.set('Authorization', token)
 			.expect(200)
 			.then(function(response) {
 				assert.equal(response.body.args,'BakaToTest');
 				assert.equal(response.body.code, 'USER_DELETED');
 			});
 	});
-	
+
 	it('List songs with Dragon Ball in their name', function() {
 		return request
-			.get('/api/v1/public/karas?filter=Dragon%20Ball&lang=fr')
+			.get('/api/public/karas?filter=Dragon%20Ball&lang=fr')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -103,10 +103,10 @@ describe('Test public API', function() {
 				assert.equal(response.body.data.content[0].serie, 'Dragon Ball');
 			});
 	});
-	
+
 	it('Get one karaoke song by ID', function() {
 		return request
-			.get('/api/v1/public/karas/1')
+			.get('/api/public/karas/1')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -115,10 +115,10 @@ describe('Test public API', function() {
 				assert.equal(response.body.data.length, 1);
 			});
 	});
-	
+
 	it('Get one karaoke song\'s lyrics', function() {
 		return request
-			.get('/api/v1/public/karas/1/lyrics')
+			.get('/api/public/karas/1/lyrics')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -126,7 +126,7 @@ describe('Test public API', function() {
 	});
 	it('Get stats', function() {
 		return request
-			.get('/api/v1/public/stats')
+			.get('/api/public/stats')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -134,7 +134,7 @@ describe('Test public API', function() {
 	});
 	it('List public playlist information', function() {
 		return request
-			.get('/api/v1/public/playlists/public')
+			.get('/api/public/playlists/public')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -142,27 +142,27 @@ describe('Test public API', function() {
 	});
 	it('List current playlist information', function() {
 		return request
-			.get('/api/v1/public/playlists/current')
+			.get('/api/public/playlists/current')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then((response) => {
-				current_playlist_id = response.body.data.playlist_id;				
+				current_playlist_id = response.body.data.playlist_id;
 			});
 	});
 	it('List public playlist contents', function() {
 		return request
-			.get('/api/v1/public/playlists/public/karas')
+			.get('/api/public/playlists/public/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
 			.expect(200);
 	});
-	
+
 	it('Add karaoke 6 to playlist depending on mode', function() {
 		return request
-			.post('/api/v1/public/karas/6')
+			.post('/api/public/karas/6')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -173,10 +173,10 @@ describe('Test public API', function() {
 			});
 	});
 	var plc_id;
-	
+
 	it('List contents from current playlist', function() {
 		return request
-			.get('/api/v1/public/playlists/current/karas')
+			.get('/api/public/playlists/current/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -196,7 +196,7 @@ describe('Test public API', function() {
 			'plc_id': plc_id
 		};
 		return request
-			.delete('/api/v1/admin/playlists/1/karas/')
+			.delete('/api/admin/playlists/1/karas/')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -212,7 +212,7 @@ describe('Test public API', function() {
 describe('Player tests', function() {
 	it('Read player status', function() {
 		return request
-			.get('/api/v1/public/player')
+			.get('/api/public/player')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -228,7 +228,7 @@ describe('Managing karaokes in playlists', function() {
 			'requestedby': 'Test'
 		};
 		return request
-			.post('/api/v1/admin/playlists/'+playlist+'/karas')
+			.post('/api/admin/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -238,11 +238,11 @@ describe('Managing karaokes in playlists', function() {
 				assert.equal(response.body.code,'PL_SONG_ADDED');
 			});
 	});
-	
+
 	var plc_id;
 	it('List contents from playlist 1', function() {
 		return request
-			.get('/api/v1/admin/playlists/'+playlist+'/karas')
+			.get('/api/admin/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -255,33 +255,33 @@ describe('Managing karaokes in playlists', function() {
 				assert.equal(result, true);
 			});
 	});
-	
+
 	it('Add karaoke 6 again to playlist 1 to see if it fails', function() {
 		var data = {
 			'kara_id': 6,
 			'requestedby': 'Test'
 		};
 		return request
-			.post('/api/v1/admin/playlists/'+playlist+'/karas')
+			.post('/api/admin/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
 			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_ADD_SONG_ERROR');	
+				assert.equal(response.body.code,'PL_ADD_SONG_ERROR');
 				assert.equal(response.body.message,'No karaoke could be added,'+
 				' all are in destination playlist already (PLID : '+playlist+')');
 			});
 	});
-	
+
 	it('Add an unknown karaoke to playlist 1 to see if it fails', function() {
 		var data = {
 			'kara_id': 10000,
 			'requestedby': 'Test'
 		};
 		return request
-			.post('/api/v1/admin/playlists/'+playlist+'/karas')
+			.post('/api/admin/playlists/'+playlist+'/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -292,14 +292,14 @@ describe('Managing karaokes in playlists', function() {
 				assert.equal(response.body.message,'One of the karaokes does not exist');
 			});
 	});
-	
+
 	it('Add karaoke 6 to an unknown playlist to see if it fails', function() {
 		var data = {
 			'kara_id': 6,
 			'requestedby': 'Test'
 		};
 		return request
-			.post('/api/v1/admin/playlists/10000/karas')
+			.post('/api/admin/playlists/10000/karas')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -311,30 +311,13 @@ describe('Managing karaokes in playlists', function() {
 				//assert.equal(response.body,'Playlist 10000 unknown');
 			});
 	});
-	
+
 	it('Edit karaoke from current playlist : flag_playing', function() {
 		var data = {
 			flag_playing: '1'
 		};
 		return request
-			.put('/api/v1/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
-			.set('Accept', 'application/json')
-			.set('Authorization', token)
-			.send(data)
-			.expect('Content-Type', /json/)
-			.expect(200)
-			.then(function(response) {				
-				assert.equal(response.body.code,'PL_CONTENT_MODIFIED');
-				assert.equal(response.body.data, current_plc_id);
-			});			
-	});
-	
-	it('Edit karaoke from current playlist : position', function() {
-		var data = {
-			pos: '1'
-		};
-		return request
-			.put('/api/v1/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
+			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -343,12 +326,29 @@ describe('Managing karaokes in playlists', function() {
 			.then(function(response) {
 				assert.equal(response.body.code,'PL_CONTENT_MODIFIED');
 				assert.equal(response.body.data, current_plc_id);
-			});			
+			});
 	});
-	
+
+	it('Edit karaoke from current playlist : position', function() {
+		var data = {
+			pos: '1'
+		};
+		return request
+			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
+			.set('Accept', 'application/json')
+			.set('Authorization', token)
+			.send(data)
+			.expect('Content-Type', /json/)
+			.expect(200)
+			.then(function(response) {
+				assert.equal(response.body.code,'PL_CONTENT_MODIFIED');
+				assert.equal(response.body.data, current_plc_id);
+			});
+	});
+
 	it('Shuffle playlist 1', function() {
 		return request
-			.put('/api/v1/admin/playlists/1/shuffle')
+			.put('/api/admin/playlists/1/shuffle')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -358,13 +358,13 @@ describe('Managing karaokes in playlists', function() {
 				assert.equal(response.body.data, 1);
 			});
 	});
-	
+
 	it('Delete karaoke 6 from playlist 1', function() {
 		var data = {
 			'plc_id': plc_id
 		};
 		return request
-			.delete('/api/v1/admin/playlists/1/karas/')
+			.delete('/api/admin/playlists/1/karas/')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -374,13 +374,13 @@ describe('Managing karaokes in playlists', function() {
 				assert.equal(response.body.code,'PL_SONG_DELETED');
 			});
 	});
-	
+
 });
 
 describe('Managing settings', function(){
 	it('Read settings', function() {
 		return request
-			.get('/api/v1/admin/settings')
+			.get('/api/admin/settings')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -389,11 +389,11 @@ describe('Managing settings', function(){
 				SETTINGS = response.body;
 			});
 	});
-	
+
 	it('Update settings', function() {
 		var data = toString(SETTINGS);
 		return request
-			.put('/api/v1/admin/settings')
+			.put('/api/admin/settings')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data.data)
@@ -412,7 +412,7 @@ describe('Managing whitelist', function() {
 			'reason': 'Because reasons'
 		};
 		return request
-			.post('/api/v1/admin/whitelist')
+			.post('/api/admin/whitelist')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -424,11 +424,11 @@ describe('Managing whitelist', function() {
 				assert.equal(response.body.data.reason, data.reason);
 			});
 	});
-		
+
 	var wlc_id;
 	it('List whitelist', function() {
 		return request
-			.get('/api/v1/admin/whitelist')
+			.get('/api/admin/whitelist')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -437,13 +437,13 @@ describe('Managing whitelist', function() {
 				wlc_id = response.body.data.content[0].whitelist_id;
 			});
 	});
-	
+
 	it('Delete karaoke 1 from whitelist', function() {
 		var data = {
 			'wlc_id': wlc_id,
 		};
 		return request
-			.delete('/api/v1/admin/whitelist/')
+			.delete('/api/admin/whitelist/')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -461,7 +461,7 @@ describe('Managing blacklist', function() {
 			'blcriteria_value': 1
 		};
 		return request
-			.post('/api/v1/admin/blacklist/criterias')
+			.post('/api/admin/blacklist/criterias')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -473,11 +473,11 @@ describe('Managing blacklist', function() {
 				assert.equal(response.body.data.blcriteria_value,data.blcriteria_value);
 			});
 	});
-	
+
 	var blc_id;
 	it('List blacklist criterias', function() {
 		return request
-			.get('/api/v1/admin/blacklist/criterias')
+			.get('/api/admin/blacklist/criterias')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -489,14 +489,14 @@ describe('Managing blacklist', function() {
 				assert.equal(result,true);
 			});
 	});
-	
+
 	it('Edit blacklist criteria', function() {
 		var data = {
 			blcriteria_type: 1001,
 			blcriteria_value: 2
 		};
 		return request
-			.put('/api/v1/admin/blacklist/criterias/'+blc_id)
+			.put('/api/admin/blacklist/criterias/'+blc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -508,10 +508,10 @@ describe('Managing blacklist', function() {
 				assert.equal(response.body.data.blcriteria_value,data.blcriteria_value);
 			});
 	});
-	
+
 	it('List blacklist', function() {
 		return request
-			.get('/api/v1/admin/blacklist')
+			.get('/api/admin/blacklist')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -522,10 +522,10 @@ describe('Managing blacklist', function() {
 				assert.equal(result,true);
 			});
 	});
-	
+
 	it('Delete blacklist criteria', function() {
 		return request
-			.delete('/api/v1/admin/blacklist/criterias/'+blc_id)
+			.delete('/api/admin/blacklist/criterias/'+blc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -535,7 +535,7 @@ describe('Managing blacklist', function() {
 				assert.equal(response.body.data,blc_id);
 			});
 	});
-	
+
 });
 describe('Managing playlists', function() {
 	var playlist = {
@@ -561,7 +561,7 @@ describe('Managing playlists', function() {
 	var new_playlist_public_id;
 	it('List all playlists', function() {
 		return request
-			.get('/api/v1/admin/playlists')
+			.get('/api/admin/playlists')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -572,10 +572,10 @@ describe('Managing playlists', function() {
 				assert.equal(result, true);
 			});
 	});
-	
+
 	it('List single playlist information', function() {
 		return request
-			.get('/api/v1/admin/playlists/1')
+			.get('/api/admin/playlists/1')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -587,7 +587,7 @@ describe('Managing playlists', function() {
 
 	it('Create a new playlist', function() {
 		return request
-			.post('/api/v1/admin/playlists')
+			.post('/api/admin/playlists')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(playlist)
@@ -598,10 +598,10 @@ describe('Managing playlists', function() {
 				new_playlist_id = response.body.data;
 			});
 	});
-	
+
 	it('Create a new CURRENT playlist', function() {
 		return request
-			.post('/api/v1/admin/playlists')
+			.post('/api/admin/playlists')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(playlist_current)
@@ -614,7 +614,7 @@ describe('Managing playlists', function() {
 	});
 	it('Create a new PUBLIC playlist', function() {
 		return request
-			.post('/api/v1/admin/playlists')
+			.post('/api/admin/playlists')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(playlist_public)
@@ -630,10 +630,10 @@ describe('Managing playlists', function() {
 		flag_visible: '1',
 		pl_id:'new_playlist_id'
 	};
-	
+
 	it('Edit a playlist', function() {
 		return request
-			.put('/api/v1/admin/playlists/'+new_playlist_id)
+			.put('/api/admin/playlists/'+new_playlist_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(edit_playlist)
@@ -646,7 +646,7 @@ describe('Managing playlists', function() {
 
 	it('Try to delete a CURRENT playlist (should fail)', function() {
 		return request
-			.delete('/api/v1/admin/playlists/'+new_playlist_current_id)
+			.delete('/api/admin/playlists/'+new_playlist_current_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect(500)
@@ -658,7 +658,7 @@ describe('Managing playlists', function() {
 
 	it('Try to delete a PUBLIC playlist (should fail)', function() {
 		return request
-			.delete('/api/v1/admin/playlists/'+new_playlist_public_id)
+			.delete('/api/admin/playlists/'+new_playlist_public_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -668,10 +668,10 @@ describe('Managing playlists', function() {
 				assert.equal(response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it');
 			});
 	});
-	
+
 	it('Delete a playlist', function() {
 		return request
-			.delete('/api/v1/admin/playlists/'+new_playlist_id)
+			.delete('/api/admin/playlists/'+new_playlist_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -681,10 +681,10 @@ describe('Managing playlists', function() {
 				assert.equal(response.body.data,new_playlist_id);
 			});
 	});
-	
+
 	it('Empty playlist', function() {
 		return request
-			.put('/api/v1/admin/playlists/'+new_playlist_public_id+'/empty')
+			.put('/api/admin/playlists/'+new_playlist_public_id+'/empty')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
@@ -699,7 +699,7 @@ describe('Managing playlists', function() {
 describe('Ending tests', function() {
 	it('Sending shutdown command', function() {
 		return request
-			.post('/api/v1/admin/shutdown')
+			.post('/api/admin/shutdown')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.expect('Content-Type', /json/)
