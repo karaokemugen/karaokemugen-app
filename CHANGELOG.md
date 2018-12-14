@@ -1,5 +1,21 @@
 # Versions
 
+## v2.4.2 "Juri Joueuse" - 13/12/2018
+
+This is a bug fix release.
+
+### Improvements
+
+- Issues created automatically when a user makes a song suggestion in Karaoke Mugen App now contain a more polite message, as well as the user's nickname
+- Media renaming now doesn't abort if a file is not found
+
+### Fixes
+
+- Fixed importing playlists
+- Fixed all jingles playing at once if interval is set to 0
+- Fixed using filters in a song list when you're not at the top of the list
+- Stats are now properly sent on startup
+
 ## v2.4.1 "Juri Joviale" - 28/11/2018
 
 ### New features

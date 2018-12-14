@@ -516,8 +516,10 @@
 	"VIEW_POPULAR": "Populaire",
 	"KARA_SUGGESTION_MAIL": "Vous ne trouvez pas votre bonheur ? Cliquez ici",
 	"KARA_SUGGESTION_SUBJECT": "Suggestion de kara : ",
-	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Merci de rajouter cette chanson à votre base dans les plus brefs délais.%0D%0A Cordialement, bisous.",
-	"KARA_SUGGESTION_NAME": "Titre de la chanson",
+	"KARA_SUGGESTION_BODY": "Bonjour,%0D%0A Serait-il possible de rajouter cette chanson à votre base ? %0D%0A Cordialement, bisous.%0D%0A(Ceci est un message automatique généré par Karaoke Mugen App)",
+    "KARA_SUGGESTION_NAME": "Titre de la chanson",
+    "KARA_SUGGESTION_INFO" : "Merci pour votre suggestion.",
+    "KARA_SUGGESTION_LINK" : "Vous pourrez la voir sous peu en suivant ce lien : <a target='_blank' href='%s'>liste des issues</a>",
 	"BASE_UPDATE": "Nouvelles de la base",
 	"APP_UPDATE": "Nouvelle version de l'application",
 	"ONLINE_STATS": {
