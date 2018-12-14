@@ -145,6 +145,6 @@
   },
   "false": {},
   "apidoc": {
-    "url": "http://localhost:1337/api/v1"
+    "url": "http://localhost:1337/api"
   }
 }
