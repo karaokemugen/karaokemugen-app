@@ -8,10 +8,10 @@ import axios from 'axios';
 // GET karas with/without filter.
 export async function getLocalKaras() {
 	try {
-		const res = await axios.get('/api/karas');
+		const res = await axios.get('/api/system/karas');
 		return res.data.content;
 	} catch (e) {
-		console.log('Error from downloadManager.js:getLocalKaras()');
+		console.log('Error from /api/local.js:getLocalKaras()');
 		throw e;
 	}
 }
@@ -19,10 +19,10 @@ export async function getLocalKaras() {
 // GET karas download queue
 export async function getDownloadQueue() {
 	try {
-		const res = await axios.get('/api/downloads');
+		const res = await axios.get('/api/system/downloads');
 		return res.data;
 	} catch (e) {
-		console.log('Error from downloadManager.js:getDownloadQueue');
+		console.log('Error from /api/local.js:getDownloadQueue');
 		throw e;
 	}
 }
@@ -35,17 +35,17 @@ export async function postToDownloadQueue(repo = 'kara.moe', downloads) {
 			downloads
 		};
 		console.log(dl);
-		await axios.post('/api/downloads', dl);
+		await axios.post('/api/system/downloads', dl);
 	} catch (e) {
 		console.log(e);
-		console.log('Error from downloadManager.js:postToDownloadQueue');
+		console.log('Error from /api/local.js:postToDownloadQueue');
 		throw e;
 	}
 }
 
 export async function deleteKaraByLocalId(karaId) {
 	try {
-		const response = await axios.delete(`/api/karas/${karaId}`);
+		const response = await axios.delete(`/api/system/karas/${karaId}`);
 		console.log(response);
 		return response.status === 200;
 	} catch (e) {
