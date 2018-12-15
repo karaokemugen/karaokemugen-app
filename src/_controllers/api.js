@@ -82,7 +82,7 @@ export function APIControllerAdmin(router) {
  * "Shutdown in progress."
  *
  */
-	router.route('/shutdown')
+	router.route('/admin/shutdown')
 		.post(getLang, requireAuth, requireValidUser, requireAdmin, async (req, res) => {
 			// Sends command to shutdown the app.
 			try {
@@ -94,7 +94,7 @@ export function APIControllerAdmin(router) {
 				res.json(err);
 			}
 		});
-	router.route('/automix')
+	router.route('/admin/automix')
 	/**
  * @api {post} /admin/automix Generate a automix playlist
  * @apiName PostMix
@@ -136,7 +136,6 @@ export function APIControllerAdmin(router) {
 			if (!validationErrors) {
 				// No errors detected
 				try {
-					req.sanitize('duration').toInt();
 					const new_playlist = await createAutoMix(req.body, req.authToken.username);
 					emitWS('playlistsUpdated');
 					res.statusCode = 201;
@@ -155,7 +154,7 @@ export function APIControllerAdmin(router) {
 			}
 		});
 
-	router.route('/playlists')
+	router.route('/admin/playlists')
 	/**
  * @api {get} /admin/playlists/ Get list of playlists
  * @apiName GetPlaylists
@@ -268,7 +267,7 @@ export function APIControllerAdmin(router) {
 
 		});
 
-	router.route('/playlists/:pl_id([0-9]+)')
+	router.route('/admin/playlists/:pl_id([0-9]+)')
 	/**
  * @api {get} /admin/playlists/:pl_id Get playlist information
  * @apiName GetPlaylist
@@ -416,7 +415,7 @@ export function APIControllerAdmin(router) {
 				res.json(errMessage('PL_DELETE_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/users')
+	router.route('/admin/users')
 	/**
  * @api {post} /admin/users Create new user (as admin)
  * @apiName PostUserAdmin
@@ -479,7 +478,7 @@ export function APIControllerAdmin(router) {
 			}
 		});
 
-	router.route('/users/:username')
+	router.route('/admin/users/:username')
 	/**
  * @api {get} /admin/users/:username View user details (admin)
  * @apiName GetUserAdmin
@@ -580,7 +579,7 @@ export function APIControllerAdmin(router) {
 			}
 		});
 
-	router.route('/playlists/:pl_id([0-9]+)/empty')
+	router.route('/admin/playlists/:pl_id([0-9]+)/empty')
 	/**
  * @api {put} /admin/playlists/:pl_id/empty Empty a playlist
  * @apiName PutEmptyPlaylist
@@ -618,7 +617,7 @@ export function APIControllerAdmin(router) {
 				res.json(err);
 			}
 		});
-	router.route('/whitelist/empty')
+	router.route('/admin/whitelist/empty')
 	/**
  * @api {put} /admin/whitelist/empty Empty whitelist
  * @apiName PutEmptyWhitelist
@@ -652,7 +651,7 @@ export function APIControllerAdmin(router) {
 				res.json(errMessage('WL_EMPTY_ERROR',err));
 			}
 		});
-	router.route('/blacklist/criterias/empty')
+	router.route('/admin/blacklist/criterias/empty')
 	/**
  * @api {put} /admin/blacklist/criterias/empty Empty list of blacklist criterias
  * @apiName PutEmptyBlacklist
@@ -686,7 +685,7 @@ export function APIControllerAdmin(router) {
 				res.json(errMessage('BLC_EMPTY_ERROR',err));
 			}
 		});
-	router.route('/playlists/:pl_id([0-9]+)/setCurrent')
+	router.route('/admin/playlists/:pl_id([0-9]+)/setCurrent')
 	/**
  * @api {put} /admin/playlists/:pl_id/setCurrent Set playlist to current
  * @apiName PutSetCurrentPlaylist
@@ -724,7 +723,7 @@ export function APIControllerAdmin(router) {
 				res.json(errMessage('PL_SET_CURRENT_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/playlists/:pl_id([0-9]+)/setPublic')
+	router.route('/admin/playlists/:pl_id([0-9]+)/setPublic')
 	/**
  * @api {put} /admin/playlists/:pl_id/setPublic Set playlist to public
  * @apiName PutSetPublicPlaylist
@@ -761,7 +760,7 @@ export function APIControllerAdmin(router) {
 				res.json(errMessage('PL_SET_PUBLIC_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/playlists/:pl_id([0-9]+)/karas')
+	router.route('/admin/playlists/:pl_id([0-9]+)/karas')
 	/**
  * @api {get} /admin/playlists/:pl_id/karas Get list of karaokes in a playlist
  * @apiName GetPlaylistKaras
@@ -1055,7 +1054,7 @@ export function APIControllerAdmin(router) {
 
 		});
 
-	router.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+	router.route('/admin/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 	/**
  * @api {get} /admin/playlists/:pl_id/karas/:plc_id Get song info from a playlist item
  * @apiName GetPlaylistPLC
@@ -1239,11 +1238,13 @@ export function APIControllerAdmin(router) {
 				if (req.body.pos) req.body.pos = parseInt(req.body.pos, 10);
 				if (req.body.flag_playing) req.body.flag_playing = parseInt(req.body.flag_playing, 10);
 				try {
-					await editPLC(req.params.plc_id,{
+					const data = await editPLC(req.params.plc_id,{
 						pos: req.body.pos,
 						flag_playing: req.body.flag_playing,
 						flag_free: req.body.flag_free
 					},req.authToken);
+					emitWS('playlistContentsUpdated',data.pl_id);
+					emitWS('playlistInfoUpdated',data.pl_id);
 					res.json(OKMessage(req.params.plc_id,'PL_CONTENT_MODIFIED'));
 				} catch(err) {
 					logger.error(err);
@@ -1259,11 +1260,11 @@ export function APIControllerAdmin(router) {
 
 		});
 
-	router.route('/settings')
+	router.route('/admin/settings')
 	/**
  * @api {get} /admin/settings Get settings
  * @apiName GetSettings
- * @apiVersion 2.2.0
+ * @apiVersion 2.4.1
  * @apiGroup Main
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
@@ -1312,6 +1313,7 @@ export function APIControllerAdmin(router) {
  *       "EngineSongsPerUser": "10000",
  * 		 "EngineTimePerUser": "10000",
  *       "EngineCreatePreviews": "1",
+ * 		 "OnlineStats": "0",
  *       "PathAltname": "../times/series_altnames.csv",
  *       "PathBackgrounds": "app/backgrounds",
  *       "PathBin": "app/bin",
@@ -1351,7 +1353,7 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {put} /admin/settings Update settings
  * @apiName PutSettings
- * @apiVersion 2.2.0
+ * @apiVersion 2.4.1
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiGroup Main
@@ -1380,6 +1382,7 @@ export function APIControllerAdmin(router) {
  * @apiParam {Number} EngineSongPollTimeout Poll duration in seconds
  * @apiParam {Number} EngineSongsPerUser Number of songs allowed per person.
  * @apiParam {Number} EngineTimePerUser Song duration allowed per person.
+ * @apiParam {Boolean} OnlineStats Enable/Disable stats upload to Karaoke Mugen Online
  * @apiParam {Boolean} PlayerFullscreen Enable/disable full screen mode
  * @apiParam {Boolean} PlayerMonitor Enable/disable player's second screen (monitor)
  * @apiParam {Boolean} PlayerPIP Enable/disable Picture-in-picture mode
@@ -1419,7 +1422,7 @@ export function APIControllerAdmin(router) {
 			}
 		});
 
-	router.route('/player/message')
+	router.route('/admin/player/message')
 	/**
  * @api {post} /admin/player/message Send a message to screen or users' devices
  * @apiName PostPlayerMessage
@@ -1485,7 +1488,7 @@ export function APIControllerAdmin(router) {
 			}
 		});
 
-	router.route('/whitelist')
+	router.route('/admin/whitelist')
 	/**
  * @api {get} /admin/whitelist Get whitelist
  * @apiName GetWhitelist
@@ -1679,7 +1682,7 @@ export function APIControllerAdmin(router) {
 
 		});
 
-	router.route('/blacklist')
+	router.route('/admin/blacklist')
 	/**
  * @api {get} /admin/blacklist Get blacklist
  * @apiName GetBlacklist
@@ -1768,7 +1771,7 @@ export function APIControllerAdmin(router) {
 				res.json(errMessage('BL_VIEW_ERROR',err));
 			}
 		});
-	router.route('/blacklist/criterias')
+	router.route('/admin/blacklist/criterias')
 	/**
  * @api {get} /admin/blacklist/criterias Get list of blacklist criterias
  * @apiName GetBlacklistCriterias
@@ -1878,7 +1881,7 @@ export function APIControllerAdmin(router) {
 
 		});
 
-	router.route('/blacklist/criterias/:blc_id([0-9]+)')
+	router.route('/admin/blacklist/criterias/:blc_id([0-9]+)')
 	/**
  * @api {delete} /admin/blacklist/criterias/:blc_id Delete a blacklist criteria
  * @apiName DeleteBlacklistCriterias
@@ -1976,7 +1979,7 @@ export function APIControllerAdmin(router) {
 
 		});
 
-	router.route('/player')
+	router.route('/admin/player')
 	/**
  * @api {put} /admin/player Send commands to player
  * @apiName PutPlayerCommando
@@ -2040,7 +2043,7 @@ export function APIControllerAdmin(router) {
 				res.json(validationErrors);
 			}
 		});
-	router.route('/playlists/:pl_id([0-9]+)/export')
+	router.route('/admin/playlists/:pl_id([0-9]+)/export')
 	/**
  * @api {get} /admin/playlists/:pl_id/export Export a playlist
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
@@ -2106,7 +2109,7 @@ export function APIControllerAdmin(router) {
 				res.json(errMessage('PL_EXPORT_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/playlists/import')
+	router.route('/admin/playlists/import')
 	/**
  * @api {post} /admin/playlists/import Import a playlist
  * @apiName postPlaylistImport
@@ -2165,7 +2168,7 @@ export function APIControllerAdmin(router) {
 		});
 
 
-	router.route('/playlists/:pl_id([0-9]+)/shuffle')
+	router.route('/admin/playlists/:pl_id([0-9]+)/shuffle')
 	/**
  * @api {put} /admin/playlists/:pl_id/shuffle Shuffle a playlist
  * @apiDescription Playlist is shuffled in database. The shuffling only begins after the currently playing song. Songs before that one are unaffected.
@@ -2230,7 +2233,7 @@ export function APIControllerPublic(router) {
 	// Public routes
 
 
-	router.route('/playlists')
+	router.route('/public/playlists')
 	/**
  * @api {get} /public/playlists/ Get list of playlists (public)
  * @apiName GetPlaylistsPublic
@@ -2279,7 +2282,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('PL_LIST_ERROR',err));
 			}
 		});
-	router.route('/playlists/:pl_id([0-9]+)')
+	router.route('/public/playlists/:pl_id([0-9]+)')
 	/**
  * @api {get} /public/playlists/:pl_id Get playlist information (public)
  * @apiName GetPlaylistPublic
@@ -2340,7 +2343,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('PL_VIEW_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/playlists/:pl_id([0-9]+)/karas')
+	router.route('/public/playlists/:pl_id([0-9]+)/karas')
 	/**
  * @api {get} /public/playlists/:pl_id/karas Get list of karaokes in a playlist (public)
  * @apiName GetPlaylistKarasPublic
@@ -2448,7 +2451,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
+	router.route('/public/playlists/:pl_id([0-9]+)/karas/:plc_id([0-9]+)')
 	/**
  * @api {get} /public/playlists/:pl_id/karas/:plc_id Get song info from a playlist (public)
  * @apiName GetPlaylistPLCPublic
@@ -2592,7 +2595,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('PL_VIEW_CONTENT_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/settings')
+	router.route('/public/settings')
 	/**
  * @api {get} /public/settings Get settings (public)
  * @apiName GetSettingsPublic
@@ -2670,7 +2673,7 @@ export function APIControllerPublic(router) {
 			}
 			res.json(OKMessage(settings));
 		});
-	router.route('/stats')
+	router.route('/public/stats')
 	/**
  * @api {get} /public/stats Get statistics
  * @apiName GetStats
@@ -2712,7 +2715,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/whitelist')
+	router.route('/public/whitelist')
 	/**
  * @api {get} /public/whitelist Get whitelist (public)
  * @apiName GetWhitelistPublic
@@ -2807,7 +2810,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/blacklist')
+	router.route('/public/blacklist')
 	/**
  * @api {get} /public/blacklist Get blacklist (public)
  * @apiName GetBlacklistPublic
@@ -2902,7 +2905,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/blacklist/criterias')
+	router.route('/public/blacklist/criterias')
 	/**
  * @api {get} /public/blacklist/criterias Get list of blacklist criterias (public)
  * @apiName GetBlacklistCriteriasPublic
@@ -2955,7 +2958,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/player')
+	router.route('/public/player')
 	/**
  * @api {get} /public/player Get player status
  * @apiName GetPlayer
@@ -3012,7 +3015,7 @@ export function APIControllerPublic(router) {
 
 			res.json(OKMessage(getPublicState()));
 		});
-	router.route('/karas')
+	router.route('/public/karas')
 	/**
  * @api {get} /public/karas Get complete list of karaokes
  * @apiName GetKaras
@@ -3113,7 +3116,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('SONG_LIST_ERROR',err));
 			}
 		});
-	router.route('/karas/random')
+	router.route('/public/karas/random')
 	/**
  * @api {get} /public/karas/random Get a random karaoke ID
  * @apiName GetKarasRandom
@@ -3152,7 +3155,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('GET_LUCKY_ERROR',err));
 			}
 		});
-	router.route('/karas/:kara_id([0-9]+)')
+	router.route('/public/karas/:kara_id([0-9]+)')
 	/**
  * @api {get} /public/karas/:kara_id Get song info from database
  * @apiName GetKaraInfo
@@ -3331,7 +3334,7 @@ export function APIControllerPublic(router) {
 
 		});
 
-	router.route('/karas/:kara_id([0-9]+)/lyrics')
+	router.route('/public/karas/:kara_id([0-9]+)/lyrics')
 	/**
  * @api {post} /public/karas/:kara_id/lyrics Get song lyrics
  * @apiName GetKarasLyrics
@@ -3366,7 +3369,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('LYRICS_VIEW_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/playlists/current')
+	router.route('/public/playlists/current')
 	/**
  * @api {get} /public/playlists/current Get current playlist information
  * @apiName GetPlaylistCurrent
@@ -3421,7 +3424,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/playlists/current/karas')
+	router.route('/public/playlists/current/karas')
 	/**
  * @api {get} /public/playlists/current/karas Get list of karaokes in the current playlist
  * @apiName GetPlaylistKarasCurrent
@@ -3527,7 +3530,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/playlists/public')
+	router.route('/public/playlists/public')
 	/**
  * @api {get} /public/playlists/public Get public playlist information
  * @apiName GetPlaylistPublic
@@ -3584,7 +3587,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/playlists/public/karas')
+	router.route('/public/playlists/public/karas')
 	/**
  * @api {get} /public/playlists/public/karas Get list of karaokes in the public playlist
  * @apiName GetPlaylistKarasPublic
@@ -3689,7 +3692,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('PL_VIEW_SONGS_CURRENT_ERROR',err));
 			}
 		});
-	router.route('/playlists/public/karas/:plc_id([0-9]+)/vote')
+	router.route('/public/playlists/public/karas/:plc_id([0-9]+)/vote')
 	/**
 	 * @api {post} /public/playlists/public/karas/:plc_id/vote Up/downvote a song in public playlist
 	 * @apiName PostVote
@@ -3730,7 +3733,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage(err.code,err.message));
 			}
 		});
-	router.route('/playlists/public/karas/:plc_id([0-9]+)')
+	router.route('/public/playlists/public/karas/:plc_id([0-9]+)')
 	/**
 	 * @api {delete} /public/playlists/public/karas/:plc_id Delete song from public playlist
 	 * @apiName DeletePublicSong
@@ -3773,7 +3776,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/playlists/current/karas/:plc_id([0-9]+)')
+	router.route('/public/playlists/current/karas/:plc_id([0-9]+)')
 	/**
 	 * @api {delete} /public/playlists/current/karas/:plc_id Delete song from current playlist
 	 * @apiName DeleteCurrentSong
@@ -3816,7 +3819,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('PL_DELETE_SONG_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/tags')
+	router.route('/public/tags')
 	/**
 	* @api {get} /public/tags Get tag list
 	* @apiName GetTags
@@ -3885,7 +3888,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('TAGS_LIST_ERROR',err));
 			}
 		});
-	router.route('/years')
+	router.route('/public/years')
 		/**
 		* @api {get} /public/years Get year list
 		* @apiName GetYears
@@ -3921,7 +3924,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('YEARS_LIST_ERROR',err));
 			}
 		});
-	router.route('/series')
+	router.route('/public/series')
 		/**
 		* @api {get} /public/series Get series list
 		* @apiName GetSeries
@@ -3983,7 +3986,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('YEARS_LIST_ERROR',err));
 			}
 		});
-	router.route('/users/:username')
+	router.route('/public/users/:username')
 	/**
  * @api {get} /public/users/:username View user details (public)
  * @apiName GetUser
@@ -4049,7 +4052,7 @@ export function APIControllerPublic(router) {
  * @apiName EditUser
  * @apiVersion 2.1.0
  * @apiGroup Users
- * @apiPermission public
+ * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {String} username Username to edit
  * @apiParam {String} login New login for user
@@ -4095,7 +4098,7 @@ export function APIControllerPublic(router) {
 				if (req.body.url) req.body.url = unescape(req.body.url.trim());
 				if (req.body.nickname) req.body.nickname = unescape(req.body.nickname.trim());
 				if (req.body.login) req.body.login = unescape(req.body.login.trim());
-				if (req.body.admin) req.body.admin = parseInt(req.body.admin, 10);
+				req.body.admin = +req.body.admin;
 				//Now we add user
 				let avatar;
 				if (req.file) avatar = req.file;
@@ -4114,7 +4117,7 @@ export function APIControllerPublic(router) {
 				res.json(validationErrors);
 			}
 		});
-	router.route('/top50')
+	router.route('/public/top50')
 	/**
  * @api {get} /public/top50 View Top 50 songs
  * @apiName GetTop50
@@ -4203,7 +4206,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/users/:username/requests')
+	router.route('/public/users/:username/requests')
 	/**
  * @api {get} public/users/:username/requests View user's most requested songs
  * @apiName GetUserRequestedKaras
@@ -4290,7 +4293,7 @@ export function APIControllerPublic(router) {
 					res.json(errMessage('USER_REQUESTS_VIEW_ERROR',err));
 				});
 		});
-	router.route('/myaccount')
+	router.route('/public/myaccount')
 	/**
  * @api {get} /public/myaccount View own user details
  * @apiName GetMyAccount
@@ -4424,7 +4427,7 @@ export function APIControllerPublic(router) {
 			}
 		});
 
-	router.route('/favorites')
+	router.route('/public/favorites')
 	/**
  * @api {get} /public/favorites View own favorites
  * @apiName GetFavorites
@@ -4636,7 +4639,7 @@ export function APIControllerPublic(router) {
 			}
 
 		});
-	router.route('/favorites/export')
+	router.route('/public/favorites/export')
 	/**
  * @api {get} /favorites/export Export favorites
  * @apiDescription Export format is in JSON. You'll usually want to save it to a file for later use.
@@ -4698,7 +4701,7 @@ export function APIControllerPublic(router) {
 				res.json(errMessage('FAVORITES_EXPORT_ERROR',err.message,err.data));
 			}
 		});
-	router.route('/favorites/import')
+	router.route('/public/favorites/import')
 	/**
  * @api {post} /favorites/import Import favorites
  * @apiName postFavoritesImport
@@ -4755,7 +4758,7 @@ export function APIControllerPublic(router) {
 			}
 
 		});
-	router.route('/users')
+	router.route('/public/users')
 	/**
  * @api {get} /public/users List users
  * @apiName GetUsers
@@ -4880,14 +4883,14 @@ export function APIControllerPublic(router) {
 				res.json(validationErrors);
 			}
 		});
-	router.route('/newsfeed')
+	router.route('/public/newsfeed')
 		/**
 	 * @api {get} public/newsfeed Get latest KM news
 	 * @apiName GetNews
 	 * @apiVersion 2.4.0
 	 * @apiGroup Misc
-	 * @apiPermission public
-	 * @apiSuccess {Array} Array Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if
+	 * @apiPermission NoAuth
+	 * @apiSuccess {Array} Array of news objects (`name` as string, and `body` as RSS turned into JSON) `body` is `null` if RSS feed could not be obtained.
 	 */
 	 .get(getLang, async (req, res) => {
 			try {
@@ -4897,7 +4900,7 @@ export function APIControllerPublic(router) {
 				res.status(500).send(err);
 			}
 		});
-	router.route('/songpoll')
+	router.route('/public/songpoll')
 	/**
  * @api {get} public/songpoll Get current poll status
  * @apiName GetPoll

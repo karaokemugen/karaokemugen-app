@@ -157,7 +157,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
-						action='/api/karas/importfile'
+						action='/api/system/karas/importfile'
 						accept='video/*,audio/*'
 						multiple={false}
 						onChange={this.onMediaUploadChange}
@@ -173,13 +173,13 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
-						action='/api/karas/importfile'
+						action='/api/system/karas/importfile'
 						multiple={false}
 						onChange={this.onSubUploadChange}
 						fileList={this.state.subfileList}
 					>
 						<Button>
-							<Icon type="upload" />Subs File
+							<Icon type="upload" />Lyrics File
 						</Button>
 					</Upload></Form.Item>
 				<Form.Item hasFeedback

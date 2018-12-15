@@ -159,8 +159,8 @@
                     </ul>             
                 </div>
             </nav>
-            <div class="playlistContainer clusterize-scroll" id="playlist1Container" >
-                <ul id="playlist1" side="1" class="list-group clusterize-content">
+            <div class="playlistContainer">
+                <ul id="playlist1" side="1" class="list-group">
                     <li class="list-group-item"></li>
                 </ul> 
             </div>
@@ -286,8 +286,8 @@
                     </ul>             
                 </div>
             </nav>
-             <div id="playlist2Container" class="playlistContainer clusterize-scroll">
-                <ul id="playlist2" side="2" class="list-group clusterize-content">
+            <div class="playlistContainer">
+                <ul id="playlist2" side="2" class="list-group">
                     <li class="list-group-item"></li>
                 </ul>
             </div>
@@ -370,7 +370,7 @@
                             <div class="form-group">
                                 <label for="PlayerPIPPositionX" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_X"}}</label>
                                 <div class="col-xs-6">
-                                    <select type="number" class="form-control" name="PlayerPIPPositionX">
+                                    <select class="form-control" name="PlayerPIPPositionX">
                                         <option value="Left" > {{i18n "LEFT"}} </option>
                                         <option value="Center" default> {{i18n "CENTER"}} </option>
                                         <option value="Right" > {{i18n "RIGHT"}} </option>
@@ -381,7 +381,7 @@
                             <div class="form-group">
                                 <label for="PlayerPIPPositionY" class="col-xs-4 control-label">{{i18n "VIDEO_POSITION_Y"}}</label>
                                 <div class="col-xs-6">
-                                    <select type="number" class="form-control" name="PlayerPIPPositionY">
+                                    <select class="form-control" name="PlayerPIPPositionY">
                                         <option value="Bottom" > {{i18n "BOTTOM"}} </option>
                                         <option value="Center" default> {{i18n "CENTER"}} </option>
                                         <option value="Top" > {{i18n "TOP"}} </option>
@@ -461,13 +461,13 @@
                                 <div class="form-group">
                                     <label class="col-xs-4 control-label" for="EngineFreeUpvotesRequiredMin">{{i18n "ENGINEFREEUPVOTESREQUIREDMIN"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" name="EngineFreeUpvotesRequiredMin">
+                                        <input class="form-control" type="number" name="EngineFreeUpvotesRequiredMin">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="EngineFreeUpvotesRequiredPercent" class="col-xs-4 control-label">{{i18n "ENGINEFREEUPVOTESREQUIREDPERCENT"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" name="EngineFreeUpvotesRequiredPercent">
+                                        <input class="form-control" type="number" name="EngineFreeUpvotesRequiredPercent">
                                     </div>
                                 </div>
                             </div>   
@@ -475,13 +475,13 @@
                                 <div class="form-group">
                                     <label class="col-xs-4 control-label" for="EngineSongPollChoices">{{i18n "ENGINESONGPOLLCHOICES"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" name="EngineSongPollChoices">
+                                        <input class="form-control" type="number" name="EngineSongPollChoices">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="EngineSongPollTimeout" class="col-xs-4 control-label">{{i18n "ENGINESONGPOLLTIMEOUT"}}</label>
                                     <div class="col-xs-6">
-                                        <input class="form-control" name="EngineSongPollTimeout">
+                                        <input class="form-control" type="number" name="EngineSongPollTimeout">
                                     </div>
                                 </div>
                             </div>    

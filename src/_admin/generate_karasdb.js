@@ -424,7 +424,7 @@ function getKaraTags(kara, allTags) {
 	} else {
 		result.add(getTagId('NO_TAG,8', allTags));
 	}
-	if (kara.group) kara.group.split(',').forEach(group => result.add(getTagId(group.trim() + ',9', allTags)));
+	if (kara.groups) kara.groups.split(',').forEach(group => result.add(getTagId(group.trim() + ',9', allTags)));
 	if (kara.lang) kara.lang.split(',').forEach(lang => {
 		if (lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang)) {
 			result.add(getTagId(lang.trim() + ',5', allTags));

@@ -1,15 +1,9 @@
-import assParser from 'ass-parser';
+import {parse as assParser} from 'ass-compiler';
 
 export function ASSToLyrics(ass) {
-	let lyrics = [];			
-	let script = assParser(ass, { comments: true });
-	let DialogueSection;
-	script.forEach((ASSSection,index) => {
-		if (ASSSection.section === 'Events') DialogueSection = index;
-	});
-	script[DialogueSection].body.forEach((param) => {
-		if (param.key === 'Dialogue') lyrics.push(param.value.Text.replace(/\{(?:.|\n)*?\}/gm, ''));
-	});		
-	return lyrics;	
+	let lyrics = [];
+	let script = assParser(ass);
+	script.events.dialogue.forEach( dialogue => lyrics.push(dialogue.Text.combined));
+	return lyrics;
 }
 

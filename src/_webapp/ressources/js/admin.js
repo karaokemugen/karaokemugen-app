@@ -426,6 +426,9 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		var promise = $.Deferred();
 		$.ajax({ url: 'admin/settings' }).done(function (data) {
 			settings = data;
+			
+			checkOnlineStats(settings);
+
 			$.each(data, function (i, val) {
 				var input = $('[name="' + i + '"]');
 				// DEBUG && console.log(i, val);
@@ -491,7 +494,10 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 
 			$('#settings').promise().then(function () {
 				settingsArray = {};
-				formArray = $('#settings').serializeArray()
+				numberArray = $('#settings [type="number"]').map(function () {
+					return { name: this.name, value: this.value ? this.value : '0' }; 
+				}).get();
+				formArray = numberArray.concat($('#settings [type!="number"]').serializeArray())
 					.concat($('#settings input[type=checkbox]:not(:checked)')
 						.map(function () {
 							return { name: this.name, value: '0' }; 
@@ -738,6 +744,7 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 	});
 
 	changeKaraPos = function (e) {
+		console.log('changeKaraPos() got called');
 		var liKara = e.closest('li');
 		var idKara = liKara.attr('idKara');
 		var side = liKara.closest('ul').attr('side');
@@ -747,21 +754,29 @@ var mouseDown;          // Boolean : capture if the mouse is pressed
 		posFromNext = isNaN(posFromNext) ? posFromPrev : posFromNext;
 
 		if (posFromPrev != posFromNext || isNaN(posFromPrev) && isNaN(posFromNext)) {
+			console.log('Positions in the list are fucked up');
 			displayMessage('warning', 'Err:',  i18n.__('CL_WRONG_KARA_ORDER'));
 			fillPlaylist(side);
 			return false;
 		} else {
+			console.log('Preparing for the PUT...');
 			var idPlc = parseInt(liKara.attr('idplaylistcontent'));
 			var idPlaylist = parseInt($('#selectPlaylist' + side).val());
-
+			liKara.parent().addClass('disabled');
+			
+			console.log('Sending the PUT right now');
 			$.ajax({
 				type: 'PUT',
 				url: scope + '/playlists/' + idPlaylist + '/karas/' + idPlc,
 				data: { pos : posFromPrev }
 			}).done(function () {
+				console.log('NICE');
 				DEBUG && console.log('Kara plc_id ' + posFromPrev + ' pos changed');
 			}).fail(function () {
+				console.log('FAIL');
 				fillPlaylist(side);
+			}).always(() => {
+				liKara.parent().removeClass('disabled');
 			});
 			scrollToKara(side, idKara, .55); 
 		}

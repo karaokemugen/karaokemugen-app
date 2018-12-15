@@ -1,4 +1,6 @@
 {
+	"YES": "Yes",
+	"NO": "No",
 	"404": "Lost on the local network?",
 	"404_2": "Do not panic, we can help you.",
 	"404_3": "you are here",
@@ -13,6 +15,7 @@
 	"DETAILS_DURATION": "Duration",
 	"DETAILS_LANGUAGE": "Language",
 	"DETAILS_SERIE": "Serie",
+	"DETAILS_SERIE_ORIG": "Serie (orig)",
 	"DETAILS_SERIE_ALT": "Other names",
 	"DETAILS_LASTPLAYED": "Last played",
 	"DETAILS_TYPE": "Type",
@@ -153,6 +156,8 @@
 	"TAG_HARDMODE_SHORT": "HRD",
 	"TAG_DUO": "Duo",
 	"TAG_DUO_SHORT": "DUO",
+	"TAG_CREDITLESS": "Creditless",
+	"TAG_CREDITLESS_SHORT": "CRE",
 	"REQUESTED_BY": "Requested by",
 	"DAY": "day(s)",
 	"HOUR": "hour(s)",
@@ -501,17 +506,36 @@
 	"_": "DO NOT MODIFY",
 	"POLLTITLE": "Your time to vote!",
 	"POLLENDED": "%s wins with %s votes!",
-	"ONLINEMODE": "Short url (requires internet access)",
+	"ONLINEMODE": "Short URL (requires internet access)",
+	"ONLINESTATS": "Send usage telemetry to Karaoke Mugen Online",
 	"NO_EXT_INFO": "Online search didn't succeed",
 	"FILTER": "Filter",
 	"VIEW_STANDARD": "Standard",
 	"VIEW_FAVORITES": "Favorites",
 	"VIEW_RECENT": "Latest",
 	"VIEW_POPULAR": "Popular",
-	"KARA_SUGGESTION_MAIL": "Can't find your heart's desire? Click here",
-	"KARA_SUGGESTION_SUBJECT": "New Song request: ",
-	"KARA_SUGGESTION_BODY": "Hello,%0D%0A How can this awesome song be missing from your base?%0D%0A I expect this infamy to be corrected asap, thanks.",
-	"KARA_SUGGESTION_NAME": "Name of the song",
+	"KARA_SUGGESTION_MAIL": "Can't find your favorite song? Click here",
+	"KARA_SUGGESTION_SUBJECT": "New Song Request: ",
+	"KARA_SUGGESTION_BODY": "Hello,%0D%0A Would you please add this song to your database?%0D%0A Thanks.%0D%0A (This is an automated message sent from a Karaoke Mugen App",
+    "KARA_SUGGESTION_NAME": "Name of the song",
+    "KARA_SUGGESTION_INFO" : "Thanks for your suggestion.",
+    "KARA_SUGGESTION_LINK" : "You will soon be able to see it at this address :  <a target='_blank' href='%s'>issues list</a>",
 	"BASE_UPDATE": "Database update",
-	"APP_UPDATE": "New version"
+	"APP_UPDATE": "New version",
+	"ONLINE_STATS": {
+		"TITLE": "Stats",
+		"INTRO": "Karaoke Mugen can send anonymous information about your instance to Karaoke Mugen Server to establish usage statistics.",
+		"DETAILS" : {
+			"TITLE": "Details of sent informations",
+			"1": "Which karaokes are favorited (but not by whom)",
+			"2": "Which karaokes got played",
+			"3": "Which karaokes gott requested (but not by whom)",
+			"4": "Information about the computer (CPU, available RAM, OS name and version ...)",
+			"5": "Application' settings (excluding any private info like password)",
+			"OUTRO": "Stats are sent at each startup, then at each hour of use. You can consult the information sent in the Karaoke Mugen log file."
+
+		},
+		"CHANGE": "You can change your choice at any time from the options.",
+		"QUESTION": "Do you agree to send these statistics to Karaoke Mugen Server?"
+	}
 }

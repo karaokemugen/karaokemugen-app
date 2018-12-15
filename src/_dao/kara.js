@@ -4,6 +4,7 @@ import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
 import {asyncExists, asyncReadFile} from '../_common/utils/files';
 import deburr from 'lodash.deburr';
+import { getState } from '../_common/utils/state';
 
 const sql = require('../_common/db/kara');
 
@@ -137,7 +138,8 @@ export async function addViewcount(kara_id,kid) {
 	return await getUserDb().run(sql.addViewcount, {
 		$kara_id: kara_id,
 		$kid: kid,
-		$modified_at: now()
+		$modified_at: now(),
+		$started_at: getState().sessionStart
 	});
 }
 
@@ -146,6 +148,7 @@ export async function addKaraToRequests(user_id,karaList) {
 		$user_id: user_id,
 		$kara_id: kara.kara_id,
 		$requested_at: now(),
+		$started_at: getState().sessionStart
 	}));
 	return await transaction(karas, sql.addRequested);
 }

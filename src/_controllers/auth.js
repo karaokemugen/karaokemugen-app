@@ -12,8 +12,10 @@ const loginErr = {
 
 async function checkLogin(username, password) {
 	const config = getConfig();
-	if (!await findUserByName(username) || !await checkPassword(username, password)) throw false;
-	const role = await getRole(username);
+	const user = await findUserByName(username);
+	if (!user) throw false;
+	if (!await checkPassword(user, password)) throw false;
+	const role = getRole(user);
 	updateLastLoginName(username);
 	return {
 		token: createJwtToken(username, role, config),
@@ -27,7 +29,7 @@ export default function authController(router) {
 
 	const requireAuth = passport.authenticate('jwt', { session: false });
 
-	router.post('/login', async (req, res) => {
+	router.post('/auth/login', async (req, res) => {
 		/**
  * @api {post} /auth/login Login / Sign in
  * @apiName AuthLogin
@@ -63,7 +65,7 @@ export default function authController(router) {
 		}
 	});
 
-	router.post('/login/guest', async (req, res) => {
+	router.post('/auth/login/guest', async (req, res) => {
 		/**
  * @api {post} /auth/login/guest Login / Sign in (as guest)
  * @apiName AuthLoginGuest
@@ -118,7 +120,7 @@ export default function authController(router) {
 		}
 	});
 
-	router.get('/checkauth', requireAuth, (req, res) => {
+	router.get('/auth/checkauth', requireAuth, (req, res) => {
 		res.send(decodeJwtToken(req.get('authorization')));
 	});
 }
@@ -137,8 +139,7 @@ function decodeJwtToken(token, config) {
 	return decode(token, conf.JwtSecret);
 }
 
-async function getRole(username) {
-	const user = await findUserByName(username);
+function getRole(user) {
 	if (+user.type === 2) return 'guest';
 	if (+user.flag_admin === 1) return 'admin';
 	return 'user';

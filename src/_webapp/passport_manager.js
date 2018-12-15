@@ -1,7 +1,6 @@
 
 import passport from 'passport';
-import {Strategy} from 'passport-jwt';
-import {ExtractJwt} from 'passport-jwt';
+import {Strategy, ExtractJwt} from 'passport-jwt';
 import LocalStrategy from 'passport-local';
 
 import {hashPassword,findUserByName} from '../_services/user';
@@ -33,11 +32,11 @@ function localPassportStrategy() {
 				if (hash !== userdata.password) return done(null, false);
 				delete userdata.password;
 				//Everything's daijoubu
-				done(null, username); 
-			}) 
-			.catch(() => done(null, false)); 
-	}); 
-} 
+				done(null, username);
+			})
+			.catch(() => done(null, false));
+	});
+}
 
 function jwtPassportStrategy(config) {
 

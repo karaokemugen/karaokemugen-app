@@ -1,4 +1,4 @@
-import {isACurrentPlaylist, isAPublicPlaylist, deletePlaylist} from '../_services/playlist';
+import {deletePlaylist} from '../_services/playlist';
 import {findFavoritesPlaylist} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
@@ -165,13 +165,12 @@ export function hashPassword(password) {
 	return hash.digest('hex');
 }
 
-export async function checkPassword(username,password) {
+export async function checkPassword(user,password) {
 	const hashedPassword = hashPassword(password);
-	const user = await findUserByName(username, {public:false});
 	// Access is granted only if passwords match OR user type is 2 (guest) and its password in database is empty.
 	if (user.password === hashedPassword || (user.type === 2 && !user.password)) {
 		// If password was empty for a guest, we set it to the password given on login.
-		if (user.type === 2 && !user.password) await db.updateUserPassword(username,hashedPassword);
+		if (user.type === 2 && !user.password) await db.updateUserPassword(user.login,hashedPassword);
 		return true;
 	}
 	return false;
@@ -223,20 +222,14 @@ export async function createUser(user, opts) {
 }
 
 async function newUserIntegrityChecks(user) {
-	if (user.id) {
-		throw ({ code: 'USER_WITH_ID'});
-	}
-	if (user.type === 1 && !user.password) {
-		throw ({ code: 'USER_EMPTY_PASSWORD'});
-	}
-	if (user.type === 2 && user.password) {
-		throw ({ code: 'GUEST_WITH_PASSWORD'});
-	}
+	if (user.id) throw { code: 'USER_WITH_ID'};
+	if (user.type === 1 && !user.password) throw { code: 'USER_EMPTY_PASSWORD'};
+	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
 	if (await db.getUserByName(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
-		logger.error('[User] User/nickname ' + user.login + ' already exists, cannot create it');
-		throw ({ code: 'USER_ALREADY_EXISTS', data: {username: user.login}});
+		logger.error(`[User] User/nickname ${user.login} already exists, cannot create it`);
+		throw { code: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}
 }
 
@@ -319,13 +312,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 	const conf = getConfig();
 	const user = await findUserByID(user_id);
 	let quotaLeft;
-	if (!playlist_id) {
-		if (+conf.EnginePrivateMode) {
-			playlist_id = await isACurrentPlaylist();
-		} else {
-			playlist_id = await isAPublicPlaylist();
-		}
-	}
+	if (!playlist_id) playlist_id = getState().modePlaylistID;
 	if (user.flag_admin === 0 && +conf.EngineQuotaType > 0) {
 		switch(+conf.EngineQuotaType) {
 		default:

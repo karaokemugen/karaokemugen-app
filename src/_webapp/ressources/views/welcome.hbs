@@ -10,14 +10,14 @@
         <!-- CSS -->
 
         <link rel="stylesheet" href="/vendors/css/bootstrap.min.css">
-    	<link rel="stylesheet" href="/vendors/css/perfect-scrollbar.min.css"> 
+    	<link rel="stylesheet" href="/vendors/css/perfect-scrollbar.min.css">
         <link rel="stylesheet" href="/ressources/css/main.css">
   	  	<link rel="stylesheet" href="/ressources/css/karaokemugen.css">
     </head>
 
     <body id="body">
 
-	    <!-- 
+	    <!--
 	    Header start
 	    ==================== -->
 	    <div class="navbar-default navbar-fixed-top" id="navigation">
@@ -54,8 +54,11 @@
 								<img class="logo-1" height="122" src="/ressources/img/Logo-final-fond-transparent.png" alt="LOGO" >
 							</h1>
 	                </div>
+					<div class="col-md-12 text-center catchPhrase" >
+						{{{ catchphrases }}}
+					</div>
 	                <div class="col-md-12 block wow menu zoomIn">
-					
+
 							<ul id="welcome_dashboard">
 								<li class="manage">
 									<div class="dash days_dash">
@@ -90,18 +93,18 @@
 									</div>
 								</li>
 							</ul>
-						
+
 	                </div>
 					<div class="col-md-12 wow block zoomIn perfectScrollbar">
 						<ul class="news">
-						
+
 						</ul>
-				
+
 					</div>
 	            </div><!-- .row close -->
 	        </div><!-- .container close -->
 	    </section><!-- header close -->
-			
+
 	<div class="modal modalPage fade" id="profilModal" role="dialog" type="prompt" tabindex="21">
 		<div class="modal-dialog modal-md">
 			<div class="modal-content">
@@ -155,7 +158,7 @@
 							</div>
 						</div>
 						<div class="modal-footer">
-							
+
 						</div>
 
 					</div>
@@ -164,56 +167,66 @@
 			</div>
 		</div>
 	</div>
-	<div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
-		<div class="modal-dialog modal-sm">
-			<div class="modal-content">
-				<ul class="nav nav-tabs nav-justified modal-header">
-					<li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true">Login admin</a></li>
-					<li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {{i18n "NEW_ACCOUNT"}}</a></li>
-					<button class="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
-				</ul>
-				<div class="tab-content" id="nav-tabContent">
-					<div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
-					
-						<div class="modal-message">
-								<input type="text" class="form-control" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
-								<input type="password" class="form-control" id="password" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
-						</div>
-						<div></div>
-						<div>
-							<button type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
-								<i class="glyphicon glyphicon-ok"></i>
-							</button>
-						</div>
-					</div>
-					<div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
-						<div class="">
-								<input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
-								<input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
-								<input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
-								<br/>
-								<select class="form-control" id="signupRole" name="modalRole">
-									<!-- <option value="guest">{{i18n "GUEST"}}</option> -->
-									<option value="user" selected>{{i18n "USER"}}</option>
-									<option value="admin">{{i18n "ADMIN"}}</option>
-								</select>
-						</div>
-						<div>
-							<button id="signup" type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
-									{{i18n "SIGN_UP"}}
-							</button>
-						</div>
-					</div>
-				</div>
-			
-			</div>
-		</div>
-	</div>
-
+<div class="modal modalPage fade" id="loginModal" role="dialog" type="prompt" tabindex="20">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <ul class="nav nav-tabs nav-justified modal-header">
+                <li class="modal-title active"><a data-toggle="tab" href="#nav-login" role="tab" aria-controls="nav-login" aria-selected="true"> {{i18n "LOGIN"}}</a></li>
+                <li class="modal-title"><a data-toggle="tab" href="#nav-signup" role="tab" aria-controls="nav-signup" aria-selected="false"> {{i18n "NEW_ACCOUNT"}}</a></li>
+                <button class="closeModal btn btn-action" data-dismiss="modal" aria-label="Close"></button>
+            </ul>
+            <div class="tab-content" id="nav-tabContent">
+                <div id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" class="modal-body tab-pane fade in active">
+                    <div class="tour hidden">
+                     {{i18n "FIRST_PUBLIC_RUN_WELCOME"}}
+                    </div>
+                    <div class="modal-message tour">
+                        <button class="btn btn-default tour">
+                             {{i18n "FOLLOW_TOUR"}}
+                        </button>
+                    </div>
+                    <div class="tour">
+                     {{i18n "OR"}}
+                    </div>
+                    <div class="modal-message">
+                        <button class="btn btn-default guest">
+                             {{i18n "GUEST_CONTINUE"}}
+                        </button>
+                    </div>
+                    <div class="loginRelated">
+                     {{i18n "OR"}}
+                    </div>
+                    <div class="modal-message loginRelated">
+                            <input type="text" class="form-control" id="login" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="password" class="form-control" id="password" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
+                    </div>
+                    <div class="loginRelated"></div>
+                    <div class="loginRelated">
+                        <button type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                            <i class="glyphicon glyphicon-ok"></i>
+                        </button>
+                    </div>
+                </div>
+                <div  id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" class="modal-body tab-pane fade">
+                    <div class="">
+                            <input type="text" class="form-control" id="signupLogin" name="modalLogin" placeholder="{{i18n "NICKNAME"}}" required autofocus/>
+                            <input type="password" class="form-control" id="signupPassword" name="modalPassword" placeholder="{{i18n "PASSWORD"}}" required>
+                            <input type="password" class="form-control" id="signupPasswordConfirmation" name="modalPassword" placeholder="{{i18n "PASSWORDCONF"}}" required>
+                    </div>
+                    <div>
+                        <button id="signup" type="button" class="btn btn-default login" data-dismiss="xxxmodalxxx">
+                             {{i18n "SIGN_UP"}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 	<div class="toastMessageContainer"></div>
         <!-- Js -->
 		<script>
-		
+
 	        var query = {{{query}}};
 			var scope = 'admin';
 			welcomeScreen = true;
@@ -221,9 +234,9 @@
 		</script>
         <script src="/vendors/js/jquery-3.2.1.min.js"></script>
         <script src="/vendors/js/select2.min.js"></script>
-        <script src="/vendors/js/bootstrap.min.js"></script> 
-		<script src="/vendors/js/i18n.js"></script>  
-			
+        <script src="/vendors/js/bootstrap.min.js"></script>
+		<script src="/vendors/js/i18n.js"></script>
+
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/vendors/js/assignIE.js"></script>
 		<script src="/vendors/js/bootstrap-switch.min.js"></script>
@@ -232,7 +245,7 @@
 		<script src="/vendors/js/hammer.min.js"></script>
 		<script src="/vendors/js/hammer-time.min.js"></script>
 		<script src="/vendors/js/velocity.min.js"></script>
-		<script src="/vendors/js/perfect-scrollbar.jquery.min.js"></script> 
+		<script src="/vendors/js/perfect-scrollbar.jquery.min.js"></script>
 		<script src="/vendors/js/intro.js"></script>
 		<script src="/vendors/js/sprintf.min.js"></script>
 		<script src="/ressources/js/karaokemugen.js"></script>
@@ -248,7 +261,7 @@
 						var mast = data[2];
 						var news = [];
 						if(base.body && appli.body) {
-						news = 
+						news =
 							[
 								{
 									html : base.body.feed.entry[0].content[0]['_'],
@@ -292,7 +305,7 @@
 										+	'<p class="new-header"><b>' + e.title + '</b>'
 										+	'<a href="' + e.link + '" target="_blank">' + e.dateStr + '</a></p>'
 										+	'<p>' + e.html + '</p>'
-										+	'</li>');			
+										+	'</li>');
 						});
 						$('.new').each((k, e) => {
 							if($(e).prop('scrollHeight') > $(e).outerHeight()) {
@@ -324,7 +337,7 @@
             switch(index) {
                 case 0: window.open('/admin' + window.location.search,'_blank');
                 break;
-                case 1: window.open(window.location.protocol + '//' + window.location.hostname + ':' + {{appAdminPort}},'_blank');
+                case 1: window.open('/system','_blank');
                 break;
                 case 4: window.open('http://mugen.karaokes.moe/docs/', '_blank');
                 break;
@@ -333,7 +346,7 @@
             }
 
         });
-		
+
 		$('.news').on('click', '.new', function (e) {
 			var $target = $(e.target);
 			if(!$target.is('a')) {

@@ -186,7 +186,6 @@ export const tags = [
 	'REMIX',
 	'SOUNDONLY',
 	'IDOL',
-	'SPACE',
 	'DREAMCAST',
 	'PARODY',
 	'HUMOR',
@@ -227,5 +226,6 @@ export const tags = [
 	'SEGACD',
 	'SATURN',
 	'WII',
+	'CREDITLESS',
 	'SWITCH'
 ];

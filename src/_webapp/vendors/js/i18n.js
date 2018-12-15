@@ -49,11 +49,18 @@ I18n.prototype = {
 
 	__: function(){
 		if(I18n.localeCache[this.locale]) {
-			var msg = I18n.localeCache[this.locale][arguments[0]];
+			var key = arguments[0].split('.');
+			var value = I18n.localeCache[this.locale][key[0]];
+			var depth = 0;
+			while(typeof value == 'object' &&  Object.keys(value).length > 0 && depth <= key.length) {
+				depth++;
+				value = value[key[depth]];
+			}
+			var msg = value;
 			if (msg && arguments.length > 1) {
-				var msgArgs = arguments[1]
+				var msgArgs = arguments[1];
 				if(typeof msgArgs === 'string') msgArgs = [msgArgs];
-				if(!(arguments.length == 2 && arguments[2] == 'console')) msg = msg.replace(/%s/g, '<b>%s</b>');            
+				if(!(arguments.length == 3 && arguments[2] == 'console')) msg = msg.replace(/%s/g, '<b>%s</b>');            
 				msg = vsprintf(msg, msgArgs);
 			}
 			return msg;

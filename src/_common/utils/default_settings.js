@@ -71,9 +71,9 @@ export const defaults = {
 	OnlineMode: 0,
 	OnlineHost: 'kara.moe',
 	OnlinePort: 80,
+	OnlineStats: -1,
 	appInstanceID: 'Change me',
 	appFrontendPort: 1337,
-	appAdminPort: 1338,
 	appFirstRun: 1,
 	karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org'
 };
@@ -95,6 +95,7 @@ export const configConstraints = {
 	EngineQuotaType: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	OnlineMode: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	OnlinePort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 1}},
+	OnlineStats: {boolIntValidator: true},
 	EngineFreeAutoTime: {numericality: {onlyInteger: true, greaterThenOrEqualTo: 1}},
 	EngineFreeUpvotes: {boolIntValidator: true},
 	EngineFreeUpvotesRequiredPercent: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 100}},
@@ -122,7 +123,6 @@ export const configConstraints = {
 	WebappMode: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
 	WebappSongLanguageMode: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	appFrontendPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	appAdminPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	appFirstRun: {boolIntValidator: true},
 	karaSuggestionMail: {email: true}
 };

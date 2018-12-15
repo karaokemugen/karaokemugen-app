@@ -569,7 +569,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		} else {
 			const startpos = playlistMaxPos.maxpos + 1.0;
 			for (const i in karaList) {
-				karaList[i].pos = startpos + i;
+				karaList[i].pos = startpos + +i;
 			}
 		}
 		await addKaraToPL(karaList);
@@ -761,7 +761,9 @@ export async function editPLC(plc_id,params,token) {
 	}
 	updatePlaylistLastEditTime(pl.playlist_id);
 	profile('editPLC');
-	return pl.playlist_id;
+	return {
+		pl_id: pl.playlist_id
+	};
 }
 
 function sortByPos(a, b) {
@@ -869,7 +871,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 	// If all tests pass, then add playlist, then add karas
 	// Playlist can end up empty if no karaokes are found in database
 	try {
-		logger.debug( `[Playlist] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
+		logger.debug(`[Playlist] Importing playlist ${JSON.stringify(playlist,null,'\n')}`);
 		let playingKara = {};
 		if (!testJSON(playlist)) throw 'Invalid JSON';
 		if (!playlist.Header) throw 'No Header section';
@@ -901,7 +903,6 @@ export async function importPlaylist(playlist, username, playlist_id) {
 				if (!user) playlist.PlaylistContents[index].username = 'admin';
 			});
 		}
-
 		// Validations done. First creating playlist.
 		try {
 			if (!playlist_id) {
@@ -917,8 +918,8 @@ export async function importPlaylist(playlist, username, playlist_id) {
 				playlist.PlaylistContents[index].playlist_id = playlist_id;
 			});
 			await addKaraToPL(playlist.PlaylistContents);
-			if (playingKara) {
-				const user = findUserByName(playingKara.username);
+			if (playingKara.kid) {
+				const user = await findUserByName(playingKara.user);
 				playingKara.user_id = user.id;
 				user ? playingKara.user_id = user.id : playingKara.user_id = 1;
 				const plcPlaying = await getPLCByKIDUserID(playingKara.kid,playingKara.user_id,playlist_id);
@@ -932,7 +933,7 @@ export async function importPlaylist(playlist, username, playlist_id) {
 			throw err;
 		}
 	} catch(err) {
-		logger.error(err);
+		logger.error(`[Playlist] Import failed : ${err}`);
 		throw err;
 	}
 }
@@ -967,7 +968,12 @@ export async function shufflePlaylist(playlist_id, isSmartShuffle) {
 			isSmartShuffle ? AfterPlaying = smartShuffle(AfterPlaying) : AfterPlaying = shuffle(AfterPlaying);
 			playlist = BeforePlaying.concat(AfterPlaying);
 			// If no flag_playing has been set, the current playlist won't be shuffled. To fix this, we shuffle the entire playlist if no flag_playing has been met
-			if (!ReachedPlaying) isSmartShuffle ? playlist = smartShuffle(playlist) :  playlist = shuffle(playlist);
+			if (!ReachedPlaying) {
+				if(!isSmartShuffle)
+					playlist = shuffle(playlist);
+				else
+					playlist = smartShuffle(playlist);
+			}
 		}
 
 		updatePlaylistLastEditTime(playlist_id);

@@ -238,9 +238,11 @@ OnlineMode = 0
 OnlineHost = "kara.moe"
 OnlinePort = 80
 
-; Ports for KM modules
+; Are we sending stats to Karaoke Mugen Server ?
+OnlineStats = 0
+
+; Port for frontend
 appFrontendPort = 1337
-appAdminPort = 1338
 
 ; Mail for suggestions to be sent to. This is the adress your users will send a mail to when making karaoke suggestions. Shelter's Karaoke Base by default
 karaSuggestionMail = "shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org"

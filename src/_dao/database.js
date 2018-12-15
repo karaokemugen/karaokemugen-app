@@ -2,7 +2,7 @@ import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
 import {setConfig, getConfig} from '../_common/utils/config';
 import {join, resolve} from 'path';
-import {asyncStat, asyncExists, asyncUnlink} from '../_common/utils/files';
+import {asyncStat, asyncExists} from '../_common/utils/files';
 import promiseRetry from 'promise-retry';
 import {exit} from '../_services/engine';
 import {duration} from '../_common/utils/date';
@@ -172,12 +172,6 @@ export async function initDBSystem() {
 	//If userdata is missing, assume it's the first time we're running.
 	if (!await asyncExists(userDbFile)) setConfig({appFirstRun: 1});
 	if (conf.optGenerateDB) {
-		// Manual generation triggered.
-		// Delete any existing karas.sqlite3 file
-		if(await asyncExists(karaDbFile)) {
-			if (karaDb) await closeKaraDatabase();
-			await asyncUnlink(karaDbFile);
-		}
 		doGenerate = true;
 	} else {
 		if (await asyncExists(karaDbFile)) {
@@ -193,7 +187,7 @@ export async function initDBSystem() {
 	await openUserDatabase();
 	await migrateUserDb();
 	// Compare Karas checksums if generation hasn't been requested already
-	logger.info('[DB] Checking kara files...');
+	logger.info('[DB] Checking data files...');
 	if (!await compareKarasChecksum()) {
 		logger.info('[DB] Kara files have changed: database generation triggered');
 		doGenerate = true;

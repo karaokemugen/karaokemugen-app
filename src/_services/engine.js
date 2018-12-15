@@ -2,7 +2,6 @@
 import {setConfig, getConfig} from '../_common/utils/config';
 import {profile} from '../_common/utils/logger';
 import readlineSync from 'readline-sync';
-import sample from 'lodash.sample';
 import logger from 'winston';
 import {getState, setState} from '../_common/utils/state';
 
@@ -11,12 +10,11 @@ import {createPreviews} from '../_webapp/previews';
 import {initUserSystem} from './user';
 import {initDBSystem, getStats, closeUserDatabase} from '../_dao/database';
 import {initFrontend} from '../_webapp/frontend';
-import {initializationCatchphrases} from './constants';
 import {initFavoritesSystem} from './favorites';
 import {initOnlineSystem} from '../_webapp/online';
-import {initControlPanel} from '../_webapp/control_panel';
 import {initPlayer, quitmpv} from './player';
 import {initDownloader} from './download';
+import {initStats} from './stats';
 import {karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
@@ -63,11 +61,11 @@ export async function initEngine() {
 		createPreviews();
 	}
 	inits.push(initPlaylistSystem());
-	if (!conf.isDemo) inits.push(initControlPanel(conf.appAdminPort));
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayer());
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
 	initDownloader();
+	if (+conf.OnlineStats === 1) inits.push(initStats());
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await isACurrentPlaylist();
@@ -101,7 +99,6 @@ export async function initEngine() {
 		let ready = 'READY';
 		if (Math.floor(Math.random() * Math.floor(10)) >= 9) ready = 'LADY';
 		logger.info(`[Engine] Karaoke Mugen is ${ready}`);
-		console.log(`\n${sample(initializationCatchphrases)}\n`);
 		if (!conf.isTest) welcomeToYoukousoKaraokeMugen(conf.appFrontendPort);
 		setState({ ready: true });
 	} catch(err) {

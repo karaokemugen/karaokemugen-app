@@ -24,7 +24,7 @@ class SerieEdit extends Component {
 	}
 
 	saveNew = (serie) => {
-		axios.post('/api/series', serie)
+		axios.post('/api/system/series', serie)
 			.then(() => {
 				this.props.infoMessage('Series successfully created');
 				this.props.push('/series');
@@ -35,7 +35,7 @@ class SerieEdit extends Component {
 	};
 
 	saveUpdate = (serie) => {
-		axios.put(`/api/series/${serie.serie_id}`, serie)
+		axios.put(`/api/system/series/${serie.serie_id}`, serie)
 			.then(() => {
 				this.props.infoMessage('Series successfully edited');
 				this.props.push('/series');
@@ -48,7 +48,7 @@ class SerieEdit extends Component {
 	loadSerie = () => {
 		this.props.loading(true);
 		if (this.props.match && this.props.match.params.serie_id) {
-			axios.get(`/api/series/${this.props.match.params.serie_id}`)
+			axios.get(`/api/system/series/${this.props.match.params.serie_id}`)
 				.then(res => {
 					const serieData = {...res.data};
 					serieData.serie_id = this.props.match.params.serie_id;

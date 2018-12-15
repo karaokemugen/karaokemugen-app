@@ -21,16 +21,18 @@ export const addKaraToPlaylist = `INSERT INTO playlist_content(
 export const addViewcount = `INSERT INTO viewcount(
 								fk_id_kara,
 								kid,
-								modified_at)
-							VALUES($kara_id,$kid,$modified_at);
+								modified_at,
+								session_started_at)
+							VALUES($kara_id,$kid,$modified_at,$started_at);
 							`;
 
 export const addRequested = `INSERT INTO request(
 								fk_id_user,
 								fk_id_kara,
 								kid,
-								requested_at)
-							VALUES($user_id,$kara_id,(SELECT kid FROM karasdb.all_karas WHERE kara_id = $kara_id),$requested_at);
+								requested_at,
+								session_started_at)
+							VALUES($user_id,$kara_id,(SELECT kid FROM karasdb.all_karas WHERE kara_id = $kara_id),$requested_at,$started_at);
 							`;
 
 export const getKaraHistory = `SELECT ak.title AS title,
@@ -52,7 +54,7 @@ export const getKaraViewcounts = `SELECT ak.title AS title,
 								ak.singer AS singer,
       							ak.songtype AS songtype,
       							ak.language AS language,
-      							(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount
+								(SELECT COUNT(pk_id_viewcount) AS viewcount FROM viewcount WHERE fk_id_kara = ak.kara_id) AS viewcount
 							FROM karasdb.all_karas AS ak
 							WHERE viewcount > 0
  							ORDER BY viewcount DESC
@@ -91,6 +93,7 @@ export const getAllKaras = (filterClauses, lang, orderClauses, typeClauses) => `
 							ak.mediafile AS mediafile,
 							ak.karafile AS karafile,
 							ak.seriefiles AS seriefiles,
+							ak.subfile AS subfile,
 							ak.duration AS duration,
 							ak.gain AS gain,
 							(CASE WHEN $dejavu_time < max(vc.modified_at)

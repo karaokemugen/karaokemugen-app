@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 var panel1Default;      // Int : default id of the playlist of the 1st panel (-1 means kara list)
 var status;             // String : status of the player
 var mode;               // String : way the kara list is constructed, atm "list" supported
@@ -31,7 +32,6 @@ var socket;
 var settings;
 var kmStats;
 var i18n;
-var clusterize;
 var introManager;
 
 /* promises */
@@ -57,7 +57,6 @@ var dragHandleHtml;
 var playKaraHtml;
 var serieMoreInfoButton;
 
-var karas;
 var listTypeBlc;
 var tagsTypesList;
 var plData;
@@ -211,34 +210,37 @@ var settingsNotUpdated;
 
 		var mugenToken = readCookie('mugenToken');
 
-		if(!welcomeScreen) {
-			if(query.admpwd && scope === 'admin' && appFirstRun) { // app first run admin
-				login('admin', query.admpwd).done(() => {
+		if(welcomeScreen) {
+			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
+			$('#wlcm_disconnect').hide();
+		}
+
+		if(query.admpwd && scope === 'admin' && appFirstRun) { // app first run admin
+			login('admin', query.admpwd).done(() => {
+				if(!welcomeScreen) {
 					startIntro('admin');
 					var privateMode = $('input[name="EnginePrivateMode"]');
 					privateMode.val(1);
 					setSettings(privateMode);
-				});
-			} else if(mugenToken) {
-				logInfos = parseJwt(mugenToken);
-				logInfos.token = mugenToken;
-				if(scope === 'admin' && logInfos.role !== 'admin') {
-					$('#loginModal').modal('show');
 				} else {
+					$('#wlcm_login > span').text(logInfos.username);
+					$('#wlcm_disconnect').show();
 					initApp();
 				}
-			} else {
-				$('#loginModal').modal('show');
-			}
-		} else if (mugenToken) {
+			});
+		} else if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
 			logInfos.token = mugenToken;
-			if(!welcomeScreen) initApp();
-			$('#wlcm_login > span').text(logInfos.username);
-			$('#wlcm_disconnect').show();
+			if(scope === 'admin' && logInfos.role !== 'admin') {
+				$('#loginModal').modal('show');
+			} else {
+				$('#wlcm_login > span').text(logInfos.username);
+				$('#wlcm_disconnect').show();
+				initApp();
+			}
 		} else {
-			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
-			$('#wlcm_disconnect').hide();
+			$('#loginModal').modal('show');
+
 		}
 
 		// Méthode standard on attend 100ms après que la personne ait arrêté d'écrire, on abort toute requete de recherche en cours, et on lance la recherche
@@ -294,8 +296,8 @@ var settingsNotUpdated;
 					createCookie('mugenPlVal' + side, val, 365);
 
 					$('#playlist' + side).empty();
-					$('#searchPlaylist' + side).val('');
-					if (oldVal == -1) {
+                    $('#searchPlaylist' + side).val('');
+					if (val != -1 && val != -5) {
 						$('#searchMenu' + side).collapse('hide');
 					}
 					playlistContentUpdating = fillPlaylist(side);
@@ -327,8 +329,13 @@ var settingsNotUpdated;
 			displayModal('prompt', i18n.__('KARA_SUGGESTION_NAME'), '', function(text) {
 				var adress = 'mailto:' + settings.karaSuggestionMail;
 				var subject = i18n.__('KARA_SUGGESTION_SUBJECT') + text;
-				var body = i18n.__('KARA_SUGGESTION_BODY');
-				window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
+                var body = i18n.__('KARA_SUGGESTION_BODY') + '%0D%0A %0D%0A ' + logInfos.username;
+                setTimeout(function() {
+                    displayMessage('info', i18n.__('KARA_SUGGESTION_INFO'),
+                    i18n.__('KARA_SUGGESTION_LINK', 'https://lab.shelter.moe/karaokemugen/karaokebase/issues/', 'console'), '30000');
+                }, 200);
+               
+                window.open(adress + '?' + 'body=' + body + '&subject=' + subject,'_blank');
 			}, search);
 		});
 
@@ -424,7 +431,7 @@ var settingsNotUpdated;
 			var tag_id =  $(this).val();
 			if(tag_id) {
 				var $searchMenu = $(this).closest('.searchMenu');
-				var $tag =  $searchMenu.find('li.tagFilter');
+				var $tag = $searchMenu.find('li.tagFilter');
 				var tagType = $searchMenu.find('.tagsTypes').val();
 				var searchType = 'tag';
 
@@ -435,7 +442,7 @@ var settingsNotUpdated;
 				}
 
 				$tag.attr('searchType', searchType);
-				$tag.find('.choice').click();
+                $tag.find('.choice').click();
 			}
 		});
 
@@ -451,11 +458,12 @@ var settingsNotUpdated;
 				var val = $li.attr('val');
 				$selector = $searchMenu.closest('.panel').find('.plSelect > select');
 				if(val) $selector.val(val);
-				$selector.change();
+                $selector.change();
 			}
 		});
 
-	/******** ********/
+    /*****************/
+
 		makeFav = function(idKara, make, $el) {
 			var type = make ? 'POST' : 'DELETE';
 			$.ajax({
@@ -995,6 +1003,7 @@ var settingsNotUpdated;
 		locale: navigator.languages[0].substring(0, 2),
 		extension: '.json'
 	});
+
 	socket = io();
 
 	isTouchScreen =  'ontouchstart' in document.documentElement || query.TOUCHSCREEN != undefined;
@@ -1007,7 +1016,6 @@ var settingsNotUpdated;
 	pathAvatar = '/avatars/';
 	pathVideo = '/previews/';
 
-	clusterize = [];
 
 	DEBUG =  query.DEBUG != undefined;
 	SOCKETDEBUG =  query.SOCKETDEBUG != undefined;
@@ -1015,7 +1023,7 @@ var settingsNotUpdated;
 	dragAndDrop = true;
 	stopUpdate = false;
 
-	pageSize = isTouchScreen ? 200 : 400;
+	pageSize = isTouchScreen ? 120 : 180;
 	if (!isNaN(query.PAGELENGTH)) pageSize = parseInt(query.PAGELENGTH);
 
 	saveLastDetailsKara = [[]];
@@ -1178,7 +1186,7 @@ var settingsNotUpdated;
 	/* simplify the ajax calls */
 	$.ajaxPrefilter(function (options) {
 		if (options.url.indexOf('http') === -1) {
-			options.url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/api/v1/' + options.url;
+			options.url = window.location.protocol + '//' + window.location.hostname + ':' + window.location.port + '/api/' + options.url;
 		}
 	});
 
@@ -1195,20 +1203,26 @@ var settingsNotUpdated;
 		var dashboard = $('#panel' + side + ' .plDashboard');
 		var container = $('#panel' + side + ' .playlistContainer');
 		var playlist = $('#playlist' + side);
-		var playlistContent = playlist.find('li.list-group-item');
 		var idPlaylist = parseInt($('#selectPlaylist' + side).val());
 		var filter = $('#searchPlaylist' + side).val();
 		var fromTo = '';
 		var url, html, canTransferKara, canAddKara, dragHandle, playKara;
-		
-		localStorage.setItem('search' + side, filter ? filter : '');
-		localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
 
-		var range = getPlaylistRange(idPlaylist);
+		var $filter = $('#searchMenu' + side + ' li.active');
+		var searchType = $filter.attr('searchType');
+        var searchValue = $filter.attr('searchValue');
+
+        /* getting all the info we need about range */
+		localStorage.setItem('search' + side, filter ? filter : '');
+        localStorage.setItem('playlistRange', JSON.stringify(playlistRange));
+
+        var range = getPlaylistRange(idPlaylist);
+
 		from = range.from;
 		to = range.to;
-	
+
 		fromTo += '&from=' + from + '&size=' + pageSize;
+        /*********************************************/
 
 		// setup variables depending on which playlist is selected : -1 = database kara list, -2 = blacklist, -3 = whitelist, -4 = blacklist criterias
 
@@ -1227,321 +1241,291 @@ var settingsNotUpdated;
 		// public users can add kara to one list, current or public
 		canAddKara = scope === 'admin' ? canAddKara : $('#selectPlaylist' + side + ' > option:selected').data('flag_' + playlistToAdd) == '1';
 
-		urlFiltre = url + (idPlaylist != -1 ? '?filter=' + filter + fromTo : '');
+		urlFiltre = url + '?filter=' + filter + fromTo;
 
-
-		var $filter = $('#searchMenu' + side + ' li.active');
-		var searchType = $filter.attr('searchType');
-		var searchValue = $filter.attr('searchValue');
 		if(searchType) {
 			urlFiltre += '&searchType=' + searchType + '&searchValue=' + (searchValue ? searchValue : '');
 		}
+
 
 		// ask for the kara list from given playlist
 		if (ajaxSearch[url]) ajaxSearch[url].abort();
 		//var start = window.performance.now();
 		var async = !(isTouchScreen && isChrome && scrollingType);
+		ajaxSearch[url] = $.ajax({  url: urlFiltre,
+			type: 'GET', async: async,
+			dataType: 'json' })
+			.done(function (response) {
+				//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
+				//var end = window.performance.now();
+				//alert(end - start);
+				var htmlContent = '', data;
 
-		var fetchingData = $.Deferred();
-		var response;
-		if(idPlaylist == -1) {
-			if(filter) {
-				var content = karas.content.filter(kara => textSearch(kara, filter));
-				response = { infos : {count: content.length, from: 0, to: content.length}, content: content };
-			} else {
-				response = karas;
-			}
+				if(idPlaylist != -4) {	// general case
+					data = response.content;
+					if(response.infos) {
+						dashboard.attr('karacount', response.infos.count );
+						setPlaylistRange(idPlaylist, response.infos.from,  response.infos.to);
+					}
 
-			fetchingData.resolve();
-		} else {
-			ajaxSearch[url] = $.ajax({  url: urlFiltre,
-				type: 'GET', async: async,
-				dataType: 'json' })
-				.done(function (res) {
-					response = res;
-					fetchingData.resolve();
-				});
-		}
-		
-		fetchingData.done(() => {
-		
-			//DEBUG && console.log(urlFiltre + " : " + data.length + " résultats");
-			//var end = window.performance.now();
-			//alert(end - start);
-			var data, rows = [];
+					for (var key in data) {
+						// build the kara line
+						if (data.hasOwnProperty(key)) {
+							var kara = data[key];
+							if (kara.language === null) kara.language = '';
 
-			if(idPlaylist != -4) {	// general case
-				data = response.content;
-				if(response.infos) {
-					dashboard.attr('karacount', response.infos.count );
-					setPlaylistRange(idPlaylist, response.infos.from,  response.infos.to);
-				}
+							var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
+							+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
+							+	(idPlaylist > 0 || idPlaylist == -5 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
+							+	kara.pos + '" data-username="' + kara.username + '"' : '')
+							+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
+							+	(kara.flag_dejavu ? 'dejavu' : '' ) + ' '
+							+	(kara.username == logInfos.username ? 'user' : '' );
 
-				for (var key in data) {
-					// build the kara line
-					if (data.hasOwnProperty(key)) {
-						var kara = data[key];
-						var htmlLine = '';
+							var badges = '';
 
-						if (kara.language === null) kara.language = '';
-
-						var karaDataAttributes = ' idKara="' + kara.kara_id + '" '
-						+	(idPlaylist == -3 ? ' idwhitelist="' + kara.whitelist_id  + '"' : '')
-						+	(idPlaylist > 0 || idPlaylist == -5 ? ' idplaylistcontent="' + kara.playlistcontent_id + '" pos="'
-						+	kara.pos + '" data-username="' + kara.username + '"' : '')
-						+	(kara.flag_playing ? 'currentlyPlaying' : '' ) + ' '
-						+	(kara.flag_dejavu ? 'dejavu' : '' ) + ' '
-						+	(kara.username == logInfos.username ? 'user' : '' );
-
-						var badges = '';
-
-						if(kara.misc) {
-							var tagArray = kara.misc.split(',');
-							tagArray.sort(function(a, b){  
-								return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
+							if(kara.misc) {
+								var tagArray = kara.misc.split(',');
+								tagArray.sort(function(a, b){
+									return flattenedTagsGroups.indexOf(a) - flattenedTagsGroups.indexOf(b);
+								  });
+								tagArray.forEach(function(tag) {
+									if (tag !== 'NO_TAG') {
+										badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
+									}
 								});
-							tagArray.forEach(function(tag) {
-								if (tag !== 'NO_TAG') {
-									badges += '<bdg title="' + i18n.__(tag) + '">'  + (i18n.__(tag + '_SHORT') ? i18n.__(tag + '_SHORT') : '?') + '</bdg>';
-								}
-							});
-						}
-						if(kara.upvotes) {
-							badges += likeCountHtml.replace('upvotes', kara.upvotes);
-						}
-						if (mode === 'list') {
-							var likeKara = likeKaraHtml;
-							if (kara.flag_upvoted === 1) {
-								likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
 							}
+							if(kara.upvotes) {
+								badges += likeCountHtml.replace('upvotes', kara.upvotes);
+							}
+							if (mode === 'list') {
+								var likeKara = likeKaraHtml;
+								if (kara.flag_upvoted === 1) {
+									likeKara = likeKaraHtml.replace('likeKara', 'likeKara currentLike');
+								}
 
-							htmlLine += '<li class="list-group-item" ' + karaDataAttributes + '>'
-							//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
-							+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
-							+   (scope == 'admin' ? checkboxKaraHtml : '')
-							+   '<div class="infoDiv">'
-							+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
-							+	(scope === 'admin' ? playKara : '')
-							+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
-							+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
-							+	'</div>'
-							+   '<div class="contentDiv">'
-							+	'<div>' + buildKaraTitle(kara, {'search' : filter}) + '</div>'
-							+	'<div>' + badges + '</div>'
-							+   '</div>'
-							+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
-							+   '</li>';
-							rows.push(htmlLine);
+								htmlContent += '<li class="list-group-item" ' + karaDataAttributes + '>'
+								//	+ 	(scope == 'public' && isTouchScreen ? '<slide></slide>' : '')
+								+   (isTouchScreen && scope !== 'admin' ? '' : '<div class="actionDiv">' + html + dragHandle + '</div>')
+								+   (scope == 'admin' ? checkboxKaraHtml : '')
+								+   '<div class="infoDiv">'
+								+   (scope === 'admin' || !isTouchScreen ? infoKaraHtml : '')
+								+	(scope === 'admin' ? playKara : '')
+								+	(scope !== 'admin' && dashboard.data('flag_public') == 1 ? likeKara : '')
+								+	(scope !== 'admin' && kara.username == logInfos.username && (idPlaylist == playlistToAddId) ?  deleteKaraHtml : '')
+								+	'</div>'
+								+   '<div class="contentDiv">'
+								+	'<div>' + buildKaraTitle(kara, {'search' : filter}) + '</div>'
+								+	'<div>' + badges + '</div>'
+								+   '</div>'
+								+   (saveDetailsKara(idPlaylist, kara.kara_id) ? buildKaraDetails(kara, mode) : '')	// this line allows to keep the details opened on recreation
+								+   '</li>';
+							}
 						}
 					}
-				}
-				var count = response.infos ? response.infos.count : 0;
+					var count = response.infos ? response.infos.count : 0;
 
 
-				/* adding artificial last line */
-				if(idPlaylist === -1 && count === response.infos.from + data.length) {
-					// count++;
-					rows.push(karaSuggestionHtml);
-				}
+					/* adding artificial last line */
+					if(idPlaylist === -1 && count === response.infos.from + data.length) {
+						// count++;
+						htmlContent +=	karaSuggestionHtml;
+					}
 
 
-				if(idPlaylist !== -1) {
+
 					// creating filler space for dyanmic scrolling
 					var fillerTopH = Math.min(response.infos.from * 34, container.height()/1.5);
 					var fillerBottomH = Math.min((count - response.infos.from - pageSize) * 34, container.height()/1.5);
-	
+
 					var fillerTop = '<li class="list-group-item filler" style="height:' + fillerTopH + 'px"><div class="loader"><div></div></div></li>';
 					var fillerBottom = '<li class="list-group-item filler" style="height:' + fillerBottomH + 'px"><div class="loader"><div></div></div></li>';
-	
-					rows.unshift(fillerTop);
-					rows.push(fillerBottom);
-				}
-				if(scrollingType) {
-					container.css('overflow-y','hidden');
-					if(scrollingType === 'reposition') {
-						var karaMarker = scrolling === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
-						var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
-					}
-				}
 
-				window.requestAnimationFrame( function() {
-				
-					// document.getElementById('playlist' + side).innerHTML = htmlContent;
-					
-					clusterize[side - 1].update(rows);
-					deferred.resolve();
-					refreshContentInfos(side);
-					//window.requestAnimationFrame( function() {
-					var y = container.scrollTop();
+					htmlContent =	fillerTop
+								+	htmlContent
+								+	fillerBottom;
+
+
 					if(scrollingType) {
-
-						container.css('overflow-y','auto');
+						container.css('overflow-y','hidden');
 						if(scrollingType === 'reposition') {
-							var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
-							var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
-							y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
-						} else if (scrollingType === 'goTo') {
-							if(scrolling === 'top') {
-								y = 0 + fillerTopH;
-							} else if (scrolling === 'bottom') {
-								y = playlist.height() + 0;
-							} else if (scrolling === 'playing') {
-								var currentlyPlaying = container.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
-								if(currentlyPlaying.length > 0) y = currentlyPlaying.offset().top - currentlyPlaying.parent().offset().top;
+							var karaMarker = scrolling === "top" ? container.find('li[idkara]').first() : container.find('li[idkara]').last();
+							var posKaraMarker = karaMarker.offset() ? karaMarker.offset().top : -1;
+						}
+					}
+
+					window.requestAnimationFrame( function() {
+						document.getElementById('playlist' + side).innerHTML = htmlContent;
+						deferred.resolve();
+						refreshContentInfos(side);
+						//window.requestAnimationFrame( function() {
+						var y = container.scrollTop();
+						if(scrollingType) {
+
+							container.css('overflow-y','auto');
+							if(scrollingType === 'reposition') {
+								var newkaraMarker = container.find('li[idkara="' + karaMarker.attr('idkara') + '"]');
+								var newPosKaraMarker = (newkaraMarker && newkaraMarker.offset() ? newkaraMarker.offset().top : posKaraMarker);
+								y = container.scrollTop() + newPosKaraMarker - posKaraMarker;
+							} else if (scrollingType === 'goTo') {
+								if(scrolling === 'top') {
+									y = 0 + fillerTopH;
+								} else if (scrolling === 'bottom') {
+									y = playlist.height() + 0;
+								} else if (scrolling === 'playing') {
+									var currentlyPlaying = container.find('li[currentlyplaying], li[currentlyPlaying=""], li[currentlyPlaying="true"]');
+									if(currentlyPlaying.length > 0) y = currentlyPlaying.offset().top - currentlyPlaying.parent().offset().top;
+								}
 							}
+							container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix
 						}
-						container.scrollTop(y); // TODO un jour, tout plaquer, reprogrammer mon propre moteur de rendu natif, et mourir en paix
-					}
-					container.scrollTop(
-						Math.min(playlist.height() - fillerBottomH - container.height(),
-							Math.max(fillerTopH, y)));
-					container.attr('flagScroll', false);
-				
-					if(clusterize[side - 1]) clusterize[side - 1].refresh(true);
-						
-				});
-				
-			} else {
-				data = response;
-				/* Blacklist criterias build */
-				var blacklistCriteriasHtml = $('<div/>');
-				var regenSelect2 = false;
-				if (scope === 'admin') {
-					if ($('#blacklistCriteriasInputs').length > 0) {
-						$('#blacklistCriteriasInputs').detach().appendTo(blacklistCriteriasHtml);
-					} else {
-						regenSelect2 = true;
-						blacklistCriteriasHtml = $('<div><span id="blacklistCriteriasInputs" class="list-group-item" style="padding:10px">'
-						+	'<select id="bcType" class="input-sm" style="color:black"/> '
-						+	'<span id="bcValContainer" style="color:black"></span> '
-						+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
-						+	'</span></div>');
-						$.each(listTypeBlc, function(k, v){
-							if(v !== 'BLCTYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('BLCTYPE_',''), text: i18n.__(v)}));
-						});
-					}
-				}
-
-				for (var k in data) {
-					if (data.hasOwnProperty(k)) {
-						if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
-							blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
-						}
-						// build the blacklist criteria line
-						var tagsFiltered = jQuery.grep(tags, function(obj) {
-							return obj.tag_id == data[k].value;
-						});
-						var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
-						var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
-
-						blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
-							'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
-						+	'<div class="actionDiv">' + html + '</div>'
-						+	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
-						+	'<div class="contentDiv">' + textContent + '</div>'
-						+	'</li>');
-					}
-				}
-				//htmlContent = blacklistCriteriasHtml.html();
-				$('#playlist' + side).empty().append(blacklistCriteriasHtml);
-				if (regenSelect2) $('#bcType').select2({ theme: 'bootstrap', dropdownAutoWidth : true, minimumResultsForSearch: -1 });
-				$('#bcType').change();
-				deferred.resolve();
-			}
-
-
-
-			// depending on the playlist we're in, notify if the other playlist can add & transfer to us
-			$('#panel' + non(side)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
-
-			//var time = console.timeEnd('html'); DEBUG && console.log(data.length);
-
-			// drag & drop part
-			// TODO revoir pour bien définir le drag&drop selon les droits
-			if (dragAndDrop && scope === 'public' && mode != 'mobile' && !isTouchScreen) {
-				/*
-				var draggableLi =  isTouchScreen  ? $('#playlist' + 1 + ' > li .dragHandle') : $('#playlist' + 1 + ' > li');
-				var dropZone = $('#playlist' + non(1)).parent();
-				if(draggableLi.draggable('instance') != undefined) {
-					if($('#panel' + 1).attr('canaddkara') == 'true')  {
-						draggableLi.draggable('enable');
-						dropZone.droppable('enable');
-					} else {
-						draggableLi.draggable('disable');
-						dropZone.droppable('disable');
-					}
-				} else if( $('#panel' + 1).attr('canaddkara') == 'true') {
-					draggableLi.draggable({
-						cursorAt: { top: 20, right: 15 },
-						helper:  function(){
-							var li = $(this).closest('li');
-							return $('<div class="list-group-item dragged"></div>')
-								.append(li.find('.dragHandle').clone(),li.find('.contentDiv').clone());
-						},
-						appendTo: dropZone,
-						zIndex: 9999,
-						delay: 0,
-						distance: 0
+						container.scrollTop(
+							Math.min(playlist.height() - fillerBottomH - container.height(),
+								Math.max(fillerTopH, y)));
+						container.attr('flagScroll', false);
+						//});
 					});
-					dropZone.droppable({
-						classes: {
-							'ui-droppable-hover': 'highlight-hover',
-							'ui-droppable-active': 'highlight-active'
-						},
-						drop : function(e, ui){
-							$(ui.draggable).closest('li').find('.actionDiv > [name=addKara]').click();
+
+				} else {
+					data = response;
+					/* Blacklist criterias build */
+					var blacklistCriteriasHtml = $('<div/>');
+					var regenSelect2 = false;
+					if (scope === 'admin') {
+						if ($('#blacklistCriteriasInputs').length > 0) {
+							$('#blacklistCriteriasInputs').detach().appendTo(blacklistCriteriasHtml);
+						} else {
+							regenSelect2 = true;
+							blacklistCriteriasHtml = $('<div><span id="blacklistCriteriasInputs" class="list-group-item" style="padding:10px">'
+							+	'<select id="bcType" class="input-sm" style="color:black"/> '
+							+	'<span id="bcValContainer" style="color:black"></span> '
+							+	'<button id="bcAdd" class="btn btn-default btn-action addBlacklistCriteria"></button>'
+							+	'</span></div>');
+							$.each(listTypeBlc, function(k, v){
+								if(v !== 'BLCTYPE_1001') blacklistCriteriasHtml.find('#bcType').append($('<option>', {value: v.replace('BLCTYPE_',''), text: i18n.__(v)}));
+							});
 						}
-					});
+					}
+
+					for (var k in data) {
+						if (data.hasOwnProperty(k)) {
+							if(blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').length == 0) {
+								blacklistCriteriasHtml.append('<li class="list-group-item liType" type="' + data[k].type + '">' + i18n.__('BLCTYPE_' + data[k].type) + '</li>');
+							}
+							// build the blacklist criteria line
+							var tagsFiltered = jQuery.grep(tags, function(obj) {
+								return obj.tag_id == data[k].value;
+							});
+							var tagText = tagsFiltered.length === 1 && data[k].type > 0  && data[k].type < 100 ?  tagsFiltered[0].name_i18n : data[k].value;
+							var textContent = data[k].type == 1001 ? buildKaraTitle(data[k].value[0]) : tagText;
+
+							blacklistCriteriasHtml.find('li[type="' + data[k].type + '"]').after(
+								'<li class="list-group-item liTag" blcriteria_id="' + data[k].blcriteria_id + '"> '
+							+	'<div class="actionDiv">' + html + '</div>'
+							+	'<div class="typeDiv">' + i18n.__('BLCTYPE_' + data[k].type) + '</div>'
+							+	'<div class="contentDiv">' + textContent + '</div>'
+							+	'</li>');
+						}
+					}
+					//htmlContent = blacklistCriteriasHtml.html();
+					$('#playlist' + side).empty().append(blacklistCriteriasHtml);
+					if (regenSelect2) $('#bcType').select2({ theme: 'bootstrap', dropdownAutoWidth : true, minimumResultsForSearch: -1 });
+					$('#bcType').change();
+					deferred.resolve();
 				}
-				*/
-			} else if(dragAndDrop && scope === 'admin') {
-				var sortableUl = $('#playlist' + side);
-				if(idPlaylist > 0) {
-					if(sortableUl.hasClass('ui-sortable')) {
-						sortableUl.sortable('enable');
-					} else {
-						sortableUl.sortable({
-							appendTo: sortableUl,
-							handle : isTouchScreen ? '.actionDiv' : false,
-							cancel : '',
-							update: function(event, ui) {
-								changeKaraPos(ui.item);
+
+
+
+				// depending on the playlist we're in, notify if the other playlist can add & transfer to us
+				$('#panel' + non(side)).attr('canTransferKara', canTransferKara).attr('canAddKara', canAddKara);
+
+				//var time = console.timeEnd('html'); DEBUG && console.log(data.length);
+
+				// drag & drop part
+				// TODO revoir pour bien définir le drag&drop selon les droits
+				if (dragAndDrop && scope === 'public' && mode != 'mobile' && !isTouchScreen) {
+					/*
+					var draggableLi =  isTouchScreen  ? $('#playlist' + 1 + ' > li .dragHandle') : $('#playlist' + 1 + ' > li');
+					var dropZone = $('#playlist' + non(1)).parent();
+					if(draggableLi.draggable('instance') != undefined) {
+						if($('#panel' + 1).attr('canaddkara') == 'true')  {
+							draggableLi.draggable('enable');
+							dropZone.droppable('enable');
+						} else {
+							draggableLi.draggable('disable');
+							dropZone.droppable('disable');
+						}
+					} else if( $('#panel' + 1).attr('canaddkara') == 'true') {
+						draggableLi.draggable({
+							cursorAt: { top: 20, right: 15 },
+							helper:  function(){
+								var li = $(this).closest('li');
+								return $('<div class="list-group-item dragged"></div>')
+									.append(li.find('.dragHandle').clone(),li.find('.contentDiv').clone());
 							},
-							distance: 10,
-							delay: 10,
-							// connectWith: sortableUl2,
-							axis : 'y'
+							appendTo: dropZone,
+							zIndex: 9999,
+							delay: 0,
+							distance: 0
+						});
+						dropZone.droppable({
+							classes: {
+								'ui-droppable-hover': 'highlight-hover',
+								'ui-droppable-active': 'highlight-active'
+							},
+							drop : function(e, ui){
+								$(ui.draggable).closest('li').find('.actionDiv > [name=addKara]').click();
+							}
 						});
 					}
-				} else if(sortableUl.hasClass('ui-sortable')) {
-					sortableUl.sortable('disable');
+					*/
+				} else if(dragAndDrop && scope === 'admin') {
+					var sortableUl = $('#playlist' + side);
+					if(idPlaylist > 0) {
+						if(sortableUl.hasClass('ui-sortable')) {
+							sortableUl.sortable('enable');
+						} else {
+							sortableUl.sortable({
+								appendTo: sortableUl,
+								handle : isTouchScreen ? '.actionDiv' : false,
+								cancel : '',
+								update: function(event, ui) {
+									changeKaraPos(ui.item);
+								},
+								distance: 10,
+								delay: 10,
+								// connectWith: sortableUl2,
+								axis : 'y'
+							});
+						}
+					} else if(sortableUl.hasClass('ui-sortable')) {
+						sortableUl.sortable('disable');
+					}
+					/*
+                if ($('#selectPlaylist' + non(side)).val() > 0) {
+                    var sortableUl2 = $("#playlist" + non(side));
+                    sortableUl2.sortable({
+                        appendTo: sortableUl2,
+                        helper : isTouchScreen ? ".dragHandle" : false,
+                        update: function(event, ui) { changeKaraPos(ui.item) },
+                       // connectWith: sortableUl,
+                       axis : "y"
+                    });
+                }
+                    */
+					/*
+                helper: function(event, ui){
+                    var li = $(ui);
+                    li.find('.detailsKara, .lyricsKara').remove();
+                    li.css('height', 'auto');
+                    return li.clone()},
+                    start: function(e, ui){
+                        ui.placeholder.height(ui.item.height());
+                    },
+                    */
+
 				}
-				/*
-			if ($('#selectPlaylist' + non(side)).val() > 0) {
-				var sortableUl2 = $("#playlist" + non(side));
-				sortableUl2.sortable({
-					appendTo: sortableUl2,
-					helper : isTouchScreen ? ".dragHandle" : false,
-					update: function(event, ui) { changeKaraPos(ui.item) },
-					// connectWith: sortableUl,
-					axis : "y"
-				});
-			}
-				*/
-				/*
-			helper: function(event, ui){
-				var li = $(ui);
-				li.find('.detailsKara, .lyricsKara').remove();
-				li.css('height', 'auto');
-				return li.clone()},
-				start: function(e, ui){
-					ui.placeholder.height(ui.item.height());
-				},
-				*/
-
-			}
-
-		});
+			});
 
 		return deferred.promise();
 	};
@@ -1732,9 +1716,7 @@ var settingsNotUpdated;
 
 		var range = getPlaylistRange(idPlaylist);
 
-		var max;
-		if (idPlaylist == -1) max = dashboard.attr('karacount');
-		else max = range.from + $('#playlist' + side + ' > li[idkara]').length;
+		var max = range.from + $('#playlist' + side + ' > li[idkara]').length;
 
 		var plInfos = '';
 		if(idPlaylist) {
@@ -1874,7 +1856,7 @@ var settingsNotUpdated;
 			data.language = '';
 		}
 		var titleText = 'fillerTitle';
-		
+
 		var limit = isSmall ? 35 : 50;
 		var serieText =  data.serie ? data.serie : data.singer.replace(/,/g, ', ');
 		serieText = serieText.length <= limit ? serieText : serieText.substring(0, limit) + '…';
@@ -1882,13 +1864,13 @@ var settingsNotUpdated;
 		var titleClean = titleArray.map(function (e, k) {
 			return titleArray[k] ? titleArray[k] : '';
 		});
-		
+
 		var separator = '';
 		if(data.title) {
 			separator = ' - ';
 			if (options.mode && options.mode === 'doubleline') {
 				separator = '<br/>';
-			} 
+			}
 		}
 		titleText = titleClean.join(' - ') + separator + data.title;
 
@@ -1974,6 +1956,7 @@ var settingsNotUpdated;
 			, 'DETAILS_LANGUAGE':	data['language_i18n']
 			, 'BLCTYPE_7':			data['misc_i18n']
 			, 'DETAILS_SERIE':		data['serie']
+			, 'DETAILS_SERIE_ORIG':		data['serie_orig']
 			//	, 'DETAILS_SERIE_ALT':	data['serie_altname']
 			, 'BLCTYPE_2':			data['singer']
 			, 'DETAILS_TYPE ':		data['songtype_i18n'] + data['songorder'] > 0 ? ' ' + data['songorder'] : ''
@@ -2028,6 +2011,79 @@ var settingsNotUpdated;
 			$('.karaCard > div').show();
 		}
 		return infoKaraTemp;
+	};
+
+
+	checkOnlineStats = function(settings) {
+
+		if(settings.OnlineStats == -1) {
+			if($('#onlineStatsModal').length < 1) {
+				var top =		'<div class="modal modalPage fade" id="onlineStatsModal" role="dialog">'+
+				'    <div class="modal-dialog modal-md">'+
+				'        <div class="modal-content">';
+
+				var bottom =	'            </div>'+
+								'        </div>'+
+								'    </div>'+
+								'</div>';
+				var content =	'<ul class="nav nav-tabs nav-justified modal-header">'+
+								'<li class="modal-title stats"><a data-toggle="tab" href="#nav-stats" role="tab" aria-controls="nav-stats" aria-selected="true" aria-expanded="true">'+
+									i18n.__('ONLINE_STATS.TITLE') +'</a>'+
+								'</li></ul>'+
+								'<div class="tab-content" id="nav-stats-tab">'+
+								'   <div id="nav-stats" role="tabpanel" aria-labelledby="nav-stats-tab" class="modal-body tab-pane fade active in">'+
+								'       <div class="modal-message text">'+
+								'       	<p>' + i18n.__('ONLINE_STATS.INTRO') + '</p>'+
+								'       </div>'+
+								'<div class="accordion text" id="accordionDetails">'+
+								'  <div class="card">'+
+								'    <div class="card-header" id="headingOne">'+
+								'      <h5 class="mb-0">'+
+								'        <a class="btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">'+
+											i18n.__('ONLINE_STATS.DETAILS.TITLE')+
+								'        </a>'+
+								'      </h5>'+
+								'    </div>'+
+								'    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionDetails">'+
+								'      <div class="card-body">'+
+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.1') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.2') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.3') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.4') +  '</br>'+
+											'- ' + i18n.__('ONLINE_STATS.DETAILS.5') +  '</br></br>'+
+
+								'       <p>' + i18n.__('ONLINE_STATS.DETAILS.OUTRO') + '</p>'+
+								'      </div>'+
+								'    </div>'+
+								'  </div>'+
+								'  </div>'+
+								'        <div class="modal-message text">'+
+								'       	<p>' + i18n.__('ONLINE_STATS.CHANGE') + '</p>'+
+								'       	<p>' + i18n.__('ONLINE_STATS.QUESTION') + '</p>'+
+								'       </div>'+
+								'   	<div></div>'+
+								'   	<div>'+
+								'		   <button type="button" value="1" class="onlineStatsBtn btn btn-default btn-primary col-xs-6">'+
+												i18n.__('YES')+
+								' 			</button>'+
+								'  			<button type="button" value="0" class="onlineStatsBtn btn btn-default col-xs-6">'+
+													i18n.__('NO')+
+								'   		</button>'+
+								'		</div>'+
+								'	</div>'+
+								'</div>';
+				$('body').append($(top + content + bottom));
+
+				$('#onlineStatsModal .onlineStatsBtn').click((e) => {
+					settings.OnlineStats = '' + $(e.target).attr('value');
+					ajx('PUT', 'admin/settings', settings, function(data) {
+						$('#onlineStatsModal').modal('hide');
+					});
+				});
+			}
+			$('#onlineStatsModal').modal('show');
+		}
 	};
 
 	/*
@@ -2167,163 +2223,139 @@ var settingsNotUpdated;
 				}
 				settingsNotUpdated = ['PlayerStayOnTop', 'PlayerFullscreen'];
 				playlistsUpdating = refreshPlaylistSelects();
-
-				clusterize = [
-					new Clusterize({
-						scrollId: 'playlist1Container',
-						contentId: 'playlist1',
-						rows_in_block: isTouchScreen? 40 : 70,
-						blocks_in_cluster: isTouchScreen? 4 : 5,
-						rows: []
-					})
-				,
-					new Clusterize({
-						scrollId: 'playlist2Container',
-						contentId: 'playlist2',
-						rows_in_block: isTouchScreen? 40 : 70,
-						blocks_in_cluster: isTouchScreen? 4 : 5,
-						rows: []
-					})
-				];
-
 				playlistsUpdating.done(function () {
-				
-					ajx('GET', 'public/karas', {}, function(data) {
-						karas = data;
-						playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
+					playlistContentUpdating = $.when.apply($, [fillPlaylist(1), fillPlaylist(2)]);
+					refreshPlaylistDashboard(1);
+					refreshPlaylistDashboard(2);
+					playlistContentUpdating.done(() => {
+						console.log(locScroll1, locScroll2);
+						if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
+						if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
+					});
+					$(window).trigger('resize');
+				});
+			});
+		}
+		if(!welcomeScreen) {
+			if(logInfos.role != 'guest') {
+				$('.pseudoChange').show();
+				$('#searchParent').css('width','');
+			} else {
+				$('.pseudoChange').hide();
+				$('#searchParent').css('width','100%');
+			}
 
-						refreshPlaylistDashboard(1);
-						refreshPlaylistDashboard(2);
-						playlistContentUpdating.done(() => {
-					
-							// console.log(locScroll1, locScroll2);
-							if(locScroll1) $('#playlist1').parent().scrollTop(locScroll1);
-							if(locScroll2) $('#playlist2').parent().scrollTop(locScroll2);
+			if(!introManager || !introManager._currentStep) initSwitchs();
+
+			$('.bootstrap-switch').promise().then(function(){
+				$(this).each(function(){
+					$(this).attr('title', $(this).find('input').attr('title'));
+				});
+			});
+
+			$.ajax({ url: 'public/tags', }).done(function (data) {
+				tags = data.content;
+				var serie, year;
+
+				var tagList = tagsTypesList.map(function(val, ind){
+					if(val === 'DETAILS_SERIE') {
+						return {id: 'serie', text: i18n.__(val)}
+					} else if (val === 'DETAILS_YEAR') {
+						return {id: 'year', text: i18n.__(val)}
+					} else {
+						return {id: val.replace('BLCTYPE_',''), text: i18n.__(val)}
+					}
+				});
+
+				$('.tagsTypes').select2({ theme: 'bootstrap',
+					tags: false,
+					minimumResultsForSearch: 15,
+					data: tagList
+				});
+				$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
+
+				forSelectTags = tags.map(function(val, ind){
+					return {id:val.tag_id, text: val.name_i18n, type: val.type};
+				});
+
+				$.ajax({ url: 'public/series', }).done(function (data) {
+
+					var series = data.content;
+					series = series.map(function(val, ind){
+						return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
+					});
+					forSelectTags.push.apply(forSelectTags, series);
+
+					$.ajax({ url: 'public/years', }).done(function (data) {
+
+						var years = data.content;
+						years = years.map(function(val, ind){
+							return {id:val.year, text: val.year, type: 'year'};
 						});
-						$(window).trigger('resize');
-					});
-					
-				});
-			});
-		}
+						forSelectTags.push.apply(forSelectTags, years);
 
-		if(logInfos.role != 'guest') {
-			$('.pseudoChange').show();
-			$('#searchParent').css('width','');
-		} else {
-			$('.pseudoChange').hide();
-			$('#searchParent').css('width','100%');
-		}
+						$('.tags').select2({
+							theme: 'bootstrap tags',
+							placeholder: '',
+							dropdownAutoWidth: false,
+							minimumResultsForSearch: 20,
+							ajax: {
+								transport: function(params, success, failure) {
+									var page = params.data.page;
+									var pageSize = 120;
+									var type = $('.tagsTypes').val();
 
-		if(!introManager || !introManager._currentStep) initSwitchs();
+									var items = forSelectTags.filter(function(item) {
+											return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
+										});
+									var totalLength = items.length;
 
-		$('.bootstrap-switch').promise().then(function(){
-			$(this).each(function(){
-				$(this).attr('title', $(this).find('input').attr('title'));
-			});
-		});
+									if(page) {
+										items = items.slice((page - 1) * pageSize, page * pageSize);
+									}  else {
+										items = items.slice(0, pageSize);
+										page = 1;
+									}
 
-		$.ajax({ url: 'public/tags', }).done(function (data) {
-			tags = data.content;
-			var serie, year;
-
-			var tagList = tagsTypesList.map(function(val, ind){
-				if(val === 'DETAILS_SERIE') {
-					return {id: 'serie', text: i18n.__(val)}
-				} else if (val === 'DETAILS_YEAR') {
-					return {id: 'year', text: i18n.__(val)}
-				} else {
-					return {id: val.replace('BLCTYPE_',''), text: i18n.__(val)}
-				}
-			});
-
-			$('.tagsTypes').select2({ theme: 'bootstrap',
-				tags: false,
-				minimumResultsForSearch: 15,
-				data: tagList
-			});
-			$('.tagsTypes').parent().find('.select2-container').addClass('value tagsTypesContainer');
-
-			forSelectTags = tags.map(function(val, ind){
-				return {id:val.tag_id, text: val.name_i18n, type: val.type};
-			});
-
-			$.ajax({ url: 'public/series', }).done(function (data) {
-
-				var series = data.content;
-				series = series.map(function(val, ind){
-					return {id:val.serie_id, text: val.i18n_name, type: 'serie'};
-				});
-				forSelectTags.push.apply(forSelectTags, series);
-
-				$.ajax({ url: 'public/years', }).done(function (data) {
-
-					var years = data.content;
-					years = years.map(function(val, ind){
-						return {id:val.year, text: val.year, type: 'year'};
-					});
-					forSelectTags.push.apply(forSelectTags, years);
-
-					$('.tags').select2({
-						theme: 'bootstrap tags',
-						placeholder: '',
-						dropdownAutoWidth: false,
-						minimumResultsForSearch: 20,
-						ajax: {
-							transport: function(params, success, failure) {
-								var page = params.data.page;
-								var pageSize = 120;
-								var type = $('.tagsTypes').val();
-
-								var items = forSelectTags.filter(function(item) {
-										return new RegExp(params.data.q, 'i').test(item.text) && item.type == type;
+									var more = false;
+									if( page * pageSize + items.length < totalLength) {
+										more = true
+									}
+									var promise = new Promise(function(resolve, reject) {
+										resolve({results: items, pagination : { more : more} });
 									});
-								var totalLength = items.length;
-
-								if(page) {
-									items = items.slice((page - 1) * pageSize, page * pageSize);
-								}  else {
-									items = items.slice(0, pageSize);
-									page = 1;
+									promise.then(success);
+									promise.catch(failure);
 								}
-
-								var more = false;
-								if( page * pageSize + items.length < totalLength) {
-									more = true
-								}
-								var promise = new Promise(function(resolve, reject) {
-									resolve({results: items, pagination : { more : more} });
-								});
-								promise.then(success);
-								promise.catch(failure);
 							}
-						}
+						});
+						$('.tags').parent().find('.select2-container').addClass('value tags');
 					});
-					$('.tags').parent().find('.select2-container').addClass('value tags');
 				});
+			// ['serie', 'year'].forEach(function(dataType) {
+			// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
+			// 		data = data.content;
+
+			// 		data = data.map(function(val, ind){
+			// 			var jsonLine;
+			// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
+			// 			if(dataType === 'year') jsonLine = {id:val.year, text: val.year};
+			// 			return jsonLine;
+			// 		});
+			// 		$('#' + dataType).select2({ theme: 'bootstrap',
+			// 			tags: false,
+			// 			minimumResultsForSearch: 3,
+			// 			data: data
+			// 		});
+			// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
+			// 	});
+
+			// });
+
 			});
-		// ['serie', 'year'].forEach(function(dataType) {
-		// 	$.ajax({ url: 'public/' + dataType, }).done(function (data) {
-		// 		data = data.content;
 
-		// 		data = data.map(function(val, ind){
-		// 			var jsonLine;
-		// 			if(dataType === 'serie') jsonLine = {id:val.serie_id, text: val.i18n_name};
-		// 			if(dataType === 'year') jsonLine = {id:val.year, text: val.year};
-		// 			return jsonLine;
-		// 		});
-		// 		$('#' + dataType).select2({ theme: 'bootstrap',
-		// 			tags: false,
-		// 			minimumResultsForSearch: 3,
-		// 			data: data
-		// 		});
-		// 		$('#' + dataType).parent().find('.select2-container').addClass('value');
-		// 	});
 
-		// });
-
-		});
-
+		}
 
 	};
 
@@ -2360,7 +2392,6 @@ var settingsNotUpdated;
 		});
 
 	};
-
 	/**
     * Init bootstrapSwitchs
     */
@@ -2481,16 +2512,28 @@ var settingsNotUpdated;
 	};
 
 	getPlaylistRange = function(idPl) {
-		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();
+
+        var side = sideOfPlaylist(idPl);
+        var search = $('#searchPlaylist' + side).val();
+		var $filter = $('#searchMenu' + side + ' li.active');
+		var searchType = $filter.attr('searchType');
+		var searchValue = $filter.attr('searchValue');
+        var key = [search, searchType, searchValue].join('_');
 
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
-		return playlistRange[idPl][search] ? playlistRange[idPl][search] : { from : 0, to : pageSize };
+		return playlistRange[idPl][key] ? playlistRange[idPl][key] : { from : 0, to : pageSize };
 	};
 
 	setPlaylistRange = function(idPl, from, to) {
-		var search = $('#searchPlaylist' + sideOfPlaylist(idPl)).val();
+        var side = sideOfPlaylist(idPl);
+        var search = $('#searchPlaylist' + side).val();
+		var $filter = $('#searchMenu' + side + ' li.active');
+		var searchType = $filter.attr('searchType');
+		var searchValue = $filter.attr('searchValue');
+        var key = [search, searchType, searchValue].join('_');
+
 		if(!playlistRange[idPl]) playlistRange[idPl] = {};
-		playlistRange[idPl][search] = { from : from, to : to };
+		playlistRange[idPl][key] = { from : from, to : to };
 	};
 
 	getPlData = function(idPl) {

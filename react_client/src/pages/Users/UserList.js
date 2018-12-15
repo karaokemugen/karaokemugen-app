@@ -23,7 +23,7 @@ class UserList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/users')
+		axios.get('/api/system/users')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({users: res.data});
@@ -35,7 +35,7 @@ class UserList extends Component {
 	}
 
 	delete = (userId) => {
-		axios.delete(`/api/users/${userId}`)
+		axios.delete(`/api/system/users/${userId}`)
 			.then(() => {
 				this.props.warnMessage('User deleted.');
 				this.setState({deleteModal: false, user: {}});
@@ -92,8 +92,8 @@ class UserList extends Component {
 	}, {
 		title: 'Avatar',
 		dataIndex: 'avatar_file',
-		key: 'avatar_file',		
-		render: (text, record) => <Avatar shape="square" size="large" src={`/static/avatars/${record.avatar_file}`}/>,
+		key: 'avatar_file',
+		render: (text, record) => <Avatar shape="square" size="large" src={`/avatars/${record.avatar_file}`}/>,
 		sorter: (a, b) => a.avatar_file.localeCompare(b.avatar_file)
 	}, {
 		title: 'Username',

@@ -1,5 +1,5 @@
 export function timer(callback, delay) {
-	var id, started, remaining = delay, running;
+	let id, started, remaining = delay, running;
 
 	this.start = () => {
 		running = true;
@@ -21,7 +21,7 @@ export function timer(callback, delay) {
 		return remaining;
 	};
 
-	this.getStateRunning = function() {
+	this.getStateRunning = () => {
 		return running;
 	};
 

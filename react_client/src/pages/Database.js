@@ -12,6 +12,7 @@ class Database extends Component {
 		super(props);
 		this.state = {
 			updateModal: false,
+			renameModal: false,
 			generationProgress: {
 				text: undefined,
 				value: 0,
@@ -82,7 +83,7 @@ class Database extends Component {
 
 	dbregen = () => {
 		this.props.loading(true);
-		axios.post('/api/db/regenerate')
+		axios.post('/api/system/db/regenerate')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);
@@ -95,7 +96,7 @@ class Database extends Component {
 
 	dbupdate() {
 		this.props.loading(true);
-		axios.post('/api/karas/update')
+		axios.post('/api/system/karas/update')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);
@@ -108,7 +109,20 @@ class Database extends Component {
 
 	dbresetviewcounts() {
 		this.props.loading(true);
-		axios.post('/api/db/resetviewcounts')
+		axios.post('/api/system/db/resetviewcounts')
+			.then(res => {
+				this.props.loading(false);
+				this.props.infoMessage(res.data);
+			})
+			.catch(err => {
+				this.props.loading(false);
+				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
+			});
+	}
+
+	dbrenameallkaras() {
+		this.props.loading(true);
+		axios.post('/api/system/db/renamekaras')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);
@@ -137,7 +151,6 @@ class Database extends Component {
 						onClick={
 							() => this.setState({updateModal: true})
 						}
-						//onClick={this.dbupdate.bind(this)}
 						active={!this.props.loadingActive}
 					>
 						Update your karaoke base files from Shelter
@@ -150,6 +163,17 @@ class Database extends Component {
 						active={!this.props.loadingActive}
 					>
 						Reset song viewcounts
+					</Button>
+				</div>
+				<div>
+					<Button
+						type='primary'
+						onClick={
+							() => this.setState({renameModal: true})
+						}
+						active={!this.props.loadingActive}
+					>
+						Rename all data files to KM naming convention
 					</Button>
 				</div>
 				<Modal
@@ -165,6 +189,20 @@ class Database extends Component {
 				>
 					<p>WARNING: Updating will delete <b>any file not in the official Karaoke Mugen repository</b>.</p>
 					<p>If you created karaokes but did not upload them, they will be deleted.</p>
+					<p>Are you sure?</p>
+				</Modal>
+				<Modal
+					title='Confirm renaming'
+					visible={this.state.renameModal}
+					onOk={() => {
+						this.dbrenameallkaras();
+						this.setState({renameModal: false});
+					}}
+					onCancel={() => this.setState({renameModal: false})}
+					okText='Yes, do it!'
+					cancelText='No'
+				>
+					<p>WARNING: Renaming all files to KM convention is not undo-able.</p>
 					<p>You can check progress in the Karaoke Mugen console window</p>
 					<p>Are you sure?</p>
 				</Modal>

@@ -18,6 +18,7 @@ import {publishURL} from '../../_webapp/online';
 import {playerNeedsRestart} from '../../_services/player';
 import {setState, getState} from './state';
 import {setSongPoll} from '../../_services/poll';
+import { initStats, stopStats } from '../../_services/stats';
 
 /** Object containing all config */
 let config = {};
@@ -84,10 +85,11 @@ export async function mergeConfig(newConfig) {
 	if (newConfig.OnlineMode && getState().ready) publishURL();
 	setConfig(newConfig);
 	const conf = getConfig();
-	conf.EngineSongPoll === 1 ? setSongPoll(true) : setSongPoll(false);
+	+conf.EngineSongPoll === 1 ? setSongPoll(true) : setSongPoll(false);
+	// Toggling stats
+	+conf.OnlineStats === 1 ? initStats() : stopStats();
 	// Toggling and updating settings
 	setState({private: conf.EnginePrivateMode});
-
 	configureHost();
 
 	// Determine which settings we send back. We get rid of all system and admin settings
