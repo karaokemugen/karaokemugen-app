@@ -109,7 +109,7 @@ class KaraList extends Component {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/karas/${record.kara_id}`}><Icon type='edit'/></Link>
+			<Link to={`/system/karas/${record.kara_id}`}><Icon type='edit'/></Link>
 		</span>)
 	}];
 }

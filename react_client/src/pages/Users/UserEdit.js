@@ -30,7 +30,7 @@ class UserEdit extends Component {
 		axios.post('/api/system/users', user)
 			.then(() => {
 				this.props.infoMessage('User successfully created');
-				this.props.push('/users');
+				this.props.push('/system/users');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -41,7 +41,7 @@ class UserEdit extends Component {
 		axios.put(`/api/system/users/${user.id}`, user)
 			.then(() => {
 				this.props.infoMessage('User successfully edited');
-				this.props.push('/users');
+				this.props.push('/system/users');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
