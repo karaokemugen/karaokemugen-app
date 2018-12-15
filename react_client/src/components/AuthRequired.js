@@ -20,7 +20,7 @@ export default function(ComposedComponentPromise) {
 				return this.state.c.default ? <this.state.c.default {...this.props} />
 					: <this.state.c {...this.props} />;
 			} else {
-				return <Redirect to='/login' push={true}/>;
+				return <Redirect to='/system/login' push={true}/>;
 			}
 		}
 	}
