@@ -374,7 +374,7 @@ export async function play(mediadata) {
 		if (mediaFile.endsWith('.mp3')) {
 			// Lavfi-complex argument to have cool visualizations on top of an image during mp3 playback
 			// Courtesy of @nah :)
-			options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
+			options.push('lavfi-complex=[aid1]asplit[ao][a]; [a]showcqt[vis];[vis]scale=1920:1080[visu];[vid1]scale=-2:1080[vidInp];[vidInp]pad=1920:1080:(ow-iw)/2:(oh-ih)/2[vpoc];[vpoc][visu]blend=shortest=0:all_mode=overlay:all_opacity=1[vo]');
 			const id3tags = await getID3(mediaFile);
 			if (!id3tags.image) {
 				const defaultImageFile = resolve(conf.appPath,conf.PathTemp,'default.jpg');
