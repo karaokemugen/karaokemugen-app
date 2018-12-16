@@ -7,11 +7,12 @@ export async function publishURL() {
 	const localHost = conf.EngineDisplayConnectionInfoHost || conf.osHost;
 	try {
 		await got(`http://${conf.OnlineHost}:${conf.OnlinePort}/api/shortener`, {
-			body: JSON.stringify({
+			body: {
 				localIP: localHost,
 				localPort: conf.appFrontendPort,
 				IID: conf.appInstanceID
-			})
+			},
+			form: true
 		});
 		configureHost();
 	} catch(err) {
