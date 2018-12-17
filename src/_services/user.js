@@ -56,7 +56,7 @@ export async function getUserRequests(username) {
 	return await db.getUserRequests(username);
 }
 
-function editRemoteUser(user, avatar) {
+async function editRemoteUser(user, avatar) {
 	// Fetch remote token
 	const remoteToken = getRemoteToken(user.login);
 	const instance = user.login.split('@')[1];
@@ -64,23 +64,24 @@ function editRemoteUser(user, avatar) {
 	const form = new formData();
 	const conf = getConfig();
 
-	if (avatar) form.append('avatarfile', createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file)));
+	if (avatar) {
+		//const avatarData = await createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file));
+		form.append('avatarfile', createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file)), user.avatar_file);
+	}
 	form.append('nickname', user.nickname);
-	form.append('bio', user.bio);
-	form.append('email', user.email);
-	form.append('url', user.url);
+	if (user.bio) form.append('bio', user.bio);
+	if (user.email) form.append('email', user.email);
+	if (user.url) form.append('url', user.url);
 	if (user.password) form.append('password', user.password);
 	try {
-		got(`http://${instance}/api/users/${login}`, {
+		await got(`http://${instance}/api/users/${login}`, {
 			method: 'PUT',
 			body: form,
-			form: true,
 			headers: {
 				authorization: remoteToken.token
 			}
 		});
 	} catch(err) {
-		console.log(err);
 		throw `Remote update failed : ${err}`;
 	}
 }
