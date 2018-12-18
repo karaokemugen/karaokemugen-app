@@ -23,6 +23,23 @@ export async function getFavorites(token, filter, lang, from, size) {
 	}
 }
 
+export async function convertToRemoteFavorites(username) {
+	// This is called when converting a local account to a remote one
+	// We thus know no favorites exist remotely.
+	try {
+		const favorites = await getFavorites({username: username});
+		const addFavorites = [];
+		if (favorites.content.length > 0) {
+			for (const favorite of favorites.content) {
+				addFavorites.push(manageFavoriteInInstance('POST', username, favorite.kara_id));
+			}
+			await Promise.all(addFavorites);
+		}
+	} catch(err) {
+		throw err;
+	}
+}
+
 export async function addToFavorites(username, kara_id) {
 	try {
 		profile('addToFavorites');
@@ -43,7 +60,7 @@ async function manageFavoriteInInstance(action, username, kara_id) {
 	const remoteToken = getRemoteToken(username);
 	const kara = await getKaraMini(kara_id);
 	try {
-		await got(`http://${instance}:1350/api/favorites`, {
+		await got(`http://${instance}/api/favorites`, {
 			method: action,
 			body: {
 				kid: kara.kid

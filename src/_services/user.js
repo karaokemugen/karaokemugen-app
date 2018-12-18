@@ -1,5 +1,5 @@
 import {deletePlaylist} from '../_services/playlist';
-import {findFavoritesPlaylist} from '../_services/favorites';
+import {findFavoritesPlaylist, convertToRemoteFavorites} from '../_services/favorites';
 import {detectFileType, asyncMove, asyncExists, asyncUnlink, asyncReadDir} from '../_common/utils/files';
 import {getConfig} from '../_common/utils/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC, createPlaylist} from '../_services/playlist';
@@ -96,10 +96,15 @@ export async function convertToRemoteUser(token, password, instance) {
 	}
 	const remoteUser = await remoteLogin(user.login, password);
 	upsertRemoteToken(user.login, remoteUser.token);
-	await editUser(token.username, user, null, token.role, {
-		editRemote: true,
-		renameUser: true
-	});
+	try {
+		await editUser(token.username, user, null, token.role, {
+			editRemote: true,
+			renameUser: true
+		});
+		await convertToRemoteFavorites(user.login);
+	} catch(err) {
+		console.log(err);
+	}
 }
 
 export async function editUser(username, user, avatar, role, opts = {
