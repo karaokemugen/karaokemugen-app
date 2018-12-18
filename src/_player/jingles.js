@@ -8,56 +8,40 @@ import sample from 'lodash.sample';
 let allJingles = [];
 let currentJingles = [];
 
-async function extractAllJingleFiles() {
-	let jingleFiles = [];
-	for (const resolvedPath of resolvedPathJingles()) {
-		jingleFiles = jingleFiles.concat(await extractJingleFiles(resolvedPath));
-	}
-	return jingleFiles;
-}
+const extractJingleFiles = async (jingleDir) => await asyncReadDir(jingleDir)
+	.filter((file) => isMediaFile(file))
+	.map((file) => ([file, resolve(jingleDir, file)]));
 
-async function extractJingleFiles(jingleDir) {
-	const jingleFiles = [];
-	const dirListing = await asyncReadDir(jingleDir);
-	for (const file of dirListing) {
-		if (isMediaFile(file)) {
-			jingleFiles.push(resolve(jingleDir, file));
-		}
-	}
-	return jingleFiles;
-}
+const extractAllJingleFiles = async () => resolvedPathJingles()
+	.map((resolvedPath) => extractJingleFiles(resolvedPath))
+	.reduce((jingleFiles, jingleFile) => jingleFiles.concat(jingleFile), []);
 
-async function getAllVideoGains(jingleFiles) {
-	let jinglesList = [];
-	for (const jinglefile of jingleFiles) {
-		const videodata = await getMediaInfo(jinglefile);
-		jinglesList.push(
-			{
-				file: jinglefile,
-				gain: videodata.audiogain
-			});
-		logger.debug(`[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.audiogain} dB`);
-	}
+const getAllVideoGains = async (jingleFiles) => {
+	const jinglesList = await jingleFiles
+		.map((jinglefile) => ({
+			file: jinglefile,
+			gain: getMediaInfo(jinglefile).audiogain
+		}));
+
+	jinglesList.forEach((jingleData) => logger.debug(`[Jingles] Computed jingle ${jingleData.file} audio gain at ${jingleData.gain} dB`));
+
 	return jinglesList;
-}
+};
 
-export async function buildJinglesList() {
+export const buildJinglesList = async () => {
 	const jingleFiles = await extractAllJingleFiles();
 	const list = await getAllVideoGains(jingleFiles);
+
 	currentJingles = currentJingles.concat(list);
 	allJingles = allJingles.concat(list);
 	return list;
-}
+};
 
-export function getJingles() {
-	return currentJingles;
-}
+export const getJingles = () => currentJingles;
 
-export function removeJingle(jingle) {
-	currentJingles = currentJingles.filter(e => {
-		return e.file !== jingle;
-	});
-}
+export const removeJingle = (jingleToRemove) =>{
+	currentJingles = currentJingles.filter(jingle => jingle.file !== jingleToRemove);
+};
 
 export function getSingleJingle() {
 	const jingles = getJingles();
