@@ -17,7 +17,7 @@ import {emitWS} from '../_webapp/frontend';
 import {profile} from '../_common/utils/logger';
 import {getState} from '../_common/utils/state';
 import got from 'got';
-import { getRemoteToken } from '../_dao/user';
+import { getRemoteToken, upsertRemoteToken } from '../_dao/user';
 import formData from 'form-data';
 import {createReadStream} from 'fs';
 
@@ -56,7 +56,7 @@ export async function getUserRequests(username) {
 	return await db.getUserRequests(username);
 }
 
-async function editRemoteUser(user, avatar) {
+async function editRemoteUser(user) {
 	// Fetch remote token
 	const remoteToken = getRemoteToken(user.login);
 	const instance = user.login.split('@')[1];
@@ -64,10 +64,7 @@ async function editRemoteUser(user, avatar) {
 	const form = new formData();
 	const conf = getConfig();
 
-	if (avatar) {
-		//const avatarData = await createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file));
-		form.append('avatarfile', createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file)), user.avatar_file);
-	}
+	if (user.avatar_file !== 'blank.png') form.append('avatarfile', createReadStream(resolve(conf.appPath, conf.PathAvatars, user.avatar_file)), user.avatar_file);
 	form.append('nickname', user.nickname);
 	if (user.bio) form.append('bio', user.bio);
 	if (user.email) form.append('email', user.email);
@@ -86,8 +83,28 @@ async function editRemoteUser(user, avatar) {
 	}
 }
 
-export async function editUser(username,user,avatar,role, opts = {
-	editRemote: true
+export async function convertToRemoteUser(token, password, instance) {
+	const user = await findUserByName(token.username);
+	if (!user) throw 'User unknown';
+	if (!await checkPassword(user, password)) throw 'Wrong password';
+	user.login = `${token.username}@${instance}`;
+	user.password = password;
+	try {
+		await createRemoteUser(user);
+	} catch(err) {
+		throw `Unable to create remote user : ${err}`;
+	}
+	const remoteUser = await remoteLogin(user.login, password);
+	upsertRemoteToken(user.login, remoteUser.token);
+	await editUser(token.username, user, null, token.role, {
+		editRemote: true,
+		renameUser: true
+	});
+}
+
+export async function editUser(username, user, avatar, role, opts = {
+	editRemote: true,
+	renameUser: false
 }) {
 	try {
 		let currentUser;
@@ -99,7 +116,7 @@ export async function editUser(username,user,avatar,role, opts = {
 		if (!currentUser) throw 'User unknown';
 		if (currentUser.type === 2 && role !== 'admin') throw 'Guests are not allowed to edit their profiles';
 		user.id = currentUser.id;
-		user.login = username;
+		if (!opts.renameUser) user.login = username;
 		if (!user.type) user.type = currentUser.type;
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
@@ -110,24 +127,23 @@ export async function editUser(username,user,avatar,role, opts = {
 		// Check if login already exists.
 		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
 		user.NORM_nickname = deburr(user.nickname);
-		// Modifying passwords is not allowed in demo mode
-		if (user.password && !getConfig().isDemo) {
-			user.password = hashPassword(user.password);
-			await db.updateUserPassword(user.id,user.password);
-		}
 		if (avatar) {
 			// If a new avatar was sent, it is contained in the avatar object
 			// Let's move it to the avatar user directory and update avatar info in
 			// database
 			// If the user is remote, we keep the avatar's original filename since it comes from KM Server.
 			user.avatar_file = await replaceAvatar(currentUser.avatar_file,avatar);
-			if (opts.editRemote) user.newAvatar = true;
 		} else {
 			user.avatar_file = currentUser.avatar_file;
 		}
 		await db.editUser(user);
 		logger.debug(`[User] ${username} (${user.nickname}) profile updated`);
-		if (user.login.includes('@') && opts.editRemote) await editRemoteUser(user, avatar);
+		if (user.login.includes('@') && opts.editRemote) await editRemoteUser(user);
+		// Modifying passwords is not allowed in demo mode
+		if (user.password && !getConfig().isDemo) {
+			user.password = hashPassword(user.password);
+			await db.updateUserPassword(user.id,user.password);
+		}
 		return user;
 	} catch (err) {
 		console.log(err);

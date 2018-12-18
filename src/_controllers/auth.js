@@ -105,7 +105,7 @@ async function checkLogin(username, password) {
 		}
 	} else {
 		// User is a local user
-		const user = await findUserByName(username);
+		user = await findUserByName(username);
 		if (!user) throw false;
 		if (!await checkPassword(user, password)) throw false;
 	}

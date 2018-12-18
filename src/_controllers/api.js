@@ -25,7 +25,7 @@ import {addKaraToWhitelist, emptyWhitelist, deleteKaraFromWhitelist, getWhitelis
 import {emptyBlacklistCriterias, addBlacklistCriteria, deleteBlacklistCriteria, editBlacklistCriteria, getBlacklistCriterias, getBlacklist} from '../_services/blacklist';
 import {createAutoMix, getFavorites, addToFavorites, deleteFavorite, exportFavorites, importFavorites} from '../_services/favorites';
 import {vote} from '../_services/upvote';
-import {createUser, findUserByName, deleteUser, editUser, getUserRequests, listUsers} from '../_services/user';
+import {convertToRemoteUser, createUser, findUserByName, deleteUser, editUser, getUserRequests, listUsers} from '../_services/user';
 import {getPoll, addPollVote} from '../_services/poll';
 import {getSeries} from '../_services/series';
 
@@ -4371,9 +4371,9 @@ export function APIControllerPublic(router) {
  * @apiParam {String} [email] User's mail. Can be empty.
  * @apiParam {String} [url] User's URL. Can be empty.
  * @apiParam {ImageFile} [avatarfile] New avatar
- * @apiSuccess {String} args ID of user deleted
+ * @apiSuccess {String} args Username
  * @apiSuccess {String} code Message to display
- * @apiSuccess {Number} data ID of user deleted
+ * @apiSuccess {Number} user data edited
  *
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
@@ -4422,6 +4422,54 @@ export function APIControllerPublic(router) {
 			} else {
 				// Errors detected
 				// Sending BAD REQUEST HTTP code and error object.
+				res.statusCode = 400;
+				res.json(validationErrors);
+			}
+		});
+	router.route('/myaccount/online')
+		/**
+	 * @api {post} /public/myaccount/online Convert your account to an online one
+	 * @apiName ConvertToOnline
+	 * @apiVersion 2.5.0
+	 * @apiGroup Users
+	 * @apiPermission own
+	 * @apiHeader authorization Auth token received from logging in
+	 * @apiParam {String} instance Instance host name
+	 * @apiParam {String} password Password to confirm conversion (also needed to create online account)
+	 * @apiSuccess {String} data name of converted user
+	 * @apiSuccess {String} code Message to display
+	 *
+	 * @apiSuccessExample Success-Response:
+	 * HTTP/1.1 200 OK
+	 * {
+	 *   "code": "USER_CONVERTED",
+	 *   "data": "axel"
+	 * }
+	 * @apiError USER_CONVERT_ERROR Unable to convert user to remote
+	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 500 Internal Server Error
+	 * @apiErrorExample Error-Response:
+	 * HTTP/1.1 403 Forbidden
+	 */
+		.post(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
+			const validationErrors = check(req.body, {
+				instance: {presence: true},
+				password: {presence: true}
+			});
+			if (!validationErrors) {
+			// No errors detected
+				req.body.instance = unescape(req.body.instance.trim());
+				try {
+					await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
+					emitWS('userUpdated',req.params.user_id);
+					res.json(OKMessage(req.authToken.username,'USER_CONVERTED'));
+				} catch(err) {
+					res.status(500).json(errMessage('USER_CONVERT_ERROR',err));
+				}
+			} else {
+			// Errors detected
+			// Sending BAD REQUEST HTTP code and error object.
 				res.statusCode = 400;
 				res.json(validationErrors);
 			}

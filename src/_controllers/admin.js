@@ -154,7 +154,7 @@ export default function adminController(router) {
 	});
 
 	router.put('/users/:userId([0-9]+)', requireNotDemo, requireAuth, requireValidUser, requireAdmin, (req, res) => {
-		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role, {editRemote: false})
+		editUser(req.body.login,req.body,req.body.avatar,req.authToken.role, { editRemote: false })
 			.then(() => res.status(200).send('User edited'))
 			.catch(err => res.status(500).send(`Error editing user: ${err}`));
 	});

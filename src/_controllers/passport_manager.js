@@ -25,7 +25,6 @@ export const requireValidUser = (req, res, next) => {
 			return false;
 		}
 	}
-
 	findUserByName(token.username)
 		.then((user) => {
 			if (!user) {
