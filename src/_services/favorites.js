@@ -7,7 +7,47 @@ import {profile} from '../_common/utils/logger';
 import { getRemoteToken } from '../_dao/user';
 import got from 'got';
 import { getKaraMini } from '../_dao/kara';
+import { now } from 'unix-timestamp';
 
+export async function fetchAndAddFavorites(instance, token, username, nickname) {
+	try {
+		const res = await got(`http://${instance}/api/favorites`, {
+			headers: {
+				authorization: token
+			},
+			json: true
+		});
+		const favorites = res.body;
+		const favoritesPlaylist = {
+			Header: {
+				version: 3,
+				description: 'Karaoke Mugen Playlist File'
+			},
+			PlaylistInformation: {
+				name: `Faves : ${username}`,
+				time_left: 0,
+				created_at: now(),
+				modified_at: now(),
+				flag_visible: 1
+			},
+			PlaylistContents: []
+		};
+		let index = 1;
+		for (const favorite of favorites) {
+			favoritesPlaylist.PlaylistContents.push({
+				kid: favorite.kid,
+				pseudo_add: nickname,
+				created_at: now(),
+				pos: index,
+				username: username
+			});
+			index++;
+		}
+		await importFavorites(favoritesPlaylist, {username: username});
+	} catch(err) {
+		throw err;
+	}
+}
 export async function getFavorites(token, filter, lang, from, size) {
 	try {
 		profile('getFavorites');

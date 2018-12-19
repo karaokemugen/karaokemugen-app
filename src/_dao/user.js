@@ -1,7 +1,13 @@
 import {getUserDb} from './database';
 const sql = require('../_common/db/user');
 
+
 const remoteTokens = [];
+// Format:
+// {
+//   username: ...
+//   token: ...
+// }
 
 export async function getUserByName(username) {
 	return await getUserDb().get(sql.selectUserByName, { $username: username });

@@ -19,7 +19,8 @@ import {getState} from '../_common/utils/state';
 import got from 'got';
 import { getRemoteToken, upsertRemoteToken } from '../_dao/user';
 import formData from 'form-data';
-import {createReadStream} from 'fs';
+import { createReadStream } from 'fs';
+import { writeStreamToFile } from '../_common/utils/files';
 
 const db = require('../_dao/user');
 let userLoginTimes = {};
@@ -54,6 +55,20 @@ export async function updateLastLoginName(login) {
 export async function getUserRequests(username) {
 	if (!await findUserByName(username)) throw 'User unknown';
 	return await db.getUserRequests(username);
+}
+
+export async function fetchRemoteAvatar(instance, avatarFile) {
+	const conf = getConfig();
+	try {
+		const res = await got(`http://${instance}/avatars/${avatarFile}`, {
+			stream: true
+		});
+		const avatarPath = resolve(conf.appPath, conf.PathTemp, avatarFile);
+		await writeStreamToFile(res, avatarFile);
+		return avatarPath;
+	} catch(err) {
+		throw err;
+	}
 }
 
 async function editRemoteUser(user) {
@@ -249,6 +264,19 @@ export async function findFingerprint(fingerprint) {
 
 export async function updateUserFingerprint(username, fingerprint) {
 	return await db.updateUserFingerprint(username, fingerprint);
+}
+
+export async function remoteCheckAuth(instance, token) {
+	try {
+		const res = await got.get(`http://${instance}/api/auth/check`, {
+			headers: {
+				authorization: token
+			}
+		});
+		return JSON.parse(res.body);
+	} catch(err) {
+		throw err;
+	}
 }
 
 export async function remoteLogin(username, password) {
