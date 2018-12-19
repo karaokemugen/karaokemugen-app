@@ -83,15 +83,16 @@ export default function authController(router) {
 		/**
  * @api {post} /auth/login Login / Sign in
  * @apiName AuthLogin
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Auth
  * @apiPermission NoAuth
  * @apiHeader {String} Content-type Must be `application/x-www-form-urlencoded`
  * @apiHeader {String} charset Must be `UTF-8`
  * @apiParam {String} username Login name for the user
  * @apiParam {String} password Password for the user. Can be empty if user is a guest.
+ * @apiSuccess {String} onlineToken If username is a remote one, `onlineToken` is defined. You need to pass it via headers along `token` for user to be authentified.
  * @apiSuccess {String} token Identification token for this session
- * @apiSuccess {String} username Username logged in
+ * @apiSuccess {String} username Username logged in ( contains @host if remote, with host being the instance's host)
  * @apiSuccess {String} role Role of this user (`user` or `admin`)
  *
  * @apiSuccessExample Success-Response:
@@ -99,7 +100,8 @@ export default function authController(router) {
  * {
  *   "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE1MTMxNjAxMTEzMjMsInJvbGUiOiJ1c2VyIn0.UWgsc5XEfFtk34IpUAQid_IEWCj2ffNjQ--FJ9eAYd0",
  *   "username": "Axel",
- *   "role": "admin"
+ *   "role": "admin",
+ *   "onlineToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE1MTMxNjAxMTEzMjMsInJvbGUiOiJ1c2VyIn0.UWgsc5XEfFtk34IpUAQid_IEWCj2ffNjQ--FJ9eAYd0"
  * }
  * @apiError 401 Unauthorized
  *
@@ -128,7 +130,7 @@ export default function authController(router) {
  * @apiHeader {String} charset Must be `UTF-8`
  * @apiParam {String} fingerprint Fingerprint hash. Uses client-side fingerprinting.
  * @apiSuccess {String} token Identification token for this session
- * @apiSuccess {String} username Username logged in
+ * @apiSuccess {String} username Username logged in ( contains @host if remote, with host being the instance's host)
  * @apiSuccess {String} role Role of this user (`user` or `admin`)
  *
  * @apiSuccessExample Success-Response:
