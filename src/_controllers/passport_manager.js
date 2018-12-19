@@ -16,7 +16,7 @@ export async function checkValidUser(token, onlineToken) {
 	// If user is remote, see if we have a remote token ready.
 	if (token.username.includes('@')) {
 		const remoteToken = getRemoteToken(token.username);
-		if (remoteToken) {
+		if (remoteToken && remoteToken.token === onlineToken) {
 			// Remote token exists, no problem here
 		} else {
 			// Remote token does not exist, we're going to verify it and add it if it does work
