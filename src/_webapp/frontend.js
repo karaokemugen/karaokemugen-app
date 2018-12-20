@@ -92,9 +92,9 @@ export async function initFrontend(port) {
 	app.use(express.static(__dirname + '/'));
 	//path for system control panel
 	if (!conf.isDemo) {
-		app.use('/system', express.static(resolve(__dirname, '../../react_client/build')));
+		app.use('/system', express.static(resolve(__dirname, '../../react_systempanel/build')));
 		app.get('/system/*', (req, res) => {
-			res.sendFile(resolve(__dirname, '../../react_client/build/index.html'));
+			res.sendFile(resolve(__dirname, '../../react_systempanel/build/index.html'));
 		});
 	}
 	//Path to locales for webapp

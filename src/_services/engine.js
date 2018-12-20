@@ -13,7 +13,7 @@ import {initFrontend} from '../_webapp/frontend';
 import {initFavoritesSystem} from './favorites';
 import {initOnlineSystem} from '../_webapp/online';
 import {initPlayer, quitmpv} from './player';
-import {initStats, sendPayload} from './stats';
+import {initStats} from './stats';
 import {karaGenerationBatch} from '../_admin/generate_karasfiles';
 import {validateKaras} from './kara';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
