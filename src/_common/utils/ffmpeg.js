@@ -30,8 +30,8 @@ export async function getMediaInfo(mediafile) {
 		const ffmpegExtractRegex = /^.*Duration: ([^,]+).*track_gain = \+([^ ]+) dB.*$/;
 		const ffmpegOutput = await execa(getConfig().BinffmpegPath, ['-i', mediafile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
 		let [, duration, audiogain] = ffmpegExtractRegex.exec(ffmpegOutput);
-		duration = formatDuration(duration);
-		audiogain = formatAudioGain(audiogain);	
+    duration = formatDuration(duration);
+    audiogain = formatAudioGain(audiogain);	
 
 		return {
 			duration: duration,
@@ -39,7 +39,7 @@ export async function getMediaInfo(mediafile) {
 			error: false
 		};
 	} catch(err) {
-		logger.warn(`[ffmpeg] Video ${mediafile} probe error : ${err.code}`);
+		logger.warn(`[ffmpeg] Video '${mediafile}' probe error : '${err.code}'`);
 		return { duration: 0, audiogain: 0, error: true };
 	}
 }
