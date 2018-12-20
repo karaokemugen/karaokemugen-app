@@ -1,7 +1,7 @@
 import {getUserDb} from './database';
 import deburr from 'lodash.deburr';
 
-const sql = require('../_common/db/tag');
+const sql = require('./sql/tag');
 
 export async function getTag(id) {
 	return await getUserDb().get(sql.getTag, { $id: id });

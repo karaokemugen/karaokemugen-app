@@ -1,5 +1,5 @@
 import {getUserDb} from './database';
-const sql = require('../_common/db/stats');
+const sql = require('./sql/stats');
 
 export async function exportViewcounts() {
 	return await getUserDb().all(sql.exportViewcounts);

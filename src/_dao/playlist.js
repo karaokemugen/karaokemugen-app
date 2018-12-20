@@ -2,7 +2,7 @@ import {langSelector, buildClauses, getUserDb, transaction} from './database';
 import {getConfig} from '../_common/utils/config';
 import {now} from 'unix-timestamp';
 
-const sql = require('../_common/db/playlist');
+const sql = require('./sql/playlist');
 
 export async function editPlaylist(pl) {
 	return await getUserDb().run(sql.editPlaylist, {

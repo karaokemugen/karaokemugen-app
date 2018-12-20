@@ -9,7 +9,7 @@ import {duration} from '../_common/utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
 import {compareKarasChecksum, checkUserdbIntegrity, run as generateDB} from '../_services/generation';
-const sql = require('../_common/db/database');
+const sql = require('./sql/database');
 
 // Setting up databases
 let karaDb;
@@ -241,11 +241,11 @@ async function generateDatabase() {
 }
 
 async function migrateUserDb() {
-	return await getUserDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata')});
+	return await getUserDb().migrate({ migrationsPath: join(__dirname,'./sql/migrations/userdata')});
 }
 
 async function migrateKaraDb() {
-	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
+	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'./sql/migrations/karasdb')});
 }
 
 export function buildTypeClauses(mode, value) {

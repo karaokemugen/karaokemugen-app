@@ -6,7 +6,7 @@ import {asyncExists, asyncReadFile} from '../_common/utils/files';
 import deburr from 'lodash.deburr';
 import { getState } from '../_common/utils/state';
 
-const sql = require('../_common/db/kara');
+const sql = require('./sql/kara');
 
 export async function getSongCountForUser(playlist_id,user_id) {
 	return await getUserDb().get(sql.getSongCountPerUser, {

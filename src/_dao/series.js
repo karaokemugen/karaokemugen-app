@@ -1,7 +1,7 @@
 import {langSelector, paramWords, getUserDb} from './database';
 import deburr from 'lodash.deburr';
 
-const sql = require('../_common/db/series');
+const sql = require('./sql/series');
 
 export function buildClausesSeries(words) {
 	const params = paramWords(words);

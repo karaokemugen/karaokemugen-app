@@ -1,6 +1,6 @@
 import {langSelector, buildClauses, getUserDb, transaction} from './database';
 
-const sql = require('../_common/db/blacklist');
+const sql = require('./sql/blacklist');
 
 export async function emptyBlacklistCriterias() {
 	return await getUserDb().run(sql.emptyBlacklistCriterias);

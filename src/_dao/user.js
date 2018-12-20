@@ -1,5 +1,5 @@
 import {getUserDb} from './database';
-const sql = require('../_common/db/user');
+const sql = require('./sql/user');
 
 export async function getUserByName(username) {
 	return await getUserDb().get(sql.selectUserByName, { $username: username });
