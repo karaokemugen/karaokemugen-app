@@ -8,7 +8,7 @@ import {exit} from '../_services/engine';
 import {duration} from '../_common/utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
-import {compareKarasChecksum, checkUserdbIntegrity, run as generateDB} from '../_admin/generate_karasdb';
+import {compareKarasChecksum, checkUserdbIntegrity, run as generateDB} from '../_services/generation';
 const sql = require('../_common/db/database');
 
 // Setting up databases

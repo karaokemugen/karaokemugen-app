@@ -14,7 +14,7 @@ import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
 import {check} from '../_common/utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import timestamp from 'unix-timestamp';
-import { compareKarasChecksum } from './generate_karasdb';
+import { compareKarasChecksum } from './generation';
 import { getAllKaras } from '../_dao/kara';
 import ini from 'ini';
 
@@ -285,8 +285,6 @@ async function findSubFile(mediaPath, karaData, subFile) {
 
 export async function renameAllKaras() {
 	const karas = await getAllKaras('admin');
-	let karasRenames = [];
-	let lyricsRenames = [];
 	const conf = getConfig();
 	try {
 		for (const kara of karas) {
@@ -312,11 +310,9 @@ export async function renameAllKaras() {
 				let karaText = await asyncReadFile(resolve(conf.appPath, conf.PathKaras,kara.karafile),'utf-8');
 				karaText = karaText.replace(/\r/g, '');
 				let karaData = ini.parse(karaText);
-				karasRenames.push(`git mv "karas/${kara.karafile}" "karas/${defineFilename(k)}.kara"`);
 				karaData.mediafile = `${defineFilename(k)}${extname(karaData.mediafile)}`;
 				if (karaData.subfile !== 'dummy.ass') {
 					karaData.subfile = `${defineFilename(k)}.ass`;
-					lyricsRenames.push(`git mv "lyrics/${kara.subfile}" "lyrics/${karaData.subfile}"`);
 				}
 				try {
 					asyncMove(
@@ -336,8 +332,6 @@ export async function renameAllKaras() {
 	} catch(err) {
 		logger.error(`[KaraRename] Process aborted : ${err}`);
 	}
-	asyncWriteFile('gitkaras.sh',karasRenames.join('\r\n'),'utf-8');
-	asyncWriteFile('gitlyrics.sh',lyricsRenames.join('\r\n'),'utf-8');
 	logger.info('[KaraRename] Renaming complete. Please update your karaoke base from Shelter now');
 }
 

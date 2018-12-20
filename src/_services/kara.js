@@ -2,7 +2,7 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_common/utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
-import {extractAllKaraFiles, readAllKaras} from '../_admin/generate_karasdb';
+import {extractAllKaraFiles, readAllKaras} from './generation';
 import logger from 'winston';
 import {getOrAddSerieID} from './series';
 import {ASSToLyrics} from '../_common/utils/ass';
