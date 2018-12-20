@@ -15,7 +15,7 @@ import { initializationCatchphrases } from '../_services/constants';
 import sample from 'lodash.sample';
 
 // Api routes
-import systemController from '../_controllers/admin';
+import systemController from '../_controllers/system';
 import authController from '../_controllers/auth';
 import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
 

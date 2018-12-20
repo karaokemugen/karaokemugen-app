@@ -15,7 +15,7 @@ import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
 import logger from 'winston';
 
-export default function adminController(router) {
+export default function systemController(router) {
 	const conf = getConfig();
 	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
 
