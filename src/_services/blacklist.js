@@ -12,9 +12,9 @@ import {getKara} from '../_dao/kara';
 import {translateKaraInfo} from './kara';
 import logger from 'winston';
 import langs from 'langs';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {resolve} from 'path';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import {formatKaraList} from './kara';
 
 export async function getBlacklist(filter, lang, from, size) {

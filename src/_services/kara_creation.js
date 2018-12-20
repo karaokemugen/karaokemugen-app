@@ -4,14 +4,14 @@
 
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
-import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias, getConfig} from '../_common/utils/config';
-import {sanitizeFile, asyncReadFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt, asyncWriteFile} from '../_common/utils/files';
+import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias, getConfig} from '../_utils/config';
+import {sanitizeFile, asyncReadFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt, asyncWriteFile} from '../_utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
-import {check} from '../_common/utils/validators';
+import {check} from '../_utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import timestamp from 'unix-timestamp';
 import { compareKarasChecksum } from './generation';

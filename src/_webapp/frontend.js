@@ -6,7 +6,7 @@ import {address} from 'ip';
 import {graphics} from 'systeminformation';
 import logger from 'winston';
 import i18n from 'i18n';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager';

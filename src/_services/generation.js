@@ -2,11 +2,11 @@ import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {basename, join, resolve} from 'path';
 import deburr from 'lodash.deburr';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
-import {asyncReadFile, checksum, asyncCopy, asyncReadDir} from '../_common/utils/files';
-import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_common/utils/config';
+import {asyncReadFile, checksum, asyncCopy, asyncReadDir} from '../_utils/files';
+import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
@@ -18,7 +18,7 @@ import {
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
-import {emit} from '../_common/utils/pubsub';
+import {emit} from '../_utils/pubsub';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {updateUUID} from '../_common/db/database.js';
 import cliProgress from 'cli-progress';

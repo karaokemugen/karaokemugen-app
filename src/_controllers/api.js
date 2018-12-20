@@ -4,10 +4,10 @@ import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '
 import {getLang} from '../_controllers/lang';
 
 //Utils
-import {getPublicState, getState} from '../_common/utils/state';
+import {getPublicState, getState} from '../_utils/state';
 import logger from 'winston';
-import {sanitizeConfig, mergeConfig, verifyConfig, getConfig} from '../_common/utils/config';
-import {check, unescape} from '../_common/utils/validators';
+import {sanitizeConfig, mergeConfig, verifyConfig, getConfig} from '../_utils/config';
+import {check, unescape} from '../_utils/validators';
 import {resolve} from 'path';
 import multer from 'multer';
 import {emitWS} from '../_webapp/frontend';

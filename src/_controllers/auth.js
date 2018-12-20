@@ -1,6 +1,6 @@
 import passport from 'passport';
 import {encode, decode} from 'jwt-simple';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {findUserByName, updateUserFingerprint, findFingerprint, checkPassword, updateLastLoginName} from '../_services/user';
 
 const loginErr = {

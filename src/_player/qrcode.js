@@ -1,5 +1,5 @@
 import {toFile} from 'qrcode';
-import {getConfig} from '../_common/utils/config.js';
+import {getConfig} from '../_utils/config.js';
 import {resolve} from 'path';
 import logger from 'winston';
 

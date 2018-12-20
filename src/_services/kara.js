@@ -1,11 +1,11 @@
 import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
-import {check, initValidators} from '../_common/utils/validators';
+import {check, initValidators} from '../_utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
 import {extractAllKaraFiles, readAllKaras} from './generation';
 import logger from 'winston';
 import {getOrAddSerieID} from './series';
-import {ASSToLyrics} from '../_common/utils/ass';
+import {ASSToLyrics} from '../_utils/ass';
 import {getPlaylistContentsMini} from './playlist';
 import {getAllKaras as getAllKarasDB,
 	getYears as getYearsDB,
@@ -22,12 +22,12 @@ import {getAllKaras as getAllKarasDB,
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
 import sample from 'lodash.sample';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {resolve} from 'path';
 import testJSON from 'is-valid-json';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 
 export async function isAllKaras(karas) {

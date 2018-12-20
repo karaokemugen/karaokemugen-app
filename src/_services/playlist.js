@@ -1,16 +1,16 @@
 //Utils
 import {uuidRegexp} from './constants';
 import {getStats} from '../_dao/database';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {now} from 'unix-timestamp';
 import logger from 'winston';
 import deburr from 'lodash.deburr';
 import shuffle from 'lodash.shuffle';
 import {emitWS} from '../_webapp/frontend';
-import {on} from '../_common/utils/pubsub';
+import {on} from '../_utils/pubsub';
 import testJSON from 'is-valid-json';
-import {setState, getState} from '../_common/utils/state';
-import {profile} from '../_common/utils/logger';
+import {setState, getState} from '../_utils/state';
+import {profile} from '../_utils/logger';
 
 //DAO
 import {

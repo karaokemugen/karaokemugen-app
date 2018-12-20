@@ -2,8 +2,8 @@ import {getFavoritesPlaylist} from '../_dao/favorites';
 import {importPlaylist, exportPlaylist, getPlaylists, trimPlaylist, shufflePlaylist, copyKaraToPlaylist, createPlaylist, deleteKaraFromPlaylist, reorderPlaylist, addKaraToPlaylist, getPlaylistContentsMini, getPlaylistContents} from '../_services/playlist';
 import {listUsers, findUserByName} from '../_services/user';
 import logger from 'winston';
-import {date} from '../_common/utils/date';
-import {profile} from '../_common/utils/logger';
+import {date} from '../_utils/date';
+import {profile} from '../_utils/logger';
 
 export async function getFavorites(token, filter, lang, from, size) {
 	try {

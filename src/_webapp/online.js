@@ -1,4 +1,4 @@
-import {configureHost, getConfig} from '../_common/utils/config';
+import {configureHost, getConfig} from '../_utils/config';
 import got from 'got';
 
 export async function publishURL() {

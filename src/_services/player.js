@@ -1,7 +1,7 @@
-import {setState, getState} from '../_common/utils/state';
-import {getConfig} from '../_common/utils/config';
+import {setState, getState} from '../_utils/state';
+import {getConfig} from '../_utils/config';
 import logger from 'winston';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import {promisify} from 'util';
 import {displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem} from '../_player/player';
 import {addViewcountKara} from './kara';

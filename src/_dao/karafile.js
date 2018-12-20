@@ -8,11 +8,11 @@ import uuidV4 from 'uuid/v4';
 import logger from 'winston';
 import {parse, extname, resolve} from 'path';
 import {parse as parseini, stringify} from 'ini';
-import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_common/utils/files';
-import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_common/utils/config';
-import {extractSubtitles, getMediaInfo} from '../_common/utils/ffmpeg';
+import {checksum, asyncReadFile, asyncStat, asyncWriteFile, resolveFileInDirs} from '../_utils/files';
+import {resolvedPathKaras, resolvedPathSubs, resolvedPathTemp, resolvedPathMedias} from '../_utils/config';
+import {extractSubtitles, getMediaInfo} from '../_utils/ffmpeg';
 import {formatKara} from '../_services/kara';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {getAllKaras} from './kara';
 
 let error = false;

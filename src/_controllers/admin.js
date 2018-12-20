@@ -1,4 +1,4 @@
-import {editSetting, backupConfig, getConfig} from '../_common/utils/config';
+import {editSetting, backupConfig, getConfig} from '../_utils/config';
 import {emitWS} from '../_webapp/frontend';
 import {run as generateDatabase} from '../_services/generation';
 import {renameAllKaras, editKara, createKara, karaGenerationBatch} from '../_services/kara_creation';

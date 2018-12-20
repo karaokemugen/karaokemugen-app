@@ -1,10 +1,10 @@
 import {buildTypeClauses, langSelector, buildClauses, getUserDb, transaction} from './database';
 import {now} from 'unix-timestamp';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {resolve} from 'path';
-import {asyncExists, asyncReadFile} from '../_common/utils/files';
+import {asyncExists, asyncReadFile} from '../_utils/files';
 import deburr from 'lodash.deburr';
-import { getState } from '../_common/utils/state';
+import { getState } from '../_utils/state';
 
 const sql = require('./sql/kara');
 

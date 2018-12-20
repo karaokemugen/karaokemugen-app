@@ -1,7 +1,7 @@
 import logger from 'winston';
-import {resolvedPathBackgrounds, getConfig} from '../_common/utils/config';
+import {resolvedPathBackgrounds, getConfig} from '../_utils/config';
 import {resolve} from 'path';
-import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_common/utils/files';
+import {resolveFileInDirs, isImageFile, asyncReadDir, asyncExists} from '../_utils/files';
 import sample from 'lodash.sample';
 import sizeOf from 'image-size';
 import {getSingleJingle, buildJinglesList} from './jingles';
@@ -13,7 +13,7 @@ import {getID3} from './id3tag';
 import mpv from 'node-mpv';
 import {promisify} from 'util';
 import {endPoll} from '../_services/poll';
-import {getState, setState} from '../_common/utils/state';
+import {getState, setState} from '../_utils/state';
 
 
 const sleep = promisify(setTimeout);

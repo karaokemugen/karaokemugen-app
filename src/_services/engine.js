@@ -1,9 +1,9 @@
 //Utils
-import {setConfig, getConfig} from '../_common/utils/config';
-import {profile} from '../_common/utils/logger';
+import {setConfig, getConfig} from '../_utils/config';
+import {profile} from '../_utils/logger';
 import readlineSync from 'readline-sync';
 import logger from 'winston';
-import {getState, setState} from '../_common/utils/state';
+import {getState, setState} from '../_utils/state';
 
 //KM Modules
 import {createPreviews} from '../_webapp/previews';

@@ -1,9 +1,9 @@
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import langs from 'langs';
 import {resolve} from 'path';
 import {getLanguage} from 'iso-countries-languages';
 import {getAllTags} from '../_dao/tag';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 
 export function translateTags(taglist,lang) {
 	// If lang is not provided, assume we're using node's system locale

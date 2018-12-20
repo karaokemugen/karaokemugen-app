@@ -1,4 +1,4 @@
-import { getConfig } from '../_common/utils/config';
+import { getConfig } from '../_utils/config';
 import si from 'systeminformation';
 import { exportViewcounts, exportRequests, exportFavorites } from '../_dao/stats';
 import internet from 'internet-available';

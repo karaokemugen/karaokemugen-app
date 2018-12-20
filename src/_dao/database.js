@@ -1,11 +1,11 @@
 import logger from 'winston/lib/winston';
 import {open} from 'sqlite';
-import {setConfig, getConfig} from '../_common/utils/config';
+import {setConfig, getConfig} from '../_utils/config';
 import {join, resolve} from 'path';
-import {asyncStat, asyncExists} from '../_common/utils/files';
+import {asyncStat, asyncExists} from '../_utils/files';
 import promiseRetry from 'promise-retry';
 import {exit} from '../_services/engine';
-import {duration} from '../_common/utils/date';
+import {duration} from '../_utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
 import {compareKarasChecksum, checkUserdbIntegrity, run as generateDB} from '../_services/generation';

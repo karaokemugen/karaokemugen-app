@@ -1,7 +1,7 @@
-import {isMediaFile, asyncReadDir} from '../_common/utils/files';
+import {isMediaFile, asyncReadDir} from '../_utils/files';
 import {resolve} from 'path';
-import {resolvedPathJingles} from '../_common/utils/config';
-import {getMediaInfo} from '../_common/utils/ffmpeg';
+import {resolvedPathJingles} from '../_utils/config';
+import {getMediaInfo} from '../_utils/ffmpeg';
 import logger from 'winston';
 import sample from 'lodash.sample';
 

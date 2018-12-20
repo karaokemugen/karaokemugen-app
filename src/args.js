@@ -1,4 +1,4 @@
-import {setConfig} from './_common/utils/config';
+import {setConfig} from './_utils/config';
 import logger from 'winston';
 
 const help = `Usage :
