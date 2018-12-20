@@ -1,7 +1,7 @@
 //Middlewares
-import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from '../_controllers/webapp_mode';
-import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from '../_controllers/passport_manager';
-import {getLang} from '../_controllers/lang';
+import {requireWebappLimitedNoAuth, requireWebappLimited, requireWebappOpen} from './middlewares/webapp_mode';
+import {requireAuth, requireValidUser, updateUserLoginTime, requireAdmin} from './middlewares/auth';
+import {getLang} from './middlewares/lang';
 
 //Utils
 import {getPublicState, getState} from '../_utils/state';

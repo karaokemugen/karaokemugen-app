@@ -1,6 +1,6 @@
-import {getConfig} from '../_utils/config';
+import {getConfig} from '../../_utils/config';
 
-export const requireNotDemo = (req, res, next) => {	
+export const requireNotDemo = (req, res, next) => {
 	if (!getConfig().isDemo) {
 		next();
 	} else {
