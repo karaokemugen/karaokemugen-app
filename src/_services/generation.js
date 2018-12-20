@@ -14,13 +14,13 @@ import {
 	selectTags, selectViewcountKaras, selectRequestKaras,
 	selectWhitelistKaras,
 	updateSeries
-} from '../_common/db/generation';
+} from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {emit} from '../_utils/pubsub';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
-import {updateUUID} from '../_common/db/database.js';
+import {updateUUID} from '../_dao/database.js';
 import cliProgress from 'cli-progress';
 import {emitWS} from '../_webapp/frontend';
 

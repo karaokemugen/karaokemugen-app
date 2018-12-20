@@ -2,7 +2,7 @@
 
 import {resolve} from 'path';
 import {asyncRequired} from './files';
-import {exit} from '../../_services/engine';
+import {exit} from '../_services/engine';
 import logger from 'winston';
 
 // Check if binaries are available

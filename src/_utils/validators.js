@@ -1,7 +1,7 @@
 import validate from 'validate.js';
 import testJSON from 'is-valid-json';
 import {has as hasLang} from 'langs';
-import {karaTypes, tags} from '../../_services/constants';
+import {karaTypes, tags} from '../_services/constants';
 
 // Validators
 
@@ -14,7 +14,7 @@ function integerValidator(value) {
 function langValidator(value) {
 	if (!Array.isArray(value)) value = value.replace(/"/g, '').split(',');
 	value = value.map((value) => value.trim());
-	
+
 	const firstInvalidLang = value.find((lang) => !(lang === 'und' || lang === 'mul' || lang === 'zxx' || hasLang('2B', lang)));
 	if (firstInvalidLang) return `'${firstInvalidLang}' is invalid ISO639-2B code`;
 

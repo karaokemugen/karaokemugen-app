@@ -14,11 +14,11 @@ import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
-import {publishURL} from '../../_webapp/online';
-import {playerNeedsRestart} from '../../_services/player';
+import {publishURL} from '../_webapp/online';
+import {playerNeedsRestart} from '../_services/player';
 import {setState, getState} from './state';
-import {setSongPoll} from '../../_services/poll';
-import { initStats, stopStats } from '../../_services/stats';
+import {setSongPoll} from '../_services/poll';
+import { initStats, stopStats } from '../_services/stats';
 
 /** Object containing all config */
 let config = {};
@@ -165,7 +165,7 @@ async function loadConfig(configFile) {
 
 async function configureLocale() {
 	i18n.configure({
-		directory: resolve(__dirname, '../../_locales'),
+		directory: resolve(__dirname, '../_locales'),
 		defaultLocale: 'en',
 		cookie: 'locale',
 		register: global

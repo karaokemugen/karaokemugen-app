@@ -5,7 +5,7 @@ import got from 'got';
 import prettyBytes from 'pretty-bytes';
 import {createWriteStream} from 'fs';
 import { getConfig } from './config';
-import { emitWS } from '../../_webapp/frontend';
+import { emitWS } from '../_webapp/frontend';
 
 
 export default class Downloader {

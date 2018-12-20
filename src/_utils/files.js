@@ -3,7 +3,7 @@ import {remove, mkdirp, copy, move} from 'fs-extra';
 import {promisify} from 'util';
 import {resolve} from 'path';
 import logger from './logger';
-import {mediaFileRegexp, imageFileRegexp} from '../../_services/constants';
+import {mediaFileRegexp, imageFileRegexp} from '../_services/constants';
 import fileType from 'file-type';
 import readChunk from 'read-chunk';
 import {getConfig} from './config';
@@ -118,7 +118,7 @@ export async function resolveFileInDirs(filename, dirs) {
 	const resolvedFile = dirs
 		.map((dir) => resolve(getConfig().appPath, dir, filename))
 		.find((resolvedFile) => asyncExists(resolvedFile));
-	
+
 	if(!resolvedFile) throw `File "${filename}" not found in any listed directory: ${dirs}`;
 
 	return resolvedFile;
