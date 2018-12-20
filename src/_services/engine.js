@@ -14,7 +14,7 @@ import {initFavoritesSystem} from './favorites';
 import {initOnlineSystem} from '../_webapp/online';
 import {initPlayer, quitmpv} from './player';
 import {initStats} from './stats';
-import {karaGenerationBatch} from '../_admin/generate_karasfiles';
+import {karaGenerationBatch} from './kara_creation';
 import {validateKaras} from './kara';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
