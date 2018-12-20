@@ -23,7 +23,7 @@ class UserList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/users')
+		axios.get('/api/system/users')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({users: res.data});
@@ -35,7 +35,7 @@ class UserList extends Component {
 	}
 
 	delete = (userId) => {
-		axios.delete(`/api/users/${userId}`)
+		axios.delete(`/api/system/users/${userId}`)
 			.then(() => {
 				this.props.warnMessage('User deleted.');
 				this.setState({deleteModal: false, user: {}});
@@ -75,7 +75,7 @@ class UserList extends Component {
 		title: 'ID',
 		dataIndex: 'user_id',
 		key: 'user_id',
-		render: user_id => <Link to={`/users/${user_id}`}>{user_id}</Link>,
+		render: user_id => <Link to={`/system/users/${user_id}`}>{user_id}</Link>,
 		defaultSortOrder: 'ascend',
 		sorter: (a, b) => a.user_id - b.user_id
 	}, {
@@ -92,20 +92,20 @@ class UserList extends Component {
 	}, {
 		title: 'Avatar',
 		dataIndex: 'avatar_file',
-		key: 'avatar_file',		
-		render: (text, record) => <Avatar shape="square" size="large" src={`/static/avatars/${record.avatar_file}`}/>,
+		key: 'avatar_file',
+		render: (text, record) => <Avatar shape="square" size="large" src={`/avatars/${record.avatar_file}`}/>,
 		sorter: (a, b) => a.avatar_file.localeCompare(b.avatar_file)
 	}, {
 		title: 'Username',
 		dataIndex: 'login',
 		key: 'login',
-		render: (text, record) => <Link to={`/users/${record.user_id}`}>{text}</Link>,
+		render: (text, record) => <Link to={`/system/users/${record.user_id}`}>{text}</Link>,
 		sorter: (a, b) => a.login.localeCompare(b.login)
 	}, {
 		title: 'Nickname',
 		dataIndex: 'nickname',
 		key: 'nickname',
-		render: (text, record) => <Link to={`/users/${record.user_id}`}>{text}</Link>,
+		render: (text, record) => <Link to={`/system/users/${record.user_id}`}>{text}</Link>,
 		sorter: (a, b) => a.nickname.localeCompare(b.nickname)
 	}, {
 		title: 'Last seen on',
@@ -139,7 +139,7 @@ class UserList extends Component {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/users/${record.user_id}`}><Icon type='edit'/></Link>
+			<Link to={`/system/users/${record.user_id}`}><Icon type='edit'/></Link>
 			<Divider type="vertical"/>
 			<Button type='danger' icon='delete' onClick={
 				() => this.setState({deleteModal: true, user: record})

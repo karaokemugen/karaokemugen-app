@@ -24,7 +24,7 @@ class KaraList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/karas', { params: { filter: this.state.filter }})
+		axios.get('/api/system/karas', { params: { filter: this.state.filter }})
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data.content});
@@ -108,7 +108,7 @@ class KaraList extends Component {
 		title: 'Action',
 		key: 'action',
 		render: (text, record) => (<span>
-			<Link to={`/karas/${record.kara_id}`}><Icon type='edit'/></Link>
+			<Link to={`/system/karas/${record.kara_id}`}><Icon type='edit'/></Link>
 		</span>)
 	}];
 }

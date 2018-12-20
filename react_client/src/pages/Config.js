@@ -8,7 +8,7 @@ import {loading, infoMessage, errorMessage} from '../actions/navigation';
 class Config extends Component {
 
 	saveSetting(record, value) {
-		axios.put('/api/config', {
+		axios.put('/api/system/config', {
 			setting: record.key,
 			value: value
 		})
@@ -50,7 +50,7 @@ class Config extends Component {
 	}
 
 	refresh() {
-		axios.get('/api/config')
+		axios.get('/api/system/config')
 			.then(res => this.setState({config: this.configKeyValue(res.data), error: ''}))
 			.catch(err => this.props.errorMsg('Unable to fetch configuration ' + err));
 	}
@@ -59,7 +59,7 @@ class Config extends Component {
 
 	configBackup() {
 		this.props.loading(true);
-		axios.post('/api/config/backup')
+		axios.post('/api/system/config/backup')
 			.then(res => {
 				this.props.loading(false);
 				this.props.infoMessage(res.data);

@@ -8,7 +8,7 @@ export const AUTH_ERROR = 'auth_error';
 
 export function login(username, password) {
 	return function(dispatch) {
-		axios.post('/api/login',
+		axios.post('/api/auth/login',
 			stringify({username: username, password: password}),
 			{
 				headers: { 'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8' }
@@ -31,7 +31,7 @@ export function login(username, password) {
 
 export function checkAuth() {
 	return function(dispatch) {
-		axios.get('/api/checkauth')
+		axios.get('/api/auth/checkauth')
 			.then(response => {
 				localStorage.setItem('username', response.data.username);
 				dispatch({

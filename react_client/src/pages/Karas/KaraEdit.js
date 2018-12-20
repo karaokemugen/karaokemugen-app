@@ -38,10 +38,10 @@ class KaraEdit extends Component {
 	}
 
 	saveNew = (kara) => {
-		axios.post('/api/karas', kara)
+		axios.post('/api/system/karas', kara)
 			.then(() => {
 				this.props.infoMessage('Kara successfully created');
-				this.props.push('/karas');
+				this.props.push('/system/karas');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -49,10 +49,10 @@ class KaraEdit extends Component {
 	};
 
 	saveUpdate = (kara) => {
-		axios.put(`/api/karas/${kara.kara_id}`, kara)
+		axios.put(`/api/system/karas/${kara.kara_id}`, kara)
 			.then(() => {
 				this.props.infoMessage('Kara successfully edited');
-				this.props.push('/karas');
+				this.props.push('/system/karas');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -62,7 +62,7 @@ class KaraEdit extends Component {
 	loadKara = () => {
 		this.props.loading(true);
 		if (this.props.match && this.props.match.params.kara_id) {
-			axios.get(`/api/karas/${this.props.match.params.kara_id}`)
+			axios.get(`/api/system/karas/${this.props.match.params.kara_id}`)
 				.then(res => {
 					const karaData = {
 						author: res.data[0].author,
