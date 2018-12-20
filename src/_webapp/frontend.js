@@ -98,7 +98,7 @@ export async function initFrontend(port) {
 		});
 	}
 	//Path to locales for webapp
-	app.use('/locales',express.static(__dirname + '/../_common/locales/'));
+	app.use('/locales',express.static(__dirname + '../_locales/'));
 	//Path to video previews
 	app.use('/previews',express.static(resolve(conf.appPath,conf.PathPreviews)));
 	//Path to user avatars

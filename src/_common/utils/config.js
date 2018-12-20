@@ -165,7 +165,7 @@ async function loadConfig(configFile) {
 
 async function configureLocale() {
 	i18n.configure({
-		directory: resolve(__dirname, '../locales'),
+		directory: resolve(__dirname, '../../_locales'),
 		defaultLocale: 'en',
 		cookie: 'locale',
 		register: global

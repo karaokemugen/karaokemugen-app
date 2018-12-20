@@ -474,7 +474,7 @@ function getTagId(tagName, tags) {
 
 function prepareAllTagsInsertData(allTags) {
 	const data = [];
-	const translations = require(join(__dirname,'../_common/locales'));
+	const translations = require(join(__dirname,'../_locales/'));
 	let lastIndex;
 
 	allTags.forEach((tag, index) => {
