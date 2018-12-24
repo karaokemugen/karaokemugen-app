@@ -8,20 +8,28 @@ import sample from 'lodash.sample';
 let allJingles = [];
 let currentJingles = [];
 
-const extractJingleFiles = async (jingleDir) => await asyncReadDir(jingleDir)
-	.filter((file) => isMediaFile(file))
+const extractJingleFiles = async (jingleDir) => {
+  const files = await asyncReadDir(jingleDir);
+  
+  return files.filter((file) => isMediaFile(file))
 	.map((file) => ([file, resolve(jingleDir, file)]));
+}
+	
 
-const extractAllJingleFiles = async () => resolvedPathJingles()
-	.map((resolvedPath) => extractJingleFiles(resolvedPath))
-	.reduce((jingleFiles, jingleFile) => jingleFiles.concat(jingleFile), []);
+const extractAllJingleFiles = async () => {
+  const resolvedFiles = await Promise.all(
+    resolvedPathJingles()
+    .map((resolvedPath) => extractJingleFiles(resolvedPath))
+  );
+  return resolvedFiles
+  	.reduce((jingleFiles, jingleFile) => jingleFiles.concat(jingleFile), []);
+}
 
 const getAllVideoGains = async (jingleFiles) => {
-	const jinglesList = await jingleFiles
-		.map((jinglefile) => ({
-			file: jinglefile,
-			gain: getMediaInfo(jinglefile).audiogain
-		}));
+   const jinglesList = await Promise.all(jingleFiles.map((jinglefile) => ({
+    file: jinglefile,
+    gain: getMediaInfo(jinglefile).audiogain
+  })));
 
 	jinglesList.forEach((jingleData) => logger.debug(`[Jingles] Computed jingle ${jingleData.file} audio gain at ${jingleData.gain} dB`));
 
@@ -29,7 +37,8 @@ const getAllVideoGains = async (jingleFiles) => {
 };
 
 export const buildJinglesList = async () => {
-	const jingleFiles = await extractAllJingleFiles();
+  const jingleFiles = await extractAllJingleFiles();
+  console.log(jingleFiles);
 	const list = await getAllVideoGains(jingleFiles);
 
 	currentJingles = currentJingles.concat(list);

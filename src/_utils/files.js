@@ -68,7 +68,11 @@ export async function detectFileType(file) {
 	return detected.ext;
 }
 
-const passThroughFunction = (fn, args) => promisify(fn)(...args);
+const passThroughFunction = (fn, args) => {
+  if(!Array.isArray(args)) args = [args]
+
+  return promisify(fn)(...args)
+};
 
 export const asyncExists = (file) => passThroughFunction(exists, file);
 export const asyncReadFile = (...args) => passThroughFunction(readFile, args);
