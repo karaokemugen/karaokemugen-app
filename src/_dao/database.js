@@ -1,4 +1,4 @@
-import logger from 'winston/lib/winston';
+import logger from 'winston';
 import {open} from 'sqlite';
 import {setConfig, getConfig} from '../_utils/config';
 import {join, resolve} from 'path';
@@ -73,12 +73,12 @@ export function langSelector(lang) {
 
 async function doTransaction(items, sql) {
 	try {
-		await getUserDb().run('begin transaction');
+		await getUserDb().run('BEGIN TRANSACTION');
 		for (const index in items) {
 			const stmt = await getUserDb().prepare(sql);
 			await stmt.run(items[index]);
 		}
-		return await getUserDb().run('commit');
+		return await getUserDb().run('COMMIT');
 	} catch(err) {
 		throw err;
 	}
@@ -132,9 +132,9 @@ async function closeKaraDatabase() {
 	} else {
 		try {
 			await karaDb.close();
-			karaDb = null;
 		} catch(err) {
 			logger.warn('[DB] Kara database is busy, force closing');
+		} finally {
 			karaDb = null;
 		}
 	}
@@ -146,9 +146,9 @@ export async function closeUserDatabase() {
 	} else {
 		try {
 			await userDb.close();
-			userDb = null;
 		} catch(err) {
 			logger.warn('[DB] User database is busy, force closing');
+		} finally {
 			userDb = null;
 		}
 	}

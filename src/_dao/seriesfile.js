@@ -22,7 +22,7 @@ export async function readSeriesFile(seriesFile) {
 	try {
 		file = resolveFileInDirs(seriesFile, resolvedPathSeries());
 	} catch(err) {
-		throw `No series file found ${seriesFile}`;
+		throw `No series file found (${seriesFile})`;
 	}
 	return await getDataFromSeriesFile(file);
 }
