@@ -295,18 +295,6 @@ const karaConstraintsV3 = {
 	version: {numericality: {onlyInteger: true, equality: 3}}
 };
 
-function verifyKIDsUnique(karas) {
-	const KIDs = [];
-	karas.forEach((kara) => {
-		if (!KIDs.includes(kara.KID)) {
-			KIDs.push(kara.KID);
-		} else {
-			logger.error(`[Kara] KID ${kara.KID} is not unique : duplicate found in karaoke ${kara.lang} - ${kara.series} - ${kara.type}${kara.order} - ${kara.title}`);
-			throw `Duplicate KID found : ${kara.KID}`;
-		}
-	});
-}
-
 export function karaDataValidationErrors(karaData) {
 	initValidators();
 	return check(karaData, karaConstraintsV3);
