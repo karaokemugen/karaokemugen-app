@@ -21,57 +21,29 @@ import parallel from 'async-await-parallel';
 import {emit} from '../_utils/pubsub';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {updateUUID} from '../_dao/database.js';
-import cliProgress from 'cli-progress';
-import {emitWS} from '../_webapp/frontend';
-
+import Bar from '../_utils/bar';
 
 let error = false;
 let generating = false;
 let bar = {};
 
-function initBar(options, preset, total, start) {
-	bar = new cliProgress.Bar(options, preset);
-	bar.start(total, start);
-	emitWS('generationProgress', {
-		value: start,
-		total: total,
-		text: options.format.substr(0, options.format.indexOf('{'))
-	});
-};
-
-function stopBar() {
-	bar.stop();
-	emitWS('generationProgress', {
-		value: 100,
-		total: 100
-	});
-};
-
-function incrBar() {
-	bar.increment();
-	emitWS('generationProgress', {
-		value: bar.value,
-		total: bar.total
-	});
-};
-
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
-	incrBar();
+	bar.incr();
 	await db.run('DELETE FROM kara_serie;');
-	incrBar();
+	bar.incr();
 	await db.run('DELETE FROM tag;');
-	incrBar();
+	bar.incr();
 	await db.run('DELETE FROM serie;');
-	incrBar();
+	bar.incr();
 	await db.run('DELETE FROM serie_lang;');
-	incrBar();
+	bar.incr();
 	await db.run('DELETE FROM kara;');
-	incrBar();
+	bar.incr();
 	await db.run('DELETE FROM sqlite_sequence;');
-	incrBar();
+	bar.incr();
 	await db.run('VACUUM;');
-	incrBar();
+	bar.incr();
 }
 
 async function extractKaraFiles(karaDir) {
@@ -123,7 +95,7 @@ export async function readAllSeries(seriesFiles) {
 async function processSerieFile(seriesFile) {
 	const data = await getDataFromSeriesFile(seriesFile);
 	data.seriefile = basename(seriesFile);
-	incrBar();
+	bar.incr();
 	return data;
 }
 
@@ -151,7 +123,7 @@ async function readAndCompleteKarafile(karafile) {
 		return karaData;
 	}
 	await writeKara(karafile, karaData);
-	incrBar();
+	bar.incr();
 	return karaData;
 }
 
@@ -547,14 +519,7 @@ async function runSqlStatementOnData(stmtPromise, data) {
 	const sqlPromises = data.map(sqlData => stmt.run(sqlData));
 	await Promise.all(sqlPromises);
 	await stmt.finalize();
-	incrBar();
-}
-
-function createBar(message, length) {
-	initBar({
-		format: `${message} {bar} {percentage}% - ETA {eta_formatted}`,
-		stopOnComplete: true
-		  }, cliProgress.Presets.shades_classic, length, 0);
+	bar.incr();
 }
 
 export async function run(config) {
@@ -570,27 +535,28 @@ export async function run(config) {
 		const karaFiles = await extractAllKaraFiles();
 		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
 		if (karaFiles.length === 0) throw 'No kara files found';
-		createBar('Reading .kara files  ', karaFiles.length + 1);
+
+		bar = new Bar('Reading .kara files  ', karaFiles.length + 1);
 		const karas = await readAllKaras(karaFiles);
 		logger.debug(`[Gen] Number of karas read : ${karas.length}`);
 		// Check if we don't have two identical KIDs
 		checkDuplicateKIDs(karas);
-		incrBar();
+		bar.incr();
 		// Series data
-		stopBar();
+		bar.stop();
 
 		const seriesFiles = await extractAllSeriesFiles();
 		if (seriesFiles.length === 0) throw 'No series files found';
-		createBar('Reading .series files', seriesFiles.length);
+		bar = new Bar('Reading .series files', seriesFiles.length);
 		const seriesData = await readAllSeries(seriesFiles);
 		checkDuplicateSeries(seriesData);
 		checkDuplicateSIDs(seriesData);
 		// Preparing data to insert
-		stopBar();
+		bar.stop();
 		logger.info('[Gen] Data files processed, creating database');
-		createBar('Generating database  ', 20);
+		bar = new Bar('Generating database  ', 20);
 		await emptyDatabase(db);
-		incrBar();
+		bar.incr();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
@@ -618,10 +584,10 @@ export async function run(config) {
 		]);
 
 		await db.run('commit');
-		incrBar();
+		bar.incr();
 		await db.close();
 		await checkUserdbIntegrity(null, conf);
-		stopBar();
+		bar.stop();
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
@@ -654,7 +620,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		karas_userdbfile + '.backup',
 		{ overwrite: true }
 	);
-	if (bar) incrBar();
+	if (bar) bar.incr();
 
 
 	logger.debug('[Gen] Running user database integrity checks');
@@ -686,7 +652,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.all(selectPlaylistKaras)
 	]);
 
-	if (bar) incrBar();
+	if (bar) bar.incr();
 
 	await userdb.run('BEGIN TRANSACTION');
 	await userdb.run('PRAGMA foreign_keys = OFF;');
@@ -702,7 +668,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		userdb.run(`UPDATE request SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
 		userdb.run(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
 	]);
-	if (bar) incrBar();
+	if (bar) bar.incr();
 	const karaIdByKid = new Map();
 	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 	let sql = '';
@@ -769,7 +735,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	await userdb.run('PRAGMA foreign_keys = ON;');
 	await userdb.run('COMMIT');
-	if (bar) incrBar();
+	if (bar) bar.incr();
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 
@@ -779,18 +745,18 @@ export async function compareKarasChecksum(opts = {silent: false}) {
 	const karaFiles = await extractAllKaraFiles();
 	const seriesFiles = await extractAllSeriesFiles();
 	let KMData = '';
-	if (!opts.silent) createBar('Checking .karas...   ', karaFiles.length);
+	if (!opts.silent) bar = new Bar('Checking .karas...   ', karaFiles.length);
 	for (const karaFile of karaFiles) {
 		KMData += await asyncReadFile(karaFile, 'utf-8');
-		if (!opts.silent) incrBar();
+		if (!opts.silent) bar.incr();
 	}
-	if (!opts.silent) stopBar();
-	if (!opts.silent) createBar('Checking series...   ', seriesFiles.length);
+	if (!opts.silent) bar.stop();
+	if (!opts.silent) bar = new Bar('Checking series...   ', seriesFiles.length);
 	for (const seriesFile of seriesFiles) {
 		KMData += await asyncReadFile(seriesFile, 'utf-8');
-		if (!opts.silent) incrBar();
+		if (!opts.silent) bar.incr();
 	}
-	if (!opts.silent) stopBar();
+	if (!opts.silent) bar.stop();
 	const karaDataSum = checksum(KMData);
 	profile('compareChecksum');
 	if (karaDataSum !== conf.appKaraDataChecksum) {
