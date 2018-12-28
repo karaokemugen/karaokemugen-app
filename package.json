@@ -116,6 +116,7 @@
     "read-chunk": "^3.0.0",
     "readline-sync": "^1.4.9",
     "sanitize-filename": "^1.6.1",
+    "semver": "^5.6.0",
     "socket.io": "^2.2.0",
     "sqlite": "^3.0.0",
     "systeminformation": "^3.51.4",
