@@ -4,7 +4,7 @@ import {run as generateDatabase} from '../_services/generation';
 import {renameAllKaras, editKara, createKara, karaGenerationBatch} from '../_services/kara_creation';
 import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
 import {requireNotDemo} from './middlewares/demo';
-import {getLang} from './lang';
+import {getLang} from './middlewares/lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
 import {getKaras, getKara, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
 import {getTags} from '../_services/tag';
