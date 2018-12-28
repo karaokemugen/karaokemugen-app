@@ -5,7 +5,7 @@ import deburr from 'lodash.deburr';
 import {profile} from '../_utils/logger';
 import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
-import {asyncReadFile, checksum, asyncCopy, asyncReadDir} from '../_utils/files';
+import {asyncReadFile, checksum, asyncCopy, asyncReadDirFilter} from '../_utils/files';
 import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
@@ -25,7 +25,7 @@ import Bar from '../_utils/bar';
 
 let error = false;
 let generating = false;
-let bar = {};
+let bar;
 
 async function emptyDatabase(db) {
 	await db.run('DELETE FROM kara_tag;');
@@ -46,32 +46,10 @@ async function emptyDatabase(db) {
 	bar.incr();
 }
 
-async function extractKaraFiles(karaDir) {
-	const karaFiles = [];
-	const dirListing = await asyncReadDir(karaDir);
-	for (const file of dirListing) {
-		if (file.endsWith('.kara') && !file.startsWith('.')) {
-			karaFiles.push(resolve(karaDir, file));
-		}
-	}
-	return karaFiles;
-}
-
-async function extractSeriesFiles(seriesDir) {
-	const seriesFiles = [];
-	const dirListing = await asyncReadDir(seriesDir);
-	for (const file of dirListing) {
-		if (file.endsWith('.series.json') && !file.startsWith('.')) {
-			seriesFiles.push(resolve(seriesDir, file));
-		}
-	}
-	return seriesFiles;
-}
-
 export async function extractAllKaraFiles() {
 	let karaFiles = [];
 	for (const resolvedPath of resolvedPathKaras()) {
-		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
+		karaFiles = karaFiles.concat(await asyncReadDirFilter(resolvedPath, '.kara'));
 	}
 	return karaFiles;
 }
@@ -79,7 +57,7 @@ export async function extractAllKaraFiles() {
 export async function extractAllSeriesFiles() {
 	let seriesFiles = [];
 	for (const resolvedPath of resolvedPathSeries()) {
-		seriesFiles = seriesFiles.concat(await extractSeriesFiles(resolvedPath));
+		seriesFiles = seriesFiles.concat(await asyncReadDirFilter(resolvedPath, '.series.json'));
 	}
 	return seriesFiles;
 }
@@ -239,17 +217,11 @@ function getAllSeries(karas, seriesData) {
 	karas.forEach((kara, index) => {
 		const karaIndex = index + 1;
 		getSeries(kara).forEach(serie => {
-			if (map.has(serie)) {
-				map.get(serie).push(karaIndex);
-			} else {
-				map.set(serie, [karaIndex]);
-			}
+			map.has(serie) ? map.get(serie).push(karaIndex) : map.set(serie, [karaIndex]);
 		});
 	});
 	for (const serie of seriesData) {
-		if (!map.has(serie.name)) {
-			map.set(serie.name, [0]);
-		}
+		if (!map.has(serie.name)) map.set(serie.name, [0]);
 	}
 	return map;
 }
@@ -275,7 +247,7 @@ function prepareAllSeriesInsertData(mapSeries) {
 }
 
 /**
- * Warning : we iterate on keys and not on map entries to get the right order and thus the same indexes as the function prepareAllSeriesInsertData. This is the historical way of doing it and should be improved sometimes.tre améliorée.
+ * Warning : we iterate on keys and not on map entries to get the right order and thus the same indexes as the function prepareAllSeriesInsertData. This is the historical way of doing it and should be improved sometimes.
  */
 function prepareAllKarasSeriesInsertData(mapSeries) {
 	const data = [];
@@ -327,11 +299,12 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 			}
 		}
 	}
-	// Checking if some series present in .kara files are not present in the series file
+	// Checking if some series present in .kara files are not present in the series files
 	for (const serie of mapSeries.keys()) {
 		if (!findSeries(serie, seriesData)) {
 			// Print a warning and push some basic data so the series can be searchable at least
 			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
+			// In strict mode, it triggers an error
 			if (getConfig().optStrict) strictModeError(serie);
 			data.push({
 				$serie_name: serie

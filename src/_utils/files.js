@@ -69,9 +69,8 @@ export async function detectFileType(file) {
 }
 
 const passThroughFunction = (fn, args) => {
-  if(!Array.isArray(args)) args = [args]
-
-  return promisify(fn)(...args)
+	if(!Array.isArray(args)) args = [args];
+	return promisify(fn)(...args);
 };
 
 export const asyncExists = (file) => passThroughFunction(exists, file);
@@ -123,7 +122,7 @@ export async function resolveFileInDirs(filename, dirs) {
 		.map((dir) => resolve(getConfig().appPath, dir, filename))
 		.find((resolvedFile) => asyncExists(resolvedFile));
 
-	if(!resolvedFile) throw `File "${filename}" not found in any listed directory: ${dirs}`;
+	if (!resolvedFile) throw `File "${filename}" not found in any listed directory: ${dirs}`;
 
 	return resolvedFile;
 }
@@ -136,7 +135,7 @@ export function replaceExt(filename, newExt) {
 async function compareFiles(file1, file2) {
 	const files = [file1, file2];
 
-	if(await Promise.all(files.some((file) => !asyncExists(file)))) return false;
+	if (await Promise.all(files.some((file) => !asyncExists(file)))) return false;
 
 	const [file1data, file2data] = await Promise.all(files.map((file) => asyncReadFile(file, 'utf-8')));
 
@@ -165,4 +164,9 @@ export async function compareDirs(dir1, dir2) {
 		removedFiles,
 		updatedFiles
 	};
+}
+
+export async function asyncReadDirFilter(dir, ext) {
+	const dirListing = await asyncReadDir(dir);
+	return dirListing.filter(file => file.endsWith(ext) && !file.startsWith('.')).map(file => resolve(dir, file));
 }
