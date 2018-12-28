@@ -2,7 +2,6 @@ import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
 import {check, initValidators} from '../_utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
-import {extractAllKaraFiles, readAllKaras} from './generation';
 import logger from 'winston';
 import {getOrAddSerieID} from './series';
 import {ASSToLyrics} from '../_utils/ass';
@@ -295,19 +294,6 @@ const karaConstraintsV3 = {
 	mediaduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	version: {numericality: {onlyInteger: true, equality: 3}}
 };
-
-export async function validateKaras() {
-	try {
-		const karaFiles = await extractAllKaraFiles();
-		const karas = await readAllKaras(karaFiles);
-		verifyKIDsUnique(karas);
-		if (karas.some((kara) => {
-			return kara.error;
-		})) throw 'One kara failed validation process';
-	} catch(err) {
-		throw err;
-	}
-}
 
 function verifyKIDsUnique(karas) {
 	const KIDs = [];

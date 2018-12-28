@@ -43,21 +43,13 @@ export async function parseCommandLineArgs(argv) {
 		logger.info('[Launcher] Profiling enabled');
 		setConfig({optProfiling: true});
 	}
-	if (argv.generate && !argv.validate) {
+	if (argv.generate) {
 		logger.info('[Launcher] Database generation requested');
 		setConfig({optGenerateDB: true});
 		if (argv.noMedia) {
 			logger.info('[Launcher] Medias will not be read during generation');
 			setConfig({optNoMedia: true});
 		}
-	}
-	if (argv.validate && !argv.generate) {
-		logger.info('[Launcher] .kara folder validation requested');
-		setConfig({optValidateKaras: true});
-	}
-	if (argv.validate && argv.generate) {
-		console.log('Error : --validate and --generate are mutually exclusive!');
-		process.exit(1);
 	}
 	if (argv.strict) {
 		logger.info('[Launcher] Strict mode enabled. KARAOKE MUGEN DOES NOT FORGIVE. EVER.');
