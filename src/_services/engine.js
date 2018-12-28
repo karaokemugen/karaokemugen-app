@@ -63,7 +63,7 @@ export async function initEngine() {
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayer());
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
-	if (+conf.OnlineStats === 1) inits.push(initStats());
+	if (+conf.OnlineStats) inits.push(initStats());
 	//Initialize engine
 	// Test if current/public playlists exist
 	const currentPL_id = await isACurrentPlaylist();
@@ -76,9 +76,7 @@ export async function initEngine() {
 		},'admin')
 		});
 		logger.info('[Engine] Initial current playlist created');
-		if (!conf.isTest) {
-			inits.push(buildDummyPlaylist(getState().currentPlaylistID));
-		}
+		if (!conf.isTest) inits.push(buildDummyPlaylist(getState().currentPlaylistID));
 	}
 	const publicPL_id = await isAPublicPlaylist();
 	if (publicPL_id) {

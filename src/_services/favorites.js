@@ -40,11 +40,8 @@ export async function deleteFavorite(username, kara_id) {
 	const plContents = await getPlaylistContentsMini(plInfo.playlist_id);
 	let plc_id;
 	const isKaraInPL = plContents.some((plc) => {
-		if (plc.kara_id === kara_id) {
-			plc_id = plc.playlistcontent_id;
-			return true;
-		}
-		return false;
+		plc_id = plc.playlistcontent_id;
+		return plc.kara_id === kara_id;
 	});
 	if (!isKaraInPL) throw 'Karaoke ID is not present in this favorites list';
 	await deleteKaraFromPlaylist(plc_id, plInfo.playlist_id, null, {sortBy: 'name'});
@@ -87,8 +84,7 @@ async function getAllFavorites(userList) {
 export async function createAutoMix(params, username) {
 	// Create Playlist.
 	profile('AutoMix');
-	let users = params.users.split(',');
-	const plcList = await getAllFavorites(users);
+	const plcList = await getAllFavorites(params.users.split(','));
 	const autoMixPLName = `AutoMix ${date()}`;
 	const playlist_id = await createPlaylist(autoMixPLName,{
 		visible: true
@@ -115,7 +111,7 @@ export async function initFavoritesSystem() {
 	]);
 	for (const user of users) {
 		const isFavoritePLExists = playlists.some(pl => {
-			return pl.username === user.login && pl.flag_favorites === 1 && user.type === 1;
+			return pl.username === user.login && pl.flag_favorites === 1;
 		});
 		if (!isFavoritePLExists && user.type === 1) await createPlaylist(`Faves : ${user.login}`,{
 			favorites: true
@@ -124,7 +120,5 @@ export async function initFavoritesSystem() {
 }
 
 export async function findFavoritesPlaylist(username) {
-	const plInfo = await getFavoritesPlaylist(username);
-	if (plInfo) return plInfo.playlist_id;
-	return false;
+	return await getFavoritesPlaylist(username);
 }

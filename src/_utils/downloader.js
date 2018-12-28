@@ -16,13 +16,10 @@ export default class Downloader {
 	  this.opts = opts;
 	  this.onEnd = null;
 	  this.fileErrors = [];
-	  if (opts.bar) {
-	  	const barFormat = 'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}';
-	  	this.bar = new _cliProgress.Bar({
-				format: barFormat,
-				stopOnComplete: true
+	  if (opts.bar)	this.bar = new _cliProgress.Bar({
+			format:  'Downloading {bar} {percentage}% {value}/{total} Mb - ETA {eta_formatted}',
+			stopOnComplete: true
 	  }, _cliProgress.Presets.shades_classic);
-		}
 	}
 
 	// Triggers the download chain
