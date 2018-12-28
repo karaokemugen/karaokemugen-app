@@ -20,7 +20,7 @@ import {serieRequired, verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {emit} from '../_utils/pubsub';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
-import {updateUUID} from '../_dao/database.js';
+import {updateUUID} from '../_dao/sql/database';
 import Bar from '../_utils/bar';
 
 let error = false;
@@ -536,7 +536,10 @@ export async function run(config) {
 		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
 		if (karaFiles.length === 0) throw 'No kara files found';
 
-		bar = new Bar('Reading .kara files  ', karaFiles.length + 1);
+		bar = new Bar({
+			message: 'Reading .kara files  ',
+			event: 'generationProgress'
+		}, karaFiles.length + 1);
 		const karas = await readAllKaras(karaFiles);
 		logger.debug(`[Gen] Number of karas read : ${karas.length}`);
 		// Check if we don't have two identical KIDs
@@ -547,14 +550,20 @@ export async function run(config) {
 
 		const seriesFiles = await extractAllSeriesFiles();
 		if (seriesFiles.length === 0) throw 'No series files found';
-		bar = new Bar('Reading .series files', seriesFiles.length);
+		bar = new Bar({
+			message: 'Reading .series files',
+			event: 'generationProgress'
+		}, seriesFiles.length);
 		const seriesData = await readAllSeries(seriesFiles);
 		checkDuplicateSeries(seriesData);
 		checkDuplicateSIDs(seriesData);
 		// Preparing data to insert
 		bar.stop();
 		logger.info('[Gen] Data files processed, creating database');
-		bar = new Bar('Generating database  ', 20);
+		bar = new Bar({
+			message: 'Generating database  ',
+			event: 'generationProgress'
+		}, 20);
 		await emptyDatabase(db);
 		bar.incr();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
@@ -745,13 +754,17 @@ export async function compareKarasChecksum(opts = {silent: false}) {
 	const karaFiles = await extractAllKaraFiles();
 	const seriesFiles = await extractAllSeriesFiles();
 	let KMData = '';
-	if (!opts.silent) bar = new Bar('Checking .karas...   ', karaFiles.length);
+	if (!opts.silent) bar = new Bar({
+		message: 'Checking .karas...   '
+	}, karaFiles.length);
 	for (const karaFile of karaFiles) {
 		KMData += await asyncReadFile(karaFile, 'utf-8');
 		if (!opts.silent) bar.incr();
 	}
 	if (!opts.silent) bar.stop();
-	if (!opts.silent) bar = new Bar('Checking series...   ', seriesFiles.length);
+	if (!opts.silent) bar = new Bar({
+		message: 'Checking series...   '
+	}, seriesFiles.length);
 	for (const seriesFile of seriesFiles) {
 		KMData += await asyncReadFile(seriesFile, 'utf-8');
 		if (!opts.silent) bar.incr();

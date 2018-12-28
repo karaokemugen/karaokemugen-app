@@ -74,7 +74,7 @@ export async function getDataFromKaraFile(karafile) {
 	try {
 		mediaFile = await resolveFileInDirs(karaData.mediafile, resolvedPathMedias());
 	} catch (err) {
-		logger.debug('[Kara] Media file not found : ' + karaData.mediafile);
+		logger.debug(`[Kara] Media file not found : ${karaData.mediafile}`);
 		if (conf.optStrict) strictModeError(karaData, 'mediafile');
 		if (!karaData.mediagain) karaData.mediagain = 0;
 		if (!karaData.mediasize) karaData.mediasize = 0;
@@ -112,7 +112,14 @@ export async function extractAssInfos(subFile, karaData) {
 export async function extractMediaTechInfos(mediaFile, karaData) {
 	const conf = getConfig();
 	if (!conf.optNoMedia) {
-		const mediaStats = await asyncStat(mediaFile);
+		let mediaStats;
+		try {
+			mediaStats = await asyncStat(mediaFile);
+		} catch(err) {
+			// Return early if file isn't found
+			if (conf.optStrict) strictModeError(karaData, `Media file "${mediaFile} not found`);
+			return;
+		}
 		if (mediaStats.size !== +karaData.mediasize) {
 			karaData.isKaraModified = true;
 			karaData.mediasize = mediaStats.size;

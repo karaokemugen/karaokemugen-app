@@ -142,7 +142,7 @@ export async function initConfig(appPath, argv) {
 
 async function loadConfigFiles(appPath) {
 	const overrideConfigFile = resolve(appPath, configFile);
-	const versionFile = resolve(__dirname, '../../VERSION');
+	const versionFile = resolve(__dirname, '../VERSION');
 	config = {...config, ...defaults};
 	config.appPath = appPath;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);

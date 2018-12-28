@@ -8,21 +8,22 @@ export default class Bar {
 		this.total = total;
 		this.start = 0;
 		this.value = 0;
+		this.format = `${options.message} {bar} {percentage}% - ETA {eta_formatted}`;
 		this.bar = new cliProgress.Bar({
-			format: `${options.message} {bar} {percentage}% - ETA {eta_formatted}`,
+			format: this.format,
 			stopOnComplete: true
 		}, cliProgress.Presets.shades_classic);
 		this.bar.start(total, this.start);
-		emitWS(options.event, {
+		if (options.event) emitWS(options.event, {
 			value: this.start,
 			total: total,
-			text: options.format.substr(0, options.format.indexOf('{'))
+			text: this.format.substr(0, this.format.indexOf('{'))
 		});
 	}
 
 	stop = () => {
 		this.bar.stop();
-		emitWS(this.options.message, {
+		if (this.options.event) emitWS(this.options.event, {
 			value: this.total,
 			total: this.total
 		});
@@ -30,7 +31,7 @@ export default class Bar {
 
 	incr = () => {
 		this.bar.increment();
-		emitWS(this.options.message, {
+		if (this.options.event) emitWS(this.options.event, {
 			value: this.value,
 			total: this.total
 		});
