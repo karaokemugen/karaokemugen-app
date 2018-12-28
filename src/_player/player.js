@@ -6,7 +6,6 @@ import sample from 'lodash.sample';
 import sizeOf from 'image-size';
 import {getSingleJingle, buildJinglesList} from './jingles';
 import {buildQRCode} from './qrcode';
-import {spawn} from 'child_process';
 import {exit} from '../_services/engine';
 import {playerEnding} from '../_services/player';
 import {getID3} from './id3tag';
@@ -14,7 +13,8 @@ import mpv from 'node-mpv';
 import {promisify} from 'util';
 import {endPoll} from '../_services/poll';
 import {getState, setState} from '../_utils/state';
-
+import execa from 'execa';
+import semver from 'semver';
 
 const sleep = promisify(setTimeout);
 
@@ -91,9 +91,9 @@ async function loadBackground(mode) {
 	let videofilter = '';
 	if (+conf.EngineDisplayConnectionInfoQRCode &&
 		+conf.EngineDisplayConnectionInfo ) {
+		//Positionning QR Code according to video size
 		const dimensions = sizeOf(backgroundImageFile);
-		let QRCodeWidth;
-		let QRCodeHeight;
+		let QRCodeWidth, QRCodeHeight;
 		QRCodeWidth = QRCodeHeight = Math.floor(dimensions.width*0.10);
 
 		const posX = Math.floor(dimensions.width*0.015);
@@ -102,11 +102,11 @@ async function loadBackground(mode) {
 		videofilter = `lavfi-complex=movie=\\'${qrCode}\\'[logo];[logo][vid1]scale2ref=${QRCodeWidth}:${QRCodeHeight}[logo1][base];[base][logo1]overlay=${posX}:${posY}[vo]`;
 	}
 	try {
-		logger.debug(`[Player] videofilter : ${videofilter}`);
-		let loads = [
+		logger.debug(`[Player] Background videofilter : ${videofilter}`);
+		const loads = [
 			player.load(backgroundImageFile,mode,[videofilter])
 		];
-		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile,mode,videofilter));
+		if (monitorEnabled) loads.push(playerMonitor.load(backgroundImageFile,mode,[videofilter]));
 		await Promise.all(loads);
 		if (mode === 'replace') displayInfo();
 	} catch(err) {
@@ -127,19 +127,9 @@ export async function initPlayerSystem() {
 	logger.debug('[Player] Player is READY');
 }
 
-function getmpvVersion(path) {
-	return new Promise((resolve) => {
-		const proc = spawn(path,['--version'], {encoding: 'utf8'});
-		let output = '';
-		proc.stdout.on('data',(data) => {
-			output += data.toString();
-		});
-		proc.on('close', () => {
-			//FIXME : test if output.split(' ')[1] is actually a valid version number
-			// using the semver format.
-			resolve (output.split(' ')[1]);
-		});
-	});
+async function getmpvVersion(path) {
+	const output = await execa(path,['--version']);
+	return semver.valid(output.split(' ')[1]);
 }
 
 async function startmpv() {
@@ -155,9 +145,9 @@ async function startmpv() {
 		'--no-border',
 		'--osd-level=0',
 		'--sub-codepage=UTF-8-BROKEN',
-		'--log-file='+resolve(conf.appPath,'mpv.log'),
-		'--volume='+playerState.volume,
-		'--input-conf='+resolve(conf.appPath,conf.PathTemp,'input.conf'),
+		`--log-file=${resolve(conf.appPath,'mpv.log')}`,
+		`--volume=${+playerState.volume}`,
+		`--input-conf=${resolve(conf.appPath,conf.PathTemp,'input.conf')}`,
 		'--autoload-files=no'
 	];
 	if (+conf.PlayerPIP) {
@@ -177,10 +167,10 @@ async function startmpv() {
 		mpvOptions.push(`--vo=${conf.mpvVideoOutput}`);
 	} else {
 		//Force direct3d for Windows users
-		//This is an issue with mpv's recent versions as direct3d bugs out some videos
+		//On some graphics cards (mainly Intel) there's no openGl support
+		//There is an issue with mpv's recent versions as directory bugs out some videos
 		//and backgrounds
 		//This is not a problem with the bundled 0.27 version, but is with 0.28
-		//FIXME : Remove this if a fixed mpv for windows is released and direct3d works great again
 		if (conf.os === 'win32') mpvOptions.push('--vo=direct3d');
 	}
 	if (conf.PlayerScreen) {
@@ -198,26 +188,26 @@ async function startmpv() {
 	}
 	if (+conf.PlayerNoHud) mpvOptions.push('--no-osc');
 	if (+conf.PlayerNoBar) mpvOptions.push('--no-osd-bar');
-	//On all platforms, check if we're using mpv at least version 0.20 or abort saying the mpv provided is too old.
+	//On all platforms, check if we're using mpv at least version 0.25 or abort saying the mpv provided is too old.
 	//Assume UNKNOWN is a compiled version, and thus the most recent one.
 	const mpvVersion = await getmpvVersion(conf.BinmpvPath);
 	logger.debug(`[Player] mpv version : ${mpvVersion}`);
 
 	//If we're on macOS, add --no-native-fs to get a real
 	// fullscreen experience on recent macOS versions.
-	if (parseInt(mpvVersion.split('.')[1], 10) < 25) {
+	if (!semver.satisfies(mpvVersion, '>=0.25.0')) {
 		// Version is too old. Abort.
 		logger.error(`[Player] mpv version detected is too old (${mpvVersion}). Upgrade your mpv from http://mpv.io to at least version 0.25`);
 		logger.error(`[Player] mpv binary : ${conf.BinmpvPath}`);
 		logger.error('[Player] Exiting due to obsolete mpv version');
 		exit(1);
 	}
-	if (conf.os === 'darwin' && parseInt(mpvVersion.split('.')[1], 10) > 26) mpvOptions.push('--no-native-fs');
+	if (conf.os === 'darwin' && semver.satisfies(mpvVersion, '0.27.x')) mpvOptions.push('--no-native-fs');
 	logger.debug(`[Player] mpv options : ${mpvOptions}`);
 	logger.debug(`[Player] mpv binary : ${conf.BinmpvPath}`);
 	let socket;
-	if (conf.os === 'win32') socket = '\\\\.\\pipe\\mpvsocket';
-	if (conf.os === 'darwin' || conf.os === 'linux') socket = '/tmp/km-node-mpvsocket';
+	// Name socket file accordingly depending on OS.
+	conf.os === 'win32' ? socket = '\\\\.\\pipe\\mpvsocket' : socket = '/tmp/km-node-mpvsocket';
 	player = new mpv(
 		{
 			ipc_command: '--input-ipc-server',
@@ -256,7 +246,7 @@ async function startmpv() {
 				auto_restart: true,
 				audio_only: false,
 				binary: conf.BinmpvPath,
-				socket: socket+'2',
+				socket: `${socket}2`,
 				time_update: 1,
 				verbose: false,
 				debug: false,
@@ -267,7 +257,7 @@ async function startmpv() {
 
 	// Starting up mpv
 	try {
-		let promises = [
+		const promises = [
 			player.start()
 		];
 		if (monitorEnabled) promises.push(playerMonitor.start());
@@ -415,11 +405,7 @@ export async function play(mediadata) {
 
 export function setFullscreen(fsState) {
 	playerState.fullscreen = fsState;
-	if(fsState) {
-		player.fullscreen();
-	} else {
-		player.leaveFullscreen();
-	}
+	fsState ? player.fullscreen() : player.leaveFullscreen();
 	return playerState.fullscreen;
 }
 
@@ -503,10 +489,9 @@ export function showSubs() {
 	return playerState;
 }
 
-export async function message(message, duration) {
-	if (!getState().player.ready) throw '[Player] Player is not ready yet!';
+export async function message(message, duration = 10000) {
+	if (!getState().player.ready) throw 'Player is not ready yet!';
 	logger.info(`[Player] I have a message from another time... : ${message}`);
-	if (!duration) duration = 10000;
 	const command = {
 		command: [
 			'expand-properties',
@@ -539,9 +524,8 @@ export async function displaySongInfo(infos) {
 	displayingInfo = false;
 }
 
-export function displayInfo(duration) {
+export function displayInfo(duration = 10000000000000) {
 	const conf = getConfig();
-	if (!duration) duration = 100000000;
 	let text = '';
 	if (+conf.EngineDisplayConnectionInfo) text = `${conf.EngineDisplayConnectionInfoMessage} ${__('GO_TO')} ${conf.osURL} !`;
 	const version = `Karaoke Mugen ${conf.VersionNo} (${conf.VersionName}) - http://karaokes.moe`;

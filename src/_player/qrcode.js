@@ -9,8 +9,7 @@ export async function buildQRCode(url) {
 	logger.debug(`[QRCode] URL detected : ${url}`);
 	toFile(qrcodeImageFile, url, {}, (err) => {
 		if (err) {
-			logger.error('[QRCode] Error generating QR Code : '+err);
-			throw err;
+			throw `Error generating QR Code : ${err}`;
 		} else {
 			return true;
 		}
