@@ -116,7 +116,7 @@ Currently french and english are supported. Translators are welcome!
 
 Read the [dedicated section on the documentation website](http://mugen.karaokes.moe/docs/en/dev-guide/code/)
 
-Everything's there, and if you have questions, you can come to [our Discord](https://discord.gg/a8dMYek) in the #karaoke_dev section!
+Everything's there, and if you have questions, you can come to [our Discord](https://discord.gg/XFXCqzU) in the #karaoke_dev section!
 
 ## Credits
 
