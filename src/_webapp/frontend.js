@@ -122,6 +122,7 @@ export async function initFrontend(port) {
 		res.render(view, {'layout': 'publicHeader',
 			'clientAdress'	:	`http://${url}`,
 			'webappMode'	:	config.WebappMode,
+            'onlineHost'  	:	config.OnlineHost,
 			'query'			:	JSON.stringify(req.query)
 		});
 	});
@@ -145,6 +146,7 @@ export async function initFrontend(port) {
 				'displays'		:	data.displays,
 				'query'			:	JSON.stringify(req.query),
 				'appFirstRun'	:	config.appFirstRun,
+                'onlineHost'  	:	config.OnlineHost,
 				'webappMode'	:	config.WebappMode
 			});
 		});

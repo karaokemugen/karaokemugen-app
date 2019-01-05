@@ -194,9 +194,11 @@ var settingsNotUpdated;
 		});
 
 		setupAjax = function () {
+            var headers = logInfos.onlineToken ? { 'Authorization': logInfos.token, 'onlineAuthorization': logInfos.onlineToken } :  { 'Authorization': logInfos.token };
+            console.log(headers);
 			$.ajaxSetup({
 				cache: false,
-				headers: { 'Authorization': logInfos.token }
+				headers: headers
 			});
 		};
 
@@ -209,6 +211,7 @@ var settingsNotUpdated;
 		});
 
 		var mugenToken = readCookie('mugenToken');
+		var mugenTokenOnline = readCookie('mugenTokenOnline');
 
 		if(welcomeScreen) { 
 			$('#wlcm_login > span').text(i18n.__('NOT_LOGGED'));
@@ -230,7 +233,10 @@ var settingsNotUpdated;
 			});
 		} else if(mugenToken) {
 			logInfos = parseJwt(mugenToken);
-			logInfos.token = mugenToken;
+            logInfos.token = mugenToken;
+            if(mugenTokenOnline) {
+                logInfos.onlineToken = mugenTokenOnline;
+            }
 			if(scope === 'admin' && logInfos.role !== 'admin') {
 				$('#loginModal').modal('show');
 			} else {
@@ -719,7 +725,8 @@ var settingsNotUpdated;
 		});
 
 		$('#nav-login .login').click( () => {
-			var username = $('#login').val();
+            var servername = $('#loginServ').val();
+            var username = $('#login').val() + (servername ? '@' + servername : '');
 			var password = $('#password').val();
 			login(username, password);
 
@@ -746,7 +753,8 @@ var settingsNotUpdated;
 			}
 		});
 		$('#nav-signup .login').click( () => {
-			var username = $('#signupLogin').val();
+            var servername = $('#signupServ').val();
+            var username = $('#signupLogin').val() + (servername ? '@' + servername : '');
 			var password = $('#signupPassword').val();
 			var passwordConfirmation = $('#signupPasswordConfirmation').val();
 			if(password !== passwordConfirmation) {
@@ -789,6 +797,7 @@ var settingsNotUpdated;
 
 		$('.logout, .btn[action="logout"]').click( () => {
 			eraseCookie('mugenToken');
+			eraseCookie('mugenTokenOnline');
 			window.location.reload();
 		});
 		/* login stuff END */
@@ -2467,10 +2476,17 @@ var settingsNotUpdated;
 			type: 'POST',
 			data: data })
 			.done(function (response) {
-
+                var token;
 				$('#loginModal').modal('hide');
-				$('#password, #login').removeClass('redBorders');
-				createCookie('mugenToken', response.token, -1);
+                $('#password, #login').removeClass('redBorders');
+                
+                createCookie('mugenToken',  response.token, -1);
+                if(response.onlineToken) {
+                    createCookie('mugenTokenOnline',  response.onlineToken, -1);
+                } else {
+                    eraseCookie('mugenTokenOnline');
+                }
+                
 				logInfos = response;
 				displayMessage('info','', i18n.__('LOG_SUCCESS', logInfos.username));
 				initApp();
