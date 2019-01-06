@@ -117,6 +117,7 @@ export async function convertToRemoteUser(token, password, instance) {
 			renameUser: true
 		});
 		await convertToRemoteFavorites(user.login);
+		return remoteUser.token;
 	} catch(err) {
 		console.log(err);
 	}
