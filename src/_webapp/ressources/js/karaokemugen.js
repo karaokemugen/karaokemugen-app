@@ -987,6 +987,25 @@ var settingsNotUpdated;
 				dlAnchorElem.setAttribute('download', ['KaraMugen', 'fav', logInfos.username, new Date().toLocaleDateString().replace('\\','-')].join('_') + '.kmplaylist');
 				dlAnchorElem.click();
 			});
+        });
+        
+        $('.profileConvert').click(function() {
+
+            displayModal('custom', i18n.__('PROFILE_CONVERT'),
+                '<input type="text"  name="modalLoginServ" value="' + onlineHost + '"//>'
+                + '<input type="password" placeholder="' + i18n.__('PROFILE_PASSWORD') + '" class="form-control" name="password">', function(data){
+                                                                
+                    var msgData =  { instance: data.modalLoginServ, password : data.password };
+                   
+                    ajx('POST', 'public/myaccount/online', msgData, function(data) {
+                        displayMessage('success', '', i18n.__('PROFILE_CONVERTED'));
+                        logInfos = parseJwt(data);
+                        createCookie('mugenTokenOnline', data, -1);
+                        setupAjax();
+                    });
+                }
+        );
+        
 		});
 
 		/* profil stuff END */

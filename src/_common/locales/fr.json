@@ -532,6 +532,7 @@
 
 		},
 		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
-		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?"		
+		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?",
+        "PROFILE_CONVERT": "Convertir en profil en ligne"
 	}
 }

@@ -1098,7 +1098,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	padding-top: 1rem;
 }
 
-.favExport, .favImport {
+.favExport, .favImport, .profileConvert {
     line-height: 2.42;
 	font-family: inherit;
 }
