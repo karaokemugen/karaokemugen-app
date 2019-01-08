@@ -116,7 +116,12 @@ async function generateKara(kara, opts) {
 		tags: {tagsValidator: true},
 		type: {typeValidator: true},
 		order: {integerValidator: true},
-		series: {presence: true},
+		series: {arrayNoCommaValidator: true},
+		singer: {arrayNoCommaValidator: true},
+		author: {arrayNoCommaValidator: true},
+		songwriter: {arrayNoCommaValidator: true},
+		creator: {arrayNoCommaValidator: true},
+		groups: {arrayNoCommaValidator: true},
 		title: {presence: true}
 	});
 	// Move files from temp directory to import, depending on the different cases.

@@ -11,6 +11,16 @@ function integerValidator(value) {
 	return ` '${value}' is invalid (not an integer)`;
 }
 
+function arrayNoCommaValidator(value) {
+	if (!Array.isArray(value)) return `${value} is not an array`;
+	value = value.map((value) => value.trim());
+	for (const elem of value) {
+		if (elem.includes(',')) return `'${value}' contains an element with a comma (${elem})`;
+	}
+	return null;
+}
+
+
 function langValidator(value) {
 	if (!Array.isArray(value)) value = value.replace(/"/g, '').split(',');
 	value = value.map((value) => value.trim());
@@ -95,7 +105,8 @@ const validatorsList = {
 	langValidator,
 	tagsValidator,
 	typeValidator,
-	seriesi18nValidator
+	seriesi18nValidator,
+	arrayNoCommaValidator
 };
 
 // Sanitizers

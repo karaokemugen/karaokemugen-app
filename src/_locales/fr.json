@@ -214,6 +214,7 @@
 	"PLAYLIST_PUBLIC": "Rendre la liste de lecture publique",
 	"PLAYLIST_VISIBLE": "Rendre la liste de lecture visible/invisible",
 	"PLAYERPIP": "Mode Picture-in-Picture",
+    "PLAYERVISUALIZATIONEFFECTS": "Activer les effets de visualisation du son",
 	"ENGINEALLOWNICKNAMECHANGE": "Changement de pseudo",
 	"ENGINEALLOWVIEWBLACKLIST": "Liste noire visible",
 	"ENGINEALLOWVIEWBLACKLISTCRITERIAS": "Critères de liste noire visibles",

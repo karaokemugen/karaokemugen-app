@@ -146,6 +146,10 @@ PlayerScreen = 0
 ; Enables/Disables the monitor window which replicates what's on the main screen.
 PlayerMonitor = 0
 
+; Player MP3 visualization effects: {boolean}
+; Enable/disable visualization effects
+PlayerVisualizationEffects = 1
+
 ; Full screen: {boolean}
 ; Set player to full screen .
 PlayerFullscreen = 0
