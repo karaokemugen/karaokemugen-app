@@ -21,6 +21,8 @@ import { getRemoteToken, upsertRemoteToken } from '../_dao/user';
 import formData from 'form-data';
 import { createReadStream } from 'fs';
 import { writeStreamToFile } from '../_common/utils/files';
+import { fetchAndAddFavorites } from '../_services/favorites';
+import {encode, decode} from 'jwt-simple';
 
 const db = require('../_dao/user');
 let userLoginTimes = {};
@@ -31,7 +33,7 @@ on('databaseBusy', status => {
 });
 
 async function updateExpiredUsers() {
-	// Unflag online accounts from database if they expired
+	// Unflag connected accounts from database if they expired
 	try {
 		if (!databaseBusy) {
 			await db.updateExpiredUsers(now() - (getConfig().AuthExpireTime * 60));
@@ -98,6 +100,88 @@ async function editRemoteUser(user) {
 	}
 }
 
+export async function checkLogin(username, password) {
+	const conf = getConfig();
+	let user;
+	let remoteUserID = {};
+	if (username.includes('@')) {
+		try {
+			// If username has a @, check its instance for existence
+			const instance = username.split('@')[1];
+			remoteUserID = await remoteLogin(username, password);
+			const remoteUser = await getRemoteUser(username, remoteUserID.token);
+			// Check if user exists. If it does not, create it.
+			user = await findUserByName(username);
+			if (!user) {
+				await createUser({
+					login: username,
+					password: password
+				}, {
+					createRemote: false
+				});
+			}
+			// Update user with new data
+			let avatar_file = null;
+			if (remoteUser.avatar_file !== 'blank.png') {
+				avatar_file = {
+					path: await fetchRemoteAvatar(instance, remoteUser.avatar_file)
+				};
+			}
+			await editUser(username,{
+				bio: remoteUser.bio,
+				url: remoteUser.url,
+				email: remoteUser.email,
+				nickname: remoteUser.nickname,
+				password: password
+			},
+			avatar_file,
+			'user',
+			{
+				editRemote: false
+			});
+			upsertRemoteToken(username, remoteUserID.token);
+			// Download and add all favorites
+			await fetchAndAddFavorites(instance, remoteUserID.token, username, remoteUser.nickname);
+		} catch(err) {
+			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${err}`);
+		}
+	} else {
+		// User is a local user
+		user = await findUserByName(username);
+		if (!user) throw false;
+		if (!await checkPassword(user, password)) throw false;
+	}
+	const role = getRole(user);
+	updateLastLoginName(username);
+	return {
+		token: createJwtToken(username, role, conf),
+		onlineToken: remoteUserID.token,
+		username: username,
+		role: role
+	};
+}
+
+function createJwtToken(username, role, config) {
+	const conf = config || getConfig();
+	const timestamp = new Date().getTime();
+	return encode(
+		{ username, iat: timestamp, role },
+		conf.JwtSecret
+	);
+}
+
+export function decodeJwtToken(token, config) {
+	const conf = config || getConfig();
+	return decode(token, conf.JwtSecret);
+}
+
+function getRole(user) {
+	if (+user.type === 2) return 'guest';
+	if (+user.flag_admin === 1) return 'admin';
+	return 'user';
+}
+
+
 export async function convertToRemoteUser(token, password, instance) {
 	const user = await findUserByName(token.username);
 	if (!user) throw 'User unknown';
@@ -117,9 +201,12 @@ export async function convertToRemoteUser(token, password, instance) {
 			renameUser: true
 		});
 		await convertToRemoteFavorites(user.login);
-		return remoteUser.token;
+		return {
+			onlineToken: remoteUser.token,
+			token: createJwtToken(user.login, token.role)
+		}
 	} catch(err) {
-		console.log(err);
+		throw `Unable to convert user to remote (remote has been created) : ${err}`;
 	}
 }
 

@@ -4436,14 +4436,17 @@ export function APIControllerPublic(router) {
 	 * @apiHeader authorization Auth token received from logging in
 	 * @apiParam {String} instance Instance host name
 	 * @apiParam {String} password Password to confirm conversion (also needed to create online account)
-	 * @apiSuccess {String} data remoteToken (to use as onlineAuthorization header in future requests)
+	 * @apiSuccess {String} data Object containing `token` and `onlineToken` properties. Use these to auth the new, converted user.
 	 * @apiSuccess {String} code Message to display
 	 *
 	 * @apiSuccessExample Success-Response:
 	 * HTTP/1.1 200 OK
 	 * {
 	 *   "code": "USER_CONVERTED",
-	 *   "data": "<remoteToken>"
+	 *   "data": {
+	 * 		"token": "<local token>"
+	 * 		"onlineToken": "<online token>"
+	 * 	 }
 	 * }
 	 * @apiError USER_CONVERT_ERROR Unable to convert user to remote
 	 * @apiError WEBAPPMODE_CLOSED_API_MESSAGE API is disabled at the moment.
@@ -4461,9 +4464,9 @@ export function APIControllerPublic(router) {
 			// No errors detected
 				req.body.instance = unescape(req.body.instance.trim());
 				try {
-					const remoteToken = await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
+					const tokens = await convertToRemoteUser(req.authToken, req.body.password, req.body.instance);
 					emitWS('userUpdated',req.params.user_id);
-					res.json(OKMessage(remoteToken,'USER_CONVERTED'));
+					res.json(OKMessage(tokens,'USER_CONVERTED'));
 				} catch(err) {
 					res.status(500).json(errMessage('USER_CONVERT_ERROR',err));
 				}

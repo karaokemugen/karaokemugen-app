@@ -1,10 +1,5 @@
 import passport from 'passport';
-import {encode, decode} from 'jwt-simple';
-import {getConfig} from '../_common/utils/config';
-import { fetchRemoteAvatar, getRemoteUser, remoteLogin, createUser, editUser, findUserByName, updateUserFingerprint, findFingerprint, checkPassword, updateLastLoginName} from '../_services/user';
-import { fetchAndAddFavorites } from '../_services/favorites';
-import { upsertRemoteToken } from '../_dao/user';
-import logger from 'winston';
+import { decodeJwtToken, checkLogin, updateUserFingerprint, findFingerprint } from '../_services/user';
 
 const loginErr = {
 	code: 'LOG_ERROR',
@@ -12,68 +7,6 @@ const loginErr = {
 	data: {
 	}
 };
-
-async function checkLogin(username, password) {
-	const conf = getConfig();
-	let user;
-	let remoteUserID = {};
-	if (username.includes('@')) {
-		try {
-			// If username has a @, check its instance for existence
-			const instance = username.split('@')[1];
-			remoteUserID = await remoteLogin(username, password);
-			const remoteUser = await getRemoteUser(username, remoteUserID.token);
-			// Check if user exists. If it does not, create it.
-			user = await findUserByName(username);
-			if (!user) {
-				await createUser({
-					login: username,
-					password: password
-				}, {
-					createRemote: false
-				});
-			}
-			// Update user with new data
-			let avatar_file = null;
-			if (remoteUser.avatar_file !== 'blank.png') {
-				avatar_file = {
-					path: await fetchRemoteAvatar(instance, remoteUser.avatar_file)
-				};
-			}
-			await editUser(username,{
-				bio: remoteUser.bio,
-				url: remoteUser.url,
-				email: remoteUser.email,
-				nickname: remoteUser.nickname,
-				password: password
-			},
-			avatar_file,
-			'user',
-			{
-				editRemote: false
-			});
-			upsertRemoteToken(username, remoteUserID.token);
-			// Download and add all favorites
-			await fetchAndAddFavorites(instance, remoteUserID.token, username, remoteUser.nickname);
-		} catch(err) {
-			logger.error(`[RemoteAuth] Failed to authenticate ${username} : ${err}`);
-		}
-	} else {
-		// User is a local user
-		user = await findUserByName(username);
-		if (!user) throw false;
-		if (!await checkPassword(user, password)) throw false;
-	}
-	const role = getRole(user);
-	updateLastLoginName(username);
-	return {
-		token: createJwtToken(username, role, conf),
-		onlineToken: remoteUserID.token,
-		username: username,
-		role: role
-	};
-}
-
 
 export default function authController(router) {
 
@@ -177,22 +110,3 @@ export default function authController(router) {
 	});
 }
 
-function createJwtToken(username, role, config) {
-	const conf = config || getConfig();
-	const timestamp = new Date().getTime();
-	return encode(
-		{ username, iat: timestamp, role },
-		conf.JwtSecret
-	);
-}
-
-function decodeJwtToken(token, config) {
-	const conf = config || getConfig();
-	return decode(token, conf.JwtSecret);
-}
-
-function getRole(user) {
-	if (+user.type === 2) return 'guest';
-	if (+user.flag_admin === 1) return 'admin';
-	return 'user';
-}
