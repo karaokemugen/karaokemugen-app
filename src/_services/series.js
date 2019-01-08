@@ -48,6 +48,7 @@ export async function getOrAddSerieID(serieObj) {
 }
 
 export async function addSerie(serieObj) {
+	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	if (await selectSerieByName(serieObj.name)) throw 'Series original name already exists';
 	serieObj.sid = uuidV4();
 	serieObj.seriefile = sanitizeFile(serieObj.name) + '.series.json';
@@ -62,6 +63,7 @@ export async function addSerie(serieObj) {
 export async function editSerie(serie_id,serieObj) {
 	const oldSerie = await getSerie(serie_id);
 	if (!oldSerie) throw 'Series ID unknown';
+	if (serieObj.name.includes(',')) throw 'Commas not allowed in series name';
 	if (oldSerie.name !== serieObj.name) {
 		await replaceSerieInKaras(oldSerie.name, serieObj.name);
 		await removeSeriesFile(oldSerie.name);
