@@ -155,7 +155,7 @@ export default class EditableTagGroup extends React.Component {
 							</AutoComplete>
 							<Button type='primary' onClick={() => this.handleInputConfirm(this.currentVal)}
 								className='login-form-button'>
-						Add Tag
+						Add...
 							</Button>
 						</Form.Item>
 					)}
