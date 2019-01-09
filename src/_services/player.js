@@ -61,7 +61,6 @@ export async function playingUpdated() {
 export async function playerEnding() {
 	// This is triggered when player ends its current song.
 	let state = getState();
-	let counter = state.counterToJingle;
 	logger.debug('[Player] Player Ending event triggered');
 	if (state.playerNeedsRestart) {
 		logger.info('[Player] Player restarts, please wait');
@@ -69,8 +68,8 @@ export async function playerEnding() {
 		await restartPlayer();
 	}
 	const conf = getConfig();
-	logger.debug(`[Jingles] Songs before next jingle: ${conf.EngineJinglesInterval - counter}`);
-	if (counter >= conf.EngineJinglesInterval && conf.EngineJinglesInterval > 0) {
+	logger.debug(`[Jingles] Songs before next jingle: ${conf.EngineJinglesInterval - state.counterToJingle}`);
+	if (state.counterToJingle >= conf.EngineJinglesInterval && conf.EngineJinglesInterval > 0) {
 		setState({
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
@@ -78,8 +77,8 @@ export async function playerEnding() {
 		await playJingle();
 	} else {
 		try {
-			counter++;
-			setState({counterToJingle: counter});
+			state.counterToJingle++;
+			setState({counterToJingle: state.counterToJingle});
 			displayInfo();
 			if (state.status !== 'stop') {
 				await nextSong();
@@ -121,21 +120,17 @@ function toggleFullScreenPlayer() {
 	let state = getState();
 	state = setState({fullscreen: !state.fullscreen});
 	setFullscreen(state.fullscreen);
-	if (state.fullscreen) {
-		logger.info('[Player] Player going to full screen');
-	} else {
-		logger.info('[Player] Player going to windowed mode');
-	}
+	state.fullscreen
+		? logger.info('[Player] Player going to full screen')
+		: logger.info('[Player] Player going to windowed mode');
 }
 
 function toggleOnTopPlayer() {
 	let state = getState();
 	state = setState({ontop: toggleOnTop()});
-	if (state.engine.ontop) {
-		logger.info('[Player] Player staying on top');
-	} else {
-		logger.info('[Player] Player NOT staying on top');
-	}
+	state.engine.ontop
+		? logger.info('[Player] Player staying on top')
+		: logger.info('[Player] Player NOT staying on top');
 }
 
 
