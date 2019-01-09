@@ -18,9 +18,7 @@ async function getPlayingSong() {
 		profile('tryToReadKaraInPlaylist');
 		try {
 			const kara = await getCurrentSong();
-			let karaForLogging = { ...kara };
-			karaForLogging.subtitle = '[Not logging ASS data]';
-			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
+			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, '\n'));
 			let serie = kara.serie;
 			let title = kara.title;
 			if (!serie) serie = kara.singer;
@@ -39,7 +37,7 @@ async function getPlayingSong() {
 		} catch(err) {
 			logger.error(`[Player] Error during song playback : ${err}`);
 			if (getState().status !== 'stop') {
-				logger.warn('[Player] Skipping playback for this kara');
+				logger.warn('[Player] Skipping playback for this song');
 				next();
 			} else {
 				stopPlayer(true);
@@ -51,6 +49,8 @@ async function getPlayingSong() {
 
 
 export async function playingUpdated() {
+	// Current playing song has been changed, stopping playing now and
+	// hitting play again to get the new song.
 	const state = getState();
 	if (state.status === 'play' && state.player.playing) {
 		await stopPlayer(true);
@@ -59,6 +59,7 @@ export async function playingUpdated() {
 }
 
 export async function playerEnding() {
+	// This is triggered when player ends its current song.
 	let state = getState();
 	let counter = state.counterToJingle;
 	logger.debug('[Player] Player Ending event triggered');

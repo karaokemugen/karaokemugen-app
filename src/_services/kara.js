@@ -41,7 +41,7 @@ async function isKara(kara_id) {
 	return await isKaraDB(kara_id);
 }
 
-export function translateKaraInfo(karalist, lang) {
+export function translateKaraInfo(karas, lang) {
 	// If lang is not provided, assume we're using node's system locale
 	if (!lang) lang = getConfig().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
@@ -57,13 +57,7 @@ export function translateKaraInfo(karalist, lang) {
 	const detectedLocale = langs.where('1',lang);
 	// If the kara list provided is not an array (only a single karaoke)
 	// Put it into an array first
-	let karas;
-	if (!Array.isArray(karalist)) {
-		karas = [];
-		karas[0] = karalist;
-	} else {
-		karas = karalist;
-	}
+	if (!Array.isArray(karas)) karas = [karas];
 	karas.forEach((kara,index) => {
 		karas[index].songtype_i18n = i18n.__(kara.songtype);
 		karas[index].songtype_i18n_short = i18n.__(kara.songtype+'_SHORT');
@@ -160,6 +154,7 @@ export async function getRandomKara(playlist_id, filter, username) {
 export async function getKara(kara_id, username, lang) {
 	profile('getKaraInfo');
 	const kara = await getKaraDB(kara_id, username, lang);
+	if (!kara) throw `Kara ${kara_id} unknown`;
 	let output = translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].mediafile);
 	if (previewfile) output[0].previewfile = previewfile;
@@ -276,7 +271,7 @@ const karaConstraintsV3 = {
 	},
 	title: {presence: {allowEmpty: true}},
 	type: {presence: true, inclusion: karaTypesArray},
-	series: function(value, attributes) {
+	series: (value, attributes) => {
 		if (!serieRequired(attributes['type'])) {
 			return { presence: {allowEmpty: true} };
 		} else {
