@@ -19,8 +19,8 @@ import {
 	deletePlaylist as deletePL,
 	editPlaylist as editPL,
 	emptyPlaylist as emptyPL,
-	findCurrentPlaylist,
-	findPublicPlaylist,
+	getCurrentPlaylist,
+	getPublicPlaylist,
 	getMaxPosInPlaylist,
 	getMaxPosInPlaylistForUser,
 	getPlaylistContents as getPLContents,
@@ -143,13 +143,13 @@ export async function isUserAllowedToAddKara(playlist_id,requester,duration) {
 	}
 }
 
-export async function isACurrentPlaylist() {
+export async function findCurrentPlaylist() {
 	const res = await findCurrentPlaylist();
 	if (res) return res.playlist_id;
 	return false;
 }
 
-export async function isAPublicPlaylist() {
+export async function findPublicPlaylist() {
 	const res = await findPublicPlaylist();
 	if (res) return res.playlist_id;
 	return false;
@@ -1068,7 +1068,7 @@ function smartShuffle(playlist){ // Smart Shuffle begin
 }
 
 export async function previousSong() {
-	const playlist_id = await isACurrentPlaylist();
+	const playlist_id = await findCurrentPlaylist();
 	const playlist = await getPlaylistContentsMini(playlist_id);
 	if (playlist.length === 0) throw 'Playlist is empty!';
 	let readpos = 0;
@@ -1084,7 +1084,7 @@ export async function previousSong() {
 
 export async function nextSong() {
 	const conf = getConfig();
-	const playlist_id = await isACurrentPlaylist();
+	const playlist_id = await findCurrentPlaylist();
 	const playlist = await getPlaylistContentsMini(playlist_id);
 	if (playlist.length === 0) throw 'Playlist is empty!';
 	let readpos = 0;
@@ -1113,7 +1113,7 @@ export async function nextSong() {
 
 async function getCurrentPlaylist() {
 	// Returns current playlist contents and where we're at.
-	const playlist_id = await isACurrentPlaylist();
+	const playlist_id = await findCurrentPlaylist();
 	const playlist = await getPlaylistContentsMini(playlist_id);
 	// Setting readpos to 0. If no flag_playing is found in current playlist
 	// Then karaoke will begin at the first element of the playlist (0)
@@ -1175,7 +1175,7 @@ export async function getCurrentSong() {
 	// Construct mpv message to display.
 	//If karaoke is present in the public playlist, we're deleting it.
 	if (+conf.EngineRemovePublicOnPlay) {
-		const playlist_id = await isAPublicPlaylist();
+		const playlist_id = await findPublicPlaylist();
 		const plc = await getPLCByKIDUserID(kara.kid,kara.user_id,playlist_id);
 		if (plc) await deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);
 	}

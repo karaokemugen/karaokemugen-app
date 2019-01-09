@@ -176,11 +176,11 @@ export async function getPlaylists(forUser) {
 	return await getUserDb().all(query + order);
 }
 
-export async function findCurrentPlaylist() {
+export async function getCurrentPlaylist() {
 	return await getUserDb().get(sql.testCurrentPlaylist);
 }
 
-export async function findPublicPlaylist() {
+export async function getPublicPlaylist() {
 	return await getUserDb().get(sql.testPublicPlaylist);
 }
 
