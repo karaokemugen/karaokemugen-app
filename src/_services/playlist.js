@@ -144,13 +144,13 @@ export async function isUserAllowedToAddKara(playlist_id,requester,duration) {
 }
 
 export async function findCurrentPlaylist() {
-	const res = await findCurrentPlaylist();
+	const res = await getCurrentPlaylist();
 	if (res) return res.playlist_id;
 	return false;
 }
 
 export async function findPublicPlaylist() {
-	const res = await findPublicPlaylist();
+	const res = await getPublicPlaylist();
 	if (res) return res.playlist_id;
 	return false;
 }
@@ -1111,7 +1111,7 @@ export async function nextSong() {
 	}
 }
 
-async function getCurrentPlaylist() {
+async function getCurrentPlaylistContents() {
 	// Returns current playlist contents and where we're at.
 	const playlist_id = await findCurrentPlaylist();
 	const playlist = await getPlaylistContentsMini(playlist_id);
@@ -1134,7 +1134,7 @@ async function getCurrentPlaylist() {
 
 export async function getCurrentSong() {
 	const conf = getConfig();
-	const playlist = await getCurrentPlaylist();
+	const playlist = await getCurrentPlaylistContents();
 	// Search for currently playing song
 	let readpos = false;
 	playlist.content.some((kara, index) => {
@@ -1213,4 +1213,34 @@ async function updateFreeOrphanedSongs() {
 
 export async function initPlaylistSystem() {
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
+}
+
+export async function testCurrentPlaylist() {
+	const conf = getConfig();
+	const currentPL_id = await findCurrentPlaylist();
+	if (currentPL_id) {
+		setState({currentPlaylistID: currentPL_id});
+	} else {
+		setState({currentPlaylistID: await createPlaylist(__('CURRENT_PLAYLIST'),{
+			visible: true,
+			current: true
+		},'admin')
+		});
+		logger.debug('[Playlist] Initial current playlist created');
+		if (!conf.isTest) buildDummyPlaylist(getState().currentPlaylistID);
+	}
+}
+
+export async function testPublicPlaylist() {
+	const publicPL_id = await findPublicPlaylist();
+	if (publicPL_id) {
+		setState({ publicPlaylistID: publicPL_id });
+	} else {
+		setState({ publicPlaylistID: await createPlaylist(__('PUBLIC_PLAYLIST'),{
+			visible: true,
+			public: true
+		},'admin')
+		});
+		logger.debug('[Playlist] Initial public playlist created');
+	}
 }

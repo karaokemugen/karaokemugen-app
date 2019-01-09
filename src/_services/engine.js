@@ -17,7 +17,7 @@ import {initStats} from './stats';
 import {karaGenerationBatch} from './kara_creation';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
-import {initPlaylistSystem, createPlaylist, buildDummyPlaylist, findCurrentPlaylist, findPublicPlaylist} from './playlist';
+import {initPlaylistSystem, testPublicPlaylist, testCurrentPlaylist} from './playlist';
 
 export async function initEngine() {
 	profile('Init');
@@ -64,29 +64,8 @@ export async function initEngine() {
 	if (+conf.OnlineStats) inits.push(initStats());
 	//Initialize engine
 	// Test if current/public playlists exist
-	const currentPL_id = await findCurrentPlaylist();
-	if (currentPL_id) {
-		setState({currentPlaylistID: currentPL_id});
-	} else {
-		setState({currentPlaylistID: await createPlaylist(__('CURRENT_PLAYLIST'),{
-			visible: true,
-			current: true
-		},'admin')
-		});
-		logger.info('[Engine] Initial current playlist created');
-		if (!conf.isTest) inits.push(buildDummyPlaylist(getState().currentPlaylistID));
-	}
-	const publicPL_id = await findPublicPlaylist();
-	if (publicPL_id) {
-		setState({ publicPlaylistID: publicPL_id });
-	} else {
-		setState({ publicPlaylistID: await createPlaylist(__('PUBLIC_PLAYLIST'),{
-			visible: true,
-			public: true
-		},'admin')
-		});
-		logger.info('[Engine] Initial public playlist created');
-	}
+	inits.push(testPublicPlaylist());
+	inits.push(testCurrentPlaylist());
 	try {
 		await Promise.all(inits);
 		//Easter egg
@@ -100,7 +79,6 @@ export async function initEngine() {
 	} finally {
 		profile('Init');
 	}
-
 }
 
 export function exit(rc) {
