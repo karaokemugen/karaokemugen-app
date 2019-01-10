@@ -1,19 +1,14 @@
 import logger from 'winston/lib/winston';
-import {open} from 'sqlite';
-import {setConfig, getConfig} from '../_common/utils/config';
-import {join, resolve} from 'path';
-import {asyncStat, asyncExists} from '../_common/utils/files';
-import promiseRetry from 'promise-retry';
+import {getConfig} from '../_common/utils/config';
+import {join} from 'path';
+import {Pool} from 'pg';
 import {exit} from '../_services/engine';
 import {duration} from '../_common/utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
 import {compareKarasChecksum, checkUserdbIntegrity, run as generateDB} from '../_admin/generate_karasdb';
+import DBMigrate from 'db-migrate';
 const sql = require('../_common/db/database');
-
-// Setting up databases
-let karaDb;
-let userDb;
 
 export function paramWords(filter) {
 	let params = {};
@@ -71,128 +66,120 @@ export function langSelector(lang) {
 	}
 }
 
-async function doTransaction(items, sql) {
+export async function transaction(queries) {
+	const client = await database.connect();
 	try {
-		await getUserDb().run('begin transaction');
-		for (const index in items) {
-			const stmt = await getUserDb().prepare(sql);
-			await stmt.run(items[index]);
+		await client.query('BEGIN');
+		for (const query of queries) {
+			if (Array.isArray(query.params)) {
+				for (const param of query.params) {
+					await client.query(query.sql, param);
+				}
+			} else {
+				await client.query(query.sql);
+			}
 		}
-		return await getUserDb().run('commit');
-	} catch(err) {
-		throw err;
-	}
-}
-
-export async function transaction(items, sql) {
-	await promiseRetry((retry) => {
-		return doTransaction(items, sql).catch(retry);
-	}, {
-		retries: 50,
-		minTimeout: 100,
-		maxTimeout: 200
-	}).then(() => {
-		return true;
-	}).catch((err) => {
-		throw err;
-	});
-}
-
-async function openKaraDatabase() {
-	const conf = getConfig();
-	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
-	if (!karaDb) {
-		logger.debug('[DB] Opening kara database');
-		karaDb = await open(karaDbFile, {verbose: true});
-	} else {
-		throw 'Kara database already opened';
-	}
-}
-
-async function openUserDatabase() {
-	const conf = getConfig();
-	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
-	if (!userDb) {
-		logger.debug( '[DB] Opening user database');
-		userDb = await open(userDbFile, {verbose: true, cached: true});
-		// Trace event.
-		if (conf.optSQL) {
-			userDb.driver.on('trace', sql => {
-				logger.debug(sql.replace('\\t','').replace('\\n',' '));
-			});
-		}
-	} else {
-		throw 'User database already opened';
-	}
-}
-
-async function closeKaraDatabase() {
-	if (!karaDb) {
-		logger.warn('[DB] Kara database already closed');
-	} else {
-		try {
-			await karaDb.close();
-			karaDb = null;
-		} catch(err) {
-			logger.warn('[DB] Kara database is busy, force closing');
-			karaDb = null;
-		}
-	}
-}
-
-export async function closeUserDatabase() {
-	if (!userDb) {
-		logger.warn('[DB] User database already closed');
-	} else {
-		try {
-			await userDb.close();
-			userDb = null;
-		} catch(err) {
-			logger.warn('[DB] User database is busy, force closing');
-			userDb = null;
-		}
+		await client.query('COMMIT');
+	} catch (e) {
+		logger.error(`[DB] Transaction error : ${e}`);
+		await client.query('ROLLBACK');
+	} finally {
+		await client.release();
 	}
 }
 
 /* Opened DB are exposed to be used by DAO objects. */
 
-export function getKaraDb() {
-	return karaDb;
+let database;
+
+export function db() {
+	return database;
 }
 
-export function getUserDb() {
-	return userDb;
+export async function connectDB(opts = {superuser: false}) {
+	const conf = getConfig();
+	const dbConfig = {
+		host: conf.db.prod.host,
+		user: conf.db.prod.user,
+		password: conf.db.prod.password,
+		database: conf.db.prod.database
+	};
+	if (opts.superuser) {
+		dbConfig.user = conf.db.prod.superuser;
+		dbConfig.password = conf.db.prod.superuserPassword;
+		dbConfig.database = 'postgres';
+	}
+	database = new Pool(dbConfig);
+	try {
+		await database.connect();
+		database.on('error', err => {
+			logger.error(`[DB] Database error : ${err}`);
+		});
+	} catch(err) {
+		logger.error(`[DB] Connection to database server failed : ${err}`);
+		throw err;
+	}
+}
+
+export async function initDB() {
+	const conf = getConfig();
+	try {
+		await db().query(`CREATE DATABASE ${conf.db.prod.database} ENCODING 'UTF8'`);
+		logger.info('[DB] Database created');
+	} catch(err) {
+		logger.debug('[DB] Database already exists');
+	}
+	try {
+		await db().query(`CREATE USER ${conf.db.prod.user} WITH ENCRYPTED PASSWORD '${conf.db.password}';`);
+		logger.info('[DB] User created');
+	} catch(err) {
+		logger.debug('[DB] User already exists');
+	}
+	await db().query(`GRANT ALL PRIVILEGES ON DATABASE ${conf.db.prod.database} to ${conf.db.prod.user};`);
+	try {
+		await db().query('CREATE EXTENSION unaccent;');
+	} catch(err) {
+		logger.debug('[DB] Extension unaccent already registered');
+	}
+}
+
+async function closeDB() {
+	database = null;
+}
+
+async function migrateDB() {
+	const dbm = DBMigrate.getInstance(true, {
+		cmdOptions: {
+			'migrations-dir': 'src/_dao/migrations',
+			'log-level': 'warn'
+		}
+	});
+	await dbm.sync('all');
 }
 
 export async function initDBSystem() {
 	let doGenerate;
 	const conf = getConfig();
-	const karaDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
-	const userDbFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
-	//If userdata is missing, assume it's the first time we're running.
-	if (!await asyncExists(userDbFile)) setConfig({appFirstRun: 1});
-	if (conf.optGenerateDB) {
-		doGenerate = true;
-	} else {
-		if (await asyncExists(karaDbFile)) {
-			const karaDbFileStats = await asyncStat(karaDbFile);
-			if (karaDbFileStats.size === 0) doGenerate = true;
-		} else {
-			doGenerate = true;
-		}
-	}
-	if (karaDb) await closeKaraDatabase();
-	await openKaraDatabase();
-	await migrateKaraDb();
-	await openUserDatabase();
-	await migrateUserDb();
-	// Compare Karas checksums if generation hasn't been requested already
+	if (conf.optGenerateDB) doGenerate = true;
+	// First login as super user to make sure user, database and extensions are created
+	await connectDB({superuser: true});
+	await initDB();
+	await closeDB();
+	await connectDB();
+	await migrateDB();
 	logger.info('[DB] Checking data files...');
 	if (!await compareKarasChecksum()) {
 		logger.info('[DB] Kara files have changed: database generation triggered');
 		doGenerate = true;
 	}
 	if (doGenerate) await generateDatabase();
+	exit(0);
+	/*
+	await migrateDB();
+	await openUserDatabase();
+	await migrateUserDb();
+	// Compare Karas checksums if generation hasn't been requested already
+
 	await closeKaraDatabase();
 	await Promise.all([
 		getUserDb().run(`ATTACH DATABASE "${karaDbFile}" AS karasdb;`),
@@ -212,15 +199,7 @@ export async function initDBSystem() {
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
 	return true;
-}
-
-async function compareDatabasesUUIDs() {
-	const res = await getUserDb().get(sql.compareUUIDs);
-	if (res && res.karasdb_uuid !== res.userdb_uuid) {
-		//Databases are different, rewriting userdb's UUID with karasdb's UUID and running integrity checks.
-		await checkUserdbIntegrity(res.karasdb_uuid);
-	}
-	return true;
+	*/
 }
 
 export async function getStats() {

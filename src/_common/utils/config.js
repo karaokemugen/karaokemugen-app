@@ -19,6 +19,7 @@ import {playerNeedsRestart} from '../../_services/player';
 import {setState, getState} from './state';
 import {setSongPoll} from '../../_services/poll';
 import { initStats, stopStats } from '../../_services/stats';
+import testJSON from 'is-valid-json';
 
 /** Object containing all config */
 let config = {};
@@ -142,11 +143,24 @@ export async function initConfig(appPath, argv) {
 
 async function loadConfigFiles(appPath) {
 	const overrideConfigFile = resolve(appPath, configFile);
+	const databaseConfigFile = resolve(appPath, 'database.json');
 	const versionFile = resolve(__dirname, '../../VERSION');
 	config = {...config, ...defaults};
 	config.appPath = appPath;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
 	if (await asyncExists(versionFile)) await loadConfig(versionFile);
+	const dbConfig = await loadDBConfig(databaseConfigFile);
+	config.db = {...dbConfig};
+}
+
+async function loadDBConfig(configFile) {
+	if (!await asyncExists(configFile)) throw 'Unable to find database.json!';
+	const configData = await asyncReadFile(configFile, 'utf-8');
+	if (!testJSON(configData)) {
+		logger.error('[Config] Database config file is not valid JSON');
+		throw 'Syntax error in database.json';
+	}
+	return JSON.parse(configData);
 }
 
 async function loadConfig(configFile) {
@@ -210,7 +224,7 @@ export async function backupConfig() {
 
 export async function updateConfig(newConfig) {
 	savingSettings = true;
-	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale'];
+	const forbiddenConfigPrefix = ['opt','Admin','BinmpvPath','BinffprobePath','BinffmpegPath','Version','isTest','isDemo','appPath','os','EngineDefaultLocale', 'db'];
 	const filteredConfig = {};
 	Object.entries(newConfig).forEach(([k, v]) => {
 		forbiddenConfigPrefix.every(prefix => !k.startsWith(prefix))

@@ -76,7 +76,22 @@ export const defaults = {
 	appInstanceID: 'Change me',
 	appFrontendPort: 1337,
 	appFirstRun: 1,
-	karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org'
+	karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org',
+	db: {
+		'sql-file': true,
+		defaultEnv: 'prod',
+		prod: {
+			driver: 'pg',
+			user: 'karaokemugen_app',
+			password: 'musubi',
+			host: 'localhost',
+			database: 'karaokemugen_app',
+			schema: 'public',
+			superuser: 'postgres',
+			superuserPassword: 'musubi',
+			bundledPostgresBinary: true
+	  	}
+	}
 };
 
 const horizontalPosArray = ['Left', 'Right', 'Center'];

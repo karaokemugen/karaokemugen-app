@@ -1,4 +1,4 @@
-import {buildTypeClauses, langSelector, buildClauses, getUserDb, transaction} from './database';
+import {buildTypeClauses, langSelector, buildClauses, db, transaction} from './database';
 import {now} from 'unix-timestamp';
 import {getConfig} from '../_common/utils/config';
 import {resolve} from 'path';
@@ -14,6 +14,15 @@ export async function getSongCountForUser(playlist_id,user_id) {
 		$user_id: user_id
 	});
 }
+
+export async function refreshKaras() {
+	return await db().query('REFRESH MATERIALIZED VIEW all_karas');
+}
+
+export async function refreshYears() {
+	return await db().query('REFRESH MATERIALIZED VIEW all_years');
+}
+
 
 export async function getYears() {
 	return await getUserDb().all(sql.getYears);

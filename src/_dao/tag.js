@@ -1,7 +1,12 @@
-import {getUserDb} from './database';
+import {db} from './database';
 import deburr from 'lodash.deburr';
 
 const sql = require('../_common/db/tag');
+
+export async function refreshTags() {
+	return await db().query('REFRESH MATERIALIZED VIEW all_tags');
+}
+
 
 export async function getTag(id) {
 	return await getUserDb().get(sql.getTag, { $id: id });

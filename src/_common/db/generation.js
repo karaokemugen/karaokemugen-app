@@ -1,29 +1,29 @@
 /** Requêtes SQL utilisées. */
 
-export const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, NORM_title, year, songorder, mediafile, mediasize, subfile, created_at,
-	modified_at, gain, duration, karafile)
-	VALUES($id_kara, $kara_KID, $kara_title, $titlenorm, $kara_year, $kara_songorder, $kara_mediafile, $kara_mediasize, $kara_subfile, $kara_dateadded,
-	$kara_datemodif, $kara_gain, $kara_duration, $kara_karafile);`;
+export const insertKaras = `INSERT INTO kara(pk_id_kara, kid, title, year, songorder, mediafile, subfile, created_at,
+	modified_at, gain, duration, karafile, mediasize)
+	VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);`;
 
-export const inserti18nSeries = 'INSERT INTO serie_lang(fk_id_serie, lang, name, NORM_name) VALUES((SELECT pk_id_serie FROM serie WHERE name = $name), $lang, $serie, $serienorm);';
+export const inserti18nSeries = 'INSERT INTO serie_lang(fk_id_serie, lang, name) VALUES((SELECT pk_id_serie FROM serie WHERE name = $3), $1, $2);';
 
-export const insertSeries = 'INSERT INTO serie(pk_id_serie, name, NORM_name, sid) VALUES($id_serie, $serie, $NORM_serie, $sid);';
+export const insertSeries = 'INSERT INTO serie(pk_id_serie, name) VALUES($1, $2);';
 
-export const insertTags = `INSERT INTO tag(pk_id_tag, tagtype, name, NORM_name)
-	VALUES($id_tag, $tagtype, $tagname, $tagnamenorm);`;
+export const insertTags = `INSERT INTO tag(pk_id_tag, tagtype, name, slug, i18n)
+	VALUES($1, $2, $3, $4, $5);`;
 
-export const insertKaraTags = 'INSERT INTO kara_tag(fk_id_tag, fk_id_kara) VALUES($id_tag, $id_kara);';
+export const insertKaraTags = 'INSERT INTO kara_tag(fk_id_tag, fk_id_kara) VALUES($1, $2);';
 
-export const insertKaraSeries = 'INSERT INTO kara_serie(fk_id_serie, fk_id_kara) VALUES($id_serie, $id_kara);';
+export const insertKaraSeries = 'INSERT INTO kara_serie(fk_id_serie, fk_id_kara) VALUES($1, $2);';
 
-export const updateSeries = `UPDATE serie SET altname = $serie_altnames ,NORM_altname = $serie_altnamesnorm, sid = $sid, seriefile = $serie_file
-	WHERE name= $serie_name ;`;
+export const updateSeries = 'UPDATE serie SET aliases = $1, seriefile = $3, sid = $4 WHERE name = $2 ;';
 
-export const selectTags = 'SELECT pk_id_tag AS id_tag, tagtype, name FROM tag;';
-
-export const selectRequestKaras = 'SELECT fk_id_kara AS id_kara, kid FROM request;';
+export const selectRequestKaras = 'SELECT fk_id_kara AS id_kara, kid FROM requested;';
 
 export const selectKaras = 'SELECT kara_id AS id_kara, kid FROM all_karas;';
+
+export const selectPlayedKaras = 'SELECT fk_id_kara AS id_kara, kid FROM played;';
+
+export const selectTags = 'SELECT pk_id_tag AS id_tag, tagtype, name FROM tag;';
 
 export const selectPlaylistKaras = 'SELECT fk_id_kara AS id_kara, kid FROM playlist_content;';
 
@@ -35,5 +35,3 @@ export const selectBLCKaras = 'SELECT value AS id_kara, uniquevalue AS kid FROM 
 
 export const selectBLCTags = `SELECT type, value AS id_tag, uniquevalue AS tagname FROM blacklist_criteria
     WHERE type > 0 AND type < 1000;`;
-
-export const selectViewcountKaras = 'SELECT fk_id_kara AS id_kara, kid FROM viewcount;';

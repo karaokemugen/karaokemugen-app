@@ -1,9 +1,7 @@
 import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {basename, join, resolve} from 'path';
-import deburr from 'lodash.deburr';
 import {profile} from '../_common/utils/logger';
-import {open} from 'sqlite';
 import {has as hasLang} from 'langs';
 import {asyncReadFile, checksum, asyncCopy, asyncReadDir} from '../_common/utils/files';
 import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_common/utils/config';
@@ -11,7 +9,7 @@ import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
 	selectBLCTags, selectKaras, selectPlaylistKaras,
-	selectTags, selectViewcountKaras, selectRequestKaras,
+	selectTags, selectPlayedKaras, selectRequestKaras,
 	selectWhitelistKaras,
 	updateSeries
 } from '../_common/db/generation';
@@ -19,15 +17,26 @@ import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {emit} from '../_common/utils/pubsub';
+import {refreshKaras, refreshYears} from '../_dao/kara';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
 import {updateUUID} from '../_common/db/database.js';
 import cliProgress from 'cli-progress';
 import {emitWS} from '../_webapp/frontend';
-
+import {db, transaction} from '../_dao/database';
+import { refreshSeries } from '../_dao/series';
+import { refreshTags } from '../_dao/tag';
+import slug from 'slug';
+import {createHash} from 'crypto';
 
 let error = false;
 let generating = false;
 let bar = {};
+
+function hash(string) {
+	const hash = createHash('sha1');
+	hash.update(string);
+	return hash.digest('hex');
+}
 
 function initBar(options, preset, total, start) {
 	bar = new cliProgress.Bar(options, preset);
@@ -55,22 +64,20 @@ function incrBar() {
 	});
 };
 
-async function emptyDatabase(db) {
-	await db.run('DELETE FROM kara_tag;');
+async function emptyDatabase() {
+	await db().query('TRUNCATE kara_tag CASCADE;');
 	incrBar();
-	await db.run('DELETE FROM kara_serie;');
+	await db().query('TRUNCATE kara_serie CASCADE;');
 	incrBar();
-	await db.run('DELETE FROM tag;');
+	await db().query('TRUNCATE tag RESTART IDENTITY CASCADE;');
 	incrBar();
-	await db.run('DELETE FROM serie;');
+	await db().query('TRUNCATE serie RESTART IDENTITY CASCADE;');
 	incrBar();
-	await db.run('DELETE FROM serie_lang;');
+	await db().query('TRUNCATE serie_lang RESTART IDENTITY CASCADE;');
 	incrBar();
-	await db.run('DELETE FROM kara;');
+	await db().query('TRUNCATE kara RESTART IDENTITY CASCADE;');
 	incrBar();
-	await db.run('DELETE FROM sqlite_sequence;');
-	incrBar();
-	await db.run('VACUUM;');
+	await db().query('VACUUM;');
 	incrBar();
 }
 
@@ -156,22 +163,21 @@ async function readAndCompleteKarafile(karafile) {
 }
 
 function prepareKaraInsertData(kara, index) {
-	return {
-		$id_kara: index,
-		$kara_KID: kara.KID,
-		$kara_title: kara.title,
-		$titlenorm: deburr(kara.title).replace('\'', '').replace(',', ''),
-		$kara_year: kara.year,
-		$kara_songorder: kara.order,
-		$kara_mediafile: kara.mediafile,
-		$kara_mediasize: kara.mediasize,
-		$kara_subfile: kara.subfile,
-		$kara_dateadded: kara.dateadded,
-		$kara_datemodif: kara.datemodif,
-		$kara_gain: kara.mediagain,
-		$kara_duration: kara.mediaduration,
-		$kara_karafile: basename(kara.karafile)
-	};
+	return [
+		index,
+		kara.KID,
+		kara.title,
+		kara.year || null,
+		kara.order || null,
+		kara.mediafile,
+		kara.subfile,
+		new Date(kara.dateadded * 1000),
+		new Date(kara.datemodif * 1000),
+		kara.mediagain,
+		kara.mediaduration,
+		basename(kara.karafile),
+		kara.mediasize
+	];
 }
 
 function prepareAllKarasInsertData(karas) {
@@ -283,13 +289,10 @@ function getAllSeries(karas, seriesData) {
 }
 
 function prepareSerieInsertData(serie, index) {
-	//UUID is generated anyway, will be updated through series files later
-	return {
-		$id_serie: index,
-		$serie: serie,
-		$NORM_serie: deburr(serie),
-		$sid: uuidV4()
-	};
+	return [
+		index,
+		serie
+	];
 }
 
 function prepareAllSeriesInsertData(mapSeries) {
@@ -310,10 +313,10 @@ function prepareAllKarasSeriesInsertData(mapSeries) {
 	let index = 1;
 	for (const serie of mapSeries.keys()) {
 		for (const karaIndex of mapSeries.get(serie)) {
-			if (karaIndex > 0) data.push({
-				$id_serie: index,
-				$id_kara: karaIndex
-			});
+			data.push([
+				index,
+				karaIndex
+			]);
 		}
 		index++;
 	}
@@ -328,49 +331,33 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 
 	for (const serie of seriesData) {
 		if (serie.aliases) {
-			data.push({
-				$serie_altnames: serie.aliases.join(','),
-				$serie_altnamesnorm: deburr(serie.aliases.join(' ')).replace('\'', '').replace(',', ''),
-				$serie_name: serie.name,
-				$serie_file: serie.seriefile,
-				$sid: serie.sid
-			});
+			data.push([
+				JSON.stringify(serie.aliases),
+				serie.name,
+				serie.seriefile,
+				serie.sid
+			]);
 		} else {
-			data.push({
-				$serie_altnames: null,
-				$serie_altnamesnorm: null,
-				$serie_name: serie.name,
-				$serie_file: serie.seriefile,
-				$sid: serie.sid
-			});
+			data.push([
+				null,
+				serie.name,
+				serie.seriefile,
+				serie.sid
+			]);
 		}
 		if (serie.i18n) {
 			for (const lang of Object.keys(serie.i18n)) {
-				i18nData.push({
-					$lang: lang,
-					$serie: serie.i18n[lang],
-					$serienorm: deburr(serie.i18n[lang]).replace('\'', '').replace(',', ''),
-					$name: serie.name
-				});
+				i18nData.push([
+					lang,
+					serie.i18n[lang],
+					serie.name
+				]);
 			}
 		}
 	}
-	// Checking if some series present in .kara files are not present in the series file
+	// Checking if some series present in .kara files are not present in the series files
 	for (const serie of mapSeries.keys()) {
-		if (!findSeries(serie, seriesData)) {
-			// Print a warning and push some basic data so the series can be searchable at least
-			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
-			if (getConfig().optStrict) strictModeError(serie);
-			data.push({
-				$serie_name: serie
-			});
-			i18nData.push({
-				$lang: 'jpn',
-				$serie: serie,
-				$serienorm: deburr(serie).replace('\'', '').replace(',', ''),
-				$name: serie
-			});
-		}
+		if (!findSeries(serie, seriesData)) strictModeError(serie);
 	}
 	return {
 		data: data,
@@ -474,6 +461,7 @@ function getTagId(tagName, tags) {
 
 function prepareAllTagsInsertData(allTags) {
 	const data = [];
+	const slugs = [];
 	const translations = require(join(__dirname,'../_common/locales'));
 	let lastIndex;
 
@@ -481,46 +469,59 @@ function prepareAllTagsInsertData(allTags) {
 		const tagParts = tag.split(',');
 		const tagName = tagParts[0];
 		const tagType = tagParts[1];
-		let tagNorm;
-		if (+tagType === 7) {
-			const tagTranslations = [];
-			for (const value of Object.values(translations)) {
-				// Key is the language, value is a i18n text
-				if (value[tagName]) tagTranslations.push(value[tagName]);
-			}
-			tagNorm = tagTranslations.join(' ');
-		} else {
-			tagNorm = tagName;
-		}
-		data.push({
-			$id_tag: index + 1,
-			$tagtype: tagType,
-			$tagname: tagName,
-			$tagnamenorm: deburr(tagNorm).replace('\'', '').replace(',', '')
+		slug.defaults.mode = 'rfc3986';
+		let tagSlug = slug(tagName, {
+			lower: true,
 		});
+		if (slugs.includes(`${tagType} ${tagSlug}`)) {
+			tagSlug = `${tagSlug}-${hash(tagName)}`;
+		}
+		if (slugs.includes(`${tagType} ${tagSlug}`)) {
+			logger.error(`[Gen] Duplicate: ${tagType} ${tagSlug} ${tagName}`);
+			error = true;
+		}
+		slugs.push(`${tagType} ${tagSlug}`);
+		const tagi18n = {};
+		if (+tagType === 7 || +tagType === 3) {
+			for (const language of Object.keys(translations)) {
+				// Key is the language, value is a i18n text
+				if (language[tagName]) tagi18n[language] = language[tagName];
+			}
+		}
+		data.push([
+			index + 1,
+			tagType,
+			tagName,
+			tagSlug,
+			tagi18n
+		]);
 		lastIndex = index + 1;
 	});
 	// We browse through tag data to add the default tags if they don't exist.
 	for (const tag of karaTags) {
 		if (!data.find(t => t.$tagname === `TAG_${tag}`)) {
-			data.push({
-				$id_tag: lastIndex + 1,
-				$tagtype: 7,
-				$tagname: `TAG_${tag}`,
-				$tagnamenorm: `TAG_${tag}`
-			});
+			const tagDefaultName = `TAG_${tag}`;
+			data.push([
+				lastIndex + 1,
+				7,
+				tagDefaultName,
+				slug(tagDefaultName),
+				{}
+			]);
 			lastIndex++;
 		}
 	}
 	// We do it as well for types
 	for (const type of karaTypesMap) {
 		if (!data.find(t => t.$tagname === `TYPE_${type[0]}`)) {
-			data.push({
-				$id_tag: lastIndex + 1,
-				$tagtype: 3,
-				$tagname: `TYPE_${type[0]}`,
-				$tagnamenorm: `TYPE_${type[0]}`
-			});
+			const typeDefaultName = `TYPE_${type[0]}`;
+			data.push([
+				lastIndex + 1,
+				3,
+				typeDefaultName,
+				slug(typeDefaultName),
+				{}
+			]);
 			lastIndex++;
 		}
 	}
@@ -532,22 +533,14 @@ function prepareTagsKaraInsertData(tagsByKara) {
 
 	tagsByKara.forEach((tags, karaIndex) => {
 		tags.forEach(tagId => {
-			data.push({
-				$id_tag: tagId,
-				$id_kara: karaIndex
-			});
+			data.push([
+				tagId,
+				karaIndex
+			]);
 		});
 	});
 
 	return data;
-}
-
-async function runSqlStatementOnData(stmtPromise, data) {
-	const stmt = await stmtPromise;
-	const sqlPromises = data.map(sqlData => stmt.run(sqlData));
-	await Promise.all(sqlPromises);
-	await stmt.finalize();
-	incrBar();
 }
 
 function createBar(message, length) {
@@ -557,16 +550,18 @@ function createBar(message, length) {
 		  }, cliProgress.Presets.shades_classic, length, 0);
 }
 
-export async function run(config) {
+async function doTransaction(query) {
+	await transaction([query]);
+	incrBar();
+}
+
+export async function run() {
 	try {
 		emit('databaseBusy',true);
 		if (generating) throw 'A database generation is already in progress';
 		generating = true;
-		const conf = config || getConfig();
 
-		const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
 		logger.info('[Gen] Starting database generation');
-		const db = await open(karas_dbfile, {verbose: true, Promise});
 		const karaFiles = await extractAllKaraFiles();
 		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
 		if (karaFiles.length === 0) throw 'No kara files found';
@@ -588,9 +583,8 @@ export async function run(config) {
 		// Preparing data to insert
 		stopBar();
 		logger.info('[Gen] Data files processed, creating database');
-		createBar('Generating database  ', 20);
+		createBar('Generating database  ', 21);
 		await emptyDatabase(db);
-		incrBar();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
@@ -603,24 +597,26 @@ export async function run(config) {
 		const sqlInsertKarasTags = prepareTagsKaraInsertData(tags.tagsByKara);
 
 		// Inserting data in a transaction
-
-		await db.run('begin transaction');
 		await Promise.all([
-			runSqlStatementOnData(db.prepare(insertKaras), sqlInsertKaras),
-			runSqlStatementOnData(db.prepare(insertSeries), sqlInsertSeries),
-			runSqlStatementOnData(db.prepare(insertTags), sqlInsertTags),
-			runSqlStatementOnData(db.prepare(insertKaraTags), sqlInsertKarasTags),
-			runSqlStatementOnData(db.prepare(insertKaraSeries), sqlInsertKarasSeries)
+			doTransaction({sql: insertKaras, params: sqlInsertKaras}),
+			doTransaction({sql: insertSeries, params: sqlInsertSeries}),
+			doTransaction({sql: insertTags, params: sqlInsertTags}),
 		]);
 		await Promise.all([
-			runSqlStatementOnData(db.prepare(inserti18nSeries), sqlInserti18nSeries),
-			runSqlStatementOnData(db.prepare(updateSeries), sqlUpdateSeries)
+			doTransaction({sql: insertKaraTags, params: sqlInsertKarasTags}),
+			doTransaction({sql: insertKaraSeries, params: sqlInsertKarasSeries}),
+			doTransaction({sql: inserti18nSeries, params: sqlInserti18nSeries}),
+			doTransaction({sql: updateSeries, params: sqlUpdateSeries})
 		]);
-
-		await db.run('commit');
+		refreshKaras();
 		incrBar();
-		await db.close();
-		await checkUserdbIntegrity(null, conf);
+		refreshSeries();
+		incrBar();
+		refreshYears();
+		incrBar();
+		refreshTags();
+		incrBar();
+		await checkUserdbIntegrity(null);
 		stopBar();
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
@@ -641,29 +637,7 @@ export async function run(config) {
  * If id_kara is different, write a UPDATE query.
  */
 export async function checkUserdbIntegrity(uuid, config) {
-
-	const conf = config || getConfig();
-
-	//If no uuid provided, we're making a new database
-	if (!uuid) uuid = uuidV4();
-	const karas_dbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBKarasFile);
-	const karas_userdbfile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
-	//Backup userdb file before running integrity checks
-	await asyncCopy(
-		karas_userdbfile,
-		karas_userdbfile + '.backup',
-		{ overwrite: true }
-	);
-	if (bar) incrBar();
-
-
 	logger.debug('[Gen] Running user database integrity checks');
-
-	const [db, userdb] = await Promise.all([
-		open(karas_dbfile, {Promise}),
-		open(karas_userdbfile, {Promise})
-	]);
-
 	const [
 		allTags,
 		allKaras,
@@ -675,72 +649,68 @@ export async function checkUserdbIntegrity(uuid, config) {
 		requestKaras,
 		playlistKaras
 	] = await Promise.all([
-		db.all(selectTags),
-		db.all(selectKaras),
-		userdb.all(selectBLCTags),
-		userdb.all(selectWhitelistKaras),
-		userdb.all(selectBLCKaras),
-		userdb.all(selectBlacklistKaras),
-		userdb.all(selectViewcountKaras),
-		userdb.all(selectRequestKaras),
-		userdb.all(selectPlaylistKaras)
+		db().query(selectTags),
+		db().query(selectKaras),
+		db().query(selectBLCTags),
+		db().query(selectWhitelistKaras),
+		db().query(selectBLCKaras),
+		db().query(selectBlacklistKaras),
+		db().query(selectPlayedKaras),
+		db().query(selectRequestKaras),
+		db().query(selectPlaylistKaras)
 	]);
 
 	if (bar) incrBar();
 
-	await userdb.run('BEGIN TRANSACTION');
-	await userdb.run('PRAGMA foreign_keys = OFF;');
-
 	// Listing existing KIDs
-	const karaKIDs = allKaras.map(k => `'${k.kid}'`).join(',');
+	const karaKIDs = allKaras.rows.map(k => `'${k.kid}'`).join(',');
 
 	// Setting kara IDs to 0 when KIDs are absent
 	await Promise.all([
-		userdb.run(`UPDATE whitelist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`UPDATE blacklist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`UPDATE viewcount SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`UPDATE request SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
-		userdb.run(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
+		db().query(`UPDATE whitelist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		db().query(`UPDATE blacklist SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		db().query(`UPDATE played SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		db().query(`UPDATE requested SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
+		db().query(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
 	]);
 	if (bar) incrBar();
 	const karaIdByKid = new Map();
-	allKaras.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
+	allKaras.rows.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 	let sql = '';
-
-	whitelistKaras.forEach(wlk => {
+	whitelistKaras.rows.forEach(wlk => {
 		if (karaIdByKid.has(wlk.kid) && karaIdByKid.get(wlk.kid) !== wlk.id_kara) {
 			sql += `UPDATE whitelist SET fk_id_kara = ${karaIdByKid.get(wlk.kid)} WHERE kid = '${wlk.kid}';`;
 		}
 	});
-	blacklistCriteriaKaras.forEach(blck => {
+	blacklistCriteriaKaras.rows.forEach(blck => {
 		if (karaIdByKid.has(blck.kid) && karaIdByKid.get(blck.kid) !== blck.id_kara) {
 			sql += `UPDATE blacklist_criteria SET value = ${karaIdByKid.get(blck.kid)} WHERE uniquevalue = '${blck.kid}';`;
 		}
 	});
-	blacklistKaras.forEach(blk => {
+	blacklistKaras.rows.forEach(blk => {
 		if (karaIdByKid.has(blk.kid) && karaIdByKid.get(blk.kid) !== blk.id_kara) {
 			sql += `UPDATE blacklist SET fk_id_kara = ${karaIdByKid.get(blk.kid)} WHERE kid = '${blk.kid}';`;
 		}
 	});
-	viewcountKaras.forEach(vck => {
+	viewcountKaras.rows.forEach(vck => {
 		if (karaIdByKid.has(vck.kid) && karaIdByKid.get(vck.kid) !== vck.id_kara) {
-			sql += `UPDATE viewcount SET fk_id_kara = ${karaIdByKid.get(vck.kid)} WHERE kid = '${vck.kid}';`;
+			sql += `UPDATE played SET fk_id_kara = ${karaIdByKid.get(vck.kid)} WHERE kid = '${vck.kid}';`;
 		}
 	});
-	requestKaras.forEach(rqk => {
+	requestKaras.rows.forEach(rqk => {
 		if (karaIdByKid.has(rqk.kid) && karaIdByKid.get(rqk.kid) !== rqk.id_kara) {
-			sql += `UPDATE request SET fk_id_kara = ${karaIdByKid.get(rqk.kid)} WHERE kid = '${rqk.kid}';`;
+			sql += `UPDATE requested SET fk_id_kara = ${karaIdByKid.get(rqk.kid)} WHERE kid = '${rqk.kid}';`;
 		}
 	});
-	playlistKaras.forEach(plck => {
+	playlistKaras.rows.forEach(plck => {
 		if (karaIdByKid.has(plck.kid) && karaIdByKid.get(plck.kid) !== plck.id_kara) {
 			sql += `UPDATE playlist_content SET fk_id_kara = ${karaIdByKid.get(plck.kid)} WHERE kid = '${plck.kid}';`;
 		}
 	});
 
-	blcTags.forEach(blcTag => {
+	blcTags.rows.forEach(blcTag => {
 		let tagFound = false;
-		allTags.forEach(function (tag) {
+		allTags.rows.forEach(function (tag) {
 			if (tag.name === blcTag.tagname && tag.tagtype === blcTag.type) {
 				// Found a matching Tagname, checking if id_tags are the same
 				if (tag.id_tag !== blcTag.id_tag) {
@@ -759,16 +729,27 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	if (sql) {
 		logger.debug( '[Gen] UPDATE SQL : ' + sql);
-		await userdb.exec(sql);
+		const beginSql = `BEGIN TRANSACTION;
+			ALTER TABLE whitelist DISABLE TRIGGER ALL;
+			ALTER TABLE blacklist DISABLE TRIGGER ALL;
+			ALTER TABLE played DISABLE TRIGGER ALL;
+			ALTER TABLE playlist_content DISABLE TRIGGER ALL;
+			ALTER TABLE blacklist_criteria DISABLE TRIGGER ALL;
+			ALTER TABLE requested DISABLE TRIGGER ALL;
+			ALTER TABLE blacklist DISABLE TRIGGER ALL;
+		`;
+		const endSql = `
+			ALTER TABLE whitelist ENABLE TRIGGER ALL;
+			ALTER TABLE blacklist ENABLE TRIGGER ALL;
+			ALTER TABLE played ENABLE TRIGGER ALL;
+			ALTER TABLE playlist_content ENABLE TRIGGER ALL;
+			ALTER TABLE blacklist_criteria ENABLE TRIGGER ALL;
+			ALTER TABLE requested ENABLE TRIGGER ALL;
+			ALTER TABLE blacklist ENABLE TRIGGER ALL;
+			COMMIT;
+		`;
+		await db().query(beginSql + sql + endSql);
 	}
-
-	await Promise.all([
-		userdb.run(updateUUID, { $uuid: uuid }),
-		db.run(updateUUID, { $uuid: uuid })
-	]);
-
-	await userdb.run('PRAGMA foreign_keys = ON;');
-	await userdb.run('COMMIT');
 	if (bar) incrBar();
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }

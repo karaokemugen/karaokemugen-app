@@ -1,7 +1,11 @@
-import {langSelector, paramWords, getUserDb} from './database';
+import {langSelector, paramWords, db} from './database';
 import deburr from 'lodash.deburr';
 
 const sql = require('../_common/db/series');
+
+export async function refreshSeries() {
+	return await db().query('REFRESH MATERIALIZED VIEW all_series');
+}
 
 export function buildClausesSeries(words) {
 	const params = paramWords(words);
