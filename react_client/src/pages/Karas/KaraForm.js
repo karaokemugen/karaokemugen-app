@@ -21,7 +21,7 @@ class KaraForm extends Component {
 			groupsDS: [],
 			tagDS: [],
 			singer: [],
-			author: null,
+			author: [],
 			tags: ['TAG_ANIME', 'TAG_TVSHOW'],
 			series: [],
 			creator: [],
