@@ -179,6 +179,8 @@ export async function trimPlaylist(playlist_id,duration) {
 	let durationPL = 0;
 	let lastPos = 1;
 	const pl = await getPlaylistContentsMini(playlist_id);
+	// Going through the playlist and updating lastPos on each item
+	// Until we hit the limit for duration
 	const needsTrimming = pl.some((kara) => {
 		lastPos = kara.pos;
 		durationPL = durationPL + kara.duration;
@@ -250,7 +252,6 @@ export async function setPublicPlaylist(playlist_id) {
 			data: pl.name
 		};
 	}
-
 }
 
 export async function deletePlaylist(playlist_id, token) {
