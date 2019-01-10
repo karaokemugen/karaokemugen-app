@@ -485,7 +485,7 @@ function prepareAllTagsInsertData(allTags) {
 		if (+tagType === 7 || +tagType === 3) {
 			for (const language of Object.keys(translations)) {
 				// Key is the language, value is a i18n text
-				if (language[tagName]) tagi18n[language] = language[tagName];
+				if (translations[language][tagName]) tagi18n[language] = translations[language][tagName];
 			}
 		}
 		data.push([
