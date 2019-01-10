@@ -79,6 +79,8 @@
     "chokidar": "^2.0.4",
     "cli-progress": "^2.1.1",
     "cookie-parser": "^1.4.3",
+    "db-migrate": "^0.11.5",
+    "db-migrate-pg": "^0.4.0",
     "decompress": "^4.2.0",
     "execa": "^1.0.0",
     "express": "^4.16.4",
@@ -108,6 +110,7 @@
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
+    "pg": "^7.7.1",
     "pretty-bytes": "^5.1.0",
     "pretty-error": "^2.1.1",
     "promise-retry": "^1.1.1",
@@ -125,7 +128,8 @@
     "webdav": "1.6.1",
     "winston": "^3.1.0",
     "winston-daily-rotate-file": "^3.5.1",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "yesql": "^3.2.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
