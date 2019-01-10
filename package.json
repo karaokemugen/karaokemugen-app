@@ -14,7 +14,10 @@
     "install": "cd react_client && yarn install",
     "setup": "yarn install && yarn buildReact",
     "buildReact": "cd react_client && yarn build",
-    "startReact": "cd react_client && yarn start"
+	"startReact": "cd react_client && yarn start",
+	"migrate": "node node_modules/db-migrate/bin/db-migrate sync [all] --migrations-dir src/_dao/migrations",
+    "migrateDown": "node node_modules/db-migrate/bin/db-migrate down --migrations-dir src/_dao/migrations",
+    "migrateUp": "node node_modules/db-migrate/bin/db-migrate up --migrations-dir src/_dao/migrations"
   },
   "homepage": "https://mugen.karaokes.moe/en",
   "repository": {
