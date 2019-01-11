@@ -1,7 +1,7 @@
 import {langSelector, paramWords, db} from './database';
 import deburr from 'lodash.deburr';
 
-const sql = require('../_common/db/series');
+const sql = require('./sql/series');
 
 export async function refreshSeries() {
 	return await db().query('REFRESH MATERIALIZED VIEW all_series');

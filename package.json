@@ -11,10 +11,10 @@
     "debug": "babel-node $NODE_DEBUG_OPTION src/index.js -- --debug",
     "test": "mocha --require babel-register --timeout 20000",
     "build": "yarn buildReact && rm -Rf dist && babel --source-maps --copy-files -d dist/ src/",
-    "install": "cd react_client && yarn install",
+    "install": "cd react_systempanel && yarn install",
     "setup": "yarn install && yarn buildReact",
-    "buildReact": "cd react_client && yarn build",
-    "startReact": "cd react_client && yarn start",
+    "buildReact": "cd react_systempanel && yarn build",
+    "startReact": "cd react_systempanel && yarn start",
     "migrate": "node node_modules/db-migrate/bin/db-migrate sync [all] --migrations-dir src/_dao/migrations",
     "migrateDown": "node node_modules/db-migrate/bin/db-migrate down --migrations-dir src/_dao/migrations",
     "migrateUp": "node node_modules/db-migrate/bin/db-migrate up --migrations-dir src/_dao/migrations"
@@ -70,7 +70,7 @@
       "dist/_webapp/vendors/**",
       "dist/_webapp/ressources/**",
       "dist/VERSION",
-      "react_client/build/**"
+      "react_systempanel/build/**"
     ]
   },
   "dependencies": {
@@ -121,6 +121,7 @@
     "read-chunk": "^3.0.0",
     "readline-sync": "^1.4.9",
     "sanitize-filename": "^1.6.1",
+    "semver": "^5.6.0",
     "slug": "^0.9.3",
     "socket.io": "^2.2.0",
     "sqlite": "^3.0.0",

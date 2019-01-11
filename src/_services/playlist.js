@@ -1,16 +1,16 @@
 //Utils
 import {uuidRegexp} from './constants';
 import {getStats} from '../_dao/database';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {now} from 'unix-timestamp';
 import logger from 'winston';
 import deburr from 'lodash.deburr';
 import shuffle from 'lodash.shuffle';
 import {emitWS} from '../_webapp/frontend';
-import {on} from '../_common/utils/pubsub';
+import {on} from '../_utils/pubsub';
 import testJSON from 'is-valid-json';
-import {setState, getState} from '../_common/utils/state';
-import {profile} from '../_common/utils/logger';
+import {setState, getState} from '../_utils/state';
+import {profile} from '../_utils/logger';
 
 //DAO
 import {
@@ -19,8 +19,8 @@ import {
 	deletePlaylist as deletePL,
 	editPlaylist as editPL,
 	emptyPlaylist as emptyPL,
-	findCurrentPlaylist,
-	findPublicPlaylist,
+	getCurrentPlaylist,
+	getPublicPlaylist,
 	getMaxPosInPlaylist,
 	getMaxPosInPlaylistForUser,
 	getPlaylistContents as getPLContents,
@@ -143,14 +143,14 @@ export async function isUserAllowedToAddKara(playlist_id,requester,duration) {
 	}
 }
 
-export async function isACurrentPlaylist() {
-	const res = await findCurrentPlaylist();
+export async function findCurrentPlaylist() {
+	const res = await getCurrentPlaylist();
 	if (res) return res.playlist_id;
 	return false;
 }
 
-export async function isAPublicPlaylist() {
-	const res = await findPublicPlaylist();
+export async function findPublicPlaylist() {
+	const res = await getPublicPlaylist();
 	if (res) return res.playlist_id;
 	return false;
 }
@@ -179,6 +179,8 @@ export async function trimPlaylist(playlist_id,duration) {
 	let durationPL = 0;
 	let lastPos = 1;
 	const pl = await getPlaylistContentsMini(playlist_id);
+	// Going through the playlist and updating lastPos on each item
+	// Until we hit the limit for duration
 	const needsTrimming = pl.some((kara) => {
 		lastPos = kara.pos;
 		durationPL = durationPL + kara.duration;
@@ -250,7 +252,6 @@ export async function setPublicPlaylist(playlist_id) {
 			data: pl.name
 		};
 	}
-
 }
 
 export async function deletePlaylist(playlist_id, token) {
@@ -1068,7 +1069,7 @@ function smartShuffle(playlist){ // Smart Shuffle begin
 }
 
 export async function previousSong() {
-	const playlist_id = await isACurrentPlaylist();
+	const playlist_id = await findCurrentPlaylist();
 	const playlist = await getPlaylistContentsMini(playlist_id);
 	if (playlist.length === 0) throw 'Playlist is empty!';
 	let readpos = 0;
@@ -1084,7 +1085,7 @@ export async function previousSong() {
 
 export async function nextSong() {
 	const conf = getConfig();
-	const playlist_id = await isACurrentPlaylist();
+	const playlist_id = await findCurrentPlaylist();
 	const playlist = await getPlaylistContentsMini(playlist_id);
 	if (playlist.length === 0) throw 'Playlist is empty!';
 	let readpos = 0;
@@ -1111,9 +1112,9 @@ export async function nextSong() {
 	}
 }
 
-async function getCurrentPlaylist() {
+async function getCurrentPlaylistContents() {
 	// Returns current playlist contents and where we're at.
-	const playlist_id = await isACurrentPlaylist();
+	const playlist_id = await findCurrentPlaylist();
 	const playlist = await getPlaylistContentsMini(playlist_id);
 	// Setting readpos to 0. If no flag_playing is found in current playlist
 	// Then karaoke will begin at the first element of the playlist (0)
@@ -1134,7 +1135,7 @@ async function getCurrentPlaylist() {
 
 export async function getCurrentSong() {
 	const conf = getConfig();
-	const playlist = await getCurrentPlaylist();
+	const playlist = await getCurrentPlaylistContents();
 	// Search for currently playing song
 	let readpos = false;
 	playlist.content.some((kara, index) => {
@@ -1175,7 +1176,7 @@ export async function getCurrentSong() {
 	// Construct mpv message to display.
 	//If karaoke is present in the public playlist, we're deleting it.
 	if (+conf.EngineRemovePublicOnPlay) {
-		const playlist_id = await isAPublicPlaylist();
+		const playlist_id = await findPublicPlaylist();
 		const plc = await getPLCByKIDUserID(kara.kid,kara.user_id,playlist_id);
 		if (plc) await deleteKaraFromPlaylist(plc.playlistcontent_id,playlist_id);
 	}
@@ -1213,4 +1214,34 @@ async function updateFreeOrphanedSongs() {
 
 export async function initPlaylistSystem() {
 	setInterval(updateFreeOrphanedSongs, 60 * 1000);
+}
+
+export async function testCurrentPlaylist() {
+	const conf = getConfig();
+	const currentPL_id = await findCurrentPlaylist();
+	if (currentPL_id) {
+		setState({currentPlaylistID: currentPL_id});
+	} else {
+		setState({currentPlaylistID: await createPlaylist(__('CURRENT_PLAYLIST'),{
+			visible: true,
+			current: true
+		},'admin')
+		});
+		logger.debug('[Playlist] Initial current playlist created');
+		if (!conf.isTest) buildDummyPlaylist(getState().currentPlaylistID);
+	}
+}
+
+export async function testPublicPlaylist() {
+	const publicPL_id = await findPublicPlaylist();
+	if (publicPL_id) {
+		setState({ publicPlaylistID: publicPL_id });
+	} else {
+		setState({ publicPlaylistID: await createPlaylist(__('PUBLIC_PLAYLIST'),{
+			visible: true,
+			public: true
+		},'admin')
+		});
+		logger.debug('[Playlist] Initial public playlist created');
+	}
 }

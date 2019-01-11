@@ -14,12 +14,12 @@ import uuidV4 from 'uuid/v4';
 import {watch} from 'chokidar';
 import {configConstraints, defaults} from './default_settings.js';
 import {check, unescape} from './validators';
-import {publishURL} from '../../_webapp/online';
-import {playerNeedsRestart} from '../../_services/player';
+import {publishURL} from '../_webapp/online';
+import {playerNeedsRestart} from '../_services/player';
 import {setState, getState} from './state';
-import {setSongPoll} from '../../_services/poll';
-import { initStats, stopStats } from '../../_services/stats';
 import testJSON from 'is-valid-json';
+import {setSongPoll} from '../_services/poll';
+import { initStats, stopStats } from '../_services/stats';
 
 /** Object containing all config */
 let config = {};
@@ -144,7 +144,7 @@ export async function initConfig(appPath, argv) {
 async function loadConfigFiles(appPath) {
 	const overrideConfigFile = resolve(appPath, configFile);
 	const databaseConfigFile = resolve(appPath, 'database.json');
-	const versionFile = resolve(__dirname, '../../VERSION');
+	const versionFile = resolve(__dirname, '../VERSION');
 	config = {...config, ...defaults};
 	config.appPath = appPath;
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
@@ -179,7 +179,7 @@ async function loadConfig(configFile) {
 
 async function configureLocale() {
 	i18n.configure({
-		directory: resolve(__dirname, '../locales'),
+		directory: resolve(__dirname, '../_locales'),
 		defaultLocale: 'en',
 		cookie: 'locale',
 		register: global

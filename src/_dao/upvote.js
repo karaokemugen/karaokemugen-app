@@ -1,5 +1,5 @@
 import {getUserDb} from './database';
-const sql = require('../_common/db/upvote');
+const sql = require('./sql/upvote');
 
 export async function getUpvotesByPLC(plc_id) {
 	return await getUserDb().all(sql.selectUpvoteByPLC, {$plc_id: plc_id});

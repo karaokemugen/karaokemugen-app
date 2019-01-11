@@ -6,7 +6,7 @@ import {address} from 'ip';
 import {graphics} from 'systeminformation';
 import logger from 'winston';
 import i18n from 'i18n';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {urlencoded, json} from 'body-parser';
 import passport from 'passport';
 import {configurePassport} from '../_webapp/passport_manager';
@@ -15,7 +15,7 @@ import { initializationCatchphrases } from '../_services/constants';
 import sample from 'lodash.sample';
 
 // Api routes
-import systemController from '../_controllers/admin';
+import systemController from '../_controllers/system';
 import authController from '../_controllers/auth';
 import {APIControllerPublic, APIControllerAdmin} from '../_controllers/api';
 
@@ -92,13 +92,13 @@ export async function initFrontend(port) {
 	app.use(express.static(__dirname + '/'));
 	//path for system control panel
 	if (!conf.isDemo) {
-		app.use('/system', express.static(resolve(__dirname, '../../react_client/build')));
+		app.use('/system', express.static(resolve(__dirname, '../../react_systempanel/build')));
 		app.get('/system/*', (req, res) => {
-			res.sendFile(resolve(__dirname, '../../react_client/build/index.html'));
+			res.sendFile(resolve(__dirname, '../../react_systempanel/build/index.html'));
 		});
 	}
 	//Path to locales for webapp
-	app.use('/locales',express.static(__dirname + '/../_common/locales/'));
+	app.use('/locales',express.static(__dirname + '../_locales/'));
 	//Path to video previews
 	app.use('/previews',express.static(resolve(conf.appPath,conf.PathPreviews)));
 	//Path to user avatars

@@ -4,17 +4,17 @@
 
 import logger from 'winston';
 import {basename, extname, resolve} from 'path';
-import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias, getConfig} from '../_common/utils/config';
-import {sanitizeFile, asyncReadFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt, asyncWriteFile} from '../_common/utils/files';
+import {resolvedPathImport, resolvedPathTemp, resolvedPathKaras, resolvedPathSubs, resolvedPathMedias, getConfig} from '../_utils/config';
+import {sanitizeFile, asyncReadFile, asyncCopy, asyncUnlink, asyncExists, asyncMove, asyncReadDir, filterMedias, replaceExt, asyncWriteFile} from '../_utils/files';
 import {
 	extractAssInfos, extractVideoSubtitles, extractMediaTechInfos, karaFilenameInfos, writeKara
 } from '../_dao/karafile';
 import {getType} from '../_services/constants';
 import {createKaraInDB, editKaraInDB, formatKara} from '../_services/kara';
-import {check} from '../_common/utils/validators';
+import {check} from '../_utils/validators';
 import {getOrAddSerieID} from '../_services/series';
 import timestamp from 'unix-timestamp';
-import { compareKarasChecksum } from './generate_karasdb';
+import { compareKarasChecksum } from './generation';
 import { getAllKaras } from '../_dao/kara';
 import ini from 'ini';
 
@@ -125,16 +125,19 @@ async function generateKara(kara, opts) {
 		title: {presence: true}
 	});
 	// Move files from temp directory to import, depending on the different cases.
+	// First name media files and subfiles according to their extensions
+	// Since temp files don't have any extension anymore
 	const newMediaFile = `${kara.mediafile}${extname(kara.mediafile_orig)}`;
 	let newSubFile;
 	if (kara.subfile && kara.subfile !== 'dummy.ass' && kara.subfile_orig) newSubFile = `${kara.subfile}${extname(kara.subfile_orig)}`;
 	if (kara.subfile === 'dummy.ass') newSubFile = kara.subfile;
+	// We don't need these anymore.
 	delete kara.subfile_orig;
 	delete kara.mediafile_orig;
+	// Let's move baby.
 	await asyncMove(resolve(resolvedPathTemp(),kara.mediafile),resolve(resolvedPathImport(),newMediaFile), { overwrite: true });
 	if (kara.subfile && kara.subfile !== 'dummy.ass') await asyncMove(resolve(resolvedPathTemp(),kara.subfile),resolve(resolvedPathImport(),newSubFile), { overwrite: true });
 
-	let newKara;
 	try {
 		if (validationErrors) throw JSON.stringify(validationErrors);
 		timestamp.round = true;
@@ -149,8 +152,7 @@ async function generateKara(kara, opts) {
 		kara.creator.forEach((e,i) => kara.creator[i] = e.trim());
 		kara.author.forEach((e,i) => kara.author[i] = e.trim());
 		if (!kara.order) kara.order = '';
-		newKara = await importKara(newMediaFile, newSubFile, kara);
-		return newKara;
+		return await importKara(newMediaFile, newSubFile, kara);;
 	} catch(err) {
 		logger.error(`[Karagen] Error during generation : ${err}`);
 		if (await asyncExists(newMediaFile)) await asyncUnlink(newMediaFile);
@@ -216,8 +218,11 @@ async function importKara(mediaFile, subFile, data) {
 		subfile: karaSubFile
 	});
 	karaData.overwrite = data.overwrite;
+	// In case we have no data (like from an automated import)
+	// try to guess some of the data from the filename)
 	if (!data) karaData = {mediafile: mediaFile, ...karaDataInfosFromFilename(mediaFile)};
 
+	// Extract media info, find subfile, and process series before moving files
 	const mediaPath = resolve(resolvedPathImport(), mediaFile);
 	let subPath;
 	if (subFile !== 'dummy.ass') subPath = await findSubFile(mediaPath, karaData, subFile);
@@ -268,6 +273,8 @@ function karaDataInfosFromFilename(mediaFile) {
 
 async function findSubFile(mediaPath, karaData, subFile) {
 	// Replacing file extension by .ass in the same directory
+	// Default is media + .ass instead of media extension.
+	// If subfile exists, assFile becomes that.
 	let assFile = replaceExt(mediaPath, '.ass');
 	if (subFile) assFile = resolve(resolvedPathImport(), subFile);
 	if (await asyncExists(assFile) && subFile !== 'dummy.ass') {
@@ -275,6 +282,7 @@ async function findSubFile(mediaPath, karaData, subFile) {
 		karaData.subfile = replaceExt(karaData.mediafile, '.ass');
 		return assFile;
 	} else if (mediaPath.endsWith('.mkv')) {
+		// In case of a mkv, we're going to extract its subtitles track
 		try {
 			const extractFile = await extractVideoSubtitles(mediaPath, karaData.KID);
 			karaData.subfile = replaceExt(karaData.mediafile, '.ass');
@@ -289,9 +297,9 @@ async function findSubFile(mediaPath, karaData, subFile) {
 }
 
 export async function renameAllKaras() {
+	// Remove this code in 2.6. We'll consider everyone has moved on from the old
+	// naming convention then.
 	const karas = await getAllKaras('admin');
-	let karasRenames = [];
-	let lyricsRenames = [];
 	const conf = getConfig();
 	try {
 		for (const kara of karas) {
@@ -317,11 +325,9 @@ export async function renameAllKaras() {
 				let karaText = await asyncReadFile(resolve(conf.appPath, conf.PathKaras,kara.karafile),'utf-8');
 				karaText = karaText.replace(/\r/g, '');
 				let karaData = ini.parse(karaText);
-				karasRenames.push(`git mv "karas/${kara.karafile}" "karas/${defineFilename(k)}.kara"`);
 				karaData.mediafile = `${defineFilename(k)}${extname(karaData.mediafile)}`;
 				if (karaData.subfile !== 'dummy.ass') {
 					karaData.subfile = `${defineFilename(k)}.ass`;
-					lyricsRenames.push(`git mv "lyrics/${kara.subfile}" "lyrics/${karaData.subfile}"`);
 				}
 				try {
 					asyncMove(
@@ -341,8 +347,6 @@ export async function renameAllKaras() {
 	} catch(err) {
 		logger.error(`[KaraRename] Process aborted : ${err}`);
 	}
-	asyncWriteFile('gitkaras.sh',karasRenames.join('\r\n'),'utf-8');
-	asyncWriteFile('gitlyrics.sh',lyricsRenames.join('\r\n'),'utf-8');
 	logger.info('[KaraRename] Renaming complete. Please update your karaoke base from Shelter now');
 }
 

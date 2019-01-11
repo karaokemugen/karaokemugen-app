@@ -2,7 +2,7 @@ import {formatKaraList, isAllKaras, getKara} from './kara';
 import {isAllKarasInPlaylist} from './playlist';
 import {removeKaraFromWhitelist, getWhitelistContents as getWLContents, emptyWhitelist as emptyWL, addKaraToWhitelist as addToWL} from '../_dao/whitelist';
 import {generateBlacklist} from './blacklist';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import logger from 'winston';
 
 export async function addKaraToWhitelist(kara_id) {

@@ -1,7 +1,7 @@
 import {insertUpvote,removeUpvote, getUpvotesByPLC} from '../_dao/upvote';
-import {freePLC, updateSongsLeft, isACurrentPlaylist, isAPublicPlaylist, getPLCInfoMini} from '../_services/playlist';
+import {freePLC, updateSongsLeft, findCurrentPlaylist, findPublicPlaylist, getPLCInfoMini} from '../_services/playlist';
 import {listUsers, findUserByName} from '../_services/user';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import logger from 'winston';
 
 export async function vote(plc_id,username,downvote) {
@@ -31,9 +31,9 @@ export async function addUpvote(plc_id,username) {
 		if (!+conf.EngineFreeUpvotes) return ret;
 		let modePlaylist_id;
 		if (+conf.EnginePrivateMode) {
-			modePlaylist_id = await isACurrentPlaylist();
+			modePlaylist_id = await findCurrentPlaylist();
 		} else {
-			modePlaylist_id = await isAPublicPlaylist();
+			modePlaylist_id = await findPublicPlaylist();
 		}
 		tryToFreeKara(plc_id, upvotes, plc.username, modePlaylist_id);
 		return ret;

@@ -3,11 +3,11 @@ import {resolve, extname, basename} from 'path';
 
 import {
 	resolveFileInDirs, asyncExists, asyncReadDir, asyncRemove, asyncStat
-} from '../_common/utils/files';
+} from '../_utils/files';
 import {
 	getConfig, resolvedPathPreviews, resolvedPathMedias
-} from '../_common/utils/config';
-import {createPreview} from '../_common/utils/ffmpeg';
+} from '../_utils/config';
+import {createPreview} from '../_utils/ffmpeg';
 
 async function extractVideoFiles(videoDir) {
 	let dirListing = [];

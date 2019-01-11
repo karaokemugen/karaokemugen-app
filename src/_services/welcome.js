@@ -1,4 +1,4 @@
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {editUser} from '../_services/user';
 import randomstring from 'randomstring';
 import opn from 'opn';

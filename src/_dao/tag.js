@@ -1,7 +1,7 @@
 import {db} from './database';
 import deburr from 'lodash.deburr';
 
-const sql = require('../_common/db/tag');
+const sql = require('./sql/tag');
 
 export async function refreshTags() {
 	return await db().query('REFRESH MATERIALIZED VIEW all_tags');

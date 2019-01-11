@@ -1,9 +1,9 @@
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import langs from 'langs';
 import {resolve} from 'path';
 import {getLanguage} from 'iso-countries-languages';
 import {getAllTags} from '../_dao/tag';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 
 export function translateTags(taglist,lang) {
 	// If lang is not provided, assume we're using node's system locale
@@ -13,7 +13,7 @@ export function translateTags(taglist,lang) {
 	// Instanciate a translation object for our needs with the correct language.
 	const i18n = require('i18n'); // Needed for its own translation instance
 	i18n.configure({
-		directory: resolve(__dirname,'../_common/locales'),
+		directory: resolve(__dirname,'../_locales'),
 	});
 	i18n.setLocale(lang);
 	// We need to read the detected locale in ISO639-1

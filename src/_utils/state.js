@@ -1,4 +1,4 @@
-import {emitWS} from '../../_webapp/frontend';
+import {emitWS} from '../_webapp/frontend';
 import {emit} from './pubsub';
 import logger from 'winston';
 import {now} from 'unix-timestamp';

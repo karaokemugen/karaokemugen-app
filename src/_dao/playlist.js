@@ -1,8 +1,8 @@
 import {langSelector, buildClauses, getUserDb, transaction} from './database';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {now} from 'unix-timestamp';
 
-const sql = require('../_common/db/playlist');
+const sql = require('./sql/playlist');
 
 export async function editPlaylist(pl) {
 	return await getUserDb().run(sql.editPlaylist, {
@@ -176,11 +176,11 @@ export async function getPlaylists(forUser) {
 	return await getUserDb().all(query + order);
 }
 
-export async function findCurrentPlaylist() {
+export async function getCurrentPlaylist() {
 	return await getUserDb().get(sql.testCurrentPlaylist);
 }
 
-export async function findPublicPlaylist() {
+export async function getPublicPlaylist() {
 	return await getUserDb().get(sql.testPublicPlaylist);
 }
 

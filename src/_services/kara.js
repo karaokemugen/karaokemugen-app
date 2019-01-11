@@ -1,11 +1,10 @@
 import timestamp from 'unix-timestamp';
 import uuidV4 from 'uuid/v4';
-import {check, initValidators} from '../_common/utils/validators';
+import {check, initValidators} from '../_utils/validators';
 import {tagTypes, karaTypes, karaTypesArray, subFileRegexp, uuidRegexp, mediaFileRegexp} from './constants';
-import {extractAllKaraFiles, readAllKaras} from '../_admin/generate_karasdb';
 import logger from 'winston';
 import {getOrAddSerieID} from './series';
-import {ASSToLyrics} from '../_common/utils/ass';
+import {ASSToLyrics} from '../_utils/ass';
 import {getPlaylistContentsMini} from './playlist';
 import {getAllKaras as getAllKarasDB,
 	getYears as getYearsDB,
@@ -22,12 +21,12 @@ import {getAllKaras as getAllKarasDB,
 import {updateKaraSeries} from '../_dao/series';
 import {updateKaraTags, checkOrCreateTag} from '../_dao/tag';
 import sample from 'lodash.sample';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {resolve} from 'path';
 import testJSON from 'is-valid-json';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 
 export async function isAllKaras(karas) {
@@ -42,7 +41,7 @@ async function isKara(kara_id) {
 	return await isKaraDB(kara_id);
 }
 
-export function translateKaraInfo(karalist, lang) {
+export function translateKaraInfo(karas, lang) {
 	// If lang is not provided, assume we're using node's system locale
 	if (!lang) lang = getConfig().EngineDefaultLocale;
 	// Test if lang actually exists in ISO639-1 format
@@ -50,7 +49,7 @@ export function translateKaraInfo(karalist, lang) {
 	// Instanciate a translation object for our needs with the correct language.
 	const i18n = require('i18n'); // Needed for its own translation instance
 	i18n.configure({
-		directory: resolve(__dirname,'../_common/locales'),
+		directory: resolve(__dirname,'../_locales'),
 	});
 	i18n.setLocale(lang);
 
@@ -58,13 +57,7 @@ export function translateKaraInfo(karalist, lang) {
 	const detectedLocale = langs.where('1',lang);
 	// If the kara list provided is not an array (only a single karaoke)
 	// Put it into an array first
-	let karas;
-	if (!Array.isArray(karalist)) {
-		karas = [];
-		karas[0] = karalist;
-	} else {
-		karas = karalist;
-	}
+	if (!Array.isArray(karas)) karas = [karas];
 	karas.forEach((kara,index) => {
 		karas[index].songtype_i18n = i18n.__(kara.songtype);
 		karas[index].songtype_i18n_short = i18n.__(kara.songtype+'_SHORT');
@@ -161,6 +154,7 @@ export async function getRandomKara(playlist_id, filter, username) {
 export async function getKara(kara_id, username, lang) {
 	profile('getKaraInfo');
 	const kara = await getKaraDB(kara_id, username, lang);
+	if (!kara) throw `Kara ${kara_id} unknown`;
 	let output = translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].mediafile);
 	if (previewfile) output[0].previewfile = previewfile;
@@ -277,7 +271,7 @@ const karaConstraintsV3 = {
 	},
 	title: {presence: {allowEmpty: true}},
 	type: {presence: true, inclusion: karaTypesArray},
-	series: function(value, attributes) {
+	series: (value, attributes) => {
 		if (!serieRequired(attributes['type'])) {
 			return { presence: {allowEmpty: true} };
 		} else {
@@ -295,31 +289,6 @@ const karaConstraintsV3 = {
 	mediaduration: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	version: {numericality: {onlyInteger: true, equality: 3}}
 };
-
-export async function validateKaras() {
-	try {
-		const karaFiles = await extractAllKaraFiles();
-		const karas = await readAllKaras(karaFiles);
-		verifyKIDsUnique(karas);
-		if (karas.some((kara) => {
-			return kara.error;
-		})) throw 'One kara failed validation process';
-	} catch(err) {
-		throw err;
-	}
-}
-
-function verifyKIDsUnique(karas) {
-	const KIDs = [];
-	karas.forEach((kara) => {
-		if (!KIDs.includes(kara.KID)) {
-			KIDs.push(kara.KID);
-		} else {
-			logger.error(`[Kara] KID ${kara.KID} is not unique : duplicate found in karaoke ${kara.lang} - ${kara.series} - ${kara.type}${kara.order} - ${kara.title}`);
-			throw `Duplicate KID found : ${kara.KID}`;
-		}
-	});
-}
 
 export function karaDataValidationErrors(karaData) {
 	initValidators();

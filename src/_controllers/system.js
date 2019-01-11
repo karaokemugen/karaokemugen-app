@@ -1,10 +1,10 @@
-import {editSetting, backupConfig, getConfig} from '../_common/utils/config';
+import {editSetting, backupConfig, getConfig} from '../_utils/config';
 import {emitWS} from '../_webapp/frontend';
-import {run as generateDatabase} from '../_admin/generate_karasdb';
-import {renameAllKaras, editKara, createKara, karaGenerationBatch} from '../_admin/generate_karasfiles';
-import {requireAuth, requireValidUser, requireAdmin} from './passport_manager';
-import {requireNotDemo} from './demo';
-import {getLang} from './lang';
+import {run as generateDatabase} from '../_services/generation';
+import {renameAllKaras, editKara, createKara, karaGenerationBatch} from '../_services/kara_creation';
+import {requireAuth, requireValidUser, requireAdmin} from './middlewares/auth';
+import {requireNotDemo} from './middlewares/demo';
+import {getLang} from './middlewares/lang';
 import {editUser, createUser, findUserByID, listUsers, deleteUserById} from '../_services/user';
 import {getKaras, getKara, getTop50, getKaraViewcounts, getKaraHistory} from '../_services/kara';
 import {getTags} from '../_services/tag';
@@ -15,7 +15,7 @@ import multer from 'multer';
 import {addSerie, deleteSerie, editSerie, getSeries, getSerie} from '../_services/series';
 import logger from 'winston';
 
-export default function adminController(router) {
+export default function systemController(router) {
 	const conf = getConfig();
 	let upload = multer({ dest: resolve(conf.appPath,conf.PathTemp)});
 

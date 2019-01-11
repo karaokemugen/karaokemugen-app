@@ -1,10 +1,10 @@
 import logger from 'winston';
-import uuidV4 from 'uuid/v4';
 import {basename, join, resolve} from 'path';
-import {profile} from '../_common/utils/logger';
+import deburr from 'lodash.deburr';
+import {profile} from '../_utils/logger';
 import {has as hasLang} from 'langs';
-import {asyncReadFile, checksum, asyncCopy, asyncReadDir} from '../_common/utils/files';
-import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_common/utils/config';
+import {asyncReadFile, checksum, asyncCopy, asyncReadDirFilter} from '../_utils/files';
+import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
 	insertKaras, insertKaraSeries, insertKaraTags, insertSeries, insertTags, inserti18nSeries, selectBlacklistKaras, selectBLCKaras,
@@ -12,25 +12,23 @@ import {
 	selectTags, selectPlayedKaras, selectRequestKaras,
 	selectWhitelistKaras,
 	updateSeries
-} from '../_common/db/generation';
+} from '../_dao/sql/generation';
 import {tags as karaTags, karaTypesMap} from '../_services/constants';
 import {serieRequired, verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
-import {emit} from '../_common/utils/pubsub';
 import {refreshKaras, refreshYears} from '../_dao/kara';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
-import {updateUUID} from '../_common/db/database.js';
-import cliProgress from 'cli-progress';
-import {emitWS} from '../_webapp/frontend';
 import {db, transaction} from '../_dao/database';
 import { refreshSeries } from '../_dao/series';
 import { refreshTags } from '../_dao/tag';
 import slug from 'slug';
 import {createHash} from 'crypto';
+import Bar from '../_utils/bar';
+import {emit} from '../_utils/pubsub';
 
 let error = false;
 let generating = false;
-let bar = {};
+let bar;
 
 function hash(string) {
 	const hash = createHash('sha1');
@@ -38,47 +36,21 @@ function hash(string) {
 	return hash.digest('hex');
 }
 
-function initBar(options, preset, total, start) {
-	bar = new cliProgress.Bar(options, preset);
-	bar.start(total, start);
-	emitWS('generationProgress', {
-		value: start,
-		total: total,
-		text: options.format.substr(0, options.format.indexOf('{'))
-	});
-};
-
-function stopBar() {
-	bar.stop();
-	emitWS('generationProgress', {
-		value: 100,
-		total: 100
-	});
-};
-
-function incrBar() {
-	bar.increment();
-	emitWS('generationProgress', {
-		value: bar.value,
-		total: bar.total
-	});
-};
-
 async function emptyDatabase() {
 	await db().query('TRUNCATE kara_tag CASCADE;');
-	incrBar();
+	bar.incr();
 	await db().query('TRUNCATE kara_serie CASCADE;');
-	incrBar();
+	bar.incr();
 	await db().query('TRUNCATE tag RESTART IDENTITY CASCADE;');
-	incrBar();
+	bar.incr();
 	await db().query('TRUNCATE serie RESTART IDENTITY CASCADE;');
-	incrBar();
+	bar.incr();
 	await db().query('TRUNCATE serie_lang RESTART IDENTITY CASCADE;');
-	incrBar();
+	bar.incr();
 	await db().query('TRUNCATE kara RESTART IDENTITY CASCADE;');
-	incrBar();
+	bar.incr();
 	await db().query('VACUUM;');
-	incrBar();
+	bar.incr();
 }
 
 async function extractKaraFiles(karaDir) {
@@ -92,6 +64,22 @@ async function extractKaraFiles(karaDir) {
 	return karaFiles;
 }
 
+export async function extractAllKaraFiles() {
+	let karaFiles = [];
+	for (const resolvedPath of resolvedPathKaras()) {
+		karaFiles = karaFiles.concat(await asyncReadDirFilter(resolvedPath, '.kara'));
+	}
+	return karaFiles;
+}
+
+export async function extractAllSeriesFiles() {
+	let seriesFiles = [];
+	for (const resolvedPath of resolvedPathSeries()) {
+		seriesFiles = seriesFiles.concat(await asyncReadDirFilter(resolvedPath, '.series.json'));
+	}
+	return seriesFiles;
+}
+
 async function extractSeriesFiles(seriesDir) {
 	const seriesFiles = [];
 	const dirListing = await asyncReadDir(seriesDir);
@@ -101,23 +89,7 @@ async function extractSeriesFiles(seriesDir) {
 		}
 	}
 	return seriesFiles;
-}
-
-export async function extractAllKaraFiles() {
-	let karaFiles = [];
-	for (const resolvedPath of resolvedPathKaras()) {
-		karaFiles = karaFiles.concat(await extractKaraFiles(resolvedPath));
-	}
-	return karaFiles;
-}
-
-export async function extractAllSeriesFiles() {
-	let seriesFiles = [];
-	for (const resolvedPath of resolvedPathSeries()) {
-		seriesFiles = seriesFiles.concat(await extractSeriesFiles(resolvedPath));
-	}
-	return seriesFiles;
-}
+};
 
 export async function readAllSeries(seriesFiles) {
 	const seriesPromises = [];
@@ -130,7 +102,7 @@ export async function readAllSeries(seriesFiles) {
 async function processSerieFile(seriesFile) {
 	const data = await getDataFromSeriesFile(seriesFile);
 	data.seriefile = basename(seriesFile);
-	incrBar();
+	bar.incr();
 	return data;
 }
 
@@ -158,9 +130,10 @@ async function readAndCompleteKarafile(karafile) {
 		return karaData;
 	}
 	await writeKara(karafile, karaData);
-	incrBar();
+	bar.incr();
 	return karaData;
 }
+
 
 function prepareKaraInsertData(kara, index) {
 	return [
@@ -273,17 +246,11 @@ function getAllSeries(karas, seriesData) {
 	karas.forEach((kara, index) => {
 		const karaIndex = index + 1;
 		getSeries(kara).forEach(serie => {
-			if (map.has(serie)) {
-				map.get(serie).push(karaIndex);
-			} else {
-				map.set(serie, [karaIndex]);
-			}
+			map.has(serie) ? map.get(serie).push(karaIndex) : map.set(serie, [karaIndex]);
 		});
 	});
 	for (const serie of seriesData) {
-		if (!map.has(serie.name)) {
-			map.set(serie.name, [0]);
-		}
+		if (!map.has(serie.name)) map.set(serie.name, [0]);
 	}
 	return map;
 }
@@ -306,7 +273,7 @@ function prepareAllSeriesInsertData(mapSeries) {
 }
 
 /**
- * Warning : we iterate on keys and not on map entries to get the right order and thus the same indexes as the function prepareAllSeriesInsertData. This is the historical way of doing it and should be improved sometimes.tre améliorée.
+ * Warning : we iterate on keys and not on map entries to get the right order and thus the same indexes as the function prepareAllSeriesInsertData. This is the historical way of doing it and should be improved sometimes.
  */
 function prepareAllKarasSeriesInsertData(mapSeries) {
 	const data = [];
@@ -357,7 +324,21 @@ async function prepareAltSeriesInsertData(seriesData, mapSeries) {
 	}
 	// Checking if some series present in .kara files are not present in the series files
 	for (const serie of mapSeries.keys()) {
-		if (!findSeries(serie, seriesData)) strictModeError(serie);
+		if (!findSeries(serie, seriesData)) {
+			// Print a warning and push some basic data so the series can be searchable at least
+			logger.warn(`[Gen] Series "${serie}" is not in any series file`);
+			// In strict mode, it triggers an error
+			if (getConfig().optStrict) strictModeError(serie);
+			data.push({
+				$serie_name: serie
+			});
+			i18nData.push({
+				$lang: 'jpn',
+				$serie: serie,
+				$serienorm: deburr(serie).replace('\'', '').replace(',', ''),
+				$name: serie
+			});
+		}
 	}
 	return {
 		data: data,
@@ -462,7 +443,7 @@ function getTagId(tagName, tags) {
 function prepareAllTagsInsertData(allTags) {
 	const data = [];
 	const slugs = [];
-	const translations = require(join(__dirname,'../_common/locales'));
+	const translations = require(join(__dirname,'../_locales/'));
 	let lastIndex;
 
 	allTags.forEach((tag, index) => {
@@ -543,16 +524,9 @@ function prepareTagsKaraInsertData(tagsByKara) {
 	return data;
 }
 
-function createBar(message, length) {
-	initBar({
-		format: `${message} {bar} {percentage}% - ETA {eta_formatted}`,
-		stopOnComplete: true
-		  }, cliProgress.Presets.shades_classic, length, 0);
-}
-
 async function doTransaction(query) {
 	await transaction([query]);
-	incrBar();
+	bar.incr();
 }
 
 export async function run() {
@@ -565,26 +539,37 @@ export async function run() {
 		const karaFiles = await extractAllKaraFiles();
 		logger.debug(`[Gen] Number of .karas found : ${karaFiles.length}`);
 		if (karaFiles.length === 0) throw 'No kara files found';
-		createBar('Reading .kara files  ', karaFiles.length + 1);
+
+		bar = new Bar({
+			message: 'Reading .kara files  ',
+			event: 'generationProgress'
+		}, karaFiles.length + 1);
 		const karas = await readAllKaras(karaFiles);
 		logger.debug(`[Gen] Number of karas read : ${karas.length}`);
 		// Check if we don't have two identical KIDs
 		checkDuplicateKIDs(karas);
-		incrBar();
+		bar.incr();
 		// Series data
-		stopBar();
+		bar.stop();
 
 		const seriesFiles = await extractAllSeriesFiles();
 		if (seriesFiles.length === 0) throw 'No series files found';
-		createBar('Reading .series files', seriesFiles.length);
+		bar = new Bar({
+			message: 'Reading .series files',
+			event: 'generationProgress'
+		}, seriesFiles.length);
 		const seriesData = await readAllSeries(seriesFiles);
 		checkDuplicateSeries(seriesData);
 		checkDuplicateSIDs(seriesData);
 		// Preparing data to insert
-		stopBar();
+		bar.stop();
 		logger.info('[Gen] Data files processed, creating database');
-		createBar('Generating database  ', 21);
-		await emptyDatabase(db);
+		bar = new Bar({
+			message: 'Generating database  ',
+			event: 'generationProgress'
+		}, 21);
+		await emptyDatabase();
+		bar.incr();
 		const sqlInsertKaras = prepareAllKarasInsertData(karas);
 		const seriesMap = getAllSeries(karas, seriesData);
 		const sqlInsertSeries = prepareAllSeriesInsertData(seriesMap);
@@ -609,15 +594,15 @@ export async function run() {
 			doTransaction({sql: updateSeries, params: sqlUpdateSeries})
 		]);
 		refreshKaras();
-		incrBar();
+		bar.incr();
 		refreshSeries();
-		incrBar();
+		bar.incr();
 		refreshYears();
-		incrBar();
+		bar.incr();
 		refreshTags();
-		incrBar();
+		bar.incr();
 		await checkUserdbIntegrity(null);
-		stopBar();
+		bar.stop();
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);
@@ -660,7 +645,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		db().query(selectPlaylistKaras)
 	]);
 
-	if (bar) incrBar();
+	if (bar) bar.incr();
 
 	// Listing existing KIDs
 	const karaKIDs = allKaras.rows.map(k => `'${k.kid}'`).join(',');
@@ -673,7 +658,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		db().query(`UPDATE requested SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`),
 		db().query(`UPDATE playlist_content SET fk_id_kara = 0 WHERE kid NOT IN (${karaKIDs});`)
 	]);
-	if (bar) incrBar();
+	if (bar) bar.incr();
 	const karaIdByKid = new Map();
 	allKaras.rows.forEach(k => karaIdByKid.set(k.kid, k.id_kara));
 	let sql = '';
@@ -750,7 +735,7 @@ export async function checkUserdbIntegrity(uuid, config) {
 		`;
 		await db().query(beginSql + sql + endSql);
 	}
-	if (bar) incrBar();
+	if (bar) bar.incr();
 	logger.debug('[Gen] Integrity checks complete, database generated');
 }
 
@@ -760,18 +745,22 @@ export async function compareKarasChecksum(opts = {silent: false}) {
 	const karaFiles = await extractAllKaraFiles();
 	const seriesFiles = await extractAllSeriesFiles();
 	let KMData = '';
-	if (!opts.silent) createBar('Checking .karas...   ', karaFiles.length);
+	if (!opts.silent) bar = new Bar({
+		message: 'Checking .karas...   '
+	}, karaFiles.length);
 	for (const karaFile of karaFiles) {
 		KMData += await asyncReadFile(karaFile, 'utf-8');
-		if (!opts.silent) incrBar();
+		if (!opts.silent) bar.incr();
 	}
-	if (!opts.silent) stopBar();
-	if (!opts.silent) createBar('Checking series...   ', seriesFiles.length);
+	if (!opts.silent) bar.stop();
+	if (!opts.silent) bar = new Bar({
+		message: 'Checking series...   '
+	}, seriesFiles.length);
 	for (const seriesFile of seriesFiles) {
 		KMData += await asyncReadFile(seriesFile, 'utf-8');
-		if (!opts.silent) incrBar();
+		if (!opts.silent) bar.incr();
 	}
-	if (!opts.silent) stopBar();
+	if (!opts.silent) bar.stop();
 	const karaDataSum = checksum(KMData);
 	profile('compareChecksum');
 	if (karaDataSum !== conf.appKaraDataChecksum) {

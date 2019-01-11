@@ -1,14 +1,28 @@
+<<<<<<< HEAD
 import logger from 'winston/lib/winston';
 import {getConfig} from '../_common/utils/config';
 import {join} from 'path';
 import {Pool} from 'pg';
+=======
+import logger from 'winston';
+import {open} from 'sqlite';
+import {setConfig, getConfig} from '../_utils/config';
+import {join, resolve} from 'path';
+import {asyncStat, asyncExists} from '../_utils/files';
+import promiseRetry from 'promise-retry';
+>>>>>>> 381-improve-code-readability
 import {exit} from '../_services/engine';
-import {duration} from '../_common/utils/date';
+import {duration} from '../_utils/date';
 import deburr from 'lodash.deburr';
 import langs from 'langs';
+<<<<<<< HEAD
 import {compareKarasChecksum, checkUserdbIntegrity, run as generateDB} from '../_admin/generate_karasdb';
 import DBMigrate from 'db-migrate';
 const sql = require('../_common/db/database');
+=======
+import {compareKarasChecksum, checkUserdbIntegrity, run as generateDB} from '../_services/generation';
+const sql = require('./sql/database');
+>>>>>>> 381-improve-code-readability
 
 export function paramWords(filter) {
 	let params = {};
@@ -69,6 +83,7 @@ export function langSelector(lang) {
 export async function transaction(queries) {
 	const client = await database.connect();
 	try {
+<<<<<<< HEAD
 		await client.query('BEGIN');
 		for (const query of queries) {
 			if (Array.isArray(query.params)) {
@@ -85,6 +100,16 @@ export async function transaction(queries) {
 		await client.query('ROLLBACK');
 	} finally {
 		await client.release();
+=======
+		await getUserDb().run('BEGIN TRANSACTION');
+		for (const index in items) {
+			const stmt = await getUserDb().prepare(sql);
+			await stmt.run(items[index]);
+		}
+		return await getUserDb().run('COMMIT');
+	} catch(err) {
+		throw err;
+>>>>>>> 381-improve-code-readability
 	}
 }
 
@@ -129,6 +154,7 @@ export async function initDB() {
 	} catch(err) {
 		logger.debug('[DB] Database already exists');
 	}
+<<<<<<< HEAD
 	try {
 		await db().query(`CREATE USER ${conf.db.prod.user} WITH ENCRYPTED PASSWORD '${conf.db.password}';`);
 		logger.info('[DB] User created');
@@ -140,6 +166,35 @@ export async function initDB() {
 		await db().query('CREATE EXTENSION unaccent;');
 	} catch(err) {
 		logger.debug('[DB] Extension unaccent already registered');
+=======
+}
+
+async function closeKaraDatabase() {
+	if (!karaDb) {
+		logger.warn('[DB] Kara database already closed');
+	} else {
+		try {
+			await karaDb.close();
+		} catch(err) {
+			logger.warn('[DB] Kara database is busy, force closing');
+		} finally {
+			karaDb = null;
+		}
+	}
+}
+
+export async function closeUserDatabase() {
+	if (!userDb) {
+		logger.warn('[DB] User database already closed');
+	} else {
+		try {
+			await userDb.close();
+		} catch(err) {
+			logger.warn('[DB] User database is busy, force closing');
+		} finally {
+			userDb = null;
+		}
+>>>>>>> 381-improve-code-readability
 	}
 }
 
@@ -220,11 +275,11 @@ async function generateDatabase() {
 }
 
 async function migrateUserDb() {
-	return await getUserDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/userdata')});
+	return await getUserDb().migrate({ migrationsPath: join(__dirname,'./sql/migrations/userdata')});
 }
 
 async function migrateKaraDb() {
-	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'../_common/db/migrations/karasdb')});
+	return await getKaraDb().migrate({ migrationsPath: join(__dirname,'./sql/migrations/karasdb')});
 }
 
 export function buildTypeClauses(mode, value) {

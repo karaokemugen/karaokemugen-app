@@ -1,9 +1,9 @@
 import {removeSeriesFile, writeSeriesFile} from '../_dao/seriesfile';
 import {insertSeriei18n, removeSerie, updateSerie, insertSerie, selectSerieByName, selectSerie, selectAllSeries} from '../_dao/series';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import {removeSerieInKaras, replaceSerieInKaras} from '../_dao/karafile';
 import uuidV4 from 'uuid/v4';
-import { sanitizeFile } from '../_common/utils/files';
+import { sanitizeFile } from '../_utils/files';
 
 export async function getSeries(filter, lang, from = 0, size = 99999999999) {
 	profile('getSeries');

@@ -22,36 +22,24 @@ export async function createPreview(videopreview) {
 	}
 }
 
+const formatAudioGain = (audiogain) => parseFloat(audiogain).toString();
+const formatDuration = (duration) => timeToSeconds(duration);
+
 export async function getMediaInfo(mediafile) {
 	try {
-		const result = await execa(getConfig().BinffmpegPath, ['-i', mediafile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
-		const outputArray = result.stderr.split(' ');
-		const indexTrackGain = outputArray.indexOf('track_gain');
-		const indexDuration = outputArray.indexOf('Duration:');
-		let audiogain = 0;
-		let duration = 0;
-		let error = false;
-		if (indexTrackGain > -1) {
-			let gain = parseFloat(outputArray[indexTrackGain + 2]);
-			audiogain = gain.toString();
-		} else {
-			error = true;
-		}
-
-		if (indexDuration > -1) {
-			duration = outputArray[indexDuration + 1].replace(',','');
-			duration = timeToSeconds(duration);
-		} else {
-			error = true;
-		}
+		const ffmpegExtractRegex = /^.*Duration: ([^,]+).*track_gain = \+([^ ]+) dB.*$/;
+		const ffmpegOutput = await execa(getConfig().BinffmpegPath, ['-i', mediafile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
+		let [, duration, audiogain] = ffmpegExtractRegex.exec(ffmpegOutput);
+    duration = formatDuration(duration);
+    audiogain = formatAudioGain(audiogain);	
 
 		return {
 			duration: duration,
 			audiogain: audiogain,
-			error: error
+			error: false
 		};
 	} catch(err) {
-		logger.warn(`[ffmpeg] Video ${mediafile} probe error : ${err.code}`);
+		logger.warn(`[ffmpeg] Video '${mediafile}' probe error : '${err.code}'`);
 		return { duration: 0, audiogain: 0, error: true };
 	}
 }

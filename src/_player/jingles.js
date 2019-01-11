@@ -1,63 +1,56 @@
-import {isMediaFile, asyncReadDir} from '../_common/utils/files';
+import {isMediaFile, asyncReadDir} from '../_utils/files';
 import {resolve} from 'path';
-import {resolvedPathJingles} from '../_common/utils/config';
-import {getMediaInfo} from '../_common/utils/ffmpeg';
+import {resolvedPathJingles} from '../_utils/config';
+import {getMediaInfo} from '../_utils/ffmpeg';
 import logger from 'winston';
 import sample from 'lodash.sample';
 
 let allJingles = [];
 let currentJingles = [];
 
-async function extractAllJingleFiles() {
-	let jingleFiles = [];
-	for (const resolvedPath of resolvedPathJingles()) {
-		jingleFiles = jingleFiles.concat(await extractJingleFiles(resolvedPath));
-	}
-	return jingleFiles;
+const extractJingleFiles = async (jingleDir) => {
+  const files = await asyncReadDir(jingleDir);
+  
+  return files.filter((file) => isMediaFile(file))
+	.map((file) => ([file, resolve(jingleDir, file)]));
+}
+	
+
+const extractAllJingleFiles = async () => {
+  const resolvedFiles = await Promise.all(
+    resolvedPathJingles()
+    .map((resolvedPath) => extractJingleFiles(resolvedPath))
+  );
+  return resolvedFiles
+  	.reduce((jingleFiles, jingleFile) => jingleFiles.concat(jingleFile), []);
 }
 
-async function extractJingleFiles(jingleDir) {
-	const jingleFiles = [];
-	const dirListing = await asyncReadDir(jingleDir);
-	for (const file of dirListing) {
-		if (isMediaFile(file)) {
-			jingleFiles.push(resolve(jingleDir, file));
-		}
-	}
-	return jingleFiles;
-}
+const getAllVideoGains = async (jingleFiles) => {
+   const jinglesList = await Promise.all(jingleFiles.map((jinglefile) => ({
+    file: jinglefile,
+    gain: getMediaInfo(jinglefile).audiogain
+  })));
 
-async function getAllVideoGains(jingleFiles) {
-	let jinglesList = [];
-	for (const jinglefile of jingleFiles) {
-		const videodata = await getMediaInfo(jinglefile);
-		jinglesList.push(
-			{
-				file: jinglefile,
-				gain: videodata.audiogain
-			});
-		logger.debug(`[Jingles] Computed jingle ${jinglefile} audio gain at ${videodata.audiogain} dB`);
-	}
+	jinglesList.forEach((jingleData) => logger.debug(`[Jingles] Computed jingle ${jingleData.file} audio gain at ${jingleData.gain} dB`));
+
 	return jinglesList;
-}
+};
 
-export async function buildJinglesList() {
-	const jingleFiles = await extractAllJingleFiles();
+export const buildJinglesList = async () => {
+  const jingleFiles = await extractAllJingleFiles();
+  console.log(jingleFiles);
 	const list = await getAllVideoGains(jingleFiles);
+
 	currentJingles = currentJingles.concat(list);
 	allJingles = allJingles.concat(list);
 	return list;
-}
+};
 
-export function getJingles() {
-	return currentJingles;
-}
+export const getJingles = () => currentJingles;
 
-export function removeJingle(jingle) {
-	currentJingles = currentJingles.filter(e => {
-		return e.file !== jingle;
-	});
-}
+export const removeJingle = (jingleToRemove) =>{
+	currentJingles = currentJingles.filter(jingle => jingle.file !== jingleToRemove);
+};
 
 export function getSingleJingle() {
 	const jingles = getJingles();

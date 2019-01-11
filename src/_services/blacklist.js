@@ -12,9 +12,9 @@ import {getKara} from '../_dao/kara';
 import {translateKaraInfo} from './kara';
 import logger from 'winston';
 import langs from 'langs';
-import {getConfig} from '../_common/utils/config';
+import {getConfig} from '../_utils/config';
 import {resolve} from 'path';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import {formatKaraList} from './kara';
 
 export async function getBlacklist(filter, lang, from, size) {
@@ -48,7 +48,7 @@ async function isBLCriteria(blc_id) {
 export async function emptyBlacklistCriterias() {
 	logger.info('[Blacklist] Wiping criterias');
 	await emptyBLC();
-	await generateBlacklist();
+	return await generateBlacklist();
 }
 
 export async function editBlacklistCriteria(blc_id, blctype, blcvalue) {
@@ -104,17 +104,12 @@ export async function addBlacklistCriteria(blctype, blcvalue) {
 		});
 	});
 	try {
-		if (blctype < 0 && blctype > 1004) throw `Incorrect BLC type (${blctype})`;
-		if (blctype > 0 && blctype < 1000) blcList = await BLCgetTagName(blcList);
+		if (+blctype < 0 && +blctype > 1004) throw `Incorrect BLC type (${blctype})`;
+		if (+blctype > 0 && +blctype < 1000) blcList = await BLCgetTagName(blcList);
 		if (+blctype === 1001) blcList = await BLCGetKID(blcList);
-		if (((blctype >= 1001 && blctype <= 1003) || (blctype > 0 && blctype < 999)) && blcvalues.some(isNaN)) {
-			let err = 'Blacklist criteria type mismatch : type '+blctype+' must have a numeric value!';
-			throw err;
-		} else {
-			await addBLC(blcList);
-			await generateBlacklist();
-			return true;
-		}
+		if (((+blctype >= 1001 && +blctype <= 1003) || (+blctype > 0 && +blctype < 999)) && blcvalues.some(isNaN)) throw `Blacklist criteria type mismatch : type ${blctype} must have a numeric value!`;
+		await addBLC(blcList);
+		return await generateBlacklist();
 	} catch(err) {
 		throw err;
 	} finally {
@@ -122,7 +117,7 @@ export async function addBlacklistCriteria(blctype, blcvalue) {
 	}
 }
 
-export async function translateBlacklistCriterias(blcs, lang) {
+async function translateBlacklistCriterias(blcs, lang) {
 	const blcList = blcs;
 	// If lang is not provided, assume we're using node's system locale
 	if (!lang) lang = getConfig().EngineDefaultLocale;
@@ -131,7 +126,7 @@ export async function translateBlacklistCriterias(blcs, lang) {
 	// Instanciate a translation object for our needs with the correct language.
 	const i18n = require('i18n'); // Needed for its own translation instance
 	i18n.configure({
-		directory: resolve(__dirname,'../_common/locales'),
+		directory: resolve(__dirname,'../_locales'),
 	});
 	i18n.setLocale(lang);
 	// We need to read the detected locale in ISO639-1

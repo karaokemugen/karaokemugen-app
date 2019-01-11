@@ -1,8 +1,8 @@
-import {asyncUnlink, sanitizeFile, asyncWriteFile, asyncReadFile, resolveFileInDirs, } from '../_common/utils/files';
+import {asyncUnlink, sanitizeFile, asyncWriteFile, asyncReadFile, resolveFileInDirs, } from '../_utils/files';
 import testJSON from 'is-valid-json';
-import {resolvedPathSeries, getConfig} from '../_common/utils/config';
+import {resolvedPathSeries, getConfig} from '../_utils/config';
 import {resolve} from 'path';
-import { check, initValidators } from '../_common/utils/validators';
+import { check, initValidators } from '../_utils/validators';
 import {uuidRegexp} from '../_services/constants';
 
 const header = {
@@ -22,7 +22,7 @@ export async function readSeriesFile(seriesFile) {
 	try {
 		file = resolveFileInDirs(seriesFile, resolvedPathSeries());
 	} catch(err) {
-		throw `No series file found ${seriesFile}`;
+		throw `No series file found (${seriesFile})`;
 	}
 	return await getDataFromSeriesFile(file);
 }

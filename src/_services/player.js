@@ -1,7 +1,7 @@
-import {setState, getState} from '../_common/utils/state';
-import {getConfig} from '../_common/utils/config';
+import {setState, getState} from '../_utils/state';
+import {getConfig} from '../_utils/config';
 import logger from 'winston';
-import {profile} from '../_common/utils/logger';
+import {profile} from '../_utils/logger';
 import {promisify} from 'util';
 import {displayInfo, playJingle, restartmpv, quitmpv as quit, toggleOnTop, setFullscreen, showSubs, hideSubs, seek, goTo, setVolume, mute, unmute, play, pause, stop, resume, initPlayerSystem} from '../_player/player';
 import {addViewcountKara} from './kara';
@@ -18,9 +18,7 @@ async function getPlayingSong() {
 		profile('tryToReadKaraInPlaylist');
 		try {
 			const kara = await getCurrentSong();
-			let karaForLogging = { ...kara };
-			karaForLogging.subtitle = '[Not logging ASS data]';
-			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(karaForLogging, null, '\n'));
+			logger.debug('[Player] Karaoke selected : ' + JSON.stringify(kara, null, '\n'));
 			let serie = kara.serie;
 			let title = kara.title;
 			if (!serie) serie = kara.singer;
@@ -39,7 +37,7 @@ async function getPlayingSong() {
 		} catch(err) {
 			logger.error(`[Player] Error during song playback : ${err}`);
 			if (getState().status !== 'stop') {
-				logger.warn('[Player] Skipping playback for this kara');
+				logger.warn('[Player] Skipping playback for this song');
 				next();
 			} else {
 				stopPlayer(true);
@@ -51,6 +49,8 @@ async function getPlayingSong() {
 
 
 export async function playingUpdated() {
+	// Current playing song has been changed, stopping playing now and
+	// hitting play again to get the new song.
 	const state = getState();
 	if (state.status === 'play' && state.player.playing) {
 		await stopPlayer(true);
@@ -59,8 +59,8 @@ export async function playingUpdated() {
 }
 
 export async function playerEnding() {
+	// This is triggered when player ends its current song.
 	let state = getState();
-	let counter = state.counterToJingle;
 	logger.debug('[Player] Player Ending event triggered');
 	if (state.playerNeedsRestart) {
 		logger.info('[Player] Player restarts, please wait');
@@ -68,8 +68,8 @@ export async function playerEnding() {
 		await restartPlayer();
 	}
 	const conf = getConfig();
-	logger.debug(`[Jingles] Songs before next jingle: ${conf.EngineJinglesInterval - counter}`);
-	if (counter >= conf.EngineJinglesInterval && conf.EngineJinglesInterval > 0) {
+	logger.debug(`[Jingles] Songs before next jingle: ${conf.EngineJinglesInterval - state.counterToJingle}`);
+	if (state.counterToJingle >= conf.EngineJinglesInterval && conf.EngineJinglesInterval > 0) {
 		setState({
 			currentlyPlayingKara: -1,
 			counterToJingle: 0
@@ -77,8 +77,8 @@ export async function playerEnding() {
 		await playJingle();
 	} else {
 		try {
-			counter++;
-			setState({counterToJingle: counter});
+			state.counterToJingle++;
+			setState({counterToJingle: state.counterToJingle});
 			displayInfo();
 			if (state.status !== 'stop') {
 				await nextSong();
@@ -120,21 +120,17 @@ function toggleFullScreenPlayer() {
 	let state = getState();
 	state = setState({fullscreen: !state.fullscreen});
 	setFullscreen(state.fullscreen);
-	if (state.fullscreen) {
-		logger.info('[Player] Player going to full screen');
-	} else {
-		logger.info('[Player] Player going to windowed mode');
-	}
+	state.fullscreen
+		? logger.info('[Player] Player going to full screen')
+		: logger.info('[Player] Player going to windowed mode');
 }
 
 function toggleOnTopPlayer() {
 	let state = getState();
 	state = setState({ontop: toggleOnTop()});
-	if (state.engine.ontop) {
-		logger.info('[Player] Player staying on top');
-	} else {
-		logger.info('[Player] Player NOT staying on top');
-	}
+	state.engine.ontop
+		? logger.info('[Player] Player staying on top')
+		: logger.info('[Player] Player NOT staying on top');
 }
 
 

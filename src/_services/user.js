@@ -1,7 +1,7 @@
 import {deletePlaylist} from '../_services/playlist';
 import {findFavoritesPlaylist} from '../_services/favorites';
-import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_common/utils/files';
-import {getConfig} from '../_common/utils/config';
+import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_utils/files';
+import {getConfig} from '../_utils/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC, createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
 import deburr from 'lodash.deburr';
@@ -11,11 +11,11 @@ import logger from 'winston';
 import uuidV4 from 'uuid/v4';
 import {defaultGuestNames} from '../_services/constants';
 import randomstring from 'randomstring';
-import {on} from '../_common/utils/pubsub';
+import {on} from '../_utils/pubsub';
 import {getSongCountForUser, getSongTimeSpentForUser} from '../_dao/kara';
 import {emitWS} from '../_webapp/frontend';
-import {profile} from '../_common/utils/logger';
-import {getState} from '../_common/utils/state';
+import {profile} from '../_utils/logger';
+import {getState} from '../_utils/state';
 
 const db = require('../_dao/user');
 let userLoginTimes = {};
