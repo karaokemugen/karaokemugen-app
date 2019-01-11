@@ -547,7 +547,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		const playingObject = getPlayingPos(plContents);
 		const playingPos = playingObject ? playingObject.plc_id_pos : 0;
 		// Position management here :
-		if (+conf.EngineSmartInsert && !user.flag_admin) {
+		if (+conf.EngineSmartInsert && user.type !== 0) {
 			if (userMaxPosition === null) {
 				// No songs yet from that user, they go first.
 				pos = -1;

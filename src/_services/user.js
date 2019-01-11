@@ -40,10 +40,10 @@ async function updateExpiredUsers() {
 export async function updateLastLoginName(login) {
 	const currentUser = await findUserByName(login);
 	// To avoid flooding database UPDATEs, only update login time every minute for a user
-	if (!userLoginTimes[login]) userLoginTimes[login] = now();
-	if (userLoginTimes[login] < (now() - 60)) {
-		userLoginTimes[login] = now();
-		return await db.updateUserLastLogin(currentUser.id,now());
+	if (!userLoginTimes[login]) userLoginTimes[login] = new Date();
+	if (userLoginTimes[login] < new Date((now() * 1000) - 60)) {
+		userLoginTimes[login] = new Date();
+		return await db.updateUserLastLogin(currentUser.id);
 	}
 }
 
@@ -67,10 +67,10 @@ export async function editUser(username,user,avatar,role) {
 		if (!user.bio) user.bio = null;
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
-		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
+		if (user.type === 0 && role !== 'admin') throw 'Admin flag permission denied';
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
-		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
+		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname)) throw 'Nickname already exists';
 		user.NORM_nickname = deburr(user.nickname);
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !getConfig().isDemo) {
@@ -142,7 +142,7 @@ export async function findUserByName(username, opt) {
 			userdata.fingerprint = null;
 			userdata.email = null;
 		}
-		if (userdata.type === 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);
+		if (userdata.type <= 1) userdata.favoritesPlaylistID = await findFavoritesPlaylist(username);
 		return userdata;
 	}
 	return false;
@@ -189,18 +189,21 @@ export async function updateUserFingerprint(username, fingerprint) {
 	return await db.updateUserFingerprint(username, fingerprint);
 }
 
-export async function createUser(user, opts) {
+export async function createUser(user, opts = {
+	createFavoritePlaylist: true,
+	admin: false
+}) {
 
 	if (!opts) opts = {
 		createFavoritePlaylist: true
 	};
 	user.type = user.type || 1;
+	if (opts.admin) user.type = 3;
 	user.nickname = user.nickname || user.login;
-	user.last_login = now();
-	user.NORM_nickname = deburr(user.nickname);
+	user.last_login_at = new Date();
 	user.avatar_file = user.avatar_file || 'blank.png';
 	user.flag_online = user.flag_online || 1;
-	user.flag_admin = user.flag_admin || 0;
+
 	user.bio = user.bio || null;
 	user.url = user.url || null;
 	user.email = user.email || null;
@@ -209,7 +212,7 @@ export async function createUser(user, opts) {
 	if (user.password) user.password = hashPassword(user.password);
 	try {
 		await db.addUser(user);
-		if (user.type === 1 && opts.createFavoritePlaylist) {
+		if (user.type <= 1 && opts.createFavoritePlaylist) {
 			await createPlaylist(`Faves : ${user.login}`, {favorites: true} , user.login);
 			logger.info(`[User] Created user ${user.login}`);
 			logger.debug(`[User] User data : ${JSON.stringify(user)}`);
@@ -227,7 +230,7 @@ async function newUserIntegrityChecks(user) {
 	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
-	if (await db.getUserByName(user.login) || await db.checkNicknameExists(user.login, deburr(user.login))) {
+	if (await db.getUserByName(user.login) || await db.checkNicknameExists(user.login)) {
 		logger.error(`[User] User/nickname ${user.login} already exists, cannot create it`);
 		throw { code: 'USER_ALREADY_EXISTS', data: {username: user.login}};
 	}
@@ -287,18 +290,19 @@ export async function initUserSystem() {
 
 	if (!await findUserByName('admin')) await createUser({
 		login: 'admin',
-		password: randomstring.generate(8),
-		flag_admin: 1
+		password: randomstring.generate(8)
 	}, {
-		createFavoritePlaylist: false
+		createFavoritePlaylist: false,
+		admin: true
 	});
 
 	if (getConfig().isTest) {
 		if (!await findUserByName('adminTest')) {
 			await createUser({
 				login: 'adminTest',
-				password: 'ceciestuntest',
-				flag_admin: 1
+				password: 'ceciestuntest'
+			}, {
+				admin: true
 			});
 		}
 	} else {
@@ -313,7 +317,7 @@ export async function updateSongsLeft(user_id,playlist_id) {
 	const user = await findUserByID(user_id);
 	let quotaLeft;
 	if (!playlist_id) playlist_id = getState().modePlaylistID;
-	if (user.flag_admin === 0 && +conf.EngineQuotaType > 0) {
+	if (user.type >= 1 && +conf.EngineQuotaType > 0) {
 		switch(+conf.EngineQuotaType) {
 		default:
 		case 1:

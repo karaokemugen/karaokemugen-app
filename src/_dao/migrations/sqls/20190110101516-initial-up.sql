@@ -88,7 +88,9 @@ CREATE TABLE users (
 	bio character varying,
 	url character varying,
 	email character varying,
-	flag_online smallint NOT NULL
+	flag_online smallint NOT NULL,
+	last_login_at timestamp,
+	fingerprint character varying
 );
 
 CREATE UNIQUE INDEX idx_users_login ON users(login);

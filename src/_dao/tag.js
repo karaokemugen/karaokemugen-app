@@ -1,5 +1,6 @@
 import {db} from './database';
 import deburr from 'lodash.deburr';
+import {pg as yesql} from 'yesql';
 
 const sql = require('./sql/tag');
 
@@ -7,36 +8,36 @@ export async function refreshTags() {
 	return await db().query('REFRESH MATERIALIZED VIEW all_tags');
 }
 
-
 export async function getTag(id) {
-	return await getUserDb().get(sql.getTag, { $id: id });
+	const res = await db().query(sql.getTag, [id]);
+	return res.rows[0];
 }
 
 export async function getAllTags() {
-	return await getUserDb().all(sql.getAllTags);
+	const res = await db().query(sql.getAllTags);
+	return res.rows;
 }
 
 export async function checkOrCreateTag(tag) {
-	const tagDB = await getUserDb().get(sql.getTagByNameAndType, {
-		$name: tag.tag,
-		$type: tag.type
-	});
-	if (tagDB) return tagDB.tag_id;
+	const tagDB = await db().query(yesql(sql.getTagByNameAndType)({
+		name: tag.tag,
+		type: tag.type
+	}));
+	if (tagDB.rows.length > 0) return tagDB.rows[0].tag_id;
 	//Tag does not exist, create it.
-	const res = await getUserDb().run(sql.insertTag, {
-		$name: tag.tag,
-		$NORM_name: deburr(tag.tag),
-		$type: tag.type
-	});
-	return res.lastID;
+	const res = await db().query(yesql(sql.insertTag)({
+		name: tag.tag,
+		type: tag.type
+	}));
+	return res.rows[0].pk_id_tag;
 }
 
 export async function updateKaraTags(kara_id, tags) {
-	await getUserDb().run(sql.deleteTagsByKara, { $kara_id: kara_id });
+	await db().query(sql.deleteTagsByKara, [kara_id]);
 	for (const tag of tags) {
-		await getUserDb().run(sql.insertKaraTags, {
-			$kara_id: kara_id,
-			$tag_id: tag.id
-		});
+		await db().query(yesql(sql.insertKaraTags)({
+			kara_id: kara_id,
+			tag_id: tag.id
+		}));
 	}
 }

@@ -141,6 +141,6 @@ function decodeJwtToken(token, config) {
 
 function getRole(user) {
 	if (+user.type === 2) return 'guest';
-	if (+user.flag_admin === 1) return 'admin';
+	if (+user.type === 0) return 'admin';
 	return 'user';
 }

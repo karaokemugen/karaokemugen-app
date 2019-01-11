@@ -6,7 +6,7 @@ import logger from 'winston';
 import {getOrAddSerieID} from './series';
 import {ASSToLyrics} from '../_utils/ass';
 import {getPlaylistContentsMini} from './playlist';
-import {getAllKaras as getAllKarasDB,
+import {selectAllKaras,
 	getYears as getYearsDB,
 	getKara as getKaraDB,
 	getKaraMini as getKaraMiniDB,
@@ -126,7 +126,7 @@ export function translateKaraInfo(karas, lang) {
 }
 
 export async function getAllKaras(username, filter, lang, searchType, searchValue) {
-	return await getAllKarasDB(username, filter, lang, searchType, searchValue);
+	return await selectAllKaras(username, filter, lang, searchType, searchValue);
 }
 
 export async function getRandomKara(playlist_id, filter, username) {

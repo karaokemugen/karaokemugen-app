@@ -6,20 +6,20 @@ INSERT INTO upvote(
 	fk_id_user
 )
 VALUES(
-	$plc_id,
-	$user_id
+	:plc_id,
+	:user_id
 );
 `;
 
 export const deleteUpvote = `
 DELETE FROM upvote
-WHERE fk_id_plcontent = $plc_id
-	AND fk_id_user = $user_id
+WHERE fk_id_plcontent = :plc_id
+	AND fk_id_user = :user_id
 `;
 
 export const selectUpvoteByPLC = `
 SELECT fk_id_user AS user_id
 FROM upvote
-WHERE fk_id_plcontent = $plc_id;
+WHERE fk_id_plcontent = $1;
 `;
 

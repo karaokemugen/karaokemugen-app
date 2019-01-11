@@ -1,14 +1,17 @@
-import {getUserDb} from './database';
+import {db} from './database';
 const sql = require('./sql/stats');
 
 export async function exportViewcounts() {
-	return await getUserDb().all(sql.exportViewcounts);
+	const res = await db().query(sql.exportViewcounts);
+	return res.rows[0];
 }
 
 export async function exportRequests() {
-	return await getUserDb().all(sql.exportRequests);
+	const res = await db().query(sql.exportRequests);
+	return res.rows;
 }
 
 export async function exportFavorites() {
-	return await getUserDb().all(sql.exportFavorites);
+	const res = await db().query(sql.exportFavorites);
+	return res.rows;
 }

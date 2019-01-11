@@ -4282,8 +4282,8 @@ export function APIControllerPublic(router) {
  *   "message": null
  * }
  */
-		.get(requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
-			getUserRequests(req.params.username)
+		.get(getLang, requireAuth, requireValidUser, updateUserLoginTime, (req,res) => {
+			getUserRequests(req.params.username, req.lang)
 				.then((requestdata) => {
 					res.json(OKMessage(requestdata));
 				})

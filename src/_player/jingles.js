@@ -10,11 +10,11 @@ let currentJingles = [];
 
 const extractJingleFiles = async (jingleDir) => {
   const files = await asyncReadDir(jingleDir);
-  
+
   return files.filter((file) => isMediaFile(file))
 	.map((file) => ([file, resolve(jingleDir, file)]));
 }
-	
+
 
 const extractAllJingleFiles = async () => {
   const resolvedFiles = await Promise.all(
@@ -37,9 +37,8 @@ const getAllVideoGains = async (jingleFiles) => {
 };
 
 export const buildJinglesList = async () => {
-  const jingleFiles = await extractAllJingleFiles();
-  console.log(jingleFiles);
-	const list = await getAllVideoGains(jingleFiles);
+  	const jingleFiles = await extractAllJingleFiles();
+  	const list = await getAllVideoGains(jingleFiles);
 
 	currentJingles = currentJingles.concat(list);
 	allJingles = allJingles.concat(list);

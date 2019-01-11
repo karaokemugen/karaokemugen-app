@@ -9,8 +9,7 @@ function generateAdminPassword() {
 		{
 			password: adminPassword,
 			nickname: 'Dummy Plug System',
-			type: 1,
-			flag_admin: 1
+			type: 0
 		},
 		null,
 		'admin');

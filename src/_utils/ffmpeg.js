@@ -28,10 +28,11 @@ const formatDuration = (duration) => timeToSeconds(duration);
 export async function getMediaInfo(mediafile) {
 	try {
 		const ffmpegExtractRegex = /^.*Duration: ([^,]+).*track_gain = \+([^ ]+) dB.*$/;
+		console.log(getConfig().BinffmpegPath);
 		const ffmpegOutput = await execa(getConfig().BinffmpegPath, ['-i', mediafile, '-vn', '-af', 'replaygain', '-f','null', '-'], { encoding : 'utf8' });
-		let [, duration, audiogain] = ffmpegExtractRegex.exec(ffmpegOutput);
-    duration = formatDuration(duration);
-    audiogain = formatAudioGain(audiogain);	
+		let [duration, audiogain] = ffmpegExtractRegex.exec(ffmpegOutput);
+    	duration = formatDuration(duration);
+    	audiogain = formatAudioGain(audiogain);
 
 		return {
 			duration: duration,
