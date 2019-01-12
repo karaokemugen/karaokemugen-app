@@ -108,7 +108,7 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 }
 
 export async function updateFreeOrphanedSongs(expireTime) {
-	return await db().query(sql.updateFreeOrphanedSongs, [expireTime]);
+	return await db().query(sql.updateFreeOrphanedSongs, [new Date(expireTime * 1000)]);
 }
 
 export async function getKaraMini(id) {

@@ -48,7 +48,7 @@ export const selectRandomGuestName = `
 SELECT pk_id_user AS id, login
 FROM users
 WHERE type = 2
-	AND flag_online = 0
+	AND flag_online = FALSE
 ORDER BY RANDOM() LIMIT 1;
 `;
 
@@ -101,16 +101,15 @@ VALUES (
 
 export const updateExpiredUsers = `
 UPDATE users SET
-	last_login = 0,
 	fingerprint = null,
-	flag_online = 0
+	flag_online = FALSE
 WHERE last_login_at <= $1;
 `;
 
 export const updateLastLogin = `
 UPDATE users SET
 	last_login_at = :now,
-	flag_online = 1
+	flag_online = TRUE
 WHERE pk_id_user = :id;
 `;
 
@@ -129,7 +128,7 @@ WHERE fingerprint = :fingerprint;
 export const resetGuestsPassword = `
 UPDATE users SET
 	password = null
-WHERE flag_online = 0
+WHERE flag_online = FALSE
 AND type = 2
 `;
 
