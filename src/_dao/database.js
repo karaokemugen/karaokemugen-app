@@ -121,7 +121,7 @@ export async function initDB() {
 		logger.debug('[DB] Database already exists');
 	}
 	try {
-		await db().query(`CREATE USER ${conf.db.prod.user} WITH ENCRYPTED PASSWORD '${conf.db.password}';`);
+		await db().query(`CREATE USER ${conf.db.prod.user} WITH ENCRYPTED PASSWORD '${conf.db.prod.password}';`);
 		logger.info('[DB] User created');
 	} catch(err) {
 		logger.debug('[DB] User already exists');

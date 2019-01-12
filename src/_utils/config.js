@@ -20,6 +20,7 @@ import {setState, getState} from './state';
 import testJSON from 'is-valid-json';
 import {setSongPoll} from '../_services/poll';
 import { initStats, stopStats } from '../_services/stats';
+import merge from 'lodash.merge';
 
 /** Object containing all config */
 let config = {};
@@ -150,7 +151,7 @@ async function loadConfigFiles(appPath) {
 	if (await asyncExists(overrideConfigFile)) await loadConfig(overrideConfigFile);
 	if (await asyncExists(versionFile)) await loadConfig(versionFile);
 	const dbConfig = await loadDBConfig(databaseConfigFile);
-	config.db = {...dbConfig};
+	config.db = merge(config.db, dbConfig);
 }
 
 async function loadDBConfig(configFile) {
