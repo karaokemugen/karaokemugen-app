@@ -8,9 +8,9 @@ INSERT INTO whitelist(
 	kid,
 	created_at
 )
-	SELECT :kara_id,kid,:created_at
+	SELECT $1,kid,$2
 	FROM kara
-	WHERE PK_id_kara = :kara_id;
+	WHERE pk_id_kara = $1;
 `;
 
 export const getWhitelistContents = (filterClauses, lang, limitClause, offsetClause) => `
@@ -65,6 +65,6 @@ ${offsetClause}
 
 export const removeKaraFromWhitelist = `
 DELETE FROM whitelist
-WHERE pk_id_whitelist = :wlc_id;
+WHERE pk_id_whitelist = $1;
 `;
 

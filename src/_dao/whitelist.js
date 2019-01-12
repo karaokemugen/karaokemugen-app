@@ -20,14 +20,13 @@ export async function emptyWhitelist() {
 }
 
 export async function removeKaraFromWhitelist(wlcList) {
-	const wlcs = wlcList.map((wlc) => ({ wlc_id: wlc.wlc_id }));
-	return await transaction([{params: wlcs, sql: sql.removeKaraFromWhitelist}]);
+	return await transaction([{params: wlcList, sql: sql.removeKaraFromWhitelist}]);
 }
 
 export async function addKaraToWhitelist(karaList) {
-	const karas = karaList.map((kara) => ({
-		kara_id: kara,
-		created_at: new Date()
-	}));
+	const karas = karaList.map((kara) => ([
+		kara,
+		new Date()
+	]));
 	return await transaction([{params: karas, sql: sql.addKaraToWhitelist}]);
 }

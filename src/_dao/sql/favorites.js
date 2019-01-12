@@ -6,5 +6,5 @@ FROM playlist AS p,
 	users AS u
 WHERE p.fk_id_user = u.pk_id_user
 	AND u.login = $1
-	AND p.flag_favorites = 1
+	AND p.flag_favorites = TRUE
 `;

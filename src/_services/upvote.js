@@ -72,7 +72,7 @@ export async function deleteUpvote(plc_id,username) {
 
 async function tryToFreeKara(plc_id, upvotes, username, playlist_id) {
 	const allUsersList = await listUsers();
-	const onlineUsers = allUsersList.filter(user => user.flag_online === 1);
+	const onlineUsers = allUsersList.filter(user => user.flag_online);
 	const upvotePercent = (upvotes / onlineUsers.length) * 100;
 	const conf = getConfig();
 	if (upvotePercent >= conf.EngineFreeUpvotesRequiredPercent &&

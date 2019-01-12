@@ -38,6 +38,7 @@ export async function getUserRequests(username, lang, from, size) {
 }
 
 export async function addUser(user) {
+	console.log(user);
 	return await db().query(yesql(sql.createUser)({
 		type: user.type,
 		login: user.login,
@@ -49,6 +50,8 @@ export async function addUser(user) {
 }
 
 export async function editUser(user) {
+	console.log('edit')
+	console.log(user);
 	return await db().query(yesql(sql.editUser)({
 		id: user.id,
 		nickname: user.nickname,

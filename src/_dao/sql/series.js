@@ -82,7 +82,7 @@ VALUES(:kara_id, :serie_id);
 `;
 
 export const insertSeriei18n = `
-INSERT INTO karasdb.serie_lang(
+INSERT INTO serie_lang(
 	fk_id_serie,
 	lang,
 	name

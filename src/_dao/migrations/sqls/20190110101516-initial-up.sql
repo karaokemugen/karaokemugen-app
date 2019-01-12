@@ -88,7 +88,7 @@ CREATE TABLE users (
 	bio character varying,
 	url character varying,
 	email character varying,
-	flag_online smallint NOT NULL,
+	flag_online BOOLEAN DEFAULT FALSE,
 	last_login_at timestamp,
 	fingerprint character varying
 );
@@ -130,16 +130,16 @@ CREATE UNIQUE INDEX idx_requested_user_kara_startedat_kid_requestedat ON request
 
 
 CREATE TABLE playlist (
-	pk_id_playlist	INTEGER PRIMARY KEY,
+	pk_id_playlist	SERIAL PRIMARY KEY,
 	name	CHARACTER VARYING NOT NULL,
 	karacount	INTEGER NOT NULL DEFAULT 0,
 	duration	INTEGER NOT NULL DEFAULT 0,
 	created_at	TIMESTAMP NOT NULL,
 	modified_at	TIMESTAMP NOT NULL,
-	flag_visible	INTEGER NOT NULL DEFAULT 1,
-	flag_current	INTEGER NOT NULL DEFAULT 0,
-	flag_public	INTEGER NOT NULL DEFAULT 0,
-	flag_favorites	INTEGER NOT NULL DEFAULT 0,
+	flag_visible	BOOLEAN DEFAULT TRUE,
+	flag_current	BOOLEAN DEFAULT FALSE,
+	flag_public	BOOLEAN DEFAULT FALSE,
+	flag_favorites	BOOLEAN DEFAULT FALSE,
 	time_left	INTEGER NOT NULL DEFAULT 0,
 	fk_id_user	INTEGER NOT NULL DEFAULT 1,
 	FOREIGN KEY(fk_id_user) REFERENCES users(pk_id_user) ON DELETE CASCADE
@@ -149,16 +149,16 @@ CREATE INDEX idx_playlist_user ON playlist(fk_id_user);
 
 
 CREATE TABLE playlist_content (
-	pk_id_plcontent	INTEGER PRIMARY KEY,
+	pk_id_plcontent	SERIAL PRIMARY KEY,
 	fk_id_playlist INTEGER NOT NULL,
 	fk_id_kara INTEGER NOT NULL,
 	kid	UUID NOT NULL,
 	created_at	TIMESTAMP NOT NULL,
 	pos	REAL NOT NULL,
-	flag_playing	INTEGER NOT NULL,
+	flag_playing	BOOLEAN DEFAULT FALSE,
 	nickname	CHARACTER VARYING,
 	fk_id_user	INTEGER NOT NULL,
-	flag_free	INTEGER NOT NULL,
+	flag_free	BOOLEAN DEFAULT FALSE,
 	FOREIGN KEY(fk_id_playlist) REFERENCES playlist(pk_id_playlist) ON DELETE CASCADE
 );
 
@@ -202,7 +202,7 @@ SELECT
 (SELECT COUNT(pk_id_tag) FROM tag WHERE tagtype=5) AS languages,
 (SELECT COUNT(pk_id_serie) FROM serie) AS series,
 (SELECT COUNT(pk_id_played) FROM played) AS played,
-(SELECT COUNT(pk_id_playlist) FROM playlist WHERE flag_favorites = 0) AS playlists,
+(SELECT COUNT(pk_id_playlist) FROM playlist WHERE flag_favorites = FALSE) AS playlists,
 (SELECT SUM(duration) FROM kara) AS duration;
 
 CREATE MATERIALIZED VIEW all_karas AS

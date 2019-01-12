@@ -15,8 +15,7 @@ export async function editPlaylist(pl) {
 }
 
 export async function createPlaylist(pl) {
-	return await db().query(yesql(sql.createPlaylist)({
-		playlist_id: pl.id,
+	const res = await db().query(yesql(sql.createPlaylist)({
 		name: pl.name,
 		created_at: new Date(pl.created_at * 1000),
 		modified_at: new Date(pl.modified_at * 1000),
@@ -26,6 +25,7 @@ export async function createPlaylist(pl) {
 		flag_favorites: pl.flag_favorites || false,
 		username: pl.username
 	}));
+	return res.rows[0].pk_id_playlist;
 }
 
 export async function emptyPlaylist(id) {
@@ -81,10 +81,10 @@ export async function getMaxPosInPlaylist(id) {
 
 export async function reorderPlaylist(playlist) {
 	let newpos = 0;
-	const karaList = playlist.map((kara) => ({
-		pos: ++newpos,
-		playlistcontent_id: kara.playlistcontent_id
-	}));
+	const karaList = playlist.map((kara) => ([
+		++newpos,
+		kara.playlistcontent_id
+	]));
 	return await transaction([{params: karaList, sql: sql.updatePLCSetPos}]);
 }
 
@@ -141,7 +141,7 @@ export async function getPlaylistKaraNames(id) {
 }
 
 export async function getPLCInfo(id, forUser, username) {
-	const query = sql.getPLCInfo + (forUser ? ' AND p.flag_visible = 1' : '');
+	const query = sql.getPLCInfo + (forUser ? ' AND p.flag_visible = TRUE' : '');
 	const res = await db().query(yesql(query)(
 		{
 			playlistcontent_id: id,
@@ -174,7 +174,7 @@ export async function getPlaylistInfo(id) {
 export async function getPlaylists(forUser) {
 	let query = sql.getPlaylists;
 	const order = ' ORDER BY p.flag_current DESC, p.flag_public DESC, name';
-	if (forUser) return await db().query(query + ' AND p.flag_visible = 1 ' + order);
+	if (forUser) return await db().query(query + ' AND p.flag_visible = TRUE ' + order);
 	const res = await db().query(query + order);
 	return res.rows;
 }

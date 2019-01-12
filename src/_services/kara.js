@@ -125,8 +125,8 @@ export function translateKaraInfo(karas, lang) {
 	return karas;
 }
 
-export async function getAllKaras(username, filter, lang, searchType, searchValue) {
-	return await selectAllKaras(username, filter, lang, searchType, searchValue);
+export async function getAllKaras(username, filter, lang, searchType, searchValue, from, size) {
+	return await selectAllKaras(username, filter, lang, searchType, searchValue, from, size);
 }
 
 export async function getRandomKara(playlist_id, filter, username) {

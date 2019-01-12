@@ -84,7 +84,7 @@ function getPlayingPos(playlist) {
 	let PLCIDPlayingPos;
 	let indexPlaying;
 	const isASongFlagPlaying = playlist.some((element,index) => {
-		if (element.flag_playing === 1) {
+		if (element.flag_playing) {
 			PLCIDPlayingPos = element.pos;
 			indexPlaying = index;
 			return true;
@@ -197,8 +197,8 @@ export async function trimPlaylist(playlist_id,duration) {
 export async function setCurrentPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw 'Playlist unknown';
-	if (pl.flag_public === 1) throw 'A current playlist cannot be set to public. Set another playlist to current first.';
-	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to current.';
+	if (pl.flag_public) throw 'A current playlist cannot be set to public. Set another playlist to current first.';
+	if (pl.flag_favorite) throw 'A favorite playlist cannot be set to current.';
 	try {
 		const state = getState();
 		const oldCurrentPlaylist_id = state.currentPlaylistID;
@@ -220,7 +220,7 @@ export async function setCurrentPlaylist(playlist_id) {
 
 export async function setVisiblePlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
-	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to visible.';
+	if (pl.flag_favorite) throw 'A favorite playlist cannot be set to visible.';
 	await setVisiblePL(playlist_id);
 	updatePlaylistLastEditTime(playlist_id);
 }
@@ -233,8 +233,8 @@ export async function unsetVisiblePlaylist(playlist_id) {
 export async function setPublicPlaylist(playlist_id) {
 	const pl = await getPlaylistInfo(playlist_id);
 	if (!pl) throw 'Playlist unknown';
-	if (pl.flag_current === 1) throw 'A public playlist cannot be set to current. Set another playlist to public first.';
-	if (pl.flag_favorite === 1) throw 'A favorite playlist cannot be set to public.';
+	if (pl.flag_current) throw 'A public playlist cannot be set to current. Set another playlist to public first.';
+	if (pl.flag_favorite) throw 'A favorite playlist cannot be set to public.';
 	try {
 		const state = getState();
 		const oldPublicPlaylist_id = state.publicPlaylistID;
@@ -326,9 +326,8 @@ export async function createPlaylist(name,opts,username) {
 	if (+opts.favorites && (+opts.public || +opts.public)) throw 'A playlist cannot be favorite and current/public at the same time!';
 	if (+opts.public) await unsetPublicAllPlaylists();
 	if (+opts.current) await unsetCurrentAllPlaylists();
-	const pl = await createPL({
+	return await createPL({
 		name: name,
-		NORM_name: deburr(name),
 		created_at: now(),
 		modified_at: now(),
 		flag_visible: opts.visible,
@@ -337,7 +336,6 @@ export async function createPlaylist(name,opts,username) {
 		flag_favorites: opts.favorites,
 		username: username
 	});
-	return pl.lastID;
 }
 
 export async function getPlaylistInfo(playlist_id, token) {
@@ -481,9 +479,8 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			karaList.push({
 				kara_id: parseInt(kara_id, 10),
 				username: requester,
-				pseudo_add: user.nickname,
-				NORM_pseudo_add: deburr(user.nickname),
-				playlist_id: parseInt(playlist_id, 10),
+				nickname: user.nickname,
+				playlist_id: +playlist_id,
 				created_at: date_add,
 			});
 		});
@@ -588,7 +585,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 		karaList.forEach(function (kara) {
 			karaAdded.push(kara.kara_id);
 		});
-		updateSongsLeft(user.id, playlist_id);
+		await updateSongsLeft(user.id, playlist_id);
 		if (+conf.EngineAutoPlay &&
 			+playlist_id === state.currentPlaylistID &&
 			state.status === 'stop' ) playPlayer();

@@ -67,7 +67,7 @@ INSERT INTO blacklist_criteria(
 	type,
 	uniquevalue
 )
-VALUES (:blcvalue,:blctype,:blcuniquevalue);
+VALUES ($1,$2,$3);
 `;
 
 export const deleteBlacklistCriteria = `

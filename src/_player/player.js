@@ -129,7 +129,7 @@ export async function initPlayerSystem() {
 
 async function getmpvVersion(path) {
 	const output = await execa(path,['--version']);
-	return semver.valid(output.split(' ')[1]);
+	return semver.valid(output.stdout.split(' ')[1]);
 }
 
 async function startmpv() {

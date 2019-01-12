@@ -202,7 +202,7 @@ export async function createUser(user, opts = {
 	user.nickname = user.nickname || user.login;
 	user.last_login_at = new Date();
 	user.avatar_file = user.avatar_file || 'blank.png';
-	user.flag_online = user.flag_online || 1;
+	user.flag_online = user.flag_online || false;
 
 	user.bio = user.bio || null;
 	user.url = user.url || null;
@@ -355,7 +355,7 @@ export async function updateUserQuotas(kara) {
 	let usersNeedingUpdate = [];
 	for (const currentSong of currentPlaylist) {
 		publicPlaylist.some(publicSong => {
-			if (publicSong.kid === currentSong.kid && currentSong.flag_free === 1) {
+			if (publicSong.kid === currentSong.kid && currentSong.flag_free) {
 				freeTasks.push(freePLC(publicSong.playlistcontent_id));
 				if (!usersNeedingUpdate.includes(publicSong.user_id)) usersNeedingUpdate.push(publicSong.user_id);
 				return true;

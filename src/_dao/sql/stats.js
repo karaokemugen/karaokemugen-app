@@ -8,5 +8,5 @@ export const exportFavorites = `
 SELECT pc.kid
 FROM playlist_content pc, playlist p
 WHERE pc.fk_id_playlist = p.pk_id_playlist
-	AND p.flag_favorites = 1;
+	AND p.flag_favorites = TRUE;
 `;

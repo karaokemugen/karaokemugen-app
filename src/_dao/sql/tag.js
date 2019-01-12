@@ -1,8 +1,8 @@
 // SQL for tags
 
 export const getTag = `
-SELECT name
-FROM karasdb.tag
+SELECT name, tagtype, slug, i18n
+FROM tag
 WHERE pk_id_tag = $1
 `;
 
@@ -24,20 +24,24 @@ WHERE name = :name
 `;
 
 export const insertTag = `
-INSERT INTO karasdb.tag(
+INSERT INTO tag(
 	name,
-	tagtype
+	tagtype,
+	slug,
+	i18n
 )
 VALUES(
 	:name,
-	:type
+	:type,
+	:slug,
+	:i18n
 ) RETURNING *
 `;
 
 export const deleteTagsByKara = 'DELETE FROM kara_tag WHERE fk_id_kara = $1';
 
 export const insertKaraTags = `
-INSERT INTO karasdb.kara_tag(
+INSERT INTO kara_tag(
 	fk_id_kara,
 	fk_id_tag
 )

@@ -10,22 +10,22 @@ INSERT INTO playlist_content(
 	pos,
 	flag_playing,
 	flag_free,
-	pseudo_add
+	nickname
 )
 	SELECT
-		:playlist_id,
-		:kara_id,
+		$1,
+		$4,
 		k.kid,
-		:created_at,
+		$5,
 		u.pk_id_user,
-		:pos,
-		0,
-		0,
-		:pseudo_add
+		$6,
+		FALSE,
+		FALSE,
+		$3
 	FROM kara AS k,
-	    user AS u
-	WHERE pk_id_kara = :kara_id
-		AND u.login = :username;
+	    users AS u
+	WHERE pk_id_kara = $4
+		AND u.login = $2;
 `;
 
 export const addViewcount = `
@@ -52,11 +52,11 @@ INSERT INTO request(
 	session_started_at
 )
 VALUES(
-	:user_id,
-	:kara_id,
-	(SELECT kid FROM all_karas WHERE kara_id = :kara_id),
-	:requested_at,
-	:started_at
+	$1,
+	$2,
+	(SELECT kid FROM all_karas WHERE kara_id = $2),
+	$3,
+	$4
 )
 `;
 
@@ -91,13 +91,13 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, limi
   COUNT(p.pk_id_played) AS played,
   COUNT(rq.pk_id_requested) AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
-		THEN 1
-		ELSE 0
+		THEN TRUE
+		ELSE FALSE
   END) AS flag_dejavu,
   MAX(p.played_at) AS lastplayed_at,
   (CASE WHEN cur_user_fav.fk_id_kara IS NULL
-		THEN 0
-		ELSE 1
+		THEN TRUE
+		ELSE FALSE
   END) as flag_favorites
 FROM all_karas AS ak
 LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_id_kara = ak.kara_id
@@ -107,7 +107,7 @@ LEFT OUTER JOIN serie_lang AS sl_fall ON sl_fall.fk_id_serie = ks_fall.fk_id_ser
 LEFT OUTER JOIN played AS p ON p.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN requested AS rq ON rq.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN users AS cur_user ON cur_user.login = :username
-LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = 1
+LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = TRUE
 LEFT OUTER JOIN playlist_content cur_user_fav ON cur_user_fav.fk_id_playlist = cur_user_pl_fav.fk_id_user AND cur_user_fav.fk_id_kara = ak.kara_id
 WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
@@ -148,9 +148,9 @@ WHERE pk_id_plcontent @> ARRAY[$playlistcontent_id]
 export const getSongCountPerUser = `
 SELECT COUNT(1) AS count
 FROM playlist_content AS pc
-WHERE pc.fk_id_user = :user_id
-	AND pc.fk_id_playlist = :playlist_id
-	AND pc.flag_free = 0
+WHERE pc.fk_id_user = $2
+	AND pc.fk_id_playlist = $1
+	AND pc.flag_free = FALSE
 	AND pc.fk_id_kara != 0
 `;
 
@@ -158,9 +158,9 @@ export const getTimeSpentPerUser = `
 SELECT SUM(ak.duration) AS timeSpent
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
-WHERE pc.fk_id_user = :user_id
-	AND pc.fk_id_playlist = :playlist_id
-	AND pc.flag_free = 0
+WHERE pc.fk_id_user = $2
+	AND pc.fk_id_playlist = $1
+	AND pc.flag_free = FALSE
 	AND pc.fk_id_kara != 0
 `;
 
@@ -169,7 +169,7 @@ export const resetViewcounts = 'TRUNCATE played RESTART IDENTITY;';
 
 export const updateFreeOrphanedSongs = `
 UPDATE playlist_content SET
-	flag_free = 1
+	flag_free = TRUE
 WHERE created_at <= $1;
 `;
 

@@ -46,10 +46,10 @@ export async function editBlacklistCriteria(blc) {
 }
 
 export async function addBlacklistCriteria(blcList) {
-	const blc = blcList.map((blcItem) => ({
-		blcvalue: blcItem.blcvalue,
-		blctype: blcItem.blctype,
-		blcuniquevalue: blcItem.blcuniquevalue
-	}));
+	const blc = blcList.map((blcItem) => ([
+		blcItem.blcvalue,
+		blcItem.blctype,
+		blcItem.blcuniquevalue
+	]));
 	return await transaction([{params: blc, sql: sql.addBlacklistCriteria}]);
 }

@@ -27,8 +27,8 @@ WHERE pk_id_playlist = :playlist_id;
 export const createPlaylist = `
 INSERT INTO playlist(
 	name,
-	num_karas,
-	length,
+	karacount,
+	duration,
 	created_at,
 	modified_at,
 	flag_visible,
@@ -39,18 +39,18 @@ INSERT INTO playlist(
 	time_left
 )
 VALUES(
-	$name,
+	:name,
 	0,
 	0,
-	$created_at,
-	$modified_at,
-	$flag_visible,
-	$flag_current,
-	$flag_public,
-	$flag_favorites,
-	(SELECT pk_id_user FROM user WHERE login = $username),
+	:created_at,
+	:modified_at,
+	:flag_visible,
+	:flag_current,
+	:flag_public,
+	:flag_favorites,
+	(SELECT pk_id_user FROM users WHERE login = :username),
 	0
-)
+) RETURNING pk_id_playlist
 `;
 
 export const updatePlaylistKaraCount = `
@@ -74,25 +74,25 @@ ORDER BY pc.pos
 
 export const updatePLCSetPos = `
 UPDATE playlist_content
-SET pos = :pos
-WHERE pk_id_plcontent = :playlistcontent_id
+SET pos = $1
+WHERE pk_id_plcontent = $2
 `;
 
 
 export const updatePlaylistDuration = `
 UPDATE playlist SET time_left = (
-	SELECT IFNULL(SUM(kara.duration),0) AS duration
+	SELECT COALESCE(SUM(kara.duration),0) AS duration
 		FROM kara, playlist_content
 		WHERE playlist_content.fk_id_kara = kara.pk_id_kara
 		AND playlist_content.fk_id_playlist = $1
 		AND playlist_content.pos >= (
-			SELECT IFNULL(pos,0)
+			SELECT COALESCE(pos,0)
 			FROM playlist_content
-			WHERE flag_playing = 1 AND playlist_content.fk_id_playlist = $1
+			WHERE flag_playing = TRUE AND playlist_content.fk_id_playlist = $1
 			)
 	),
 	duration = (
-		SELECT ifnull(SUM(kara.duration),0) AS duration
+		SELECT COALESCE(SUM(kara.duration),0) AS duration
 			FROM kara, playlist_content
 			WHERE playlist_content.fk_id_kara = kara.pk_id_kara
 				AND playlist_content.fk_id_playlist = $1
@@ -144,13 +144,13 @@ SELECT ak.kara_id AS kara_id,
   COUNT(p.pk_id_played) AS played,
   COUNT(rq.pk_id_requested) AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
-		THEN 1
-		ELSE 0
+		THEN TRUE
+		ELSE FALSE
   END) AS flag_dejavu,
   MAX(p.played_at) AS lastplayed_at,
   (CASE WHEN cur_user_fav.fk_id_kara IS NULL
-		THEN 0
-		ELSE 1
+		THEN FALSE
+		ELSE TRUE
   END) as flag_favorites,
   pc.nickname AS nickname,
   u.login AS username,
@@ -158,12 +158,12 @@ SELECT ak.kara_id AS kara_id,
   pc.pk_id_plcontent AS playlistcontent_id,
   pc.flag_playing AS flag_playing,
   (CASE WHEN wl.fk_id_kara = ak.kara_id
-	THEN 1
-	ELSE 0
+	THEN TRUE
+	ELSE FALSE
   END) AS flag_whitelisted,
   (CASE WHEN bl.fk_id_kara = ak.kara_id
-	THEN 1
-	ELSE 0
+	THEN TRUE
+	ELSE FALSE
   END) AS flag_blacklisted,
   COUNT(up.fk_id_plcontent) AS upvotes,
   (CASE WHEN cur_user.pk_id_user = up.fk_id_user THEN 1 ELSE 0 END) as flag_upvoted
@@ -180,7 +180,7 @@ LEFT OUTER JOIN serie_lang AS sl_fall ON sl_fall.fk_id_serie = ks_fall.fk_id_ser
 LEFT OUTER JOIN played AS p ON p.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN requested AS rq ON rq.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN users AS cur_user ON cur_user.login = :username
-LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = 1
+LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = TRUE
 LEFT OUTER JOIN playlist_content cur_user_fav ON cur_user_fav.fk_id_playlist = cur_user_pl_fav.fk_id_user AND cur_user_fav.fk_id_kara = ak.kara_id
 WHERE pc.fk_id_playlist = $playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
@@ -193,7 +193,7 @@ ${offsetClause}
 
 export const getPlaylistContentsMini = (lang) => `
 SELECT ak.kara_id AS kara_id,
-    ak.language AS language,
+    ak.languages AS languages,
 	ak.title AS title,
 	ak.songorder AS songorder,
 	COALESCE(
@@ -212,8 +212,8 @@ SELECT ak.kara_id AS kara_id,
 		ak.serie
 	) AS serie,
 	ak.serie_i18n AS serie_i18n,
-    ak.songtype AS songtype,
-	ak.singer AS singer,
+    ak.songtypes AS songtypes,
+	ak.singers AS singers,
     ak.gain AS gain,
     pc.nickname AS nickname,
 	pc.created_at AS created_at,
@@ -227,7 +227,7 @@ SELECT ak.kara_id AS kara_id,
 	pc.flag_free AS flag_free,
 	u.login AS username,
 	ak.duration AS duration
-FROM karasdb.all_karas AS ak
+FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN users AS u ON u.pk_id_user = pc.fk_id_user
 WHERE pc.fk_id_playlist = $1
@@ -245,10 +245,10 @@ ORDER BY pc.pos,pc.created_at DESC;
 export const getPlaylistKaraNames = `
 SELECT pc.pos AS pos,
 	pc.pk_id_plcontent AS playlistcontent_id,
-	(ak.language || (CASE WHEN ak.serie IS NULL
+	(ak.languages || (CASE WHEN ak.serie IS NULL
 	    THEN ak.singer
         ELSE ak.serie
-	END) || ak.songtype || ak.songorder || ak.title) AS karaname
+	END) || ak.songtypes || ak.songorder || ak.title) AS karaname
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 WHERE pc.fk_id_playlist = $1
@@ -286,8 +286,8 @@ SELECT ak.kara_id AS kara_id,
   COUNT(p.pk_id_played) AS played,
   COUNT(rq.pk_id_requested) AS requested,
   (CASE WHEN :dejavu_time < max(p.played_at)
-		THEN 1
-		ELSE 0
+		THEN TRUE
+		ELSE FALSE
   END) AS flag_dejavu,
   MAX(p.played_at) AS lastplayed_at,
   pc.nickname AS nickname,
@@ -299,25 +299,25 @@ SELECT ak.kara_id AS kara_id,
   COUNT(up.fk_id_plcontent) AS upvotes,
   pc.flag_free AS flag_free,
   MAX(p.modified_at) AS lastplayed_at,
-  (CASE WHEN wl.fk_id_kara IS NULL THEN 0 ELSE 1 END) as flag_whitelisted,
-  (CASE WHEN bl.fk_id_kara IS NULL THEN 0 ELSE 1 END) as flag_blacklisted,
-  (CASE WHEN cur_user_fav.fk_id_kara IS NULL THEN 0 ELSE 1 END) as flag_favorites,
-  (CASE WHEN cur_user.pk_id_user = up.fk_id_user THEN 1 ELSE 0 END) as flag_upvoted,
+  (CASE WHEN wl.fk_id_kara IS NULL THEN FALSE ELSE TRUE END) as flag_whitelisted,
+  (CASE WHEN bl.fk_id_kara IS NULL THEN FALSE ELSE TRUE END) as flag_blacklisted,
+  (CASE WHEN cur_user_fav.fk_id_kara IS NULL THEN FALSE ELSE TRUE END) as flag_favorites,
+  (CASE WHEN cur_user.pk_id_user = up.fk_id_user THEN TRUE ELSE FALSE END) as flag_upvoted,
   SUM(plc_before_karas.duration) - ak.duration AS time_before_play
 FROM playlist_content AS pc
-INNER JOIN karasdb.all_karas AS ak ON pc.fk_id_kara = ak.kara_id
-INNER JOIN user u ON u.pk_id_user = pc.fk_id_user
+INNER JOIN all_karas AS ak ON pc.fk_id_kara = ak.kara_id
+INNER JOIN users u ON u.pk_id_user = pc.fk_id_user
 LEFT OUTER JOIN played p ON ak.kara_id = p.fk_id_kara
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 LEFT OUTER JOIN request rq ON rq.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
 LEFT OUTER JOIN users AS cur_user ON cur_user.login = :username
-LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = 1
+LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = TRUE
 LEFT OUTER JOIN playlist_content cur_user_fav ON cur_user_fav.fk_id_playlist = cur_user_pl_fav.fk_id_user AND cur_user_fav.fk_id_kara = pc.fk_id_kara
-LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.fk_id_playlist = pc.fk_id_playlist AND plc_current_playing.flag_playing = 1
-LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc.fk_id_playlist AND plc_before.pos BETWEEN IFNULL(plc_current_playing.pos, 0) AND pc.pos
-LEFT OUTER JOIN karasdb.kara AS plc_before_karas ON plc_before_karas.pk_id_kara = plc_before.fk_id_kara
+LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.fk_id_playlist = pc.fk_id_playlist AND plc_current_playing.flag_playing = TRUE
+LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc.fk_id_playlist AND plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND pc.pos
+LEFT OUTER JOIN kara AS plc_before_karas ON plc_before_karas.pk_id_kara = plc_before.fk_id_kara
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
 `;
 
@@ -332,7 +332,7 @@ SELECT pc.fk_id_kara AS kara_id,
 	pc.fk_id_playlist AS playlist_id,
 	pc.fk_id_user AS user_id,
 	COUNT(up.fk_id_plcontent) AS upvotes
-FROM karasdb.all_karas AS ak
+FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 LEFT OUTER JOIN users AS u ON u.pk_id_user = pc.fk_id_user
@@ -346,21 +346,21 @@ SELECT ak.kara_id AS kara_id,
 	ak.songorder AS songorder,
 	ak.serie AS serie,
 	ak.serie_i18n AS serie_i18n,
-	ak.songtype AS songtype,
-	ak.singer AS singer,
+	ak.songtypes AS songtypes,
+	ak.singers AS singers,
 	ak.gain AS gain,
-	pc.pseudo_add AS pseudo_add,
+	pc.nickname AS nickname,
 	ak.mediafile AS mediafile,
 	pc.pos AS pos,
 	pc.flag_playing AS flag_playing,
 	pc.pk_id_plcontent AS playlistcontent_id,
 	ak.kid AS kid,
 	(CASE WHEN :dejavu_time < max(p.played_at)
-		THEN 1
-		ELSE 0
+		THEN TRUE
+		ELSE FALSE
     END) AS flag_dejavu,
 	MAX(p.played_at) AS lastplayed_at
-FROM karasdb.all_karas AS ak
+FROM all_karas AS ak
 LEFT OUTER JOIN played p ON ak.kara_id = p.fk_id_kara
 INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 WHERE pc.fk_id_playlist = :playlist_id
@@ -382,7 +382,7 @@ SELECT p.pk_id_playlist AS playlist_id,
 	p.flag_public AS flag_public,
 	p.flag_favorites AS flag_favorites,
 	u.login AS username
-FROM playlist AS p, user AS u
+FROM playlist AS p, users AS u
 WHERE pk_id_playlist = $1
 	AND u.pk_id_user = p.fk_id_user
 `;
@@ -400,25 +400,25 @@ SELECT p.pk_id_playlist AS playlist_id,
 	p.flag_public AS flag_public,
 	p.flag_favorites AS flag_favorites,
 	u.login AS username
-FROM playlist AS p, user AS u
+FROM playlist AS p, users AS u
 WHERE p.fk_id_user = u.pk_id_user
 `;
 
 export const testCurrentPlaylist = `
 SELECT pk_id_playlist AS playlist_id
 FROM playlist
-WHERE flag_current = 1;
+WHERE flag_current = TRUE;
 `;
 
 export const setPLCFree = `
 UPDATE playlist_content
-SET flag_free = 1
+SET flag_free = TRUE
 WHERE pk_id_plcontent = $1;
 `;
 
 export const setPLCFreeBeforePos = `
 UPDATE playlist_content
-SET flag_free = 1
+SET flag_free = TRUE
 WHERE fk_id_playlist = :playlist_id
 	AND pos <= :pos;
 `;
@@ -426,7 +426,7 @@ WHERE fk_id_playlist = :playlist_id
 export const testPublicPlaylist = `
 SELECT pk_id_playlist AS playlist_id
 FROM playlist
-WHERE flag_public = 1;
+WHERE flag_public = TRUE;
 `;
 
 export const shiftPosInPlaylist = `
@@ -451,48 +451,48 @@ WHERE fk_id_playlist = :playlist_id
 
 export const setCurrentPlaylist = `
 UPDATE playlist
-SET flag_current = 1
+SET flag_current = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
 export const unsetCurrentPlaylist = `
-UPDATE playlist SET flag_current = 0
+UPDATE playlist SET flag_current = TRUE
 `;
 
 export const setVisiblePlaylist = `
 UPDATE playlist
-SET flag_visible = 1
+SET flag_visible = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
 export const unsetVisiblePlaylist = `
 UPDATE playlist
-SET flag_visible = 0
+SET flag_visible = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
 export const unsetPublicPlaylist = `
 UPDATE playlist
-SET flag_public = 0;
+SET flag_public = TRUE;
 `;
 
 
 export const setPublicPlaylist = `
 UPDATE playlist
-SET flag_public = 1
+SET flag_public = TRUE
 WHERE pk_id_playlist = $1;
 `;
 
 export const unsetPlaying = `
 UPDATE playlist_content
-SET flag_playing = 0
+SET flag_playing = FALSE
 WHERE fk_id_playlist = $1
-	AND flag_playing = 1;
+	AND flag_playing = TRUE;
 `;
 
 export const setPlaying = `
 UPDATE playlist_content
-SET flag_playing = 1
+SET flag_playing = TRUE
 WHERE pk_id_plcontent = $1;
 `;
 

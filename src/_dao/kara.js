@@ -69,10 +69,11 @@ export async function addKara(kara) {
 }
 
 export async function getSongTimeSpentForUser(playlist_id,user_id) {
-	return await db().query(yesql(sql.getTimeSpentPerUser)({
-		playlist_id: playlist_id,
-		user_id: user_id
-	}));
+	const res = await db().query(sql.getTimeSpentPerUser,[
+		playlist_id,
+		user_id
+	]);
+	return res.rows[0];
 }
 
 export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0) {
@@ -98,7 +99,7 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	if (size > 0) limitClause = `LIMIT ${size} `;
 	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, limitClause, offsetClause);
 	const params = {
-		dejavu_time: now() - (getConfig().EngineMaxDejaVuTime * 60),
+		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60) * 1000)),
 		username: username,
 		...filterClauses.params
 	};
@@ -129,7 +130,7 @@ export async function getKaraViewcounts(lang, from, size) {
 
 export async function getKara(id, username, lang) {
 	const res = await selectAllKaras(username, null, lang, 'kara', id);
-	return res[0];
+	return res.rows[0];
 }
 
 export async function getASS(sub) {
@@ -140,7 +141,7 @@ export async function getASS(sub) {
 }
 
 export async function isKara(id) {
-	const res = db().query(sql.isKara, [id]);
+	const res = await db().query(sql.isKara, [id]);
 	return res.rows[0];
 }
 
@@ -162,12 +163,12 @@ export async function addViewcount(kara_id,kid) {
 }
 
 export async function addKaraToRequests(user_id,karaList) {
-	const karas = karaList.map((kara) => ({
-		user_id: user_id,
-		kara_id: kara.kara_id,
-		requested_at: new Date(now() * 1000),
-		started_at: new Date(getState().sessionStart * 1000)
-	}));
+	const karas = karaList.map((kara) => ([
+		user_id,
+		kara.kara_id,
+		new Date(now() * 1000),
+		new Date(getState().sessionStart * 1000)
+	]));
 	return await transaction([{params: karas, sql: sql.addRequested}]);
 }
 
@@ -176,14 +177,14 @@ export async function resetViewcounts() {
 }
 
 export async function addKaraToPlaylist(karaList) {
-	const karas = karaList.map((kara) => ({
-		playlist_id: kara.playlist_id,
-		username: kara.username,
-		pseudo_add: kara.pseudo_add,
-		kara_id: kara.kara_id,
-		created_at: new Date(kara.created_at * 1000),
-		pos: kara.pos
-	}));
+	const karas = karaList.map((kara) => ([
+		kara.playlist_id,
+		kara.username,
+		kara.nickname,
+		kara.kara_id,
+		new Date(kara.created_at * 1000),
+		kara.pos
+	]));
 	return await transaction([{params: karas, sql: sql.addKaraToPlaylist}]);
 }
 
