@@ -50,8 +50,6 @@ export async function addUser(user) {
 }
 
 export async function editUser(user) {
-	console.log('edit')
-	console.log(user);
 	return await db().query(yesql(sql.editUser)({
 		id: user.id,
 		nickname: user.nickname,

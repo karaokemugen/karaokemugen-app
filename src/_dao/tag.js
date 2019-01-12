@@ -1,5 +1,4 @@
 import {db} from './database';
-import deburr from 'lodash.deburr';
 import {pg as yesql} from 'yesql';
 import slug from 'slug';
 const sql = require('./sql/tag');

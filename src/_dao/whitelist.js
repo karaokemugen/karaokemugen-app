@@ -1,5 +1,4 @@
 import {transaction, langSelector, buildClauses, db} from './database';
-import {now} from 'unix-timestamp';
 import {pg as yesql} from 'yesql';
 const sql = require('./sql/whitelist');
 
