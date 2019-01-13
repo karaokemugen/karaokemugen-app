@@ -26,12 +26,26 @@ test:
     - yarn start --debug --test &disown
     - bash test/run.sh
   only:
-    refs:
-      - master
-      - next
-      - tags
-    variables :
-      - $CI_PIPELINE_SOURCE == "web"
+    - master
+    - next
+    - tags
+
+test_manual:
+  stage: test
+  script:
+    - yarn install --check-files --force
+    - touch mpv
+    - echo "BinPlayerLinux=mpv" >>config.ini
+    - mkdir -p /builds/karaokemugen/karaokemugen-app/app/data
+    - cp -R samples/* /builds/karaokemugen/karaokemugen-app/app/data/
+    - export LANG=en_US
+    - node --version
+    - yarn start --debug --test &disown
+    - bash test/run.sh
+  only:
+    - branches
+  when: manual
+  allow_failure: false
 
 build:
   stage: build
