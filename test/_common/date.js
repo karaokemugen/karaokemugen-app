@@ -4,9 +4,6 @@ import * as dateFunctions from '../../src/_common/utils/date';
 const testDate = () => it('Testing date()', () => {
 	const testRegex = /(\d{2})-(\d{2})-(\d+)/;
 	
-	expect(dateFunctions.date)
-		.to.not.throw();
-
 	const returnedDate = dateFunctions.date();
 	
 	expect(returnedDate)
@@ -31,9 +28,6 @@ const testDate = () => it('Testing date()', () => {
 const testTime = () => it('Testing time()', () => {
 	const testRegex = /(\d{2}):(\d{2}):(\d{2})/;
 	
-	expect(dateFunctions.time)
-		.to.not.throw();
-
 	const returnedTime = dateFunctions.time();
 	
 	expect(returnedTime)
@@ -61,20 +55,25 @@ const testTimeToSeconds = () => it('Testing time()', () => {
 	testDataToThrow
 		.forEach((testData) => expect(() => dateFunctions.timeToSeconds(testData), `Error with the parameter '${testData}'`).to.throw());
 	
-	const testDataToWork = [['23:32:09', 84729], ['12:34:65', 45305], ['00:34:65', 2105], ['00:52:65', 3185], ['0:52:65', 3185], ['0:0:0', 0]];
+	const testDataToWork = [['23:32:09', 84729], ['12:34:34', 45274], ['00:34:55', 2095], ['00:52:45', 3165], ['0:52:22.74', 3142], ['0:52:18', 3138], ['0:0:0', 0]];
 	testDataToWork
-		.forEach((testData) => expect(() => dateFunctions.timeToSeconds(testData[0]))
-			.to.not.throw()
-			.and.to.be.a('number')
-			.and.equal(testData[1])
-		);
+		.forEach((dataArray) => expect(dateFunctions.timeToSeconds(dataArray[0]), `Error with the parameter '${dataArray[0]}'`).to.be.equal(dataArray[1]));
 });
 
 const testDuration = () => it('Testing duration()', () => {
-	throw new Error('NotImplemented');
+	const wrongValues = ['a', null, undefined, 0.2, -1, 0];
+	wrongValues
+		.forEach((testData) => expect(() => dateFunctions.duration(testData), `Error with the parameter '${testData}'`).to.throw());
 });
 
 export default () => {
+	global.__ = (id) => {
+		const i18nValues = ['DAY', 'HOUR', 'MINUTE', 'SECOND'];
+		if(!i18nValues.includes(id)){
+			throw `The id '${id}' does not exist in the i18n module.`;
+		}
+		return `${id}_I18N`;
+	};
 	testDate();
 	testTime();
 	testTimeToSeconds();

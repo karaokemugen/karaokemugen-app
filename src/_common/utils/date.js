@@ -21,13 +21,35 @@ export function time() {
 }
 
 export function timeToSeconds(time) {
+	if(typeof time !== 'string'){
+		throw `The parameter ${time} is supposed to be a string !`;
+	}
+
+	if(!time.match(/\d+:\d{1,2}:\d+\.?\d*/)){
+		throw `The parameter ${time} is in a wrong format '00:00:00.000' .`;
+	}
+
 	const a = time.split(':'); // split it at the colons
+
+	if(+a[1] >= 60 || +a[2] >= 60){
+		throw `The parameter ${time} is impossible, please follow the format "Hours:Minutes:Seconds.Milliseconds`;
+	}
+
 	a[2] = Math.floor(a[2]); // Seconds can have miliseconds
 	// minutes are worth 60 seconds. Hours are worth 60 minutes.
+
 	return (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
 }
 
+//FormatDateString From Duration in Seconds
 export function duration(duration) {
+	if(typeof duration !== 'number'){
+		throw `The parameter ${duration} is supposed to be a number !`;
+	}
+
+	if(Math.floor(duration) !== duration || duration <= 0){
+		throw `The parameter ${duration} is supposed to be "entier" and be superior to 0`;
+	}
 
 	// calculate (and subtract) whole days
 	const days = Math.floor(duration / 86400);
