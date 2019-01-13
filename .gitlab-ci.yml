@@ -31,7 +31,7 @@ test:
       - next
       - tags
     variables :
-      - $TEST
+      - $CI_PIPELINE_SOURCE == "web"
 
 build:
   stage: build
