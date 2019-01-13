@@ -29,6 +29,8 @@ test:
     - master
     - next
     - tags
+    variables :
+      - $TEST
 
 build:
   stage: build

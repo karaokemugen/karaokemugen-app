@@ -31,6 +31,21 @@ let token;
 let current_playlist_id;
 let current_plc_id;
 describe('Test public API', function() {
+	it('connect with a guest user', function() {
+		var data = {
+			fingerprint: '666'
+		};
+		return request
+			.post('/api/auth/login/guest')
+			.set('Accept', 'application/json')
+			.send(data)
+			.then(function(response) {
+				assert.notStrictEqual(response.body.token, '');
+				assert.notStrictEqual(response.body.username, '');
+				assert.notStrictEqual(response.body.role, 'user');
+			});
+	});
+
 	it('Create a new user', function() {
 		var data = {
 			login: 'BakaToTest',
@@ -42,8 +57,8 @@ describe('Test public API', function() {
 			.send(data)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'USER_CREATED');
-				assert.equal(response.body.data, true);
+				assert.strictEqual(response.body.code,'USER_CREATED');
+				assert.strictEqual(response.body.data, true);
 			});
 	});
 
@@ -59,8 +74,8 @@ describe('Test public API', function() {
 			.expect(200)
 			.then(function(response) {
 				token = response.body.token;
-				assert.equal(response.body.username,data.username);
-				assert.equal(response.body.role, 'admin');
+				assert.strictEqual(response.body.username,data.username);
+				assert.strictEqual(response.body.role, 'admin');
 			});
 	});
 
@@ -73,8 +88,8 @@ describe('Test public API', function() {
 			.then(function(response) {
 				response.body.data.forEach(element => {
 					if (element.login === 'BakaToTest') {
-						assert.equal(element.type, 1);
-						assert.equal(element.flag_admin, 0);
+						assert.strictEqual(element.type, 1);
+						assert.strictEqual(element.flag_admin, 0);
 					}
 				});
 			});
@@ -87,8 +102,8 @@ describe('Test public API', function() {
 			.set('Authorization', token)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.args,'BakaToTest');
-				assert.equal(response.body.code, 'USER_DELETED');
+				assert.strictEqual(response.body.args,'BakaToTest');
+				assert.strictEqual(response.body.code, 'USER_DELETED');
 			});
 	});
 
@@ -100,7 +115,7 @@ describe('Test public API', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.data.content[0].serie, 'Dragon Ball');
+				assert.strictEqual(response.body.data.content[0].serie, 'Dragon Ball');
 			});
 	});
 
@@ -112,7 +127,7 @@ describe('Test public API', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.data.length, 1);
+				assert.strictEqual(response.body.data.length, 1);
 			});
 	});
 
@@ -168,8 +183,8 @@ describe('Test public API', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				assert.equal(response.body.code,'PLAYLIST_MODE_SONG_ADDED');
-				assert.equal(response.body.data.kara_id,6);
+				assert.strictEqual(response.body.code,'PLAYLIST_MODE_SONG_ADDED');
+				assert.strictEqual(response.body.data.kara_id,6);
 			});
 	});
 	var plc_id;
@@ -184,10 +199,10 @@ describe('Test public API', function() {
 			.then(function(response) {
 				// We get the PLC_ID of our last karaoke, the one we just added
 				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id;
-				current_plc_id = plc_id;
+				current_plc_id = plc_id.toString();
 				var result = false;
 				if (response.body.data.content.length >= 1) result = true;
-				assert.equal(result, true);
+				assert.strictEqual(result, true);
 			});
 	});
 
@@ -203,7 +218,7 @@ describe('Test public API', function() {
 			.expect('Content-Type',  /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_SONG_DELETED');
+				assert.strictEqual(response.body.code,'PL_SONG_DELETED');
 			});
 	});
 });
@@ -235,7 +250,7 @@ describe('Managing karaokes in playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_SONG_ADDED');
+				assert.strictEqual(response.body.code,'PL_SONG_ADDED');
 			});
 	});
 
@@ -252,7 +267,7 @@ describe('Managing karaokes in playlists', function() {
 				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id;
 				var result = false;
 				if (response.body.data.content.length >= 1) result = true;
-				assert.equal(result, true);
+				assert.strictEqual(result, true);
 			});
 	});
 
@@ -269,8 +284,8 @@ describe('Managing karaokes in playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_ADD_SONG_ERROR');
-				assert.equal(response.body.message,'No karaoke could be added,'+
+				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');	
+				assert.strictEqual(response.body.message,'No karaoke could be added,'+
 				' all are in destination playlist already (PLID : '+playlist+')');
 			});
 	});
@@ -288,8 +303,8 @@ describe('Managing karaokes in playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_ADD_SONG_ERROR');
-				assert.equal(response.body.message,'One of the karaokes does not exist');
+				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
+				assert.strictEqual(response.body.message,'One of the karaokes does not exist');
 			});
 	});
 
@@ -306,9 +321,9 @@ describe('Managing karaokes in playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_ADD_SONG_ERROR');
+				assert.strictEqual(response.body.code,'PL_ADD_SONG_ERROR');
 				// FIXME
-				//assert.equal(response.body,'Playlist 10000 unknown');
+				//assert.strictEqual(response.body,'Playlist 10000 unknown');
 			});
 	});
 
@@ -324,8 +339,8 @@ describe('Managing karaokes in playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_CONTENT_MODIFIED');
-				assert.equal(response.body.data, current_plc_id);
+				assert.strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
+				assert.strictEqual(response.body.data, current_plc_id);
 			});
 	});
 
@@ -341,8 +356,8 @@ describe('Managing karaokes in playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_CONTENT_MODIFIED');
-				assert.equal(response.body.data, current_plc_id);
+				assert.strictEqual(response.body.code,'PL_CONTENT_MODIFIED');
+				assert.strictEqual(response.body.data, current_plc_id);
 			});
 	});
 
@@ -354,8 +369,8 @@ describe('Managing karaokes in playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_SHUFFLED');
-				assert.equal(response.body.data, 1);
+				assert.strictEqual(response.body.code,'PL_SHUFFLED');
+				assert.strictEqual(response.body.data, '1');
 			});
 	});
 
@@ -371,7 +386,7 @@ describe('Managing karaokes in playlists', function() {
 			.expect('Content-Type',  /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_SONG_DELETED');
+				assert.strictEqual(response.body.code,'PL_SONG_DELETED');
 			});
 	});
 
@@ -400,7 +415,7 @@ describe('Managing settings', function(){
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response){
-				assert.equal(response.body.data.isTest,'true');
+				assert.strictEqual(response.body.data.isTest,'true');
 			});
 	});
 });
@@ -419,9 +434,9 @@ describe('Managing whitelist', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				assert.equal(response.body.code,'WL_SONG_ADDED');
-				assert.equal(response.body.data.kara_id, data.kara_id);
-				assert.equal(response.body.data.reason, data.reason);
+				assert.strictEqual(response.body.code,'WL_SONG_ADDED');
+				assert.strictEqual(response.body.data.kara_id, data.kara_id);
+				assert.strictEqual(response.body.data.reason, data.reason);
 			});
 	});
 
@@ -449,16 +464,16 @@ describe('Managing whitelist', function() {
 			.send(data)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'WL_SONG_DELETED');
-				assert.equal(response.body.data, wlc_id);
+				assert.strictEqual(response.body.code,'WL_SONG_DELETED');
+				assert.strictEqual(response.body.data, wlc_id);
 			});
 	});
 });
 describe('Managing blacklist', function() {
 	it('Add a single karaoke to blacklist criterias', function() {
 		var data = {
-			'blcriteria_type': 1001,
-			'blcriteria_value': 1
+			'blcriteria_type': '1001',
+			'blcriteria_value': '1'
 		};
 		return request
 			.post('/api/admin/blacklist/criterias')
@@ -468,9 +483,9 @@ describe('Managing blacklist', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				assert.equal(response.body.code,'BLC_ADDED');
-				assert.equal(response.body.data.blcriteria_type,data.blcriteria_type);
-				assert.equal(response.body.data.blcriteria_value,data.blcriteria_value);
+				assert.strictEqual(response.body.code,'BLC_ADDED');
+				assert.strictEqual(response.body.data.blcriteria_type,data.blcriteria_type);
+				assert.strictEqual(response.body.data.blcriteria_value,data.blcriteria_value);
 			});
 	});
 
@@ -483,10 +498,10 @@ describe('Managing blacklist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				blc_id = response.body.data[0].blcriteria_id;
+				blc_id = response.body.data[0].blcriteria_id.toString();
 				var result = false;
 				if (response.body.data.length >= 1) result = true;
-				assert.equal(result,true);
+				assert.strictEqual(result,true);
 			});
 	});
 
@@ -503,9 +518,9 @@ describe('Managing blacklist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'BLC_UPDATED');
-				assert.equal(response.body.data.blcriteria_type,data.blcriteria_type);
-				assert.equal(response.body.data.blcriteria_value,data.blcriteria_value);
+				assert.strictEqual(response.body.code,'BLC_UPDATED');
+				assert.strictEqual(response.body.data.blcriteria_type,data.blcriteria_type);
+				assert.strictEqual(response.body.data.blcriteria_value,data.blcriteria_value);
 			});
 	});
 
@@ -519,7 +534,7 @@ describe('Managing blacklist', function() {
 			.then(function(response) {
 				var result = false;
 				if (response.body.data.content.length >= 1) result = true;
-				assert.equal(result,true);
+				assert.strictEqual(result,true);
 			});
 	});
 
@@ -531,8 +546,8 @@ describe('Managing blacklist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'BLC_DELETED');
-				assert.equal(response.body.data,blc_id);
+				assert.strictEqual(response.body.code,'BLC_DELETED');
+				assert.strictEqual(response.body.data,blc_id);
 			});
 	});
 
@@ -569,7 +584,7 @@ describe('Managing playlists', function() {
 			.then(function(response) {
 				var result = false;
 				if (response.body.data.length >= 2) result = true;
-				assert.equal(result, true);
+				assert.strictEqual(result, true);
 			});
 	});
 
@@ -581,7 +596,7 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.data.playlist_id, 1);
+				assert.strictEqual(response.body.data.playlist_id, 1);
 			});
 	});
 
@@ -594,8 +609,8 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				assert.equal(response.body.code, 'PL_CREATED');
-				new_playlist_id = response.body.data;
+				assert.strictEqual(response.body.code, 'PL_CREATED');
+				new_playlist_id = response.body.data.toString();
 			});
 	});
 
@@ -608,7 +623,7 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				assert.equal(response.body.code, 'PL_CREATED');
+				assert.strictEqual(response.body.code, 'PL_CREATED');
 				new_playlist_current_id = response.body.data;
 			});
 	});
@@ -621,8 +636,8 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(201)
 			.then(function(response) {
-				assert.equal(response.body.code, 'PL_CREATED');
-				new_playlist_public_id = response.body.data;
+				assert.strictEqual(response.body.code, 'PL_CREATED');
+				new_playlist_public_id = response.body.data.toString();
 			});
 	});
 	var edit_playlist = {
@@ -639,8 +654,8 @@ describe('Managing playlists', function() {
 			.send(edit_playlist)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_UPDATED');
-				assert.equal(response.body.data,new_playlist_id);
+				assert.strictEqual(response.body.code,'PL_UPDATED');
+				assert.strictEqual(response.body.data,new_playlist_id);
 			});
 	});
 
@@ -651,8 +666,8 @@ describe('Managing playlists', function() {
 			.set('Authorization', token)
 			.expect(500)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_DELETE_ERROR');
-				assert.equal(response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it');
+				assert.strictEqual(response.body.code,'PL_DELETE_ERROR');
+				assert.strictEqual(response.body.message,'Playlist '+new_playlist_current_id+' is current. Unable to delete it');
 			});
 	});
 
@@ -664,8 +679,8 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(500)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_DELETE_ERROR');
-				assert.equal(response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it');
+				assert.strictEqual(response.body.code,'PL_DELETE_ERROR');
+				assert.strictEqual(response.body.message,'Playlist '+new_playlist_public_id+' is public. Unable to delete it');
 			});
 	});
 
@@ -677,8 +692,8 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_DELETED');
-				assert.equal(response.body.data,new_playlist_id);
+				assert.strictEqual(response.body.code,'PL_DELETED');
+				assert.strictEqual(response.body.data,new_playlist_id);
 			});
 	});
 
@@ -690,8 +705,8 @@ describe('Managing playlists', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				assert.equal(response.body.code,'PL_EMPTIED');
-				assert.equal(response.body.data,new_playlist_public_id);
+				assert.strictEqual(response.body.code,'PL_EMPTIED');
+				assert.strictEqual(response.body.data,new_playlist_public_id);
 			});
 	});
 });
@@ -705,7 +720,7 @@ describe('Ending tests', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response){
-				assert.equal(response.body,'Shutdown in progress.');
+				assert.strictEqual(response.body,'Shutdown in progress.');
 			})
 	});
 });*/
