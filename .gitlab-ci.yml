@@ -26,9 +26,10 @@ test:
     - yarn start --debug --test &disown
     - bash test/run.sh
   only:
-    - master
-    - next
-    - tags
+    refs:
+      - master
+      - next
+      - tags
     variables :
       - $TEST
 
