@@ -24,8 +24,9 @@ export async function selectAllSeries(filter, lang, from, size) {
 	const filterClauses = filter ? buildClausesSeries(filter) : {sql: [], params: {}};
 	let offsetClause = '';
 	let limitClause = '';
-	if (from && from > 0) offsetClause = `OFFSET ${from} `;
-	if (size && size > 0) limitClause = `LIMIT ${size} `;
+	//Disabled until frontend manages this
+	//if (from && from > 0) offsetClause = `OFFSET ${from} `;
+	//if (size && size > 0) limitClause = `LIMIT ${size} `;
 	const query = sql.getSeries(filterClauses.sql, langSelector(lang), limitClause, offsetClause);
 	const q = yesql(query)(filterClauses.params);
 	const series = await db().query(q);

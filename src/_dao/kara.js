@@ -95,8 +95,9 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 			}
 		};
 	}
-	if (from > 0) offsetClause = `OFFSET ${from} `;
-	if (size > 0) limitClause = `LIMIT ${size} `;
+	//Disabled until we get the frontend to work around this.
+	//if (from > 0) offsetClause = `OFFSET ${from} `;
+	//if (size > 0) limitClause = `LIMIT ${size} `;
 	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, limitClause, offsetClause);
 	const params = {
 		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60) * 1000)),

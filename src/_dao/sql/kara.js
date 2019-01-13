@@ -96,8 +96,8 @@ export const getAllKaras = (filterClauses, lang, typeClauses, orderClauses, limi
   END) AS flag_dejavu,
   MAX(p.played_at) AS lastplayed_at,
   (CASE WHEN cur_user_fav.fk_id_kara IS NULL
-		THEN TRUE
-		ELSE FALSE
+		THEN FALSE
+		ELSE TRUE
   END) as flag_favorites
 FROM all_karas AS ak
 LEFT OUTER JOIN kara_serie AS ks_main ON ks_main.fk_id_kara = ak.kara_id
