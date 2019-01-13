@@ -111,7 +111,7 @@ WHERE pc.fk_id_playlist = $1
 ORDER BY pc.pos,pc.created_at DESC
 `;
 
-export const getPlaylistContents = (filterClauses, lang, typeClauses, limitClause, offsetClause) => `
+export const getPlaylistContents = (filterClauses, lang, limitClause, offsetClause) => `
 SELECT ak.kara_id AS kara_id,
   ak.kid AS kid,
   ak.title AS title,
@@ -169,7 +169,7 @@ SELECT ak.kara_id AS kara_id,
   (CASE WHEN cur_user.pk_id_user = up.fk_id_user THEN 1 ELSE 0 END) as flag_upvoted
 FROM all_karas AS ak
 INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
-LEFT OUTER JOIN user AS u ON u.pk_id_user = pc.fk_id_user
+LEFT OUTER JOIN users AS u ON u.pk_id_user = pc.fk_id_user
 LEFT OUTER JOIN blacklist AS bl ON ak.kara_id = bl.fk_id_kara
 LEFT OUTER JOIN whitelist AS wl ON ak.kara_id = wl.fk_id_kara
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
@@ -182,10 +182,9 @@ LEFT OUTER JOIN requested AS rq ON rq.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN users AS cur_user ON cur_user.login = :username
 LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = TRUE
 LEFT OUTER JOIN playlist_content cur_user_fav ON cur_user_fav.fk_id_playlist = cur_user_pl_fav.fk_id_user AND cur_user_fav.fk_id_kara = ak.kara_id
-WHERE pc.fk_id_playlist = $playlist_id
+WHERE pc.fk_id_playlist = :playlist_id
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
-  ${typeClauses}
-GROUP BY ak.kara_id, ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname, ak.serie_i18n, ak.serie_id, ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, cur_user_fav.fk_id_kara, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, u.login, pc.pos, pc.pk_id_plcontent, wl.fk_id_kara, bl.fk_id_kara
+GROUP BY ak.kara_id, ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname, ak.serie_i18n, ak.serie_id, ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, cur_user_fav.fk_id_kara, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, u.login, pc.pos, pc.pk_id_plcontent, wl.fk_id_kara, bl.fk_id_kara, cur_user.pk_id_user, up.fk_id_user
 ORDER BY pc.pos
 ${limitClause}
 ${offsetClause}
@@ -319,6 +318,7 @@ LEFT OUTER JOIN playlist_content AS plc_current_playing ON plc_current_playing.f
 LEFT OUTER JOIN playlist_content AS plc_before ON plc_before.fk_id_playlist = pc.fk_id_playlist AND plc_before.pos BETWEEN COALESCE(plc_current_playing.pos, 0) AND pc.pos
 LEFT OUTER JOIN kara AS plc_before_karas ON plc_before_karas.pk_id_kara = plc_before.fk_id_kara
 WHERE  pc.pk_id_plcontent = :playlistcontent_id
+GROUP BY ak.kara_id, ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname, ak.serie_i18n, ak.serie_id, ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, cur_user_fav.fk_id_kara, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable, pc.created_at, pc.nickname, u.login, pc.pos, pc.pk_id_plcontent, wl.fk_id_kara, bl.fk_id_kara, cur_user.pk_id_user, up.fk_id_user
 `;
 
 export const getPLCInfoMini = `
@@ -337,6 +337,7 @@ INNER JOIN playlist_content AS pc ON pc.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN upvote up ON up.fk_id_plcontent = pc.pk_id_plcontent
 LEFT OUTER JOIN users AS u ON u.pk_id_user = pc.fk_id_user
 WHERE  pc.pk_id_plcontent = $1
+GROUP BY pc.fk_id_kara, ak.title, ak.serie, ak.serie_i18n, pc.nickname, u.login, pc.pk_id_plcontent, pc.fk_id_playlist, pc.fk_id_user
 `;
 
 
@@ -456,7 +457,7 @@ WHERE pk_id_playlist = $1;
 `;
 
 export const unsetCurrentPlaylist = `
-UPDATE playlist SET flag_current = TRUE
+UPDATE playlist SET flag_current = FALSE
 `;
 
 export const setVisiblePlaylist = `
@@ -473,7 +474,7 @@ WHERE pk_id_playlist = $1;
 
 export const unsetPublicPlaylist = `
 UPDATE playlist
-SET flag_public = TRUE;
+SET flag_public = FALSE;
 `;
 
 

@@ -25,7 +25,6 @@ import {getConfig} from '../_utils/config';
 import langs from 'langs';
 import {getLanguage} from 'iso-countries-languages';
 import {resolve} from 'path';
-import testJSON from 'is-valid-json';
 import {profile} from '../_utils/logger';
 import {isPreviewAvailable} from '../_webapp/previews';
 
@@ -121,9 +120,10 @@ export async function getRandomKara(playlist_id, filter, username) {
 	return sample(allKarasNotInCurrentPlaylist);
 }
 
-export async function getKara(kara_id, username, lang) {
+export async function getKara(kara_id, token, lang) {
 	profile('getKaraInfo');
-	const kara = await getKaraDB(kara_id, username, lang);
+
+	const kara = await getKaraDB(kara_id, token.username, lang, token.role);
 	if (!kara) throw `Kara ${kara_id} unknown`;
 	let output = translateKaraInfo(kara, lang);
 	const previewfile = await isPreviewAvailable(output[0].mediafile);

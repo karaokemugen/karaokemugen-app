@@ -89,10 +89,10 @@ export async function reorderPlaylist(playlist) {
 }
 
 export async function setPos(plc_id,pos) {
-	return await db().query(yesql(sql.updatePLCSetPos)({
-		pos: pos,
-		playlistcontent_id: plc_id
-	}));
+	return await db().query(sql.updatePLCSetPos,[
+		pos,
+		plc_id
+	]);
 }
 
 export async function updatePlaylistDuration(id) {
@@ -114,7 +114,12 @@ export async function getPlaylistContentsMini(id, lang) {
 
 export async function getPlaylistContents(id, username, filter, lang) {
 	const filterClauses = filter ? buildClauses(filter, 'playlist') : {sql: [], params: {}};
-	const query = sql.getPlaylistContents(filterClauses.sql, langSelector(lang));
+	let limitClause = '';
+	let offsetClause = '';
+	const query = sql.getPlaylistContents(filterClauses.sql, langSelector(lang), limitClause, offsetClause);
+	//Disabled until we get the frontend to work around this.
+	//if (from > 0) offsetClause = `OFFSET ${from} `;
+	//if (size > 0) limitClause = `LIMIT ${size} `;
 	const res = await db().query(yesql(query)({
 		playlist_id: id,
 		username: username,

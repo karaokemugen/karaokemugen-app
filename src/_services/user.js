@@ -4,7 +4,6 @@ import {detectFileType, asyncMove, asyncExists, asyncUnlink} from '../_utils/fil
 import {getConfig} from '../_utils/config';
 import {freePLCBeforePos, getPlaylistContentsMini, freePLC, createPlaylist} from '../_services/playlist';
 import {createHash} from 'crypto';
-import deburr from 'lodash.deburr';
 import {now} from 'unix-timestamp';
 import {resolve} from 'path';
 import logger from 'winston';
@@ -71,7 +70,6 @@ export async function editUser(username,user,avatar,role) {
 		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
 		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname)) throw 'Nickname already exists';
-		user.NORM_nickname = deburr(user.nickname);
 		// Modifying passwords is not allowed in demo mode
 		if (user.password && !getConfig().isDemo) {
 			user.password = hashPassword(user.password);
@@ -198,7 +196,7 @@ export async function createUser(user, opts = {
 		createFavoritePlaylist: true
 	};
 	user.type = user.type || 1;
-	if (opts.admin) user.type = 3;
+	if (opts.admin) user.type = 0;
 	user.nickname = user.nickname || user.login;
 	user.last_login_at = new Date();
 	user.avatar_file = user.avatar_file || 'blank.png';
@@ -226,7 +224,7 @@ export async function createUser(user, opts = {
 
 async function newUserIntegrityChecks(user) {
 	if (user.id) throw { code: 'USER_WITH_ID'};
-	if (user.type === 1 && !user.password) throw { code: 'USER_EMPTY_PASSWORD'};
+	if (user.type < 2 && !user.password) throw { code: 'USER_EMPTY_PASSWORD'};
 	if (user.type === 2 && user.password) throw { code: 'GUEST_WITH_PASSWORD'};
 
 	// Check if login already exists.
@@ -292,7 +290,6 @@ export async function initUserSystem() {
 		login: 'admin',
 		password: randomstring.generate(8)
 	}, {
-		createFavoritePlaylist: false,
 		admin: true
 	});
 

@@ -17,7 +17,7 @@ import {initStats} from './stats';
 import {karaGenerationBatch} from './kara_creation';
 import {welcomeToYoukousoKaraokeMugen} from '../_services/welcome';
 import {runBaseUpdate} from '../_updater/karabase_updater.js';
-import {initPlaylistSystem, testPublicPlaylist, testCurrentPlaylist} from './playlist';
+import {initPlaylistSystem, testPlaylists} from './playlist';
 
 export async function initEngine() {
 	profile('Init');
@@ -61,11 +61,10 @@ export async function initEngine() {
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayer());
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());
+	testPlaylists();
 	if (+conf.OnlineStats) inits.push(initStats());
 	//Initialize engine
 	// Test if current/public playlists exist
-	inits.push(testPublicPlaylist());
-	inits.push(testCurrentPlaylist());
 	try {
 		await Promise.all(inits);
 		//Easter egg

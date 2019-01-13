@@ -6,9 +6,10 @@ export const addKaraToWhitelist = `
 INSERT INTO whitelist(
 	fk_id_kara,
 	kid,
-	created_at
+	created_at,
+	reason
 )
-	SELECT $1,kid,$2
+	SELECT $1,kid,$2,$3
 	FROM kara
 	WHERE pk_id_kara = $1;
 `;
@@ -26,7 +27,6 @@ SELECT ak.kara_id AS kara_id,
   ak.serie_i18n AS serie_i18n,
   ak.serie_id AS serie_id,
   ak.seriefiles AS seriefiles,
-  ak.subfile AS subfile,
   ak.singers AS singers,
   ak.songtypes AS songtype,
   ak.creators AS creators,
@@ -35,25 +35,10 @@ SELECT ak.kara_id AS kara_id,
   ak.languages AS languages,
   ak.authors AS authors,
   ak.misc_tags AS misc_tags,
-  ak.mediafile AS mediafile,
-  ak.karafile AS karafile,
-  ak.duration AS duration,
-  ak.gain AS gain,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
-  ak.mediasize AS mediasize
-  (
-	SELECT COUNT(pk_id_viewcount) AS viewcount
-	FROM viewcount
-	WHERE fk_id_kara = ak.kara_id
-  ) AS viewcount,
-  (
-	SELECT COUNT(pk_id_request) AS request
-	FROM request
-	WHERE fk_id_kara = ak.kara_id
-  ) AS requested,
-  ak.duration AS duration,
-  wl.created_at AS created_at,
+  wl.created_at AS whitelisted_at,
+  wl.reason AS reason
   FROM all_karas AS ak
   INNER JOIN whitelist AS wl ON wl.fk_id_kara = ak.kara_id
   WHERE 1 = 1

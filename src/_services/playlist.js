@@ -78,6 +78,10 @@ on('databaseBusy', status => {
 	databaseBusy = status;
 });
 
+export async function testPlaylists() {
+	await testCurrentPlaylist();
+	await testPublicPlaylist();
+}
 
 function getPlayingPos(playlist) {
 	// Function to run in array.some of a playlist to check if a kara is a flag_playing one, and get its position.
@@ -463,7 +467,6 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			}
 			// Check if karaoke is in blacklist
 			const blacklist = await getBlacklist();
-
 			if (blacklist.content.some(blc => {
 				return +blc.kara_id === +karas[0];
 			})) {
@@ -603,7 +606,7 @@ export async function addKaraToPlaylist(kara_ids, requester, playlist_id, pos) {
 			message: err.msg,
 			data: {
 				kara: karas,
-				playlist: pl.name,
+				playlist: pl.name || 'unknown',
 				user: requester
 			}
 		};
@@ -786,6 +789,7 @@ export async function reorderPlaylist(playlist_id, opt = {}) {
 		pl[arraypos].pos = newpos;
 		arraypos++;
 	});
+	console.log(pl);
 	await reorderPL(pl);
 	return pl;
 }

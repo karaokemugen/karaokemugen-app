@@ -21,7 +21,7 @@ export function paramWords(filter) {
 			return `%${word}%`;
 		});
 	for (const i in words) {
-		params[`$word${i}`] = `%${words[i]}%`;
+		params[`word${i}`] = `%${words[i]}%`;
 	}
 	return params;
 }

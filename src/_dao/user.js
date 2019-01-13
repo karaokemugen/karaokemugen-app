@@ -38,7 +38,6 @@ export async function getUserRequests(username, lang, from, size) {
 }
 
 export async function addUser(user) {
-	console.log(user);
 	return await db().query(yesql(sql.createUser)({
 		type: user.type,
 		login: user.login,

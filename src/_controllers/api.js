@@ -1581,11 +1581,12 @@ export function APIControllerAdmin(router) {
 	/**
  * @api {post} /admin/whitelist Add song to whitelist
  * @apiName PostWhitelist
- * @apiVersion 2.1.0
+ * @apiVersion 2.5.0
  * @apiGroup Whitelist
  * @apiPermission admin
  * @apiHeader authorization Auth token received from logging in
  * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
+ * @apiParam {String} [reason] Reason the song was added
  * @apiSuccess {Number} args Arguments associated with message
  * @apiSuccess {Number} code Message to display
  * @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
@@ -1617,7 +1618,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await addKaraToWhitelist(req.body.kara_id);
+					await addKaraToWhitelist(req.body.kara_id,req.body.reason);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.statusCode = 201;
@@ -3258,7 +3259,7 @@ export function APIControllerPublic(router) {
  */
 		.get(getLang, requireAuth, requireWebappLimited, requireValidUser, updateUserLoginTime, async (req, res) => {
 			try {
-				const kara = await getKara(req.params.kara_id,req.authToken.username,req.lang);
+				const kara = await getKara(req.params.kara_id,req.authToken,req.lang);
 				res.json(OKMessage(kara));
 			} catch(err) {
 				logger.error(err);

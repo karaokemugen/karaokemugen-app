@@ -11,8 +11,7 @@ export async function getWhitelistContents(filter, lang, from = 0, size = 0) {
 	//if (from > 0) offsetClause = `OFFSET ${from} `;
 	//if (size > 0) limitClause = `LIMIT ${size} `;
 	const query = sql.getWhitelistContents(filterClauses.sql, langSelector(lang), limitClause, offsetClause);
-
-	const res = db().query(yesql(query)(filterClauses.params));
+	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }
 export async function emptyWhitelist() {
@@ -23,10 +22,11 @@ export async function removeKaraFromWhitelist(wlcList) {
 	return await transaction([{params: wlcList, sql: sql.removeKaraFromWhitelist}]);
 }
 
-export async function addKaraToWhitelist(karaList) {
+export async function addKaraToWhitelist(karaList, reason) {
 	const karas = karaList.map((kara) => ([
 		kara,
-		new Date()
+		new Date(),
+		reason
 	]));
 	return await transaction([{params: karas, sql: sql.addKaraToWhitelist}]);
 }

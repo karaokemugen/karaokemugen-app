@@ -5486,3 +5486,37 @@
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  */
+
+/**
+ * @api {post} /admin/whitelist Add song to whitelist
+ * @apiName PostWhitelist
+ * @apiVersion 2.1.0
+ * @apiGroup Whitelist
+ * @apiPermission admin
+ * @apiHeader authorization Auth token received from logging in
+ * @apiParam {Number[]} kara_id Karaoke song IDs, separated by commas
+ * @apiSuccess {Number} args Arguments associated with message
+ * @apiSuccess {Number} code Message to display
+ * @apiSuccess {Number[]} data/kara_id List of karaoke IDs separated by commas
+ *
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 201 Created
+ * {
+ *   "args": "2",
+ *   "code": "WL_SONG_ADDED",
+ *   "data": {
+ *       "kara_id": "2"
+ *   }
+ * }
+ * @apiError WL_ADD_SONG_ERROR Karaoke couldn't be added to whitelist
+ *
+ * @apiErrorExample Error-Response:
+ * HTTP/1.1 500 Internal Server Error
+ * {
+ *   "args": [
+ *       "2"
+ *   ],
+ *   "code": "WL_ADD_SONG_ERROR",
+ *   "message": "No karaoke could be added, all are in whitelist already"
+ * }
+ */

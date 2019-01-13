@@ -87,8 +87,6 @@ SELECT ak.kara_id AS kara_id,
   ak.serie_altname AS serie_altname,
   ak.serie_i18n AS serie_i18n,
   ak.serie_id AS serie_id,
-  ak.seriefiles AS seriefiles,
-  ak.subfile AS subfile,
   ak.singers AS singers,
   ak.songtypes AS songtype,
   ak.creators AS creators,
@@ -97,26 +95,11 @@ SELECT ak.kara_id AS kara_id,
   ak.languages AS languages,
   ak.authors AS authors,
   ak.misc_tags AS misc_tags,
-  ak.mediafile AS mediafile,
-  ak.karafile AS karafile,
   ak.duration AS duration,
-  ak.gain AS gain,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
-  ak.mediasize AS mediasize
-  (
-	SELECT COUNT(pk_id_viewcount) AS viewcount
-	FROM viewcount
-	WHERE fk_id_kara = ak.kara_id
-  ) AS viewcount,
-  (
-	SELECT COUNT(pk_id_request) AS request
-	FROM request
-	WHERE fk_id_kara = ak.kara_id
-  ) AS requested,
-  ak.duration AS duration,
   bl.created_at AS created_at,
-  bl.reason AS reason_add,
+  bl.reason AS reason_add
   FROM all_karas AS ak
   INNER JOIN blacklist AS bl ON bl.fk_id_kara = ak.kara_id
   WHERE 1 = 1

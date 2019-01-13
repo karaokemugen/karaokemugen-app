@@ -100,7 +100,8 @@ CREATE TABLE whitelist (
 	pk_id_whitelist	SERIAL NOT NULL PRIMARY KEY,
 	fk_id_kara	INTEGER NOT NULL,
 	kid	UUID NOT NULL UNIQUE,
-	created_at	TIMESTAMP NOT NULL
+	created_at TIMESTAMP NOT NULL,
+	reason CHARACTER VARYING
 );
 
 CREATE INDEX idx_whitelist_kid ON whitelist(kid);
@@ -177,14 +178,14 @@ CREATE TABLE upvote (
 CREATE UNIQUE INDEX idx_upvote_plcontent_user ON upvote(fk_id_plcontent, fk_id_user);
 
 CREATE TABLE blacklist_criteria (
-	pk_id_blcriteria	INTEGER PRIMARY KEY,
+	pk_id_blcriteria	SERIAL PRIMARY KEY,
 	type	INTEGER NOT NULL,
 	value	CHARACTER VARYING NOT NULL,
 	uniquevalue	CHARACTER VARYING
 );
 
 CREATE TABLE blacklist (
-	pk_id_blacklist	INTEGER PRIMARY KEY,
+	pk_id_blacklist	SERIAL PRIMARY KEY,
 	fk_id_kara	INTEGER NOT NULL,
 	kid	UUID NOT NULL UNIQUE,
 	created_at	TIMESTAMP NOT NULL,

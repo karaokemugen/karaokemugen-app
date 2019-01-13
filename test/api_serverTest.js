@@ -542,7 +542,7 @@ describe('Managing playlists', function() {
 		name:'new_playlist',
 		flag_visible:'1',
 		flag_public:'0',
-		flag_current:'1',
+		flag_current:'0',
 	};
 	var playlist_current = {
 		name:'new_playlist',

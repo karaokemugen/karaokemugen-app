@@ -81,14 +81,13 @@ function isNumber(value) {
 
 function numbersArrayValidator(value) {
 	if(!value) return ` '${value}' is invalid (empty)`;
-
-	value = toString(value);
+	value = value.toString();
 	if (value.includes(',')) {
 		const array = value.split(',');
 		if (array.every(isNumber)) return null;
 		return ` '${value}' is invalid (not an array of numbers)`;
 	}
-
+	console.log(value);
 	if (!isNaN(value)) return null;
 
 	return ` '${value}' is invalid (not a number)`;

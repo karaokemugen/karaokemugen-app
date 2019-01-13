@@ -12,7 +12,7 @@ export async function generateBlacklist() {
 }
 
 export async function getBlacklistCriterias() {
-	const res = db().query(sql.getBlacklistCriterias);
+	const res = await db().query(sql.getBlacklistCriterias);
 	return res.rows;
 }
 
@@ -28,8 +28,7 @@ export async function getBlacklistContents(filter, lang, from = 0, size = 0) {
 	//if (from > 0) offsetClause = `OFFSET ${from} `;
 	//if (size > 0) limitClause = `LIMIT ${size} `;
 	const query = sql.getBlacklistContents(filterClauses.sql, langSelector(lang), limitClause, offsetClause);
-
-	const res = db().query(yesql(query)(filterClauses.params));
+	const res = await db().query(yesql(query)(filterClauses.params));
 	return res.rows;
 }
 

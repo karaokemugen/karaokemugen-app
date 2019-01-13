@@ -29,22 +29,22 @@ INSERT INTO playlist_content(
 `;
 
 export const addViewcount = `
-INSERT INTO viewcount(
+INSERT INTO played(
 	fk_id_kara,
 	kid,
-	modified_at,
+	played_at,
 	session_started_at
 )
 VALUES(
 	:kara_id,
 	:kid,
-	:modified_at,
+	:played_at,
 	:started_at
 )
 `;
 
 export const addRequested = `
-INSERT INTO request(
+INSERT INTO requested(
 	fk_id_user,
 	fk_id_kara,
 	kid,
@@ -109,7 +109,7 @@ LEFT OUTER JOIN requested AS rq ON rq.fk_id_kara = ak.kara_id
 LEFT OUTER JOIN users AS cur_user ON cur_user.login = :username
 LEFT OUTER JOIN playlist AS cur_user_pl_fav ON cur_user.pk_id_user = cur_user_pl_fav.fk_id_user AND cur_user_pl_fav.flag_favorites = TRUE
 LEFT OUTER JOIN playlist_content cur_user_fav ON cur_user_fav.fk_id_playlist = cur_user_pl_fav.fk_id_user AND cur_user_fav.fk_id_kara = ak.kara_id
-WHERE ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)
+WHERE 1 = 1
   ${filterClauses.map(clause => 'AND (' + clause + ')').reduce((a, b) => (a + ' ' + b), '')}
   ${typeClauses}
 GROUP BY ak.kara_id, ak.kid, ak.title, ak.songorder, ak.serie, ak.serie_altname, ak.serie_i18n, ak.serie_id, ak.seriefiles, ak.subfile, ak.singers, ak.songtypes, ak.creators, ak.songwriters, ak.year, ak.languages, ak.authors, ak.misc_tags, ak.mediafile, ak.karafile, ak.duration, ak.gain, ak.created_at, ak.modified_at, ak.mediasize, cur_user_fav.fk_id_kara, ak.languages_sortable, ak.songtypes_sortable, ak.singers_sortable
@@ -141,8 +141,8 @@ AND fk_id_kara = :kara_id;
 
 export const removeKaraFromPlaylist = `
 DELETE FROM playlist_content
-WHERE pk_id_plcontent @> ARRAY[$playlistcontent_id]
-	AND fk_id_playlist = :playlist_id;
+WHERE pk_id_plcontent IN ($playlistcontent_id)
+	AND fk_id_playlist = $1;
 `;
 
 export const getSongCountPerUser = `

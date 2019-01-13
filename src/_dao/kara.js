@@ -76,9 +76,17 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 	return res.rows[0];
 }
 
-export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0) {
+export async function getKara(kara_id, username, lang, role) {
+	const res = await selectAllKaras('admin', null, lang, 'kara', kara_id, role === 'admin');
+	console.log(res);
+	return res[0];
+}
+
+export async function selectAllKaras(username, filter, lang, mode, modeValue, from = 0, size = 0, admin = true) {
 	let filterClauses = filter ? buildClauses(filter) : {sql: [], params: {}};
-	const typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
+	let typeClauses = mode ? buildTypeClauses(mode, modeValue) : '';
+	// Hide blacklisted songs if not admin
+	if (!admin) typeClauses = typeClauses + ' AND ak.kara_id NOT IN (SELECT fk_id_kara FROM blacklist)';
 	let orderClauses = '';
 	let limitClause = '';
 	let offsetClause = '';
@@ -100,10 +108,11 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 	//if (size > 0) limitClause = `LIMIT ${size} `;
 	const query = sql.getAllKaras(filterClauses.sql, langSelector(lang), typeClauses, orderClauses, limitClause, offsetClause);
 	const params = {
-		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60) * 1000)),
+		dejavu_time: new Date((now() - (getConfig().EngineMaxDejaVuTime * 60)) * 1000),
 		username: username,
 		...filterClauses.params
 	};
+	console.log(query);
 	const res = await db().query(yesql(query)(params));
 	return res.rows;
 }
@@ -127,11 +136,6 @@ export async function getKaraHistory(lang, from, size) {
 
 export async function getKaraViewcounts(lang, from, size) {
 	return await selectAllKaras('admin', null, lang, 'played', null, from, size);
-}
-
-export async function getKara(id, username, lang) {
-	const res = await selectAllKaras(username, null, lang, 'kara', id);
-	return res.rows[0];
 }
 
 export async function getASS(sub) {
@@ -158,7 +162,7 @@ export async function addViewcount(kara_id,kid) {
 	return await db().query(yesql(sql.addViewcount)({
 		kara_id: kara_id,
 		kid: kid,
-		modified_at: new Date(now() * 1000),
+		played_at: new Date(),
 		started_at: new Date(getState().sessionStart * 1000)
 	}));
 }
@@ -167,7 +171,7 @@ export async function addKaraToRequests(user_id,karaList) {
 	const karas = karaList.map((kara) => ([
 		user_id,
 		kara.kara_id,
-		new Date(now() * 1000),
+		new Date(),
 		new Date(getState().sessionStart * 1000)
 	]));
 	return await transaction([{params: karas, sql: sql.addRequested}]);
