@@ -204,6 +204,7 @@ export async function createUser(user, opts) {
 	user.bio = user.bio || null;
 	user.url = user.url || null;
 	user.email = user.email || null;
+	if (user.type === 2) user.flag_online = 0;
 
 	await newUserIntegrityChecks(user);
 	if (user.password) user.password = hashPassword(user.password);
