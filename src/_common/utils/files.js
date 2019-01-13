@@ -43,8 +43,9 @@ export function sanitizeFile(file) {
 		.replace(/[△:\/☆★†↑½♪＊*∞♥❤♡⇄♬]/g, ' ')
 		.replace(/…/,'...')
 		.replace(/\+/,' Plus ')
-		.replace(/^\./,'')
+		.replace(/\?\?/,' question_mark 2')
 		.replace(/\?/,' question_mark ')
+		.replace(/^\./,'')
 		.replace(/♭/,' Flat ')
 		.replace(replaceRegExp, input => {
 			return replaceMap[input];

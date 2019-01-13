@@ -60,7 +60,7 @@ I18n.prototype = {
 			if (msg && arguments.length > 1) {
 				var msgArgs = arguments[1];
 				if(typeof msgArgs === 'string') msgArgs = [msgArgs];
-				if(!(arguments.length == 2 && arguments[2] == 'console')) msg = msg.replace(/%s/g, '<b>%s</b>');            
+				if(!(arguments.length == 3 && arguments[2] == 'console')) msg = msg.replace(/%s/g, '<b>%s</b>');            
 				msg = vsprintf(msg, msgArgs);
 			}
 			return msg;

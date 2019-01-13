@@ -35,6 +35,7 @@ export const defaults = {
 	PlayerScreen: 0,
 	PlayerFullscreen: 0,
 	PlayerStayOnTop: 1,
+	PlayerVisualizationEffects: 0,
 	PlayerMonitor: 0,
 	PlayerNoHud: 1,
 	PlayerNoBar: 1,
@@ -74,7 +75,6 @@ export const defaults = {
 	OnlineStats: -1,
 	appInstanceID: 'Change me',
 	appFrontendPort: 1337,
-	appAdminPort: 1338,
 	appFirstRun: 1,
 	karaSuggestionMail: 'shelter.lab+karaokemugen/karaokebase+9cvqz5cb128c57iluad54wdqg@mahoro-net.org'
 };
@@ -114,6 +114,7 @@ export const configConstraints = {
 	EngineSongPollChoices: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	EngineSongPollTimeout: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	PlayerMonitor: {boolIntValidator: true},
+	PlayerVisualizationEffects: {boolIntValidator: true},
 	PlayerNoHud: {boolIntValidator: true},
 	PlayerNoBar: {boolIntValidator: true},
 	PlayerPIP: {boolIntValidator: true},
@@ -124,7 +125,6 @@ export const configConstraints = {
 	WebappMode: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 2}},
 	WebappSongLanguageMode: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0, lowerThanOrEqualTo: 3}},
 	appFrontendPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
-	appAdminPort: {numericality: {onlyInteger: true, greaterThanOrEqualTo: 0}},
 	appFirstRun: {boolIntValidator: true},
 	karaSuggestionMail: {email: true}
 };

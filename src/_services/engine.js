@@ -12,7 +12,6 @@ import {initDBSystem, getStats, closeUserDatabase} from '../_dao/database';
 import {initFrontend} from '../_webapp/frontend';
 import {initFavoritesSystem} from './favorites';
 import {initOnlineSystem} from '../_webapp/online';
-import {initControlPanel} from '../_webapp/control_panel';
 import {initPlayer, quitmpv} from './player';
 import {initStats, sendPayload} from './stats';
 import {karaGenerationBatch} from '../_admin/generate_karasfiles';
@@ -71,7 +70,6 @@ export async function initEngine() {
 		createPreviews();
 	}
 	inits.push(initPlaylistSystem());
-	if (!conf.isDemo) inits.push(initControlPanel(conf.appAdminPort));
 	if (!conf.isDemo && !conf.isTest) inits.push(initPlayer());
 	inits.push(initFrontend(conf.appFrontendPort));
 	inits.push(initFavoritesSystem());

@@ -46,7 +46,7 @@ class KMMenu extends Component {
 						openKeys={this.state.connectOpenKeys}
 					>
 						<Menu.Item key='login' style={{float: 'right'}}>
-							<Button icon='login' onClick={() => this.props.push('/login')}>Log In</Button>
+							<Button icon='login' onClick={() => this.props.push('/system/login')}>Log In</Button>
 						</Menu.Item>
 					</Menu>
 				</div>
@@ -63,23 +63,23 @@ class KMMenu extends Component {
 						theme='dark'
 						style={{ lineHeight: '56px' }}
 					>
-						<Menu.Item key='home'><Link to='/home'>Home</Link></Menu.Item>
-						<Menu.Item key='config'><Link to='/config'>Configuration</Link></Menu.Item>
+						<Menu.Item key='home'><Link to='/system/home'>Home</Link></Menu.Item>
+						<Menu.Item key='config'><Link to='/system/config'>Configuration</Link></Menu.Item>
 						<Menu.SubMenu title='Karas'>
-							<Menu.Item key='karamanage'><Link to='/karas'>List</Link></Menu.Item>
-							<Menu.Item key='karaimport'><Link to='/karas/create'>New</Link></Menu.Item>
-							<Menu.Item key='karahistory'><Link to='/karas/history'>History</Link></Menu.Item>
-							<Menu.Item key='kararanking'><Link to='/karas/ranking'>Most requested</Link></Menu.Item>
-							<Menu.Item key='karaviewcounts'><Link to='/karas/viewcounts'>Most played</Link></Menu.Item>
+							<Menu.Item key='karamanage'><Link to='/system/karas'>List</Link></Menu.Item>
+							<Menu.Item key='karaimport'><Link to='/system/karas/create'>New</Link></Menu.Item>
+							<Menu.Item key='karahistory'><Link to='/system/karas/history'>History</Link></Menu.Item>
+							<Menu.Item key='kararanking'><Link to='/system/karas/ranking'>Most requested</Link></Menu.Item>
+							<Menu.Item key='karaviewcounts'><Link to='/system/karas/viewcounts'>Most played</Link></Menu.Item>
 						</Menu.SubMenu>
 						<Menu.SubMenu title='Series'>
-							<Menu.Item key='seriesmanage'><Link to='/series'>List</Link></Menu.Item>
-							<Menu.Item key='seriesnew'><Link to='/series/new'>New</Link></Menu.Item>
+							<Menu.Item key='seriesmanage'><Link to='/system/series'>List</Link></Menu.Item>
+							<Menu.Item key='seriesnew'><Link to='/system/series/new'>New</Link></Menu.Item>
 						</Menu.SubMenu>
-						<Menu.Item key='db'><Link to='/db'>Database</Link></Menu.Item>
+						<Menu.Item key='db'><Link to='/system/db'>Database</Link></Menu.Item>
 						<Menu.SubMenu title='Users'>
-							<Menu.Item key='userlist'><Link to='/users'>User list</Link></Menu.Item>
-							<Menu.Item key='newuser'><Link to='/users/create'>Create new user</Link></Menu.Item>
+							<Menu.Item key='userlist'><Link to='/system/users'>User list</Link></Menu.Item>
+							<Menu.Item key='newuser'><Link to='/system/users/create'>Create new user</Link></Menu.Item>
 						</Menu.SubMenu>
 					</Menu>
 				</div>

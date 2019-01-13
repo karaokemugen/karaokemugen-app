@@ -102,11 +102,7 @@ async function main() {
 	/**
 	 * Test if network ports are available
 	 */
-	const ports = [
-		config.appFrontendPort,
-		config.appAdminPort
-	];
-	ports.forEach(port => verifyOpenPort(port));
+	verifyOpenPort(config.appFrontendPort);
 
 	/**
 	 * Gentlemen, start your engines.

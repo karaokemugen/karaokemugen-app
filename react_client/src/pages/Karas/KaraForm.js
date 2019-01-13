@@ -21,7 +21,7 @@ class KaraForm extends Component {
 			groupsDS: [],
 			tagDS: [],
 			singer: [],
-			author: localStorage.getItem('username') !== 'admin' ? [localStorage.getItem('username')] : [],
+			author: [],
 			tags: ['TAG_ANIME', 'TAG_TVSHOW'],
 			series: [],
 			creator: [],
@@ -31,7 +31,12 @@ class KaraForm extends Component {
 			lang: ['jpn']
 		};
 		timestamp.round = true;
-		if (!this.props.kara.dateadded) this.props.kara.dateadded = timestamp.now();
+		// If kara is being edited (already has a dateadded) author won't be automatically filled if there's no author already.
+		// If there's an author field already in the karadata, it gets filled later.
+		if (!this.props.kara.dateadded) {
+			this.props.kara.dateadded = timestamp.now();
+			localStorage.getItem('username') !== 'admin' ? this.state.author = [localStorage.getItem('username')] : this.state.author = [];
+		}
 		if (!this.props.kara.datemodif) this.props.kara.datemodif = this.props.kara.dateadded;
 		if (this.props.kara.singer && this.props.kara.singer !== 'NO_TAG') this.state.singer = this.props.kara.singer.split(',');
 		if (this.props.kara.series) this.state.series = this.props.kara.series.split(',');
@@ -58,7 +63,6 @@ class KaraForm extends Component {
 				status: 'done'
 			}];
 		}
-
 	}
 
 	componentDidMount() {
@@ -69,9 +73,7 @@ class KaraForm extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 		this.props.form.validateFields((err, values) => {
-			if (!err) {
-				this.props.save(values);
-			}
+			if (!err) this.props.save(values);
 		});
 	};
 
@@ -157,7 +159,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
-						action='/api/karas/importfile'
+						action='/api/system/karas/importfile'
 						accept='video/*,audio/*'
 						multiple={false}
 						onChange={this.onMediaUploadChange}
@@ -173,7 +175,7 @@ class KaraForm extends Component {
 					wrapperCol={{ span: 6, offset: 0 }}
 				>
 					<Upload
-						action='/api/karas/importfile'
+						action='/api/system/karas/importfile'
 						multiple={false}
 						onChange={this.onSubUploadChange}
 						fileList={this.state.subfileList}

@@ -1168,7 +1168,7 @@ export async function getCurrentSong() {
 	// If series is empty, pick singer information instead
 
 	let series = kara.serie;
-	if (!kara.serie) series = kara.singer;
+	if (!kara.serie) series = kara.singer.replace(/,/g,', ');
 
 	// If song order is 0, don't display it (we don't want things like OP0, ED0...)
 	if (!kara.songorder || kara.songorder === 0) kara.songorder = '';

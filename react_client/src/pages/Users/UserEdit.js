@@ -27,10 +27,10 @@ class UserEdit extends Component {
 	}
 
 	saveNew = (user) => {
-		axios.post('/api/users', user)
+		axios.post('/api/system/users', user)
 			.then(() => {
 				this.props.infoMessage('User successfully created');
-				this.props.push('/users');
+				this.props.push('/system/users');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -38,10 +38,10 @@ class UserEdit extends Component {
 	};
 
 	saveUpdate = (user) => {
-		axios.put(`/api/users/${user.id}`, user)
+		axios.put(`/api/system/users/${user.id}`, user)
 			.then(() => {
 				this.props.infoMessage('User successfully edited');
-				this.props.push('/users');
+				this.props.push('/system/users');
 			})
 			.catch(err => {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
@@ -51,7 +51,7 @@ class UserEdit extends Component {
 	loadUser = () => {
 		this.props.loading(true);
 		if (this.props.match && this.props.match.params.userId) {
-			axios.get(`/api/users/${this.props.match.params.userId}`)
+			axios.get(`/api/system/users/${this.props.match.params.userId}`)
 				.then(res => {
 					this.setState({user: res.data, save: this.saveUpdate});
 					this.props.loading(false);

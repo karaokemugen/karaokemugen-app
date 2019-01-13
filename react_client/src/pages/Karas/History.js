@@ -10,7 +10,7 @@ class KaraList extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			karas: [],			
+			karas: [],
 			kara: {}
 		};
 	}
@@ -21,7 +21,7 @@ class KaraList extends Component {
 
 	refresh() {
 		this.props.loading(true);
-		axios.get('/api/karas/history')
+		axios.get('/api/system/karas/history')
 			.then(res => {
 				this.props.loading(false);
 				this.setState({karas: res.data});
@@ -31,7 +31,7 @@ class KaraList extends Component {
 				this.props.errorMessage(`${err.response.status}: ${err.response.statusText}. ${err.response.data}`);
 			});
 	}
-	
+
 	render() {
 		return (
 			<Layout.Content style={{ padding: '25px 50px', textAlign: 'center' }}>
@@ -40,7 +40,7 @@ class KaraList extends Component {
 					columns={this.columns}
 					rowKey='viewed_at'
 				/>
-				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>				
+				<Button type='primary' onClick={this.refresh.bind(this)}>Refresh</Button>
 			</Layout.Content>
 		);
 	}
@@ -53,17 +53,17 @@ class KaraList extends Component {
 	}, {
 		title: 'Series/Singer',
 		dataIndex: 'serie',
-		key: 'serie',	
+		key: 'serie',
 		render: (serie, record) => (serie || record.singer)
 	}, {
 		title: 'Type',
 		dataIndex: 'songtype',
-		key: 'songtype',		
+		key: 'songtype',
 		render: (songtype, record) => (songtype.replace('TYPE_','') + ' ' + record.songorder)
 	}, {
 		title: 'Title',
 		dataIndex: 'title',
-		key: 'title'		
+		key: 'title'
 	}, {
 		title: 'View count',
 		dataIndex: 'viewcount',
@@ -72,7 +72,7 @@ class KaraList extends Component {
 	}, {
 		title: 'Seen on',
 		dataIndex: 'viewed_at',
-		key: 'viewed_at',		
+		key: 'viewed_at',
 		render: (viewed_at) => (new Date(viewed_at*1000)).toLocaleString('en'),
 		defaultSortOrder: 'descend',
 		sorter: (a,b) => a.viewed_at - b.viewed_at

@@ -68,7 +68,7 @@ export async function editUser(username,user,avatar,role) {
 		if (!user.url) user.url = null;
 		if (!user.email) user.email = null;
 		if (user.flag_admin && role !== 'admin') throw 'Admin flag permission denied';
-		if (user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
+		if (user.type && +user.type !== currentUser.type && role !== 'admin') throw 'Only admins can change a user\'s type';
 		// Check if login already exists.
 		if (currentUser.nickname !== user.nickname && await db.checkNicknameExists(user.nickname, user.NORM_nickname)) throw 'Nickname already exists';
 		user.NORM_nickname = deburr(user.nickname);

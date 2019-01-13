@@ -11,6 +11,15 @@ function integerValidator(value) {
 	return null;
 }
 
+function arrayNoCommaValidator(value) {
+	if (!Array.isArray(value)) return `${value} is not an array`;
+	value.forEach((e,i) => value[i] = e.trim());
+	for (const elem of value) {
+		if (elem.includes(',')) return `'${value}' contains an element with a comma (${elem})`;
+	}
+	return null;
+}
+
 function langValidator(value) {
 	if (!Array.isArray(value)) value = value.replace('"', '').split(',');
 	value.forEach((e,i) => value[i] = e.trim());
@@ -102,15 +111,16 @@ export function unescape(str) {
 // Init
 
 export function initValidators() {
-	if (!validate.validators.boolIntValidator) validate.validators.boolIntValidator = boolIntValidator;
-	if (!validate.validators.numbersArrayValidator) validate.validators.numbersArrayValidator = numbersArrayValidator;
-	if (!validate.validators.integerValidator) validate.validators.integerValidator = integerValidator;
-	if (!validate.validators.seriesAliasesValidator) validate.validators.seriesAliasesValidator = seriesAliasesValidator;
-	if (!validate.validators.isJSON) validate.validators.isJSON = isJSON;
-	if (!validate.validators.langValidator) validate.validators.langValidator = langValidator;
-	if (!validate.validators.tagsValidator) validate.validators.tagsValidator = tagsValidator;
-	if (!validate.validators.typeValidator) validate.validators.typeValidator = typeValidator;
-	if (!validate.validators.seriesi18nValidator) validate.validators.seriesi18nValidator = seriesi18nValidator;
+	validate.validators.boolIntValidator = boolIntValidator;
+	validate.validators.numbersArrayValidator = numbersArrayValidator;
+	validate.validators.integerValidator = integerValidator;
+	validate.validators.seriesAliasesValidator = seriesAliasesValidator;
+	validate.validators.isJSON = isJSON;
+	validate.validators.langValidator = langValidator;
+	validate.validators.tagsValidator = tagsValidator;
+	validate.validators.typeValidator = typeValidator;
+	validate.validators.seriesi18nValidator = seriesi18nValidator;
+	validate.validators.arrayNoCommaValidator = arrayNoCommaValidator;
 }
 
 export function check(obj, constraints) {
