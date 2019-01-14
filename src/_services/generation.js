@@ -1,9 +1,9 @@
 import logger from 'winston';
-import {basename, join, resolve} from 'path';
+import {basename, join} from 'path';
 import deburr from 'lodash.deburr';
 import {profile} from '../_utils/logger';
 import {has as hasLang} from 'langs';
-import {asyncReadFile, checksum, asyncCopy, asyncReadDirFilter} from '../_utils/files';
+import {asyncReadFile, checksum, asyncReadDirFilter} from '../_utils/files';
 import {getConfig, resolvedPathSeries, resolvedPathKaras, setConfig} from '../_utils/config';
 import {getDataFromKaraFile, writeKara} from '../_dao/karafile';
 import {
@@ -18,7 +18,7 @@ import {serieRequired, verifyKaraData} from '../_services/kara';
 import parallel from 'async-await-parallel';
 import {refreshKaras, refreshYears} from '../_dao/kara';
 import {findSeries, getDataFromSeriesFile} from '../_dao/seriesfile';
-import {db, transaction} from '../_dao/database';
+import {db, transaction, saveSetting} from '../_dao/database';
 import { refreshSeries } from '../_dao/series';
 import { refreshTags } from '../_dao/tag';
 import slug from 'slug';
@@ -53,17 +53,6 @@ async function emptyDatabase() {
 	bar.incr();
 }
 
-async function extractKaraFiles(karaDir) {
-	const karaFiles = [];
-	const dirListing = await asyncReadDir(karaDir);
-	for (const file of dirListing) {
-		if (file.endsWith('.kara') && !file.startsWith('.')) {
-			karaFiles.push(resolve(karaDir, file));
-		}
-	}
-	return karaFiles;
-}
-
 export async function extractAllKaraFiles() {
 	let karaFiles = [];
 	for (const resolvedPath of resolvedPathKaras()) {
@@ -79,17 +68,6 @@ export async function extractAllSeriesFiles() {
 	}
 	return seriesFiles;
 }
-
-async function extractSeriesFiles(seriesDir) {
-	const seriesFiles = [];
-	const dirListing = await asyncReadDir(seriesDir);
-	for (const file of dirListing) {
-		if (file.endsWith('.series.json') && !file.startsWith('.')) {
-			seriesFiles.push(resolve(seriesDir, file));
-		}
-	}
-	return seriesFiles;
-};
 
 export async function readAllSeries(seriesFiles) {
 	const seriesPromises = [];
@@ -603,6 +581,7 @@ export async function run() {
 		bar.incr();
 		await checkUserdbIntegrity(null);
 		bar.stop();
+		await saveSetting('lastGeneration', new Date());
 		if (error) throw 'Error during generation. Find out why in the messages above.';
 	} catch (err) {
 		logger.error(`[Gen] Generation error: ${err}`);

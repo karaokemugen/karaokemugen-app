@@ -29,7 +29,6 @@ const usernameAdmin = 'adminTest';
 const passwordAdmin = 'ceciestuntest';
 let token;
 let current_playlist_id;
-let current_plc_id;
 describe('Test public API', function() {
 	it('Create a new user', function() {
 		var data = {

@@ -12,4 +12,16 @@ TRUNCATE users RESTART IDENTITY CASCADE;
 TRUNCATE requested RESTART IDENTITY CASCADE;
 TRUNCATE played RESTART IDENTITY CASCADE;
 TRUNCATE whitelist RESTART IDENTITY CASCADE;
+TRUNCATE settings;
 `;
+
+export const upsertSetting = `
+INSERT INTO settings (
+	option,
+	value
+) VALUES($1, $2)
+ON CONFLICT (option) DO UPDATE SET
+	value = $2;
+`;
+
+export const selectSettings = 'SELECT option, value FROM settings;'

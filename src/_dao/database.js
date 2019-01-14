@@ -150,7 +150,23 @@ async function migrateDB() {
 			'log-level': 'warn|error|info'
 		}
 	});
-	await dbm.sync('all');
+	await dbm.silence();
+	try {
+		await dbm.sync('all');
+	} catch(err) {
+		throw `[DB] Migrations failed : ${err}`;
+	}
+}
+
+export async function getSettings() {
+	const res = await db().query(sql.selectSettings);
+	const settings = {};
+	res.rows.forEach(e => settings[e.option] = e.value);
+	return settings;
+}
+
+export async function saveSetting(setting, value) {
+	return await db().query(sql.upsertSetting, [setting, value]);
 }
 
 export async function initDBSystem() {
@@ -167,6 +183,8 @@ export async function initDBSystem() {
 		logger.info('[DB] Kara files have changed: database generation triggered');
 		doGenerate = true;
 	}
+	const settings = await getSettings();
+	if (!settings.lastGeneration) doGenerate = true;
 	if (doGenerate) await generateDatabase();
 	if (conf.optReset) await resetUserData();
 	await db().query('VACUUM');
@@ -183,8 +201,8 @@ export async function initDBSystem() {
 }
 
 export async function resetUserData() {
-	logger.warn('[DB] Resetting user data!');
-	return await db().query(sql.resetUserData);
+	await db().query(sql.resetUserData);
+	logger.warn('[DB] User data has been reset!');
 }
 
 export async function getStats() {
