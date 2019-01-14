@@ -168,6 +168,7 @@ export async function initDBSystem() {
 		doGenerate = true;
 	}
 	if (doGenerate) await generateDatabase();
+	if (conf.optReset) await resetUserData();
 	await db().query('VACUUM');
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
@@ -179,6 +180,11 @@ export async function initDBSystem() {
 	logger.info(`Playlists    : ${stats.playlists}`);
 	logger.info(`Songs played : ${stats.played}`);
 	return true;
+}
+
+export async function resetUserData() {
+	logger.warn('[DB] Resetting user data!');
+	return await db().query(sql.resetUserData);
 }
 
 export async function getStats() {

@@ -1618,7 +1618,7 @@ export function APIControllerAdmin(router) {
 			});
 			if (!validationErrors) {
 				try {
-					await addKaraToWhitelist(req.body.kara_id,req.body.reason);
+					await addKaraToWhitelist(req.body.kara_id,req.body.reason, req.authToken, req.lang);
 					emitWS('whitelistUpdated');
 					emitWS('blacklistUpdated');
 					res.statusCode = 201;

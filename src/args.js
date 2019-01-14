@@ -31,9 +31,8 @@ export async function parseCommandLineArgs(argv) {
 		logger.info('[Launcher] Debug messages enabled on console');
 		process.env['NODE_ENV'] = 'development';
 	}
-	if (argv.sql) {
-		logger.info('[Launcher] SQL trace enabled');
-		setConfig({optSQL: true});
+	if (argv.reset) {
+		setConfig({optReset: true});
 	}
 	if (argv.version) {
 		// Version number is already displayed so we exit here.

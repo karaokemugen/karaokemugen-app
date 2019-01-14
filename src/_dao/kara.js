@@ -78,7 +78,6 @@ export async function getSongTimeSpentForUser(playlist_id,user_id) {
 
 export async function getKara(kara_id, username, lang, role) {
 	const res = await selectAllKaras('admin', null, lang, 'kara', kara_id, role === 'admin');
-	console.log(res);
 	return res[0];
 }
 
@@ -112,7 +111,6 @@ export async function selectAllKaras(username, filter, lang, mode, modeValue, fr
 		username: username,
 		...filterClauses.params
 	};
-	console.log(query);
 	const res = await db().query(yesql(query)(params));
 	return res.rows;
 }

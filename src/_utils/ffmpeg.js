@@ -51,8 +51,7 @@ export async function getMediaInfo(mediafile) {
 			error: error
 		};
 	} catch(err) {
-		console.log(err);
-		logger.warn(`[ffmpeg] Video '${mediafile}' probe error : '${err.code}'`);
+		logger.warn(`[ffmpeg] Video '${mediafile}' probe error : '${JSON.stringify(err)}'`);
 		return { duration: 0, audiogain: 0, error: true };
 	}
 }

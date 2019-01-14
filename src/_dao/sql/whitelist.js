@@ -38,7 +38,8 @@ SELECT ak.kara_id AS kara_id,
   ak.created_at AS created_at,
   ak.modified_at AS modified_at,
   wl.created_at AS whitelisted_at,
-  wl.reason AS reason
+  wl.reason AS reason,
+  wl.pk_id_whitelist AS whitelistcontent_id
   FROM all_karas AS ak
   INNER JOIN whitelist AS wl ON wl.fk_id_kara = ak.kara_id
   WHERE 1 = 1

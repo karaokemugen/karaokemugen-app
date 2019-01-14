@@ -5,10 +5,10 @@ import {generateBlacklist} from './blacklist';
 import {profile} from '../_utils/logger';
 import logger from 'winston';
 
-export async function addKaraToWhitelist(kara_id, reason) {
+export async function addKaraToWhitelist(kara_id, reason, token, lang) {
 	let karas = [kara_id];
 	if (typeof kara_id === 'string') karas = kara_id.split(',');
-	const kara = await getKara(karas[0]);
+	const kara = await getKara(karas[0], token, lang);
 	logger.info(`[Whitelist] Adding ${karas.length} karaokes to whitelist : ${kara[0].title}...`);
 	try {
 		profile('addKaraToWL');

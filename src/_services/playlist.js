@@ -789,7 +789,6 @@ export async function reorderPlaylist(playlist_id, opt = {}) {
 		pl[arraypos].pos = newpos;
 		arraypos++;
 	});
-	console.log(pl);
 	await reorderPL(pl);
 	return pl;
 }

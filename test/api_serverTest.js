@@ -47,7 +47,7 @@ describe('Test public API', function() {
 			});
 	});
 
-	it('connect with a user', function() {
+	it('Connect with a user', function() {
 		var data = {
 			username: usernameAdmin,
 			password: passwordAdmin
@@ -64,7 +64,7 @@ describe('Test public API', function() {
 			});
 	});
 
-	it('get user informations', function() {
+	it('Get user informations', function() {
 		return request
 			.get('/api/public/users/')
 			.set('Authorization', token)
@@ -74,13 +74,12 @@ describe('Test public API', function() {
 				response.body.data.forEach(element => {
 					if (element.login === 'BakaToTest') {
 						assert.equal(element.type, 1);
-						assert.equal(element.flag_admin, 0);
 					}
 				});
 			});
 	});
 
-	it('delete a user', function() {
+	it('Delete a user', function() {
 		return request
 			.delete('/api/admin/users/BakaToTest')
 			.set('Accept', 'application/json')
@@ -183,7 +182,7 @@ describe('Test public API', function() {
 			.expect(200)
 			.then(function(response) {
 				// We get the PLC_ID of our last karaoke, the one we just added
-				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id;
+				plc_id = response.body.data.content[0].playlistcontent_id;
 				current_plc_id = plc_id;
 				var result = false;
 				if (response.body.data.content.length >= 1) result = true;
@@ -249,13 +248,12 @@ describe('Managing karaokes in playlists', function() {
 			.expect(200)
 			.then(function(response) {
 				// We get the PLC_ID of our last karaoke, the one we just added
-				plc_id = response.body.data.content[response.body.data.content.length-1].playlistcontent_id;
+				plc_id = response.body.data.content[0].playlistcontent_id;
 				var result = false;
 				if (response.body.data.content.length >= 1) result = true;
 				assert.equal(result, true);
 			});
 	});
-
 	it('Add karaoke 6 again to playlist 1 to see if it fails', function() {
 		var data = {
 			'kara_id': 6,
@@ -314,10 +312,10 @@ describe('Managing karaokes in playlists', function() {
 
 	it('Edit karaoke from current playlist : flag_playing', function() {
 		var data = {
-			flag_playing: '1'
+			flag_playing: 1
 		};
 		return request
-			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
+			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+plc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -325,16 +323,16 @@ describe('Managing karaokes in playlists', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.equal(response.body.code,'PL_CONTENT_MODIFIED');
-				assert.equal(response.body.data, current_plc_id);
+				assert.equal(response.body.data, plc_id);
 			});
 	});
 
 	it('Edit karaoke from current playlist : position', function() {
 		var data = {
-			pos: '1'
+			pos: 1
 		};
 		return request
-			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+current_plc_id)
+			.put('/api/admin/playlists/'+current_playlist_id+'/karas/'+plc_id)
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.send(data)
@@ -342,7 +340,7 @@ describe('Managing karaokes in playlists', function() {
 			.expect(200)
 			.then(function(response) {
 				assert.equal(response.body.code,'PL_CONTENT_MODIFIED');
-				assert.equal(response.body.data, current_plc_id);
+				assert.equal(response.body.data, plc_id);
 			});
 	});
 
@@ -434,13 +432,13 @@ describe('Managing whitelist', function() {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then(function(response) {
-				wlc_id = response.body.data.content[0].whitelist_id;
+				wlc_id = response.body.data.content[0].whitelistcontent_id;
 			});
 	});
 
 	it('Delete karaoke 1 from whitelist', function() {
 		var data = {
-			'wlc_id': wlc_id,
+			wlc_id: wlc_id
 		};
 		return request
 			.delete('/api/admin/whitelist/')

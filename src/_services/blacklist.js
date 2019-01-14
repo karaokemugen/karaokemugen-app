@@ -32,7 +32,6 @@ export async function getBlacklist(filter, lang, from, size) {
 export async function getBlacklistCriterias(lang) {
 	profile('getBLC');
 	const blcs = await getBLC();
-	console.log(blcs);
 	const ret = await translateBlacklistCriterias(blcs, lang);
 	profile('getBLC');
 	return ret;
@@ -131,10 +130,6 @@ async function translateBlacklistCriterias(blcs, lang) {
 	});
 	i18n.setLocale(lang);
 	// We need to read the detected locale in ISO639-1
-	console.log(blcList);
-	try{
-
-
 	for (const i in blcList) {
 		if (blcList[i].type === 1) {
 			// We just need to translate the tag name if there is a translation
@@ -158,14 +153,9 @@ async function translateBlacklistCriterias(blcs, lang) {
 		if (blcList[i].type === 1001) {
 			// We have a kara ID, let's get the kara itself and append it to the value
 			const kara = await getKara(blcList[i].value, true);
-			console.log(kara);
 			blcList[i].value = translateKaraInfo(kara, lang);
 		}
 		// No need to do anything, values have been modified if necessary
 	}
 	return blcList;
-	}catch(err) {
-		console.log(err);
-		throw err;
-	}
 }
