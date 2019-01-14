@@ -1188,18 +1188,7 @@ body[scope="public"] .panel[side="1"] .ps>.ps__scrollbar-y-rail {
 	border: none;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.10), 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 3px 5px -1px rgba(0, 0, 0, 0.1);
 }
-#loginModal .modal-body input[name="modalLoginServ"] {
-    background-color: hsla(225, 32%, 38%, 1) !important
-}
-#loginModal .modal-body input[name="modalLoginServ"] {
-    width: 130px;
-    color: #bbb;
-    /* padding-left: 2px; */
-}
-#loginModal .modal-body input[name="modalLogin"] {
-    width: calc(100% - 130px - 4px);
-    /* padding-right: 2px; */
-}
+
 .modalPage .modal-message div {
 	height: 100%;
 }

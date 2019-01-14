@@ -407,6 +407,7 @@
 	"PROFILE_URL": "Website",
 	"PROFILE_BIO": "Biography",
 	"PROFILE_PASSWORD": "Password",
+	"PROFILE_PASSWORD_AGAIN": "Type your password",
 	"PROFILE_PASSWORDCONF": "Confirm",
 	"TOOLTIP_ADDKARA": "Add this kara to the playlist - right click to append it after the currently playing song",
 	"TOOLTIP_DELETEKARA": "Delete this kara",
@@ -533,5 +534,7 @@
 		"CHANGE": "You can change your choice at any time from the options.",
 		"QUESTION": "Do you agree to send these statistics to Karaoke Mugen Server?"
 	},
-	"PROFILE_CONVERT": "Convert to online profile"
+	"PROFILE_CONVERT": "Convert to online profile",
+	"PROFILE_CONVERTED": "Your profile was successfuly converted",
+	"TAG_CREDITLESS": "TAG_CREDITLESS"
 }

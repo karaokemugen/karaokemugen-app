@@ -404,7 +404,8 @@
 	"PROFILE_MAIL": "Courriel",
 	"PROFILE_URL": "Site web",
 	"PROFILE_BIO": "Biographie",
-	"PROFILE_PASSWORD": "Mot de passe",
+    "PROFILE_PASSWORD": "Mot de passe",
+    "PROFILE_PASSWORD_AGAIN": "Retapez votre mot de passe",
 	"TOOLTIP_ADDKARA": "Ajouter ce kara à la liste - clique droit l'ajoute après le morceau en cours",
 	"TOOLTIP_DELETEKARA": "Supprimer ce kara",
 	"TOOLTIP_DELETECRITERIA": "Supprimer ce critère de liste noire",
@@ -533,7 +534,7 @@
 		},
 		"CHANGE": "Vous pourrez modifier votre choix à tout moment depuis les options.",
 		"QUESTION": "Acceptez-vous d'envoyer ces statistiques à Karaoke Mugen Server ?",
-		"PROFILE_CONVERT": "Convertir en profil en ligne"
 	},
-	"PROFILE_CONVERT": "Passer mon profil en ligne"
+    "PROFILE_CONVERT": "Passer mon profil en ligne",
+    "PROFILE_CONVERTED": "Votre profil a bien été mis en ligne"
 }
