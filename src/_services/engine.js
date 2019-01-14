@@ -61,7 +61,7 @@ export async function initEngine() {
 	//Database system is the foundation of every other system
 	await initDBSystem();
 	await initUserSystem();
-	if (+conf.OnlineMode) try {
+	if (+conf.OnlineURL) try {
 		await initOnlineSystem();
 	} catch(err) {
 		logger.error(`[Engine] Failed to init online system : ${err}`);

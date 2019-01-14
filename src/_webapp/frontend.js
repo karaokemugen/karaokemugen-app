@@ -122,7 +122,7 @@ export async function initFrontend(port) {
 		res.render(view, {'layout': 'publicHeader',
 			'clientAdress'	:	`http://${url}`,
 			'webappMode'	:	config.WebappMode,
-            'onlineHost'  	:	config.OnlineMode ? config.OnlineHost : '',
+            'onlineHost'  	:	config.OnlineURL ? config.OnlineHost : '',
 			'query'			:	JSON.stringify(req.query)
 		});
 	});
@@ -146,7 +146,7 @@ export async function initFrontend(port) {
 				'displays'		:	data.displays,
 				'query'			:	JSON.stringify(req.query),
 				'appFirstRun'	:	config.appFirstRun,
-                'onlineHost'  	:	config.OnlineMode ? config.OnlineHost : '',
+                'onlineHost'  	:	config.OnlineURL ? config.OnlineHost : '',
 				'webappMode'	:	config.WebappMode
 			});
 		});
