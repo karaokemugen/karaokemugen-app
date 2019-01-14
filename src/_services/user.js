@@ -107,6 +107,7 @@ export async function checkLogin(username, password) {
 	if (username.includes('@')) {
 		try {
 			// If username has a @, check its instance for existence
+			if (!conf.OnlineUsers) throw 'Online users are not allowed right now';
 			const instance = username.split('@')[1];
 			remoteUserID = await remoteLogin(username, password);
 			const remoteUser = await getRemoteUser(username, remoteUserID.token);
@@ -439,7 +440,10 @@ export async function createUser(user, opts) {
 	user.email = user.email || null;
 
 	await newUserIntegrityChecks(user);
-	if (user.login.includes('@') && opts.createRemote) await createRemoteUser(user);
+	if (user.login.includes('@') && opts.createRemote) {
+		if (!getConfig().OnlineUsers) throw 'Creating online accounts is not allowed on this instance';
+		await createRemoteUser(user);
+	}
 	if (user.password) user.password = hashPassword(user.password);
 	try {
 		await db.addUser(user);
