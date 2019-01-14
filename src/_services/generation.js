@@ -600,7 +600,7 @@ export async function run() {
  * Parse karas in playlist_content, search for the KIDs in all_karas
  * If id_kara is different, write a UPDATE query.
  */
-export async function checkUserdbIntegrity(uuid, config) {
+export async function checkUserdbIntegrity() {
 	logger.debug('[Gen] Running user database integrity checks');
 	const [
 		allTags,
@@ -693,23 +693,10 @@ export async function checkUserdbIntegrity(uuid, config) {
 
 	if (sql) {
 		logger.debug( '[Gen] UPDATE SQL : ' + sql);
-		const beginSql = `BEGIN TRANSACTION;
-			ALTER TABLE whitelist DISABLE TRIGGER ALL;
-			ALTER TABLE blacklist DISABLE TRIGGER ALL;
-			ALTER TABLE played DISABLE TRIGGER ALL;
-			ALTER TABLE playlist_content DISABLE TRIGGER ALL;
-			ALTER TABLE blacklist_criteria DISABLE TRIGGER ALL;
-			ALTER TABLE requested DISABLE TRIGGER ALL;
-			ALTER TABLE blacklist DISABLE TRIGGER ALL;
+		const beginSql = `
+			BEGIN TRANSACTION;
 		`;
 		const endSql = `
-			ALTER TABLE whitelist ENABLE TRIGGER ALL;
-			ALTER TABLE blacklist ENABLE TRIGGER ALL;
-			ALTER TABLE played ENABLE TRIGGER ALL;
-			ALTER TABLE playlist_content ENABLE TRIGGER ALL;
-			ALTER TABLE blacklist_criteria ENABLE TRIGGER ALL;
-			ALTER TABLE requested ENABLE TRIGGER ALL;
-			ALTER TABLE blacklist ENABLE TRIGGER ALL;
 			COMMIT;
 		`;
 		await db().query(beginSql + sql + endSql);

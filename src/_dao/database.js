@@ -1,4 +1,5 @@
 import logger from 'winston/lib/winston';
+import {open} from 'sqlite';
 import {getConfig} from '../_utils/config';
 import {Pool} from 'pg';
 import {exit} from '../_services/engine';
@@ -7,6 +8,8 @@ import deburr from 'lodash.deburr';
 import langs from 'langs';
 import {compareKarasChecksum, run as generateDB} from '../_services/generation';
 import DBMigrate from 'db-migrate';
+import {resolve} from 'path';
+import {asyncRename, asyncExists} from '../_utils/files';
 const sql = require('./sql/database');
 
 export function paramWords(filter) {
@@ -178,6 +181,8 @@ export async function initDBSystem() {
 	await initDB();
 	await connectDB();
 	await migrateDB();
+	if (conf.optReset) await resetUserData();
+	await importFromSQLite();
 	logger.info('[DB] Checking data files...');
 	if (!await compareKarasChecksum()) {
 		logger.info('[DB] Kara files have changed: database generation triggered');
@@ -186,7 +191,6 @@ export async function initDBSystem() {
 	const settings = await getSettings();
 	if (!settings.lastGeneration) doGenerate = true;
 	if (doGenerate) await generateDatabase();
-	if (conf.optReset) await resetUserData();
 	await db().query('VACUUM');
 	logger.debug( '[DB] Database Interface is READY');
 	const stats = await getStats();
@@ -245,4 +249,123 @@ export function buildTypeClauses(mode, value) {
 		LEFT OUTER JOIN user AS u ON u.pk_id_user = r.fk_id_user
 		WHERE u.login = '${value}'`;
 	return '';
+}
+
+export async function importFromSQLite() {
+	const conf = getConfig();
+	const sqliteDBFile = resolve(conf.appPath, conf.PathDB, conf.PathDBUserFile);
+	if (await asyncExists(sqliteDBFile)) {
+		logger.info('[DB] SQLite database detected. Importing...');
+		const sqliteDB = await open(sqliteDBFile, {verbose: true});
+		//Getting data
+		const [blc, p, plc, rq, up, u, vc, w] = await Promise.all([
+			sqliteDB.all('SELECT * FROM blacklist_criteria;'),
+			sqliteDB.all('SELECT * FROM playlist;'),
+			sqliteDB.all('SELECT * FROM playlist_content;'),
+			sqliteDB.all('SELECT * FROM request;'),
+			sqliteDB.all('SELECT * FROM upvote;'),
+			sqliteDB.all('SELECT * FROM user;'),
+			sqliteDB.all('SELECT * FROM viewcount;'),
+			sqliteDB.all('SELECT * FROM whitelist;')
+		]);
+		await sqliteDB.close();
+		// Transforming data
+		const newBLC = blc.map(e => [
+			e.pk_id_blcriteria,
+			e.type,
+			e.value,
+			e.uniquevalue
+		]);
+		const newP = p.map(e => [
+			e.pk_id_playlist,
+			e.name,
+			e.num_karas,
+			e.length,
+			new Date(e.created_at * 1000),
+			new Date(e.modified_at * 1000),
+			e.flag_visible === 1,
+			e.flag_current === 1,
+			e.flag_public === 1,
+			e.flag_favorites === 1,
+			e.time_left,
+			e.fk_id_user
+		]);
+		const newPLC = plc.map(e => [
+			e.pk_id_plcontent,
+			e.fk_id_playlist,
+			e.fk_id_kara,
+			e.kid,
+			new Date(e.created_at * 1000),
+			e.pos,
+			e.flag_playing === 1,
+			e.pseudo_add,
+			e.fk_id_user,
+			e.flag_free === 1
+		]);
+		const newRQ = rq.map(e => [
+			e.pk_id_request,
+			e.fk_id_user,
+			e.fk_id_kara,
+			new Date(e.session_started_at * 1000),
+			e.kid,
+			new Date(e.requested_at * 1000)
+		]);
+		const newUP = up.map(e => [
+			e.fk_id_plcontent,
+			e.fk_id_user
+		]);
+		const newU = u.map(e => [
+			e.pk_id_user,
+			e.login,
+			e.nickname,
+			e.password,
+			e.type,
+			e.avatar_file,
+			e.bio,
+			e.url,
+			e.email,
+			e.flag_online === 1,
+			new Date(0),
+			e.fingerprint
+		]);
+		// Admin flag is not needed anymore. Instead admins have type 0
+		u.forEach((e,i) => {
+			if (e.flag_admin) newU[i][4] = 0;
+		});
+		const newVC = vc.map(e => [
+			e.pk_id_viewcount,
+			e.fk_id_kara,
+			new Date(e.session_started_at * 1000),
+			e.kid,
+			new Date(e.modified_at * 1000)
+		]);
+		const newW = w.map(e => [
+			w.pk_id_whitelist,
+			e.fk.id_kara,
+			e.kid,
+			new Date(e.created_at * 1000),
+			null
+		]);
+		await transaction([
+			{sql: 'INSERT INTO whitelist VALUES($1,$2,$3,$4,$5)', params: newW},
+			{sql: 'INSERT INTO played VALUES($1,$2,$3,$4,$5)', params: newVC},
+			{sql: 'INSERT INTO users VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', params: newU},
+			{sql: 'INSERT INTO upvote VALUES($1,$2)', params: newUP},
+			{sql: 'INSERT INTO requested VALUES($1,$2,$3,$4,$5,$6)', params: newRQ},
+			{sql: 'INSERT INTO playlist VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', params: newP},
+			{sql: 'INSERT INTO playlist_content VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)', params: newPLC},
+			{sql: 'INSERT INTO blacklist_criteria VALUES($1,$2,$3,$4)', params: newBLC}
+		]);
+		await db().query(`
+		SELECT SETVAL('blacklist_criteria_pk_id_blcriteria_seq',(SELECT MAX(pk_id_blcriteria) FROM blacklist_criteria));
+		SELECT SETVAL('played_pk_id_played_seq',(SELECT MAX(pk_id_played) FROM played));
+		SELECT SETVAL('playlist_pk_id_playlist_seq',(SELECT MAX(pk_id_playlist) FROM playlist));
+		SELECT SETVAL('playlist_content_pk_id_plcontent_seq',(SELECT MAX(pk_id_plcontent) FROM playlist_content));
+		SELECT SETVAL('requested_pk_id_requested_seq',(SELECT MAX(pk_id_requested) FROM requested));
+		SELECT SETVAL('users_pk_id_user_seq',(SELECT MAX(pk_id_user) FROM users));
+		SELECT SETVAL('whitelist_pk_id_whitelist_seq',(SELECT MAX(pk_id_whitelist) FROM whitelist));
+		`);
+		logger.info('[DB] SQLite import complete');
+		await asyncRename(sqliteDBFile, sqliteDBFile+'-old');
+	}
 }
