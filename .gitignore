@@ -15,6 +15,7 @@ doc/
 \.DS_Store
 *.backup
 config\.ini
+database\.json
 *.bak
 karaokemugen-app-linux
 karaokemugen-app-macos
