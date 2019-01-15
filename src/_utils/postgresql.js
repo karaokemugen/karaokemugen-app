@@ -7,7 +7,6 @@ import {asyncExists, asyncReadFile} from './files';
 import {getConfig} from './config';
 import {emit} from './pubsub';
 import logger from 'winston';
-import {Readable} from 'stream';
 
 let started = false;
 
@@ -55,7 +54,7 @@ export async function initPG() {
 			pidWatcher.on('unlink', () => {
 				emit('postgresShutdown');
 			});
-			const stream = execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresExe), ['-D', pgDataDir, '-p', conf.db.prod.port ], {
+			const stream = execa(resolve(conf.appPath, conf.BinPostgresPath, conf.BinPostgresCTLExe), ['start', '-D', pgDataDir ], {
 				cwd: resolve(conf.appPath, conf.BinPostgresPath)
 			}).stderr;
 			stream.on('data', data => {
